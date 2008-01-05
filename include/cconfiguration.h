@@ -84,7 +84,7 @@ class cConfigKey;
  */
 //FIXME explain what is cConfigKey (ie purpose: to detect unrecognized entries (ie caused by typos) in omnetpp.ini)
 //XXX refine the above docu!
-class ENVIR_API cConfiguration : public cObject
+class SIM_API cConfiguration : public cObject
 {
   public:
     /**

@@ -27,6 +27,13 @@ OMNETPP_VERSION=omnetpp-4.0a3
 TOOLCHAIN_NAME=vc71
 
 #
+# Choose whether to build static libs or DLLs, by setting LIB_SUFFIX to 
+# either .lib or .dll
+#
+LIB_SUFFIX=.lib
+#LIB_SUFFIX=.dll
+
+#
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
 # Tcl/Tk 8.4 (minimum 8.4.0) and BLT 2.4 required.
 # Leave BLT_VER empty if you don't have BLT. BLT is expected to reside
@@ -263,13 +270,13 @@ LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
 CFLAGS_RELEASE=/MT /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE
 LDFLAGS_RELEASE=/subsystem:console /opt:noref
 
-# LIB_SUFFIX is either .lib or .dll
-LIB_SUFFIX=.lib
-#LIB_SUFFIX=.dll
-
 HAVE_DLOPEN=0
 
 VC_AUX_FILES=*.ilk *.idb *.pdb *.pch *.exp *.suo *.sln
+
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
+!endif
 
 !if "$(WITH_PARSIM)"=="yes"
 CFLAGS=$(CFLAGS) /DWITH_PARSIM

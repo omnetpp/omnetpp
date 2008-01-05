@@ -14,19 +14,15 @@
 !error OMNETPP_LIB_DIR must be correctly set
 !endif
 
-!if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
-!endif
-
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/nedxml
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
 #
 # Local definitions
 #
 LIBNAME=nedxml
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/nedxml
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DNEDXML_EXPORT /Fd"$O/nedxml.pdb"
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/nedxml.pdb"
 IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
 OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
@@ -40,6 +36,10 @@ OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
       $O/msg2.tab.obj $O/lex.msg2yy.obj \
       $O/nedresourcecache.obj $O/nedcomponent.obj \
       $O/nedcompiler.obj
+
+!if "$(LIB_SUFFIX)"==".dll"
+COPTS= $(COPTS) -DNEDXML_EXPORT
+!endif
 
 #
 # Automatic rules

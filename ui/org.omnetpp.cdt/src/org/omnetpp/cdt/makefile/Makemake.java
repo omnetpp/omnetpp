@@ -39,6 +39,8 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 //XXX template: extra blank lines before "generateheaders" in the makefile (one per subdir)
 // FIXME remove subdirtargets
 //XXX  copy template contents to perl script opp_makemake
+///XXX dllexportmacro: remove from the template
+//XXX template: make clean doesn't work
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
 

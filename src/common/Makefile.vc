@@ -14,19 +14,14 @@
 !error OMNETPP_LIB_DIR must be correctly set
 !endif
 
-!if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
-!endif
-
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/common
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-
 #
 # Local definitions
 #
 LIBNAME=common
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/common
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. -DCOMMON_EXPORT /Fd"$O/common.pdb"
+COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/common.pdb"
 
 OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/stringpool.obj $O/stringtokenizer.obj $O/fnamelisttokenizer.obj \
@@ -35,6 +30,10 @@ OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/patternmatcher.obj $O/unitconversion.obj $O/displaystring.obj $O/fileglobber.obj \
       $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj \
       $O/enumstr.obj
+
+!if "$(LIB_SUFFIX)"==".dll"
+COPTS= $(COPTS) -DCOMMON_EXPORT
+!endif
 
 #
 # Automatic rules

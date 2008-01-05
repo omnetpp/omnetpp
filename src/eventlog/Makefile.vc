@@ -14,25 +14,24 @@
 !error OMNETPP_LIB_DIR must be correctly set
 !endif
 
-!if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
-!endif
-
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/eventlog
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-
 #
 # Local definitions
 #
 LIBNAME=eventlog
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/eventlog
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DEVENTLOG_EXPORT /Fd"$O/eventlog.pdb"
+COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/eventlog.pdb"
 IMPLIBS= $O/../common/common.lib
 
 OBJS= $O/ievent.obj $O/ieventlog.obj $O/eventlogfacade.obj $O/eventlogtablefacade.obj \
       $O/sequencechartfacade.obj $O/eventlog.obj $O/eventlogindex.obj \
       $O/messagedependency.obj $O/event.obj $O/eventlogentry.obj $O/eventlogentries.obj \
       $O/filteredevent.obj $O/filteredeventlog.obj $O/eventlogentryfactory.obj
+
+!if "$(LIB_SUFFIX)"==".dll"
+COPTS= $(COPTS) -DEVENTLOG_EXPORT
+!endif
 
 #
 # Automatic rules

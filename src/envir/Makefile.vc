@@ -14,26 +14,14 @@
 !error OMNETPP_LIB_DIR must be correctly set
 !endif
 
-!if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
-!endif
-
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/envir
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-
-#
-# Local setup
-#
-!if "$(WITH_NETBUILDER)"=="yes"
-CFLAGS=$(CFLAGS) -DWITH_NETBUILDER
-!endif
-
 #
 # Local definitions
 #
 LIBNAME=envir
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/envir
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DENVIR_EXPORT -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"$O/envir.pdb"
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"$O/envir.pdb"
 IMPLIBS= $O/../sim/sim_std.lib $O/../nedxml/nedxml.lib $O/../common/common.lib
 
 OBJS= $O/args.obj $O/cenvir.obj $O/main.obj $O/omnetapp.obj $O/fsutils.obj \
@@ -41,6 +29,13 @@ OBJS= $O/args.obj $O/cenvir.obj $O/main.obj $O/omnetapp.obj $O/fsutils.obj \
       $O/speedometer.obj $O/filemgrs.obj $O/akoutvectormgr.obj $O/matchableobject.obj \
       $O/akaroarng.obj $O/cxmldoccache.obj $O/ivfilemgr.obj $O/eventlogwriter.obj $O/objectprinter.obj
 
+!if "$(LIB_SUFFIX)"==".dll"
+COPTS= $(COPTS) -DENVIR_EXPORT
+!endif
+
+!if "$(WITH_NETBUILDER)"=="yes"
+COPTS=$(COPTS) -DWITH_NETBUILDER
+!endif
 
 #
 # Automatic rules

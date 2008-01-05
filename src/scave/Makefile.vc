@@ -14,19 +14,14 @@
 !error OMNETPP_LIB_DIR must be correctly set
 !endif
 
-!if "$(LIB_SUFFIX)"==".dll"
-CFLAGS=$(CFLAGS) -DOMNETPPLIBS_IMPORT
-!endif
-
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/scave
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-
 #
 # Local definitions
 #
 LIBNAME=scave
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/scave
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" -DSCAVE_EXPORT /Fd"$O/scave.pdb"
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/scave.pdb"
 IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
 OBJS= $O/arraybuilder.obj $O/channel.obj $O/commonnodes.obj $O/compoundfilter.obj \
@@ -39,6 +34,10 @@ OBJS= $O/arraybuilder.obj $O/channel.obj $O/commonnodes.obj $O/compoundfilter.ob
       $O/vectorfileindexer.obj $O/indexfile.obj $O/scaveutils.obj \
       $O/scaveexception.obj $O/enumtype.obj $O/export.obj $O/teenode.obj \
       $O/indexedvectorfilereader.obj $O/xyarray.obj $O/fields.obj
+
+!if "$(LIB_SUFFIX)"==".dll"
+COPTS= $(COPTS) -DSCAVE_EXPORT
+!endif
 
 #
 # Automatic rules
