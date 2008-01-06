@@ -23,9 +23,9 @@ Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
   -t <suffix> output C++ header file suffix (defaults to: _m.h)
   -P <symbol> add dllexport/dllimport symbol to class declarations
   -h          output in current directory
-  -A          always overwrite output files (by default, opp_msgc has a
-              make-like behavior: it only overwrites output files if they
-              appear to be out-of-date after a timestamp check)
+  -A          no timestamp check, always overwrite output files.
+              (by default, opp_msgc only overwrites output files if they
+              appear to be out-of-date, according to file time/date)
   -Xnc        do not generate the classes, only object descriptions
   -Xnd        do not generate object descriptions
   -Xns        do not generate setters in object descriptions

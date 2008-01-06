@@ -1180,10 +1180,6 @@ all: $O/$(TARGET)
 {submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [Entering %%i] && nmake /nologo /f Makefile.vc && echo [Leaving %%i] && @popd || exit /b 1
 {submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS); do (cd $$i && $(MAKE)) || exit 1; done
 
-{msgfiles:}{nmake:}$(MSG_CC_FILES) $(MSG_H_FILES) : $(MSGFILES) # FIXME does not work - use iteration
-{msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
-{msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $?
-{msgfiles:}
 .SUFFIXES: .{cc}
 
 {~nmake:}$O/%.{obj}: %.{cc}
@@ -1198,7 +1194,8 @@ all: $O/$(TARGET)
 {nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {/@}
 
-generateheaders: $(MSG_H_FILES)
+generateheaders: $(MSGFILES)
+	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
 {submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && @popd || exit /b 1
 {submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS); do (cd $$i && $(MAKE) generateheaders) || exit 1; done
 

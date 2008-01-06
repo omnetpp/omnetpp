@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.util.FileUtils;
@@ -38,7 +37,6 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  * @author Andras
  */
 //XXX "Out" dir should be excluded implicitly
-//XXX rules for msg files are wrong when using nmake!
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
     private static String template;
