@@ -1,10 +1,9 @@
 package org.omnetpp.cdt.ui;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.eclipse.cdt.utils.ui.controls.FileListControl;
+import org.eclipse.cdt.utils.ui.controls.IFileListChangeListener;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -48,15 +47,13 @@ import org.omnetpp.common.util.StringUtils;
 
 
 /**
- * UI for editing MakemakeOptions
+ * UI for editing MakemakeOptions.
  * 
  * @author Andras
  */
 //XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
 //XXX kezzel beirt -D elveszik!!! ezek szinten: defaultMode, exceptSubdirs, includeDirs, libDirs, defines, makefileDefines
 //XXX display which makefile is the primary makefile, and add "Make primary Makefile" button
-//improvement: create new View: cross-folder dependencies (use DOT to render the graph?)
-//improvement: copy SWTFactory and use it instead of random createXXX() method in each and every dialog class?
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;
     // see https://bugs.eclipse.org/bugs/show_bug.cgi?id=213188
@@ -283,7 +280,7 @@ public class MakemakeOptionsPanel extends Composite {
         pathsPageLink2.addSelectionListener(gotoListener);
         pathsPageLink3.addSelectionListener(gotoListener);
 
-        hookListeners();
+        hookChangeListeners();
 
         return composite;
     }
@@ -366,7 +363,7 @@ public class MakemakeOptionsPanel extends Composite {
         return toggleLink;
     }
 
-    protected void hookListeners() {
+    protected void hookChangeListeners() {
         // maintain consistency between dialog controls and the "Preview" page
         tabfolder.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -380,50 +377,52 @@ public class MakemakeOptionsPanel extends Composite {
         });
 
         // validate dialog contents on changes
-        SelectionListener sel = new SelectionAdapter() {
+        SelectionListener selectionChangeListener = new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 updateDialogState();
-            }
-        };
-        ModifyListener mod = new ModifyListener() {
+            }};
+        ModifyListener modifyListener = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 updateDialogState();
-            }
-        };
+            }};
+        IFileListChangeListener fileListChangeListener = new IFileListChangeListener() {
+            public void fileListChanged(FileListControl fileList, String[] oldValue, String[] newValue) {
+                updateDialogState();
+            }};
 
-        deepMakefileRadioButton.addSelectionListener(sel);
-        recursiveMakefileRadioButton.addSelectionListener(sel);
-        localMakefileRadioButton.addSelectionListener(sel);
-        subdirsDirsList.getListControl().addSelectionListener(sel);
+        deepMakefileRadioButton.addSelectionListener(selectionChangeListener);
+        recursiveMakefileRadioButton.addSelectionListener(selectionChangeListener);
+        localMakefileRadioButton.addSelectionListener(selectionChangeListener);
+        subdirsDirsList.addChangeListener(fileListChangeListener);
 
-        targetExecutableRadioButton.addSelectionListener(sel);
-        targetSharedLibRadioButton.addSelectionListener(sel);
-        targetStaticLibRadioButton.addSelectionListener(sel);
-        targetCompileOnlyRadioButton.addSelectionListener(sel);
+        targetExecutableRadioButton.addSelectionListener(selectionChangeListener);
+        targetSharedLibRadioButton.addSelectionListener(selectionChangeListener);
+        targetStaticLibRadioButton.addSelectionListener(selectionChangeListener);
+        targetCompileOnlyRadioButton.addSelectionListener(selectionChangeListener);
 
-        defaultTargetNameRadionButton.addSelectionListener(sel);
-        specifyTargetNameRadioButton.addSelectionListener(sel);
-        targetNameText.addModifyListener(mod);
-        exportLibraryCheckbox.addSelectionListener(sel);
-        outputDirText.addModifyListener(mod);
+        defaultTargetNameRadionButton.addSelectionListener(selectionChangeListener);
+        specifyTargetNameRadioButton.addSelectionListener(selectionChangeListener);
+        targetNameText.addModifyListener(modifyListener);
+        exportLibraryCheckbox.addSelectionListener(selectionChangeListener);
+        outputDirText.addModifyListener(modifyListener);
 
-        deepIncludesCheckbox.addSelectionListener(sel);
-        autoIncludePathCheckbox.addSelectionListener(sel);
+        deepIncludesCheckbox.addSelectionListener(selectionChangeListener);
+        autoIncludePathCheckbox.addSelectionListener(selectionChangeListener);
 
-        ccextCombo.addSelectionListener(sel);
-        compileForDllCheckbox.addSelectionListener(sel);
-        dllSymbolText.addModifyListener(mod);
+        ccextCombo.addSelectionListener(selectionChangeListener);
+        compileForDllCheckbox.addSelectionListener(selectionChangeListener);
+        dllSymbolText.addModifyListener(modifyListener);
 
-        userInterfaceCombo.addSelectionListener(sel);
-        useExportedLibsCheckbox.addSelectionListener(sel);
-        linkAllObjectsCheckbox.addSelectionListener(sel);
-        libsList.getListControl().addSelectionListener(sel);
-        linkObjectsList.getListControl().addSelectionListener(sel);
+        userInterfaceCombo.addSelectionListener(selectionChangeListener);
+        useExportedLibsCheckbox.addSelectionListener(selectionChangeListener);
+        linkAllObjectsCheckbox.addSelectionListener(selectionChangeListener);
+        libsList.addChangeListener(fileListChangeListener);
+        linkObjectsList.addChangeListener(fileListChangeListener);
 
-        makefragText.addModifyListener(mod);
-        makefragvcText.addModifyListener(mod);
-        makefragsList.getListControl().addSelectionListener(sel);  //XXX does not work for list control
+        makefragText.addModifyListener(modifyListener);
+        makefragvcText.addModifyListener(modifyListener);
+        makefragsList.addChangeListener(fileListChangeListener);
     }
 
     protected void activeTabChanged() {
@@ -540,11 +539,12 @@ public class MakemakeOptionsPanel extends Composite {
 
                 // validate text field contents
                 setErrorMessage(null);
+                if (!targetNameText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
+                    setErrorMessage("Target name contains illegal characters");
                 if (outputDirText.getText().matches(".*[:/\\\\].*"))
                     setErrorMessage("Output folder: cannot contain /, \\ or :.");
                 if (!dllSymbolText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
                     setErrorMessage("DLL export macro: contains illegal characters");
-                //TODO others...
             }
         } finally {
             beingUpdated = false;
@@ -597,6 +597,7 @@ public class MakemakeOptionsPanel extends Composite {
 
     protected void setErrorMessage(String text) {
         ownerPage.setErrorMessage(text);
+        ownerPage.setValid(text == null);
     }
 
     public void setOwner(PropertyPage page) {

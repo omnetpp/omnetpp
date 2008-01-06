@@ -11,8 +11,9 @@ import org.eclipse.swt.widgets.Link;
 
 
 /**
- * A link that shows/hides other controls, while the link text reads
- * "More >>" or "<< Less". Controls have to have GridLayout.
+ * A link that shows/hides other controls. Link text alternates between 
+ * "More >>" or "<< Less" (can be overridden). The controlled Controls 
+ * need to be under GridLayout.
  * 
  * @author Andras
  */

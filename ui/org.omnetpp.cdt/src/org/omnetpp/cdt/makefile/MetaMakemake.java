@@ -37,6 +37,9 @@ import org.omnetpp.common.util.StringUtils;
  * - adds opp_makemake -X options from CDT's "exclude from build" settings
  * - adds opp_makemake -I and -L options from CDT's include paths and library paths settings
  *
+ * NOTE: we only support excluding whole folders. In CDT one can exclude individual files too, 
+ * but currently our generated makefiles ignore that.
+ *
  * @author Andras
  */
 //XXX handle  translatedOptions.metaLinkWithAllObjectsInProject
