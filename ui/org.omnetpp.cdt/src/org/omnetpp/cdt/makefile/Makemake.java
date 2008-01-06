@@ -188,11 +188,11 @@ public class Makemake {
             targetPrefix = isNMake ? "" : "lib";
         }
 
-        // prepare subdirs. First, check that all specified subdirs exist
-        List<String> subdirs = new ArrayList<String>();
-        subdirs.addAll(options.subdirs);
+        // prepare submakeDirs. First, check that all specified submakeDirs exist
+        List<String> submakeDirs = new ArrayList<String>();
+        submakeDirs.addAll(options.submakeDirs);
 
-        for (String subdir : subdirs)
+        for (String subdir : submakeDirs)
             if (!file(subdir).isDirectory())
                 throw new IllegalArgumentException("subdirectory '" + subdir + "' does not exist");
 
@@ -207,7 +207,7 @@ public class Makemake {
                     return false;
                 }});
             for (File i : list) {
-                subdirs.add(i.getName());
+                submakeDirs.add(i.getName());
             }
         }
 
@@ -338,7 +338,7 @@ public class Makemake {
         m.put("msghfiles", quoteJoin(msghfiles));
         m.put("msgfiles", quoteJoin(msgfiles));
         m.put("objs", quoteJoin(objs));
-        m.put("subdirs", quoteJoin(subdirs));
+        m.put("submakedirs", quoteJoin(submakeDirs));
         m.put("dllsymbol", StringUtils.nullToEmpty(options.dllSymbol));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);

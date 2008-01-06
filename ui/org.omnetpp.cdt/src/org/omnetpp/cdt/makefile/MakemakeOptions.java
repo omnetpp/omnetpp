@@ -31,7 +31,7 @@ public class MakemakeOptions implements Cloneable {
     public String dllSymbol = "";
     public boolean ignoreNedFiles = true; // note: no option for this
     public List<String> fragmentFiles = new ArrayList<String>();
-    public List<String> subdirs = new ArrayList<String>();
+    public List<String> submakeDirs = new ArrayList<String>();
     public List<String> exceptSubdirs = new ArrayList<String>();
     public List<String> includeDirs = new ArrayList<String>();
     public List<String> libDirs = new ArrayList<String>();
@@ -169,10 +169,10 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.equals("-d") || arg.equals("--subdir")) {
                 if (checkArg(argv, i))
-                    subdirs.add(argv[++i]);
+                    submakeDirs.add(argv[++i]);
             }
             else if (arg.startsWith("-d")) {
-                subdirs.add(arg.substring(2));
+                submakeDirs.add(arg.substring(2));
             }
             else if (arg.equals("-n") || arg.equals("--nolink")) {
                 type = Type.NOLINK;
@@ -322,7 +322,7 @@ public class MakemakeOptions implements Cloneable {
         if (!ignoreNedFiles)
             add(result, "-N");
         addOpts2(result, fragmentFiles, "-i");
-        addOpts2(result, subdirs, "-d");
+        addOpts2(result, submakeDirs, "-d");
         addOpts1(result, exceptSubdirs, "-X");
         addOpts1(result, includeDirs, "-I");
         addOpts1(result, libDirs, "-L");
@@ -391,7 +391,7 @@ public class MakemakeOptions implements Cloneable {
         result.compileForDll = compileForDll;
         result.ignoreNedFiles = ignoreNedFiles;
         result.fragmentFiles.addAll(fragmentFiles);
-        result.subdirs.addAll(subdirs);
+        result.submakeDirs.addAll(submakeDirs);
         result.exceptSubdirs.addAll(exceptSubdirs);
         result.includeDirs.addAll(includeDirs);
         result.libDirs.addAll(libDirs);

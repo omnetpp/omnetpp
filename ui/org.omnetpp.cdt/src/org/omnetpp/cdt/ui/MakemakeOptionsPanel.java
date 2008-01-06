@@ -82,7 +82,7 @@ public class MakemakeOptionsPanel extends Composite {
     private Button recursiveMakefileRadioButton;
     private Button localMakefileRadioButton;
     private ToggleLink scopePageToggle;
-    private FileListControl subdirsDirsList;
+    private FileListControl submakeDirsList;
 
     // "Target" page
     private Button targetExecutableRadioButton;
@@ -158,9 +158,9 @@ public class MakemakeOptionsPanel extends Composite {
         recursiveMakefileRadioButton = createRadioButton(group1, "Recursive", "Process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist");
         localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");
         createLabel(group1, "Makefiles will ignore directories marked as \"Excluded\"");
-        Label subdirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
-        subdirsDirsList = new FileListControl(scopePage, "Sub-make directories (relative path)", BROWSE_DIR);
-        scopePageToggle = createToggleLink(scopePage, new Control[] {subdirsLabel, subdirsDirsList.getListControl().getParent()});
+        Label submakeDirsLabel = createLabel(scopePage, "Additionally, invoke \"make\" in the following directories:");
+        submakeDirsList = new FileListControl(scopePage, "Sub-make directories (relative path)", BROWSE_DIR);
+        scopePageToggle = createToggleLink(scopePage, new Control[] {submakeDirsLabel, submakeDirsList.getListControl().getParent()});
         
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
@@ -393,7 +393,7 @@ public class MakemakeOptionsPanel extends Composite {
         deepMakefileRadioButton.addSelectionListener(selectionChangeListener);
         recursiveMakefileRadioButton.addSelectionListener(selectionChangeListener);
         localMakefileRadioButton.addSelectionListener(selectionChangeListener);
-        subdirsDirsList.addChangeListener(fileListChangeListener);
+        submakeDirsList.addChangeListener(fileListChangeListener);
 
         targetExecutableRadioButton.addSelectionListener(selectionChangeListener);
         targetSharedLibRadioButton.addSelectionListener(selectionChangeListener);
@@ -455,7 +455,7 @@ public class MakemakeOptionsPanel extends Composite {
         deepMakefileRadioButton.setSelection(options.isDeep);
         recursiveMakefileRadioButton.setSelection(options.isRecursive);
         localMakefileRadioButton.setSelection(!options.isDeep && !options.isRecursive);
-        subdirsDirsList.setList(options.subdirs.toArray(new String[]{}));
+        submakeDirsList.setList(options.submakeDirs.toArray(new String[]{}));
 
         // "Target" page
         targetExecutableRadioButton.setSelection(options.type==Type.EXE);
@@ -493,7 +493,7 @@ public class MakemakeOptionsPanel extends Composite {
         makefragsList.setList(options.fragmentFiles.toArray(new String[]{}));
 
         // open ToggleLinks if controls are not empty
-        if (subdirsDirsList.getListControl().getItemCount() != 0)
+        if (submakeDirsList.getListControl().getItemCount() != 0)
             scopePageToggle.setExpanded(true);
         if (libsList.getListControl().getItemCount() != 0 || linkObjectsList.getListControl().getItemCount() != 0)
             linkPageToggle.setExpanded(true);
@@ -614,7 +614,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "Scope" page
         result.isDeep = deepMakefileRadioButton.getSelection();
         result.isRecursive = recursiveMakefileRadioButton.getSelection();
-        result.subdirs.addAll(Arrays.asList(subdirsDirsList.getItems()));
+        result.submakeDirs.addAll(Arrays.asList(submakeDirsList.getItems()));
 
         // "Target" page
         result.type = getSelectedType();
