@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
 import org.omnetpp.common.util.FileUtils;
@@ -37,14 +38,13 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  * @author Andras
  */
 //XXX "Out" dir should be excluded implicitly
+//XXX rules for msg files are wrong when using nmake!
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
-
-    private String template;
+    private static String template;
 
     // parameters for the makemake function
     private IContainer folder;
-    private MakemakeOptions p;
 
     // computed
     private IPath projectLocation;
@@ -57,38 +57,41 @@ public class Makemake {
      * Generates Makefile in the given folder.
      */
     public void generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
-        generateMakefile(folder, new MakemakeOptions(args), perFileDeps);
-        //XXX check makemakeOptions.getParseErrors() !!!
+        MakemakeOptions options = new MakemakeOptions(args);
+        generateMakefile(folder, options, perFileDeps);
+        if (!options.getParseErrors().isEmpty())
+            throw new IllegalArgumentException(options.getParseErrors().get(0));
     }
 
     /**
      * Generates Makefile in the given folder.
      */
     public void generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
-        generateMakefile(folder, new MakemakeOptions(argv), perFileDeps);
-        //XXX check makemakeOptions.getParseErrors() !!!
+        MakemakeOptions options = new MakemakeOptions(argv);
+        generateMakefile(folder, options, perFileDeps);
+        if (!options.getParseErrors().isEmpty())
+            throw new IllegalArgumentException(options.getParseErrors().get(0));
     }
 
     /**
      * Generates Makefile in the given folder.
      */
-    public void generateMakefile(IContainer folder, MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException {
+    public void generateMakefile(IContainer folder, final MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException {
         this.folder = folder;
-        this.p = options;
         
         File directory = folder.getLocation().toFile();
         projectLocation = folder.getProject().getLocation();
         folderLocation = folder.getLocation();
 
-        boolean isNMake = p.isNMake;
-        boolean isRecursive = p.isRecursive;
-        boolean isDeep = p.isDeep;
+        boolean isNMake = options.isNMake;
+        boolean isRecursive = options.isRecursive;
+        boolean isDeep = options.isDeep;
 
         String makefileName = isNMake ? "Makefile.vc" : "Makefile";
-        if (file(makefileName).isFile() && !p.force)
+        if (file(makefileName).isFile() && !options.force)
             throw new IllegalStateException("use -f to force overwriting existing " + makefileName);
 
-        String target = p.target == null ? folder.getName() : p.target;
+        String target = options.target == null ? folder.getName() : options.target;
         List<String> objs = new ArrayList<String>();
         List<String> extraObjs = new ArrayList<String>();
         List<String> ccfiles = new ArrayList<String>();
@@ -113,8 +116,8 @@ public class Makemake {
 
         String makecommand = isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 
-        if (p.projectDir != null)
-            throw new IllegalStateException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
+        if (options.projectDir != null)
+            throw new IllegalArgumentException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
 
         String omnetppRoot = OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT);
         if (StringUtils.isEmpty(omnetppRoot))
@@ -129,7 +132,7 @@ public class Makemake {
             nedfiles = glob("*.ned");
         }
         else {
-            sourceDirs = collectDirs(folder, p.exceptSubdirs);
+            sourceDirs = collectDirs(folder, options.exceptSubdirs);
             for (String i : sourceDirs) {
                 ccfiles.addAll(glob(i, "*.cc"));
                 cppfiles.addAll(glob(i, "*.cpp"));
@@ -142,18 +145,18 @@ public class Makemake {
             backslashedSourceDirs.add(dir.replace('/', '\\'));
 
         // include dirs and lib dirs
-        for (String i : p.includeDirs)
+        for (String i : options.includeDirs)
             includeDirs.add(abs2rel(i));
-        if (!p.noDeepIncludes)
+        if (!options.noDeepIncludes)
             for (String i : sourceDirs)
                 includeDirs.add(i);
 
-        for (String i : p.libDirs)
+        for (String i : options.libDirs)
             libDirs.add(abs2rel(i));
 
         
         // try to determine if .cc or .cpp files are used
-        String ccExt = p.ccext;
+        String ccExt = options.ccext;
         if (ccExt == null) {
             if (ccfiles.isEmpty() && !cppfiles.isEmpty())
                 ccExt = "cpp";
@@ -174,20 +177,20 @@ public class Makemake {
         String objExt = isNMake ? "obj" : "o";
         String targetPrefix = ""; 
         String targetSuffix = "";
-        if (p.type == MakemakeOptions.Type.EXE)
+        if (options.type == MakemakeOptions.Type.EXE)
             targetSuffix = isNMake ? ".exe" : "";
-        else if (p.type == MakemakeOptions.Type.SHAREDLIB) {
+        else if (options.type == MakemakeOptions.Type.SHAREDLIB) {
             targetSuffix = isNMake ? ".dll" : ".so";
             targetPrefix = isNMake ? "" : "lib";
         }
-        else if (p.type == MakemakeOptions.Type.STATICLIB) {
+        else if (options.type == MakemakeOptions.Type.STATICLIB) {
             targetSuffix = isNMake ? ".lib" : ".a";
             targetPrefix = isNMake ? "" : "lib";
         }
 
         // prepare subdirs. First, check that all specified subdirs exist
         List<String> subdirs = new ArrayList<String>();
-        subdirs.addAll(p.subdirs);
+        subdirs.addAll(options.subdirs);
 
         for (String subdir : subdirs)
             if (!file(subdir).isDirectory())
@@ -198,7 +201,7 @@ public class Makemake {
                 public boolean accept(File file) {
                     if (file.isDirectory()) {
                         String name = file.getName();
-                        if (!name.startsWith(".") && !ArrayUtils.contains(MakefileTools.IGNORABLE_DIRS, name) && !p.exceptSubdirs.contains(name))
+                        if (!name.startsWith(".") && !ArrayUtils.contains(MakefileTools.IGNORABLE_DIRS, name) && !options.exceptSubdirs.contains(name))
                             return true;
                     }
                     return false;
@@ -208,7 +211,7 @@ public class Makemake {
             }
         }
 
-        for (String arg : p.extraArgs) {
+        for (String arg : options.extraArgs) {
             Assert.isTrue(!StringUtils.isEmpty(arg), "empty makemake argument found");
             extraObjs.add(arg);
         }
@@ -219,7 +222,7 @@ public class Makemake {
         if (ccExt.equals("cpp"))
             sources.addAll(cppfiles);
         sources.addAll(msgfiles);
-        if (!p.ignoreNedFiles) 
+        if (!options.ignoreNedFiles) 
             sources.addAll(nedfiles);
         
         for (String i : sources) {
@@ -242,8 +245,8 @@ public class Makemake {
 
         String makefrags = "";
         try {
-            if (!p.fragmentFiles.isEmpty()) {
-                for (String frag : p.fragmentFiles) {
+            if (!options.fragmentFiles.isEmpty()) {
+                for (String frag : options.fragmentFiles) {
                     makefrags += "# inserted from file '" + frag + "':\n";
                     makefrags += FileUtils.readTextFile(file(frag)) + "\n";
                 }
@@ -260,13 +263,13 @@ public class Makemake {
         }
 
         // defines
-        defines.addAll(p.defines);
-        if ((p.compileForDll || p.type == Type.SHAREDLIB) && !StringUtils.isEmpty(p.dllSymbol))
-            defines.add(p.dllSymbol+"_EXPORT");
+        defines.addAll(options.defines);
+        if ((options.compileForDll || options.type == Type.SHAREDLIB) && !StringUtils.isEmpty(options.dllSymbol))
+            defines.add(options.dllSymbol+"_EXPORT");
 
         // determine outDir (defaults to "out")
         String outdir;
-        IPath outRootPath = new Path(StringUtils.isEmpty(p.outRoot) ? "out" : p.outRoot);
+        IPath outRootPath = new Path(StringUtils.isEmpty(options.outRoot) ? "out" : options.outRoot);
         IPath outRootAbs = outRootPath.isAbsolute() ? outRootPath : folder.getProject().getLocation().append(outRootPath);
         IPath outRootRel = abs2rel(outRootAbs);  // "<project>/out"
         outdir = outRootRel.toString();
@@ -304,7 +307,7 @@ public class Makemake {
         m.put("subpath", subpath); 
         m.put("isdeep", isDeep);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
-        m.put("args", p.toString());
+        m.put("args", options.toString());
         m.put("configfile", configFile);
         m.put("-L", isNMake ? "/libpath:" : "-L");
         m.put("-l", isNMake ? "" : "-l");
@@ -314,20 +317,20 @@ public class Makemake {
         m.put("cc", ccExt);
         m.put("obj", objExt);
         m.put("deps", deps.toString());
-        m.put("exe", p.type == MakemakeOptions.Type.EXE);
-        m.put("sharedlib", p.type == MakemakeOptions.Type.SHAREDLIB);
-        m.put("staticlib", p.type == MakemakeOptions.Type.STATICLIB);
-        m.put("nolink", p.type == MakemakeOptions.Type.NOLINK);
-        m.put("defaultmode", StringUtils.nullToEmpty(p.defaultMode));
-        m.put("allenv", p.userInterface.startsWith("A"));
-        m.put("cmdenv", p.userInterface.startsWith("C"));
-        m.put("tkenv", p.userInterface.startsWith("T"));
+        m.put("exe", options.type == MakemakeOptions.Type.EXE);
+        m.put("sharedlib", options.type == MakemakeOptions.Type.SHAREDLIB);
+        m.put("staticlib", options.type == MakemakeOptions.Type.STATICLIB);
+        m.put("nolink", options.type == MakemakeOptions.Type.NOLINK);
+        m.put("defaultmode", StringUtils.nullToEmpty(options.defaultMode));
+        m.put("allenv", options.userInterface.startsWith("A"));
+        m.put("cmdenv", options.userInterface.startsWith("C"));
+        m.put("tkenv", options.userInterface.startsWith("T"));
         m.put("extraobjs", quoteJoin(extraObjs));
         m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
         m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
-        m.put("libs", p.libs);
+        m.put("libs", options.libs);
         m.put("defines", prefixQuoteJoin(defines, "-D"));
-        m.put("makefiledefines", p.makefileDefines);
+        m.put("makefiledefines", options.makefileDefines);
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
         m.put("makefrags", makefrags);
@@ -336,7 +339,7 @@ public class Makemake {
         m.put("msgfiles", quoteJoin(msgfiles));
         m.put("objs", quoteJoin(objs));
         m.put("subdirs", quoteJoin(subdirs));
-        m.put("dllsymbol", StringUtils.nullToEmpty(p.dllSymbol));
+        m.put("dllsymbol", StringUtils.nullToEmpty(options.dllSymbol));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);
 

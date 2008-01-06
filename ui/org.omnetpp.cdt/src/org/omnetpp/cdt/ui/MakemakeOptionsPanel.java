@@ -51,7 +51,7 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
-//XXX kezzel beirt -D elveszik!!! ezek szinten: defaultMode, exceptSubdirs, includeDirs, libDirs, defines, makefileDefines
+//XXX kezzel beirt -D elveszik!!! ezek szinten: defaultMode, exceptSubdirs, includeDirs, libDirs, defines, makefileDefines. Store them separately!
 //XXX display which makefile is the primary makefile, and add "Make primary Makefile" button
 public class MakemakeOptionsPanel extends Composite {
     // constants for CDT's FileListControl which are private;

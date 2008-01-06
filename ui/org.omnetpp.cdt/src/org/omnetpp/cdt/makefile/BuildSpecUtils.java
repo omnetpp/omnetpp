@@ -51,7 +51,7 @@ public class BuildSpecUtils {
                         IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
                         if (!StringUtils.isEmpty(args)) {
                             MakemakeOptions makemakeOptions = new MakemakeOptions(args);
-                            //XXX check makemakeOptions.getParseErrors() !!!
+                            //XXX check makemakeOptions.getParseErrors() !!! log and ignore?
                             buildSpec.setMakemakeOptions(folder, makemakeOptions);
                         }
                     }

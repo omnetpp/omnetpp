@@ -45,7 +45,8 @@ import org.omnetpp.common.util.StringUtils;
 //XXX handle  translatedOptions.metaLinkWithAllObjectsInProject
 public class MetaMakemake {
     /**
-     * Generates Makefile in the given folder.
+     * Generates Makefile in the given folder. Note: underlying Makemake may throw 
+     * IllegalArgumentException, IllegalStateException etc.
      */
     public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options) throws CoreException {
         MakemakeOptions translatedOptions = translateOptions(makefileFolder, options);

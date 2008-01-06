@@ -40,7 +40,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 Activator.getDependencyCache().clean(getProject());
 
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
-            buildSpec = BuildSpecUtils.readBuildSpecFile(getProject()); //XXX possible IllegalArgumentException
+            buildSpec = BuildSpecUtils.readBuildSpecFile(getProject());
             if (buildSpec == null)
                 buildSpec = new BuildSpecification();
             
@@ -49,6 +49,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             return Activator.getDependencyCache().getProjectGroup(getProject());
         }
         catch (Exception e) {
+            //FIXME catch CoreEx, IOEx, etc individually!!! or use our own exception type for makefile exceptions??
             // This is expected to catch mostly IOExceptions. Other (non-fatal) errors 
             // are already converted to markers inside the build methods.
             addMarker(getProject(), IMarker.SEVERITY_ERROR, "Error refreshing Makefiles: " + e.getMessage());
@@ -90,8 +91,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 options = MakemakeOptions.createInitial();
             MetaMakemake.generateMakefile(folder, options);
         }
-        catch (CoreException e) {
-            addMarker(folder, IMarker.SEVERITY_ERROR, "Error refreshing Makefile: " + e.getMessage());
+        catch (CoreException e) { //FIXME handle IllegalArgumentException, IllegalStateException etc, coming from Makemake too!!!
+            addMarker(folder, IMarker.SEVERITY_ERROR, "Makefile generator: " + e.getMessage());
             // remove stale/incomplete makefile, so that build won't continue with CDT
             //XXX makefile.vc ???
             try { folder.getFile(new Path("Makefile")).delete(true, null); } catch (CoreException e1) {}

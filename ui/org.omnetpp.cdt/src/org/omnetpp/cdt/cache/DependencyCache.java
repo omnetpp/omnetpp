@@ -327,7 +327,7 @@ public class DependencyCache {
             return parseIncludes(contents);
         } 
         catch (IOException e) {
-            throw Activator.wrap("Error collecting #includes from " + file.getFullPath(), e); 
+            throw Activator.wrapIntoCoreException("Error collecting #includes from " + file.getFullPath(), e); 
         }
     }
 

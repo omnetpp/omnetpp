@@ -68,10 +68,10 @@ public class Activator extends AbstractUIPlugin {
     }
 
     public static CoreException wrapIntoCoreException(Throwable exception) {
-        return wrap(exception.getMessage(), exception);
+        return wrapIntoCoreException(exception.getMessage(), exception);
     }
 
-    public static CoreException wrap(String message, Throwable exception) {
+    public static CoreException wrapIntoCoreException(String message, Throwable exception) {
         return new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
     }
     
