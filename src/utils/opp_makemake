@@ -54,7 +54,6 @@ sub makemake()
     $isRecursive = 0;
     $noDeepIncludes = 0;
     $force = 0;
-    $linkWithObjects = 0;
     $defaultMode = "";
     $userInterface = "ALL";
     $ccExt = "";
@@ -169,7 +168,7 @@ sub makemake()
             $compileForDll = 1;
         }
         elsif ($arg eq "-w" || $arg eq "--withobjects") {
-            $linkWithObjects = 1;
+            error("$progname: $arg: obsolete option, please remove");
         }
         elsif ($arg eq "-x" || $arg eq "--notstamp") {
             error("$progname: $arg: obsolete option, please remove");
@@ -410,14 +409,6 @@ sub makemake()
     }
 
     @extraObjs = @extraArgs;  #FIXME rename extraArgs?
-
-    if ($linkWithObjects) {
-        foreach $i (@includeDirs) {
-            if ($i ne ".") {
-                push(@extraObjs, "$i/*.$objExt");
-            }
-        }
-    }
 
     @sources = ();
     push(@sources, @ccfiles) if ($ccExt eq "cc");

@@ -214,11 +214,6 @@ public class Makemake {
             extraObjs.add(arg);
         }
 
-        if (p.linkWithObjects)
-            for (String i : includeDirs)
-                if (!i.equals("."))
-                    extraObjs.add(i + "/*." + objExt);
-
         List<String> sources = new ArrayList<String>();
         if (ccExt.equals("cc"))
             sources.addAll(ccfiles);

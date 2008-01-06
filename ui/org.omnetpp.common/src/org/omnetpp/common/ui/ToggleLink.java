@@ -38,22 +38,19 @@ public class ToggleLink extends Composite {
         });
     }
 
-    public void setState(boolean open) {
-        isOpen = open;
-        for (Control c : controls) {
-            ((GridData)c.getLayoutData()).exclude = !isOpen;
-            c.setVisible(isOpen);
+    public void setExpanded(boolean open) {
+        if (isOpen != open) {
+            isOpen = open;
+            refresh();
         }
-        link.setText(isOpen ? lessText : moreText);
-        getParent().layout();
     }
 
-    public boolean getState() {
+    public boolean isExpanded() {
         return isOpen;
     }
     
     public void toggle() {
-        setState(!getState());
+        setExpanded(!isExpanded());
     }
 
     public String getMoreText() {
@@ -80,6 +77,15 @@ public class ToggleLink extends Composite {
 
     public void setControls(Control[] controls) {
         this.controls = controls;
-        setState(getState());
+        refresh();
+    }
+
+    protected void refresh() {
+        for (Control c : controls) {
+            ((GridData)c.getLayoutData()).exclude = !isOpen;
+            c.setVisible(isOpen);
+        }
+        link.setText(isOpen ? lessText : moreText);
+        getParent().layout();
     }
 }

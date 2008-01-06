@@ -16,7 +16,7 @@ public class MakemakeOptions implements Cloneable {
     
     // opp_makemake options
     public boolean isNMake = false;
-    public String projectDir = null;  // not supported
+    public String projectDir = null;  // ignored (implicit)
     public Type type = Type.EXE;
     public String target = null;
     public String outRoot = null;
@@ -24,7 +24,6 @@ public class MakemakeOptions implements Cloneable {
     public boolean isRecursive = false;
     public boolean noDeepIncludes = false;
     public boolean force = false;
-    public boolean linkWithObjects = false;
     public String defaultMode = null;
     public String userInterface = "ALL";
     public String ccext = null;
@@ -46,6 +45,7 @@ public class MakemakeOptions implements Cloneable {
     public boolean metaAutoIncludePath = false;
     public boolean metaExportLibrary = false;
     public boolean metaUseExportedLibs = false;
+    public boolean metaLinkWithAllObjectsInProject = false;
 
     private List<String> errors = null; 
     
@@ -187,7 +187,7 @@ public class MakemakeOptions implements Cloneable {
                 compileForDll = true;
             }
             else if (arg.equals("-w") || arg.equals("--withobjects")) {
-                linkWithObjects = true;
+                addError(arg + ": obsolete option, please remove");
             }
             else if (arg.equals("-x") || arg.equals("--notstamp")) {
                 addError(arg + ": obsolete option, please remove");
@@ -238,6 +238,9 @@ public class MakemakeOptions implements Cloneable {
             }
             else if (arg.equals("--meta:use-exported-libs")) {
                 metaUseExportedLibs = true;
+            }
+            else if (arg.equals("--meta:link-project-objs")) {
+                metaLinkWithAllObjectsInProject = true;
             }
             else if (arg.equals("--")) {
                 break;
@@ -304,8 +307,6 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-o", target);
         if (!StringUtils.isEmpty(outRoot))
             add(result, "-O", outRoot);
-        if (linkWithObjects)
-            add(result, "-w");
         if (!StringUtils.isEmpty(defaultMode))
             add(result, "-M", defaultMode);
         if (!StringUtils.isEmpty(userInterface) && !userInterface.equalsIgnoreCase("All"))
@@ -334,6 +335,9 @@ public class MakemakeOptions implements Cloneable {
             result.add("--meta:export-library");
         if (metaUseExportedLibs)
             result.add("--meta:use-exported-libs");
+        if (metaLinkWithAllObjectsInProject)
+            result.add("--meta:link-project-objs");
+
         if (!extraArgs.isEmpty())
             result.add("--");
         result.addAll(extraArgs);
@@ -380,7 +384,6 @@ public class MakemakeOptions implements Cloneable {
         result.isRecursive = isRecursive;
         result.noDeepIncludes = noDeepIncludes;
         result.force = force;
-        result.linkWithObjects = linkWithObjects;
         result.defaultMode = defaultMode;
         result.userInterface = userInterface;
         result.ccext = ccext;
@@ -399,6 +402,7 @@ public class MakemakeOptions implements Cloneable {
         result.metaAutoIncludePath = metaAutoIncludePath;
         result.metaExportLibrary = metaExportLibrary;
         result.metaUseExportedLibs = metaUseExportedLibs;
+        result.metaLinkWithAllObjectsInProject = metaLinkWithAllObjectsInProject;
         return result;
     }
 }

@@ -39,6 +39,7 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
+//XXX handle  translatedOptions.metaLinkWithAllObjectsInProject
 public class MetaMakemake {
     /**
      * Generates Makefile in the given folder.
@@ -123,6 +124,11 @@ public class MetaMakemake {
         if (translatedOptions.metaExportLibrary) {
             // no processing required
             translatedOptions.metaExportLibrary = false;
+        }
+        
+        if (translatedOptions.metaLinkWithAllObjectsInProject) {
+            //FIXME TODO
+            translatedOptions.metaLinkWithAllObjectsInProject = false;
         }
         
         System.out.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
