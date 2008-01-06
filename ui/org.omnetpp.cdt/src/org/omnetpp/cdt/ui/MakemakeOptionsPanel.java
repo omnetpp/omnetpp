@@ -51,7 +51,6 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
-//XXX ha "Preview" lapon a user rossz opciot ir be, hibat jelezni!!!
 //XXX kezzel beirt -D elveszik!!! ezek szinten: defaultMode, exceptSubdirs, includeDirs, libDirs, defines, makefileDefines
 //XXX display which makefile is the primary makefile, and add "Make primary Makefile" button
 public class MakemakeOptionsPanel extends Composite {
@@ -511,7 +510,9 @@ public class MakemakeOptionsPanel extends Composite {
             if (isPreviewPageSelected()) {
                 // re-parse options text modified by user
                 MakemakeOptions updatedOptions = new MakemakeOptions(optionsText.getText());
-                //XXX check makemakeOptions.getParseErrors() !!!
+                setErrorMessage(null);
+                if (!updatedOptions.getParseErrors().isEmpty())
+                    setErrorMessage("Error: " + updatedOptions.getParseErrors().get(0));
                 populateControls(updatedOptions);
                 refreshTranslatedOptions(updatedOptions);
             }
