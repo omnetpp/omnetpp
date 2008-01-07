@@ -1,11 +1,21 @@
 #
 # Global definitions
 #
-OMNETPP_ROOT=..\..
+!include ..\..\configuser.vc
 
-!include $(OMNETPP_ROOT)\configuser.vc
+# Make sure that output locations are set
+!if "$(OMNETPP_BIN_DIR)"==""
+!error OMNETPP_BIN_DIR must be correctly set
+!endif
+!if "$(OMNETPP_OUT_DIR)"==""
+!error OMNETPP_OUT_DIR must be correctly set
+!endif
+!if "$(OMNETPP_LIB_DIR)"==""
+!error OMNETPP_LIB_DIR must be correctly set
+!endif
 
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/ui
 
 JDK="$(TOOLS_DIR)\jdk1.5.0"
 SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.31\swig.exe"
@@ -28,14 +38,10 @@ SCAVE_JAVADIR = src\$(SCAVE_JAVAPKG:.=\)
 LAYOUT_JAVADIR = src\$(LAYOUT_JAVAPKG:.=\)
 EVENTLOG_JAVADIR = src\$(EVENTLOG_JAVAPKG:.=\)
 
-SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
-CXXFILES = $(SWIGFILES:.i=.cxx)
-OBJS = $(CXXFILES:.cxx=.obj) jprogressmonitor.obj
-
+OBJS = $O/common.obj $O/nedxml.obj $O/scave.obj $O/layout.obj $O/eventlog.obj $O/jprogressmonitor.obj
 LIBS=$L/common$D.lib $L/nedxml$D.lib $L/scave$D.lib $L/layout$D.lib $L/eventlog$D.lib
 
 DLL = opplibs.dll
-
 DLL_TARGET_DIR = ..\org.omnetpp.ide.nativelibs.win32.x86
 
 
@@ -51,10 +57,10 @@ SWIGOPTS=$(SWIGFLAGS) $(INCLUDES)
 #
 .SUFFIXES : .cc .cxx
 
-.cc.obj:
+{.}.cc{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
-.cxx.obj:
+{.}.cxx{$O}.obj:
 	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 #
@@ -62,7 +68,7 @@ SWIGOPTS=$(SWIGFLAGS) $(INCLUDES)
 #
 all: $(JNILIBS_IF_POSSIBLE)
 
-jnilibs: $(DLL)
+jnilibs: $O/$(DLL) $(DLL_TARGET_DIR)/$(DLL)
 
 common.cxx : common.i
 	-del $(COMMON_JAVADIR)\*.java >nul
@@ -89,9 +95,20 @@ eventlog.cxx : eventlog.i
 	-mkdir $(EVENTLOG_JAVADIR) >nul
 	$(SWIG) -c++ -java $(SWIGOPTS) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $**
 
-$(DLL): $(OBJS) $(LIBS)
-	$(LINK) /dll /out:$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
-	copy $(DLL) $(DLL_TARGET_DIR)
+$O/$(DLL): $(OBJS) $(LIBS)
+	$(LINK) /dll /out:$(O:/=\)\$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
+
+$(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
+!if "$(LIB_SUFFIX)"==".lib"
+	copy $(O:/=\)\$(DLL) $(DLL_TARGET_DIR)
+	- copy /b $(O:/=\)\$(DLL).manifest $(DLL_TARGET_DIR)
+!endif
+
+$(OBJS): $O
+
+$O $L:
+	md $(@:/=\)
+
 
 missing-dependency:
 	@echo '  *** Missing required dependency -- skipping build of UI support library.'
@@ -101,8 +118,8 @@ depend:
 	$(MAKEDEPEND) $(INCLUDES) -fMakefile.vc -- *.cxx *.cc
 
 clean:
-	-del *.cxx *.obj *.exp *.lib test*.exe *.dll 2>nul
-	-del *.ilk *.idb *.pdb *.pch 2>nul
+	-del *.cxx  2>nul
+	-rmdir /s /q $(O:/=\) 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
