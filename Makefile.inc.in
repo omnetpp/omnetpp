@@ -92,7 +92,6 @@ ZLIB_LIBS = @ZLIB_LIBS@
 HAVE_MPI = @HAVE_MPI@
 MPI_CFLAGS = @MPI_CFLAGS@
 MPI_LIBS = @MPI_LIBS@
-SYS_LIBS = @SYS_LIBS@
 
 XMLPARSER = @XMLPARSER@
 XML_CFLAGS = @XML_CFLAGS@
@@ -115,4 +114,22 @@ WITH_PARSIM = @WITH_PARSIM@
 JAVA_CFLAGS = @JAVA_CFLAGS@
 SWIG = @SWIG@
 
+#
+# Definitions for makemake-generated makefiles
+#
+CMDENV_LIBS = -u_cmdenv_lib -lenvir$D -lcmdenv$D
+TKENV_LIBS = -u_tkenv_lib -lenvir$D -ltkenv$D -llayout$D $(TK_LIBS) $(ZLIB_LIBS)
+KERNEL_LIBS = -lsim_std$D
+
+ifeq ($(WITH_NETBUILDER),yes)
+KERNEL_LIBS += -lnedxml$D $(XML_LIBS)
+endif
+
+KERNEL_LIBS += -lcommon$D
+
+ifeq ($(WITH_PARSIM),yes)
+KERNEL_LIBS += $(MPI_LIBS)
+endif
+
+SYS_LIBS = @SYS_LIBS@
 

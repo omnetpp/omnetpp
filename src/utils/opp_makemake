@@ -483,7 +483,6 @@ sub makemake()
         "-L" =>  $isNMake ? "/libpath:" : "-L",
         "-l" =>  $isNMake ? "" : "-l",
         ".lib" =>  $isNMake ? ".lib" : "",
-        "-u" =>  $isNMake ? "/include:" : "-u",
         "-out" =>  $isNMake ? "/out:" : "-o",
         "cc" =>  $ccExt,
         "obj" =>  $objExt,
@@ -1129,29 +1128,8 @@ MSG_H_FILES = {msghfiles}
 {rem:}{~nmake:}endif
 {rem:}{~nmake:}endif
 
-# User interface libs
-CMDENV_LIBS = {-u}_cmdenv_lib {-l}envir{.lib} {-l}cmdenv{.lib}
-TKENV_LIBS = {-u}_tkenv_lib {-l}envir{.lib} {-l}tkenv{.lib} {-l}layout{.lib} $(TK_LIBS) $(ZLIB_LIBS)
-
-# Simulation kernel
-KERNEL_LIBS = {-l}sim_std{.lib}
-
-{nmake:}!if "$(WITH_NETBUILDER)"=="yes"
-{~nmake:}ifeq ($(WITH_NETBUILDER),yes)
-KERNEL_LIBS {~nmake?+}= {nmake?$(KERNEL_LIBS)} {-l}nedxml{.lib} $(XML_LIBS)
-{~nmake:}endif
-{nmake:}!endif
-
-KERNEL_LIBS {~nmake?+}= {nmake?$(KERNEL_LIBS)} {-l}common{.lib}
-
-{nmake:}!if "$(WITH_PARSIM)"=="yes"
-{~nmake:}ifeq ($(WITH_PARSIM),yes)
-KERNEL_LIBS {~nmake?+}= {nmake?$(KERNEL_LIBS)} $(MPI_LIBS)
-{~nmake:}endif
-{nmake:}!endif
-
 # Simulation kernel and user interface libraries
-OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)-$(MODE)
+OMNETPP_LIB_SUBDIR = $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 OMNETPP_LIBS = {-L}"$(OMNETPP_LIB_SUBDIR)" {-L}"$(OMNETPP_LIB_DIR)" $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
 COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)

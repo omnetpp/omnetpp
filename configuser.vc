@@ -216,8 +216,26 @@ XML_LIBS=$(LIBXML_LIBS)
 !error XMLPARSER must be set to "expat", "libxml" or "none" in configuser.vc
 !endif
 
-# winsock is needed by libxml as well as the sockets example, maybe in the future by other libs too
-SYS_LIBS=wsock32.lib
+#
+# Definitions for makemake-generated makefiles
+#
+CMDENV_LIBS = /include:_cmdenv_lib envir$D.lib cmdenv$D.lib
+TKENV_LIBS = /include:_tkenv_lib envir$D.lib tkenv$D.lib layout$D.lib $(TK_LIBS) $(ZLIB_LIBS)
+
+KERNEL_LIBS = sim_std$D.lib
+
+!if "$(WITH_NETBUILDER)"=="yes"
+KERNEL_LIBS = $(KERNEL_LIBS) nedxml$D.lib $(XML_LIBS)
+!endif
+
+KERNEL_LIBS = $(KERNEL_LIBS) common$D.lib
+
+!if "$(WITH_PARSIM)"=="yes"
+KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
+!endif
+
+# winsock is needed by libxml as well as the sockets sample simulation
+SYS_LIBS = wsock32.lib
 
 #
 # Tools
