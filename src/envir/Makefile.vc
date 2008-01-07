@@ -48,7 +48,7 @@ COPTS=$(COPTS) -DWITH_NETBUILDER
 #
 # Targets
 #
-all : $O/envir$(LIB_SUFFIX)
+all : $O/envir$(LIB_SUFFIX) $O/opp_run.exe
 
 $O/envir.lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
@@ -70,6 +70,14 @@ eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentr
 	$(PERL) eventlogentries.pl
 
 $O/omnetapp.obj: eventlogwriter.h
+
+$O/opp_run.exe : $O/opp_run.obj $O/envir$(LIB_SUFFIX)
+	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/opp_run.obj $(O:/=\)\envir.lib $(IMPLIBS)
+	copy $(O:/=\)\opp_run.exe $(OMNETPP_BIN_DIR:/=\)
+
+$O/opp_run.obj : opp_run.cc $O
+	@: Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT
+	$(CXX) $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DHAVE_DLOPEN=$(HAVE_DLOPEN) /c /Fo"$@" /Tp opp_run.cc
 
 $(OBJS): $O
 
