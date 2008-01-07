@@ -4,7 +4,19 @@
 
 include ../../Makefile.inc
 
+# Make sure that output locations are set
+ifeq ("$(strip $(OMNETPP_BIN_DIR))","")
+$(error OMNETPP_BIN_DIR must be correctly set)
+endif
+ifeq ("$(strip $(OMNETPP_OUT_DIR))","")
+$(error OMNETPP_OUT_DIR must be correctly set)
+endif
+ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
+$(error OMNETPP_LIB_DIR must be correctly set)
+endif
+
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/ui
 
 #
 # Local definitions
@@ -27,16 +39,11 @@ SCAVE_JAVADIR = src/$(subst .,/,$(SCAVE_JAVAPKG))
 LAYOUT_JAVADIR = src/$(subst .,/,$(LAYOUT_JAVAPKG))
 EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 
-SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
-CXXFILES = $(SWIGFILES:.i=.cxx)
-OBJS = $(CXXFILES:.cxx=.o) jprogressmonitor.o
-
+OBJS = $O/common.o $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/jprogressmonitor.o
 LIBS=-L$L -lcommon$D -lnedxml$D -lscave$D -llayout$D -leventlog$D
 
 DLL = libopplibs$(SO_LIB_SUFFIX)
-
 DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.linux.x86
-
 
 #
 # Local definitions
@@ -50,18 +57,20 @@ COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
 #
 .SUFFIXES : .cc .cxx
 
-.cc.o:
-	$(CXX) -c $(COPTS) $<
+$O/%.o: %.cc
+	@mkdir -p $O
+	$(CXX) -c $(COPTS) -o $@ $<
 
-.cxx.o:
-	$(CXX) -c $(COPTS) $<
+$O/%.o: %.cxx
+	@mkdir -p $O
+	$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
 #
 all: $(JNILIBS_IF_POSSIBLE)
 
-jnilibs: $(DLL)
+jnilibs: $O/$(DLL) $(DLL_TARGET_DIR)/$(DLL)
 
 common.cxx : common.i
 	-rm -f $(COMMON_JAVADIR)/*.java
@@ -88,9 +97,14 @@ eventlog.cxx : eventlog.i
 	-mkdir -p $(EVENTLOG_JAVADIR)
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
-$(DLL): $(OBJS)
-	$(SHLIB_LD) -L$(OMNETPP_LIB_DIR) -leventlog -llayout -lscave -lnedxml -lcommon -o $(DLL) $(OBJS)
-	cp $(DLL) $(DLL_TARGET_DIR)
+$O/$(DLL): $(OBJS)
+	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS)
+
+$(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
+ifeq ("$(strip $(LIB_SUFFIX))",".a")
+	cp $O/$(DLL) $(DLL_TARGET_DIR)
+endif
+
 
 missing-dependency:
 	@echo '  *** Missing required dependency -- skipping build of UI support library.'
