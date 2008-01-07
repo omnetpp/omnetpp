@@ -23,7 +23,7 @@ L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/sim_std.pdb"
 #COPTS=/C /P $(COPTS)
-IMPLIBS=../envir/envir.lib ../common/common.lib
+IMPLIBS=$O/../envir/envir.lib $O/../common/common.lib
 
 OBJS_STD=\
     $O/carray.obj $O/cbasicchannel.obj $O/cboolpar.obj $O/cchannel.obj \
@@ -73,7 +73,7 @@ COPTS= $(COPTS) -DSIM_EXPORT
 !if "$(WITH_NETBUILDER)"=="yes"
 OBJS= $(OBJS) $(OBJS_NETBUILDER)
 COPTS= $(COPTS) -I../nedxml
-IMPLIBS= $(IMPLIBS) ../nedxml/nedxml.lib
+IMPLIBS= $(IMPLIBS) $O/../nedxml/nedxml.lib
 !endif
 
 !if "$(WITH_PARSIM)"=="yes"
