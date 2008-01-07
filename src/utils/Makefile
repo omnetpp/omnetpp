@@ -18,8 +18,8 @@ endif
 #
 # Local definitions
 #
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/utils
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/utils
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 #
 # Rules

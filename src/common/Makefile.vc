@@ -17,9 +17,9 @@
 #
 # Local definitions
 #
-LIBNAME=common
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/common
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=common$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/common
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/$(LIBNAME).pdb"
 
@@ -52,14 +52,14 @@ all : $O/$(LIBNAME)$(LIB_SUFFIX)
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS)
 	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 expression.tab.h expression.tab.cc : expression.y
 	$(YACC:/=\) -p expressionyy -b expression -d expression.y

@@ -17,12 +17,12 @@
 #
 # Local definitions
 #
-LIBNAME=tkenv
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/tkenv
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=tkenv$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/tkenv
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../common -I../layout $(TK_CFLAGS) $(ZLIB_CFLAGS) /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../sim/sim_std.lib $O/../envir/envir.lib $O/../layout/layout.lib $O/../common/common.lib $(TK_LIBS) $(ZLIB_LIBS)
+IMPLIBS= $O/../sim/sim_std$D.lib $O/../envir/envir$D.lib $O/../layout/layout$D.lib $O/../common/common$D.lib $(TK_LIBS) $(ZLIB_LIBS)
 
 OBJS = $O/tkapp$(TKENV_EMBED_SUFFIX).obj $O/tkcmd.obj $O/tklib.obj $O/inspector.obj \
        $O/inspfactory.obj $O/objinsp.obj $O/modinsp.obj $O/statinsp.obj $O/layouterenv.obj \
@@ -59,14 +59,14 @@ tkenv : $O/$(LIBNAME)$(LIB_SUFFIX)
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 tkapp.cc : tclcode.cc
 

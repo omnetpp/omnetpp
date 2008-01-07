@@ -18,13 +18,13 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libscave
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/scave
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=libscave$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/scave
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
 
-IMPLIBS= -L$L -lcommon
+IMPLIBS= -L$L -lcommon$D
 
 OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/dataflowmanager.o $O/datasorter.o $O/diffquot.o \

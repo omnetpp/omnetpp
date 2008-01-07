@@ -18,13 +18,13 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libnedxml
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/nedxml
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=libnedxml$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/nedxml
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep -DBUILDING_NEDXML
 
-IMPLIBS= -L$L -lcommon $(XML_LIBS)
+IMPLIBS= -L$L -lcommon$D $(XML_LIBS)
 
 OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o \
       $O/nedvalidator.o $O/neddtdvalidator.o $O/neddtdvalidatorbase.o \
@@ -56,7 +56,7 @@ all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/nedtool
 	cp nedc opp_msgc $(OMNETPP_BIN_DIR)
 
 $O/nedtool: $O/nedtool.o $L/$(LIBNAME)$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -o $O/nedtool $O/nedtool.o -L$L -lnedxml -lcommon $(XML_LIBS)
+	$(CXX) $(LDFLAGS) -o $O/nedtool $O/nedtool.o -L$L -lnedxml$D -lcommon$D $(XML_LIBS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog nedtool $(OMNETPP_BIN_DIR)
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX): $(OBJS)

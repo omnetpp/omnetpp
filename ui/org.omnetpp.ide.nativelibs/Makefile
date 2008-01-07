@@ -4,11 +4,7 @@
 
 include ../../Makefile.inc
 
-ifeq ("$(strip $(CONFIGNAME))",".")
-L=$(OMNETPP_LIB_DIR)
-else
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-endif
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 #
 # Local definitions
@@ -35,7 +31,7 @@ SWIGFILES = common.i nedxml.i scave.i layout.i eventlog.i
 CXXFILES = $(SWIGFILES:.i=.cxx)
 OBJS = $(CXXFILES:.cxx=.o) jprogressmonitor.o
 
-LIBS=-L$L -lcommon -lnedxml -lscave -llayout -leventlog
+LIBS=-L$L -lcommon$D -lnedxml$D -lscave$D -llayout$D -leventlog$D
 
 DLL = libopplibs$(SO_LIB_SUFFIX)
 

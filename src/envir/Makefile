@@ -18,13 +18,13 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libenvir
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/envir
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=libenvir$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/envir
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../sim -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
 
-IMPLIBS= -L$L -lsim_std -lnedxml -lcommon
+IMPLIBS= -L$L -lsim_std$D -lnedxml$D -lcommon$D
 
 OBJS=$O/args.o $O/cenvir.o $O/main.o $O/omnetapp.o $O/fsutils.o \
      $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \

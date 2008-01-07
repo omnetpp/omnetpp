@@ -17,12 +17,12 @@
 #
 # Local definitions
 #
-LIBNAME=envir
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/envir
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=envir$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/envir
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../sim/sim_std.lib $O/../nedxml/nedxml.lib $O/../common/common.lib
+IMPLIBS= $O/../sim/sim_std$D.lib $O/../nedxml/nedxml$D.lib $O/../common/common$D.lib $(XML_LIBS)
 
 OBJS= $O/args.obj $O/cenvir.obj $O/main.obj $O/omnetapp.obj $O/fsutils.obj \
       $O/sectionbasedconfig.obj $O/inifilereader.obj $O/scenario.obj $O/valueiterator.obj \
@@ -53,19 +53,19 @@ all : $O/$(LIBNAME)$(LIB_SUFFIX) $O/opp_run.exe
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 envir-implib : $(OBJS) $L
 	@rem How can one create only the import lib, without trying to link the DLL?
         @rem With this command, we need the '>nul' to hide the 'undefined symbol' errors
-	- $(SHLIB_LD) /out:$(O:/=\)\envir.dll /subsystem:console $(OBJS) >nul
+	- $(SHLIB_LD) /out:$(O:/=\)\$(LIBNAME).dll /subsystem:console $(OBJS) >nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogentries.pl
@@ -75,7 +75,7 @@ $O/omnetapp.obj: eventlogwriter.h
 $O/opp_run.exe : $O/opp_run.obj $O/$(LIBNAME)$(LIB_SUFFIX)
 	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/opp_run.obj $(O:/=\)\$(LIBNAME).lib $(IMPLIBS)
 	copy $(O:/=\)\opp_run.exe $(OMNETPP_BIN_DIR:/=\)
-	- copy $(O:/=\)\opp_run.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy $(O:/=\)\opp_run.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
 $O/opp_run.obj : opp_run.cc $O
 	@: Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT

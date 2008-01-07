@@ -17,12 +17,12 @@
 #
 # Local definitions
 #
-LIBNAME=layout
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/layout
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=layout$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/layout
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../common/common.lib
+IMPLIBS= $O/../common/common$D.lib
 
 OBJS= $O/geometry.obj $O/graphcomponent.obj $O/heapembedding.obj $O/startreeembedding.obj \
       $O/forcedirectedparametersbase.obj $O/forcedirectedparameters.obj $O/forcedirectedembedding.obj \
@@ -48,14 +48,14 @@ all : $O/$(LIBNAME)$(LIB_SUFFIX)
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $(OBJS): $O
 

@@ -18,18 +18,18 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libeventlog
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/eventlog
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=libeventlog$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/eventlog
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR)/platdep -I. -I../common
 
-IMPLIBS= -L$L -lcommon
+IMPLIBS= -L$L -lcommon$D
 
 OBJS= $O/ievent.o $O/ieventlog.o $O/eventlogfacade.o $O/eventlogtablefacade.o $O/sequencechartfacade.o \
       $O/eventlog.o $O/eventlogindex.o $O/messagedependency.o $O/event.o $O/eventlogentry.o \
       $O/eventlogentries.o $O/filteredevent.o $O/filteredeventlog.o $O/eventlogentryfactory.o
-LIBS= -leventlog -lcommon
+LIBS= -leventlog$D -lcommon$D
 
 #
 # Automatic rules

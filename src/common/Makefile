@@ -18,9 +18,9 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libcommon
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/common
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=libcommon$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/common
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I. -I$(OMNETPP_INCL_DIR)/platdep
 

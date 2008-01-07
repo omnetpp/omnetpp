@@ -17,13 +17,13 @@
 #
 # Local definitions
 #
-LIBNAME=sim_std
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/sim
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=sim_std$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/sim
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
 #COPTS=/C /P $(COPTS)
-IMPLIBS=$O/../envir/envir.lib $O/../common/common.lib
+IMPLIBS=$O/../envir/envir$D.lib $O/../common/common$D.lib
 
 OBJS_STD=\
     $O/carray.obj $O/cbasicchannel.obj $O/cboolpar.obj $O/cchannel.obj \
@@ -73,7 +73,7 @@ COPTS= $(COPTS) -DSIM_EXPORT
 !if "$(WITH_NETBUILDER)"=="yes"
 OBJS= $(OBJS) $(OBJS_NETBUILDER)
 COPTS= $(COPTS) -I../nedxml
-IMPLIBS= $(IMPLIBS) $O/../nedxml/nedxml.lib
+IMPLIBS= $(IMPLIBS) $O/../nedxml/nedxml$D.lib
 !endif
 
 !if "$(WITH_PARSIM)"=="yes"
@@ -112,7 +112,7 @@ $O/$(LIBNAME).lib : $(OBJS) $L
 $O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$O/$(LIBNAME).dll" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy /b $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy /b $(O:/=\)\$(LIBNAME).lib $(L:/=\)
 	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 

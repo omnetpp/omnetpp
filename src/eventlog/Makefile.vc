@@ -17,12 +17,12 @@
 #
 # Local definitions
 #
-LIBNAME=eventlog
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/eventlog
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=eventlog$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/eventlog
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../common/common.lib
+IMPLIBS= $O/../common/common$D.lib
 
 OBJS= $O/ievent.obj $O/ieventlog.obj $O/eventlogfacade.obj $O/eventlogtablefacade.obj \
       $O/sequencechartfacade.obj $O/eventlog.obj $O/eventlogindex.obj \
@@ -52,19 +52,19 @@ eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt ev
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/eventlogtool.exe : $O/eventlogtool.obj $O/$(LIBNAME)$(LIB_SUFFIX)
 	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/eventlogtool.obj $(O:/=\)\$(LIBNAME).lib $(IMPLIBS)
 	copy $(O:/=\)\eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
-	- copy $(O:/=\)\eventlogtool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy $(O:/=\)\eventlogtool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
 $O/eventlogtool.obj : eventlogtool.cc $O
 	@: Note: not in OBJS because eventlogtool.cc must be compiled *without* -DEVENTLOG_EXPORT

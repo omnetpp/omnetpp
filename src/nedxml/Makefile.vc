@@ -18,12 +18,12 @@
 #
 # Local definitions
 #
-LIBNAME=nedxml
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/nedxml
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=nedxml$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/nedxml
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
-IMPLIBS= $O/../common/common.lib $(XML_LIBS)
+IMPLIBS= $O/../common/common$D.lib $(XML_LIBS)
 
 OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
       $O/nedvalidator.obj $O/neddtdvalidator.obj $O/neddtdvalidatorbase.obj \
@@ -60,19 +60,19 @@ all : $O/nedtool.exe $O/$(LIBNAME)$(LIB_SUFFIX)
 $O/nedtool.exe : $O/$(LIBNAME)$(LIB_SUFFIX) $O/nedtool.obj
 	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/nedtool.obj $(O:/=\)\$(LIBNAME).lib $(IMPLIBS)
 	copy $(O:/=\)\nedtool.exe $(OMNETPP_BIN_DIR:/=\)
-	- copy $(O:/=\)\nedtool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy $(O:/=\)\nedtool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
-	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/nedtool.obj : nedtool.cc $O
 	@: Note: not in OBJS because nedtool.cc must be compiled *without* -DNEDXML_EXPORT

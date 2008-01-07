@@ -18,13 +18,13 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libtkenv
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/tkenv
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=libtkenv$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/tkenv
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -I../layout -I../common $(TK_CFLAGS) $(ZLIB_CFLAGS) -DBUILDING_TKENV
 
-IMPLIBS= -L$L -lsim_std -lenvir.lib -llayout -lcommon $(TK_LIBS) $(ZLIB_LIBS)
+IMPLIBS= -L$L -lsim_std$D -lenvir$D -llayout$D -lcommon$D $(TK_LIBS) $(ZLIB_LIBS)
 
 OBJS = $O/tkapp$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o \
        $O/inspfactory.o $O/objinsp.o $O/modinsp.o $O/statinsp.o $O/layouterenv.o \

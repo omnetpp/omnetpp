@@ -143,9 +143,11 @@ MODE=debug
 !if "$(MODE)"=="debug"
 CFLAGS=$(CFLAGS_DEBUG)
 LDFLAGS=$(LDFLAGS_DEBUG)
+D=d
 !else
 CFLAGS=$(CFLAGS_RELEASE)
 LDFLAGS=$(LDFLAGS_RELEASE)
+D=
 !endif
 
 #
@@ -291,8 +293,9 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 !endif
 
 #
-# Configname selects where (in which subdirectory of obj/ and lib/)
-# to put the resulting object files and libs.
+# Configname determines where (in which subdirectory of out/)
+# makemake-generated makefiles create object files and other
+# build artifacts.
 #
 !ifndef CONFIGNAME
 CONFIGNAME=$(TOOLCHAIN_NAME)-$(MODE)

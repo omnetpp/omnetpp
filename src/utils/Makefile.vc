@@ -17,8 +17,8 @@
 #
 # Local definitions
 #
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/utils
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/utils
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS)
 
@@ -39,7 +39,7 @@ all: seedtool.exe opp_replace.exe
 	copy linkall.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy linkall.pl $(OMNETPP_BIN_DIR:/=\)
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
-	- copy *.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	-copy *.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
 seedtool.exe : seedtool.cc
 	:rem FIXME into $O/ !!!

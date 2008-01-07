@@ -18,13 +18,13 @@ endif
 #
 # Local definitions
 #
-LIBNAME=libcmdenv
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/cmdenv
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+LIBNAME=libcmdenv$D
+O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/cmdenv
+L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common -I../envir -DBUILDING_CMDENV
 
-IMPLIBS= -L$L -lsim_std -lenvir
+IMPLIBS= -L$L -lsim_std$D -lenvir$D
 
 OBJS = $O/cmdenv.o
 
