@@ -57,12 +57,14 @@ $O/eventlog.lib : $(OBJS) $L
 $O/eventlog.dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\eventlog.dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\eventlog.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\eventlog.lib $(L:/=\)
 	- copy /b $(O:/=\)\eventlog.pdb $(L:/=\) 2>nul
 
 $O/eventlogtool.exe : $O/eventlogtool.obj $O/eventlog$(LIB_SUFFIX)
 	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/eventlogtool.obj $(O:/=\)\eventlog.lib $(IMPLIBS)
 	copy $(O:/=\)\eventlogtool.exe $(OMNETPP_BIN_DIR:/=\)
+	- copy $(O:/=\)\eventlogtool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
 $O/eventlogtool.obj : eventlogtool.cc $O
 	@: Note: not in OBJS because eventlogtool.cc must be compiled *without* -DEVENTLOG_EXPORT
@@ -80,7 +82,7 @@ clean:
 	-del -f eventlogentries.cc eventlogentries.h eventlogfactory.cc 2>nul
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
-	-cd $(OMNETPP_BIN_DIR:/=\) && del /q eventlogtool.exe 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q eventlogtool.exe* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/event.obj: event.cc \

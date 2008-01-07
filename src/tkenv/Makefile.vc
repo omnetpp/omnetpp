@@ -64,6 +64,7 @@ $O/tkenv.lib : $(OBJS) $L
 $O/tkenv.dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\tkenv.dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\tkenv.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\tkenv.lib $(L:/=\)
 	- copy /b $(O:/=\)\tkenv.pdb $(L:/=\) 2>nul
 

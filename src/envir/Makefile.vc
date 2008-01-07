@@ -63,6 +63,7 @@ envir-implib : $(OBJS) $L
 $O/envir.dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\envir.dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\envir.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\envir.lib $(L:/=\)
 	- copy /b $(O:/=\)\envir.pdb $(L:/=\) 2>nul
 
@@ -74,6 +75,7 @@ $O/omnetapp.obj: eventlogwriter.h
 $O/opp_run.exe : $O/opp_run.obj $O/envir$(LIB_SUFFIX)
 	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/opp_run.obj $(O:/=\)\envir.lib $(IMPLIBS)
 	copy $(O:/=\)\opp_run.exe $(OMNETPP_BIN_DIR:/=\)
+	- copy $(O:/=\)\opp_run.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
 $O/opp_run.obj : opp_run.cc $O
 	@: Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT
@@ -91,6 +93,7 @@ clean:
 	-del eventlogwriter.cc eventlogwriter.h 2>nul
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q opp_run.exe* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/akaroarng.obj: akaroarng.cc \

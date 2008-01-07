@@ -53,6 +53,7 @@ $O/layout.lib : $(OBJS) $L
 $O/layout.dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\layout.dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\layout.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\layout.lib $(L:/=\)
 	- copy /b $(O:/=\)\layout.pdb $(L:/=\) 2>nul
 

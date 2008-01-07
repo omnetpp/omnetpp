@@ -57,6 +57,7 @@ $O/common.lib : $(OBJS) $L
 $O/common.dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS)
 	copy $(O:/=\)\common.dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\common.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\common.lib $(L:/=\)
 	- copy /b $(O:/=\)\common.pdb $(L:/=\) 2>nul
 

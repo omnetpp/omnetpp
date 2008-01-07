@@ -40,6 +40,7 @@ all: seedtool.exe opp_replace.exe
 	copy linkall.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy linkall.pl $(OMNETPP_BIN_DIR:/=\)
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
+	- copy *.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
 seedtool.exe : seedtool.cc
 	:rem FIXME into $O/ !!!
@@ -55,7 +56,7 @@ depend:
 clean:
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
-	-cd $(OMNETPP_BIN_DIR:/=\) && del /q seedtool.exe opp_replace.exe 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q seedtool.exe* opp_replace.exe 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 seedtool.obj: seedtool.cc

@@ -61,12 +61,14 @@ $O/scave.lib : $(OBJS) $L
 $O/scave.dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\scave.dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\scave.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\scave.lib $(L:/=\)
 	- copy /b $(O:/=\)\scave.pdb $(L:/=\) 2>nul
 
 $O/scavetool.exe : $O/scavetool.obj $O/scave$(LIB_SUFFIX)
 	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/scavetool.obj $(O:/=\)\scave.lib $(IMPLIBS)
 	copy $(O:/=\)\scavetool.exe $(OMNETPP_BIN_DIR:/=\)
+	- copy $(O:/=\)\scavetool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
 $O/scavetool.obj : scavetool.cc $O
 	@: Note: not in OBJS because scavetool.cc must be compiled *without* -DSCAVE_EXPORT
@@ -86,7 +88,7 @@ depend:
 clean:
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
-	-cd $(OMNETPP_BIN_DIR:/=\) && del /q scavetool.exe 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q scavetool.exe* 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arraybuilder.obj: arraybuilder.cc \

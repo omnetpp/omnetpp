@@ -60,6 +60,7 @@ all : $O/nedtool.exe $O/nedxml$(LIB_SUFFIX)
 $O/nedtool.exe : $O/nedxml$(LIB_SUFFIX) $O/nedtool.obj
 	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/nedtool.obj $(O:/=\)\nedxml.lib $(IMPLIBS)
 	copy $(O:/=\)\nedtool.exe $(OMNETPP_BIN_DIR:/=\)
+	- copy $(O:/=\)\nedtool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
 $O/nedxml.lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
@@ -69,6 +70,7 @@ $O/nedxml.lib : $(OBJS) $L
 $O/nedxml.dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\nedxml.dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\nedxml.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\nedxml.lib $(L:/=\)
 	- copy /b $(O:/=\)\nedxml.pdb $(L:/=\) 2>nul
 
@@ -127,7 +129,7 @@ clean:
 	-del *.tab.* lex.*yy.* 2>nul
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
-	-cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe nedc.bat opp_msgc opp_msgc.cmd 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe* nedc.bat opp_msgc opp_msgc.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/cppexprgenerator.obj: cppexprgenerator.cc \

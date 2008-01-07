@@ -52,6 +52,7 @@ $O/cmdenv.lib : $(OBJS) $L
 $O/cmdenv.dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
 	copy $(O:/=\)\cmdenv.dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\cmdenv.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy $(O:/=\)\cmdenv.lib $(L:/=\)
 	- copy /b $(O:/=\)\cmdenv.pdb $(L:/=\) 2>nul
 
