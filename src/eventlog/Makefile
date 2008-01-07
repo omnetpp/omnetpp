@@ -15,13 +15,12 @@ ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
 $(error OMNETPP_LIB_DIR must be correctly set)
 endif
 
-O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/eventlog
-L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-
 #
 # Local definitions
 #
 LIBNAME=libeventlog
+O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/eventlog
+L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR)/platdep -I. -I../common
 

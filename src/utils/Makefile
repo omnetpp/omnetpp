@@ -15,9 +15,15 @@ ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
 $(error OMNETPP_LIB_DIR must be correctly set)
 endif
 
+#
+# Local definitions
+#
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/utils
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
+#
+# Rules
+#
 all: $O/seedtool
 	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
 	chmod +x opp_makemake opp_test opp_makedep splitvec opp_configfilepath
