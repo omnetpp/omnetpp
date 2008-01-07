@@ -27,11 +27,11 @@ OMNETPP_VERSION=omnetpp-4.0a3
 TOOLCHAIN_NAME=vc71
 
 #
-# Choose whether to build static libs or DLLs, by setting LIB_SUFFIX to 
+# Choose whether to build static libs or DLLs, by setting LIB_SUFFIX to
 # either .lib or .dll
 #
-LIB_SUFFIX=.lib
-#LIB_SUFFIX=.dll
+#LIB_SUFFIX=.lib
+LIB_SUFFIX=.dll
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
@@ -221,8 +221,8 @@ SYS_LIBS=wsock32.lib
 # Tools
 #
 
-# MSVC programs. 
-# Note that we use our linkall.cmd which is a wrapper around link.exe; this makes it 
+# MSVC programs.
+# Note that we use our linkall.cmd which is a wrapper around link.exe; this makes it
 # possible to link with static libs containing simple modules and other dynamically
 # registered compontents.
 #
@@ -268,10 +268,10 @@ FIXFLEX=$(PERL:/=\) -i.bak -pe "s/^.include .unistd.h.*//g"
 #   /opt:noref: keep functions and/or data that is never referenced (DOES NOT WORK!)
 #       see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
-CFLAGS_DEBUG=/MTd /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /D_CRT_SECURE_NO_DEPRECATE
+CFLAGS_DEBUG=/MDd /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
 LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
 
-CFLAGS_RELEASE=/MT /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE
+CFLAGS_RELEASE=/MD /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
 LDFLAGS_RELEASE=/subsystem:console /opt:noref
 
 HAVE_DLOPEN=0

@@ -37,6 +37,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  * @author Andras
  */
 //XXX "Out" dir should be excluded implicitly
+//XXX create softlink/.cmd file in src dir to the target
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
     private static String template;
