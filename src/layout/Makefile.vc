@@ -21,7 +21,7 @@ LIBNAME=layout
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/layout
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/layout.pdb"
+COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../common/common.lib
 
 OBJS= $O/geometry.obj $O/graphcomponent.obj $O/heapembedding.obj $O/startreeembedding.obj \
@@ -43,19 +43,19 @@ COPTS= $(COPTS) -DLAYOUT_EXPORT
 #
 # Targets
 #
-all : $O/layout$(LIB_SUFFIX)
+all : $O/$(LIBNAME)$(LIB_SUFFIX)
 
-$O/layout.lib : $(OBJS) $L
+$O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
-	copy $(O:/=\)\layout.lib $(L:/=\)
-	- copy /b $(O:/=\)\layout.pdb $(L:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-$O/layout.dll : $(OBJS) $L
+$O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
-	copy $(O:/=\)\layout.dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\layout.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
-	copy $(O:/=\)\layout.lib $(L:/=\)
-	- copy /b $(O:/=\)\layout.pdb $(L:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $(OBJS): $O
 

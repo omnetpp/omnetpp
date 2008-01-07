@@ -21,7 +21,7 @@ LIBNAME=scave
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/scave
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/scave.pdb"
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
 OBJS= $O/arraybuilder.obj $O/channel.obj $O/commonnodes.obj $O/compoundfilter.obj \
@@ -51,22 +51,22 @@ COPTS= $(COPTS) -DSCAVE_EXPORT
 #
 # Targets (TBD: build dll)
 #
-all : $O/scave$(LIB_SUFFIX) $O/scavetool.exe
+all : $O/$(LIBNAME)$(LIB_SUFFIX) $O/scavetool.exe
 
-$O/scave.lib : $(OBJS) $L
+$O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
-	copy $(O:/=\)\scave.lib $(L:/=\)
-	- copy /b $(O:/=\)\scave.pdb $(L:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-$O/scave.dll : $(OBJS) $L
+$O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
-	copy $(O:/=\)\scave.dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\scave.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
-	copy $(O:/=\)\scave.lib $(L:/=\)
-	- copy /b $(O:/=\)\scave.pdb $(L:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-$O/scavetool.exe : $O/scavetool.obj $O/scave$(LIB_SUFFIX)
-	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/scavetool.obj $(O:/=\)\scave.lib $(IMPLIBS)
+$O/scavetool.exe : $O/scavetool.obj $O/$(LIBNAME)$(LIB_SUFFIX)
+	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/scavetool.obj $(O:/=\)\$(LIBNAME).lib $(IMPLIBS)
 	copy $(O:/=\)\scavetool.exe $(OMNETPP_BIN_DIR:/=\)
 	- copy $(O:/=\)\scavetool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 

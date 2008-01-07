@@ -22,7 +22,7 @@ LIBNAME=nedxml
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/nedxml
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/nedxml.pdb"
+COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../common/common.lib $(XML_LIBS)
 
 OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
@@ -52,27 +52,27 @@ COPTS= $(COPTS) -DNEDXML_EXPORT
 #
 # Targets
 #
-all : $O/nedtool.exe $O/nedxml$(LIB_SUFFIX)
+all : $O/nedtool.exe $O/$(LIBNAME)$(LIB_SUFFIX)
 	copy nedc.bat $(OMNETPP_BIN_DIR:/=\)
 	copy opp_msgc $(OMNETPP_BIN_DIR:/=\)
 	copy opp_msgc.cmd $(OMNETPP_BIN_DIR:/=\)
 
-$O/nedtool.exe : $O/nedxml$(LIB_SUFFIX) $O/nedtool.obj
-	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/nedtool.obj $(O:/=\)\nedxml.lib $(IMPLIBS)
+$O/nedtool.exe : $O/$(LIBNAME)$(LIB_SUFFIX) $O/nedtool.obj
+	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/nedtool.obj $(O:/=\)\$(LIBNAME).lib $(IMPLIBS)
 	copy $(O:/=\)\nedtool.exe $(OMNETPP_BIN_DIR:/=\)
 	- copy $(O:/=\)\nedtool.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
-$O/nedxml.lib : $(OBJS) $L
+$O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
-	copy $(O:/=\)\nedxml.lib $(L:/=\)
-	- copy /b $(O:/=\)\nedxml.pdb $(L:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-$O/nedxml.dll : $(OBJS) $L
+$O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
-	copy $(O:/=\)\nedxml.dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\nedxml.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
-	copy $(O:/=\)\nedxml.lib $(L:/=\)
-	- copy /b $(O:/=\)\nedxml.pdb $(L:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/nedtool.obj : nedtool.cc $O
 	@: Note: not in OBJS because nedtool.cc must be compiled *without* -DNEDXML_EXPORT

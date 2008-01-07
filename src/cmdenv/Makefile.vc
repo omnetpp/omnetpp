@@ -21,7 +21,7 @@ LIBNAME=cmdenv
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/cmdenv
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir /Fd"$O/cmdenv.pdb"
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../common -I../envir /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../sim/sim_std.lib $O/../envir/envir.lib $O/../common/common.lib
 
 OBJS= $O/cmdenv.obj
@@ -42,19 +42,19 @@ COPTS= $(COPTS) -DCMDENV_EXPORT
 #
 # Targets
 #
-all: $O/cmdenv$(LIB_SUFFIX)
+all: $O/$(LIBNAME)$(LIB_SUFFIX)
 
-$O/cmdenv.lib : $(OBJS) $L
+$O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
-	copy $(O:/=\)\cmdenv.lib $(L:/=\)
-	- copy /b $(O:/=\)\cmdenv.pdb $(L:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-$O/cmdenv.dll : $(OBJS) $L
+$O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS)
-	copy $(O:/=\)\cmdenv.dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\cmdenv.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
-	copy $(O:/=\)\cmdenv.lib $(L:/=\)
-	- copy /b $(O:/=\)\cmdenv.pdb $(L:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $(OBJS): $O
 

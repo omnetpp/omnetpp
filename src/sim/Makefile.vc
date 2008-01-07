@@ -21,7 +21,7 @@ LIBNAME=sim_std
 O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/sim
 L=$(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 
-COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/sim_std.pdb"
+COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
 #COPTS=/C /P $(COPTS)
 IMPLIBS=$O/../envir/envir.lib $O/../common/common.lib
 
@@ -102,21 +102,19 @@ IMPLIBS= $(IMPLIBS) $(MPI_LIBS)
 #
 # Targets
 #
-default : sim_std
+all : $O/$(LIBNAME)$(LIB_SUFFIX)
 
-sim_std : $O/sim_std$(LIB_SUFFIX)
+$O/$(LIBNAME).lib : $(OBJS) $L
+	$(AR) /out:"$O/$(LIBNAME).lib" $(OBJS)
+	copy /b $(O:/=\)\$(LIBNAME).lib $(L:/=\) 2>nul
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-$O/sim_std.lib : $(OBJS) $L
-	$(AR) /out:"$O/sim_std.lib" $(OBJS)
-	copy /b $(O:/=\)\sim_std.lib $(L:/=\) 2>nul
-	-copy /b $(O:/=\)\sim_std.pdb $(L:/=\) 2>nul
-
-$O/sim_std.dll : $(OBJS) $L
-	$(SHLIB_LD) /out:"$O/sim_std.dll" /subsystem:console $(OBJS) $(IMPLIBS)
-	copy /b $(O:/=\)\sim_std.dll $(OMNETPP_BIN_DIR:/=\)
-	- copy /b $(O:/=\)\sim_std.dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
-	copy /b $(O:/=\)\sim_std.lib $(L:/=\)
-	-copy /b $(O:/=\)\sim_std.pdb $(L:/=\) 2>nul
+$O/$(LIBNAME).dll : $(OBJS) $L
+	$(SHLIB_LD) /out:"$O/$(LIBNAME).dll" /subsystem:console $(OBJS) $(IMPLIBS)
+	copy /b $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
+	- copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
+	copy /b $(O:/=\)\$(LIBNAME).lib $(L:/=\)
+	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 expr.tab.h expr.tab.cc : expr.y
 	$(YACC:/=\) -p expryy -b expr -d expr.y
