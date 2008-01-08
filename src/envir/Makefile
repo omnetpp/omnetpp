@@ -43,7 +43,7 @@ $O/%.o: %.cc
 #
 # Targets
 #
-all : $L/$(LIBNAME)$(LIB_SUFFIX)
+all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/opp_run$(EXE_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)$(LIB_SUFFIX)* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
@@ -74,14 +74,25 @@ eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentr
 
 $O/omnetapp.o: eventlogwriter.h
 
+$O/opp_run$(EXE_SUFFIX) : $O/opp_run.o $O/$(LIBNAME)$(LIB_SUFFIX)
+	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o $O/$(LIBNAME)$(LIB_SUFFIX) $(IMPLIBS)
+	cp $O/opp_run$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
+
+$O/opp_run.o : opp_run.cc
+	@# Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT
+	@mkdir -p $O
+	$(CXX) $(CFLAGS) -c -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -o$O/opp_run.o opp_run.cc
+
 depend:
 	$(MAKEDEPEND) -I. -I../../include -P\$$O/ -- *.cc
+ 
 
 clean:
 	rm -f eventlogwriter.cc eventlogwriter.h
 	rm -rf $O
 	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
-
+	cd $(OMNETPP_BIN_DIR) && rm -f opp_run$(EXE_SUFFIX)                                                  
+ 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/akaroarng.o: akaroarng.cc \
   ../../include/cenvir.h \

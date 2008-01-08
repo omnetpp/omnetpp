@@ -1173,6 +1173,9 @@ all: $O/$(TARGET)
 {nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {/@}
 
+{msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
+{msgfiles:}{~nmake:}	$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
+{msgfiles:}{~nmake:}
 generateheaders: $(MSGFILES)
 	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
 {submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && @popd || exit /b 1

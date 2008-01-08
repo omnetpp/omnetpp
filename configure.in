@@ -74,20 +74,26 @@ OMNETPP_EDITION="Academic Public License"
 #
 #  Set system/arch specific values
 #
+jdk_platform=$host_os
 case $host in
-  sparc-sun-*)
-    CFLAGS_ARCH="-DSUNSPARC"
-    ;;
   *-*-cygwin*)
     cygwin=yes
     windows=yes
+    jdk_platform=win32
     ;;
   *-*-mingw32*)
     mingw=yes
     windows=yes
+    jdk_platform=win32
+    ;;
+  *linux*)
+    jdk_platform=linux
     ;;
   *-hp-hpux*)
     SO_LIB_SUFFIX=".sl"
+    ;;
+  sparc-sun-*)
+    CFLAGS_ARCH="-DSUNSPARC"
     ;;
   *)
     ;;
@@ -702,7 +708,7 @@ else
       if test "$JAVA_HOME" = ""; then
          AC_MSG_WARN(JAVA_HOME variable not set.)
       else
-         JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux"
+         JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/$jdk_platform"
       fi
    fi
    OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $JAVA_CFLAGS, jni_ok)

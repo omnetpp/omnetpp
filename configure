@@ -1880,20 +1880,26 @@ OMNETPP_EDITION="Academic Public License"
 #
 #  Set system/arch specific values
 #
+jdk_platform=$host_os
 case $host in
-  sparc-sun-*)
-    CFLAGS_ARCH="-DSUNSPARC"
-    ;;
   *-*-cygwin*)
     cygwin=yes
     windows=yes
+    jdk_platform=win32
     ;;
   *-*-mingw32*)
     mingw=yes
     windows=yes
+    jdk_platform=win32
+    ;;
+  *linux*)
+    jdk_platform=linux
     ;;
   *-hp-hpux*)
     SO_LIB_SUFFIX=".sl"
+    ;;
+  sparc-sun-*)
+    CFLAGS_ARCH="-DSUNSPARC"
     ;;
   *)
     ;;
@@ -6006,7 +6012,7 @@ else
          { echo "$as_me:$LINENO: WARNING: JAVA_HOME variable not set." >&5
 echo "$as_me: WARNING: JAVA_HOME variable not set." >&2;}
       else
-         JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/linux"
+         JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/$jdk_platform"
       fi
    fi
 
