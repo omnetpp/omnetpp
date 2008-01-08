@@ -38,6 +38,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  */
 //XXX "Out" dir should be excluded implicitly
 //XXX create softlink/.cmd file in src dir to the target
+//XXX support ccExt = "cc,cpp" too! (because by default, CDT creates files with .cpp extension)
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
     private static String template;
