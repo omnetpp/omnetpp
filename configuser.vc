@@ -272,6 +272,7 @@ FIXFLEX=$(PERL:/=\) -i.bak -pe "s/^.include .unistd.h.*//g"
 
 # Compiler switches (see MSDN for more info)
 #   /MT,/MTd: use multithreaded C library (single-threaded not available on VC8.0+)
+#   /MD,/MDd: same as /MT[d], but use DLL-based C libraries not static ones
 #   /EHsc: synchronous exception handling, assume extern "C" funcs don't throw exceptions
 #   /GR: enable RTTI
 #   /FD: generate file dependencies
@@ -288,14 +289,19 @@ FIXFLEX=$(PERL:/=\) -i.bak -pe "s/^.include .unistd.h.*//g"
 #   /opt:noref: keep functions and/or data that is never referenced (DOES NOT WORK!)
 #       see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
-CFLAGS_DEBUG=/MDd /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
+CFLAGS_DEBUG=$(MOPTION)d /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
 LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
 
-CFLAGS_RELEASE=/MD /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
+CFLAGS_RELEASE=$(MOPTION) /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
 LDFLAGS_RELEASE=/subsystem:console /opt:noref
 
-HAVE_DLOPEN=0
+!if "$(LIB_SUFFIX)"==".dll"
+MOPTION=/MD
+!else
+MOPTION=/MT
+!endif
 
+HAVE_DLOPEN=0
 VC_AUX_FILES=*.ilk *.idb *.pdb *.pch *.exp *.suo *.sln
 
 !if "$(LIB_SUFFIX)"==".dll"
