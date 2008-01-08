@@ -112,7 +112,7 @@ all: $O/$(TARGET)
 {exe:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
 {sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
-{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS){nmake? $(LIBS) $(OMNETPP_LIBS)}
+{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)}
 {staticlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS)
 {nolink:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} {makefile}
@@ -135,7 +135,9 @@ all: $O/$(TARGET)
 {nmake:}	-@md $(O:/=\)\{bsdir} 2>nul
 {nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {/@}
-
+{msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
+{msgfiles:}{~nmake:}	$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
+{msgfiles:}{~nmake:}
 generateheaders: $(MSGFILES)
 	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
 {submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && @popd || exit /b 1
@@ -161,4 +163,3 @@ makefiles:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
-

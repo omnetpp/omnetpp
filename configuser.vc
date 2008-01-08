@@ -30,8 +30,8 @@ TOOLCHAIN_NAME=vc71
 # Choose whether to build static libs or DLLs, by setting LIB_SUFFIX to
 # either .lib or .dll
 #
-#LIB_SUFFIX=.lib
-LIB_SUFFIX=.dll
+LIB_SUFFIX=.lib
+#LIB_SUFFIX=.dll
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
