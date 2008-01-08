@@ -87,9 +87,9 @@ public class MetaMakemake {
         // add extra include folders
         if (options.metaAutoIncludePath && folderDeps != null) {
             for (IContainer srcFolder : folderDeps.keySet())
-                if (MakefileTools.folderContains(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs))  
+                if (MakefileTools.makefileCovers(makefileFolder, srcFolder, options.isDeep, options.exceptSubdirs))  
                     for (IContainer dep : folderDeps.get(srcFolder))
-                        if (!MakefileTools.folderContains(makefileFolder, dep, options.isDeep, options.exceptSubdirs)) // only add if "dep" is outside "folder"!  
+                        if (!MakefileTools.makefileCovers(makefileFolder, dep, options.isDeep, options.exceptSubdirs)) // only add if "dep" is outside "folder"!  
                             if (!translatedOptions.includeDirs.contains(dep.getLocation().toString()))  // if not added yet
                                 translatedOptions.includeDirs.add(dep.getLocation().toString());
 

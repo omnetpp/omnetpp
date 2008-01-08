@@ -281,7 +281,7 @@ public class Makemake {
         //String sep = " ";
         String sep = " \\\n\t";
         for (IContainer srcFolder : perFileDeps.keySet()) {
-            if (MakefileTools.folderContains(folder, srcFolder, options.isDeep, options.exceptSubdirs)) {  
+            if (MakefileTools.makefileCovers(folder, srcFolder, options.isDeep, options.exceptSubdirs)) {  
                 Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(srcFolder);
                 for (IFile srcFile : fileDepsMap.keySet()) {
                     if (srcFile.getFileExtension().equals(ccExt)) {

@@ -198,10 +198,10 @@ public class MakemakeOptionsPanel extends Composite {
         ccextCombo.add(".cpp");
 
         Group dllGroup = createGroup(compilePage, "Windows DLLs", 2);
+        final Link dllHelpLink = createLink(dllGroup, "Hover or <A>click here</A> for more info on creating DLLs.");
         compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines the FOO_EXPORT macro, where FOO is the DLL export/import symbol");
         compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         dllSymbolText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO):", "Base name for the FOO_API, FOO_EXPORT and FOO_IMPORT macros"); 
-        final Link dllHelpLink = createLink(dllGroup, "Hover or <A>click here</A> for more info on creating DLLs.");
         Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and symbols</A> page.");
 
         // "Link" page
@@ -695,9 +695,17 @@ public class MakemakeOptionsPanel extends Composite {
         "#endif\n" + 
         "</pre>\n" + 
         "\n" + 
+        "<p>\n" + 
         "Then you need to include <tt>foodefs.h</tt> into all your header files, and\n" + 
-        "annotate public symbols in them with <tt>FOO_API</tt>. When building the\n" + 
-        "DLL, OMNeT++-generated makefiles will ensure that <tt>FOO_EXPORT</tt> is\n" + 
+        "annotate public symbols in them with <tt>FOO_API</tt>. Also, insert the following in" +
+        " your .msg files: \n" +
+        "<pre>\n" +
+        "cplusplus {{\n" +
+        "  #include \"foodefs.h\"\n" +
+        "}}\n" +
+        "</pre>\n" +
+        "<p>\n" + 
+        "When building the DLL, OMNeT++-generated makefiles will ensure that <tt>FOO_EXPORT</tt> is\n" + 
         "defined, and so <tt>FOO_API</tt> becomes <tt>__declspec(dllexport)</tt>.\n" + 
         "Likewise, when you use the DLL from external code, the makefile will define\n" + 
         "<tt>FOO_IMPORT</tt>, causing <tt>FOO_API</tt> to become\n" + 

@@ -55,5 +55,3 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/seedtool.o: seedtool.cc
-$O/opp_replace.o: opp_replace.c
-$O/tcl2c.o: tcl2c.c

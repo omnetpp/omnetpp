@@ -121,26 +121,25 @@ public class MakefileTools {
     }
     
     /**
-     * Utility function to determine whether a given resource is under a given
-     * makefile folder. CDT source dirs and exclusions (CSourceEntry) are ignored, 
+     * Utility function to determine whether a given container is covered by
+     * a given makefile. CDT source dirs and exclusions (CSourceEntry) are ignored, 
      * instead there is excludedFolders (list of folder-relative paths to be excluded;
      * it excludes subtrees not single folders).
      */
-    public static boolean folderContains(IContainer folder, IResource resource, boolean deep, List<String> excludedFolders) {
+    public static boolean makefileCovers(IContainer makefileFolder, IContainer folder, boolean deep, List<String> excludedFolders) {
         if (!deep) {
-            if (!resource.getParent().equals(folder))
-                return false; // not in that folder
+            return folder.equals(makefileFolder);
         }
         else {
-            if (!folder.getFullPath().isPrefixOf(resource.getFullPath()))
+            if (!makefileFolder.getFullPath().isPrefixOf(folder.getFullPath()))
                 return false; // not under that folder
+            if (excludedFolders != null) {
+                IPath folderRelativePath = folder.getFullPath().removeFirstSegments(makefileFolder.getFullPath().segmentCount());
+                for (String exludedFolder : excludedFolders) 
+                    if (new Path(exludedFolder).isPrefixOf(folderRelativePath))
+                        return false; // excluded
+            }
+            return true;
         }
-        if (excludedFolders != null) {
-            IPath folderRelativePath = resource.getFullPath().removeFirstSegments(folder.getFullPath().segmentCount());
-            for (String exludedFolder : excludedFolders) 
-                if (new Path(exludedFolder).isPrefixOf(folderRelativePath))
-                    return false; // excluded
-        }
-        return true;
     }
 }
