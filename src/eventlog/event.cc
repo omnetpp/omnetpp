@@ -35,7 +35,7 @@ void Event::deleteState()
 	for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
         delete *it;
 
-    if (!causes)
+	if (!cause)
         delete cause;
 
     if (causes)
@@ -51,6 +51,8 @@ void Event::deleteState()
             delete *it;
         delete consequences;
     }
+
+	clearState();
 }
 
 void Event::clearState()
@@ -64,6 +66,8 @@ void Event::clearState()
     cause = NULL;
 	causes = NULL;
 	consequences = NULL;
+
+	eventLogEntries.clear();
 }
 
 void Event::synchronize()
@@ -92,7 +96,6 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
     eventLog->progress();
 
 	deleteState();
-	clearState();
     numEventLogMessages = 0;
     numBeginSendEntries = 0;
 
