@@ -168,12 +168,12 @@ void FileReader::checkFileChangedAndSynchronize()
 {
     switch (getFileChangedState()) {
         case OVERWRITTEN:
-			throw opp_runtime_error("Eventlog file changed: `%s' has been overwritten", fileName.c_str());
+			throw opp_runtime_error("File changed: `%s' has been overwritten", fileName.c_str());
         case APPENDED:
 			if (synchronizeWhenAppended)
 	            synchronize();
 			else
-	            throw opp_runtime_error("Eventlog file changed: `%s' has been appended", fileName.c_str());
+	            throw opp_runtime_error("File changed: `%s' has been appended", fileName.c_str());
         default:
            break;
     }
