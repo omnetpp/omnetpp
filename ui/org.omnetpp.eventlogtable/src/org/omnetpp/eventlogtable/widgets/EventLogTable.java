@@ -107,8 +107,16 @@ public class EventLogTable
 		else
 			eventLogInput.runWithProgressMonitor(new Runnable() {
 				public void run() {
-					EventLogTable.super.paint(gc);
-					normalPaintHasBeenRun = true;
+				    try {
+    					EventLogTable.super.paint(gc);
+    					normalPaintHasBeenRun = true;
+				    }
+                    catch (RuntimeException e) {
+                        if (eventLogInput.isEventLogChangedException(e))
+                            eventLogInput.checkEventLogForChanges();
+                        else
+                            throw e;
+                    }
 				}
 			});
 	}
@@ -277,10 +285,14 @@ public class EventLogTable
 	 */
 
 	public void eventLogAppended() {
+        if (!eventLog.isEmpty() && fixPointElement == null)
+            scrollToBegin();
+
 		eventLogChanged();
 	}
 
     public void eventLogOverwritten() {
+        scrollToBegin();
         eventLogChanged();
     }
 
@@ -288,15 +300,16 @@ public class EventLogTable
         if (debug)
 			System.out.println("EventLogTable got notification about event log change");
 
-		configureVerticalScrollBar();
+        configureVerticalScrollBar();
 		updateVerticalBarPosition();
 
 		if (followEnd)
 		{
 			if (debug)
 				System.out.println("Scrolling to follow event log change");
-			
-			scrollToEnd();
+
+			if (!eventLog.isEmpty())
+			    scrollToEnd();
 		}
 		else
 			redraw();

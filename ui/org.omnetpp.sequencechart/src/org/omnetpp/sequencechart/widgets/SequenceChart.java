@@ -541,7 +541,11 @@ public class SequenceChart
 
 	protected void relocateFixPoint(IEvent event, int fixPointViewportCoordinate) {
 		this.fixPointViewportCoordinate = fixPointViewportCoordinate;
-		sequenceChartFacade.relocateTimelineCoordinateSystem(event);
+		
+		if (event != null)
+		    sequenceChartFacade.relocateTimelineCoordinateSystem(event);
+		else
+            sequenceChartFacade.undefineTimelineCoordinateSystem();
 
 		if (eventLog != null & !eventLog.isEmpty()) {
 			if (eventLog.getLastEvent().getSimulationTime().doubleValue() <= getSimulationTimeForViewportCoordinate(getViewportWidth())) {
@@ -616,7 +620,6 @@ public class SequenceChart
 			horizontalBar.setSelection((int)((horizontalBar.getMaximum() - horizontalBar.getThumb()) * percentage));
 		}
 	}
-
 
 	@Override
 	protected void horizontalScrollBarChanged(SelectionEvent e) {
@@ -1081,19 +1084,20 @@ public class SequenceChart
 	}
 
 	public void eventLogAppended() {
+        if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
+            relocateFixPoint(eventLog.getFirstEvent(), 0);
+
 		eventLogChanged();
 	}
 
     public void eventLogOverwritten() {
+        relocateFixPoint(eventLog.getFirstEvent(), 0);
         eventLogChanged();
     }
 
     private void eventLogChanged() {
         if (debug)
 			System.out.println("SequenceChart got notification about event log change");
-
-		if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
-			sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
 
 		configureScrollBars();
 		adjustHorizontalScrollBar();
@@ -1104,7 +1108,8 @@ public class SequenceChart
 			if (debug)
 				System.out.println("Scrolling to follow event log change");
 
-			scrollToEnd();
+            if (!eventLog.isEmpty())
+                scrollToEnd();
 		}
 		else
 			redraw();
@@ -1398,14 +1403,22 @@ public class SequenceChart
 		else
 			eventLogInput.runWithProgressMonitor(new Runnable() {
 				public void run() {
-					if (eventLogInput != null)
-						calculateStuff();
-
-					SequenceChart.super.paint(gc);
-					normalPaintHasBeenRun = true;
-
-					if (eventLogInput != null && debug)
-						System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
+				    try {
+    					if (eventLogInput != null)
+    						calculateStuff();
+    
+    					SequenceChart.super.paint(gc);
+    					normalPaintHasBeenRun = true;
+    
+    					if (eventLogInput != null && debug)
+    						System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
+				    }
+				    catch (RuntimeException e) {
+				        if (eventLogInput.isEventLogChangedException(e))
+				            eventLogInput.checkEventLogForChanges();
+				        else
+				            throw e;
+				    }
 				}
 			});
 	}

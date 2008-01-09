@@ -107,7 +107,7 @@ public class EventLogInput
 		restoreState();
 	}
 
-	private void checkEventLogForChanges() {
+	public synchronized void checkEventLogForChanges() {
 	    switch (eventLog.getFileReader().getFileChangedState()) {
 	        case FileReader.FileChangedState.APPENDED:
 	            synchronize();
@@ -121,6 +121,9 @@ public class EventLogInput
 	}
 
     public synchronized void synchronize() {
+        if (debug)
+            System.out.println("Synchronizing event log file content: " + file.getName());
+
         getSequenceChartFacade().synchronize();
         getEventLogTableFacade().synchronize();
     }
@@ -368,13 +371,13 @@ public class EventLogInput
 
     private void eventLogOverwritten() {
         if (debug)
-            System.out.println("Notifying listeners about new content being appended to the event log");
+            System.out.println("Notifying listeners about the content being overwritten in the event log");
 
         for (IEventLogChangeListener listener : eventLogChangeListeners)
             listener.eventLogOverwritten();
 
         if (debug)
-            System.out.println("Event log append notification done");
+            System.out.println("Event log overwritten notification done");
     }
 
 	private void eventLogFiltered() {
@@ -472,7 +475,7 @@ public class EventLogInput
         else if (t.getCause() != null)
             return isEventLogChangedException(t.getCause());
         else
-            return t.getMessage() != null && t.getMessage().contains("Eventlog file changed");
+            return t.getMessage() != null && t.getMessage().contains("File changed: ");
     }
 
 	public void progress() {
