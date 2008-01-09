@@ -56,3 +56,4 @@
 platform:
 - the ${} parser should match the correct ending }. 
   constructs like ${var1:${var2}} are not working
+

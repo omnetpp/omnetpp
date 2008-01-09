@@ -62,6 +62,9 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
+//FIXME unify .oppbuildspec with .nedfolders, and include nedfolder-to-dll mapping too!!!
+//FIXME per-configuration MakemakeOptions????
+//TODO check consistency!!!
 public class MakemakeFolderPropertyPage extends PropertyPage {
     private static final String SELECTED = " <selected>";
     public static final String MAKEFRAG_FILENAME = "makefrag";
