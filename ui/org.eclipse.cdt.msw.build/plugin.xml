@@ -9,6 +9,7 @@
             configurationEnvironmentSupplier="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier"
             id="org.eclipse.cdt.msvc.toolchain.base"
             isAbstract="true"
+            isToolChainSupported="org.eclipse.cdt.msw.build.WinEnvironmentVariableSupplier"
             name="%toolchain.name"
             osList="win32"
             targetTool="org.eclipse.cdt.msvc.link;org.eclipse.cdt.msvc.lib">
