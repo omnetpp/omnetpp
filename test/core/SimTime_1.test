@@ -2,10 +2,17 @@
 Tests for SimTime.
 XXX split to several tests? to be revised
 
+%global:
+// make protected SimTime::resetScale() accessible via subclassing
+class SimTimeExt : SimTime {
+  public: static void reset() {resetScale();}
+};
+
 %activity:
    // check scaling
    for (int i=-18; i<=0; i++)
    {
+       SimTimeExt::reset();
        SimTime::setScaleExp(i);
 
        char *u="";
@@ -19,6 +26,7 @@ XXX split to several tests? to be revised
        ev.printf("%d: scale=%I64d %s\n", i, SimTime::scale(), u);
    }
 
+   SimTimeExt::reset();
    SimTime::setScaleExp(SimTime::SCALEEXP_NS);
    ev.printf("using nanosecond precision: scale=%I64d\n", SimTime::scale());
 
