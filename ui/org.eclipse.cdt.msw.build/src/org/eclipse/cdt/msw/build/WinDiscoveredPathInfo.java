@@ -26,16 +26,16 @@ public class WinDiscoveredPathInfo implements IDiscoveredPathInfo {
 		if (vcDir != null ) {
 		    if (sdkDir != null) {
 		        paths = new IPath[] {
-		                new Path(vcDir.concat("INCLUDE")),
-		                new Path(vcDir.concat("INCLUDE\\SYS")),
-		                new Path(sdkDir.concat("Include")),
-		                new Path(sdkDir.concat("Include\\gl"))
+		                new Path(vcDir).append("INCLUDE"),
+		                new Path(vcDir).append("INCLUDE\\SYS"),
+		                new Path(sdkDir).append("Include"),
+		                new Path(sdkDir).append("Include\\gl")
 		        };
 		    }
 		    else {
                 paths = new IPath[] {
-                        new Path(vcDir.concat("INCLUDE")),
-                        new Path(vcDir.concat("INCLUDE\\SYS")),
+                        new Path(vcDir).append("INCLUDE"),
+                        new Path(vcDir).append("INCLUDE\\SYS"),
                 };
 		    }
 		} 

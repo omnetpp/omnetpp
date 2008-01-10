@@ -13,12 +13,18 @@ import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSu
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.cdt.managedbuilder.envvar.IProjectEnvironmentVariableSupplier;
 import org.eclipse.cdt.utils.WindowsRegistry;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PluginVersionIdentifier;
 
 /**
- * @author DSchaefer
  * Visual C environment detector. Tries to detect Visual C and (optional) MS Windows SDK
- * installation. (Returns the latest version) Also checks whether the toolchain is installed at all.
+ * installation. (Returns the latest version) Also checks whether the tool-chain is installed at all.
+ * Looks for environment variables VCINSTALLDIR, VSINSTALLDIR, MSSdk. If you have several versions
+ * of SDK / Visual C on your machine, and need a specific one (not the latest) define these variables
+ * to point to the needed installation.
+ * 
+ * @author DSchaefer 
+ * @author rhornig
  */
 public class WinEnvironmentVariableSupplier
 	implements IConfigurationEnvironmentVariableSupplier, IProjectEnvironmentVariableSupplier,
@@ -102,16 +108,23 @@ public class WinEnvironmentVariableSupplier
 	}
 	
     /**
-     * The Windows SDK installation directory (the highest version possible). 
-     * Return NULL if not installed.
+     * The Windows SDK installation directory (the highest version possible).
+     * First looks for MSSdk environment variable then looks in system registry.
+     * (OS specific format)  
+     * Returns NULL if not installed.
      */
 	public static String getSDKDir() {
+        // first check for environment variable
+        String sdkDir = System.getenv("MSSdk");
+        if (sdkDir != null)
+            return sdkDir;
+        
 		WindowsRegistry reg = WindowsRegistry.getRegistry();
 		if (reg == null)
 			return null;
 		
 		for (int i = 0; i < SDK_VERSIONS.length; ++i) {
-			String sdkDir = reg.getLocalMachineValue(SDK_VERSIONS[i], "InstallationFolder");
+			sdkDir = reg.getLocalMachineValue(SDK_VERSIONS[i], "InstallationFolder");
 			if (sdkDir != null)
 				return sdkDir;
 		}
@@ -121,18 +134,23 @@ public class WinEnvironmentVariableSupplier
 	
     /**
      * The Visual C installation directory (the highest version possible)
-     * First looks in Visual Studio then in SDK and tries to find VC.  
-     * Return NULL if not installed.
+     * First looks for VCINSTALLDIR environment variable then in the registry for
+     * Visual Studio then for SDK installations and tries to find VC. (OS specific format) 
+     * Returns NULL if VC is not found.
      */
-	// TODO add VCDIR environment var detection too
 	public static String getVCDir() {
+	    // first check for environment variable
+	    String vcDir = System.getenv("VCINSTALLDIR");
+	    if (vcDir != null)
+	        return vcDir;
+	    
 		WindowsRegistry reg = WindowsRegistry.getRegistry();
 		if (reg == null)
 			return null;
 
 		// try to detect visual c
         for (int i = 0; i < VC_VERSIONS.length; ++i) {
-            String vcDir = reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VC7", VC_VERSIONS[i]);
+            vcDir = reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VC7", VC_VERSIONS[i]);
             if (vcDir != null) 
                 return vcDir;
         }
@@ -141,7 +159,7 @@ public class WinEnvironmentVariableSupplier
         for (int i = 0; i < SDK_VC_VERSIONS.length; ++i) {
             String sdkVCDir = reg.getLocalMachineValue(SDK_VC_VERSIONS[i], "InstallationFolder");
             if (sdkVCDir != null) 
-                return sdkVCDir.concat("VC\\");
+                return new Path(sdkVCDir).append("VC").toOSString();
         }
 		
 		return null;
@@ -149,15 +167,22 @@ public class WinEnvironmentVariableSupplier
 	
 	/**
 	 * The Visual Studio installation directory (the highest version possible)
-     * Return NULL if not installed.
+	 * First checks the VSINSTALLDIR environment variable then the registry.
+	 * (OS specific format)
+     * Returns NULL if not installed.
 	 */
 	public static String getVSDir() {
-		WindowsRegistry reg = WindowsRegistry.getRegistry();
+        // first check for environment variable
+        String vsDir = System.getenv("VSINSTALLDIR");
+        if (vsDir != null)
+            return vsDir;
+
+        WindowsRegistry reg = WindowsRegistry.getRegistry();
 		if (reg == null)
 			return null;
 
         for (int i = 0; i < VC_VERSIONS.length; ++i) {
-            String vsDir = reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VS7", VC_VERSIONS[i]);
+            vsDir = reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VS7", VC_VERSIONS[i]);
             if (vsDir != null) 
                 return vsDir;
         }
@@ -178,20 +203,20 @@ public class WinEnvironmentVariableSupplier
 		// INCLUDE
 		StringBuffer buff = new StringBuffer();
 
-		buff.append(vcDir).append("INCLUDE;");
-		buff.append(vcDir).append("INCLUDE\\SYS;");
+		buff.append(new Path(vcDir).append("INCLUDE").toOSString()+";");
+		buff.append(new Path(vcDir).append("INCLUDE\\SYS").toOSString()+";");
 		
 		if (sdkDir != null) {
-		    buff.append(sdkDir).append("Include;");
-		    buff.append(sdkDir).append("Include\\gl;");
+		    buff.append(new Path(sdkDir).append("Include").toOSString()+";");
+		    buff.append(new Path(sdkDir).append("Include\\gl").toOSString()+";");
 		}
 		addvar(new WindowsBuildEnvironmentVariable("INCLUDE", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 
 		// LIB
 		buff = new StringBuffer();
-		buff.append(vcDir).append("LIB;");
+		buff.append(new Path(vcDir).append("LIB").toOSString()+";");
 		if (sdkDir != null)
-		    buff.append(sdkDir).append("Lib;");
+		    buff.append(new Path(sdkDir).append("Lib").toOSString()+";");
 		addvar(new WindowsBuildEnvironmentVariable("LIB", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 		
 		// PATH
@@ -199,16 +224,15 @@ public class WinEnvironmentVariableSupplier
 		
 		String vsDir = getVSDir();
 		if (vsDir != null)
-			buff.append(vsDir).append("Common7\\IDE;");
+			buff.append(new Path(vsDir).append("Common7\\IDE").toOSString()+";");
 		
-		buff.append(vcDir).append("Bin;");
+		buff.append(new Path(vcDir).append("Bin").toOSString()+";");
         if (sdkDir != null)
-            buff.append(sdkDir).append("Bin;");
+            buff.append(new Path(sdkDir).append("Bin").toOSString()+";");
 		addvar(new WindowsBuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 	}
 
     public boolean isSupported(IToolChain toolChain, PluginVersionIdentifier version, String instance) {
         return getVCDir() != null;
     }
-
 }
