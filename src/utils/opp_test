@@ -811,6 +811,8 @@ endnetwork
 
 class @TESTNAME@ : public cSimpleModule
 {
+  public:
+    @TESTNAME@() : cSimpleModule(16384) {}
     virtual void activity();
 };
 
@@ -838,7 +840,7 @@ void @TESTNAME@::activity()
 
     $INITemplate = '
 [General]
-network=@TESTNAME@_network
+network = @TESTNAME@_network
 output-vector-file = @TESTNAME@.vec
 output-scalar-file = @TESTNAME@.sca
 cmdenv-express-mode = false
