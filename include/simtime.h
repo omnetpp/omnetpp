@@ -51,6 +51,10 @@ class SIM_API SimTime
     static double fscale;    // 10^-scaleexp, that is 1 or 1000 or 1000000...
     static double invfscale; // 1/fscale; we store it because floating-point multiplication is faster than division
 
+  protected:
+    static void resetScale() {scaleexp = SCALEEXP_UNINITIALIZED;} // for unit tests only
+
+  private:
     template<typename T> void check(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
     void initError(double d);
 
