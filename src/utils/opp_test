@@ -161,9 +161,9 @@ if ($testprogram eq '') {
     $workingdir =~ /([^\/\\]*)$/;
     $tmp = $1;
     if ($isWindows) {
-        $testprogram = $tmp.'.exe';
+        $testprogram = $tmp . ".cmd";
     } else {
-        $testprogram = './'.$tmp;
+        $testprogram = "./" . $tmp;
     }
 
 }
@@ -481,7 +481,7 @@ sub testcase_run()
     }
 
     # run the program
-    $exitcode = exec_program("$testprogram $extraargs $dynamicnedargs -f $inifname", $workingdir, $outfname, $errfname);
+    $exitcode = exec_program("$testprogram -u Cmdenv $extraargs $dynamicnedargs -f $inifname", $workingdir, $outfname, $errfname);
     if ($exitcode != 0) {
         if ($exitcode == -1) {
             unresolved($testfilename, "could not execute test program");
@@ -811,7 +811,6 @@ endnetwork
 
 class @TESTNAME@ : public cSimpleModule
 {
-    Module_Class_Members(@TESTNAME@,cSimpleModule,16384)
     virtual void activity();
 };
 
