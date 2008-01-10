@@ -32,10 +32,6 @@
 #define usleep(x) _sleep((x)/1000)
 #define mkdir(x,y) _mkdir(x)
 
-#ifndef __MINGW32__
-#define vsnprintf _vsnprintf
-#endif
-
 #else
 
 #include <sys/types.h>
