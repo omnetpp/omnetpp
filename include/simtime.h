@@ -58,25 +58,27 @@ class SIM_API SimTime
     template<typename T> void check(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
     void initError(double d);
 
+    bool haveSameSign(int64 a, int64 b) { return (a^b) >= 0; }
+
     int64 toInt64(double i64) {
-         if (i64 > INT64_MAX_DBL || i64 < -INT64_MAX_DBL)
+         if (fabs(i64) > INT64_MAX_DBL)
              rangeError(i64);
          return (int64)i64;
     }
 
     void checkedAdd(const SimTime& x) {
         // if operands are the same sign but result has different sign ==> overflow
-        bool sameSign = (t^x.t) > 0;
+        bool sameSign = haveSameSign(t, x.t);
         t += x.t;
-        if (sameSign && (t^x.t) < 0)
+        if (sameSign && !haveSameSign(t, x.t))
             overflowAdding(x);
     }
 
     void checkedSub(const SimTime& x) {
         // if operands are different signs and result has same sign as x ==> overflow
-        bool sameSign = (t^x.t) > 0;
+        bool differentSign = !haveSameSign(t, x.t);
         t -= x.t;
-        if (!sameSign && (t^x.t) > 0)
+        if (differentSign && haveSameSign(t, x.t))
             overflowSubstracting(x);
     }
 
