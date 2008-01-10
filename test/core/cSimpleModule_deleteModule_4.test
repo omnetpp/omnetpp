@@ -24,7 +24,7 @@ endnetwork
 
 class {NodeA} : public cSimpleModule
 {
-    Module_Class_Members({NodeA},cSimpleModule,0)
+  public:
     cMessage *msg;
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);

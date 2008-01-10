@@ -45,7 +45,7 @@ void {Node}::activity()
 
 class {Suicide} : public cSimpleModule
 {
-    Module_Class_Members({Suicide},cSimpleModule,0);
+  public:;
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

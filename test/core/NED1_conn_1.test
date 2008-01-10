@@ -67,7 +67,7 @@ void {Gen}::activity()
 
 class {Sink} : public cSimpleModule
 {
-    Module_Class_Members({Sink},cSimpleModule,0)
+  public:
     virtual void handleMessage(cMessage *msg);
 };
 

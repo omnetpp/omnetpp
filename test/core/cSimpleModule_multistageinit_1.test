@@ -32,7 +32,7 @@ endnetwork
 
 class {Module} : public cSimpleModule
 {
-    Module_Class_Members({Module},cSimpleModule,0)
+  public:
     virtual void initialize(int stage);
     virtual int numInitStages() const; // NOTE THE const MODIFIER!!!
 

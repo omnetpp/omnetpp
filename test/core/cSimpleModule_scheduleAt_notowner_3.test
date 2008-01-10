@@ -25,7 +25,7 @@ void {Sender}::activity()
 
 class {Receiver} : public cSimpleModule
 {
-    Module_Class_Members({Receiver},cSimpleModule,0)
+  public:
     virtual void handleMessage(cMessage *) { } // ignore but do not delete
 };
 

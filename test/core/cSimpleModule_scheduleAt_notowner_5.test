@@ -26,7 +26,7 @@ void {Sender}::activity()
 
 class {Receiver} : public cSimpleModule
 {
-    Module_Class_Members({Receiver},cSimpleModule,0)
+  public:
     virtual void handleMessage(cMessage *msg) {scheduleAt(1000,msg);}
 };
 

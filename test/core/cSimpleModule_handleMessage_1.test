@@ -7,7 +7,7 @@ Basic test for cSimpleModule.handleMessage().
 
 class {Module} : public cSimpleModule
 {
-    Module_Class_Members({Module},cSimpleModule,0)
+  public:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();

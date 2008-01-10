@@ -69,7 +69,7 @@ void {NodeB}::activity()
 
 class {Deleter} : public cSimpleModule
 {
-    Module_Class_Members({Deleter},cSimpleModule,0);
+  public:;
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };

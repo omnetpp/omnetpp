@@ -9,7 +9,8 @@ int three = 3;
 
 class {Llist} : public cSimpleModule
 {
-    Module_Class_Members({Llist}, cSimpleModule, 16384);
+  public:
+    {Llist}() : cSimpleModule(16384) { }
     virtual void activity();
     void fillLlist(cLinkedList& ll);
     void output(cLinkedList& ll);
