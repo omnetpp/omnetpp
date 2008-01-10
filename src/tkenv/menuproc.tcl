@@ -421,13 +421,21 @@ proc run_until {} {
     if {$time=="" && $event==""} {set until_on "until_off"}
 
     if [is_running] {
-        set_gui_for_runmode $mode "" $untilmode
-        opp_set_run_mode $mode
-        opp_set_run_until $time $event
+        if [catch {
+            set_gui_for_runmode $mode "" $untilmode
+            opp_set_run_mode $mode
+            opp_set_run_until $time $event
+        } err] {
+            messagebox {Error} "Error: $err" error ok
+        }
     } else {
         if {![network_ready]} {return}
-        set_gui_for_runmode $mode "" $untilmode
-        opp_run $mode $time $event
+        if [catch {
+            set_gui_for_runmode $mode "" $untilmode
+            opp_run $mode $time $event
+        } err] {
+            messagebox {Error} "Error: $err" error ok
+        }
         set_gui_for_runmode notrunning
     }
 
