@@ -22,16 +22,16 @@ EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
  	reader->setSynchronizeWhenAppended(false);
 
-	clearState();
+	clearInternalState();
     parseInitializationLogEntries();
 }
 
 EventLog::~EventLog()
 {
-	deleteState();
+	deleteAllocatedObjects();
 }
 
-void EventLog::deleteState()
+void EventLog::deleteAllocatedObjects()
 {
 	for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
 		delete *it;
@@ -39,10 +39,10 @@ void EventLog::deleteState()
 	for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
 		delete it->second;
 
-	clearState();
+	clearInternalState();
 }
 
-void EventLog::clearState(FileReader::FileChangedState change)
+void EventLog::clearInternalState(FileReader::FileChangedState change)
 {
     approximateNumberOfEvents = -1;
 
@@ -90,14 +90,15 @@ void EventLog::synchronize()
 
 	if (change != FileReader::UNCHANGED) {
 		if (change == FileReader::OVERWRITTEN)
-			deleteState();
+			deleteAllocatedObjects();
 
 		Event *lastEvent = this->lastEvent;
 
 		IEventLog::synchronize();
 		EventLogIndex::synchronize();
 
-		clearState(change);
+		if (change != FileReader::OVERWRITTEN)
+			clearInternalState(change);
 
 		if (change == FileReader::APPENDED) {
 			// always update the old last event because it might have been incomplete

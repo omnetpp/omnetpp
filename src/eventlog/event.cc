@@ -22,15 +22,15 @@ Event::Event(EventLog *eventLog)
 {
     this->eventLog = eventLog;
 	
-	clearState();
+	clearInternalState();
 }
 
 Event::~Event()
 {
-	deleteState();
+	deleteAllocatedObjects();
 }
 
-void Event::deleteState()
+void Event::deleteAllocatedObjects()
 {
 	for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
         delete *it;
@@ -52,10 +52,10 @@ void Event::deleteState()
         delete consequences;
     }
 
-	clearState();
+	clearInternalState();
 }
 
-void Event::clearState()
+void Event::clearInternalState()
 {
     beginOffset = -1;
     endOffset = -1;
@@ -95,7 +95,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 {
     eventLog->progress();
 
-	deleteState();
+	deleteAllocatedObjects();
     numEventLogMessages = 0;
     numBeginSendEntries = 0;
 

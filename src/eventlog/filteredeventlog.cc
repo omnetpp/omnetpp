@@ -36,21 +36,23 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     setModuleExpression("");
     setMessageExpression("");
 
-	clearState();
+	clearInternalState();
 }
 
 FilteredEventLog::~FilteredEventLog()
 {
-	deleteState();
+	deleteAllocatedObjects();
 }
 
-void FilteredEventLog::deleteState()
+void FilteredEventLog::deleteAllocatedObjects()
 {
 	for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
 		delete it->second;
+
+	clearInternalState();
 }
 
-void FilteredEventLog::clearState(FileReader::FileChangedState change)
+void FilteredEventLog::clearInternalState(FileReader::FileChangedState change)
 {
     approximateNumberOfEvents = -1;
     approximateMatchingEventRatio = -1;
@@ -71,9 +73,9 @@ void FilteredEventLog::synchronize()
 
 	if (change != FileReader::UNCHANGED) {
 		if (change == FileReader::OVERWRITTEN)
-			deleteState();
-
-		clearState(change);
+			deleteAllocatedObjects();
+		else
+			clearInternalState(change);
 
 		eventLog->synchronize();
 
