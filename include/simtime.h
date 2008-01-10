@@ -22,6 +22,9 @@
 
 class cPar;
 
+#define INT64_MAX_DBL  9.22337203685e18
+
+
 /**
  * int64-based, fixed-point simulation time. Precision is determined by a scale
  * exponent, which is global (shared by all SimTime instances), and falls in
@@ -37,9 +40,6 @@ class cPar;
  * operation, without floating-point or int64 multiplication.
  *
  * The underlying raw 64-bit integer is also made accessible.
- *
- * FIXME add warning about integer overflows! conversions from double etc may overflow
- * XXX also: add (optional) overflow checks? at least to conversion from double...
  */
 class SIM_API SimTime
 {
@@ -53,6 +53,32 @@ class SIM_API SimTime
 
     template<typename T> void check(T d) {if (scaleexp==SCALEEXP_UNINITIALIZED) initError(d);}
     void initError(double d);
+
+    int64 toInt64(double i64) {
+         if (i64 > INT64_MAX_DBL || i64 < -INT64_MAX_DBL)
+             rangeError(i64);
+         return (int64)i64;
+    }
+
+    void checkedAdd(const SimTime& x) {
+        // if operands are the same sign but result has different sign ==> overflow
+        bool sameSign = (t^x.t) > 0;
+        t += x.t;
+        if (sameSign && (t^x.t) < 0)
+            overflowAdding(x);
+    }
+
+    void checkedSub(const SimTime& x) {
+        // if operands are different signs and result has same sign as x ==> overflow
+        bool sameSign = (t^x.t) > 0;
+        t -= x.t;
+        if (!sameSign && (t^x.t) > 0)
+            overflowSubstracting(x);
+    }
+
+    void rangeError(double i64);
+    void overflowAdding(const SimTime& x);
+    void overflowSubstracting(const SimTime& x);
 
   public:
     static const int SCALEEXP_S  =  0;
@@ -71,16 +97,16 @@ class SIM_API SimTime
 
     /** @name Arithmetic operations */
     //@{
-    const SimTime& operator=(double d) {check(d); t=(int64)(fscale*d); return *this;}
+    const SimTime& operator=(double d) {check(d); t=toInt64(fscale*d); return *this;}
     const SimTime& operator=(const cPar& d);
     const SimTime& operator=(const SimTime& x) {t=x.t; return *this;}
-    template<typename T> const SimTime& operator=(T d) {check(d); t=(int64)(dscale*d); return *this;}
+    template<typename T> const SimTime& operator=(T d) {check(d); t=toInt64(dscale*d); return *this;}
 
-    const SimTime& operator+=(const SimTime& x) {t+=x.t; return *this;}
-    const SimTime& operator-=(const SimTime& x) {t-=x.t; return *this;}
+    const SimTime& operator+=(const SimTime& x) {checkedAdd(x); return *this;}
+    const SimTime& operator-=(const SimTime& x) {checkedSub(x); return *this;}
 
-    const SimTime& operator*=(double d) {t=(int64)(t*d); return *this;} //XXX to be checked on Linux, see below
-    const SimTime& operator/=(double d) {t=(int64)(t/d); return *this;} //XXX to be checked on Linux, see below
+    const SimTime& operator*=(double d) {t=toInt64(t*d); return *this;} //XXX to be checked on Linux, see below
+    const SimTime& operator/=(double d) {t=toInt64(t/d); return *this;} //XXX to be checked on Linux, see below
     const SimTime& operator*=(const cPar& p);
     const SimTime& operator/=(const cPar& p);
     template<typename T> const SimTime& operator*=(T d) {t*=d; return *this;}

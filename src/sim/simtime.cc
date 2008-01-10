@@ -25,7 +25,6 @@ int64 SimTime::dscale;
 double SimTime::fscale;
 double SimTime::invfscale;
 
-
 void SimTime::setScaleExp(int e)
 {
     if (e == scaleexp)
@@ -49,13 +48,37 @@ void SimTime::setScaleExp(int e)
     invfscale = 1.0 / fscale;
 }
 
+static std::string range()
+{
+    return std::string("(-") + SimTime::maxTime().str() + "," + SimTime::maxTime().str() + ")";
+}
+
 void SimTime::initError(double d)
 {
     throw cRuntimeError("Global simtime_t variable found, with value %g. Global simtime_t variables are "
-                        "forbidden, because simtime exponent is not known yet at the time they get initialized. "
+                        "forbidden, because scale exponent is not yet known at the time they get initialized. "
                         "Please use double or const_simtime_t instead", d);
 }
 
+void SimTime::rangeError(double i64)
+{
+    throw cRuntimeError("Cannot convert %g to simtime_t: out of range %s, allowed by scale exponent %d",
+                        i64*invfscale, range().c_str(), scaleexp);
+}
+
+void SimTime::overflowAdding(const SimTime& x)
+{
+    t -= x.t; // restore original value
+    throw cRuntimeError("simtime_t overflow adding %s to %s: result is out of range %s, allowed by scale exponent %d",
+                        x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
+}
+
+void SimTime::overflowSubstracting(const SimTime& x)
+{
+    t += x.t; // restore original value
+    throw cRuntimeError("simtime_t overflow substracting %s from %s: result is out of range %s, allowed by scale exponent %d",
+                        x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
+}
 
 //XXX inline, at the end of simtime.h, just after #include "cpar.h" ?
 const SimTime& SimTime::operator=(const cPar& p)
