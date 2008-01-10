@@ -4,6 +4,10 @@
 #
 #=====================================================================
 
+ifeq ("$(MODE)","")
+all: allmodes
+endif
+
 include Makefile.inc
 
 # Make sure that output locations are set
@@ -23,8 +27,11 @@ endif
 #
 #=====================================================================
 
-
 all: check-env components
+
+allmodes:
+	$(MAKE) MODE=debug
+	$(MAKE) MODE=release
 
 components: base jnilibs samples
 
@@ -110,6 +117,8 @@ tests: check-env base
 #=====================================================================
 
 check-env:
+	@echo "***** Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX) ****"
+	@echo ===== Checking environment =====                                      
 	@probefile=__probe__; \
 	if (echo '#!/bin/sh' >$(OMNETPP_BIN_DIR)/$$probefile && \
 	    chmod +x $(OMNETPP_BIN_DIR)/$$probefile) 2>/dev/null; then \

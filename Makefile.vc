@@ -7,6 +7,10 @@
 #
 #=====================================================================
 
+!if "$(MODE)"==""
+all: allmodes
+!endif
+
 include configuser.vc
 
 # Make sure that output locations are set
@@ -38,8 +42,11 @@ MAKEFILE=/F Makefile.vc
 #
 #=====================================================================
 
-
 all: check-env components reminder
+
+allmodes:
+	$(MAKE) $(MOPTS) $(MAKEFILE) MODE=debug
+	$(MAKE) $(MOPTS) $(MAKEFILE) MODE=release
 
 components: base jnilibs samples
 
@@ -128,7 +135,8 @@ tests: check-env base
 #=====================================================================
 
 check-env:
-	@echo ===== Checking environment =====
+	@echo ***** Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX) ****
+	@echo ===== Checking environment =====                                      
 	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP! && exit 1
 	@echo  Checking if $(CXX) works...
 	@$(CXX) /? /nologo <nul > nul || echo ERROR: Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1
