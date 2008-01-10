@@ -46,7 +46,8 @@ void {Node}::activity()
 
 class {Suicide} : public cSimpleModule
 {
-    Module_Class_Members({Suicide},cSimpleModule,32768);
+  public:
+    {Suicide}() : cSimpleModule(32768) { };
     virtual void activity();
 };
 

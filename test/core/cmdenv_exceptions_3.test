@@ -5,7 +5,8 @@ Tests that errors in finish() are properly caught and displayed in Cmdenv.
 
 class {Module} : public cSimpleModule
 {
-    Module_Class_Members({Module},cSimpleModule,32768)
+  public:
+    {Module}() : cSimpleModule(32768) { }
     virtual void activity();
     virtual void finish();
 };

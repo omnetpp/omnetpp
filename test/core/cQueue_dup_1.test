@@ -5,7 +5,8 @@ check cQueue::operator=
 
 class {Queues} : public cSimpleModule
 {
-    Module_Class_Members({Queues}, cSimpleModule, 16384);
+  public:  
+    {Queues} : cSimpleModule(16384) { }
     virtual void activity();
     void fillQueue(cQueue& q);
     void output(cQueue& q, const char *label);

@@ -5,7 +5,8 @@ endSimulation() from finish() is an error
 
 class {Module} : public cSimpleModule
 {
-    Module_Class_Members({Module},cSimpleModule,32768);
+  public:
+    {Module}() : cSimpleModule(32768) { };
     virtual void activity();
     virtual void finish();
 };

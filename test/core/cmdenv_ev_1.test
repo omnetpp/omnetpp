@@ -8,7 +8,8 @@ ev buffer should be flushed before each "context switch" (event, finish, etc)
 
 class {Module} : public cSimpleModule
 {
-    Module_Class_Members({Module},cSimpleModule,32768)
+  public:
+    {Module}() : cSimpleModule(32768) { }
     virtual void initialize();
     virtual void activity();
     virtual void finish();
