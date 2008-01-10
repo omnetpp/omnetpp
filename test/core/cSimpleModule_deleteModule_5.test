@@ -34,7 +34,8 @@ endnetwork
 
 class {Node} : public cSimpleModule
 {
-    Module_Class_Members({Node},cSimpleModule,16384)
+  public:
+    {Node}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
@@ -51,7 +52,8 @@ void {Node}::activity()
 
 class {Deleter} : public cSimpleModule
 {
-    Module_Class_Members({Deleter},cSimpleModule,16384)
+  public:
+    {Deleter}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 

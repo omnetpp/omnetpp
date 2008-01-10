@@ -36,7 +36,8 @@ Define_Function({testfunc4},4);
 
 class {Simple} : public cSimpleModule
 {
-    Module_Class_Members({Simple},cSimpleModule,16384)
+  public:
+    {Simple}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 

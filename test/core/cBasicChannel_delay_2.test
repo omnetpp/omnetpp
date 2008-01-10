@@ -29,7 +29,8 @@ endnetwork
 
 class {Sender} : public cSimpleModule
 {
-    Module_Class_Members({Sender},cSimpleModule,16384)
+  public:
+    {Sender}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
@@ -50,7 +51,8 @@ void {Sender}::activity()
 
 class {Receiver} : public cSimpleModule
 {
-    Module_Class_Members({Receiver},cSimpleModule,16384)
+  public:
+    {Receiver}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 

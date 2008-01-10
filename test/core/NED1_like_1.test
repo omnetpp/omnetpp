@@ -22,7 +22,8 @@ endnetwork
 
 class {GenMod} : public cSimpleModule
 {
-    Module_Class_Members({GenMod},cSimpleModule,16384)
+  public:
+    {GenMod}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 

@@ -76,7 +76,8 @@ endnetwork
 
 class {Gen} : public cSimpleModule
 {
-    Module_Class_Members({Gen},cSimpleModule,16384)
+  public:
+    {Gen}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 

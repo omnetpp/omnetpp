@@ -5,7 +5,8 @@ test scheduleAt(): what if message has been sent to another module
 
 class {Sender} : public cSimpleModule
 {
-    Module_Class_Members({Sender},cSimpleModule,16384)
+  public:
+    {Sender}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 

@@ -26,7 +26,8 @@ endnetwork
 
 class {Node} : public cSimpleModule
 {
-    Module_Class_Members({Node},cSimpleModule,16384)
+  public:
+    {Node}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 

@@ -26,7 +26,8 @@ endnetwork
 
 class {First} : public cSimpleModule
 {
-    Module_Class_Members({First},cSimpleModule,16384)
+  public:
+    {First}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
@@ -34,7 +35,8 @@ class {Second} : public cSimpleModule
 {
   protected:
     cMessage *receivedMsg;
-    Module_Class_Members({Second},cSimpleModule,16384)
+  public:
+    {Second}() : cSimpleModule(16384) { }
     virtual void activity();
   public:
     void accept(cMessage *msg); // stores in 'receivedMsg' member

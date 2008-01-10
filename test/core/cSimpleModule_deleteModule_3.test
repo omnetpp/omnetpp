@@ -1,5 +1,5 @@
 %description:
-Tests an activity() simple module deleting anoter activity() simple module 
+Tests an activity() simple module deleting anoter activity() simple module
 which
   (a) stays inside a wait() call
   (b) stays inside a receive() call and has scheduled events.
@@ -31,7 +31,8 @@ endnetwork
 
 class {NodeA} : public cSimpleModule
 {
-    Module_Class_Members({NodeA},cSimpleModule,16384)
+  public:
+    {NodeA}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
@@ -48,7 +49,8 @@ void {NodeA}::activity()
 
 class {NodeB} : public cSimpleModule
 {
-    Module_Class_Members({NodeB},cSimpleModule,16384)
+  public:
+    {NodeB}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
@@ -67,7 +69,8 @@ void {NodeB}::activity()
 
 class {Deleter} : public cSimpleModule
 {
-    Module_Class_Members({Deleter},cSimpleModule,16384)
+  public:
+    {Deleter}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 

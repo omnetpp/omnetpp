@@ -5,7 +5,8 @@ Test that NED-generated simple modules have the right className() methods.
 
 class {SomeModule} : public cSimpleModule
 {
-    Module_Class_Members({SomeModule},cSimpleModule,16384)
+  public:
+    {SomeModule}() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
