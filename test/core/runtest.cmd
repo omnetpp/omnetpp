@@ -13,7 +13,7 @@ if "x%TESTFILES%" == "x" set TESTFILES=*.test
 
 path %~dp0\..\bin;%PATH%
 mkdir work 2>nul
-del work\work.exe 2>nul
+del work\work.cmd 2>nul
 
 call opp_test %OPT% -g -v %TESTFILES% || goto end
 
