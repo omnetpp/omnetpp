@@ -1148,6 +1148,8 @@ all: $O/$(TARGET)
 
 {exe:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
+{exe:}{nmake:}	echo @^%~dp0\$(O:/=\)\$(TARGET) ^%* > $(TARGET:.exe=.cmd)
+{exe:}{~nmake:}	rm -f $(TARGET) && ln -s $O/$(TARGET) .
 {sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)}
 {staticlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
