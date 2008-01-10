@@ -54,3 +54,4 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 seedtool.obj: seedtool.cc
+opp_replace.obj: opp_replace.c

@@ -375,7 +375,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    long until_event = 0;
    if (argc==4)
    {
-       until_time = STR_SIMTIME(argv[2]);
+       TRY( until_time = STR_SIMTIME(argv[2]) ); // simtime overflow
        sscanf(argv[3],"%ld",&until_event);
    }
 
@@ -406,7 +406,8 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    }
    else
    {
-       simtime_t until_time = STR_SIMTIME(argv[1]);
+       simtime_t until_time;
+       TRY( until_time = STR_SIMTIME(argv[1]) );  // simtime overflow
        long until_event = atol(argv[2]);
 
        app->setSimulationRunUntil(until_time, until_event);

@@ -103,6 +103,7 @@ $O/arraybuilder.obj: arraybuilder.cc \
   commonnodes.h \
   xyarray.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h
 $O/channel.obj: channel.cc \
@@ -118,6 +119,7 @@ $O/commonnodes.obj: commonnodes.cc \
   channel.h \
   node.h \
   nodetype.h \
+  ../common/filereader.h \
   scavedefs.h \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
@@ -139,7 +141,8 @@ $O/compoundfilter.obj: compoundfilter.cc \
   ../common/progressmonitor.h \
   channel.h \
   scavedefs.h \
-  ../common/bigdecimal.h
+  ../common/bigdecimal.h \
+  ../common/filereader.h
 $O/customfilter.obj: customfilter.cc \
   channel.h \
   customfilter.h \
@@ -153,12 +156,14 @@ $O/customfilter.obj: customfilter.cc \
   commonnodes.h \
   ../common/expression.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h \
   ../common/stringutil.h
 $O/dataflowmanager.obj: dataflowmanager.cc \
   channel.h \
   nodetype.h \
+  commonnodes.h \
   dataflowmanager.h \
   ../common/commonutil.h \
   node.h \
@@ -166,6 +171,7 @@ $O/dataflowmanager.obj: dataflowmanager.cc \
   ../common/exception.h \
   scavedefs.h \
   ../common/bigdecimal.h \
+  ../common/filereader.h \
   ../common/progressmonitor.h
 $O/datasorter.obj: datasorter.cc \
   resultfilemanager.h \
@@ -193,6 +199,7 @@ $O/diffquot.obj: diffquot.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h
 $O/enumtype.obj: enumtype.cc \
@@ -246,6 +253,7 @@ $O/filewriter.obj: filewriter.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h
 $O/filternodes.obj: filternodes.cc \
@@ -260,6 +268,7 @@ $O/filternodes.obj: filternodes.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h
 $O/idlist.obj: idlist.cc \
@@ -308,6 +317,7 @@ $O/indexedvectorfilereader.obj: indexedvectorfilereader.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   nodetype.h \
+  commonnodes.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   resultfilemanager.h \
@@ -341,6 +351,7 @@ $O/mergernodes.obj: mergernodes.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h
 $O/nodetype.obj: nodetype.cc \
@@ -452,9 +463,9 @@ $O/scavetool.obj: scavetool.cc \
   node.h \
   ../common/progressmonitor.h \
   channel.h \
+  commonnodes.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
-  commonnodes.h \
   xyarray.h \
   datasorter.h \
   ../common/patternmatcher.h \
@@ -476,6 +487,7 @@ $O/slidingwinavg.obj: slidingwinavg.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h
 $O/stddev.obj: stddev.cc \
@@ -490,6 +502,7 @@ $O/stddev.obj: stddev.cc \
   commonnodes.h \
   xyarray.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h
 $O/teenode.obj: teenode.cc \
@@ -503,6 +516,7 @@ $O/teenode.obj: teenode.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h
 $O/vectorfileindexer.obj: vectorfileindexer.cc \
@@ -537,6 +551,7 @@ $O/vectorfilereader.obj: vectorfilereader.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   nodetype.h \
+  commonnodes.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   resultfilemanager.h \
@@ -574,6 +589,7 @@ $O/windowavg.obj: windowavg.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h
 $O/xyarray.obj: xyarray.cc \
@@ -593,5 +609,6 @@ $O/xyplotnode.obj: xyplotnode.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
   ../common/progressmonitor.h

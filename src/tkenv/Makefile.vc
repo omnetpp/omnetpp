@@ -635,11 +635,7 @@ $O/tkcmd.obj: tkcmd.cc \
 $O/tklib.obj: tklib.cc \
   tklib.h \
   tkapp.h \
-  tkdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h
+  tkdefs.h
 $O/tkutil.obj: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \

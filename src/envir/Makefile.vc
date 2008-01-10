@@ -151,11 +151,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   filemgrs.h
 $O/args.obj: args.cc \
   args.h \
-  envdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h
+  envdefs.h
 $O/cenvir.obj: cenvir.cc \
   args.h \
   ../../include/distrib.h \
@@ -174,10 +170,10 @@ $O/cenvir.obj: cenvir.cc \
   matchableobject.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
+  ../../include/random.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/random.h \
   ../../include/csimulation.h \
   ../../include/crng.h \
   ../../include/util.h \
@@ -227,11 +223,11 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   envdefs.h \
   ../../include/cexception.h \
   ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
   ../../include/util.h
 $O/filemgrs.obj: filemgrs.cc \
   ../../include/simkerneldefs.h \
@@ -299,12 +295,12 @@ $O/inifilereader.obj: inifilereader.cc \
   ../../include/cexception.h \
   envdefs.h \
   ../../include/cconfigreader.h \
+  ../../include/util.h \
   ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/util.h \
-  ../../include/errmsg.h \
   ../../include/opp_string.h
 $O/ivfilemgr.obj: ivfilemgr.cc \
   ../../include/simkerneldefs.h \
@@ -438,10 +434,6 @@ $O/omnetapp.obj: omnetapp.cc \
   ../../include/cparsimcomm.h \
   objectprinter.h \
   envdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -449,8 +441,12 @@ $O/omnetapp.obj: omnetapp.cc \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -469,6 +465,15 @@ $O/omnetapp.obj: omnetapp.cc \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   matchableobject.h
+$O/opp_run.obj: opp_run.cc \
+  ../../include/cenvir.h \
+  ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/errmsg.h
 $O/scenario.obj: scenario.cc \
   scenario.h \
   valueiterator.h \
@@ -526,9 +531,9 @@ $O/valueiterator.obj: valueiterator.cc \
   ../../include/cexception.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
   ../../include/util.h
