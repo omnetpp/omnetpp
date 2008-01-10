@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.virtualtable.IVirtualTableSelection;
-import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 /**
@@ -15,26 +14,26 @@ import org.omnetpp.eventlog.engine.IEventLog;
  *  
  * @author andras
  */
-public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<IEvent>, IStructuredSelection, Cloneable {
+public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<Integer>, IStructuredSelection, Cloneable {
 	/**
 	 * The input where this selection is.
 	 */
 	protected EventLogInput eventLogInput;
 
 	/**
-	 * The selected events.
+	 * The selected event numbers.
 	 */
-	protected List<IEvent> events;
+	protected List<Integer> eventNumbers;
 
-	public EventLogSelection(EventLogInput eventLogInput, List<IEvent> events) {
+	public EventLogSelection(EventLogInput eventLogInput, List<Integer> eventNumbers) {
 		Assert.isTrue(eventLogInput != null);
-		Assert.isTrue(events != null);
+		Assert.isTrue(eventNumbers != null);
 		this.eventLogInput = eventLogInput;
-		this.events = events;
+		this.eventNumbers = eventNumbers;
 	}
 
-	public List<IEvent> getElements() {
-		return events;
+	public List<Integer> getElements() {
+		return eventNumbers;
 	}
 
 	public Object getInput() {
@@ -49,22 +48,22 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 		return eventLogInput;
 	}
 
-	public List<IEvent> getEvents() {
-		return events;
+	public List<Integer> getEventNumbers() {
+		return eventNumbers;
 	}
 
-	public IEvent getFirstEvent() {
-		return events.isEmpty() ? null : events.get(0);
+	public Integer getFirstEventNumber() {
+		return eventNumbers.isEmpty() ? null : eventNumbers.get(0);
 	}
 
 	public boolean isEmpty() {
-		return events.isEmpty();
+		return eventNumbers.isEmpty();
 	}
 
 	@Override
 	public EventLogSelection clone() {
-		ArrayList<IEvent> list = new ArrayList<IEvent>();
-		for (IEvent e : events)
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		for (Integer e : eventNumbers)
 			list.add(e);
 		return new EventLogSelection(this.eventLogInput, list);
 	}
@@ -76,34 +75,34 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 		EventLogSelection sel = (EventLogSelection)o;
 		if (sel.eventLogInput != eventLogInput)
 			return false;
-		if (sel.events.size() != events.size())
+		if (sel.eventNumbers.size() != eventNumbers.size())
 			return false;
-		for (int i = 0; i<events.size(); i++)
-			if (sel.events.get(i).getEventNumber() != events.get(i).getEventNumber())
+		for (int i = 0; i<eventNumbers.size(); i++)
+			if (sel.eventNumbers.get(i) != eventNumbers.get(i))
 				return false;
 		return true;
 	}
 
 	public Object getFirstElement() {
-		if (events.size() == 0)
+		if (eventNumbers.size() == 0)
 			return null;
 		else
-			return events.get(0);
+			return eventNumbers.get(0);
 	}
 
-	public Iterator<IEvent> iterator() {
-		return events.iterator();
+	public Iterator<Integer> iterator() {
+		return eventNumbers.iterator();
 	}
 
 	public int size() {
-		return events.size();
+		return eventNumbers.size();
 	}
 
 	public Object[] toArray() {
-		return events.toArray();
+		return eventNumbers.toArray();
 	}
 
-	public List<IEvent> toList() {
-		return events;
+	public List<Integer> toList() {
+		return eventNumbers;
 	}
 }

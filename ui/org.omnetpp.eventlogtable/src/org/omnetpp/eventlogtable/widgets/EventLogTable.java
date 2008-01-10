@@ -160,11 +160,11 @@ public class EventLogTable
 			return null;
 		else {
 			List<EventLogEntryReference> selectionElements = getSelectionElements();
-			ArrayList<IEvent> selectionEvents = new ArrayList<IEvent>();
+			ArrayList<Integer> selectionEvents = new ArrayList<Integer>();
 
 			if (selectionElements != null)
     			for (EventLogEntryReference selectionElement : selectionElements)
-    				selectionEvents.add(eventLog.getEventForEventNumber(selectionElement.getEventNumber()));
+    				selectionEvents.add(selectionElement.getEventNumber());
 	
 			return new EventLogSelection(eventLogInput, selectionEvents);
 		}
@@ -178,8 +178,8 @@ public class EventLogTable
 		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
 		List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
 
-		for (IEvent event : eventLogSelection.getEvents())
-			eventLogEntries.add(new EventLogEntryReference(event.getEventEntry()));
+		for (Integer eventNumber : eventLogSelection.getEventNumbers())
+			eventLogEntries.add(new EventLogEntryReference(eventLog.getEventForEventNumber(eventNumber).getEventEntry()));
 
 		super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
 	}

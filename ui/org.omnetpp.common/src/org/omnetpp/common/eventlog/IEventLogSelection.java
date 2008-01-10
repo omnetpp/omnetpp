@@ -3,7 +3,6 @@ package org.omnetpp.common.eventlog;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;
-import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 /**
@@ -25,13 +24,13 @@ public interface IEventLogSelection extends ISelection {
 	public IEventLog getEventLog();
 	
 	/**
-	 * The list of selected events. The returned list MUST NOT be modified
+	 * The list of selected event numbers. The returned list MUST NOT be modified
 	 * by clients. Never returns null. 
 	 */
-	public List<IEvent> getEvents();
+	public List<Integer> getEventNumbers();
 
 	/**
-	 * Returns the first EventEntry in the selection, or null.
+	 * Returns the first event number in the selection, or null.
 	 */
-	public IEvent getFirstEvent();
+	public Integer getFirstEventNumber();
 }

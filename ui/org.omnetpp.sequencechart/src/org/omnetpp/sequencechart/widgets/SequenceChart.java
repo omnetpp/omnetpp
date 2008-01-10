@@ -221,7 +221,7 @@ public class SequenceChart
 	private boolean followSelection = true;
 
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
-	private List<IEvent> selectionEvents = new ArrayList<IEvent>(); // the selection
+	private List<Integer> selectionEventNumbers = new ArrayList<Integer>(); // the selection
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
 	private MenuManager menuManager;
 
@@ -1880,13 +1880,14 @@ public class SequenceChart
 			graphics.setAntialias(SWT.ON);
 
 			// draw event selection marks
-			if (selectionEvents != null) {
+			if (selectionEventNumbers != null) {
 				graphics.setLineStyle(SWT.LINE_SOLID);
 			    graphics.setForegroundColor(EVENT_SELECTION_COLOR);
 
-			    for (IEvent selectedEvent : selectionEvents) {
-			    	if (startEventNumber <= selectedEvent.getEventNumber() && selectedEvent.getEventNumber() <= endEventNumber)
+			    for (int selectedEventNumber : selectionEventNumbers) {
+			    	if (startEventNumber <= selectedEventNumber && selectedEventNumber <= endEventNumber)
 			    	{
+			    	    IEvent selectedEvent = eventLog.getEventForEventNumber(selectedEventNumber);
 			    		int x = getEventXViewportCoordinate(selectedEvent.getCPtr());
 			    		int y = getEventYViewportCoordinate(selectedEvent.getCPtr());
 			    		graphics.drawOval(x - EVENT_SELECTION_RADIUS, y - EVENT_SELECTION_RADIUS, EVENT_SELECTION_RADIUS * 2 + 1, EVENT_SELECTION_RADIUS * 2 + 1);
@@ -2671,18 +2672,11 @@ public class SequenceChart
 					ArrayList<IEvent> events = new ArrayList<IEvent>();
 					ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
 					collectStuffUnderMouse(me.x, me.y, events, messageDependencies);
-
+					
 					if (messageDependencies.size() == 1)
 						zoomToMessageDependency(messageDependencies.get(0));
-					if (eventListEquals(selectionEvents, events)) {
-						fireSelection(true);
-					}
-					else {
-						selectionEvents = events;
-						fireSelection(true);
-						fireSelectionChanged();
-						redraw();
-					}
+
+                    updateSelectionEvents(events, true);
 				}
 			}
 
@@ -2707,20 +2701,12 @@ public class SequenceChart
 							ArrayList<IEvent> events = new ArrayList<IEvent>();
 
 							if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
-								for (IEvent e : selectionEvents)
-									events.add(e);
+								for (Integer eventNumber : selectionEventNumbers)
+									events.add(eventLog.getEventForEventNumber(eventNumber));
 
 							collectStuffUnderMouse(me.x, me.y, events, null);
-
-							if (eventListEquals(selectionEvents, events)) {
-								fireSelection(false);
-							}
-							else {
-								selectionEvents = events;
-								fireSelection(false);
-								fireSelectionChanged();
-								redraw();
-							}
+							
+							updateSelectionEvents(events, false);
 						}
 						else if (System.currentTimeMillis() - dragStartTime < 500){
 							ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
@@ -2739,24 +2725,22 @@ public class SequenceChart
 					isDragging = false;
 				}
 			}
+
+			private void updateSelectionEvents(ArrayList<IEvent> events, boolean fireSelection) {
+                ArrayList<Integer> eventNumbers = new ArrayList<Integer>();
+                for (IEvent event : events)
+                    eventNumbers.add(event.getEventNumber());
+
+                if (eventNumbers.equals(selectionEventNumbers))
+                    fireSelection(fireSelection);
+                else {
+                    selectionEventNumbers = eventNumbers;
+                    fireSelection(fireSelection);
+                    fireSelectionChanged();
+                    redraw();
+                }
+            }
 		});
-	}
-
-	/**
-	 * Utility function, used in selection change handling
-	 */
-	private static boolean eventListEquals(List<IEvent> a, List<IEvent> b) {
-		if (a == null || b == null)
-			return a == b;
-
-		if (a.size() != b.size())
-			return false;
-
-		for (int i = 0; i < a.size(); i++)
-			if (a.get(i).getEventNumber() != b.get(i).getEventNumber()) // cannot use a.get(i)==b.get(i) because SWIG return new instances every time
-				return false;
-
-		return true;
 	}
 
 	/*************************************************************************************
@@ -3157,7 +3141,7 @@ public class SequenceChart
 		if (eventLogInput == null)
 			return null;
 		else
-			return new EventLogSelection(eventLogInput, selectionEvents);
+			return new EventLogSelection(eventLogInput, selectionEventNumbers);
 	}
 
 	/**
@@ -3180,13 +3164,13 @@ public class SequenceChart
 		}
 
 		// if new selection differs from existing one, take over its contents
-		if (!eventListEquals(eventLogSelection.getEvents(), selectionEvents)) {
-			selectionEvents.clear();
-			selectionEvents.addAll(eventLogSelection.getEvents());
+		if (!eventLogSelection.getEventNumbers().equals(selectionEventNumbers)) {
+			selectionEventNumbers.clear();
+			selectionEventNumbers.addAll(eventLogSelection.getEventNumbers());
 
 			// go to the time of the first event selected
-			if (selectionEvents.size() > 0)
-				gotoElement(selectionEvents.get(0));
+			if (selectionEventNumbers.size() > 0)
+				gotoElement(eventLog.getEventForEventNumber(selectionEventNumbers.get(0)));
 
 			redraw();
 			fireSelectionChanged();
@@ -3197,8 +3181,8 @@ public class SequenceChart
 	 * Removes all selection events.
 	 */
 	public void clearSelection() {
-		if (selectionEvents != null && selectionEvents.size() != 0) {
-			selectionEvents.clear();
+		if (selectionEventNumbers != null && selectionEventNumbers.size() != 0) {
+			selectionEventNumbers.clear();
 
 			fireSelectionChanged();
 		}
@@ -3208,19 +3192,28 @@ public class SequenceChart
 	 * Returns the current selection.
 	 */
 	public IEvent getSelectionEvent() {
-		if (selectionEvents != null && selectionEvents.size() != 0)
-			return selectionEvents.get(0);
+		if (selectionEventNumbers != null && selectionEventNumbers.size() != 0)
+			return eventLog.getEventForEventNumber(selectionEventNumbers.get(0));
 		else
 			return null;
 	}
 
-	public List<IEvent> getSelectionEvents() {
-		return selectionEvents;
+	public List<Integer> getSelectionEventNumbers() {
+		return selectionEventNumbers;
 	}
 
+    public List<IEvent> getSelectionEvents() {
+        ArrayList<IEvent> events = new ArrayList<IEvent>();
+        
+        for (Integer eventNumber : selectionEventNumbers)
+            events.add(eventLog.getEventForEventNumber(eventNumber));
+        
+        return events;
+    }
+
 	public void setSelectionEvent(IEvent event) {
-		selectionEvents.clear();
-		selectionEvents.add(event);
+		selectionEventNumbers.clear();
+		selectionEventNumbers.add(event.getEventNumber());
 		fireSelectionChanged();
 		redraw();
 	}
