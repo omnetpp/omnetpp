@@ -3,6 +3,7 @@
 %include "loadlib.i"
 %include "enumtypeunsafe.swg"
 %include "commondefs.i"
+%include "stacktrace.i"
 %javaconst(1);
 
 COMMON_ENGINE_BIGDECIMAL();
