@@ -23,16 +23,11 @@ makemake();
 exit 0;
 
 #TODO:
-# use linkall.cmd on Windows!
 # perl warnings when -Odir is used
 # when a folder-to-link is given as arg: the src folder must be specified, but we need to translate in to the <projectroot>/out/ subdir!
-# if too many args are given: {progname} {args} becomes multi-line ==> nmake parser error
 # implement isGoodDir correctly
-# invoke opp_makedepend in the end?
 # with --deep, -d<subdir> should imply -X<subdir> (in Java too)
 # convert between .o and .obj in extraArgs!
-# -i (makefile fragment) option needed..?
-# makefrag vs makefrag.vc: which one to include??? use only one, but send that through template processing? (IDE only edits makefrag but not makefrag.vc)
 #
 
 sub makemake()
