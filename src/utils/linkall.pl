@@ -23,9 +23,11 @@ $DUMPFILE = "dumpbin.out";
 
 @knownlibs = (
     "sim_std.lib", "envir.lib", "cmdenv.lib", "tkenv.lib",
-    "common.lib", "nedxml.lib", "layout.lib", "tcl84.lib",
-    "tk84.lib", "blt24.lib", "zdll.lib", "libxml2.lib",
-    "iconv.lib", "wsock32.lib"
+    "common.lib", "nedxml.lib", "layout.lib",
+    "sim_stdd.lib", "envird.lib", "cmdenvd.lib", "tkenvd.lib",
+    "commond.lib", "nedxmld.lib", "layoutd.lib",
+    "tcl84.lib", "tk84.lib", "blt24.lib", "zdll.lib",
+    "libxml2.lib", "iconv.lib", "wsock32.lib"
 );
 foreach $i (@knownlibs) {$knownlibs{$i} = 1;}
 
@@ -70,7 +72,7 @@ foreach $arg (@ARGV) {
         # invoke dumpbin and redirect output into file
         unlink($DUMPFILE) || error("cannot remove existing $DUMPFILE") if -r $DUMPFILE;
         @prog = ($DUMPBIN, "/linkermember:1", $lib, ">$DUMPFILE");
-        system($ENV{COMSPEC}, "/c", @prog)==0 || error("error invoking dumpbin (check $DUMPFILE)");
+        system($ENV{COMSPEC}, "/c", @prog)==0 || error("error invoking dumpbin (check contents of $DUMPFILE)");
 
         # read dumpbin output
         open(IN, $DUMPFILE) || error("cannot open $DUMPFILE");
@@ -98,7 +100,7 @@ foreach $arg (@ARGV) {
         $filename =~ s/[^A-Z0-9_]/-/gi;
         $filename .= ".opt";
         open(OUT, ">".$filename) || error("cannot open $filename for write");
-        print OUT $symbols; #FIXME || error("cannot write $filename");
+        print OUT $symbols."\n" || error("cannot write $filename"); # do NOT remove "\n" -- would cause error for empty files
         close(OUT) || error("cannot close $filename");
         push(@tempfiles, $filename);
     }
@@ -112,13 +114,19 @@ print("invoking linker: ".join(' ', @cmdline)) if $verbose;
 system($ENV{COMSPEC}, "/c", @cmdline)==0 || error("error invoking linker");
 
 # remove temporary linker command files
-foreach $tempfile (@tempfiles) {
-    unlink $tempfile || error("cannot remove temp file $tempfile");
-}
+removeTempFiles();
+exit(0);
 
 sub error {
     my $msg = shift;
     print STDERR "linkall: $msg\n";
     exit(1);
 }
+
+sub removeTempFiles {
+    foreach $tempfile (@tempfiles) {
+        unlink $tempfile || print STDERR "linkall: cannot remove temp file $tempfile";
+    }
+}
+
 
