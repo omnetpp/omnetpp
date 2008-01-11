@@ -42,6 +42,8 @@ import org.omnetpp.eventlog.engine.ModuleReparentedEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
+import org.omnetpp.eventlog.engine.SimulationEndEntry;
+import org.omnetpp.eventlog.engine.SimulationStartEntry;
 
 public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventLogEntryReference> {
 	private static final Color DARKBLUE = new Color(null, 0, 0, 192);
@@ -328,6 +330,14 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawText("Deleting ", CONSTANT_TEXT_COLOR);
 								drawMessageDescription(findBeginSendEntry(deleteMessageEntry.getPreviousEventNumber(), deleteMessageEntry.getMessageId()));
 							}
+                            else if (eventLogEntry instanceof SimulationStartEntry) {
+                                SimulationStartEntry simulationStartEntry = (SimulationStartEntry)eventLogEntry;
+                                drawText("Simulation has been started with runId ", CONSTANT_TEXT_COLOR);
+                                drawText(simulationStartEntry.getRunId(), DATA_COLOR);
+                            }
+                            else if (eventLogEntry instanceof SimulationEndEntry) {
+                                drawText("Simulation has been finished", CONSTANT_TEXT_COLOR);
+                            }
 							else
 								throw new RuntimeException("Unknown event log entry: " + eventLogEntry.getClassName());
 						}
