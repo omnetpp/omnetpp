@@ -73,8 +73,8 @@ import org.omnetpp.eventlog.engine.FilteredMessageDependency;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
-import org.omnetpp.eventlog.engine.Int64Vector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
+import org.omnetpp.eventlog.engine.PtrVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.FileRunList;
@@ -1677,14 +1677,14 @@ public class SequenceChart
 		long endEventPtr = eventPtrRange[1];
 
 		if (startEventPtr != 0 && endEventPtr != 0) {
-			Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+			PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
 
 			if (debug)
 				System.out.println("Drawing " + messageDependencies.size() + " message dependencies");
 
 			VLineBuffer vlineBuffer = new VLineBuffer();
 			for (int i = 0; i < messageDependencies.size(); i++)
-				drawOrFitMessageDependency(messageDependencies.get(i), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
+				drawOrFitMessageDependency(messageDependencies.get(i).longValue(), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
 		}
 	}
 
@@ -2962,10 +2962,10 @@ public class SequenceChart
 			    			endEventPtr = eventPtrRange[1];
 
 			    			if (startEventPtr != 0 && endEventPtr != 0) {
-				            	Int64Vector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
+				            	PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
 
 				        		for (int i = 0; i < messageDependencies.size(); i++) {
-				        			long messageDependencyPtr = messageDependencies.get(i);
+				        			long messageDependencyPtr = messageDependencies.get(i).longValue();
 
 				        			if (drawOrFitMessageDependency(messageDependencyPtr, mouseX, mouseY - GUTTER_HEIGHT, MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
 				            			msgs.add(sequenceChartFacade.MessageDependency_getMessageDependency(messageDependencyPtr));
