@@ -111,7 +111,7 @@ void SequenceChartFacade::setTimelineMode(TimelineMode timelineMode)
         relocateTimelineCoordinateSystem(eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber));
 }
 
-double SequenceChartFacade::Event_getTimelineCoordinate(int64 ptr)
+double SequenceChartFacade::Event_getTimelineCoordinate(ptr_t ptr)
 {
     EVENT_PTR(ptr);
     return getTimelineCoordinate((IEvent*)ptr);
@@ -127,7 +127,7 @@ double SequenceChartFacade::getTimelineCoordinateDelta(double simulationTimeDelt
         return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(fabs(simulationTimeDelta) / nonLinearFocus) / PI * 2;
 }
 
-double SequenceChartFacade::getTimelineCoordinate(int64 ptr, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
+double SequenceChartFacade::getTimelineCoordinate(ptr_t ptr, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)
 {
     EVENT_PTR(ptr);
     return getTimelineCoordinate((IEvent *)ptr, lowerTimelineCoordinateCalculationLimit, upperTimelineCoordinateCalculationLimit);
@@ -460,9 +460,9 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
     return timelineCoordinate;
 }
 
-std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int64 startEventPtr, int64 endEventPtr)
+std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_t startEventPtr, ptr_t endEventPtr)
 {
-    std::set<int64> messageDependencies;
+    std::set<ptr_t> messageDependencies;
     IEvent *startEvent = (IEvent *)startEventPtr;
     IEvent *endEvent = (IEvent *)endEventPtr;
     Assert(startEvent);
@@ -476,19 +476,19 @@ std::vector<int64> *SequenceChartFacade::getIntersectingMessageDependencies(int6
             IMessageDependency *messageDependency = *it;
 
             if (messageDependency->getCauseEventNumber() < startEventNumber)
-                messageDependencies.insert((int64)messageDependency);
+                messageDependencies.insert((ptr_t)messageDependency);
         }
 
         IMessageDependencyList *consequences = event->getConsequences();
 
         for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
-            messageDependencies.insert((int64)*it);
+            messageDependencies.insert((ptr_t)*it);
 
         if (event == endEvent)
             break;
     }
 
-    std::vector<int64> *result = new std::vector<int64>;
+    std::vector<ptr_t> *result = new std::vector<ptr_t>;
     result->resize(messageDependencies.size());
     std::copy(messageDependencies.begin(), messageDependencies.end(), result->begin());
 

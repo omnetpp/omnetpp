@@ -33,6 +33,7 @@
 #define PRINT_DEBUG_MESSAGES false
 
 typedef BigDecimal simtime_t;
+typedef uint64 ptr_t;
 
 #define simtime_nil BigDecimal::MinusOne
 

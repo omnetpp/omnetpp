@@ -41,32 +41,32 @@ class EVENTLOG_API EventLogFacade
         void setEventLog(IEventLog *eventLog) { Assert(eventLog); this->eventLog = eventLog; }
         virtual void synchronize();
 
-        IEvent* Event_getEvent(int64 ptr);
-        int64 Event_getNonFilteredEvent(int64 ptr);
-        int64 Event_getEventForEventNumber(long eventNumber);
-        int64 Event_getNonFilteredEventForEventNumber(long eventNumber);
-        int64 Event_getPreviousEvent(int64 ptr);
-        int64 Event_getNextEvent(int64 ptr);
-        long Event_getEventNumber(int64 ptr);
-        simtime_t Event_getSimulationTime(int64 ptr);
-        double Event_getSimulationTimeAsDouble(int64 ptr);
-        int Event_getModuleId(int64 ptr);
-        int Event_getNumCauses(int64 ptr);
-        int Event_getNumConsequences(int64 ptr);
-        int64 Event_getCause(int64 ptr, int index);
-        int64 Event_getConsequence(int64 ptr, int index);
-        bool Event_isSelfMessageProcessingEvent(int64 ptr);
+        IEvent* Event_getEvent(ptr_t ptr);
+        ptr_t Event_getNonFilteredEvent(ptr_t ptr);
+        ptr_t Event_getEventForEventNumber(long eventNumber);
+        ptr_t Event_getNonFilteredEventForEventNumber(long eventNumber);
+        ptr_t Event_getPreviousEvent(ptr_t ptr);
+        ptr_t Event_getNextEvent(ptr_t ptr);
+        long Event_getEventNumber(ptr_t ptr);
+        simtime_t Event_getSimulationTime(ptr_t ptr);
+        double Event_getSimulationTimeAsDouble(ptr_t ptr);
+        int Event_getModuleId(ptr_t ptr);
+        int Event_getNumCauses(ptr_t ptr);
+        int Event_getNumConsequences(ptr_t ptr);
+        ptr_t Event_getCause(ptr_t ptr, int index);
+        ptr_t Event_getConsequence(ptr_t ptr, int index);
+        bool Event_isSelfMessageProcessingEvent(ptr_t ptr);
 
-        IMessageDependency *MessageDependency_getMessageDependency(int64 ptr);
-        const char *MessageDependency_getMessageName(int64 ptr);
-        const char *FilteredMessageDependency_getBeginMessageName(int64 ptr);
-        const char *FilteredMessageDependency_getEndMessageName(int64 ptr);
-        bool MessageDependency_getIsReuse(int64 ptr);
-        bool MessageDependency_isFilteredMessageDependency(int64 ptr);
-        int64 MessageDependency_getCauseEvent(int64 ptr);
-        int64 MessageDependency_getConsequenceEvent(int64 ptr);
-        simtime_t MessageDependency_getCauseSimulationTime(int64 ptr);
-        simtime_t MessageDependency_getConsequenceSimulationTime(int64 ptr);
+        IMessageDependency *MessageDependency_getMessageDependency(ptr_t ptr);
+        const char *MessageDependency_getMessageName(ptr_t ptr);
+        const char *FilteredMessageDependency_getBeginMessageName(ptr_t ptr);
+        const char *FilteredMessageDependency_getEndMessageName(ptr_t ptr);
+        bool MessageDependency_getIsReuse(ptr_t ptr);
+        bool MessageDependency_isFilteredMessageDependency(ptr_t ptr);
+        ptr_t MessageDependency_getCauseEvent(ptr_t ptr);
+        ptr_t MessageDependency_getConsequenceEvent(ptr_t ptr);
+        simtime_t MessageDependency_getCauseSimulationTime(ptr_t ptr);
+        simtime_t MessageDependency_getConsequenceSimulationTime(ptr_t ptr);
 };
 
 #endif
