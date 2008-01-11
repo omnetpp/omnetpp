@@ -110,6 +110,8 @@ MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 all: $O/$(TARGET)
 
 {exe:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{exe:}{nmake:}	-@md $(O:/=\) 2>nul
+{exe:}{~nmake:}	@mkdir -p $O
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
 {exe:}{nmake:}	echo @^%~dp0\$(O:/=\)\$(TARGET) ^%* > $(TARGET:.exe=.cmd)
 {exe:}{~nmake:}	rm -f $(TARGET)
@@ -119,8 +121,12 @@ all: $O/$(TARGET)
 {exe:}{~nmake:}	ln -s $O/$(TARGET) .
 {exe:}{~nmake:}endif
 {sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
+{sharedlib:}{~nmake:}	@mkdir -p $O
 {sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)}
 {staticlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
+{staticlib:}{~nmake:}	@mkdir -p $O
 {staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS)
 {nolink:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
@@ -134,11 +140,11 @@ all: $O/$(TARGET)
 {~nmake:}$O/%.{obj}: %.{cc}
 {~nmake:}	@mkdir -p $(dir $@)
 {~nmake:}	$(CXX) -c $(COPTS) -o $@ $<
-{nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
+{nmake:}{lbrace}.{rbrace}.{cc}{lbrace}$O{rbrace}.{obj}:
 {nmake:}	-@md $(O:/=\) 2>nul
 {nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {@dir:sourcedirs,bsdir:backslashedsourcedirs}
-{nmake:}{lbrace}{dir}{rbrace}.cc{lbrace}$O/{dir}{rbrace}.{obj}:
+{nmake:}{lbrace}{dir}{rbrace}.{cc}{lbrace}$O/{dir}{rbrace}.{obj}:
 {nmake:}	-@md $(O:/=\)\{bsdir} 2>nul
 {nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {/@}
@@ -170,4 +176,3 @@ makefiles:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
-
