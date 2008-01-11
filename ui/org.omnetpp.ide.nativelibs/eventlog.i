@@ -43,6 +43,27 @@ COMMON_ENGINE_BIGDECIMAL();
 %include "inttypes.h"
 %include "eventlogdefs.h"
 
+/*--------------------------------------------------------------------------
+ * ptr_t <--> long mapping
+ *--------------------------------------------------------------------------*/
+
+%typemap(jni)    ptr_t "jlong"
+%typemap(jtype)  ptr_t "long"
+%typemap(jstype) ptr_t "long"
+%typemap(javain) ptr_t "$javainput"
+%typemap(javaout) ptr_t {
+   return $jnicall;
+}
+
+%typemap(in) ptr_t {
+    $1 = (ptr_t)$input;
+}
+%typemap(out) ptr_t {
+    $result = (jlong)$1;
+}
+
+typedef uint64 ptr_t;
+
 %include "std_common.i"
 %include "std_string.i"
 %include "std_set.i"     // our custom version
@@ -117,15 +138,14 @@ namespace std {
    %template(FilteredMessageDependencyList) vector<FilteredMessageDependency*>;
 
    %template(IntSet) set<int>;
-
-   %template(LongSet) set<int64>;
+   %template(PtrSet) set<ptr_t>;
 
    specialize_std_map_on_both(int,,,,int,,,);
    %template(IntIntMap) map<int,int>;
 
    %template(IntVector) vector<int>;
    %template(LongVector) vector<long>;
-   %template(Int64Vector) vector<int64>;
+   %template(PtrVector) vector<ptr_t>;
 };
 
 %ignore EventLog::writeTrace;
