@@ -23,7 +23,6 @@ makemake();
 exit 0;
 
 #TODO:
-# FIXME empty executable fails because $O is not created
 # FIXME instead of *choosing* between .cc and .cpp, both files should be recognized and compiled!
 # implement isGoodDir correctly
 # with --deep, -d<subdir> should imply -X<subdir> (in Java too)
@@ -1142,6 +1141,8 @@ MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 all: $O/$(TARGET)
 
 {exe:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{exe:}{nmake:}	-@md $(O:/=\) 2>nul
+{exe:}{~nmake:}	@mkdir -p $O
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
 {exe:}{nmake:}	echo @^%~dp0\$(O:/=\)\$(TARGET) ^%* > $(TARGET:.exe=.cmd)
 {exe:}{~nmake:}	rm -f $(TARGET)
@@ -1151,8 +1152,12 @@ all: $O/$(TARGET)
 {exe:}{~nmake:}	ln -s $O/$(TARGET) .
 {exe:}{~nmake:}endif
 {sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
+{sharedlib:}{~nmake:}	@mkdir -p $O
 {sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)}
 {staticlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
+{staticlib:}{~nmake:}	@mkdir -p $O
 {staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS)
 {nolink:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
