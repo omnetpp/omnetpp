@@ -23,8 +23,8 @@ makemake();
 exit 0;
 
 #TODO:
-# perl warnings when -Odir is used
-# when a folder-to-link is given as arg: the src folder must be specified, but we need to translate in to the <projectroot>/out/ subdir!
+# FIXME empty executable fails because $O is not created
+# FIXME instead of *choosing* between .cc and .cpp, both files should be recognized and compiled!
 # implement isGoodDir correctly
 # with --deep, -d<subdir> should imply -X<subdir> (in Java too)
 # convert between .o and .obj in extraArgs!
@@ -1166,11 +1166,11 @@ all: $O/$(TARGET)
 {~nmake:}$O/%.{obj}: %.{cc}
 {~nmake:}	@mkdir -p $(dir $@)
 {~nmake:}	$(CXX) -c $(COPTS) -o $@ $<
-{nmake:}{lbrace}.{rbrace}.cc{lbrace}$O{rbrace}.{obj}:
+{nmake:}{lbrace}.{rbrace}.{cc}{lbrace}$O{rbrace}.{obj}:
 {nmake:}	-@md $(O:/=\) 2>nul
 {nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {@dir:sourcedirs,bsdir:backslashedsourcedirs}
-{nmake:}{lbrace}{dir}{rbrace}.cc{lbrace}$O/{dir}{rbrace}.{obj}:
+{nmake:}{lbrace}{dir}{rbrace}.{cc}{lbrace}$O/{dir}{rbrace}.{obj}:
 {nmake:}	-@md $(O:/=\)\{bsdir} 2>nul
 {nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
 {/@}
