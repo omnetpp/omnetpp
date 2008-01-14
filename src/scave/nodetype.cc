@@ -50,8 +50,9 @@ void NodeType::checkAttrNames(const StringMap& attrs) const
     }
 }
 
-void NodeType::mapVectorAttributes(StringMap &attrs) const
+void NodeType::mapVectorAttributes(StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	// identity map by default
 }
 
 

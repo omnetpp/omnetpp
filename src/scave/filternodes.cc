@@ -102,8 +102,10 @@ Node *AdderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void AdderNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void AdderNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double"; // XXX int?
 }
 
@@ -155,8 +157,10 @@ Node *MultiplierNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void MultiplierNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void MultiplierNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double"; // XXX int?
 }
 
@@ -208,8 +212,10 @@ Node *DividerNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void DividerNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void DividerNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double";
 }
 
@@ -262,8 +268,10 @@ Node *ModuloNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void ModuloNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void ModuloNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double"; // XXX int?
 }
 
@@ -316,8 +324,10 @@ Node *DifferenceNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void DifferenceNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void DifferenceNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	if (attrs["type"] != "int")
 		attrs["type"] = "double";
 	// TODO interpolation-mode
@@ -371,7 +381,7 @@ Node *TimeDiffNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void TimeDiffNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void TimeDiffNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
 	attrs["type"] = "double";
 	attrs["interpolationmode"] = "backward-sample-hold";
@@ -443,8 +453,10 @@ Node *MovingAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
     return node;
 }
 
-void MovingAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void MovingAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double";
 }
 
@@ -496,8 +508,10 @@ Node *SumNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void SumNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void SumNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	if (attrs["type"] != "int")
 		attrs["type"] = "double";
 }
@@ -595,8 +609,10 @@ Node *LinearTrendNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void LinearTrendNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void LinearTrendNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double";
 }
 
@@ -667,8 +683,10 @@ void MeanNode::process()
     }
 }
 
-void MeanNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void MeanNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double";
 }
 
@@ -742,7 +760,7 @@ Node *RemoveRepeatsNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
     return node;
 }
 
-void RemoveRepeatsNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void RemoveRepeatsNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
 	// TODO interpolationmode
 }
@@ -885,8 +903,10 @@ Node *IntegrateNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void IntegrateNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void IntegrateNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double";
 }
 
@@ -956,8 +976,10 @@ Node *TimeAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void TimeAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void TimeAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double";
 }
 
@@ -1001,8 +1023,10 @@ Node *DivideByTimeNodeType::create(DataflowManager *mgr, StringMap& attrs) const
     return node;
 }
 
-void DivideByTimeNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void DivideByTimeNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double";
 }
 

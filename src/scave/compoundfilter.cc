@@ -197,13 +197,13 @@ Port *CompoundFilterType::getPort(Node *node, const char *name) const
     return subnode->nodeType()->getPort(subnode, name);
 }
 
-void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     int n = numSubfilters();
 	for (int i=0; i<n; i++)
 	{
 		const char *nodetypename = subfilter(i).nodeType();
 		NodeType *nodeType = NodeTypeRegistry::instance()->getNodeType(nodetypename);
-		nodeType->mapVectorAttributes(attrs);
+		nodeType->mapVectorAttributes(attrs, warnings);
 	}
 }

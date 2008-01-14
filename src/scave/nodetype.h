@@ -17,12 +17,14 @@
 
 #include <map>
 #include <string>
+#include <vector>
 #include "dataflowmanager.h"
 
 class Node;
 class Port;
 
 typedef std::map<std::string,std::string> StringMap;
+typedef std::vector<std::string> StringVector;
 
 
 /**
@@ -92,7 +94,7 @@ class SCAVE_API NodeType
          * Maps input vector attributes to output vector attributes.
          * This method is called for filter nodes only.
          */
-        virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
 };
 
 

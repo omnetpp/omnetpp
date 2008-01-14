@@ -108,11 +108,23 @@ public class ScavePlugin extends AbstractUIPlugin {
 		}
 	}
 	
+	public static IStatus getWarningStatus(String message) {
+		return getWarningStatus(0, message);
+	}
+	
+	public static IStatus getWarningStatus(int code, String message) {
+		return getStatus(IStatus.WARNING, code, message, null);
+	}
+	
 	public static IStatus getErrorStatus(Throwable exception) {
 		return getErrorStatus(0, exception.getLocalizedMessage(), exception);
 	}
 	
 	public static IStatus getErrorStatus(int errorCode, String message, Throwable exception) {
-		return new Status(IStatus.ERROR, PLUGIN_ID, errorCode, message, exception);		
+		return getStatus(IStatus.ERROR, errorCode, message, exception);		
+	}
+	
+	public static IStatus getStatus(int severity, int code, String message, Throwable exception) {
+		return new Status(severity, PLUGIN_ID, code, message, exception);
 	}
 }

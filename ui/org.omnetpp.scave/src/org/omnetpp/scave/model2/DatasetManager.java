@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.CompoundXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
@@ -523,7 +524,10 @@ public class DatasetManager {
 			outAttrs.set(key, inputAttrs.get(key));
 		
 		NodeType type = NodeTypeRegistry.instance().getNodeType(operation);
-		type.mapVectorAttributes(outAttrs); // TODO pass warnings
+		StringVector warningList = new StringVector();
+		type.mapVectorAttributes(outAttrs, warningList);
+		for (int i = 0; i < warningList.size(); ++i)
+			warnings.add(ScavePlugin.getWarningStatus(warningList.get(i)));
 		return outAttrs;
 	}
 	
