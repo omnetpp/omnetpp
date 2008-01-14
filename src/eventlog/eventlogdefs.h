@@ -33,6 +33,19 @@
 #define PRINT_DEBUG_MESSAGES false
 
 typedef BigDecimal simtime_t;
+
+// the ptr_t type is used throughout the eventlog library to return C++ object pointers
+// those pointers are used by the gui to efficiently access the C++ library without
+// generating lots of garbage in the Java world (where the pointer is stored as a 64 long value)
+// the unsigned long here will be 32 bits on 32 bit platforms and 64 bits on 64 bit platforms
+//
+// SWIG provides (by cPtr) positive Java long values even for objects hanging in the upper two gigabytes
+// of memory on 32 bit platforms; so to have pointers to C++ objects == in Java we must ensure
+// that the eventlog API functions return values which will be converted to positive Java long
+// values by SWIG.
+//
+// note that C99 defines intptr_t and uintptr_t and uintptr_t would be sufficient here
+// but not all supported compilers are C99 compatible
 typedef unsigned long ptr_t;
 
 #define simtime_nil BigDecimal::MinusOne
