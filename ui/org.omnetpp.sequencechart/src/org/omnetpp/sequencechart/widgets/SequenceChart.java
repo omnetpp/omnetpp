@@ -2229,7 +2229,8 @@ public class SequenceChart
 	private void drawText(Graphics g, String s, int x, int y) {
 		g.drawText(s, x, y);
 		// HACK clear the cairo lib internal state (on Linux)
-		g.drawPoint(-1000000, -1000000);
+		if("gtk".equals(SWT.getPlatform()))
+				g.drawPoint(-1000000, -1000000);
 	}
 
 	private void drawFilteredMessageDependencySign(Graphics graphics, int x1, int y1, int x2, int y2) {
