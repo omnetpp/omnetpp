@@ -1684,7 +1684,7 @@ public class SequenceChart
 
 			VLineBuffer vlineBuffer = new VLineBuffer();
 			for (int i = 0; i < messageDependencies.size(); i++)
-				drawOrFitMessageDependency(messageDependencies.get(i).longValue(), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
+				drawOrFitMessageDependency(messageDependencies.get(i), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
 		}
 	}
 
@@ -2965,7 +2965,10 @@ public class SequenceChart
 				            	PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
 
 				        		for (int i = 0; i < messageDependencies.size(); i++) {
-				        			long messageDependencyPtr = messageDependencies.get(i).longValue();
+				        			long messageDependencyPtr = messageDependencies.get(i);
+				        			
+				        			// TODO: cast ptr_t as (ptr_t)(unsigned int)
+				        			// TODO: PtrVector should return Java long
 
 				        			if (drawOrFitMessageDependency(messageDependencyPtr, mouseX, mouseY - GUTTER_HEIGHT, MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
 				            			msgs.add(sequenceChartFacade.MessageDependency_getMessageDependency(messageDependencyPtr));

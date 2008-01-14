@@ -55,15 +55,6 @@ COMMON_ENGINE_BIGDECIMAL();
    return $jnicall;
 }
 
-%typemap(in) ptr_t {
-    $1 = (ptr_t)$input;
-}
-%typemap(out) ptr_t {
-    $result = (jlong)$1;
-}
-
-typedef uint64 ptr_t;
-
 %include "std_common.i"
 %include "std_string.i"
 %include "std_set.i"     // our custom version
