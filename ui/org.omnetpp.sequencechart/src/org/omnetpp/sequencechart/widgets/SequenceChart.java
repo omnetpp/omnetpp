@@ -1548,7 +1548,7 @@ public class SequenceChart
 		graphics.setLineStyle(SWT.LINE_SOLID);
 		graphics.drawRectangle(x - 3, GUTTER_HEIGHT, width + 5, GUTTER_HEIGHT);
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-		graphics.drawText(timeString, x, GUTTER_HEIGHT + 2);
+		drawText(graphics, timeString, x, GUTTER_HEIGHT + 2);
 	}
 
 	/**
@@ -1569,7 +1569,7 @@ public class SequenceChart
 		graphics.drawRectangle(0, 0, width + 6, GUTTER_HEIGHT);
 
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-		graphics.drawText(timeString, 3, 2);
+		drawText(graphics, timeString, 3, 2);
 		newFont.dispose();
 	}
 
@@ -1732,7 +1732,7 @@ public class SequenceChart
 
 		if (showEventNumbers) {
 			graphics.setFont(font);
-			graphics.drawText("#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3 + axisRenderers[getEventAxisModuleIndex(eventPtr)].getHeight() / 2);
+			drawText(graphics, "#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3 + axisRenderers[getEventAxisModuleIndex(eventPtr)].getHeight() / 2);
 		}
 	}
 
@@ -1853,8 +1853,8 @@ public class SequenceChart
 		// draw tick value
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(backgroundColor);
-		graphics.drawText(string, boxX + 3, 2);
-		graphics.drawText(string, boxX + 3, viewportHeight + GUTTER_HEIGHT + 1);
+		drawText(graphics, string, boxX + 3, 2);
+		drawText(graphics, string, boxX + 3, viewportHeight + GUTTER_HEIGHT + 1);
 
 		// draw hair line
 		graphics.setLineStyle(SWT.LINE_DOT);
@@ -1954,7 +1954,7 @@ public class SequenceChart
 		String label = treeItem.getModuleFullPath();
 		graphics.setForegroundColor(LABEL_COLOR);
 		graphics.setFont(font);
-		graphics.drawText(label, 5, y - MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS + 1);
+		drawText(graphics, label, 5, y - MINIMUM_AXIS_SPACING_TO_DISPLAY_LABELS + 1);
 	}
 
 	/**
@@ -2222,7 +2222,14 @@ public class SequenceChart
 			graphics.setForegroundColor(MESSAGE_LABEL_COLOR);
 
 		graphics.setFont(font);
-		graphics.drawText(arrowLabel, x + dx, y + dy);
+		drawText(graphics, arrowLabel, x + dx, y + dy);
+	}
+
+	// FIXME This is a workaround for SWT bug https://bugs.eclipse.org/215243 
+	private void drawText(Graphics g, String s, int x, int y) {
+		g.drawText(s, x, y);
+		// HACK clear the cairo lib internal state (on Linux)
+		g.drawPoint(-1000000, -1000000);
 	}
 
 	private void drawFilteredMessageDependencySign(Graphics graphics, int x1, int y1, int x2, int y2) {
