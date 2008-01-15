@@ -91,7 +91,7 @@
 %typemap(javain) BigDecimal "org.omnetpp.common.engine.BigDecimal.getCPtr($javainput)"
 %typemap(javaout) BigDecimal {
     long cPtr = $jnicall;
-    return (cPtr == 0) ? null : new org.omnetpp.common.engine.BigDecimal(cPtr, $owner);
+    return (cPtr == 0) ? null : new org.omnetpp.common.engine.BigDecimal(cPtr, true);
 }
 %typemap(in) BigDecimal ($&1_type argp) %{
    argp = *($&1_ltype*)(void *)&$input; 
