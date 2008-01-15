@@ -275,8 +275,13 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	}
 	
 	protected Group createGroup(String text, Composite parent, int colSpan, int numOfColumns) {
+		return createGroup(text, parent, colSpan, numOfColumns, false);
+	}
+	
+	protected Group createGroup(String text, Composite parent,
+			int colSpan, int numOfColumns, boolean grabExcessVerticalSpace) {
 		Group group = new Group(parent, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, colSpan, 1));
+		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, grabExcessVerticalSpace, colSpan, 1));
 		group.setLayout(new GridLayout(numOfColumns, false));
 		group.setText(text);
 		return group;
