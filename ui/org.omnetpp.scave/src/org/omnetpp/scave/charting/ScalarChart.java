@@ -382,6 +382,7 @@ public class ScalarChart extends ChartCanvas {
 	protected void paintCachableLayer(GC gc) {
 		resetDrawingStylesAndColors(gc);
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
+		gc.fillRectangle(gc.getClipping());
 		
 		valueAxis.drawGrid(gc);
 		plot.draw(gc);
@@ -444,7 +445,6 @@ public class ScalarChart extends ChartCanvas {
 		
 		public void draw(GC gc) {
 			resetDrawingStylesAndColors(gc);
-			gc.fillRectangle(gc.getClipping());
 
 			if (dataset != null) {
 				Graphics graphics = new SWTGraphics(gc);
