@@ -3,7 +3,6 @@ package org.omnetpp.common.ui;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.internal.text.html.BrowserInformationControl;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
@@ -247,7 +246,14 @@ public class HoverSupport {
                     public void focusGained(FocusEvent e) {
                     }
                     public void focusLost(FocusEvent e) {
-                        informationControl.dispose();
+                    	// async exec needed because on browser creation the focus is temporarily lost
+                    	// and transferred to the browser (this would close the infoControl on browser creation)
+            			Display.getCurrent().asyncExec(new Runnable() {
+            				public void run() {
+            					if (informationControl == null || !informationControl.isFocusControl())
+            						informationControl.dispose();
+            				}
+            			});
                     }
                 });
             }
@@ -349,7 +355,7 @@ public class HoverSupport {
 			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
 				// for more info, see JavadocHover class in JDT
-				int shellStyle = SWT.TOOL;
+				int shellStyle = SWT.TOOL | SWT.ON_TOP;
 				int style = SWT.NONE;
 				String tooltipAffordanceString = "Press 'F2' for focus."; //TODO use EditorsUI.getTooltipAffordanceString();
 				if (BrowserInformationControl.isAvailable(parent))
