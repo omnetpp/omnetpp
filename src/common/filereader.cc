@@ -30,7 +30,7 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
     this->bufferSize = bufferSize;
 
     f = NULL;
-	synchronizeWhenAppended = true;
+    synchronizeWhenAppended = true;
 
     bufferBegin = new char[bufferSize];
     bufferEnd = bufferBegin + bufferSize;
@@ -106,9 +106,9 @@ void FileReader::restorePosition()
 
 file_offset_t FileReader::pointerToFileOffset(char *pointer)
 {
-	file_offset_t fileOffset = pointer - bufferBegin + bufferFileOffset;
-	Assert(fileOffset >= 0 && fileOffset <= fileSize);
-	return fileOffset;
+    file_offset_t fileOffset = pointer - bufferBegin + bufferFileOffset;
+    Assert(fileOffset >= 0 && fileOffset <= fileSize);
+    return fileOffset;
 }
 
 FileReader::FileChangedState FileReader::getFileChangedState()
@@ -170,12 +170,12 @@ void FileReader::checkFileChangedAndSynchronize()
 {
     switch (getFileChangedState()) {
         case OVERWRITTEN:
-			throw opp_runtime_error("File changed: `%s' has been overwritten", fileName.c_str());
+            throw opp_runtime_error("File changed: `%s' has been overwritten", fileName.c_str());
         case APPENDED:
-			if (synchronizeWhenAppended)
-	            synchronize();
-			else
-	            throw opp_runtime_error("File changed: `%s' has been appended", fileName.c_str());
+            if (synchronizeWhenAppended)
+                synchronize();
+            else
+                throw opp_runtime_error("File changed: `%s' has been appended", fileName.c_str());
         default:
            break;
     }
@@ -372,7 +372,9 @@ char *FileReader::getNextLineBufferPointer(bool checkFileChanged)
         checkFileChangedAndSynchronize();
 
     fillBuffer(true);
+#ifndef NDEBUG
     checkConsistence();
+#endif
 
     if (!isLineStart(currentDataPointer)) {
         char *nextLineDataPointer = findNextLineStart(currentDataPointer);
@@ -415,7 +417,9 @@ char *FileReader::getPreviousLineBufferPointer(bool checkFileChanged)
         checkFileChangedAndSynchronize();
 
     fillBuffer(false);
+#ifndef NDEBUG
     checkConsistence();
+#endif
 
     if (!isLineStart(currentDataPointer)) {
         char *previousLineDataPointer = findPreviousLineStart(currentDataPointer);
