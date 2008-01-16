@@ -744,14 +744,14 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Static function that compares two messages by their delivery times,
-     * then by their priorities. Usable as cQeueue CompareFunc.
+     * then by their priorities. Usable as cQueue CompareFunc.
      */
     static int cmpbydelivtime(cOwnedObject *one, cOwnedObject *other);
 
     /**
      * Static function that compares two messages by their priorities.
      * It can be used to sort messages in a priority queue.
-     * Usable as cQeueue CompareFunc.
+     * Usable as cQueue CompareFunc.
      */
     static int cmpbypriority(cOwnedObject *one, cOwnedObject *other);
 

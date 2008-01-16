@@ -78,7 +78,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     virtual ~cDefaultList();
     //@}
 
-    /** @name Redefined cPolymorpic methods. */
+    /** @name Redefined cObject methods. */
     //@{
     /**
      * Returns true.

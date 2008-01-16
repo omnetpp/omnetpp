@@ -6,7 +6,6 @@
 //
 //  Declaration of the following classes:
 //    cLinkedList        : linked list of pointers (cQueue-like interface)
-//    cLinkedListIterator: walks along a linked list
 //
 //==========================================================================
 
