@@ -22,8 +22,8 @@ EventLogIndex::EventLogIndex(FileReader *reader)
 
     firstEventNumber = EVENT_NOT_YET_CALCULATED;
     lastEventNumber = EVENT_NOT_YET_CALCULATED;
-    firstSimulationTime = -1;
-    lastSimulationTime = -1;
+    firstSimulationTime = simtime_nil;
+    lastSimulationTime = simtime_nil;
     firstEventOffset = -1;
     lastEventOffset = -1;
 }
@@ -43,12 +43,12 @@ void EventLogIndex::synchronize()
 			simulationTimeToOffsetMap.clear();
 
 			firstEventNumber = EVENT_NOT_YET_CALCULATED;
-			firstSimulationTime = -1;
+			firstSimulationTime = simtime_nil;
 			firstEventOffset = -1;
 		}
 
 		lastEventNumber = EVENT_NOT_YET_CALCULATED;
-		lastSimulationTime = -1;
+		lastSimulationTime = simtime_nil;
 		lastEventOffset = -1;
 
 		reader->synchronize();

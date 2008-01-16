@@ -83,8 +83,8 @@ Options::Options()
     fromEventNumber = -1;
     toEventNumber = -1;
 
-    fromSimulationTime = -1;
-    toSimulationTime = -1;
+    fromSimulationTime = simtime_nil;
+    toSimulationTime = simtime_nil;
 
     outputInitialization = true;
     outputLogLines = true;
@@ -154,7 +154,7 @@ long Options::getFirstEventNumber()
 
         if (fromEventNumber != -1)
             firstEventNumber = fromEventNumber;
-        else if (fromSimulationTime != -1) {
+        else if (fromSimulationTime != simtime_nil) {
             IEvent *event = eventLog.getEventForSimulationTime(fromSimulationTime, FIRST_OR_NEXT);
 
             if (event)
@@ -177,7 +177,7 @@ long Options::getLastEventNumber()
 
         if (toEventNumber != -1)
             lastEventNumber = toEventNumber;
-        else if (toSimulationTime != -1) {
+        else if (toSimulationTime != simtime_nil) {
             IEvent *event = eventLog.getEventForSimulationTime(toSimulationTime, LAST_OR_PREVIOUS);
 
             if (event)

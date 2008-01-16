@@ -87,7 +87,7 @@ void SequenceChartFacade::setNonLinearFocus(double nonLinearFocus)
 
 void SequenceChartFacade::undefineTimelineCoordinateSystem()
 {
-	timelineCoordinateSystemVersion++;
+    timelineCoordinateSystemVersion++;
     timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = -1;
     timelineCoordinateOriginSimulationTime = -1;
 }

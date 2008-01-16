@@ -111,7 +111,7 @@ long MessageDependency::getConsequenceEventNumber()
         // and find the one "caused by" our message.
         simtime_t consequenceTime = getConsequenceSimulationTime();
 
-        if (consequenceTime == -1)
+        if (consequenceTime == simtime_nil)
             consequenceEventNumber = NO_SUCH_EVENT;
         else {
             IEvent *event = eventLog->getEventForSimulationTime(consequenceTime, FIRST_OR_PREVIOUS);
@@ -183,7 +183,7 @@ simtime_t MessageDependency::getConsequenceSimulationTime()
             DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
             if (deleteMessageEntry) {
                 Assert(deleteMessageEntry->messageId == beginSendEntry->messageId);
-                return -1;
+                return simtime_nil;
             }
         }
 

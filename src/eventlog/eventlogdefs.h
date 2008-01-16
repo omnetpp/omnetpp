@@ -32,8 +32,6 @@
 
 #define PRINT_DEBUG_MESSAGES false
 
-typedef BigDecimal simtime_t;
-
 // the ptr_t type is used throughout the eventlog library to return C++ object pointers
 // those pointers are used by the gui to efficiently access the C++ library without
 // generating lots of garbage in the Java world (where the pointer is stored as a 64 long value)
@@ -47,6 +45,8 @@ typedef BigDecimal simtime_t;
 // note that C99 defines intptr_t and uintptr_t and uintptr_t would be sufficient here
 // but not all supported compilers are C99 compatible
 typedef unsigned long ptr_t;
+
+typedef BigDecimal simtime_t;
 
 #define simtime_nil BigDecimal::MinusOne
 
