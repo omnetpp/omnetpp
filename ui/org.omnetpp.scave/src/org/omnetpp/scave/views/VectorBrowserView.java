@@ -16,12 +16,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.INullSelectionListener;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.virtualtable.VirtualTable;
 import org.omnetpp.scave.editors.IDListSelection;
+import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.datatable.VectorResultContentProvider;
 import org.omnetpp.scave.editors.datatable.VectorResultRowRenderer;
 import org.omnetpp.scave.engine.IndexFile;
@@ -30,8 +32,8 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model2.ChartDataPoint;
-import org.omnetpp.scave.model2.ComputedResultFileUpdater;
 import org.omnetpp.scave.model2.ChartLine;
+import org.omnetpp.scave.model2.ComputedResultFileUpdater;
 import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionEvent;
 
 /**
@@ -45,6 +47,8 @@ public class VectorBrowserView extends ViewWithMessagePart {
 	protected TableColumn eventNumberColumn;
 	protected VirtualTable<OutputVectorEntry> viewer;
 	protected ISelectionListener selectionChangedListener;
+	protected IPartListener partListener;
+	protected IWorkbenchPart activePart;
 	protected VectorResultContentProvider contentProvider;
 	
 	protected GotoAction gotoLineAction;
@@ -55,7 +59,7 @@ public class VectorBrowserView extends ViewWithMessagePart {
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		createPulldownMenu();
-		hookSelectionChangedListener();
+		hookListeners();
 		setViewerInput(getSite().getPage().getSelection());
 	}
 	
@@ -118,22 +122,49 @@ public class VectorBrowserView extends ViewWithMessagePart {
 	
 	@Override
 	public void dispose() {
-		unhookSelectionChangedListener();
+		unhookListeners();
 		super.dispose();
 	}
 	
-	private void hookSelectionChangedListener() {
+	private void hookListeners() {
 		selectionChangedListener = new INullSelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				setViewerInput(selection);
+				if (part == activePart)
+					setViewerInput(selection);
 			}
 		};
 		getSite().getPage().addPostSelectionListener(selectionChangedListener);
+		
+		partListener = new IPartListener() {
+
+			public void partActivated(IWorkbenchPart part) {
+				if (part instanceof ScaveEditor || part instanceof DatasetView)
+					activePart = part;
+			}
+
+			public void partClosed(IWorkbenchPart part) {
+				if (part == activePart) {
+					activePart = null;
+					setViewerInput((ISelection)null);
+				}
+			}
+
+			public void partOpened(IWorkbenchPart part) {}
+			public void partBroughtToTop(IWorkbenchPart part) {}
+			public void partDeactivated(IWorkbenchPart part) {}
+		};
+		getSite().getPage().addPartListener(partListener);
 	}
 	
-	private void unhookSelectionChangedListener() {
-		if (selectionChangedListener != null)
+	private void unhookListeners() {
+		if (selectionChangedListener != null) {
 			getSite().getPage().removePostSelectionListener(selectionChangedListener);
+			selectionChangedListener = null;
+		}
+		if (partListener != null) {
+			getSite().getPage().removePartListener(partListener);
+			partListener = null;
+		}
 	}
 	
 	@Override
