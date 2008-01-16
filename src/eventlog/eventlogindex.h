@@ -57,6 +57,7 @@ class EVENTLOG_API EventLogIndex
         void addPosition(long eventNumber, simtime_t simulationTime, file_offset_t offset);
         template <typename T> file_offset_t binarySearchForOffset(bool eventNumberBased, std::map<T, file_offset_t> *keyToOffsetMap, T key, MatchKind matchKind);
         template <typename T> file_offset_t linearSearchForOffset(bool eventNumberBased, file_offset_t offset, T key, bool forward, bool exactMatchFound);
+        void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
 
     public:
         // reader will be deleted

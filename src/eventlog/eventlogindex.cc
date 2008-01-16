@@ -20,12 +20,7 @@ EventLogIndex::EventLogIndex(FileReader *reader)
 {
     this->reader = reader;
 
-    firstEventNumber = EVENT_NOT_YET_CALCULATED;
-    lastEventNumber = EVENT_NOT_YET_CALCULATED;
-    firstSimulationTime = simtime_nil;
-    lastSimulationTime = simtime_nil;
-    firstEventOffset = -1;
-    lastEventOffset = -1;
+    clearInternalState();
 }
 
 EventLogIndex::~EventLogIndex()
@@ -35,24 +30,28 @@ EventLogIndex::~EventLogIndex()
 
 void EventLogIndex::synchronize()
 {
-	FileReader::FileChangedState change = reader->getFileChangedState();
+    FileReader::FileChangedState change = reader->getFileChangedState();
 
-	if (change != FileReader::UNCHANGED) {
-		if (change != FileReader::APPENDED) {
-			eventNumberToOffsetMap.clear();
-			simulationTimeToOffsetMap.clear();
+    if (change != FileReader::UNCHANGED)
+        clearInternalState(change);
+}
 
-			firstEventNumber = EVENT_NOT_YET_CALCULATED;
-			firstSimulationTime = simtime_nil;
-			firstEventOffset = -1;
-		}
+void EventLogIndex::clearInternalState(FileReader::FileChangedState change)
+{
+    if (change != FileReader::APPENDED) {
+        eventNumberToOffsetMap.clear();
+        simulationTimeToOffsetMap.clear();
 
-		lastEventNumber = EVENT_NOT_YET_CALCULATED;
-		lastSimulationTime = simtime_nil;
-		lastEventOffset = -1;
+        firstEventNumber = EVENT_NOT_YET_CALCULATED;
+        firstSimulationTime = simtime_nil;
+        firstEventOffset = -1;
+    }
 
-		reader->synchronize();
-	}
+    lastEventNumber = EVENT_NOT_YET_CALCULATED;
+    lastSimulationTime = simtime_nil;
+    lastEventOffset = -1;
+
+    reader->synchronize();
 }
 
 long EventLogIndex::getFirstEventNumber()
