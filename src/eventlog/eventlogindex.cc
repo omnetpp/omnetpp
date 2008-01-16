@@ -90,14 +90,14 @@ file_offset_t EventLogIndex::getLastEventOffset()
     return lastEventOffset;
 }
 
-simtime_t EventLogIndex::getFirstSimulationTime()
+simtime_t& EventLogIndex::getFirstSimulationTime()
 {
     getFirstEventNumber();
 
     return firstSimulationTime;
 }
 
-simtime_t EventLogIndex::getLastSimulationTime()
+simtime_t& EventLogIndex::getLastSimulationTime()
 {
     getLastEventNumber();
 

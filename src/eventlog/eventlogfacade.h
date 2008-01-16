@@ -48,7 +48,7 @@ class EVENTLOG_API EventLogFacade
         ptr_t Event_getPreviousEvent(ptr_t ptr);
         ptr_t Event_getNextEvent(ptr_t ptr);
         long Event_getEventNumber(ptr_t ptr);
-        simtime_t Event_getSimulationTime(ptr_t ptr);
+        simtime_t& Event_getSimulationTime(ptr_t ptr);
         double Event_getSimulationTimeAsDouble(ptr_t ptr);
         int Event_getModuleId(ptr_t ptr);
         int Event_getNumCauses(ptr_t ptr);
@@ -65,8 +65,8 @@ class EVENTLOG_API EventLogFacade
         bool MessageDependency_isFilteredMessageDependency(ptr_t ptr);
         ptr_t MessageDependency_getCauseEvent(ptr_t ptr);
         ptr_t MessageDependency_getConsequenceEvent(ptr_t ptr);
-        simtime_t MessageDependency_getCauseSimulationTime(ptr_t ptr);
-        simtime_t MessageDependency_getConsequenceSimulationTime(ptr_t ptr);
+        simtime_t& MessageDependency_getCauseSimulationTime(ptr_t ptr);
+        simtime_t& MessageDependency_getConsequenceSimulationTime(ptr_t ptr);
 };
 
 #endif

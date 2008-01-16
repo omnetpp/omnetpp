@@ -76,7 +76,7 @@ class EVENTLOG_API IEvent
 
         // some of the data found in the 'E' entry (line), to get additional data query the entries
         virtual long getEventNumber() = 0;
-        virtual simtime_t getSimulationTime() = 0;
+        virtual simtime_t& getSimulationTime() = 0;
         virtual int getModuleId() = 0;
         virtual long getMessageId() = 0;
         virtual long getCauseEventNumber() = 0;

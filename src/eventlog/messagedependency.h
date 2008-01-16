@@ -44,8 +44,8 @@ class EVENTLOG_API IMessageDependency
         virtual long getConsequenceEventNumber() = 0;
         virtual IEvent *getConsequenceEvent() = 0;
 
-        virtual simtime_t getCauseSimulationTime() = 0;
-        virtual simtime_t getConsequenceSimulationTime() = 0;
+        virtual simtime_t& getCauseSimulationTime() = 0;
+        virtual simtime_t& getConsequenceSimulationTime() = 0;
         virtual BeginSendEntry *getBeginSendEntry() = 0;
 
         virtual void print(FILE *file = stdout) = 0;
@@ -95,8 +95,8 @@ class EVENTLOG_API MessageDependency : public IMessageDependency
 
         virtual BeginSendEntry *getBeginSendEntry() { return isReuse ? getConsequenceBeginSendEntry() : getCauseBeginSendEntry(); }
 
-        virtual simtime_t getCauseSimulationTime();
-        virtual simtime_t getConsequenceSimulationTime();
+        virtual simtime_t& getCauseSimulationTime();
+        virtual simtime_t& getConsequenceSimulationTime();
 
         long getCauseMessageId() { return getCauseBeginSendEntry()->messageId; }
         long getConsequenceMessageId() { return getConsequenceBeginSendEntry()->messageId; }
@@ -128,8 +128,8 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         virtual long getConsequenceEventNumber() { return endMessageDependency->getConsequenceEventNumber(); }
         virtual IEvent *getConsequenceEvent();
 
-        virtual simtime_t getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };
-        virtual simtime_t getConsequenceSimulationTime() { return endMessageDependency->getConsequenceSimulationTime(); };
+        virtual simtime_t& getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };
+        virtual simtime_t& getConsequenceSimulationTime() { return endMessageDependency->getConsequenceSimulationTime(); };
         virtual BeginSendEntry *getBeginSendEntry() { throw opp_runtime_error("getBeginSendEntry is not supported on a FilteredMessageDependency"); }
         virtual void print(FILE *file);
         virtual const char *getClassName() { return "FilteredMessageDependency"; }

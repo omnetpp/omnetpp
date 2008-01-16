@@ -67,8 +67,8 @@ class EVENTLOG_API EventLogIndex
         virtual void synchronize();
         long getFirstEventNumber();
         long getLastEventNumber();
-        simtime_t getFirstSimulationTime();
-        simtime_t getLastSimulationTime();
+        simtime_t& getFirstSimulationTime();
+        simtime_t& getLastSimulationTime();
         file_offset_t getFirstEventOffset();
         file_offset_t getLastEventOffset();
         file_offset_t getBeginOffsetForEndOffset(file_offset_t endOffset);

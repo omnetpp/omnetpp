@@ -82,7 +82,7 @@ long EventLogFacade::Event_getEventNumber(ptr_t ptr)
     return ((IEvent*)ptr)->getEventNumber();
 }
 
-simtime_t EventLogFacade::Event_getSimulationTime(ptr_t ptr)
+simtime_t& EventLogFacade::Event_getSimulationTime(ptr_t ptr)
 {
     EVENT_PTR(ptr);
     return ((IEvent*)ptr)->getSimulationTime();
@@ -178,13 +178,13 @@ ptr_t EventLogFacade::MessageDependency_getConsequenceEvent(ptr_t ptr)
     return (ptr_t)((IMessageDependency*)ptr)->getConsequenceEvent();
 }
 
-simtime_t EventLogFacade::MessageDependency_getCauseSimulationTime(ptr_t ptr)
+simtime_t& EventLogFacade::MessageDependency_getCauseSimulationTime(ptr_t ptr)
 {
     MESSAGE_DEPENDENCY_PTR(ptr);
     return ((IMessageDependency*)ptr)->getCauseSimulationTime();
 }
 
-simtime_t EventLogFacade::MessageDependency_getConsequenceSimulationTime(ptr_t ptr)
+simtime_t& EventLogFacade::MessageDependency_getConsequenceSimulationTime(ptr_t ptr)
 {
     MESSAGE_DEPENDENCY_PTR(ptr);
     return ((IMessageDependency*)ptr)->getConsequenceSimulationTime();
