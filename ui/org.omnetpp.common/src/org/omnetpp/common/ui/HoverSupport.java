@@ -3,6 +3,8 @@ package org.omnetpp.common.ui;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.dialogs.PopupDialog;
+import org.eclipse.jface.internal.text.html.BrowserInformationControl;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
@@ -12,16 +14,20 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.util.ReflectionUtils;
 
 /**
  * Provides hover for a widget. SWT's Control.setTooltipText() has several
@@ -355,7 +361,7 @@ public class HoverSupport {
 			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
 				// for more info, see JavadocHover class in JDT
-				int shellStyle = SWT.TOOL | SWT.ON_TOP;
+				int shellStyle = SWT.TOOL;
 				int style = SWT.NONE;
 				String tooltipAffordanceString = "Press 'F2' for focus."; //TODO use EditorsUI.getTooltipAffordanceString();
 				if (BrowserInformationControl.isAvailable(parent))
@@ -376,14 +382,138 @@ public class HoverSupport {
 				// for more info, see JavadocHover class in JDT
 				int shellStyle = SWT.RESIZE | SWT.TOOL;
 				int style = SWT.V_SCROLL | SWT.H_SCROLL;
-				if (BrowserInformationControl.isAvailable(parent))
-					return new BrowserInformationControl(parent, shellStyle, style);
-				else
-					return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false));
+				if (BrowserInformationControl.isAvailable(parent)) {
+					BrowserInformationControl browserInformationControl = new BrowserInformationControl(parent, shellStyle, style);
+					
+					final Shell shell = (Shell)ReflectionUtils.getFieldValue(browserInformationControl,"fShell");
+					((GridLayout)shell.getLayout()).marginHeight = 5;
+					((GridLayout)shell.getLayout()).marginWidth = 5;
+					shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+					makeShellResizeable(shell);
+					
+					return browserInformationControl;
+				} else {
+					DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false));
+					
+					final Shell shell = ((PopupDialog)ReflectionUtils.getFieldValue(defaultInformationControl,"fPopupDialog")).getShell();
+					((GridLayout)shell.getLayout()).marginHeight = 5;
+					((GridLayout)shell.getLayout()).marginWidth = 5;
+					shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+					makeShellResizeable(shell);
+
+					return defaultInformationControl;
+				}
 			}
 		};
 	}
 
+	// WORKAROUND Solution for the bug 23980. It can be removed once it is integrated in the platform
+	/**
+	 * Adds a mouse listener to the shell which implements resize behavior. Any of the edges
+	 * can be dragged to resize the shell, but the shell must expose a border which 
+	 * can be dragged. (ie. must not be fully covered by the contained Composite)
+	 */
+	public static void makeShellResizeable(final Shell shell) {
+		class MouseListener extends MouseAdapter implements MouseMoveListener {
+			private boolean mouse1Down;
+			private Point prevPos;
+			private int resizeEdge = 0;
+			private final static int BORDERSIZE = 15; 
+
+			public void mouseDown(MouseEvent e) {
+                mouse1Down = true;
+                prevPos = Display.getCurrent().getCursorLocation();
+                resizeEdge = 0;
+                Point shellPos = shell.getLocation();
+                Point shellSize = shell.getSize();
+                if (Math.abs(prevPos.y - shellSize.y - shellPos.y) < BORDERSIZE) 
+                	resizeEdge |= SWT.BOTTOM;
+                else if (Math.abs(prevPos.y - shellPos.y) < BORDERSIZE) 
+                	resizeEdge |= SWT.TOP;
+                if (Math.abs(prevPos.x - shellSize.x - shellPos.x) < BORDERSIZE) 
+                	resizeEdge |= SWT.RIGHT;
+                else if (Math.abs(prevPos.x - shellPos.x) < BORDERSIZE) 
+                	resizeEdge |= SWT.LEFT;
+            }
+            
+			public void mouseUp(MouseEvent e) {
+                mouse1Down = false;
+            }
+			
+			private void setMouseCursor() {
+                Point cpos = Display.getCurrent().getCursorLocation();
+                Point shellPos = shell.getLocation();
+                Point shellSize = shell.getSize();
+                boolean top = Math.abs(cpos.y - shellPos.y) < BORDERSIZE;
+                boolean bottom = Math.abs(cpos.y - shellSize.y - shellPos.y) < BORDERSIZE;
+                boolean left = Math.abs(cpos.x - shellPos.x) < BORDERSIZE;
+                boolean right = Math.abs(cpos.x - shellSize.x - shellPos.x) < BORDERSIZE;
+            
+                int cursorid = SWT.NONE;
+                if (top) {
+                	if (left)
+                		cursorid = SWT.CURSOR_SIZENW;
+                	else if (right)
+                		cursorid = SWT.CURSOR_SIZENE;
+                	else
+                		cursorid = SWT.CURSOR_SIZEN;
+                } 
+                else if (bottom) {
+                	if (left)
+                		cursorid = SWT.CURSOR_SIZESW;
+                	else if (right)
+                		cursorid = SWT.CURSOR_SIZESE;
+                	else
+                		cursorid = SWT.CURSOR_SIZES;
+                }
+                else {
+                	if (left)
+                		cursorid = SWT.CURSOR_SIZEW;
+                	else if (right)
+                		cursorid = SWT.CURSOR_SIZEE;
+                	else
+                		cursorid = SWT.NONE;
+                }
+                
+                shell.setCursor(cursorid == SWT.NONE ? null : Display.getCurrent().getSystemCursor(cursorid));
+			}
+			
+            public void mouseMove(MouseEvent e) {
+            	setMouseCursor();
+            	
+                if (mouse1Down) {
+                    Point p = Display.getCurrent().getCursorLocation();
+                    Point size = shell.getSize();
+                    Point loc = shell.getLocation();
+                    int dx = p.x - prevPos.x;
+                    int dy = p.y - prevPos.y;
+                    if ((resizeEdge & SWT.BOTTOM) != 0)
+                    	size.y += dy;
+                    if ((resizeEdge & SWT.RIGHT) != 0)
+                    	size.x += dx;
+                    if ((resizeEdge & SWT.TOP) != 0) {
+                    	size.y -= dy;
+                    	loc.y += dy;
+                    }
+                    if ((resizeEdge & SWT.LEFT) != 0) {
+                    	size.x -= dx;
+                    	loc.x += dx;
+                    }
+                    
+                    shell.setLocation(loc);
+                    shell.setSize(size);
+                    
+                    prevPos = p;
+                    
+                }
+            }
+		}
+		
+		MouseListener ls = new MouseListener();
+        shell.addMouseListener(ls);
+        shell.addMouseMoveListener(ls);
+	}
+	
 	/**
 	 * Wraps an HTML formatted string with a stylesheet for hover display
 	 */
