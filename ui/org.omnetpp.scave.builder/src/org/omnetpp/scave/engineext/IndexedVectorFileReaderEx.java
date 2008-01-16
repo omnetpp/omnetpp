@@ -34,8 +34,13 @@ public class IndexedVectorFileReaderEx extends IndexedVectorFileReader {
 	}
 	
 	private static OutputVectorEntry copy(OutputVectorEntry entry) {
-		OutputVectorEntry ownedEntry = entry == null ? null : 
-			new OutputVectorEntry(entry.getSerial(), entry.getEventNumber(), entry.getSimtime(), entry.getValue());
+		if (entry == null)
+			return null;
+		OutputVectorEntry ownedEntry = new OutputVectorEntry(
+											entry.getSerial(),
+											entry.getEventNumber(),
+											new BigDecimal(entry.getSimtime()), // because entry.getSimtime() points to the class member 
+											entry.getValue());
 		return ownedEntry;
 	}
 }

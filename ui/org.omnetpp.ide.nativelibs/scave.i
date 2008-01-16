@@ -409,7 +409,6 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
 %include "vectorfileindexer.h"
 
 /* ------------- indexedvectorfile.h  ----------------- */
-
 %typemap(javacode) OutputVectorEntry %{
    public boolean equals(Object obj) {
       return (obj instanceof OutputVectorEntry) && getSerial() == ((OutputVectorEntry)obj).getSerial();
