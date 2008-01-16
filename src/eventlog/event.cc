@@ -21,21 +21,21 @@
 Event::Event(EventLog *eventLog)
 {
     this->eventLog = eventLog;
-	
-	clearInternalState();
+    
+    clearInternalState();
 }
 
 Event::~Event()
 {
-	deleteAllocatedObjects();
+    deleteAllocatedObjects();
 }
 
 void Event::deleteAllocatedObjects()
 {
-	for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
         delete *it;
 
-	if (!cause)
+    if (!cause)
         delete cause;
 
     if (causes)
@@ -52,7 +52,7 @@ void Event::deleteAllocatedObjects()
         delete consequences;
     }
 
-	clearInternalState();
+    clearInternalState();
 }
 
 void Event::clearInternalState()
@@ -62,12 +62,12 @@ void Event::clearInternalState()
     numEventLogMessages = -1;
     numBeginSendEntries = -1;
 
-	eventEntry = NULL;
+    eventEntry = NULL;
     cause = NULL;
-	causes = NULL;
-	consequences = NULL;
+    causes = NULL;
+    consequences = NULL;
 
-	eventLogEntries.clear();
+    eventLogEntries.clear();
 }
 
 void Event::synchronize()
@@ -95,11 +95,11 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 {
     eventLog->progress();
 
-	deleteAllocatedObjects();
+    deleteAllocatedObjects();
     numEventLogMessages = 0;
     numBeginSendEntries = 0;
 
-	Assert(offset >= 0);
+    Assert(offset >= 0);
     beginOffset = offset;
     reader->seekTo(offset);
 

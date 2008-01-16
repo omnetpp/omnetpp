@@ -65,7 +65,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         int maximumConsequenceDepth; // maximum depth of message dependencies considered when collecting consequences
         int maximumNumberOfConsequences; // maximum number of message dependencies collected
 
-		// internal state
+        // internal state
         typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
         EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
 
@@ -163,8 +163,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         double getApproximateMatchingEventRatio();
         void setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<std::string> &patterns, bool dottedPath = false);
 
-		void deleteAllocatedObjects();
-		void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
+        void deleteAllocatedObjects();
+        void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
 };
 
 #endif

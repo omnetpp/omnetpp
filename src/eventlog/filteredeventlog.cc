@@ -19,7 +19,7 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
 {
     this->eventLog = eventLog;
 
-	// filter parameters
+    // filter parameters
     tracedEventNumber = -1;
     firstEventNumber = -1;
     lastEventNumber = -1;
@@ -36,20 +36,20 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     setModuleExpression("");
     setMessageExpression("");
 
-	clearInternalState();
+    clearInternalState();
 }
 
 FilteredEventLog::~FilteredEventLog()
 {
-	deleteAllocatedObjects();
+    deleteAllocatedObjects();
 }
 
 void FilteredEventLog::deleteAllocatedObjects()
 {
-	for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
-		delete it->second;
+    for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
+        delete it->second;
 
-	clearInternalState();
+    clearInternalState();
 }
 
 void FilteredEventLog::clearInternalState(FileReader::FileChangedState change)
@@ -58,31 +58,31 @@ void FilteredEventLog::clearInternalState(FileReader::FileChangedState change)
     approximateMatchingEventRatio = -1;
     lastMatchingEvent = NULL;
 
-	if (change == FileReader::OVERWRITTEN) {
-	    firstMatchingEvent = NULL;
+    if (change == FileReader::OVERWRITTEN) {
+        firstMatchingEvent = NULL;
 
-		eventNumberToFilteredEventMap.clear();
-		eventNumberToFilterMatchesFlagMap.clear();
-		eventNumberToTraceableEventFlagMap.clear();
-	}
+        eventNumberToFilteredEventMap.clear();
+        eventNumberToFilterMatchesFlagMap.clear();
+        eventNumberToTraceableEventFlagMap.clear();
+    }
 }
 
 void FilteredEventLog::synchronize()
 {
-	FileReader::FileChangedState change = getFileReader()->getFileChangedState();
+    FileReader::FileChangedState change = getFileReader()->getFileChangedState();
 
-	if (change != FileReader::UNCHANGED) {
-		if (change == FileReader::OVERWRITTEN)
-			deleteAllocatedObjects();
-		else
-			clearInternalState(change);
+    if (change != FileReader::UNCHANGED) {
+        if (change == FileReader::OVERWRITTEN)
+            deleteAllocatedObjects();
+        else
+            clearInternalState(change);
 
-		eventLog->synchronize();
+        eventLog->synchronize();
 
-		if (change == FileReader::APPENDED)
-			for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
-				it->second->synchronize();
-	}
+        if (change == FileReader::APPENDED)
+            for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
+                it->second->synchronize();
+    }
 }
 
 void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<std::string> &patterns, bool dottedPath)

@@ -20,53 +20,53 @@ StringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
- 	reader->setSynchronizeWhenAppended(false);
+     reader->setSynchronizeWhenAppended(false);
 
-	clearInternalState();
+    clearInternalState();
     parseInitializationLogEntries();
 }
 
 EventLog::~EventLog()
 {
-	deleteAllocatedObjects();
+    deleteAllocatedObjects();
 }
 
 void EventLog::deleteAllocatedObjects()
 {
-	for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
-		delete *it;
+    for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
+        delete *it;
 
-	for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
-		delete it->second;
+    for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+        delete it->second;
 
-	clearInternalState();
+    clearInternalState();
 }
 
 void EventLog::clearInternalState(FileReader::FileChangedState change)
 {
     approximateNumberOfEvents = -1;
 
-	// lastEvent should be set to null if the last event becomes a different one
-	if (change == FileReader::OVERWRITTEN) {
-		numParsedEvents = 0;
+    // lastEvent should be set to null if the last event becomes a different one
+    if (change == FileReader::OVERWRITTEN) {
+        numParsedEvents = 0;
 
-		progressCallInterval = CLOCKS_PER_SEC;
-		lastProgressCall = -1;
+        progressCallInterval = CLOCKS_PER_SEC;
+        lastProgressCall = -1;
 
-		firstEvent = NULL;
-		lastEvent = NULL;
+        firstEvent = NULL;
+        lastEvent = NULL;
 
-		messageNames.clear();
-		messageClassNames.clear();
+        messageNames.clear();
+        messageClassNames.clear();
 
-		initializationLogEntries.clear();
-		initializationModuleIdToModuleCreatedEntryMap.clear();
+        initializationLogEntries.clear();
+        initializationModuleIdToModuleCreatedEntryMap.clear();
 
-		eventNumberToEventMap.clear();
-		offsetToEventMap.clear();
-	}
-	else if (lastEvent && lastEvent->getBeginOffset() != getLastEventOffset())
-		lastEvent = NULL;
+        eventNumberToEventMap.clear();
+        offsetToEventMap.clear();
+    }
+    else if (lastEvent && lastEvent->getBeginOffset() != getLastEventOffset())
+        lastEvent = NULL;
 }
 
 ProgressMonitor EventLog::setProgressMonitor(ProgressMonitor newProgressMonitor)
@@ -86,31 +86,31 @@ void EventLog::progress()
 
 void EventLog::synchronize()
 {
-	FileReader::FileChangedState change = getFileReader()->getFileChangedState();
+    FileReader::FileChangedState change = getFileReader()->getFileChangedState();
 
-	if (change != FileReader::UNCHANGED) {
-		if (change == FileReader::OVERWRITTEN)
-			deleteAllocatedObjects();
+    if (change != FileReader::UNCHANGED) {
+        if (change == FileReader::OVERWRITTEN)
+            deleteAllocatedObjects();
 
-		Event *lastEvent = this->lastEvent;
+        Event *lastEvent = this->lastEvent;
 
-		IEventLog::synchronize();
-		EventLogIndex::synchronize();
+        IEventLog::synchronize();
+        EventLogIndex::synchronize();
 
-		if (change != FileReader::OVERWRITTEN)
-			clearInternalState(change);
+        if (change != FileReader::OVERWRITTEN)
+            clearInternalState(change);
 
-		if (change == FileReader::APPENDED) {
-			// always update the old last event because it might have been incomplete
-			if (lastEvent)
-				lastEvent->parse(reader, lastEvent->getBeginOffset());
+        if (change == FileReader::APPENDED) {
+            // always update the old last event because it might have been incomplete
+            if (lastEvent)
+                lastEvent->parse(reader, lastEvent->getBeginOffset());
 
-			for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
-				it->second->synchronize();
-		}
-		else
-			parseInitializationLogEntries();
-	}
+            for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+                it->second->synchronize();
+        }
+        else
+            parseInitializationLogEntries();
+    }
 }
 
 long EventLog::getApproximateNumberOfEvents()
@@ -242,19 +242,19 @@ Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
     Assert(eventNumber >= 0);
 
     if (matchKind == EXACT) {
-		EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
+        EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
         if (it != eventNumberToEventMap.end())
             return it->second;
 
-		// the following two are still faster than binary searching
-		it = eventNumberToEventMap.find(eventNumber - 1);
+        // the following two are still faster than binary searching
+        it = eventNumberToEventMap.find(eventNumber - 1);
         if (it != eventNumberToEventMap.end())
-			return it->second->getNextEvent();
+            return it->second->getNextEvent();
 
-		it = eventNumberToEventMap.find(eventNumber + 1);
+        it = eventNumberToEventMap.find(eventNumber + 1);
         if (it != eventNumberToEventMap.end())
-			return it->second->getPreviousEvent();
-	}
+            return it->second->getPreviousEvent();
+    }
 
     // TODO: cache result
     file_offset_t offset = getOffsetForEventNumber(eventNumber, matchKind);
@@ -348,12 +348,12 @@ Event *EventLog::getEventForEndOffset(file_offset_t endOffset)
 
 Event *EventLog::cacheEvent(Event *event)
 {
-	int eventNumber = event->getEventNumber();
-	Assert(!lastEvent || eventNumber <= lastEvent->getEventNumber());
-	Assert(eventNumberToEventMap.find(eventNumber) == eventNumberToEventMap.end());
+    int eventNumber = event->getEventNumber();
+    Assert(!lastEvent || eventNumber <= lastEvent->getEventNumber());
+    Assert(eventNumberToEventMap.find(eventNumber) == eventNumberToEventMap.end());
 
     eventNumberToEventMap[eventNumber] = event;
     offsetToEventMap[event->getBeginOffset()] = event;
 
-	return event;
+    return event;
 }

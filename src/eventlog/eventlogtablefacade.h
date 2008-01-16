@@ -67,18 +67,18 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         const char *getCustomFilter() { return customFilter.c_str(); }
 
         EventLogEntry *getEventLogEntry(long eventNumber, int eventLogEntryIndex);
-		EventLogEntry *getFirstEntry();
-		EventLogEntry *getLastEntry();
+        EventLogEntry *getFirstEntry();
+        EventLogEntry *getLastEntry();
         int getEntryIndexInEvent(EventLogEntry *eventLogEntry);
         EventLogEntry *getEntryInEvent(IEvent *event, int index);
-		long getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit);
+        long getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit);
         EventLogEntry *getClosestEntryInEvent(EventLogEntry *eventLogEntry);
-		long getDistanceToFirstEntry(EventLogEntry *eventLogEntry, long limit);
-		long getDistanceToLastEntry(EventLogEntry *eventLogEntry, long limit);
-		EventLogEntry *getNeighbourEntry(EventLogEntry *eventLogEntry, long distance);
+        long getDistanceToFirstEntry(EventLogEntry *eventLogEntry, long limit);
+        long getDistanceToLastEntry(EventLogEntry *eventLogEntry, long limit);
+        EventLogEntry *getNeighbourEntry(EventLogEntry *eventLogEntry, long distance);
         double getApproximatePercentageForEntry(EventLogEntry *eventLogEntry);
-		EventLogEntry *getApproximateEventLogEntryTableAt(double percentage);
-		long getApproximateNumberOfEntries();
+        EventLogEntry *getApproximateEventLogEntryTableAt(double percentage);
+        long getApproximateNumberOfEntries();
 
     protected:
         EventLogEntry *getPreviousEntry(EventLogEntry *eventLogEntry, int& index);

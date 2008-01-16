@@ -98,9 +98,9 @@ class EVENTLOG_API Event : public IEvent
 
         virtual void print(FILE *file = stdout, bool outputEventLogMessages = true);
 
-	protected:
-		void deleteAllocatedObjects();
-		void clearInternalState();
+    protected:
+        void deleteAllocatedObjects();
+        void clearInternalState();
 };
 
 #endif

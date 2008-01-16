@@ -72,7 +72,7 @@ class EVENTLOG_API IEventLog
         /**
          * Synchorizes state when the underlying log file changes (new events are appended).
          */
-		virtual void synchronize();
+        virtual void synchronize();
 
         /**
          * Returns the file reader used to read in events.
