@@ -83,7 +83,7 @@ void PQueue::handleMessage(cMessage *msg)
         send(job, "out", k);
     }
     else
-        error("This should not happen. Queueue is NOT empty and there is an IDLE server attached to us.");
+        error("This should not happen. Queue is NOT empty and there is an IDLE server attached to us.");
 
     // statistics
     lengthStats.record(length());
