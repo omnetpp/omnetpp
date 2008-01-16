@@ -47,8 +47,8 @@ enum eMessageKind
 {
   MK_STARTER = -1,  /// Starter message. Used by scheduleStart().
   MK_TIMEOUT = -2,  /// Internal timeout message. Used by wait(), etc.
-  MK_PACKET  = -3,  /// Network packet. Used by cPacket.
-  MK_INFO    = -4,  /// Information packet. Used by cPacket.
+  MK_PACKET  = -3,  /// Obsolete
+  MK_INFO    = -4,  /// Obsolete
 
   MK_PARSIM_BEGIN = -1000  /// values -1000...-2000 reserved for parallel simulation
 };
