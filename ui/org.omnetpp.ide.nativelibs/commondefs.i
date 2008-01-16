@@ -155,13 +155,13 @@ class BigDecimal;
    }
 %}
 %typemap(out) BigDecimal& %{
-   if ($1.isNil())
+   if ($1->isNil())
    {
       $result = 0;
    }
    else
    {
-      {*($1_ltype*)(void *)&$result = &$1; }
+      {*($1_ltype*)(void *)&$result = $1; }
    }
 %}
 %enddef // COMMON_ENGINE_BIGDECIMAL

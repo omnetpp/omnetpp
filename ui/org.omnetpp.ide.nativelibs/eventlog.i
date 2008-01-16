@@ -339,8 +339,6 @@ import java.lang.reflect.Constructor;
 
 %newobject SequenceChartFacade::getIntersectingMessageDependencies;
 
-typedef double simtime_t;
-
 %ignore eventLogStringPool;
 %ignore FILE;
 %ignore *::parse;
