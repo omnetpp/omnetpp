@@ -385,22 +385,24 @@ public class HoverSupport {
 				if (BrowserInformationControl.isAvailable(parent)) {
 					BrowserInformationControl browserInformationControl = new BrowserInformationControl(parent, shellStyle, style);
 					
-					final Shell shell = (Shell)ReflectionUtils.getFieldValue(browserInformationControl,"fShell");
-					((GridLayout)shell.getLayout()).marginHeight = 5;
-					((GridLayout)shell.getLayout()).marginWidth = 5;
-					shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					makeShellResizeable(shell);
+					if (!SWT.getPlatform().equals("win32") && !SWT.getPlatform().equals("wpf")) {
+					    final Shell shell = (Shell)ReflectionUtils.getFieldValue(browserInformationControl,"fShell");
+					    ((GridLayout)shell.getLayout()).marginHeight = 5;
+					    ((GridLayout)shell.getLayout()).marginWidth = 5;
+					    shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+					    makeShellResizeable(shell);
+					}
 					
 					return browserInformationControl;
 				} else {
 					DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false));
-					
-					final Shell shell = ((PopupDialog)ReflectionUtils.getFieldValue(defaultInformationControl,"fPopupDialog")).getShell();
-					((GridLayout)shell.getLayout()).marginHeight = 5;
-					((GridLayout)shell.getLayout()).marginWidth = 5;
-					shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					makeShellResizeable(shell);
-
+					if (!SWT.getPlatform().equals("win32") && !SWT.getPlatform().equals("wpf")) {
+					    final Shell shell = ((PopupDialog)ReflectionUtils.getFieldValue(defaultInformationControl,"fPopupDialog")).getShell();
+					    ((GridLayout)shell.getLayout()).marginHeight = 5;
+					    ((GridLayout)shell.getLayout()).marginWidth = 5;
+					    shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+					    makeShellResizeable(shell);
+                    }
 					return defaultInformationControl;
 				}
 			}
@@ -504,7 +506,6 @@ public class HoverSupport {
                     shell.setSize(size);
                     
                     prevPos = p;
-                    
                 }
             }
 		}
