@@ -25,7 +25,7 @@
 #include "ieventlog.h"
 #include "eventlogindex.h"
 
-extern EVENTLOG_API StringPool eventLogStringPool;
+extern EVENTLOG_API CommonStringPool eventLogStringPool;
 
 class Event;
 class EventLogEntry;

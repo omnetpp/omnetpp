@@ -16,7 +16,7 @@
 #include "stringpool.h"
 #include "eventlog.h"
 
-StringPool eventLogStringPool;
+CommonStringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
@@ -217,7 +217,7 @@ Event *EventLog::getFirstEvent()
 {
     if (!firstEvent) {
         file_offset_t offset = getFirstEventOffset();
-    
+
         if (offset != -1)
             firstEvent = getEventForBeginOffset(offset);
     }

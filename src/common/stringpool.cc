@@ -14,11 +14,11 @@
 
 #include "stringpool.h"
 
-StringPool::StringPool()
+CommonStringPool::CommonStringPool()
 {
 }
 
-StringPool::~StringPool()
+CommonStringPool::~CommonStringPool()
 {
     for (StringSet::iterator it = pool.begin(); it!=pool.end(); ++it)
         delete [] *it;
@@ -29,7 +29,7 @@ StringPool::~StringPool()
     //}
 }
 
-const char *StringPool::get(const char *s)
+const char *CommonStringPool::get(const char *s)
 {
     if (s==NULL)
         return ""; // must not be NULL because SWIG-generated code will crash!

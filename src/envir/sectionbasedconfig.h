@@ -63,7 +63,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     StringSet basedirs;  // stores ini file locations (absolute paths)
 
     // config entries (i.e. keys not containing a dot or wildcard)
-    std::map<std::string,KeyValue1> config;  //XXX use const char * and StringPool
+    std::map<std::string,KeyValue1> config;  //XXX use const char * and CommonStringPool
 
     class KeyValue2 : public KeyValue1 {
       public:
@@ -138,7 +138,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     StringMap variables;
 
     // storage for values returned by substituteVariables()
-    StringPool stringPool;
+    CommonStringPool stringPool;
 
   public:
     /**

@@ -26,7 +26,7 @@
  * to be released. The downside is that they will only be deallocated in the
  * stringpool object's destructor.
  */
-class COMMON_API StringPool
+class COMMON_API CommonStringPool
 {
   protected:
     struct strless {
@@ -40,8 +40,8 @@ class COMMON_API StringPool
     StringSet pool;
 
   public:
-    StringPool();
-    ~StringPool();
+    CommonStringPool();
+    ~CommonStringPool();
     const char *get(const char *s);
 };
 
