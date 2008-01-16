@@ -158,8 +158,10 @@ void FileReader::synchronize()
 void FileReader::checkConsistence()
 {
     bool ok = (size_t)(bufferEnd - bufferBegin) == bufferSize &&
-              dataBegin <= dataEnd && dataBegin >= bufferBegin && dataEnd <= bufferEnd &&
-              strlen(dataBegin) == (size_t)(dataEnd - dataBegin);
+      ((!dataBegin && !dataEnd) || 
+       dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd &&
+       dataBegin <= currentDataPointer && currentDataPointer <= dataEnd);
+
     if (!ok)
         throw opp_runtime_error("FileReader: internal error");
 }
@@ -246,16 +248,33 @@ void FileReader::fillBuffer(bool forward)
     }
 }
 
-bool FileReader::isLineStart(char *&s) {
-    if (bufferFileOffset == 0 && bufferBegin == s)
-        return true;
+bool FileReader::isLineStart(char *s) {
+    Assert(bufferBegin <= s && s <= bufferEnd);
 
-    if (dataBegin == s) {
-	    file_offset_t fileOffset = pointerToFileOffset(s);
-        seekTo(fileOffset, 1);
-        fillBuffer(false);
-        s = fileOffsetToPointer(fileOffset);
+    if (s == bufferBegin) {
+        // first line of file
+        if (bufferFileOffset == 0)
+            return true;
+        else { // slow path
+           file_offset_t fileOffset = pointerToFileOffset(s) - 1;
+
+           filereader_fseek(f, fileOffset, SEEK_SET);
+           if (ferror(f))
+               throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
+
+           char previousChar;
+           fread(&previousChar, 1, 1, f);
+
+           if (ferror(f))
+               throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
+
+           return previousChar == '\n';
+        }
     }
+    else if (s - 1 < dataBegin)
+        fillBuffer(false);
+    else if (s - 1 >= dataEnd)
+        fillBuffer(true);
 
     return *(s - 1) == '\n';
 }
@@ -274,8 +293,8 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
     if (s < dataEnd && *s == '\n')
         s++;
 
-    // did we reach the end of the buffer? (slow path)
-    if (s >= dataEnd)
+    Assert(s <= dataEnd);
+    if (s == dataEnd) // did we reach the end of the data in the buffer? (slow path)
     {
         file_offset_t fileOffset = pointerToFileOffset(start);
 
@@ -313,8 +332,10 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
     while (s >= dataBegin && *s != '\r' && *s!= '\n')
         s--;
 
-    // did we reach the beginning of the buffer? (slow path)
-    if (s < dataBegin)
+    s++;
+
+    Assert(s >= dataBegin);
+    if (s == dataBegin) // did we reach the beginning of the data in the buffer? (slow path)
     {
         file_offset_t fileOffset = pointerToFileOffset(start);
 
@@ -329,26 +350,29 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
 
             return findPreviousLineStart(s, true);
         }
-        if (getDataBeginFileOffset() == 0) // searching reached to the beginning of the file without CR/LF
+        else if (getDataBeginFileOffset() == 0) // searching reached to the beginning of the file without CR/LF
             return dataBegin;
         else // line too long
             throw opp_runtime_error("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
     }
 
-    return s + 1;
+    return s;
 }
 
 char *FileReader::getNextLineBufferPointer(bool checkFileChanged)
 {
     numReadLines++;
     ensureFileOpen();
+
     Assert(currentDataPointer);
+
     if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
     if (checkFileChanged)
         checkFileChangedAndSynchronize();
 
     fillBuffer(true);
+    checkConsistence();
 
     if (!isLineStart(currentDataPointer)) {
         char *nextLineDataPointer = findNextLineStart(currentDataPointer);
@@ -382,13 +406,16 @@ char *FileReader::getPreviousLineBufferPointer(bool checkFileChanged)
 {
     numReadLines++;
     ensureFileOpen();
+
     Assert(currentDataPointer);
+
     if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 
     if (checkFileChanged)
         checkFileChangedAndSynchronize();
 
     fillBuffer(false);
+    checkConsistence();
 
     if (!isLineStart(currentDataPointer)) {
         char *previousLineDataPointer = findPreviousLineStart(currentDataPointer);

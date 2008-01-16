@@ -92,12 +92,15 @@ fieldpattern
                     PatternMatcher *p = new PatternMatcher();
                     p->setPattern($1, state.dottedpath, state.fullstring, state.casesensitive);
                     state.elemsp->push_back(MatchExpression::Elem(p));
+                    delete [] $1;
                 }
         | STRINGLITERAL '(' STRINGLITERAL ')'
                 {
                     PatternMatcher *p = new PatternMatcher();
                     p->setPattern($3, state.dottedpath, state.fullstring, state.casesensitive);
                     state.elemsp->push_back(MatchExpression::Elem(p, $1));
+                    delete [] $1;
+                    delete [] $3;
                 }
         ;
 

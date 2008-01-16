@@ -107,7 +107,8 @@ class COMMON_API FileReader
 
   private:
     /**
-     * Reads data into the buffer till the end of the buffer in the given direction.
+     * Reads data into the buffer till the end of the buffer in the given direction
+     * starting from the current data pointer.
      * May read from 0 up to bufferSize number of bytes.
      */
     void fillBuffer(bool forward);
@@ -127,7 +128,7 @@ class COMMON_API FileReader
     file_offset_t getDataEndFileOffset() { return pointerToFileOffset(dataEnd); }
     bool hasData() { return dataBegin != dataEnd; }
 
-    bool isLineStart(char *&s);
+    bool isLineStart(char *s);
     char *findNextLineStart(char *s, bool bufferFilled = false);
     char *findPreviousLineStart(char *s, bool bufferFilled = false);
 
