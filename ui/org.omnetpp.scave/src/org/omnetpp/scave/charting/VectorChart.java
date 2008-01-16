@@ -67,8 +67,8 @@ public class VectorChart extends ChartCanvas {
 	
 	private IXYDataset dataset = null;
 
-	private LinearAxis xAxis = new LinearAxis(this, false, false);
-	private LinearAxis yAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC);
+	private LinearAxis xAxis = new LinearAxis(this, false, false, true);
+	private LinearAxis yAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC, true);
 	private List<LineProperties> lineProperties;
 	private LineProperties defaultProperties;
 	private CrossHair crosshair = new CrossHair(this);
@@ -486,7 +486,7 @@ public class VectorChart extends ChartCanvas {
 						maxX = Math.max(maxX, transformX(dataset.getX(series, n-1)));
 						for (int i = 0; i < n; i++) {
 							double y = transformY(dataset.getY(series, i));
-							if (!Double.isNaN(y)) {
+							if (!Double.isNaN(y) && !Double.isInfinite(y)) {
 								minY = Math.min(minY, y);
 								maxY = Math.max(maxY, y);
 							}

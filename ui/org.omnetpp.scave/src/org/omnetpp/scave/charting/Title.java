@@ -1,5 +1,6 @@
 package org.omnetpp.scave.charting;
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -15,6 +16,7 @@ public class Title {
 
 	private String text;
 	private Font font;
+	private Color color = ChartDefaults.DEFAULT_TITLE_COLOR;
 	private Rectangle bounds;
 	
 	public Title() {
@@ -59,6 +61,7 @@ public class Title {
 			return;
 		
 		gc.setFont(font);
+		gc.setForeground(color);
 		gc.drawString(text, bounds.x, bounds.y, true);
 	}
 }

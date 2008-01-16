@@ -65,7 +65,7 @@ import org.omnetpp.scave.charting.plotter.SquareSymbol;
 public class ScalarChart extends ChartCanvas {
 	private IScalarDataset dataset;
 
-	private LinearAxis valueAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC);
+	private LinearAxis valueAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
 	private DomainAxis domainAxis = new DomainAxis(this);
 	private BarPlot plot = new BarPlot();
 
@@ -394,6 +394,7 @@ public class ScalarChart extends ChartCanvas {
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 		
 		paintInsets(gc);
+		plot.drawBaseline(gc);
 		title.draw(gc);
 		legend.draw(gc);
 		valueAxis.drawAxis(gc);
@@ -403,8 +404,6 @@ public class ScalarChart extends ChartCanvas {
 		drawStatusText(gc);
 	}
 	
-	
-
 	@Override
 	public void setZoomX(double zoomX) {
 		super.setZoomX(zoomX);
@@ -449,9 +448,8 @@ public class ScalarChart extends ChartCanvas {
 			if (dataset != null) {
 				Graphics graphics = new SWTGraphics(gc);
 				graphics.pushState();
-
+				
 				Rectangle clip = graphics.getClip(new Rectangle());
-
 				int cColumns = dataset.getColumnCount();
 				int[] indices = getRowColumnsInRectangle(clip);
 				for (int i = indices[0]; i <= indices[1]; ++i) {
@@ -459,6 +457,21 @@ public class ScalarChart extends ChartCanvas {
 					int column = i % cColumns;
 					drawBar(graphics, row, column);
 				}
+				graphics.popState();
+				graphics.dispose();
+			}
+		}
+		
+		public void drawBaseline(GC gc) {
+			double baseline = transformBaseline(barBaseline);
+			if (!Double.isNaN(baseline) && !Double.isInfinite(baseline)) {
+				Graphics graphics = new SWTGraphics(gc);
+				graphics.pushState();
+				
+				int y = toCanvasY(baseline);
+				graphics.setForegroundColor(ChartDefaults.DEFAULT_BAR_BASELINE_COLOR);
+				graphics.drawLine(rect.x + 1, y, rect.x + rect.width - 1, y);
+				
 				graphics.popState();
 				graphics.dispose();
 			}
@@ -523,10 +536,20 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		protected Rectangle getBarRectangle(int row, int column) {
-			int x = toCanvasX(getLeftX(row, column));
-			int y = toCanvasY(getTopY(row, column));
-			int width = toCanvasDistX(getRightX(row,column) - getLeftX(row, column));
-			int height = toCanvasDistY(getTopY(row, column) - getBottomY(row, column));
+			double top = getTopY(row, column);
+			double bottom = getBottomY(row, column);
+			double left = getLeftX(row, column);
+			double right = getRightX(row, column);
+			
+			if (Double.isInfinite(top))
+				top = top < 0.0 ? chartArea.minY : chartArea.maxY;
+			if (Double.isInfinite(bottom))
+				bottom = bottom < 0.0 ? chartArea.minY : chartArea.maxY;
+			
+			int x = toCanvasX(left);
+			int y = toCanvasY(top);
+			int width = toCanvasDistX(right - left);
+			int height = toCanvasDistY(top - bottom);
 			return new Rectangle(x, y, width, height);
 		}
 		
@@ -536,17 +559,18 @@ public class ScalarChart extends ChartCanvas {
 			
 			int cRows = dataset.getRowCount();
 			int cColumns = dataset.getColumnCount();
+			double baseline = transformBaseline(barBaseline);
 			double minX = getLeftX(0, 0);
 			double maxX = getRightX(cRows - 1, cColumns - 1);
-			double minY = transformBaseline(barBaseline);
-			double maxY = transformBaseline(barBaseline);
+			double minY = baseline;
+			double maxY = baseline;
 			for (int row = 0; row < cRows; ++row)
 				for (int column = 0; column < cColumns; ++column) {
 					double topY = plot.getTopY(row, column);
 					double bottomY = plot.getBottomY(row, column);
-					if (!Double.isNaN(bottomY))
+					if (!Double.isNaN(bottomY) && !Double.isInfinite(bottomY))
 						minY = Math.min(minY, bottomY);
-					if (!Double.isNaN(topY))
+					if (!Double.isNaN(topY) && !Double.isInfinite(topY))
 						maxY = Math.max(maxY, topY);
 				}
 			if (minY > maxY) { // no data points
@@ -554,8 +578,10 @@ public class ScalarChart extends ChartCanvas {
 				maxY = 1.0;
 			}
 			double height = maxY - minY;
-			return new RectangularArea(minX - horizontalInset * widthBar, minY,
-									   maxX + horizontalInset * widthBar, maxY + verticalInset * height);
+			double topInset = maxY > baseline ? verticalInset * height : 0.0;
+			double bottomInset = minY < baseline ? verticalInset * height : 0.0;
+			return new RectangularArea(minX - horizontalInset * widthBar, minY - bottomInset,
+									   maxX + horizontalInset * widthBar, maxY + topInset);
 		}
 		
 		protected double getLeftX(int row, int column) {
@@ -591,7 +617,7 @@ public class ScalarChart extends ChartCanvas {
 		
 		protected double transformBaseline(double baseline) {
 			baseline = transformValue(baseline);
-			return Double.isNaN(baseline) ? 0.0 : baseline;
+			return Double.isNaN(baseline) || Double.isInfinite(baseline) ? 0.0 : baseline;
 		}
 	}
 	

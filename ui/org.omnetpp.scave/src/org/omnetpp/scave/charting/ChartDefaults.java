@@ -48,6 +48,7 @@ public class ChartDefaults {
 	// title
 	public static final String DEFAULT_TITLE = "";
 	public static final Font DEFAULT_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
+	public static final Color DEFAULT_TITLE_COLOR = ColorFactory.BLACK;
 
 	// colors
 	public static final Color DEFAULT_BACKGROUND_COLOR = ColorFactory.WHITE;
@@ -79,6 +80,7 @@ public class ChartDefaults {
 	public static final double DEFAULT_BAR_BASELINE = 0.0;
 	public static final BarPlacement DEFAULT_BAR_PLACEMENT = BarPlacement.Aligned;
 	public static final Color DEFAULT_BAR_OUTLINE_COLOR = ColorFactory.GREY80;
+	public static final Color DEFAULT_BAR_BASELINE_COLOR = ColorFactory.GREY80;
 	public static final boolean DEFAULT_WRAP_LABELS = true;
 
 	// lines

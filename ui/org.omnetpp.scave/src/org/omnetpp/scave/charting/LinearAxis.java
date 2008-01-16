@@ -31,6 +31,7 @@ public class LinearAxis {
 	/* Properties */
 	private boolean vertical;    // horizontal or vertical axis
 	private boolean logarithmic; // logarithmic axis
+	private boolean drawAxisToPlot;
 	private ShowGrid showGrid = DEFAULT_SHOW_GRID;
 	private boolean drawTickLabels = true;
 	private boolean drawTitle = true;
@@ -49,10 +50,11 @@ public class LinearAxis {
 	/* Area -> Canvas coords */
 	private ICoordsMapping mapping;
 	
-	public LinearAxis(ICoordsMapping mapping, boolean vertical, boolean logarithmic) {
+	public LinearAxis(ICoordsMapping mapping, boolean vertical, boolean logarithmic, boolean drawAxisToPlot) {
 		this.mapping = mapping;
 		this.vertical = vertical;
 		this.logarithmic = logarithmic;
+		this.drawAxisToPlot = drawAxisToPlot;
 		this.title = vertical ? DEFAULT_Y_AXIS_TITLE : DEFAULT_X_AXIS_TITLE;
 	}
 
@@ -160,7 +162,8 @@ public class LinearAxis {
 
 		Point titleSize = gc.textExtent(title);
 		if (vertical) {
-			if (!logarithmic && mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
+			if (drawAxisToPlot && !logarithmic &&
+					mapping.fromCanvasY(plotArea.bottom()) < 0 && mapping.fromCanvasY(plotArea.y) > 0)
 				gc.drawLine(plotArea.x, mapping.toCanvasY(0), plotArea.right(), mapping.toCanvasY(0)); // x axis
 			gc.drawLine(plotArea.x - gap, plotArea.y, plotArea.x - gap, plotArea.bottom());
 			gc.drawLine(plotArea.right() + gap, plotArea.y, plotArea.right() + gap, plotArea.bottom());
@@ -174,7 +177,8 @@ public class LinearAxis {
 			}
 		}
 		else {
-			if (!logarithmic && mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
+			if (drawAxisToPlot && !logarithmic &&
+					mapping.fromCanvasX(plotArea.x) < 0 && mapping.fromCanvasX(plotArea.right()) > 0)
 				gc.drawLine(mapping.toCanvasX(0), plotArea.y, mapping.toCanvasX(0), plotArea.bottom()); // y axis
 			gc.drawLine(plotArea.x, plotArea.y - gap, plotArea.right(), plotArea.y - gap);
 			gc.drawLine(plotArea.x, plotArea.bottom() + gap, plotArea.right(), plotArea.bottom() + gap);

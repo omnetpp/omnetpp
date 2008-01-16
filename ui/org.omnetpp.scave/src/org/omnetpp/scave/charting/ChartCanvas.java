@@ -418,11 +418,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			double maxY = transform.transformY(area.maxY);
 			
 			return new RectangularArea(
-							Double.isNaN(minX) ? Double.NEGATIVE_INFINITY : minX,
-							Double.isNaN(minY) ? Double.NEGATIVE_INFINITY : minY,
-							Double.isNaN(maxX) ? Double.POSITIVE_INFINITY : maxX,
-							Double.isNaN(maxY) ? Double.POSITIVE_INFINITY : maxY
-						);
+				Double.isNaN(minX) || Double.isInfinite(minX) ? Double.NEGATIVE_INFINITY : minX,
+				Double.isNaN(minY) || Double.isInfinite(minY)? Double.NEGATIVE_INFINITY : minY,
+				Double.isNaN(maxX) || Double.isInfinite(maxX)? Double.POSITIVE_INFINITY : maxX,
+				Double.isNaN(maxY) || Double.isInfinite(maxY) ? Double.POSITIVE_INFINITY : maxY
+			);
 		}
 	}
 	
@@ -665,7 +665,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		}
 
 		public double transformY(double y) {
-			if (Double.isNaN(y) || y <= 0)
+			if (Double.isNaN(y) || y < 0)
 				return Double.NaN;
 			return Math.log10(y);
 		}
