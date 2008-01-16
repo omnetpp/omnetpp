@@ -104,9 +104,9 @@ simtime_t& EventLogIndex::getLastSimulationTime()
     return lastSimulationTime;
 }
 
-bool EventLogIndex::needsToBeStored(long eventNumber)
+bool EventLogIndex::needsToBeStored(long eventNumber, file_offset_t offset)
 {
-    if (eventNumber%EVENTNUM_INDEX_DENSITY==0)
+    if (eventNumber % EVENTNUM_INDEX_DENSITY == 0 || firstEventOffset == offset || lastEventOffset == offset)
         return true;
 
     // find eventNumber in map (lower_bound() finds equal or first greater key)
@@ -120,7 +120,7 @@ bool EventLogIndex::needsToBeStored(long eventNumber)
 
 void EventLogIndex::addPosition(long eventNumber, simtime_t simulationTime, file_offset_t offset)
 {
-    if (needsToBeStored(eventNumber))
+    if (needsToBeStored(eventNumber, offset))
     {
         eventNumberToOffsetMap[eventNumber] = offset;
         simulationTimeToOffsetMap[simulationTime] = offset;

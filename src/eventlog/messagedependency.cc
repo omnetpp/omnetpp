@@ -101,7 +101,7 @@ BeginSendEntry *MessageDependency::getConsequenceBeginSendEntry()
 
 long MessageDependency::getConsequenceEventNumber()
 {
-    if (consequenceEventNumber == EVENT_NOT_YET_CALCULATED)
+    if (consequenceEventNumber == EVENT_NOT_YET_CALCULATED || consequenceEventNumber == EVENT_NOT_YET_REACHED)
     {
         // only cause is present, calculate consequence from it.
         //

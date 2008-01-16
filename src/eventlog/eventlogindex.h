@@ -53,7 +53,7 @@ class EVENTLOG_API EventLogIndex
 
     protected:
         // return true if the given offset should be stored in the map (not already there, etc)
-        bool needsToBeStored(long eventNumber);
+        bool needsToBeStored(long eventNumber, file_offset_t offset);
         void addPosition(long eventNumber, simtime_t simulationTime, file_offset_t offset);
         template <typename T> file_offset_t binarySearchForOffset(bool eventNumberBased, std::map<T, file_offset_t> *keyToOffsetMap, T key, MatchKind matchKind);
         template <typename T> file_offset_t linearSearchForOffset(bool eventNumberBased, file_offset_t offset, T key, bool forward, bool exactMatchFound);
