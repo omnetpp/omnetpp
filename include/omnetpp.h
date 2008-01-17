@@ -93,7 +93,6 @@
 #include "omnetpp.h"
 #include "onstartup.h"
 #include "opp_string.h"
-#include "protocol.h"
 #include "random.h"
 #include "regmacros.h"
 #include "util.h"
