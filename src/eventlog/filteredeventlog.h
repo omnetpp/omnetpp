@@ -126,6 +126,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual std::set<const char *>& getMessageClassNames() { return eventLog->getMessageClassNames(); }
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int index) { return eventLog->getModuleCreatedEntry(index); }
         virtual int getNumModuleCreatedEntries() { return eventLog->getNumModuleCreatedEntries(); }
+        virtual SimulationBeginEntry *getSimulationBeginEntry() { return eventLog->getSimulationBeginEntry(); }
 
         virtual bool isEmpty();
         virtual FilteredEvent *getFirstEvent();

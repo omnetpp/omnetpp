@@ -64,6 +64,8 @@ void EventLog::clearInternalState(FileReader::FileChangedState change)
         initializationLogEntries.clear();
         initializationModuleIdToModuleCreatedEntryMap.clear();
 
+        simulationBeginEntry = NULL;
+
         eventNumberToEventMap.clear();
         offsetToEventMap.clear();
     }
@@ -193,6 +195,11 @@ void EventLog::parseInitializationLogEntries()
             break;
 
         EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, line, reader->getCurrentLineLength());
+
+        if (dynamic_cast<SimulationBeginEntry *>(eventLogEntry)) {
+            Assert(!simulationBeginEntry);
+            simulationBeginEntry = (SimulationBeginEntry *)eventLogEntry;
+        }
 
         if (dynamic_cast<EventEntry *>(eventLogEntry)) {
             delete eventLogEntry;

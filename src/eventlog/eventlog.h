@@ -53,6 +53,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         typedef std::vector<EventLogEntry *> EventLogEntryList;
         EventLogEntryList initializationLogEntries; // all entries from the beginning of the file to the first event
 
+        SimulationBeginEntry *simulationBeginEntry;
+
         typedef std::map<int, ModuleCreatedEntry *> ModuleIdToModuleCreatedEntryMap;
         ModuleIdToModuleCreatedEntryMap initializationModuleIdToModuleCreatedEntryMap;
 
@@ -95,6 +97,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual std::set<const char *>& getMessageClassNames() { return messageClassNames; }
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }
         virtual int getNumModuleCreatedEntries() { return initializationModuleIdToModuleCreatedEntryMap.size(); }
+        virtual SimulationBeginEntry *getSimulationBeginEntry() { return simulationBeginEntry; }
 
         virtual Event *getFirstEvent();
         virtual Event *getLastEvent();

@@ -1,4 +1,4 @@
-SS SimulationStartEntry // first line of an event log file
+SB SimulationBeginEntry // first line of an event log file
 {
    v int version
    rid string runId

@@ -102,6 +102,11 @@ class EVENTLOG_API IEventLog
          */
         virtual int getNumModuleCreatedEntries() = 0;
 
+		/**
+		 * Returns the event log entry describing the whole simulation.
+		 */
+        virtual SimulationBeginEntry *getSimulationBeginEntry() = 0;
+
         /**
          * Returns true if the event log does not contain any events.
          */
