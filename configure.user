@@ -109,6 +109,13 @@ WITH_PARSIM=no
 #ZLIB_LIBS=-lz
 
 #
+# Compiler flags used to compile JNI code.
+# -fno-strict-aliasing is needed for gcc when using -O2 otherwise Java
+# native calls don't work
+#
+#JAVA_CFLAGS=-fno-strict-aliasing
+
+#
 # Compiler and linker options for MPI (optional component).
 # On LAM/MPI, typing `mpic++ -showme' can give you a hint about MPI_LIBS.
 #
