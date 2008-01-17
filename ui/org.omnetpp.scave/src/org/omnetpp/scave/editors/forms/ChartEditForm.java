@@ -187,7 +187,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	protected void populateTabItem(TabItem item) {
 		Group group;
 		String name = item.getText();
-		final Composite panel = (Composite)item.getControl();
+		Composite panel = (Composite)item.getControl();
 		
 		if (TAB_MAIN.equals(name)) {
 			nameGroup = createGroup("Names", panel);
@@ -235,10 +235,10 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			legendAnchorRadios = createRadioGroup("Anchoring", panel, 4, LegendAnchor.class, false);
 			displayLegendCheckbox.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					boolean enabled = displayLegendCheckbox.getSelection();
-					setEnabledDescendants(panel, enabled, displayLegendCheckbox);
+					updateLegendPanelEnabled();
 				}
 			});
+			updateLegendPanelEnabled();
 		}
 	}
 	
@@ -378,6 +378,15 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			radios[i++] = createRadioField(radioLabel, group, value);
 		}
 		return radios;
+	}
+	
+	protected void updateLegendPanelEnabled() {
+		if (displayLegendCheckbox != null && !displayLegendCheckbox.isDisposed()) {
+			setEnabledDescendants(
+				displayLegendCheckbox.getParent(),
+				displayLegendCheckbox.getSelection(),
+				displayLegendCheckbox);
+		}
 	}
 	
 	protected class ColorEdit {
@@ -585,10 +594,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		legendFontText.setText(asString(props.getLegendFont()));
 		setSelection(legendPositionRadios, props.getLegendPosition());
 		setSelection(legendAnchorRadios, props.getLegendAnchoring());
-		setEnabledDescendants(
-				displayLegendCheckbox.getParent(),
-				displayLegendCheckbox.getSelection(),
-				displayLegendCheckbox);
+		updateLegendPanelEnabled();
 	}
 	
 	private static String asString(FontData fontData) {
