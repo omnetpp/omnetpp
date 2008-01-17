@@ -39,8 +39,8 @@ SCAVE_JAVADIR = src/$(subst .,/,$(SCAVE_JAVAPKG))
 LAYOUT_JAVADIR = src/$(subst .,/,$(LAYOUT_JAVAPKG))
 EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 
-OBJS = $O/common.o $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/jprogressmonitor.o
-LIBS=-L$L -lcommon$D -lnedxml$D -lscave$D -llayout$D -leventlog$D
+OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogressmonitor.o
+LIBS=-L$L -lnedxml$D -lscave$D -llayout$D -leventlog$D -lcommon$D
 
 DLL = libopplibs$(SO_LIB_SUFFIX)
 DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.linux.x86
