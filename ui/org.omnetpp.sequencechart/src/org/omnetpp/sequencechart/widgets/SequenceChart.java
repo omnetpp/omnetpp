@@ -76,7 +76,6 @@ import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.PtrVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
-import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.FileRunList;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
@@ -205,6 +204,7 @@ public class SequenceChart
 	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 	private HashMap<Integer, Integer> moduleIdToAxisModuleIndexMap = new HashMap<Integer, Integer>();
 	private boolean invalidVirtualSize = true;
+	private boolean drawStuffUnderMouse = false;
 
     private boolean normalPaintHasBeenRun = false;
 
@@ -1011,15 +1011,9 @@ public class SequenceChart
 								if (idList.size() == 1) {
 									long id = idList.get(0);
 									ResultItem resultItem = resultFileManager.getItem(id);
-									EnumType enumType = resultItem.getEnum();
-
-									if (enumType != null) {
-										XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
-										String[] names = enumType.names().toArray();
-
-										setAxisRenderer(getAxisModule(axisState.vectorModuleFullPath),
-											new AxisVectorBarRenderer(this, axisState.vectorFileName, axisState.vectorModuleFullPath, axisState.vectorName, names, data));
-									}
+									XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
+									setAxisRenderer(getAxisModule(axisState.vectorModuleFullPath),
+										new AxisVectorBarRenderer(this, axisState.vectorFileName, resultItem, data));
 								}
 							}
 						}
@@ -1455,7 +1449,10 @@ public class SequenceChart
 
 	        graphics.translate(0, GUTTER_HEIGHT);
 
-	        drawStuffUnderMouse(graphics);
+	        if (drawStuffUnderMouse) {
+	            drawStuffUnderMouse(graphics);
+	            drawStuffUnderMouse = false;
+	        }
 
 	        graphics.translate(0, -GUTTER_HEIGHT);
 	        graphics.dispose();
@@ -2638,6 +2635,12 @@ public class SequenceChart
             public void mouseExit(MouseEvent e) {
 				redraw();
 			}
+
+            @Override
+            public void mouseHover(MouseEvent e) {
+                drawStuffUnderMouse = true;
+                redraw();
+            }
 		});
 
 		// dragging

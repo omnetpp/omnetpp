@@ -76,7 +76,6 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
-import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -1021,15 +1020,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				if (dialog.open() == ListDialog.OK) {
 					long id = (Long)dialog.getFirstResult();
 					ResultItem resultItem = resultFileManager.getItem(id);
-					EnumType enumType = resultItem.getEnum();
-					
-					if (enumType == null)
-						MessageDialog.openError(null, "Error", "The selected vector is not of type enum");
-					else {							
-						XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
-						String[] names = enumType.names().toArray();
-						sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, vectorFileName, resultItem.getModuleName(), resultItem.getName(), names, data));
-					}
+					XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
+					sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, vectorFileName, resultItem, data));
 				}
 			}
 		};

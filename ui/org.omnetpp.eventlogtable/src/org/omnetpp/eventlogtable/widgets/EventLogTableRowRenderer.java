@@ -42,8 +42,8 @@ import org.omnetpp.eventlog.engine.ModuleReparentedEntry;
 import org.omnetpp.eventlog.engine.PStringVector;
 import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
+import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 import org.omnetpp.eventlog.engine.SimulationEndEntry;
-import org.omnetpp.eventlog.engine.SimulationStartEntry;
 
 public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventLogEntryReference> {
 	private static final Color DARKBLUE = new Color(null, 0, 0, 192);
@@ -330,10 +330,10 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawText("Deleting ", CONSTANT_TEXT_COLOR);
 								drawMessageDescription(findBeginSendEntry(deleteMessageEntry.getPreviousEventNumber(), deleteMessageEntry.getMessageId()));
 							}
-                            else if (eventLogEntry instanceof SimulationStartEntry) {
-                                SimulationStartEntry simulationStartEntry = (SimulationStartEntry)eventLogEntry;
+                            else if (eventLogEntry instanceof SimulationBeginEntry) {
+                                SimulationBeginEntry simulationBeginEntry = (SimulationBeginEntry)eventLogEntry;
                                 drawText("Simulation has been started with runId ", CONSTANT_TEXT_COLOR);
-                                drawText(simulationStartEntry.getRunId(), DATA_COLOR);
+                                drawText(simulationBeginEntry.getRunId(), DATA_COLOR);
                             }
                             else if (eventLogEntry instanceof SimulationEndEntry) {
                                 drawText("Simulation has been finished", CONSTANT_TEXT_COLOR);
@@ -477,14 +477,20 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	
 	private Image getEventLogEntryImage(EventLogEntry eventLogEntry) {
 		String className = eventLogEntry.getClassName();
-		
-		if (eventLogEntry instanceof EventEntry && eventLogEntry.getEvent().isSelfMessageProcessingEvent())
+		Event event = eventLogEntry.getEvent();
+
+		if (eventLogEntry instanceof EventEntry && event.isSelfMessageProcessingEvent())
 			return ImageFactory.getImage(ImageFactory.EVENLOG_IMAGE_SELF_EVENT);
 		else if (eventLogEntry instanceof BeginSendEntry) {
-			EventLogEntry nextEventLogEntry = eventLogEntry.getEvent().getEventLogEntry(eventLogEntry.getIndex() + 1);
-
-			if (nextEventLogEntry instanceof EndSendEntry)
-				return ImageFactory.getImage(ImageFactory.EVENLOG_IMAGE_SCHEDULE_AT);
+			int index = eventLogEntry.getIndex();
+			int count = event.getNumEventLogEntries();
+			
+			if (count > index + 1) {
+                EventLogEntry nextEventLogEntry = event.getEventLogEntry(index + 1);
+    
+    			if (nextEventLogEntry instanceof EndSendEntry)
+    				return ImageFactory.getImage(ImageFactory.EVENLOG_IMAGE_SCHEDULE_AT);
+			}
 		}
 
 		return ImageFactory.getImage(ImageFactory.EVENTLOG_IMAGE_DIR + className.substring(0, className.length() - 5));

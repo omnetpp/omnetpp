@@ -8,14 +8,15 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.common.eventlog.EventLogView;
 import org.omnetpp.common.eventlog.IEventLogSelection;
-import org.omnetpp.common.ui.ViewWithMessagePart;
+import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
 /**
  * View for displaying causes and consequences of events.
  */
-public class SequenceChartView extends ViewWithMessagePart {
+public class SequenceChartView extends EventLogView {
 	private SequenceChart sequenceChart;
 
 	private ISelectionListener selectionListener;
@@ -38,8 +39,10 @@ public class SequenceChartView extends ViewWithMessagePart {
 		// follow selection
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != SequenceChartView.this && selection instanceof IEventLogSelection)
+				if (part != SequenceChartView.this && selection instanceof IEventLogSelection) {
 					sequenceChart.setSelection(selection);
+                    updateTitleToolTip();
+				}
 			}
 		};
 		viewSite.getPage().addSelectionListener(selectionListener);
@@ -71,6 +74,11 @@ public class SequenceChartView extends ViewWithMessagePart {
 	}
 	
 	@Override
+	public IEventLog getEventLog() {
+	    return sequenceChart.getEventLog();
+	}
+	
+	@Override
 	public void dispose() {
 		IViewSite viewSite = (IViewSite)getSite();
 		
@@ -95,9 +103,11 @@ public class SequenceChartView extends ViewWithMessagePart {
 		return sequenceChart;
 	}
 
-	private void updateSelectionFromActiveEditor() {
-		ISelection selection = getActiveEditorSelection();
-		
+    private void updateSelectionFromActiveEditor() {
+        updateSelection(getActiveEditorSelection());
+    }
+        
+    private void updateSelection(ISelection selection) {
 		if (selection instanceof IEventLogSelection) {
 			hideMessage();
 			sequenceChart.setSelection(selection);

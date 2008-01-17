@@ -289,7 +289,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto event cause") {
 			@Override
 			public void run() {
-				eventLogTable.gotoClosestElement(new EventLogEntryReference(getCauseEventLogEntry()));
+			    EventLogEntry entry = getCauseEventLogEntry();
+			    
+			    if (entry != null)
+			        eventLogTable.gotoClosestElement(new EventLogEntryReference(entry));
+                else
+                    MessageDialog.openError(null, "Goto event cause" , "No such event");
 			}
 
 			@Override
@@ -318,7 +323,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message arrival") {
 			@Override
 			public void run() {
-				eventLogTable.gotoElement(new EventLogEntryReference(getConsequenceEventLogEntry()));
+			    EventLogEntry entry = getConsequenceEventLogEntry();
+
+			    if (entry != null)
+			        eventLogTable.gotoElement(new EventLogEntryReference(entry));
+			    else
+                    MessageDialog.openError(null, "Goto message arrival" , "No such event");
 			}
 
 			@Override
@@ -357,7 +367,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message origin") {
 			@Override
 			public void run() {
-				eventLogTable.gotoElement(new EventLogEntryReference(getMessageOriginEventLogEntry()));
+			    EventLogEntry entry = getMessageOriginEventLogEntry();
+			    
+			    if (entry != null)
+			        eventLogTable.gotoElement(new EventLogEntryReference(entry));
+                else
+                    MessageDialog.openError(null, "Goto message origin" , "No such event");
 			}
 
 			@Override
@@ -395,7 +410,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message reuse") {
 			@Override
 			public void run() {
-				eventLogTable.gotoClosestElement(new EventLogEntryReference(getMessageReuseEventLogEntry()));
+			    EventLogEntry entry = getMessageReuseEventLogEntry();
+			    
+			    if (entry != null)
+			        eventLogTable.gotoClosestElement(new EventLogEntryReference(entry));
+                else
+                    MessageDialog.openError(null, "Goto message reuse" , "No such event");
 			}
 
 			@Override

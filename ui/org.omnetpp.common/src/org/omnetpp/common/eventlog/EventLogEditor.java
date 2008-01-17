@@ -18,6 +18,7 @@ import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.EventLogFacade;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 
 /**
  * Serves as a base class for editors which show an event log file.
@@ -70,6 +71,22 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 		IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
 		eventLogInput = new EventLogInput(file, eventLog);
 	}
+
+    @Override
+	public String getTitleToolTip() {
+        IEventLog eventLog = eventLogInput.getEventLog();
+        
+        if (eventLog == null)
+            return super.getTitleToolTip();
+        else {
+            SimulationBeginEntry entry = eventLog.getSimulationBeginEntry();
+
+            if (entry == null)
+                return super.getTitleToolTip();
+            else
+                return super.getTitleToolTip() + " : " + entry.getRunId();
+        }
+    }
 	
 	@Override
 	public void dispose() {

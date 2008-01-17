@@ -178,6 +178,7 @@ public class EventLogTable
 		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
 		List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
 
+		IEventLog eventLog = eventLogSelection.getEventLogInput().getEventLog();
 		for (Integer eventNumber : eventLogSelection.getEventNumbers())
 			eventLogEntries.add(new EventLogEntryReference(eventLog.getEventForEventNumber(eventNumber).getEventEntry()));
 

@@ -8,14 +8,15 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.omnetpp.common.eventlog.EventLogView;
 import org.omnetpp.common.eventlog.IEventLogSelection;
-import org.omnetpp.common.ui.ViewWithMessagePart;
+import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 /**
  * View for displaying and navigating event log entries.
  */
-public class EventLogTableView extends ViewWithMessagePart {
+public class EventLogTableView extends EventLogView {
 	private EventLogTable eventLogTable;
 
 	private ISelectionListener selectionListener;
@@ -38,8 +39,10 @@ public class EventLogTableView extends ViewWithMessagePart {
 		// follow selection
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != EventLogTableView.this && selection instanceof IEventLogSelection)
+				if (part != EventLogTableView.this && selection instanceof IEventLogSelection) {
 					eventLogTable.setSelection(selection);
+					updateTitleToolTip();
+				}
 			}
 		};
 		viewSite.getPage().addSelectionListener(selectionListener);
@@ -71,6 +74,11 @@ public class EventLogTableView extends ViewWithMessagePart {
 	}
 	
 	@Override
+	public IEventLog getEventLog() {
+	    return eventLogTable.getEventLog();
+	}
+	
+	@Override
 	public void dispose() {
 		IViewSite viewSite = (IViewSite)getSite();
 		
@@ -96,8 +104,10 @@ public class EventLogTableView extends ViewWithMessagePart {
 	}
 	
 	private void updateSelectionFromActiveEditor() {
-		ISelection selection = getActiveEditorSelection();
+	    updateSelection(getActiveEditorSelection());
+	}
 		
+    private void updateSelection(ISelection selection) {
 		if (selection instanceof IEventLogSelection) {
 			hideMessage();
 			eventLogTable.setSelection(selection);
@@ -106,5 +116,7 @@ public class EventLogTableView extends ViewWithMessagePart {
 			eventLogTable.setInput(null);
 			showMessage("No event log available");
 		}
-	}
+
+        updateTitleToolTip();
+    }
 }

@@ -108,19 +108,27 @@ public class EventLogInput
 	}
 
 	public synchronized void checkEventLogForChanges() {
-	    switch (eventLog.getFileReader().getFileChangedState()) {
-	        case FileReader.FileChangedState.APPENDED:
-	            synchronize();
-	            eventLogAppended();
-	            break;
-            case FileReader.FileChangedState.OVERWRITTEN:
-                synchronize();
-                eventLogOverwritten();
-                break;
+	    try {
+    	    switch (eventLog.getFileReader().getFileChangedState()) {
+    	        case FileReader.FileChangedState.APPENDED:
+    	            synchronize();
+    	            eventLogAppended();
+    	            break;
+                case FileReader.FileChangedState.OVERWRITTEN:
+                    synchronize();
+                    eventLogOverwritten();
+                    break;
+    	    }
+	    }
+	    catch (RuntimeException e) {
+	        // ignore if the log changes during synchronizing
+	        // we will synchronize later
+	        if (!isEventLogChangedException(e))
+	            throw e;
 	    }
 	}
 
-    public synchronized void synchronize() {
+    private void synchronize() {
         if (debug)
             System.out.println("Synchronizing event log file content: " + file.getName());
 

@@ -8,6 +8,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
+import org.omnetpp.scave.engine.EnumType;
+import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 
@@ -33,17 +35,24 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	protected String vectorFileName;
 
 	protected String moduleFullPath;
-
+	
 	protected String vectorName;
 
-	public AxisVectorBarRenderer(SequenceChart sequenceChart, String vectorFileName, String moduleFullPath, String vectorName, String[] valueNames, XYArray data) {
+    protected ResultItem.Type type;
+
+    public AxisVectorBarRenderer(SequenceChart sequenceChart, String vectorFileName, ResultItem resultItem, XYArray data) {
 		this.sequenceChart = sequenceChart;
 		this.vectorFileName = vectorFileName;
-		this.moduleFullPath = moduleFullPath;
-		this.vectorName = vectorName;
+		this.moduleFullPath = resultItem.getModuleName();
+		this.vectorName = resultItem.getName();
 		this.data = data;
-		this.valueNames = valueNames;
-	}
+        this.type = resultItem.getType();
+
+        if (type == ResultItem.Type.TYPE_ENUM) {
+            EnumType enumType = resultItem.getEnum();
+            valueNames = enumType.names().toArray();
+        }
+    }
 
 	public int getHeight() {
 		return 13;
@@ -85,8 +94,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 		SequenceChartFacade sequenceChartFacade = sequenceChart.getInput().getSequenceChartFacade();
 		int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 
-		// draw axis as a colored thick line with labels representing value names
-		// two phases: first for background, then value names
+		// draw axis as a colored thick line with labels representing values
+		// two phases: first draw the background and after that draw the values
 		for (int phase = 0; phase < 2; phase++) {
 			for (int i = startIndex; i < endIndex; i++) {
 				int eventNumber = getEventNumber(i);
@@ -138,7 +147,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
 				// draw labels starting at each value change and repeat labels based on canvas width
 				if (phase == 1) {
-					String name = getValueName(i);
+					String name = getValueText(i);
 					int labelWidth = graphics.getFontMetrics().getAverageCharWidth() * name.length();
 					if (x2 - x1 > labelWidth) {
 						graphics.setForegroundColor(VALUE_NAME_COLOR);
@@ -284,11 +293,17 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
 	private int getValueIndex(int index)
 	{
-		return (int)Math.floor(getValue(index));
+        if (type == ResultItem.Type.TYPE_ENUM || type == ResultItem.Type.TYPE_INT)
+            return (int)Math.floor(getValue(index));
+        else
+            return index % 2;
 	}
 
-	private String getValueName(int index)
+	private String getValueText(int index)
 	{
-		return valueNames[getValueIndex(index)];
+	    if (type == ResultItem.Type.TYPE_ENUM)
+            return valueNames[getValueIndex(index)];
+	    else
+            return String.valueOf(getValue(index));
 	}
 }
