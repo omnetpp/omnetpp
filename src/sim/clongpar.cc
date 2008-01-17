@@ -19,6 +19,8 @@
 #include "cdynamicexpression.h"
 #include "ccomponent.h"
 
+USING_NAMESPACE
+
 
 cLongPar::cLongPar()
 {

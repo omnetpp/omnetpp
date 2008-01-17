@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include "ccoroutine.h"
 
+USING_NAMESPACE
+
 
 #ifdef USE_WIN32_FIBERS
 

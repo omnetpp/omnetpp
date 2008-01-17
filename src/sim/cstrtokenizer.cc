@@ -21,6 +21,8 @@
 #include "cstrtokenizer.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
 {

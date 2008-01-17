@@ -29,6 +29,8 @@
 #include "parsim/cplaceholdermod.h"
 #endif
 
+USING_NAMESPACE
+
 // Functions  (register them for findFunction())
 Define_Function( acos,  1 )
 Define_Function( asin,  1 )

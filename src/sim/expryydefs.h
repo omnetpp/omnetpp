@@ -18,6 +18,8 @@
 
 #include "cdynamicexpression.h"
 
+NAMESPACE_BEGIN
+
 //
 // misc bison/flex related stuff, shared among *.lex and *.y files
 //
@@ -38,6 +40,9 @@ typedef struct {int li; int co;} LineColumn;
 extern LineColumn xpos, xprevpos;
 
 void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, int& nelems);
+
+NAMESPACE_END
+
 
 #endif
 

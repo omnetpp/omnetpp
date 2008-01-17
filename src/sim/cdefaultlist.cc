@@ -30,6 +30,8 @@
 #include "ccommbuffer.h"
 #endif
 
+USING_NAMESPACE
+
 
 Register_Class(cDefaultList);
 

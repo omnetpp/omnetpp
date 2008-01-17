@@ -26,6 +26,8 @@
 #include "cexception.h"
 #include "cstrtokenizer.h"
 
+USING_NAMESPACE
+
 
 Register_Class(cEnum);
 

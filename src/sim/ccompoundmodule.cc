@@ -21,6 +21,8 @@
 #include "ccomponenttype.h"
 #include "cmessage.h"
 
+USING_NAMESPACE
+
 
 //
 // Note: cModule,cSimpleModule,cCompoundModule are left unregistered.

@@ -43,6 +43,8 @@ Register_Class(cKSplit);
 #  error "K must be 2 or a >=3 odd number"
 #endif
 
+USING_NAMESPACE
+
 //----
 // Cell division criteria - they are used to decide whether a cell should be split.
 

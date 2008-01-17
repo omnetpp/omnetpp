@@ -19,6 +19,8 @@
 #include "ccomponent.h"
 #include "stringutil.h"
 
+USING_NAMESPACE
+
 
 cStringPar::cStringPar()
 {

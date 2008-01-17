@@ -23,6 +23,8 @@
 #include "cownedobject.h"
 #include "cclassfactory.h"    // createOne()
 
+USING_NAMESPACE
+
 
 void cCommBuffer::packObject(cOwnedObject *obj)
 {

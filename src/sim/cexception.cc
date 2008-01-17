@@ -28,6 +28,8 @@
 #include "cenvir.h"
 #include "cconfiguration.h"
 
+USING_NAMESPACE
+
 
 #define BUFLEN 1024
 static char buffer[BUFLEN];

@@ -31,6 +31,8 @@
 #include "cscheduler.h" // dummy()
 #include "distrib.h" // dummy()
 
+USING_NAMESPACE
+
 
 // functions to support expressions compiled by nedtool
 

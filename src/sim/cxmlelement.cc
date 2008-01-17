@@ -27,6 +27,8 @@
 #include "cenvir.h"
 #include "cmodule.h" // for ModNameParamResolver
 
+USING_NAMESPACE
+
 
 using std::ostream;
 

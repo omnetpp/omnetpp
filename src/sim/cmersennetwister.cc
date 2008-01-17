@@ -22,6 +22,8 @@
 #include "cmessage.h"
 #include "cconfigkey.h"
 
+USING_NAMESPACE
+
 
 Register_Class(cMersenneTwister);
 

@@ -21,6 +21,8 @@
 
 #include "cxmlelement.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * A minimalistic XPath interpreter.
@@ -55,6 +57,9 @@ class MiniXPath
      */
     cXMLElement *matchPathExpression(cXMLElement *contextNode, const char *pathexpr, cXMLElement *documentNode);
 };
+
+NAMESPACE_END
+
 
 #endif
 

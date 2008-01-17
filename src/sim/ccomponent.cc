@@ -21,6 +21,8 @@
 #include "cconfiguration.h"
 #include "cconfigkey.h"
 
+USING_NAMESPACE
+
 
 Register_PerObjectConfigEntry(CFGID_SAVE_AS_SCALAR, "save-as-scalar", CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
 

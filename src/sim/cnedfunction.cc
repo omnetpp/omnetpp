@@ -19,6 +19,8 @@
 #include "globals.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *argtypes, const char *rettype) : cNoncopyableOwnedObject(name,false)
 {

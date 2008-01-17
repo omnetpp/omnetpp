@@ -32,6 +32,8 @@
 #include "cenvir.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 bool cSimpleModule::stack_cleanup_requested;
 cSimpleModule *cSimpleModule::after_cleanup_transfer_to;

@@ -18,6 +18,8 @@
 
 #include "errmsg.h"
 
+USING_NAMESPACE
+
 
 const char *cErrorMessages::get(ErrorCode e)
 {

@@ -26,6 +26,8 @@
 #include "parsim/cplaceholdermod.h"
 #endif
 
+USING_NAMESPACE
+
 cComponentType::cComponentType(const char *qname, const char *description) : cNoncopyableOwnedObject(qname,false)
 {
     setDescription(description);

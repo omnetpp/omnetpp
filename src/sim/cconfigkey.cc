@@ -18,6 +18,8 @@
 
 #include "cconfigkey.h"
 
+USING_NAMESPACE
+
 
 cConfigKey::cConfigKey(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
                            const char *defaultValue, const char *description) :

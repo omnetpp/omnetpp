@@ -22,6 +22,8 @@
 #include "parsim/cplaceholdermod.h"
 #endif
 
+USING_NAMESPACE
+
 
 cClassFactory::cClassFactory(const char *name, cObject *(*f)(), const char *description)
   : cNoncopyableOwnedObject(name, false)

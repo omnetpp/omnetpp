@@ -16,6 +16,8 @@
 
 #include "chasher.h"
 
+USING_NAMESPACE
+
 
 void cHasher::add(const char *p, size_t length)
 {

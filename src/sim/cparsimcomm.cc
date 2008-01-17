@@ -25,6 +25,8 @@
 #include "cenvir.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
 {

@@ -19,6 +19,8 @@
 #include "unitconversion.h"
 #include "cpar.h"
 
+USING_NAMESPACE
+
 
 int SimTime::scaleexp = SimTime::SCALEEXP_UNINITIALIZED;
 int64 SimTime::dscale;

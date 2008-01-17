@@ -24,6 +24,8 @@
 #include "ccommbuffer.h"
 #endif
 
+USING_NAMESPACE
+
 long cParValue::total_parvalue_objs;
 long cParValue::live_parvalue_objs;
 cStringPool cParValue::unitStringPool;

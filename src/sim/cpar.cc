@@ -29,6 +29,8 @@
 #include "ccommbuffer.h"
 #endif
 
+USING_NAMESPACE
+
 
 cPar::~cPar()
 {

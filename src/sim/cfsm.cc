@@ -23,6 +23,8 @@
 #include "globals.h"
 #include "cfsm.h"
 
+USING_NAMESPACE
+
 using std::ostream;
 
 

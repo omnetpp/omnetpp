@@ -20,6 +20,8 @@
 #include "onstartup.h"
 #include "ccomponenttype.h"
 
+USING_NAMESPACE
+
 
 //
 // Global objects

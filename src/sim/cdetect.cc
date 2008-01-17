@@ -28,6 +28,8 @@
 #include "csimulation.h"  // simTime()
 #include "cdetect.h"
 
+USING_NAMESPACE
+
 
 cTDExpandingWindows::cTDExpandingWindows(const cTDExpandingWindows& r) : cTransientDetection()
 {

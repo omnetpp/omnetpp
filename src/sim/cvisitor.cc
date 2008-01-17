@@ -21,6 +21,8 @@
 #include "cvisitor.h"
 #include "cobject.h"
 
+USING_NAMESPACE
+
 
 bool cVisitor::process(cObject *obj)
 {

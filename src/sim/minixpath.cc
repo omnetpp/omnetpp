@@ -21,6 +21,8 @@
 #include "minixpath.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 
 MiniXPath::MiniXPath(cXMLElement::ParamResolver *resolver)

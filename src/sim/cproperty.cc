@@ -15,6 +15,8 @@
 #include "cproperty.h"
 #include "cproperties.h"
 
+USING_NAMESPACE
+
 
 const char *cProperty::DEFAULTKEY = "";
 

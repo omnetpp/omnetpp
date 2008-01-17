@@ -32,6 +32,8 @@
 #include "cproperty.h"
 #include "util.h"
 
+USING_NAMESPACE
+
 
 // static members:
 std::string cModule::lastmodulefullpath;

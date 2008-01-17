@@ -21,6 +21,8 @@
 #include "cexception.h"
 #include "cconfigkey.h"
 
+USING_NAMESPACE
+
 
 Register_Class(cLCG32);
 

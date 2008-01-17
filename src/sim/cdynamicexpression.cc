@@ -25,6 +25,8 @@
 #include "cmodule.h"
 #include "stringutil.h"
 
+USING_NAMESPACE
+
 cStringPool cDynamicExpression::Elem::stringPool;
 
 void cDynamicExpression::Elem::operator=(const Elem& other)

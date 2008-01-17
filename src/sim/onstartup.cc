@@ -21,6 +21,8 @@
 #include "cexception.h"
 #include "carray.h"
 
+USING_NAMESPACE
+
 
 ExecuteOnStartup *ExecuteOnStartup::head;
 

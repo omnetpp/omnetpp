@@ -20,6 +20,8 @@
 #include "cdynamicexpression.h"
 #include "ccomponent.h"
 
+USING_NAMESPACE
+
 
 cXMLPar::cXMLPar()
 {

@@ -25,6 +25,8 @@
 #include "fnamelisttokenizer.h"
 #include "exception.h"
 
+USING_NAMESPACE
+
 //XXX move these functions into another base class, like cConfigurationBase : public cConfiguration {} ?
 
 bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fallbackValue)

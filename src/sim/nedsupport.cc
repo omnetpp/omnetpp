@@ -23,6 +23,8 @@
 #include "cmodule.h"
 #include "nedsupport.h"
 
+USING_NAMESPACE
+
 
 namespace NEDSupport
 {

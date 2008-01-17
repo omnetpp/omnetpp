@@ -18,6 +18,8 @@
 #include <string.h>
 #include "task.h"
 
+USING_NAMESPACE
+
 
 _Task main_task;
 _Task *current_task = NULL;

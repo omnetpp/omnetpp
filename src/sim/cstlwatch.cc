@@ -20,6 +20,8 @@
 #include "cclassdescriptor.h"
 #include "globals.h"
 
+USING_NAMESPACE
+
 //
 // Internal
 //

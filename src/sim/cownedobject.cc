@@ -40,6 +40,8 @@ Register_Class(cOwnedObject);
 
 #ifdef DEVELOPER_DEBUG
 #include <set>
+
+USING_NAMESPACE
 std::set<cOwnedObject*> objectlist;
 void printAllObjects()
 {

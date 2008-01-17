@@ -34,6 +34,8 @@
 #include "util.h"
 #include "ccomponenttype.h"
 
+USING_NAMESPACE
+
 using std::ostream;
 
 cStringPool cGate::stringPool;

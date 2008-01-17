@@ -16,6 +16,8 @@
 #include "cproperties.h"
 #include "cproperty.h"
 
+USING_NAMESPACE
+
 
 cProperties::cProperties()
 {

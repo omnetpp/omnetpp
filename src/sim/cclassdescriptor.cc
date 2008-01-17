@@ -25,6 +25,8 @@
 #include "util.h"
 #include "cclassfactory.h"  // createOne()
 
+USING_NAMESPACE
+
 
 void cClassDescriptor::long2string(long l, char *buf, int bufsize)
 {

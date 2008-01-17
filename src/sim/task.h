@@ -19,6 +19,10 @@
 #define __TASK_H
 
 #include <setjmp.h>
+#include "platdep/platdefs.h"
+
+NAMESPACE_BEGIN
+
 #define JMP_BUF jmp_buf
 #define SETJMP  setjmp
 #define LONGJMP longjmp
@@ -66,6 +70,9 @@ void task_free( _Task *t );
 void task_restart( _Task *t );
 bool task_testoverflow( _Task *t );
 unsigned task_stackusage( _Task *t );
+
+NAMESPACE_END
+
 
 #endif
 

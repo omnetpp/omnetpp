@@ -22,6 +22,8 @@
 #include "cwatch.h"
 #include "stringutil.h"
 
+USING_NAMESPACE
+
 std::string cWatch_stdstring::info() const
 {
     return opp_quotestr(r.c_str());

@@ -15,6 +15,8 @@
 #include "cstringpool.h"
 #include "cownedobject.h"
 
+USING_NAMESPACE
+
 cStringPool::cStringPool()
 {
 }

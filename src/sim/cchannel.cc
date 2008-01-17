@@ -30,6 +30,8 @@
 #include "ccommbuffer.h"
 #endif
 
+USING_NAMESPACE
+
 using std::ostream;
 
 Register_Class(cIdealChannel);

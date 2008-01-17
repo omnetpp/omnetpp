@@ -21,6 +21,8 @@
 #include "cgate.h"
 #include "cdisplaystring.h"
 
+USING_NAMESPACE
+
 
 cDisplayString::cDisplayString()
 {

@@ -19,6 +19,8 @@
 #include "cexception.h"
 #include "cclassdescriptor.h"
 
+USING_NAMESPACE
+
 
 
 cObject::~cObject()

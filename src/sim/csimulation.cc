@@ -52,6 +52,8 @@ extern std::set<cOwnedObject*> objectlist;
 void printAllObjects();
 #endif
 
+USING_NAMESPACE
+
 cSimulation simulation("simulation");
 
 

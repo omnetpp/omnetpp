@@ -31,6 +31,8 @@
 #include "ccommbuffer.h"
 #endif
 
+USING_NAMESPACE
+
 // comment out to disable reference-counting for encapsulated messages
 #define REFCOUNTING
 

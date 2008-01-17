@@ -26,6 +26,8 @@
 #include "cmessage.h"
 #include "cmsgheap.h"
 
+USING_NAMESPACE
+
 Register_Class(cMessageHeap);
 
 
