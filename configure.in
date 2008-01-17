@@ -708,7 +708,7 @@ else
       if test "$JAVA_HOME" = ""; then
          AC_MSG_WARN(JAVA_HOME variable not set.)
       else
-         JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/$jdk_platform"
+         JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jdk_platform"
       fi
    fi
    OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $JAVA_CFLAGS, jni_ok)
