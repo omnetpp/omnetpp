@@ -284,17 +284,27 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 		};
 	}
+	
+	private void gotoEventLogEntry(EventLogEntry entry, Action action, boolean gotoClosest) {
+        if (entry != null) {
+            EventLogEntryReference reference = new EventLogEntryReference(entry);
+            if (reference.isPresent(getEventLog()))
+                if (gotoClosest)
+                    eventLogTable.gotoClosestElement(reference);
+                else
+                    eventLogTable.gotoElement(reference);
+            else
+                MessageDialog.openError(null, action.getText() , "Event not present in event log file");
+        }
+        else
+            MessageDialog.openError(null, action.getText() , "No such event");
+	}
 
 	private EventLogTableAction createGotoEventCauseAction() {
 		return new EventLogTableAction("Goto event cause") {
 			@Override
 			public void run() {
-			    EventLogEntry entry = getCauseEventLogEntry();
-			    
-			    if (entry != null)
-			        eventLogTable.gotoClosestElement(new EventLogEntryReference(entry));
-                else
-                    MessageDialog.openError(null, "Goto event cause" , "No such event");
+			    gotoEventLogEntry(getCauseEventLogEntry(), this, true);
 			}
 
 			@Override
@@ -323,12 +333,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message arrival") {
 			@Override
 			public void run() {
-			    EventLogEntry entry = getConsequenceEventLogEntry();
-
-			    if (entry != null)
-			        eventLogTable.gotoElement(new EventLogEntryReference(entry));
-			    else
-                    MessageDialog.openError(null, "Goto message arrival" , "No such event");
+			    gotoEventLogEntry(getConsequenceEventLogEntry(), this, false);
 			}
 
 			@Override
@@ -367,12 +372,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message origin") {
 			@Override
 			public void run() {
-			    EventLogEntry entry = getMessageOriginEventLogEntry();
-			    
-			    if (entry != null)
-			        eventLogTable.gotoElement(new EventLogEntryReference(entry));
-                else
-                    MessageDialog.openError(null, "Goto message origin" , "No such event");
+			    gotoEventLogEntry(getMessageOriginEventLogEntry(), this, false);
 			}
 
 			@Override
@@ -410,12 +410,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		return new EventLogTableAction("Goto message reuse") {
 			@Override
 			public void run() {
-			    EventLogEntry entry = getMessageReuseEventLogEntry();
-			    
-			    if (entry != null)
-			        eventLogTable.gotoClosestElement(new EventLogEntryReference(entry));
-                else
-                    MessageDialog.openError(null, "Goto message reuse" , "No such event");
+			    gotoEventLogEntry(getMessageReuseEventLogEntry(), this, true);
 			}
 
 			@Override

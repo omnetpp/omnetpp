@@ -30,6 +30,10 @@ public class EventLogEntryReference {
 	public EventLogEntry getEventLogEntry(IEventLog eventLog) {
 		return eventLog.getEventForEventNumber(eventNumber).getEventLogEntry(eventEntryIndex);
 	}
+	
+	public boolean isPresent(IEventLog eventLog) {
+	    return eventLog.getEventForEventNumber(eventNumber) != null;
+	}
 
 	@Override
 	public String toString() {
