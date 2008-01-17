@@ -21,6 +21,8 @@
 
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Queue class for objects derived from cOwnedObject. The default behaviour of
@@ -276,6 +278,9 @@ class SIM_API cQueue : public cOwnedObject
     bool takeOwnership() const   {return tkownership;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

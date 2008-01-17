@@ -25,6 +25,8 @@
 #include "simkerneldefs.h"
 #include "opp_string.h"
 
+NAMESPACE_BEGIN
+
 class cObject;
 class cOwnedObject;
 class cMessage;
@@ -602,5 +604,8 @@ int basic_evbuf<E,T>::sync() {
     setp(this->pbase(),this->epptr());
     return 0;
 }
+
+NAMESPACE_END
+
 
 #endif

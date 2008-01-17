@@ -118,6 +118,8 @@ typedef double   const_simtime_t;
 // OMNeT++ 4.x native mode: int64-based fixed-point simtime_t (class SimTime)
 class SimTime;
 #include "simtime.h"
+
+NAMESPACE_BEGIN
 typedef SimTime       simtime_t;
 typedef const double  const_simtime_t;
 #define MAXTIME  SimTime::maxTime()
@@ -143,6 +145,9 @@ typedef void (*VoidDelFunc)(void *);
  * @ingroup EnumsTypes
  */
 typedef void *(*VoidDupFunc)(void *);
+
+NAMESPACE_END
+
 
 #endif
 

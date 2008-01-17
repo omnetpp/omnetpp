@@ -22,6 +22,8 @@
 
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Internal class, used as a base class for cModule. cDefaultList acts
@@ -134,6 +136,9 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     bool defaultListContains(cOwnedObject *obj) const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

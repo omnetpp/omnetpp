@@ -23,6 +23,8 @@
 
 #include "cdensity.h"
 
+NAMESPACE_BEGIN
+
 
 // K: the grid size of the algorithm
 #define K 2
@@ -357,6 +359,9 @@ int critfunc_depth(const cKSplit&, cKSplit::Grid&, int, double *);
 // cell division criteria
 double divfunc_const(const cKSplit&, cKSplit::Grid&, double, double *);
 double divfunc_babak(const cKSplit&, cKSplit::Grid&, double, double *);
+
+
+NAMESPACE_END
 
 
 #endif

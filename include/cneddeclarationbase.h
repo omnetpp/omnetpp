@@ -26,6 +26,8 @@
 #include "cparvalue.h"
 #include "cgate.h"
 
+NAMESPACE_BEGIN
+
 class cProperties;
 
 
@@ -105,6 +107,9 @@ class SIM_API cNEDDeclarationBase : public cNamedObject, noncopyable
     virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const = 0;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

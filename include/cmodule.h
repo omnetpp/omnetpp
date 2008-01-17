@@ -21,6 +21,8 @@
 #include "cgate.h"
 #include "csimulation.h"
 
+NAMESPACE_BEGIN
+
 
 class  cMessage;
 class  cGate;
@@ -681,6 +683,9 @@ class SIM_API cSubModIterator : public cModule::SubmoduleIterator
     cSubModIterator(const cModule& m) : cModule::SubmoduleIterator(&m) {}
     void init(const cModule& m) {cModule::SubmoduleIterator::init(&m);}
 };
+
+NAMESPACE_END
+
 
 #endif
 

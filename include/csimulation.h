@@ -25,6 +25,8 @@
 #include "cmsgheap.h"
 #include "ccoroutine.h"
 
+NAMESPACE_BEGIN
+
 //=== classes mentioned:
 class  cMessage;
 class  cGate;
@@ -441,6 +443,9 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      */
     void insertMsg(cMessage *msg);
 };
+
+NAMESPACE_END
+
 
 #endif
 

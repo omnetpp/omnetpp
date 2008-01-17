@@ -21,6 +21,8 @@
 
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 /**
  * @name FSM Macros
  * @ingroup Macros
@@ -275,5 +277,8 @@ class SIM_API cFSM : public cOwnedObject
     void setState(int state, const char *stn=NULL)  {_state=state;_statename=stn;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif

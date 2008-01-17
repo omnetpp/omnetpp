@@ -23,6 +23,8 @@
 #include "cmodule.h"
 #include "crng.h"
 
+NAMESPACE_BEGIN
+
 
 // helper: return the "current" RNG.
 inline cRNG *__contextModuleRNG(int k) {
@@ -56,6 +58,9 @@ inline long genk_intrand(int k,long r)  {return __contextModuleRNG(k)->intRand(r
  */
 inline double genk_dblrand(int k)  {return __contextModuleRNG(k)->doubleRand();}
 //@}
+
+NAMESPACE_END
+
 
 #endif
 

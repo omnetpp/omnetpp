@@ -21,6 +21,8 @@
 
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Use of this class is DISCOURAGED, it is provided for backward compatibility
@@ -270,6 +272,9 @@ class SIM_API cLinkedList : public cOwnedObject
     void clear();
     //@}
 };
+
+
+NAMESPACE_END
 
 
 #endif

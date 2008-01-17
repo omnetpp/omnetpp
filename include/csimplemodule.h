@@ -21,6 +21,8 @@
 
 #include "cmodule.h"
 
+NAMESPACE_BEGIN
+
 class cQueue;
 
 /**
@@ -473,6 +475,9 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     virtual unsigned stackUsage() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

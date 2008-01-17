@@ -22,6 +22,8 @@
 #include "ccomponent.h"
 #include "ccomponenttype.h"
 
+NAMESPACE_BEGIN
+
 class cGate;
 class cMessage;
 
@@ -184,6 +186,9 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     virtual simtime_t transmissionFinishes() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

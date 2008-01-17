@@ -19,6 +19,8 @@
 #include "carray.h"
 #include "cclassfactory.h"
 
+NAMESPACE_BEGIN
+
 class cModuleType;
 
 
@@ -50,6 +52,9 @@ SIM_API extern cRegistrationList configKeys;      ///< List of supported configu
 SIM_API cModuleType *findModuleType(const char *s);
 
 //@}
+
+NAMESPACE_END
+
 
 #endif
 

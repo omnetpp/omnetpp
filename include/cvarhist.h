@@ -22,6 +22,8 @@
 
 #include "chist.h"
 
+NAMESPACE_BEGIN
+
 //==========================================================================
 //  transform types for cVarHistogram
 //
@@ -217,6 +219,9 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     virtual void addBinBound(double x);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

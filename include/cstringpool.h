@@ -19,6 +19,8 @@
 #include "util.h"
 #include <map>
 
+NAMESPACE_BEGIN
+
 /**
  * For saving memory on the storage of (largely) constant strings that occur in
  * many instances during runtime: module names, gate names, property names,
@@ -63,6 +65,9 @@ class cStringPool
      */
     void release(const char *s);
 };
+
+NAMESPACE_END
+
 
 #endif
 

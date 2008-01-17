@@ -21,6 +21,8 @@
 #include "simkerneldefs.h"
 #include "random.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * @name Continuous distributions
@@ -393,6 +395,9 @@ SIM_API double genk_normal(double gen_nr, double mean, double variance);
  */
 SIM_API double genk_truncnormal(double gen_nr, double mean, double variance);
 //@}
+
+
+NAMESPACE_END
 
 
 #endif

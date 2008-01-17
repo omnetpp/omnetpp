@@ -21,6 +21,8 @@
 
 #include "cobject.h"
 
+NAMESPACE_BEGIN
+
 
 #define MAXARGS 16
 
@@ -281,6 +283,9 @@ class SIM_API cDisplayString
     bool removeTag(int tagindex);
     //@}
 };
+
+
+NAMESPACE_END
 
 
 #endif

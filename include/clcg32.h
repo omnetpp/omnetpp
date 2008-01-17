@@ -23,6 +23,8 @@
 #include "crng.h"
 #include "cconfiguration.h"
 
+NAMESPACE_BEGIN
+
 
 #define LCG32_MAX  0x7ffffffeL  /* = 2^31-2 */
 
@@ -79,6 +81,9 @@ class SIM_API cLCG32 : public cRNG
     /** Random double on the [0,1] interval */
     virtual double doubleRandIncl1();
 };
+
+NAMESPACE_END
+
 
 #endif
 

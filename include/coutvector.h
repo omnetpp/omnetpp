@@ -23,6 +23,8 @@
 #include <stdio.h>
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Prototype for callback functions that are used to notify graphical user
@@ -186,6 +188,9 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     long valuesStored() const  {return num_stored;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

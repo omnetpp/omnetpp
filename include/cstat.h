@@ -25,6 +25,8 @@
 #include <stdio.h>
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 class cTransientDetection;
 class cAccuracyDetection;
 
@@ -551,6 +553,9 @@ class SIM_API cWeightedStdDev : public cStdDev
     virtual void loadFromFile(FILE *);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -33,6 +33,8 @@
 #define _WIN32_WINNT 0x0400
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+
+NAMESPACE_BEGIN
 // their min() and max() macros interfere with us
 #undef min
 #undef max
@@ -161,6 +163,9 @@ class SIM_API cCoroutine
     virtual unsigned stackUsage() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

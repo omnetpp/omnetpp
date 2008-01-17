@@ -27,6 +27,8 @@
 // misunderstanding Register_Class() in other source files as a function declaration
 #include "regmacros.h"
 
+NAMESPACE_BEGIN
+
 class cCommBuffer;
 class cClassDescriptor;
 
@@ -248,6 +250,9 @@ class noncopyable
     noncopyable(const noncopyable& x);
     const noncopyable& operator=(const noncopyable&);
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -19,6 +19,8 @@
 #include "globals.h"
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * The class behind the createOne() function and the Register_Class() macro.
@@ -128,6 +130,9 @@ inline cObject *createOneIfClassIsKnown(const char *classname) {
     return cClassFactory::createOneIfClassIsKnown(classname);
 }
 //@}
+
+NAMESPACE_END
+
 
 #endif
 

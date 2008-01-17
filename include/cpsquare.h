@@ -22,6 +22,8 @@
 
 #include "cdensity.h"
 
+NAMESPACE_BEGIN
+
 //==========================================================================
 
 /**
@@ -186,6 +188,9 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual void loadFromFile(FILE *);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

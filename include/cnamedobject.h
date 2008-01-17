@@ -25,6 +25,8 @@
 #include "cexception.h"
 #include "cstringpool.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * FIXME revise this
@@ -189,6 +191,9 @@ class SIM_API cNamedObject : public cObject
     virtual void setNamePooling(bool b);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

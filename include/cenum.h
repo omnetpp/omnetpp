@@ -22,6 +22,8 @@
 
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 #define Register_Enum(NAME, VALUES)  \
     EXECUTE_ON_STARTUP(enums.instance()->add((new cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))
 
@@ -117,6 +119,9 @@ class SIM_API cEnum : public cOwnedObject
      */
     static cEnum *find(const char *name);
 };
+
+NAMESPACE_END
+
 
 #endif
 

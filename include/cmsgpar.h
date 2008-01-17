@@ -18,6 +18,8 @@
 #include "cownedobject.h"
 #include "cfunction.h"
 
+NAMESPACE_BEGIN
+
 #define SHORTSTR  27
 
 class  cStatistic;
@@ -574,6 +576,9 @@ class SIM_API cMsgPar : public cOwnedObject
     static int cmpbyvalue(cOwnedObject *one, cOwnedObject *other);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

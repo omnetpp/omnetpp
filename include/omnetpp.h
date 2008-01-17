@@ -99,6 +99,11 @@
 #include "nedsupport.h"
 #include "compat.h"
 
+NAMESPACE_BEGIN
+
+NAMESPACE_END
+
+
 #endif
 
 

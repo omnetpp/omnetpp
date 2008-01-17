@@ -20,6 +20,8 @@
 
 #include "simkerneldefs.h"
 
+NAMESPACE_BEGIN
+
 class cObject;
 
 
@@ -94,6 +96,9 @@ class SIM_API cVisitor
      */
     virtual void visit(cObject *obj) = 0;
 };
+
+NAMESPACE_END
+
 
 #endif
 

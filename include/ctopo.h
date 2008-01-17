@@ -26,6 +26,8 @@
 #include "cmodule.h"
 #include "cgate.h"
 
+NAMESPACE_BEGIN
+
 class cPar;
 
 #ifndef INFINITY
@@ -479,5 +481,8 @@ class SIM_API cTopology : public cOwnedObject
     Node *targetNode() const {return target;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif

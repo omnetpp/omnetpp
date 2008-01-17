@@ -21,6 +21,8 @@
 #include "cpar.h"
 #include "cdefaultlist.h"
 
+NAMESPACE_BEGIN
+
 class cComponentType;
 class cProperties;
 class cRNG;
@@ -302,6 +304,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 #endif
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

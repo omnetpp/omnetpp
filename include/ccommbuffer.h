@@ -22,6 +22,8 @@
 
 #include "cobject.h"
 
+NAMESPACE_BEGIN
+
 // forward declaration:
 class cCommBuffer;
 class cOwnedObject;
@@ -345,6 +347,9 @@ class SIM_API cCommBuffer : public cObject
     virtual cOwnedObject *unpackObject();
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

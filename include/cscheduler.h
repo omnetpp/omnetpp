@@ -23,6 +23,8 @@
 #include "cobject.h"
 #include "platdep/timeutil.h"  // for timeval
 
+NAMESPACE_BEGIN
+
 // forward declarations
 class cSimulation;
 class cMessage;
@@ -195,6 +197,9 @@ class SIM_API cRealTimeScheduler : public cScheduler
      */
     virtual cMessage *getNextEvent();
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -24,6 +24,8 @@
 #include "simkerneldefs.h"
 #include "errmsg.h"
 
+NAMESPACE_BEGIN
+
 // forward declarations
 class cComponent;
 
@@ -391,6 +393,9 @@ inline long double_to_long(double d)
     unsigned long ul = (unsigned long)d;
     return d<0 ? l : ul;
 }
+
+NAMESPACE_END
+
 
 #endif
 

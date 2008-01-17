@@ -21,6 +21,8 @@
 #include "cgate.h"
 #include "cneddeclarationbase.h"
 
+NAMESPACE_BEGIN
+
 
 class cModule;
 class cChannel;
@@ -274,6 +276,9 @@ class SIM_API cChannelType : public cComponentType
      */
     static cChannelType *find(const char *name, const char *contextNamespace);
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -24,6 +24,8 @@
 #include "cconfiguration.h"
 #include "mersennetwister.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Wraps the Mersenne Twister RNG by Makoto Matsumoto and Takuji Nishimura.
@@ -72,6 +74,9 @@ class SIM_API cMersenneTwister : public cRNG
     /** Random double on the [0,1] interval */
     virtual double doubleRandIncl1();
 };
+
+NAMESPACE_END
+
 
 #endif
 

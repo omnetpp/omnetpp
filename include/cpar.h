@@ -23,6 +23,8 @@
 #include "cexpression.h"
 #include "cexception.h"
 
+NAMESPACE_BEGIN
+
 class cParValue;
 class cExpression;
 class cXMLElement;
@@ -471,6 +473,9 @@ class cParValueCache2
     cParValue *get(cParValue *p) const;
     void put(cParValue *p);
 };
+
+NAMESPACE_END
+
 
 #endif
 

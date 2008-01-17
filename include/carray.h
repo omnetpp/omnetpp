@@ -21,6 +21,8 @@
 
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Container object that holds objects derived from cObject.
@@ -334,6 +336,9 @@ class SIM_API cArray : public cOwnedObject
     bool takeOwnership() const   {return tkownership;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

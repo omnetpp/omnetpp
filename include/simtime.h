@@ -20,6 +20,8 @@
 #include "simkerneldefs.h"
 #include "platdep/inttypes.h"
 
+NAMESPACE_BEGIN
+
 class cPar;
 
 #define INT64_MAX_DBL  9.22337203685e18
@@ -360,6 +362,9 @@ inline const SimTime min(const SimTime& x, const SimTime& y)
 {
     return x < y ? x : y;
 }
+
+
+NAMESPACE_END
 
 
 #endif

@@ -25,6 +25,8 @@
 
 #include "cdensity.h"
 
+NAMESPACE_BEGIN
+
 //==========================================================================
 
 /**
@@ -477,6 +479,9 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     virtual double random() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

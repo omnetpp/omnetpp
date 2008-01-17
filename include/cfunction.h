@@ -20,6 +20,8 @@
 #include "globals.h"
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Prototype for mathematical functions.
@@ -181,6 +183,9 @@ class SIM_API cMathFunction : public cNoncopyableOwnedObject
     static cMathFunction *findByPointer(MathFunc f);
 
 };
+
+NAMESPACE_END
+
 
 #endif
 

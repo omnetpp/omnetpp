@@ -24,6 +24,8 @@
 #include "simkerneldefs.h"
 #include "cenvir.h"
 
+NAMESPACE_BEGIN
+
 class cXMLElement;
 class cModule;
 
@@ -354,6 +356,9 @@ class SIM_API StringMapParamResolver : public cXMLElement::ParamResolver
     StringMapParamResolver(const StringMap& m)  {params = m;}
     virtual bool resolve(const char *paramname, std::string& value);
 };
+
+NAMESPACE_END
+
 
 #endif
 

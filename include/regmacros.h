@@ -17,6 +17,8 @@
 
 #include "simkerneldefs.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * @name NED function registration macros
@@ -229,6 +231,9 @@
   __REGISTER_CONFIGENTRY(ID, (NAME, true, false, cConfigKey::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 //@}
+
+NAMESPACE_END
+
 
 #endif
 

@@ -28,6 +28,8 @@
 #include "cownedobject.h"
 #include "cwatch.h"
 
+NAMESPACE_BEGIN
+
 
 
 //
@@ -374,6 +376,9 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
  */
 #define WATCH_PTRMAP(m)      createStdPointerMapWatcher(#m,(m))
 //@}
+
+NAMESPACE_END
+
 
 #endif
 

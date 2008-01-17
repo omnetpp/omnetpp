@@ -20,6 +20,8 @@
 #include "cexpression.h"
 #include "cstringpool.h"
 
+NAMESPACE_BEGIN
+
 class cXMLElement;
 class cPar;
 class cMathFunction;
@@ -349,6 +351,9 @@ class SIM_API cDynamicExpression : public cExpression
     virtual const char *unit() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

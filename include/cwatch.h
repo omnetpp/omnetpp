@@ -23,6 +23,8 @@
 #include <sstream>
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Utility class to make primitive types and non-cOwnedObject objects
@@ -353,6 +355,9 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
  */
 #define WATCH_PTR(variable) createWatch_cObjectPtr(#variable,(cObject*&)(variable),(variable))
 //@}
+
+NAMESPACE_END
+
 
 #endif
 

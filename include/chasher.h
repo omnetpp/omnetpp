@@ -24,6 +24,8 @@
 #include "cexception.h"
 #include "platdep/inttypes.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Utility class to calculate the "fingerprint" of a simulation.
@@ -98,6 +100,9 @@ class SIM_API cHasher : noncopyable
     std::string toString() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

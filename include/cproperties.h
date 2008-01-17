@@ -20,6 +20,8 @@
 #include "cobject.h"
 #include <vector>
 
+NAMESPACE_BEGIN
+
 class cProperty;
 
 
@@ -143,6 +145,9 @@ class SIM_API cProperties : public cObject
     virtual void remove(int k);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

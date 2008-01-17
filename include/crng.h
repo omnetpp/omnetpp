@@ -21,6 +21,8 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 
+NAMESPACE_BEGIN
+
 class cConfiguration;
 
 
@@ -111,6 +113,9 @@ class SIM_API cRNG : public cObject
      */
     double doubleRandNonzIncl1() {return 1-doubleRand();}
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -17,6 +17,8 @@
 
 #include "cmodule.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Represents a compound module in the simulation.
@@ -68,6 +70,9 @@ class SIM_API cCompoundModule : public cModule //implies noncopyable
     virtual void scheduleStart(simtime_t t);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

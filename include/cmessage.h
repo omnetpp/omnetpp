@@ -24,6 +24,8 @@
 #include "cmsgpar.h"
 #include "csimulation.h"
 
+NAMESPACE_BEGIN
+
 //=== classes mentioned:
 class cMsgPar;
 class cGate;
@@ -782,6 +784,9 @@ class SIM_API cMessage : public cOwnedObject
     static void resetMessageCounters()  {total_msgs=live_msgs=0;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

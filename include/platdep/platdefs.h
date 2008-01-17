@@ -62,5 +62,15 @@
 #define _OPPDEPRECATED
 #endif
 
+#ifdef USE_NAMESPACE
+#  define NAMESPACE_BEGIN  namespace omnetpp {
+#  define NAMESPACE_END    };
+#  define USING_NAMESPACE  using namespace omnetpp;
+#else
+#  define NAMESPACE_BEGIN
+#  define NAMESPACE_END
+#  define USING_NAMESPACE
+#endif
+
 #endif
 

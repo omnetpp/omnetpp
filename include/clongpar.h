@@ -19,6 +19,8 @@
 
 #include "cparvalue.h"
 
+NAMESPACE_BEGIN
+
 /**
  * FIXME revise docu in the whole class!!!!!!
  *
@@ -194,6 +196,9 @@ class SIM_API cLongPar : public cParValue
     virtual int compare(const cParValue *other) const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

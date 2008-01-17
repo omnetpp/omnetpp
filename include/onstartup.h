@@ -23,6 +23,8 @@
 #include "simkerneldefs.h"
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 // Generating identifiers unique for this file. See MSVC Help for __COUNTER__
 // for more info.
@@ -154,6 +156,9 @@ class SIM_API cRegistrationList
     cSymTable *instance();
     void clear();
 };
+
+NAMESPACE_END
+
 
 #endif
 

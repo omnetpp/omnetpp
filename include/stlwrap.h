@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+NAMESPACE_BEGIN
+
 //XXX we *may* need to use these classes in public API functions exposed in a dll interface
 
 /**
@@ -71,6 +73,9 @@ class SIM_API stdcharpvector : public std::vector<const char *>
     stdcharpvector(const stdcharpvector& x) : std::vector<const char *>(x) {}
     stdcharpvector(const_iterator first, const_iterator last) : std::vector<const char *>(first,last) {}
 };
+
+
+NAMESPACE_END
 
 
 #endif

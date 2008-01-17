@@ -19,6 +19,8 @@
 
 #include "simkerneldefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Error codes
  */
@@ -75,5 +77,8 @@ class SIM_API cErrorMessages
     cErrorMessages() {}
     static const char *get(ErrorCode e);
 };
+
+NAMESPACE_END
+
 
 #endif

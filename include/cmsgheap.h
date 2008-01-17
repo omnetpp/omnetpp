@@ -21,6 +21,8 @@
 
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 class cMessage;
 
 
@@ -190,6 +192,9 @@ class SIM_API cMessageHeap : public cOwnedObject
     bool empty() const {return n==0;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

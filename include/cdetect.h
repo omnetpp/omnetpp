@@ -29,6 +29,8 @@
 #include "cownedobject.h"
 #include "cstat.h"
 
+NAMESPACE_BEGIN
+
 //=== classes declared here:
 class cTransientDetection;
 class cAccuracyDetection;
@@ -440,6 +442,9 @@ class SIM_API cADByStddev : public cAccuracyDetection
         {accuracy=acc; repeats=detreps=reps;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

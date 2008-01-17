@@ -23,6 +23,8 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 
+NAMESPACE_BEGIN
+
 
 class cModule;
 class cStatistic;
@@ -292,6 +294,9 @@ class ENVIR_API cSnapshotManager : public cObject
     virtual const char *fileName() const = 0;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

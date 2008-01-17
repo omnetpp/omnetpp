@@ -23,6 +23,8 @@
 
 #include "cobject.h"
 
+NAMESPACE_BEGIN
+
 // forward declaration:
 class cCommBuffer;
 
@@ -114,6 +116,9 @@ class SIM_API cParsimCommunications : public cObject
     virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId) = 0;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

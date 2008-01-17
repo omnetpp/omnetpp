@@ -18,6 +18,8 @@
 #include "cchannel.h"
 #include "cpar.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Channel that models delay, bit error rate and data rate.
@@ -169,6 +171,9 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
     virtual bool deliver(cMessage *msg, simtime_t at);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

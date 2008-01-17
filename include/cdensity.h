@@ -21,6 +21,8 @@
 
 #include "cstat.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Common base class for density estimation classes. Provides several
  * pure virtual functions, so it is an abstract class, no instances
@@ -351,6 +353,9 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual double cdf(double x) const = 0;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

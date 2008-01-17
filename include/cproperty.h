@@ -23,6 +23,8 @@
 #include <map>
 #include <vector>
 
+NAMESPACE_BEGIN
+
 class cProperties;
 
 
@@ -210,6 +212,9 @@ class SIM_API cProperty : public cNamedObject
     virtual void erase(const char *key);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

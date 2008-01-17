@@ -19,6 +19,8 @@
 
 #include "cobject.h"
 
+NAMESPACE_BEGIN
+
 class cXMLElement;
 
 /**
@@ -137,6 +139,9 @@ class SIM_API cExpression : public cObject
     virtual const char *unit() const {return NULL;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

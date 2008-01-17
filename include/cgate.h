@@ -22,6 +22,8 @@
 #include "cobject.h"
 #include "cstringpool.h"
 
+NAMESPACE_BEGIN
+
 class  cGate;
 class  cModule;
 class  cMessage;
@@ -330,6 +332,9 @@ class SIM_API cGate : public cObject, noncopyable
     void setDisplayString(const char *dispstr, bool immediate=true);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

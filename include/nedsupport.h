@@ -19,6 +19,8 @@
 
 #include "cdynamicexpression.h"
 
+NAMESPACE_BEGIN
+
 
 namespace NEDSupport
 {
@@ -164,6 +166,9 @@ class Sizeof : public Functor
 */
 
 };
+
+NAMESPACE_END
+
 
 #endif
 

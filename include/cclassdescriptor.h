@@ -22,6 +22,8 @@
 #include <string>
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Abstract base class for structure description classes, used mainly
@@ -235,6 +237,9 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     virtual void *getFieldStructPointer(void *object, int field, int i) = 0;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

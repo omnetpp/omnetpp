@@ -18,6 +18,8 @@
 #include <string>
 #include "cownedobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Declares a configuration key.
@@ -106,6 +108,9 @@ class SIM_API cConfigKey : public cNoncopyableOwnedObject
     const char *description() const  {return description_.c_str();}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

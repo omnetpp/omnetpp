@@ -24,6 +24,8 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 
+NAMESPACE_BEGIN
+
 class cConfigKey;
 
 
@@ -408,6 +410,9 @@ class SIM_API cConfiguration : public cObject
     virtual std::vector<std::string> getAsFilenames(const char *objectFullPath, cConfigKey *entry);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

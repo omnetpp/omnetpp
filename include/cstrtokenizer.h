@@ -23,6 +23,8 @@
 #include <vector>
 #include "simkerneldefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * String tokenizer class, modelled after strtok(). It considers the input
  * string to consist of tokens, separated by one or more delimiter characters.
@@ -110,6 +112,9 @@ class SIM_API cStringTokenizer
      */
     std::vector<double> asDoubleVector();
 };
+
+NAMESPACE_END
+
 
 #endif
 

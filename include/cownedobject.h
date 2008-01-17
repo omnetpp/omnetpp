@@ -25,6 +25,8 @@
 #include "cnamedobject.h"
 #include "cexception.h"
 
+NAMESPACE_BEGIN
+
 
 class cOwnedObject;
 class cStaticFlag;
@@ -404,6 +406,9 @@ const T check_and_cast(const cObject *p)
 {
     return check_and_cast<T>(const_cast<cObject *>(p));
 }
+
+NAMESPACE_END
+
 
 #endif
 

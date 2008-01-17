@@ -24,6 +24,8 @@
 #include "simkerneldefs.h"
 #include "util.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Lightweight string class, used internally in some parts of \opp.
  * In simulation models it is better to use std::string or const char *
@@ -144,6 +146,9 @@ class SIM_API opp_string_map : public std::map<opp_string,opp_string>
     opp_string_map() {}
     opp_string_map(const opp_string_map& other) {*this = other;}
 };
+
+NAMESPACE_END
+
 
 #endif
 

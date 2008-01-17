@@ -22,6 +22,8 @@
 #include "cstringpool.h"
 #include "cexception.h"
 
+NAMESPACE_BEGIN
+
 class cExpression;
 class cXMLElement;
 class cProperties;
@@ -351,6 +353,9 @@ class SIM_API cParValue : public cNamedObject
     static void resetParValueObjectCounters()  {total_parvalue_objs=live_parvalue_objs=0L;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

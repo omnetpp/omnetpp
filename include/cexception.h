@@ -26,6 +26,8 @@
 #include "errmsg.h"
 #include "opp_string.h"
 
+NAMESPACE_BEGIN
+
 class cObject;
 class cComponent;
 
@@ -307,6 +309,9 @@ class SIM_API cStackCleanupException : public cException
      */
     virtual cStackCleanupException *dup() const {return new cStackCleanupException(*this);}
 };
+
+NAMESPACE_END
+
 
 #endif
 
