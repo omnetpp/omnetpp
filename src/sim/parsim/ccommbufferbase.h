@@ -23,6 +23,8 @@
 
 #include "ccommbuffer.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Adds buffer (re)allocation functions to cCommBuffer. This functionality
  * is not always needed, e.g. PVM manages its pack/unpack buffers internally.
@@ -98,5 +100,8 @@ class SIM_API cCommBufferBase : public cCommBuffer
     virtual void assertBufferEmpty();
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif

@@ -24,6 +24,8 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 
+NAMESPACE_BEGIN
+
 // forward declarations:
 class cSimulation;
 class cParsimSynchronizer;
@@ -142,6 +144,9 @@ class SIM_API cParsimPartition : public cObject
      */
     virtual void broadcastException(cException *e);
 };
+
+NAMESPACE_END
+
 
 #endif
 

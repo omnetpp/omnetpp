@@ -23,6 +23,8 @@
 #include "cownedobject.h"
 #include "macros.h"
 
+USING_NAMESPACE
+
 Register_Class(cMemCommBuffer);
 
 

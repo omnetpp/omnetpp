@@ -15,6 +15,8 @@
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 
+USING_NAMESPACE
+
 
 cPlaceHolderModule::cPlaceHolderModule()
 {

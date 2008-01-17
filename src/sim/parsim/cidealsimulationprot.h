@@ -22,6 +22,8 @@
 
 #include "cparsimprotocolbase.h"
 
+NAMESPACE_BEGIN
+
 // forward declarations
 class cCommBuffer;
 
@@ -90,6 +92,9 @@ class SIM_API cIdealSimulationProtocol : public cParsimProtocolBase
      */
     virtual cMessage *getNextEvent();
 };
+
+NAMESPACE_END
+
 
 #endif
 

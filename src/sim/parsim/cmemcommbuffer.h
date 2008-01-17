@@ -22,6 +22,8 @@
 
 #include "ccommbufferbase.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Communication buffer that packs data into a memory buffer without any
@@ -114,6 +116,9 @@ class SIM_API cMemCommBuffer : public cCommBufferBase
     virtual void unpack(opp_string *d, int size);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

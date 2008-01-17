@@ -20,6 +20,8 @@
 
 #include "cmpicommbuffer.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * A variant of cMPICommBuffer. packObject() only packs the pointer
@@ -46,6 +48,9 @@ class SIM_API cPtrPassingMPICommBuffer : public cMPICommBuffer
      */
     virtual cOwnedObject *unpackObject();
 };
+
+NAMESPACE_END
+
 
 #endif
 

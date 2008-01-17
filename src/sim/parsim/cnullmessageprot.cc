@@ -34,6 +34,8 @@
 #include "cproxygate.h"
 #include "cchannel.h"
 
+USING_NAMESPACE
+
 Register_Class(cNullMessageProtocol);
 
 Register_GlobalConfigEntry(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "parsim-nullmessageprotocol-lookahead-class", CFG_STRING, "cLinkDelayLookahead", "When cNullMessageProtocol is selected as parsim synchronization class: specifies the C++ class that calculates lookahead. The class should subclass from cNMPLookahead.");

@@ -23,6 +23,8 @@
 #include "cparsimprotocolbase.h"
 #include "cmessage.h"  // MK_PARSIM_BEGIN
 
+NAMESPACE_BEGIN
+
 // forward declarations
 class cCommBuffer;
 class cNMPLookahead;
@@ -129,5 +131,8 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
      */
     virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data);
 };
+
+NAMESPACE_END
+
 
 #endif

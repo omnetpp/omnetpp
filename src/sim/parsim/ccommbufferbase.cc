@@ -22,6 +22,8 @@
 #include "ccommbufferbase.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 cCommBufferBase::cCommBufferBase()
 {

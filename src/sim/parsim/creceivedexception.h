@@ -22,6 +22,8 @@
 
 #include "cexception.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Represents an exception that has been received from other partitions.
  *
@@ -50,6 +52,9 @@ class cReceivedTerminationException : public cTerminationException
      */
     cReceivedTerminationException(int sourceProcId, const char *msg);
 };
+
+NAMESPACE_END
+
 
 #endif
 

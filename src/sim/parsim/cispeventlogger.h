@@ -22,6 +22,8 @@
 
 #include "cnullmessageprot.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Implements phase one for the Ideal Simulation Protocol (ISP),
@@ -80,6 +82,9 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
      */
     virtual cMessage *getNextEvent();
 };
+
+NAMESPACE_END
+
 
 #endif
 

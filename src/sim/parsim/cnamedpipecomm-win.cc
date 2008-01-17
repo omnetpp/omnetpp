@@ -36,6 +36,8 @@
 #include "cconfiguration.h"
 #include "parsimutil.h"
 
+USING_NAMESPACE
+
 
 Register_Class(cNamedPipeCommunications);
 

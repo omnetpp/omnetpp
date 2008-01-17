@@ -26,6 +26,8 @@
 #include "cconfiguration.h"
 #include "platmisc.h"
 
+USING_NAMESPACE
+
 Register_Class(cMPICommunications);
 
 Register_GlobalConfigEntry(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER, "parsim-mpicommunications-mpibuffer", CFG_INT, NULL, "When cMPICommunications is selected as parsim communications class: specifies the size of the MPI communications buffer. The default is to calculate a buffer size based on the number of partitions.");

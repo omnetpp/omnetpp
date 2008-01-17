@@ -22,6 +22,8 @@
 
 #include "cgate.h"
 
+NAMESPACE_BEGIN
+
 // forward declaration
 class cParsimPartition;
 
@@ -139,6 +141,9 @@ class SIM_API cProxyGate : public cGate // noncopyable
     void *getSynchData()   {return data;}
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

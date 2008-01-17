@@ -20,6 +20,8 @@
 #include "cmpicommbuffer.h"
 #include "macros.h"
 
+USING_NAMESPACE
+
 Register_Class(cPtrPassingMPICommBuffer);
 
 

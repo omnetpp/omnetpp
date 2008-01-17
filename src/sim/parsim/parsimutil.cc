@@ -21,6 +21,8 @@
 #include "parsimutil.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 void getProcIdFromCommandLineArgs(int& myProcId, int& numPartitions, const char *caller)
 {

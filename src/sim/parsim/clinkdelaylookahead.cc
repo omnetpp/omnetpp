@@ -30,6 +30,8 @@
 #include "cchannel.h"
 #include "macros.h"
 
+USING_NAMESPACE
+
 
 Register_Class(cLinkDelayLookahead);
 

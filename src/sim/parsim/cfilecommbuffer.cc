@@ -26,6 +26,8 @@
 #include "cownedobject.h"
 #include "macros.h"
 
+USING_NAMESPACE
+
 Register_Class(cFileCommBuffer);
 
 #define STORE(FMT,d)    {sprintf(mBuffer+mMsgSize, FMT "\n", d); mMsgSize+=strlen(mBuffer+mMsgSize);}

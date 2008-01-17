@@ -26,6 +26,8 @@
 #include "cmodule.h"
 #include "macros.h"
 
+USING_NAMESPACE
+
 Register_Class(cISPEventLogger);
 
 

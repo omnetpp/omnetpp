@@ -31,6 +31,8 @@
 #include "messagetags.h"
 #include "macros.h"
 
+USING_NAMESPACE
+
 
 Register_Class(cIdealSimulationProtocol);
 

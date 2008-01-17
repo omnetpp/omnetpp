@@ -44,6 +44,8 @@
 #ifdef USE_WINDOWS_PIPES
 #define MEAN_AND_LEAN
 #include <windows.h>
+
+NAMESPACE_BEGIN
 typedef HANDLE PIPE;
 #else
 typedef int PIPE;
@@ -140,6 +142,9 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourceProcId);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

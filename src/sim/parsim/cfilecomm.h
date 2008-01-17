@@ -21,6 +21,8 @@
 #include "cparsimcomm.h"
 #include "util.h"
 
+NAMESPACE_BEGIN
+
 #ifndef __CFILECOMM_H__
 #define __CFILECOMM_H__
 
@@ -107,6 +109,9 @@ class SIM_API cFileCommunications : public cParsimCommunications
     virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourceProcId);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

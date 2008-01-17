@@ -25,6 +25,8 @@
 #include "cmodule.h"
 #include "cmessage.h"
 
+USING_NAMESPACE
+
 
 cProxyGate::cProxyGate(const char *name, char type) : cGate(name, type)
 {

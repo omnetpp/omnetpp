@@ -33,6 +33,8 @@
 #include "fileglobber.h"
 #include "platmisc.h"
 
+USING_NAMESPACE
+
 
 Register_Class(cFileCommunications);
 

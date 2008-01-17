@@ -22,6 +22,8 @@
 
 #include "cparsimcomm.h"
 
+NAMESPACE_BEGIN
+
 class cMPICommBuffer;
 
 /**
@@ -109,6 +111,9 @@ class SIM_API cMPICommunications : public cParsimCommunications
     virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourceProcId);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

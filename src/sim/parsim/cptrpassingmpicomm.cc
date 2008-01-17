@@ -19,6 +19,8 @@
 #include "cptrpassingmpicommbuffer.h"
 #include "macros.h"
 
+USING_NAMESPACE
+
 Register_Class(cPtrPassingMPICommunications);
 
 cPtrPassingMPICommunications::cPtrPassingMPICommunications()

@@ -22,6 +22,8 @@
 
 #include "cparsimsynchr.h"
 
+NAMESPACE_BEGIN
+
 // forward declarations
 class cCommBuffer;
 
@@ -63,6 +65,9 @@ class SIM_API cParsimProtocolBase : public cParsimSynchronizer
      */
     virtual void processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data);
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -22,6 +22,8 @@
 
 #include "cobject.h"
 
+NAMESPACE_BEGIN
+
 // forward declarations
 class cMessage;
 class cSimulation;
@@ -81,5 +83,8 @@ class SIM_API cNMPLookahead : public cObject
     virtual double getCurrentLookahead(int procId) = 0;
 
 };
+
+NAMESPACE_END
+
 
 #endif

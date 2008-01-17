@@ -18,6 +18,8 @@
 
 #include "cparsimcomm.h"
 
+NAMESPACE_BEGIN
+
 #ifndef __CPTRPASSINGMPICOMM_H__
 #define __CPTRPASSINGMPICOMM_H__
 
@@ -41,6 +43,9 @@ class SIM_API cPtrPassingMPICommunications : public cMPICommunications
      */
     virtual cMPICommBuffer *doCreateCommBuffer();
 };
+
+NAMESPACE_END
+
 
 #endif
 

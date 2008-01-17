@@ -28,6 +28,8 @@
 #include "messagetags.h"
 #include "cparsimprotocolbase.h"
 
+USING_NAMESPACE
+
 
 
 cParsimProtocolBase::cParsimProtocolBase() : cParsimSynchronizer()

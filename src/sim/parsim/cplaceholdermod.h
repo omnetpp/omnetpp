@@ -18,6 +18,8 @@
 #include "cmodule.h"
 #include "csimul.h"
 
+NAMESPACE_BEGIN
+
 /**
  * In distributed parallel simulation, modules of the network
  * are distributed across partitions.
@@ -77,6 +79,9 @@ class SIM_API cPlaceHolderModule : public cModule // so, noncopyable
     virtual void scheduleStart(simtime_t t);
     //@}
 };
+
+
+NAMESPACE_END
 
 
 #endif

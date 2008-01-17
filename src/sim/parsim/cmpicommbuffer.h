@@ -22,6 +22,8 @@
 
 #include "ccommbufferbase.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Communication buffer that wraps MPI_Pack() and MPI_Unpack() functions.
@@ -113,6 +115,9 @@ class SIM_API cMPICommBuffer : public cCommBufferBase
     virtual void unpack(opp_string *d, int size);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -22,6 +22,8 @@
 
 #include "cnmplookahead.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Lookahead calculation based on inter-partition link delays only.
  *
@@ -78,6 +80,9 @@ class SIM_API cAdvancedLinkDelayLookahead : public cNMPLookahead
      */
     virtual double getCurrentLookahead(int procId);
 };
+
+NAMESPACE_END
+
 
 #endif
 
