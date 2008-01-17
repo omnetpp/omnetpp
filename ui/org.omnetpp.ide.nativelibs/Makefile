@@ -49,7 +49,7 @@ DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.linux.x86
 # Local definitions
 #
 INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
-COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
+COPTS=$(CFLAGS) -fno-strict-aliasing $(JAVA_CFLAGS) $(INCLUDES)
 
 
 #
