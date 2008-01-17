@@ -19,6 +19,8 @@
 #include "channel.h"
 #include "xyplotnode.h"
 
+USING_NAMESPACE
+
 
 Port *XYPlotNode::portY(int k)
 {

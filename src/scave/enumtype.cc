@@ -24,6 +24,8 @@
 #include "scaveutils.h"
 #include "enumtype.h"
 
+USING_NAMESPACE
+
 
 EnumType::EnumType(const EnumType& list)
 {

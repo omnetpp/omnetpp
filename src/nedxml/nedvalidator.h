@@ -22,6 +22,8 @@
 
 #include "nedelements.h"
 
+NAMESPACE_BEGIN
+
 /**
  * GENERATED CLASS. Abtract base class for NED validators.
  * 
@@ -96,6 +98,9 @@ class NEDXML_API NEDValidatorBase
     virtual void validateElement(UnknownNode *node) = 0;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

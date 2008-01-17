@@ -18,6 +18,8 @@
 #include "exception.h"
 #include "linetokenizer.h"
 
+USING_NAMESPACE
+
 
 LineTokenizer::LineTokenizer(int bufferSize, int maxTokenNum)
 {

@@ -22,6 +22,8 @@
 #include "onstartup.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 void loadExtensionLibrary(const char *lib)
 {

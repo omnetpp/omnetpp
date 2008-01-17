@@ -20,6 +20,8 @@
 #include "tkutil.h"
 #include "omnetapp.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Inspector types
  */
@@ -114,6 +116,9 @@ class TInspectorPanel
       virtual void writeBack() = 0;
       virtual int inspectorCommand(Tcl_Interp *, int, const char **) = 0;
 };
+
+NAMESPACE_END
+
 
 #endif
 

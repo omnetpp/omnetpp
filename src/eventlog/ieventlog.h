@@ -21,6 +21,8 @@
 #include "eventlogdefs.h"
 #include "ievent.h"
 
+NAMESPACE_BEGIN
+
 class IEventLog;
 
 class EVENTLOG_API ProgressMonitor
@@ -168,5 +170,8 @@ class EVENTLOG_API IEventLog
          */
         virtual void print(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1, bool outputInitializationEntries = true, bool outputEventLogMessages = true);
 };
+
+NAMESPACE_END
+
 
 #endif

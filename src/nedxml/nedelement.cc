@@ -22,6 +22,8 @@
 #include "nedelement.h"
 #include "nederror.h"
 
+USING_NAMESPACE
+
 using std::ostream;
 
 

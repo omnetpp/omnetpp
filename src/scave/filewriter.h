@@ -18,6 +18,8 @@
 #include <string>
 #include "commonnodes.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Processing node which writes data into a file. Every line contains two
@@ -47,6 +49,9 @@ class SCAVE_API FileWriterNodeType : public SingleSinkNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };
+
+
+NAMESPACE_END
 
 
 #endif

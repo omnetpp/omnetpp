@@ -19,6 +19,8 @@
 #include <stdlib.h>
 #include "enumstr.h"
 
+USING_NAMESPACE
+
 EnumStringIterator::EnumStringIterator(const char *s)
 {
      // loop through string to check its syntax

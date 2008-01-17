@@ -22,6 +22,8 @@
 #include "messagedependency.h"
 #include "sequencechartfacade.h"
 
+USING_NAMESPACE
+
 static double zero = 0;
 
 static double NaN = zero / zero;

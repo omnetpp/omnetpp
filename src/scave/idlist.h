@@ -20,6 +20,8 @@
 #include <stdexcept>
 #include "scavedefs.h" // int64
 
+NAMESPACE_BEGIN
+
 class ResultFileManager;
 
 /**
@@ -93,6 +95,9 @@ class SCAVE_API IDList
         void toByteArray(char *array, int n) const;
         void fromByteArray(char *array, int n);
 };
+
+NAMESPACE_END
+
 
 #endif
 

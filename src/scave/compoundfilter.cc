@@ -21,6 +21,8 @@
 #include "filternodes.h"
 #include "nodetyperegistry.h"
 
+USING_NAMESPACE
+
 
 bool CompoundFilterType::Subfilter::operator==(const CompoundFilterType::Subfilter& other) const
 {

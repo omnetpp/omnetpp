@@ -35,6 +35,8 @@
 #include "forcedirectedgraphlayouter.h"
 #include "basicspringembedderlayout.h"
 
+USING_NAMESPACE
+
 #define UNKNOWNICON_WIDTH  32
 #define UNKNOWNICON_HEIGHT 32
 

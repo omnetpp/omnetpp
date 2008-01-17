@@ -16,6 +16,8 @@
 #include "eventlogindex.h"
 #include "exception.h"
 
+USING_NAMESPACE
+
 EventLogIndex::EventLogIndex(FileReader *reader)
 {
     this->reader = reader;

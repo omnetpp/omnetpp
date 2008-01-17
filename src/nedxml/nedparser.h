@@ -22,6 +22,8 @@
 #include "nedyydefs.h"
 #include "nederror.h"
 
+NAMESPACE_BEGIN
+
 class NEDFileBuffer;
 class NEDParser;
 
@@ -142,6 +144,9 @@ class NEDXML_API NEDParser
      */
     NEDElement *parseMSGText(const char *nedtext);
 };
+
+NAMESPACE_END
+
 
 #endif
 

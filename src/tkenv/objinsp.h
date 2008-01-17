@@ -20,6 +20,8 @@
 #include "inspector.h"
 #include "omnetapp.h"
 
+NAMESPACE_BEGIN
+
 class TGenericObjectInspector : public TInspector
 {
    protected:
@@ -91,6 +93,9 @@ class TWatchInspector: public TInspector
 //       virtual void update();
 //       virtual void writeBack();
 // };
+
+NAMESPACE_END
+
 
 #endif
 

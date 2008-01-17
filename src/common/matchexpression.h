@@ -21,6 +21,8 @@
 #include "commondefs.h"
 #include "exception.h"
 
+NAMESPACE_BEGIN
+
 class PatternMatcher;
 
 
@@ -158,6 +160,9 @@ class COMMON_API MatchableString : public MatchExpression::Matchable
     virtual const char *getDefaultAttribute() const {return str.c_str();}
     virtual const char *getAttribute(const char *name) const {return NULL;}
 };
+
+NAMESPACE_END
+
 
 #endif
 

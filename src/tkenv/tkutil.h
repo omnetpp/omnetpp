@@ -24,6 +24,8 @@
 #include "cownedobject.h"
 #include "exception.h"
 
+NAMESPACE_BEGIN
+
 //
 // In some installations Tcl headers files have 'char*' without 'const char*'
 // in arg lists -- we have to cast away 'const char*' from args in our Tcl calls.
@@ -101,6 +103,9 @@ void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Int
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 
 void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);
+
+NAMESPACE_END
+
 
 #endif
 

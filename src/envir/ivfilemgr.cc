@@ -47,6 +47,8 @@ Register_PerObjectConfigEntry(CFGID_OUTVECTOR_MAX_BUFFERED_SAMPLES, "max-buffere
 #ifdef CHECK
 #undef CHECK
 #endif
+
+USING_NAMESPACE
 #define CHECK(fprintf, fname)    if (fprintf<0) throw cRuntimeError("Cannot write output file `%s'", fname.c_str())
 #define WARN(msg)       fprintf(stderr,msg)
 

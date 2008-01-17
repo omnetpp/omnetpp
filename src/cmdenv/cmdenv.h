@@ -23,6 +23,8 @@
 #include "omnetapp.h"
 #include <signal.h>
 
+NAMESPACE_BEGIN
+
 
 /**
  * Command line user interface.
@@ -92,6 +94,9 @@ class CMDENV_API TCmdenvApp : public TOmnetApp
      void setupSignals();
      static void signalHandler(int signum);
 };
+
+NAMESPACE_END
+
 
 #endif
 

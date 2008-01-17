@@ -21,6 +21,8 @@
 #include "stringutil.h"
 #include "nedutil.h"
 
+USING_NAMESPACE
+
 using std::ostream;
 
 #define DEFAULTINDENT "            "

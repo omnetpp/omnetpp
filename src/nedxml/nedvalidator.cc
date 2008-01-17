@@ -21,6 +21,8 @@
 #include "nederror.h"
 #include "nedvalidator.h"
 
+USING_NAMESPACE
+
 void  NEDValidatorBase::validate(NEDElement *node)
 {
     validateElement(node);

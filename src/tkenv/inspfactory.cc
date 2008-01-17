@@ -26,6 +26,8 @@
 #include "inspector.h"
 #include "inspfactory.h"
 
+USING_NAMESPACE
+
 
 cRegistrationList inspectorfactories;
 

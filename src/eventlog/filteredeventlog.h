@@ -23,6 +23,8 @@
 #include "eventlog.h"
 #include "filteredevent.h"
 
+NAMESPACE_BEGIN
+
 /**
  * This is a "view" of the EventLog, including only a subset of events and their dependencies. This class
  * uses EventLog by delegation so that multiple instances might share the same EventLog object.
@@ -166,5 +168,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void deleteAllocatedObjects();
         void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
 };
+
+NAMESPACE_END
+
 
 #endif

@@ -16,6 +16,8 @@
 #include "patternmatcher.h"
 #include "commonutil.h"
 
+USING_NAMESPACE
+
 
 MatchExpression::Elem::Elem(PatternMatcher *pattern, const char *fieldname)
 {

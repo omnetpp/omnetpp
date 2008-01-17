@@ -19,6 +19,8 @@
 #include "matchableobject.h"
 #include "cclassdescriptor.h"
 
+USING_NAMESPACE
+
 MatchableObjectAdapter::MatchableObjectAdapter(DefaultAttribute attr, cObject *obj)
 {
     this->attr = attr;

@@ -21,6 +21,8 @@
 #include "inspector.h"
 #include "omnetapp.h"
 
+NAMESPACE_BEGIN
+
 #define Register_InspectorFactory(FACTORYNAME) \
   EXECUTE_ON_STARTUP(inspectorfactories.instance()->add(new FACTORYNAME(#FACTORYNAME));)
 
@@ -83,6 +85,9 @@ extern cRegistrationList inspectorfactories;
  * Find a cInspectorFactory.
  */
 cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type);
+
+NAMESPACE_END
+
 
 #endif
 

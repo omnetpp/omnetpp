@@ -15,6 +15,8 @@
 #include <math.h>
 #include "lcgrandom.h"
 
+USING_NAMESPACE
+
 
 LCGRandom::LCGRandom(int32 seed)
 {

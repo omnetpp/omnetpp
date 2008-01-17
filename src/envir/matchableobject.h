@@ -22,6 +22,8 @@
 #include "cobject.h"
 #include "matchexpression.h"
 
+NAMESPACE_BEGIN
+
 class cClassDescriptor;
 
 
@@ -48,6 +50,9 @@ class ENVIR_API MatchableObjectAdapter : public MatchExpression::Matchable
     virtual const char *getDefaultAttribute() const;
     virtual const char *getAttribute(const char *name) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

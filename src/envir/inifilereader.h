@@ -20,6 +20,8 @@
 #include "envdefs.h"
 #include "cconfigreader.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Low-level inifile reading, including the resolution of includes.
  * Inifile contents is presented as key-value pairs grouped into sections.
@@ -85,6 +87,9 @@ class ENVIR_API InifileReader : public cConfigurationReader
     virtual void dump() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

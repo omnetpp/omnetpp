@@ -36,6 +36,8 @@
 #include "resultfilemanager.h"
 #include "commonutil.h"
 
+USING_NAMESPACE
+
 
 static double zero = 0.0;
 static double NaN = zero / zero;

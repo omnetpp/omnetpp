@@ -33,6 +33,8 @@
 #include "patternmatcher.h"
 #include "visitor.h"
 
+USING_NAMESPACE
+
 
 
 cCollectObjectsVisitor::cCollectObjectsVisitor()

@@ -31,6 +31,8 @@
 #include "macros.h"
 #include "akoutvectormgr.h"
 
+USING_NAMESPACE
+
 
 Register_Class(cAkOutputVectorManager);
 

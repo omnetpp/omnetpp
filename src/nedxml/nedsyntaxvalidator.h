@@ -22,6 +22,8 @@
 
 #include "nedvalidator.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Performs structural validation of components. Assumes the tree already
@@ -107,6 +109,9 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
     virtual void validateElement(UnknownNode *node);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

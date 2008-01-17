@@ -17,6 +17,8 @@
 
 #include "commonnodes.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Processing node which performs sliding window average. Replaces every
@@ -47,6 +49,9 @@ class SCAVE_API SlidingWindowAverageNodeType : public FilterNodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

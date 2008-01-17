@@ -19,6 +19,8 @@
 #include "stringtokenizer.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 //FIXME use new StringTokenizer from experimental/inifile, otherwise string literals with commas inside won't work!
 

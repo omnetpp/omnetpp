@@ -49,6 +49,8 @@
 #define OMNETPP_PLUGIN_PATH "./plugins"
 #endif
 
+USING_NAMESPACE
+
 //
 // Register the Tkenv user interface
 //

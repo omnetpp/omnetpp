@@ -15,6 +15,8 @@
 
 #include "cenvir.h"
 
+USING_NAMESPACE
+
 static void nothing()
 {
     cEnvir dummy;

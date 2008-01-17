@@ -29,6 +29,8 @@
 #include "inspfactory.h"
 #include "statinsp.h"
 
+USING_NAMESPACE
+
 
 
 void _dummy_for_statinsp() {}

@@ -24,6 +24,8 @@
 #include "envdefs.h"
 #include "cxmlelement.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Reads and caches XML config files.
  */
@@ -52,6 +54,9 @@ class ENVIR_API cXMLDocCache : public cObject
      */
     virtual cXMLElement *getDocument(const char *filename);
 };
+
+NAMESPACE_END
+
 
 #endif
 

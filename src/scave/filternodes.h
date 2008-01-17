@@ -17,6 +17,8 @@
 
 #include "commonnodes.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Processing node which does nothing but copying its input to its output.
@@ -358,6 +360,9 @@ class SCAVE_API MeanNodeType : public FilterNodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

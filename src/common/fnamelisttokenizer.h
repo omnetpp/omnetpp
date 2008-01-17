@@ -24,6 +24,8 @@
 #include "commondefs.h"
 #include "commonutil.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * A string tokenizer class which honors quotation marks but not
@@ -73,6 +75,9 @@ class COMMON_API FilenamesListTokenizer
      */
     std::vector<std::string> asVector();
 };
+
+NAMESPACE_END
+
 
 #endif
 

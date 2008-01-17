@@ -19,6 +19,8 @@
 #include "channel.h"
 #include "windowavg.h"
 
+USING_NAMESPACE
+
 
 WindowAverageNode::WindowAverageNode(int windowSize)
 {

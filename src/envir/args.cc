@@ -20,6 +20,8 @@
 #include "opp_ctype.h"
 #include "exception.h"
 
+USING_NAMESPACE
+
 
 ArgList::ArgList(int ac, char *av[], const char *sp)
 {

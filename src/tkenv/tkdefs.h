@@ -19,6 +19,8 @@
 
 #include "platdefs.h"
 
+NAMESPACE_BEGIN
+
 #if defined(TKENV_EXPORT)
 #  define TKENV_API OPP_DLLEXPORT
 #elif defined(TKENV_IMPORT) || defined(OMNETPPLIBS_IMPORT)
@@ -26,5 +28,8 @@
 #else
 #  define TKENV_API
 #endif
+
+NAMESPACE_END
+
 
 #endif

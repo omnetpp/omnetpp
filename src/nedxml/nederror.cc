@@ -18,6 +18,8 @@
 #include <stdlib.h>
 #include "nederror.h"
 
+USING_NAMESPACE
+
 
 #define DO_VSPRINTF()  \
     va_list va; \

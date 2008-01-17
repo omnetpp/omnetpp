@@ -21,6 +21,8 @@
 #include <iostream>
 #include "nedelements.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Simple front-end to NEDXMLGenerator.
  *
@@ -75,5 +77,8 @@ class NEDXML_API NEDXMLGenerator
      */
     virtual void generate(std::ostream& out, NEDElement *tree);
 };
+
+NAMESPACE_END
+
 
 #endif

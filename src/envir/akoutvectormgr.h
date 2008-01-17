@@ -25,6 +25,8 @@
 #include "filemgrs.h"
 #include "util.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * An output vector manager that supports multiple independent runs
@@ -79,5 +81,8 @@ class ENVIR_API cAkOutputVectorManager : public cFileOutputVectorManager
 };
 
 #endif
+NAMESPACE_END
+
+
 #endif
 

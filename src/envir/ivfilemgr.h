@@ -26,6 +26,8 @@
 #include "util.h"
 #include "filemgrs.h"
 
+NAMESPACE_BEGIN
+
 #define MIN_BUFFER_MEMORY    (1024*1024)
 #define DEFAULT_MEMORY_LIMIT "16MB"
 
@@ -136,6 +138,9 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
     virtual bool record(void *vectorhandle, simtime_t t, double value);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

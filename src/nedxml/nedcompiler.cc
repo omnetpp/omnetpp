@@ -26,6 +26,8 @@
 #include "nedsemanticvalidator.h"
 #include "stringutil.h"
 
+USING_NAMESPACE
+
 
 // luckily, "/" satisfies windows too :)
 #define PATHSEPARATOR "/"

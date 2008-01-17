@@ -21,6 +21,8 @@
 #include "node.h"
 #include "nodetype.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Creates x-y plot. Has one "x" and several "y" input ports. Values of these
@@ -60,6 +62,9 @@ class SCAVE_API XYPlotNodeType : public NodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual Port *getPort(Node *node, const char *portname) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

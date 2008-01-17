@@ -21,6 +21,8 @@
 #include "filternodes.h"
 #include "stringutil.h"
 
+USING_NAMESPACE
+
 
 bool NopNode::isReady() const
 {

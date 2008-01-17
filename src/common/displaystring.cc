@@ -17,6 +17,8 @@
 #include "opp_ctype.h"
 #include "displaystring.h"
 
+USING_NAMESPACE
+
 
 //FIXME migrate (part of) sim/utils.cc here, and use these functions from there?
 

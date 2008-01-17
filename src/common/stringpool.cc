@@ -14,6 +14,8 @@
 
 #include "stringpool.h"
 
+USING_NAMESPACE
+
 CommonStringPool::CommonStringPool()
 {
 }

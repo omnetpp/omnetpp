@@ -24,6 +24,8 @@
 #include "nederror.h"
 #include "nedsyntaxvalidator.h"
 
+USING_NAMESPACE
+
 
 // FIXME TODO: assert types begin with capital letters, and submods/gates/params with lowercase! warning if not!
 

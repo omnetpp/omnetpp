@@ -21,6 +21,8 @@
 #include "commonutil.h"
 #include "bigdecimal.h"
 
+NAMESPACE_BEGIN
+
 
 #if defined(EVENTLOG_EXPORT)
 #  define EVENTLOG_API OPP_DLLEXPORT
@@ -95,5 +97,8 @@ enum TimelineMode {
     STEP,
     NONLINEAR
 };
+
+NAMESPACE_END
+
 
 #endif

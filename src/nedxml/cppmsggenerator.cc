@@ -26,6 +26,8 @@
 #include "cppgenerator.h"
 #include "nederror.h"
 
+USING_NAMESPACE
+
 using std::ostream;
 
 inline bool strnotnull(const char *s)

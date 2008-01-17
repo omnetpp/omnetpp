@@ -20,6 +20,8 @@
 #include <string>
 #include "envdefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Somewhat similar to getopt(), this class stores and parses command-line
  * arguments.
@@ -83,5 +85,8 @@ class ENVIR_API ArgList
      */
     char **argVector()  {return argv;}
 };
+
+NAMESPACE_END
+
 
 #endif

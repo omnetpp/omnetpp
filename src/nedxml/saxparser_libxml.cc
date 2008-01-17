@@ -23,6 +23,8 @@
 #include <libxml/SAX.h>
 #include "saxparser.h"
 
+USING_NAMESPACE
+
 
 //
 // Validating only if LibXML is at least 2.6.0

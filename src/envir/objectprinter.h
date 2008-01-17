@@ -25,6 +25,8 @@
 #include "matchexpression.h"
 #include "matchableobject.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * A utility class to serialize an object in text form. It is currently used
@@ -55,5 +57,8 @@ class ENVIR_API ObjectPrinter
         void printObjectToStream(std::ostream& ostream, void *object, cClassDescriptor *descriptor, int level);
         bool matchesObjectField(cObject *object, const char *fieldName);
 };
+
+NAMESPACE_END
+
 
 #endif

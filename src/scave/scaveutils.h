@@ -18,6 +18,8 @@
 #include <string>
 #include "scavedefs.h"
 
+NAMESPACE_BEGIN
+
 SCAVE_API extern double dblNaN;
 SCAVE_API extern double dblPositiveInfinity;
 SCAVE_API extern double dblNegativeInfinity;
@@ -31,6 +33,9 @@ SCAVE_API bool parseLong(const char *str, long &dest);
 SCAVE_API bool parseDouble(const char *str, double &dest);
 SCAVE_API bool parseSimtime(const char *str, simultime_t &dest);
 SCAVE_API std::string unquoteString(const char *str);
+
+NAMESPACE_END
+
 
 #endif
 

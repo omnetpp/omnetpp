@@ -18,6 +18,8 @@
 
 #include "nedxmldefs.h"
 
+NAMESPACE_BEGIN
+
 //
 // misc bison/flex related stuff, shared among *.lex, *.y and nedparser.cc/h files
 //
@@ -44,6 +46,9 @@ extern LineColumn pos, prevpos;
 NEDElement *doParseNED2(NEDParser *p, const char *nedtext);
 NEDElement *doParseNED1(NEDParser *p, const char *nedtext);
 NEDElement *doParseMSG2(NEDParser *p, const char *nedtext);
+
+NAMESPACE_END
+
 
 #endif
 

@@ -15,6 +15,8 @@
 #include <algorithm>
 #include "filteredeventlog.h"
 
+USING_NAMESPACE
+
 FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
 {
     this->eventLog = eventLog;

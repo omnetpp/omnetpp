@@ -21,6 +21,8 @@
 #include "eventlogentry.h"
 #include "eventlogentries.h"
 
+NAMESPACE_BEGIN
+
 class IEvent;
 class IEventLog;
 
@@ -135,5 +137,8 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         virtual const char *getClassName() { return "FilteredMessageDependency"; }
         virtual int getClassIndex() { return 1; }
 };
+
+NAMESPACE_END
+
 
 #endif

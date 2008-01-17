@@ -17,6 +17,8 @@
 
 #include "commonnodes.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Processing node which performs window average. Replaces every batch
@@ -45,6 +47,9 @@ class SCAVE_API WindowAverageNodeType : public FilterNodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

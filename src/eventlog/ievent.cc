@@ -14,6 +14,8 @@
 
 #include "ievent.h"
 
+USING_NAMESPACE
+
 IEvent::IEvent()
 {
     nextEvent = NULL;

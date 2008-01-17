@@ -21,6 +21,8 @@
 #include "nedyydefs.h"
 #include "nedparser.h"
 
+NAMESPACE_BEGIN
+
 
 std::string slashifyFilename(const char *fname);
 const char *currentLocation();
@@ -93,6 +95,9 @@ inline YYLTYPE makeYYLTYPE(int fl, int fc, int ll, int lc) {
 inline YYLTYPE makeEmptyYYLTYPE() {
     return makeYYLTYPE(1,0,1,0);
 }
+
+NAMESPACE_END
+
 
 #endif
 

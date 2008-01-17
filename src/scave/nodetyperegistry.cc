@@ -35,6 +35,8 @@
 #include "stddev.h"
 #include "teenode.h"
 
+USING_NAMESPACE
+
 NodeTypeRegistry *NodeTypeRegistry::inst;
 
 NodeTypeRegistry *NodeTypeRegistry::instance()

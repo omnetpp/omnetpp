@@ -19,6 +19,8 @@
 #include "scavedefs.h"
 #include "scaveutils.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Class for collecting statistical data of the result
  * used in several places in Scave.
@@ -90,5 +92,8 @@ inline void Statistics::adjoin(const Statistics &other)
             _sum += other._sum;
             _sumSqr += other._sumSqr;
 }
+
+NAMESPACE_END
+
 
 #endif

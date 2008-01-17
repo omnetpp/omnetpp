@@ -22,6 +22,8 @@
 #include "commonutil.h"
 #include "statistics.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Data of one block stored in the index file.
  */
@@ -321,5 +323,8 @@ class SCAVE_API IndexFileWriter
         /** Closes the index file. */
         void closeFile();
 };
+
+NAMESPACE_END
+
 
 #endif

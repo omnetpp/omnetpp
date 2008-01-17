@@ -18,6 +18,8 @@
 #include "nederror.h"
 #include "nedcomponent.h"
 
+USING_NAMESPACE
+
 
 NEDComponent::NEDComponent(NEDElement *tree)
 {

@@ -19,6 +19,8 @@
 #include "nedresourcecache.h"
 #include "fileutil.h"
 
+USING_NAMESPACE
+
 
 NEDResourceCache::NEDResourceCache()
 {

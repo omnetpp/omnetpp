@@ -24,6 +24,8 @@
 #include "cexception.h"
 #include "akaroarng.h"
 
+USING_NAMESPACE
+
 
 Register_Class(cAkaroaRNG);
 

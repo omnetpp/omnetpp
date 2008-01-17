@@ -23,6 +23,8 @@
 
 #include "arrow.h"
 
+USING_NAMESPACE
+
 static void clip_line_to_rect(
             double& x1, double& y1, double x2, double y2,
             double rx1, double ry1, double rx2, double ry2)

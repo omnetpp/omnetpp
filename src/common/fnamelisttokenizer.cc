@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include "fnamelisttokenizer.h"
 
+USING_NAMESPACE
+
 
 FilenamesListTokenizer::FilenamesListTokenizer(const char *s)
 {

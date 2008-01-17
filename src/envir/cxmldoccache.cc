@@ -28,6 +28,8 @@
 #include "cexception.h"
 #include "../nedxml/saxparser.h"
 
+USING_NAMESPACE
+
 
 // We depend on WITH_NETBUILDER because it brings the nedxml library which
 // contains the XML parser. TBD XML parser should be an independent library

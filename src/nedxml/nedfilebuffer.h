@@ -18,6 +18,8 @@
 
 #include "nedparser.h"   // for YYLTYPE
 
+NAMESPACE_BEGIN
+
 /**
  * Used internally by NEDParser. Stores the full text of a NED file,
  * and makes it possible to retrieve parts of it by (line1,col1,line2,col2)
@@ -129,6 +131,9 @@ class NEDXML_API NEDFileBuffer
      */
     void trimSpaceAndComments(YYLTYPE& pos);
 };
+
+NAMESPACE_END
+
 
 #endif
 

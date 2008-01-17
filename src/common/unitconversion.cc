@@ -16,6 +16,8 @@
 #include "opp_ctype.h"
 #include "unitconversion.h"
 
+USING_NAMESPACE
+
 UnitConversion::UnitDesc UnitConversion::unitTable[] = {
 //FIXME accept longer names too ("byte", "bytes", "sec", "second", "seconds"...)
     { "d",   86400, "s",    "day" },

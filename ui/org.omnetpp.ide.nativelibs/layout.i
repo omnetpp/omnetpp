@@ -29,6 +29,10 @@
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
+#define NAMESPACE_BEGIN
+#define NAMESPACE_END
+#define USING_NAMESPACE
+
 %typemap(jni)    int32 "jint"
 %typemap(jtype)  int32 "int"
 %typemap(jstype) int32 "int"

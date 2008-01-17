@@ -31,6 +31,8 @@
 #include "cmodule.h"
 #include "cdisplaystring.h"
 
+USING_NAMESPACE
+
 
 
 TGraphLayouterEnvironment::TGraphLayouterEnvironment(cModule *parentModule, const cDisplayString& displayString)

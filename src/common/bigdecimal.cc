@@ -18,6 +18,8 @@
 #include "platmisc.h"
 #include "bigdecimal.h"
 
+USING_NAMESPACE
+
 // helpers
 static double zero = 0.0;
 static double dblNaN = zero / zero;

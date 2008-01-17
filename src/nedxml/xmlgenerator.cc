@@ -20,6 +20,8 @@
 #include "nedelements.h"
 #include "xmlgenerator.h"
 
+USING_NAMESPACE
+
 using std::ostream;
 using std::endl;
 

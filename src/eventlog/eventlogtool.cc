@@ -20,6 +20,8 @@
 #include "eventlog.h"
 #include "filteredeventlog.h"
 
+USING_NAMESPACE
+
 class Options
 {
     public:

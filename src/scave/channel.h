@@ -20,6 +20,8 @@
 #include <deque>
 #include "node.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Does buffering between two processing nodes (Node).
@@ -96,6 +98,9 @@ class SCAVE_API Channel
          */
         int length() {return buffer.size();}
 };
+
+NAMESPACE_END
+
 
 #endif
 

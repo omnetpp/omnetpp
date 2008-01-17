@@ -18,6 +18,8 @@
 #include "ievent.h"
 #include "ieventlog.h"
 
+NAMESPACE_BEGIN
+
 #define PTR(ptr) if (ptr == 0) throw opp_runtime_error("NULL ptr exception");
 #define EVENT_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IEvent *>((IEvent *)ptr));
 #define MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IMessageDependency *>((IMessageDependency *)ptr));
@@ -68,5 +70,8 @@ class EVENTLOG_API EventLogFacade
         simtime_t& MessageDependency_getCauseSimulationTime(ptr_t ptr);
         simtime_t& MessageDependency_getConsequenceSimulationTime(ptr_t ptr);
 };
+
+NAMESPACE_END
+
 
 #endif

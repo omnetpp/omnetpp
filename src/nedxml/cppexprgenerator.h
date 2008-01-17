@@ -22,6 +22,8 @@
 #include <iostream>
 #include "nedelements.h"
 
+NAMESPACE_BEGIN
+
 using std::ostream;
 class NEDSymbolTable;
 
@@ -115,6 +117,9 @@ class NEDXML_API CppExpressionGenerator
      */
     void generateExpressionUsage(ExpressionNode *expr, const char *indent);
 };
+
+NAMESPACE_END
+
 
 #endif
 

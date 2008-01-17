@@ -21,6 +21,8 @@
 #include "stringutil.h"
 #include "exception.h"
 
+USING_NAMESPACE
+
 
 PatternMatcher::PatternMatcher()
 {

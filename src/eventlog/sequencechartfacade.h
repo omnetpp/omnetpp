@@ -22,6 +22,8 @@
 #include "ieventlog.h"
 #include "eventlogfacade.h"
 
+NAMESPACE_BEGIN
+
 /**
  * A class that makes it possible to extract info about events, without
  * returning objects. (Wherever a C++ method returns an object pointer,
@@ -96,5 +98,8 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
             double &nextEventSimulationTime, double &nextEventTimelineCoordinate,
             double &simulationTimeDelta, double &timelineCoordinateDelta);
 };
+
+NAMESPACE_END
+
 
 #endif

@@ -22,6 +22,8 @@
 #ifdef CHECK
 #undef CHECK
 #endif
+
+USING_NAMESPACE
 #define CHECK(fprintf)    if (fprintf<0) throw opp_runtime_error("Cannot write file `%s'", fileName.c_str())
 
 

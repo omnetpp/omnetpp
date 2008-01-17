@@ -20,6 +20,8 @@
 #include "exception.h"
 #include "inttypes.h"
 
+NAMESPACE_BEGIN
+
 #ifdef NDEBUG
 #  define Assert(x)
 #  define DBG(x)
@@ -65,6 +67,9 @@ class COMMON_API DebugCall
  * See http://en.wikipedia.org/wiki/RDTSC
  */
 uint64 readCPUTimeStampCounter();
+
+NAMESPACE_END
+
 
 #endif
 

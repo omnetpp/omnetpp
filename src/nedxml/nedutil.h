@@ -23,6 +23,8 @@
 #include <string>
 #include "nedelement.h"
 
+NAMESPACE_BEGIN
+
 class DisplayString;
 
 /**
@@ -40,6 +42,9 @@ class DisplayStringUtil
     static std::string toOldSubmoduleDisplayString(const char *s);
     static std::string toOldConnectionDisplayString(const char *s);
 };
+
+NAMESPACE_END
+
 
 #endif
 

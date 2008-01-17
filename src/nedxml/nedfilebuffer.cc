@@ -23,6 +23,8 @@
 #include "nedfilebuffer.h"
 #include "nedyylib.h"
 
+USING_NAMESPACE
+
 //-----------------------------------------------------------
 
 NEDFileBuffer::NEDFileBuffer()

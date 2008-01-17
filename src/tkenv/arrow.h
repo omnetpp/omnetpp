@@ -19,8 +19,14 @@
 #define __ARROW_H
 
 #include <tk.h>
+#include "platdefs.h"
+
+NAMESPACE_BEGIN
 
 int arrowcoords(Tcl_Interp *interp, int argc, const char **argv);
+
+NAMESPACE_END
+
 
 #endif
 

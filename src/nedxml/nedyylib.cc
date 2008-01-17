@@ -22,6 +22,8 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
+USING_NAMESPACE
+
 
 // this global var is shared by all lexers
 LineColumn pos, prevpos;

@@ -20,6 +20,8 @@
 #include <vector>
 #include "dataflowmanager.h"
 
+NAMESPACE_BEGIN
+
 class Node;
 class Port;
 
@@ -96,6 +98,9 @@ class SCAVE_API NodeType
          */
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
 };
+
+
+NAMESPACE_END
 
 
 #endif

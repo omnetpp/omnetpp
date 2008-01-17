@@ -23,6 +23,8 @@
 #include "scaveutils.h"
 #include "export.h"
 
+USING_NAMESPACE
+
 using namespace std;
 
 //XXX unfortunately, VC8.0 doesn't like the following lines, so Column needs to be fully qualified in the source...

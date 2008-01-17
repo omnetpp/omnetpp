@@ -17,6 +17,8 @@
 #include "event.h"
 #include "eventlogtablefacade.h"
 
+USING_NAMESPACE
+
 EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
     setDisplayMode(DESCRIPTIVE);

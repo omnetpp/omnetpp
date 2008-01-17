@@ -16,6 +16,8 @@
 #include "stringpool.h"
 #include "eventlog.h"
 
+USING_NAMESPACE
+
 CommonStringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)

@@ -18,6 +18,8 @@
 #include "eventlog.h"
 #include "eventlogentry.h"
 
+USING_NAMESPACE
+
 Event::Event(EventLog *eventLog)
 {
     this->eventLog = eventLog;

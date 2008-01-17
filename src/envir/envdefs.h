@@ -19,6 +19,8 @@
 
 #include "platdefs.h"
 
+NAMESPACE_BEGIN
+
 #if defined(ENVIR_EXPORT)
 #  define ENVIR_API OPP_DLLEXPORT
 #elif defined(ENVIR_IMPORT) || defined(OMNETPPLIBS_IMPORT)
@@ -26,6 +28,9 @@
 #else
 #  define ENVIR_API
 #endif
+
+
+NAMESPACE_END
 
 
 #endif

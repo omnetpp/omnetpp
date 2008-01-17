@@ -19,6 +19,8 @@
 #include "channel.h"
 #include "arraybuilder.h"
 
+USING_NAMESPACE
+
 
 ArrayBuilderNode::ArrayBuilderNode()
 {

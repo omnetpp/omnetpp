@@ -19,6 +19,8 @@
 #include "platdefs.h"
 #include "bigdecimal.h"
 
+NAMESPACE_BEGIN
+
 #if defined(SCAVE_EXPORT)
 #  define SCAVE_API OPP_DLLEXPORT
 #elif defined(SCAVE_IMPORT) || defined(OMNETPPLIBS_IMPORT)
@@ -35,6 +37,9 @@ typedef BigDecimal simultime_t;
  * Used by VectorResult as well as filter nodes e.g. Integrate
  */
 enum InterpolationMode { UNSPECIFIED, NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
+
+
+NAMESPACE_END
 
 
 #endif

@@ -24,6 +24,8 @@
 #include "eventlogentries.h"
 #include "messagedependency.h"
 
+NAMESPACE_BEGIN
+
 class EventLog;
 
 /**
@@ -102,6 +104,9 @@ class EVENTLOG_API Event : public IEvent
         void deleteAllocatedObjects();
         void clearInternalState();
 };
+
+NAMESPACE_END
+
 
 #endif
 

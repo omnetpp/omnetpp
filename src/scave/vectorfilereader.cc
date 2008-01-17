@@ -22,6 +22,8 @@
 #include "scaveexception.h"
 #include "vectorfilereader.h"
 
+USING_NAMESPACE
+
 using namespace std;
 
 

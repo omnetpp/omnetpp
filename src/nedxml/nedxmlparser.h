@@ -20,12 +20,17 @@
 #include "nedelement.h"
 #include "nederror.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Simple front-end to NED XML parsing: invokes SAXParser with NEDSAXHandler.
  *
  * @ingroup XMLParser
  */
 NEDXML_API NEDElement *parseXML(const char *filename, NEDErrorStore *errors);
+
+NAMESPACE_END
+
 
 #endif
 

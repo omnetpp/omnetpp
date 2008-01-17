@@ -25,6 +25,8 @@
 #include "resultfilemanager.h"
 #include "datasorter.h"
 
+NAMESPACE_BEGIN
+
 typedef std::vector<std::string> StringVector;
 
 /**
@@ -246,6 +248,9 @@ class SCAVE_API ExporterFactory
     public:
         static ScaveExport *createExporter(const std::string format);
 };
+
+NAMESPACE_END
+
 
 #endif
 

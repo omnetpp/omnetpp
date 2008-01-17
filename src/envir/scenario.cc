@@ -21,6 +21,8 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
+USING_NAMESPACE
+
 
 /**
  * Resolves variables ($x, $y) and functions (sin, fabs, etc) in expressions.

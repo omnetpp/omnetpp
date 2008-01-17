@@ -22,6 +22,8 @@
 #include "globals.h"
 #include "onstartup.h"
 
+NAMESPACE_BEGIN
+
 //
 // Register_OmnetApp() macro, omnetapps list, cOmnetAppRegistration class.
 //
@@ -69,6 +71,9 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
     std::string info() const {return desc;}
     int score()  {return scor;}
 };
+
+NAMESPACE_END
+
 
 #endif
 

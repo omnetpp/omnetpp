@@ -28,6 +28,8 @@
 #include <string>
 #include "nedxmldefs.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Empty. Subclass from this if you want to attach extra data to NEDElement objects.
@@ -408,6 +410,9 @@ class NEDXML_API NEDElement
     virtual NEDElementUserData *getUserData() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

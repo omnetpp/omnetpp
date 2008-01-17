@@ -25,6 +25,8 @@
 #include "envirext.h"
 #include "util.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * A cOutputVectorManager that uses a line-oriented text file as output.
@@ -270,6 +272,9 @@ class ENVIR_API cFileSnapshotManager : public cSnapshotManager
     const char *fileName() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

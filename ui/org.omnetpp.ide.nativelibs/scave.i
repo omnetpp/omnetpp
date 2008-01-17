@@ -21,6 +21,7 @@
 %}
 
 %include "commondefs.i"
+%include "bigdecimal.i"
 
 %exception {
     try {
@@ -35,6 +36,10 @@
 #define COMMON_API
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
+
+#define NAMESPACE_BEGIN
+#define NAMESPACE_END
+#define USING_NAMESPACE
 
 %include "inttypes.h"
 %include "scavedefs.h"
@@ -228,7 +233,7 @@ namespace std {
 //
 %define FIX_STRING_MEMBER(STRUCT,MEMBER,CAPITALIZEDMEMBER)
 %ignore STRUCT::MEMBER;
-%extend STRUCT {      
+%extend STRUCT {
    std::string get ## CAPITALIZEDMEMBER() {return self->MEMBER;}
    void set ## CAPITALIZEDMEMBER(std::string __a) {self->MEMBER = __a;}
 }
@@ -276,9 +281,9 @@ namespace std {
     try {
         $action
     } catch (ResultFileFormatException& e) {
-	jclass clazz = jenv->FindClass("org/omnetpp/scave/engineext/ResultFileFormatException");
-	jmethodID methodId = jenv->GetMethodID(clazz, "<init>", "(Ljava/lang/String;Ljava/lang/String;I)V");
-	jthrowable exception = (jthrowable)(jenv->NewObject(clazz, methodId, jenv->NewStringUTF(e.what()), jenv->NewStringUTF(e.getFileName()), e.getLine()));
+    jclass clazz = jenv->FindClass("org/omnetpp/scave/engineext/ResultFileFormatException");
+    jmethodID methodId = jenv->GetMethodID(clazz, "<init>", "(Ljava/lang/String;Ljava/lang/String;I)V");
+    jthrowable exception = (jthrowable)(jenv->NewObject(clazz, methodId, jenv->NewStringUTF(e.what()), jenv->NewStringUTF(e.getFileName()), e.getLine()));
         jenv->Throw(exception);
         return $null;
     } catch (std::exception& e) {
@@ -430,7 +435,7 @@ namespace std {
 
 /* ------------- vectorfilereader.h  ----------------- */
 %extend VectorFileReaderNode {
-	static VectorFileReaderNode *cast(Node* node) { return dynamic_cast<VectorFileReaderNode*>(node); }
+    static VectorFileReaderNode *cast(Node* node) { return dynamic_cast<VectorFileReaderNode*>(node); }
 };
 
 %ignore VectorFileReaderNodeType;
@@ -446,7 +451,7 @@ class ReaderNodeType;
 
 
 %extend IndexedVectorFileReaderNode {
-	static IndexedVectorFileReaderNode *cast(Node* node) { return dynamic_cast<IndexedVectorFileReaderNode*>(node); }
+    static IndexedVectorFileReaderNode *cast(Node* node) { return dynamic_cast<IndexedVectorFileReaderNode*>(node); }
 };
 
 /* ------------------ fields.h --------------------- */
@@ -496,5 +501,5 @@ class ReaderNodeType;
 %ignore MatlabStructExport;
 %ignore MatlabScriptExport;
 %ignore OctaveTextExport;
-%rename(EOL)	CsvExport::eol;
+%rename(EOL)    CsvExport::eol;
 %include "export.h"

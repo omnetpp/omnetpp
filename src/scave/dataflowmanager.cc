@@ -21,6 +21,8 @@
 #include "commonnodes.h"
 #include "dataflowmanager.h"
 
+USING_NAMESPACE
+
 
 DataflowManager::DataflowManager()
 {

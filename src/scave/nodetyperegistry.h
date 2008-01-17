@@ -21,6 +21,8 @@
 #include "node.h"
 #include "nodetype.h"
 
+NAMESPACE_BEGIN
+
 class DataflowManager;
 
 typedef std::vector<NodeType*> NodeTypeVector;
@@ -70,5 +72,8 @@ class SCAVE_API NodeTypeRegistry
         void remove(NodeType *nodetype);
 
 };
+
+NAMESPACE_END
+
 
 #endif

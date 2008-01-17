@@ -18,6 +18,8 @@
 #include "commondefs.h"
 #include "exception.h"
 
+NAMESPACE_BEGIN
+
 /**
  * XXX
  */
@@ -82,6 +84,9 @@ class COMMON_API UnitConversion
      */
     static std::string unitDescription(const char *unit);
 };
+
+NAMESPACE_END
+
 
 #endif
 

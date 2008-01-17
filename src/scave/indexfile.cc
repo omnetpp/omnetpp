@@ -15,6 +15,8 @@
 #include "scaveexception.h"
 #include "indexfile.h"
 
+USING_NAMESPACE
+
 
 static bool serialLess(const Block &first, const Block &second)
 {

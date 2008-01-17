@@ -30,6 +30,8 @@
 #include "stringutil.h"
 #include "scaveutils.h"
 
+USING_NAMESPACE
+
 
 void printUsage()
 {

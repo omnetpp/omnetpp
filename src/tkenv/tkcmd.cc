@@ -43,6 +43,8 @@
 #include "fsutils.h"
 #include "unitconversion.h"
 
+USING_NAMESPACE
+
 using std::string;
 
 

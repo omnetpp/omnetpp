@@ -17,6 +17,8 @@
 
 #include "commondefs.h"
 
+NAMESPACE_BEGIN
+
 #define MAXARGS 16
 
 /**
@@ -252,6 +254,9 @@ class COMMON_API DisplayString
     bool removeTag(int tagindex);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

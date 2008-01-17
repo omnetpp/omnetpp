@@ -26,6 +26,8 @@
 #include "indexfile.h"
 #include "vectorfileindexer.h"
 
+USING_NAMESPACE
+
 static inline bool existsFile(const std::string fileName)
 {
     struct stat s;

@@ -21,6 +21,8 @@
 #include "nodetype.h"
 #include "commonnodes.h"
 
+NAMESPACE_BEGIN
+
 
 class CompoundFilterType;
 
@@ -141,6 +143,9 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
         //@}
 };
+
+
+NAMESPACE_END
 
 
 #endif

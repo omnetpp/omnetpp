@@ -20,6 +20,8 @@
 #include "channel.h"
 #include "stddev.h"
 
+USING_NAMESPACE
+
 
 StddevNode::StddevNode()
 {

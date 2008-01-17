@@ -18,6 +18,9 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <tk.h>
+#include "platdefs.h"
+
+NAMESPACE_BEGIN
 
 struct OmnetTclCommand {
     char *namestr;
@@ -30,6 +33,9 @@ extern int exit_omnetpp;
 Tcl_Interp *initTk(int argc, char **argv);
 int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *tcl_commands );
 int runTk( Tcl_Interp *interp );
+
+NAMESPACE_END
+
 
 #endif
 

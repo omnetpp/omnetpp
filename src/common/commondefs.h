@@ -17,6 +17,8 @@
 
 #include "platdefs.h"
 
+NAMESPACE_BEGIN
+
 #if defined(COMMON_EXPORT)
 #  define COMMON_API OPP_DLLEXPORT
 #elif defined(COMMON_IMPORT) || defined(OMNETPPLIBS_IMPORT)
@@ -24,6 +26,9 @@
 #else
 #  define COMMON_API
 #endif
+
+NAMESPACE_END
+
 
 #endif
 

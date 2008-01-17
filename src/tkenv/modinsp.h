@@ -44,6 +44,8 @@
 #include "omnetapp.h"
 #include "graphlayouter.h"
 
+NAMESPACE_BEGIN
+
 
 // utility functions:
 bool resolveBoolDispStrArg(const char *s, cModule *mod, bool defaultValue);
@@ -166,5 +168,8 @@ class TGraphicalGateWindow : public TInspector
       // notifications from envir:
       virtual void displayStringChanged(cGate *gate);
 };
+
+NAMESPACE_END
+
 
 #endif

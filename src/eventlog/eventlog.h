@@ -25,6 +25,8 @@
 #include "ieventlog.h"
 #include "eventlogindex.h"
 
+NAMESPACE_BEGIN
+
 extern EVENTLOG_API CommonStringPool eventLogStringPool;
 
 class Event;
@@ -112,5 +114,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         void deleteAllocatedObjects();
         void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
 };
+
+NAMESPACE_END
+
 
 #endif

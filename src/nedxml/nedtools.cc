@@ -18,6 +18,8 @@
 #include "neddtdvalidator.h"
 #include "fileutil.h"
 
+USING_NAMESPACE
+
 
 void NEDTools::repairNEDElementTree(NEDElement *tree)
 {

@@ -22,6 +22,8 @@
 #include "exception.h"
 #include "inttypes.h"
 
+NAMESPACE_BEGIN
+
 // maximum number of digits in an int64 number, i.e. number of digits in INT64_MAX.
 #define INT64_MAX_DIGITS 19
 
@@ -281,6 +283,9 @@ inline const BigDecimal min(const BigDecimal& x, const BigDecimal& y)
 {
     return x < y ? x : y;
 }
+
+
+NAMESPACE_END
 
 
 #endif

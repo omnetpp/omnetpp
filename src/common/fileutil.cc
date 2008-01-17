@@ -28,6 +28,8 @@
 #include "stringtokenizer.h"
 #include "exception.h"
 
+USING_NAMESPACE
+
 
 void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {

@@ -25,6 +25,8 @@
 #include "cppexprgenerator.h"
 #include "nedcompiler.h" // for NEDSymbolTable
 
+NAMESPACE_BEGIN
+
 
 /**
  * Simple front-end to NEDCppGenerator.
@@ -159,6 +161,9 @@ class NEDXML_API NEDCppGenerator
     void generateStruct(ClassDesc& cld, FieldDesc *&fld, int numfields);
     void generateDescriptorClass(ClassDesc& cld, FieldDesc *&fld, int numfields);
 };
+
+NAMESPACE_END
+
 
 #endif
 

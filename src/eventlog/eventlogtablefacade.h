@@ -20,6 +20,8 @@
 #include "ieventlog.h"
 #include "eventlogfacade.h"
 
+NAMESPACE_BEGIN
+
 enum EventLogTableFilterMode {
     ALL_ENTRIES,
     EVENT_AND_SEND_AND_MESSAGE_ENTRIES,
@@ -85,5 +87,8 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         EventLogEntry *getNextEntry(EventLogEntry *eventLogEntry, int& index);
         EventLogEntry *getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance);
 };
+
+NAMESPACE_END
+
 
 #endif

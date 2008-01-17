@@ -23,6 +23,8 @@
 #include <direct.h>
 #include <stdlib.h> // _MAX_PATH
 
+USING_NAMESPACE
+
 
 struct GlobPrivateData
 {

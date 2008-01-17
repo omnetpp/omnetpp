@@ -21,6 +21,8 @@
 
 #include "util.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Utility function: dynamically loads a DLL (Windows) or shared object
  * (.so, on Unix systems) and registers the module types, channel types,
@@ -30,6 +32,9 @@
  * On failure, cRuntimeError will be thrown.
  */
 ENVIR_API void loadExtensionLibrary(const char *lib);
+
+NAMESPACE_END
+
 
 #endif
 

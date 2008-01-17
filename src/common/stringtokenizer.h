@@ -23,6 +23,8 @@
 #include <vector>
 #include "commondefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * String tokenizer class, modelled after strtok(). It considers the input
  * string to consist of tokens, separated by one or more delimiter characters.
@@ -98,6 +100,9 @@ class COMMON_API StringTokenizer
      */
     std::vector<std::string> asVector();
 };
+
+NAMESPACE_END
+
 
 #endif
 

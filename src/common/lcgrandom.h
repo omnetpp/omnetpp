@@ -19,6 +19,8 @@
 #include "inttypes.h"
 #include "exception.h"
 
+NAMESPACE_BEGIN
+
 #define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
 /**
@@ -42,5 +44,8 @@ class COMMON_API LCGRandom
 
         void selfTest();
 };
+
+NAMESPACE_END
+
 
 #endif

@@ -21,6 +21,8 @@
 #include "node.h"
 #include "nodetype.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Processing node which merges several input streams into one.
@@ -53,6 +55,9 @@ class SCAVE_API MergerNodeType : public NodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual Port *getPort(Node *node, const char *portname) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

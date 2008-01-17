@@ -18,6 +18,8 @@
 #include <assert.h>
 #include "speedometer.h"
 
+USING_NAMESPACE
+
 
 Speedometer::Speedometer()
 {

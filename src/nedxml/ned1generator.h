@@ -20,6 +20,8 @@
 #include "nedelements.h"
 #include "nederror.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Simple front-end to NED1Generator.
@@ -160,6 +162,9 @@ class NEDXML_API NED1Generator
     void doLiteral(LiteralNode *node, const char *indent, bool islast, const char *);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

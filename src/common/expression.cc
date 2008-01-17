@@ -18,6 +18,8 @@
 #include "expression.h"
 #include "expressionyydefs.h"
 
+USING_NAMESPACE
+
 
 #define eESTKOFLOW   "Stack overflow"
 #define eESTKUFLOW   "Stack underflow"

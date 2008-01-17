@@ -22,6 +22,8 @@
 #include <string>
 #include "nedelements.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Wraps a NEDElement tree of a NED declaration (module, channel, module
@@ -45,6 +47,9 @@ class NEDXML_API NEDComponent
     /** Returns the raw NEDElement tree representing the component */
     virtual NEDElement *getTree() const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

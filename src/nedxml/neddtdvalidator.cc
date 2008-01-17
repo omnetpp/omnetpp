@@ -21,6 +21,8 @@
 #include "nederror.h"
 #include "neddtdvalidator.h"
 
+USING_NAMESPACE
+
 void NEDDTDValidator::validateElement(FilesNode *node)
 {
     int tags[] = {NED_NED_FILE,NED_MSG_FILE, NED_NULL};

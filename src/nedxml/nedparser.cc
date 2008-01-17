@@ -30,6 +30,8 @@
 
 #include "nedyydefs.h"
 
+USING_NAMESPACE
+
 #define MAGIC_PREFIX   "@expr@"  // note: must agree with ned2.lex
 
 NEDParser *np;

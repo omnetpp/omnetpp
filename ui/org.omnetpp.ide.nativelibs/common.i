@@ -25,6 +25,10 @@
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
+#define NAMESPACE_BEGIN
+#define NAMESPACE_END
+#define USING_NAMESPACE
+
 %rename(parseQuotedString)   ::opp_parsequotedstr;
 %rename(quoteString)         ::opp_quotestr;
 %rename(needsQuotes)         ::opp_needsquotes;

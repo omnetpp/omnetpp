@@ -19,6 +19,8 @@
 #include "channel.h"
 #include "mergernodes.h"
 
+USING_NAMESPACE
+
 
 Port *MergerNode::addPort()
 {

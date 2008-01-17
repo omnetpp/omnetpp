@@ -27,6 +27,8 @@
 #include "nodetype.h"
 #include "resultfilemanager.h"
 
+NAMESPACE_BEGIN
+
 struct OutputVectorEntry {
     long serial;
     long eventNumber;
@@ -169,5 +171,8 @@ class SCAVE_API IndexedVectorFileWriterNodeType : public NodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual Port *getPort(Node *node, const char *portname) const;
 };
+
+NAMESPACE_END
+
 
 #endif

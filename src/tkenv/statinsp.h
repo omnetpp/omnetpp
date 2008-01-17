@@ -20,6 +20,8 @@
 #include "inspector.h"
 #include "omnetapp.h"
 
+NAMESPACE_BEGIN
+
 
 class THistogramWindow : public TInspector
 {
@@ -100,6 +102,9 @@ class TOutVectorWindow : public TInspector
 //       virtual void update();
 // };
 //
+
+NAMESPACE_END
+
 
 #endif
 

@@ -19,6 +19,8 @@
 #include <vector>
 #include "envdefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Support class for parsing simulation scenarios. Given a sequence of
  * values in string form, this class can enumerate those values.
@@ -128,5 +130,8 @@ class ENVIR_API ValueIterator
      */
     void dump() const;
 };
+
+NAMESPACE_END
+
 
 #endif

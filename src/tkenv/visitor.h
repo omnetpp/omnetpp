@@ -24,6 +24,8 @@
 #include "matchexpression.h"
 #include "matchableobject.h"
 
+NAMESPACE_BEGIN
+
 
 
 /**
@@ -126,6 +128,9 @@ class cCountChildrenVisitor : public cVisitor
 void sortObjectsByName(cObject **objs, int n);
 void sortObjectsByFullPath(cObject **objs, int n);
 void sortObjectsByClassName(cObject **objs, int n);
+
+NAMESPACE_END
+
 
 #endif
 

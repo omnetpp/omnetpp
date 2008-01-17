@@ -3,6 +3,7 @@
 %include "loadlib.i"
 %include "enumtypeunsafe.swg"
 %include "commondefs.i"
+%include "bigdecimal.i"
 %include "stacktrace.i"
 %javaconst(1);
 
@@ -39,6 +40,10 @@ COMMON_ENGINE_BIGDECIMAL();
 #define EVENTLOG_API
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
+
+#define NAMESPACE_BEGIN
+#define NAMESPACE_END
+#define USING_NAMESPACE
 
 %include "inttypes.h"
 %include "eventlogdefs.h"

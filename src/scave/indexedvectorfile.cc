@@ -24,6 +24,8 @@
 #pragma warning(disable:4786)
 #endif
 
+USING_NAMESPACE
+
 //=========================================================================
 
 IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vectorId)

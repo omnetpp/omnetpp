@@ -14,6 +14,8 @@
 
 #include "ieventlog.h"
 
+USING_NAMESPACE
+
 IEventLog::IEventLog()
 {
     lastNeighbourEventNumber = -1;

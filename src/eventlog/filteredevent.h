@@ -20,6 +20,8 @@
 #include "ievent.h"
 #include "event.h"
 
+NAMESPACE_BEGIN
+
 class FilteredEventLog;
 
 /**
@@ -84,6 +86,9 @@ class EVENTLOG_API FilteredEvent : public IEvent
         IMessageDependencyList *getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool isReuse, int level);
         IMessageDependencyList *getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool isReuse, int level);
 };
+
+NAMESPACE_END
+
 
 #endif
 

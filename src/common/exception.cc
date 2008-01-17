@@ -20,6 +20,8 @@
 #include <stdarg.h>
 #include "exception.h"
 
+USING_NAMESPACE
+
 
 opp_runtime_error::opp_runtime_error(const char *message, ...) : std::runtime_error("")
 {

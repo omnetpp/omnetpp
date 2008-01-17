@@ -23,6 +23,8 @@
 #include "sectionbasedconfig.h"
 #include "valueiterator.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Helper class for SectionBasedConfiguration: Resolves iterations in a scenario.
@@ -118,6 +120,9 @@ class ENVIR_API Scenario
      */
     std::string str() const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

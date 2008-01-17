@@ -20,6 +20,8 @@
 #include "nodetype.h"
 #include "resultfilemanager.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Consumer node which writes an output vector file.
  */
@@ -68,6 +70,9 @@ class SCAVE_API VectorFileWriterNodeType : public NodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual Port *getPort(Node *node, const char *portname) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

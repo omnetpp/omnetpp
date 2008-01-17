@@ -19,6 +19,8 @@
 #include "nederror.h"
 #include "nedxmlparser.h"
 
+USING_NAMESPACE
+
 NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
 {
     NEDSAXHandler sh(filename, errors);

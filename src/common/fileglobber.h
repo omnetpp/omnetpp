@@ -39,6 +39,8 @@
 
 #include "commondefs.h"
 
+NAMESPACE_BEGIN
+
 struct GlobPrivateData;
 
 /**
@@ -74,6 +76,9 @@ class COMMON_API FileGlobber
      */
     std::vector<std::string> getFilenames();
 };
+
+NAMESPACE_END
+
 
 #endif
 

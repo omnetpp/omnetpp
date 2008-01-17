@@ -25,6 +25,8 @@
 #include "crng.h"
 #include "cconfiguration.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Wraps Akaroa's random number generator.
@@ -82,4 +84,7 @@ class SIM_API cAkaroaRNG : public cRNG
 };
 
 #endif
+NAMESPACE_END
+
+
 #endif

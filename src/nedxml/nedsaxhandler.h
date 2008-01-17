@@ -21,6 +21,8 @@
 #include "nederror.h"
 #include "saxparser.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * SAX handler (to be used with SAXParser) that builds a NED object tree.
@@ -74,6 +76,9 @@ class NEDXML_API NEDSAXHandler : public SAXHandler
     virtual void endCdataSection();
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

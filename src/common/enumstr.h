@@ -17,6 +17,8 @@
 
 #include "commondefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Loops through numbers in a string like "1,2,5..10", expanding ranges.
  * Both ".." and "-" are accepted for ranges.
@@ -35,5 +37,8 @@ class COMMON_API EnumStringIterator
      int operator()() {return err ? -1 : current;}
      bool error()      {return err;}
 };
+
+NAMESPACE_END
+
 
 #endif

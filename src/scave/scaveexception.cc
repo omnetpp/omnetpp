@@ -19,6 +19,8 @@
 #include <sstream>
 #include "scaveexception.h"
 
+USING_NAMESPACE
+
 
 ResultFileFormatException::ResultFileFormatException(const char *message, const char *file, int line, long offset)
     : opp_runtime_error(""), file(file), line(line), offset(offset)

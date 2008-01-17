@@ -17,6 +17,8 @@
 
 #include "scavedefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * ArrayBuilderNode returns the results in this class.
  */
@@ -38,6 +40,9 @@ class SCAVE_API XYArray
         long getEventNumber(int i) const {return ((evec != NULL && i>=0 && i<len) ? evec[i] : -1);}
         void sortByX();
 };
+
+NAMESPACE_END
+
 
 #endif
 

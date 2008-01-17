@@ -19,6 +19,8 @@
 #include <vector>
 #include "commondefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Glob-style pattern matching class, adopted to special OMNeT++ requirements.
  * One instance represents a pattern to match.
@@ -167,6 +169,9 @@ class COMMON_API PatternMatcher
     static bool containsWildcards(const char *pattern);
 
 };
+
+NAMESPACE_END
+
 
 #endif
 

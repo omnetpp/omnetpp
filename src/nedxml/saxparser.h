@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include "nedxmldefs.h"
 
+NAMESPACE_BEGIN
+
 class SAXParser;
 
 
@@ -134,6 +136,9 @@ class NEDXML_API SAXParser
      */
     const char *getErrorMessage()  {return errortext;}
 };
+
+NAMESPACE_END
+
 
 #endif
 

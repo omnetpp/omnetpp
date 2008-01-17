@@ -26,6 +26,8 @@
 #include "nedelements.h"
 #include "nedresourcecache.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Abstract interface for loading NED imports; to be used with NEDCompiler.
@@ -123,6 +125,9 @@ class NEDXML_API NEDCompiler
      */
     void validate(NEDElement *tree);
 };
+
+NAMESPACE_END
+
 
 #endif
 

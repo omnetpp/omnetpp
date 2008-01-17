@@ -21,6 +21,8 @@
 #include "expat.h"
 #include "saxparser.h"
 
+USING_NAMESPACE
+
 
 static bool hasDTD;
 

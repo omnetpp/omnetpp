@@ -33,6 +33,8 @@
 #include "timeutil.h"
 #include "cconfigkey.h"
 
+USING_NAMESPACE
+
 #define CMDENV_EXTRASTACK_KB  "8"
 
 Register_GlobalConfigEntry(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")

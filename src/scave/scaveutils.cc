@@ -9,6 +9,8 @@
 #include <string.h>
 #include "scaveutils.h"
 
+USING_NAMESPACE
+
 static double dblZero = 0.0;
 double dblNaN = dblZero / dblZero;
 double dblPositiveInfinity = 1 / dblZero;

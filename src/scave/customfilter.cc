@@ -21,6 +21,8 @@
 #include "customfilter.h"
 #include "scaveutils.h"
 
+USING_NAMESPACE
+
 
 
 /**

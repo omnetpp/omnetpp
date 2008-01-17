@@ -19,6 +19,8 @@
 #include <string>
 #include "commondefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Tokenizes a line. Uses space as separator, and also honors quoted substrings
  * (that is, `one "two or three" four' is returned as 3 tokens `one',
@@ -65,6 +67,9 @@ class COMMON_API LineTokenizer
      */
     char **tokens() {return vec;}
 };
+
+NAMESPACE_END
+
 
 #endif
 

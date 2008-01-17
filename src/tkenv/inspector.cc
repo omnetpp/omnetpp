@@ -29,6 +29,8 @@
 #include "tklib.h"
 #include "inspector.h"
 
+USING_NAMESPACE
+
 //
 // Inspector type code <--> string conversions
 //

@@ -25,6 +25,8 @@
 #include "indexfile.h"
 #include "resultfilemanager.h"
 
+NAMESPACE_BEGIN
+
 // read in 64K chunks (apparently it doesn't matter much if we use a bigger buffer)
 #define VECFILEREADER_BUFSIZE  (64*1024)
 
@@ -77,6 +79,9 @@ class SCAVE_API IndexedVectorFileReaderNodeType : public ReaderNodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual Port *getPort(Node *node, const char *portname) const;
 };
+
+
+NAMESPACE_END
 
 
 #endif

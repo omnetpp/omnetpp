@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include "stringtokenizer.h"
 
+USING_NAMESPACE
+
 
 StringTokenizer::StringTokenizer(const char *s, const char *delim)
 {

@@ -18,6 +18,8 @@
 #include "eventlogentry.h"
 #include "messagedependency.h"
 
+USING_NAMESPACE
+
 /**************************************************/
 
 IMessageDependency::IMessageDependency(IEventLog *eventLog, bool isReuse)

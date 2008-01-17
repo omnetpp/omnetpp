@@ -17,6 +17,8 @@
 #include <locale.h>
 #include "commonutil.h"
 
+USING_NAMESPACE
+
 
 void setPosixLocale()
 {

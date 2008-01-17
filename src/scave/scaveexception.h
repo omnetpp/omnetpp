@@ -22,6 +22,8 @@
 #include "scavedefs.h"
 #include "exception.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Exception thrown when a syntax error found while reading a result file.
  */
@@ -58,6 +60,9 @@ class SCAVE_API ResultFileFormatException : public opp_runtime_error
      */
     long getFileOffset() const { return offset; }
 };
+
+NAMESPACE_END
+
 
 #endif
 

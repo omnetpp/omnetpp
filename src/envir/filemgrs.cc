@@ -39,6 +39,8 @@
 #include "ivfilemgr.h"
 #include "stringtokenizer.h"
 
+USING_NAMESPACE
+
 using std::ostream;
 using std::ofstream;
 using std::ios;

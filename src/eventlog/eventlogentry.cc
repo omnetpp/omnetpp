@@ -16,6 +16,8 @@
 #include "eventlogentry.h"
 #include "eventlogentryfactory.h"
 
+USING_NAMESPACE
+
 char EventLogEntry::buffer[128];
 LineTokenizer EventLogEntry::tokenizer(32768);
 static const char *currentLine;

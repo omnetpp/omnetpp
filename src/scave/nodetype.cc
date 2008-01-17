@@ -19,6 +19,8 @@
 #include "commonutil.h"
 #include "nodetype.h"
 
+USING_NAMESPACE
+
 
 void NodeType::checkAttrNames(const StringMap& attrs) const
 {

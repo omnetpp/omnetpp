@@ -34,6 +34,8 @@
 #include "statistics.h"
 #include "fields.h"
 
+NAMESPACE_BEGIN
+
 typedef std::vector<ID> IDVector;
 typedef std::vector<IDVector> IDVectorVector;
 typedef std::vector<std::string> StringVector;
@@ -220,6 +222,9 @@ class SCAVE_API ScalarDataSorter
      */
     IDVectorVector prepareCopyToClipboard(const IDList& idlist);
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -20,6 +20,8 @@
 #include <stdexcept>
 #include "commondefs.h"
 
+NAMESPACE_BEGIN
+
 //FIXME rename this file
 
 /**
@@ -47,6 +49,9 @@ class COMMON_API opp_runtime_error : public std::runtime_error
      */
     virtual const char *what() const throw() {return errormsg.c_str();}
 };
+
+NAMESPACE_END
+
 
 #endif
 

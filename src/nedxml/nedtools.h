@@ -19,6 +19,8 @@
 
 #include "nedelements.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Misc NED utilities
  *
@@ -39,6 +41,9 @@ class NEDXML_API NEDTools
      */
     static void splitToFiles(FilesNode *tree);
 };
+
+NAMESPACE_END
+
 
 #endif
 

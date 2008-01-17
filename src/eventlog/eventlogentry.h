@@ -20,6 +20,8 @@
 #include "eventlogdefs.h"
 #include "linetokenizer.h"
 
+NAMESPACE_BEGIN
+
 class Event;
 
 /**
@@ -92,5 +94,8 @@ class EVENTLOG_API EventLogMessageEntry : public EventLogEntry
         virtual const char *getDefaultAttribute() const { return "-"; }
         virtual const char *getAttribute(const char *name) const;
 };
+
+NAMESPACE_END
+
 
 #endif

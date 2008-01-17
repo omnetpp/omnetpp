@@ -19,6 +19,8 @@
 #include "channel.h"
 #include "teenode.h"
 
+USING_NAMESPACE
+
 Port *TeeNode::addPort()
 {
     outs.push_back(Port(this));

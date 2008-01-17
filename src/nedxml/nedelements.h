@@ -22,6 +22,8 @@
 
 #include "nedelement.h"
 
+NAMESPACE_BEGIN
+
 class FilesNode;
 class NedFileNode;
 class CommentNode;
@@ -2627,6 +2629,9 @@ class NEDXML_API NEDElementFactory
     /** Creates NEDElement subclass which corresponds to tagcode */
     virtual NEDElement *createNodeWithTag(int tagcode);
 };
+
+NAMESPACE_END
+
 
 #endif
 

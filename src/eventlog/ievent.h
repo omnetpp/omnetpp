@@ -19,6 +19,8 @@
 #include "eventlogentry.h"
 #include "messagedependency.h"
 
+NAMESPACE_BEGIN
+
 class EVENTLOG_API IEvent
 {
     protected:
@@ -125,5 +127,8 @@ class EVENTLOG_API IEvent
         static void linkEvents(IEvent *previousEvent, IEvent *nextEvent);
         static void unlinkEvents(IEvent *previousEvent, IEvent *nextEvent);
 };
+
+NAMESPACE_END
+
 
 #endif

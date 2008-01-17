@@ -25,6 +25,8 @@
 #include "filereader.h"
 #include "linetokenizer.h"
 
+NAMESPACE_BEGIN
+
 // we store the offset of roughly every Xth event
 #define EVENTNUM_INDEX_DENSITY 100
 
@@ -82,5 +84,8 @@ class EVENTLOG_API EventLogIndex
         bool readToEventLine(bool forward, file_offset_t readStartOffset, long& eventNumber, simtime_t& simulationTime, file_offset_t& lineStartOffset, file_offset_t& lineEndOffset);
         void dumpTable();
 };
+
+NAMESPACE_END
+
 
 #endif

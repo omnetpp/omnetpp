@@ -20,6 +20,8 @@
 #include "commondefs.h"
 #include "inttypes.h"   // for int64
 
+NAMESPACE_BEGIN
+
 typedef int64 file_offset_t;  // off_t on Linux
 
 /*
@@ -252,5 +254,8 @@ class COMMON_API FileReader
      */
     int64 getNumReadBytes() { return numReadBytes; }
 };
+
+NAMESPACE_END
+
 
 #endif

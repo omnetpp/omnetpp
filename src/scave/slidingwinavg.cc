@@ -19,6 +19,8 @@
 #include "channel.h"
 #include "slidingwinavg.h"
 
+USING_NAMESPACE
+
 
 SlidingWindowAverageNode::SlidingWindowAverageNode(int windowSize)
 {

@@ -23,6 +23,8 @@
 #include "envdefs.h"
 #include "timeutil.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Speedometer: utility class to measure simulation speed
@@ -48,6 +50,9 @@ class ENVIR_API Speedometer
     double eventsPerSimSec();
     double simSecPerSec();
 };
+
+NAMESPACE_END
+
 
 #endif
 

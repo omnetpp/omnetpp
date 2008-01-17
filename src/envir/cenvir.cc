@@ -41,6 +41,8 @@
 
 #include "inttypes.h"
 
+USING_NAMESPACE
+
 using std::ostream;
 
 

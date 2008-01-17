@@ -19,6 +19,8 @@
 
 #include "platdefs.h"
 
+NAMESPACE_BEGIN
+
 #if defined(CMDENV_EXPORT)
 #  define CMDENV_API OPP_DLLEXPORT
 #elif defined(CMDENV_IMPORT) || defined(OMNETPPLIBS_IMPORT)
@@ -26,6 +28,9 @@
 #else
 #  define CMDENV_API
 #endif
+
+
+NAMESPACE_END
 
 
 #endif

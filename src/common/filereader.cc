@@ -21,6 +21,8 @@
 #include "filereader.h"
 #include "exception.h"
 
+USING_NAMESPACE
+
 #define PRINT_DEBUG_MESSAGES false
 
 

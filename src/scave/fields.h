@@ -27,6 +27,8 @@
 #include "stringutil.h"
 #include "scaveutils.h"
 
+NAMESPACE_BEGIN
+
 
 class SCAVE_API ResultItemField
 {
@@ -224,6 +226,9 @@ struct IDFieldsLess : public std::binary_function<ID,ID,bool>
     bool operator()(ID id1, ID id2) const { return fields.less(id1, id2, manager); }
 };
 #endif
+
+NAMESPACE_END
+
 
 #endif
 

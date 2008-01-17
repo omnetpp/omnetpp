@@ -26,6 +26,8 @@
 #include "stringutil.h"
 #include "fields.h"
 
+USING_NAMESPACE
+
 using namespace std;
 
 /*----------------------------------------

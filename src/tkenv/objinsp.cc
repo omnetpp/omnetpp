@@ -30,6 +30,8 @@
 #include "inspfactory.h"
 #include "objinsp.h"
 
+USING_NAMESPACE
+
 
 void _dummy_for_objinsp() {}
 

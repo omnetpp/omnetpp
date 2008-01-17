@@ -21,6 +21,8 @@
 #include <stdexcept>
 #include "nedelement.h"
 
+NAMESPACE_BEGIN
+
 
 // Note: this cannot be inner type because of swig wrapping
 enum NEDErrorSeverity {NED_SEVERITY_INFO, NED_SEVERITY_WARNING, NED_SEVERITY_ERROR};
@@ -165,6 +167,9 @@ class NEDXML_API NEDException : public std::runtime_error   //FIXME into separat
      */
     virtual const char *what() const throw() {return errormsg.c_str();}
 };
+
+
+NAMESPACE_END
 
 
 #endif

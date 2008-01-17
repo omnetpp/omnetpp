@@ -18,6 +18,8 @@
 #include <set>
 #include "commondefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * For saving memory on the storage of (largely) constant strings that occur in
  * many instances. (See Flyweight GoF pattern.)
@@ -44,6 +46,9 @@ class COMMON_API CommonStringPool
     ~CommonStringPool();
     const char *get(const char *s);
 };
+
+NAMESPACE_END
+
 
 #endif
 

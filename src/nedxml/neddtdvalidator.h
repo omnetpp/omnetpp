@@ -23,6 +23,8 @@
 #include "nedelements.h"
 #include "neddtdvalidatorbase.h"
 
+NAMESPACE_BEGIN
+
 /**
  * GENERATED CLASS. Validates a NEDElement tree by the DTD.
  * 
@@ -87,6 +89,9 @@ class NEDXML_API NEDDTDValidator : public NEDDTDValidatorBase
     virtual void validateElement(UnknownNode *node);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

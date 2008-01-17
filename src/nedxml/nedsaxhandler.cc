@@ -18,6 +18,8 @@
 #include "nedelements.h"
 #include "nederror.h"
 
+USING_NAMESPACE
+
 
 NEDSAXHandler::NEDSAXHandler(const char *fname, NEDErrorStore *e)
 {

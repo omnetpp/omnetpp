@@ -16,6 +16,8 @@
 #include "filteredevent.h"
 #include "filteredeventlog.h"
 
+USING_NAMESPACE
+
 FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumber)
 {
     this->eventNumber = eventNumber;

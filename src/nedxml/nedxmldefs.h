@@ -19,6 +19,8 @@
 
 #include "platdefs.h"
 
+NAMESPACE_BEGIN
+
 #if defined(NEDXML_EXPORT)
 #  define NEDXML_API OPP_DLLEXPORT
 #elif defined(NEDXML_IMPORT) || defined(OMNETPPLIBS_IMPORT)
@@ -26,6 +28,9 @@
 #else
 #  define NEDXML_API
 #endif
+
+NAMESPACE_END
+
 
 #endif
 

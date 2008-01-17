@@ -28,6 +28,8 @@
 #include "timeutil.h"
 #include "platmisc.h"   //getpid()
 
+USING_NAMESPACE
+
 
 //XXX test the likes of: **.apply-default, **whatever.apply=default, whatever**.apply-default!!! make them illegal?
 //XXX error messages (exceptions) should contain file/line info!

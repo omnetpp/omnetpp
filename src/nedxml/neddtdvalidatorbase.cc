@@ -20,6 +20,8 @@
 #include "nederror.h"
 #include "neddtdvalidatorbase.h"
 
+USING_NAMESPACE
+
 
 void NEDDTDValidatorBase::checkSequence(NEDElement *node, int tags[], char mult[])
 {

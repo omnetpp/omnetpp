@@ -24,6 +24,8 @@
 #include "stringutil.h"
 #include "displaystring.h"
 
+USING_NAMESPACE
+
 static void renameTag(DisplayString& ds, const char *from, const char *to)
 {
     int n = ds.getNumArgs(from);

@@ -20,6 +20,8 @@
 #include "commondefs.h"
 #include "commonutil.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Returns true if the string only contains whitespace.
@@ -112,6 +114,9 @@ COMMON_API bool opp_stringendswith(const char *s, const char *ending);
  * numerical order.
  */
 COMMON_API int strdictcmp(const char *s1, const char *s2);
+
+NAMESPACE_END
+
 
 #endif
 

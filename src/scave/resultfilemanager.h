@@ -29,6 +29,8 @@
 #include "commonutil.h"
 #include "statistics.h"
 
+NAMESPACE_BEGIN
+
 class Run;
 class ResultFile;
 class FileRun;
@@ -389,6 +391,9 @@ inline ResultFile *ResultFileManager::getFileForID(ID id) const
         throw opp_runtime_error("ResultFileManager: stale ID: its file has already been unloaded");
     return fileRef;
 }
+
+
+NAMESPACE_END
 
 
 #endif

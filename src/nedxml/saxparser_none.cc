@@ -18,6 +18,8 @@
 #include "nederror.h"
 #include "saxparser.h"
 
+USING_NAMESPACE
+
 
 SAXParser::SAXParser()
 {

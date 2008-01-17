@@ -30,6 +30,10 @@
 #define OPP_DLLEXPORT
 #define OPP_DLLIMPORT
 
+#define NAMESPACE_BEGIN
+#define NAMESPACE_END
+#define USING_NAMESPACE
+
 namespace std {
 //class ostream;
 };

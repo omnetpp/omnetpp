@@ -22,6 +22,8 @@
 #include "commonutil.h"
 #include "stringutil.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * This is an extensible arithmetic expression evaluator class. Supports the
@@ -319,6 +321,9 @@ class COMMON_API MathFunction : public Expression::Functor
     virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs);
     virtual std::string toString(std::string args[], int numargs);
 };
+
+NAMESPACE_END
+
 
 #endif
 

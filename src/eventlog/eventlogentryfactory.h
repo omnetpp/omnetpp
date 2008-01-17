@@ -17,11 +17,16 @@
 
 #include "eventlogentries.h"
 
+NAMESPACE_BEGIN
+
 class EVENTLOG_API EventLogEntryFactory
 {
    public:
       EventLogTokenBasedEntry * parseEntry(Event *event, char **tokens, int numTokens);
 };
+
+NAMESPACE_END
+
 
 #endif
 

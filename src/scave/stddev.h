@@ -18,6 +18,8 @@
 #include "commonnodes.h"
 #include "xyarray.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Calculates min, max, mean, stddev.
@@ -59,6 +61,9 @@ class SCAVE_API StddevNodeType : public SingleSinkNodeType
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

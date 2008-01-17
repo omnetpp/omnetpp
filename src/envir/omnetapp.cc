@@ -87,6 +87,8 @@
 #define PATH_SEPARATOR   ":;"
 #endif
 
+USING_NAMESPACE
+
 
 using std::ostream;
 

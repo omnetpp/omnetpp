@@ -21,6 +21,8 @@
 #include "nederror.h"
 #include "nedelements.h"
 
+USING_NAMESPACE
+
 static const char *gatetype_vals[] = {"", "input", "output", "inout"};
 static int gatetype_nums[] = {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};
 static const int gatetype_n = 4;

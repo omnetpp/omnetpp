@@ -21,6 +21,8 @@
 #include "fsutils.h"
 #include "cexception.h"
 
+USING_NAMESPACE
+
 
 #define ERRPREFIX  "Error at `%s' line %d: "
 

@@ -19,6 +19,8 @@
 #include <ctype.h>
 #include "commondefs.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Replacement for the standard C characher type macros.
@@ -50,6 +52,9 @@ inline bool opp_isupper(unsigned char c)  {return isupper(c);}
 inline char opp_tolower(unsigned char c)  {return tolower(c);}
 inline char opp_toupper(unsigned char c)  {return toupper(c);}
 //@}
+
+NAMESPACE_END
+
 
 #endif
 

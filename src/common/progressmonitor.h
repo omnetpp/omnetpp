@@ -17,7 +17,13 @@
 #define _PROGRESSMONITOR_H_
 
 #include <string>
+#include "platdefs.h"
 
+NAMESPACE_BEGIN
+
+/**
+ * Interface for reporting progress. Compatible with Eclipse's IProgressMonitor class.
+ */
 class IProgressMonitor
 {
 	public:
@@ -85,6 +91,9 @@ class IProgressMonitor
 	 */
 	virtual void worked(int work) = 0;
 };
+
+NAMESPACE_END
+
 
 #endif
 

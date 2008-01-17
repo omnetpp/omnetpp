@@ -19,6 +19,8 @@
 
 #include "channel.h"
 
+USING_NAMESPACE
+
 
 Channel::Channel()
 {

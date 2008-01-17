@@ -19,6 +19,8 @@
 #include "cenvir.h"
 #include "../utils/ver.h"
 
+USING_NAMESPACE
+
 
 //
 // The main() function

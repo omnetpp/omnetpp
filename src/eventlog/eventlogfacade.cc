@@ -20,6 +20,8 @@
 #include "filteredeventlog.h"
 #include "eventlogfacade.h"
 
+USING_NAMESPACE
+
 EventLogFacade::EventLogFacade(IEventLog *eventLog)
 {
     Assert(eventLog);

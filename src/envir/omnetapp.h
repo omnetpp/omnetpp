@@ -29,6 +29,8 @@
 #include "cconfiguration.h"
 #include "timeutil.h"
 
+NAMESPACE_BEGIN
+
 
 class cXMLDocCache;
 class cScheduler;
@@ -350,6 +352,9 @@ class ENVIR_API TOmnetApp
     void stoppedWithException(std::exception& e);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

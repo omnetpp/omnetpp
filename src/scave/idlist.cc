@@ -23,6 +23,8 @@
 #include "resultfilemanager.h"
 #include "stringutil.h"
 
+USING_NAMESPACE
+
 IDList::IDList(const IDList& ids)
 {
     ids.checkV();

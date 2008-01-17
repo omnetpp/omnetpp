@@ -23,6 +23,8 @@
 #include "nedelements.h"
 #include "nedcomponent.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Stores loaded NED files, and keeps track of components in them.
@@ -74,6 +76,9 @@ class NEDXML_API NEDResourceCache
     /** Get a component by fully qualified name from the cache */
     virtual NEDComponent *lookup(const char *qname) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

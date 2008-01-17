@@ -24,6 +24,8 @@
 #include "cppexprgenerator.h"
 #include "nederror.h"
 
+USING_NAMESPACE
+
 
 inline bool strnotnull(const char *s)
 {

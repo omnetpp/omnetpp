@@ -22,6 +22,8 @@
 #include <utility>
 #include "xyarray.h"
 
+USING_NAMESPACE
+
 using namespace std;
 
 template <typename T> static void permute(T *&array, int size, const vector<int> &permutation)

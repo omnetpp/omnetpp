@@ -41,6 +41,8 @@
 #include "platmisc.h"   // getcwd, chdir
 #include "../utils/ver.h"
 
+USING_NAMESPACE
+
 using std::ofstream;
 using std::ifstream;
 using std::ios;

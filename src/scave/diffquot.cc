@@ -19,6 +19,8 @@
 #include "channel.h"
 #include "diffquot.h"
 
+USING_NAMESPACE
+
 
 DifferenceQuotientNode::DifferenceQuotientNode()
 {

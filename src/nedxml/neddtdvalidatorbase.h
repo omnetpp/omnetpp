@@ -19,6 +19,8 @@
 
 #include "nedvalidator.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Adds utility methods for DTD validation to NEDValidatorBase.
  *
@@ -49,6 +51,9 @@ class NEDXML_API NEDDTDValidatorBase : public NEDValidatorBase
   public:
     NEDDTDValidatorBase(NEDErrorStore *e) : NEDValidatorBase(e) {}
 };
+
+NAMESPACE_END
+
 
 #endif
 

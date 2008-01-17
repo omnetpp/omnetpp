@@ -22,6 +22,8 @@
 #include "cppgenerator.h"
 #include "nederror.h"
 
+USING_NAMESPACE
+
 using std::ostream;
 
 #define NEDC_VERSION "3.2"

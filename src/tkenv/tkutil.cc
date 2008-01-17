@@ -31,6 +31,8 @@
 #include "visitor.h"
 #include "tkutil.h"
 
+USING_NAMESPACE
+
 
 #define INSPECTORLISTBOX_MAX_ITEMS   100000
 

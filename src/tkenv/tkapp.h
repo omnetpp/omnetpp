@@ -24,6 +24,8 @@
 #include "tkdefs.h"
 #include "omnetapp.h"
 
+NAMESPACE_BEGIN
+
 class Speedometer;
 class TInspector;
 
@@ -228,5 +230,8 @@ inline TOmnetTkApp *getTkApplication()
 {
     return (TOmnetTkApp *)(ev.app);
 }
+
+NAMESPACE_END
+
 
 #endif

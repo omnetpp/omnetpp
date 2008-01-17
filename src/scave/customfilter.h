@@ -18,6 +18,8 @@
 #include "commonnodes.h"
 #include "expression.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Processing node which evaluates an arbitrary expression entered
@@ -78,6 +80,9 @@ class SCAVE_API ExpressionFilterNodeType : public FilterNodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

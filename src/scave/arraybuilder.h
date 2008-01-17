@@ -19,6 +19,8 @@
 #include "commonnodes.h"
 #include "xyarray.h"
 
+NAMESPACE_BEGIN
+
 class ArrayBuilderNodeType;
 
 /**
@@ -60,6 +62,9 @@ class SCAVE_API ArrayBuilderNodeType : public SingleSinkNodeType
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

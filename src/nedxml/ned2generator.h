@@ -20,6 +20,8 @@
 #include "nedelements.h"
 #include "nederror.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Simple front-end to NED2Generator.
@@ -166,6 +168,9 @@ class NEDXML_API NED2Generator
     void doComment(CommentNode *node, const char *indent, bool islast, const char *);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -19,6 +19,8 @@
 #include "stringutil.h"
 #include "stringtokenizer.h"
 
+USING_NAMESPACE
+
 
 bool opp_isblank(const char *txt)
 {

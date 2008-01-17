@@ -20,6 +20,8 @@
 #include "nodetype.h"
 #include "filereader.h"
 
+NAMESPACE_BEGIN
+
 #ifdef _MSC_VER
 #pragma warning(disable:4355) // 'this' : used in base member initializer list
 #endif
@@ -122,6 +124,9 @@ class SCAVE_API ReaderNodeType : public NodeType
         virtual const char *category() const {return "reader-node";}
         virtual bool isHidden() const {return true;}
 };
+
+NAMESPACE_END
+
 
 #endif
 

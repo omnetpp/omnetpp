@@ -22,6 +22,8 @@
 #include "xyarray.h"
 #include "exception.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Exports data in Octave's "save -text" format. This format can be loaded
  * into R (r-project.org) as well.
@@ -76,6 +78,9 @@ class SCAVE_API OctaveExport
         void saveVectorY(const char *name, const char *description, const XYArray *vec, int startIndex=0, int endIndex=-1);
         void close();
 };
+
+NAMESPACE_END
+
 
 #endif
 

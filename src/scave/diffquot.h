@@ -17,6 +17,8 @@
 
 #include "commonnodes.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Processing node which calculates difference quotient of every value
@@ -43,6 +45,9 @@ class SCAVE_API DifferenceQuotientNodeType : public FilterNodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;
 };
+
+NAMESPACE_END
+
 
 #endif
 

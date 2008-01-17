@@ -20,6 +20,8 @@
 #include "nedsemanticvalidator.h"
 #include "nedresourcecache.h"
 
+USING_NAMESPACE
+
 
 inline bool strnull(const char *s)
 {

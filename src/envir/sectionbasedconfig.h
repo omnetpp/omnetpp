@@ -23,6 +23,8 @@
 #include "cconfigreader.h"
 #include "stringpool.h"
 
+NAMESPACE_BEGIN
+
 class PatternMatcher;
 class Scenario;
 
@@ -228,6 +230,9 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     virtual void dump() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -25,6 +25,8 @@
 #include <string>
 #include "scavedefs.h"
 
+NAMESPACE_BEGIN
+
 /**
  * Provides string representation for enums. The class basically implements
  * effective integer-to-string and string-to-integer mapping.
@@ -89,6 +91,9 @@ class SCAVE_API EnumType
      */
     void parseFromString(const char *str);
 };
+
+NAMESPACE_END
+
 
 #endif
 

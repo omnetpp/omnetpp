@@ -18,6 +18,8 @@
 #include "scavedefs.h"
 #include "commonutil.h"
 
+NAMESPACE_BEGIN
+
 
 class Node;
 class NodeType;
@@ -145,6 +147,9 @@ class SCAVE_API Node
          */
         bool alreadyFinished() {return alreadyfinished;}
 };
+
+NAMESPACE_END
+
 
 #endif
 

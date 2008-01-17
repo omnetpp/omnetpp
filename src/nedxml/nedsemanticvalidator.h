@@ -23,6 +23,8 @@
 #include <string.h>
 #include "nedvalidator.h"
 
+NAMESPACE_BEGIN
+
 class NEDResourceCache;
 
 /**
@@ -117,6 +119,9 @@ class NEDXML_API NEDSemanticValidator : public NEDValidatorBase
     virtual void validateElement(UnknownNode *node);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

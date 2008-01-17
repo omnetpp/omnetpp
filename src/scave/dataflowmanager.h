@@ -20,6 +20,8 @@
 #include "progressmonitor.h"
 #include "channel.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Controls execution of the data flow network.
@@ -87,6 +89,9 @@ class SCAVE_API DataflowManager
          */
         void dump();
 };
+
+NAMESPACE_END
+
 
 #endif
 

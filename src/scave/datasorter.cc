@@ -28,6 +28,8 @@
 #include "datasorter.h"
 #include "stringutil.h"
 
+USING_NAMESPACE
+
 using namespace std;
 
 

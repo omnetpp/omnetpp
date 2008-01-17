@@ -19,6 +19,8 @@
 #include "commonnodes.h"
 #include "channel.h"
 
+USING_NAMESPACE
+
 
 Port *SingleSourceNodeType::getPort(Node *node, const char *name) const
 {

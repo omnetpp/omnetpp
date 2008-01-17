@@ -22,6 +22,8 @@
 #include "vectorfilereader.h"
 #include "indexedvectorfilereader.h"
 
+USING_NAMESPACE
+
 using namespace std;
 
 IndexedVectorFileReaderNode::IndexedVectorFileReaderNode(const char *filename, size_t bufferSize) :
