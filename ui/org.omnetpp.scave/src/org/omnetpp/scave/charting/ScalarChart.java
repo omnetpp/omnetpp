@@ -1,7 +1,6 @@
 package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_BASELINE;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_OUTLINE_COLOR;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LABELS_FONT;
 import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
@@ -26,14 +25,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
@@ -67,7 +63,7 @@ public class ScalarChart extends ChartCanvas {
 
 	private LinearAxis valueAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
 	private DomainAxis domainAxis = new DomainAxis(this);
-	private BarPlot plot = new BarPlot();
+	private BarPlot plot;
 
 	private Map<String,BarProperties> barProperties = new HashMap<String,BarProperties>();
 	private static final String KEY_ALL = null;
@@ -82,6 +78,7 @@ public class ScalarChart extends ChartCanvas {
 	
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
+		plot = new BarPlot(this);
 		new Tooltip();
 		
 		this.addMouseListener(new MouseAdapter() {
@@ -253,6 +250,8 @@ public class ScalarChart extends ChartCanvas {
 			value = DEFAULT_BAR_PLACEMENT;
 
 		plot.barPlacement = value;
+		chartArea = calculatePlotArea();
+		updateArea();
 		chartChanged();
 	}
 
@@ -419,209 +418,6 @@ public class ScalarChart extends ChartCanvas {
 
 
 	/**
-	 * Draws the bars of the bar chart. 
-	 */
-	class BarPlot {
-		private Rectangle rect = new Rectangle(0,0,1,1);
-		private int widthBar = 10;
-		private int hgapMinor = 5;
-		private int hgapMajor = 20;
-		private double horizontalInset = 1.0;   // left/right inset relative to the bars' width 
-		private double verticalInset = 0.1; // top inset relative to the height of the highest bar
-		
-		private double barBaseline = DEFAULT_BAR_BASELINE;
-		private BarPlacement barPlacement = DEFAULT_BAR_PLACEMENT;
-		private Color barOutlineColor = DEFAULT_BAR_OUTLINE_COLOR;
-		
-		public Rectangle getRectangle() {
-			return rect;
-		}
-		
-		public Rectangle layout(GC gc, Rectangle rect) {
-			this.rect = rect.getCopy();
-			return rect;
-		}
-		
-		public void draw(GC gc) {
-			resetDrawingStylesAndColors(gc);
-
-			if (dataset != null) {
-				Graphics graphics = new SWTGraphics(gc);
-				graphics.pushState();
-				
-				Rectangle clip = graphics.getClip(new Rectangle());
-				int cColumns = dataset.getColumnCount();
-				int[] indices = getRowColumnsInRectangle(clip);
-				for (int i = indices[0]; i <= indices[1]; ++i) {
-					int row = i / cColumns;
-					int column = i % cColumns;
-					drawBar(graphics, row, column);
-				}
-				graphics.popState();
-				graphics.dispose();
-			}
-		}
-		
-		public void drawBaseline(GC gc) {
-			double baseline = transformBaseline(barBaseline);
-			if (!Double.isNaN(baseline) && !Double.isInfinite(baseline)) {
-				Graphics graphics = new SWTGraphics(gc);
-				graphics.pushState();
-				
-				int y = toCanvasY(baseline);
-				graphics.setForegroundColor(ChartDefaults.DEFAULT_BAR_BASELINE_COLOR);
-				graphics.drawLine(rect.x + 1, y, rect.x + rect.width - 1, y);
-				
-				graphics.popState();
-				graphics.dispose();
-			}
-		}
-		
-		protected void drawBar(Graphics graphics, int row, int column) {
-			Rectangle rect = getBarRectangle(row, column);
-			rect.width = Math.max(rect.width, 1);
-			rect.height = Math.max(rect.height, 1);
-			graphics.setBackgroundColor(getBarColor(column));
-			graphics.fillRectangle(rect);
-			if (rect.width >= 4 && rect.height >= 3) {
-				graphics.setForegroundColor(barOutlineColor);
-				graphics.drawRectangle(rect.getCropped(new Insets(0,0,0,0)));
-			}
-		}
-		
-		protected int[] getRowColumnsInRectangle(org.eclipse.draw2d.geometry.Rectangle rect) {
-			int[] result = new int[2];
-			result[0] = getRowColumn(rect.x, true);
-			result[1] = getRowColumn(rect.x + rect.width, false);
-			return result;
-		}
-		
-		private int getRowColumn(double x, boolean before) {
-			int cRows = dataset.getRowCount();
-			int cColumns = dataset.getColumnCount();
-			return before ? 0 : (cRows*cColumns-1);
-		}
-
-		public int findRowColumn(double x, double y) {
-			if (dataset == null)
-				return -1;
-			int cRows = dataset.getRowCount();
-			int cColumns = dataset.getColumnCount();
-			x -= horizontalInset * widthBar;
-			if (x < 0)
-				return -1;
-			double rowWidth = cColumns * widthBar + (cColumns - 1) * hgapMinor;
-			int row = (int) Math.floor(x / (rowWidth+hgapMajor));
-			if (row >= cRows)
-				return -1;  // x too big
-			x -= row * (rowWidth+hgapMajor);
-			if (x > rowWidth)
-				return -1;  // x falls in a major gap
-			int column = (int) Math.floor(x / (widthBar + hgapMinor));
-			x -= column * (widthBar+hgapMinor);
-			if (x > widthBar)
-				return -1;  // x falls in a minor gap
-			double value = dataset.getValue(row, column);
-			if (Double.isNaN(value) || (value >= barBaseline ? (y < barBaseline || y > value) : (y > barBaseline || y < value)))
-				return -1;  // above or below actual bar 
-			return row * cColumns + column; 
-		}
-		
-		protected Color getBarColor(int column) {
-			RGB color = ScalarChart.this.getBarColor(getKeyFor(column));
-			if (color != null)
-				return new Color(null, color);
-			else
-				return ColorFactory.getGoodDarkColor(column);
-		}
-		
-		protected Rectangle getBarRectangle(int row, int column) {
-			double top = getTopY(row, column);
-			double bottom = getBottomY(row, column);
-			double left = getLeftX(row, column);
-			double right = getRightX(row, column);
-			
-			if (Double.isInfinite(top))
-				top = top < 0.0 ? chartArea.minY : chartArea.maxY;
-			if (Double.isInfinite(bottom))
-				bottom = bottom < 0.0 ? chartArea.minY : chartArea.maxY;
-			
-			int x = toCanvasX(left);
-			int y = toCanvasY(top);
-			int width = toCanvasDistX(right - left);
-			int height = toCanvasDistY(top - bottom);
-			return new Rectangle(x, y, width, height);
-		}
-		
-		protected RectangularArea calculatePlotArea() {
-			if (dataset == null)
-				return new RectangularArea(0, 0, 1, 1);
-			
-			int cRows = dataset.getRowCount();
-			int cColumns = dataset.getColumnCount();
-			double baseline = transformBaseline(barBaseline);
-			double minX = getLeftX(0, 0);
-			double maxX = getRightX(cRows - 1, cColumns - 1);
-			double minY = baseline;
-			double maxY = baseline;
-			for (int row = 0; row < cRows; ++row)
-				for (int column = 0; column < cColumns; ++column) {
-					double topY = plot.getTopY(row, column);
-					double bottomY = plot.getBottomY(row, column);
-					if (!Double.isNaN(bottomY) && !Double.isInfinite(bottomY))
-						minY = Math.min(minY, bottomY);
-					if (!Double.isNaN(topY) && !Double.isInfinite(topY))
-						maxY = Math.max(maxY, topY);
-				}
-			if (minY > maxY) { // no data points
-				minY = 0.0;
-				maxY = 1.0;
-			}
-			double height = maxY - minY;
-			double topInset = maxY > baseline ? verticalInset * height : 0.0;
-			double bottomInset = minY < baseline ? verticalInset * height : 0.0;
-			return new RectangularArea(minX - horizontalInset * widthBar, minY - bottomInset,
-									   maxX + horizontalInset * widthBar, maxY + topInset);
-		}
-		
-		protected double getLeftX(int row, int column) {
-			int cColumns = dataset.getColumnCount();
-			double rowWidth = cColumns * widthBar + (cColumns - 1) * hgapMinor;
-			return horizontalInset * widthBar + row * (rowWidth + hgapMajor) + column * (widthBar + hgapMinor); 
-		}
-		
-		protected double getRightX(int row, int column) {
-			return getLeftX(row, column) + widthBar;
-		}
-		
-		protected double getTopY(int row, int column) {
-			double value = transformValue(dataset.getValue(row, column));
-			double baseline = transformBaseline(barBaseline);
-			return (Double.isNaN(value) || value > baseline ?
-					value : baseline);
-		}
-		
-		protected double getBottomY(int row, int column) {
-			double value = transformValue(dataset.getValue(row, column));
-			double baseline = transformBaseline(barBaseline);
-			return (Double.isNaN(value) || value < baseline ?
-					value : baseline);
-		}
-		
-		protected double transformValue(double y) {
-			if (transform != null)
-				return transform.transformY(y);
-			else
-				return y;
-		}
-		
-		protected double transformBaseline(double baseline) {
-			baseline = transformValue(baseline);
-			return Double.isNaN(baseline) || Double.isInfinite(baseline) ? 0.0 : baseline;
-		}
-	}
-	
-	/**
 	 * Bar chart tooltip
 	 * @author Andras
 	 */
@@ -637,8 +433,7 @@ public class ScalarChart extends ChartCanvas {
 		}
 		
 		private String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
-			int rowColumn = plot.findRowColumn(inverseTransformX(fromCanvasX(x)),
-											   inverseTransformY(fromCanvasY(y)));
+			int rowColumn = plot.findRowColumn(fromCanvasX(x), fromCanvasY(y));
 			if (rowColumn != -1) {
 				int numColumns = dataset.getColumnCount();
 				int row = rowColumn / numColumns;

@@ -26,6 +26,18 @@ public class RectangularArea {
 		this.maxY = maxY;
 	}
 	
+	public boolean contains(double x, double y) {
+		return minX <= x && x <= maxX && minY <= y && y <= maxY;
+	}
+	
+	public RectangularArea unionWith(RectangularArea other) {
+		minX = Math.min(minX, other.minX);
+		minY = Math.min(minY, other.minY);
+		maxX = Math.max(maxX, other.maxX);
+		maxY = Math.max(maxY, other.maxY);
+		return this;
+	}
+
 	public RectangularArea intersect(RectangularArea other) {
 		return new RectangularArea(
 				Math.max(minX, other.minX),

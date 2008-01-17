@@ -23,7 +23,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GeomUtils;
-import org.omnetpp.scave.charting.ScalarChart.BarPlot;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 
 /**
