@@ -114,11 +114,11 @@ doc:
 	$(DOXYGEN) doxy.cfg
 
 clean:
-	rm *.tab.* lex.*yy.* 2>nul
+	rm -f *.tab.* lex.*yy.*
 	rm -f nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h
 	rm -rf $O
 	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
-	cd $(OMNETPP_BIN_DIR) && rm -f nedtool(EXE_SUFFIX) nedc opp_msgc
+	cd $(OMNETPP_BIN_DIR) && rm -f nedtool$(EXE_SUFFIX) nedc opp_msgc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/cppexprgenerator.o: cppexprgenerator.cc \
