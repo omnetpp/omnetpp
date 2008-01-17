@@ -24,9 +24,10 @@ USING_NAMESPACE
 
 bool opp_isblank(const char *txt)
 {
-    for (const char *s = txt; *s; s++)
-        if (!opp_isspace(*s))
-            return false;
+    if (txt!=NULL)
+        for (const char *s = txt; *s; s++)
+            if (!opp_isspace(*s))
+                return false;
     return true;
 }
 
