@@ -152,6 +152,7 @@ namespace std {
 
 %ignore EnumType::insert;
 %ignore EnumType::parseFromString;
+%ignore EnumType::operator=;
 %include "enumtype.h"
 
 
@@ -293,6 +294,7 @@ namespace std {
 int strdictcmp(const char *s1, const char *s2);
 
 /* ------------- statistics.h  ----------------- */
+%ignore Statistics::operator=;
 %include "statistics.h"
 
 /* ------------- idlist.h  ----------------- */
@@ -433,6 +435,10 @@ namespace std {
 
 %ignore VectorFileReaderNodeType;
 %ignore parseColumns;
+class ReaderNode;
+class ReaderNodeType;
+%ignore ReaderNode;
+%ignore ReaderNodeType;
 %include "vectorfilereader.h"
 
 /* ------------- indexedvectorfilereader.h  ----------------- */
@@ -484,6 +490,7 @@ namespace std {
 
 /* ------------------ export.h ----------------------- */
 %ignore DataTable;
+%ignore DataTable::Column;
 %ignore XYDataTable;
 %ignore ScalarDataTable;
 %ignore MatlabStructExport;

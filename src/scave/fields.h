@@ -184,6 +184,7 @@ class SCAVE_API ResultItemFields
         bool equal(const ResultItem& d1, const ResultItem& d2) const;
 };
 
+#ifndef SWIG
 /*
  * Equality test of ResultItems that compares the specified fields.
  */
@@ -222,6 +223,7 @@ struct IDFieldsLess : public std::binary_function<ID,ID,bool>
         : fields(fields), manager(manager) {}
     bool operator()(ID id1, ID id2) const { return fields.less(id1, id2, manager); }
 };
+#endif
 
 #endif
 
