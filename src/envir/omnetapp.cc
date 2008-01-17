@@ -583,7 +583,7 @@ void TOmnetApp::startRun()
     snapshotmgr->startRun();
     if (feventlog)
     {
-        EventLogWriter::recordSimulationStartEntry_v_rid(feventlog, OMNETPP_VERSION, runid.c_str());
+        EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runid.c_str());
     }
     if (opt_parsim)
     {
