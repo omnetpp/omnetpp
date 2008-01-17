@@ -182,7 +182,6 @@ $O/inspector.obj: inspector.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
   ../../include/util.h \
@@ -274,7 +273,6 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
   ../../include/util.h \
@@ -469,7 +467,6 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
   ../../include/util.h \
@@ -523,7 +520,6 @@ $O/statinsp.obj: statinsp.cc \
   tkdefs.h \
   inspector.h \
   tkutil.h
-$O/tclcode.obj: tclcode.cc
 $O/tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
@@ -540,7 +536,6 @@ $O/tkapp.obj: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
-  tclcode.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \

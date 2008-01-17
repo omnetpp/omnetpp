@@ -2036,7 +2036,6 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
   ../../include/util.h \
