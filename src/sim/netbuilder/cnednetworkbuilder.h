@@ -22,6 +22,8 @@
 #include "cpar.h"
 #include "nedelements.h"
 
+NAMESPACE_BEGIN
+
 class cModule;
 class cGate;
 class cChannel;
@@ -111,6 +113,9 @@ class SIM_API cNEDNetworkBuilder
      */
     void buildInside(cModule *module, cNEDDeclaration *decl);
 };
+
+NAMESPACE_END
+
 
 #endif
 

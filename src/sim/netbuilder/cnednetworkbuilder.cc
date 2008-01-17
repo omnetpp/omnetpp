@@ -47,6 +47,8 @@
 #include "nedsupport.h"
 #include "commonutil.h"  // TRACE()
 
+USING_NAMESPACE
+
 /*
   FIXME FIXME FIXME
   TODO connection display string

@@ -21,6 +21,8 @@
 #include "cnednetworkbuilder.h"
 #include "cneddeclaration.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * NEDXML-based cChannelType: takes all info from cNEDLoader
@@ -60,6 +62,9 @@ class SIM_API cDynamicChannelType : public cChannelType
     virtual cNEDDeclarationBase *declaration() const {return getDecl();} //XXX
 
 };
+
+
+NAMESPACE_END
 
 
 #endif

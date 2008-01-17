@@ -24,6 +24,8 @@
 #include "cnedloader.h"
 #include "nederror.h"
 
+USING_NAMESPACE
+
 
 cNEDDeclaration::cNEDDeclaration(const char *name, NEDElement *tree) :
 cNEDDeclarationBase(name), NEDComponent(tree)

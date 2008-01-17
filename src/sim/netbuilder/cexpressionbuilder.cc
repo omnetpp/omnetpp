@@ -28,6 +28,8 @@
 #include "xmlgenerator.h"
 #include "nedsupport.h"
 
+USING_NAMESPACE
+
 inline bool strnull(const char *s)
 {
     return !s || !s[0];

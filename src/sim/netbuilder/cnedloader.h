@@ -21,6 +21,8 @@
 #include "nedresourcecache.h"
 #include "cneddeclaration.h"
 
+NAMESPACE_BEGIN
+
 class cProperties;
 class cProperty;
 
@@ -107,6 +109,9 @@ class SIM_API cNEDLoader : public NEDResourceCache
      */
     void done();
 };
+
+NAMESPACE_END
+
 
 #endif
 

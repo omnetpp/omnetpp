@@ -25,6 +25,8 @@
 #include "cnednetworkbuilder.h"
 #include "ccompoundmodule.h"
 
+USING_NAMESPACE
+
 
 cDynamicModuleType::cDynamicModuleType(const char *name) : cModuleType(name)
 {

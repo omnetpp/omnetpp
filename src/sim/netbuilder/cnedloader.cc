@@ -40,6 +40,8 @@
 #include "fileutil.h"
 #include "fileglobber.h"
 
+USING_NAMESPACE
+
 cNEDLoader *cNEDLoader::instance_;
 
 cNEDLoader *cNEDLoader::instance()

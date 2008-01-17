@@ -23,6 +23,8 @@
 #include "cdynamicexpression.h"
 #include "cexception.h"
 
+NAMESPACE_BEGIN
+
 class cParValue;
 
 /**
@@ -64,6 +66,9 @@ class SIM_API cExpressionBuilder
      */
     static void assign(cParValue *par, cDynamicExpression *expr);
 };
+
+NAMESPACE_END
+
 
 #endif
 

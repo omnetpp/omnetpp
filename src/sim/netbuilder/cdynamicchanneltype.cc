@@ -23,6 +23,8 @@
 #include "cnedloader.h"
 #include "cnednetworkbuilder.h"
 
+USING_NAMESPACE
+
 
 cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 {

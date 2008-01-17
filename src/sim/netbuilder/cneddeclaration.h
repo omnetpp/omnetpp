@@ -31,6 +31,8 @@
 
 #include "nedcomponent.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * Represents NED declarations of modules, module interfaces,
@@ -209,6 +211,9 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
     virtual ConnectionsNode *getConnectionsNode() const;
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

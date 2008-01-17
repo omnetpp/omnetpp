@@ -21,6 +21,8 @@
 #include "cneddeclaration.h"
 #include "cnednetworkbuilder.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * NEDXML-based cModuleType: takes all info from cNEDLoader
@@ -70,6 +72,9 @@ class SIM_API cDynamicModuleType : public cModuleType
     virtual cNEDDeclarationBase *declaration() const {return getDecl();}  //XXX merge the two funcs
 
 };
+
+NAMESPACE_END
+
 
 #endif
 
