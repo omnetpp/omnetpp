@@ -97,6 +97,7 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
    <plugin
          id="org.omnetpp.ide.nativelibs.linux.x86"
          os="linux"
+         arch="x86"
          download-size="0"
          install-size="0"
          version="4.0.0"
@@ -113,6 +114,7 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
    <plugin
          id="org.omnetpp.ide.nativelibs.win32.x86"
          os="win32"
+         arch="x86"
          download-size="0"
          install-size="0"
          version="4.0.0"
@@ -244,5 +246,14 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="org.omnetpp.ide.nativelibs.linux.x86_64"
+         os="linux"
+         arch="x86_64"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"/>
 
 </feature>
