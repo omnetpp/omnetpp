@@ -47,6 +47,8 @@ class Port
     Node *node();
 };
 
+%newobject Node::getArray;
+
 class Node
 {
   private:
