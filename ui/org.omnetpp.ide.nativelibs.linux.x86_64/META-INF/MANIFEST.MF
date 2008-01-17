@@ -6,4 +6,4 @@ Bundle-Version: 4.0.0
 Bundle-Vendor: OpenSim Ltd.
 Fragment-Host: org.omnetpp.ide.nativelibs;bundle-version="[4.0.0,5.0.0)"
 Bundle-Localization: plugin
-Eclipse-PlatformFilter: (& (osgi.os=linux) (osgi.arch=x86))
+Eclipse-PlatformFilter: (& (osgi.os=linux) (osgi.arch=x86_64))
