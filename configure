@@ -6012,7 +6012,7 @@ else
          { echo "$as_me:$LINENO: WARNING: JAVA_HOME variable not set." >&5
 echo "$as_me: WARNING: JAVA_HOME variable not set." >&2;}
       else
-         JAVA_CFLAGS="-I$JAVA_HOME/include -I$JAVA_HOME/include/$jdk_platform"
+         JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jdk_platform"
       fi
    fi
 
