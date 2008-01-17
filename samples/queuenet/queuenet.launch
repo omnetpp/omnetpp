@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.omnetpp.launch.standaloneLaunchConfigurationType">
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-f ../queuenet/omnetpp.ini -c Terminal -n ${ned_path:/queuenet} -u Tkenv "/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="/queueinglib/queueinglib.exe"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-f ../queuenet/omnetpp.ini -n ${ned_path:/queuenet} -u Tkenv "/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="/queuenet/queuenet"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
 <booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="false"/>
-<intAttribute key="org.omnetpp.launch.PARALELISM" value="1"/>
 <intAttribute key="org.omnetpp.launch.NUM_CONCURRENT_PROCESSES" value="1"/>
+<intAttribute key="org.omnetpp.launch.PARALELISM" value="1"/>
 <stringAttribute key="org.omnetpp.launch.RUN" value="0"/>
 <booleanAttribute key="org.omnetpp.launch.SHOW_DEBUG_VIEW" value="true"/>
 </launchConfiguration>

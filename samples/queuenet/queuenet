@@ -1,2 +1,2 @@
-`dirname $0`/lib/queuenet $*
+`dirname $0`../queueinglib/queueinglib $*
 
