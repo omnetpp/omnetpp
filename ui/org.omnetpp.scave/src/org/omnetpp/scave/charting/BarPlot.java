@@ -110,7 +110,6 @@ class BarPlot {
 	}
 
 	public int findRowColumn(double x, double y) {
-		System.out.format("x=%s,y=%s%n", x, y);
 		IScalarDataset dataset = chart.getDataset();
 		if (dataset == null || bars == null)
 			return -1;

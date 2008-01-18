@@ -35,13 +35,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
@@ -66,15 +64,13 @@ public class VectorChart extends ChartCanvas {
 	private static final boolean debug = false;
 	
 	private IXYDataset dataset = null;
+	private List<LineProperties> lineProperties;
+	private LineProperties defaultProperties;
 
 	private LinearAxis xAxis = new LinearAxis(this, false, false, true);
 	private LinearAxis yAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC, true);
-	private List<LineProperties> lineProperties;
-	private LineProperties defaultProperties;
 	private CrossHair crosshair = new CrossHair(this);
-	
-	private boolean smartMode = true; // whether smartModeLimit is enabled
-	private int smartModeLimit = 10000; // turn off symbols if there're more than this amount of points on the plot
+	private LinePlot plot;
 	
 	/**
 	 * Class representing the properties of one line of the chart.
@@ -233,6 +229,7 @@ public class VectorChart extends ChartCanvas {
 		super(parent, style);
 		lineProperties = new ArrayList<LineProperties>();
 		defaultProperties = new LineProperties();
+		plot = new LinePlot(this);
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				List<CrossHair.DataPoint> points = new ArrayList<CrossHair.DataPoint>();
@@ -468,62 +465,7 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	protected RectangularArea calculatePlotArea() {
-		double minX = Double.POSITIVE_INFINITY;
-		double minY = Double.POSITIVE_INFINITY;
-		double maxX = Double.NEGATIVE_INFINITY;
-		double maxY = Double.NEGATIVE_INFINITY;
-
-		if (dataset!=null && dataset.getSeriesCount() > 0) {
-			// calculate bounding box
-			if (transform != null) {
-				long startTime = System.currentTimeMillis();
-				long numOfPoints = 0;
-				for (int series = 0; series < dataset.getSeriesCount(); series++) {
-					int n = dataset.getItemCount(series);
-					if (n > 0) {
-						// X must be increasing
-						minX = Math.min(minX, transformX(dataset.getX(series, 0)));
-						maxX = Math.max(maxX, transformX(dataset.getX(series, n-1)));
-						for (int i = 0; i < n; i++) {
-							double y = transformY(dataset.getY(series, i));
-							if (!Double.isNaN(y) && !Double.isInfinite(y)) {
-								minY = Math.min(minY, y);
-								maxY = Math.max(maxY, y);
-							}
-						}
-	
-						numOfPoints += n;
-					}
-				}
-				long duration = System.currentTimeMillis() - startTime;
-				if (debug) System.out.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
-			}
-			else {
-				minX = dataset.getMinX();
-				maxX = dataset.getMaxX();
-				minY = dataset.getMinY();
-				maxY = dataset.getMaxY();
-			}
-		}
-		
-		if (minX > maxX) {
-			minX = 0.0;
-			maxX = 1.0;
-		}
-		if (minY > maxY) {
-			minY = 0.0;
-			maxY = 1.0;
-		}
-		
-        double width = maxX - minX;
-        double height = maxY - minY;
-        
-        minX = (minX>=0 ? 0 : minX-width/80);
-		maxX = (maxX<=0 ? 0 : maxX+width/80);
-		minY = (minY>=0 ? 0 : minY-height/3);
-		maxY = (maxY<=0 ? 0 : maxY+height/3);
-		
-		return new RectangularArea(minX, minY, maxX, maxY);
+		return plot.calculatePlotArea();
 	}
 	
 	@Override
@@ -566,7 +508,7 @@ public class VectorChart extends ChartCanvas {
 			// now we have the final insets, set it everywhere again 
 			xAxis.setLayout(mainArea, insetsToMainArea);
 			yAxis.setLayout(mainArea, insetsToMainArea);
-			plotArea = mainArea.getCopy().crop(insetsToMainArea);
+			plotArea = plot.layout(gc, mainArea.getCopy().crop(insetsToMainArea));
 			crosshair.layout(gc, plotArea);
 			legend.layoutSecondPass(plotArea);
 			//FIXME how to handle it when plotArea.height/width comes out negative??
@@ -602,48 +544,13 @@ public class VectorChart extends ChartCanvas {
 		gc.fillRectangle(gc.getClipping());
 		xAxis.drawGrid(gc);
 		yAxis.drawGrid(gc);
+		plot.draw(gc);
 
-		if (dataset != null) {
-			ICoordsMapping mapper = getOptimizedCoordinateMapper();
-			long startTime = System.currentTimeMillis();
-			for (int series=0; series<dataset.getSeriesCount(); series++) {
-				LineProperties props = getLineProperties(series);
-				if (props.getDisplayLine()) {
-
-					IVectorPlotter plotter = props.getPlotter();
-					IChartSymbol symbol = props.getSymbol();
-					Color color = props.getColor();
-					resetDrawingStylesAndColors(gc);
-					gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
-					gc.setForeground(color);
-					gc.setBackground(color);
-
-					if (smartMode && plotter.getNumPointsInXRange(dataset, series, gc, mapper) >= smartModeLimit) {
-						//XXX this may have unwanted effects when caching is on,
-						// i.e. parts of a line w/ symbols, other parts the SAME line w/o symbols....
-						if (debug) System.out.println("\"smart mode\": turning off symbols");
-						symbol = null;
-					}
-
-					plotter.plot(dataset, series, gc, mapper, symbol);
-
-					// if drawing is taking too long, display busy cursor
-					if (System.currentTimeMillis() - startTime > 1000) {
-						Cursor cursor = Display.getCurrent().getSystemCursor(SWT.CURSOR_WAIT);
-						getShell().setCursor(cursor);
-						setCursor(null); // crosshair cursor would override shell's busy cursor 
-					}
-				}
-			}
-			getShell().setCursor(null);
-			if (debug) System.out.println("plotting: "+(System.currentTimeMillis()-startTime)+" ms");
-
-			if (mapper.getNumCoordinateOverflows()>0) {
-				resetDrawingStylesAndColors(gc);
-				gc.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
-						    "may not be accurate. Please decrease zoom level.", 
-						    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
-			}
+		if (getNumCoordinateOverflows()>0) {
+			resetDrawingStylesAndColors(gc);
+			gc.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
+					    "may not be accurate. Please decrease zoom level.", 
+					    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
 		}
 	}
 	
