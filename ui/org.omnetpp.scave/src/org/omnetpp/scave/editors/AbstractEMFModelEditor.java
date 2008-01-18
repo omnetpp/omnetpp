@@ -56,7 +56,7 @@ import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.provider.ReflectiveItemProviderAdapterFactory;
 import org.eclipse.emf.edit.provider.resource.ResourceItemProviderAdapterFactory;
 import org.eclipse.emf.edit.ui.action.EditingDomainActionBarContributor;
-import org.eclipse.emf.edit.ui.celleditor.AdapterFactoryTreeEditor;
+//import org.eclipse.emf.edit.ui.celleditor.AdapterFactoryTreeEditor;
 import org.eclipse.emf.edit.ui.dnd.EditingDomainViewerDropAdapter;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
@@ -710,7 +710,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 		modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
 		modelViewer.setLabelProvider(new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)));
 		modelViewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
-		new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory); //XXX this appears to be something about in-place editing - do we need it?
+		// new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory); //XXX this appears to be something about in-place editing - do we need it?
 
 		modelViewer.addSelectionChangedListener(selectionChangedListener);
 

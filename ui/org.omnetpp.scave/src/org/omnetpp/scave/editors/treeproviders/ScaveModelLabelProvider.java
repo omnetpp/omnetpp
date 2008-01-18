@@ -1,5 +1,8 @@
 package org.omnetpp.scave.editors.treeproviders;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -34,10 +37,6 @@ import org.omnetpp.scave.model.SetOperation;
  *  
  * @author andras
  */
-//XXX changing the "based on" property of "Dataset" in the properties view somehow doesn't refresh the label in the editor's tree
-//    reason:  the generated item providers create viewer notifications from emf notifications in the notifyChanged() method
-//             the viewer notification contains the flag that labels need to be updated
-//             the generated notifyChanged() method works only with the generated label provider
 public class ScaveModelLabelProvider extends LabelProvider {
 	
 	ILabelProvider fallback;
@@ -64,23 +63,23 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		} 
 		else if (element instanceof InputFile) {
 			InputFile o = (InputFile) element;
-			return "file "+fallback(o.getName(),"<nothing>");
+			return "file "+defaultIfEmpty(o.getName(), "<nothing>");
 		} 
 		else if (element instanceof ChartSheets) {
 			return "Chart Sheets";
 		} 
 		else if (element instanceof ChartSheet) {
 			ChartSheet o = (ChartSheet) element;
-			return "chart sheet "+fallback(o.getName(),"<unnamed>")+" ("+o.getCharts().size()+" charts)";
+			return "chart sheet "+defaultIfEmpty(o.getName(), "<unnamed>")+" ("+o.getCharts().size()+" charts)";
 		} 
 		else if (element instanceof Datasets) {
 			return "Datasets";
 		} 
 		else if (element instanceof Dataset) {
 			Dataset o = (Dataset) element;
-			String res = "dataset "+fallback(o.getName(),"<unnamed>");
+			String res = "dataset "+defaultIfEmpty(o.getName(), "<unnamed>");
 			if (o.getBasedOn()!=null)
-				res += " based on dataset "+fallback(o.getBasedOn().getName(),"<unnamed>");
+				res += " based on dataset "+defaultIfEmpty(o.getBasedOn().getName(), "<unnamed>");
 			return res;
 		} 
 		else if (element instanceof SetOperation) {
@@ -103,24 +102,24 @@ public class ScaveModelLabelProvider extends LabelProvider {
 				res = "???";
 
 			res += " " + (o.getType()==null ? "???" : o.getType().getName())+"s: ";
-			res += isEmpty(o.getFilterPattern()) ? "all" : o.getFilterPattern();
+			res += defaultIfEmpty(o.getFilterPattern(), "all");
 
 			if (o.getSourceDataset()!=null)
-				res += " from dataset "+fallback(o.getSourceDataset().getName(),"<unnamed>");
+				res += " from dataset "+defaultIfEmpty(o.getSourceDataset().getName(), "<unnamed>");
 
 			return res;
 		}
 		else if (element instanceof Except) {
 			Except o = (Except) element;
-			return "except " + (isEmpty(o.getFilterPattern()) ? "all" : o.getFilterPattern());
+			return "except " + defaultIfEmpty(o.getFilterPattern(), "all");
 		}
 		else if (element instanceof Apply) {
 			Apply o = (Apply) element;
-			return "apply "+fallback(o.getOperation(),"<undefined>");
+			return "apply "+defaultIfEmpty(o.getOperation(), "<undefined>");
 		}
 		else if (element instanceof Compute) {
 			Compute o = (Compute) element;
-			return "compute "+fallback(o.getOperation(),"<undefined>");
+			return "compute "+defaultIfEmpty(o.getOperation(), "<undefined>");
 		}
 		else if (element instanceof Group) {
 			Group o = (Group) element;
@@ -128,42 +127,34 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		}
 		else if (element instanceof BarChart) {
 			Chart o = (Chart) element;
-			return "bar chart "+fallback(o.getName(),"<unnamed>");
+			return "bar chart "+defaultIfEmpty(o.getName(), "<unnamed>");
 		}
 		else if (element instanceof LineChart) {
 			Chart o = (Chart) element;
-			return "line chart "+fallback(o.getName(),"<unnamed>");
+			return "line chart "+defaultIfEmpty(o.getName(), "<unnamed>");
 		}
 		else if (element instanceof HistogramChart) {
 			Chart o = (Chart) element;
-			return "histogram chart "+fallback(o.getName(),"<unnamed>");
+			return "histogram chart "+defaultIfEmpty(o.getName(), "<unnamed>");
 		}
 		else if (element instanceof ScatterChart) {
 			Chart o = (Chart) element;
-			return "scatter chart "+fallback(o.getName(),"<unnamed>");
+			return "scatter chart "+defaultIfEmpty(o.getName(), "<unnamed>");
 		}
 		else if (element instanceof Chart) {
 			throw new IllegalArgumentException("unrecognized chart type");
 		}
 		else if (element instanceof Param) {
 			Param o = (Param) element;
-			return fallback(o.getName(),"<undefined>")+" = "+fallback(o.getValue(),"");
+			return defaultIfEmpty(o.getName(), "<undefined>")+" = "+defaultIfEmpty(o.getValue(), "");
 		}
 		else if (element instanceof Property) {
 			Property o = (Property) element;
-			return fallback(o.getName(),"<undefined>")+" = "+fallback(o.getValue(),"");
+			return defaultIfEmpty(o.getName(), "<undefined>")+" = "+defaultIfEmpty(o.getValue(), "");
 		}
 		else if (element instanceof IWrapperItemProvider) {
 			return getText(((IWrapperItemProvider)element).getValue());
 		}
 		return element.toString(); // fallback
-	}
-
-	private String fallback(String string, String defaultString) {
-		return (string!=null && !string.equals("")) ? string : defaultString; 
-	}
-
-	private boolean isEmpty(String string) {
-		return string==null || string.equals(""); 
 	}
 }
