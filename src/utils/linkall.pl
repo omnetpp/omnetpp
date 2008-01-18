@@ -99,10 +99,10 @@ foreach $arg (@ARGV) {
         $filename = $arg . "-" . $i++;
         $filename =~ s/[^A-Z0-9_]/-/gi;
         $filename .= ".opt";
+        push(@tempfiles, $filename);
         open(OUT, ">".$filename) || error("cannot open $filename for write");
         print OUT $symbols."\n" || error("cannot write $filename"); # do NOT remove "\n" -- would cause error for empty files
         close(OUT) || error("cannot close $filename");
-        push(@tempfiles, $filename);
     }
 }
 
@@ -120,6 +120,7 @@ exit(0);
 sub error {
     my $msg = shift;
     print STDERR "linkall: $msg\n";
+    removeTempFiles();
     exit(1);
 }
 
