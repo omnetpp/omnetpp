@@ -174,11 +174,13 @@ public class EventLogFilterParameters implements Serializable {
 	public IntVector getModuleIds() {
 		IntVector vector = new IntVector();
 		
-		for (int id : moduleNameIds)
-			vector.add(id);
+		if (enableModuleNameFilter)
+    		for (int id : moduleNameIds)
+    			vector.add(id);
 
-		for (int id : moduleIds)
-			vector.add(id);
+		if (enableModuleIdFilter)
+    		for (int id : moduleIds)
+    			vector.add(id);
 
 		return vector;
 	}

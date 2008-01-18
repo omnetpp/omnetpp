@@ -273,9 +273,14 @@ public class EventLogInput
 
 		filteredEventLog.setEnableModuleFilter(eventLogFilterParameters.enableModuleFilter);
 		if (eventLogFilterParameters.enableModuleFilter) {
-			filteredEventLog.setModuleExpression(eventLogFilterParameters.moduleFilterExpression);
-			filteredEventLog.setModuleIds(eventLogFilterParameters.getModuleIds());
-			filteredEventLog.setModuleClassNames(eventLogFilterParameters.getModuleClassNames());
+		    if (eventLogFilterParameters.enableModuleExpressionFilter)
+		        filteredEventLog.setModuleExpression(eventLogFilterParameters.moduleFilterExpression);
+
+			if (eventLogFilterParameters.enableModuleIdFilter || eventLogFilterParameters.enableModuleNameFilter)
+                filteredEventLog.setModuleIds(eventLogFilterParameters.getModuleIds());
+
+			if (eventLogFilterParameters.enableMessageClassNameFilter)
+			    filteredEventLog.setModuleClassNames(eventLogFilterParameters.getModuleClassNames());
 		}
 
 		if (eventLogFilterParameters.enableTraceFilter) {
@@ -290,13 +295,26 @@ public class EventLogInput
 		
 		filteredEventLog.setEnableMessageFilter(eventLogFilterParameters.enableMessageFilter);
 		if (eventLogFilterParameters.enableMessageFilter) {
-			filteredEventLog.setMessageExpression(eventLogFilterParameters.messageFilterExpression);
-			filteredEventLog.setMessageClassNames(eventLogFilterParameters.getMessageClassNames());
-			filteredEventLog.setMessageNames(eventLogFilterParameters.getMessageNames());
-			filteredEventLog.setMessageIds(eventLogFilterParameters.getMessageIds());
-			filteredEventLog.setMessageTreeIds(eventLogFilterParameters.getMessageTreeIds());
-			filteredEventLog.setMessageEncapsulationIds(eventLogFilterParameters.getMessageEncapsulationIds());
-			filteredEventLog.setMessageEncapsulationTreeIds(eventLogFilterParameters.getMessageEcapsulationTreeIds());
+		    if (eventLogFilterParameters.enableMessageExpressionFilter)
+		        filteredEventLog.setMessageExpression(eventLogFilterParameters.messageFilterExpression);
+
+            if (eventLogFilterParameters.enableMessageClassNameFilter)
+                filteredEventLog.setMessageClassNames(eventLogFilterParameters.getMessageClassNames());
+            
+            if (eventLogFilterParameters.enableMessageNameFilter)
+                filteredEventLog.setMessageNames(eventLogFilterParameters.getMessageNames());
+
+            if (eventLogFilterParameters.enableMessageIdFilter)
+                filteredEventLog.setMessageIds(eventLogFilterParameters.getMessageIds());
+            
+            if (eventLogFilterParameters.enableMessageTreeIdFilter)
+                filteredEventLog.setMessageTreeIds(eventLogFilterParameters.getMessageTreeIds());
+
+            if (eventLogFilterParameters.enableMessageEncapsulationIdFilter)
+                filteredEventLog.setMessageEncapsulationIds(eventLogFilterParameters.getMessageEncapsulationIds());
+
+            if (eventLogFilterParameters.enableMessageEncapsulationTreeIdFilter)
+                filteredEventLog.setMessageEncapsulationTreeIds(eventLogFilterParameters.getMessageEcapsulationTreeIds());
 		}
 
 		// store event log

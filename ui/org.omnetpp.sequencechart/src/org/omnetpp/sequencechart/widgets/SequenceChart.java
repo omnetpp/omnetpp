@@ -1197,6 +1197,7 @@ public class SequenceChart
 		calculateAxisSpacing();
 
 		axisModuleYs = null;
+		axisModulePositions = null;
 		invalidVirtualSize = true;
 		calculateAxisModulePositions();
 		calculateAxisModuleIndices();

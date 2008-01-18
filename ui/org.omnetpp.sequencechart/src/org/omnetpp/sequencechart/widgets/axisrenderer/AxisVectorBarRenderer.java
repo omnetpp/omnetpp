@@ -149,11 +149,12 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 				if (phase == 1) {
 					String name = getValueText(i);
 					int labelWidth = graphics.getFontMetrics().getAverageCharWidth() * name.length();
-					if (x2 - x1 > labelWidth) {
+
+					if (x2 - x1 > labelWidth + 6) {
 						graphics.setForegroundColor(VALUE_NAME_COLOR);
 						graphics.setFont(VALUE_NAME_FONT);
 
-						int x = x1 + 3;
+						int x = x1 + 5;
 						while (x < rect.right() && x < x2 - labelWidth) {
 							graphics.drawText(name, x, 0);
 							x += sequenceChart.getClientArea().width;
@@ -303,7 +304,13 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	{
 	    if (type == ResultItem.Type.TYPE_ENUM)
             return valueNames[getValueIndex(index)];
-	    else
-            return String.valueOf(getValue(index));
+	    else {
+	        double value = getValue(index);
+	        
+	        if (value == Math.floor(value))
+	            return String.valueOf((long)value);
+	        else
+	            return String.valueOf(value);
+	    }
 	}
 }
