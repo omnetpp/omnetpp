@@ -103,7 +103,10 @@ long FilteredEventLog::getApproximateNumberOfEvents()
         if (tracedEventNumber != -1) {
             // TODO: this is clearly not good and should return a much better approximation
             // TODO: maybe start from traced event number and go forward/backward and return approximation based on that?
-            return 1000;
+            if (firstEventNumber != -1 && lastEventNumber != -1)
+                return lastEventNumber - firstEventNumber;
+            else
+                return 1000;
         }
         else {
             // TODO: what if filter is event range limited?

@@ -22,7 +22,7 @@ CommonStringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
-     reader->setSynchronizeWhenAppended(false);
+    reader->setSynchronizeWhenAppended(false);
 
     clearInternalState();
     parseInitializationLogEntries();
@@ -67,7 +67,8 @@ void EventLog::clearInternalState(FileReader::FileChangedState change)
         simulationBeginEntry = NULL;
 
         eventNumberToEventMap.clear();
-        offsetToEventMap.clear();
+        beginOffsetToEventMap.clear();
+        endOffsetToEventMap.clear();
     }
     else if (lastEvent && lastEvent->getBeginOffset() != getLastEventOffset())
         lastEvent = NULL;
@@ -265,7 +266,7 @@ Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
             return it->second->getPreviousEvent();
     }
 
-    // TODO: cache result
+    // TODO: maybe cache result
     file_offset_t offset = getOffsetForEventNumber(eventNumber, matchKind);
 
     if (offset == -1)
@@ -282,7 +283,6 @@ Event *EventLog::getNeighbourEvent(IEvent *event, long distance)
 
 Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
-    // TODO: cache result
     Assert(simulationTime >= 0);
 
     file_offset_t offset = getOffsetForSimulationTime(simulationTime, matchKind);
@@ -327,9 +327,9 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
 Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
 {
     Assert(beginOffset >= 0);
-    OffsetToEventMap::iterator it = offsetToEventMap.find(beginOffset);
+    OffsetToEventMap::iterator it = beginOffsetToEventMap.find(beginOffset);
 
-    if (it != offsetToEventMap.end())
+    if (it != beginOffsetToEventMap.end())
         return it->second;
     else if (reader->getFileSize() != beginOffset)
     {
@@ -339,7 +339,7 @@ Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
         return cacheEvent(event);
     }
     else {
-        offsetToEventMap[beginOffset] = NULL;
+        beginOffsetToEventMap[beginOffset] = NULL;
         return NULL;
     }
 }
@@ -347,12 +347,20 @@ Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
 Event *EventLog::getEventForEndOffset(file_offset_t endOffset)
 {
     Assert(endOffset >= 0);
-    file_offset_t beginOffset = getBeginOffsetForEndOffset(endOffset);
+    OffsetToEventMap::iterator it = endOffsetToEventMap.find(endOffset);
 
-    if (beginOffset == -1)
-        return NULL;
-    else
-        return getEventForBeginOffset(beginOffset);
+    if (it != endOffsetToEventMap.end())
+        return it->second;
+    else {
+        file_offset_t beginOffset = getBeginOffsetForEndOffset(endOffset);
+
+        if (beginOffset == -1) {
+            endOffsetToEventMap[endOffset] = NULL;
+            return NULL;
+        }
+        else
+            return getEventForBeginOffset(beginOffset);
+    }
 }
 
 Event *EventLog::cacheEvent(Event *event)
@@ -362,7 +370,8 @@ Event *EventLog::cacheEvent(Event *event)
     Assert(eventNumberToEventMap.find(eventNumber) == eventNumberToEventMap.end());
 
     eventNumberToEventMap[eventNumber] = event;
-    offsetToEventMap[event->getBeginOffset()] = event;
+    beginOffsetToEventMap[event->getBeginOffset()] = event;
+    endOffsetToEventMap[event->getEndOffset()] = event;
 
     return event;
 }

@@ -65,7 +65,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         EventNumberToEventMap eventNumberToEventMap; // all parsed events so far
 
         typedef std::map<file_offset_t, Event *> OffsetToEventMap;
-        OffsetToEventMap offsetToEventMap; // all parsed events so far
+        OffsetToEventMap beginOffsetToEventMap; // all parsed events so far
+        OffsetToEventMap endOffsetToEventMap; // all parsed events so far
 
     public:
         EventLog(FileReader *index);

@@ -338,8 +338,7 @@ Event *Event::getReuserEvent(int &beginSendEntryNumber)
             EventLogEntry *eventLogEntry = current->eventLogEntries[beginSendEntryNumber];
             BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
 
-            if (beginSendEntry &&
-                beginSendEntry->messageId == getMessageId())
+            if (beginSendEntry && beginSendEntry->messageId == getMessageId())
             {
                 if (beginSendEntry->previousEventNumber == getEventNumber())
                     return current;
