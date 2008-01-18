@@ -36,6 +36,7 @@ all: $O/seedtool.exe
 	copy opp_test $(OMNETPP_BIN_DIR:/=\)
 	copy linkall.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy linkall.pl $(OMNETPP_BIN_DIR:/=\)
+	copy msvcver.pl $(OMNETPP_BIN_DIR:/=\)
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy $(O:/=\)\seedtool.exe* $(OMNETPP_BIN_DIR:/=\)
 
@@ -50,7 +51,7 @@ depend:
 
 clean:
 	-rmdir /s /q $(O:/=\) 2>nul
-	-cd $(OMNETPP_BIN_DIR:/=\) && del /q seedtool.exe* opp_makemake* opp_test* opp_makedep* linkall* opp_nmakemake.cmd 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q seedtool.exe* opp_makemake* opp_test* opp_makedep* linkall* msvcver.pl opp_nmakemake.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 seedtool.obj: seedtool.cc

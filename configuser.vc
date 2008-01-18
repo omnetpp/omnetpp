@@ -13,18 +13,11 @@
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-# OMNETPP_ROOT=C:/Work/Projects/omnest/omnetpp4/omnetpp
+OMNETPP_ROOT=C:/Work/Projects/omnest/omnetpp4/omnetpp
 OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 
 # Version. Should ideally come from the 'Version' file but nmake doesn't support that
-OMNETPP_VERSION=omnetpp-4.0a3
-
-#
-# The Visual C++ compiler used: "vc71", "vc80", etc. This selects which set of
-# libraries simulation models will be linked with: linker path will be set as
-# $(OMNETPP_ROOT)/lib/$(TOOLCHAIN_NAME)-debug or -release.
-#
-TOOLCHAIN_NAME=vc71
+OMNETPP_VERSION=omnetpp-4.0a4
 
 #
 # Choose whether to build static libs or DLLs, by setting LIB_SUFFIX to
@@ -246,9 +239,8 @@ SYS_LIBS = wsock32.lib
 # possible to link with static libs containing simple modules and other dynamically
 # registered compontents.
 #
-CXX=cl.exe /nologo
-LINK=linkall.cmd /nologo
-AS=cl.exe /nologo
+CXX=cl.exe
+LINK=linkall.cmd
 AR=lib.exe /nologo
 SHLIB_LD=$(LINK) /dll $(LDFLAGS)
 RC=rc.exe
@@ -289,11 +281,11 @@ FIXFLEX=$(PERL:/=\) -i.bak -pe "s/^.include .unistd.h.*//g"
 #   /opt:noref: keep functions and/or data that is never referenced (DOES NOT WORK!)
 #       see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
-CFLAGS_DEBUG=$(MOPTION)d /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
-LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
+CFLAGS_DEBUG=/nologo $(MOPTION)d /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
+LDFLAGS_DEBUG=/nologo /subsystem:console /opt:noref /debug
 
-CFLAGS_RELEASE=$(MOPTION) /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
-LDFLAGS_RELEASE=/subsystem:console /opt:noref
+CFLAGS_RELEASE=/nologo $(MOPTION) /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB
+LDFLAGS_RELEASE=/nologo /subsystem:console /opt:noref
 
 !if "$(LIB_SUFFIX)"==".dll"
 MOPTION=/MD
@@ -315,6 +307,25 @@ CFLAGS=$(CFLAGS) /DWITH_PARSIM
 !if "$(WITH_NETBUILDER)"=="yes"
 CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 !endif
+
+#
+# The Visual C++ compiler used: "vc71", "vc80", etc. This selects which set of
+# libraries simulation models will be linked with: linker path will be set as
+# $(OMNETPP_ROOT)/lib/$(TOOLCHAIN_NAME)-debug or -release.
+#
+# absolute path can be omitted if the script is already in the bin directory (e.g windows binary distribution)
+CLVER=perl $(OMNETPP_SRC_DIR)/utils/msvcver.pl $(CXX)
+!IF [$(CLVER)] == 14
+TOOLCHAIN_NAME = vc80
+!ELSEIF [$(CLVER)] == 15
+TOOLCHAIN_NAME = vc90
+!ELSEIF [$(CLVER)] == 13
+TOOLCHAIN_NAME = vc71
+!ELSEIF [$(CLVER)] == -1
+!error Visual C compiler not found
+!ELSE
+!error Unknow Visual C compiler version (8.x and 9.x supported)
+!ENDIF
 
 #
 # Configname determines where (in which subdirectory of out/)

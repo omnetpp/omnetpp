@@ -134,6 +134,9 @@ void PQueue::request(int gateIndex)
 
     send(job, "out", gateIndex);
 
+    // statistics
+    lengthStats.record(length());
+
     if (ev.isGUI())
         displayString().setTagArg("i",1, queue.empty() ? "" : "cyan");
 }

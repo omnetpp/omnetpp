@@ -147,7 +147,7 @@ int ShortestQueueSelectionStrategy::select()
 {
     // return the smallest selectable index
     int result = -1;            // by default none of them is selectable
-    int sizeMin = 2^30;
+    int sizeMin = INT_MAX;
     for (int i = 0; i<gateSize; ++i)
     {
         PQueue *queue = check_and_cast<PQueue *>(selectableGate(i)->ownerModule());
