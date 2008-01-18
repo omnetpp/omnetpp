@@ -12,8 +12,10 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.SubToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPage;
@@ -46,6 +48,9 @@ import org.omnetpp.scave.actions.SelectAllAction;
 import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
 import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
+import org.omnetpp.scave.editors.ui.DatasetPage;
+import org.omnetpp.scave.editors.ui.DatasetsAndChartsPage;
+import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 import org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor;
 import org.omnetpp.scave.views.DatasetView;
 
@@ -63,12 +68,15 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 //	public IAction addToDatasetAction;
 //	public IAction createDatasetAction;
 //	public IAction createChartAction;
-
+	
 	// global retarget actions
 	private RetargetAction undoRetargetAction;
 	private RetargetAction redoRetargetAction;
 	private RetargetAction deleteRetargetAction;
-
+	
+	// container of conditional toolbar actions (delete/open/edit)
+	private SubToolBarManager optionalToolbarActions;
+	
 	// generic actions
 	private IAction openAction;
 	private IAction editAction;
@@ -226,10 +234,11 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 
     	manager.add(undoRetargetAction);
     	manager.add(redoRetargetAction);
-    	manager.add(deleteRetargetAction);
-
-    	manager.add(openAction);
-    	manager.add(editAction);
+    	
+    	optionalToolbarActions = new SubToolBarManager(manager);
+    	optionalToolbarActions.add(deleteRetargetAction);
+    	optionalToolbarActions.add(openAction);
+    	optionalToolbarActions.add(editAction);
 
 		manager.insertBefore("scavemodel-additions", createTempChartAction);
 
@@ -293,6 +302,25 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		menuManager.insertAfter("ui-actions", showDatasetViewAction);
 		refreshViewerAction.setEnabled(refreshViewerAction.isEnabled());
 		menuManager.insertAfter("ui-actions", refreshViewerAction);
+	}
+	
+	protected void showOptionalToolbarActions(boolean visible) {
+		if (optionalToolbarActions != null) {
+			optionalToolbarActions.setVisible(visible);
+			optionalToolbarActions.update(true);
+		}
+	}
+
+	@Override
+	public void setActivePage(IEditorPart part) {
+		super.setActivePage(part);
+		boolean visible = false;
+		if (activeEditorPart instanceof ScaveEditor) {
+			ScaveEditor scaveEditor = (ScaveEditor)activeEditorPart;
+			ScaveEditorPage page = scaveEditor.getActiveEditorPage();
+			visible = page instanceof DatasetsAndChartsPage || page instanceof DatasetPage;
+		}
+		showOptionalToolbarActions(visible);
 	}
 
 	public IAction getOpenAction() {
