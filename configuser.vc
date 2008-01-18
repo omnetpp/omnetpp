@@ -322,7 +322,7 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 # build artifacts.
 #
 !ifndef CONFIGNAME
-CONFIGNAME=$(TOOLCHAIN_NAME)-$(MODE)
+CONFIGNAME=msvc-$(MODE)
 !endif
 
 #XXX add SWIG and JAVA_CFLAGS here as well
