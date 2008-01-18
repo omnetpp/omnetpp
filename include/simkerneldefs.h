@@ -116,17 +116,18 @@ typedef double   const_simtime_t;
 #else
 
 // OMNeT++ 4.x native mode: int64-based fixed-point simtime_t (class SimTime)
+NAMESPACE_BEGIN
 class SimTime;
+NAMESPACE_END
 #include "simtime.h"
 
-NAMESPACE_BEGIN
-typedef SimTime       simtime_t;
-typedef const double  const_simtime_t;
-#define MAXTIME  SimTime::maxTime()
+typedef OPP::SimTime   simtime_t;
+typedef const double   const_simtime_t;
+#define MAXTIME        OPP::SimTime::maxTime()
 #define SIMTIME_STR(t) ((t).str().c_str())
 #define SIMTIME_DBL(t) ((t).dbl())
 #define SIMTIME_RAW(t) ((t).raw())
-#define STR_SIMTIME(s) SimTime::parse(s)
+#define STR_SIMTIME(s) OPP::SimTime::parse(s)
 #define SIMTIME_TTOA(buf,t) ((t).str(buf))
 
 #endif
@@ -145,8 +146,6 @@ typedef void (*VoidDelFunc)(void *);
  * @ingroup EnumsTypes
  */
 typedef void *(*VoidDupFunc)(void *);
-
-NAMESPACE_END
 
 
 #endif

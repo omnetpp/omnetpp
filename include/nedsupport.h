@@ -21,9 +21,7 @@
 
 NAMESPACE_BEGIN
 
-
-namespace NEDSupport
-{
+namespace NEDSupport {
 
 typedef cDynamicExpression::StkValue StkValue; // abbreviation for local use
 

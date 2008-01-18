@@ -66,10 +66,12 @@
 #  define NAMESPACE_BEGIN  namespace omnetpp {
 #  define NAMESPACE_END    };
 #  define USING_NAMESPACE  using namespace omnetpp;
+#  define OPP              omnetpp
 #else
 #  define NAMESPACE_BEGIN
 #  define NAMESPACE_END
 #  define USING_NAMESPACE
+#  define OPP
 #endif
 
 #endif

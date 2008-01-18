@@ -30,19 +30,19 @@
 //XXX can typedefs be deprecated?
 
 // following ones became inner classes:
-typedef cKSplit::Iterator      cKSplitIterator;
-typedef cKSplit::Grid          sGrid;
-typedef cLinkedList::Iterator  cLinkedListIterator;
-typedef cMessageHeap::Iterator cMessageHeapIterator;
-typedef cTopology::Link        sTopoLink;
-typedef cTopology::LinkIn      sTopoLinkIn;
-typedef cTopology::LinkOut     sTopoLinkOut;
-typedef cTopology::Node        sTopoNode;
+typedef OPP::cKSplit::Iterator      cKSplitIterator;
+typedef OPP::cKSplit::Grid          sGrid;
+typedef OPP::cLinkedList::Iterator  cLinkedListIterator;
+typedef OPP::cMessageHeap::Iterator cMessageHeapIterator;
+typedef OPP::cTopology::Link        sTopoLink;
+typedef OPP::cTopology::LinkIn      sTopoLinkIn;
+typedef OPP::cTopology::LinkOut     sTopoLinkOut;
+typedef OPP::cTopology::Node        sTopoNode;
 
 // renamed classes:
-typedef cDisplayString cDisplayStringParser;
-typedef cBasicChannel  cSimpleChannel;
-typedef cObject        cPolymorphic;
+typedef OPP::cDisplayString cDisplayStringParser;
+typedef OPP::cBasicChannel  cSimpleChannel;
+typedef OPP::cObject        cPolymorphic;
 
 #endif
 

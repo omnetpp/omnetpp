@@ -275,7 +275,7 @@ inline const SimTime operator/(const SimTime& x, double d)
 
 inline double operator/(const SimTime& x, const SimTime& y)
 {
-    return (double)x.t / (double)y.t;
+    return (double)x.raw() / (double)y.raw();
 }
 
 inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
@@ -284,14 +284,16 @@ inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
     return os << SimTime::ttoa(buf, x.raw(), SimTime::scaleExp(), endp);
 }
 
+NAMESPACE_END
+
 /**
  * simtime_t version of floor(double) from math.h.
  */
-inline const SimTime floor(const SimTime& x)
+inline const OPP::SimTime floor(const OPP::SimTime& x)
 {
-    int64 u = SimTime::scale();
+    int64 u = OPP::SimTime::scale();
     int64 t = x.raw();
-    return SimTime().setRaw(t - t % u); //XXX test: also OK for negative t?
+    return OPP::SimTime().setRaw(t - t % u); //XXX test: also OK for negative t?
 }
 
 /**
@@ -301,56 +303,56 @@ inline const SimTime floor(const SimTime& x)
  * Examples: floor(2.1234, 0.1) = 2.1; floor(2.1234, 0.1, 0.007) = 2.107;
  * floor(2.1006, 0.1, 0.007) = 2.007.
  */
-inline const SimTime floor(const SimTime& x, const SimTime& unit, const SimTime& offset = SimTime())
+inline const OPP::SimTime floor(const OPP::SimTime& x, const OPP::SimTime& unit, const OPP::SimTime& offset = OPP::SimTime())
 {
     int64 off = offset.raw();
     int64 u = unit.raw();
     int64 t = x.raw() - off;
-    return SimTime().setRaw(t - t % u + off); //XXX test: also OK for negative t?
+    return OPP::SimTime().setRaw(t - t % u + off); //XXX test: also OK for negative t?
 }
 
 /**
  * simtime_t version of ceil(double) from math.h.
  */
-inline const SimTime ceil(const SimTime& x)
+inline const OPP::SimTime ceil(const OPP::SimTime& x)
 {
-    int64 u = SimTime::scale();
+    int64 u = OPP::SimTime::scale();
     int64 t = x.raw() + u-1;
-    return SimTime().setRaw(t - t % u); //XXX test: also OK for negative t?
+    return OPP::SimTime().setRaw(t - t % u); //XXX test: also OK for negative t?
 }
 
 /**
  * Generalized version of ceil(), accepting a unit and an offset:
  * ceil(x,u,off) = ceil((x-off)/u)*u + off.
  */
-inline const SimTime ceil(const SimTime& x, const SimTime& unit, const SimTime& offset = SimTime())
+inline const OPP::SimTime ceil(const OPP::SimTime& x, const OPP::SimTime& unit, const OPP::SimTime& offset = OPP::SimTime())
 {
     int64 off = offset.raw();
     int64 u = unit.raw();
     int64 t = x.raw() - off + u-1;
-    return SimTime().setRaw(t - t % u + off); //XXX test: also OK for negative t?
+    return OPP::SimTime().setRaw(t - t % u + off); //XXX test: also OK for negative t?
 }
 
 /**
  * simtime_t version of fabs(double) from math.h.
  */
-inline const SimTime fabs(const SimTime& x)
+inline const OPP::SimTime fabs(const OPP::SimTime& x)
 {
-    return x.raw()<0 ? SimTime().setRaw(-x.raw()) : x;
+    return x.raw()<0 ? OPP::SimTime().setRaw(-x.raw()) : x;
 }
 
 /**
  * simtime_t version of fmod(double,double) from math.h.
  */
-inline const SimTime fmod(const SimTime& x, const SimTime& y)
+inline const OPP::SimTime fmod(const OPP::SimTime& x, const OPP::SimTime& y)
 {
-    return SimTime().setRaw(x.raw() % y.raw()); //XXX test: also OK for negative x or y?
+    return OPP::SimTime().setRaw(x.raw() % y.raw()); //XXX test: also OK for negative x or y?
 }
 
 /**
  * Returns the greater of the two arguments.
  */
-inline const SimTime max(const SimTime& x, const SimTime& y)
+inline const OPP::SimTime max(const OPP::SimTime& x, const OPP::SimTime& y)
 {
     return x > y ? x : y;
 }
@@ -358,13 +360,11 @@ inline const SimTime max(const SimTime& x, const SimTime& y)
 /**
  * Returns the smaller of the two arguments.
  */
-inline const SimTime min(const SimTime& x, const SimTime& y)
+inline const OPP::SimTime min(const OPP::SimTime& x, const OPP::SimTime& y)
 {
     return x < y ? x : y;
 }
 
-
-NAMESPACE_END
-
-
 #endif
+
+
