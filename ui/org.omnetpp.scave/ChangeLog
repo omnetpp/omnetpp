@@ -1,3 +1,28 @@
+2008-01-18
+----------
+
+Additions:
+
+   + Overlap/InFront/Stacked bar placements are implemented.
+
+Fixes:
+
+   + Grid was not visible on scalar charts.
+
+   + Add scroll bars to the lists in the edit dialog of bar charts.
+
+   + Draw the baseline on scalar charts.
+
+   + Node.getArray() leaked memory.
+
+   + Controls on the Legend edit page was not disabled initially.
+
+   + Fixed IllegalArgumentException in DatasetPage.dispose().
+
+   + Delete/Open/Edit toolbar actions are visible only if the "Datasets and Charts" or
+     "Dataset" page is active.
+
+
 2008-01-04
 ----------
 
