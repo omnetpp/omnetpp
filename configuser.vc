@@ -313,24 +313,32 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 # libraries simulation models will be linked with: linker path will be set as
 # $(OMNETPP_ROOT)/lib/$(TOOLCHAIN_NAME)-debug or -release.
 #
-# absolute path can be omitted if the script is already in the bin directory (e.g windows binary distribution)
+# We autodetect the compiler version by running cl.exe and parsing the printed "logo".
+# Absolute path to msvcver.pl can be omitted if the script is already in the bin/
+# directory.
+#
 CLVER=perl $(OMNETPP_SRC_DIR)/utils/msvcver.pl $(CXX)
-!IF [$(CLVER)] == 14
+!if "$(TOOLCHAIN_NAME)"!=""
+# respect user's setting
+!elseif [$(CLVER)] == 14
 TOOLCHAIN_NAME = vc80
-!ELSEIF [$(CLVER)] == 15
+!elseif [$(CLVER)] == 15
 TOOLCHAIN_NAME = vc90
-!ELSEIF [$(CLVER)] == 13
+!elseif [$(CLVER)] == 13
 TOOLCHAIN_NAME = vc71
-!ELSEIF [$(CLVER)] == -1
-!error Visual C compiler not found
-!ELSE
-!error Unknow Visual C compiler version (8.x and 9.x supported)
-!ENDIF
+!elseif [$(CLVER)] == -1
+!error Visual C++ compiler $(CXX) not found (not in the PATH?)
+!else
+!error Unsupported Visual C++ compiler version (8.x and 9.x supported)
+!endif
 
 #
 # Configname determines where (in which subdirectory of out/)
 # makemake-generated makefiles create object files and other
 # build artifacts.
+#
+# Note: We use msvc-$(MODE) instead of $(TOOLCHAIN_NAME)-$(MODE) to
+# be consistent with the IDE's default.
 #
 !ifndef CONFIGNAME
 CONFIGNAME=msvc-$(MODE)
