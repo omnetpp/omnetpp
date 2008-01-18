@@ -3,8 +3,6 @@ package org.omnetpp.scave.editors.ui;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.edit.provider.IChangeNotifier;
-import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -14,16 +12,12 @@ import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.engineext.IResultFilesChangeListener;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 public class DatasetPage extends ScaveEditorPage {
 	private TreeViewer datasetTreeViewer;
 	private Dataset dataset; // backreference to the model object we operate on
-
-	private IResultFilesChangeListener resultFilesChangeListener; // we'll need to unhook on dispose()
-	private INotifyChangedListener modelChangeListener; // we'll need to unhook on dispose()
 
 	public DatasetPage(Composite parent, ScaveEditor scaveEditor, Dataset dataset) {
 		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, scaveEditor);
@@ -71,16 +65,6 @@ public class DatasetPage extends ScaveEditorPage {
 		TreeViewer treeViewer = getDatasetTreeViewer();
 		scaveEditor.configureTreeViewer(treeViewer);
 		treeViewer.setInput(dataset);
-	}
-
-	@Override
-	public void dispose() {
-		// deregister listeners we hooked on external objects
-		scaveEditor.getResultFileManager().removeChangeListener(resultFilesChangeListener);
-		IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
-		notifier.removeListener(modelChangeListener);
-
-		super.dispose();
 	}
 
 	@Override
