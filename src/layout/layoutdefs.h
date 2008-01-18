@@ -17,6 +17,8 @@
 
 #include "platdefs.h"
 
+NAMESPACE_BEGIN
+
 #if defined(LAYOUT_EXPORT)
 #  define LAYOUT_API OPP_DLLEXPORT
 #elif defined(LAYOUT_IMPORT) || defined(OMNETPPLIBS_IMPORT)
@@ -24,6 +26,9 @@
 #else
 #  define LAYOUT_API
 #endif
+
+NAMESPACE_END
+
 
 #endif
 

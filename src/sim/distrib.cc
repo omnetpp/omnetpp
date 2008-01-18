@@ -32,7 +32,7 @@
 #define M_E     2.7182818284590452353602874713527
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 //----------------------------------------------------------------------------
@@ -751,4 +751,4 @@ Define_Function(genk_exponential, 2);
 Define_Function(genk_normal, 3);
 Define_Function(genk_truncnormal, 3);
 
-
+NAMESPACE_END

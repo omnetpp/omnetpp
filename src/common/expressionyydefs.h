@@ -18,8 +18,6 @@
 
 #include "expression.h"
 
-NAMESPACE_BEGIN
-
 //
 // misc bison/flex related stuff, shared among *.lex and *.y files
 //
@@ -43,10 +41,7 @@ struct my_yyltype {
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn xpos, xprevpos;
 
-void doParseExpression(const char *text, Expression::Resolver *resolver, Expression::Elem *&elems, int& nelems);
-
-NAMESPACE_END
-
+void doParseExpression(const char *text, OPP::Expression::Resolver *resolver, OPP::Expression::Elem *&elems, int& nelems);
 
 #endif
 

@@ -18,6 +18,8 @@
 #include <math.h>
 #include "geometry.h"
 
+NAMESPACE_BEGIN
+
 class ForceDirectedEmbedding;
 
 /**
@@ -365,5 +367,8 @@ class IForceProvider {
 
         virtual double getPotentialEnergy() = 0;
 };
+
+NAMESPACE_END
+
 
 #endif

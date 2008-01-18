@@ -20,7 +20,7 @@
 #include "commondefs.h"
 #include "commonutil.h"
 
-NAMESPACE_BEGIN
+//NAMESPACE_BEGIN
 
 
 /**
@@ -115,7 +115,7 @@ COMMON_API bool opp_stringendswith(const char *s, const char *ending);
  */
 COMMON_API int strdictcmp(const char *s1, const char *s2);
 
-NAMESPACE_END
+//NAMESPACE_END
 
 
 #endif

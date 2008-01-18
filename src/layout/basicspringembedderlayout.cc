@@ -23,6 +23,8 @@
 #include "commonutil.h"
 #include "basicspringembedderlayout.h"
 
+USING_NAMESPACE
+
 
 BasicSpringEmbedderLayout::BasicSpringEmbedderLayout()
 {

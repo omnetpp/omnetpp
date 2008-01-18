@@ -17,6 +17,8 @@
 #include "forcedirectedparameters.h"
 #include "lcgrandom.h"
 
+USING_NAMESPACE
+
 ForceDirectedEmbedding::ForceDirectedEmbedding() {
     debugLevel = 0;
     inspected = false;

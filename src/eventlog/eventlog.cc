@@ -16,7 +16,7 @@
 #include "stringpool.h"
 #include "eventlog.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 CommonStringPool eventLogStringPool;
 
@@ -366,3 +366,6 @@ Event *EventLog::cacheEvent(Event *event)
 
     return event;
 }
+
+NAMESPACE_END
+

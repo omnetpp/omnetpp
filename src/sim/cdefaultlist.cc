@@ -30,7 +30,7 @@
 #include "ccommbuffer.h"
 #endif
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 
 Register_Class(cDefaultList);
@@ -212,3 +212,4 @@ bool cDefaultList::defaultListContains(cOwnedObject *obj) const
     return obj && obj->owner()==const_cast<cDefaultList *>(this);
 }
 
+NAMESPACE_END

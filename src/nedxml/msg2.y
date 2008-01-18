@@ -80,6 +80,8 @@ void yyerror (const char *s);
 #include "nedutil.h"
 #include "nedyylib.h"
 
+USING_NAMESPACE
+
 static struct MSG2ParserState
 {
     /* tmp flags, used with msg fields */

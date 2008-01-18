@@ -82,6 +82,7 @@ LineColumn xpos, xprevpos;
 #include "stringutil.h"
 #include "unitconversion.h"
 
+USING_NAMESPACE
 
 static cDynamicExpression::Elem *e;
 

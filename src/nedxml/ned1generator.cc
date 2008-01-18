@@ -21,7 +21,7 @@
 #include "stringutil.h"
 #include "nedutil.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -1195,5 +1195,7 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             ;//XXX: add back this line: INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
     }
 }
+
+NAMESPACE_END
 
 

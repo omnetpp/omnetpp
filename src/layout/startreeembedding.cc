@@ -14,6 +14,8 @@
 
 #include "startreeembedding.h"
 
+USING_NAMESPACE
+
 StarTreeEmbedding::StarTreeEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
     this->graphComponent = graphComponent;

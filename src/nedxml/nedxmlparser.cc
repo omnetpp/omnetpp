@@ -19,7 +19,7 @@
 #include "nederror.h"
 #include "nedxmlparser.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
 {
@@ -35,3 +35,6 @@ NEDElement *parseXML(const char *filename, NEDErrorStore *errors)
     }
     return sh.getTree();
 }
+
+NAMESPACE_END
+

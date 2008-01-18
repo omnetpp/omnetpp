@@ -22,8 +22,7 @@
 #include "onstartup.h"
 #include "cexception.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 void loadExtensionLibrary(const char *lib)
 {
@@ -36,4 +35,4 @@ void loadExtensionLibrary(const char *lib)
     }
 }
 
-
+NAMESPACE_END

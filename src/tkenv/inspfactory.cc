@@ -26,11 +26,9 @@
 #include "inspector.h"
 #include "inspfactory.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 cRegistrationList inspectorfactories;
-
 
 cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
@@ -52,4 +50,5 @@ cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
     return best; // may be NULL too
 }
 
+NAMESPACE_END
 

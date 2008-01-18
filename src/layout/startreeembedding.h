@@ -19,6 +19,8 @@
 #include "geometry.h"
 #include "graphcomponent.h"
 
+NAMESPACE_BEGIN
+
 /**
  * This is a planar graph embedding for a connected graph component with spanning tree.
  *
@@ -72,5 +74,8 @@ class StarTreeEmbedding
         void calculatePosition();
         void calculatePositionRecursive(Vertex *vertex, Pt pt);
 };
+
+NAMESPACE_END
+
 
 #endif

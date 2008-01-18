@@ -9,7 +9,8 @@
 #include <string.h>
 #include "scaveutils.h"
 
-USING_NAMESPACE
+
+NAMESPACE_BEGIN
 
 static double dblZero = 0.0;
 double dblNaN = dblZero / dblZero;
@@ -91,3 +92,5 @@ std::string unquoteString(const char *str)
         result = str;
     return result;
 }
+
+NAMESPACE_END

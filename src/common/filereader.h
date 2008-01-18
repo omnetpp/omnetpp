@@ -20,8 +20,6 @@
 #include "commondefs.h"
 #include "inttypes.h"   // for int64
 
-NAMESPACE_BEGIN
-
 typedef int64 file_offset_t;  // off_t on Linux
 
 /*
@@ -53,6 +51,8 @@ typedef int64 file_offset_t;  // off_t on Linux
 #define filereader_fseek fseeko64
 #endif
 
+NAMESPACE_BEGIN
+
 /**
  * Reads a file line by line. It has to be very efficient since
  * it may be used up to gigabyte-sized files (output vector files
@@ -61,8 +61,8 @@ typedef int64 file_offset_t;  // off_t on Linux
  * buffer must be able to contain at least two lines, therefore
  * the maximum line length is limited to buffer size divided by 2.
  *
- * It maintains a position which is used to return subsequent lines from 
- * the file in both directions from both ends. Automatically follows file 
+ * It maintains a position which is used to return subsequent lines from
+ * the file in both directions from both ends. Automatically follows file
  * content when appended, but overwriting the file causes an exception to be thrown.
  *
  * All functions throw class opp_runtime_error on error.
@@ -73,7 +73,7 @@ class COMMON_API FileReader
     // the file
     std::string fileName;
     FILE *f;
-	bool synchronizeWhenAppended;
+    bool synchronizeWhenAppended;
 
     // the buffer
     size_t bufferSize;
@@ -154,10 +154,10 @@ class COMMON_API FileReader
      */
     virtual ~FileReader();
 
-	/**
-	 * Controls what happens when new content is appended to the file.
-	 */
-	void setSynchronizeWhenAppended(bool value) { synchronizeWhenAppended = value; }
+    /**
+     * Controls what happens when new content is appended to the file.
+     */
+    void setSynchronizeWhenAppended(bool value) { synchronizeWhenAppended = value; }
 
     /**
      * This method is called automatically whenever the file is accessed through a public function.
@@ -165,13 +165,13 @@ class COMMON_API FileReader
     void ensureFileOpen();
 
     /**
-     * This method is called automatically from the destructor, but might be useful to release the file when it is 
+     * This method is called automatically from the destructor, but might be useful to release the file when it is
      * not needed for a long period of time.
      */
     void ensureFileClosed();
 
     /**
-     * Checks if file has been changed on disk. A file change is considered to be an append if it did not change the 
+     * Checks if file has been changed on disk. A file change is considered to be an append if it did not change the
      * content of the line (starting at the very same offset) which was the last before the change.
      */
     FileChangedState getFileChangedState();

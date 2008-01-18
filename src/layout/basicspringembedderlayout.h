@@ -25,6 +25,8 @@
 
 #include "graphlayouter.h"
 
+NAMESPACE_BEGIN
+
 // currently it works fine without boxing the graph
 //#define USE_CONTRACTING_BOX
 
@@ -149,6 +151,9 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     void getNodePosition(cModule *mod, int& x, int& y);
     //@}
 };
+
+NAMESPACE_END
+
 
 #endif
 

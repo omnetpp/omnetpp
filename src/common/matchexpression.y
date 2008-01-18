@@ -59,6 +59,11 @@ int yyparse();
 #include "patternmatcher.h"
 #include "exception.h"
 
+using OPP::MatchExpression;
+using OPP::PatternMatcher;
+using OPP::opp_runtime_error;
+
+
 static struct MatchExpressionParserVars {
     std::vector<MatchExpression::Elem> *elemsp;
     bool dottedpath;

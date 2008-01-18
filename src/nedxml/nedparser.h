@@ -17,7 +17,6 @@
 #define __NEDPARSER_H
 
 #include <stdio.h>
-
 #include "nedelement.h"
 #include "nedyydefs.h"
 #include "nederror.h"

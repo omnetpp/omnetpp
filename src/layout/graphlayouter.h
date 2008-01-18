@@ -23,6 +23,8 @@
 #include "layoutdefs.h"
 #include "lcgrandom.h"
 
+NAMESPACE_BEGIN
+
 class cModule;
 
 class LAYOUT_API GraphLayouterEnvironment
@@ -117,6 +119,9 @@ class LAYOUT_API GraphLayouter
      */
     virtual void getNodePosition(cModule *mod, int& x, int& y) = 0;
 };
+
+NAMESPACE_END
+
 
 #endif
 

@@ -23,11 +23,10 @@
 #include "cmodule.h"
 #include "nedsupport.h"
 
-USING_NAMESPACE
 
+NAMESPACE_BEGIN
 
-namespace NEDSupport
-{
+namespace NEDSupport {
 
 ModuleIndex::ModuleIndex()
 {
@@ -217,6 +216,8 @@ std::string XMLDoc::toString(std::string args[], int numargs)
 }
 
 };
+
+NAMESPACE_END
 
 /*
 //FIXME make error messages consistent

@@ -18,14 +18,16 @@
 
 #include "nedxmldefs.h"
 
-NAMESPACE_BEGIN
 
 //
 // misc bison/flex related stuff, shared among *.lex, *.y and nedparser.cc/h files
 //
+NAMESPACE_BEGIN
 
 class NEDElement;
 class NEDParser;
+
+NAMESPACE_END
 
 #ifdef YYLTYPE
 #error 'YYLTYPE defined before nedyydefs.h -- type clash?'
@@ -38,17 +40,18 @@ struct my_yyltype {
    char *text;
 };
 #define YYLTYPE  struct my_yyltype
-#define YYSTYPE  NEDElement*
+#define YYSTYPE  OPP::NEDElement*
+
+NAMESPACE_BEGIN
 
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn pos, prevpos;
 
-NEDElement *doParseNED2(NEDParser *p, const char *nedtext);
-NEDElement *doParseNED1(NEDParser *p, const char *nedtext);
-NEDElement *doParseMSG2(NEDParser *p, const char *nedtext);
-
 NAMESPACE_END
 
+OPP::NEDElement *doParseNED2(OPP::NEDParser *p, const char *nedtext);
+OPP::NEDElement *doParseNED1(OPP::NEDParser *p, const char *nedtext);
+OPP::NEDElement *doParseMSG2(OPP::NEDParser *p, const char *nedtext);
 
 #endif
 

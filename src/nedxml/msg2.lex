@@ -58,6 +58,8 @@ void extendCount();
 #define TEXTBUF_LEN 1024
 static char textbuf[TEXTBUF_LEN];
 
+USING_NAMESPACE
+
 %}
 
 %%

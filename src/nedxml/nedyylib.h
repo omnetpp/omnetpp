@@ -23,7 +23,6 @@
 
 NAMESPACE_BEGIN
 
-
 std::string slashifyFilename(const char *fname);
 const char *currentLocation();
 

@@ -20,7 +20,7 @@
 #include "nedelements.h"
 #include "xmlgenerator.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 using std::endl;
@@ -145,5 +145,7 @@ void NEDXMLGenerator::doGenerate(ostream& out, NEDElement *node, int level)
         out << indent;
     out << "</" << node->getTagName() << ">" << endl;
 }
+
+NAMESPACE_END
 
 

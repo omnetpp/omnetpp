@@ -39,9 +39,9 @@
 
 #include "commondefs.h"
 
-NAMESPACE_BEGIN
-
 struct GlobPrivateData;
+
+NAMESPACE_BEGIN
 
 /**
  * Utility for resolving wildcards in file names. If the pattern doesn't contain

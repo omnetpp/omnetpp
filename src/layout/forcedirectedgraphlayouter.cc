@@ -25,6 +25,8 @@
 #include "heapembedding.h"
 #include "platmisc.h"
 
+USING_NAMESPACE
+
 
 ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
 {

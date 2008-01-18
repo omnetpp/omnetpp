@@ -18,8 +18,7 @@
 #include <stdlib.h>
 #include "nederror.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 #define DO_VSPRINTF()  \
     va_list va; \
@@ -178,4 +177,6 @@ NEDException::NEDException(const char *msgformat...) : std::runtime_error("")
 
     errormsg = message;
 }
+
+NAMESPACE_END
 

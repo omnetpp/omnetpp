@@ -18,7 +18,7 @@
 
 #include "cdynamicexpression.h"
 
-NAMESPACE_BEGIN
+//NAMESPACE_BEGIN
 
 //
 // misc bison/flex related stuff, shared among *.lex and *.y files
@@ -39,9 +39,9 @@ struct my_yyltype {
 typedef struct {int li; int co;} LineColumn;
 extern LineColumn xpos, xprevpos;
 
-void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, int& nelems);
+void doParseExpression(const char *nedtext, OPP::cDynamicExpression::Elem *&elems, int& nelems);
 
-NAMESPACE_END
+//NAMESPACE_END
 
 
 #endif

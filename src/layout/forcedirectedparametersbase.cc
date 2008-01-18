@@ -13,3 +13,5 @@
 *--------------------------------------------------------------*/
 
 #include "forcedirectedparametersbase.h"
+
+USING_NAMESPACE

@@ -16,7 +16,7 @@
 #include "eventlogentry.h"
 #include "eventlogentryfactory.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 char EventLogEntry::buffer[128];
 LineTokenizer EventLogEntry::tokenizer(32768);
@@ -156,3 +156,6 @@ const char *EventLogMessageEntry::getAttribute(const char *name) const
     else
         return NULL;
 }
+
+NAMESPACE_END
+

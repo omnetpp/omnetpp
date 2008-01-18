@@ -15,6 +15,8 @@
 
 #include "graphlayouter.h"
 
+USING_NAMESPACE
+
 
 GraphLayouter::GraphLayouter()
 {

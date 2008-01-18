@@ -44,6 +44,8 @@
 #include "netbuilder/cnedloader.h"
 #endif
 
+NAMESPACE_BEGIN
+
 using std::ostream;
 
 #ifdef DEVELOPER_DEBUG
@@ -51,8 +53,6 @@ using std::ostream;
 extern std::set<cOwnedObject*> objectlist;
 void printAllObjects();
 #endif
-
-USING_NAMESPACE
 
 cSimulation simulation("simulation");
 
@@ -685,5 +685,7 @@ void cSimulation::insertMsg(cMessage *msg)
     msg->setPreviousEventNumber(event_num);
     simulation.msgQueue.insert(msg);
 }
+
+NAMESPACE_END
 
 

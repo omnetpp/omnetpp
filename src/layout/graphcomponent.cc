@@ -15,6 +15,8 @@
 #include <float.h>
 #include "graphcomponent.h"
 
+USING_NAMESPACE
+
 Vertex::Vertex(Pt pt, Rs rs, void *identity) {
     this->rc = Rc(pt, rs);
     this->identity = identity;

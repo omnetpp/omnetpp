@@ -20,7 +20,6 @@
 #include "exception.h"
 #include "inttypes.h"
 
-NAMESPACE_BEGIN
 
 #ifdef NDEBUG
 #  define Assert(x)
@@ -59,16 +58,15 @@ class COMMON_API DebugCall
 #define TRACE  DebugCall __x
 
 /**
- * Performs the RDTSC (read time stamp counter) x86 instruction, and returns 
+ * Performs the RDTSC (read time stamp counter) x86 instruction, and returns
  * the resulting high-resolution 64-bit timer value. This can be used for
- * ad-hoc performance measurements on Windows (this function returns 0 on 
+ * ad-hoc performance measurements on Windows (this function returns 0 on
  * other platforms).
  *
  * See http://en.wikipedia.org/wiki/RDTSC
  */
 uint64 readCPUTimeStampCounter();
 
-NAMESPACE_END
 
 
 #endif

@@ -18,8 +18,7 @@
 #include <string.h>
 #include "task.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 _Task main_task;
 _Task *current_task = NULL;
@@ -212,4 +211,5 @@ unsigned task_stackusage( _Task *t )
     return dist(t,p);
 }
 
+NAMESPACE_END
 

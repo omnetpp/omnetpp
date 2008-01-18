@@ -31,11 +31,9 @@
 #include "visitor.h"
 #include "tkutil.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 #define INSPECTORLISTBOX_MAX_ITEMS   100000
-
 
 
 TclQuotedString::TclQuotedString()
@@ -237,5 +235,7 @@ void inspectObjectByName(const char *fullpath, const char *classname, int inspty
     cInspectByNameVisitor v(fullpath, classname, insptype, geometry);
     v.process(&simulation);
 }
+
+NAMESPACE_END
 
 

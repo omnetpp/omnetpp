@@ -143,7 +143,10 @@ print ENTRIES_H_FILE
 #include \"eventlogdefs.h\"
 #include \"eventlogentry.h\"
 
+NAMESPACE_BEGIN
+
 class Event;
+
 ";
 
 $index = 1;
@@ -180,6 +183,8 @@ class EVENTLOG_API $class->{NAME} : public EventLogTokenBasedEntry
 }
 
 print ENTRIES_H_FILE "
+NAMESPACE_END
+
 #endif
 ";
 
@@ -207,6 +212,7 @@ print ENTRIES_CC_FILE "\
 #include \"eventlogentries.h\"
 #include \"stringutil.h\"
 
+USING_NAMESPACE
 ";
 
 foreach $class (@classes)
@@ -361,6 +367,8 @@ print FACTORY_CC_FILE "\
 
 #include \"event.h\"
 #include \"eventlogentryfactory.h\"
+
+USING_NAMESPACE
 
 EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, char **tokens, int numTokens)
 {

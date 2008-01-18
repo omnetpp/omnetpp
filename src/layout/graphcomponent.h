@@ -20,6 +20,8 @@
 #include <deque>
 #include "geometry.h"
 
+NAMESPACE_BEGIN
+
 class Edge;
 class GraphComponent;
 
@@ -218,5 +220,8 @@ class GraphComponent {
         void addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex);
         void colorizeConnectedSubComponent(GraphComponent *childComponent, Vertex *vertex, int color);
 };
+
+NAMESPACE_END
+
 
 #endif

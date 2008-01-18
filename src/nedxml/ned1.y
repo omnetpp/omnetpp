@@ -118,6 +118,8 @@ void yyerror (const char *s);
 #include "nedutil.h"
 #include "nedyylib.h"
 
+USING_NAMESPACE
+
 static struct NED1ParserState
 {
     bool inLoop;

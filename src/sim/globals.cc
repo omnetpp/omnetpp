@@ -20,8 +20,7 @@
 #include "onstartup.h"
 #include "ccomponenttype.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 //
 // Global objects
@@ -38,3 +37,6 @@ cModuleType *findModuleType(const char *name)
 {
     return cModuleType::find(name);
 }
+
+NAMESPACE_END
+

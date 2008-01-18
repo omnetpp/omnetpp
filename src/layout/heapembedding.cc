@@ -14,6 +14,8 @@
 
 #include "heapembedding.h"
 
+USING_NAMESPACE
+
 HeapEmbedding::HeapEmbedding(GraphComponent *graphComponent, double vertexSpacing)
 {
     this->graphComponent = graphComponent;

@@ -35,6 +35,7 @@
 using std::ostream;
 using std::endl;
 
+NAMESPACE_BEGIN
 
 Register_Class(cKSplit);
 
@@ -43,7 +44,6 @@ Register_Class(cKSplit);
 #  error "K must be 2 or a >=3 odd number"
 #endif
 
-USING_NAMESPACE
 
 //----
 // Cell division criteria - they are used to decide whether a cell should be split.
@@ -837,3 +837,5 @@ double cKSplit::Iterator::cellValue() const
    cKSplit::Grid& g = ks->gridv[grid];
    return ks->realCellValue(g,cell);
 }
+
+NAMESPACE_END

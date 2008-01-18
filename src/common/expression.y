@@ -76,6 +76,7 @@ LineColumn xpos, xprevpos;
 #include "stringutil.h"
 #include "unitconversion.h"
 
+using OPP::Expression;
 
 static Expression::Elem *e;
 static Expression::Resolver *resolver;

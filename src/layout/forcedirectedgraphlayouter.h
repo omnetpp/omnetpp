@@ -28,6 +28,8 @@
 #include "forcedirectedparameters.h"
 #include "graphcomponent.h"
 
+NAMESPACE_BEGIN
+
 
 /**
  * XXX
@@ -209,6 +211,9 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
 
     void debugDraw();
 };
+
+NAMESPACE_END
+
 
 #endif
 

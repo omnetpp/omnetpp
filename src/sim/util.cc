@@ -31,8 +31,7 @@
 #include "cscheduler.h" // dummy()
 #include "distrib.h" // dummy()
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 // functions to support expressions compiled by nedtool
 
@@ -463,6 +462,8 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
     simulation.setContextType(contexttype);
 }
 
+NAMESPACE_END
+
 //----
 // dummy function to force over-optimizing Unix linkers to include these symbols
 // in the library
@@ -475,6 +476,9 @@ cContextTypeSwitcher::~cContextTypeSwitcher()
 #include "cpsquare.h"
 #include "cstrtokenizer.h"
 #include "cxmlelement.h"
+
+USING_NAMESPACE
+
 //void _dummy_for_env();
 void std_sim_descriptor_dummy();
 void _sim_dummy_func()

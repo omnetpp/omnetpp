@@ -117,6 +117,8 @@ print H
 #include \"envdefs.h\"
 #include \"cexception.h\"
 
+USING_NAMESPACE
+
 class EventLogWriter
 {
   public:

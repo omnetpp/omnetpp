@@ -22,7 +22,7 @@
 #include "scaveexception.h"
 #include "vectorfilereader.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using namespace std;
 
@@ -191,3 +191,4 @@ Port *VectorFileReaderNodeType::getPort(Node *node, const char *portname) const
     return node1->addVector(vector);
 }
 
+NAMESPACE_END

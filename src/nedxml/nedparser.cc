@@ -30,7 +30,7 @@
 
 #include "nedyydefs.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 #define MAGIC_PREFIX   "@expr@"  // note: must agree with ned2.lex
 
@@ -236,3 +236,4 @@ void NEDParser::error(const char *msg, int line)
     errors->addError(os.str().c_str(), "%s", msg);
 }
 
+NAMESPACE_END

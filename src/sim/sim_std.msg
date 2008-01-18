@@ -22,7 +22,7 @@
 
 cplusplus
 {{
-
+USING_NAMESPACE
 //
 // Register enums from the sim. kernel
 //

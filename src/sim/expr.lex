@@ -46,6 +46,8 @@ S  [ \t\v\n\r\f]
 #include "cexception.h"
 #include "expr.tab.h"
 
+using OPP::opp_strdup;
+
 #define yylval expryylval
 extern YYSTYPE yylval;
 
@@ -224,5 +226,4 @@ void extendCount()
 {
     _count(false);
 }
-
 

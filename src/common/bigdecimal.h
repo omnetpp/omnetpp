@@ -236,42 +236,44 @@ inline std::ostream& operator<<(std::ostream& os, const BigDecimal& x)
     return os << BigDecimal::ttoa(buf, x, endp);
 }
 
+NAMESPACE_END
+
 /**
  * BigDecimal version of floor(double) from math.h.
  */
-inline const BigDecimal floor(const BigDecimal& x)
+inline const OPP::BigDecimal floor(const OPP::BigDecimal& x)
 {
-    return BigDecimal(floor(x.dbl()));
+    return OPP::BigDecimal(floor(x.dbl()));
 }
 
 /**
  * BigDecimal version of ceil(double) from math.h.
  */
-inline const BigDecimal ceil(const BigDecimal& x)
+inline const OPP::BigDecimal ceil(const OPP::BigDecimal& x)
 {
-    return BigDecimal(ceil(x.dbl()));
+    return OPP::BigDecimal(ceil(x.dbl()));
 }
 
 /**
  * BigDecimal version of fabs(double) from math.h.
  */
-inline const BigDecimal fabs(const BigDecimal& x)
+inline const OPP::BigDecimal fabs(const OPP::BigDecimal& x)
 {
-    return x.getIntValue()<0 ? BigDecimal(x).setIntValue(-x.getIntValue()) : x;
+    return x.getIntValue()<0 ? OPP::BigDecimal(x).setIntValue(-x.getIntValue()) : x;
 }
 
 /**
  * BigDecimal version of fmod(double,double) from math.h.
  */
-inline const BigDecimal fmod(const BigDecimal& x, const BigDecimal& y)
+inline const OPP::BigDecimal fmod(const OPP::BigDecimal& x, const OPP::BigDecimal& y)
 {
-    return BigDecimal(fmod(x.dbl(), y.dbl()));
+    return OPP::BigDecimal(fmod(x.dbl(), y.dbl()));
 }
 
 /**
  * Returns the greater of the two arguments.
  */
-inline const BigDecimal max(const BigDecimal& x, const BigDecimal& y)
+inline const OPP::BigDecimal max(const OPP::BigDecimal& x, const OPP::BigDecimal& y)
 {
     return x > y ? x : y;
 }
@@ -279,13 +281,11 @@ inline const BigDecimal max(const BigDecimal& x, const BigDecimal& y)
 /**
  * Returns the smaller of the two arguments.
  */
-inline const BigDecimal min(const BigDecimal& x, const BigDecimal& y)
+inline const OPP::BigDecimal min(const OPP::BigDecimal& x, const OPP::BigDecimal& y)
 {
     return x < y ? x : y;
 }
 
-
-NAMESPACE_END
-
-
 #endif
+
+

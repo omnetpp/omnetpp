@@ -22,8 +22,7 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 // this global var is shared by all lexers
 LineColumn pos, prevpos;
@@ -468,5 +467,6 @@ NEDElement *unaryMinus(NEDElement *node)
     return node;
 }
 
+NAMESPACE_END
 
 

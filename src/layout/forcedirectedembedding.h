@@ -22,6 +22,8 @@
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"
 
+NAMESPACE_BEGIN
+
 class LAYOUT_API ForceDirectedEmbedding
 {
     protected:
@@ -389,5 +391,7 @@ class LAYOUT_API ForceDirectedEmbedding
             return (double)ticks / CLOCKS_PER_SEC * 1000;
         }
 };
+
+NAMESPACE_END
 
 #endif

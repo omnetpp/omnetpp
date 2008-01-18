@@ -28,8 +28,7 @@
 #include "stringtokenizer.h"
 #include "exception.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
@@ -217,4 +216,6 @@ PushDir::~PushDir()
             throw opp_runtime_error("cannot change back to directory `%s'", olddir.c_str());
     }
 }
+
+NAMESPACE_END
 

@@ -21,7 +21,7 @@
 #include "stringutil.h"
 #include "nederror.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 using std::ostream;
 
@@ -1192,4 +1192,4 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
     }
 }
 
-
+NAMESPACE_END

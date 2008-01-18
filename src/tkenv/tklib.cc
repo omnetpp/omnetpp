@@ -27,8 +27,7 @@
 #include "tklib.h"
 #include "tkapp.h"
 
-USING_NAMESPACE
-
+NAMESPACE_BEGIN
 
 int exit_omnetpp;
 extern "C" int Tkpng_Init(Tcl_Interp *interp);
@@ -120,4 +119,6 @@ int runTk( Tcl_Interp *)
 
     return TCL_OK;
 }
+
+NAMESPACE_END
 

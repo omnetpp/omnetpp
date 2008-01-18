@@ -30,8 +30,9 @@
 #include "ccommbuffer.h"
 #endif
 
-using std::ostream;
+NAMESPACE_BEGIN
 
+using std::ostream;
 
 bool cStaticFlag::staticflag;
 
@@ -41,7 +42,6 @@ Register_Class(cOwnedObject);
 #ifdef DEVELOPER_DEBUG
 #include <set>
 
-USING_NAMESPACE
 std::set<cOwnedObject*> objectlist;
 void printAllObjects()
 {
@@ -242,4 +242,4 @@ ostream& operator<< (ostream& os, const cOwnedObject& o)
     return os << "(" << o.className() << ")" << o.fullName();
 }
 
-
+NAMESPACE_END

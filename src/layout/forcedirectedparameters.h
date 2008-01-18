@@ -20,6 +20,8 @@
 #include "forcedirectedparametersbase.h"
 #include "forcedirectedembedding.h"
 
+NAMESPACE_BEGIN
+
 inline double signum(double val) {
     return val < 0 ? -1 : val == 0 ? 0 : 1;
 }
@@ -815,5 +817,8 @@ class CircleConstraint : public BodyConstraint {
             return "CircleConstraint";
         }
 };
+
+NAMESPACE_END
+
 
 #endif

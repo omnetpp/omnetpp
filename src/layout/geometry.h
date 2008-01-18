@@ -21,6 +21,8 @@
 #include "commonutil.h"
 #include "exception.h"
 
+NAMESPACE_BEGIN
+
 
 extern LAYOUT_API double NaN;
 extern LAYOUT_API double POSITIVE_INFINITY;
@@ -636,5 +638,8 @@ class Cc {
             return Pt(origin.x + radius, origin.y, origin.z);
         }
 };
+
+NAMESPACE_END
+
 
 #endif

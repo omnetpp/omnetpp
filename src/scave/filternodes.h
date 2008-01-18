@@ -361,12 +361,6 @@ class SCAVE_API MeanNodeType : public FilterNodeType
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
 };
 
-NAMESPACE_END
-
-
-#endif
-
-
 //----
 
 /**
@@ -518,4 +512,8 @@ class SCAVE_API DivideByTimeNodeType : public FilterNodeType
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
 };
+
+NAMESPACE_END
+
+#endif
 
