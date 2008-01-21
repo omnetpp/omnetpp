@@ -93,14 +93,14 @@ class SIM_API cNEDDeclarationBase : public cNamedObject, noncopyable
     virtual cProperties *subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const = 0;
 
     /**
-     * Returns the properties of a parameter of a submodule or a contained channel
+     * Returns the properties of a parameter of a submodule or a contained channel.
      * (Subcomponent type is needed because with the NED "like" syntax,
      * we need the runtime type not the NED type of the submodule.)
      */
     virtual cProperties *subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const = 0;
 
     /**
-     * Returns the properties of a submodule gate
+     * Returns the properties of a submodule gate.
      * (Subcomponent type is needed because with the NED "like" syntax,
      * we need the runtime type not the NED type of the submodule.)
      */
