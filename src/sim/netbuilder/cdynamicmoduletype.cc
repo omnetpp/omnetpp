@@ -44,7 +44,9 @@ std::string cDynamicModuleType::detailedInfo() const
 
 cNEDDeclaration *cDynamicModuleType::getDecl() const
 {
-    cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(name());
+    // do store the pointer, because the declaration object
+    // may have been thrown NEDLoader to conserve memory
+    cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(fullName());
     //FIXME assert that it's a module decl
     return decl;
 }

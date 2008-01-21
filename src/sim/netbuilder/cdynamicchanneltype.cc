@@ -32,7 +32,9 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 
 cNEDDeclaration *cDynamicChannelType::getDecl() const
 {
-    cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(name());
+    // do store the pointer, because the declaration object
+    // may have been thrown NEDLoader to conserve memory
+    cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(fullName());
     //FIXME assert that it's a channel decl
     return decl;
 }

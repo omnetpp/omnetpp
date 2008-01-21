@@ -31,14 +31,19 @@ class cProperties;
 //FIXME is it necessary at all to have separate cModuleType and cChannelType classes???
 
 /**
- * Common base class for cModuleType and cChannelType
+ * Common base class for cModuleType and cChannelType.
+ *
+ * The name() method returns the unqualified name (without namespace, e.g.
+ * "Queue"), and fullName() returns the qualified name (with namespace,
+ * e.g. "inet.network.Queue").
  *
  * @ingroup FIXME
  */
 class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
   protected:
-    std::string desc;
+    std::string qualifiedName;
+    std::string desc;  //FIXME should be removed (delegate getter to NED decl!)
     cParValueCache parvaluecache;
     cParValueCache2 parvaluecache2;
   public:
@@ -59,6 +64,12 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 
     /** @name Redefined cObject member functions. */
     //@{
+    /**
+     * Returns the fully qualified name (i.e. the simple name prefixed
+     * with the package name and any existing enclosing NED type names).
+     */
+    virtual const char *fullName() const  {return qualifiedName.c_str();}
+
     /**
      * Produces a one-line description of object contents.
      * See cObject for more details.
@@ -159,7 +170,7 @@ class SIM_API cModuleType : public cComponentType
     /**
      * Constructor.
      */
-    cModuleType(const char *name=NULL, const char *description=NULL);
+    cModuleType(const char *qname=NULL, const char *description=NULL);
     //@}
 
     /** @name Misc */
@@ -176,8 +187,8 @@ class SIM_API cModuleType : public cComponentType
     /**
      * Creates a module which is not element of a module vector.
      * In addition to creating an object of the correct type,
-     * this function inserts it into cSimulation's module vector and adds the
-     * parameters and gates specified in the interface description.
+     * this function inserts the module into the simulation's data structure,
+     * and adds the parameters and gates specified in the NED declaration.
      */
     virtual cModule *create(const char *name, cModule *parentmod);
 
@@ -250,7 +261,7 @@ class SIM_API cChannelType : public cComponentType
     /**
      * Constructor.
      */
-    cChannelType(const char *name=NULL, const char *description=NULL);
+    cChannelType(const char *qname=NULL, const char *description=NULL);
 
     /** @name Channel object creation */
     //@{

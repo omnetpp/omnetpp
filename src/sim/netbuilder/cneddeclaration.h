@@ -61,6 +61,8 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
     typedef std::vector<std::string> StringVector;
     typedef std::map<std::string,int> StringToIntMap;
 
+    std::string qualifiedName;
+
     // inheritance
     StringVector extendsnames;
     StringVector interfacenames;
@@ -99,9 +101,9 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
     /** @name Constructors, destructor, assignment */
     //@{
     /**
-     * Constructor.
+     * Constructor. It takes the fully qualified name.
      */
-    cNEDDeclaration(const char *name, NEDElement *tree);
+    cNEDDeclaration(const char *qname, NEDElement *tree);
 
     /**
      * Destructor.
@@ -111,6 +113,13 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
 
     /** @name Redefined cObject member functions */
     //@{
+
+    /**
+     * Returns the fully qualified name (i.e. the simple name prefixed
+     * with the package name and any existing enclosing NED type names).
+     */
+    virtual const char *fullName() const  {return qualifiedName.c_str();}
+
     /**
      * Produces a one-line description of object contents.
      */

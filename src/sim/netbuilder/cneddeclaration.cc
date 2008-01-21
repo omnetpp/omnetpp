@@ -27,11 +27,15 @@
 USING_NAMESPACE
 
 
-cNEDDeclaration::cNEDDeclaration(const char *name, NEDElement *tree) :
-cNEDDeclarationBase(name), NEDComponent(tree)
+cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDComponent(tree)
 {
-    ASSERT(name && name[0]);
+    ASSERT(qname && qname[0]);
     ASSERT(tree);
+
+    // store fully qualified name, and set name to simple (unqualified) name
+    qualifiedName = qname;
+    const char *lastDot = strrchr(qname, '.');
+    setName(!lastDot ? qname : lastDot + 1);
 
     props = NULL;
 
@@ -47,7 +51,7 @@ cNEDDeclarationBase(name), NEDComponent(tree)
     if (numExtendsNames()!=0)
         implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
     else if (tree->getTagCode()==NED_SIMPLE_MODULE || tree->getTagCode()==NED_CHANNEL)
-        implClassName = name;
+        implClassName = name();  //FIXME not good: honor @class(), package etc!
 }
 
 cNEDDeclaration::~cNEDDeclaration()

@@ -35,27 +35,21 @@ class cProperties;
  * Represents NED declarations of modules, module interfaces,
  * channels and channel interfaces.
  *
+ * The name() method returns the unqualified name (without namespace, e.g.
+ * "Queue"), and fullName() returns the qualified name (with namespace,
+ * e.g. "inet.network.Queue").
+ *
  * This is a passive, data-only class.
  *
  * @ingroup FIXME
  */
+//FIXME rename to cAbstractNEDDeclaration
 class SIM_API cNEDDeclarationBase : public cNamedObject, noncopyable
 {
+  protected:
+    std::string fullname;
+
   public:
-    /** @name Constructors, destructor, assignment */
-    //@{
-
-    /**
-     * Constructor. Takes the fully qualified name.
-     */
-    cNEDDeclarationBase(const char *qname) : cNamedObject(qname) {}
-
-    /**
-     * Destructor.
-     */
-    virtual ~cNEDDeclarationBase() {}
-    //@}
-
     /**
      * NED declaration as text, if available
      */

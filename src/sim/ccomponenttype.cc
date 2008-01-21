@@ -30,6 +30,11 @@ USING_NAMESPACE
 
 cComponentType::cComponentType(const char *qname, const char *description) : cNoncopyableOwnedObject(qname,false)
 {
+    // store fully qualified name, and set name to simple (unqualified) name
+    qualifiedName = qname;
+    const char *lastDot = strrchr(qname, '.');
+    setName(!lastDot ? qname : lastDot + 1);
+
     setDescription(description);
 }
 

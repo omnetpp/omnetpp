@@ -77,9 +77,10 @@ class SIM_API ExecuteOnStartup
 
 /**
  * Stores objects with a qualified name: namespace + name. Namespaces may be
- * nested, the namespace element separator is "::". The name() method of
- * objects should return the unqualified name (without namespace, e.g. "Queue"),
- * and the fullName() method the qualified name (with namespace, e.g. "INET::Queue").
+ * nested, the namespace element separator is ".". The name() method of objects
+ * should return the unqualified name (without namespace, e.g. "Queue"), and
+ * the fullName() method the qualified name (with namespace, e.g.
+ * "inet.network.Queue").
  */
 //XXX better name
 //XXX why are those objects cOwnedObjects? cNamedObject not enough?
