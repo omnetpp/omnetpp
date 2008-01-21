@@ -136,7 +136,7 @@ cOwnedObject *cSymTable::lookup(const char *name, const char *contextNamespace)
     // try the lookup cache
     std::string namespacePrefix = contextNamespace;
     if (!namespacePrefix.empty())
-        namespacePrefix += "::";
+        namespacePrefix += ".";
     LookupCache::iterator it = lookupCache.find(namespacePrefix+name);
     if (it!=lookupCache.end())
         return it->second;
@@ -155,12 +155,12 @@ cOwnedObject *cSymTable::lookup(const char *name, const char *contextNamespace)
             break;
 
         // discard last namespace element
-        namespacePrefix.resize(namespacePrefix.length()-2); // chop "::"
-        size_t k = namespacePrefix.rfind("::", namespacePrefix.length());
+        namespacePrefix.resize(namespacePrefix.length()-1); // chop "."
+        size_t k = namespacePrefix.rfind(".", namespacePrefix.length());
         if (k==std::string::npos)
             namespacePrefix.clear();
         else
-            namespacePrefix.resize(k+2);
+            namespacePrefix.resize(k+1);
     }
     return NULL;
 }

@@ -43,7 +43,12 @@ bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
 
     files[key] = node;
 
-    collectComponents(node, "");
+    PackageNode *packageDecl = (PackageNode *) node->getFirstChildWithTag(NED_PACKAGE);
+    std::string packagePrefix = packageDecl ? packageDecl->getName() : "";
+    if (!packagePrefix.empty())
+    	packagePrefix += ".";
+    
+    collectComponents(node, packagePrefix);
     return true;
 }
 
