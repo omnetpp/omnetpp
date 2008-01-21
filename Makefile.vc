@@ -48,7 +48,7 @@ allmodes:
 	$(MAKE) $(MOPTS) $(MAKEFILE) MODE=debug
 	$(MAKE) $(MOPTS) $(MAKEFILE) MODE=release
 
-components: base jnilibs samples
+components: base samples
 
 
 #=====================================================================
@@ -66,7 +66,7 @@ JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
 # Group targets.
 #
 base: $(BASE)
-jnilibs : $(JNILIBS) base
+ui : base $(JNILIBS)
 samples: $(SAMPLES)
 
 # dependencies (because of ver.h, tcl2c, opp_msgc, etc)
