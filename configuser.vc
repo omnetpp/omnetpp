@@ -13,7 +13,7 @@
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=C:/Work/Projects/omnest/omnetpp4/omnetpp
+#OMNETPP_ROOT=C:/Work/Projects/omnest/omnetpp4/omnetpp
 OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 
 # Version. Should ideally come from the 'Version' file but nmake doesn't support that
