@@ -42,7 +42,7 @@ CFLAGS_RELEASE='-O2 -DNDEBUG=1'
 # self-contained standalone executables which do not rely on external
 # Tcl scripts. This option is available for Tkenv.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # Set to "yes" to enable simulation executables load NED files dynamically.
@@ -79,8 +79,8 @@ WITH_PARSIM=no
 # case add -lX11 to TK_LIBS.
 #
 # With MinGW I use the following:
-TK_CFLAGS="-I/c/tools/Tcl-8.4.5/include"
-TK_LIBS="-L/c/tools/Tcl-8.4.5/lib -ltk84 -ltcl84"
+# TK_CFLAGS="-I/c/tools/Tcl-8.4.5/include"
+# TK_LIBS="-L/c/tools/Tcl-8.4.5/lib -ltk84 -ltcl84"
 # With Cygwin, you can try:
 #  TK_CFLAGS=
 #  TK_LIBS="-ltk84 -ltcl84"
@@ -105,8 +105,9 @@ TK_LIBS="-L/c/tools/Tcl-8.4.5/lib -ltk84 -ltcl84"
 #
 # ZLib is a compression library needed by libxml2 and Tkenv's png support.
 #
-ZLIB_CFLAGS=-IC:/Tools/zlib-1.2.3.mingw/include
-ZLIB_LIBS="-LC:/Tools/zlib-1.2.3.mingw/lib -lz"
+# On MinGW we use the following
+#ZLIB_CFLAGS=-IC:/Tools/zlib-1.2.3.mingw/include
+#ZLIB_LIBS="-LC:/Tools/zlib-1.2.3.mingw/lib -lz"
 
 #
 # Compiler flags used to compile JNI code.
@@ -180,7 +181,9 @@ NEDC="$OMNETPP_BIN_DIR/nedtool"
 #
 # Override the following setting if you have additional icons somewhere else.
 #
-#OMNETPP_IMAGE_PATH="./images;./bitmaps;$OMNETPP_ROOT/images"
+# OMNETPP_IMAGE_PATH="./images;./bitmaps;$OMNETPP_ROOT/images"
 
-JDK=/c/Tools/jdk1.6.0 
-SWIG=/c/Tools/swigwin-1.3.31
+#
+# On MinGW we use the following
+# JDK=/c/Tools/jdk1.6.0 
+# SWIG=/c/Tools/swigwin-1.3.31
