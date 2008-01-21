@@ -6,6 +6,8 @@
 
 #FIXME: make use of "default value" column!!
 
+$verbose = 0;
+
 open(FILE, "../eventlog/eventlogentries.txt");
 
 
@@ -28,11 +30,11 @@ while (<FILE>)
       $classCode = $1;
       $className = $2;
       $classHasOptField = 0;
-      print "$classCode $className\n";
+      print "$classCode $className\n" if ($verbose);
    }
    elsif ($_ =~ /^ *{ *$/)
    {
-      print "{\n";
+      print "{\n" if ($verbose);
    }
    elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +([^ ]+))? *(\/\/ *([\w-+ ]+))?$/)
    {
@@ -78,7 +80,7 @@ while (<FILE>)
       };
 
       push(@fields, $field);
-      print " $fieldCode $fieldType $fieldName $fieldDefault\n";
+      print " $fieldCode $fieldType $fieldName $fieldDefault\n" if ($verbose);
    }
    elsif ($_ =~ /^ *} *$/)
    {
@@ -90,7 +92,7 @@ while (<FILE>)
       };
       push(@classes, $class);
       @fields = ();
-      print "}\n";
+      print "}\n" if ($verbose);
    }
    else
    {

@@ -136,7 +136,6 @@ check-env:
 	fi
 
 clean:
-	-rm -f $(OMNETPP_BIN_DIR)/*
 	-rm -f $(OMNETPP_LIB_DIR)/*.*
 	-rm -rf $(OMNETPP_OUT_DIR)/$(CONFIGNAME)
 	-rm -rf $(OMNETPP_LIB_DIR)/$(CONFIGNAME)
@@ -147,6 +146,8 @@ clean:
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
 	done
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
+	# bin should be removed last because opp_configfilepath (in bin directory) is needed to clean
+	-rm -f $(OMNETPP_BIN_DIR)/*
 
 cleanall: clean
 	-rm -rf $(OMNETPP_BIN_DIR)/*

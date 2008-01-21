@@ -1,7 +1,7 @@
 # Tkenv configuration
 option updatefreq_fast	{500}
 option updatefreq_express	{10000}
-option stepdelay	{295 ms}
+option stepdelay	{293 ms}
 option use_mainwindow	{1}
 option print_banners	{1}
 option animation_enabled	{1}
@@ -36,7 +36,7 @@ config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{C:/home/omnetpp40/omnetpp/samples/aloha/omnetpp.out}
 config logwindow-scrollbacklines	{}
-config mainwin-geom	{664x374+220+199}
+config mainwin-geom	{664x374+476+182}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Fast (rare updates)}

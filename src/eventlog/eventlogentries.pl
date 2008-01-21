@@ -8,6 +8,8 @@
 #    unrecognized field names and missing mandatory fields in the trace file!
 # FIXME ctors should use default value from the eventlogentries.txt file; also parse() and print() methods
 
+$verbose = 0;
+
 open(FILE, "eventlogentries.txt");
 
 
@@ -31,7 +33,7 @@ while (<FILE>)
       $className = $2;
       $classComment = $4;
       $classHasOptField = 0;
-      print "$classCode $className\n";
+      print "$classCode $className\n" if ($verbose);
       foreach $class (@classes)
       {
          if ($classCode eq $class->{CODE})
@@ -42,7 +44,7 @@ while (<FILE>)
    }
    elsif ($_ =~ /^ *{ *$/)
    {
-      print "{\n";
+      print "{\n" if ($verbose);
    }
    elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +([^ ]+))? *(\/\/ *([\w-+ ]+))?$/)
    {
@@ -96,7 +98,7 @@ while (<FILE>)
       };
 
       push(@fields, $field);
-      print " $fieldCode $fieldType $fieldName $fieldDefault\n";
+      print " $fieldCode $fieldType $fieldName $fieldDefault\n" if ($verbose);
    }
    elsif ($_ =~ /^ *} *$/)
    {
@@ -109,7 +111,7 @@ while (<FILE>)
       };
       push(@classes, $class);
       @fields = ();
-      print "}\n";
+      print "}\n" if ($verbose);
    }
    else
    {

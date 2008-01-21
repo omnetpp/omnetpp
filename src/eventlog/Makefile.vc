@@ -47,7 +47,7 @@ COPTS= $(COPTS) -DEVENTLOG_EXPORT
 all : eventlogentries.cc $O/$(LIBNAME)$(LIB_SUFFIX) $O/eventlogtool.exe
 
 eventlogentries.cc eventlogentries.h eventlogfactory.cc : eventlogentries.txt eventlogentries.pl
-	$(PERL) eventlogentries.pl
+	$(PERL) eventlogentries.pl >nul
 
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
