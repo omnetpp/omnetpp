@@ -24,7 +24,7 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../common -I../envir -DBUILDING_CMDENV
 
-IMPLIBS= -L$L -lsim_std$D -lenvir$D
+IMPLIBS= -L$L -lsim_std$D -lenvir$D -lcommon$D
 
 OBJS = $O/cmdenv.o
 
@@ -41,7 +41,7 @@ $O/%.o: %.cc
 # Targets
 #
 all: $L/$(LIBNAME)$(LIB_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)$(LIB_SUFFIX)* .
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	mkdir -p $L
@@ -78,16 +78,16 @@ $O/cmdenv.o: cmdenv.cc \
   ../envir/args.h \
   ../envir/speedometer.h \
   ../../include/cconfigkey.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
   ../../include/csimulation.h \
   ../envir/omnetapp.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/carray.h \

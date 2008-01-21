@@ -14,6 +14,11 @@
 !error OMNETPP_LIB_DIR must be correctly set
 !endif
 
+# Make sure that we are linking statically
+!if "$(LIB_SUFFIX)"!=".lib"
+!error UI library is supported only with statical linkig. Please set LIB_SUFFIX to ".lib" in configuser.vc
+!endif
+
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/ui
 

@@ -92,6 +92,5 @@ class NEDXML_API NEDDTDValidator : public NEDDTDValidatorBase
 
 NAMESPACE_END
 
-
 #endif
 

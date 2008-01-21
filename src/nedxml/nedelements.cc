@@ -21,7 +21,7 @@
 #include "nederror.h"
 #include "nedelements.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 static const char *gatetype_vals[] = {"", "input", "output", "inout"};
 static int gatetype_nums[] = {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};
@@ -4060,4 +4060,6 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
     }
     throw NEDException("unknown tag code %d, cannot create object to represent it", tagcode);
 }
+
+NAMESPACE_END
 

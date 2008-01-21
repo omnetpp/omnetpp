@@ -43,6 +43,7 @@ OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogress
 LIBS=-L$L -lnedxml$D -lscave$D -llayout$D -leventlog$D -lcommon$D
 
 DLL = libopplibs$(SO_LIB_SUFFIX)
+# FIXME thsi should correctly set the platform (i.e support x86_64 too) and MacOSX
 DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.linux.x86
 
 #

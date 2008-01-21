@@ -44,7 +44,7 @@ $O/%.o: %.cc
 # Targets
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/opp_run$(EXE_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)$(LIB_SUFFIX)* .
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
@@ -65,9 +65,12 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS) envir-implib
 
 envir-implib : $(OBJS)
 	@mkdir -p $L
-	-$(SHLIB_LD) $(OBJS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX) 2>/dev/null
+	-$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX) 2>/dev/null
 # this line would generate an implib without trying to create the DLL, but apparently it does not create a correct lib
-#	$(DLLTOOL) --output-lib $O/$(LIBNAME)$(A_LIB_SUFFIX) --dllname $(LIBNAME)$(DLL_LIB_SUFFIX) -k $(OBJS)
+#	$(DLLTOOL) -z $O/$(LIBNAME).def -D $(LIBNAME)$(DLL_LIB_SUFFIX) -e $O/$(LIBNAME).exp --export-all-symbols $(OBJS)
+#	$(DLLTOOL) -l $O/$(LIBNAME)$(A_LIB_SUFFIX) -d $O/$(LIBNAME).def -enable-auto-import
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)* .
 
 eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogentries.pl
@@ -75,7 +78,7 @@ eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentr
 $O/omnetapp.o: eventlogwriter.h
 
 $O/opp_run$(EXE_SUFFIX) : $O/opp_run.o $O/$(LIBNAME)$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o $O/$(LIBNAME)$(LIB_SUFFIX) $(IMPLIBS)
+	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o $(IMPLIBS) -lenvir$D
 	cp $O/opp_run$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 
 $O/opp_run.o : opp_run.cc
@@ -149,11 +152,7 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   filemgrs.h
 $O/args.o: args.cc \
   args.h \
-  envdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h
+  envdefs.h
 $O/cenvir.o: cenvir.cc \
   args.h \
   ../../include/distrib.h \
@@ -172,10 +171,10 @@ $O/cenvir.o: cenvir.cc \
   matchableobject.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
+  ../../include/random.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/random.h \
   ../../include/csimulation.h \
   ../../include/crng.h \
   ../../include/util.h \
@@ -220,6 +219,17 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
+$O/eventlogwriter.o: eventlogwriter.cc \
+  eventlogwriter.h \
+  envdefs.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h
 $O/filemgrs.o: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -286,12 +296,12 @@ $O/inifilereader.o: inifilereader.cc \
   ../../include/cexception.h \
   envdefs.h \
   ../../include/cconfigreader.h \
+  ../../include/util.h \
   ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/util.h \
-  ../../include/errmsg.h \
   ../../include/opp_string.h
 $O/ivfilemgr.o: ivfilemgr.cc \
   ../../include/simkerneldefs.h \
@@ -404,6 +414,7 @@ $O/omnetapp.o: omnetapp.cc \
   omnetapp.h \
   appreg.h \
   fsutils.h \
+  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
@@ -424,10 +435,6 @@ $O/omnetapp.o: omnetapp.cc \
   ../../include/cparsimcomm.h \
   objectprinter.h \
   envdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -435,8 +442,12 @@ $O/omnetapp.o: omnetapp.cc \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -455,6 +466,15 @@ $O/omnetapp.o: omnetapp.cc \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   matchableobject.h
+$O/opp_run.o: opp_run.cc \
+  ../../include/cenvir.h \
+  ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/errmsg.h
 $O/scenario.o: scenario.cc \
   scenario.h \
   valueiterator.h \
@@ -512,9 +532,9 @@ $O/valueiterator.o: valueiterator.cc \
   ../../include/cexception.h \
   envdefs.h \
   ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
   ../../include/util.h

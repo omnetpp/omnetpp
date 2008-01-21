@@ -2632,6 +2632,5 @@ class NEDXML_API NEDElementFactory
 
 NAMESPACE_END
 
-
 #endif
 

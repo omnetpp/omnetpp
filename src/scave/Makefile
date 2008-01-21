@@ -50,7 +50,7 @@ $O/%.o: %.cc
 # Targets
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)$(LIB_SUFFIX)* .
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX): $(OBJS)
 	@mkdir -p $L
@@ -94,7 +94,9 @@ $O/arraybuilder.o: arraybuilder.cc \
   commonnodes.h \
   xyarray.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/channel.o: channel.cc \
   channel.h \
   ../common/commonutil.h \
@@ -108,12 +110,14 @@ $O/commonnodes.o: commonnodes.cc \
   channel.h \
   node.h \
   nodetype.h \
+  ../common/filereader.h \
   scavedefs.h \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h \
-  dataflowmanager.h
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/compoundfilter.o: compoundfilter.cc \
   ../common/commonutil.h \
   compoundfilter.h \
@@ -125,9 +129,11 @@ $O/compoundfilter.o: compoundfilter.cc \
   commonnodes.h \
   dataflowmanager.h \
   node.h \
+  ../common/progressmonitor.h \
   channel.h \
   scavedefs.h \
-  ../common/bigdecimal.h
+  ../common/bigdecimal.h \
+  ../common/filereader.h
 $O/customfilter.o: customfilter.cc \
   channel.h \
   customfilter.h \
@@ -141,18 +147,23 @@ $O/customfilter.o: customfilter.cc \
   commonnodes.h \
   ../common/expression.h \
   nodetype.h \
+  ../common/filereader.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   ../common/stringutil.h
 $O/dataflowmanager.o: dataflowmanager.cc \
   channel.h \
   nodetype.h \
+  commonnodes.h \
   dataflowmanager.h \
   ../common/commonutil.h \
   node.h \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \
-  ../common/bigdecimal.h
+  ../common/bigdecimal.h \
+  ../common/filereader.h \
+  ../common/progressmonitor.h
 $O/datasorter.o: datasorter.cc \
   resultfilemanager.h \
   ../common/commonutil.h \
@@ -179,7 +190,9 @@ $O/diffquot.o: diffquot.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/enumtype.o: enumtype.cc \
   ../common/stringtokenizer.h \
   scaveutils.h \
@@ -231,7 +244,9 @@ $O/filewriter.o: filewriter.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/filternodes.o: filternodes.cc \
   channel.h \
   filternodes.h \
@@ -244,7 +259,9 @@ $O/filternodes.o: filternodes.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/idlist.o: idlist.cc \
   idlist.h \
   resultfilemanager.h \
@@ -275,6 +292,7 @@ $O/indexedvectorfile.o: indexedvectorfile.cc \
   resultfilemanager.h \
   statistics.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h
 $O/indexedvectorfilereader.o: indexedvectorfilereader.cc \
@@ -290,10 +308,12 @@ $O/indexedvectorfilereader.o: indexedvectorfilereader.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   nodetype.h \
+  commonnodes.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   resultfilemanager.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h \
   statistics.h \
@@ -322,7 +342,9 @@ $O/mergernodes.o: mergernodes.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/nodetype.o: nodetype.cc \
   ../common/commonutil.h \
   nodetype.h \
@@ -330,6 +352,7 @@ $O/nodetype.o: nodetype.cc \
   ../common/exception.h \
   dataflowmanager.h \
   node.h \
+  ../common/progressmonitor.h \
   channel.h \
   scavedefs.h \
   ../common/bigdecimal.h
@@ -359,6 +382,7 @@ $O/nodetyperegistry.o: nodetyperegistry.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   channel.h \
   commonnodes.h \
   xyarray.h \
@@ -428,10 +452,11 @@ $O/scavetool.o: scavetool.cc \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   node.h \
+  ../common/progressmonitor.h \
   channel.h \
+  commonnodes.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
-  commonnodes.h \
   xyarray.h \
   datasorter.h \
   ../common/patternmatcher.h \
@@ -453,7 +478,9 @@ $O/slidingwinavg.o: slidingwinavg.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/stddev.o: stddev.cc \
   channel.h \
   stddev.h \
@@ -466,7 +493,9 @@ $O/stddev.o: stddev.cc \
   commonnodes.h \
   xyarray.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/teenode.o: teenode.cc \
   channel.h \
   teenode.h \
@@ -478,7 +507,9 @@ $O/teenode.o: teenode.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/vectorfileindexer.o: vectorfileindexer.cc \
   ../common/opp_ctype.h \
   ../common/stringutil.h \
@@ -495,6 +526,7 @@ $O/vectorfileindexer.o: vectorfileindexer.cc \
   ../common/bigdecimal.h \
   statistics.h \
   resultfilemanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h
 $O/vectorfilereader.o: vectorfilereader.cc \
@@ -510,10 +542,12 @@ $O/vectorfilereader.o: vectorfilereader.cc \
   scavedefs.h \
   ../common/bigdecimal.h \
   nodetype.h \
+  commonnodes.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
   resultfilemanager.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h \
   statistics.h
@@ -530,6 +564,7 @@ $O/vectorfilewriter.o: vectorfilewriter.cc \
   nodetype.h \
   resultfilemanager.h \
   dataflowmanager.h \
+  ../common/progressmonitor.h \
   idlist.h \
   enumtype.h \
   statistics.h \
@@ -545,7 +580,9 @@ $O/windowavg.o: windowavg.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h
 $O/xyarray.o: xyarray.cc \
   xyarray.h \
   scavedefs.h \
@@ -563,4 +600,6 @@ $O/xyplotnode.o: xyplotnode.cc \
   ../common/bigdecimal.h \
   commonnodes.h \
   nodetype.h \
-  dataflowmanager.h
+  ../common/filereader.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h

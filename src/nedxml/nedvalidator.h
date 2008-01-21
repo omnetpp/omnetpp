@@ -101,6 +101,5 @@ class NEDXML_API NEDValidatorBase
 
 NAMESPACE_END
 
-
 #endif
 

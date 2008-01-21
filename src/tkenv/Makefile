@@ -49,7 +49,7 @@ $O/%.o: %.cc
 all: $(TKENV_IF_POSSIBLE)
 
 tkenv : $L/$(LIBNAME)$(LIB_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)$(LIB_SUFFIX)* .
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
@@ -181,7 +181,6 @@ $O/inspector.o: inspector.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
   ../../include/util.h \
@@ -276,7 +275,6 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
   ../../include/util.h \
@@ -484,7 +482,6 @@ $O/objinsp.o: objinsp.cc \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
-  ../../include/protocol.h \
   ../../include/random.h \
   ../../include/regmacros.h \
   ../../include/util.h \
@@ -546,6 +543,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cconfiguration.h \
   inspector.h \
   tkutil.h
+$O/tclcode.o: tclcode.cc
 $O/tkapp.o: tkapp.cc \
   ../envir/appreg.h \
   ../../include/cenvir.h \
@@ -564,6 +562,7 @@ $O/tkapp.o: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
+  tclcode.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -672,10 +671,6 @@ $O/tklib.o: tklib.cc \
   tkapp.h \
   tkdefs.h \
   ../envir/omnetapp.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -685,8 +680,12 @@ $O/tklib.o: tklib.cc \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
+  ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -784,5 +783,6 @@ $O/visitor.o: visitor.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h
+$O/tcl2c.o: tcl2c.c
 $O/tkImgPNG.o: tkImgPNG.c
 $O/tkImgPNGInit.o: tkImgPNGInit.c

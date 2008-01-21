@@ -21,7 +21,7 @@
 #include "nederror.h"
 #include "neddtdvalidator.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 void NEDDTDValidator::validateElement(FilesNode *node)
 {
@@ -547,4 +547,6 @@ void NEDDTDValidator::validateElement(UnknownNode *node)
 
     checkRequiredAttribute(node, "element");
 }
+
+NAMESPACE_END
 

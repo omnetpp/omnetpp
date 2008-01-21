@@ -47,7 +47,7 @@ $O/%.o: %.cc
 # Targets
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)$(LIB_SUFFIX)* .
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	mkdir -p $L
@@ -104,6 +104,9 @@ $O/displaystring.o: displaystring.cc \
   opp_ctype.h \
   displaystring.h \
   commondefs.h
+$O/enumstr.o: enumstr.cc \
+  enumstr.h \
+  commondefs.h
 $O/exception.o: exception.cc \
   exception.h \
   commondefs.h
@@ -114,6 +117,14 @@ $O/expression.o: expression.cc \
   commonutil.h \
   stringutil.h \
   exception.h
+$O/expression.tab.o: expression.tab.cc \
+  expressionyydefs.h \
+  expression.h \
+  exception.h \
+  stringutil.h \
+  unitconversion.h \
+  commondefs.h \
+  commonutil.h
 $O/fileglobber.o: fileglobber.cc \
   fileglobber.h \
   commondefs.h
@@ -123,6 +134,7 @@ $O/filereader.o: filereader.cc \
   exception.h \
   commondefs.h
 $O/fileutil.o: fileutil.cc \
+  ./unistd.h \
   opp_ctype.h \
   fileutil.h \
   stringtokenizer.h \
@@ -136,6 +148,22 @@ $O/fnamelisttokenizer.o: fnamelisttokenizer.cc \
 $O/lcgrandom.o: lcgrandom.cc \
   lcgrandom.h \
   commondefs.h \
+  exception.h
+$O/lex.expressionyy.o: lex.expressionyy.cc \
+  ./unistd.h \
+  expressionyydefs.h \
+  exception.h \
+  expression.tab.h \
+  stringutil.h \
+  expression.h \
+  commondefs.h \
+  commonutil.h
+$O/lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
+  ./unistd.h \
+  stringutil.h \
+  matchexpression.tab.h \
+  commondefs.h \
+  commonutil.h \
   exception.h
 $O/linetokenizer.o: linetokenizer.cc \
   exception.h \

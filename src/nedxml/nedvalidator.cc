@@ -21,7 +21,7 @@
 #include "nederror.h"
 #include "nedvalidator.h"
 
-USING_NAMESPACE
+NAMESPACE_BEGIN
 
 void  NEDValidatorBase::validate(NEDElement *node)
 {
@@ -90,4 +90,6 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         INTERNAL_ERROR1(node,"validateElement(): NEDException: %s", e.what());
     }
 }
+
+NAMESPACE_END
 
