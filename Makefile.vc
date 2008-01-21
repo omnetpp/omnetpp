@@ -160,6 +160,7 @@ clean:
 	-cd $(OMNETPP_TEST_DIR:/=\) && $(MAKE) clean
 
 cleanall: clean
+	-del /s /q $(OMNETPP_BIN_DIR:/=\)\*.* 2>nul
 	-del /s /q $(OMNETPP_LIB_DIR:/=\)\*.* 2>nul
 	-rmdir /s /q $(OMNETPP_OUT_DIR:/=\) 2>nul
 

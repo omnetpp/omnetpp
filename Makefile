@@ -151,7 +151,7 @@ clean:
 
 cleanall: clean
 	-rm -rf $(OMNETPP_BIN_DIR)/*
-	-rm -rf $(OMNETPP_OUT_DIR)/*
+	-rm -rf $(OMNETPP_OUT_DIR)
 	-rm -rf $(OMNETPP_LIB_DIR)/*
 
 depend:

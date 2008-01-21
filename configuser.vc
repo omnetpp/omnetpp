@@ -100,7 +100,7 @@ JNILIBS_IF_POSSIBLE=jnilibs
 # This option is available at present for Tkenv.
 # Set the following variable to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # It is possible to compile Tkenv as a Windows GUI app (as opposed to
@@ -117,7 +117,7 @@ WITH_NETBUILDER=yes
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
 # WITH_PARSIM=yes
-WITH_PARSIM=no    # FIXME for now
+WITH_PARSIM=no
 
 #==============================================================================
 #======!!!         Try not to change anything below this line       !!!======
