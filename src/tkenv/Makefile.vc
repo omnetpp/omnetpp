@@ -68,19 +68,14 @@ $O/$(LIBNAME).dll : $(OBJS) $L
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
 	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-tkapp.cc : tclcode.cc
-
 $O/tkapp.obj : tkapp.cc
 	$(CXX) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Fo"$@" /Tp tkapp.cc
 
 $O/tkapp-e.obj : tkapp.cc tclcode.cc
 	$(CXX) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" $(COPTS) /c /Fo"$@" /Tp tkapp.cc
 
-tclcode.cc : $O/tcl2c.exe *.tcl
-	$(O:/=\)\tcl2c tclcode.cc *.tcl
-
-$O/tcl2c.exe: tcl2c.c $O
-	$(CXX) $(CFLAGS) tcl2c.c -o"$@"
+tclcode.cc : *.tcl
+	$(PERL) tcl2c.pl tclcode.cc *.tcl
 
 $(OBJS): $O
 
@@ -708,6 +703,5 @@ $O/visitor.obj: visitor.cc \
   ../../include/cparvalue.h \
   tkapp.h \
   tkdefs.h
-$O/tcl2c.obj: tcl2c.c
 $O/tkImgPNG.obj: tkImgPNG.c
 $O/tkImgPNGInit.obj: tkImgPNGInit.c

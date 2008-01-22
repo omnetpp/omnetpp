@@ -30,6 +30,12 @@ OBJS = $O/tkapp$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o \
        $O/inspfactory.o $O/objinsp.o $O/modinsp.o $O/statinsp.o $O/layouterenv.o \
        $O/arrow.o $O/visitor.o $O/tkutil.o $O/tkImgPNG.o $O/tkImgPNGInit.o
 
+ifeq ("$(EMBED_TCL_CODE)","yes")
+TKENV_EMBED_SUFFIX=-e
+else
+TKENV_EMBED_SUFFIX=
+endif
+
 #
 # Automatic rules
 #
@@ -68,23 +74,16 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
-tkapp.cc : tclcode.cc
-
 $O/tkapp.o : tkapp.cc
 	@mkdir -p $O
 	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc -o $O/tkapp.o
 
-$O/tkapp-e.o : tkapp.cc
+$O/tkapp-e.o : tkapp.cc tclcode.cc
 	@mkdir -p $O
 	$(CXX) -c $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc -o $O/tkapp-e.o
 
-tclcode.cc: $O/tcl2c$(EXE_SUFFIX) *.tcl
-	@mkdir -p $O
-	$O/tcl2c tclcode.cc *.tcl
-
-$O/tcl2c$(EXE_SUFFIX): tcl2c.c
-	@mkdir -p $O
-	$(CC) tcl2c.c -o $@
+tclcode.cc: *.tcl
+	$(PERL) tcl2c.pl tclcode.cc *.tcl
 
 missing-dependency:
 	@echo '  *** No Tcl/Tk installation found -- skipping Tkenv.'
@@ -781,6 +780,5 @@ $O/visitor.o: visitor.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h
-$O/tcl2c.o: tcl2c.c
 $O/tkImgPNG.o: tkImgPNG.c
 $O/tkImgPNGInit.o: tkImgPNGInit.c
