@@ -72,6 +72,8 @@ eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentr
 
 $O/omnetapp.obj: eventlogwriter.h
 
+# opp_run is useless with static libs
+!if "$(LIB_SUFFIX)"==".dll"
 $O/opp_run.exe : $O/opp_run.obj $O/$(LIBNAME)$(LIB_SUFFIX)
 	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/opp_run.obj $(O:/=\)\$(LIBNAME).lib $(IMPLIBS)
 	copy $(O:/=\)\opp_run.exe $(OMNETPP_BIN_DIR:/=\)
@@ -80,6 +82,7 @@ $O/opp_run.exe : $O/opp_run.obj $O/$(LIBNAME)$(LIB_SUFFIX)
 $O/opp_run.obj : opp_run.cc $O
 	@: Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT
 	$(CXX) $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DHAVE_DLOPEN=$(HAVE_DLOPEN) /c /Fo"$@" /Tp opp_run.cc
+!endif
 
 $(OBJS): $O
 

@@ -575,7 +575,7 @@ if test -n "$NO_TCL"; then
 TKENV_IF_POSSIBLE=missing-dependency
 
 # and build samples using Cmdenv (TBD)
-USERIF_LIBS='$(CMDENV_LIBS)'
+ALL_ENV_LIBS='$(CMDENV_LIBS)'
 
 else  #matching "fi" is after BLT testing
 
@@ -685,7 +685,7 @@ fi
 TKENV_IF_POSSIBLE=tkenv
 
 # and build samples using Tkenv
-USERIF_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS)'
+ALL_ENV_LIBS='$(TKENV_LIBS) $(CMDENV_LIBS)'
 
 fi # end of Tcl tests ($NO_TCL=="" branch)
 
@@ -914,7 +914,7 @@ AC_SUBST(AKAROA_LIBS)
 AC_SUBST(TKENV_IF_POSSIBLE)
 AC_SUBST(JNILIBS_IF_POSSIBLE)
 
-AC_SUBST(USERIF_LIBS)
+AC_SUBST(ALL_ENV_LIBS)
 AC_SUBST(TKENV_EMBED_SUFFIX)
 
 AC_SUBST(OMNETPP_TKENV_DIR)

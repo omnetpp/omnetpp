@@ -1040,7 +1040,7 @@ sub template()
 TARGET = {target}
 
 # User interface (uncomment one) (-u option)
-{~allenv?#}USERIF_LIBS = $(TKENV_LIBS) $(CMDENV_LIBS)
+{~allenv?#}USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 {~cmdenv?#}USERIF_LIBS = $(CMDENV_LIBS)
 {~tkenv?#}USERIF_LIBS = $(TKENV_LIBS)
 

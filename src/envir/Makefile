@@ -77,14 +77,17 @@ eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentr
 
 $O/omnetapp.o: eventlogwriter.h
 
+# opp_run is useless with static libs
+ifeq ("$(LIB_SUFFIX)","$(SHARED_LIB_SUFFIX)")
 $O/opp_run$(EXE_SUFFIX) : $O/opp_run.o $O/$(LIBNAME)$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o $(IMPLIBS) -lenvir$D
+	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o -lenvir$D $(IMPLIBS)
 	cp $O/opp_run$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 
 $O/opp_run.o : opp_run.cc
 	@# Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT
 	@mkdir -p $O
 	$(CXX) $(CFLAGS) -c -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -o$O/opp_run.o opp_run.cc
+endif
 
 depend:
 	$(MAKEDEPEND) -I. -I../../include -P\$$O/ -- *.cc
