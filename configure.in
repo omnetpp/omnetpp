@@ -72,32 +72,39 @@ OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
 OMNETPP_EDITION="Academic Public License"
 
 #
-#  Set system/arch specific values
+#  Figure out target platform
 #
-jdk_platform=$host_os
-case $host in
-  *-*-cygwin*)
-    cygwin=yes
-    windows=yes
-    jdk_platform=win32
-    ;;
-  *-*-mingw32*)
-    mingw=yes
-    windows=yes
-    jdk_platform=win32
-    ;;
-  *linux*)
-    jdk_platform=linux
-    ;;
-  *-hp-hpux*)
-    SO_LIB_SUFFIX=".sl"
-    ;;
-  sparc-sun-*)
-    CFLAGS_ARCH="-DSUNSPARC"
-    ;;
-  *)
-    ;;
-esac
+#FIXME too early: if configure.user sets $TARGET_PLATFORM, we'll be in trouble
+if test "$TARGET_PLATFORM" == "mingw"; then
+	mingw=yes
+	windows=yes
+	jdk_platform=win32
+else
+	jdk_platform=$host_os
+	case $host in
+	*-*-cygwin*)
+		cygwin=yes
+		windows=yes
+		jdk_platform=win32
+		;;
+	*-*-mingw32*)
+		mingw=yes
+		windows=yes
+		jdk_platform=win32
+		;;
+	*linux*)
+		jdk_platform=linux
+		;;
+	*-hp-hpux*)
+		SO_LIB_SUFFIX=".sl"
+		;;
+	sparc-sun-*)
+		CFLAGS_ARCH="-DSUNSPARC"
+		;;
+	*)
+		;;
+	esac
+fi
 
 # We'll collect in this variable the components we've detected problems with
 OPP_PROBLEM_PACKAGES=
@@ -105,13 +112,19 @@ OPP_PROBLEM_PACKAGES=
 #
 # Location of various components. They are defined here so that they can be overridden in configure.user.
 #
-OMNETPP_ROOT=`pwd`
-if test "$mingw" = yes; then
-    OMNETPP_ROOT=`pwd -W`
-fi
-if test "$cygwin" = yes; then
-    OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
-fi
+
+# determine OMNETPP_ROOT; note that 'case' branches on *host* platform not the target platform
+case $host in
+*-*-cygwin*)
+   	OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
+	;;
+*-*-mingw32*)
+   	OMNETPP_ROOT=`pwd -W`
+	;;
+*)
+	OMNETPP_ROOT=`pwd`
+	;;
+esac
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_UI_DIR="$OMNETPP_ROOT/ui"
@@ -128,7 +141,6 @@ OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
 OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
 OMNETPP_NEDC_DIR="$OMNETPP_SRC_DIR/nedc"
-
 
 if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
@@ -182,6 +194,8 @@ AC_MSG_NOTICE(reading configure.user for your custom settings)
 AC_MSG_NOTICE(-----------------------------------------------)
 . ./configure.user
 
+#FIXME if TARGET_PLATFORM gets set within configure.user, already set variables may become obsolete!
+
 #----------------------
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
@@ -199,40 +213,50 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 #----------------------
 # Check compiler
 #----------------------
-# icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
-AC_PROG_CC(icc gcc cc xlc)
-AC_PROG_CXX(icpc g++ c++ cxx xlC)
-
-if test "$CXX" = "icpc"; then
-    # disable useless warnings and 'remarks' with the Intel compiler:
-    #
-    # warning #654: overloaded virtual function "NEDElement::setAttribute" is only partially overridden
-    # warning #177: label "yyerrlab1" was declared but never referenced
-    # remark #869: parameter "node" was never referenced
-    # remark #981: operands are evaluated in unspecified order
-    # remark #279: controlling expression is constant  (occurs in unfinished cppmsggenerator.cc code)
-    # remark #1572: floating-point equality and inequality comparisons are unreliable
-    # remark #424: extra ";" ignored
-    # remark #1682: implicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
-    # remark #1683: explicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
-    # remark #810: conversion from "unsigned int" to "char" may lose significant bits
-    # remark #810: conversion from "long" to "double" may lose significant bits
-    # remark #1418: external definition with no prior declaration
-    # remark #1419: external declaration in primary source file
-    # remark #383: value copied to temporary, reference to temporary used
-    #
-    #CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
-
-    # -w1 disables all remarks
-    CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
-    CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
+if test "$TARGET_PLATFORM" = "mingw"; then
+	AC_PROG_CC(i586-mingw32msvc-gcc)
+	AC_PROG_CXX(i586-mingw32msvc-g++)
+	AS=${AS:-i586-mingw32msvc-as}
+	AR=${AR:-i586-mingw32msvc-ar cr}
+	SHLIB_LD=${SHLIB_LD:-$CXX -shared}
+	DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
+	RANLIB=${RANLIB:-i586-mingw32msvc-ranlib}
+else
+	# icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
+	AC_PROG_CC(icc gcc cc xlc)
+	AC_PROG_CXX(icpc g++ c++ cxx xlC)
+	
+	if test "$CXX" = "icpc"; then
+		# disable useless warnings and 'remarks' with the Intel compiler:
+		#
+		# warning #654: overloaded virtual function "NEDElement::setAttribute" is only partially overridden
+		# warning #177: label "yyerrlab1" was declared but never referenced
+		# remark #869: parameter "node" was never referenced
+		# remark #981: operands are evaluated in unspecified order
+		# remark #279: controlling expression is constant  (occurs in unfinished cppmsggenerator.cc code)
+		# remark #1572: floating-point equality and inequality comparisons are unreliable
+		# remark #424: extra ";" ignored
+		# remark #1682: implicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
+		# remark #1683: explicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
+		# remark #810: conversion from "unsigned int" to "char" may lose significant bits
+		# remark #810: conversion from "long" to "double" may lose significant bits
+		# remark #1418: external definition with no prior declaration
+		# remark #1419: external declaration in primary source file
+		# remark #383: value copied to temporary, reference to temporary used
+		#
+		#CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
+	
+		# -w1 disables all remarks
+		CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
+		CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
+	fi
+	AS=${AS:-as}
+	AR=${AR:-ar cr}
+	SHLIB_LD=${SHLIB_LD:-$CXX -shared}
+	DLLTOOL=${DLLTOOL:-dlltool}
+	AC_PROG_RANLIB
 fi
 
-AS=${AS:-as}
-AR=${AR:-ar cr}
-SHLIB_LD=${SHLIB_LD:-$CXX -shared}
-DLLTOOL=${DLLTOOL:-dlltool}
-AC_PROG_RANLIB
 
 # determine toolchain name, used in opp_makemake-generated Makefiles as part of the linker path
 if test "$TOOLCHAIN_NAME" = ""; then
@@ -805,16 +829,6 @@ if test "$cygwin" = yes; then
 fi
 
 #----------------------
-# Tcl code embedding.
-#----------------------
-
-if test "$EMBED_TCL_CODE" = yes; then
-   TKENV_EMBED_SUFFIX=-e
-else
-   TKENV_EMBED_SUFFIX=
-fi
-
-#----------------------
 # #defines in CFLAGS
 #----------------------
 if test "$WITH_PARSIM" = yes; then
@@ -915,7 +929,7 @@ AC_SUBST(TKENV_IF_POSSIBLE)
 AC_SUBST(JNILIBS_IF_POSSIBLE)
 
 AC_SUBST(ALL_ENV_LIBS)
-AC_SUBST(TKENV_EMBED_SUFFIX)
+AC_SUBST(EMBED_TCL_CODE)
 
 AC_SUBST(OMNETPP_TKENV_DIR)
 
