@@ -99,7 +99,7 @@ eventlog.cxx : eventlog.i
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $O/$(DLL): $(OBJS)
-	$(SHLIB_LD) -static -o $O/$(DLL) $(OBJS) $(LIBS)
+	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) -static $(LIBS)
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)

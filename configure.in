@@ -146,18 +146,18 @@ DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
 
 if test "$cygwin" = yes -o "$mingw" = yes; then
     EXE_SUFFIX=".exe"
+    SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
 else
     EXE_SUFFIX=
+    SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 fi
 
 
 # total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
 CYGWIN_STACKSIZE=134217728
 
-build_shared_libs=if-not-windows
-#build_shared_libs=yes
-#build_shared_libs=no
-
+# Build shared library by default
+BUILD_SHARED_LIBS=yes
 
 #----------------------
 # Default flags for values for other variables that come from configure.user.
@@ -287,7 +287,7 @@ fi
 if test "$fpic" = "x"; then
    AC_MSG_RESULT(failure)
    AC_MSG_WARN([COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs])
-   build_shared_libs="no"
+   BUILD_SHARED_LIBS="no"
 else
    CFLAGS_DEBUG="$CFLAGS_DEBUG $fpic"
    CFLAGS_RELEASE="$CFLAGS_RELEASE $fpic"
@@ -805,28 +805,6 @@ if test "$cygwin" = yes; then
 fi
 
 #----------------------
-# shared or static libraries
-#----------------------
-# If you change this setting, remember to delete the other set of libraries
-# (or at least the soft links from lib/).
-if test "$build_shared_libs" = if-not-windows; then
-    if test "$windows" = yes; then
-        build_shared_libs=no
-    else
-        build_shared_libs=yes
-    fi
-fi
-if test "$build_shared_libs" = yes; then
-    LIB_SUFFIX='$(SO_LIB_SUFFIX)'
-    if test "$windows" = yes; then
-        CFLAGS_DEBUG="$CFLAGS_DEBUG -DWIN32_DLL"
-        CFLAGS_RELEASE="$CFLAGS_RELEASE -DWIN32_DLL"
-    fi
-else
-    LIB_SUFFIX='$(A_LIB_SUFFIX)'
-fi
-
-#----------------------
 # Tcl code embedding.
 #----------------------
 
@@ -906,10 +884,11 @@ AC_SUBST(DOT)
 
 AC_SUBST(DOXYGEN)
 
+AC_SUBST(BUILD_SHARED_LIBS)
 AC_SUBST(A_LIB_SUFFIX)
+AC_SUBST(SHARED_LIB_SUFFIX)
 AC_SUBST(SO_LIB_SUFFIX)
 AC_SUBST(DLL_LIB_SUFFIX)
-AC_SUBST(LIB_SUFFIX)
 AC_SUBST(EXE_SUFFIX)
 
 AC_SUBST(NO_TCL)
@@ -1029,7 +1008,7 @@ fi
 # with Cygwin because Windows locates DLLs another way.
 #----------------------
 
-if test "$build_shared_libs" = yes -a "$cygwin" != yes; then
+if test "$BUILD_SHARED_LIBS" = yes -a "$cygwin" != yes; then
   if echo $LD_LIBRARY_PATH | grep `eval echo $OMNETPP_LIB_DIR` >/dev/null; then
     echo "Your LD_LIBRARY_PATH is set. Good!"
   else
@@ -1047,7 +1026,7 @@ Add the following line to your .profile or .bash_profile (provided you use bash)
   export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
 
 If you prefer static libraries, edit configure.user and change the
-build_shared_libs=yes line to build_shared_libs=no, then delete the shared
+BUILD_SHARED_LIBS=yes line to BUILD_SHARED_LIBS=no, then delete the shared
 libraries, re-run configure and make.
 EOT
   fi

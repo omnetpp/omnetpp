@@ -134,7 +134,6 @@ $O/filereader.o: filereader.cc \
   exception.h \
   commondefs.h
 $O/fileutil.o: fileutil.cc \
-  ./unistd.h \
   opp_ctype.h \
   fileutil.h \
   stringtokenizer.h \
@@ -150,7 +149,6 @@ $O/lcgrandom.o: lcgrandom.cc \
   commondefs.h \
   exception.h
 $O/lex.expressionyy.o: lex.expressionyy.cc \
-  ./unistd.h \
   expressionyydefs.h \
   exception.h \
   expression.tab.h \
@@ -159,7 +157,6 @@ $O/lex.expressionyy.o: lex.expressionyy.cc \
   commondefs.h \
   commonutil.h
 $O/lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
-  ./unistd.h \
   stringutil.h \
   matchexpression.tab.h \
   commondefs.h \

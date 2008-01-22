@@ -167,7 +167,12 @@ $O/lex.ned2yy.o: lex.ned2yy.cc \
   nederror.h \
   ned2.tab.h \
   nedxmldefs.h \
-  nedelement.h
+  nedelement.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedyylib.h
 $O/msg2.tab.o: msg2.tab.cc \
   nedyydefs.h \
   nederror.h \
@@ -196,6 +201,7 @@ $O/ned1generator.o: ned1generator.cc \
   nedelement.h \
   nedxmldefs.h
 $O/ned2.tab.o: ned2.tab.cc \
+  ned2.tab.h \
   nedyydefs.h \
   nederror.h \
   nedparser.h \

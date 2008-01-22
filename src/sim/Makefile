@@ -2101,17 +2101,6 @@ $O/util.o: util.cc \
   ../../include/mersennetwister.h \
   ../../include/cdensity.h \
   ../../include/cstat.h
-$O/xxx.o: xxx.cc \
-  ../../include/stlwrap.h \
-  ../../include/cobject.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/errmsg.h
 $O/netbuilder/cdynamicchanneltype.o: netbuilder/cdynamicchanneltype.cc \
   netbuilder/cdynamicchanneltype.h \
   netbuilder/cnedloader.h \

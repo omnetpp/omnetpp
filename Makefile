@@ -44,13 +44,13 @@ components: base samples
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils
 SAMPLES=aloha cqn dyna fifo hcube hist neddemo queueinglib queuenet routing tictoc tokenring sockets
-JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
+JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
 #
 # Group targets.
 #
 base: $(BASE)
-ui : base $(JNILIBS)
+ui : common layout eventlog scave nedxml $(JNILIBS)
 samples: $(SAMPLES)
 
 # dependencies (because of ver.h, tcl2c, opp_msgc, etc)

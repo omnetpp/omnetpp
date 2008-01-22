@@ -8,10 +8,12 @@ full_lib_name=$1
 dest_dir=$2
 short_lib_name=$3
 if test -f $short_lib_name; then
-	cp $short_lib_name $dest_dir/$full_lib_name
-	cd $dest_dir
-	if test -n "$short_lib_name"; then 
-		rm -f $short_lib_name
-		ln -s $full_lib_name $short_lib_name
-	fi
+	cp $short_lib_name $dest_dir
+# no version numbers will be attached	
+#	cp $short_lib_name $dest_dir/$full_lib_name
+#	cd $dest_dir
+#	if test -n "$short_lib_name"; then 
+#		rm -f $short_lib_name
+#		ln -s $full_lib_name $short_lib_name
+#	fi
 fi

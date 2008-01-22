@@ -20,13 +20,6 @@ OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 OMNETPP_VERSION=omnetpp-4.0a4
 
 #
-# Choose whether to build static libs or DLLs, by setting LIB_SUFFIX to
-# either .lib or .dll
-#
-LIB_SUFFIX=.lib
-#LIB_SUFFIX=.dll
-
-#
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
 # Tcl/Tk 8.4 (minimum 8.4.0) and BLT 2.4 required.
 # Leave BLT_VER empty if you don't have BLT. BLT is expected to reside
@@ -141,6 +134,19 @@ D=d
 CFLAGS=$(CFLAGS_RELEASE)
 LDFLAGS=$(LDFLAGS_RELEASE)
 D=
+!endif
+
+#
+# Choose whether to build static libs or DLLs
+#
+!ifndef BUILD_SHARED_LIBS
+BUILD_SHARED_LIBS=yes
+!endif
+
+!if "$(BUILD_SHARED_LIBS)"=="yes"
+LIB_SUFFIX=.dll
+!else
+LIB_SUFFIX=.dll
 !endif
 
 #
