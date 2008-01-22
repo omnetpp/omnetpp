@@ -44,7 +44,7 @@ $O/%.o: %.cc
 # Targets
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/opp_run$(EXE_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)* .
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
@@ -222,17 +222,6 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
-$O/eventlogwriter.o: eventlogwriter.cc \
-  eventlogwriter.h \
-  envdefs.h \
-  ../../include/cexception.h \
-  ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h
 $O/filemgrs.o: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -417,7 +406,6 @@ $O/omnetapp.o: omnetapp.cc \
   omnetapp.h \
   appreg.h \
   fsutils.h \
-  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
