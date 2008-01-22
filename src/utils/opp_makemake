@@ -973,9 +973,8 @@ $progname [options] [object files or libraries]
                           to load the model dynamically (via the load-libs=
                           omnetpp.ini or the -l Cmdenv/Tkenv command-line option).
     -a, --make-lib        Create static library (.a or .lib).
-    -S, --fordll          Compile C++ files for use in DLLs (i.e. with the
-                          WIN32_DLL symbol defined). The -s (build shared
-                          library) option implies this one.
+    -S, --fordll          Compile C++ files for use in DLLs; see -p option.
+                          The -s (build shared library) option implies this one.
     -w, --withobjects     Link with all object files found in -I directories,
                           or add them to the created library. Ignored when
                           -n option is present. Dependencies between directo-
