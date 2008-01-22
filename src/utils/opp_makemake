@@ -168,7 +168,7 @@ sub makemake()
             error("$progname: $arg: obsolete option, please remove");
         }
         elsif ($arg eq "-u" || $arg eq "--userinterface") {
-            my $userInterface = shift @ARGV;
+            $userInterface = shift @ARGV;
             $userInterface = uc($userInterface);
             if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "TKENV") {
                 error("$progname: -u: specify All, Cmdenv or Tkenv");
