@@ -219,19 +219,26 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 #----------------------
 # Check compiler
 #----------------------
+
 if test "$TARGET_PLATFORM" = "mingw"; then
-	AC_PROG_CC(i586-mingw32msvc-gcc)
-	AC_PROG_CXX(i586-mingw32msvc-g++)
+	cc_candidates="i586-mingw32msvc-gcc"
+	cxx_candidates="i586-mingw32msvc-g++"
+else
+	# icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
+	cc_candidates="icc gcc cc xlc"
+	cxx_candidates="icpc g++ c++ cxx xlC"
+fi
+# the below macros should be present only ONCE in the whole file (otherwise bad things will happen)
+AC_PROG_CC($cc_candidates)
+AC_PROG_CXX($cxx_candidates)
+
+if test "$TARGET_PLATFORM" = "mingw"; then
 	AS=${AS:-i586-mingw32msvc-as}
 	AR=${AR:-i586-mingw32msvc-ar cr}
 	SHLIB_LD=${SHLIB_LD:-$CXX -shared}
 	DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
 	RANLIB=${RANLIB:-i586-mingw32msvc-ranlib}
 else
-	# icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
-	AC_PROG_CC(icc gcc cc xlc)
-	AC_PROG_CXX(icpc g++ c++ cxx xlC)
-	
 	if test "$CXX" = "icpc"; then
 		# disable useless warnings and 'remarks' with the Intel compiler:
 		#
