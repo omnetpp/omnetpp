@@ -110,7 +110,7 @@ $O/$(LIBNAME).lib : $(OBJS) $L
 	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
-	$(SHLIB_LD) /out:"$O/$(LIBNAME).dll" /subsystem:console $(OBJS) $(IMPLIBS)
+	$(SHLIB_LD) /out:"$O/$(LIBNAME).dll" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
 	copy /b $(O:/=\)\$(LIBNAME).dll $(OMNETPP_BIN_DIR:/=\)
 	-copy /b $(O:/=\)\$(LIBNAME).dll.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 	copy /b $(O:/=\)\$(LIBNAME).lib $(L:/=\)

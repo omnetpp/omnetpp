@@ -78,22 +78,26 @@ OMNETPP_EDITION="Academic Public License"
 if test "$TARGET_PLATFORM" == "mingw"; then
 	mingw=yes
 	windows=yes
-	jdk_platform=win32
+	jni_platform=win32
+	ECLIPSE_PLATFORM=win32.x86
 else
-	jdk_platform=$host_os
+	jni_platform=$host_os
 	case $host in
 	*-*-cygwin*)
 		cygwin=yes
 		windows=yes
-		jdk_platform=win32
+		jni_platform=win32
+		ECLIPSE_PLATFORM=win32.x86
 		;;
 	*-*-mingw32*)
 		mingw=yes
 		windows=yes
-		jdk_platform=win32
+		jni_platform=win32
+		ECLIPSE_PLATFORM=win32.x86
 		;;
 	*linux*)
-		jdk_platform=linux
+		jni_platform=linux
+		ECLIPSE_PLATFORM=linux.x86
 		;;
 	*-hp-hpux*)
 		SO_LIB_SUFFIX=".sl"
@@ -159,9 +163,11 @@ DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
 if test "$cygwin" = yes -o "$mingw" = yes; then
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+    LIB_PREFIX=""
 else
     EXE_SUFFIX=
     SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
+    LIB_PREFIX="lib"
 fi
 
 
@@ -716,29 +722,28 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 #----------------------
 # Check for JDK
 #----------------------
-AC_CHECK_PROG(JDK, javac, javac, not found)
-if test "$JDK" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES jdk"
-   AC_MSG_WARN(JDK not found. IDE cannot be built.)
-   jni_ok=no
-else
-   if test "$JAVA_CFLAGS" = ""; then
-      javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk"
-      for dir in $javahome_candidates; do
-          if test "$JAVA_HOME" = "" -a -d "$dir"; then
-              JAVA_HOME=$dir
-          fi
-      done
-      if test "$JAVA_HOME" = ""; then
-         AC_MSG_WARN(JAVA_HOME variable not set.)
-      else
-         JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jdk_platform"
-      fi
+
+if test "$JAVA_CFLAGS" = ""; then
+   if test "$JDK" = ""; then
+     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk"
+     for dir in $javahome_candidates; do
+         if test "$JAVA_HOME" = "" -a -d "$dir"; then
+             JAVA_HOME=$dir
+         fi
+     done
+   else
+     JAVA_HOME=$JDK
    fi
-   OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $JAVA_CFLAGS, jni_ok)
-   if test "$jni_ok" = no; then
-      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java"
+   if test "$JAVA_HOME" = ""; then
+      AC_MSG_WARN(JAVA_HOME variable not set.)
+   else
+      JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jni_platform"
    fi
+fi
+
+OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $JAVA_CFLAGS, jni_ok)
+if test "$jni_ok" = no; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java"
 fi
 
 if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
@@ -828,6 +833,11 @@ if test "$cygwin" = yes; then
   LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
 fi
 
+# on MinGW dll aout importing is used
+if test "$mingw" = yes; then
+  LDFLAGS="$LDFLAGS -enable-auto-import"
+fi
+
 #----------------------
 # #defines in CFLAGS
 #----------------------
@@ -904,6 +914,7 @@ AC_SUBST(SHARED_LIB_SUFFIX)
 AC_SUBST(SO_LIB_SUFFIX)
 AC_SUBST(DLL_LIB_SUFFIX)
 AC_SUBST(EXE_SUFFIX)
+AC_SUBST(LIB_PREFIX)
 
 AC_SUBST(NO_TCL)
 AC_SUBST(HAVE_DLOPEN)
@@ -938,6 +949,8 @@ AC_SUBST(WITH_PARSIM)
 
 AC_SUBST(JAVA_CFLAGS)
 AC_SUBST(SWIG)
+AC_SUBST(ECLIPSE_PLATFORM)
+
 #
 # Generate files
 #

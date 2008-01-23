@@ -27,16 +27,6 @@ CFLAGS_DEBUG='-g -Wall'
 CFLAGS_RELEASE='-O2 -DNDEBUG=1'
 
 #
-# Select here whether you want to build static or shared libraries.
-# If you change this setting, remember to delete the other set of libraries
-# (or at least the soft links from lib/).
-# On Windows (Cygwin or MinGW), only static libraries can be used. FIXME still true..?
-# The default setting is `if-not-windows'.  FIXME revise!
-#
-#build_shared_libs=yes
-#build_shared_libs=no
-
-#
 # It is possible to have the Tcl files embedded into the compiled OMNeT++
 # libraries and executables. This can be useful if you want to ship
 # self-contained standalone executables which do not rely on external
@@ -79,8 +69,12 @@ WITH_PARSIM=no
 # case add -lX11 to TK_LIBS.
 #
 # With MinGW I use the following:
-# TK_CFLAGS="-I/c/tools/Tcl-8.4.5/include"
-# TK_LIBS="-L/c/tools/Tcl-8.4.5/lib -ltk84 -ltcl84"
+# Note that we are using the "bin" directory as the LIB dir. 
+# i.e. directly linking to the DLLs instead of the importlibs in the "lib" directory.
+#
+# TK_CFLAGS="-I/c/tools/Tcl-8.4.11/include"
+# TK_LIBS="-L/c/tools/Tcl-8.4.11/bin -ltk84 -ltcl84"
+#
 # With Cygwin, you can try:
 #  TK_CFLAGS=
 #  TK_LIBS="-ltk84 -ltcl84"
@@ -100,14 +94,16 @@ WITH_PARSIM=no
 # Default setting is:
 #  BLT_LIBS="-lBLT24"
 #
+# 
 #BLT_LIBS=
 
 #
 # ZLib is a compression library needed by libxml2 and Tkenv's png support.
 #
-# On MinGW we use the following
-#ZLIB_CFLAGS=-IC:/Tools/zlib-1.2.3.mingw/include
-#ZLIB_LIBS="-LC:/Tools/zlib-1.2.3.mingw/lib -lz"
+# On MinGW we use the following (dynamically linking against the DLL)
+#
+#ZLIB_CFLAGS="-I/c/Tools/zlib-1.2.3/include"
+#ZLIB_LIBS="-L/c/Tools/zlib-1.2.3/bin -lzlib1"
 
 #
 # Compiler flags used to compile JNI code.
@@ -141,8 +137,8 @@ WITH_PARSIM=no
 # Compiler and linker options for LIBXML (optional component)
 #
 # With MinGW I use the following:
-#  LIBXML_CFLAGS="-I/d/home/tools/libxml2-2.4.26.win32/include"
-#  LIBXML_LIBS="-L/d/home/tools/libxml2-2.4.26.win32/lib -lxml2 -L/d/home/tools/iconv-1.8.win32/lib -liconv"
+#  LIBXML_CFLAGS="-I/c/Tools/libxml2-2.6.20.win32/include -I/c/Tools/iconv-1.9.1.win32/include"
+#  LIBXML_LIBS="-L/c/Tools/libxml2-2.6.20.win32/bin -lxml2 -L/c/Tools/iconv-1.9.1.win32/lib -liconv"
 # If commented out, the configure script will try to autodetect it
 #
 #LIBXML_CFLAGS=

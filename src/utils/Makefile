@@ -24,7 +24,7 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 #
 # Rules
 #
-all: $O/seedtool
+all: $O/seedtool$(EXE_SUFFIX)
 	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
 	chmod +x opp_makemake opp_test opp_makedep splitvec opp_configfilepath
 	if [ "$$OS" = "Windows_NT" ] ; then \
@@ -40,7 +40,7 @@ all: $O/seedtool
 	@# next line is for samples/rundemo
 	echo $(WISH) >$(HOME)/.wishname
 
-$O/seedtool : seedtool.cc
+$O/seedtool$(EXE_SUFFIX) : seedtool.cc
 	@mkdir -p $O
 	$(CXX) seedtool.cc -o $O/seedtool$(EXE_SUFFIX)
 

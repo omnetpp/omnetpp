@@ -42,9 +42,8 @@ EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogressmonitor.o
 LIBS=-L$L -lnedxml$D -lscave$D -llayout$D -leventlog$D -lcommon$D
 
-DLL = libopplibs$(SO_LIB_SUFFIX)
-# FIXME thsi should correctly set the platform (i.e support x86_64 too) and MacOSX
-DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.linux.x86
+DLL = $(LIB_PREFIX)opplibs$(SHARED_LIB_SUFFIX)
+DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(ECLIPSE_PLATFORM)
 
 #
 # Local definitions
@@ -99,7 +98,7 @@ eventlog.cxx : eventlog.i
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $O/$(DLL): $(OBJS)
-	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) -static $(LIBS)
+	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) -static $(LIBS) $(LDFLAGS)
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)

@@ -12,6 +12,7 @@
 # [ \t\n]   --> \s
 # [^ \t\n]  --> [^\s]
 #
+$verbose = 0;
 
 $filename = $ARGV[0];
 $filename =~ /./ || die "*** usage: prog dtdfile importpackage package outdir\n";
@@ -66,7 +67,7 @@ while ($buf =~ s/(<!ELEMENT[ \t\n]+([^ \t\n]+)[ \t\n]+(.*?)>)//s) {
     $children{$element} = [ @children ];
     $childmult{$element} = [ @childmult ];
 
-    print "$element: $elementdef{$element}\n";
+    print "$element: $elementdef{$element}\n" if ($verbose);
 
 }
 

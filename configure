@@ -646,7 +646,6 @@ SWIG
 XMKMF
 CXXCPP
 WISH
-JDK
 OMNETPP_VERSION
 OMNETPP_EDITION
 OMNETPP_ROOT
@@ -681,6 +680,7 @@ SHARED_LIB_SUFFIX
 SO_LIB_SUFFIX
 DLL_LIB_SUFFIX
 EXE_SUFFIX
+LIB_PREFIX
 NO_TCL
 HAVE_DLOPEN
 TK_CFLAGS
@@ -706,6 +706,7 @@ OMNETPP_TKENV_DIR
 WITH_NETBUILDER
 WITH_PARSIM
 JAVA_CFLAGS
+ECLIPSE_PLATFORM
 LIBOBJS
 LTLIBOBJS'
 ac_subst_files=''
@@ -1885,22 +1886,26 @@ OMNETPP_EDITION="Academic Public License"
 if test "$TARGET_PLATFORM" == "mingw"; then
 	mingw=yes
 	windows=yes
-	jdk_platform=win32
+	jni_platform=win32
+	ECLIPSE_PLATFORM=win32.x86
 else
-	jdk_platform=$host_os
+	jni_platform=$host_os
 	case $host in
 	*-*-cygwin*)
 		cygwin=yes
 		windows=yes
-		jdk_platform=win32
+		jni_platform=win32
+		ECLIPSE_PLATFORM=win32.x86
 		;;
 	*-*-mingw32*)
 		mingw=yes
 		windows=yes
-		jdk_platform=win32
+		jni_platform=win32
+		ECLIPSE_PLATFORM=win32.x86
 		;;
 	*linux*)
-		jdk_platform=linux
+		jni_platform=linux
+		ECLIPSE_PLATFORM=linux.x86
 		;;
 	*-hp-hpux*)
 		SO_LIB_SUFFIX=".sl"
@@ -1966,9 +1971,11 @@ DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
 if test "$cygwin" = yes -o "$mingw" = yes; then
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+    LIB_PREFIX=""
 else
     EXE_SUFFIX=
     SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
+    LIB_PREFIX="lib"
 fi
 
 
@@ -6824,64 +6831,26 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 #----------------------
 # Check for JDK
 #----------------------
-# Extract the first word of "javac", so it can be a program name with args.
-set dummy javac; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_JDK+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$JDK"; then
-  ac_cv_prog_JDK="$JDK" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_JDK="javac"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
 
-  test -z "$ac_cv_prog_JDK" && ac_cv_prog_JDK="not found"
-fi
-fi
-JDK=$ac_cv_prog_JDK
-if test -n "$JDK"; then
-  { echo "$as_me:$LINENO: result: $JDK" >&5
-echo "${ECHO_T}$JDK" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-if test "$JDK" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES jdk"
-   { echo "$as_me:$LINENO: WARNING: JDK not found. IDE cannot be built." >&5
-echo "$as_me: WARNING: JDK not found. IDE cannot be built." >&2;}
-   jni_ok=no
-else
-   if test "$JAVA_CFLAGS" = ""; then
-      javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk"
-      for dir in $javahome_candidates; do
-          if test "$JAVA_HOME" = "" -a -d "$dir"; then
-              JAVA_HOME=$dir
-          fi
-      done
-      if test "$JAVA_HOME" = ""; then
-         { echo "$as_me:$LINENO: WARNING: JAVA_HOME variable not set." >&5
-echo "$as_me: WARNING: JAVA_HOME variable not set." >&2;}
-      else
-         JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jdk_platform"
-      fi
+if test "$JAVA_CFLAGS" = ""; then
+   if test "$JDK" = ""; then
+     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk"
+     for dir in $javahome_candidates; do
+         if test "$JAVA_HOME" = "" -a -d "$dir"; then
+             JAVA_HOME=$dir
+         fi
+     done
+   else
+     JAVA_HOME=$JDK
    fi
+   if test "$JAVA_HOME" = ""; then
+      { echo "$as_me:$LINENO: WARNING: JAVA_HOME variable not set." >&5
+echo "$as_me: WARNING: JAVA_HOME variable not set." >&2;}
+   else
+      JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jni_platform"
+   fi
+fi
+
 
    save_CXXFLAGS=$CXXFLAGS
    CXXFLAGS="$JAVA_CFLAGS"
@@ -6935,9 +6904,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
    CXXFLAGS=$save_CXXFLAGS
 
-   if test "$jni_ok" = no; then
-      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java"
-   fi
+if test "$jni_ok" = no; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java"
 fi
 
 if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
@@ -7611,6 +7579,11 @@ if test "$cygwin" = yes; then
   LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
 fi
 
+# on MinGW dll aout importing is used
+if test "$mingw" = yes; then
+  LDFLAGS="$LDFLAGS -enable-auto-import"
+fi
+
 #----------------------
 # #defines in CFLAGS
 #----------------------
@@ -7634,6 +7607,9 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
+
+
 
 
 
@@ -8420,7 +8396,6 @@ SWIG!$SWIG$ac_delim
 XMKMF!$XMKMF$ac_delim
 CXXCPP!$CXXCPP$ac_delim
 WISH!$WISH$ac_delim
-JDK!$JDK$ac_delim
 OMNETPP_VERSION!$OMNETPP_VERSION$ac_delim
 OMNETPP_EDITION!$OMNETPP_EDITION$ac_delim
 OMNETPP_ROOT!$OMNETPP_ROOT$ac_delim
@@ -8448,6 +8423,7 @@ AS!$AS$ac_delim
 AR!$AR$ac_delim
 SHLIB_LD!$SHLIB_LD$ac_delim
 DLLTOOL!$DLLTOOL$ac_delim
+MAKEDEPEND!$MAKEDEPEND$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -8489,13 +8465,13 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-MAKEDEPEND!$MAKEDEPEND$ac_delim
 BUILD_SHARED_LIBS!$BUILD_SHARED_LIBS$ac_delim
 A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 SHARED_LIB_SUFFIX!$SHARED_LIB_SUFFIX$ac_delim
 SO_LIB_SUFFIX!$SO_LIB_SUFFIX$ac_delim
 DLL_LIB_SUFFIX!$DLL_LIB_SUFFIX$ac_delim
 EXE_SUFFIX!$EXE_SUFFIX$ac_delim
+LIB_PREFIX!$LIB_PREFIX$ac_delim
 NO_TCL!$NO_TCL$ac_delim
 HAVE_DLOPEN!$HAVE_DLOPEN$ac_delim
 TK_CFLAGS!$TK_CFLAGS$ac_delim
@@ -8521,11 +8497,12 @@ OMNETPP_TKENV_DIR!$OMNETPP_TKENV_DIR$ac_delim
 WITH_NETBUILDER!$WITH_NETBUILDER$ac_delim
 WITH_PARSIM!$WITH_PARSIM$ac_delim
 JAVA_CFLAGS!$JAVA_CFLAGS$ac_delim
+ECLIPSE_PLATFORM!$ECLIPSE_PLATFORM$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 34; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 35; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
