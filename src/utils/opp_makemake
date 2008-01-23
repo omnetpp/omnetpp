@@ -377,13 +377,12 @@ sub makemake()
     $targetPrefix = "";
     $targetSuffix = "";
     if ($type eq "EXE") {
-        $targetSuffix = $isNMake ? ".exe" : "";
+        $targetSuffix = $isNMake ? ".exe" : "\$(EXE_SUFFIX)";
     } elsif ($type eq "SHAREDLIB") {
-        $targetSuffix = $isNMake ? ".dll" : ".so";
+        $targetSuffix = $isNMake ? ".dll" : "\$(SHARED_LIB_SUFFIX)";
         $targetPrefix = $isNMake ? "" : "lib";
-
     } elsif ($type eq "STATICLIB") {
-        $targetSuffix = $isNMake ? ".lib" : ".a";
+        $targetSuffix = $isNMake ? ".lib" : "\$(A_LIB_SUFFIX)";
         $targetPrefix = $isNMake ? "" : "lib";
     }
 

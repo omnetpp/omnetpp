@@ -178,13 +178,13 @@ public class Makemake {
         String targetPrefix = ""; 
         String targetSuffix = "";
         if (options.type == MakemakeOptions.Type.EXE)
-            targetSuffix = isNMake ? ".exe" : "";
+            targetSuffix = isNMake ? ".exe" : "$(EXE_SUFFIX)";
         else if (options.type == MakemakeOptions.Type.SHAREDLIB) {
-            targetSuffix = isNMake ? ".dll" : ".so";
+            targetSuffix = isNMake ? ".dll" : "$(SHARED_LIB_SUFFIX)";
             targetPrefix = isNMake ? "" : "lib";
         }
         else if (options.type == MakemakeOptions.Type.STATICLIB) {
-            targetSuffix = isNMake ? ".lib" : ".a";
+            targetSuffix = isNMake ? ".lib" : "$(A_LIB_SUFFIX)";
             targetPrefix = isNMake ? "" : "lib";
         }
 
