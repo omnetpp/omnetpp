@@ -55,6 +55,25 @@ AC_DEFUN(OPP_CHECK_LIB_NOLINK,[
    CXXFLAGS=$save_CXXFLAGS
 ])
 
+# usage: AC_PROG_CC_OPTION(--compiler-option, if-supported, if-unsupported)
+# add this option to $(CC) if it is supported by the compiler
+# if no sc
+# Martin Waitz <tali@admingilde.org>
+AC_DEFUN([AC_PROG_CC_OPTION], [
+	AC_MSG_CHECKING([whether $CC supports $1])
+	ac_save_CC="$CC"
+	CC="$CC $1"
+	AC_COMPILE_IFELSE(AC_LANG_PROGRAM(),[
+		AC_MSG_RESULT([yes])
+		ifelse($2, , [], [
+		CC="$ac_save_CC"
+		$2])
+	], [
+		AC_MSG_RESULT([no])
+		CC="$ac_save_CC"
+		$3
+	])
+])
 
 #
 # Autoconf initialization
@@ -281,6 +300,10 @@ if test "$TOOLCHAIN_NAME" = ""; then
         TOOLCHAIN_NAME=`echo $CC | sed 's|[/ ]|_|g'`
     fi
 fi
+
+# check and disable stack checking to avoid dependence on glibc 2.4
+AC_PROG_CC_OPTION(-fno-stack-protector, CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-stack-protector")
+AC_PROG_CC_OPTION(-fno-stack-protector, CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector")
 
 #----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
