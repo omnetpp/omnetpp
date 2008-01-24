@@ -38,7 +38,7 @@
                id="org.omnetpp.neddoc.toolbars.neddocToolbar">
             <command
                   commandId="org.omnetpp.neddoc.commands.neddocCommand"
-                 icon="icons/sample.gif"
+                 icon="icons/full/etool16/neddoc.gif"
                   tooltip="Generate neddoc"
                   id="org.omnetpp.neddoc.toolbars.neddocCommand">
             </command>

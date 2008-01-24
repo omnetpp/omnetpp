@@ -32,45 +32,40 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.ide.properties.DocumentationGeneratorPropertyPage;
 
 /**
- * This is the documentation generator configuration dialog displayed before generating documentation for an OMNeT++/OMNEST project.
- * The dialog shows the list of open projects to allow generating documentation for multiple projects at once. Besides it allows
- * to control what is included in the documentation with respect to doxygen, NED type figures, inheritance and usage diagrams, etc.
+ * This is the documentation generator configuration dialog displayed before 
+ * generating documentation for an OMNeT++/OMNEST project. The dialog shows 
+ * the list of open projects to allow generating documentation for multiple 
+ * projects at once. In addition, it allows to control what is included 
+ * in the documentation: doxygen, NED type figures, inheritance and usage 
+ * diagrams, etc.
  * 
- * The documentation generators are configured to put the result either under the project preconfigured by the user using the project 
- * properties page or to a separate directory given in this dialog.
+ * The documentation generators are configured to put the result either 
+ * under the project preconfigured by the user using the project properties 
+ * page or to a separate directory given in this dialog.
  * 
  * @author levy
  */
+//TODO disable checkboxes depending on DOT availability --Andras
+//TODO offer to generate doxyfile? checkboxes to tweak some of the options in there (like include source or not) --Andras
 public class GeneratorConfigurationDialog
     extends TitleAreaDialog
 {
     private IProject project;
-    
     private List<IProject> projects = new ArrayList<IProject>();
-
-    private CheckboxTableViewer selectedProjects;
-
     private List<DocumentationGenerator> generators;
-
-    private Button generateDoxy;
-
-    private Button generateNedTypeFigures;
-
-    private Button generateInheritanceDiagrams;
-
-    private Button generateUsageDiagrams;
-
-    private Button generateSourceContent;
-
     private GeneratorConfiguration configuration;
 
+    // Widgets
+    private CheckboxTableViewer selectedProjects;
+    private Button generateDoxy;
+    private Button generateNedTypeFigures;
+    private Button generateInheritanceDiagrams;
+    private Button generateUsageDiagrams;
+    private Button generateSourceContent;
     private Text outputDirectoryPath;
-
     private Button browseButton;
-
     private Button insideProjectsButton;
-
-    private Button separateDirecttoryButton;
+    private Button separateDirectoryButton;
 
     public GeneratorConfigurationDialog(Shell parentShell, IProject project, GeneratorConfiguration configuration) {
         super(parentShell);
@@ -83,8 +78,8 @@ public class GeneratorConfigurationDialog
     @Override
     protected Control createDialogArea(Composite parent) {
         setHelpAvailable(false);
-        setTitle("Please configure documentation generation options");
-        setMessage("Documentation will be generated for all declared types in the selected projects");
+        setTitle("Generate HTML documentation from NED, MSG, and C++ files");
+        setMessage("Please select projects and documentation options below");
 
         Composite container = new Composite((Composite)super.createDialogArea(parent), SWT.NONE);
         container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -128,11 +123,12 @@ public class GeneratorConfigurationDialog
     private void createProjectListButtons(Composite container) {
         Composite buttons = new Composite(container, SWT.NONE);
         buttons.setLayout(new GridLayout(1, true));
-        buttons.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 1, 1));
+        buttons.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
 
-        Button button = new Button(buttons, SWT.PUSH);
-        button.setText("Select referenced");
-        button.addSelectionListener(new SelectionAdapter() {
+        Button selectReferencedButton = new Button(buttons, SWT.PUSH);
+        selectReferencedButton.setText("Select referenced");
+        selectReferencedButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
+        selectReferencedButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 ISelection selection = selectedProjects.getSelection();
@@ -165,18 +161,20 @@ public class GeneratorConfigurationDialog
             }
         });
         
-        button = new Button(buttons, SWT.PUSH);
-        button.setText("Select All");
-        button.addSelectionListener(new SelectionAdapter() {
+        Button selectAllButton = new Button(buttons, SWT.PUSH);
+        selectAllButton.setText("Select All");
+        selectAllButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
+        selectAllButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 selectedProjects.setCheckedElements(projects.toArray());
             }
         });
         
-        button = new Button(buttons, SWT.PUSH);
-        button.setText("Deselect All");
-        button.addSelectionListener(new SelectionAdapter() {
+        Button deselectAllButton = new Button(buttons, SWT.PUSH);
+        deselectAllButton.setText("Deselect All");
+        deselectAllButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
+        deselectAllButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 selectedProjects.setCheckedElements(new IProject[0]);
@@ -187,43 +185,38 @@ public class GeneratorConfigurationDialog
     private void createContentOptions(Composite container) {
         Group group = new Group(container, SWT.NONE);
         group.setLayout(new RowLayout(SWT.VERTICAL));
-        group.setText("Content options");
+        group.setText("Generate:");
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
-        generateDoxy = new Button(group, SWT.CHECK);
-        generateDoxy.setSelection(configuration.generateDoxy);
-        generateDoxy.setText("Generate Doxygen C++ documentation");
+        generateNedTypeFigures = createCheckbox(group, "Network diagrams", configuration.generateNedTypeFigures);
+        generateInheritanceDiagrams = createCheckbox(group, "Inheritance diagrams", configuration.generateInheritanceDiagrams);
+        generateUsageDiagrams = createCheckbox(group, "Usage diagrams", configuration.generateUsageDiagrams);
+        generateSourceContent = createCheckbox(group, "Source listings", configuration.generateSourceContent);
+        generateDoxy = createCheckbox(group, "C++ documentation (using Doxygen)", configuration.generateDoxy);
+        Label label = new Label(group, SWT.NONE);
+        label.setText("   Note: Doxyfile locations can be configured in the Project Properties dialog");
+    }
 
-        generateNedTypeFigures = new Button(group, SWT.CHECK);
-        generateNedTypeFigures.setSelection(configuration.generateNedTypeFigures);
-        generateNedTypeFigures.setText("Generate NED type figures");
-
-        generateInheritanceDiagrams = new Button(group, SWT.CHECK);
-        generateInheritanceDiagrams.setSelection(configuration.generateInheritanceDiagrams);
-        generateInheritanceDiagrams.setText("Generate inheritance diagrams");
-
-        generateUsageDiagrams = new Button(group, SWT.CHECK);
-        generateUsageDiagrams.setSelection(configuration.generateUsageDiagrams);
-        generateUsageDiagrams.setText("Generate usage diagrams");
-
-        generateSourceContent = new Button(group, SWT.CHECK);
-        generateSourceContent.setSelection(configuration.generateSourceContent);
-        generateSourceContent.setText("Generate type source content");
+    private Button createCheckbox(Composite parent, String text, boolean initialSelection) {
+        Button checbox = new Button(parent, SWT.CHECK);
+        checbox.setSelection(initialSelection);
+        checbox.setText(text);
+        return checbox;
     }
 
     private void createOutputOptions(Composite container) {
         Group group = new Group(container, SWT.NONE);
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false, 2, 1));
         group.setLayout(new GridLayout(3, false));
-        group.setText("Output options");
+        group.setText("Target folders:");
 
         insideProjectsButton = new Button(group, SWT.RADIO);
         insideProjectsButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
-        insideProjectsButton.setText("inside projects");
+        insideProjectsButton.setText("Inside each project (note: locations can be configured in the Project Properties dialog)");
 
-        separateDirecttoryButton = new Button(group, SWT.RADIO);
-        separateDirecttoryButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
-        separateDirecttoryButton.setText("separate directory");
+        separateDirectoryButton = new Button(group, SWT.RADIO);
+        separateDirectoryButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
+        separateDirectoryButton.setText("A common directory:");
         
         outputDirectoryPath = new Text(group, SWT.BORDER);
         if (configuration.outputDirectoryPath != null)
@@ -251,7 +244,7 @@ public class GeneratorConfigurationDialog
             }
         });
 
-        separateDirecttoryButton.addSelectionListener(new SelectionAdapter() {
+        separateDirectoryButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 updateBrowseButton();
@@ -259,18 +252,18 @@ public class GeneratorConfigurationDialog
         });
 
         insideProjectsButton.setSelection(configuration.outputDirectoryPath == null);
-        separateDirecttoryButton.setSelection(configuration.outputDirectoryPath != null);
+        separateDirectoryButton.setSelection(configuration.outputDirectoryPath != null);
         updateBrowseButton();
     }
 
     private void updateBrowseButton() {
-        outputDirectoryPath.setEnabled(separateDirecttoryButton.getSelection());
-        browseButton.setEnabled(separateDirecttoryButton.getSelection());
+        outputDirectoryPath.setEnabled(separateDirectoryButton.getSelection());
+        browseButton.setEnabled(separateDirectoryButton.getSelection());
     }
 
     @Override
     protected void configureShell(Shell newShell) {
-        newShell.setText("Configure Documentation Generation");
+        newShell.setText("Documentation Generation");
         super.configureShell(newShell);
     }
     

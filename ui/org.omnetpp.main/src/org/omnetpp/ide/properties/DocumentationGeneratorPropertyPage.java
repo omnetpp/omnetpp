@@ -29,25 +29,28 @@ import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
  * 
  * @author levy
  */
+//FIXME refine organization of the dialog:  (Andras)
+// Target folders:-------
+//    For Doxygen:               [________]
+//    For NED/MSG documentation: [________]
+// Doxygen:--------------
+//    Doxyfile:   [__________]
+//
+//FIXME "Browse" dialogs not really good here -- one with tree control needed  (Andras)
+//XXX why project relative paths here? or if so, why begin with "/"?
 public class DocumentationGeneratorPropertyPage 
     extends PropertyPage
 {
     private static final String DEFAULT_DOXY_PATH = "/Documentation/doxy";
-
     private static final String DEFAULT_DOXY_CONFIG_FILE_PATH = "/doxy.cfg";
-
     private static final String DEFAULT_NEDDOC_PATH = "/Documentation/neddoc";
 
     public static QualifiedName DOXY_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyPath");
-
     public static QualifiedName DOXY_CONFIG_FILE_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyConfigFilePath");
-    
     public static QualifiedName NEDDOC_PATH_QNAME = new QualifiedName("DocumentationGenerator", "NeddocPath");
 
 	private Text doxyPath;
-
 	private Text doxyConfigFilePath;
-    
 	private Text neddocPath;
 
     public DocumentationGeneratorPropertyPage() {
