@@ -146,7 +146,7 @@ BUILD_SHARED_LIBS=yes
 !if "$(BUILD_SHARED_LIBS)"=="yes"
 LIB_SUFFIX=.dll
 !else
-LIB_SUFFIX=.dll
+LIB_SUFFIX=.lib
 !endif
 
 #
