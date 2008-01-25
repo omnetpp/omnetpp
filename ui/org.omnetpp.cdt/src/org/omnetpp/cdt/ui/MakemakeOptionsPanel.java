@@ -199,6 +199,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         Group dllGroup = createGroup(compilePage, "Windows DLLs", 2);
         final Link dllHelpLink = createLink(dllGroup, "Hover or <A>click here</A> for more info on creating DLLs.");
+        setColumnSpan(dllHelpLink, 2);
         compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines the FOO_EXPORT macro, where FOO is the DLL export/import symbol");
         compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         dllSymbolText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO):", "Base name for the FOO_API, FOO_EXPORT and FOO_IMPORT macros"); 
@@ -298,6 +299,10 @@ public class MakemakeOptionsPanel extends Composite {
         return link;
     }
 
+    protected void setColumnSpan(Control control, int columnSpan) {
+        ((GridData)control.getLayoutData()).horizontalSpan = columnSpan;
+    }
+    
     protected Group createGroup(Composite composite, String text, int numColumns) {
         Group group = new Group(composite, SWT.NONE);
         group.setText(text);
