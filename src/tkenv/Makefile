@@ -542,6 +542,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cconfiguration.h \
   inspector.h \
   tkutil.h
+$O/tclcode.o: tclcode.cc
 $O/tkapp.o: tkapp.cc \
   ../envir/appreg.h \
   ../../include/cenvir.h \
@@ -560,6 +561,7 @@ $O/tkapp.o: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
+  tclcode.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/carray.h \

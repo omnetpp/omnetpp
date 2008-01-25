@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# detects the platform and architecture and starts the IDE
+#
+
+../ide/eclipse >/dev/null &

@@ -10,9 +10,11 @@
       </text>
    </aboutInfo>
 
-   <configIni use="default"/>
+   <configIni use="custom" path="/org.omnetpp.main/config.ini"/>
 
    <launcherArgs>
+      <vmArgs>-Xms40m 
+-Xmx256m</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.omnetpp.main/icons/omnest16.gif" i32="/org.omnetpp.main/icons/omnest32.gif" i48="/org.omnetpp.main/icons/omnest48.gif" i64="/org.omnetpp.main/icons/omnest64.gif" i128="/org.omnetpp.main/icons/omnest128.gif"/>
@@ -22,7 +24,8 @@
       startupProgressRect="10,10,300,10"
       startupMessageRect="10,20,500,25"
       startupForegroundColor="000000" />
-   <launcher name="omnetpp">
+   <launcher>
+      <linux icon="/org.omnetpp.main/icons/omnest.xpm"/>
       <macosx icon="/org.omnetpp.main/icons/omnest.icns"/>
       <solaris/>
       <win useIco="true">
@@ -30,6 +33,7 @@
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>

@@ -219,6 +219,17 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
+$O/eventlogwriter.o: eventlogwriter.cc \
+  eventlogwriter.h \
+  envdefs.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h
 $O/filemgrs.o: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -403,6 +414,7 @@ $O/omnetapp.o: omnetapp.cc \
   omnetapp.h \
   appreg.h \
   fsutils.h \
+  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \

@@ -187,21 +187,21 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          id="de.unikassel.imageexport.pdf"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.5.0"
          unpack="false"/>
 
    <plugin
          id="de.unikassel.imageexport.svg"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.5.0"
          unpack="false"/>
 
    <plugin
          id="org.slf4j.nop"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.0.rc3"
          unpack="false"/>
 
    <plugin
@@ -244,7 +244,7 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          os="win32"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="4.0.0"
          unpack="false"/>
 
    <plugin
@@ -253,7 +253,7 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          arch="x86_64"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="4.0.0"
          fragment="true"/>
 
 </feature>

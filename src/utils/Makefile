@@ -26,7 +26,7 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 #
 all: $O/seedtool$(EXE_SUFFIX)
 	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
-	chmod +x opp_makemake opp_test opp_makedep splitvec opp_configfilepath
+	chmod +x opp_makemake opp_test opp_makedep splitvec opp_configfilepath omnetpp
 	if [ "$$OS" = "Windows_NT" ] ; then \
 	  echo "@echo $(OMNETPP_ROOT)/Makefile.inc" >opp_configfilepath.cmd && \
 	  cp opp_configfilepath.cmd $(OMNETPP_BIN_DIR); \
@@ -36,6 +36,7 @@ all: $O/seedtool$(EXE_SUFFIX)
 	cp opp_test $(OMNETPP_BIN_DIR)
 	cp opp_makedep $(OMNETPP_BIN_DIR)
 	cp splitvec $(OMNETPP_BIN_DIR)
+	cp omnetpp $(OMNETPP_BIN_DIR)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog seedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 	@# next line is for samples/rundemo
 	echo $(WISH) >$(HOME)/.wishname

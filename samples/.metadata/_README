@@ -1,0 +1,4 @@
+.plugins/org.eclipse.core.resources/.project
+
+contains all the directories that should be imported into the samples workspace by default
+ONLY the directories should be cjecked in
