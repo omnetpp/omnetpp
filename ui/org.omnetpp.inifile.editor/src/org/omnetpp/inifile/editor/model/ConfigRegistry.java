@@ -452,27 +452,6 @@ public class ConfigRegistry {
         "Part of the Envir plugin mechanism: selects the class to handle streams to " +
         "which snapshot() writes its output. The class has to implement the " +
         "cSnapshotManager interface.");
-    public static final ConfigKey CFGID_TKENV_ANIM_METHODCALLS = addGlobalEntry(
-        "tkenv-anim-methodcalls", CFG_BOOL, "true",
-        "Whether to animate method calls across modules. Only calls to methods which " +
-        "contain Enter_Method() can be animated.");
-    public static final ConfigKey CFGID_TKENV_ANIMATION_ENABLED = addGlobalEntry(
-        "tkenv-animation-enabled", CFG_BOOL, "true",
-        "Enables/disables animation.");
-    public static final ConfigKey CFGID_TKENV_ANIMATION_MSGCLASSNAMES = addGlobalEntry(
-        "tkenv-animation-msgclassnames", CFG_BOOL, "true",
-        "Enables/disables displaying the C++ class name of messages during " +
-        "animation.");
-    public static final ConfigKey CFGID_TKENV_ANIMATION_MSGCOLORS = addGlobalEntry(
-        "tkenv-animation-msgcolors", CFG_BOOL, "true",
-        "Enables/disables using different colors for each message kind during " +
-        "message flow animation.");
-    public static final ConfigKey CFGID_TKENV_ANIMATION_MSGNAMES = addGlobalEntry(
-        "tkenv-animation-msgnames", CFG_BOOL, "true",
-        "Enables/disables displaying message names during message flow animation.");
-    public static final ConfigKey CFGID_TKENV_ANIMATION_SPEED = addGlobalEntry(
-        "tkenv-animation-speed", CFG_DOUBLE, "1.5",
-        "Controls the speed of the animation; values in the range 0..3 are accepted.");
     public static final ConfigKey CFGID_TKENV_DEFAULT_CONFIG = addGlobalEntry(
         "tkenv-default-config", CFG_STRING, null,
         "Specifies which config Tkenv should set up automatically on startup. The " +
@@ -481,9 +460,6 @@ public class ConfigRegistry {
         "tkenv-default-run", CFG_INT, "0",
         "Specifies which run (of the default config, see tkenv-default-config) Tkenv " +
         "should set up automatically on startup. The default is to ask the user.");
-    public static final ConfigKey CFGID_TKENV_EXPRESSMODE_AUTOUPDATE = addGlobalEntry(
-        "tkenv-expressmode-autoupdate", CFG_BOOL, "true",
-        "Enables/disables updating the inspectors during Express mode.");
     public static final ConfigKey CFGID_TKENV_EXTRA_STACK_KB = addGlobalEntry(
         "tkenv-extra-stack-kb", CFG_INT, "48",
         "Specifies the extra amount of stack (in kilobytes) that is reserved for " +
@@ -491,48 +467,10 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_TKENV_IMAGE_PATH = addGlobalEntry(
         "tkenv-image-path", CFG_FILENAME, null,
         "Specifies the path for loading module icons.");
-    public static final ConfigKey CFGID_TKENV_METHODCALLS_DELAY = addGlobalEntryU(
-        "tkenv-methodcalls-delay", "s", "0.2",
-        "Sets delay after method call animation.");
-    public static final ConfigKey CFGID_TKENV_NEXT_EVENT_MARKERS = addGlobalEntry(
-        "tkenv-next-event-markers", CFG_BOOL, "true",
-        "Whether to display the next event marker (red rectange).");
-    public static final ConfigKey CFGID_TKENV_PENGUIN_MODE = addGlobalEntry(
-        "tkenv-penguin-mode", CFG_BOOL, "false",
-        "Surprise surprise.");
     public static final ConfigKey CFGID_TKENV_PLUGIN_PATH = addGlobalEntry(
         "tkenv-plugin-path", CFG_FILENAME, null,
         "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files " +
         "that get evaluated on startup.");
-    public static final ConfigKey CFGID_TKENV_PRINT_BANNERS = addGlobalEntry(
-        "tkenv-print-banners", CFG_BOOL, "true",
-        "Enables/disables printing banners for each event.");
-    public static final ConfigKey CFGID_TKENV_SENDDIRECT_ARROWS = addGlobalEntry(
-        "tkenv-senddirect-arrows", CFG_BOOL, "true",
-        "Whether to display arrows during animation of sendDirect() calls.");
-    public static final ConfigKey CFGID_TKENV_SHOW_BUBBLES = addGlobalEntry(
-        "tkenv-show-bubbles", CFG_BOOL, "true",
-        "Whether to honor the bubble() calls during animation.");
-    public static final ConfigKey CFGID_TKENV_SHOW_LAYOUTING = addGlobalEntry(
-        "tkenv-show-layouting", CFG_BOOL, "false",
-        "Show layouting process of network graphics.");
-    public static final ConfigKey CFGID_TKENV_SLOWEXEC_DELAY = addGlobalEntryU(
-        "tkenv-slowexec-delay", "s", "0.3",
-        "Delay between steps when you slow-execute the simulation.");
-    public static final ConfigKey CFGID_TKENV_UPDATE_FREQ_EXPRESS = addGlobalEntry(
-        "tkenv-update-freq-express", CFG_INT, "10000",
-        "Number of events executed between two display updates when in Express " +
-        "execution mode.");
-    public static final ConfigKey CFGID_TKENV_UPDATE_FREQ_FAST = addGlobalEntry(
-        "tkenv-update-freq-fast", CFG_INT, "50",
-        "Number of events executed between two display updates when in Fast " +
-        "execution mode.");
-    public static final ConfigKey CFGID_TKENV_USE_MAINWINDOW = addGlobalEntry(
-        "tkenv-use-mainwindow", CFG_BOOL, "true",
-        "Enables/disables writing ev output to the Tkenv main window.");
-    public static final ConfigKey CFGID_TKENV_USE_NEW_LAYOUTER = addGlobalEntry(
-        "tkenv-use-new-layouter", CFG_BOOL, "false",
-        "Selects between the new and the old (3.x) network layouting algorithms.");
     public static final ConfigKey CFGID_TOTAL_STACK_KB = addGlobalEntry(
         "total-stack-kb", CFG_INT, null,
         "Specifies the maximum memory for activity() simple module stacks in " +

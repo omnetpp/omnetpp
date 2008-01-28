@@ -59,30 +59,11 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCAL
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIM_TIME_LIMIT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SNAPSHOTMANAGER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SNAPSHOT_FILE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIMATION_ENABLED;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIMATION_MSGCLASSNAMES;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIMATION_MSGCOLORS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIMATION_MSGNAMES;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIMATION_SPEED;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_ANIM_METHODCALLS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_CONFIG;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_RUN;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_EXPRESSMODE_AUTOUPDATE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_EXTRA_STACK_KB;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_IMAGE_PATH;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_METHODCALLS_DELAY;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_NEXT_EVENT_MARKERS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_PENGUIN_MODE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_PLUGIN_PATH;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_PRINT_BANNERS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_SENDDIRECT_ARROWS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_SHOW_BUBBLES;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_SHOW_LAYOUTING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_SLOWEXEC_DELAY;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_UPDATE_FREQ_EXPRESS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_UPDATE_FREQ_FAST;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_USE_MAINWINDOW;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_USE_NEW_LAYOUTER;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TOTAL_STACK_KB;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARNINGS;
@@ -268,37 +249,6 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group4, CFGID_TKENV_PLUGIN_PATH, "Plugin path");
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK_KB, "Tkenv extra stack (Kb)");
-			addSpacer(form);
-			addMessage(form, ICON_WARNING,
-					"NOTE: The following settings are only first-time defaults, and settings in .tkenvrc (created by Tkenv\n" +
-					"automatically) will override them. Delete .tkenvrc for these settings to take effect.");
-			addSpacer(form);
-			Group group5 = createGroup(form, "Execution");
-			addTextFieldEditor(group5, CFGID_TKENV_ANIMATION_SPEED, "Animation speed");
-			addCheckboxFieldEditor(group5, CFGID_TKENV_EXPRESSMODE_AUTOUPDATE, "Auto-update in Express mode");
-			addTextFieldEditor(group5, CFGID_TKENV_SLOWEXEC_DELAY, "Slow-exec delay");
-			addTextFieldEditor(group5, CFGID_TKENV_UPDATE_FREQ_FAST, "Update frequency for Fast mode");
-			addTextFieldEditor(group5, CFGID_TKENV_UPDATE_FREQ_EXPRESS, "Update frequency for Express mode");
-			addSpacer(form);
-			Group group1 = createGroup(form, "Animation options");
-			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_ENABLED, "Enable animation");
-			addCheckboxFieldEditor(group1, CFGID_TKENV_NEXT_EVENT_MARKERS, "Show next event markers");
-			addCheckboxFieldEditor(group1, CFGID_TKENV_SENDDIRECT_ARROWS, "Show SendDirect arrows");
-			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIM_METHODCALLS, "Animate method calls");
-			addTextFieldEditor(group1, CFGID_TKENV_METHODCALLS_DELAY, "Delay for method call animation");
-			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_MSGNAMES, "Show message names in animation");
-			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_MSGCLASSNAMES, "Show message class names in animation");
-			addCheckboxFieldEditor(group1, CFGID_TKENV_ANIMATION_MSGCOLORS, "Colorize messages by message kind");
-			addCheckboxFieldEditor(group1, CFGID_TKENV_SHOW_BUBBLES, "Show bubbles");
-			addCheckboxFieldEditor(group1, CFGID_TKENV_PENGUIN_MODE, "Penguin mode");
-			addSpacer(form);
-			Group group2 = createGroup(form, "Network layouting");
-			addCheckboxFieldEditor(group2, CFGID_TKENV_SHOW_LAYOUTING, "Show layouting process");
-			addCheckboxFieldEditor(group2, CFGID_TKENV_USE_NEW_LAYOUTER, "Use new layouter");
-			addSpacer(form);
-			Group group3 = createGroup(form, "Logging");
-			addCheckboxFieldEditor(group3, CFGID_TKENV_PRINT_BANNERS, "Print banners");
-			addCheckboxFieldEditor(group3, CFGID_TKENV_USE_MAINWINDOW, "Use main window");
 		}
 		else if (category.equals(CAT_PARSIM)) {
 			addCheckboxFieldEditor(form, CFGID_PARALLEL_SIMULATION, "Enable parallel simulation");
