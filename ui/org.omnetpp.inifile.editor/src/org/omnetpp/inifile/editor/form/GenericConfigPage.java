@@ -36,15 +36,15 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTO
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTOR_PRECISION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARALLEL_SIMULATION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_COMMUNICATIONS_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_DEBUG;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMM_PREFIX;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMM_PRESERVE_READ;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMM_READ_PREFIX;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NAMEDPIPECOMM_PREFIX;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS;
+//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_DEBUG;
+//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMM_PREFIX;
+//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMM_PRESERVE_READ;
+//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMM_READ_PREFIX;
+//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE;
+//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER;
+//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NAMEDPIPECOMM_PREFIX;
+//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS;
+//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_SYNCHRONIZATION_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
@@ -255,6 +255,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			Group group1 = createGroup(form, "General");
 			addTextFieldEditor(group1, CFGID_PARSIM_COMMUNICATIONS_CLASS, "Communications class");
 			addTextFieldEditor(group1, CFGID_PARSIM_SYNCHRONIZATION_CLASS, "Synchronization class");
+/*FIXME XXX TODO put back!
 			addCheckboxFieldEditor(group1, CFGID_PARSIM_DEBUG, "Debug parallel simulation");
 			addSpacer(form);
 			Group group2 = createGroup(form, "Communications");
@@ -268,6 +269,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group3, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS, "Null Message Protocol: lookahead class");
 			addTextFieldEditor(group3, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "Null Message Protocol: laziness");
 			addTextFieldEditor(group3, CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, "Ideal Simulation Protocol: table size");
+*/
 		}
 		else {
 			throw new IllegalArgumentException("no such category: "+category);
