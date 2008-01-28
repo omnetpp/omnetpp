@@ -84,25 +84,6 @@ extern "C" TKENV_API void tkenv_lib() {}
 Register_GlobalConfigEntry(CFGID_TKENV_EXTRA_STACK_KB, "tkenv-extra-stack-kb", CFG_INT, "48", "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Tkenv.");
 Register_GlobalConfigEntry(CFGID_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, NULL, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigEntry(CFGID_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
-Register_GlobalConfigEntry(CFGID_SLOWEXEC_DELAY, "tkenv-slowexec-delay", CFG_TIME, "0.3", "Delay between steps when you slow-execute the simulation.");
-Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_FAST, "tkenv-update-freq-fast", CFG_INT, "50", "Number of events executed between two display updates when in Fast execution mode.");
-Register_GlobalConfigEntry(CFGID_UPDATE_FREQ_EXPRESS, "tkenv-update-freq-express",  CFG_INT, "10000" , "Number of events executed between two display updates when in Express execution mode.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_ENABLED, "tkenv-animation-enabled", CFG_BOOL, "true", "Enables/disables animation.");
-Register_GlobalConfigEntry(CFGID_NEXT_EVENT_MARKERS, "tkenv-next-event-markers", CFG_BOOL, "true", "Whether to display the next event marker (red rectange).");
-Register_GlobalConfigEntry(CFGID_SENDDIRECT_ARROWS, "tkenv-senddirect-arrows", CFG_BOOL, "true", "Whether to display arrows during animation of sendDirect() calls.");
-Register_GlobalConfigEntry(CFGID_ANIM_METHODCALLS, "tkenv-anim-methodcalls", CFG_BOOL, "true", "Whether to animate method calls across modules. Only calls to methods which contain Enter_Method() can be animated.");
-Register_GlobalConfigEntry(CFGID_METHODCALLS_DELAY, "tkenv-methodcalls-delay", CFG_TIME, "0.2", "Sets delay after method call animation.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_MSGNAMES, "tkenv-animation-msgnames", CFG_BOOL, "true", "Enables/disables displaying message names during message flow animation.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCLASSNAMES, "tkenv-animation-msgclassnames", CFG_BOOL, "true", "Enables/disables displaying the C++ class name of messages during animation.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_MSGCOLORS, "tkenv-animation-msgcolors", CFG_BOOL, "true", "Enables/disables using different colors for each message kind during message flow animation.");
-Register_GlobalConfigEntry(CFGID_PENGUIN_MODE, "tkenv-penguin-mode", CFG_BOOL, "false", "Surprise surprise.");
-Register_GlobalConfigEntry(CFGID_SHOW_LAYOUTING, "tkenv-show-layouting", CFG_BOOL, "false", "Show layouting process of network graphics.");
-Register_GlobalConfigEntry(CFGID_USE_NEW_LAYOUTER, "tkenv-use-new-layouter", CFG_BOOL, "false", "Selects between the new and the old (3.x) network layouting algorithms.");
-Register_GlobalConfigEntry(CFGID_SHOW_BUBBLES, "tkenv-show-bubbles", CFG_BOOL, "true", "Whether to honor the bubble() calls during animation.");
-Register_GlobalConfigEntry(CFGID_ANIMATION_SPEED, "tkenv-animation-speed", CFG_DOUBLE, "1.5", "Controls the speed of the animation; values in the range 0..3 are accepted.");
-Register_GlobalConfigEntry(CFGID_PRINT_BANNERS, "tkenv-print-banners", CFG_BOOL, "true", "Enables/disables printing banners for each event.");
-Register_GlobalConfigEntry(CFGID_USE_MAINWINDOW, "tkenv-use-mainwindow", CFG_BOOL, "true", "Enables/disables writing ev output to the Tkenv main window.");
-Register_GlobalConfigEntry(CFGID_EXPRESSMODE_AUTOUPDATE, "tkenv-expressmode-autoupdate", CFG_BOOL, "true", "Enables/disables updating the inspectors during Express mode.");
 Register_GlobalConfigEntry(CFGID_IMAGE_PATH, "tkenv-image-path", CFG_FILENAME, "", "Specifies the path for loading module icons.");
 Register_GlobalConfigEntry(CFGID_PLUGIN_PATH, "tkenv-plugin-path", CFG_FILENAME, "", "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files that get evaluated on startup.");
 
@@ -134,7 +115,26 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
     inspectorfactories.instance()->setName("inspectorfactories");
 
-    // The opt_* vars will be set by readOptions()
+    // initialize .tkenvrc config variables
+    opt_stepdelay = 300;
+    opt_updatefreq_fast = 1000;
+    opt_updatefreq_express = 100000;
+    opt_animation_enabled = true;
+    opt_nexteventmarkers = true;
+    opt_senddirect_arrows = true;
+    opt_anim_methodcalls = true;
+    opt_methodcalls_delay = 0.2;
+    opt_animation_msgnames = true;
+    opt_animation_msgclassnames = true;
+    opt_animation_msgcolors = true;
+    opt_penguin_mode = false;
+    opt_showlayouting = false;
+    opt_usenewlayouter = false;
+    opt_bubbles = true;
+    opt_animation_speed = 1.5;
+    opt_print_banners = true;
+    opt_use_mainwindow = true;
+    opt_expressmode_autoupdate = true;
 }
 
 TOmnetTkApp::~TOmnetTkApp()
@@ -1033,27 +1033,6 @@ void TOmnetTkApp::readOptions()
     const char *r = args->optionValue('r');
     opt_default_run = r ? atoi(r) : cfg->getAsInt(CFGID_DEFAULT_RUN);
 
-    // Note: most entries below should be obsoleted (because .tkenvrc overrides them anyway)
-    opt_stepdelay = long(1000*cfg->getAsDouble(CFGID_SLOWEXEC_DELAY));
-    opt_updatefreq_fast = cfg->getAsInt(CFGID_UPDATE_FREQ_FAST);
-    opt_updatefreq_express = cfg->getAsInt(CFGID_UPDATE_FREQ_EXPRESS);
-    opt_animation_enabled = cfg->getAsBool(CFGID_ANIMATION_ENABLED);
-    opt_nexteventmarkers = cfg->getAsBool(CFGID_NEXT_EVENT_MARKERS);
-    opt_senddirect_arrows = cfg->getAsBool(CFGID_SENDDIRECT_ARROWS);
-    opt_anim_methodcalls = cfg->getAsBool(CFGID_ANIM_METHODCALLS);
-    opt_methodcalls_delay = long(1000*cfg->getAsDouble(CFGID_METHODCALLS_DELAY));
-    opt_animation_msgnames = cfg->getAsBool(CFGID_ANIMATION_MSGNAMES);
-    opt_animation_msgclassnames = cfg->getAsBool(CFGID_ANIMATION_MSGCLASSNAMES);
-    opt_animation_msgcolors = cfg->getAsBool(CFGID_ANIMATION_MSGCOLORS);
-    opt_penguin_mode = cfg->getAsBool(CFGID_PENGUIN_MODE);
-    opt_showlayouting = cfg->getAsBool(CFGID_SHOW_LAYOUTING);
-    opt_usenewlayouter = cfg->getAsBool(CFGID_USE_NEW_LAYOUTER);
-    opt_bubbles = cfg->getAsBool(CFGID_SHOW_BUBBLES);
-    opt_animation_speed = cfg->getAsDouble(CFGID_ANIMATION_SPEED);
-    opt_animation_speed = std::min(3.0, std::max(0.0, opt_animation_speed));
-    opt_print_banners = cfg->getAsBool(CFGID_PRINT_BANNERS);
-    opt_use_mainwindow = cfg->getAsBool(CFGID_USE_MAINWINDOW);
-    opt_expressmode_autoupdate = cfg->getAsBool(CFGID_EXPRESSMODE_AUTOUPDATE);
     opt_image_path = cfg->getAsFilename(CFGID_IMAGE_PATH).c_str();
     opt_plugin_path = cfg->getAsFilename(CFGID_PLUGIN_PATH).c_str();
 }

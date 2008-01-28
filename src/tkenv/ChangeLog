@@ -1,3 +1,5 @@
+removed many tkenv-* config entries, because they took no effect (.tkenvrc took priority)
+    (tkenv-slowexec-delay, tkenv-update-freq-fast, tkenv-animation-enabled, etc)
 
 multiple "r" and "t" tags supported per submodule (as "r1", "r2" etc); 
 

@@ -60,19 +60,19 @@ AC_DEFUN(OPP_CHECK_LIB_NOLINK,[
 # if no sc
 # Martin Waitz <tali@admingilde.org>
 AC_DEFUN([AC_PROG_CC_OPTION], [
-	AC_MSG_CHECKING([whether $CC supports $1])
-	ac_save_CC="$CC"
-	CC="$CC $1"
-	AC_COMPILE_IFELSE(AC_LANG_PROGRAM(),[
-		AC_MSG_RESULT([yes])
-		ifelse($2, , [], [
-		CC="$ac_save_CC"
-		$2])
-	], [
-		AC_MSG_RESULT([no])
-		CC="$ac_save_CC"
-		$3
-	])
+    AC_MSG_CHECKING([whether $CC supports $1])
+    ac_save_CC="$CC"
+    CC="$CC $1"
+    AC_COMPILE_IFELSE(AC_LANG_PROGRAM(),[
+        AC_MSG_RESULT([yes])
+        ifelse($2, , [], [
+        CC="$ac_save_CC"
+        $2])
+    ], [
+        AC_MSG_RESULT([no])
+        CC="$ac_save_CC"
+        $3
+    ])
 ])
 
 #
@@ -95,38 +95,38 @@ OMNETPP_EDITION="Academic Public License"
 #
 #FIXME too early: if configure.user sets $TARGET_PLATFORM, we'll be in trouble
 if test "$TARGET_PLATFORM" == "mingw"; then
-	mingw=yes
-	windows=yes
-	jni_platform=win32
-	ECLIPSE_PLATFORM=win32.x86
+    mingw=yes
+    windows=yes
+    jni_platform=win32
+    ECLIPSE_PLATFORM=win32.x86
 else
-	jni_platform=$host_os
-	case $host in
-	*-*-cygwin*)
-		cygwin=yes
-		windows=yes
-		jni_platform=win32
-		ECLIPSE_PLATFORM=win32.x86
-		;;
-	*-*-mingw32*)
-		mingw=yes
-		windows=yes
-		jni_platform=win32
-		ECLIPSE_PLATFORM=win32.x86
-		;;
-	*linux*)
-		jni_platform=linux
-		ECLIPSE_PLATFORM=linux.x86
-		;;
-	*-hp-hpux*)
-		SO_LIB_SUFFIX=".sl"
-		;;
-	sparc-sun-*)
-		CFLAGS_ARCH="-DSUNSPARC"
-		;;
-	*)
-		;;
-	esac
+    jni_platform=$host_os
+    case $host in
+    *-*-cygwin*)
+        cygwin=yes
+        windows=yes
+        jni_platform=win32
+        ECLIPSE_PLATFORM=win32.x86
+        ;;
+    *-*-mingw32*)
+        mingw=yes
+        windows=yes
+        jni_platform=win32
+        ECLIPSE_PLATFORM=win32.x86
+        ;;
+    *linux*)
+        jni_platform=linux
+        ECLIPSE_PLATFORM=linux.x86
+        ;;
+    *-hp-hpux*)
+        SO_LIB_SUFFIX=".sl"
+        ;;
+    sparc-sun-*)
+        CFLAGS_ARCH="-DSUNSPARC"
+        ;;
+    *)
+        ;;
+    esac
 fi
 
 # We'll collect in this variable the components we've detected problems with
@@ -139,14 +139,14 @@ OPP_PROBLEM_PACKAGES=
 # determine OMNETPP_ROOT; note that 'case' branches on *host* platform not the target platform
 case $host in
 *-*-cygwin*)
-   	OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
-	;;
+    OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
+    ;;
 *-*-mingw32*)
-   	OMNETPP_ROOT=`pwd -W`
-	;;
+    OMNETPP_ROOT=`pwd -W`
+    ;;
 *)
-	OMNETPP_ROOT=`pwd`
-	;;
+    OMNETPP_ROOT=`pwd`
+    ;;
 esac
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
@@ -240,53 +240,53 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 #----------------------
 
 if test "$TARGET_PLATFORM" = "mingw"; then
-	cc_candidates="i586-mingw32msvc-gcc"
-	cxx_candidates="i586-mingw32msvc-g++"
+    cc_candidates="i586-mingw32msvc-gcc"
+    cxx_candidates="i586-mingw32msvc-g++"
 else
-	# icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
-	cc_candidates="icc gcc cc xlc"
-	cxx_candidates="icpc g++ c++ cxx xlC"
+    # icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
+    cc_candidates="icc gcc cc xlc"
+    cxx_candidates="icpc g++ c++ cxx xlC"
 fi
 # the below macros should be present only ONCE in the whole file (otherwise bad things will happen)
 AC_PROG_CC($cc_candidates)
 AC_PROG_CXX($cxx_candidates)
 
 if test "$TARGET_PLATFORM" = "mingw"; then
-	AS=${AS:-i586-mingw32msvc-as}
-	AR=${AR:-i586-mingw32msvc-ar cr}
-	SHLIB_LD=${SHLIB_LD:-$CXX -shared}
-	DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
-	RANLIB=${RANLIB:-i586-mingw32msvc-ranlib}
+    AS=${AS:-i586-mingw32msvc-as}
+    AR=${AR:-i586-mingw32msvc-ar cr}
+    SHLIB_LD=${SHLIB_LD:-$CXX -shared}
+    DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
+    RANLIB=${RANLIB:-i586-mingw32msvc-ranlib}
 else
-	if test "$CXX" = "icpc"; then
-		# disable useless warnings and 'remarks' with the Intel compiler:
-		#
-		# warning #654: overloaded virtual function "NEDElement::setAttribute" is only partially overridden
-		# warning #177: label "yyerrlab1" was declared but never referenced
-		# remark #869: parameter "node" was never referenced
-		# remark #981: operands are evaluated in unspecified order
-		# remark #279: controlling expression is constant  (occurs in unfinished cppmsggenerator.cc code)
-		# remark #1572: floating-point equality and inequality comparisons are unreliable
-		# remark #424: extra ";" ignored
-		# remark #1682: implicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
-		# remark #1683: explicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
-		# remark #810: conversion from "unsigned int" to "char" may lose significant bits
-		# remark #810: conversion from "long" to "double" may lose significant bits
-		# remark #1418: external definition with no prior declaration
-		# remark #1419: external declaration in primary source file
-		# remark #383: value copied to temporary, reference to temporary used
-		#
-		#CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
-	
-		# -w1 disables all remarks
-		CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
-		CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
-	fi
-	AS=${AS:-as}
-	AR=${AR:-ar cr}
-	SHLIB_LD=${SHLIB_LD:-$CXX -shared}
-	DLLTOOL=${DLLTOOL:-dlltool}
-	AC_PROG_RANLIB
+    if test "$CXX" = "icpc"; then
+        # disable useless warnings and 'remarks' with the Intel compiler:
+        #
+        # warning #654: overloaded virtual function "NEDElement::setAttribute" is only partially overridden
+        # warning #177: label "yyerrlab1" was declared but never referenced
+        # remark #869: parameter "node" was never referenced
+        # remark #981: operands are evaluated in unspecified order
+        # remark #279: controlling expression is constant  (occurs in unfinished cppmsggenerator.cc code)
+        # remark #1572: floating-point equality and inequality comparisons are unreliable
+        # remark #424: extra ";" ignored
+        # remark #1682: implicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
+        # remark #1683: explicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
+        # remark #810: conversion from "unsigned int" to "char" may lose significant bits
+        # remark #810: conversion from "long" to "double" may lose significant bits
+        # remark #1418: external definition with no prior declaration
+        # remark #1419: external declaration in primary source file
+        # remark #383: value copied to temporary, reference to temporary used
+        #
+        #CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
+
+        # -w1 disables all remarks
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
+        CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
+    fi
+    AS=${AS:-as}
+    AR=${AR:-ar cr}
+    SHLIB_LD=${SHLIB_LD:-$CXX -shared}
+    DLLTOOL=${DLLTOOL:-dlltool}
+    AC_PROG_RANLIB
 fi
 
 
@@ -301,7 +301,9 @@ if test "$TOOLCHAIN_NAME" = ""; then
     fi
 fi
 
-# check and disable stack checking to avoid dependence on glibc 2.4
+#----------------------
+# check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
+#----------------------
 AC_PROG_CC_OPTION(-fno-stack-protector, CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-stack-protector")
 AC_PROG_CC_OPTION(-fno-stack-protector, CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector")
 

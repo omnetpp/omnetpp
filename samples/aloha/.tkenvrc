@@ -1,22 +1,22 @@
 # Tkenv configuration
-option updatefreq_fast	{500}
-option updatefreq_express	{10000}
-option stepdelay	{293 ms}
+option updatefreq_fast	{1000}
+option updatefreq_express	{100000}
+option stepdelay	{300 ms}
 option use_mainwindow	{1}
 option print_banners	{1}
 option animation_enabled	{1}
 option nexteventmarkers	{1}
 option senddirect_arrows	{1}
 option anim_methodcalls	{1}
-option methodcalls_delay	{200}
+option methodcalls_delay	{0}
 option animation_msgnames	{1}
 option animation_msgclassnames	{1}
 option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
-option usenewlayouter	{1}
+option usenewlayouter	{0}
 option bubbles	{1}
-option animation_speed	{3}
+option animation_speed	{1.5}
 option expressmode_autoupdate	{1}
 config concurrent-anim	{1}
 config confirm-exit	{1}
@@ -34,24 +34,17 @@ config filtobjlist-maxcount	{100000}
 config filtobjlist-name	{}
 config filtobjlist-order	{Class}
 config last-nedfile	{}
-config log-save-filename	{C:/home/omnetpp40/omnetpp/samples/aloha/omnetpp.out}
-config logwindow-scrollbacklines	{}
-config mainwin-geom	{664x374+476+182}
+config log-save-filename	{omnetpp.out}
+config logwindow-scrollbacklines	{100000}
+config mainwin-geom	{640x350+48+62}
 config mainwin-state	{normal}
 config rununtil-event	{}
-config rununtil-mode	{Fast (rare updates)}
-config rununtil-time	{1000000000}
+config rununtil-mode	{Express (tracing off)}
+config rununtil-time	{}
 config timeline-maxnumevents	{1000}
 config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "Aloha" "Aloha" "2" "504x522+0+13"
-inspector "enums.v×" "cEnum" "1" "460x312+120+155"
-inspector "alohaNet" "alohaNet" "1" "460x394+69+60"
-inspector "component types" "cSymTable" "1" "460x312+120+155"
-inspector "ALOHAnet" "ALOHAnet" "1" "529x384+295+298"
-inspector "alohaNet" "alohaNet" "2" "617x576+286+103"
-inspector "ALOHAnet" "ALOHAnet" "2" "923x675+35+103"
-inspector "supported config entries" "cSymTable" "1" "788x564+48+62"
+inspector "Aloha" "Aloha" "2" "627x598+72+93"
 
