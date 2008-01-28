@@ -37,7 +37,7 @@ void printUsage()
 {
     fprintf(stderr,
        "scavetool -- part of OMNeT++/OMNEST, (C) 2006 Andras Varga\n"
-       "Release: " OMNETPP_RELEASE ", " OMNETPP_EDITION ".\n"
+       "Release: " OMNETPP_RELEASE ", edition: " OMNETPP_EDITION ".\n"
        "\n"
        "Usage: scavetool <command> [options] <files>...\n"
        "\n"

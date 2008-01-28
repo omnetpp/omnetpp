@@ -344,7 +344,7 @@ void usage(char *message)
 
     fprintf(stderr, ""
 "eventlogtool -- part of OMNeT++/OMNEST, (C) 2006 Andras Varga\n"
-"Release: " OMNETPP_RELEASE ", " OMNETPP_EDITION ".\n"
+"Release: " OMNETPP_RELEASE ", edition: " OMNETPP_EDITION ".\n"
 "\n"
 "Usage:\n"
 "   eventlogtool <command> [options]* <input-file-name>\n"
