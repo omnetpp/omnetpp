@@ -108,6 +108,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		super(parent, style);
 		setCaching(DEFAULT_CANVAS_CACHING);
 		setBackground(backgroundColor);
+		setToolTipText(null); // XXX prevent "Close" tooltip of the TabItem to come up (Linux only) 
 		
 		legendTooltip = new LegendTooltip(this);
 
