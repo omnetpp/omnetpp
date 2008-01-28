@@ -37,7 +37,7 @@ void printUsage()
 {
     fprintf(stderr,
        "scavetool -- part of OMNeT++/OMNEST, (C) 2006 Andras Varga\n"
-       "Release: " OMNETPP_RELEASE ", edition: " OMNETPP_EDITION ".\n"
+       "Release: " OMNETPP_RELEASE ", " OMNETPP_EDITION ".\n"
        "\n"
        "Usage: scavetool <command> [options] <files>...\n"
        "\n"
@@ -303,7 +303,7 @@ int filterCommand(int argc, char **argv)
                     // write scalars
                     if (!scalarIDList.isEmpty())
                     {
-                    	ResultItemFields fields(ResultItemField::NAME);
+                        ResultItemFields fields(ResultItemField::NAME);
                         exporter->saveScalars("scalars", "scalar desc", scalarIDList,
                             fields.complement(), resultFileManager);
                     }

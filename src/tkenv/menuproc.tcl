@@ -90,7 +90,7 @@ OMNeT++/OMNEST
 Discrete Event Simulation Framework
 " \
 "(C) 1992-2005 Andras Varga
-Release: $OMNETPP_RELEASE, edition: $OMNETPP_EDITION
+Release: $OMNETPP_RELEASE, $OMNETPP_EDITION
 
 NO WARRANTY -- see license for details."
 }

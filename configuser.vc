@@ -166,7 +166,7 @@ OMNETPP_OUT_DIR=$(OMNETPP_ROOT)/out
 OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
 OMNETPP_IMAGE_PATH=./images;./bitmaps;$(OMNETPP_ROOT)/images
 
-OMNETPP_EDITION=Academic Public License
+OMNETPP_EDITION=Academic Public License -- NOT FOR COMMERCIAL USE
 
 #
 # Libraries
