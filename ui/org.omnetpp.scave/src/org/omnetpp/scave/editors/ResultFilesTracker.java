@@ -7,7 +7,9 @@ import static org.omnetpp.scave.engineext.IndexFile.isIndexFileUpToDate;
 import static org.omnetpp.scave.engineext.IndexFile.isVectorFile;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -85,15 +87,15 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		case Notification.ADD_MANY:
 		case Notification.REMOVE:
 		case Notification.REMOVE_MANY:
-		case Notification.MOVE:
+		//case Notification.MOVE:
 		case Notification.SET:
-		case Notification.UNSET:
+		//case Notification.UNSET:
 			Object notifier = notification.getNotifier();
 			if (notifier instanceof Inputs || notifier instanceof InputFile)
 				synchronize();
 		}
 	}
-
+	
 	/**
 	 * Listen to workspace changes. We want to keep our result files in
 	 * sync with the workspace. In addition to changes in file contents,
@@ -164,18 +166,18 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			return;
 		
 		if (debug) System.out.println("ResultFileTracker.synchronize()");
-		//XXX also: must unload files which have been removed from Inputs
-		//FIXME for now, a primitive solution, TO BE REPLACED: unload everything
+		Set<String> loadedFiles = new HashSet<String>();
 		for (ResultFile file : manager.getFiles().toArray())
-			manager.unloadFile(file);
-
+			loadedFiles.add(file.getFilePath());
+		
+		Set<String> filesToBeLoaded = new HashSet<String>();
 		List<InputFile> files = new ArrayList<InputFile>();
 		List<InputFile> wildcards = new ArrayList<InputFile>();
 		partitionInputFiles(files, wildcards);
 
 		// load files specified by path
 		for (InputFile inputfile : files) {
-			loadFile(inputfile.getName());
+			filesToBeLoaded.add(inputfile.getName());
 		}
 		// load files matching with patterns
 		if (wildcards.size() > 0) {
@@ -183,8 +185,17 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 			for (IFile file : allFiles)
 				for (InputFile wildcard : wildcards)
 					if (matchFile(file, wildcard))
-						loadFile(file);
+						filesToBeLoaded.add(file.getFullPath().toString());
 		}
+		
+		Set<String> filesToBeUnloaded = new HashSet<String>(loadedFiles);
+		filesToBeUnloaded.removeAll(filesToBeLoaded);
+		for (String file : filesToBeUnloaded)
+			unloadFile(file);
+		
+		filesToBeLoaded.removeAll(loadedFiles);
+		for (String file : filesToBeLoaded)
+			loadFile(file);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -259,8 +270,16 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * Has no effect when the file was not loaded.
 	 */
 	private void unloadFile(IFile file) {
-		if (debug) System.out.format("  unloadFile: %s%n ", file);
-		ResultFile resultFile = manager.getFile(file.getFullPath().toString());
+		unloadFile(file.getFullPath().toString());
+	}
+	
+	/**
+	 * Unloads the file specified  by <code>resourcePath</code> from the ResultFileManager.
+	 * Has no effect when the file was not loaded.
+	 */
+	private void unloadFile(String resourcePath) {
+		if (debug) System.out.format("  unloadFile: %s%n ", resourcePath);
+		ResultFile resultFile = manager.getFile(resourcePath);
 		if (resultFile != null) {
 			manager.unloadFile(resultFile);
 			if (debug) System.out.println("done");
