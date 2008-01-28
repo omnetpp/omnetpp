@@ -89,7 +89,9 @@ Node *WindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
     return node;
 }
 
-void WindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void WindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
+	if (attrs["type"] == "enum")
+		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
 	attrs["type"] = "double";
 }
