@@ -220,6 +220,7 @@ XML_LIBS=$(LIBXML_LIBS)
 #
 CMDENV_LIBS = /include:_cmdenv_lib envir$D.lib cmdenv$D.lib
 TKENV_LIBS = /include:_tkenv_lib envir$D.lib tkenv$D.lib layout$D.lib $(TK_LIBS) $(ZLIB_LIBS)
+ALL_ENV_LIBS = $(CMDENV_LIBS) $(TKENV_LIBS)
 
 KERNEL_LIBS = sim_std$D.lib
 
