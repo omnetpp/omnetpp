@@ -1,5 +1,5 @@
 //==========================================================================
-//  STARTUP.CC - part of
+//  ONSTARTUP.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
