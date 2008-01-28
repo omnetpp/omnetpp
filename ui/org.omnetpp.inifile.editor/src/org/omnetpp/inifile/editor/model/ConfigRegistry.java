@@ -133,15 +133,16 @@ public class ConfigRegistry {
 		return (ConfigKey[]) perObjectEntries.values().toArray(new ConfigKey[perObjectEntries.size()]);
 	}
 
-	public static final ConfigKey CFGID_APPLY_DEFAULT = addPerObjectEntry(
+    public static final ConfigKey CFGID_APPLY_DEFAULT = addPerObjectEntry(
         "apply-default", CFG_BOOL, "false",
         "Applies to module parameters: whether NED default values should be assigned " +
         "if present.");
     public static final ConfigKey CFGID_CMDENV_AUTOFLUSH = addPerRunEntry(
         "cmdenv-autoflush", CFG_BOOL, "false",
         "Call fflush(stdout) after each event banner or status update; affects both " +
-        "express and normal mode. Turning on autoflush can be useful with " +
-        "printf-style debugging for tracking down program crashes.");
+        "express and normal mode. Turning on autoflush may have a performance " +
+        "penalty, but it can be useful with printf-style debugging for tracking down " +
+        "program crashes.");
     public static final ConfigKey CFGID_CMDENV_CONFIG_NAME = addGlobalEntry(
         "cmdenv-config-name", CFG_STRING, null,
         "Specifies the name of the configuration to be run (for a value `Foo', " +
@@ -197,14 +198,14 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_CONFIGURATION_CLASS = addGlobalEntry(
         "configuration-class", CFG_STRING, null,
         "Part of the Envir plugin mechanism: selects the class from which all " +
-        "configuration will be obtained. This option lets you replace omnetpp.ini " +
-        "with some other implementation, e.g. database input. The simulation program " +
-        "still has to bootstrap from an omnetpp.ini (which contains the " +
-        "configuration-class setting). The class has to implement the cConfiguration " +
-        "interface.");
+        "configuration information will be obtained. This option lets you replace " +
+        "omnetpp.ini with some other implementation, e.g. database input. The " +
+        "simulation program still has to bootstrap from an omnetpp.ini (which " +
+        "contains the configuration-class setting). The class should implement the " +
+        "cConfiguration interface.");
     public static final ConfigKey CFGID_CONSTRAINT = addPerRunEntry(
         "constraint", CFG_STRING, null,
-        "For defining scenarios. Contains an expression that iteration variables (${} syntax) " +
+        "For scenarios. Contains an expression that iteration variables (${} syntax) " +
         "must satisfy for that simulation to run. Example: $i < $j+1.");
     public static final ConfigKey CFGID_CPU_TIME_LIMIT = addPerRunEntryU(
         "cpu-time-limit", "s", null,
@@ -259,9 +260,9 @@ public class ConfigRegistry {
         "Currently ignored. Accepted for backward compatibility.");
     public static final ConfigKey CFGID_LOAD_LIBS = addGlobalEntry(
         "load-libs", CFG_FILENAMES, null,
-        "Specifies dynamic libraries to be loaded on startup. The libraries should " +
-        "be given without the `.dll' or `.so' suffix -- that will be automatically " +
-        "appended.");
+        "A space-separated list of dynamic libraries to be loaded on startup. The " +
+        "libraries should be given without the `.dll' or `.so' suffix -- that will " +
+        "be automatically appended.");
     public static final ConfigKey CFGID_MAX_BUFFERED_SAMPLES = addPerObjectEntry(
         "max-buffered-samples", CFG_INT, null,
         "For output vectors: the maximum number of values to buffer per vector, " +
@@ -270,6 +271,12 @@ public class ConfigRegistry {
         "measurement", CFG_STRING, "${iterationvars}",
         "Measurement label. This string gets recorded into result files, and may be " +
         "referred to during result analysis.");
+    public static final ConfigKey CFGID_NED_PATH = addGlobalEntry(
+        "ned-path", CFG_STRING, null,
+        "A semicolon-separated list of directories which will be appended to the " +
+        "NEDPATH environment variable. The directories will be regarded as roots of " +
+        "the NED package hierarchy, and all NED files will be loaded from the " +
+        "subdirectories under them.");
     public static final ConfigKey CFGID_NETWORK = addPerRunEntry(
         "network", CFG_STRING, null,
         "The name of the network to be simulated.");
@@ -285,15 +292,17 @@ public class ConfigRegistry {
         "(OMNeT++ 3.x behavior), or delete it and begin a new file (default).");
     public static final ConfigKey CFGID_OUTPUT_SCALAR_PRECISION = addPerRunEntry(
         "output-scalar-precision", CFG_INT, "14",
-        "Adjusts the number of significant digits for recording numbers into the " +
-        "output scalar file.");
+        "The number of significant digits for recording data into the output scalar " +
+        "file. The maximum value is ~15 (IEEE double precision).");
     public static final ConfigKey CFGID_OUTPUT_VECTOR_FILE = addPerRunEntry(
         "output-vector-file", CFG_FILENAME, "${configname}-${runnumber}.vec",
         "Name for the output vector file.");
     public static final ConfigKey CFGID_OUTPUT_VECTOR_PRECISION = addPerRunEntry(
         "output-vector-precision", CFG_INT, "14",
-        "Adjusts the number of significant digits for recording numbers into the " +
-        "output vector file.");
+        "The number of significant digits for recording data into the output vector " +
+        "file. The maximum value is ~15 (IEEE double precision). This setting has no " +
+        "effect on the \"time\" column of output vectors, which are represented as " +
+        "fixed-point numbers and always get recorded precisely.");
     public static final ConfigKey CFGID_OUTPUT_VECTORS_MEMORY_LIMIT = addPerRunEntryU(
         "output-vectors-memory-limit", "B", "16MB",
         "Total memory that can be used for buffering output vectors. Larger values " +
@@ -317,44 +326,6 @@ public class ConfigRegistry {
         "If parallel-simulation=true, it selects the class that implements " +
         "communication between partitions. The class must implement the " +
         "cParsimCommunications interface.");
-    public static final ConfigKey CFGID_PARSIM_DEBUG = addGlobalEntry(
-       	"parsim-debug", CFG_BOOL, "true",
-       	"With parallel-simulation=true: turns on printing of log messages from the parallel simulation code.");
-    public static final ConfigKey CFGID_PARSIM_FILECOMM_PREFIX = addGlobalEntry(
-    	"parsim-filecommunications-prefix", CFG_STRING, "comm/",
-    	"When cFileCommunications is selected as parsim communications class: specifies the prefix " +
-     	"(directory+potential filename prefix) for creating the files for cross-partition messages.");
-    public static final ConfigKey CFGID_PARSIM_FILECOMM_PRESERVE_READ = addGlobalEntry(
-    	"parsim-filecommunications-preserve-read", CFG_BOOL, "false",
-    	"When cFileCommunications is selected as parsim communications class: specifies that " +
-     	"consumed files should be moved into another directory instead of being deleted.");
-    public static final ConfigKey CFGID_PARSIM_FILECOMM_READ_PREFIX = addGlobalEntry(
-    	"parsim-filecommunications-read-prefix", CFG_STRING, "comm/read/",
-    	"When cFileCommunications is selected as parsim communications class: specifies the " +
-     	"prefix (directory) where files will be moved after having been consumed.");
-    public static final ConfigKey CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE = addGlobalEntry(
-    	"parsim-idealsimulationprotocol-tablesize", CFG_INT, null,
-    	"When cIdealSimulationProtocol is selected as parsim synchronization class: specifies " +
-     	"the memory buffer size for reading the ISP event trace file.");
-    public static final ConfigKey CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER = addGlobalEntry(
-    	"parsim-mpicommunications-mpibuffer", CFG_INT, null,
-    	"When cMPICommunications is selected as parsim communications class: specifies the size " +
-     	"of the MPI communications buffer. The default is to calculate a buffer size based on the " +
-     	"number of partitions.");
-    public static final ConfigKey CFGID_PARSIM_NAMEDPIPECOMM_PREFIX = addGlobalEntry(
-    	"parsim-namedpipecommunications-prefix", CFG_STRING, "comm/",
-    	"When cNamedPipeCommunications is selected as parsim communications class: selects the " +
-     	"prefix (directory+potential filename prefix) where name pipes are created in the file system.");
-    public static final ConfigKey CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS = addGlobalEntry(
-    	"parsim-nullmessageprotocol-laziness", CFG_DOUBLE, "0.5",
-    	"When cNullMessageProtocol is selected as parsim synchronization class: specifies the " +
-     	"laziness of sending null messages. Values in the range [0,1) are accepted. " +
-     	"Laziness=0 causes null messages to be sent out immediately as a new EOT is learned, " +
-     	"which may result in excessive null message traffic.");
-    public static final ConfigKey CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS = addGlobalEntry(
-    	"parsim-nullmessageprotocol-lookahead-class", CFG_STRING, "cLinkDelayLookahead",
-    	"When cNullMessageProtocol is selected as parsim synchronization class: specifies " +
-     	"the C++ class that calculates lookahead. The class should subclass from cNMPLookahead.");
     public static final ConfigKey CFGID_PARSIM_SYNCHRONIZATION_CLASS = addGlobalEntry(
         "parsim-synchronization-class", CFG_STRING, "cNullMessageProtocol",
         "If parallel-simulation=true, it selects the parallel simulation algorithm. " +
@@ -368,9 +339,6 @@ public class ConfigRegistry {
         "Whether the simulation kernel should delete on network cleanup the " +
         "simulation objects not deleted by simple module destructors. Not " +
         "recommended.");
-    public static final ConfigKey CFGID_NED_PATH = addGlobalEntry(
-        "ned-path", CFG_FILENAMES, null,
-        "A path where NED files loaded from. One or more semicolon separated path entry."); //FIXME this decripting must be re-generated from C++
     public static final ConfigKey CFGID_PRINT_UNDISPOSED = addGlobalEntry(
         "print-undisposed", CFG_BOOL, "true",
         "Whether to report objects left (that is, not deallocated by simple module " +
@@ -392,7 +360,7 @@ public class ConfigRegistry {
         "separated by comma. Example: ..100, 200..400, 900..");
     public static final ConfigKey CFGID_REPEAT = addPerRunEntry(
         "repeat", CFG_INT, "1",
-        "Specifies how many replications should be done with the same " +
+        "For scenarios. Specifies how many replications should be done with the same " +
         "parameters (iteration variables). This is typically used to perform " +
         "multiple runs with different random number seeds. The loop variable is " +
         "available as ${repetition}. See also: seed-set= key.");

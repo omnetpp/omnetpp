@@ -185,7 +185,7 @@ std::string opp_replacesubstring(const char *s, const char *substring, const cha
         if (pos == std::string::npos)
             break;
         text.replace(pos, strlen(substring), replacement);
-        pos += strlen(replacement) - strlen(substring);
+        pos += strlen(replacement);
     }
     while (replaceAll);
     return text;

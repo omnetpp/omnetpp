@@ -100,7 +100,7 @@ using std::ostream;
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings", CFG_BOOL, "false", "Currently ignored. Accepted for backward compatibility.");
-Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", CFG_FILENAMES, "", "NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
+//Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", CFG_FILENAMES, "", "NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
 Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb", CFG_INT, NULL, "Specifies the maximum memory for activity() simple module stacks in kilobytes. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
 Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
@@ -320,24 +320,25 @@ void TOmnetApp::setup()
              }
          }
 
-         // load NED files from the (obsolete) "preload-ned-files=" config entry
-         std::vector<std::string> nedfiles = getConfig()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
-         if (!nedfiles.empty())
-         {
-             // iterate through file names
-             ev.printf("\n");
-             for (int i=0; i<(int)nedfiles.size(); i++)
-             {
-                 const char *fname = nedfiles[i].c_str();
-                 if (fname[0]=='@' && fname[1]=='@')
-                     globAndLoadListFile(fname+2, true);
-                 else if (fname[0]=='@')
-                     globAndLoadListFile(fname+1, false);
-                 else if (fname[0])
-                     globAndLoadNedFile(fname);
-             }
-             simulation.doneLoadingNedFiles();
-         }
+         // load NED files from the "preload-ned-files=" config entry.
+         // XXX This code is now obsolete, as we load NED files from NEDPATH trees
+         //std::vector<std::string> nedfiles = getConfig()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
+         //if (!nedfiles.empty())
+         //{
+         //    // iterate through file names
+         //    ev.printf("\n");
+         //    for (int i=0; i<(int)nedfiles.size(); i++)
+         //    {
+         //        const char *fname = nedfiles[i].c_str();
+         //        if (fname[0]=='@' && fname[1]=='@')
+         //            globAndLoadListFile(fname+2, true);
+         //        else if (fname[0]=='@')
+         //            globAndLoadListFile(fname+1, false);
+         //        else if (fname[0])
+         //            globAndLoadNedFile(fname);
+         //    }
+         //    simulation.doneLoadingNedFiles();
+         //}
 
          setupEventLogObjectPrinter();
      }
@@ -1102,70 +1103,70 @@ void TOmnetApp::readPerRunOptions()
 
 }
 
-void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
-{
-    try {
-        FileGlobber glob(fnamepattern);
-        const char *fname;
-        while ((fname=glob.getNext())!=NULL)
-        {
-            ev.printf("Loading NED file: %s\n", fname);
-            simulation.loadNedFile(fname);
-        }
-    }
-    catch (std::runtime_error e) {
-        throw cRuntimeError(e.what());
-    }
-}
-
-void TOmnetApp::globAndLoadListFile(const char *fnamepattern, bool istemplistfile)
-{
-    try {
-        FileGlobber glob(fnamepattern);
-        const char *fname;
-        while ((fname=glob.getNext())!=NULL)
-        {
-            processListFile(fname, istemplistfile);
-        }
-    }
-     catch (std::runtime_error e) {
-        throw cRuntimeError(e.what());
-    }
-}
-
-void TOmnetApp::processListFile(const char *listfilename, bool istemplistfile)
-{
-    std::ifstream in(listfilename, std::ios::in);
-    if (in.fail())
-        throw cRuntimeError("Cannot open list file '%s'",listfilename);
-
-    ev.printf("Processing listfile: %s\n", listfilename);
-
-    // @listfile: files should be relative to list file, so try cd into list file's directory
-    // @@listfile (temp=true): don't cd.
-    PushDir d(istemplistfile ? NULL : directoryOf(listfilename).c_str());
-
-    const int maxline=1024;
-    char line[maxline];
-    while (in.getline(line, maxline))
-    {
-        int len = in.gcount();
-        if (line[len-1]=='\n')
-            line[len-1] = '\0';
-        const char *fname = line;
-
-        if (fname[0]=='@' && fname[1]=='@')
-            globAndLoadListFile(fname+2, true);
-        else if (fname[0]=='@')
-            globAndLoadListFile(fname+1, false);
-        else if (fname[0] && fname[0]!='#')
-            globAndLoadNedFile(fname);
-    }
-
-    if (in.bad())
-        throw cRuntimeError("Error reading list file '%s'",listfilename);
-    in.close();
-}
+//void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
+//{
+//    try {
+//        FileGlobber glob(fnamepattern);
+//        const char *fname;
+//        while ((fname=glob.getNext())!=NULL)
+//        {
+//            ev.printf("Loading NED file: %s\n", fname);
+//            simulation.loadNedFile(fname);
+//        }
+//    }
+//    catch (std::runtime_error e) {
+//        throw cRuntimeError(e.what());
+//    }
+//}
+//
+//void TOmnetApp::globAndLoadListFile(const char *fnamepattern, bool istemplistfile)
+//{
+//    try {
+//        FileGlobber glob(fnamepattern);
+//        const char *fname;
+//        while ((fname=glob.getNext())!=NULL)
+//        {
+//            processListFile(fname, istemplistfile);
+//        }
+//    }
+//     catch (std::runtime_error e) {
+//        throw cRuntimeError(e.what());
+//    }
+//}
+//
+//void TOmnetApp::processListFile(const char *listfilename, bool istemplistfile)
+//{
+//    std::ifstream in(listfilename, std::ios::in);
+//    if (in.fail())
+//        throw cRuntimeError("Cannot open list file '%s'",listfilename);
+//
+//    ev.printf("Processing listfile: %s\n", listfilename);
+//
+//    // @listfile: files should be relative to list file, so try cd into list file's directory
+//    // @@listfile (temp=true): don't cd.
+//    PushDir d(istemplistfile ? NULL : directoryOf(listfilename).c_str());
+//
+//    const int maxline=1024;
+//    char line[maxline];
+//    while (in.getline(line, maxline))
+//    {
+//        int len = in.gcount();
+//        if (line[len-1]=='\n')
+//            line[len-1] = '\0';
+//        const char *fname = line;
+//
+//        if (fname[0]=='@' && fname[1]=='@')
+//            globAndLoadListFile(fname+2, true);
+//        else if (fname[0]=='@')
+//            globAndLoadListFile(fname+1, false);
+//        else if (fname[0] && fname[0]!='#')
+//            globAndLoadNedFile(fname);
+//    }
+//
+//    if (in.bad())
+//        throw cRuntimeError("Error reading list file '%s'",listfilename);
+//    in.close();
+//}
 
 //-------------------------------------------------------------
 

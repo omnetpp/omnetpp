@@ -175,14 +175,10 @@ class ENVIR_API TOmnetApp
     // Utility function: optionally appends host name to fname
     virtual void processFileName(opp_string& fname);
 
-    // Utility function: NED file loading and list file handling
-    virtual void globAndLoadNedFile(const char *fnamepattern);
-
-    // Utility function: NED file loading and list file handling
-    virtual void globAndLoadListFile(const char *fnamepattern, bool istemplistfile);
-
-    // Utility function: NED file loading and list file handling
-    virtual void processListFile(const char *listfilename, bool istemplistfile);
+    // Utility functions: NED file loading and list file handling
+    //virtual void globAndLoadNedFile(const char *fnamepattern);
+    //virtual void globAndLoadListFile(const char *fnamepattern, bool istemplistfile);
+    //virtual void processListFile(const char *listfilename, bool istemplistfile);
 
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();
