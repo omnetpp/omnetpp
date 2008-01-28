@@ -358,8 +358,8 @@ class SIM_API cStaticFlag
     static bool isSet() {return staticflag;}
 };
 
-std::ostream& operator<< (std::ostream& os, const cOwnedObject *p);
-std::ostream& operator<< (std::ostream& os, const cOwnedObject& o);
+SIM_API std::ostream& operator<< (std::ostream& os, const cOwnedObject *p);
+SIM_API std::ostream& operator<< (std::ostream& os, const cOwnedObject& o);
 
 inline std::ostream& operator<< (std::ostream& os, cOwnedObject *p) {
     return os << (const cOwnedObject *)p;
