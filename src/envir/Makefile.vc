@@ -82,6 +82,9 @@ $O/opp_run.exe : $O/opp_run.obj $O/$(LIBNAME)$(LIB_SUFFIX)
 $O/opp_run.obj : opp_run.cc $O
 	@: Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT
 	$(CXX) $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DHAVE_DLOPEN=$(HAVE_DLOPEN) /c /Fo"$@" /Tp opp_run.cc
+!else
+$O/opp_run.exe :
+	echo "Skip building opp_run.exe when linked with static libs"
 !endif
 
 $(OBJS): $O
