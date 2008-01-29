@@ -2,5 +2,5 @@
 #
 # detects the platform and architecture and starts the IDE
 #
-
-../ide/eclipse >/dev/null &
+IDEDIR=`dirname $0`/../ide
+$IDEDIR/eclipse >/dev/null &
