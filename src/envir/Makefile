@@ -28,7 +28,7 @@ IMPLIBS= -L$L -lsim_std$D -lnedxml$D -lcommon$D $(XML_LIBS)
 
 OBJS=$O/args.o $O/cenvir.o $O/main.o $O/omnetapp.o $O/fsutils.o \
      $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \
-     $O/speedometer.o $O/filemgrs.o $O/akoutvectormgr.o $O/matchableobject.o \
+     $O/speedometer.o $O/filemgrs.o $O/akoutvectormgr.o $O/matchableobject.o $O/matchablefield.o \
      $O/akaroarng.o $O/cxmldoccache.o $O/ivfilemgr.o $O/eventlogwriter.o $O/objectprinter.o
 
 #

@@ -26,7 +26,7 @@ IMPLIBS= $O/../sim/sim_std$D.lib $O/../nedxml/nedxml$D.lib $O/../common/common$D
 
 OBJS= $O/args.obj $O/cenvir.obj $O/main.obj $O/omnetapp.obj $O/fsutils.obj \
       $O/sectionbasedconfig.obj $O/inifilereader.obj $O/scenario.obj $O/valueiterator.obj \
-      $O/speedometer.obj $O/filemgrs.obj $O/akoutvectormgr.obj $O/matchableobject.obj \
+      $O/speedometer.obj $O/filemgrs.obj $O/akoutvectormgr.obj $O/matchableobject.obj $O/matchablefield.obj \
       $O/akaroarng.obj $O/cxmldoccache.obj $O/ivfilemgr.obj $O/eventlogwriter.obj $O/objectprinter.obj
 
 !if "$(LIB_SUFFIX)"==".dll"

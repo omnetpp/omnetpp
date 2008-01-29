@@ -21,8 +21,8 @@
 
 #include <vector>
 #include <iostream>
-#include "patternmatcher.h"
 #include "matchexpression.h"
+#include "matchablefield.h"
 #include "matchableobject.h"
 
 NAMESPACE_BEGIN
@@ -37,17 +37,16 @@ class ENVIR_API ObjectPrinter
     protected:
         int indentSize;
         char buffer[1024];
-        std::vector<MatchExpression> *objectMatchExpressions;
-        std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList;
+        std::vector<MatchExpression> objectMatchExpressions;
+        std::vector<std::vector<MatchExpression>> fieldNameMatchExpressionsList;
 
     public:
         /**
          * FIXME Levy: pls document parameters and operation
          */
-        ObjectPrinter(std::vector<MatchExpression> *objectMatchExpressions,
-                      std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList,
+        ObjectPrinter(std::vector<MatchExpression> &objectMatchExpressions,
+                      std::vector<std::vector<MatchExpression>> &fieldNameMatchExpressionsList,
                       int indentSize);
-        virtual ~ObjectPrinter();
 
         void printObjectToStream(std::ostream& ostream, cObject *object);
         std::string printObjectToString(cObject *object);
@@ -55,7 +54,7 @@ class ENVIR_API ObjectPrinter
     protected:
         void printIndent(std::ostream& ostream, int level);
         void printObjectToStream(std::ostream& ostream, void *object, cClassDescriptor *descriptor, int level);
-        bool matchesObjectField(cObject *object, const char *fieldName);
+        bool matchesObjectField(cObject *object, int fieldIndex);
 };
 
 NAMESPACE_END

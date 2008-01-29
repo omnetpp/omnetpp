@@ -21,8 +21,6 @@
 
 USING_NAMESPACE
 
-static bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int fieldIndex,  void *fieldValue, int level);
-
 static bool defaultRecurseIntoCObject(void *object, cClassDescriptor *descriptor, int fieldIndex, cObject *fieldValue, int level)
 {
     cArray *carray = dynamic_cast<cArray *>(fieldValue);
@@ -45,20 +43,14 @@ static bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int f
 
 //----
 
-ObjectPrinter::ObjectPrinter(std::vector<MatchExpression> *objectMatchExpressions,
-                             std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList,
+ObjectPrinter::ObjectPrinter(std::vector<MatchExpression> &objectMatchExpressions,
+                             std::vector<std::vector<MatchExpression>> &fieldNameMatchExpressionsList,
                              int indentSize)
 {
-    Assert(objectMatchExpressions->size() == fieldNamePatternMatchersList->size());
+    Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());
     this->objectMatchExpressions = objectMatchExpressions;
-    this->fieldNamePatternMatchersList = fieldNamePatternMatchersList;
+    this->fieldNameMatchExpressionsList = fieldNameMatchExpressionsList;
     this->indentSize = indentSize;
-}
-
-ObjectPrinter::~ObjectPrinter()
-{
-    delete objectMatchExpressions;
-    delete fieldNamePatternMatchersList;
 }
 
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, cObject *object)
@@ -99,7 +91,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                 void *fieldValue = isCompound ? descriptor->getFieldStructPointer(object, fieldIndex, elementIndex) : NULL;
 
                 if (!defaultRecurseInto(object, descriptor, fieldIndex, fieldValue, level) ||
-                    (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldName)))
+                    (descriptor->extendsCObject() && !matchesObjectField((cObject *)object, fieldIndex)))
                     continue;
 
                 printIndent(ostream, level);
@@ -153,19 +145,23 @@ void ObjectPrinter::printIndent(std::ostream& ostream, int level)
         ostream << " ";
 }
 
-bool ObjectPrinter::matchesObjectField(cObject *object, const char *fieldName)
+bool ObjectPrinter::matchesObjectField(cObject *object, int fieldIndex)
 {
-    const MatchableObjectAdapter matchable(MatchableObjectAdapter::CLASSNAME, object);
+    const MatchableObjectAdapter matchableObject(MatchableObjectAdapter::CLASSNAME, object);
 
-    for (int i = 0; i < (int)objectMatchExpressions->size(); i++) {
-        MatchExpression &objectMatchExpression = objectMatchExpressions->at(i);
-        std::vector<PatternMatcher> &fieldNamePatternMatchers = fieldNamePatternMatchersList->at(i);
+    for (int i = 0; i < (int)objectMatchExpressions.size(); i++) {
+        MatchExpression &objectMatchExpression = objectMatchExpressions[i];
 
-        for (int j = 0; j < (int)fieldNamePatternMatchers.size(); j++) {
-            PatternMatcher &fieldNamePatternMatcher = fieldNamePatternMatchers[j];
+        if (objectMatchExpression.matches(&matchableObject)) {
+            std::vector<MatchExpression> &fieldNameMatchExpressions = fieldNameMatchExpressionsList[i];
 
-            if (objectMatchExpression.matches(&matchable) && fieldNamePatternMatcher.matches(fieldName))
-                return true;
+            for (int j = 0; j < (int)fieldNameMatchExpressions.size(); j++) {
+                MatchExpression &fieldNameMatchExpression = fieldNameMatchExpressions[j];
+                const MatchableFieldAdapter matchableField(object, fieldIndex);
+
+                if (fieldNameMatchExpression.matches(&matchableField))
+                    return true;
+            }
         }
     }
 

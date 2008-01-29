@@ -126,7 +126,7 @@ Register_PerRunConfigEntry(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneT
 Register_PerRunConfigEntry(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
 Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, NULL, "Name of the event log file to generate. If empty, no file is generated.");
 //FIXME why is this global:
-Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL, "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field name patterns. In the object pattern and/or/not/* and various field matcher expressions can be used. The field pattern contains a wildcard expressions matched against field names.");
+Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL, "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field patterns. In both patterns and/or/not/* and various matcher expressions can be used. The object pattern matches to class name, the field pattern matches to field name by default.");
 
 Register_PerObjectConfigEntry(CFGID_PARTITION_ID, "partition-id", CFG_INT, NULL, "With parallel simulation: in which partition the module should be instantiated.");
 //FIXME register "rng-*" ?
@@ -143,8 +143,8 @@ static void setupEventLogObjectPrinter()
      const char *eventLogMessageDetailPattern = ev.config()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
 
      if (eventLogMessageDetailPattern) {
-         std::vector<MatchExpression> *objectMatchExpressions = new std::vector<MatchExpression>;
-         std::vector<std::vector<PatternMatcher> > *fieldNamePatternMatchersList = new std::vector<std::vector<PatternMatcher> >;
+         std::vector<MatchExpression> objectMatchExpressions;
+         std::vector<std::vector<MatchExpression>> fieldNameMatchExpressionsList;
 
          StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
          std::vector<std::string> patterns = tokenizer.asVector();
@@ -157,23 +157,23 @@ static void setupEventLogObjectPrinter()
                  *fieldNamePattern = '\0';
                  StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
                  std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
-                 std::vector<PatternMatcher> fieldNamePatternMatchers;
+                 std::vector<MatchExpression> fieldNameMatchExpressions;
 
                  for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
-                     fieldNamePatternMatchers.push_back(PatternMatcher(fieldNamePatterns[j].c_str(), false, false, false));
+                     fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, false, false));
 
-                 fieldNamePatternMatchersList->push_back(fieldNamePatternMatchers);
+                 fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
              }
              else {
-                 std::vector<PatternMatcher> fieldNamePatternMatchers;
-                 fieldNamePatternMatchers.push_back(PatternMatcher("*", false, false, false));
-                 fieldNamePatternMatchersList->push_back(fieldNamePatternMatchers);
+                 std::vector<MatchExpression> fieldNameMatchExpressions;
+                 fieldNameMatchExpressions.push_back(MatchExpression("*", false, false, false));
+                 fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
              }
 
-             objectMatchExpressions->push_back(MatchExpression(objectPattern, false, false, false));
+             objectMatchExpressions.push_back(MatchExpression(objectPattern, false, false, false));
          }
 
-         eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNamePatternMatchersList, 3);
+         eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNameMatchExpressionsList, 3);
      }
 }
 
