@@ -1,10 +1,16 @@
 package org.omnetpp.ide.properties;
 
+import java.io.File;
+import java.util.ArrayList;
+
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
-import org.eclipse.jface.window.Window;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -16,8 +22,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
+import org.eclipse.ui.model.WorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.ui.views.navigator.ResourceComparator;
+import org.omnetpp.common.util.FileUtils;
+import org.omnetpp.common.util.ProcessUtils;
+import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 
 /**
  * This is a property page displayed in project properties to set the project specific parameters for documentation generation.
@@ -29,21 +41,12 @@ import org.eclipse.ui.dialogs.ResourceListSelectionDialog;
  * 
  * @author levy
  */
-//FIXME refine organization of the dialog:  (Andras)
-// Target folders:-------
-//    For Doxygen:               [________]
-//    For NED/MSG documentation: [________]
-// Doxygen:--------------
-//    Doxyfile:   [__________]
-//
-//FIXME "Browse" dialogs not really good here -- one with tree control needed  (Andras)
-//XXX why project relative paths here? or if so, why begin with "/"?
 public class DocumentationGeneratorPropertyPage 
     extends PropertyPage
 {
-    private static final String DEFAULT_DOXY_PATH = "/Documentation/doxy";
-    private static final String DEFAULT_DOXY_CONFIG_FILE_PATH = "/doxy.cfg";
-    private static final String DEFAULT_NEDDOC_PATH = "/Documentation/neddoc";
+    private static final String DEFAULT_DOXY_PATH = "Documentation/doxy";
+    private static final String DEFAULT_DOXY_CONFIG_FILE_PATH = "doxy.cfg";
+    private static final String DEFAULT_NEDDOC_PATH = "Documentation/neddoc";
 
     public static QualifiedName DOXY_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyPath");
     public static QualifiedName DOXY_CONFIG_FILE_PATH_QNAME = new QualifiedName("DocumentationGenerator", "DoxyConfigFilePath");
@@ -59,6 +62,8 @@ public class DocumentationGeneratorPropertyPage
 
     @Override
 	protected Control createContents(Composite parent) {
+        final IProject project = getProject();
+        
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout(1, false));
@@ -68,20 +73,87 @@ public class DocumentationGeneratorPropertyPage
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         group.setLayout(new GridLayout(3, false));
 
-        doxyPath = addLabelledText(group, "Generated Doxygen documentation:");
-        doxyConfigFilePath = addLabelledText(group, "Doxygen configuration file:");
-        neddocPath = addLabelledText(group, "Generated NED documentation:");
+        doxyPath = addTextAndBrowse(group, "Generated Doxygen documentation:", true);
+        neddocPath = addTextAndBrowse(group, "Generated NED documentation:", true);
         
         try {
-            IProject project = getProject();
             setText(doxyPath, getDoxyPath(project));
-            setText(doxyConfigFilePath, getDoxyConfigFilePath(project));
             setText(neddocPath, getNeddocPath(project));
         }
         catch (CoreException e) {
             throw new RuntimeException(e);
         }
         
+        group = new Group(composite, SWT.NONE);
+        group.setText("Doxygen");
+        group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        group.setLayout(new GridLayout(3, false));
+
+        doxyConfigFilePath = addTextAndBrowse(group, "Configuration file path:", false);
+        
+        IPreferenceStore store = org.omnetpp.ide.OmnetppMainPlugin.getDefault().getPreferenceStore();
+        final String doxyExecutablePath = store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE);
+
+        Button button = new Button(group, SWT.PUSH);
+        button.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 3, 1));
+        button.setText("Generate default");
+        button.setEnabled(doxyExecutablePath != null && new File(doxyExecutablePath).exists());
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String relativePath = doxyConfigFilePath.getText();
+                if (relativePath == null || relativePath.equals("")) {
+                    relativePath = "doxy.cfg";
+                    doxyConfigFilePath.setText(relativePath);
+                }
+                String fileName = project.getFile(relativePath).getLocation().toPortableString();
+                
+                if (new File(fileName).exists())
+                    if (!MessageDialog.openConfirm(getShell(), "Confirm overwrite", "Do you wan to overwrite the Doxygen configuration file: " + fileName + "?"))
+                       return;
+
+                try {
+                    ProcessUtils.exec(doxyExecutablePath, new String[] {"-g", fileName}, project.getLocation().toString());
+
+                    String content = FileUtils.readTextFile(fileName);
+                    // AUTO means will be set when generating the documentation based on project settings
+                    content = replaceDoxygenConfigurationEntry(content, "PROJECT_NAME", project.getName());
+                    content = replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", "AUTO");
+                    content = replaceDoxygenConfigurationEntry(content, "FULL_PATH_NAMES", "NO");
+                    content = replaceDoxygenConfigurationEntry(content, "DETAILS_AT_TOP", "YES");
+                    content = replaceDoxygenConfigurationEntry(content, "EXTRACT_ALL", "YES");
+                    content = replaceDoxygenConfigurationEntry(content, "EXTRACT_PRIVATE", "YES");
+                    content = replaceDoxygenConfigurationEntry(content, "QUIET", "YES");
+                    content = replaceDoxygenConfigurationEntry(content, "RECURSIVE", "YES");
+                    content = replaceDoxygenConfigurationEntry(content, "EXCLUDE_PATTERNS", "*_m.cc *_n.cc");
+                    content = replaceDoxygenConfigurationEntry(content, "INLINE_SOURCES", "YES");
+                    content = replaceDoxygenConfigurationEntry(content, "REFERENCES_RELATION", "NO");
+                    content = replaceDoxygenConfigurationEntry(content, "VERBATIM_HEADERS", "NO");
+                    content = replaceDoxygenConfigurationEntry(content, "HTML_OUTPUT", ".");
+                    content = replaceDoxygenConfigurationEntry(content, "HTML_STYLESHEET", "AUTO");
+                    content = replaceDoxygenConfigurationEntry(content, "GENERATE_TREEVIEW", "YES");
+                    content = replaceDoxygenConfigurationEntry(content, "GENERATE_LATEX", "NO");
+                    content = replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", "AUTO");
+                    content = replaceDoxygenConfigurationEntry(content, "TEMPLATE_RELATIONS", "YES");
+                    FileUtils.writeTextFile(fileName, content);                    
+                    
+                    MessageDialog.openInformation(getShell(), "Generate default Doxygen configuration file", 
+                            "Generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath + " succeeded.");
+                }
+                catch (Exception x) {
+                    MessageDialog.openError(getShell(), "Generate default Doxygen configuration file", 
+                            "Generating the Doxygen configuration file: " + fileName + " using Doxygen: " + doxyExecutablePath + " failed.");
+                }
+            }
+        });
+
+        try {
+            setText(doxyConfigFilePath, getDoxyConfigFilePath(project));
+        }
+        catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+
         return composite;
 	}
 
@@ -90,7 +162,7 @@ public class DocumentationGeneratorPropertyPage
             text.setText(value);
     }
 
-    private Text addLabelledText(Composite composite, String labelText) {
+    private Text addTextAndBrowse(Composite composite, String labelText, final boolean folder) {
         Label label = new Label(composite, SWT.NONE);
         label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
         label.setText(labelText);
@@ -104,10 +176,34 @@ public class DocumentationGeneratorPropertyPage
         button.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                ResourceListSelectionDialog dialog = new ResourceListSelectionDialog(getShell(), getProject(), IResource.FOLDER + IResource.FILE);
+                IProject project = getProject();
 
-                if (dialog.open() == Window.OK)
-                    text.setText(dialog.getResult()[0].toString().substring(1));
+                ElementTreeSelectionDialog dialog = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
+                    new WorkbenchContentProvider() {
+                        @Override
+                        public Object[] getChildren(Object element) {
+                            Object[] children = super.getChildren(element);
+                            
+                            if (folder) {
+                                ArrayList<Object> filteredChildren = new ArrayList<Object>();
+                                for (Object child : children)
+                                   if (child instanceof IContainer)
+                                       filteredChildren.add(child);
+                                return filteredChildren.toArray();
+                            }
+                            else
+                                return children;
+                        }
+                });
+                dialog.setAllowMultiple(false);
+                dialog.setTitle("Select a " + (folder ? "Folder" : "File"));
+                dialog.setInput(project);
+                dialog.setComparator(new ResourceComparator(ResourceComparator.NAME));
+
+                if (dialog.open() == IDialogConstants.OK_ID && dialog.getFirstResult() instanceof IResource) {
+                    String result = ((IResource)dialog.getFirstResult()).getFullPath().toString();
+                    text.setText(result.replaceFirst("^/" + project.getName() + "/", ""));
+                }
             }
         });
         
@@ -166,5 +262,11 @@ public class DocumentationGeneratorPropertyPage
             return DEFAULT_NEDDOC_PATH;
         else
             return value;
+    }
+
+    public static String replaceDoxygenConfigurationEntry(String content, String key, String value) {
+        key = key.replace("\\", "\\\\");
+        value = value.replace("\\", "\\\\");
+        return content.replaceAll("(?m)^\\s*" + key +"\\s*=.*?$", key + "=" + value);
     }
 }

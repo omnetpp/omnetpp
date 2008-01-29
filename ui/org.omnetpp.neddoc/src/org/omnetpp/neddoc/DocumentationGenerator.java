@@ -50,6 +50,7 @@ import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
+import org.omnetpp.ide.properties.DocumentationGeneratorPropertyPage;
 import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
@@ -449,13 +450,17 @@ public class DocumentationGenerator {
 
                 if (doxyConfigFile.exists()) {
                     String content = FileUtils.readTextFile(doxyConfigFile);
-                    content = content.replaceAll("(?m)^\\s*OUTPUT_DIRECTORY\\s*=.*?$", "OUTPUT_DIRECTORY=" + getFullDoxyPath().toOSString().replace("\\", "\\\\"));
-                    content = content.replaceAll("(?m)^\\s*GENERATE_TAGFILE\\s*=.*?$", "GENERATE_TAGFILE=" + getFullDoxyPath().append("doxytags.xml").toOSString().replace("\\", "\\\\"));
+                    // these options must be always overwritten
+                    IPath fullPath = getFullDoxyPath();
+                    content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", fullPath.toOSString());
+                    content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "HTML_STYLESHEET", fullPath.append("opp.css").toOSString());
+                    content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "GENERATE_TAGFILE", fullPath.append("doxytags.xml").toOSString());
+                    content = DocumentationGeneratorPropertyPage.replaceDoxygenConfigurationEntry(content, "SOURCE_BROWSER", (configuration.doxySourceBrowser ? "YES" : "NO"));
                     File modifiedDoxyConfigFile = documentationRootPath.append("temp-doxy.cfg").toFile();
 
                     try {
                         FileUtils.writeTextFile(modifiedDoxyConfigFile, content);
-                        ProcessUtils.exec(doxyExecutablePath, new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString());
+                        ProcessUtils.exec(ProcessUtils.lookupExecutable(doxyExecutablePath), new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString());
                     }
                     finally {
                         modifiedDoxyConfigFile.delete();
@@ -1752,7 +1757,7 @@ public class DocumentationGenerator {
         if (dotExecutablePath == null || !new File(dotExecutablePath).exists())
             throw new RuntimeException("The GraphViz Dot executable path is invalid, set it using Window/Preferences...\nPath: " + dotExecutablePath);
         
-        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10);
+        ProcessUtils.exec(ProcessUtils.lookupExecutable(dotExecutablePath), new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10);
     }
     
     protected String getParamTypeAsString(ParamElementEx param) {

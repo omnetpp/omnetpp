@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.ide.properties.DocumentationGeneratorPropertyPage;
 
 /**
@@ -45,33 +46,34 @@ import org.omnetpp.ide.properties.DocumentationGeneratorPropertyPage;
  * 
  * @author levy
  */
-//TODO disable checkboxes depending on DOT availability --Andras
-//TODO offer to generate doxyfile? checkboxes to tweak some of the options in there (like include source or not) --Andras
 public class GeneratorConfigurationDialog
     extends TitleAreaDialog
 {
-    private IProject project;
-    private List<IProject> projects = new ArrayList<IProject>();
+    private List<IProject> allProjects = new ArrayList<IProject>();
     private List<DocumentationGenerator> generators;
     private GeneratorConfiguration configuration;
 
     // Widgets
     private CheckboxTableViewer selectedProjects;
-    private Button generateDoxy;
+
     private Button generateNedTypeFigures;
     private Button generateInheritanceDiagrams;
     private Button generateUsageDiagrams;
     private Button generateSourceContent;
+    
+    private Button generateDoxy;
+    private Button doxySourceBrowser;
+
     private Text outputDirectoryPath;
+    
     private Button browseButton;
     private Button insideProjectsButton;
     private Button separateDirectoryButton;
 
-    public GeneratorConfigurationDialog(Shell parentShell, IProject project, GeneratorConfiguration configuration) {
+    public GeneratorConfigurationDialog(Shell parentShell, GeneratorConfiguration configuration) {
         super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
 
-        this.project = project;
         this.configuration = configuration;
     }
     
@@ -107,14 +109,14 @@ public class GeneratorConfigurationDialog
 
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
             if (project.isAccessible()) {
-                projects.add(project);
+                allProjects.add(project);
                 selectedProjects.add(project);
             }
         }
         
-        if (project != null) {
-            selectedProjects.setChecked(project, true);
-            selectedProjects.setSelection(new StructuredSelection(project));
+        if (configuration.projects != null) {
+            selectedProjects.setCheckedElements(configuration.projects);
+            selectedProjects.setSelection(new StructuredSelection(configuration.projects));
         }
 
         createProjectListButtons(container);
@@ -167,7 +169,7 @@ public class GeneratorConfigurationDialog
         selectAllButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                selectedProjects.setCheckedElements(projects.toArray());
+                selectedProjects.setCheckedElements(allProjects.toArray());
             }
         });
         
@@ -188,13 +190,28 @@ public class GeneratorConfigurationDialog
         group.setText("Generate:");
         group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
-        generateNedTypeFigures = createCheckbox(group, "Network diagrams", configuration.generateNedTypeFigures);
-        generateInheritanceDiagrams = createCheckbox(group, "Inheritance diagrams", configuration.generateInheritanceDiagrams);
-        generateUsageDiagrams = createCheckbox(group, "Usage diagrams", configuration.generateUsageDiagrams);
+        boolean dotAvailable = OmnetppPreferencePage.isGraphvizDotAvailable();
+        generateNedTypeFigures = createCheckbox(group, "Network diagrams", configuration.generateNedTypeFigures && dotAvailable);
+        generateInheritanceDiagrams = createCheckbox(group, "Inheritance diagrams", configuration.generateInheritanceDiagrams && dotAvailable);
+        generateUsageDiagrams = createCheckbox(group, "Usage diagrams", configuration.generateUsageDiagrams && dotAvailable);
+        generateNedTypeFigures.setEnabled(dotAvailable);
+        generateInheritanceDiagrams.setEnabled(dotAvailable);
+        generateUsageDiagrams.setEnabled(dotAvailable);
+        
         generateSourceContent = createCheckbox(group, "Source listings", configuration.generateSourceContent);
-        generateDoxy = createCheckbox(group, "C++ documentation (using Doxygen)", configuration.generateDoxy);
+
+        boolean doxygenAvailable = OmnetppPreferencePage.isDoxygenAvailable();
+        generateDoxy = createCheckbox(group, "C++ documentation (using Doxygen)", configuration.generateDoxy && doxygenAvailable);
+        generateDoxy.setEnabled(doxygenAvailable);
+        
         Label label = new Label(group, SWT.NONE);
-        label.setText("   Note: Doxyfile locations can be configured in the Project Properties dialog");
+        label.setText("   Note: Doxygen configuration file locations can be configured in the Project Properties dialog");
+
+        doxySourceBrowser = createCheckbox(group, "Doxygen source browser", configuration.doxySourceBrowser);
+        doxySourceBrowser.setEnabled(doxygenAvailable);
+        
+        label = new Label(group, SWT.NONE);
+        label.setText("   Note: other Doxygen options can be configured in the Doxygen configuration file");
     }
 
     private Button createCheckbox(Composite parent, String text, boolean initialSelection) {
@@ -274,11 +291,18 @@ public class GeneratorConfigurationDialog
     protected void okPressed() {
         generators =  new ArrayList<DocumentationGenerator>();
 
-        configuration.generateDoxy = generateDoxy.getSelection();
         configuration.generateNedTypeFigures = generateNedTypeFigures.getSelection();
         configuration.generateUsageDiagrams = generateUsageDiagrams.getSelection();
         configuration.generateInheritanceDiagrams = generateInheritanceDiagrams.getSelection();
         configuration.generateSourceContent = generateSourceContent.getSelection();
+        
+        configuration.generateDoxy = generateDoxy.getSelection();
+        configuration.doxySourceBrowser = doxySourceBrowser.getSelection();
+        
+        Object[] selectedElements = selectedProjects.getCheckedElements();
+        configuration.projects = new IProject[selectedElements.length];
+        System.arraycopy(selectedElements, 0, configuration.projects, 0, selectedElements.length);
+
         configuration.outputDirectoryPath = outputDirectoryPath.getText().equals("") || insideProjectsButton.getSelection() ? null : outputDirectoryPath.getText();
 
         for (Object element : selectedProjects.getCheckedElements()) {
@@ -303,6 +327,8 @@ public class GeneratorConfigurationDialog
             generators.add(generator);
         }
 
+        NeddocPlugin.getDefault().storeGeneratorConfiguration(configuration);
+        
         super.okPressed();
     }
 

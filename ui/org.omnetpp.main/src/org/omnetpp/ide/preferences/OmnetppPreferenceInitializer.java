@@ -6,22 +6,18 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-
+import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Class used to initialize default preference values.
  */
 public class OmnetppPreferenceInitializer extends AbstractPreferenceInitializer {
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
-	 */
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
 		store.setDefault(OmnetppPreferencePage.OMNETPP_ROOT, getOmnetppRootDefault());
+		store.setDefault(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE, getGraphvizDotExecutableDefault());
+        store.setDefault(OmnetppPreferencePage.DOXYGEN_EXECUTABLE, getDoxygenExecutableDefault());
 	}
 	
 	private String getOmnetppRootDefault() {
@@ -40,5 +36,12 @@ public class OmnetppPreferenceInitializer extends AbstractPreferenceInitializer 
 	private boolean containsConfigFiles(String path) {
 	    return new File(path+"/configuser.vc").exists() || new File(path+"/Makefile.inc").exists();  
 	}
-
+	
+	private String getGraphvizDotExecutableDefault() {
+        return ProcessUtils.lookupExecutable("dot") != null ? "dot" : "";
+	}
+	
+	private String getDoxygenExecutableDefault() {
+	    return ProcessUtils.lookupExecutable("doxygen") != null ? "doxygen" : "";
+	}
 }

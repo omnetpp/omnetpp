@@ -18,7 +18,7 @@
          point="org.eclipse.ui.handlers">
       <handler
             commandId="org.omnetpp.neddoc.commands.neddocCommand"
-            class="org.omnetpp.neddoc.handlers.DocumentationGeneratorHandler">
+            class="org.omnetpp.neddoc.GenerateNeddocHandler">
       </handler>
    </extension>
    <extension
@@ -44,5 +44,21 @@
             </command>
          </toolbar>
       </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="org.omnetpp.neddoc.generateNeddoc"
+            nameFilter="*"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="org.omnetpp.neddoc.GenerateNeddocAction"
+               enablesFor="+"
+               id="org.omnetpp.ide.generateNeddoc"
+               label="Generate neddoc"
+               menubarPath="additions">
+         </action>
+      </objectContribution>
    </extension>
 </plugin>

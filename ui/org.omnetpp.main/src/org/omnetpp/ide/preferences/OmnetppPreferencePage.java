@@ -1,10 +1,15 @@
 package org.omnetpp.ide.preferences;
 
+import java.io.File;
+
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
@@ -38,10 +43,9 @@ public class OmnetppPreferencePage
 	
 	public void createFieldEditors() {
 	    // FIXME naming is not correct - not install location) 
-		addField(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, 
-				"OMNEST/OMNeT++ install location:", getFieldEditorParent()));
-		addField(new FileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", getFieldEditorParent()));
-        addField(new FileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", getFieldEditorParent()));
+		addField(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, "OMNEST/OMNeT++ install location:", getFieldEditorParent()));
+		addField(new LookupFileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", getFieldEditorParent()));
+        addField(new LookupFileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)
@@ -49,5 +53,27 @@ public class OmnetppPreferencePage
 	 */
 	public void init(IWorkbench workbench) {
 	}
-	
+
+    public static boolean isGraphvizDotAvailable() {
+        IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
+        String graphvizDotExecutablePath = store.getString(OmnetppPreferencePage.GRAPHVIZ_DOT_EXECUTABLE);
+        return graphvizDotExecutablePath != null && new File(ProcessUtils.lookupExecutable(graphvizDotExecutablePath)).exists();
+    }
+
+    public static boolean isDoxygenAvailable() {
+        IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
+        String doxyExecutablePath = store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE);
+        return doxyExecutablePath != null && new File(ProcessUtils.lookupExecutable(doxyExecutablePath)).exists();
+    }
+
+    private static class LookupFileFieldEditor extends FileFieldEditor {
+        public LookupFileFieldEditor(String name, String string, Composite fieldEditorParent) {
+            super(name, string, fieldEditorParent);
+        }
+
+        @Override
+        protected boolean checkState() {
+            return ProcessUtils.lookupExecutable(getStringValue()) != null || super.checkState();
+        }
+    }
 }

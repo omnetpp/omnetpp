@@ -130,4 +130,27 @@ public class ProcessUtils {
         
         throw new TimeoutException("Process exec timeout elapsed for: " + command);
     }
+
+    public static String lookupExecutable(String name) {
+        if (name != null && !name.equals("")) {
+            String systemPath = System.getenv("PATH");
+
+            if (systemPath != null) {
+                String separator = System.getProperty("file.separator");
+                String[] directories = systemPath.split(System.getProperty("path.separator"));
+
+                for (String directory : directories) {
+                    String path = directory + separator + name;
+                    if (new File(path).exists())
+                        return path;
+
+                    path = directory + separator + name + ".exe";
+                    if (new File(path).exists())
+                        return path;
+                }
+            }
+        }
+        
+        return name;
+    }
 }
