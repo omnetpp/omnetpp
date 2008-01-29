@@ -233,9 +233,21 @@ public class ConfigRegistry {
         "message detail information into the event log for each message sent during " +
         "the simulation. The message detail will be presented in the sequence chart " +
         "tool. Each pattern starts with an object pattern optionally followed by ':' " +
-        "character and a comma separated list of field name patterns. In the object " +
-        "pattern and/or/not/* and various field matcher expressions can be used. The " +
-        "field pattern contains a wildcard expressions matched against field names.");
+        "character and a comma separated list of field patterns. In both " +
+        "patterns and/or/not/* and various field matcher expressions can be used. " +
+        "The object pattern matches to class name, the field pattern matches to field name by default." +
+        // TODO: FIXME: KLUDGE: XXX: copy this to omnetapp.cc and use a common formatting infrastructure [we need at least new lines)
+        "<pre>\n\n" +
+        "EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN\n" +
+        "DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n" +
+        "OBJECT-PATTERN := MATCHER-EXPRESSION\n" +
+        "FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n" +
+        "FIELD-PATTERN := MATCHER-EXPRESSION\n" +
+        "</pre>" +
+        "Examples:</br>" +
+        " * - captures all fields of all messages</br>" +
+        " MyMessage:declaredOn(MyMessage) - captures instances of MyMessage recording the fields declared on the MyMessage class</br>" +
+        " *Frame:*Address,*Id - captures all various Address and Id fields from various Frame message instances");
     public static final ConfigKey CFGID_EXPERIMENT = addPerRunEntry(
         "experiment", CFG_STRING, "${configname}",
         "Experiment label. This string gets recorded into result files, and may be " +
