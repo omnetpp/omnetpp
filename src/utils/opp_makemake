@@ -1143,11 +1143,10 @@ all: $O/$(TARGET)
 {exe:}{~nmake:}	@mkdir -p $O
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
 {exe:}{nmake:}	echo @^%~dp0\$(O:/=\)\$(TARGET) ^%* > $(TARGET:.exe=.cmd)
-{exe:}{~nmake:}	rm -f $(TARGET)
 {exe:}{~nmake:}ifeq ("$(EXE_SUFFIX)",".exe")
 {exe:}{~nmake:}	echo "@%~dp0\\\\$(subst /,\\\\,$O)\\\\$(TARGET) %*" > $(subst .exe,.cmd,$(TARGET))
 {exe:}{~nmake:}else
-{exe:}{~nmake:}	ln -s $O/$(TARGET) .
+{exe:}{~nmake:}	ln -s -f $O/$(TARGET) .
 {exe:}{~nmake:}endif
 {sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul

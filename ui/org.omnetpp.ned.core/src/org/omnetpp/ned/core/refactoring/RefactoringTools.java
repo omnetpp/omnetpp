@@ -11,7 +11,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.util.StringUtils;
@@ -161,7 +163,8 @@ public class RefactoringTools {
      */
 	//XXX move it out of this class
 	protected static String chooseImport(List<String> importsList) {
-        Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
 		ListDialog dialog = new ListDialog(shell);
 		dialog.setInput(importsList);
 		dialog.setContentProvider(new ArrayContentProvider());

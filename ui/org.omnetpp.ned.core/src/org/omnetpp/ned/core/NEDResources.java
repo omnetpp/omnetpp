@@ -122,6 +122,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private NedFileElementEx builtInDeclarationsFile;
 
     private boolean nedModelChangeNotificationDisabled = false;
+	private boolean refactoringInProgress = false;
 
 
     // utilities for predicate-based filtering of NED types using getAllNedTypes()
@@ -957,7 +958,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
         if (event instanceof NEDModelChangeEvent) {
             INEDElement source = ((NEDModelChangeEvent)event).getSource();
-            Assert.isTrue(source==null || source instanceof NedFileElementEx || hasConnectedEditor(getNedFile(source.getContainingNedFileElement())), "NED trees not opened in any editor must NOT be changed");
+            Assert.isTrue(source==null || refactoringInProgress || source instanceof NedFileElementEx || hasConnectedEditor(getNedFile(source.getContainingNedFileElement())), "NED trees not opened in any editor must NOT be changed");
             invalidate();
             validationJob.restartTimer();
         }
@@ -1052,5 +1053,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     				"  deps: " + StringUtils.join(projectData.referencedProjects, ",") +
     				"  nedfolders: " + StringUtils.join(projectData.nedSourceFolders, ","));
     	}
+	}
+
+	public boolean isRefactoringInProgress() {
+		return refactoringInProgress;
+	}
+
+	public void setRefactoringInProgress(boolean refactoringInProgress) {
+		this.refactoringInProgress = refactoringInProgress;
 	}
 }

@@ -107,6 +107,11 @@ public class NEDTreeUtil {
 			int numMessages = swigErrors.numMessages();
 			NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
 			dtdvalidator.validate(swigTree);
+			// FIXME remove next lines  (for debugging only)
+			for (int i=0 ; i<swigErrors.numMessages() ; i++) {
+				System.out.println(swigErrors. errorText(i)+" loc: "+swigErrors.errorLocation(i));
+			}
+			
 			Assert.isTrue(swigErrors.numMessages() == numMessages, "NED tree fails DTD validation, even after repairs");
 
 			// additional syntax-related validation

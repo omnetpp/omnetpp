@@ -44,8 +44,11 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
     
     public void run(IAction action) {
         //FIXME tell user: "Please save all files and close all editors" etc.
-        Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        ContainerSelectionDialog dialog = new ContainerSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), false, "Clean up NED files in the following folder:");
+    	// FIXME tell user if some files has syntax error
+        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
+
+		ContainerSelectionDialog dialog = new ContainerSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), false, "Clean up NED files in the following folder:");
         if (dialog.open() == ListDialog.OK) {
             IPath path = (IPath) dialog.getResult()[0];
             final IContainer container = (IContainer) ResourcesPlugin.getWorkspace().getRoot().findMember(path);
@@ -68,7 +71,10 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
 
     protected void cleanupNedFilesIn(IContainer container, final IProgressMonitor monitor) {
         try {
+        	
+        	NEDResourcesPlugin.getNEDResources().setRefactoringInProgress(true);
             NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
+
             container.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) throws CoreException {
                     if (NEDResourcesPlugin.getNEDResources().isNedFile(resource)) {
@@ -85,28 +91,32 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
         }
         catch (CoreException e) {
             NEDResourcesPlugin.logError(e);
-            Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+            IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+    		Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
             ErrorDialog.openError(shell, "Error", "An error occurred during cleaning up NED files. Not all of the selected files have been processed.", e.getStatus());
         }
         finally {
             NEDResourcesPlugin.getNEDResources().fireEndChangeEvent();
+            NEDResourcesPlugin.getNEDResources().setRefactoringInProgress(false);
         }
     }
 
     protected void cleanupNedFile(IFile file) throws CoreException {
         NEDResources res = NEDResourcesPlugin.getNEDResources();
         NedFileElementEx nedFileElement = res.getNedFileElement(file);
-        
-        // clean up
-        RefactoringTools.cleanupTree(nedFileElement);
-        RefactoringTools.fixupPackageDeclaration(nedFileElement);
-        RefactoringTools.organizeImports(nedFileElement);
-        
-        // save the file
-        String source = nedFileElement.getNEDSource();
-        
-        // save it
-        file.setContents(new ByteArrayInputStream(source.getBytes()), IFile.FORCE, null);
+
+        if (!nedFileElement.hasSyntaxError()) {
+        	// clean up
+        	RefactoringTools.cleanupTree(nedFileElement);
+        	RefactoringTools.fixupPackageDeclaration(nedFileElement);
+        	RefactoringTools.organizeImports(nedFileElement);
+
+        	// save the file
+        	String source = nedFileElement.getNEDSource();
+
+        	// save it
+        	file.setContents(new ByteArrayInputStream(source.getBytes()), IFile.FORCE, null);
+        }
     }
 
     public void selectionChanged(IAction action, ISelection selection) {
