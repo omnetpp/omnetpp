@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.omnetpp.common.util.Pair;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -27,7 +28,6 @@ import org.omnetpp.scave.model2.DatasetManager;
  */
 public class ExportJob extends WorkspaceJob
 {
-	private String fileName;
 	private ScaveExport exporter;
 	private ResultFileManager manager;
 	private IDList scalars, vectors, histograms;
@@ -35,12 +35,11 @@ public class ExportJob extends WorkspaceJob
 	private DatasetItem datasetItem;
 	private ResultItemFields scalarsGroupBy;
 	
-	public ExportJob(String fileName, ScaveExport exporter,
+	public ExportJob(ScaveExport exporter,
 			IDList scalars, IDList vectors, IDList histograms,
 			Dataset dataset, DatasetItem datasetItem,
 			ResultItemFields scalarsGroupBy, ResultFileManager manager) {
 		super("Data Export");
-		this.fileName = fileName;
 		this.exporter = exporter;
 		this.scalars = scalars;
 		this.vectors = vectors;
@@ -55,14 +54,13 @@ public class ExportJob extends WorkspaceJob
 	public IStatus runInWorkspace(IProgressMonitor monitor)
 			throws CoreException {
 		
-		if (fileName == null || exporter == null || manager == null)
+		if (exporter == null || manager == null)
 			return Status.OK_STATUS;
 		
 		IStatus status = Status.CANCEL_STATUS;
 
 		try {
 			monitor.beginTask("Exporting", calculateTotalWork());
-			exporter.open(fileName); // TODO: file exists: overwite/append
 			
 			status = exportVectors(exporter, monitor);
 			if (status.getSeverity() != IStatus.OK)
@@ -84,17 +82,20 @@ public class ExportJob extends WorkspaceJob
 			return error;
 		}
 		finally {
-			exporter.close();
 			monitor.done();
 			if (status.getSeverity() != IStatus.OK) {
-				try {
-					File file = new File(fileName); 
-					if (file.exists())
-						file.delete();
-				} catch (Exception e) {
-					ScavePlugin.logError("Cannot delete export file: "+fileName, e);
+				String fileName = exporter.getLastFileName();
+				if (!StringUtils.isEmpty(fileName)) {
+					try {
+						File file = new File(fileName); 
+						if (file.exists())
+							file.delete();
+					} catch (Exception e) {
+						ScavePlugin.logError("Cannot delete export file: "+fileName, e);
+					}
 				}
 			}
+			exporter.delete();
 		}
 	}
 	

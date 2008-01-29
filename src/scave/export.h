@@ -109,23 +109,29 @@ class SCAVE_API ScalarDataTable : public DataTable
 class SCAVE_API ScaveExport
 {
     protected:
+    	std::string baseFileName;
         std::string fileName;
         std::ofstream out;
         int prec;
-
+        
+    protected:
+        void open();
+    	void close();
+        virtual std::string makeFileName(const std::string name) = 0;
+    	
     public:
         ScaveExport() : prec(DEFAULT_PRECISION) {}
         virtual ~ScaveExport();
 
         void setPrecision(int prec) { this->prec = prec; }
-        virtual std::string makeFileName(const std::string name) = 0;
-        void open(const std::string filename);
-        void close();
-
+        void setBaseFileName(const std::string baseFileName) { this->baseFileName = baseFileName; }
+        
         virtual void saveVector(const std::string name, const std::string description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
                         int startIndex=0, int endIndex=-1);
         virtual void saveScalars(const std::string name, const std::string description, const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager);
+
+        const std::string &getLastFileName() const { return fileName; }
     protected:
         virtual void saveTable(const DataTable &rows, int startIndex, int endIndex) = 0;
 };
@@ -159,9 +165,8 @@ class MatlabStructExport : public ScaveExport
  */
 class SCAVE_API MatlabScriptExport : public MatlabStructExport
 {
-    public:
-        virtual std::string makeFileName(const std::string name);
     protected:
+        virtual std::string makeFileName(const std::string name);
         virtual void saveTable(const DataTable &table, int startRow, int endRow);
     private:
         void writeDescriptionField(const DataTable &rows, const std::string tableName);
@@ -199,9 +204,8 @@ class SCAVE_API MatlabScriptExport : public MatlabStructExport
  */
 class SCAVE_API OctaveTextExport : public MatlabStructExport
 {
-    public:
-        virtual std::string makeFileName(const std::string name);
     protected:
+        virtual std::string makeFileName(const std::string name);
         virtual void saveTable(const DataTable &table, int startRow, int endRow);
     private:
         void writeStructHeader(const DataTable &table);
@@ -225,13 +229,16 @@ class SCAVE_API CsvExport : public ScaveExport
         const char *eol;
         QuoteMethod quoteMethod;
         bool columnNames;
+        // state
+        int fileNameSuffix; // zero = do not add suffix, otherwise incremented when writing a new table
     public:
-        CsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE), columnNames(true) {}
-        virtual std::string makeFileName(const std::string name);
+        CsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE),
+        				columnNames(true), fileNameSuffix(0) {}
         virtual void saveVector(const std::string name, const std::string description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
                         int startIndex=0, int endIndex=-1);
     protected:
+        virtual std::string makeFileName(const std::string name);
         virtual void saveTable(const DataTable &table, int startRow, int endRow);
     private:
         void writeHeader(const DataTable &table);

@@ -2,6 +2,8 @@ package org.omnetpp.scave.wizard;
 
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -12,6 +14,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ui.FileSelectionPanel;
 import org.omnetpp.scave.engine.CsvExport;
 import org.omnetpp.scave.engine.ScaveExport;
 import org.omnetpp.scave.engine.CsvExport.QuoteMethod;
@@ -59,6 +62,8 @@ public class CsvExportWizard extends AbstractExportWizard {
 		exporter.setQuoteChar(getPage().getQuoteChar());
 		exporter.setQuoteMethod(QuoteMethod.DOUBLE);
 		exporter.setColumnNames(getPage().getHeader());
+		if (selectedVectors.size() + selectedScalars.size() + selectedHistograms.size() > 1)
+			exporter.setFileNameSuffix(1);
 		return exporter;
 	}
 	
@@ -83,6 +88,31 @@ public class CsvExportWizard extends AbstractExportWizard {
 		protected void createPanels(Composite parent) {
 			super.createPanels(parent);
 			createCsvOptionsPanel(parent);
+		}
+		
+		@Override
+		protected void createFileSelectionPanel(Composite parent) {
+			Group group = new Group(parent, SWT.NONE);
+			group.setText("Output files");
+			group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			group.setLayout(new GridLayout(1, false));
+			
+			fileSelectionPanel = 
+				new FileSelectionPanel(group, SWT.NONE, "Base file name:", SWT.SAVE, "Save to file",
+						getFileDialogFilterExtensions());
+			fileSelectionPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			setControl(fileSelectionPanel);
+			
+			Label label = new Label(group, SWT.WRAP);
+			label.setText("When several files are generated the file names are formed by appending '-1','-2',... to the base file name.");
+			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			
+			fileSelectionPanel.addPropertyChangeListener(new IPropertyChangeListener() {
+				public void propertyChange(PropertyChangeEvent event) {
+					if (FileSelectionPanel.PROP_FILENAME.equals(event.getProperty()))
+						updatePageCompletion();
+				}
+			});
 		}
 		
 		private void createCsvOptionsPanel(Composite parent) {

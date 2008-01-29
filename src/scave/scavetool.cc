@@ -283,8 +283,7 @@ int filterCommand(int argc, char **argv)
             {
                 try
                 {
-                    std::string fileName = exporter->makeFileName(opt_outputFileName);
-                    exporter->open(fileName);
+                    exporter->setBaseFileName(opt_outputFileName);
                     // write vectors
                     for (int i=0; i<vectorIDList.size(); i++)
                     {
@@ -308,7 +307,6 @@ int filterCommand(int argc, char **argv)
                             fields.complement(), resultFileManager);
                     }
 
-                    exporter->close();
                     delete exporter;
                 }
                 catch (std::exception&)

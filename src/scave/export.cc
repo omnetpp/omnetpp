@@ -19,6 +19,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <sstream>
 #include "opp_ctype.h"
 #include "scaveutils.h"
 #include "export.h"
@@ -170,20 +171,18 @@ std::string ScalarDataTable::getStringValue(int row, int col) const
 
 ScaveExport::~ScaveExport()
 {
+	close();
 }
 
-void ScaveExport::open(const string fileName)
+void ScaveExport::open()
 {
-    if (out.is_open())
+    if (!out.is_open())
     {
-        out.close();
+    	fileName = makeFileName(baseFileName);
+	    out.open(fileName.c_str(), ios_base::binary); // no \n translation
+	    if (out.fail())
+	        throw opp_runtime_error("Cannot open file '%s'", fileName.c_str());
     }
-
-    out.open(fileName.c_str(), ios_base::binary); // no \n translation
-    if (out.fail())
-        throw opp_runtime_error("Cannot open file '%s'", fileName.c_str());
-
-    this->fileName = fileName;
 }
 
 void ScaveExport::close()
@@ -285,6 +284,7 @@ string MatlabScriptExport::makeFileName(const string name)
 
 void MatlabScriptExport::saveTable(const DataTable &table, int startRow, int endRow)
 {
+	open();
     string tableName = makeUniqueIdentifier(table.name);
     writeDescriptionField(table, tableName);
     writeColumnFields(table, startRow, endRow, tableName);
@@ -359,6 +359,7 @@ string OctaveTextExport::makeFileName(const string name)
 
 void OctaveTextExport::saveTable(const DataTable &table, int startIndex, int endIndex)
 {
+	open();
     writeStructHeader(table);
     writeDescriptionField(table);
     writeColumnFields(table, startIndex, endIndex);
@@ -466,16 +467,30 @@ void OctaveTextExport::writeStringColumn(const DataTable &table, int col, int st
 /*===============================
  *           Csv
  *===============================*/
-// XXX separate file for each table?
+
+/**
+ * Generate a new filename for each table by appending '-1','-2',... suffixes to the base filename.
+ */ 
 string CsvExport::makeFileName(const string name)
 {
-    string fileName = name;
-    if (fileName.empty())
-        return "table.csv";
-    else if (fileName.find('.') == string::npos)
-        return fileName + ".csv";
-    else
-        return fileName;
+	string file(name), extension(".csv");
+	stringstream suffix;
+	
+	if (fileNameSuffix > 0)
+		suffix << '-' << (fileNameSuffix++);
+	
+	if (name.empty())
+		file = "table";
+	else {
+		string::size_type pos = name.rfind('.');
+		if (pos == string::npos)
+			file = name;
+		else {
+			file = name.substr(0, pos);
+			extension = name.substr(pos, name.size() - pos);
+		}
+	}
+	return file + suffix.str() + extension;
 }
 
 void CsvExport::saveVector(const string name, const string description,
@@ -502,9 +517,12 @@ void CsvExport::saveVector(const string name, const string description,
 
 void CsvExport::saveTable(const DataTable &table, int startRow, int endRow)
 {
+	open();
     writeHeader(table);
     for (int row = startRow; row < endRow; ++row)
         writeRow(table, row);
+    if (fileNameSuffix > 0)
+    	close();
 }
 
 void CsvExport::writeHeader(const DataTable &table)

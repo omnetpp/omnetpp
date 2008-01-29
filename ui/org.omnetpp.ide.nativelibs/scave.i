@@ -502,4 +502,5 @@ class ReaderNodeType;
 %ignore MatlabScriptExport;
 %ignore OctaveTextExport;
 %rename(EOL)    CsvExport::eol;
+%newobject ExporterFactory::createExporter;
 %include "export.h"

@@ -81,8 +81,8 @@ public abstract class AbstractExportWizard extends Wizard implements IExportWiza
 				// export the data
 				ScaveExport exporter = createExporter();
 				exporter.setPrecision(page.getPrecision());
-				String fileName = exporter.makeFileName(page.getFileName());
-				ExportJob job = new ExportJob(fileName, exporter, 
+				exporter.setBaseFileName(page.getFileName());
+				ExportJob job = new ExportJob(exporter, 
 										selectedScalars, selectedVectors, selectedHistograms,
 										selectedDataset, selectedDatasetItem,
 										page.getGroupBy(), manager);

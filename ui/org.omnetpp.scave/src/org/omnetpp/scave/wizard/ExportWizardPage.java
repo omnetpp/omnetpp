@@ -125,6 +125,7 @@ public abstract class ExportWizardPage extends WizardPage {
 		fileSelectionPanel = 
 			new FileSelectionPanel(parent, SWT.NONE, "To file:", SWT.SAVE, "Save to file",
 					getFileDialogFilterExtensions());
+		fileSelectionPanel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		setControl(fileSelectionPanel);
 		
 		fileSelectionPanel.addPropertyChangeListener(new IPropertyChangeListener() {

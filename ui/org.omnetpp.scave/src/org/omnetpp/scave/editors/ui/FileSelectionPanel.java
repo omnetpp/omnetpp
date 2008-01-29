@@ -61,7 +61,6 @@ public class FileSelectionPanel extends Composite {
 	}
 	
 	private void initialize() {
-		this.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		this.setLayout(new GridLayout(3, false));
 		
 		Label label = new Label(this, SWT.NONE);
