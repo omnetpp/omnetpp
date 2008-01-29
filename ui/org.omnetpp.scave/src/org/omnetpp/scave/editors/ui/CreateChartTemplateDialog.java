@@ -1,6 +1,8 @@
 package org.omnetpp.scave.editors.ui;
 
 import static org.omnetpp.scave.engine.ResultItemField.FILE;
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
 import static org.omnetpp.scave.engine.ResultItemField.RUN;
 import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
 import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
@@ -8,16 +10,15 @@ import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -27,21 +28,18 @@ import org.eclipse.swt.widgets.Text;
  *
  * @author tomi
  */
-//FIXME checkboxes have to be replaced by a CheckboxTable that includes the "Name" and "Module Name" fields too
-// Potential hint text: "Filter fields" / "Choose fields that identify the data; these fields will be used as
-// data filter criteria when the chart is next opened." 
 public class CreateChartTemplateDialog extends TitleAreaDialog {
 	
 	private static String RUNID_FIELD_KEY = "org.omnetpp.scave.editors.ui.CreateChartTemplateDialog.runidfield";
 	
 	String datasetName;
 	String chartName;
-	String[] runidFields;
+	String[] filterFields;
 	
 	Text datasetnameText;
 	Text chartnameText;
-	Button[] runidButtons;
-
+	Table filterFieldsTable;
+	
 	public CreateChartTemplateDialog(Shell parentShell) {
 		super(parentShell);
 	}
@@ -54,8 +52,8 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		return datasetName;
 	}
 
-	public String[] getRunidFields() {
-		return runidFields;
+	public String[] getFilterFields() {
+		return filterFields;
 	}
 	
 	@Override
@@ -83,70 +81,49 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		
 		Group group = new Group(panel, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		group.setLayout(new GridLayout(3, false));
-		group.setText("Identify Runs");
+		group.setLayout(new GridLayout(1, false));
+		group.setText("Filter fields");
 
-		Label label2 = new Label(group, SWT.NONE);
-		label2.setText("Select how to identify the data (in addition to their names and containing modules):");
-		label2.setLayoutData(new GridData());
-		((GridData)label2.getLayoutData()).horizontalSpan = 3;
+		Label label2 = new Label(group, SWT.WRAP);
+		label2.setText("Choose fields that identify the data; these fields will be used as data filter criteria when the chart is next opened." );
+		label2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		int i = 0;
-		runidButtons = new Button[5];
-		Button runnameCb = runidButtons[i++] = createCheckbox(group, "By Run Id", RUN, 3);
-		Button filenameCb = runidButtons[i++] = createCheckbox(group, "By File Name", FILE, 3);
-		Button experimentCb  = runidButtons[i++] = createCheckbox(group, "Experiment", EXPERIMENT, 1);
-		Button measurementCb = runidButtons[i++] = createCheckbox(group, "Measurement", MEASUREMENT, 1);
-		Button replicationCb = runidButtons[i++] = createCheckbox(group, "Replication", REPLICATION, 1);
+		filterFieldsTable = new Table(group, SWT.CHECK | SWT.BORDER | SWT.HIDE_SELECTION);
+		filterFieldsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		createFilterFieldItem(group, "By Run Id", RUN);
+		TableItem filenameItem = createFilterFieldItem(group, "By File Name", FILE);
+		createFilterFieldItem(group, "Experiment", EXPERIMENT);
+		createFilterFieldItem(group, "Measurement", MEASUREMENT);
+		createFilterFieldItem(group, "Replication", REPLICATION);
+		TableItem moduleNameItem = createFilterFieldItem(group, "Module name", MODULE);
+		TableItem dataNameItem = createFilterFieldItem(group, "Data name", NAME);
+		filenameItem.setChecked(true);
+		moduleNameItem.setChecked(true);
+		dataNameItem.setChecked(true);
 
-		addDependency(runnameCb, true, new Button[] {experimentCb, measurementCb, replicationCb} , false);
-		addDependency(measurementCb, true, new Button[] {experimentCb}, true);
-		addDependency(replicationCb, true, new Button[] {experimentCb, measurementCb}, true);
-		
-		//runnameCb.setSelection(true);
-		filenameCb.setSelection(true);
 		return panel;
 	}
 	
-	private Button createCheckbox(Composite parent, String label, String field, int columnSpan) {
-		Button cb = new Button(parent, SWT.CHECK);
-		cb.setText(label);
-		cb.setData(RUNID_FIELD_KEY, field);
-		if (columnSpan != 1) {
-		    GridData gridData = new GridData();
-		    gridData.horizontalSpan = columnSpan;
-		    cb.setLayoutData(gridData);
-		}
-		return cb;
+	private TableItem createFilterFieldItem(Composite parent, String label, String field) {
+		TableItem item = new TableItem(filterFieldsTable, SWT.NONE);
+		item.setText(label);
+		item.setData(RUNID_FIELD_KEY, field);
+		return item;
 	}
 	
-	private void addDependency(Button cb, final boolean state, final Button[] dependentCbs, final boolean depState)
-	{
-		cb.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				Button checkbox = (Button)e.widget;
-				if (checkbox.getSelection() == state)
-					for (Button btn : dependentCbs)
-						btn.setSelection(depState);
-			}
-		});
-	}
-
 	@Override
 	protected void okPressed() {
 		datasetName = datasetnameText.getText();
 		chartName = chartnameText.getText();
 		int count = 0;
-		for (Button btn : runidButtons)
-			if (btn.getSelection())
+		for (TableItem item : filterFieldsTable.getItems())
+			if (item.getChecked())
 				count++;
-		runidFields = new String[count];
 		int i = 0;
-		for (Button btn : runidButtons)
-			if (btn.getSelection())
-				runidFields[i++] = (String)btn.getData(RUNID_FIELD_KEY);
+		filterFields = new String[count];
+		for (TableItem item : filterFieldsTable.getItems())
+			if (item.getChecked())
+				filterFields[i++] = (String)item.getData(RUNID_FIELD_KEY);
 		super.okPressed();
 	}
-
-	
 }

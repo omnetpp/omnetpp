@@ -64,7 +64,7 @@ public class CreateChartTemplateAction extends AbstractScaveAction {
 					IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null, type);
 					ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
 					Collection<Add> origAdds = getOriginalAdds(dataset);
-					Collection<Add> adds = ScaveModelUtil.createAdds(items, dialog.getRunidFields());
+					Collection<Add> adds = ScaveModelUtil.createAddsWithFields(items, dialog.getFilterFields());
 
 					CompoundCommand command = new CompoundCommand();
 					command.append(SetCommand.create( // set dataset name

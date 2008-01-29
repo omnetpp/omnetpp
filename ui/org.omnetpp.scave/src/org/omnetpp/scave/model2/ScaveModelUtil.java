@@ -1,5 +1,8 @@
 package org.omnetpp.scave.model2;
 
+import static org.omnetpp.scave.engine.ResultItemField.MODULE;
+import static org.omnetpp.scave.engine.ResultItemField.NAME;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -129,19 +132,31 @@ public class ScaveModelUtil {
 	 * @param runidFields  may be null (meaning autoselect)
 	 */
 	public static Collection<Add> createAdds(ResultItem[] items, String[] runidFields) {
+		String[] filterFields = null;
+		if (runidFields != null) {
+			int runidFieldCount = runidFields.length;
+			filterFields = new String[runidFieldCount];
+			System.arraycopy(runidFields, 0, filterFields, 0, runidFieldCount);
+			filterFields[runidFieldCount] = MODULE;
+			filterFields[runidFieldCount + 1] = NAME;
+		}
+		return createAddsWithFields(items, filterFields);
+	}
+	
+	public static Collection<Add> createAddsWithFields(ResultItem[] items, String[] filterFields) {
 		List<Add> adds = new ArrayList<Add>(items.length);
 		for (ResultItem item : items)
-			adds.add(createAdd(item, runidFields));
+			adds.add(createAdd(item, filterFields));
 		return adds;
 	}
 
 	/**
 	 * Generates an Add command with filter pattern to identify item.
-	 * @param runidFields  may be null (meaning autoselect)
+	 * @param filterFields, includeModuleAndName  may be null (meaning autoselect)
 	 */
-	public static Add createAdd(ResultItem item, String[] runidFields) {
+	public static Add createAdd(ResultItem item, String[] filterFields) {
 		Add add = factory.createAdd();
-		add.setFilterPattern(new FilterUtil(item, runidFields).getFilterPattern());
+		add.setFilterPattern(new FilterUtil(item, filterFields).getFilterPattern());
 		if (item instanceof ScalarResult)
 			add.setType(ResultType.SCALAR_LITERAL);
 		else if (item instanceof VectorResult)
