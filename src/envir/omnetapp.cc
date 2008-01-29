@@ -303,9 +303,10 @@ void TOmnetApp::setup()
          // precedence), and the "ned-path=" config entry gets appended to it.
          const char *nedpath1 = args->optionValue('n',0);
          if (nedpath1==NULL) nedpath1 = getenv("NEDPATH");
-         if (nedpath1==NULL) nedpath1 = ".";
+         if (nedpath1==NULL) nedpath1 = "";
          std::string nedpath2 = getConfig()->getAsString(CFGID_NED_PATH, "");
          std::string nedpath = std::string(nedpath1) + ";" + nedpath2;
+         if (nedpath.empty()) nedpath = ".";
          StringTokenizer tokenizer(nedpath.c_str(), PATH_SEPARATOR);
          std::set<std::string> foldersloaded;
          while (tokenizer.hasMoreTokens())

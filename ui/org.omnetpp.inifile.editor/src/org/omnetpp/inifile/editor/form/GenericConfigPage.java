@@ -276,14 +276,14 @@ public class GenericConfigPage extends ScrolledFormPage {
 		}
 	}
 
-	private void addMessage(Composite parent, Image image, String text) {
-		Composite warnPanel = new Composite(parent, SWT.NONE);
-		warnPanel.setLayout(new GridLayout(2,false));
-		Label warnImageLabel = new Label(warnPanel, SWT.NONE);
-		warnImageLabel.setImage(image); //XXX 
-		Label warnLabel = new Label(warnPanel, SWT.NONE);
-		warnLabel.setText(text);
-	}
+//	private void addMessage(Composite parent, Image image, String text) {
+//		Composite warnPanel = new Composite(parent, SWT.NONE);
+//		warnPanel.setLayout(new GridLayout(2,false));
+//		Label warnImageLabel = new Label(warnPanel, SWT.NONE);
+//		warnImageLabel.setImage(image); //XXX 
+//		Label warnLabel = new Label(warnPanel, SWT.NONE);
+//		warnLabel.setText(text);
+//	}
 
 	private void addSpacer(Composite parent) {
 		new Label(parent, SWT.NONE);
