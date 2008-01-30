@@ -32,6 +32,7 @@
 #include "cmodule.h"
 #include "fsutils.h"
 #include "fnamelisttokenizer.h"
+#include "stringutil.h"
 
 #include "speedometer.h"     // env_dummy_function()
 #include "filemgrs.h"        // env_dummy_function()

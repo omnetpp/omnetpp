@@ -23,6 +23,7 @@
 #include "cdisplaystring.h"
 #include "cnedloader.h"
 #include "nederror.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 

@@ -214,25 +214,26 @@ char *opp_concat(const char *s1,
     return buf;
 }
 
-char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
-{
-    if (!src) {
-        *dest='\0';
-        return dest;
-    }
-    strncpy(dest, src, maxlen);
-    if (strlen(src)>maxlen) {
-        dest[maxlen] = '\0';
-        if (maxlen>=3) dest[maxlen-1] = dest[maxlen-2] = dest[maxlen-3] = '.';
-    }
-    return dest;
-}
-
 char *opp_mkindexedname(char *dest, const char *name, int index)
 {
     static char buf[64];
     if (dest==NULL) dest=buf;
     sprintf(dest,"%.54s[%d]",name,index);
+    return dest;
+}
+
+char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
+{
+    if (!src) {
+        *dest = '\0';
+        return dest;
+    }
+    strncpy(dest, src, maxlen);
+    if (strlen(src) > maxlen) {
+        dest[maxlen] = '\0';
+        if (maxlen >= 3)
+            dest[maxlen-1] = dest[maxlen-2] = dest[maxlen-3] = '.';
+    }
     return dest;
 }
 

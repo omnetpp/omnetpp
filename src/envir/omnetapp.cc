@@ -301,12 +301,16 @@ void TOmnetApp::setup()
          // load NED files from folders on the NED path. Note: NED path is taken
          // from the "-n" command-line option or the NEDPATH variable ("-n" takes
          // precedence), and the "ned-path=" config entry gets appended to it.
+         // If the result is still empty, we fall back to "." -- this is needed
+         // for single-directory models to work
          const char *nedpath1 = args->optionValue('n',0);
-         if (nedpath1==NULL) nedpath1 = getenv("NEDPATH");
-         if (nedpath1==NULL) nedpath1 = "";
+         if (!nedpath1)
+             nedpath1 = getenv("NEDPATH");
          std::string nedpath2 = getConfig()->getAsString(CFGID_NED_PATH, "");
-         std::string nedpath = std::string(nedpath1) + ";" + nedpath2;
-         if (nedpath.empty()) nedpath = ".";
+         std::string nedpath = opp_join(";", nedpath1, nedpath2.c_str());
+         if (nedpath.empty())
+             nedpath = ".";
+
          StringTokenizer tokenizer(nedpath.c_str(), PATH_SEPARATOR);
          std::set<std::string> foldersloaded;
          while (tokenizer.hasMoreTokens())

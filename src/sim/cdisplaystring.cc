@@ -20,6 +20,7 @@
 #include "cmodule.h"
 #include "cgate.h"
 #include "cdisplaystring.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 

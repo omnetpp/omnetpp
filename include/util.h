@@ -113,7 +113,7 @@ SIM_API double max(double a, double b);
  * @ingroup Functions
  */
 //@{
-
+//FIXME reduce the number of these string util functions...
 /**
  * Duplicates the string. If the pointer passed is NULL or points
  * to a null string (""), NULL is returned.
@@ -130,7 +130,7 @@ SIM_API char *opp_strcpy(char *,const char *);
  * Same as the standard strcmp() function, except that NULL pointers
  * are treated like pointers to a null string ("").
  */
-SIM_API int  opp_strcmp(const char *, const char *);
+SIM_API int opp_strcmp(const char *, const char *);
 
 /**
  * Returns true if the two strings are identical up to the length of the
@@ -162,11 +162,6 @@ SIM_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, co
  */
 SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
 
-/**
- * Returns the pointer passed as argument unchanged, except that if it was NULL,
- * it returns a pointer to a null string ("").
- */
-inline const char *opp_nulltoempty(const char *);
 //@}
 
 /**
@@ -364,11 +359,6 @@ inline bool equal(double a, double b, double epsilon)
 {
    double d = a-b;
    return (d>=0.0 ? d : -d) < epsilon;
-}
-
-inline const char *opp_nulltoempty(const char *s)
-{
-   return s ? s : "";
 }
 
 // internally used: appends [num] to the given string

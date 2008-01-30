@@ -27,13 +27,9 @@
 #include "cparvalue.h"
 #include "xmlgenerator.h"
 #include "nedsupport.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
-
-inline bool strnull(const char *s)
-{
-    return !s || !s[0];
-}
 
 /* for debugging
 static void dump(NEDElement *node)
@@ -187,7 +183,7 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
         // XXX actually we could decide here from the NED declarations
         // if it's sizeof(parentModuleGateVector) or sizeof(submoduleVector),
         // we don't have to do it at runtime in the Sizeof functor class.
-        if (strnull(modulename))
+        if (opp_isempty(modulename))
             elems[pos++] = new NEDSupport::Sizeof(ident, inSubcomponentScope, false);
         else //FIXME handle "this.ident"
             //XXX elems[pos++] = new NEDSupport::Sizeof(modulename, ident, inSubcomponentScope, hasChild);
@@ -238,9 +234,9 @@ void cExpressionBuilder::doIdent(IdentNode *node)
     bool hasChild = node->getFirstChild()!=NULL;
 
 //FIXME handle "this." prefix!
-    if (strnull(modulename) && isLoopVar(parname))
+    if (opp_isempty(modulename) && isLoopVar(parname))
         elems[pos++] = new NEDSupport::LoopVar(parname);
-    else if (strnull(modulename))
+    else if (opp_isempty(modulename))
         elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
     else
         elems[pos++] = new NEDSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);

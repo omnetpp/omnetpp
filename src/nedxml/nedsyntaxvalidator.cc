@@ -23,6 +23,7 @@
 #include "opp_ctype.h"
 #include "nederror.h"
 #include "nedsyntaxvalidator.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
@@ -101,16 +102,6 @@ static struct { char *fname; int args; } known_funcs[] =
    {NULL,0}
 };
 
-inline bool strnull(const char *s)
-{
-    return !s || !s[0];
-}
-
-inline bool strnotnull(const char *s)
-{
-    return s && s[0];
-}
-
 void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n)
 {
     if (parsedExpressions)
@@ -146,7 +137,7 @@ void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char 
                // check: Expression element must be there
                ExpressionNode *expr;
                for (expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
-                   if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attrs[i]))
+                   if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attrs[i]))
                        break;
                if (!expr)
                    errors->addError(node, "expression-valued attribute '%s' not present in parsed form (missing 'expression' element)", attrs[i]);
@@ -298,7 +289,7 @@ void NEDSyntaxValidator::validateElement(SubmoduleNode *node)
 
 
 //    // if there's a "like", name should be an existing module parameter name
-//    if (strnotnull(node->getLikeParam()))
+//    if (!opp_isempty(node->getLikeParam()))
 //    {
 //        const char *paramName = node->getLikeParam();
 //        NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
@@ -558,7 +549,7 @@ void NEDSyntaxValidator::validateElement(IdentNode *node)
 
 /*
     // make sure parameter exists
-    if (strnull(node->getModule()))
+    if (opp_isempty(node->getModule()))
     {
         const char *paramName = node->getName();
         NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
@@ -602,14 +593,14 @@ void NEDSyntaxValidator::validateElement(LiteralNode *node)
     //const char *text = node->getText();
 
     // Note: null value is valid as well, because that represents the "" string literal!
-    if (strnull(value)) value="";
+    if (opp_isempty(value)) value="";
 
     if (type==NED_CONST_BOOL)
     {
         // check bool
         if (strcmp(value,"true") && strcmp(value,"false"))
             errors->addError(node, "bool constant should be 'true' or 'false'");
-        if (!strnull(node->getUnit()))
+        if (!opp_isempty(node->getUnit()))
             errors->addError(node, "bool constant cannot have a unit");
         // TBD check that if text is present, it's the same as value
     }
@@ -620,7 +611,7 @@ void NEDSyntaxValidator::validateElement(LiteralNode *node)
         strtol(value, &s, 0);
         if (s && *s)
             errors->addError(node, "invalid integer constant '%s'", value);
-        if (!strnull(node->getUnit()))
+        if (!opp_isempty(node->getUnit()))
             errors->addError(node, "integer constant cannot have a unit");
         // TBD check that if text is present, it's the same as value
     }
@@ -636,7 +627,7 @@ void NEDSyntaxValidator::validateElement(LiteralNode *node)
     else if (type==NED_CONST_STRING)
     {
         // string: no restriction on value
-        if (!strnull(node->getUnit()))
+        if (!opp_isempty(node->getUnit()))
             errors->addError(node, "string constant cannot have a unit");
         // TBD check that if text is present, it's the same as value
     }
@@ -698,13 +689,13 @@ void NEDSyntaxValidator::validateElement(FieldNode *node)
     if (node->getIsAbstract() && isStruct)
           errors->addError(node, "a struct cannot have abstract fields");
 
-    if (node->getIsAbstract() && strnotnull(node->getDefaultValue()))
+    if (node->getIsAbstract() && !opp_isempty(node->getDefaultValue()))
          errors->addError(node, "an abstract field cannot be assigned a default value");
 
-    if (node->getIsVector() && strnull(node->getVectorSize()) && isStruct)
+    if (node->getIsVector() && opp_isempty(node->getVectorSize()) && isStruct)
          errors->addError(node, "a struct cannot have dynamic array fields");
 
-    // if (strnotnull(node->getDataType())) // type is there
+    // if (!opp_isempty(node->getDataType())) // type is there
     // {
     //      if (defined in base class too)
     //      {
@@ -715,15 +706,15 @@ void NEDSyntaxValidator::validateElement(FieldNode *node)
     //      }
     // }
 
-    if (strnull(node->getDataType())) // type is missing
+    if (opp_isempty(node->getDataType())) // type is missing
     {
          if (node->getIsAbstract())
              errors->addError(node, "an abstract field needs a type");
          if (node->getIsVector())
              errors->addError(node, "cannot set array field of the base class");
-         if (strnotnull(node->getEnumName()))
+         if (!opp_isempty(node->getEnumName()))
              errors->addError(node, "cannot specify enum for base class field");
-         if (strnull(node->getDefaultValue()))
+         if (opp_isempty(node->getDefaultValue()))
              errors->addError(node, "missing field type");
     }
 

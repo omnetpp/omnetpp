@@ -19,19 +19,10 @@
 #include "nederror.h"
 #include "nedsemanticvalidator.h"
 #include "nedresourcecache.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
-
-inline bool strnull(const char *s)
-{
-    return !s || !s[0];
-}
-
-inline bool strnotnull(const char *s)
-{
-    return s && s[0];
-}
 
 NEDSemanticValidator::NEDSemanticValidator(bool parsedExpr, NEDResourceCache *nedcache, NEDErrorStore *e)
    : NEDValidatorBase(e)
@@ -252,7 +243,7 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
 {
     // FIXME revise
     const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
-    if (strnull(submodName))
+    if (opp_isempty(submodName))
     {
         // connected to parent module: check such gate is declared
         NEDElement *gates = parent->getFirstChildWithTag(NED_GATES);

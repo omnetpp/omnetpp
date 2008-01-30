@@ -22,6 +22,16 @@
 
 //NAMESPACE_BEGIN
 
+/**
+ * Returns true if the string is NULL or has zero length.
+ */
+inline bool opp_isempty(const char *s)  {return !s || !s[0];}
+
+/**
+ * Returns the pointer passed as argument unchanged, except that if it was NULL,
+ * it returns a pointer to a null string ("").
+ */
+inline const char *opp_nulltoempty(const char *s)  {return s ? s : "";}
 
 /**
  * Returns true if the string only contains whitespace.
@@ -107,6 +117,12 @@ COMMON_API std::string opp_indentlines(const char *text, const char *indent);
  * Returns true if the first string ends in the second string.
  */
 COMMON_API bool opp_stringendswith(const char *s, const char *ending);
+
+/**
+ * If either s1 or s2 is empty, returns the other one, otherwise returns
+ * s1 + separator + s2.
+ */
+COMMON_API std::string opp_join(const char *separator, const char *s1, const char *s2);
 
 /**
  * Dictionary-compare two strings, the main difference from strcasecmp()

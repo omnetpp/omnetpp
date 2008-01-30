@@ -23,14 +23,10 @@
 #include "nedcompiler.h"
 #include "cppexprgenerator.h"
 #include "nederror.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
-
-inline bool strnotnull(const char *s)
-{
-    return s && s[0];
-}
 
 // static struct { char *fname; int args; } known_funcs[] =
 // {
@@ -629,7 +625,7 @@ void CppExpressionGenerator::doParamref(IdentNode *node, const char *indent, int
         {
             // arg holds pointer of current module
             out << "mod";
-            if (strnotnull(node->getModule()))
+            if (!opp_isempty(node->getModule()))
             {
                 // TBD implement: parameter of another submodule
                 out << "->submodule(\"" << node->getModule() << "\")";
@@ -659,7 +655,7 @@ void CppExpressionGenerator::doParamref(IdentNode *node, const char *indent, int
         {
             if (node->getIsRef())
                 out << "cPar().setRedirection(&("; // note: cannot use tmpval here, because redirection would remain!
-            if (strnotnull(node->getModule()))
+            if (!opp_isempty(node->getModule()))
             {
                 out << node->getModule() << "_p";
                 ExpressionNode *modindex = (ExpressionNode *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");

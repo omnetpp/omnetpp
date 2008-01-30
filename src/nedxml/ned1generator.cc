@@ -90,11 +90,6 @@ const char *NED1Generator::decreaseIndent(const char *indent)
 
 //---------------------------------------------------------------------------
 
-inline bool strnotnull(const char *s)
-{
-    return s && s[0];
-}
-
 static bool _isNetworkNode(NEDElement *node)
 {
     return (node->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleNode *)node)->getIsNetwork())
@@ -168,14 +163,14 @@ void NED1Generator::printInheritance(NEDElement *node, const char *indent)
 
 bool NED1Generator::hasExpression(NEDElement *node, const char *attr)
 {
-    if (strnotnull(node->getAttribute(attr)))
+    if (!opp_isempty(node->getAttribute(attr)))
     {
         return true;
     }
     else
     {
         for (ExpressionNode *expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
-            if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
+            if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
                 return true;
         return false;
     }
@@ -183,14 +178,14 @@ bool NED1Generator::hasExpression(NEDElement *node, const char *attr)
 
 void NED1Generator::printExpression(NEDElement *node, const char *attr, const char *indent)
 {
-    if (strnotnull(node->getAttribute(attr)))
+    if (!opp_isempty(node->getAttribute(attr)))
     {
         OUT << node->getAttribute(attr);
     }
     else
     {
         for (ExpressionNode *expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
-            if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
+            if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
                 generateNedItem(expr, indent, false, NULL);
     }
 }
@@ -210,7 +205,7 @@ void NED1Generator::printOptVector(NEDElement *node, const char *attr, const cha
 static const char *getComment(NEDElement *node, const char *locId)
 {
     CommentNode *comment = (CommentNode *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
-    return (comment && strnotnull(comment->getContent())) ? comment->getContent() : NULL;
+    return (comment && !opp_isempty(comment->getContent())) ? comment->getContent() : NULL;
 }
 
 static std::string formatComment(const char *comment, const char *indent, const char *defaultValue)
@@ -727,7 +722,7 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     OUT << getBannerComment(node, indent);
     OUT << indent << node->getName() << ": ";
 
-    if (strnotnull(node->getLikeType()))
+    if (!opp_isempty(node->getLikeType()))
     {
         // "like" version
         printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
@@ -777,7 +772,7 @@ std::string NED1Generator::getDisplayStringOf(NEDElement *node, PropertyNode *&o
     if (!literal)
         return "";
     outDisplayProp = displayProp;
-    return strnotnull(literal->getText()) ? literal->getText() : opp_quotestr(literal->getValue());
+    return !opp_isempty(literal->getText()) ? literal->getText() : opp_quotestr(literal->getValue());
 }
 
 void NED1Generator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
@@ -865,11 +860,11 @@ void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, boo
     NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
     bool hasParams = params && params->getFirstChildWithTag(NED_PARAM);
 
-    if (strnotnull(node->getLikeType()))
+    if (!opp_isempty(node->getLikeType()))
     {
         errors->addWarning(node, NED2FEATURE "channel `like'");
     }
-    else if (strnotnull(node->getType()))
+    else if (!opp_isempty(node->getType()))
     {
         // concrete channel type
         OUT << " " << node->getType() << arrow;
@@ -920,7 +915,7 @@ void NED1Generator::printConnectionGate(NEDElement *conn, const char *modname, c
                                         const char *gatename, const char *gateindexattr, bool isplusplus,
                                         int gatesubg, const char *indent)
 {
-    if (strnotnull(modname)) {
+    if (!opp_isempty(modname)) {
         OUT << modname;
         printOptVector(conn, modindexattr,indent);
         OUT << ".";
@@ -1094,7 +1089,7 @@ void NED1Generator::doFunction(FunctionNode *node, const char *indent, bool isla
 
 void NED1Generator::doIdent(IdentNode *node, const char *indent, bool islast, const char *)
 {
-    if (strnotnull(node->getModule())) {
+    if (!opp_isempty(node->getModule())) {
         OUT << node->getModule();
         printOptVector(node, "module-index", indent);
         OUT << ".";
@@ -1105,7 +1100,7 @@ void NED1Generator::doIdent(IdentNode *node, const char *indent, bool islast, co
 
 void NED1Generator::doLiteral(LiteralNode *node, const char *indent, bool islast, const char *)
 {
-    if (strnotnull(node->getText()))
+    if (!opp_isempty(node->getText()))
     {
         OUT << node->getText();
     }

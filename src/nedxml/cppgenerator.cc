@@ -21,6 +21,7 @@
 #include "nedelements.h"
 #include "cppgenerator.h"
 #include "nederror.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
@@ -34,11 +35,6 @@ void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *
 {
     NEDCppGenerator cppgen(out, outh, symtab, errors);
     cppgen.generate(node);
-}
-
-inline bool strnotnull(const char *s)
-{
-    return s && s[0];
 }
 
 //-----------------------------------------------------------------------
@@ -727,7 +723,7 @@ void NEDCppGenerator::doSubmodules(SubmodulesNode *node, const char *indent, int
 void NEDCppGenerator::resolveSubmoduleType(SubmoduleNode *node, const char *indent)
 {
     // find module descriptor
-    if (!strnotnull(node->getLikeParam()))
+    if (opp_isempty(node->getLikeParam()))
     {
         out << indent << "modtype = _getModuleType(\"" << node->getType() << "\");\n";
     }
@@ -900,7 +896,7 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
         INTERNAL_ERROR0(NULL,"resolveGate(): \"++\" and gate index expression cannot exist together");
 
     // wrap
-    if (isplusplus && !strnotnull(modname))
+    if (isplusplus && opp_isempty(modname))
         out << "_getFirstUnusedParentModGate(";
     else if (isplusplus)
         out << "_getFirstUnusedSubmodGate(";
@@ -908,7 +904,7 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
         out << "_checkGate(";
 
     // module
-    if (!strnotnull(modname))
+    if (opp_isempty(modname))
     {
         out << "mod";
     }

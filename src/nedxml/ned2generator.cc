@@ -85,16 +85,6 @@ const char *NED2Generator::decreaseIndent(const char *indent)
     return indent + indentsize;
 }
 
-inline bool strnotnull(const char *s)
-{
-    return s && *s;
-}
-
-inline bool strnull(const char *s)
-{
-    return !s || !*s;
-}
-
 //---------------------------------------------------------------------------
 
 void NED2Generator::generateChildren(NEDElement *node, const char *indent, const char *arg)
@@ -158,14 +148,14 @@ void NED2Generator::printInheritance(NEDElement *node, const char *indent)
 
 bool NED2Generator::hasExpression(NEDElement *node, const char *attr)
 {
-    if (strnotnull(node->getAttribute(attr)))
+    if (!opp_isempty(node->getAttribute(attr)))
     {
         return true;
     }
     else
     {
         for (ExpressionNode *expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
-            if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
+            if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
                 return true;
         return false;
     }
@@ -173,14 +163,14 @@ bool NED2Generator::hasExpression(NEDElement *node, const char *attr)
 
 void NED2Generator::printExpression(NEDElement *node, const char *attr, const char *indent)
 {
-    if (strnotnull(node->getAttribute(attr)))
+    if (!opp_isempty(node->getAttribute(attr)))
     {
         OUT << node->getAttribute(attr);
     }
     else
     {
         for (ExpressionNode *expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
-            if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
+            if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
                 generateNedItem(expr, indent, false, NULL);
     }
 }
@@ -200,7 +190,7 @@ void NED2Generator::printOptVector(NEDElement *node, const char *attr, const cha
 static const char *getComment(NEDElement *node, const char *locId)
 {
     CommentNode *comment = (CommentNode *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
-    return (comment && strnotnull(comment->getContent())) ? comment->getContent() : NULL;
+    return (comment && !opp_isempty(comment->getContent())) ? comment->getContent() : NULL;
 }
 
 static std::string formatComment(const char *comment, const char *indent, const char *defaultValue)
@@ -468,7 +458,7 @@ void NED2Generator::doProperty(PropertyNode *node, const char *indent, bool isla
         if (sep)
             OUT << " ";
         OUT << "@" << node->getName();
-        if (strnotnull(node->getIndex()))
+        if (!opp_isempty(node->getIndex()))
             OUT << "[" << node->getIndex() << "]";
         const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
         if (node->getFirstChildWithTag(NED_PROPERTY_KEY))
@@ -489,7 +479,7 @@ void NED2Generator::doPropertyKey(PropertyKeyNode *node, const char *indent, boo
     OUT << node->getName();
     if (node->getFirstChildWithTag(NED_LITERAL))
     {
-        if (strnotnull(node->getName()))
+        if (!opp_isempty(node->getName()))
             OUT << "=";
         generateChildrenWithType(node, NED_LITERAL, increaseIndent(indent),",");
     }
@@ -546,7 +536,7 @@ void NED2Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     printOptVector(node, "vector-size",indent);
     OUT << ": ";
 
-    if (strnotnull(node->getLikeType()))
+    if (!opp_isempty(node->getLikeType()))
     {
         // "like" version
         OUT << "<";
@@ -636,7 +626,7 @@ void NED2Generator::doConnection(ConnectionNode *node, const char *indent, bool 
 
 bool NED2Generator::isEmptyChannelSpec(ChannelSpecNode *node)
 {
-    if (strnotnull(node->getType()) || strnotnull(node->getLikeType()) || strnotnull(node->getLikeParam()))
+    if (!opp_isempty(node->getType()) || !opp_isempty(node->getLikeType()) || !opp_isempty(node->getLikeParam()))
         return false;
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
         if (child->getTagCode() != NED_COMMENT)
@@ -646,7 +636,7 @@ bool NED2Generator::isEmptyChannelSpec(ChannelSpecNode *node)
 
 void NED2Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *)
 {
-    if (strnotnull(node->getLikeType()))
+    if (!opp_isempty(node->getLikeType()))
     {
         // "like" version
         OUT << " <";
@@ -654,7 +644,7 @@ void NED2Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, boo
         OUT << ">";
         OUT << " like " << node->getLikeType();
     }
-    else if (strnotnull(node->getType()))
+    else if (!opp_isempty(node->getType()))
     {
         // concrete channel type
         OUT << " " << node->getType();
@@ -706,7 +696,7 @@ void NED2Generator::printConnectionGate(NEDElement *conn, const char *modname, c
                                         const char *gatename, const char *gateindexattr, bool isplusplus,
                                         int gatesubg, const char *indent)
 {
-    if (strnotnull(modname)) {
+    if (!opp_isempty(modname)) {
         OUT << modname;
         printOptVector(conn, modindexattr,indent);
         OUT << ".";
@@ -892,7 +882,7 @@ void NED2Generator::doFunction(FunctionNode *node, const char *indent, bool isla
 
 void NED2Generator::doIdent(IdentNode *node, const char *indent, bool islast, const char *)
 {
-    if (strnotnull(node->getModule())) {
+    if (!opp_isempty(node->getModule())) {
         OUT << node->getModule();
         if (node->getFirstChild()) {
             OUT << "[";
@@ -907,7 +897,7 @@ void NED2Generator::doIdent(IdentNode *node, const char *indent, bool islast, co
 
 void NED2Generator::doLiteral(LiteralNode *node, const char *indent, bool islast, const char *sep)
 {
-    if (strnotnull(node->getText()))
+    if (!opp_isempty(node->getText()))
     {
         OUT << node->getText();
     }
@@ -971,7 +961,7 @@ void NED2Generator::doEnum(EnumNode *node, const char *indent, bool islast, cons
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "enum " << node->getName();
-    if (strnotnull(node->getExtendsName()))
+    if (!opp_isempty(node->getExtendsName()))
         OUT << " extends " << node->getExtendsName();
     OUT << getRightComment(node);
     OUT << indent << "{\n";
@@ -991,7 +981,7 @@ void NED2Generator::doEnumField(EnumFieldNode *node, const char *indent, bool is
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << node->getName();
-    if (strnotnull(node->getValue()))
+    if (!opp_isempty(node->getValue()))
         OUT << " = " << node->getValue();
     OUT << ";" << getRightComment(node);
 }
@@ -1000,7 +990,7 @@ void NED2Generator::doMessage(MessageNode *node, const char *indent, bool islast
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "message " << node->getName();
-    if (strnotnull(node->getExtendsName()))
+    if (!opp_isempty(node->getExtendsName()))
         OUT << " extends " << node->getExtendsName();
     OUT << getRightComment(node);
     OUT << indent << "{\n";
@@ -1013,7 +1003,7 @@ void NED2Generator::doClass(ClassNode *node, const char *indent, bool islast, co
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "class " << node->getName();
-    if (strnotnull(node->getExtendsName()))
+    if (!opp_isempty(node->getExtendsName()))
         OUT << " extends " << node->getExtendsName();
     OUT << getRightComment(node);
     OUT << indent << "{\n";
@@ -1026,7 +1016,7 @@ void NED2Generator::doStruct(StructNode *node, const char *indent, bool islast, 
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "struct " << node->getName();
-    if (strnotnull(node->getExtendsName()))
+    if (!opp_isempty(node->getExtendsName()))
         OUT << " extends " << node->getExtendsName();
     OUT << getRightComment(node);
     OUT << indent << "{\n";
@@ -1065,16 +1055,16 @@ void NED2Generator::doField(FieldNode *node, const char *indent, bool islast, co
         OUT << "abstract ";
     if (node->getIsReadonly())
         OUT << "readonly ";
-    if (strnotnull(node->getDataType()))
+    if (!opp_isempty(node->getDataType()))
         OUT << node->getDataType() << " ";
     OUT << node->getName();
-    if (node->getIsVector() && strnotnull(node->getVectorSize()))
+    if (node->getIsVector() && !opp_isempty(node->getVectorSize()))
         OUT << "[" << node->getVectorSize() << "]";
     else if (node->getIsVector())
         OUT << "[]";
-    if (strnotnull(node->getEnumName()))
+    if (!opp_isempty(node->getEnumName()))
         OUT << " enum(" << node->getEnumName() << ")";
-    if (strnotnull(node->getDefaultValue()))
+    if (!opp_isempty(node->getDefaultValue()))
         OUT << " = " << node->getDefaultValue();
     OUT << ";" << getRightComment(node);
 }

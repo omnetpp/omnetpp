@@ -240,6 +240,16 @@ bool opp_stringendswith(const char *s, const char *ending)
     return endinglen>slen ? false : strcmp(s+slen-endinglen, ending)==0;
 }
 
+std::string opp_join(const char *separator, const char *s1, const char *s2)
+{
+    if (opp_isempty(s1))
+        return opp_nulltoempty(s2);
+    else if (opp_isempty(s2))
+        return opp_nulltoempty(s1);
+    else
+        return std::string(s1) + separator + s2;
+}
+
 int strdictcmp(const char *s1, const char *s2)
 {
     int casediff = 0;

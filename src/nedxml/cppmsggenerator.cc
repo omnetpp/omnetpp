@@ -25,15 +25,11 @@
 #include "nedelements.h"
 #include "cppgenerator.h"
 #include "nederror.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
 using std::ostream;
-
-inline bool strnotnull(const char *s)
-{
-    return s && s[0];
-}
 
 inline ostream& operator<< (ostream& out, const std::string& str)
 {
@@ -73,7 +69,7 @@ void NEDCppGenerator::doEnumDecl(EnumDeclNode *node, const char *indent, int mod
 void NEDCppGenerator::doEnum(EnumNode *node, const char *indent, int mode, const char *)
 {
     outh << "enum " << node->getName() << " {\n";
-    if (!strnotnull(node->getExtendsName()))
+    if (opp_isempty(node->getExtendsName()))
         out << "static sEnumBuilder _" << node->getName() << "( \"" << node->getName() << "\",\n";
     else
         out << "static sEnumBuilder _" << node->getExtendsName() << "_" << node->getName() << "( \"" << node->getExtendsName() << "\",\n";
