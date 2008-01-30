@@ -131,6 +131,7 @@ cOwnedObject *cSymTable::lookup(const char *qualifiedName)
     return NULL;
 }
 
+//FIXME do we need this function? it is NOT used for NED lookups
 cOwnedObject *cSymTable::lookup(const char *name, const char *contextNamespace)
 {
     // try the lookup cache

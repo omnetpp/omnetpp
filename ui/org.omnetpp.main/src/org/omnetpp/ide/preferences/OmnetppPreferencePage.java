@@ -25,7 +25,7 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  * the main plug-in class. That way, preferences can
  * be accessed directly via the preference store.
  */
-
+//TODO display message if doxygen or dot cannot be found
 public class OmnetppPreferencePage
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
