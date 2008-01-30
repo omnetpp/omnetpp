@@ -72,6 +72,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.viewers.DecoratingLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -108,6 +110,7 @@ import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
+import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelDecorator;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.provider.ScaveEditPlugin;
 import org.omnetpp.scave.model2.provider.ScaveModelItemProviderAdapterFactory;
@@ -707,8 +710,12 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	 * that is used to edit the model.
 	 */
 	public void configureTreeViewer(TreeViewer modelViewer) {
+		ILabelProvider labelProvider =
+			new DecoratingLabelProvider(
+				new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)),
+				new ScaveModelLabelDecorator());
 		modelViewer.setContentProvider(new AdapterFactoryContentProvider(adapterFactory));
-		modelViewer.setLabelProvider(new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(adapterFactory)));
+		modelViewer.setLabelProvider(labelProvider);
 		modelViewer.setAutoExpandLevel(TreeViewer.ALL_LEVELS);
 		// new AdapterFactoryTreeEditor(modelViewer.getTree(), adapterFactory); //XXX this appears to be something about in-place editing - do we need it?
 
