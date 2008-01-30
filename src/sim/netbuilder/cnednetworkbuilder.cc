@@ -315,18 +315,33 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodname)
 {
+    cComponentType *componenttype = findComponentType(modTypeName);
+    if (!componenttype)
+        throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
+                            "in (%s)%s not found (not in the loaded NED files?)",
+                            modTypeName, submodname, modp->className(), modp->fullPath().c_str());
+    if (!dynamic_cast<cModuleType *>(componenttype))
+        throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
+                            "in (%s)%s not found (type is a channel type)",
+                            modTypeName, submodname, modp->className(), modp->fullPath().c_str());
+    return (cModuleType *)componenttype;
+}
+
+cComponentType *cNEDNetworkBuilder::findComponentType(const char *nedtypename)
+{
+//FIXME modp not needed? we have currentdecl!!!
     //FIXME TODO cache result of resolution!
 
     // note: this is to be kept consistent with the Java code NEDResources.lookupNedType()
 
-//  // context is a compound module, so it may be an inner type
+    // context is a compound module, so it may be an inner type
 //FIXME TODO
 //  if (lookupContext instanceof CompoundModuleElementEx) {
 //      INEDTypeInfo contextTypeInfo = ((CompoundModuleElementEx)lookupContext).getNEDTypeInfo();
-//      if (modTypeName.contains(".")) {
+//      if (nedtypename.contains(".")) {
 //          // inner type with fully qualified name?
-//          String prefix = StringUtils.substringBeforeLast(modTypeName, ".");
-//          String simpleName = StringUtils.substringAfterLast(modTypeName, ".");
+//          String prefix = StringUtils.substringBeforeLast(nedtypename, ".");
+//          String simpleName = StringUtils.substringAfterLast(nedtypename, ".");
 //          if (contextTypeInfo.getFullyQualifiedName().equals(prefix)) {
 //              INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(simpleName);
 //              if (innerType != null)
@@ -334,19 +349,19 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
 //          }
 //      }
 //      else {
-//          INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(modTypeName);
+//          INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(nedtypename);
 //          if (innerType != null)
 //              return innerType.getNEDTypeInfo();
 //      }
 //  }
 
     // not an inner type: look up as toplevel type
-    if (strchr(modTypeName, '.'))
+    if (strchr(nedtypename, '.'))
     {
         // contains dot: must be a fully qualified name (as we don't accept partially qualified names)
-        cModuleType *modtype = cModuleType::find(modTypeName);
-        if (modtype)
-            return modtype;
+        cComponentType *componenttype = cComponentType::find(nedtypename);
+        if (componenttype)
+            return componenttype;
     }
     else {
         // no dot: name is an unqualified name (simple name), or from the default package
@@ -355,10 +370,10 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
         // from the same package?
         PackageNode *packageNode = nedfileNode->getFirstPackageChild();
         const char *packageName = packageNode ? packageNode->getName() : "";
-        std::string qname = opp_isempty(packageName) ? modTypeName : std::string(packageName) + "." + modTypeName;
-        cModuleType *modtype = cModuleType::find(qname.c_str());
-        if (modtype)
-            return modtype;
+        std::string qname = opp_isempty(packageName) ? nedtypename : std::string(packageName) + "." + nedtypename;
+        cComponentType *componenttype = cComponentType::find(qname.c_str());
+        if (componenttype)
+            return componenttype;
 
         // collect imports, for convenience
         std::vector<const char *> imports;
@@ -368,8 +383,8 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
         // imported type?
         // try a shortcut first: if the import doesn't contain wildcards
         for (int i=0; i<imports.size(); i++)
-            if (cModuleType::find(imports[i]) && (opp_stringendswith(imports[i], (std::string(".")+modTypeName).c_str()) || strcmp(imports[i], modTypeName)==0))
-                return cModuleType::find(imports[i]);
+            if (cComponentType::find(imports[i]) && (opp_stringendswith(imports[i], (std::string(".")+nedtypename).c_str()) || strcmp(imports[i], nedtypename)==0))
+                return cComponentType::find(imports[i]);
 
         // try harder, using wildcards
         for (int i=0; i<imports.size(); i++) {
@@ -378,14 +393,12 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
             for (int j=0; j<types->size(); j++) {
                 const char *simplename = types->get(j)->name();
                 const char *qname = types->get(j)->fullName();
-                if (strcmp(simplename,modTypeName)==0 && importpattern.matches(qname))
-                    return dynamic_cast<cModuleType *>(types->get(j));
+                if (strcmp(simplename,nedtypename)==0 && importpattern.matches(qname))
+                    return dynamic_cast<cComponentType *>(types->get(j));
             }
         }
     }
-    throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
-                        "in (%s)%s not found (not in the loaded NED files?)",
-                        modTypeName, submodname, modp->className(), modp->fullPath().c_str());
+    return NULL;
 }
 
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
@@ -701,7 +714,7 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
     gate1 = gate2 = NULL;
     if (!gateindexp && !isplusplus)
     {
-        // optimization possiblity: add gatePair() method to cModule to spare one lookup
+        // optimization possibility: add gatePair() method to cModule to spare one lookup
         gate1 = modp->gateHalf(gatename, cGate::INPUT);
         gate2 = modp->gateHalf(gatename, cGate::OUTPUT);
     }
@@ -781,20 +794,22 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
         //XXX check actual type fulfills likeType
     }
 
-    cChannelType *channeltype = findAndCheckChannelType(channeltypename.c_str());
+    cChannelType *channeltype = findAndCheckChannelType(channeltypename.c_str(), parentmodp);
     channelp = channeltype->create("channel", parentmodp); //FIXME must give unique names, otherwise channel properties() won't work!!!
 
     return channelp;
 }
 
-cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename)
+cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename, cModule *modp)
 {
-    // try first in local scope, then in global scope
-    cChannelType *channeltype = cChannelType::find(channeltypename, currentDecl->fullName());
-    if (!channeltype)
+    cComponentType *componenttype = findComponentType(channeltypename);
+    if (!componenttype)
         throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
-                            "(not in the loaded NED files?)", channeltypename);
-    return channeltype;
+                            "(not in the loaded NED files?)", channeltypename);  //FIXME "in module %s"
+    if (!dynamic_cast<cChannelType *>(componenttype))
+        throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
+                            "(given type is a module type)", channeltypename);  //FIXME "in module %s"
+    return (cChannelType *)componenttype;
 }
 
 ExpressionNode *cNEDNetworkBuilder::findExpression(NEDElement *node, const char *exprname)

@@ -44,7 +44,7 @@ class SIM_API cNEDNetworkBuilder
     // avoid having to pass it around as a parameter.
     cNEDDeclaration *currentDecl;
 
-    // stack of loop variables
+    // stack of loop variables in NED "for" loops
     struct {const char *varname; int value;} loopVarStack[MAX_LOOP_NESTING];
     int loopVarSP;
 
@@ -60,6 +60,7 @@ class SIM_API cNEDNetworkBuilder
     bool superTypeAllowsUnconnected() const;
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
+    cComponentType *findComponentType(const char *nedtypename);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
     void setConnDisplayString(cGate *srcgatep);
     static cPar::Type translateParamType(int t);
@@ -83,7 +84,7 @@ class SIM_API cNEDNetworkBuilder
     cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionNode *modindexp);
     cChannel *createChannel(ChannelSpecNode *channelspec, cModule *parentmodp);
 
-    cChannelType *findAndCheckChannelType(const char *channeltypename);
+    cChannelType *findAndCheckChannelType(const char *channeltypename, cModule *modp);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
     cParValue *getOrCreateExpression(ExpressionNode *exprNode, cPar::Type type, bool inSubcomponentScope);
     long evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
