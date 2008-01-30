@@ -47,6 +47,7 @@
 #include "nedsupport.h"
 #include "commonutil.h"  // TRACE()
 #include "stringutil.h"
+#include "patternmatcher.h"
 
 USING_NAMESPACE
 
@@ -314,6 +315,8 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodname)
 {
+    //FIXME TODO cache result of resolution!
+
     // note: this is to be kept consistent with the Java code NEDResources.lookupNedType()
 
 //  // context is a compound module, so it may be an inner type
@@ -367,30 +370,22 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
         for (int i=0; i<imports.size(); i++)
             if (cModuleType::find(imports[i]) && (opp_stringendswith(imports[i], (std::string(".")+modTypeName).c_str()) || strcmp(imports[i], modTypeName)==0))
                 return cModuleType::find(imports[i]);
-//FIXME TODO:
-//      // try harder, using wildcards
-//      String nameWithDot = "." + modTypeName;
-//      for (String importSpec : imports) {
-//          String importRegex = NEDElementUtilEx.importToRegex(importSpec);
-//          for (String qualifiedName : projectData.components.keySet())
-//              if ((qualifiedName.endsWith(nameWithDot) || qualifiedName.equals(modTypeName)) && qualifiedName.matches(importRegex))
-//                  return projectData.components.get(qualifiedName);
-//      }
+
+        // try harder, using wildcards
+        for (int i=0; i<imports.size(); i++) {
+            PatternMatcher importpattern(imports[i], true, true, true);
+            cSymTable *types = componentTypes.instance(); // bypass cModuleType as it cannot enumerate all types
+            for (int j=0; j<types->size(); j++) {
+                const char *simplename = types->get(j)->name();
+                const char *qname = types->get(j)->fullName();
+                if (strcmp(simplename,modTypeName)==0 && importpattern.matches(qname))
+                    return dynamic_cast<cModuleType *>(types->get(j));
+            }
+        }
     }
     throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
                         "in (%s)%s not found (not in the loaded NED files?)",
                         modTypeName, submodname, modp->className(), modp->fullPath().c_str());
-
-///////////////////////////////
-//  //FIXME  old code: (remove!)
-//
-//    // try first in local scope, then in global scope
-//    cModuleType *modtype = cModuleType::find(modtypename, currentDecl->fullName()); //XXX this 2-arg find() is likely useless
-//    if (!modtype)
-//        throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
-//                            "in (%s)%s not found (not in the loaded NED files?)",
-//                            modtypename, submodname, modp->className(), modp->fullPath().c_str());
-//    return modtype;
 }
 
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)

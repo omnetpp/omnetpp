@@ -89,7 +89,7 @@ class SIM_API cSymTable : public cNoncopyableOwnedObject
   private:
     std::vector<cOwnedObject *> v;  // stores the objects
     typedef std::map<std::string, cOwnedObject*> LookupCache;
-    LookupCache lookupCache;  // to remember lookups
+    LookupCache lookupCache;  // to remember lookups  FIXME needed?
   public:
     cSymTable(const char *name) : cNoncopyableOwnedObject(name) {}
     virtual ~cSymTable();
