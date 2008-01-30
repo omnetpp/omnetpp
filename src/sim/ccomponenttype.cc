@@ -49,7 +49,7 @@ cProperties *cComponentType::getPropertiesFor(const cComponent *component)
     cProperties *props;
     if (parent)
         props = parent->componentType()->declaration()->subcomponentProperties(
-            component->name(), component->componentType()->name());
+            component->name(), component->componentType()->fullName());
     else
         props = component->componentType()->declaration()->properties();
     return props;
@@ -62,7 +62,7 @@ cProperties *cComponentType::getPropertiesFor(const cPar *par)
     cProperties *props;
     if (parent)
         props = parent->componentType()->declaration()->subcomponentParamProperties(
-            component->name(), component->componentType()->name(), par->name());
+            component->name(), component->componentType()->fullName(), par->name());
     else
         props = component->componentType()->declaration()->paramProperties(par->name());
     return props;
@@ -75,7 +75,7 @@ cProperties *cComponentType::getPropertiesFor(const cGate *gate)
     cProperties *props;
     if (parent)
         props = parent->componentType()->declaration()->subcomponentGateProperties(
-            component->name(), component->componentType()->name(), gate->name());
+            component->name(), component->componentType()->fullName(), gate->name());
     else
         props = component->componentType()->declaration()->gateProperties(gate->name());
     return props;
@@ -170,7 +170,7 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
 {
     if (!parentmod)
         throw cRuntimeError("createScheduleInit(): parent module pointer cannot be NULL "
-                            "when creating module named '%s' of type %s", modname, name());
+                            "when creating module named '%s' of type %s", modname, fullName());
     cModule *mod = create(modname, parentmod);
     mod->finalizeParameters();
     mod->buildInside();

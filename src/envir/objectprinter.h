@@ -38,14 +38,14 @@ class ENVIR_API ObjectPrinter
         int indentSize;
         char buffer[1024];
         std::vector<MatchExpression> objectMatchExpressions;
-        std::vector<std::vector<MatchExpression>> fieldNameMatchExpressionsList;
+        std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
 
     public:
         /**
          * FIXME Levy: pls document parameters and operation
          */
         ObjectPrinter(std::vector<MatchExpression> &objectMatchExpressions,
-                      std::vector<std::vector<MatchExpression>> &fieldNameMatchExpressionsList,
+                      std::vector<std::vector<MatchExpression> > &fieldNameMatchExpressionsList,
                       int indentSize);
 
         void printObjectToStream(std::ostream& ostream, cObject *object);

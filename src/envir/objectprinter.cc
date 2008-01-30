@@ -44,7 +44,7 @@ static bool defaultRecurseInto(void *object, cClassDescriptor *descriptor, int f
 //----
 
 ObjectPrinter::ObjectPrinter(std::vector<MatchExpression> &objectMatchExpressions,
-                             std::vector<std::vector<MatchExpression>> &fieldNameMatchExpressionsList,
+                             std::vector<std::vector<MatchExpression> > &fieldNameMatchExpressionsList,
                              int indentSize)
 {
     Assert(objectMatchExpressions.size() == fieldNameMatchExpressionsList.size());

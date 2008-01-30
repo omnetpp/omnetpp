@@ -144,7 +144,7 @@ static void setupEventLogObjectPrinter()
 
      if (eventLogMessageDetailPattern) {
          std::vector<MatchExpression> objectMatchExpressions;
-         std::vector<std::vector<MatchExpression>> fieldNameMatchExpressionsList;
+         std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
 
          StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
          std::vector<std::string> patterns = tokenizer.asVector();
