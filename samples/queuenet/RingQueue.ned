@@ -20,9 +20,6 @@ network RingQueue
 {
     parameters:
         @display("i=device/lan-ring");
-    gates:
-        input in[5];
-        output out[5];
     submodules:
         source1: Source {
             @display("p=370.0,36.0");
