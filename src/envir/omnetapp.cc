@@ -324,6 +324,7 @@ void TOmnetApp::setup()
                  foldersloaded.insert(folder);
              }
          }
+         simulation.doneLoadingNedFiles();
 
          // load NED files from the "preload-ned-files=" config entry.
          // XXX This code is now obsolete, as we load NED files from NEDPATH trees

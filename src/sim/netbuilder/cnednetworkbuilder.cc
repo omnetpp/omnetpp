@@ -329,31 +329,27 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
 
 cComponentType *cNEDNetworkBuilder::findComponentType(const char *nedtypename)
 {
-//FIXME modp not needed? we have currentdecl!!!
+    // note: this method is to be kept consistent with NEDResources.lookupNedType() in the Java code
+
     //FIXME TODO cache result of resolution!
 
-    // note: this is to be kept consistent with the Java code NEDResources.lookupNedType()
-
-    // context is a compound module, so it may be an inner type
-//FIXME TODO
-//  if (lookupContext instanceof CompoundModuleElementEx) {
-//      INEDTypeInfo contextTypeInfo = ((CompoundModuleElementEx)lookupContext).getNEDTypeInfo();
-//      if (nedtypename.contains(".")) {
-//          // inner type with fully qualified name?
-//          String prefix = StringUtils.substringBeforeLast(nedtypename, ".");
-//          String simpleName = StringUtils.substringAfterLast(nedtypename, ".");
-//          if (contextTypeInfo.getFullyQualifiedName().equals(prefix)) {
-//              INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(simpleName);
-//              if (innerType != null)
-//                  return innerType.getNEDTypeInfo();
-//          }
-//      }
-//      else {
-//          INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(nedtypename);
-//          if (innerType != null)
-//              return innerType.getNEDTypeInfo();
-//      }
-//  }
+    // try it as inner type
+    ASSERT(currentDecl->getTree()->getTagCode() == NED_COMPOUND_MODULE);
+    if (strchr(nedtypename, '.'))
+    {
+        // inner type with fully qualified name
+        cComponentType *innertype = cComponentType::find(nedtypename);
+        if (innertype)
+            return innertype;
+    }
+    else
+    {
+        // inner type with simple name
+        std::string qname = std::string(currentDecl->fullName()) + "." + nedtypename;
+        cComponentType *innertype = cComponentType::find(qname.c_str());
+        if (innertype)
+            return innertype;
+    }
 
     // not an inner type: look up as toplevel type
     if (strchr(nedtypename, '.'))
@@ -363,7 +359,8 @@ cComponentType *cNEDNetworkBuilder::findComponentType(const char *nedtypename)
         if (componenttype)
             return componenttype;
     }
-    else {
+    else
+    {
         // no dot: name is an unqualified name (simple name), or from the default package
         NedFileNode *nedfileNode = dynamic_cast<NedFileNode *>(currentDecl->getTree()->getParentWithTag(NED_NED_FILE));
 
@@ -387,10 +384,12 @@ cComponentType *cNEDNetworkBuilder::findComponentType(const char *nedtypename)
                 return cComponentType::find(imports[i]);
 
         // try harder, using wildcards
-        for (int i=0; i<imports.size(); i++) {
+        for (int i=0; i<imports.size(); i++)
+        {
             PatternMatcher importpattern(imports[i], true, true, true);
             cSymTable *types = componentTypes.instance(); // bypass cModuleType as it cannot enumerate all types
-            for (int j=0; j<types->size(); j++) {
+            for (int j=0; j<types->size(); j++)
+            {
                 const char *simplename = types->get(j)->name();
                 const char *qname = types->get(j)->fullName();
                 if (strcmp(simplename,nedtypename)==0 && importpattern.matches(qname))

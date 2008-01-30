@@ -82,15 +82,15 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
             tag==NED_COMPOUND_MODULE || tag==NED_MODULE_INTERFACE ||
             tag==NED_ENUM || tag==NED_STRUCT || tag==NED_CLASS || tag==NED_MESSAGE)
         {
-            std::string name = namespaceprefix + child->getAttribute("name");
-            if (lookup(name.c_str()))
-                throw NEDException("redeclaration of %s %s", child->getTagName(), name.c_str()); //XXX maybe just NEDError?
+            std::string qname = namespaceprefix + child->getAttribute("name");
+            if (lookup(qname.c_str()))
+                throw NEDException("redeclaration of %s %s", child->getTagName(), qname.c_str()); //XXX maybe just NEDError?
 
-            addComponent(name.c_str(), child);
+            addComponent(qname.c_str(), child);
 
             NEDElement *types = child->getFirstChildWithTag(NED_TYPES);
             if (types)
-                collectComponents(types, name+".");
+                collectComponents(types, qname+".");
         }
     }
 }
