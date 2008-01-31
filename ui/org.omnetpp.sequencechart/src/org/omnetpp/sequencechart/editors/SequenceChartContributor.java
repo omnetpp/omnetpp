@@ -146,6 +146,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 	protected SequenceChartAction decreaseSpacingAction;
 
+    protected SequenceChartAction defaultZoomAction;
+
 	protected SequenceChartAction zoomInAction;
 
 	protected SequenceChartAction zoomOutAction;
@@ -157,6 +159,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	protected SequenceChartAction toggleBookmarkAction;
 
 	protected SequenceChartAction refreshAction;
+	
+    protected SequenceChartAction releaseMemoryAction;
 
 	protected SequenceChartAction exportToSVGAction;
 
@@ -179,6 +183,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.showArrowHeadsAction = createShowArrowHeadsAction();
 		this.increaseSpacingAction = createIncreaseSpacingAction();
 		this.decreaseSpacingAction = createDecreaseSpacingAction();
+        this.defaultZoomAction = createDefaultZoomAction();
 		this.zoomInAction = createZoomInAction();
 		this.zoomOutAction = createZoomOutAction();
 		this.denseAxesAction = createDenseAxesAction();
@@ -186,6 +191,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.toggleBookmarkAction = createToggleBookmarkAction();
 		this.exportToSVGAction = createExportToSVGAction();
 		this.refreshAction = createRefreshAction();
+		this.releaseMemoryAction = createReleaseMemoryAction();
 		
 		this.timelineModeStatus = createTimelineModeStatus();
 		this.filterStatus = createFilterStatus();
@@ -290,11 +296,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				menuManager.add(denseAxesAction);
 				menuManager.add(balancedAxesAction);
 				menuManager.add(separatorAction);
+                menuManager.add(defaultZoomAction);
 				menuManager.add(zoomInAction);
 				menuManager.add(zoomOutAction);
 				menuManager.add(separatorAction);
 				menuManager.add(toggleBookmarkAction);
 				menuManager.add(refreshAction);
+                menuManager.add(releaseMemoryAction);
 				menuManager.add(separatorAction);
 				menuManager.add(exportToSVGAction);
 			}
@@ -842,6 +850,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		};
 	}
 	
+    private SequenceChartAction createDefaultZoomAction() {
+        return new SequenceChartAction("Default Zoom", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOM)) {
+            @Override
+            public void run() {
+                sequenceChart.defaultZoom();
+            }
+        };
+    }
+
 	private SequenceChartAction createZoomInAction() {
 		return new SequenceChartAction("Zoom In", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOMPLUS)) {
 			@Override
@@ -1306,6 +1323,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 			}
 		};
 	}
+
+    private SequenceChartAction createReleaseMemoryAction() {
+        return new SequenceChartAction("Release Memory", Action.AS_PUSH_BUTTON) {
+            @Override
+            public void run() {
+                // TODO:
+            }
+        };
+    }
 
 	private StatusLineContributionItem createTimelineModeStatus() {
 		return new StatusLineContributionItem("Timeline Mode") {

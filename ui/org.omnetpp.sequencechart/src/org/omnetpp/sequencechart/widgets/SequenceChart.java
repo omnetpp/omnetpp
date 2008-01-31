@@ -805,6 +805,15 @@ public class SequenceChart
 	/*************************************************************************************
 	 * ZOOMING
 	 */
+	
+	public void defaultZoom() {
+        eventLogInput.runWithProgressMonitor(new Runnable() {
+            public void run() {
+                calculatePixelPerTimelineUnit(getViewportWidth());
+                calculateVirtualSize();
+            }
+        });
+	}
 
 	/**
 	 * Increases pixels per timeline coordinate.
@@ -1296,13 +1305,13 @@ public class SequenceChart
 	 * Calculates initial pixelPerTimelineUnit.
 	 */
 	private void calculatePixelPerTimelineUnit(int viewportWidth) {
+	    IEvent referenceEvent = sequenceChartFacade.getTimelineCoordinateSystemOriginEvent();
 		int distance = Math.min(20, eventLog.getApproximateNumberOfEvents());
 
 		if (distance > 1) {
-			IEvent firstEvent = eventLog.getFirstEvent();
-			double firstEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(firstEvent);
-			double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(firstEvent, distance - 1));
-			double timelineCoordinateDelta = otherEventTimelineCoordinate - firstEventTimelineCoordinate;
+			double referenceEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(referenceEvent);
+			double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(referenceEvent, distance - 1));
+			double timelineCoordinateDelta = otherEventTimelineCoordinate - referenceEventTimelineCoordinate;
 			setPixelPerTimelineCoordinate(viewportWidth / timelineCoordinateDelta);
 		}
 		else
