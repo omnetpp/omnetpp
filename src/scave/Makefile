@@ -35,7 +35,8 @@ OBJS= $O/arraybuilder.o $O/channel.o $O/commonnodes.o $O/compoundfilter.o \
       $O/xyplotnode.o $O/indexedvectorfile.o \
       $O/vectorfileindexer.o $O/indexfile.o $O/scaveutils.o \
       $O/scaveexception.o $O/enumtype.o $O/export.o $O/teenode.o \
-      $O/indexedvectorfilereader.o $O/xyarray.o $O/fields.o
+      $O/indexedvectorfilereader.o $O/xyarray.o $O/fields.o \
+      $O/indexedvectorfilereader2.o
 
 #
 # Automatic rules

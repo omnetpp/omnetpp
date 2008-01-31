@@ -150,6 +150,8 @@ sub testReader2
 }
 
 
+
+
 mkdir("result");
 
 testReader("reader-builder", "testfiles/omnetpp1.vec");
@@ -167,6 +169,6 @@ testExport("testfiles/vectors.vec", "csv");
 
 generateVectorFile("testfiles/big.vec", 1000, 1000000, 100);
 testIndexer("testfiles/big.vec");
-testReader2("indexedreader", "testfiles/big.vec", "100,200,300,400,500,600,700,800,900,1000");
-testReader2("reader", "testfiles/big.vec", "100,200,300,400,500,600,700,800,900,1000");
+testReader2("indexedvectorfilereader", "testfiles/big.vec", "100,200,300,400,500,600,700,800,900,1000");
+testReader2("vectorfilereader", "testfiles/big.vec", "100,200,300,400,500,600,700,800,900,1000");
 

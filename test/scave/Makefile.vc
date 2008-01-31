@@ -14,9 +14,9 @@ COPTS=$(CFLAGS) -I. -I../../src/common -I../../include/platdep -I../../src/scave
       /Fd"vectorfilereadertest.pdb"
 
 OBJS= main.obj vectorfilereadertest.obj resultfilemanagertest.obj \
-      vectorfileindexertest.obj indexedvectorfilereadertest.obj
+      vectorfileindexertest.obj
       
-LIBS= ../../lib/common.lib ../../lib/scave.lib
+LIBS= ../../lib/$(TOOLCHAIN_NAME)/common$(D).lib ../../lib/$(TOOLCHAIN_NAME)/scave$(D).lib
 
 #
 # Automatic rules

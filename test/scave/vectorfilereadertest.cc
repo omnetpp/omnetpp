@@ -12,6 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <exception>
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <set>
@@ -24,6 +26,7 @@
 #include "nodetype.h"
 #include "nodetyperegistry.h"
 #include "dataflowmanager.h"
+#include "indexfile.h"
 #include "vectorfilereader.h"
 #include "vectorfilewriter.h"
 #include "arraybuilder.h"
@@ -125,38 +128,29 @@ void testReaderBuilder(const char *inputfile, const char *outputfile)
     out.close();
 }
 
-void testReader(const char *inputfile, int *vectorIds, int count)
+void testReader(const char* readerNodeType, const char *inputFile, int *vectorIds, int count)
 {
+	if ((strcmp(readerNodeType, "indexedvectorfilereader") == 0 ||
+			strcmp(readerNodeType, "indexedvectorfilereader2") == 0) &&
+			!IndexFile::isIndexFileUpToDate(inputFile))
+		throw exception("Index file is not up to date");
+	
     NodeTypeRegistry *registry = NodeTypeRegistry::instance();
-    NodeType *readerType = registry->getNodeType("vectorfilereader");
+    NodeType *readerType = registry->getNodeType(readerNodeType);
     NodeType *builderType = registry->getNodeType("arraybuilder");
-    
-    ResultFileManager resultfilemanager;
-    resultfilemanager.loadFile(inputfile);
-    set<int> vectorIdSet(vectorIds, vectorIds+count);
-    IDList vectors = resultfilemanager.getAllVectors();
-    IDList vectorsToBeRead; 
-    for (int i = 0; i < vectors.size(); ++i)
-    {
-    	ID id = vectors.get(i);
-    	const VectorResult &vector = resultfilemanager.getVector(id);
-    	if (vectorIdSet.find(vector.vectorId) != vectorIdSet.end())
-    		vectorsToBeRead.add(id);
-    }
 
     DataflowManager manager;
     StringMap attrs;
-    attrs["filename"] = inputfile;
-    VectorFileReaderNode *reader = (VectorFileReaderNode *)readerType->create(&manager, attrs);
+    attrs["filename"] = inputFile;
+    Node *reader = readerType->create(&manager, attrs);
 
     attrs.clear();
     char vectorIdStr[12];
     
-    for (int i = 0; i < vectorsToBeRead.size(); ++i)
+    for (size_t i = 0; i < count; ++i)
     {
-    	const VectorResult &vector = resultfilemanager.getVector(vectorsToBeRead.get(i));
         Node *builder = builderType->create(&manager, attrs);
-        Port *src = reader->addVector(vector);
+        Port *src = readerType->getPort(reader, itoa(vectorIds[i], vectorIdStr, 10));
         Port *dest = builderType->getPort(builder, "in");
         manager.connect(src, dest);
     }
@@ -166,4 +160,5 @@ void testReader(const char *inputfile, int *vectorIds, int count)
     	manager.execute();
     }
 }
+
 

@@ -12,8 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef _INDEXEDVECTORFILEREADER_H_
-#define _INDEXEDVECTORFILEREADER_H_
+#ifndef _INDEXEDVECTORFILEREADER2_H_
+#define _INDEXEDVECTORFILEREADER2_H_
 
 #include <map>
 #include <string>
@@ -34,44 +34,29 @@ NAMESPACE_BEGIN
 /**
  * Producer node which reads an output vector file.
  */
-class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
+class SCAVE_API IndexedVectorFileReaderNode2 : public ReaderNode
 {
     typedef std::vector<Port> PortVector;
 
-    struct PortData
-    {
+    struct PortData {
 		VectorData *vector;
+		int currentBlockIndex;
 		PortVector ports;
 		
-		PortData() : vector(NULL) {}
-	};
-	
-	struct BlockAndPortData
-	{
-		Block *blockPtr;
-		PortData *portDataPtr;
-		
-		BlockAndPortData(Block *blockPtr, PortData *portDataPtr)
-			: blockPtr(blockPtr), portDataPtr(portDataPtr) {}
-		
-		bool operator<(const BlockAndPortData& other)
-		{
-			return this->blockPtr->startOffset < other.blockPtr->startOffset;
-		}
+		PortData() : vector(NULL), currentBlockIndex(0) {}
 	};
 
-    typedef std::map<int,PortData> VectorIdToPortMap;
+    typedef std::map<int,PortData> PortMap;
 
 	private:
-        VectorIdToPortMap ports;
+        PortMap ports;
         VectorFileIndex *index;
-        std::vector<BlockAndPortData> blocksToRead;
-        int currentBlockIndex;
         LineTokenizer tokenizer;
+        bool fFinished;
 
     public:
-        IndexedVectorFileReaderNode(const char *filename, size_t bufferSize = VECFILEREADER_BUFSIZE);
-        virtual ~IndexedVectorFileReaderNode();
+        IndexedVectorFileReaderNode2(const char *filename, size_t bufferSize = VECFILEREADER_BUFSIZE);
+        virtual ~IndexedVectorFileReaderNode2();
 
         Port *addVector(const VectorResult &vector);
 
@@ -81,14 +66,14 @@ class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
 
     private:
         void readIndexFile();
-        long readBlock(const Block *blockPtr, const PortData *portDataPtr);
+        bool readNextBlock(PortData& portData);
 };
 
 
-class SCAVE_API IndexedVectorFileReaderNodeType : public ReaderNodeType
+class SCAVE_API IndexedVectorFileReaderNode2Type : public ReaderNodeType
 {
     public:
-        virtual const char *name() const {return "indexedvectorfilereader";}
+        virtual const char *name() const {return "indexedvectorfilereader2";}
         virtual const char *description() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

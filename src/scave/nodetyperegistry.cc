@@ -24,6 +24,7 @@
 #include "vectorfilewriter.h"
 #include "indexedvectorfile.h"
 #include "indexedvectorfilereader.h"
+#include "indexedvectorfilereader2.h"
 #include "filewriter.h"
 #include "windowavg.h"
 #include "slidingwinavg.h"
@@ -66,6 +67,7 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new VectorFileWriterNodeType());
     add(new IndexedVectorFileWriterNodeType());
     add(new IndexedVectorFileReaderNodeType());
+    add(new IndexedVectorFileReaderNode2Type());
     add(new FileWriterNodeType());
     add(new MergerNodeType());
     add(new XYPlotNodeType());

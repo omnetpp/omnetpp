@@ -24,8 +24,7 @@ void testReaderWriter(const char *inputfile, const char *outputfile);
 void testReaderBuilder(const char *inputfile, const char *outputfile);
 void testResultFileManager(const char *inputfile);
 void testIndexer(const char *inputFile);
-void testIndexedReader(const char *inputFile, int *vectorIds, int count);
-void testReader(const char *inputFile, int *vectorIds, int count);
+void testReader(const char *readerNodeType, const char *inputFile, int *vectorIds, int count);
 
 static void usage(char *message)
 {
@@ -73,8 +72,16 @@ static void parseIntList(const char *str, int *&result, int &len)
 			if (in.fail())
 				throw exception("Malformed interval end");
 			
-			for (int id = start+1; id <= end; ++id)
-				ids.push_back(id);
+			if (start < end)
+            {
+                for (int id = start+1; id <= end; ++id)
+				    ids.push_back(id);
+            }
+            else if (end < start)
+            {
+                for (int id = start-1; id >= end; --id)
+				    ids.push_back(id);
+            }
 		}
 		else if (sep != ',')
 			throw exception("Unexpected char in int list");
@@ -126,8 +133,9 @@ int main(int argc, char **argv)
                 }
                 testIndexer(argv[2]);
             }
-            else if (strcmp(argv[1], "indexedreader") == 0 ||
-            		strcmp(argv[1], "reader") == 0)
+            else if (strcmp(argv[1], "indexedvectorfilereader") == 0 ||
+            			strcmp(argv[1], "indexedvectorfilereader2") == 0 ||
+            			strcmp(argv[1], "vectorfilereader") == 0)
             {
                 if (argc < 4) {
                     usage("Not enough arguments specified");
@@ -140,11 +148,8 @@ int main(int argc, char **argv)
                 	usage("No vectors specified");
                 	return -1;
                 }
-                	
-                if (strcmp(argv[1], "indexedreader") == 0)
-                	testIndexedReader(argv[2], vectorIds, count);
-                else
-                	testReader(argv[2], vectorIds, count);
+                
+               	testReader(argv[1], argv[2], vectorIds, count);
             }
 
             cout << "PASS\n";

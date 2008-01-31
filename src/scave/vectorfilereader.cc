@@ -41,7 +41,6 @@ Port *VectorFileReaderNode::addVector(const VectorResult &vector)
     PortVector& portvec = ports[vector.vectorId];
     portvec.push_back(Port(this));
     Port& port = portvec.back();
-    columns[vector.vectorId] = vector.columns;
     return &port;
 }
 
@@ -122,18 +121,31 @@ void VectorFileReaderNode::process()
 
         int numtokens = tokenizer.numTokens();
         char **vec = tokenizer.tokens();
-        if (numtokens>=3 && opp_isdigit(vec[0][0]))  // silently ignore incomplete lines
+        
+        if (vec[0][0] == 'v' && strcmp(vec[0], "vector") == 0)
+        {
+            if (numtokens < 4)
+                throw ResultFileFormatException("vector file reader: broken vector declaration", file, lineNo);
+
+            int vectorId;
+            if (!parseInt(vec[1], vectorId))
+                throw ResultFileFormatException("vector file reader: malformed vector in vector declaration", file, lineNo);
+            if (ports.find(vectorId) != ports.end())
+            	columns[vectorId] = (numtokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]); 
+        }
+        else if (numtokens>=3 && opp_isdigit(vec[0][0]))  // silently ignore incomplete lines
         {
             // extract vector id
             int vectorId;
             if (!parseInt(vec[0], vectorId))
-                throw ResultFileFormatException("invalid vector file syntax: invalid vector id column", file, lineNo, -1);
+                throw ResultFileFormatException("invalid vector file syntax: invalid vector id column", file, lineNo);
 
             Portmap::iterator portvec = ports.find(vectorId);
             if (portvec!=ports.end())
             {
                 ColumnMap::iterator columnSpec = columns.find(vectorId);
-                assert(columnSpec != columns.end());
+                if (columnSpec == columns.end())
+                	throw ResultFileFormatException("vector file reader: missing vector declaration", file, lineNo);
 
                 // parse columns
                 Datum a = parseColumns(vec, numtokens, columnSpec->second, file, lineNo, -1);
@@ -187,7 +199,6 @@ Port *VectorFileReaderNodeType::getPort(Node *node, const char *portname) const
     VectorFileReaderNode *node1 = dynamic_cast<VectorFileReaderNode *>(node);
     VectorResult vector;
     vector.vectorId = atoi(portname);  // FIXME check it's numeric at all
-    vector.columns = "TV";             // support old vector file format only
     return node1->addVector(vector);
 }
 

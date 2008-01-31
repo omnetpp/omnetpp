@@ -1,5 +1,5 @@
 //=========================================================================
-//  INDEXEDVECTORFILEREADER.CC - part of
+//  INDEXEDVECTORFILEREADER2.CC - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
@@ -16,24 +16,23 @@
 #pragma warning(disable:4786)
 #endif
 
-#include <algorithm>
 #include "opp_ctype.h"
 #include "channel.h"
 #include "scaveutils.h"
 #include "vectorfilereader.h"
-#include "indexedvectorfilereader.h"
+#include "indexedvectorfilereader2.h"
 
 USING_NAMESPACE
 
 using namespace std;
 
-IndexedVectorFileReaderNode::IndexedVectorFileReaderNode(const char *filename, size_t bufferSize) :
-  ReaderNode(filename, bufferSize), index(NULL), currentBlockIndex(0)
+IndexedVectorFileReaderNode2::IndexedVectorFileReaderNode2(const char *filename, size_t bufferSize) :
+  ReaderNode(filename, bufferSize), index(NULL), fFinished(false)
 {
 
 }
 
-IndexedVectorFileReaderNode::~IndexedVectorFileReaderNode()
+IndexedVectorFileReaderNode2::~IndexedVectorFileReaderNode2()
 {
     if (index) {
         delete index;
@@ -41,7 +40,7 @@ IndexedVectorFileReaderNode::~IndexedVectorFileReaderNode()
     }
 }
 
-Port *IndexedVectorFileReaderNode::addVector(const VectorResult &vector)
+Port *IndexedVectorFileReaderNode2::addVector(const VectorResult &vector)
 {
     PortData& portdata = ports[vector.vectorId];
     portdata.ports.push_back(Port(this));
@@ -49,30 +48,37 @@ Port *IndexedVectorFileReaderNode::addVector(const VectorResult &vector)
     return &port;
 }
 
-bool IndexedVectorFileReaderNode::isReady() const
+bool IndexedVectorFileReaderNode2::isReady() const
 {
     return true;
 }
 
-void IndexedVectorFileReaderNode::process()
+void IndexedVectorFileReaderNode2::process()
 {
     if (!index)
         readIndexFile();
+
+    // read one block from each vector
     
-    long bytesRead = 0;
-    while (currentBlockIndex < blocksToRead.size() && bytesRead < 64 * 1024)
+    // FIXME read the blocks sequentially instead of round-robin
+    bool found = false;
+    for (PortMap::iterator it = ports.begin(); it != ports.end(); ++it)
     {
-    	BlockAndPortData &blockAndPort = blocksToRead[currentBlockIndex++];
-    	bytesRead += readBlock(blockAndPort.blockPtr, blockAndPort.portDataPtr);
+        PortData &portData = it->second;
+        found |= readNextBlock(portData);
     }
+
+
+    if (!found)
+        fFinished = true;
 }
 
-bool IndexedVectorFileReaderNode::finished() const
+bool IndexedVectorFileReaderNode2::finished() const
 {
-    return index && currentBlockIndex >= blocksToRead.size();
+    return fFinished;
 }
 
-void IndexedVectorFileReaderNode::readIndexFile()
+void IndexedVectorFileReaderNode2::readIndexFile()
 {
     const char *fn = filename.c_str();
 
@@ -85,7 +91,7 @@ void IndexedVectorFileReaderNode::readIndexFile()
     IndexFileReader reader(indexFileName.c_str());
     index = reader.readAll();
 
-    for (VectorIdToPortMap::iterator it = ports.begin(); it != ports.end(); ++it)
+    for (PortMap::iterator it = ports.begin(); it != ports.end(); ++it)
     {
         int vectorId = it->first;
         PortData &portData = it->second;
@@ -95,27 +101,25 @@ void IndexedVectorFileReaderNode::readIndexFile()
         if (!portData.vector)
             throw opp_runtime_error("indexed vector file reader: vector %d not found, file %s",
                                         vectorId, indexFileName.c_str());
-        
-        Blocks &blocks = portData.vector->blocks;
-        for (Blocks::iterator it = blocks.begin(); it != blocks.end(); ++it)
-        	blocksToRead.push_back(BlockAndPortData(&(*it), &portData));
     }
-    
-    sort(blocksToRead.begin(), blocksToRead.end());
 }
 
-long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortData *portDataPtr)
+bool IndexedVectorFileReaderNode2::readNextBlock(PortData &portData)
 {
-	assert(blockPtr);
-    assert(portDataPtr->vector);
-	
+    assert(portData.vector);
+
+    VectorData *vector = portData.vector;
+    if (portData.currentBlockIndex >= (int)vector->blocks.size())
+        return false;
+
     const char *file = filename.c_str();
     long offset;
 #define CHECK(cond, msg) {if (!cond) throw opp_runtime_error(msg ", file %s, offset %ld", file, offset); }
 
-    VectorData *vector = portDataPtr->vector;
-    long startOffset = blockPtr->startOffset;
-    long count = blockPtr->count();
+
+    Block &block = vector->blocks[portData.currentBlockIndex++];
+    long startOffset = block.startOffset;
+    long count = block.count();
 
     reader.seekTo(startOffset);
 
@@ -139,41 +143,41 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
         Datum a = parseColumns(vec, numtokens, vector->columns, file, -1, offset);
 
         // write to port(s)
-        for (PortVector::const_iterator port = portDataPtr->ports.begin(); port != portDataPtr->ports.end(); ++port)
+        for (PortVector::const_iterator port = portData.ports.begin(); port != portData.ports.end(); ++port)
             port->channel()->write(&a,1);
     }
 
-    return blockPtr->size;
+    return true;
 }
 
 //-----
 
-const char *IndexedVectorFileReaderNodeType::description() const
+const char *IndexedVectorFileReaderNode2Type::description() const
 {
     return "Reads indexed output vector files.";
 }
 
-void IndexedVectorFileReaderNodeType::getAttributes(StringMap& attrs) const
+void IndexedVectorFileReaderNode2Type::getAttributes(StringMap& attrs) const
 {
     attrs["filename"] = "name of the output vector file (.vec)";
 }
 
-Node *IndexedVectorFileReaderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+Node *IndexedVectorFileReaderNode2Type::create(DataflowManager *mgr, StringMap& attrs) const
 {
     checkAttrNames(attrs);
 
     const char *fname = attrs["filename"].c_str();
 
-    Node *node = new IndexedVectorFileReaderNode(fname);
+    Node *node = new IndexedVectorFileReaderNode2(fname);
     node->setNodeType(this);
     mgr->addNode(node);
     return node;
 }
 
-Port *IndexedVectorFileReaderNodeType::getPort(Node *node, const char *portname) const
+Port *IndexedVectorFileReaderNode2Type::getPort(Node *node, const char *portname) const
 {
     // vector id is used as port name
-    IndexedVectorFileReaderNode *node1 = dynamic_cast<IndexedVectorFileReaderNode *>(node);
+    IndexedVectorFileReaderNode2 *node1 = dynamic_cast<IndexedVectorFileReaderNode2 *>(node);
     VectorResult vector;
     if (!parseInt(portname, vector.vectorId))
         throw opp_runtime_error("indexed file reader node: port should be a vector id, received: %s", portname);

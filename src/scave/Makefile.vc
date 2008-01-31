@@ -33,7 +33,8 @@ OBJS= $O/arraybuilder.obj $O/channel.obj $O/commonnodes.obj $O/compoundfilter.ob
       $O/xyplotnode.obj $O/indexedvectorfile.obj \
       $O/vectorfileindexer.obj $O/indexfile.obj $O/scaveutils.obj \
       $O/scaveexception.obj $O/enumtype.obj $O/export.obj $O/teenode.obj \
-      $O/indexedvectorfilereader.obj $O/xyarray.obj $O/fields.obj
+      $O/indexedvectorfilereader.obj $O/xyarray.obj $O/fields.obj \
+      $O/indexedvectorfilereader2.obj
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DSCAVE_EXPORT
