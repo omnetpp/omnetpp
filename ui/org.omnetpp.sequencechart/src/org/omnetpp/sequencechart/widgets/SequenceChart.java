@@ -1087,18 +1087,21 @@ public class SequenceChart
 	}
 
 	public void eventLogAppended() {
-        if (!eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
-            relocateFixPoint(eventLog.getFirstEvent(), 0);
-
 		eventLogChanged();
 	}
 
     public void eventLogOverwritten() {
-        relocateFixPoint(eventLog.getFirstEvent(), 0);
         eventLogChanged();
     }
 
     private void eventLogChanged() {
+        if (!eventLog.isEmpty() && 
+            (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1 ||
+             sequenceChartFacade.getTimelineCoordinateSystemOriginEvent() == null))
+        {
+            relocateFixPoint(eventLog.getFirstEvent(), 0);
+        }
+
         if (debug)
 			System.out.println("SequenceChart got notification about event log change");
 

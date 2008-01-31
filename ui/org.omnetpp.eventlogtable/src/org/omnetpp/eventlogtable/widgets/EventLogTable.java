@@ -286,18 +286,17 @@ public class EventLogTable
 	 */
 
 	public void eventLogAppended() {
-        if (!eventLog.isEmpty() && fixPointElement == null)
-            scrollToBegin();
-
 		eventLogChanged();
 	}
 
     public void eventLogOverwritten() {
-        scrollToBegin();
         eventLogChanged();
     }
 
     private void eventLogChanged() {
+        if (!eventLog.isEmpty() && fixPointElement == null)
+            scrollToBegin();
+
         if (debug)
 			System.out.println("EventLogTable got notification about event log change");
 

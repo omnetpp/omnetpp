@@ -123,8 +123,8 @@ public class EventLogInput
         if (debug)
             System.out.println("Synchronizing event log file content: " + file.getName());
 
-        getSequenceChartFacade().synchronize(change);
         getEventLogTableFacade().synchronize(change);
+        getSequenceChartFacade().synchronize(change);
 
         switch (change) {
             case FileReader.FileChangedState.APPENDED:
