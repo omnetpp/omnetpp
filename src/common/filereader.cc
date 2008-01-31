@@ -512,8 +512,8 @@ int64 FileReader::getFileSizeInternal()
 {
     ensureFileOpen();
 
-    struct stat s;
-    fstat(fileno(f), &s);
+    struct filereader_stat s;
+    filereader_fstat(fileno(f), &s);
     return s.st_size;
 }
 

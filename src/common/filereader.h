@@ -42,13 +42,19 @@ typedef int64 file_offset_t;  // off_t on Linux
 #if defined _MSC_VER && (_MSC_VER >= 1400)
 #define filereader_ftell _ftelli64
 #define filereader_fseek _fseeki64
+#define filereader_stat _stat64
+#define filereader_fstat _fstati64
 #elif defined _MSC_VER || __MINGW32__ // FIXME: no 64 bit version under mingw?
 // for Visual C++ 7.1, fall back to 32-bit functions
 #define filereader_ftell ftell
 #define filereader_fseek fseek
+#define filereader_stat stat
+#define filereader_fstat fstat
 #else
 #define filereader_ftell ftello64
 #define filereader_fseek fseeko64
+#define filereader_stat stat64
+#define filereader_fstat fstato64
 #endif
 
 NAMESPACE_BEGIN
