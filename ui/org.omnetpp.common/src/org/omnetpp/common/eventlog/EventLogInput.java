@@ -109,16 +109,7 @@ public class EventLogInput
 
 	public synchronized void checkEventLogForChanges() {
 	    try {
-    	    switch (eventLog.getFileReader().getFileChangedState()) {
-    	        case FileReader.FileChangedState.APPENDED:
-    	            synchronize();
-    	            eventLogAppended();
-    	            break;
-                case FileReader.FileChangedState.OVERWRITTEN:
-                    synchronize();
-                    eventLogOverwritten();
-                    break;
-    	    }
+	        synchronize(eventLog.getFileReader().getFileChangedState());
 	    }
 	    catch (RuntimeException e) {
 	        // ignore if the log changes during synchronizing
@@ -128,12 +119,21 @@ public class EventLogInput
 	    }
 	}
 
-    private void synchronize() {
+    public void synchronize(int change) {
         if (debug)
             System.out.println("Synchronizing event log file content: " + file.getName());
 
-        getSequenceChartFacade().synchronize();
-        getEventLogTableFacade().synchronize();
+        getSequenceChartFacade().synchronize(change);
+        getEventLogTableFacade().synchronize(change);
+
+        switch (change) {
+            case FileReader.FileChangedState.APPENDED:
+                eventLogAppended();
+                break;
+            case FileReader.FileChangedState.OVERWRITTEN:
+                eventLogOverwritten();
+                break;
+        }
     }
 
 	public void dispose() {

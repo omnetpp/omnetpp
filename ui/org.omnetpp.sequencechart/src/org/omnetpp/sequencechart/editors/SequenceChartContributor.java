@@ -71,6 +71,7 @@ import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.TimeUtils;
+import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -1328,7 +1329,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         return new SequenceChartAction("Release Memory", Action.AS_PUSH_BUTTON) {
             @Override
             public void run() {
-                // TODO:
+                sequenceChart.getInput().synchronize(FileReader.FileChangedState.OVERWRITTEN);
             }
         };
     }
