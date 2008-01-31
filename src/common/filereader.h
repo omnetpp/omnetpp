@@ -54,7 +54,7 @@ typedef int64 file_offset_t;  // off_t on Linux
 #define filereader_ftell ftello64
 #define filereader_fseek fseeko64
 #define filereader_stat stat64
-#define filereader_fstat fstato64
+#define filereader_fstat fstat64
 #endif
 
 NAMESPACE_BEGIN

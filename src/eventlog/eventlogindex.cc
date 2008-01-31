@@ -300,7 +300,7 @@ template <typename T> file_offset_t EventLogIndex::searchForOffset(std::map<T, C
 template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, CacheEntry> &map, T key, MatchKind matchKind, T& lowerKey, T& upperKey, file_offset_t& foundOffset, file_offset_t& lowerOffset, file_offset_t& upperOffset)
 {
     T keyValue = (T)key;
-    std::map<T, CacheEntry>::iterator it = map.lower_bound(keyValue); // greater or equal
+    typename std::map<T, CacheEntry>::iterator it = map.lower_bound(keyValue); // greater or equal
 
     // if exact match found
     if (it != map.end() && it->first == keyValue) {
@@ -313,8 +313,8 @@ template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, Cache
         }
         else {
             // for simulation times we must consider whether the cache entry is complete or not by looking around it
-            std::map<T, CacheEntry>::iterator itUpper = it;
-            std::map<T, CacheEntry>::iterator itLower = it;
+            typename std::map<T, CacheEntry>::iterator itUpper = it;
+            typename std::map<T, CacheEntry>::iterator itLower = it;
     
             ++itUpper;
             if (itLower != map.begin())
@@ -362,7 +362,7 @@ template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, Cache
     }
     else {
         // upper iterator refers to the closest element after the key
-        std::map<T, CacheEntry>::iterator itUpper = it;
+        typename std::map<T, CacheEntry>::iterator itUpper = it;
         if (itUpper != map.end()) {
             CacheEntry &cacheEntry = itUpper->second;
             cacheEntry.getBeginKey(upperKey);
@@ -374,7 +374,7 @@ template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, Cache
         }
 
         // lower iterator refers to the closest element before the key
-        std::map<T, CacheEntry>::iterator itLower = it;
+        typename std::map<T, CacheEntry>::iterator itLower = it;
         if (!map.empty() && itLower != map.begin()) {
             --itLower;
             CacheEntry &cacheEntry = itLower->second;
@@ -602,10 +602,10 @@ void EventLogIndex::dump()
     printf("eventNumberToCacheEntryMap:\n");
 
     for (EventNumberToCacheEntryMap::iterator it = eventNumberToCacheEntryMap.begin(); it != eventNumberToCacheEntryMap.end(); ++it)
-        printf("  #%ld --> offset %lld (0x%llx)\n", it->first, it->second, it->second);
+        printf("  #%ld --> offset %lld (0x%llx)\n", it->first, it->second.beginOffset, it->second.beginOffset);
 
     printf("simulationTimeToCacheEntryMap:\n");
 
     for (SimulationTimeToCacheEntryMap::iterator it = simulationTimeToCacheEntryMap.begin(); it != simulationTimeToCacheEntryMap.end(); ++it)
-        printf("  %.*g --> offset %lld (0x%llx)\n", it->first.dbl(), it->second, it->second);
+        printf("  %.*g --> offset %lld (0x%llx)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
 }
