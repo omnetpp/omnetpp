@@ -121,7 +121,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         // IEventLog interface
         virtual ProgressMonitor setProgressMonitor(ProgressMonitor progressMonitor) { return eventLog->setProgressMonitor(progressMonitor); }
         virtual void setProgressCallInterval(double seconds) { eventLog->setProgressCallInterval(seconds); }
-        virtual void synchronize();
+        virtual void synchronize(FileReader::FileChangedState change);
         virtual FileReader *getFileReader() { return eventLog->getFileReader(); }
         virtual long getNumParsedEvents() { return eventLog->getNumParsedEvents(); }
         virtual std::set<const char *>& getMessageNames() { return eventLog->getMessageNames(); }

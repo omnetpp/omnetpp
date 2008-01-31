@@ -28,9 +28,10 @@ EventLogFacade::EventLogFacade(IEventLog *eventLog)
     this->eventLog = eventLog;
 }
 
-void EventLogFacade::synchronize()
+void EventLogFacade::synchronize(FileReader::FileChangedState change)
 {
-    return eventLog->synchronize();
+    if (change != FileReader::UNCHANGED)
+        return eventLog->synchronize(change);
 }
 
 IEvent* EventLogFacade::Event_getEvent(ptr_t ptr)

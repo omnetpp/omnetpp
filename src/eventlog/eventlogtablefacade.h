@@ -57,7 +57,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         EventLogTableFacade(IEventLog *eventLog);
         virtual ~EventLogTableFacade() {}
 
-        virtual void synchronize();
+        virtual void synchronize(FileReader::FileChangedState change);
 
         EventLogTableDisplayMode getDisplayMode() { return displayMode; }
         void setDisplayMode(EventLogTableDisplayMode displayMode) { this->displayMode = displayMode; }

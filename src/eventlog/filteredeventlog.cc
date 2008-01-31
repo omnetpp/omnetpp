@@ -56,6 +56,7 @@ void FilteredEventLog::deleteAllocatedObjects()
 
 void FilteredEventLog::clearInternalState(FileReader::FileChangedState change)
 {
+    Assert(change != FileReader::UNCHANGED);
     approximateNumberOfEvents = -1;
     approximateMatchingEventRatio = -1;
     lastMatchingEvent = NULL;
@@ -69,17 +70,15 @@ void FilteredEventLog::clearInternalState(FileReader::FileChangedState change)
     }
 }
 
-void FilteredEventLog::synchronize()
+void FilteredEventLog::synchronize(FileReader::FileChangedState change)
 {
-    FileReader::FileChangedState change = getFileReader()->getFileChangedState();
-
     if (change != FileReader::UNCHANGED) {
         if (change == FileReader::OVERWRITTEN)
             deleteAllocatedObjects();
         else
             clearInternalState(change);
 
-        eventLog->synchronize();
+        eventLog->synchronize(change);
 
         if (change == FileReader::APPENDED)
             for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)

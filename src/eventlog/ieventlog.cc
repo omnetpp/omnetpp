@@ -22,10 +22,12 @@ IEventLog::IEventLog()
     lastNeighbourEvent = NULL;
 }
 
-void IEventLog::synchronize()
+void IEventLog::synchronize(FileReader::FileChangedState change)
 {
-    lastNeighbourEventNumber = -1;
-    lastNeighbourEvent = NULL;
+    if (change != FileReader::UNCHANGED) {
+        lastNeighbourEventNumber = -1;
+        lastNeighbourEvent = NULL;
+    }
 }
 
 void IEventLog::printEvents(FILE *file, long fromEventNumber, long toEventNumber, bool outputEventLogMessages)

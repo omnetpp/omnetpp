@@ -72,9 +72,10 @@ class EVENTLOG_API IEventLog
         virtual void setProgressCallInterval(double seconds) = 0;
 
         /**
-         * Synchorizes state when the underlying log file changes (new events are appended).
+         * Synchorizes state when the underlying log file has been changed. 
+         * Either new events were appended or the whole file has been overwritten.
          */
-        virtual void synchronize();
+        virtual void synchronize(FileReader::FileChangedState change);
 
         /**
          * Returns the file reader used to read in events.

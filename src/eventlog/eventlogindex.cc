@@ -112,17 +112,17 @@ EventLogIndex::~EventLogIndex()
     delete reader;
 }
 
-void EventLogIndex::synchronize()
+void EventLogIndex::synchronize(FileReader::FileChangedState change)
 {
-    FileReader::FileChangedState change = reader->getFileChangedState();
-
     if (change != FileReader::UNCHANGED)
         clearInternalState(change);
 }
 
 void EventLogIndex::clearInternalState(FileReader::FileChangedState change)
 {
-    if (change != FileReader::APPENDED) {
+    Assert(change != FileReader::UNCHANGED);
+
+    if (change == FileReader::OVERWRITTEN) {
         eventNumberToCacheEntryMap.clear();
         simulationTimeToCacheEntryMap.clear();
 

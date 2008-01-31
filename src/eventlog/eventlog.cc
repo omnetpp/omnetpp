@@ -46,6 +46,7 @@ void EventLog::deleteAllocatedObjects()
 
 void EventLog::clearInternalState(FileReader::FileChangedState change)
 {
+    Assert(change != FileReader::UNCHANGED);
     approximateNumberOfEvents = -1;
 
     // lastEvent should be set to null if the last event becomes a different one
@@ -74,6 +75,34 @@ void EventLog::clearInternalState(FileReader::FileChangedState change)
         lastEvent = NULL;
 }
 
+void EventLog::synchronize(FileReader::FileChangedState change)
+{
+    if (change != FileReader::UNCHANGED) {
+        if (change == FileReader::OVERWRITTEN)
+            deleteAllocatedObjects();
+
+        Event *lastEvent = this->lastEvent;
+
+        IEventLog::synchronize(change);
+        EventLogIndex::synchronize(change);
+
+        if (change == FileReader::APPENDED) {
+            clearInternalState(change);
+
+            // always update the old last event because it might have been incomplete
+            if (lastEvent) {
+                lastEvent->parse(reader, lastEvent->getBeginOffset());
+                cacheEntry(lastEvent->getEventNumber(), lastEvent->getSimulationTime(), lastEvent->getBeginOffset(), lastEvent->getEndOffset());
+            }
+
+            for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+                it->second->synchronize();
+        }
+        else
+            parseInitializationLogEntries();
+    }
+}
+
 ProgressMonitor EventLog::setProgressMonitor(ProgressMonitor newProgressMonitor)
 {
     ProgressMonitor oldProgressMonitor = progressMonitor;
@@ -86,37 +115,6 @@ void EventLog::progress()
     if (lastProgressCall + progressCallInterval < clock()) {
         progressMonitor.progress(this);
         lastProgressCall = clock();
-    }
-}
-
-void EventLog::synchronize()
-{
-    FileReader::FileChangedState change = getFileReader()->getFileChangedState();
-
-    if (change != FileReader::UNCHANGED) {
-        if (change == FileReader::OVERWRITTEN)
-            deleteAllocatedObjects();
-
-        Event *lastEvent = this->lastEvent;
-
-        IEventLog::synchronize();
-        EventLogIndex::synchronize();
-
-        if (change != FileReader::OVERWRITTEN)
-            clearInternalState(change);
-
-        if (change == FileReader::APPENDED) {
-            // always update the old last event because it might have been incomplete
-            if (lastEvent) {
-                lastEvent->parse(reader, lastEvent->getBeginOffset());
-                cacheEntry(lastEvent->getEventNumber(), lastEvent->getSimulationTime(), lastEvent->getBeginOffset(), lastEvent->getEndOffset());
-            }
-
-            for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
-                it->second->synchronize();
-        }
-        else
-            parseInitializationLogEntries();
     }
 }
 

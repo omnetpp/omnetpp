@@ -26,10 +26,12 @@ EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(e
     setCustomFilter("*");
 }
 
-void EventLogTableFacade::synchronize()
+void EventLogTableFacade::synchronize(FileReader::FileChangedState change)
 {
-    EventLogFacade::synchronize();
-    setFilterMode(filterMode);
+    if (change != FileReader::UNCHANGED) {
+        EventLogFacade::synchronize(change);
+        setFilterMode(filterMode);
+    }
 }
 
 void EventLogTableFacade::setFilterMode(EventLogTableFilterMode filterMode)

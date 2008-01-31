@@ -40,19 +40,21 @@ SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(e
     setNonLinearFocus(calculateNonLinearFocus());
 }
 
-void SequenceChartFacade::synchronize()
+void SequenceChartFacade::synchronize(FileReader::FileChangedState change)
 {
-    EventLogFacade::synchronize();
+    if (change != FileReader::UNCHANGED) {
+        EventLogFacade::synchronize(change);
 
-    setNonLinearFocus(calculateNonLinearFocus());
+        setNonLinearFocus(calculateNonLinearFocus());
 
-    if (timelineCoordinateOriginEventNumber != -1) {
-        IEvent *event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber);
+        if (timelineCoordinateOriginEventNumber != -1) {
+            IEvent *event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber);
 
-        if (event)
-            relocateTimelineCoordinateSystem(event);
-        else
-            undefineTimelineCoordinateSystem();
+            if (event)
+                relocateTimelineCoordinateSystem(event);
+            else
+                undefineTimelineCoordinateSystem();
+        }
     }
 }
 

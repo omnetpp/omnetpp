@@ -91,7 +91,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         void putMessageClassName(const char *messageClassName) { messageClassNames.insert(messageClassName); }
 
         // IEventLog interface
-        virtual void synchronize();
+        virtual void synchronize(FileReader::FileChangedState change);
         virtual FileReader *getFileReader() { return reader; }
         virtual long getNumParsedEvents() { return numParsedEvents; }
         virtual std::set<const char *>& getMessageNames() { return messageNames; }
