@@ -29,32 +29,45 @@ NAMESPACE_BEGIN
 /**
  * Stores loaded NED files, and keeps track of components in them.
  *
- * This class could be turned into a cache (discarding and reloading
+ * This class can be turned into a cache (discarding and reloading
  * NED files on demand) if such need arises.
  *
  * @ingroup NEDCompiler
  */
 class NEDXML_API NEDResourceCache
 {
+  public:
+	  /** Interface that enumerates NED types; used by resolveType() */
+	  class NEDTypeNames {
+	  public:
+		/** Returns true if the given fully qualified name is an existing NED type */
+		virtual bool contains(const char *qname) const = 0;
+		
+		/** Returns the number of NED type names */
+		virtual int size() const = 0;
+		
+		/** Returns the kth fully qualified NED type name */
+		virtual const char *get(int k) const = 0;
+	  };
   protected:
     typedef std::map<std::string, NEDElement *> NEDFileMap;
-    typedef std::map<std::string, NEDComponent *> NEDComponentMap;
+    typedef std::map<std::string, NEDTypeInfo *> NEDTypeInfoMap;
 
     // table of loaded NED files; maps file name to NED element.
     NEDFileMap files;
 
-    // table of component declarations; key is fully qualified name, and
+    // table of NED type declarations; key is fully qualified name, and
     // elements point into the files map
-    NEDComponentMap components;
+    NEDTypeInfoMap nedTypes;
 
   protected:
     virtual void collectComponents(NEDElement *node, const std::string& namespaceprefix);
 
     /**
-     * Wrap the given NEDElement into a NEDComponent and add it to the table.
-     * Redefine it if you want to subclass NEDComponent.
+     * Wrap the given NEDElement into a NEDTypeInfo and add it to the table.
+     * Redefine it if you want to subclass NEDTypeInfo.
      */
-    virtual void addComponent(const char *qname, NEDElement *node);
+    virtual void addNedType(const char *qname, NEDElement *node);
 
   public:
     /** Constructor */
@@ -73,8 +86,11 @@ class NEDXML_API NEDResourceCache
     /** Get a file (represented as object tree) from the cache */
     virtual NEDElement *getFile(const char *fname);
 
-    /** Get a component by fully qualified name from the cache */
-    virtual NEDComponent *lookup(const char *qname) const;
+    /** Look up a fully qualified NED type name from the cache. Returns NULL if not found. */
+    virtual NEDTypeInfo *lookup(const char *qname) const;
+    
+    /** Resolves the given NED type name in the given context. Returns "" if not found. */ 
+    virtual std::string resolveNedType(NEDTypeInfo *context, const char *nedtypename, NEDTypeNames *qnames);
 };
 
 NAMESPACE_END

@@ -315,89 +315,17 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodname)
 {
-    cComponentType *componenttype = findComponentType(modTypeName);
-    if (!componenttype)
+	std::string qname = cNEDLoader::instance()->resolveNedType(currentDecl, modTypeName);
+    if (qname.empty())
         throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
                             "in (%s)%s not found (not in the loaded NED files?)",
                             modTypeName, submodname, modp->className(), modp->fullPath().c_str());
+	cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
         throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
                             "in (%s)%s not found (type is a channel type)",
                             modTypeName, submodname, modp->className(), modp->fullPath().c_str());
     return (cModuleType *)componenttype;
-}
-
-cComponentType *cNEDNetworkBuilder::findComponentType(const char *nedtypename)
-{
-    // note: this method is to be kept consistent with NEDResources.lookupNedType() in the Java code
-
-    //FIXME TODO cache result of resolution!
-
-    // try it as inner type
-    ASSERT(currentDecl->getTree()->getTagCode() == NED_COMPOUND_MODULE);
-    if (strchr(nedtypename, '.'))
-    {
-        // inner type with fully qualified name
-        cComponentType *innertype = cComponentType::find(nedtypename);
-        if (innertype)
-            return innertype;
-    }
-    else
-    {
-        // inner type with simple name
-        std::string qname = std::string(currentDecl->fullName()) + "." + nedtypename;
-        cComponentType *innertype = cComponentType::find(qname.c_str());
-        if (innertype)
-            return innertype;
-    }
-
-    // not an inner type: look up as toplevel type
-    if (strchr(nedtypename, '.'))
-    {
-        // contains dot: must be a fully qualified name (as we don't accept partially qualified names)
-        cComponentType *componenttype = cComponentType::find(nedtypename);
-        if (componenttype)
-            return componenttype;
-    }
-    else
-    {
-        // no dot: name is an unqualified name (simple name), or from the default package
-        NedFileNode *nedfileNode = dynamic_cast<NedFileNode *>(currentDecl->getTree()->getParentWithTag(NED_NED_FILE));
-
-        // from the same package?
-        PackageNode *packageNode = nedfileNode->getFirstPackageChild();
-        const char *packageName = packageNode ? packageNode->getName() : "";
-        std::string qname = opp_isempty(packageName) ? nedtypename : std::string(packageName) + "." + nedtypename;
-        cComponentType *componenttype = cComponentType::find(qname.c_str());
-        if (componenttype)
-            return componenttype;
-
-        // collect imports, for convenience
-        std::vector<const char *> imports;
-        for (ImportNode *import = nedfileNode->getFirstImportChild(); import; import = import->getNextImportNodeSibling())
-            imports.push_back(import->getImportSpec());
-
-        // imported type?
-        // try a shortcut first: if the import doesn't contain wildcards
-        for (int i=0; i<imports.size(); i++)
-            if (cComponentType::find(imports[i]) && (opp_stringendswith(imports[i], (std::string(".")+nedtypename).c_str()) || strcmp(imports[i], nedtypename)==0))
-                return cComponentType::find(imports[i]);
-
-        // try harder, using wildcards
-        for (int i=0; i<imports.size(); i++)
-        {
-            PatternMatcher importpattern(imports[i], true, true, true);
-            cSymTable *types = componentTypes.instance(); // bypass cModuleType as it cannot enumerate all types
-            for (int j=0; j<types->size(); j++)
-            {
-                const char *simplename = types->get(j)->name();
-                const char *qname = types->get(j)->fullName();
-                if (strcmp(simplename,nedtypename)==0 && importpattern.matches(qname))
-                    return dynamic_cast<cComponentType *>(types->get(j));
-            }
-        }
-    }
-    return NULL;
 }
 
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
@@ -801,10 +729,11 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
 
 cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename, cModule *modp)
 {
-    cComponentType *componenttype = findComponentType(channeltypename);
-    if (!componenttype)
+	std::string qname = cNEDLoader::instance()->resolveNedType(currentDecl, channeltypename);
+    if (qname.empty())
         throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
                             "(not in the loaded NED files?)", channeltypename);  //FIXME "in module %s"
+	cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cChannelType *>(componenttype))
         throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
                             "(given type is a module type)", channeltypename);  //FIXME "in module %s"

@@ -37,7 +37,7 @@ NEDSemanticValidator::~NEDSemanticValidator()
 
 NEDElement *NEDSemanticValidator::getXXXDeclaration(const char *name, int tagcode1, int tagcode2)
 {
-    NEDComponent *component = nedresourcecache->lookup(name);
+    NEDTypeInfo *component = nedresourcecache->lookup(name);
     if (!component)
         return NULL;
 

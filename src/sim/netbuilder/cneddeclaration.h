@@ -49,19 +49,17 @@ NAMESPACE_BEGIN
  *
  * cNEDDeclarations are used during network setup (and dynamic module
  * creation) to add gates and parameters to the freshly created module
- * object, and also to verify that module parameters set correctly.
+ * object, and also to verify that module parameters are set correctly.
  *
  * cNEDDeclaration is a passive, data-only class.
  *
  * @ingroup Internals
  */
-class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent // noncopyable
+class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo // noncopyable
 {
   protected:
     typedef std::vector<std::string> StringVector;
     typedef std::map<std::string,int> StringToIntMap;
-
-    std::string qualifiedName;
 
     // inheritance
     StringVector extendsnames;
@@ -118,8 +116,19 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDComponent 
      * Returns the fully qualified name (i.e. the simple name prefixed
      * with the package name and any existing enclosing NED type names).
      */
-    virtual const char *fullName() const  {return qualifiedName.c_str();}
+    virtual const char *name() const  {return NEDTypeInfo::name();}
+    
+    /**
+     * Returns the fully qualified name (i.e. the simple name prefixed
+     * with the package name and any existing enclosing NED type names).
+     */
+    virtual const char *fullName() const  {return NEDTypeInfo::fullName();}
 
+    /**
+     * Changing the name is not possible after creation.
+     */
+    virtual void setName(const char *s); 
+    
     /**
      * Produces a one-line description of object contents.
      */

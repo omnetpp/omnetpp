@@ -18,6 +18,8 @@
 #include "nederror.h"
 #include "nedresourcecache.h"
 #include "fileutil.h"
+#include "stringutil.h"
+#include "patternmatcher.h"
 
 USING_NAMESPACE
 
@@ -30,7 +32,7 @@ NEDResourceCache::~NEDResourceCache()
 {
     for (NEDFileMap::iterator i = files.begin(); i!=files.end(); ++i)
         delete i->second;
-    for (NEDComponentMap::iterator i = components.begin(); i!=components.end(); ++i)
+    for (NEDTypeInfoMap::iterator i = nedTypes.begin(); i!=nedTypes.end(); ++i)
         delete i->second;
 }
 
@@ -46,8 +48,8 @@ bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
     PackageNode *packageDecl = (PackageNode *) node->getFirstChildWithTag(NED_PACKAGE);
     std::string packagePrefix = packageDecl ? packageDecl->getName() : "";
     if (!packagePrefix.empty())
-    	packagePrefix += ".";
-    
+        packagePrefix += ".";
+
     collectComponents(node, packagePrefix);
     return true;
 }
@@ -60,17 +62,17 @@ NEDElement *NEDResourceCache::getFile(const char *fname)
     return i==files.end() ? NULL : i->second;
 }
 
-NEDComponent *NEDResourceCache::lookup(const char *qname) const
+NEDTypeInfo *NEDResourceCache::lookup(const char *qname) const
 {
     // hash table lookup
-    NEDComponentMap::const_iterator i = components.find(qname);
-    return i==components.end() ? NULL : i->second;
+    NEDTypeInfoMap::const_iterator i = nedTypes.find(qname);
+    return i==nedTypes.end() ? NULL : i->second;
 }
 
-void NEDResourceCache::addComponent(const char *qname, NEDElement *node)
+void NEDResourceCache::addNedType(const char *qname, NEDElement *node)
 {
-    NEDComponent *component = new NEDComponent(node);
-    components[qname] = component;
+    NEDTypeInfo *component = new NEDTypeInfo(qname, node);
+    nedTypes[qname] = component;
 }
 
 void NEDResourceCache::collectComponents(NEDElement *node, const std::string& namespaceprefix)
@@ -86,12 +88,66 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
             if (lookup(qname.c_str()))
                 throw NEDException("redeclaration of %s %s", child->getTagName(), qname.c_str()); //XXX maybe just NEDError?
 
-            addComponent(qname.c_str(), child);
+            addNedType(qname.c_str(), child);
 
             NEDElement *types = child->getFirstChildWithTag(NED_TYPES);
             if (types)
                 collectComponents(types, qname+".");
         }
     }
+}
+
+std::string NEDResourceCache::resolveNedType(NEDTypeInfo *context, const char *nedtypename, NEDTypeNames *qnames)
+{
+    // note: this method is to be kept consistent with NEDResources.lookupNedType() in the Java code
+	// note2: partially qualified names are not supported: name must be either simplename or fully qualified
+    if (!strchr(nedtypename, '.'))
+    {
+        // no dot: name is an unqualified name (simple name); so, it can be: 
+    	// (a) inner type, (b) from the same package, (c) an imported type, (d) from the default package
+
+    	// inner type?
+    	std::string qname = std::string(context->fullName()) + "." + nedtypename;
+        if (qnames->contains(qname.c_str()))
+            return qname;
+
+        NedFileNode *nedfileNode = dynamic_cast<NedFileNode *>(context->getTree()->getParentWithTag(NED_NED_FILE));
+
+        // from the same package?
+        PackageNode *packageNode = nedfileNode->getFirstPackageChild();
+        const char *packageName = packageNode ? packageNode->getName() : "";
+        qname = opp_isempty(packageName) ? nedtypename : std::string(packageName) + "." + nedtypename;
+        if (qnames->contains(qname.c_str()))
+            return qname;
+
+        // collect imports, for convenience
+        std::vector<const char *> imports;
+        for (ImportNode *import = nedfileNode->getFirstImportChild(); import; import = import->getNextImportNodeSibling())
+            imports.push_back(import->getImportSpec());
+
+        // imported type?
+        // try a shortcut first: if the import doesn't contain wildcards
+        std::string dot_nedtypename = std::string(".")+nedtypename;
+        for (int i=0; i<imports.size(); i++)
+            if (qnames->contains(imports[i]) && (opp_stringendswith(imports[i], dot_nedtypename.c_str()) || strcmp(imports[i], nedtypename)==0))
+                return imports[i];
+
+        // try harder, using wildcards
+        for (int i=0; i<imports.size(); i++) {
+            PatternMatcher importpattern(imports[i], true, true, true);
+            for (int j=0; j<qnames->size(); j++) {
+            	const char *qname = qnames->get(j);
+            	if ((opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0))
+            		if (importpattern.matches(qname))
+            			return qname;
+            }
+        }
+    }
+
+    // fully qualified name?
+    if (qnames->contains(nedtypename))
+        return nedtypename;
+
+    return "";
 }
 

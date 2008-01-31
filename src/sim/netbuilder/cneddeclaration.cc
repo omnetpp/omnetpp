@@ -28,16 +28,8 @@
 USING_NAMESPACE
 
 
-cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDComponent(tree)
+cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeInfo(qname, tree)
 {
-    ASSERT(qname && qname[0]);
-    ASSERT(tree);
-
-    // store fully qualified name, and set name to simple (unqualified) name
-    qualifiedName = qname;
-    const char *lastDot = strrchr(qname, '.');
-    setName(!lastDot ? qname : lastDot + 1);
-
     props = NULL;
 
     // add "extends" and "like" names
@@ -52,7 +44,7 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDCompo
     if (numExtendsNames()!=0)
         implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
     else if (tree->getTagCode()==NED_SIMPLE_MODULE || tree->getTagCode()==NED_CHANNEL)
-        implClassName = name();  //FIXME not good: honor @class(), package etc!
+        implClassName = name();  //FIXME not good: honor @class(), @cppnamespace(), etc!
 }
 
 cNEDDeclaration::~cNEDDeclaration()
@@ -66,6 +58,13 @@ cNEDDeclaration::~cNEDDeclaration()
     clearPropsMap(subcomponentGatePropsMap);
     //XXX printf("%s: %d cached expressions\n", name(), expressionMap.size());
     clearExpressionMap(expressionMap);
+}
+
+void cNEDDeclaration::setName(const char *s)
+{
+	//XXX instead of this, add name locking feature to cNamedObject and use that 
+	// (it'll be useful with modules, gates, params, coutvectors etc too!)
+	throw cRuntimeError(this, "Changing the name is not allowed");  
 }
 
 void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)

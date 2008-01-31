@@ -87,7 +87,7 @@ void cNEDLoader::registerBuiltinDeclarations()
     }
 }
 
-void cNEDLoader::addComponent(const char *qname, NEDElement *node)
+void cNEDLoader::addNedType(const char *qname, NEDElement *node)
 {
     if (!areDependenciesResolved(node))
     {
@@ -98,7 +98,7 @@ void cNEDLoader::addComponent(const char *qname, NEDElement *node)
 
     // Note: base class (nedxml's NEDResourceCache) has already checked for duplicates, no need here
     cNEDDeclaration *decl = buildNEDDeclaration(qname, node);
-    components[qname] = decl;
+    nedTypes[qname] = decl;
 
     //printf("DBG: registered %s\n",name);
 
@@ -112,14 +112,9 @@ void cNEDLoader::addComponent(const char *qname, NEDElement *node)
         componentTypes.instance()->add(type);
 }
 
-cNEDDeclaration *cNEDLoader::lookup2(const char *qname) const
-{
-    return dynamic_cast<cNEDDeclaration *>(NEDResourceCache::lookup(qname));
-}
-
 cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const
 {
-    cNEDDeclaration *decl = cNEDLoader::instance()->lookup2(qname);
+    cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(lookup(qname));
     if (!decl)
         throw cRuntimeError("NED declaration '%s' not found", qname);
     return decl;
@@ -231,8 +226,13 @@ bool cNEDLoader::areDependenciesResolved(NEDElement *node)
         if (child->getTagCode()!=NED_EXTENDS && child->getTagCode()!=NED_INTERFACE_NAME)
             continue;
 
+        //XXX use this:
+        //std::string qname = resolveNedType(context, name);
+        //if (qname.empty())
+        //    return false;
+
         const char *name = child->getAttribute("name");
-        cNEDDeclaration *decl = lookup2(name);
+        cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(lookup(name));
         if (!decl)
             return false;
     }
@@ -250,7 +250,7 @@ void cNEDLoader::tryResolvePendingDeclarations()
             NEDElement *node = pendingList[i];
             if (areDependenciesResolved(node))
             {
-                addComponent(node->getAttribute("name"), node); //FIXME we have to use QUALIFIED name here!!!!
+                addNedType(node->getAttribute("name"), node); //FIXME we have to use QUALIFIED name here!!!!
                 pendingList.erase(pendingList.begin() + i--);
                 again = true;
             }

@@ -1,5 +1,5 @@
 //==========================================================================
-// NEDCOMPONENT.CC -
+// NEDNEDTYPEINFO.CC -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -21,17 +21,30 @@
 USING_NAMESPACE
 
 
-NEDComponent::NEDComponent(NEDElement *tree)
+NEDTypeInfo::NEDTypeInfo(const char *qname, NEDElement *tree)
 {
+	this->qualifiedName = qname;
     this->tree = tree;
 }
 
-NEDComponent::~NEDComponent()
+NEDTypeInfo::~NEDTypeInfo()
 {
     // nothing -- we don't manage the tree, only cache a pointer to it
 }
 
-NEDElement *NEDComponent::getTree() const
+const char *NEDTypeInfo::name() const 
+{
+	const char *qname = fullName();
+	const char *lastdot = strrchr(qname, '.');
+	return !lastdot ? qname : lastdot + 1;
+}
+
+const char *NEDTypeInfo::fullName() const 
+{
+	return qualifiedName.c_str();
+}
+
+NEDElement *NEDTypeInfo::getTree() const
 {
     return tree;
 }

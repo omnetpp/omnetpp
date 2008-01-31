@@ -1,5 +1,5 @@
 //==========================================================================
-// NEDCOMPONENT.H -
+// NEDTYPEINFO.H -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __NEDCOMPONENT_H
-#define __NEDCOMPONENT_H
+#ifndef __NEDTYPEINFO_H
+#define __NEDTYPEINFO_H
 
 #include <map>
 #include <vector>
@@ -24,6 +24,7 @@
 
 NAMESPACE_BEGIN
 
+//FIXME rename file to nedtypeinfo.h
 
 /**
  * Wraps a NEDElement tree of a NED declaration (module, channel, module
@@ -32,17 +33,24 @@ NAMESPACE_BEGIN
  *
  * @ingroup NEDCompiler
  */
-class NEDXML_API NEDComponent
+class NEDXML_API NEDTypeInfo
 {
   protected:
+	std::string qualifiedName;
     NEDElement *tree;
 
   public:
-    /** Constructor */
-    NEDComponent(NEDElement *tree);
+    /** Constructor. It expects fully qualified name */
+    NEDTypeInfo(const char *qname, NEDElement *tree);
 
     /** Destructor */
-    virtual ~NEDComponent();
+    virtual ~NEDTypeInfo();
+
+    /** Returns the simple name of the NED type */
+    virtual const char *name() const;
+
+    /** Returns the fully qualified name of the NED type */
+    virtual const char *fullName() const;
 
     /** Returns the raw NEDElement tree representing the component */
     virtual NEDElement *getTree() const;

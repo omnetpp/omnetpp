@@ -38,10 +38,18 @@ class PropertyNode;
  * point back into the NEDElement trees of the loaded NED files.
  *
  * This cNEDLoader class extends nedxml's NEDResourceCache, and
- * cNEDDeclaration extends nexml's corresponding NEDComponent.
+ * cNEDDeclaration extends nexml's corresponding NEDTypeInfo.
  */
 class SIM_API cNEDLoader : public NEDResourceCache
 {
+  protected:
+	class ComponentTypeNames : public NEDTypeNames {
+	  public:
+		virtual bool contains(const char *qname) const  {return componentTypes.instance()->lookup(qname)!=NULL;}
+		virtual int size() const  {return componentTypes.instance()->size();}
+		virtual const char *get(int k) const  {return componentTypes.instance()->get(k)->fullName();}
+	};
+
   protected:
     // the singleton instance
     static cNEDLoader *instance_;
@@ -51,7 +59,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
 
   protected:
     /** Redefined to return a cNEDDeclaration. */
-    virtual void addComponent(const char *qname, NEDElement *node);
+    virtual void addNedType(const char *qname, NEDElement *node);
 
   protected:
     // utility functions
@@ -73,14 +81,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     static void clear();
 
     /**
-     * A call to base class's lookup(), plus a cast. Implementation note: we cannot just
-     * override lookup() with covariant return types, because VC 7.1 is buggy and
-     * cannot handle it properly.
-     */
-    virtual cNEDDeclaration *lookup2(const char *qname) const;
-
-    /**
-     * Like lookup2(), but throws an error if the declaration is not found,
+     * Like lookup(), but throws an error if the declaration is not found,
      * so it never returns NULL.
      */
     virtual cNEDDeclaration *getDecl(const char *qname) const;
@@ -108,6 +109,15 @@ class SIM_API cNEDLoader : public NEDResourceCache
      * missing (unloaded) dependencies.
      */
     void done();
+    
+    /**
+     * Resolves NED type names, based on component names registered in the simkernel.
+     * This allows the user to instantiate components which are OUTSIDE NED, that is,
+     * are not declared in NED at all.
+     */
+    virtual std::string resolveNedType(NEDTypeInfo *context, const char *nedtypename) {
+    	return NEDResourceCache::resolveNedType(context, nedtypename, &ComponentTypeNames());
+    }
 };
 
 NAMESPACE_END

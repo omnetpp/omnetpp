@@ -60,7 +60,6 @@ class SIM_API cNEDNetworkBuilder
     bool superTypeAllowsUnconnected() const;
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
-    cComponentType *findComponentType(const char *nedtypename);
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
     void setConnDisplayString(cGate *srcgatep);
     static cPar::Type translateParamType(int t);
