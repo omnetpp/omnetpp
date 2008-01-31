@@ -299,6 +299,7 @@ template <typename T> file_offset_t EventLogIndex::searchForOffset(std::map<T, C
 
 template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, CacheEntry> &map, T key, MatchKind matchKind, T& lowerKey, T& upperKey, file_offset_t& foundOffset, file_offset_t& lowerOffset, file_offset_t& upperOffset)
 {
+    ensureFirstEventAndLastEventCached();
     T keyValue = (T)key;
     typename std::map<T, CacheEntry>::iterator it = map.lower_bound(keyValue); // greater or equal
 
@@ -370,7 +371,7 @@ template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, Cache
         }
         else {
             upperKey = getKey(key, getLastEventNumber(), getLastSimulationTime());
-            upperOffset = reader->getFileSize();
+            upperOffset = reader->getFileSize(); // this has to match last event's end offset
         }
 
         // lower iterator refers to the closest element before the key
@@ -383,7 +384,7 @@ template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, Cache
         }
         else {
             lowerKey = getKey(key, getFirstEventNumber(), getFirstSimulationTime());
-            lowerOffset = 0;
+            lowerOffset = getFirstEventOffset();
         }
 
         // if the closest element before and after are subsequent elements
@@ -595,6 +596,12 @@ void EventLogIndex::cacheEntry(long eventNumber, simtime_t simulationTime, file_
         itSimulationTime->second.include(eventNumber, simulationTime, beginOffset, endOffset);
     else
         simulationTimeToCacheEntryMap[simulationTime] = CacheEntry(eventNumber, simulationTime, beginOffset, endOffset);
+}
+
+void EventLogIndex::ensureFirstEventAndLastEventCached()
+{
+    getFirstEventNumber();
+    getLastEventNumber();
 }
 
 void EventLogIndex::dump()

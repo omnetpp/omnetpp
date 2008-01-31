@@ -132,6 +132,7 @@ class EVENTLOG_API EventLogIndex
         simtime_t& getLastSimulationTime();
         file_offset_t getFirstEventOffset();
         file_offset_t getLastEventOffset();
+        void ensureFirstEventAndLastEventCached();
         /**
          * Returns the begin file offset of an event reading linearly backward from its end file offset.
          */

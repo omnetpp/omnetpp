@@ -83,7 +83,9 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         ~FilteredEventLog();
 
     public:
+        long getFirstEventNumber() { return firstEventNumber; }
         void setFirstEventNumber(long firstEventNumber) { this->firstEventNumber = firstEventNumber; }
+        long getLastEventNumber() { return lastEventNumber; }
         void setLastEventNumber(long lastEventNumber) { this->lastEventNumber = lastEventNumber; }
 
         void setEnableModuleFilter(bool enableModuleFilter) { this->enableModuleFilter = enableModuleFilter; }

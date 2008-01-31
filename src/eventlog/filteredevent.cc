@@ -107,6 +107,9 @@ FilteredEvent *FilteredEvent::getCauseEvent()
         // this might read all events backward if none of the causes matches the filter
         while (causeEvent)
         {
+            if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
+                return NULL;
+
             if (filteredEventLog->matchesFilter(causeEvent))
                 return filteredEventLog->getEventForEventNumber(causeEvent->getEventNumber());
 
@@ -140,6 +143,9 @@ IMessageDependency *FilteredEvent::getCause()
             // this might read all events backward if none of the causes matches the filter
             while (causeEvent && (messageDependency = causeEvent->getCause()))
             {
+                if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
+                    return NULL;
+
                 if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent()))
                 {
                     if (messageDependency == causeMessageDependency)
