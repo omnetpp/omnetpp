@@ -437,6 +437,25 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
 {
     Assert(event);
 
+    if (forward) {
+        if (firstMatchingEvent && event->getEventNumber() < firstMatchingEvent->getEventNumber())
+            return firstMatchingEvent;
+
+        if (firstEventNumber != -1 && event->getEventNumber() < firstEventNumber)
+            event = eventLog->getEventForEventNumber(firstEventNumber, LAST_OR_NEXT);
+    }
+    else {
+        if (lastMatchingEvent && lastMatchingEvent->getEventNumber() < event->getEventNumber())
+            return lastMatchingEvent;
+
+        if (lastEventNumber != -1 && lastEventNumber < event->getEventNumber())
+            event = eventLog->getEventForEventNumber(lastEventNumber, FIRST_OR_PREVIOUS);
+    }
+
+    Assert(event);
+
+    // TODO: LONG RUNNING OPERATION
+    // if none of firstEventNumber, lastEventNumber, stopEventNumber is set this might take a while
     while (event)
     {
         int eventNumber = event->getEventNumber();
@@ -484,6 +503,8 @@ std::vector<int> FilteredEventLog::getSelectedModuleIds()
     return moduleIds;
 }
 
+// TODO: LONG RUNNING OPERATION
+// this does a recursive depth search
 bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
 {
     EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(cause->getEventNumber());
@@ -524,6 +545,8 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
     return result;
 }
 
+// TODO: LONG RUNNING OPERATION
+// this does a recursive depth search
 bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
 {
     if (!traceSelfMessages && consequence->isSelfMessageProcessingEvent())

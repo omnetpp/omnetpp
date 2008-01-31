@@ -102,7 +102,9 @@ FilteredEvent *FilteredEvent::getCauseEvent()
     {
         IEvent *causeEvent = getEvent()->getCauseEvent();
 
+        // TODO: LONG RUNNING OPERATION
         // walk backwards on the cause chain until we find an event matched by the filter
+        // this might read all events backward if none of the causes matches the filter
         while (causeEvent)
         {
             if (filteredEventLog->matchesFilter(causeEvent))
@@ -134,6 +136,8 @@ IMessageDependency *FilteredEvent::getCause()
         if (causeMessageDependency) {
             IMessageDependency *messageDependency;
 
+            // TODO: LONG RUNNING OPERATION
+            // this might read all events backward if none of the causes matches the filter
             while (causeEvent && (messageDependency = causeEvent->getCause()))
             {
                 if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent()))
@@ -144,6 +148,7 @@ IMessageDependency *FilteredEvent::getCause()
                         cause = new FilteredMessageDependency(filteredEventLog, false,
                                     messageDependency->duplicate(filteredEventLog->getEventLog()),
                                     causeMessageDependency->duplicate(filteredEventLog->getEventLog()));
+                    break;
                 }
 
                 causeEvent = causeEvent->getCauseEvent();
@@ -165,6 +170,8 @@ IMessageDependencyList *FilteredEvent::getCauses()
     return causes;
 }
 
+// TODO: LONG RUNNING OPERATION
+// this is recursive and might take some time
 IMessageDependencyList *FilteredEvent::getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool isReuse, int level)
 {
     // returns a list of dependencies, where the consequence is this event,
@@ -210,6 +217,8 @@ IMessageDependencyList *FilteredEvent::getConsequences()
     return consequences;
 }
 
+// TODO: LONG RUNNING OPERATION
+// this is recursive and might take some time
 IMessageDependencyList *FilteredEvent::getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool isReuse, int level)
 {
     // similar to getCause

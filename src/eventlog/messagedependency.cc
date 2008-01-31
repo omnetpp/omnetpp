@@ -118,6 +118,7 @@ long MessageDependency::getConsequenceEventNumber()
         else {
             IEvent *event = eventLog->getEventForSimulationTime(consequenceTime, FIRST_OR_PREVIOUS);
 
+            // TODO: LONG RUNNING OPERATION
             while (event)
             {
                 if (!event)

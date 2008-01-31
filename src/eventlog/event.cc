@@ -328,8 +328,9 @@ Event *Event::getReuserEvent(int &beginSendEntryNumber)
     eventLog->progress();
     Event *current = this;
 
-    // TODO: the result of this calculation should be put into an index file lazily
-    // TODO: and first we should look it up there, so that the expesive computation is not repeated
+    // TODO: LONG RUNNING OPERATION
+    // TODO: maybe the result of this calculation should be put into an index file lazily?
+    // TODO: and first we should look it up there, so that the expensive computation is not repeated when the file is reopened
     // TODO: the limit on this loop should be configurable
     int maxLookAhead = 1000;
     while (current && maxLookAhead--) {

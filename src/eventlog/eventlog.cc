@@ -107,8 +107,10 @@ void EventLog::synchronize()
 
         if (change == FileReader::APPENDED) {
             // always update the old last event because it might have been incomplete
-            if (lastEvent)
+            if (lastEvent) {
                 lastEvent->parse(reader, lastEvent->getBeginOffset());
+                cacheEntry(lastEvent->getEventNumber(), lastEvent->getSimulationTime(), lastEvent->getBeginOffset(), lastEvent->getEndOffset());
+            }
 
             for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
                 it->second->synchronize();
@@ -335,6 +337,7 @@ Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
     {
         Event *event = new Event(this);
         event->parse(reader, beginOffset);
+        cacheEntry(event->getEventNumber(), event->getSimulationTime(), event->getBeginOffset(), event->getEndOffset());
         numParsedEvents++;
         return cacheEvent(event);
     }

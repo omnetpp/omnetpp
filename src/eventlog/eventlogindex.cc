@@ -18,6 +18,88 @@
 
 USING_NAMESPACE
 
+static bool isEventNumber(long eventNumber)
+{
+    return true;
+}
+
+static bool isEventNumber(simtime_t simulationTime)
+{
+    return false;
+}
+
+static bool isSimulationTime(long eventNumber)
+{
+    return false;
+}
+
+static bool isSimulationTime(simtime_t simulationTime)
+{
+    return true;
+}
+
+static long getKey(long key, long eventNumber, simtime_t simulationTime)
+{
+    return eventNumber;
+}
+
+static simtime_t getKey(simtime_t key, long eventNumber, simtime_t simulationTime)
+{
+    return simulationTime;
+}
+
+EventLogIndex::CacheEntry::CacheEntry()
+{
+    this->simulationTime = -1;
+    this->beginEventNumber = -1;
+    this->endEventNumber = -1;
+    this->beginOffset = -1;
+    this->endEventBeginOffset = -1;
+    this->endOffset = -1;
+}
+
+EventLogIndex::CacheEntry::CacheEntry(long eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
+{
+    this->simulationTime = simulationTime;
+    this->beginEventNumber = eventNumber;
+    this->endEventNumber = eventNumber;
+    this->beginOffset = beginOffset;
+    this->endEventBeginOffset = beginOffset;
+    this->endOffset = endOffset;
+}
+
+void EventLogIndex::CacheEntry::include(long eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
+{
+    Assert(this->simulationTime == simulationTime);
+    this->beginEventNumber = std::min(beginEventNumber, eventNumber);
+    this->endEventNumber = std::max(endEventNumber, eventNumber);
+    this->beginOffset = std::min(this->beginOffset, beginOffset);
+    this->endEventBeginOffset = std::max(this->endEventBeginOffset, beginOffset);
+    this->endOffset = std::max(this->endOffset, endOffset);
+}
+
+void EventLogIndex::CacheEntry::getBeginKey(long &key)
+{
+    key = beginEventNumber;
+}
+
+void EventLogIndex::CacheEntry::getBeginKey(simtime_t &key)
+{
+    key = simulationTime;
+}
+
+void EventLogIndex::CacheEntry::getEndKey(long &key)
+{
+    key = endEventNumber;
+}
+
+void EventLogIndex::CacheEntry::getEndKey(simtime_t &key)
+{
+    key = simulationTime;
+}
+
+//*************************************************************************************************
+
 EventLogIndex::EventLogIndex(FileReader *reader)
 {
     this->reader = reader;
@@ -41,8 +123,8 @@ void EventLogIndex::synchronize()
 void EventLogIndex::clearInternalState(FileReader::FileChangedState change)
 {
     if (change != FileReader::APPENDED) {
-        eventNumberToOffsetMap.clear();
-        simulationTimeToOffsetMap.clear();
+        eventNumberToCacheEntryMap.clear();
+        simulationTimeToCacheEntryMap.clear();
 
         firstEventNumber = EVENT_NOT_YET_CALCULATED;
         firstSimulationTime = simtime_nil;
@@ -106,39 +188,16 @@ simtime_t& EventLogIndex::getLastSimulationTime()
     return lastSimulationTime;
 }
 
-bool EventLogIndex::needsToBeStored(long eventNumber, file_offset_t offset)
-{
-    if (eventNumber % EVENTNUM_INDEX_DENSITY == 0 || firstEventOffset == offset || lastEventOffset == offset)
-        return true;
-
-    // find eventNumber in map (lower_bound() finds equal or first greater key)
-    EventNumberToOffsetMap::iterator it = eventNumberToOffsetMap.lower_bound(eventNumber);
-    if (it!=eventNumberToOffsetMap.end() && (it->first - eventNumber) < EVENTNUM_INDEX_DENSITY)
-        return false;  // too close to next stored one
-    if (it!=eventNumberToOffsetMap.begin() && (eventNumber - (--it)->first) < EVENTNUM_INDEX_DENSITY)
-        return false;  // too close to previous stored one
-    return true;
-}
-
-void EventLogIndex::addPosition(long eventNumber, simtime_t simulationTime, file_offset_t offset)
-{
-    if (needsToBeStored(eventNumber, offset))
-    {
-        eventNumberToOffsetMap[eventNumber] = offset;
-        simulationTimeToOffsetMap[simulationTime] = offset;
-    }
-}
-
 file_offset_t EventLogIndex::getBeginOffsetForEndOffset(file_offset_t endOffset)
 {
     Assert(endOffset >= 0);
 
     long eventNumber;
-    file_offset_t lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
+    file_offset_t lineBeginOffset, lineEndOffset;
 
-    if (readToEventLine(false, endOffset, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
-        return lineStartOffset;
+    if (readToEventLine(false, endOffset, eventNumber, simulationTime, lineBeginOffset, lineEndOffset))
+        return lineBeginOffset;
     else
         return -1;
 }
@@ -148,36 +207,27 @@ file_offset_t EventLogIndex::getEndOffsetForBeginOffset(file_offset_t beginOffse
     Assert(beginOffset >= 0);
 
     long eventNumber;
-    file_offset_t lineStartOffset, lineEndOffset;
     simtime_t simulationTime;
+    file_offset_t lineBeginOffset, lineEndOffset;
 
-    if (readToEventLine(true, beginOffset + 1, eventNumber, simulationTime, lineStartOffset, lineEndOffset))
-        return lineStartOffset;
+    if (readToEventLine(true, beginOffset + 1, eventNumber, simulationTime, lineBeginOffset, lineEndOffset))
+        return lineBeginOffset;
     else
         return reader->getFileSize();
 }
 
-bool EventLogIndex::positionToEventNumber(long eventNumber, MatchKind matchKind)
+bool EventLogIndex::isEventBeginOffset(file_offset_t offset)
 {
-    file_offset_t offset = getOffsetForEventNumber(eventNumber, matchKind);
-
-    if (offset == -1)
-        return false; // eventNumber not found
-
     reader->seekTo(offset);
-    return true;
-}
+    char *line = reader->getNextLineBufferPointer();
 
-bool EventLogIndex::positionToSimulationTime(simtime_t simulationTime, MatchKind matchKind)
-{
-    reader->seekTo(getOffsetForSimulationTime(simulationTime, matchKind));
-    return true;
+    return line && *line == 'E';
 }
 
 file_offset_t EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind matchKind)
 {
     Assert(eventNumber >= 0);
-    file_offset_t offset = binarySearchForOffset(true, &eventNumberToOffsetMap, eventNumber, matchKind);
+    file_offset_t offset = searchForOffset(eventNumberToCacheEntryMap, eventNumber, matchKind);
 
     if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld for match kind: %d at offset: %lld\n", eventNumber, matchKind, offset);
 
@@ -187,196 +237,290 @@ file_offset_t EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind
 file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
 {
     Assert(simulationTime >= 0);
-    file_offset_t offset = binarySearchForOffset(false, &simulationTimeToOffsetMap, simulationTime, matchKind);
+    file_offset_t offset = searchForOffset(simulationTimeToCacheEntryMap, simulationTime, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("*** Found simulation time: %.*g for match kind: %d at offset: %lld\n", 12, simulationTime.dbl(), matchKind, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Found simulation time: %.*g for match kind: %d at offset: %lld\n", 12, simulationTime.dbl(), matchKind, offset);
 
     return offset;
 }
 
-static void convertKey(long& key, long eventNumber)
+template <typename T> file_offset_t EventLogIndex::searchForOffset(std::map<T, CacheEntry> &map, T key, MatchKind matchKind)
 {
-    key = eventNumber;
-}
+    T lowerKey;
+    T upperKey;
+    file_offset_t foundOffset;
+    file_offset_t lowerOffset;
+    file_offset_t upperOffset;
+    // first try to look up it the cache, this may result in an exact offset or a range around the offset being searched
+    bool found = cacheSearchForOffset(map, key, matchKind, lowerKey, upperKey, foundOffset, lowerOffset, upperOffset);
 
-static void convertKey(simtime_t& key, simtime_t simulationTime)
-{
-    key = simulationTime;
-}
+    if (!found) {
+        Assert(lowerKey <= key && key <= upperKey);
+        Assert(foundOffset == -1 || (lowerOffset <= foundOffset && foundOffset <= upperOffset));
 
-static void convertKey(simtime_t& key, long eventNumber)
-{
-    throw opp_runtime_error("Invalid conversion");
-}
+        // if we still have a key range then use a binary search to look up the closest match
+        if (foundOffset == -1 || lowerKey != upperKey)
+            foundOffset = binarySearchForOffset(key, matchKind, lowerKey, upperKey, lowerOffset, upperOffset);
 
-static void convertKey(long& key, simtime_t simulationTime)
-{
-    throw opp_runtime_error("Invalid conversion");
-}
+        bool exactMatchFound = lowerKey == key && upperKey == key;
 
-template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(bool eventNumberBased, std::map<T, file_offset_t> *keyToOffsetMap, T key, MatchKind matchKind)
-{
-    Assert(key >= 0);
-    file_offset_t foundOffset = -1;
-    file_offset_t lowerOffset, upperOffset;
-    file_offset_t midEventStartOffset, midEventEndOffset;
+        // finally use linear search to find the requested offset
+        if (matchKind == EXACT) {
+            if (foundOffset != -1 && isSimulationTime(key)) {
+                // check if there are multiple events with the same simulation time
+                file_offset_t firstOffset = linearSearchForOffset(key, foundOffset, false, true);
+                file_offset_t lastOffset = linearSearchForOffset(key, foundOffset, true, true);
 
-    // find key in map (lower_bound() finds equal or first greater key)
-    typename std::map<T, file_offset_t>::iterator it = keyToOffsetMap->lower_bound(key);
-
-    // exact match in cache?
-    if (it != keyToOffsetMap->end() && it->first == key)
-        foundOffset = it->second;
-    else
-    {
-        T lowerKey;
-
-        // figure out start positions for binary search
-        if (it == keyToOffsetMap->end())
-            upperOffset = reader->getFileSize();
-        else
-            upperOffset = it->second;
-
-        if (it == keyToOffsetMap->begin()) {
-            lowerKey = 0;
-            lowerOffset = 0;
+                if (foundOffset != lastOffset || foundOffset != firstOffset)
+                    throw opp_runtime_error("Found non unique simulation time when exact match is requested");
+            }
         }
         else {
-            --it; // note: --it seems to be valid even when it==end()
-            lowerKey = it->first;
-            lowerOffset = it->second;
+            bool forward;
+            file_offset_t searchOffset;
+
+            if (exactMatchFound) {
+                forward = matchKind == LAST_OR_NEXT || matchKind == LAST_OR_PREVIOUS;
+                searchOffset = foundOffset;
+            }
+            else {
+                forward = matchKind == FIRST_OR_NEXT || matchKind == LAST_OR_NEXT;
+                searchOffset = forward ? lowerOffset : (upperOffset + lowerOffset) / 2;
+            }
+
+            foundOffset = linearSearchForOffset(key, searchOffset, forward, exactMatchFound);
+        }
+    }
+
+    Assert(foundOffset == -1 || isEventBeginOffset(foundOffset));
+
+    return foundOffset;
+}
+
+template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, CacheEntry> &map, T key, MatchKind matchKind, T& lowerKey, T& upperKey, file_offset_t& foundOffset, file_offset_t& lowerOffset, file_offset_t& upperOffset)
+{
+    T keyValue = (T)key;
+    std::map<T, CacheEntry>::iterator it = map.lower_bound(keyValue); // greater or equal
+
+    // if exact match found
+    if (it != map.end() && it->first == keyValue) {
+        CacheEntry &cacheEntry = it->second;
+
+        // for event numbers there can be only one exact match so we can safely return it independently of matchKind
+        if (isEventNumber(key)) {
+            foundOffset = cacheEntry.beginOffset;
+            return true;
+        }
+        else {
+            // for simulation times we must consider whether the cache entry is complete or not by looking around it
+            std::map<T, CacheEntry>::iterator itUpper = it;
+            std::map<T, CacheEntry>::iterator itLower = it;
+    
+            ++itUpper;
+            if (itLower != map.begin())
+                --itLower;
+            else
+                itLower = map.end();
+
+            bool completeBegin = itLower != map.end() && itLower->second.endOffset == cacheEntry.beginOffset;
+            bool completeEnd = itUpper != map.end() && itUpper->second.beginOffset == cacheEntry.endOffset;
+
+            // dispatching on match kind is required
+            switch (matchKind) {
+                case EXACT:
+                    if (completeBegin && completeEnd) {
+                        Assert(cacheEntry.beginEventNumber == cacheEntry.endEventNumber);
+                        foundOffset = cacheEntry.beginOffset;
+                        return true;
+                    }
+                    break;
+                case FIRST_OR_PREVIOUS:
+                case FIRST_OR_NEXT:
+                    if (completeBegin) {
+                        foundOffset = cacheEntry.beginOffset;
+                        return true;
+                    }
+                    break;
+                case LAST_OR_PREVIOUS:
+                case LAST_OR_NEXT:
+                    if (completeEnd) {
+                        foundOffset = cacheEntry.endEventBeginOffset;
+                        return true;
+                    }
+                    break;
+            }
+
+            // cannot exactly determine from cache
+            lowerKey = key;
+            lowerOffset = cacheEntry.beginOffset;
+            upperKey = key;
+            upperOffset = cacheEntry.endOffset;
+            // an event's begin offset must be returned
+            foundOffset = cacheEntry.beginOffset;
+            return false;
+        }
+    }
+    else {
+        // upper iterator refers to the closest element after the key
+        std::map<T, CacheEntry>::iterator itUpper = it;
+        if (itUpper != map.end()) {
+            CacheEntry &cacheEntry = itUpper->second;
+            cacheEntry.getBeginKey(upperKey);
+            upperOffset = cacheEntry.beginOffset;
+        }
+        else {
+            upperKey = getKey(key, getLastEventNumber(), getLastSimulationTime());
+            upperOffset = reader->getFileSize();
         }
 
-        // binary search
-        //
-        // IMPORTANT NOTE: lowerOffset will always be exactly on an "E" line
-        // (that of lowerKey), but upperOffset will NOT! This is necessary
-        // for the distance between lowerOffset and upperOffset to shrink properly.
-        //
-        int stepCount = 0;
+        // lower iterator refers to the closest element before the key
+        std::map<T, CacheEntry>::iterator itLower = it;
+        if (!map.empty() && itLower != map.begin()) {
+            --itLower;
+            CacheEntry &cacheEntry = itLower->second;
+            cacheEntry.getEndKey(lowerKey);
+            lowerOffset = cacheEntry.endOffset;
+        }
+        else {
+            lowerKey = getKey(key, getFirstEventNumber(), getFirstSimulationTime());
+            lowerOffset = 0;
+        }
 
-        while (true)
-        {
-            stepCount++;
-            file_offset_t midOffset = (upperOffset + lowerOffset) / 2;
-            //printf("step %d: offsets: lo=%ld, up=%ld, mid=%ld \t\tkey#: lo=#%ld\n",
-            //       stepCount, lowerOffset, upperOffset, midOffset, lowerKey);
-            long midEventNumber;
-            simtime_t midSimulationTime;
-
-            if (readToEventLine(true, midOffset, midEventNumber, midSimulationTime, midEventStartOffset, midEventEndOffset))
-            {
-                //printf("  found event #%ld at offset=%ld\n", midEventNumber, midEventStartOffset);
-                T midKey;
-
-                if (eventNumberBased)
-                    convertKey(midKey, midEventNumber);
-                else
-                    convertKey(midKey, midSimulationTime);
-
-                // store the mid position
-                addPosition(midEventNumber, midSimulationTime, midEventStartOffset);
-
-                // assign "mid" to "lower" or "upper"
-                if (midKey < key)
-                {
-                    lowerKey = midKey;
-                    lowerOffset = lowerOffset == midEventStartOffset ? midEventStartOffset + 1 : midEventStartOffset;
-                }
-                else if (midKey > key)
-                {
-                    upperOffset = upperOffset == midOffset ? midOffset - 1 : midOffset;
-                }
-                // stopping condition
-                else if (midKey == key)
-                {
-                    foundOffset = midEventStartOffset;
+        // if the closest element before and after are subsequent elements
+        // then the cache is complete around the key so the exact offset can be determined
+        if (lowerOffset == upperOffset) {
+            switch (matchKind) {
+                case EXACT:
+                    // we did not get an exact match in the first place (see above)
+                    foundOffset = -1;
                     break;
-                }
+                case FIRST_OR_PREVIOUS:
+                case LAST_OR_PREVIOUS:
+                    if (itLower == map.begin())
+                        foundOffset = -1;
+                    else
+                        foundOffset = itLower->second.endEventBeginOffset;
+                    break;
+                case FIRST_OR_NEXT:
+                case LAST_OR_NEXT:
+                    if (itUpper == map.end())
+                        foundOffset = -1;
+                    else
+                        foundOffset = itUpper->second.beginOffset;
+                    break;
             }
-            else
-            {
-                //printf("  NOTHING found, decreasing upperOffset\n");
 
-                // no key found -- we must be at the very end of the file.
-                // try again finding an "E" line from a bit earlier point in the file.
-                upperOffset = midOffset;
+            return true;
+        }
+        else {
+            // not possible to determine exact offset from cache
+            foundOffset = -1;
+            return false;
+        }
+    }
+}
+
+template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(T key, MatchKind matchKind, T& lowerKey, T& upperKey, file_offset_t& lowerOffset, file_offset_t& upperOffset)
+{
+    Assert(key >= 0);
+    file_offset_t foundOffset, middleEventBeginOffset, middleEventEndOffset;
+    long middleEventNumber;
+    simtime_t middleSimulationTime;
+
+    /**
+     * Binary search
+     *
+     * IMPORTANT NOTE: lowerOffset will always be exactly on an "E" line
+     * (that of lowerKey), but upperOffset will NOT! This is necessary
+     * for the distance between lowerOffset and upperOffset to shrink properly.
+     */
+    int stepCount = 0;
+
+    while (true) {
+        stepCount++;
+        file_offset_t middleOffset = (upperOffset + lowerOffset) / 2;
+        //printf("step %d: offsets: lo=%ld, up=%ld, middle=%ld \t\tkey#: lo=#%ld\n", stepCount, lowerOffset, upperOffset, middleOffset, lowerKey);
+
+        if (readToEventLine(true, middleOffset, middleEventNumber, middleSimulationTime, middleEventBeginOffset, middleEventEndOffset)) {
+            //printf("  found event #%ld at offset=%ld\n", middleEventNumber, middleEventBeginOffset);
+            T middleKey = getKey(key, middleEventNumber, middleSimulationTime);
+
+            // assign "middle" to "lower" or "upper"
+            if (middleKey < key) {
+                lowerKey = middleKey;
+                lowerOffset = lowerOffset == middleEventBeginOffset ? middleEventBeginOffset + 1 : middleEventBeginOffset;
             }
-
-            if (lowerOffset >= upperOffset)
-            {
-                foundOffset = -1;
+            else if (middleKey > key) {
+                upperKey = middleKey;
+                upperOffset = upperOffset == middleOffset ? middleOffset - 1 : middleOffset;
+            }
+            // stopping condition
+            else if (middleKey == key) {
+                lowerKey = upperKey = key;
+                foundOffset = lowerOffset = upperOffset = middleEventBeginOffset;
                 break;
             }
         }
+        else {
+            //printf("  NOTHING found, decreasing upperOffset\n");
+
+            // no key found -- we must be at the very end of the file.
+            // try again finding an "E" line from a bit earlier point in the file.
+            upperOffset = middleOffset;
+        }
+
+        if (lowerOffset >= upperOffset) {
+            foundOffset = -1;
+            break;
+        }
     }
 
-    //printf("  binary search steps: %d\n", stepCount);
+    if (PRINT_DEBUG_MESSAGES) printf("Binary search steps: %d\n", stepCount);
 
-    if (matchKind == EXACT && (foundOffset == -1 || eventNumberBased))
-        return foundOffset;
-    else if (matchKind == EXACT && !eventNumberBased)
-    {
-        file_offset_t firstOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, false, true);
-        file_offset_t lastOffset = linearSearchForOffset(eventNumberBased, foundOffset, key, true, true);
-
-        if (foundOffset == lastOffset && foundOffset == firstOffset)
-            return foundOffset;
-        else
-            throw opp_runtime_error("Found non unique simulation time when exact match is requested");
-    }
-    else
-    {
-        bool forward = matchKind == FIRST_OR_NEXT || matchKind == LAST_OR_NEXT;
-        bool exactMatchFound = foundOffset != -1;
-        file_offset_t searchOffset = exactMatchFound ? foundOffset : (forward ? lowerOffset : midEventEndOffset);
-
-        return linearSearchForOffset(eventNumberBased, searchOffset, key, forward, exactMatchFound);
-    }
+    return foundOffset;
 }
 
-template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(bool eventNumberBased, file_offset_t offset, T key, bool forward, bool exactMatchFound)
+template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(T key, file_offset_t beginOffset, bool forward, bool exactMatchRequired)
 {
-    Assert(offset >= 0);
-    file_offset_t previousOffset = offset;
-    long eventNumber;
-    file_offset_t lineStartOffset, lineEndOffset;
-    simtime_t simulationTime;
+    Assert(beginOffset >= 0);
 
-    while (offset != -1)
+    long eventNumber;
+    simtime_t simulationTime;
+    file_offset_t lineBeginOffset, lineEndOffset;
+    file_offset_t previousOffset = beginOffset;
+
+    while (beginOffset != -1)
     {
-        bool readEventLine = readToEventLine(forward, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
+        bool readEventLine = readToEventLine(forward, beginOffset, eventNumber, simulationTime, lineBeginOffset, lineEndOffset);
 
         if (!readEventLine) {
-            if (exactMatchFound)
+            if (exactMatchRequired)
                 return previousOffset;
             else
                 return -1;
         }
 
-        T readKey;
+        T readKey = getKey(key, eventNumber, simulationTime);
 
-        if (eventNumberBased)
-            convertKey(readKey, eventNumber);
-        else
-            convertKey(readKey, simulationTime);
-
-        if (!exactMatchFound) {
-            if (forward && readKey > key)
-                return lineStartOffset;
-
-            if (!forward && readKey < key)
-                return lineStartOffset;
+        if (!exactMatchRequired) {
+            if (forward) {
+                if (readKey > key)
+                    return lineBeginOffset;
+            }
+            else {
+                if (readKey < key)
+                    return lineBeginOffset;
+            }
         }
         else if (readKey != key)
             return previousOffset;
 
-        previousOffset = lineStartOffset;
+        previousOffset = lineBeginOffset;
 
         if (forward)
-            offset = lineEndOffset;
+            beginOffset = lineEndOffset;
         else
-            offset = lineStartOffset;
+            beginOffset = lineBeginOffset;
     }
 
     return -1;
@@ -426,17 +570,42 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
             simulationTime = BigDecimal::parse(tokens[i+1]);
     }
 
-    if (eventNumber != -1)
+    if (eventNumber != -1) {
+        Assert(simulationTime != simtime_nil);
+        cacheEntry(eventNumber, simulationTime, lineStartOffset, lineEndOffset);
         return true;
+    }
 
     // bad luck
     throw opp_runtime_error("Wrong file format: no event number in 'E' line, line %d", reader->getNumReadLines());
 }
 
-void EventLogIndex::dumpTable()
+void EventLogIndex::cacheEntry(long eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
 {
-    printf("Stored eventNumberToOffsetMap:\n");
+    EventNumberToCacheEntryMap::iterator itEventNumber = eventNumberToCacheEntryMap.lower_bound(eventNumber);
 
-    for (EventNumberToOffsetMap::iterator it = eventNumberToOffsetMap.begin(); it!=eventNumberToOffsetMap.end(); ++it)
+    if (itEventNumber != eventNumberToCacheEntryMap.end() && itEventNumber->first == eventNumber)
+        itEventNumber->second.include(eventNumber, simulationTime, beginOffset, endOffset);
+    else
+        eventNumberToCacheEntryMap[eventNumber] = CacheEntry(eventNumber, simulationTime, beginOffset, endOffset);
+
+    SimulationTimeToCacheEntryMap::iterator itSimulationTime = simulationTimeToCacheEntryMap.lower_bound(simulationTime);
+
+    if (itSimulationTime != simulationTimeToCacheEntryMap.end() && itSimulationTime->first == simulationTime)
+        itSimulationTime->second.include(eventNumber, simulationTime, beginOffset, endOffset);
+    else
+        simulationTimeToCacheEntryMap[simulationTime] = CacheEntry(eventNumber, simulationTime, beginOffset, endOffset);
+}
+
+void EventLogIndex::dump()
+{
+    printf("eventNumberToCacheEntryMap:\n");
+
+    for (EventNumberToCacheEntryMap::iterator it = eventNumberToCacheEntryMap.begin(); it != eventNumberToCacheEntryMap.end(); ++it)
         printf("  #%ld --> offset %lld (0x%llx)\n", it->first, it->second, it->second);
+
+    printf("simulationTimeToCacheEntryMap:\n");
+
+    for (SimulationTimeToCacheEntryMap::iterator it = simulationTimeToCacheEntryMap.begin(); it != simulationTimeToCacheEntryMap.end(); ++it)
+        printf("  %.*g --> offset %lld (0x%llx)\n", it->first.dbl(), it->second, it->second);
 }
