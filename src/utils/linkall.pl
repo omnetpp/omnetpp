@@ -41,6 +41,9 @@ foreach $arg (@ARGV) {
     }
 }
 
+# remove temp files when killed by Ctrl+C, by catching the INT signal
+$SIG{'INT'} = 'removeTempFiles';
+
 # process libs
 @tempfiles = ();
 $i = 0;
