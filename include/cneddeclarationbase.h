@@ -36,8 +36,8 @@ class cProperties;
  * channels and channel interfaces.
  *
  * The name() method returns the unqualified name (without namespace, e.g.
- * "Queue"), and fullName() returns the qualified name (with namespace,
- * e.g. "inet.network.Queue").
+ * "Queue"). fullName() should be redefined in subclasses so that it returns 
+ * the qualified name (e.g. "inet.network.Queue").
  *
  * This is a passive, data-only class.
  *
@@ -46,9 +46,6 @@ class cProperties;
 //FIXME rename to cAbstractNEDDeclaration
 class SIM_API cNEDDeclarationBase : public cNamedObject, noncopyable
 {
-  protected:
-    std::string fullname;
-
   public:
     /**
      * NED declaration as text, if available
