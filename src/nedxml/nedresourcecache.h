@@ -21,7 +21,7 @@
 #include <vector>
 #include <string>
 #include "nedelements.h"
-#include "nedcomponent.h"
+#include "nedtypeinfo.h"
 
 NAMESPACE_BEGIN
 
@@ -37,18 +37,18 @@ NAMESPACE_BEGIN
 class NEDXML_API NEDResourceCache
 {
   public:
-	  /** Interface that enumerates NED types; used by resolveType() */
-	  class NEDTypeNames {
-	  public:
-		/** Returns true if the given fully qualified name is an existing NED type */
-		virtual bool contains(const char *qname) const = 0;
-		
-		/** Returns the number of NED type names */
-		virtual int size() const = 0;
-		
-		/** Returns the kth fully qualified NED type name */
-		virtual const char *get(int k) const = 0;
-	  };
+      /** Interface that enumerates NED types; used by resolveType() */
+      class NEDTypeNames {
+      public:
+        /** Returns true if the given fully qualified name is an existing NED type */
+        virtual bool contains(const char *qname) const = 0;
+
+        /** Returns the number of NED type names */
+        virtual int size() const = 0;
+
+        /** Returns the kth fully qualified NED type name */
+        virtual const char *get(int k) const = 0;
+      };
   protected:
     typedef std::map<std::string, NEDElement *> NEDFileMap;
     typedef std::map<std::string, NEDTypeInfo *> NEDTypeInfoMap;
@@ -88,8 +88,8 @@ class NEDXML_API NEDResourceCache
 
     /** Look up a fully qualified NED type name from the cache. Returns NULL if not found. */
     virtual NEDTypeInfo *lookup(const char *qname) const;
-    
-    /** Resolves the given NED type name in the given context. Returns "" if not found. */ 
+
+    /** Resolves the given NED type name in the given context. Returns "" if not found. */
     virtual std::string resolveNedType(NEDTypeInfo *context, const char *nedtypename, NEDTypeNames *qnames);
 };
 

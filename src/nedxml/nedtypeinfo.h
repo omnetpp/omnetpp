@@ -24,7 +24,6 @@
 
 NAMESPACE_BEGIN
 
-//FIXME rename file to nedtypeinfo.h
 
 /**
  * Wraps a NEDElement tree of a NED declaration (module, channel, module
@@ -36,7 +35,7 @@ NAMESPACE_BEGIN
 class NEDXML_API NEDTypeInfo
 {
   protected:
-	std::string qualifiedName;
+    std::string qualifiedName;
     NEDElement *tree;
 
   public:

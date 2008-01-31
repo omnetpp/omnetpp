@@ -29,7 +29,7 @@
 #include "cproperties.h"
 #include "cproperty.h"
 
-#include "nedcomponent.h"
+#include "nedtypeinfo.h"
 
 NAMESPACE_BEGIN
 
@@ -117,7 +117,7 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
      * with the package name and any existing enclosing NED type names).
      */
     virtual const char *name() const  {return NEDTypeInfo::name();}
-    
+
     /**
      * Returns the fully qualified name (i.e. the simple name prefixed
      * with the package name and any existing enclosing NED type names).
@@ -127,8 +127,8 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     /**
      * Changing the name is not possible after creation.
      */
-    virtual void setName(const char *s); 
-    
+    virtual void setName(const char *s);
+
     /**
      * Produces a one-line description of object contents.
      */

@@ -35,7 +35,7 @@ OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o \
       $O/nedxmlparser.o $O/nedsaxhandler.o $O/saxparser_$(XMLPARSER).o \
       $O/ned1.tab.o $O/lex.ned1yy.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
-      $O/nedresourcecache.o $O/nedcomponent.o \
+      $O/nedresourcecache.o $O/nedtypeinfo.o \
       $O/nedcompiler.o
 
 #
@@ -129,7 +129,7 @@ $O/cppexprgenerator.o: cppexprgenerator.cc \
   nedresourcecache.h \
   nedelement.h \
   nedxmldefs.h \
-  nedcomponent.h
+  nedtypeinfo.h
 $O/cppgenerator.o: cppgenerator.cc \
   nedelements.h \
   cppgenerator.h \
@@ -139,7 +139,7 @@ $O/cppgenerator.o: cppgenerator.cc \
   cppexprgenerator.h \
   nedcompiler.h \
   nedresourcecache.h \
-  nedcomponent.h
+  nedtypeinfo.h
 $O/cppmsggenerator.o: cppmsggenerator.cc \
   nedelements.h \
   cppgenerator.h \
@@ -149,7 +149,7 @@ $O/cppmsggenerator.o: cppmsggenerator.cc \
   cppexprgenerator.h \
   nedcompiler.h \
   nedresourcecache.h \
-  nedcomponent.h
+  nedtypeinfo.h
 $O/lex.msg2yy.o: lex.msg2yy.cc \
   nedyydefs.h \
   nederror.h \
@@ -228,13 +228,13 @@ $O/nedcompiler.o: nedcompiler.cc \
   nedxmldefs.h \
   nedelements.h \
   nedresourcecache.h \
-  nedcomponent.h \
+  nedtypeinfo.h \
   nedyydefs.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
-$O/nedcomponent.o: nedcomponent.cc \
+$O/nedtypeinfo.o: nedtypeinfo.cc \
   nederror.h \
-  nedcomponent.h \
+  nedtypeinfo.h \
   nedelement.h \
   nedxmldefs.h \
   nedelements.h
@@ -289,7 +289,7 @@ $O/nedresourcecache.o: nedresourcecache.cc \
   nedelement.h \
   nedxmldefs.h \
   nedelements.h \
-  nedcomponent.h
+  nedtypeinfo.h
 $O/nedsaxhandler.o: nedsaxhandler.cc \
   nedsaxhandler.h \
   nedelements.h \
@@ -305,7 +305,7 @@ $O/nedsemanticvalidator.o: nedsemanticvalidator.cc \
   nedxmldefs.h \
   nedvalidator.h \
   nedelements.h \
-  nedcomponent.h
+  nedtypeinfo.h
 $O/nedsyntaxvalidator.o: nedsyntaxvalidator.cc \
   nederror.h \
   nedsyntaxvalidator.h \
