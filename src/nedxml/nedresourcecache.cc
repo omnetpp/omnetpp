@@ -97,21 +97,21 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
     }
 }
 
-std::string NEDResourceCache::resolveNedType(NEDTypeInfo *context, const char *nedtypename, NEDTypeNames *qnames)
+std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, const char *nedtypename, NEDTypeNames *qnames)
 {
     // note: this method is to be kept consistent with NEDResources.lookupNedType() in the Java code
-	// note2: partially qualified names are not supported: name must be either simplename or fully qualified
+    // note2: partially qualified names are not supported: name must be either simplename or fully qualified
     if (!strchr(nedtypename, '.'))
     {
-        // no dot: name is an unqualified name (simple name); so, it can be: 
-    	// (a) inner type, (b) from the same package, (c) an imported type, (d) from the default package
+        // no dot: name is an unqualified name (simple name); so, it can be:
+        // (a) inner type, (b) from the same package, (c) an imported type, (d) from the default package
 
-    	// inner type?
-    	std::string qname = std::string(context->fullName()) + "." + nedtypename;
+        // inner type?
+        std::string qname = context.qname + "." + nedtypename;
         if (qnames->contains(qname.c_str()))
             return qname;
 
-        NedFileNode *nedfileNode = dynamic_cast<NedFileNode *>(context->getTree()->getParentWithTag(NED_NED_FILE));
+        NedFileNode *nedfileNode = dynamic_cast<NedFileNode *>(context.element->getParentWithTag(NED_NED_FILE));
 
         // from the same package?
         PackageNode *packageNode = nedfileNode->getFirstPackageChild();
@@ -136,10 +136,10 @@ std::string NEDResourceCache::resolveNedType(NEDTypeInfo *context, const char *n
         for (int i=0; i<imports.size(); i++) {
             PatternMatcher importpattern(imports[i], true, true, true);
             for (int j=0; j<qnames->size(); j++) {
-            	const char *qname = qnames->get(j);
-            	if ((opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0))
-            		if (importpattern.matches(qname))
-            			return qname;
+                const char *qname = qnames->get(j);
+                if ((opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0))
+                    if (importpattern.matches(qname))
+                        return qname;
             }
         }
     }

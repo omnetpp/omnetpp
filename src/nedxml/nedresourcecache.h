@@ -27,6 +27,16 @@ NAMESPACE_BEGIN
 
 
 /**
+ * Context of NED type lookup
+ */
+struct NEDLookupContext
+{
+    NEDElement *element;  // compound module or NED file
+    std::string qname;    // fully qualified name, or (for NED files) package name
+    NEDLookupContext(NEDElement *e, const char *q) {element=e;qname=q;}
+};
+
+/**
  * Stores loaded NED files, and keeps track of components in them.
  *
  * This class can be turned into a cache (discarding and reloading
@@ -90,7 +100,7 @@ class NEDXML_API NEDResourceCache
     virtual NEDTypeInfo *lookup(const char *qname) const;
 
     /** Resolves the given NED type name in the given context. Returns "" if not found. */
-    virtual std::string resolveNedType(NEDTypeInfo *context, const char *nedtypename, NEDTypeNames *qnames);
+    virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename, NEDTypeNames *qnames);
 };
 
 NAMESPACE_END

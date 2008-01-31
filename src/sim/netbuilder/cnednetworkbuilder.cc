@@ -315,12 +315,13 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodname)
 {
-	std::string qname = cNEDLoader::instance()->resolveNedType(currentDecl, modTypeName);
+    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
+    std::string qname = cNEDLoader::instance()->resolveNedType(context, modTypeName);
     if (qname.empty())
         throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
                             "in (%s)%s not found (not in the loaded NED files?)",
                             modTypeName, submodname, modp->className(), modp->fullPath().c_str());
-	cComponentType *componenttype = cComponentType::find(qname.c_str());
+    cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
         throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
                             "in (%s)%s not found (type is a channel type)",
@@ -729,11 +730,12 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
 
 cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename, cModule *modp)
 {
-	std::string qname = cNEDLoader::instance()->resolveNedType(currentDecl, channeltypename);
+    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
+    std::string qname = cNEDLoader::instance()->resolveNedType(context, channeltypename);
     if (qname.empty())
         throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
                             "(not in the loaded NED files?)", channeltypename);  //FIXME "in module %s"
-	cComponentType *componenttype = cComponentType::find(qname.c_str());
+    cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cChannelType *>(componenttype))
         throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
                             "(given type is a module type)", channeltypename);  //FIXME "in module %s"

@@ -2063,7 +2063,8 @@ $O/simtime.obj: simtime.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
 $O/task.obj: task.cc \
-  task.h
+  task.h \
+  ../../include/platdep/platdefs.h
 $O/util.obj: util.cc \
   ../../include/util.h \
   ../../include/cenvir.h \
@@ -2111,17 +2112,6 @@ $O/util.obj: util.cc \
   ../../include/mersennetwister.h \
   ../../include/cdensity.h \
   ../../include/cstat.h
-$O/xxx.obj: xxx.cc \
-  ../../include/stlwrap.h \
-  ../../include/cobject.h \
-  ../../include/simkerneldefs.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/errmsg.h
 $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   netbuilder/cdynamicchanneltype.h \
   netbuilder/cnedloader.h \

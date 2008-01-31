@@ -1,5 +1,5 @@
 //==========================================================================
-// NEDNEDTYPEINFO.CC -
+// NEDTYPEINFO.CC -
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++

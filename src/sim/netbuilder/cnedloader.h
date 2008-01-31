@@ -31,6 +31,8 @@ class ParamNode;
 class GateNode;
 class PropertyNode;
 
+
+
 /**
  * Stores dynamically loaded NED files, and one can look up NED declarations
  * of modules, channels, module interfaces and channel interfaces in them.
@@ -43,19 +45,25 @@ class PropertyNode;
 class SIM_API cNEDLoader : public NEDResourceCache
 {
   protected:
-	class ComponentTypeNames : public NEDTypeNames {
-	  public:
-		virtual bool contains(const char *qname) const  {return componentTypes.instance()->lookup(qname)!=NULL;}
-		virtual int size() const  {return componentTypes.instance()->size();}
-		virtual const char *get(int k) const  {return componentTypes.instance()->get(k)->fullName();}
-	};
+    class ComponentTypeNames : public NEDTypeNames {
+      public:
+        virtual bool contains(const char *qname) const  {return componentTypes.instance()->lookup(qname)!=NULL;}
+        virtual int size() const  {return componentTypes.instance()->size();}
+        virtual const char *get(int k) const  {return componentTypes.instance()->get(k)->fullName();}
+    };
 
   protected:
     // the singleton instance
     static cNEDLoader *instance_;
 
+    struct PendingNedType {
+        std::string qname;
+        NEDElement *node;
+        PendingNedType(const char *q, NEDElement *e) {qname=q;node=e;}
+    };
+
     // storage for NED components not resolved yet because of missing dependencies
-    std::vector<NEDElement *> pendingList;
+    std::vector<PendingNedType> pendingList;
 
   protected:
     /** Redefined to return a cNEDDeclaration. */
@@ -65,7 +73,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     // utility functions
     void registerBuiltinDeclarations();
     NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
-    bool areDependenciesResolved(NEDElement *node);
+    bool areDependenciesResolved(const char *qname, NEDElement *node);
     void tryResolvePendingDeclarations();
     cNEDDeclaration *buildNEDDeclaration(const char *qname, NEDElement *node);
     int doLoadNedSourceFolder(const char *foldername);
@@ -109,15 +117,21 @@ class SIM_API cNEDLoader : public NEDResourceCache
      * missing (unloaded) dependencies.
      */
     void done();
-    
+
     /**
      * Resolves NED type names, based on component names registered in the simkernel.
      * This allows the user to instantiate components which are OUTSIDE NED, that is,
      * are not declared in NED at all.
      */
-    virtual std::string resolveNedType(NEDTypeInfo *context, const char *nedtypename) {
-    	return NEDResourceCache::resolveNedType(context, nedtypename, &ComponentTypeNames());
+    virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename) {
+        return NEDResourceCache::resolveNedType(context, nedtypename, &ComponentTypeNames());
     }
+
+    /**
+     * Utility method, useful with resolveNedType()
+     */
+    static NEDLookupContext getParentContextOf(const char *qname, NEDElement *node);
+
 };
 
 NAMESPACE_END

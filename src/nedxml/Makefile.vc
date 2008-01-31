@@ -237,12 +237,6 @@ $O/nedcompiler.obj: nedcompiler.cc \
   nedyydefs.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
-$O/nedtypeinfo.obj: nedtypeinfo.cc \
-  nederror.h \
-  nedtypeinfo.h \
-  nedelement.h \
-  nedxmldefs.h \
-  nedelements.h
 $O/neddtdvalidator.obj: neddtdvalidator.cc \
   nederror.h \
   neddtdvalidator.h \
@@ -345,6 +339,12 @@ $O/nedtools.obj: nedtools.cc \
   nedxmldefs.h \
   neddtdvalidatorbase.h \
   nedvalidator.h
+$O/nedtypeinfo.obj: nedtypeinfo.cc \
+  nederror.h \
+  nedtypeinfo.h \
+  nedelement.h \
+  nedxmldefs.h \
+  nedelements.h
 $O/nedutil.obj: nedutil.cc \
   nederror.h \
   nedutil.h \

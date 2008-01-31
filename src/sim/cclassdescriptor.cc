@@ -133,18 +133,18 @@ void cClassDescriptor::oppstring2string(const std::string& str, char *buf, int b
 
 void cClassDescriptor::string2oppstring(const char *s, opp_string& str)
 {
-	str = s ? s : "";
+    str = s ? s : "";
 }
 
 void cClassDescriptor::oppstring2string(const char *s, char *buf, int buflen)
 {
-	strncpy(buf, s ? s : "", buflen);
+    strncpy(buf, s ? s : "", buflen);
     buf[buflen-1] = '\0';
 }
 
 void cClassDescriptor::string2oppstring(const char *s, std::string& str)
 {
-	str = s ? s : "";
+    str = s ? s : "";
 }
 
 

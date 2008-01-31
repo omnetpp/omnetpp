@@ -89,10 +89,10 @@ void cNEDLoader::registerBuiltinDeclarations()
 
 void cNEDLoader::addNedType(const char *qname, NEDElement *node)
 {
-    if (!areDependenciesResolved(node))
+    if (!areDependenciesResolved(qname, node))
     {
         // we'll process it later
-        pendingList.push_back(node);
+        pendingList.push_back(PendingNedType(qname,node));
         return;
     }
 
@@ -219,24 +219,31 @@ int cNEDLoader::doLoadNedSourceFolder(const char *foldername)
     return count;
 }
 
-bool cNEDLoader::areDependenciesResolved(NEDElement *node)
+bool cNEDLoader::areDependenciesResolved(const char *qname, NEDElement *node)
 {
+    // check that all base types are resolved
+    NEDLookupContext context = getParentContextOf(qname, node);
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
     {
         if (child->getTagCode()!=NED_EXTENDS && child->getTagCode()!=NED_INTERFACE_NAME)
             continue;
 
-        //XXX use this:
-        //std::string qname = resolveNedType(context, name);
-        //if (qname.empty())
-        //    return false;
-
         const char *name = child->getAttribute("name");
-        cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(lookup(name));
-        if (!decl)
+        std::string qname = resolveNedType(context, name);
+        if (qname.empty())
             return false;
     }
     return true;
+}
+
+NEDLookupContext cNEDLoader::getParentContextOf(const char *qname, NEDElement *node) 
+{
+    NEDElement *contextnode = node->getParent();
+    if (contextnode->getTagCode()==NED_TYPES)
+        contextnode = contextnode->getParent();
+    const char *lastdot = strrchr(qname, '.');
+    std::string contextqname = !lastdot ? "" : std::string(qname, lastdot-qname);
+    return NEDLookupContext(contextnode, contextqname.c_str());
 }
 
 void cNEDLoader::tryResolvePendingDeclarations()
@@ -247,10 +254,10 @@ void cNEDLoader::tryResolvePendingDeclarations()
         again = false;
         for (int i=0; i<(int)pendingList.size(); i++)
         {
-            NEDElement *node = pendingList[i];
-            if (areDependenciesResolved(node))
+            PendingNedType type = pendingList[i];
+            if (areDependenciesResolved(type.qname.c_str(), type.node))
             {
-                addNedType(node->getAttribute("name"), node); //FIXME we have to use QUALIFIED name here!!!!
+                addNedType(type.qname.c_str(), type.node);
                 pendingList.erase(pendingList.begin() + i--);
                 again = true;
             }
@@ -270,10 +277,10 @@ void cNEDLoader::done()
 
     for (int i=0; i<(int)pendingList.size(); i++)
     {
-        NEDElement *tree = pendingList[i];
+        PendingNedType type = pendingList[i];
         ev.printfmsg("WARNING: Type `%s' at %s could not be fully resolved, dropped (base type or interface missing)",
-                     tree->getAttribute("name"), tree->getSourceLocation()); // FIXME create an ev.warning() or something...
-        delete tree;
+                     type.node->getAttribute("name"), type.node->getSourceLocation()); // FIXME create an ev.warning() or something...
+        delete type.node;
     }
 }
 

@@ -32,13 +32,22 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
 {
     props = NULL;
 
-    // add "extends" and "like" names
+    // add "extends" and "like" names, after resolving them
+    NEDLookupContext context = cNEDLoader::getParentContextOf(qname, tree); 
     for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
     {
-        if (child->getTagCode()==NED_EXTENDS)
-            extendsnames.push_back(((ExtendsNode *)child)->getName());
-        if (child->getTagCode()==NED_INTERFACE_NAME)
-            interfacenames.push_back(((InterfaceNameNode *)child)->getName());
+        if (child->getTagCode()==NED_EXTENDS) {
+            const char *extendsname = ((ExtendsNode *)child)->getName();
+            std::string extendsqname = cNEDLoader::instance()->resolveNedType(context, extendsname);
+            ASSERT(!extendsqname.empty());
+            extendsnames.push_back(extendsqname);
+        }
+        if (child->getTagCode()==NED_INTERFACE_NAME) {
+            const char *interfacename = ((InterfaceNameNode *)child)->getName();
+            std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, interfacename);
+            ASSERT(!interfaceqname.empty());
+            interfacenames.push_back(interfaceqname);
+        }
     }
 
     if (numExtendsNames()!=0)
@@ -62,9 +71,9 @@ cNEDDeclaration::~cNEDDeclaration()
 
 void cNEDDeclaration::setName(const char *s)
 {
-	//XXX instead of this, add name locking feature to cNamedObject and use that 
-	// (it'll be useful with modules, gates, params, coutvectors etc too!)
-	throw cRuntimeError(this, "Changing the name is not allowed");  
+    //XXX instead of this, add name locking feature to cNamedObject and use that 
+    // (it'll be useful with modules, gates, params, coutvectors etc too!)
+    throw cRuntimeError(this, "Changing the name is not allowed");  
 }
 
 void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)

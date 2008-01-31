@@ -151,7 +151,8 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     virtual int numExtendsNames() const  {return extendsnames.size();}
 
     /**
-     * Returns the name of the kth "extends" name (k=0..numExtendsNames()-1).
+     * Returns the name of the kth "extends" name (k=0..numExtendsNames()-1),
+     * resolved to fully qualified name.
      */
     virtual const char *extendsName(int k) const;
 
@@ -161,7 +162,8 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     virtual int numInterfaceNames() const  {return interfacenames.size();}
 
     /**
-     * Returns the name of the kth interface (k=0..numInterfaceNames()-1).
+     * Returns the name of the kth interface (k=0..numInterfaceNames()-1),
+     * resolved to fully qualified name.
      */
     virtual const char *interfaceName(int k) const;
 
