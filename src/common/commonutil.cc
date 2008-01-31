@@ -22,7 +22,7 @@ USING_NAMESPACE
 
 void setPosixLocale()
 {
-	setlocale(LC_ALL, "C");
+    setlocale(LC_ALL, "C");
 }
 
 //----

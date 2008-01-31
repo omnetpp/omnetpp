@@ -141,7 +141,7 @@ void ValueIterator::restart()
 {
     pos = itemIndex = k = 0;
     while (itemIndex < (int)items.size() && items[itemIndex].n == 0) 
-    	itemIndex++;
+        itemIndex++;
 }
 
 void ValueIterator::operator++(int)
