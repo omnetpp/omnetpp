@@ -54,7 +54,7 @@ class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
 		BlockAndPortData(Block *blockPtr, PortData *portDataPtr)
 			: blockPtr(blockPtr), portDataPtr(portDataPtr) {}
 		
-		bool operator<(const BlockAndPortData& other)
+		bool operator<(const BlockAndPortData& other) const
 		{
 			return this->blockPtr->startOffset < other.blockPtr->startOffset;
 		}
@@ -66,7 +66,7 @@ class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
         VectorIdToPortMap ports;
         VectorFileIndex *index;
         std::vector<BlockAndPortData> blocksToRead;
-        int currentBlockIndex;
+        unsigned int currentBlockIndex;
         LineTokenizer tokenizer;
 
     public:
