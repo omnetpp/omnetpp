@@ -2,7 +2,8 @@
 #
 # opp_test: regression testing tool for OMNeT++/OMNEST
 #
-
+use File::Path;
+use File::Basename;
 
 # Note: use of perl modules (e.g. cwd.pm) is avoided, because we don't want
 # to install a full-blown perl on windows, only a perl.exe
@@ -684,6 +685,7 @@ sub writefile()
         print "  file `$fname' already exists with identical content\n" if ($debug);
     } else {
         print "  writing `$fname'\n" if ($debug);
+        mkpath(dirname($fname));
         if (!open(OUT,">$fname")) {
             print STDERR "$arg0: error: cannot write file `$fname'\n";
             exit(1);
