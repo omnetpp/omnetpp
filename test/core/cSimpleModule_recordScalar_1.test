@@ -6,7 +6,7 @@ check that recordScalar() methods work OK.
 recordScalar("one", 24.2);
 recordScalar("two", -1.3);
 
-%contains: {}.sca
+%contains: {}/test.sca
 run 1  {}_network
 scalar {}_network 	one 	24.2
 scalar {}_network 	two 	-1.3

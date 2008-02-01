@@ -1,9 +1,9 @@
 %description:
 Check simple field types in structs are initialized to zero
 
-%file: {}.msg
+%file: {}/test.msg
 
-struct {MyStruct}
+struct MyStruct
 {
     fields:
         bool b;
@@ -25,7 +25,7 @@ struct {MyStruct}
 // print everything as number because who knows how '\0' in cc[] is treated by <<
 #define PRINT(X) ev << #X << ":" << (double)X << endl
 
-{MyStruct} x;
+MyStruct x;
 
 // scalars
 PRINT(x.b);

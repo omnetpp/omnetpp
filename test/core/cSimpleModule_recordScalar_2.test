@@ -6,15 +6,15 @@ check that scalar file does not get deleted between runs.
 recordScalar("one", 24.2);
 recordScalar("two", -1.5);
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={}_network
-output-scalar-file = {}.sca
+network={}.Test
+output-scalar-file = {}/test.sca
 
-[Run 1]
-[Run 2]
+[Config 1]
+[Config 2]
 
-%contains: {}.sca
+%contains: {}/test.sca
 run 1  {}_network
 scalar {}_network 	one 	24.2
 scalar {}_network 	two 	-1.5

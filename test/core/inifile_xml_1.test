@@ -1,7 +1,7 @@
 %description:
 Check xmldoc("filename.xml") and xmldoc("filename.xml", "pathexpr") functionality
 
-%file: {}.xml
+%file: {}/test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -19,32 +19,36 @@ Check xmldoc("filename.xml") and xmldoc("filename.xml", "pathexpr") functionalit
 #endif
 
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
+package {};
+
+simple Simple
+{
     parameters:
-        xmlconfig1: xml,
-        xmlconfig2: xml;
-endsimple
+        xml xmlconfig1;
+        xml xmlconfig2;
+}
 
-network {Net} : {Simple}
-endnetwork
+network Net extends Simple
+{
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <string.h>
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     cXMLElement *node1 = par("xmlconfig1");
     ASSERT(node1);
@@ -56,13 +60,13 @@ void {Simple}::activity()
 }
 
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={Net}
+network=Net
 
 [Parameters]
-*.xmlconfig1 = xmldoc("{}.xml");
-*.xmlconfig2 = xmldoc("{}.xml","foo/foo[1]//*[@color='green']");
+*.xmlconfig1 = xmldoc("{}/test.xml");
+*.xmlconfig2 = xmldoc("{}/test.xml","foo/foo[1]//*[@color='green']");
 
 %contains-regex: stdout
 <foo id='1'>

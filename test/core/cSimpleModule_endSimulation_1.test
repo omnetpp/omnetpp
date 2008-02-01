@@ -1,19 +1,19 @@
 %description:
 tests that endSimulation() works from activity(), and finish() gets called
 
-%module: {Module}
+%module: Module
 
-class {Module} : public cSimpleModule
+class Module : public cSimpleModule
 {
   public:
-    {Module}() : cSimpleModule(32768) { };
+    Module() : cSimpleModule(32768) { };
     virtual void activity();
     virtual void finish();
 };
 
-Define_Module({Module});
+Define_Module(Module);
 
-void {Module}::activity()
+void Module::activity()
 {
     wait(1.0);
     wait(1.0);
@@ -26,7 +26,7 @@ void {Module}::activity()
     ev << "event after endSimulation\n";
 }
 
-void {Module}::finish()
+void Module::finish()
 {
     ev << "finish called\n";
 }

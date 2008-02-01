@@ -29,7 +29,7 @@ ev << "received: " << vec.valuesReceived() << endl;
 ev << "stored: " << vec.valuesStored() << endl;
 
 
-%contains: {}.vec
+%contains: {}/test.vec
 vector 0  {}_network  vec  1
 0	0	35
 0	3	-24

@@ -11,72 +11,76 @@ RNGs.
 !!! THIS TEST IS CURRENTLY OUT OF ORDER (%contains always matches) !!!
 The dist/ dir can be used to test the functions.
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
+package {};
+
+simple Simple
+{
     parameters:
-        uniform_par,
-        exponential_par,
-        normal_par,
-        truncnormal_par,
-        gamma_d_par,
-        beta_par,
-        erlang_k_par,
-        chi_square_par,
-        student_t_par,
-        cauchy_par,
-        triang_par,
-        lognormal_par,
-        weibull_par,
-        pareto_shifted_par,
+        volatile double uniform_par;
+        volatile double exponential_par;
+        volatile double normal_par;
+        volatile double truncnormal_par;
+        volatile double gamma_d_par;
+        volatile double beta_par;
+        volatile double erlang_k_par;
+        volatile double chi_square_par;
+        volatile double student_t_par;
+        volatile double cauchy_par;
+        volatile double triang_par;
+        volatile double lognormal_par;
+        volatile double weibull_par;
+        volatile double pareto_shifted_par;
 
-        intuniform_par,
-        bernoulli_par,
-        binomial_par,
-        geometric_par,
-        negbinomial_par,
+        volatile double intuniform_par;
+        volatile double bernoulli_par;
+        volatile double binomial_par;
+        volatile double geometric_par;
+        volatile double negbinomial_par;
         // hypergeometric_par,
-        poisson_par;
-endsimple
+        volatile double poisson_par;
+}
 
-network {Net}: {Simple}
+network Net extends Simple
+{
     parameters:
-        uniform_par = input,
-        exponential_par = input,
-        normal_par = input,
-        truncnormal_par = input,
-        gamma_d_par = input,
-        beta_par = input,
-        erlang_k_par = input,
-        chi_square_par = input,
-        student_t_par = input,
-        cauchy_par = input,
-        triang_par = input,
-        lognormal_par = input,
-        weibull_par = input,
-        pareto_shifted_par = input,
+        uniform_par;
+        exponential_par;
+        normal_par;
+        truncnormal_par;
+        gamma_d_par;
+        beta_par;
+        erlang_k_par;
+        chi_square_par;
+        student_t_par;
+        cauchy_par;
+        triang_par;
+        lognormal_par;
+        weibull_par;
+        pareto_shifted_par;
 
-        intuniform_par = input,
-        bernoulli_par = input,
-        binomial_par = input,
-        geometric_par = input,
-        negbinomial_par = input,
+        intuniform_par;
+        bernoulli_par;
+        binomial_par;
+        geometric_par;
+        negbinomial_par;
         // hypergeometric_par = input,
-        poisson_par = input;
-endnetwork
+        poisson_par;
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
 #define PAR_MEAN_AND_VARIANCE(PARNAME) \
  {\
@@ -85,7 +89,7 @@ Define_Module({Simple});
    ev.printf("%s: m=%lg v=%lg\n", #PARNAME, s.mean(), s.variance()); \
  }
 
-void {Simple}::activity()
+void Simple::activity()
 {
     int numrepl=10000;
 
@@ -113,33 +117,33 @@ void {Simple}::activity()
     PAR_MEAN_AND_VARIANCE(poisson_par);
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={Net}
+network=Net
 
 [Parameters]
-{Net}.uniform_par =         uniform(1.0, 2.0)
-{Net}.exponential_par =     exponential(1.0)
-{Net}.normal_par =          normal(1.0, 1.0)
-{Net}.truncnormal_par =     truncnormal(1.0, 1.0)
-{Net}.gamma_d_par =         gamma_d(2.0, 2.0)
-{Net}.beta_par =            beta(1.0, 1.0)
-{Net}.erlang_k_par =        erlang_k(1, 1.0)
-{Net}.chi_square_par =      chi_square(2)
-{Net}.student_t_par =       student_t(1)
-{Net}.cauchy_par =          cauchy(1.0, 2.0)
-{Net}.triang_par =          triang(1.0, 2.0, 3.0)
-{Net}.lognormal_par =       lognormal(1.0, 1.0)
-{Net}.weibull_par =         weibull(1.0, 2.0)
-{Net}.pareto_shifted_par =  pareto_shifted(1.0, 2.0, 3.0)
+Net.uniform_par =         uniform(1.0, 2.0)
+Net.exponential_par =     exponential(1.0)
+Net.normal_par =          normal(1.0, 1.0)
+Net.truncnormal_par =     truncnormal(1.0, 1.0)
+Net.gamma_d_par =         gamma_d(2.0, 2.0)
+Net.beta_par =            beta(1.0, 1.0)
+Net.erlang_k_par =        erlang_k(1, 1.0)
+Net.chi_square_par =      chi_square(2)
+Net.student_t_par =       student_t(1)
+Net.cauchy_par =          cauchy(1.0, 2.0)
+Net.triang_par =          triang(1.0, 2.0, 3.0)
+Net.lognormal_par =       lognormal(1.0, 1.0)
+Net.weibull_par =         weibull(1.0, 2.0)
+Net.pareto_shifted_par =  pareto_shifted(1.0, 2.0, 3.0)
 
-{Net}.intuniform_par =      intuniform(0, 10)
-{Net}.bernoulli_par =       bernoulli(0.3)
-{Net}.binomial_par =        binomial(10, 0.3)
-{Net}.geometric_par =       geometric(0.3)
-{Net}.negbinomial_par =     negbinomial(10, 0.3)
-# {Net}.hypergeometric_par =  hypergeometric(1, 2, 2)
-{Net}.poisson_par =         poisson(1.0)
+Net.intuniform_par =      intuniform(0, 10)
+Net.bernoulli_par =       bernoulli(0.3)
+Net.binomial_par =        binomial(10, 0.3)
+Net.geometric_par =       geometric(0.3)
+Net.negbinomial_par =     negbinomial(10, 0.3)
+# Net.hypergeometric_par =  hypergeometric(1, 2, 2)
+Net.poisson_par =         poisson(1.0)
 
 %contains: stdout
 uniform_par

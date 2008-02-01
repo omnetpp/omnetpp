@@ -1,7 +1,7 @@
 %description:
 ev.getXMLDocument(): parse error (incomplete XML doc)
 
-%file: {}.xml
+%file: {}/test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -11,7 +11,7 @@ ev.getXMLDocument(): parse error (incomplete XML doc)
 
 %activity:
 
-cXMLElement *node = ev.getXMLDocument("{}.xml");
+cXMLElement *node = ev.getXMLDocument("{}/test.xml");
 if (!node)
     ev << "NULL\n";
 else

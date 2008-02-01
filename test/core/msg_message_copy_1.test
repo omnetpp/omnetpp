@@ -1,9 +1,9 @@
 %description:
 Copying and assignment for messages
 
-%file: {}.msg
+%file: {}/test.msg
 
-message {Base}
+message Base
 {
     fields:
         int a = 7;
@@ -11,7 +11,7 @@ message {Base}
         int c[];
 }
 
-message {MyMessage} extends {Base}
+message MyMessage extends Base
 {
     fields:
         string s1 = "one";
@@ -23,7 +23,7 @@ message {MyMessage} extends {Base}
 %global:
 #include "{}_m.h"
 
-void print(const char *what, {MyMessage}& x)
+void print(const char *what, MyMessage& x)
 {
    ev << what << ":";
    ev << x.getA() << ":" << x.getB(0) << "," << x.getB(1) << ":";
@@ -38,7 +38,7 @@ void print(const char *what, {MyMessage}& x)
 %activity:
 
 // set up tester classes
-{MyMessage} x;
+MyMessage x;
 x.setCArraySize(2);
 x.setS3ArraySize(2);
 x.setA(39);
@@ -51,7 +51,7 @@ x.setS2(1,"three");
 x.setS3(0,"four");
 x.setS3(1,"five");
 
-{MyMessage} xx;
+MyMessage xx;
 xx.setCArraySize(5);
 xx.setS3ArraySize(5);
 xx.setC(0,11);
@@ -63,11 +63,11 @@ print("x", x);
 print("xx", xx);
 
 // copy constructor
-{MyMessage} x1(x);
+MyMessage x1(x);
 print("x1(x)",x1);
 
 // assigment
-{MyMessage} x2;
+MyMessage x2;
 x2 = x;
 print("x2=x",x2);
 

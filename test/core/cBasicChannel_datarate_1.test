@@ -1,51 +1,54 @@
 %description:
 Test channel data rate
 
-%file: {}.ned
+%file: {}/test.ned
 
-channel {MyConn}
-    datarate 1e5;
-    delay 0.1;
-endchannel
+package {};
 
-simple {Node1}
+channel MyConn extends cBasicChannel
+{
+    parameters:
+        datarate = 1e5;
+        delay = 0.1;
+}
+
+simple Node1
+{
     gates:
-        out: out;
-endsimple
+        output out;
+}
 
-simple {Node2}
+simple Node2
+{
     gates:
-        in: in;
-endsimple
+        input in;
+}
 
-module {MyNet}
+network Test
+{
     submodules:
-        node1: {Node1};
-        node2: {Node2};
+        node1: Node1;
+        node2: Node2;
     connections:
-        node1.out --> {MyConn} --> node2.in;
-endmodule
+        node1.out --> MyConn --> node2.in;
+}
 
-network
-     {myNet}: {MyNet};
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Node1} : public cSimpleModule
+class Node1 : public cSimpleModule
 {
   public:
-    {Node1}() : cSimpleModule(16384) { }
+    Node1() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Node1});
+Define_Module(Node1);
 
 #define PRINTGATESTATE()  ev << "t=" << simTime() << ": busy:" << g->isBusy() << ", finishes:" << g->transmissionFinishes() << endl;
 
-void {Node1}::activity()
+void Node1::activity()
 {
     cMessage *msg;
     cGate *g = gate("out");
@@ -84,17 +87,17 @@ void {Node1}::activity()
     PRINTGATESTATE();
 }
 
-class {Node2} : public cSimpleModule
+class Node2 : public cSimpleModule
 {
   public:
-    {Node2}() : cSimpleModule(16384) { }
+    Node2() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Node2});
+Define_Module(Node2);
 
 
-void {Node2}::activity()
+void Node2::activity()
 {
     for (;;)
     {
@@ -105,13 +108,11 @@ void {Node2}::activity()
 }
 
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={myNet}
-
-[Cmdenv]
-express-mode=false
-event-banners=false
+network={}.Test
+cmdenv-express-mode=false
+cmdenv-event-banners=false
 
 %contains: stdout
 t=0: busy:0, finishes:0

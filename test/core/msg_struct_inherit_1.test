@@ -1,15 +1,15 @@
 %description:
 Check inheritance for structs
 
-%file: {}.msg
+%file: {}/test.msg
 
-struct {Base}
+struct Base
 {
     fields:
         int b;
 }
 
-struct {MyStruct} extends {Base}
+struct MyStruct extends Base
 {
     fields:
         char c;
@@ -22,7 +22,7 @@ struct {MyStruct} extends {Base}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyStruct} x;
+MyStruct x;
 
 x.b = 11; PRINT(x.b);
 x.c = 'x'; PRINT(x.c);

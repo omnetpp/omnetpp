@@ -1,9 +1,9 @@
 %description:
 Check primitive scalar field types in messages
 
-%file: {}.msg
+%file: {}/test.msg
 
-message {MyMessage}
+message MyMessage
 {
     fields:
         bool b;
@@ -24,7 +24,7 @@ message {MyMessage}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyMessage} x("msg");
+MyMessage x("msg");
 
 // test it's really subclassed from cMessage
 (void)(cMessage *)&x;
@@ -68,7 +68,7 @@ x.setD(3.1415); PRINT(x.getD());
 
 %contains: stdout
 cMessage
-{MyMessage}:msg
+MyMessage:msg
 x.getB():0
 (int)x.getC():0
 x.getS():0

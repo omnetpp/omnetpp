@@ -1,11 +1,11 @@
 %description:
 If there are no events at all.
 
-%module: {Module}
+%module: Module
 
 #include <omnetpp.h>
 
-class {Module} : public cSimpleModule
+class Module : public cSimpleModule
 {
   public:
     virtual void initialize();
@@ -13,20 +13,20 @@ class {Module} : public cSimpleModule
     virtual void finish();
 };
 
-Define_Module({Module});
+Define_Module(Module);
 
-void {Module}::initialize()
+void Module::initialize()
 {
    ev << "initialize()\n";
 }
 
-void {Module}::handleMessage(cMessage *msg)
+void Module::handleMessage(cMessage *msg)
 {
    ev << "handleMessage()\n";
    delete msg;
 }
 
-void {Module}::finish()
+void Module::finish()
 {
    ev << "finish()\n";
 }

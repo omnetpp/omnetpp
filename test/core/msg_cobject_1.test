@@ -1,9 +1,9 @@
 %description:
 Check primitive scalar field types in cOwnedObject-rooted classes
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {MyClass} extends cOwnedObject
+class MyClass extends cOwnedObject
 {
     fields:
         bool b;
@@ -24,7 +24,7 @@ class {MyClass} extends cOwnedObject
 
 #define PRINT(X) ev << #X << ":" << (X) << endl
 
-{MyClass} x("myclass");
+MyClass x("myclass");
 
 // test it's really subclassed from cOwnedObject
 (void)(cOwnedObject *)&x;
@@ -68,7 +68,7 @@ x.setD(3.1415); PRINT(x.getD());
 
 %contains: stdout
 cOwnedObject
-{MyClass}:myclass
+MyClass:myclass
 x.getB():0
 (int)x.getC():0
 x.getS():0

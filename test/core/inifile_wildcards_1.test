@@ -1,54 +1,60 @@
 %description:
 check that wildcards in the ini file work properly
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
-    parameters:
-        p: string,
-        par: string,
-        param: string;
-endsimple
+package {};
 
-module {Mod}
+simple Simple
+{
     parameters:
-        p: string,
-        par: string,
-        param: string;
+        string p;
+        string par;
+        string param;
+}
+
+module Mod
+{
+    parameters:
+        string p;
+        string par;
+        string param;
     submodules:
-        submod1: {Simple};
-        submod: {Simple}[2];
-endmodule
+        submod1: Simple;
+        submod[2]: Simple;
+}
 
-module {Net}
+module Net
+{
     parameters:
-        p: string,
-        par: string,
-        param: string;
+        string p;
+        string par;
+        string param;
     submodules:
-        submod1: {Simple};
-        submod2: {Mod};
-        submod: {Mod}[2];
-endmodule
+        submod1: Simple;
+        submod2: Mod;
+        submod[2]: Mod;
+}
 
-network {net}: {Net}
-endnetwork
+network net extends Net
+{
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
     virtual void printParametersOf(cModule *mod);
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     static bool first = true;
     if (first)
@@ -58,7 +64,7 @@ void {Simple}::activity()
     }
 }
 
-void {Simple}::printParametersOf(cModule *mod)
+void Simple::printParametersOf(cModule *mod)
 {
     ev << mod->par("p").fullPath() << "=" << mod->par("p").toString() << endl;
     ev << mod->par("par").fullPath() << "=" << mod->par("par").toString() << endl;
@@ -70,62 +76,62 @@ void {Simple}::printParametersOf(cModule *mod)
     }
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={net}
+network=net
 
 [Parameters]
-{net}.p="1st-level, p"
-{net}.*.*.*.par="4th-level, par"
-{net}.*.par="2nd-level, par"
-{net}.*.*.par="3rd-level, par"
-{net}.*.*.p*="3rd-level, not par"
-{net}.*.*="2nd-level, not par"
-{net}.p*="1st-level, not p"
-{net}.*.*.*.p*="4th-level, not par"
+net.p="1st-level, p"
+net.*.*.*.par="4th-level, par"
+net.*.par="2nd-level, par"
+net.*.*.par="3rd-level, par"
+net.*.*.p*="3rd-level, not par"
+net.*.*="2nd-level, not par"
+net.p*="1st-level, not p"
+net.*.*.*.p*="4th-level, not par"
 
 
 %contains: stdout
-{net}.p="1st-level, p"
-{net}.par="1st-level, not p"
-{net}.param="1st-level, not p"
-{net}.submod1.p="2nd-level, not par"
-{net}.submod1.par="2nd-level, par"
-{net}.submod1.param="2nd-level, not par"
-{net}.submod2.p="2nd-level, not par"
-{net}.submod2.par="2nd-level, par"
-{net}.submod2.param="2nd-level, not par"
-{net}.submod2.submod1.p="3rd-level, not par"
-{net}.submod2.submod1.par="3rd-level, par"
-{net}.submod2.submod1.param="3rd-level, not par"
-{net}.submod2.submod[0].p="3rd-level, not par"
-{net}.submod2.submod[0].par="3rd-level, par"
-{net}.submod2.submod[0].param="3rd-level, not par"
-{net}.submod2.submod[1].p="3rd-level, not par"
-{net}.submod2.submod[1].par="3rd-level, par"
-{net}.submod2.submod[1].param="3rd-level, not par"
-{net}.submod[0].p="2nd-level, not par"
-{net}.submod[0].par="2nd-level, par"
-{net}.submod[0].param="2nd-level, not par"
-{net}.submod[0].submod1.p="3rd-level, not par"
-{net}.submod[0].submod1.par="3rd-level, par"
-{net}.submod[0].submod1.param="3rd-level, not par"
-{net}.submod[0].submod[0].p="3rd-level, not par"
-{net}.submod[0].submod[0].par="3rd-level, par"
-{net}.submod[0].submod[0].param="3rd-level, not par"
-{net}.submod[0].submod[1].p="3rd-level, not par"
-{net}.submod[0].submod[1].par="3rd-level, par"
-{net}.submod[0].submod[1].param="3rd-level, not par"
-{net}.submod[1].p="2nd-level, not par"
-{net}.submod[1].par="2nd-level, par"
-{net}.submod[1].param="2nd-level, not par"
-{net}.submod[1].submod1.p="3rd-level, not par"
-{net}.submod[1].submod1.par="3rd-level, par"
-{net}.submod[1].submod1.param="3rd-level, not par"
-{net}.submod[1].submod[0].p="3rd-level, not par"
-{net}.submod[1].submod[0].par="3rd-level, par"
-{net}.submod[1].submod[0].param="3rd-level, not par"
-{net}.submod[1].submod[1].p="3rd-level, not par"
-{net}.submod[1].submod[1].par="3rd-level, par"
-{net}.submod[1].submod[1].param="3rd-level, not par"
+net.p="1st-level, p"
+net.par="1st-level, not p"
+net.param="1st-level, not p"
+net.submod1.p="2nd-level, not par"
+net.submod1.par="2nd-level, par"
+net.submod1.param="2nd-level, not par"
+net.submod2.p="2nd-level, not par"
+net.submod2.par="2nd-level, par"
+net.submod2.param="2nd-level, not par"
+net.submod2.submod1.p="3rd-level, not par"
+net.submod2.submod1.par="3rd-level, par"
+net.submod2.submod1.param="3rd-level, not par"
+net.submod2.submod[0].p="3rd-level, not par"
+net.submod2.submod[0].par="3rd-level, par"
+net.submod2.submod[0].param="3rd-level, not par"
+net.submod2.submod[1].p="3rd-level, not par"
+net.submod2.submod[1].par="3rd-level, par"
+net.submod2.submod[1].param="3rd-level, not par"
+net.submod[0].p="2nd-level, not par"
+net.submod[0].par="2nd-level, par"
+net.submod[0].param="2nd-level, not par"
+net.submod[0].submod1.p="3rd-level, not par"
+net.submod[0].submod1.par="3rd-level, par"
+net.submod[0].submod1.param="3rd-level, not par"
+net.submod[0].submod[0].p="3rd-level, not par"
+net.submod[0].submod[0].par="3rd-level, par"
+net.submod[0].submod[0].param="3rd-level, not par"
+net.submod[0].submod[1].p="3rd-level, not par"
+net.submod[0].submod[1].par="3rd-level, par"
+net.submod[0].submod[1].param="3rd-level, not par"
+net.submod[1].p="2nd-level, not par"
+net.submod[1].par="2nd-level, par"
+net.submod[1].param="2nd-level, not par"
+net.submod[1].submod1.p="3rd-level, not par"
+net.submod[1].submod1.par="3rd-level, par"
+net.submod[1].submod1.param="3rd-level, not par"
+net.submod[1].submod[0].p="3rd-level, not par"
+net.submod[1].submod[0].par="3rd-level, par"
+net.submod[1].submod[0].param="3rd-level, not par"
+net.submod[1].submod[1].p="3rd-level, not par"
+net.submod[1].submod[1].par="3rd-level, par"
+net.submod[1].submod[1].param="3rd-level, not par"
 

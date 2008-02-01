@@ -1,9 +1,9 @@
 %description:
 Check string fields in non-cOwnedObject-rooted classes
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {MyClass}
+class MyClass
 {
     fields:
         string s1;
@@ -15,7 +15,7 @@ class {MyClass}
 
 %activity:
 
-{MyClass} x;
+MyClass x;
 ev << "s1:" << x.getS1() << endl;
 ev << "s2:" << x.getS2() << endl;
 

@@ -4,41 +4,44 @@ which
   (a) stays inside a wait() call
   (b) stays inside a receive() call and has scheduled events.
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {NodeA}
-endsimple
+package {};
 
-simple {NodeB}
-endsimple
+simple NodeA
+{
+}
 
-simple {Deleter}
-endsimple
+simple NodeB
+{
+}
 
-module {Net}
+simple Deleter
+{
+}
+
+network Test
+{
     submodules:
-        nodeA: {NodeA};
-        nodeB: {NodeB};
-        deleter: {Deleter};
-endmodule
+        nodeA: NodeA;
+        nodeB: NodeB;
+        deleter: Deleter;
+}
 
-network {network} : {Net};
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {NodeA} : public cSimpleModule
+class NodeA : public cSimpleModule
 {
   public:
-    {NodeA}() : cSimpleModule(16384) { }
+    NodeA() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({NodeA});
+Define_Module(NodeA);
 
-void {NodeA}::activity()
+void NodeA::activity()
 {
     for (int i=0; i<10; i++)
     {
@@ -47,16 +50,16 @@ void {NodeA}::activity()
     }
 }
 
-class {NodeB} : public cSimpleModule
+class NodeB : public cSimpleModule
 {
   public:
-    {NodeB}() : cSimpleModule(16384) { }
+    NodeB() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({NodeB});
+Define_Module(NodeB);
 
-void {NodeB}::activity()
+void NodeB::activity()
 {
     cMessage *msg = new cMessage("timeout");
     for (int i=0; i<10; i++)
@@ -67,21 +70,21 @@ void {NodeB}::activity()
     }
 }
 
-class {Deleter} : public cSimpleModule
+class Deleter : public cSimpleModule
 {
   public:;
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module({Deleter});
+Define_Module(Deleter);
 
-void {Deleter}::initialize()
+void Deleter::initialize()
 {
     scheduleAt(3, new cMessage("timer"));
 }
 
-void {Deleter}::handleMessage(cMessage *msg)
+void Deleter::handleMessage(cMessage *msg)
 {
     delete msg;
 
@@ -93,20 +96,19 @@ void {Deleter}::handleMessage(cMessage *msg)
     ev << "Deleted" << endl;
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={network}
-
-[Cmdenv]
-event-banners=no
+network={}.Test
+cmdenv-express-mode=false
+cmdenv-event-banners=false
 
 %contains: stdout
-NodeA {network}.nodeA at t=0
-NodeB {network}.nodeB at t=0
-NodeA {network}.nodeA at t=1
-NodeB {network}.nodeB at t=1
-NodeA {network}.nodeA at t=2
-NodeB {network}.nodeB at t=2
+NodeA network.nodeA at t=0
+NodeB network.nodeB at t=0
+NodeA network.nodeA at t=1
+NodeB network.nodeB at t=1
+NodeA network.nodeA at t=2
+NodeB network.nodeB at t=2
 Deleting nodeA, nodeB at t=3
 Deleted
 

@@ -1,11 +1,11 @@
 %description:
 Check dynamic array of cOwnedObject-based class as message member
 
-%file: {}.msg
+%file: {}/test.msg
 
 class cQueue;
 
-message {MyMessage}
+message MyMessage
 {
     fields:
         cQueue q[];
@@ -21,7 +21,7 @@ message {MyMessage}
                         << (X.owner()==&x ? "owned" : "not owned") << ":" \
                         << X.length() << endl;
 
-{MyMessage} x;
+MyMessage x;
 
 // access
 x.setQArraySize(3);

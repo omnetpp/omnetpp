@@ -1,7 +1,7 @@
 %description:
 Check cXMLElement::getElementsByTagName()
 
-%file: {}.xml
+%file: {}/test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -28,7 +28,7 @@ Check cXMLElement::getElementsByTagName()
 
 static void getElements(const char *tagname)
 {
-    cXMLElement *rootelement = ev.getXMLDocument("{}.xml", NULL);
+    cXMLElement *rootelement = ev.getXMLDocument("{}/test.xml", NULL);
     cXMLElementList list = rootelement->getElementsByTagName(tagname);
 
     ev << tagname << ":";

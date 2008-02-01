@@ -1,9 +1,9 @@
 %description:
 Check enums
 
-%file: {}.msg
+%file: {}/test.msg
 
-enum {MyEnum}
+enum MyEnum
 {
     ECC = 1;
     PECC = 2;

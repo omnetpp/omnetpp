@@ -1,20 +1,20 @@
 %description:
 check cQueue::operator=
 
-%module: {Queues}
+%module: Queues
 
-class {Queues} : public cSimpleModule
+class Queues : public cSimpleModule
 {
   public:  
-    {Queues} : cSimpleModule(16384) { }
+    Queues : cSimpleModule(16384) { }
     virtual void activity();
     void fillQueue(cQueue& q);
     void output(cQueue& q, const char *label);
 };
 
-Define_Module({Queues});
+Define_Module(Queues);
 
-void {Queues}::fillQueue(cQueue& q)
+void Queues::fillQueue(cQueue& q)
 {
     cMsgPar *parm = NULL;
     parm = new cMsgPar("1");
@@ -25,7 +25,7 @@ void {Queues}::fillQueue(cQueue& q)
     q.insert(parm);
 }
 
-void {Queues}::output(cQueue& q, const char *label)
+void Queues::output(cQueue& q, const char *label)
 {
     ev << label << q.name() << ": len=" << q.length() << ", contents:";
     while (!q.empty())
@@ -33,7 +33,7 @@ void {Queues}::output(cQueue& q, const char *label)
     ev << endl;
 }
 
-void {Queues}::activity()
+void Queues::activity()
 {
     cQueue initial("initial");
     cQueue copy("copy");

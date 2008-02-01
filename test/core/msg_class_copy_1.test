@@ -1,9 +1,9 @@
 %description:
 Copying and assignment for non-cOwnedObject rooted classes
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {Base}
+class Base
 {
     fields:
         int a = 7;
@@ -11,7 +11,7 @@ class {Base}
         int c[];
 }
 
-class {MyClass} extends {Base}
+class MyClass extends Base
 {
     fields:
         string s1 = "one";
@@ -23,7 +23,7 @@ class {MyClass} extends {Base}
 %global:
 #include "{}_m.h"
 
-void print(const char *what, {MyClass}& x)
+void print(const char *what, MyClass& x)
 {
    ev << what << ":";
    ev << x.getA() << ":" << x.getB(0) << "," << x.getB(1) << ":";
@@ -38,7 +38,7 @@ void print(const char *what, {MyClass}& x)
 %activity:
 
 // set up tester classes
-{MyClass} x;
+MyClass x;
 x.setCArraySize(2);
 x.setS3ArraySize(2);
 x.setA(39);
@@ -51,7 +51,7 @@ x.setS2(1,"three");
 x.setS3(0,"four");
 x.setS3(1,"five");
 
-{MyClass} xx;
+MyClass xx;
 xx.setCArraySize(5);
 xx.setS3ArraySize(5);
 xx.setC(0,11);
@@ -63,11 +63,11 @@ print("x", x);
 print("xx", xx);
 
 // copy constructor
-{MyClass} x1(x);
+MyClass x1(x);
 print("x1(x)",x1);
 
 // assigment
-{MyClass} x2;
+MyClass x2;
 x2 = x;
 print("x2=x",x2);
 

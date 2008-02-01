@@ -1,9 +1,9 @@
 %description:
 endSimulation() from initialize() is an error
 
-%module: {Module}
+%module: Module
 
-class {Module} : public cSimpleModule
+class Module : public cSimpleModule
 {
   public:;
     virtual void initialize();
@@ -11,22 +11,22 @@ class {Module} : public cSimpleModule
     virtual void finish();
 };
 
-Define_Module({Module});
+Define_Module(Module);
 
-void {Module}::initialize()
+void Module::initialize()
 {
     scheduleAt(1.0, new cMessage("msg"));
     endSimulation();
     ev << "after endSimulation\n";
 }
 
-void {Module}::handleMessage(cMessage *msg)
+void Module::handleMessage(cMessage *msg)
 {
     scheduleAt(simTime()+1.0, msg);
     ev << "event after endSimulation\n";
 }
 
-void {Module}::finish()
+void Module::finish()
 {
     ev << "finish called\n";
 }

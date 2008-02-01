@@ -1,66 +1,66 @@
 %description:
 Basic test for cSimpleModule.sendDelayed().
 
-%file: {test}.ned
+%file: test.ned
 
-simple {Sender}
+simple Sender
   gates:
     out: out;
 endsimple
 
-simple {Receiver}
+simple Receiver
   gates:
     in: in;
 endsimple
 
-module {Net}
+module Net
   submodules:
-    sender : {Sender};
-    receiver : {Receiver};
+    sender : Sender;
+    receiver : Receiver;
   connections:
     sender.out --> receiver.in;
 endmodule
 
-network {net} : {Net}
+network net : Net
 endnetwork
 
-%file: {modules}.cc
+%file: modules.cc
 
 #include <omnetpp.h>
 
-class {Sender} : public cSimpleModule
+class Sender : public cSimpleModule
 {
   public:
-    {Sender}() : cSimpleModule(16384) { }
+    Sender() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-class {Receiver} : public cSimpleModule
+class Receiver : public cSimpleModule
 {
   public:
-    {Receiver}() : cSimpleModule(16384) { }
+    Receiver() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Sender});
-Define_Module({Receiver});
+Define_Module(Sender);
+Define_Module(Receiver);
 
-void {Sender}::activity()
+void Sender::activity()
 {
    cMessage *msg = new cMessage();
    sendDelayed(msg, 0.3456, "out");
 }
 
-void {Receiver}::activity()
+void Receiver::activity()
 {
    cMessage *msg = receive();
    simtime_t diff = simTime() - msg->timestamp();
    ev << "diff: " << diff << endl;
 }
 
-%inifile: {test}.ini
+%inifile: test.ini
 [General]
-network={net}
+network=net
 
 %contains: stdout
 diff: 0.3456

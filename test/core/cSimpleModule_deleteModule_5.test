@@ -5,43 +5,46 @@ of the compound module.
 FIXME test that messages sent between modules of the deleted compund
 module do not cause errors (they're removed too).
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Node}
-endsimple
+package {};
 
-module {Compound}
+simple Node
+{
+}
+
+module Compound
+{
     submodules:
-        node1: {Node};
-        node2: {Node};
-endmodule
+        node1: Node;
+        node2: Node;
+}
 
-simple {Deleter}
-endsimple
+simple Deleter
+{
+}
 
-module {Net}
+network Test
+{
     submodules:
-        compound: {Compound};
-        deleter: {Deleter};
-endmodule
+        compound: Compound;
+        deleter: Deleter;
+}
 
-network {network} : {Net};
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Node} : public cSimpleModule
+class Node : public cSimpleModule
 {
   public:
-    {Node}() : cSimpleModule(16384) { }
+    Node() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Node});
+Define_Module(Node);
 
-void {Node}::activity()
+void Node::activity()
 {
     for (int i=0; i<10; i++)
     {
@@ -50,16 +53,16 @@ void {Node}::activity()
     }
 }
 
-class {Deleter} : public cSimpleModule
+class Deleter : public cSimpleModule
 {
   public:
-    {Deleter}() : cSimpleModule(16384) { }
+    Deleter() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Deleter});
+Define_Module(Deleter);
 
-void {Deleter}::activity()
+void Deleter::activity()
 {
     wait(3);
 
@@ -72,20 +75,19 @@ void {Deleter}::activity()
     ev << "Still here at t=" << simTime() << endl;
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={network}
-
-[Cmdenv]
-event-banners=no
+network={}.Test
+cmdenv-express-mode=false
+cmdenv-event-banners=false
 
 %contains: stdout
-Node {network}.compound.node1 at t=0
-Node {network}.compound.node2 at t=0
-Node {network}.compound.node1 at t=1
-Node {network}.compound.node2 at t=1
-Node {network}.compound.node1 at t=2
-Node {network}.compound.node2 at t=2
+Node network.compound.node1 at t=0
+Node network.compound.node2 at t=0
+Node network.compound.node1 at t=1
+Node network.compound.node2 at t=1
+Node network.compound.node1 at t=2
+Node network.compound.node2 at t=2
 Deleting compound t=3
 Deleted
 Still here at t=5

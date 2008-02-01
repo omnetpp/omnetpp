@@ -1,28 +1,30 @@
 %description:
 Tests deletion of a handleMessage() simple module which has scheduled events.
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {NodeA}
-endsimple
+package {};
 
-simple {Deleter}
-endsimple
+simple NodeA
+{
+}
 
-module {Net}
+simple Deleter
+{
+}
+
+network Test
+{
     submodules:
-        nodeA: {NodeA};
-        deleter: {Deleter};
-endmodule
+        nodeA: NodeA;
+        deleter: Deleter;
+}
 
-network {network} : {Net};
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {NodeA} : public cSimpleModule
+class NodeA : public cSimpleModule
 {
   public:
     cMessage *msg;
@@ -30,30 +32,30 @@ class {NodeA} : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module({NodeA});
+Define_Module(NodeA);
 
-void {NodeA}::initialize()
+void NodeA::initialize()
 {
     cMessage *msg = new cMessage("timeout");
     scheduleAt(0, msg);
 }
 
-void {NodeA}::handleMessage(cMessage *msg)
+void NodeA::handleMessage(cMessage *msg)
 {
     ev << "NodeA " << fullPath() << " at t=" << simTime() << endl;
     scheduleAt(simTime()+1, msg);
 }
 
-class {Deleter} : public cSimpleModule
+class Deleter : public cSimpleModule
 {
   public:
-    {Deleter}() : cSimpleModule(16384) { }
+    Deleter() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Deleter});
+Define_Module(Deleter);
 
-void {Deleter}::activity()
+void Deleter::activity()
 {
     wait(3);
 
@@ -66,18 +68,17 @@ void {Deleter}::activity()
     ev << "Still here at t=" << simTime() << endl;
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={network}
-
-[Cmdenv]
-event-banners=no
+network={}.Test
+cmdenv-express-mode=false
+cmdenv-event-banners=false
 
 
 %contains: stdout
-NodeA {network}.nodeA at t=0
-NodeA {network}.nodeA at t=1
-NodeA {network}.nodeA at t=2
+NodeA network.nodeA at t=0
+NodeA network.nodeA at t=1
+NodeA network.nodeA at t=2
 Deleting nodeA at t=3
 Deleted
 Still here at t=5

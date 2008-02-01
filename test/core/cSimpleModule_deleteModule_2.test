@@ -3,37 +3,38 @@ Tests that a handleMessage() module can delete itself, and execution of that mod
 stops immediately. Simulation of other modules continue. Scheduled events for
 deleted simple module are discarded.
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Node}
-endsimple
+package {};
 
-simple {Suicide}
-endsimple
+simple Node
+{
+}
 
-module {Net}
+simple Suicide
+{
+}
+
+network Test
+{
     submodules:
-        node: {Node};
-        suicide: {Suicide};
-endmodule
+        node: Node;
+        suicide: Suicide;
+}
 
-network {network} : {Net};
-endnetwork
-
-
-%file: {}.cc
+%file: {}/test.cc
 #include <omnetpp.h>
 
-class {Node} : public cSimpleModule
+class Node : public cSimpleModule
 {
   public:
-    {Node}() : cSimpleModule(16384) { }
+    Node() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Node});
+Define_Module(Node);
 
-void {Node}::activity()
+void Node::activity()
 {
     for (int i=0; i<5; i++)
     {
@@ -43,21 +44,21 @@ void {Node}::activity()
     }
 }
 
-class {Suicide} : public cSimpleModule
+class Suicide : public cSimpleModule
 {
   public:;
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module({Suicide});
+Define_Module(Suicide);
 
-void {Suicide}::initialize()
+void Suicide::initialize()
 {
     scheduleAt(1.0, new cMessage("msg"));
 }
 
-void {Suicide}::handleMessage(cMessage *msg)
+void Suicide::handleMessage(cMessage *msg)
 {
     scheduleAt(simTime()+1.0, msg);
     ev << "before deleteModule\n";
@@ -65,12 +66,11 @@ void {Suicide}::handleMessage(cMessage *msg)
     ev << "after deleteModule\n";
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={network}
-
-[Cmdenv]
-event-banners=no
+network={}.Test
+cmdenv-express-mode=false
+cmdenv-event-banners=no
 
 %contains: stdout
 t=0: exists=1

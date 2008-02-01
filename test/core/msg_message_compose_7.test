@@ -1,11 +1,11 @@
 %description:
 Check static array of cOwnedObject-based class as message member
 
-%file: {}.msg
+%file: {}/test.msg
 
 class cQueue;
 
-message {MyMessage}
+message MyMessage
 {
     fields:
         cQueue q[3];
@@ -22,7 +22,7 @@ message {MyMessage}
                         << (X.owner()==&x ? "owned" : "not owned") << ":" \
                         << X.length() << endl;
 
-{MyMessage} x;
+MyMessage x;
 
 // access
 x.getQ(0).setName("q0"); x.getQ(0).insert(new cMessage());

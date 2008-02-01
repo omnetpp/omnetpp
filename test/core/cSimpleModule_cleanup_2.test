@@ -4,20 +4,20 @@ Test that dynamically allocated, cOwnedObject-based objects are properly cleaned
 at the end of the simulation.
 
 %global:
-class {Noisy} : public cOwnedObject
+class Noisy : public cOwnedObject
 {
   public:
-    {Noisy}() {ev << "Noisy ctor!\n";}
-    virtual ~{Noisy}() {ev << "Noisy dtor!\n";}
+    Noisy() {ev << "Noisy ctor!\n";}
+    virtual ~Noisy() {ev << "Noisy dtor!\n";}
 };
 
 %activity:
 ev << "begin\n";
-new {Noisy};
+new Noisy;
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={}_network
+network={}.Test
 perform-gc = true
 
 %contains-regex: stdout

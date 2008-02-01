@@ -1,7 +1,7 @@
 %description:
 Check cXMLElement attributes and node content
 
-%file: {}.xml
+%file: {}/test.xml
 
 <foo>
     <bar></bar>
@@ -37,7 +37,7 @@ static void printNode(cXMLElement *node)
 }
 
 %activity:
-cXMLElement *root = ev.getXMLDocument("{}.xml");
+cXMLElement *root = ev.getXMLDocument("{}/test.xml");
 for (cXMLElement *child=root->getFirstChild(); child; child=child->getNextSibling())
     printNode(child);
 

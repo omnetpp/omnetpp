@@ -4,16 +4,16 @@ and it gets deleted when message gets deleted
 
 %global:
 
-class {Ctrl} : public cOwnedObject
+class Ctrl : public cOwnedObject
 {
   public:
-    {Ctrl}() : cOwnedObject() { }
-    ~{Ctrl}() {ev << "control info deleted\n";}
+    Ctrl() : cOwnedObject() { }
+    ~Ctrl() {ev << "control info deleted\n";}
 };
 
 %activity:
 cMessage *msg = new cMessage("msg");
-{Ctrl} *ctrl = new {Ctrl}();
+Ctrl *ctrl = new Ctrl();
 ev << "1. owner:" << ctrl->owner()->name() << "\n";
 
 msg->setControlInfo(ctrl);
@@ -29,9 +29,9 @@ delete msg;
 ev << "done\n";
 
 %contains: stdout
-1. owner:{network}
+1. owner:network
 2. owner:msg
-3. owner:{network}
+3. owner:network
 4. owner:msg
 control info deleted
 done

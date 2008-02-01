@@ -1,9 +1,9 @@
 %description:
 Check dynamic arrays for messages
 
-%file: {}.msg
+%file: {}/test.msg
 
-message {MyMessage}
+message MyMessage
 {
     fields:
         bool bb[];
@@ -27,7 +27,7 @@ message {MyMessage}
 #define PRINTA(X)  ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
 #define PRINTA1(X) ev << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
 
-{MyMessage} x;
+MyMessage x;
 
 // default array sizes should be zero
 PRINT(x.getBbArraySize());

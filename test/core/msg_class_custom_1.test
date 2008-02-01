@@ -1,9 +1,9 @@
 %description:
 Customize non-cOwnedObject-rooted class, abstract fields
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {MyClass}
+class MyClass
 {
     properties:
         customize = true;
@@ -15,27 +15,27 @@ class {MyClass}
 %global:
 #include "{}_m.h"
 
-class {MyClass} : public {MyClass_Base}
+class MyClass : public MyClass_Base
 {
   private:
     int m;
   public:
-    {MyClass}() : {MyClass_Base}() {m=0;}
-    {MyClass}(const {MyClass}& other) : {MyClass_Base}() {operator=(other);}
-    {MyClass}& operator=(const {MyClass}& other) {{MyClass_Base}::operator=(other); m=other.m; return *this;}
+    MyClass() : MyClass_Base() {m=0;}
+    MyClass(const MyClass& other) : MyClass_Base() {operator=(other);}
+    MyClass& operator=(const MyClass& other) {MyClass_Base::operator=(other); m=other.m; return *this;}
 
     virtual int getI() const {return m;}
     virtual void setI(int i) {m=i;}
 };
 
 
-Register_Class({MyClass});
+Register_Class(MyClass);
 
 %activity:
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyClass} x;
+MyClass x;
 
 x.setB(11); PRINT(x.getB());
 x.setI(11); PRINT(x.getI());

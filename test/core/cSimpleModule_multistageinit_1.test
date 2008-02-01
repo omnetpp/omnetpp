@@ -5,32 +5,34 @@ Tests that:
 - a compound module has its initialize() function called before all its submodules have.
 - initialize(0) is called for all modules, then initialize(1), initialize(2), etc.
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Module}
-endsimple
+package {};
 
-module {A}
+simple Module
+{
+}
+
+module A
+{
     submodules:
-        a1: {Module};
-        a2: {Module};
-endmodule
+        a1: Module;
+        a2: Module;
+}
 
-module {B}
+network Test
+{
     submodules:
-        b1: {A};
-        b2: {Module};
-        b3: {A};
-endmodule
+        b1: A;
+        b2: Module;
+        b3: A;
+}
 
-network {network} : {B}
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Module} : public cSimpleModule
+class Module : public cSimpleModule
 {
   public:
     virtual void initialize(int stage);
@@ -39,14 +41,14 @@ class {Module} : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module({Module});
+Define_Module(Module);
 
-int {Module}::numInitStages() const
+int Module::numInitStages() const
 {
     return 3;
 }
 
-void {Module}::initialize(int stage)
+void Module::initialize(int stage)
 {
     ev << "   " << fullPath() << ": initialize stage=" << stage << " called" << endl;
     if (stage==2)
@@ -56,52 +58,52 @@ void {Module}::initialize(int stage)
     }
 }
 
-void {Module}::handleMessage(cMessage *msg)
+void Module::handleMessage(cMessage *msg)
 {
    ev << "handleMessage() at " << simTime() << endl;
    delete msg;
 }
 
 %contains: stdout
-Initializing {network}, stage 0
-Initializing {network}.b1, stage 0
-Initializing {network}.b1.a1, stage 0
-   {network}.b1.a1: initialize stage=0 called
-Initializing {network}.b1.a2, stage 0
-   {network}.b1.a2: initialize stage=0 called
-Initializing {network}.b2, stage 0
-   {network}.b2: initialize stage=0 called
-Initializing {network}.b3, stage 0
-Initializing {network}.b3.a1, stage 0
-   {network}.b3.a1: initialize stage=0 called
-Initializing {network}.b3.a2, stage 0
-   {network}.b3.a2: initialize stage=0 called
-Initializing {network}, stage 1
-Initializing {network}.b1, stage 1
-Initializing {network}.b1.a1, stage 1
-   {network}.b1.a1: initialize stage=1 called
-Initializing {network}.b1.a2, stage 1
-   {network}.b1.a2: initialize stage=1 called
-Initializing {network}.b2, stage 1
-   {network}.b2: initialize stage=1 called
-Initializing {network}.b3, stage 1
-Initializing {network}.b3.a1, stage 1
-   {network}.b3.a1: initialize stage=1 called
-Initializing {network}.b3.a2, stage 1
-   {network}.b3.a2: initialize stage=1 called
-Initializing {network}, stage 2
-Initializing {network}.b1, stage 2
-Initializing {network}.b1.a1, stage 2
-   {network}.b1.a1: initialize stage=2 called
-Initializing {network}.b1.a2, stage 2
-   {network}.b1.a2: initialize stage=2 called
-Initializing {network}.b2, stage 2
-   {network}.b2: initialize stage=2 called
-Initializing {network}.b3, stage 2
-Initializing {network}.b3.a1, stage 2
-   {network}.b3.a1: initialize stage=2 called
-Initializing {network}.b3.a2, stage 2
-   {network}.b3.a2: initialize stage=2 called
+Initializing network, stage 0
+Initializing network.b1, stage 0
+Initializing network.b1.a1, stage 0
+   network.b1.a1: initialize stage=0 called
+Initializing network.b1.a2, stage 0
+   network.b1.a2: initialize stage=0 called
+Initializing network.b2, stage 0
+   network.b2: initialize stage=0 called
+Initializing network.b3, stage 0
+Initializing network.b3.a1, stage 0
+   network.b3.a1: initialize stage=0 called
+Initializing network.b3.a2, stage 0
+   network.b3.a2: initialize stage=0 called
+Initializing network, stage 1
+Initializing network.b1, stage 1
+Initializing network.b1.a1, stage 1
+   network.b1.a1: initialize stage=1 called
+Initializing network.b1.a2, stage 1
+   network.b1.a2: initialize stage=1 called
+Initializing network.b2, stage 1
+   network.b2: initialize stage=1 called
+Initializing network.b3, stage 1
+Initializing network.b3.a1, stage 1
+   network.b3.a1: initialize stage=1 called
+Initializing network.b3.a2, stage 1
+   network.b3.a2: initialize stage=1 called
+Initializing network, stage 2
+Initializing network.b1, stage 2
+Initializing network.b1.a1, stage 2
+   network.b1.a1: initialize stage=2 called
+Initializing network.b1.a2, stage 2
+   network.b1.a2: initialize stage=2 called
+Initializing network.b2, stage 2
+   network.b2: initialize stage=2 called
+Initializing network.b3, stage 2
+Initializing network.b3.a1, stage 2
+   network.b3.a1: initialize stage=2 called
+Initializing network.b3.a2, stage 2
+   network.b3.a2: initialize stage=2 called
 
 %not-contains: stdout
 stage=3

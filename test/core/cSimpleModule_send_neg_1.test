@@ -1,36 +1,37 @@
 %description:
 Test assertions in the send() call: gate must be connected
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
-   gates:
-      out: out;
-endsimple
+package {};
 
-module {Compound}
-   submodules:
-      a: {Simple};
-   connections nocheck:
-endmodule
+simple Simple
+{
+    gates:
+        output out;
+}
 
-network {network}: {Compound}
-endnetwork
+network Test
+{
+    submodules:
+        a: Simple;
+    connections allowunconnected:
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     cMessage *msg = new cMessage("msg");
     send(msg, "out");

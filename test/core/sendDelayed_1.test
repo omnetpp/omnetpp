@@ -1,35 +1,35 @@
 %description:
 Basic test for cSimpleModule.sendDelayed().
 
-%module_a: {Sender}
+%module_a: Sender
 
-class {Sender} : public cSimpleModule
+class Sender : public cSimpleModule
 {
   public:
-    {Sender}() : cSimpleModule(16384) { }
+    Sender() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Sender});
+Define_Module(Sender);
 
-void {Sender}::activity()
+void Sender::activity()
 {
    cMessage *msg = new cMessage();
    sendDelayed(msg, 0.3456, "out");
 }
 
-%module_b: {Receiver}
+%module_b: Receiver
 
-class {Receiver} : public cSimpleModule
+class Receiver : public cSimpleModule
 {
   public:
-    {Receiver}() : cSimpleModule(16384) { }
+    Receiver() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Receiver});
+Define_Module(Receiver);
 
-void {Receiver}::activity()
+void Receiver::activity()
 {
    cMessage *msg = receive();
    simtime_t diff = simTime() - msg->timestamp();

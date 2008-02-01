@@ -15,19 +15,19 @@ for (int i=0; i<ev.numRNGs(); i++)
     ev << r2 << "  " << r1 << ", drawn " << rng(i)->numbersDrawn() << "\n";
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={}_network
+network={}.Test
+cmdenv-express-mode=false
 num-rngs=3
 
 seed-0-mt = 873
 seed-1-mt = 885
 seed-2-mt = 848
 
-[Cmdenv]
 # Runs occurring more than once should get the same seeds every time.
 # Also, Run 2 and Run 4 must have the same seeds because they both use [General].
-runs-to-execute = 2,1,4,3,1,2,3,4
+cmdenv-runs-to-execute = 2,1,4,3,1,2,3,4
 
 [Run 1]
 seed-0-mt = 793

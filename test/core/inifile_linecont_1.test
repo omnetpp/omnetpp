@@ -1,39 +1,43 @@
 %description:
 check that backslash line continuation works
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
+package {};
+
+simple Simple
+{
     parameters:
-        str: string;
-endsimple
+        string str;
+}
 
-network {Net} : {Simple}
-endnetwork
+network Net extends Simple
+{
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     ev << "\"" <<(const char *)par("str") << "\"" << endl;
     ev << "." << endl;
 }
 
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={Net}
+network=Net
 
 [Parameters]
 *.str="one \

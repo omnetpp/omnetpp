@@ -1,19 +1,19 @@
 %description:
 Check struct as class member in non-cOwnedObject rooted classes
 
-%file: {}.msg
+%file: {}/test.msg
 
-struct {MyStruct}
+struct MyStruct
 {
     fields:
         int bb;
 }
 
 
-class {MyClass}
+class MyClass
 {
     fields:
-        {MyStruct} b;
+        MyStruct b;
         char c;
 };
 
@@ -24,7 +24,7 @@ class {MyClass}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyClass} x;
+MyClass x;
 
 x.getB().bb=11; PRINT(x.getB().bb);
 x.setC('x'); PRINT(x.getC());

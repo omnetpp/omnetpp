@@ -1,32 +1,32 @@
 %description:
 Test that NED-generated simple modules have the right className() methods.
 
-%module_a: {SomeModule}
+%module_a: SomeModule
 
-class {SomeModule} : public cSimpleModule
+class SomeModule : public cSimpleModule
 {
   public:
-    {SomeModule}() : cSimpleModule(16384) { }
+    SomeModule() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({SomeModule});
+Define_Module(SomeModule);
 
-void {SomeModule}::activity()
+void SomeModule::activity()
 {
     ev << "'" << className() << "'" << endl;
 }
 
-%module_b: {Dummy}
+%module_b: Dummy
 
-class {Dummy} : public cSimpleModule
+class Dummy : public cSimpleModule
 {
     virtual void handleMessage(cMessage *) { }
 };
 
-Define_Module({Dummy});
+Define_Module(Dummy);
 
 %exitcode: 1
 
 %contains: stdout
-'{SomeModule}'
+'SomeModule'

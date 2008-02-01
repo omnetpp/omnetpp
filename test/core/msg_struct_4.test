@@ -1,9 +1,9 @@
 %description:
 Check simple field type initializers in structs
 
-%file: {}.msg
+%file: {}/test.msg
 
-struct {MyStruct}
+struct MyStruct
 {
     fields:
         bool b = true;
@@ -24,7 +24,7 @@ struct {MyStruct}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyStruct} x;
+MyStruct x;
 
 // scalars
 PRINT(x.b);

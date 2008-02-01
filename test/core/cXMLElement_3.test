@@ -1,7 +1,7 @@
 %description:
 Check cXMLElement::getElementById()
 
-%file: {}.xml
+%file: {}/test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -28,7 +28,7 @@ Check cXMLElement::getElementById()
 
 static void getElement(const char *id)
 {
-    cXMLElement *rootelement = ev.getXMLDocument("{}.xml", NULL);
+    cXMLElement *rootelement = ev.getXMLDocument("{}/test.xml", NULL);
     cXMLElement *node = rootelement->getElementById(id);
 
     ev << id << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";

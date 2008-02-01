@@ -1,19 +1,19 @@
 %description:
 Check non-cOwnedObject-class as member in non-cOwnedObject class
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {Class1}
+class Class1
 {
     fields:
         int bb;
 }
 
 
-class {MyClass} extends cOwnedObject
+class MyClass extends cOwnedObject
 {
     fields:
-        {Class1} b;
+        Class1 b;
         char c;
 };
 
@@ -24,7 +24,7 @@ class {MyClass} extends cOwnedObject
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyClass} x;
+MyClass x;
 
 x.getB().setBb(11); PRINT(x.getB().getBb());
 x.setC('x'); PRINT(x.getC());

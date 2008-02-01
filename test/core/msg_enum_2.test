@@ -1,15 +1,15 @@
 %description:
 Check "inheritance" with enums
 
-%file: {}.msg
+%file: {}/test.msg
 
-enum {Base}
+enum Base
 {
     CSIGA = 10;
     BIGE = 12;
 };
 
-enum {MyEnum} extends {Base}
+enum MyEnum extends Base
 {
     ECC = 1;
     PECC = 2;

@@ -1,31 +1,35 @@
 %description:
 check that too long continued lines also detected OK
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
+package {};
+
+simple Simple
+{
     parameters:
-        verylongstring: string;
-endsimple
+        string verylongstring;
+}
 
-network {Net} : {Simple}
-endnetwork
+network Net extends Simple
+{
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <string.h>
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     ev << strlen((const char *)par("verylongstring")) << endl;
     ev << (const char *)par("verylongstring") << endl;
@@ -33,9 +37,9 @@ void {Simple}::activity()
 }
 
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={Net}
+network=Net
 
 [Parameters]
 *.verylongstring="123-------abc-------123-------abc-------123-------abc\

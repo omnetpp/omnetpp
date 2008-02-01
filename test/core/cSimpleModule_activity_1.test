@@ -1,33 +1,34 @@
 %description:
 Test what happens if coroutine cannot be created
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
-endsimple
+package {};
 
-module {Top}
+simple Simple
+{
+}
+
+network Test
+{
     submodules:
-        a: {Simple}[1000000]; // surely too many
-endmodule
+        a[1000000]: Simple;
+}
 
-network {network}: {Top}
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     ev << "hello" << endl;
 }

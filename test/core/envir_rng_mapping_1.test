@@ -1,40 +1,45 @@
 %description:
 check that rng mapping in omnetpp.ini works properly
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
-endsimple
+package {};
 
-module {Net}
+simple Simple
+{
+}
+
+module Net
+{
     submodules:
-        a: {Simple}[5];
-endmodule
+        a[5]: Simple;
+}
 
-network {net}: {Net}
-endnetwork
+network net extends Net
+{
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
     virtual int getRngId(cRNG *rng);
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     for (int i=0; i<=2; i++)
         ev << fullName() << ".rng-" << i << " --> ev.rng-" << getRngId(rng(i)) << "\n";
 }
 
-int {Simple}::getRngId(cRNG *rng)
+int Simple::getRngId(cRNG *rng)
 {
     for (int i=0; i<ev.numRNGs(); i++)
         if (ev.rng(i)==rng)
@@ -42,9 +47,9 @@ int {Simple}::getRngId(cRNG *rng)
     error("getRngId(): RNG not found");
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={net}
+network=net
 num-rngs=3
 
 *.a[0].rng-0 = 1

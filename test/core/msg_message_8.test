@@ -1,9 +1,9 @@
 %description:
 Dynamic array out of bounds test for messages
 
-%file: {}.msg
+%file: {}/test.msg
 
-message {MyMessage}
+message MyMessage
 {
     fields:
         int aa[];
@@ -25,7 +25,7 @@ message {MyMessage}
                        ev << "OOPS!" << endl; \
                      }
 
-{MyMessage} x;
+MyMessage x;
 
 // default array sizes should be zero
 TRYPRINT(x.getAaArraySize());

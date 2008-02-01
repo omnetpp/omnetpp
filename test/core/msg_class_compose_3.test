@@ -1,11 +1,11 @@
 %description:
 Check external non-cOwnedObject class as member in non-cOwnedObject class
 
-%file: {}.msg
+%file: {}/test.msg
 
 cplusplus {{
 
-  class {A} {
+  class A {
     private:
       int a;
     public:
@@ -15,12 +15,12 @@ cplusplus {{
 
 }}
 
-class noncobject {A};
+class noncobject A;
 
-class {MyClass} extends cOwnedObject
+class MyClass extends cOwnedObject
 {
     fields:
-        {A} b;
+        A b;
         char c;
 };
 
@@ -31,7 +31,7 @@ class {MyClass} extends cOwnedObject
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyClass} x;
+MyClass x;
 
 x.getB().setA(11); PRINT(x.getB().getA());
 x.setC('x'); PRINT(x.getC());

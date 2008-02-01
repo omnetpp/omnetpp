@@ -70,9 +70,9 @@ for (int rng=0; rng<=2; rng++)
 }
 ev << "finished\n";
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={}_network
+network={}.Test
 num-rngs=10
 
 %contains-regex: stdout

@@ -2,11 +2,11 @@
 Tests that errors in handleMessage() are properly caught and displayed in Cmdenv,
 and finish() doesn't get called.
 
-%module: {Module}
+%module: Module
 
 #include <omnetpp.h>
 
-class {Module} : public cSimpleModule
+class Module : public cSimpleModule
 {
   public:
     virtual void initialize();
@@ -14,19 +14,19 @@ class {Module} : public cSimpleModule
     virtual void finish();
 };
 
-Define_Module({Module});
+Define_Module(Module);
 
-void {Module}::initialize()
+void Module::initialize()
 {
     scheduleAt(1.0, new cMessage("msg"));
 }
 
-void {Module}::handleMessage(cMessage *msg)
+void Module::handleMessage(cMessage *msg)
 {
     throw cRuntimeError("test exception");
 }
 
-void {Module}::finish()
+void Module::finish()
 {
     ev << "finish called\n";
 }

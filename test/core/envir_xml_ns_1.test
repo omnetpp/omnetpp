@@ -2,7 +2,7 @@
 Tests namespaces in XML documents. Elements and attributes are created with
 name prefix; xmlns attribute may or may not be removed (parser dependent).
 
-%file: {}.xml
+%file: {}/test.xml
 <?xml version="1.0" ?>
 <foo xmlns:z="http://www.zzz.com/zzz">
     <bar one="X"/>
@@ -11,7 +11,7 @@ name prefix; xmlns attribute may or may not be removed (parser dependent).
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("{}.xml");
+cXMLElement *node = ev.getXMLDocument("{}/test.xml");
 node->debugDump();
 
 %contains-regex: stdout

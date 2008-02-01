@@ -4,7 +4,7 @@ Test that completion takes place.
 
 THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 
-%file: {}.dtd
+%file: {}/test.dtd
 <!ELEMENT foo ( bar )>
 <!ATTLIST foo
             one      CDATA "F1"
@@ -16,15 +16,15 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
             two      CDATA "B2"
 >
 
-%file: {}.xml
+%file: {}/test.xml
 <?xml version="1.0" ?>
-<!DOCTYPE foo SYSTEM "./{}.dtd">
+<!DOCTYPE foo SYSTEM "./{}/test.dtd">
 <foo>
     <bar one="X"/>
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("{}.xml");
+cXMLElement *node = ev.getXMLDocument("{}/test.xml");
 node->debugDump();
 
 %contains: stdout

@@ -1,9 +1,9 @@
 %description:
 Check static arrays in structs
 
-%file: {}.msg
+%file: {}/test.msg
 
-struct {MyStruct}
+struct MyStruct
 {
     fields:
         bool bb[10];
@@ -25,7 +25,7 @@ struct {MyStruct}
 #define PRINT(X) ev << #X << ":" << X << endl
 #define PRINTA(X) ev << #X << ":" << X[0] << ":" << sizeof(X)/sizeof(X[0]) << endl;
 
-{MyStruct} x;
+MyStruct x;
 
 // arrays
 x.bb[0] = true; PRINTA(x.bb);

@@ -1,31 +1,31 @@
 %description:
 check that cLinkedList::operator=() works correctly and preserves order
 
-%module: {Llist}
+%module: Llist
 
 int one = 1;
 int two = 2;
 int three = 3;
 
-class {Llist} : public cSimpleModule
+class Llist : public cSimpleModule
 {
   public:
-    {Llist}() : cSimpleModule(16384) { }
+    Llist() : cSimpleModule(16384) { }
     virtual void activity();
     void fillLlist(cLinkedList& ll);
     void output(cLinkedList& ll);
 };
 
-Define_Module({Llist});
+Define_Module(Llist);
 
-void {Llist}::fillLlist(cLinkedList& ll)
+void Llist::fillLlist(cLinkedList& ll)
 {
   ll.insert(&one);
   ll.insert(&three);
   ll.insert(&two);
 }
 
-void {Llist}::output(cLinkedList& ll)
+void Llist::output(cLinkedList& ll)
 {
   ev << ll.name() << ":";
   while (!ll.empty())
@@ -33,7 +33,7 @@ void {Llist}::output(cLinkedList& ll)
   ev << endl;
 }
 
-void {Llist}::activity()
+void Llist::activity()
 {
   cLinkedList initial("Initial");
   cLinkedList duplicate("Duplicate");

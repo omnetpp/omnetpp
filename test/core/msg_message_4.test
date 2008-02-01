@@ -1,9 +1,9 @@
 %description:
 Check string fields in messages
 
-%file: {}.msg
+%file: {}/test.msg
 
-message {MyMessage}
+message MyMessage
 {
     fields:
         string s1;
@@ -15,7 +15,7 @@ message {MyMessage}
 
 %activity:
 
-{MyMessage} x;
+MyMessage x;
 ev << "s1:" << x.getS1() << endl;
 ev << "s2:" << x.getS2() << endl;
 

@@ -3,16 +3,16 @@ Test that controlInfo() gets deleted when message gets deleted
 
 %global:
 
-class {Ctrl} : public cPolymorphic
+class Ctrl : public cPolymorphic
 {
   public:
-    {Ctrl}() : cPolymorphic() { }
-    ~{Ctrl}() {ev << "control info deleted\n";}
+    Ctrl() : cPolymorphic() { }
+    ~Ctrl() {ev << "control info deleted\n";}
 };
 
 %activity:
 cMessage *msg = new cMessage();
-{Ctrl} *ctrl = new {Ctrl}();
+Ctrl *ctrl = new Ctrl();
 
 msg->setControlInfo(ctrl);
 delete msg;

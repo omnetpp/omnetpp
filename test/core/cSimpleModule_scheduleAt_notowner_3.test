@@ -1,18 +1,18 @@
 %description:
 test scheduleAt(): what if message has been sent and is currently underway
 
-%module_a: {Sender}
+%module_a: Sender
 
-class {Sender} : public cSimpleModule
+class Sender : public cSimpleModule
 {
   public:
-    {Sender}() : cSimpleModule(16384) { }
+    Sender() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Sender});
+Define_Module(Sender);
 
-void {Sender}::activity()
+void Sender::activity()
 {
     wait(1);
 
@@ -21,15 +21,15 @@ void {Sender}::activity()
     scheduleAt(3,msg);
 }
 
-%module_b: {Receiver}
+%module_b: Receiver
 
-class {Receiver} : public cSimpleModule
+class Receiver : public cSimpleModule
 {
   public:
     virtual void handleMessage(cMessage *) { } // ignore but do not delete
 };
 
-Define_Module({Receiver});
+Define_Module(Receiver);
 
 %exitcode: 1
 

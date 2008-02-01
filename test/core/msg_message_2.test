@@ -1,9 +1,9 @@
 %description:
 Check field initializers in messages
 
-%file: {}.msg
+%file: {}/test.msg
 
-message {MyMessage}
+message MyMessage
 {
     fields:
         bool b1 = true;
@@ -26,7 +26,7 @@ message {MyMessage}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyMessage} x;
+MyMessage x;
 
 // scalar fields
 PRINT(x.getB1());

@@ -1,21 +1,21 @@
 %description:
 Missing [General]/sim-time-limit= setting.
 
-%module: {Module}
+%module: Module
 
 #include <omnetpp.h>
 
-class {Module} : public cSimpleModule
+class Module : public cSimpleModule
 {
   public:
-    {Module}() : cSimpleModule(32768) { }
+    Module() : cSimpleModule(32768) { }
     virtual void activity();
     virtual void finish();
 };
 
-Define_Module({Module});
+Define_Module(Module);
 
-void {Module}::activity()
+void Module::activity()
 {
     wait(2);
     ev << "time: " << simTime() << endl;
@@ -23,15 +23,15 @@ void {Module}::activity()
     ev << "time: " << simTime() << endl;
 }
 
-void {Module}::finish()
+void Module::finish()
 {
    ev << "finish() at " << simTime() << endl;
    ev << "-" << endl;
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={}_network
+network={}.Test
 # sim-time-limit=
 
 %contains-regex: stdout

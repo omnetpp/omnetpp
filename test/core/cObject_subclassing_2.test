@@ -4,17 +4,17 @@ and destructor must call drop().
 
 %global:
 
-class {Noisy} : public cOwnedObject
+class Noisy : public cOwnedObject
 {
   public:
-    {Noisy}(const char *name=NULL) : cOwnedObject(name) {ev << "noisy born\n";}
-    ~{Noisy}() {ev << "noisy died\n";}
+    Noisy(const char *name=NULL) : cOwnedObject(name) {ev << "noisy born\n";}
+    ~Noisy() {ev << "noisy died\n";}
 };
 
 class X2 : public cOwnedObject
 {
   public:
-    {Noisy} y;
+    Noisy y;
 
     X2() : cOwnedObject() {take(&y);}
     ~X2() {drop(&y);}

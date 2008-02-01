@@ -1,9 +1,9 @@
 %description:
 Check static arrays in classes
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {MyClass}
+class MyClass
 {
     fields:
         bool bb[10];
@@ -26,7 +26,7 @@ class {MyClass}
 #define PRINTA(X)  ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
 #define PRINTA1(X) ev << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
 
-{MyClass} x;
+MyClass x;
 
 // fill in element 0 (element 1 must be zero from initialization)
 x.setBb(0,true); PRINTA(x.getBb);

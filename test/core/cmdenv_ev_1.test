@@ -4,26 +4,26 @@ ev buffer should be flushed before each "context switch" (event, finish, etc)
 
 *** KNOWN TO FAIL IN 3.0 ***
 
-%module: {Module}
+%module: Module
 
-class {Module} : public cSimpleModule
+class Module : public cSimpleModule
 {
   public:
-    {Module}() : cSimpleModule(32768) { }
+    Module() : cSimpleModule(32768) { }
     virtual void initialize();
     virtual void activity();
     virtual void finish();
 };
 
-Define_Module({Module});
+Define_Module(Module);
 
-void {Module}::initialize()
+void Module::initialize()
 {
     ev << "initialize line 1" << endl;
     ev << "initialize unterminated line";
 }
 
-void {Module}::activity()
+void Module::activity()
 {
     ev << "activity line 1" << endl;
     ev << "activity unterminated line 1";
@@ -34,7 +34,7 @@ void {Module}::activity()
     ev << "activity unterminated line 2";
 }
 
-void {Module}::finish()
+void Module::finish()
 {
     ev << "finish line 1" << endl;
     ev << "finish unterminated line";

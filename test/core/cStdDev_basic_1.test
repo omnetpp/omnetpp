@@ -2,7 +2,7 @@
 basic use of cStdDev
 
 %global:
-void {print}(cStdDev& s)
+void print(cStdDev& s)
 {
     ev << "n=" << s.samples() << ":w=" << s.weights()
        << ":S=" << s.sum() << ":SS=" << s.sqrSum()
@@ -14,26 +14,26 @@ void {print}(cStdDev& s)
 %activity:
 
 cStdDev sd;
-{print}(sd);
+print(sd);
 
-sd.collect(5);  {print}(sd);
-sd.collect(4);  {print}(sd);
-sd.collect(3);  {print}(sd);
-sd.collect(2);  {print}(sd);
-sd.collect(1);  {print}(sd);
+sd.collect(5);  print(sd);
+sd.collect(4);  print(sd);
+sd.collect(3);  print(sd);
+sd.collect(2);  print(sd);
+sd.collect(1);  print(sd);
 ev << "-" << endl;
 
-sd.clearResult(); {print}(sd);
-sd.collect(5);    {print}(sd);
-sd.collect(5);    {print}(sd);
-sd.collect(5);    {print}(sd);
+sd.clearResult(); print(sd);
+sd.collect(5);    print(sd);
+sd.collect(5);    print(sd);
+sd.collect(5);    print(sd);
 ev << "-" << endl;
 
-sd.clearResult();  {print}(sd);
-sd.collect(1.23);  {print}(sd);
-sd.collect(4.52);  {print}(sd);
-sd.collect(-3.64); {print}(sd);
-sd.collect(-12.2); {print}(sd);
+sd.clearResult();  print(sd);
+sd.collect(1.23);  print(sd);
+sd.collect(4.52);  print(sd);
+sd.collect(-3.64); print(sd);
+sd.collect(-12.2); print(sd);
 ev << "-" << endl;
 
 %contains-regex: stdout

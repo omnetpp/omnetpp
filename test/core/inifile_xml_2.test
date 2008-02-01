@@ -6,22 +6,22 @@ $MODULE_FULLPATH, $MODULE_FULLNAME, $MODULE_NAME, $MODULE_INDEX, $MODULE_ID
 $PARENTMODULE_FULLPATH, ...
 $GRANDPARENTMODULE_FULLPATH,...
 
-%file: {}.xml
+%file: {}/test.xml
 
 <foo >
-    <foo id="fp" att="{net}.subnet[0].simp[0]"/>
+    <foo id="fp" att="net.subnet[0].simp[0]"/>
     <foo id="fn" att="simp[0]"/>
     <foo id="n"  att="simp"/>
     <foo id="i"  att="0"/>
     <foo id="id" att="6"/>
 
-    <pfoo id="p_fp" att="{net}.subnet[0]"/>
+    <pfoo id="p_fp" att="net.subnet[0]"/>
     <pfoo id="p_fn" att="subnet[0]"/>
     <pfoo id="p_n"  att="subnet"/>
     <pfoo id="p_i"  att="0"/>
     <pfoo id="p_id" att="2"/>
 
-    <gpfoo id="gp_fp/fn/n" att="{net}"/>
+    <gpfoo id="gp_fp/fn/n" att="net"/>
     <gpfoo id="gp_i"  att="0"/>
     <gpfoo id="gp_id" att="1"/>
 </foo>
@@ -33,63 +33,70 @@ $GRANDPARENTMODULE_FULLPATH,...
 #endif
 
 
-%file: {}.ned
+%file: {}/test.ned
 
-module {Dummy}
-endmodule
+package {};
 
-simple {Simple}
+module Dummy
+{
+}
+
+simple Simple
+{
     parameters:
-        by_module_fullpath: xml,
-        by_module_fullname: xml,
-        by_module_name: xml,
-        by_module_index: xml,
-        by_module_id: xml,
+        xml by_module_fullpath;
+        xml by_module_fullname;
+        xml by_module_name;
+        xml by_module_index;
+        xml by_module_id;
 
-        by_parentmodule_fullpath: xml,
-        by_parentmodule_fullname: xml,
-        by_parentmodule_name: xml,
-        by_parentmodule_index: xml,
-        by_parentmodule_id: xml,
+        xml by_parentmodule_fullpath;
+        xml by_parentmodule_fullname;
+        xml by_parentmodule_name;
+        xml by_parentmodule_index;
+        xml by_parentmodule_id;
 
-        by_grandparentmodule_fullpath: xml,
-        by_grandparentmodule_fullname: xml,
-        by_grandparentmodule_name: xml,
-        by_grandparentmodule_index: xml,
-        by_grandparentmodule_id: xml;
-endsimple
+        xml by_grandparentmodule_fullpath;
+        xml by_grandparentmodule_fullname;
+        xml by_grandparentmodule_name;
+        xml by_grandparentmodule_index;
+        xml by_grandparentmodule_id;
+}
 
-module {Subnet}
+module Subnet
+{
     submodules:
-        dum1: {Dummy};
-        dum2: {Dummy}[2];
-        simp: {Simple}[1];
-        dum3: {Dummy};
-endmodule
+        dum1: Dummy;
+        dum2[2]: Dummy;
+        simp[1]: Simple;
+        dum3: Dummy;
+}
 
-module {Net}
+module Net
+{
     submodules:
-        subnet: {Subnet}[1];
-endmodule
+        subnet[1]: Subnet;
+}
 
-network {net} : {Net}
-endnetwork
+network net extends Net
+{
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <string.h>
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     for (int i=0; i<params(); i++)
     {
@@ -99,28 +106,28 @@ void {Simple}::activity()
 }
 
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={net}
+network=net
 
 [Parameters]
-**.by_module_fullpath = xmldoc("{}.xml","//foo[@att=$MODULE_FULLPATH]");
-**.by_module_fullname = xmldoc("{}.xml","//foo[@att=$MODULE_FULLNAME]");
-**.by_module_name =     xmldoc("{}.xml","//foo[@att=$MODULE_NAME]");
-**.by_module_index =    xmldoc("{}.xml","//foo[@att=$MODULE_INDEX]");
-**.by_module_id =       xmldoc("{}.xml","//foo[@att=$MODULE_ID]");
+**.by_module_fullpath = xmldoc("{}/test.xml","//foo[@att=$MODULE_FULLPATH]");
+**.by_module_fullname = xmldoc("{}/test.xml","//foo[@att=$MODULE_FULLNAME]");
+**.by_module_name =     xmldoc("{}/test.xml","//foo[@att=$MODULE_NAME]");
+**.by_module_index =    xmldoc("{}/test.xml","//foo[@att=$MODULE_INDEX]");
+**.by_module_id =       xmldoc("{}/test.xml","//foo[@att=$MODULE_ID]");
 
-**.by_parentmodule_fullpath = xmldoc("{}.xml","//pfoo[@att=$PARENTMODULE_FULLPATH]");
-**.by_parentmodule_fullname = xmldoc("{}.xml","//pfoo[@att=$PARENTMODULE_FULLNAME]");
-**.by_parentmodule_name =     xmldoc("{}.xml","//pfoo[@att=$PARENTMODULE_NAME]");
-**.by_parentmodule_index =    xmldoc("{}.xml","//pfoo[@att=$PARENTMODULE_INDEX]");
-**.by_parentmodule_id =       xmldoc("{}.xml","//pfoo[@att=$PARENTMODULE_ID]");
+**.by_parentmodule_fullpath = xmldoc("{}/test.xml","//pfoo[@att=$PARENTMODULE_FULLPATH]");
+**.by_parentmodule_fullname = xmldoc("{}/test.xml","//pfoo[@att=$PARENTMODULE_FULLNAME]");
+**.by_parentmodule_name =     xmldoc("{}/test.xml","//pfoo[@att=$PARENTMODULE_NAME]");
+**.by_parentmodule_index =    xmldoc("{}/test.xml","//pfoo[@att=$PARENTMODULE_INDEX]");
+**.by_parentmodule_id =       xmldoc("{}/test.xml","//pfoo[@att=$PARENTMODULE_ID]");
 
-**.by_grandparentmodule_fullpath = xmldoc("{}.xml","//gpfoo[@att=$GRANDPARENTMODULE_FULLPATH]");
-**.by_grandparentmodule_fullname = xmldoc("{}.xml","//gpfoo[@att=$GRANDPARENTMODULE_FULLNAME]");
-**.by_grandparentmodule_name =     xmldoc("{}.xml","//gpfoo[@att=$GRANDPARENTMODULE_NAME]");
-**.by_grandparentmodule_index =    xmldoc("{}.xml","//gpfoo[@att=$GRANDPARENTMODULE_INDEX]");
-**.by_grandparentmodule_id =       xmldoc("{}.xml","//gpfoo[@att=$GRANDPARENTMODULE_ID]");
+**.by_grandparentmodule_fullpath = xmldoc("{}/test.xml","//gpfoo[@att=$GRANDPARENTMODULE_FULLPATH]");
+**.by_grandparentmodule_fullname = xmldoc("{}/test.xml","//gpfoo[@att=$GRANDPARENTMODULE_FULLNAME]");
+**.by_grandparentmodule_name =     xmldoc("{}/test.xml","//gpfoo[@att=$GRANDPARENTMODULE_NAME]");
+**.by_grandparentmodule_index =    xmldoc("{}/test.xml","//gpfoo[@att=$GRANDPARENTMODULE_INDEX]");
+**.by_grandparentmodule_id =       xmldoc("{}/test.xml","//gpfoo[@att=$GRANDPARENTMODULE_ID]");
 
 %contains-regex: stdout
 by_module_fullpath: <foo id='fp'>

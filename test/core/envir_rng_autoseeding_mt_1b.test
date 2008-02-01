@@ -15,14 +15,14 @@ for (int i=0; i<ev.numRNGs(); i++)
     ev << r2 << "  " << r1 << ", drawn " << rng(i)->numbersDrawn() << "\n";
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={}_network
+network={}.Test
+cmdenv-express-mode=false
 num-rngs=3
 
-[Cmdenv]
 # Runs occurring more than once should get the same seeds every time.
-runs-to-execute = 4,2,5,3,1,5,1
+cmdenv-runs-to-execute = 4,2,5,3,1,5,1
 
 %contains-regex: stdout
 .*Run #4.*

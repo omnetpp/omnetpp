@@ -1,15 +1,15 @@
 %description:
 Copying and assignment for messages: struct and class members
 
-%file: {}.msg
+%file: {}/test.msg
 
-struct {MyStruct}
+struct MyStruct
 {
     fields:
         int bb;
 }
 
-class {MyClass}
+class MyClass
 {
     fields:
         int bb;
@@ -17,26 +17,26 @@ class {MyClass}
 
 class cQueue;
 
-message {Base}
+message Base
 {
     fields:
-        {MyStruct} ms;
-        {MyClass} mc;
+        MyStruct ms;
+        MyClass mc;
         cQueue q;
 }
 
-message {MyMessage} extends {Base}
+message MyMessage extends Base
 {
     fields:
-        {MyStruct} ms2;
-        {MyClass} mc2;
+        MyStruct ms2;
+        MyClass mc2;
         cQueue q2;
 };
 
 %global:
 #include "{}_m.h"
 
-void {print}(const char *what, {MyMessage}& x)
+void print(const char *what, MyMessage& x)
 {
    ev << what << ":";
    ev << x.getMs().bb << ":" << x.getMc().getBb() << ":"
@@ -49,7 +49,7 @@ void {print}(const char *what, {MyMessage}& x)
 %activity:
 
 // set up tester classes
-{MyMessage} x;
+MyMessage x;
 x.getMs().bb=11;
 x.getMc().setBb(12);
 x.getQ().setName("q"); x.getQ().insert(new cMessage);
@@ -57,16 +57,16 @@ x.getMs2().bb=21;
 x.getMc2().setBb(22);
 x.getQ2().setName("q2"); x.getQ2().insert(new cMessage);x.getQ2().insert(new cMessage);
 
-{print}("x", x);
+print("x", x);
 
 // copy constructor
-{MyMessage} x1(x);
-{print}("x1(x)",x1);
+MyMessage x1(x);
+print("x1(x)",x1);
 
 // assigment
-{MyMessage} x2;
+MyMessage x2;
 x2 = x;
-{print}("x2=x",x2);
+print("x2=x",x2);
 
 %contains: stdout
 x:11:12:q:1:21:22:q2:2.

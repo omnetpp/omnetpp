@@ -1,9 +1,9 @@
 %description:
 Check field initializers in non-cOwnedObject-rooted classes
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {MyClass}
+class MyClass
 {
     fields:
         bool b1 = true;
@@ -26,7 +26,7 @@ class {MyClass}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyClass} x;
+MyClass x;
 
 // scalar fields
 PRINT(x.getB1());

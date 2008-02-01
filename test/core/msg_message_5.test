@@ -1,9 +1,9 @@
 %description:
 Check static arrays in messages
 
-%file: {}.msg
+%file: {}/test.msg
 
-message {MyMessage}
+message MyMessage
 {
     fields:
         bool bb[10];
@@ -27,7 +27,7 @@ message {MyMessage}
 #define PRINTA(X)  ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
 #define PRINTA1(X) ev << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
 
-{MyMessage} x;
+MyMessage x;
 
 x.setBb(0,true); PRINTA(x.getBb);
 x.setCc(0,'a');  PRINTA1(x.getCc);

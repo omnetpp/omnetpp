@@ -1,21 +1,21 @@
 %description:
 Tests cGate::connectTo() and disconnect().
 
-%module_a: {Sender}
+%module_a: Sender
 
-class {Sender} : public cSimpleModule
+class Sender : public cSimpleModule
 {
   public:
-    {Sender}() : cSimpleModule(16384) { }
+    Sender() : cSimpleModule(16384) { }
     cChannel *createChannel(double delay);
     virtual void activity();
 };
 
-Define_Module({Sender});
+Define_Module(Sender);
 
 #define PRINT(g)   ev << #g << ":" << ((g) ? (g)->fullName() : "NULL") << endl
 
-cChannel *{Sender}::createChannel(double delay)
+cChannel *Sender::createChannel(double delay)
 {
     cChannelType *channelType = cChannelType::find("cBasicChannel"); //XXX find something more concise to create a basic channel...
     cBasicChannel *ch = (cBasicChannel *)channelType->create("chan", parentModule());
@@ -23,7 +23,7 @@ cChannel *{Sender}::createChannel(double delay)
     return ch;
 }
 
-void {Sender}::activity()
+void Sender::activity()
 {
    cGate *out = gate("out");
    cGate *rcvin = gate("out")->toGate();
@@ -73,18 +73,18 @@ void {Sender}::activity()
    ev << "done\n";
 }
 
-%module_b: {Receiver}
+%module_b: Receiver
 
-class {Receiver} : public cSimpleModule
+class Receiver : public cSimpleModule
 {
   public:
-    {Receiver}() : cSimpleModule(16384) { }
+    Receiver() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Receiver});
+Define_Module(Receiver);
 
-void {Receiver}::activity()
+void Receiver::activity()
 {
     while (true)
     {

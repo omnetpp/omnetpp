@@ -1,9 +1,9 @@
 %description:
 Check primitive scalar field types in non-cObject rooted classes
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {MyClass}
+class MyClass
 {
     fields:
         bool b;
@@ -24,7 +24,7 @@ class {MyClass}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyClass} x;
+MyClass x;
 
 // test it's really not subclassed from cObject
 ev << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;

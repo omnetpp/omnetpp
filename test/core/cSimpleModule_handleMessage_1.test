@@ -1,11 +1,11 @@
 %description:
 Basic test for cSimpleModule.handleMessage().
 
-%module: {Module}
+%module: Module
 
 #include <omnetpp.h>
 
-class {Module} : public cSimpleModule
+class Module : public cSimpleModule
 {
   public:
     virtual void initialize();
@@ -13,22 +13,22 @@ class {Module} : public cSimpleModule
     virtual void finish();
 };
 
-Define_Module({Module});
+Define_Module(Module);
 
-void {Module}::initialize()
+void Module::initialize()
 {
    ev << "initialize() at " << simTime() << endl;
    cMessage *msg = new cMessage();
    scheduleAt(15.0, msg);
 }
 
-void {Module}::handleMessage(cMessage *msg)
+void Module::handleMessage(cMessage *msg)
 {
    ev << "handleMessage() at " << simTime() << endl;
    delete msg;
 }
 
-void {Module}::finish()
+void Module::finish()
 {
    ev << "finish() at " << simTime() << endl;
 }

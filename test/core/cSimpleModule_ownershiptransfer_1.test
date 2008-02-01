@@ -3,51 +3,53 @@ Test if ownership of a message can be manually transferred from one
 module to the other. Such functionality is needed for one particular
 project, it's rarely if ever useful for normal simulation models.
 
-%file: {test}.ned
+%file: test.ned
 
-simple {First}
-endsimple
+package {};
 
-simple {Second}
-endsimple
+simple First
+{
+}
 
-module {Net}
+simple Second
+{
+}
+
+network Test
+{
   submodules:
-    first : {First};
-    second : {Second};
-endmodule
+    first: First;
+    second: Second;
+}
 
-network {net} : {Net}
-endnetwork
-
-%file: {modules}.cc
+%file: modules.cc
 
 #include <omnetpp.h>
 
-class {First} : public cSimpleModule
+class First : public cSimpleModule
 {
   public:
-    {First}() : cSimpleModule(16384) { }
+    First() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-class {Second} : public cSimpleModule
+class Second : public cSimpleModule
 {
   protected:
     cMessage *receivedMsg;
   public:
-    {Second}() : cSimpleModule(16384) { }
+    Second() : cSimpleModule(16384) { }
     virtual void activity();
   public:
     void accept(cMessage *msg); // stores in 'receivedMsg' member
 };
 
-Define_Module({First});
-Define_Module({Second});
+Define_Module(First);
+Define_Module(Second);
 
-void {First}::activity()
+void First::activity()
 {
-   {Second} *other = check_and_cast<{Second} *>(parentModule()->submodule("second"));
+   Second *other = check_and_cast<Second *>(parentModule()->submodule("second"));
    cMessage *msg = new cMessage("hello");
    ev << "before:  " << msg->fullPath() << endl;
    ev << "  owner: " << msg->owner()->fullPath() << endl;
@@ -56,31 +58,31 @@ void {First}::activity()
    ev << "  owner: " << msg->owner()->fullPath() << endl;
 }
 
-void {Second}::accept(cMessage *msg)
+void Second::accept(cMessage *msg)
 {
    receivedMsg = msg;
    take(msg);
 }
 
-void {Second}::activity()
+void Second::activity()
 {
    wait(1.0); // until accept() surely takes place
    ev << "receivedMsg: " << receivedMsg->fullPath() << endl;
    ev << "      owner: " << receivedMsg->owner()->fullPath() << endl;
 }
 
-%inifile: {test}.ini
+%inifile: test.ini
 [General]
-network={net}
+network={}.Test
 
 %contains: stdout
-before:  {net}.first.hello
-  owner: {net}.first
-after:   {net}.second.hello
-  owner: {net}.second
+before:  net.first.hello
+  owner: net.first
+after:   net.second.hello
+  owner: net.second
 
 %contains: stdout
-{net}.second (id=3)
-receivedMsg: {net}.second.hello
-      owner: {net}.second
+net.second (id=3)
+receivedMsg: net.second.hello
+      owner: net.second
 

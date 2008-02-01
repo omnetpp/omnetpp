@@ -1,9 +1,9 @@
 %description:
 Check static arrays in structs are initialized to zero
 
-%file: {}.msg
+%file: {}/test.msg
 
-struct {MyStruct}
+struct MyStruct
 {
     fields:
         bool bb[3];
@@ -25,7 +25,7 @@ struct {MyStruct}
 // print everything as number because who knows how '\0' in cc[] is treated by <<
 #define PRINTA(X) ev << #X << ":" << (double)X[0] << ":" << (double)X[1] << ":" << (double)X[2] << endl;
 
-{MyStruct} x;
+MyStruct x;
 
 // arrays
 PRINTA(x.bb);

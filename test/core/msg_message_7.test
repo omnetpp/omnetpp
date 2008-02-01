@@ -1,9 +1,9 @@
 %description:
 Check dynamic arrays in non-cOwnedObject rooted classes
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {MyClass}
+class MyClass
 {
     fields:
         bool bb[];
@@ -27,7 +27,7 @@ class {MyClass}
 #define PRINTA(X)  ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
 #define PRINTA1(X) ev << #X << ":" << X(0) << ":" << (int)X(1) << ":" << X ## ArraySize() << endl;
 
-{MyClass} x;
+MyClass x;
 
 // default array sizes should be zero
 PRINT(x.getBbArraySize());

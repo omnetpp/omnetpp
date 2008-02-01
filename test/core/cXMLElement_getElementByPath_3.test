@@ -1,7 +1,7 @@
 %description:
 Check cXMLElement::getElementByPath(): cannot go above root with ".."
 
-%file: {}.xml
+%file: {}/test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -39,7 +39,7 @@ static void getElement(cXMLElement *ctx, cXMLElement *root, const char *pathexpr
 
 %activity:
 
-cXMLElement *root = ev.getXMLDocument("{}.xml");
+cXMLElement *root = ev.getXMLDocument("{}/test.xml");
 cXMLElement *bar9 = root->getElementById("9");
 
 getElement(bar9, root, "../../..");

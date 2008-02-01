@@ -2,48 +2,51 @@
 Test that when simple modules get stage==0 initialized, channels are already
 initialized.
 
-%file: {}.ned
+%file: {}/test.ned
 
-channel {MyConn}
-    delay 1;
-    datarate 1000;
-endchannel
+package {};
 
-simple {Node1}
+channel MyConn extends cBasicChannel
+{
+    parameters:
+        delay = 1;
+        datarate = 1000;
+}
+
+simple Node1
+{
     gates:
-        out: out;
-endsimple
+        output out;
+}
 
-simple {Node2}
+simple Node2
+{
     gates:
-        in: in;
-endsimple
+        input in;
+}
 
-module {MyNet}
+network Test
+{
     submodules:
-        node1: {Node1};
-        node2: {Node2};
+        node1: Node1;
+        node2: Node2;
     connections:
-        node1.out --> {MyConn} --> node2.in;
-endmodule
+        node1.out --> MyConn --> node2.in;
+}
 
-network
-     {myNet}: {MyNet};
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Node1} : public cSimpleModule
+class Node1 : public cSimpleModule
 {
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module({Node1});
+Define_Module(Node1);
 
-void {Node1}::initialize()
+void Node1::initialize()
 {
     for (int i=0; i<5; i++)
     {
@@ -53,31 +56,29 @@ void {Node1}::initialize()
     }
 }
 
-void {Node1}::handleMessage(cMessage *msg)
+void Node1::handleMessage(cMessage *msg)
 {
     ASSERT(false);
 }
 
-class {Node2} : public cSimpleModule
+class Node2 : public cSimpleModule
 {
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module({Node2});
+Define_Module(Node2);
 
-void {Node2}::handleMessage(cMessage *msg)
+void Node2::handleMessage(cMessage *msg)
 {
     ev << "msg arrived at T=" << simTime();
     delete msg;
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={myNet}
-
-[Cmdenv]
-express-mode=no
-event-banners=no
+network=myNet
+cmdenv-express-mode=false
+cmdenv-event-banners=false
 
 %contains: stdout
 msg arrived at T=1.1

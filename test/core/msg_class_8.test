@@ -1,9 +1,9 @@
 %description:
 Dynamic array out of bounds test for non-cOwnedObject rooted classes
 
-%file: {}.msg
+%file: {}/test.msg
 
-class {MyClass}
+class MyClass
 {
     fields:
         int aa[];
@@ -25,7 +25,7 @@ class {MyClass}
                        ev << "OOPS!" << endl; \
                      }
 
-{MyClass} x;
+MyClass x;
 
 // default array sizes should be zero
 TRYPRINT(x.getAaArraySize());
