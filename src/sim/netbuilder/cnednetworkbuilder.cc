@@ -315,8 +315,9 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodname)
 {
+    //FIXME cache the result to speed up further lookups
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
-    std::string qname = cNEDLoader::instance()->resolveNedType(context, modTypeName);
+    std::string qname = cNEDLoader::instance()->resolveComponentType(context, modTypeName);
     if (qname.empty())
         throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
                             "in (%s)%s not found (not in the loaded NED files?)",
@@ -328,6 +329,25 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
                             modTypeName, submodname, modp->className(), modp->fullPath().c_str());
     return (cModuleType *)componenttype;
 }
+
+//cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *likeType, const char *modTypeName, cModule *modp, const char *submodname)
+//{
+//    //FIXME cache the result to speed up further lookups
+//    //FIXME same function for channels!!
+//    //FIXME actually use this function!!!
+//
+//    // resolve the interface
+//    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
+//    std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
+//    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : cNEDLoader::instance()->lookup(interfaceqname.c_str());
+//    if (!interfacedecl || interfacedecl->getTree()->getTagCode()!=NED_MODULE_INTERFACE)
+//        throw cRuntimeError("dynamic module builder: interface type `%s' for submodule %s in (%s)%s could not be resolved",
+//                            likeType, submodname, modp->className(), modp->fullPath().c_str());
+//
+//    // if modTypeName contains a dot, it must be a fully qualified name;
+//    // if it's a simple name, do a more casual lookup: if there's only one such module implementing the given interface, use that; only raise error if there's zero or more than one candidate
+//    //TODO...
+//}
 
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 {
@@ -373,6 +393,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     }
     else
     {
+        // note: we don't try to resolve moduleType if vector size is zero
         int vectorsize = (int) evaluateAsLong(vectorsizeexpr, modp, false);
         ModulePtrVector& v = submodMap[submodname];
         cModuleType *submodtype = NULL;
@@ -730,8 +751,9 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
 
 cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename, cModule *modp)
 {
+    //FIXME cache the result to speed up further lookups
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
-    std::string qname = cNEDLoader::instance()->resolveNedType(context, channeltypename);
+    std::string qname = cNEDLoader::instance()->resolveComponentType(context, channeltypename);
     if (qname.empty())
         throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
                             "(not in the loaded NED files?)", channeltypename);  //FIXME "in module %s"

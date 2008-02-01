@@ -73,6 +73,7 @@ void NEDResourceCache::addNedType(const char *qname, NEDElement *node)
 {
     NEDTypeInfo *component = new NEDTypeInfo(qname, node);
     nedTypes[qname] = component;
+    nedTypeNames.clear(); // invalidate
 }
 
 void NEDResourceCache::collectComponents(NEDElement *node, const std::string& namespaceprefix)
@@ -106,7 +107,7 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
         // no dot: name is an unqualified name (simple name); so, it can be:
         // (a) inner type, (b) from the same package, (c) an imported type, (d) from the default package
 
-        // inner type?
+        // inner type?  FIXME only if context is NOT a nedfile
         std::string qname = context.qname + "." + nedtypename;
         if (qnames->contains(qname.c_str()))
             return qname;
@@ -151,3 +152,13 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
     return "";
 }
 
+const std::vector<std::string>& NEDResourceCache::getTypeNames() const
+{
+    if (nedTypeNames.empty() && !nedTypes.empty()) 
+    {
+        // fill in nedTypeNames vector
+        for (NEDTypeInfoMap::const_iterator i=nedTypes.begin(); i!=nedTypes.end(); ++i)
+            nedTypeNames.push_back(i->first);
+    }
+    return nedTypeNames;
+}

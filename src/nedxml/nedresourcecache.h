@@ -49,15 +49,25 @@ class NEDXML_API NEDResourceCache
   public:
       /** Interface that enumerates NED types; used by resolveType() */
       class NEDTypeNames {
-      public:
-        /** Returns true if the given fully qualified name is an existing NED type */
-        virtual bool contains(const char *qname) const = 0;
+        public:
+          /** Returns true if the given fully qualified name is an existing NED type */
+          virtual bool contains(const char *qname) const = 0;
 
-        /** Returns the number of NED type names */
-        virtual int size() const = 0;
+          /** Returns the number of NED type names */
+          virtual int size() const = 0;
 
-        /** Returns the kth fully qualified NED type name */
-        virtual const char *get(int k) const = 0;
+          /** Returns the kth fully qualified NED type name */
+          virtual const char *get(int k) const = 0;
+      };
+
+      class CachedTypeNames : public NEDTypeNames {
+        protected:
+          NEDResourceCache *p;
+        public:
+          CachedTypeNames(NEDResourceCache *p) {this->p=p;}
+          virtual bool contains(const char *qname) const {return p->lookup(qname)!=NULL;}
+          virtual int size() const {return p->getTypeNames().size();}
+          virtual const char *get(int k) const {return p->getTypeNames()[k].c_str();}
       };
   protected:
     typedef std::map<std::string, NEDElement *> NEDFileMap;
@@ -69,6 +79,9 @@ class NEDXML_API NEDResourceCache
     // table of NED type declarations; key is fully qualified name, and
     // elements point into the files map
     NEDTypeInfoMap nedTypes;
+    
+    // cached keys of the nedTypes map, for getTypeNames(); zero size means out of date
+    mutable std::vector<std::string> nedTypeNames;
 
   protected:
     virtual void collectComponents(NEDElement *node, const std::string& namespaceprefix);
@@ -101,6 +114,10 @@ class NEDXML_API NEDResourceCache
 
     /** Resolves the given NED type name in the given context. Returns "" if not found. */
     virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename, NEDTypeNames *qnames);
+    
+    /** Available NED type names */
+    virtual const std::vector<std::string>& getTypeNames() const;
+
 };
 
 NAMESPACE_END

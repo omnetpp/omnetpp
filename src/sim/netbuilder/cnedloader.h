@@ -119,16 +119,26 @@ class SIM_API cNEDLoader : public NEDResourceCache
     void done();
 
     /**
-     * Resolves NED type names, based on component names registered in the simkernel.
-     * This allows the user to instantiate components which are OUTSIDE NED, that is,
-     * are not declared in NED at all.
+     * Resolves NED module/channel/moduleinterface/channelinterface type name, 
+     * based on the NED files loaded. This lookup is need for resolving inheritance
+     * ("extends", "like").
      */
     virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename) {
+        return NEDResourceCache::resolveNedType(context, nedtypename, &NEDResourceCache::CachedTypeNames(this));
+    }
+
+    /**
+     * Resolve a NED module/channel type name, for a submodule or channel 
+     * instance. Lookup is based on component names registered in the simkernel,
+     * NOT on the NED files loaded. This allows the user to instantiate 
+     * cModuleTypes/cChannelTypes which are not declared in NED.
+     */
+    virtual std::string resolveComponentType(const NEDLookupContext& context, const char *nedtypename) {
         return NEDResourceCache::resolveNedType(context, nedtypename, &ComponentTypeNames());
     }
 
     /**
-     * Utility method, useful with resolveNedType()
+     * Utility method, useful with resolveNedType()/resolveComponentType()
      */
     static NEDLookupContext getParentContextOf(const char *qname, NEDElement *node);
 
