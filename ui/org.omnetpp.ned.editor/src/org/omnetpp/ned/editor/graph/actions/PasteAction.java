@@ -73,13 +73,16 @@ public class PasteAction extends SelectionAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		Object contents = Clipboard.getDefault().getContents();
-		return contents instanceof INEDElement[];
+		Clipboard clipboard = Clipboard.getDefault();
+		return clipboard != null && clipboard.getContents() instanceof INEDElement[];
 	}
 
 	@Override @SuppressWarnings("unchecked")
 	public void run() {
-		Object contents = Clipboard.getDefault().getContents();
+		Clipboard clipboard = Clipboard.getDefault();
+		if (clipboard == null)
+			return;
+		Object contents = clipboard.getContents();
 		if (!(contents instanceof INEDElement[]))
 			return;
 

@@ -704,7 +704,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
     std::string channeltypename;
     if (opp_isempty(channelspec->getLikeType()))
     {
-        channeltypename = opp_isempty(channelspec->getType()) ? "cBasicChannel" : channelspec->getType();
+        channeltypename = opp_isempty(channelspec->getType()) ? "ned.cBasicChannel" : channelspec->getType();
     }
     else
     {
