@@ -219,7 +219,6 @@ public class DatasetManager {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static ScalarDataset createScalarDataset(BarChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {
 		//TODO update progressMonitor
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);

@@ -549,18 +549,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	@Override
 	public void handleSelectionChange(ISelection selection) {
 		super.handleSelectionChange(selection);
-
-		//FIXME all pages should implement a selectionChanged() method, and move all the following stuff in there!
-		// propagate selection to the following viewers
-		setViewerSelectionNoNotify(inputsPage.getInputFilesTreeViewer(), selection);
-		setViewerSelectionNoNotify(datasetsPage.getDatasetsTreeViewer(), selection);
-		setViewerSelectionNoNotify(datasetsPage.getChartSheetsTreeViewer(), selection);
-		for (Control page : closablePages.values()) {
-			if (page instanceof DatasetPage) {
-				setViewerSelectionNoNotify(((DatasetPage)page).getDatasetTreeViewer(), selection);
-			}
-		}
 		
+		inputsPage.selectionChanged(selection);
+		browseDataPage.selectionChanged(selection);
+		datasetsPage.selectionChanged(selection);
+		for (Control page : closablePages.values())
+			((ScaveEditorPage)page).selectionChanged(selection);
 	}
 	
 	class ScaveEditorContentOutlinePage extends MyContentOutlinePage

@@ -8,6 +8,7 @@ import static org.omnetpp.scave.TestSupport.enableGuiTest;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.DelegatingWrapperItemProvider;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -144,6 +145,12 @@ public class DatasetsAndChartsPage extends ScaveEditorPage {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public void selectionChanged(ISelection selection) {
+		setViewerSelectionNoNotify(getDatasetsTreeViewer(), selection);
+		setViewerSelectionNoNotify(getChartSheetsTreeViewer(), selection);
 	}
 }
 

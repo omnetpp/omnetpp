@@ -552,7 +552,7 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
 	 * Utility function to update selection in a viewer without generating 
 	 * further notifications.
 	 */
-	protected void setViewerSelectionNoNotify(Viewer target, ISelection selection) {
+	public void setViewerSelectionNoNotify(Viewer target, ISelection selection) {
 		if (target!=null) {
 			target.removeSelectionChangedListener(selectionChangedListener);
 			target.setSelection(selection,true);

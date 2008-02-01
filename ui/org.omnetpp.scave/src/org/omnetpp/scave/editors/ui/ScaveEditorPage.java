@@ -7,6 +7,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -254,6 +255,18 @@ public class ScaveEditorPage extends ScrolledForm {
 	 * multipage editor.
 	 */
 	public void pageActivated() {
+	}
+	
+	/**
+	 * Notification about the change of the workbench selection.
+	 * Pages are synchronizing their selection of their viewers
+	 * by calling {@link #setViewerSelectionNoNotify(Viewer, ISelection)}.
+	 */
+	public void selectionChanged(ISelection selection) {
+	}
+	
+	protected void setViewerSelectionNoNotify(Viewer viewer, ISelection selection) {
+		scaveEditor.setViewerSelectionNoNotify(viewer, selection);
 	}
 	
 	/**

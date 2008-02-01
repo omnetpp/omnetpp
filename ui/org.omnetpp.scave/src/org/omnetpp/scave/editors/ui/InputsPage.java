@@ -7,6 +7,7 @@ import static org.omnetpp.scave.TestSupport.RUN_FILE_VIEW_TREE_ID;
 import static org.omnetpp.scave.TestSupport.WIDGET_ID;
 import static org.omnetpp.scave.TestSupport.enableGuiTest;
 
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -227,5 +228,10 @@ public class InputsPage extends ScaveEditorPage {
 		}
 			
 		return false;
+	}
+
+	@Override
+	public void selectionChanged(ISelection selection) {
+		setViewerSelectionNoNotify(getInputFilesTreeViewer(), selection);
 	}
 }

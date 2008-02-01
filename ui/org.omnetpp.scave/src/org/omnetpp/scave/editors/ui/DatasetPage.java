@@ -3,6 +3,7 @@ package org.omnetpp.scave.editors.ui;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -78,5 +79,10 @@ public class DatasetPage extends ScaveEditorPage {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void selectionChanged(ISelection selection) {
+		setViewerSelectionNoNotify(getDatasetTreeViewer(), selection);
 	}
 }
