@@ -301,7 +301,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      */
 //FIXME MUST BE ENFORCED THAT NAME IS UNIQUE!!!!! NOT THE SAME AS ANY SUBMODULE,PARAMETER OR GATE!!! OTHERWISE properties() WILL MESS UP!!!!!!!
 //FIXME THE SAME MUST BE ENFORCED WITH SUBMODULE CREATION!!!!
-    virtual cGate *addGate(const char *gatename, cGate::Type type, bool isvector=false);
+    virtual void addGate(const char *gatename, cGate::Type type, bool isvector=false);
 
     /**
      * Sets gate vector size. If the vector size is increased, Ids of existing
