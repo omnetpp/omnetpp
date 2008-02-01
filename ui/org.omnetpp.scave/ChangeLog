@@ -1,3 +1,22 @@
+2008-02-01
+----------
+
+Fixes:
+
+   + When input files are added to or removed from the analysis, only the affected files
+     are loaded/unloaded. Previously all files were unloaded and the new file list
+     was loaded.
+
+   + When exporting several vectors each table is written in a separate CSV file.
+
+   + CreateChartTemplateDialog uses a checkbox table instead of separate checkboxes.
+
+   + Warning/error markers are added to the input files on the Input page too.
+
+   + IndexedVectorFileReaderNode reads the blocks in increasing offset order
+     (instead of one block from each vector in a step).
+
+
 2008-01-18
 ----------
 
