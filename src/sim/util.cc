@@ -477,6 +477,7 @@ NAMESPACE_END
 #include "cpsquare.h"
 #include "cstrtokenizer.h"
 #include "cxmlelement.h"
+#include "cbasicchannel.h"
 
 USING_NAMESPACE
 
@@ -504,6 +505,7 @@ void _sim_dummy_func()
       tok.nextToken();
       std_sim_descriptor_dummy();
       cXMLElement a(0,0,0);
+      cBasicChannel c(NULL);
       //_dummy_for_env();
 }
 

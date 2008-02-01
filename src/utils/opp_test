@@ -358,7 +358,7 @@ sub testcase_generatesources
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$testname/g;
         $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
-        $nedfname = $workingdir."/".$testname.'.ned';
+        $nedfname = $workingdir."/".$testname.'/test.ned';
         writefile($nedfname, $ned);
 
         # generate C++
@@ -367,7 +367,7 @@ sub testcase_generatesources
         $cpp =~ s/\@ACTIVITY\@/$activity/g;
         $cpp =~ s/\@GLOBAL\@/$globalcode/g;
         $cpp =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
-        $cppfname = $workingdir."/".$testname.'.cc';
+        $cppfname = $workingdir."/".$testname.'/test.cc';
         writefile($cppfname, $cpp);
     }
 
@@ -381,14 +381,14 @@ sub testcase_generatesources
         $ned = $ModuleNEDTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$module/g;
-        $nedfname = $workingdir."/".$testname.'.ned';
+        $nedfname = $workingdir."/".$testname.'/test.ned';
         writefile($nedfname, $ned);
 
         # generate C++
         $cpp = $ModuleCPPTemplate;
         $cpp =~ s/\@MODULE\@/$module/g;
         $cpp =~ s/\@MODULE_SRC\@/$module_src/g;
-        $cppfname = $workingdir."/".$testname.'.cc';
+        $cppfname = $workingdir."/".$testname.'/test.cc';
         writefile($cppfname, $cpp);
     }
 
@@ -405,7 +405,7 @@ sub testcase_generatesources
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE_A\@/$module_a/g;
         $ned =~ s/\@MODULE_B\@/$module_b/g;
-        $nedfname = $workingdir."/".$testname.'.ned';
+        $nedfname = $workingdir."/".$testname.'/test.ned';
         writefile($nedfname, $ned);
 
         # generate C++
@@ -415,14 +415,14 @@ sub testcase_generatesources
         $cpp =~ s/\@MODULE_B\@/$module_b/g;
         $cpp =~ s/\@MODULE_A_SRC\@/$module_a_src/g;
         $cpp =~ s/\@MODULE_B_SRC\@/$module_b_src/g;
-        $cppfname = $workingdir."/".$testname.'.cc';
+        $cppfname = $workingdir."/".$testname.'/test.cc';
         writefile($cppfname, $cpp);
     }
 
     # ini file
     $inifname = $values{'inifile(1)'};
     if ($inifname eq '') {
-        $inifname = $testname.'.ini';
+        $inifname = $testname.'/test.ini';
     }
     $inifname = $workingdir."/".$inifname;
 
@@ -442,8 +442,8 @@ sub testcase_run()
 
     parse_testfile($testfilename);
 
-    $outfname = $testname.'.out';
-    $errfname = $testname.'.err';
+    $outfname = $testname.'/test.out';
+    $errfname = $testname.'/test.err';
 
     # delete temp files before running the test case
     foreach $key (keys(%values))
@@ -471,7 +471,7 @@ sub testcase_run()
     # ini file
     $inifname = $values{'inifile(1)'};
     if ($inifname eq '') {
-        $inifname = $testname.'.ini';
+        $inifname = $testname.'/test.ini';
     }
 
     # dynamic NED
@@ -773,37 +773,43 @@ sub exec_program()
 sub define_templates()
 {
     $ModuleNEDTemplate = '
-simple @MODULE@
-endsimple
+package @TESTNAME@;
 
-network @TESTNAME@_network : @MODULE@
-endnetwork
+simple @MODULE@
+{
+}
+
+network Test extends @MODULE@
+{
+}
 ';
 
     $ModuleABNEDTemplate = '
+package @TESTNAME@;
+
 simple @MODULE_A@
+{
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
 simple @MODULE_B@
+{
     gates:
-        in: in;
-        out: out;
-endsimple
+        input in;
+        output out;
+}
 
-module @TESTNAME@
+network Test
+{
     submodules:
         the@MODULE_A@ : @MODULE_A@;
         the@MODULE_B@ : @MODULE_B@;
     connections:
         the@MODULE_A@.out --> the@MODULE_B@.in;
         the@MODULE_A@.in  <-- the@MODULE_B@.out;
-endmodule
-
-network @TESTNAME@_network : @TESTNAME@
-endnetwork
+}
 ';
 
     $ActivityCPPTemplate = '
@@ -842,7 +848,7 @@ void @TESTNAME@::activity()
 
     $INITemplate = '
 [General]
-network = @TESTNAME@_network
+network = @TESTNAME@.Test
 output-vector-file = @TESTNAME@.vec
 output-scalar-file = @TESTNAME@.sca
 cmdenv-express-mode = false
