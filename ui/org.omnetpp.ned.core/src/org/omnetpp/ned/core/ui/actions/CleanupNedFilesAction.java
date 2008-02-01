@@ -18,6 +18,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -45,6 +46,7 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
     public void run(IAction action) {
         //FIXME tell user: "Please save all files and close all editors" etc.
     	// FIXME tell user if some files has syntax error
+    	// FIXME fix package declarations and imports in two separate passes
         IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
 
@@ -58,7 +60,8 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
                     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                         cleanupNedFilesIn(container, monitor);
                     }};
-                new ProgressMonitorDialog(shell).run(true, true, op);
+                // first param of run() is "fork" it set to false to run the process in UI thread to allow dialogs to come up    
+                new ProgressMonitorDialog(shell).run(false, true, op);
             } 
             catch (InvocationTargetException e) {
                 NEDResourcesPlugin.logError(e);
@@ -80,6 +83,8 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
                     if (NEDResourcesPlugin.getNEDResources().isNedFile(resource)) {
                         monitor.subTask(resource.getFullPath().toString());
                         cleanupNedFile((IFile)resource);
+                        // we are running in the UI thread. process to events to make the UI responsive
+                        Display.getCurrent().readAndDispatch();
                         monitor.worked(1);
                     }
                     if (monitor.isCanceled())
