@@ -1,7 +1,7 @@
 %description:
 Check xmldoc(): no such element in XML document
 
-%file: {}.xml
+%file: {}/test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -19,39 +19,39 @@ Check xmldoc(): no such element in XML document
 #endif
 
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
+package {};
+
+simple Simple
+{
     parameters:
-        xmlconfig: xml;
-endsimple
+        xml xmlconfig;
+}
 
-network {Net} : {Simple}
+network Test extends Simple
+{
     parameters:
-        xmlconfig = xmldoc("{}.xml","foo/nothing");
-endnetwork
+        xmlconfig = xmldoc("NED1_xmldoc_3/test.xml", "foo/nothing");
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <string.h>
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
 }
-
-%inifile: {}.ini
-[General]
-network={Net}
 
 %exitcode: 1
 

@@ -18,7 +18,7 @@ del work\work.cmd 2>nul
 call opp_test %OPT% -g -v %TESTFILES% || goto end
 
 cd work || goto end
-call opp_nmakemake %OPT% -f -e cc -u cmdenv || goto end
+call opp_nmakemake %OPT% -f -e cc --deep -u cmdenv || goto end
 nmake -f makefile.vc || cd .. && goto end
 cd .. || goto end
 

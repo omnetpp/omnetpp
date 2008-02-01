@@ -1,86 +1,106 @@
 %description:
 Similar to NED_sizeof_1, only *const* parameters are tested this time.
 
-%file: {}.ned
+%file: {}/test.ned
 
-module {Foo}
-endmodule
+package {};
 
-simple {Simple}
-   parameters:
-      p1:const, p2:const, p3:const, p4:const, p5:const, p6:const, p7:const, p8:const;
-   gates:
-      in: g1[], g2[], g3[], g4[], g5[], g6[], g7[], g8[];
-endsimple
+module Foo
+{
+}
 
-module {Compound}
+simple Simple
+{
     parameters:
-        a: numeric;
+        double p1;
+        double p2;
+        double p3;
+        double p4;
+        double p5;
+        double p6;
+        double p7;
+        double p8;
     gates:
-        in: in0[];
-        in: in1[];
+        input g1[];
+        input g2[];
+        input g3[];
+        input g4[];
+        input g5[];
+        input g6[];
+        input g7[];
+        input g8[];
+}
+
+module Compound
+{
+    parameters:
+        double a;
+    gates:
+        input in0[];
+        input in1[];
     submodules:
-        foo0 : {Foo}[0];
-        foo1 : {Foo}[5];
-
-        dum1 : {Foo}[sizeof(foo0)];
-        dum2 : {Foo}[sizeof(foo1)];
-        dum3 : {Foo}[sizeof(in0)];
-        dum4 : {Foo}[sizeof(in1)];
-        dum5 : {Foo}[a+sizeof(foo0)];
-        dum6 : {Foo}[a+sizeof(foo1)];
-        dum7 : {Foo}[a+sizeof(in0)];
-        dum8 : {Foo}[a+sizeof(in1)];
-
-        sub : {Simple};
+        foo0[0]: Foo;
+        foo1[5]: Foo;
+        dum1[sizeof(foo0)]: Foo;
+        dum2[sizeof(foo1)]: Foo;
+        dum3[sizeof(in0)]: Foo;
+        dum4[sizeof(in1)]: Foo;
+        dum5[a+sizeof(foo0)]: Foo;
+        dum6[a+sizeof(foo1)]: Foo;
+        dum7[a+sizeof(in0)]: Foo;
+        dum8[a+sizeof(in1)]: Foo;
+        sub: Simple {
             parameters:
-                p1 = sizeof(foo0),
-                p2 = sizeof(foo1),
-                p3 = sizeof(in0),
-                p4 = sizeof(in1),
-                p5 = a+sizeof(foo0),
-                p6 = a+sizeof(foo1),
-                p7 = a+sizeof(in0),
+                p1 = sizeof(foo0);
+                p2 = sizeof(foo1);
+                p3 = sizeof(in0);
+                p4 = sizeof(in1);
+                p5 = a+sizeof(foo0);
+                p6 = a+sizeof(foo1);
+                p7 = a+sizeof(in0);
                 p8 = a+sizeof(in1);
-            gatesizes:
-                g1[sizeof(foo0)],
-                g2[sizeof(foo1)],
-                g3[sizeof(in0)],
-                g4[sizeof(in1)],
-                g5[a+sizeof(foo0)],
-                g6[a+sizeof(foo1)],
-                g7[a+sizeof(in0)],
+            gates:
+                g1[sizeof(foo0)];
+                g2[sizeof(foo1)];
+                g3[sizeof(in0)];
+                g4[sizeof(in1)];
+                g5[a+sizeof(foo0)];
+                g6[a+sizeof(foo1)];
+                g7[a+sizeof(in0)];
                 g8[a+sizeof(in1)];
-    connections nocheck:
-endmodule
+        }
+    connections allowunconnected:
+}
 
 // we need this only because the top-level module cannot
 // have gates, and we want to test sizeof(gatevector) as well
-module {Wrapper}
+network Test
+{
     submodules:
-        c: {Compound};
-            parameters: a=100;
-            gatesizes: in0[0], in1[8];
-    connections nocheck:
-endmodule
+        c: Compound {
+            parameters:
+                a = 100;
+            gates:
+                in0[0];
+                in1[8];
+        }
+    connections allowunconnected:
+}
 
-network {network}: {Wrapper}
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     for (int i=0; i<params(); i++)
         ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
@@ -101,8 +121,6 @@ sub.p5=100
 sub.p6=105
 sub.p7=100
 sub.p8=108
-g1 size=0
-g3 size=0
 g2 size=5
 g4 size=8
 g5 size=100

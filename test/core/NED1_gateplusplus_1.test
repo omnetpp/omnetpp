@@ -1,21 +1,25 @@
 %description:
 Test gate++ notation in connections
 
-%file: {}.ned
+%file: {}/test.ned
 
-module {Node}
+package {};
+
+module Node
+{
     gates:
-        in: in[];
-        out: out[];
-    connections nocheck:
-endmodule
+        input in[];
+        output out[];
+    connections allowunconnected:
+}
 
-module {Network}
+module Test
+{
     submodules:
-        a: {Node};
-        b: {Node};
-        c: {Node};
-        n: {Node}[2];
+        a: Node;
+        b: Node;
+        c: Node;
+        n[2]: Node;
     connections:
         // Note: a.out++ occurs several times, b.in++ once, c.out++ never;
         // n[0] is not connected at all.
@@ -26,10 +30,7 @@ module {Network}
         a.out++ --> c.in++;
         a.out++ --> n[1].in++;
         a.in++ <-- n[1].out++;
-endmodule
+}
 
-network {network}: {Network}
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 // prevent "no object files" linker error if test is run alone

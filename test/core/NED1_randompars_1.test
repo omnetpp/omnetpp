@@ -1,42 +1,49 @@
 %description:
 Test random module parameters
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
-   parameters:
-      p0, p1, c0:const, c1:const;
-endsimple
+package {};
 
-network {network}: {Simple}
-   parameters:
-      p0 = truncnormal(10,3),
-      p1 = 1+truncnormal(10,3),
-      c0 = exponential(1),
-      c1 = 1+exponential(1);
-endnetwork
+simple Simple
+{
+    parameters:
+        volatile double p0;
+        volatile double p1;
+        double c0;
+        double c1;
+}
 
-%file: {}.cc
+network Test extends Simple
+{
+    parameters:
+        p0 = truncnormal(10, 3);
+        p1 = 1+truncnormal(10, 3);
+        c0 = exponential(1);
+        c1 = 1+exponential(1);
+}
+
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     for (int i=0; i<params(); i++)
         ev << par(i).name() << ":" << (par(i).isExpression()?0:1) << ":" << par(i).doubleValue() << "," << par(i).doubleValue() << endl;
 }
 
 %contains-regex: stdout
-p0:0:18\.85\d+,12\.21\d+
-p1:0:11\.51\d+,15\.64\d+
-c0:1:0\.8746\d+,0\.8746\d+
-c1:1:1\.0028\d+,1\.0028\d+
+p0:0:11\.89\d+,11\.371\d+
+p1:0:8\.1948\d+,12\.896\d+
+c0:1:0\.59999\d+,0\.59999\d+
+c1:1:1\.5228\d+,1\.5228\d+

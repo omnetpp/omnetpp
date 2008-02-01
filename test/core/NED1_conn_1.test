@@ -1,55 +1,62 @@
 %description:
 Tests that NED connection properties get properly set.
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Gen}
+package {};
+
+import ned.*;
+
+simple Gen
+{
     gates:
-        out: out[];
-endsimple
+        output out[];
+}
 
-simple {Sink}
+simple Sink
+{
     gates:
-        in: in[];
-endsimple
+        input in[];
+}
 
-module {MyNet}
+network Test
+{
     submodules:
-        gen: {Gen};
-           gatesizes: out[8];
-        sink: {Sink};
-           gatesizes: in[8];
+        gen: Gen {
+            gates:
+                out[8];
+        }
+        sink: Sink {
+            gates:
+                in[8];
+        }
     connections:
         gen.out[0] --> sink.in[0];
-        gen.out[1] --> delay 0.004 --> sink.in[1];
-        gen.out[2] --> error 0.001 --> sink.in[2];
-        gen.out[3] --> datarate 64000 --> sink.in[3];
-        gen.out[4] --> delay 0.004 error 0.001 --> sink.in[4];
-        gen.out[5] --> delay 0.004 datarate 64000 --> sink.in[5];
-        gen.out[6] --> error 0.001 datarate 64000 --> sink.in[6];
-        gen.out[7] --> delay 0.004 error 0.001 datarate 64000 --> sink.in[7];
-endmodule
+        gen.out[1] --> {  delay = 0.004; } --> sink.in[1];
+        gen.out[2] --> {  error = 0.001; } --> sink.in[2];
+        gen.out[3] --> {  datarate = 64000; } --> sink.in[3];
+        gen.out[4] --> {  delay = 0.004; error = 0.001; } --> sink.in[4];
+        gen.out[5] --> {  delay = 0.004; datarate = 64000; } --> sink.in[5];
+        gen.out[6] --> {  error = 0.001; datarate = 64000; } --> sink.in[6];
+        gen.out[7] --> {  delay = 0.004; error = 0.001; datarate = 64000; } --> sink.in[7];
+}
 
-network
-     {myNet}: {MyNet};
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Gen} : public cSimpleModule
+class Gen : public cSimpleModule
 {
   public:
-    {Gen}() : cSimpleModule(16384) { }
+    Gen() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Gen});
+Define_Module(Gen);
 
-void {Gen}::activity()
+void Gen::activity()
 {
-    for (int i=0; i<gate("out")->size(); i++)
+    for (int i=0; i<gateSize("out"); i++)
     {
         ev << i << ":";
         cGate *g = gate("out",i);
@@ -57,7 +64,7 @@ void {Gen}::activity()
         if (ch)
         {
             cBasicChannel *sch = check_and_cast<cBasicChannel *>(ch);
-            if (sch->delay())  ev << "delay=" << sch->delay() << ":";
+            if (sch->delay() != 0)  ev << "delay=" << sch->delay() << ":";
             if (sch->error())  ev << "error=" << sch->error() << ":";
             if (sch->datarate())  ev << "datarate=" << sch->datarate() << ":";
         }
@@ -65,22 +72,18 @@ void {Gen}::activity()
     }
 }
 
-class {Sink} : public cSimpleModule
+class Sink : public cSimpleModule
 {
   public:
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module({Sink});
+Define_Module(Sink);
 
-void {Sink}::handleMessage(cMessage *msg)
+void Sink::handleMessage(cMessage *msg)
 {
     delete msg;
 }
-
-%inifile: {}.ini
-[General]
-network={myNet}
 
 %contains: stdout
 0:

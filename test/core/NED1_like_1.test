@@ -1,45 +1,46 @@
 %description:
 check that "like" keyword works
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {GenMod}
-endsimple
+package {};
 
-module {Net}
-  parameters:
-    mod_type : string;
-  submodules:
-    specMod: mod_type like {GenMod};
-endmodule
+simple GenMod
+{
+}
 
-network {net} : {Net}
-endnetwork
+network Test
+{
+    parameters:
+        string mod_type;
+    submodules:
+        specMod: <mod_type> like GenMod;
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {GenMod} : public cSimpleModule
+class GenMod : public cSimpleModule
 {
   public:
-    {GenMod}() : cSimpleModule(16384) { }
+    GenMod() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({GenMod});
+Define_Module(GenMod);
 
-void {GenMod}::activity()
+void GenMod::activity()
 {
    ev << "Here!" << endl;
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={net}
+network={}.Test
 warnings=yes
-[Parameters]
-*.mod_type = "{GenMod}"
+cmdenv-express-mode=false
+*.mod_type = "GenMod"
 
 %contains-regex: stdout
 Here!

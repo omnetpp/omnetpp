@@ -5,32 +5,36 @@ FIXME explore! *** Known to fail on Linux (on Windows it's OK) because with doub
 (long)d yields 0x80000000  (Linux discards a bit on the double->long conversion).
 This occurs at cpar.cc#827 return (long)doubleValue();
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
-   parameters:
-      p00;
-endsimple
+package {};
 
-network {network}: {Simple}
-   parameters:
-      p00 = (192 << 24);
-endnetwork
+simple Simple
+{
+    parameters:
+        double p00;
+}
 
-%file: {}.cc
+network Test extends Simple
+{
+    parameters:
+        p00 = 192<<24;
+}
+
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     for (int i=0; i<params(); i++)
         ev << par(i).name() << "=" << std::hex << (unsigned long)par(i) << endl;

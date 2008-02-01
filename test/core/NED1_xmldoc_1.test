@@ -2,7 +2,7 @@
 Check xmldoc("filename.xml") and xmldoc("filename.xml", "pathexpr")
 functionality in NED assignments
 
-%file: {}.xml
+%file: {}/test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -20,35 +20,39 @@ functionality in NED assignments
 #endif
 
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
+package {};
+
+simple Simple
+{
     parameters:
-        xmlconfig1: xml,
-        xmlconfig2: xml;
-endsimple
+        xml xmlconfig1;
+        xml xmlconfig2;
+}
 
-network {Net} : {Simple}
+network Test extends Simple
+{
     parameters:
-        xmlconfig1 = xmldoc("{}.xml"),
-        xmlconfig2 = xmldoc("{}.xml","foo/foo[1]//*[@color='green']");
-endnetwork
+        xmlconfig1 = xmldoc("NED1_xmldoc_1/test.xml");
+        xmlconfig2 = xmldoc("NED1_xmldoc_1/test.xml", "foo/foo[1]//*[@color='green']");
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <string.h>
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     cXMLElement *node1 = par("xmlconfig1");
     ASSERT(node1);
@@ -59,11 +63,6 @@ void {Simple}::activity()
     ev << node2->getTagName() << " at " << node2->getSourceLocation() << endl;
 }
 
-
-%inifile: {}.ini
-[General]
-network={Net}
-
 %contains: stdout
-foo at {}.xml:2
-baz at {}.xml:6
+foo at {}/test.xml:2
+baz at {}/test.xml:6

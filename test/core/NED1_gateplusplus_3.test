@@ -3,55 +3,61 @@ Test that gate++ notation for parent modules is also accepted,
 and connects the first _existing_ but unconnected gate. It should
 not add new gates in any case.
 
-%file: {}.ned
+%file: {}/test.ned
 
-module {Part}
-    gates:
-        in: in[];
-        out: out[];
-    connections nocheck:
-endmodule
+package {};
 
-module {Node}
+module Part
+{
     gates:
-        in: in[];
-        out: out[];
+        input in[];
+        output out[];
+    connections allowunconnected:
+}
+
+module Node
+{
+    gates:
+        input in[];
+        output out[];
     submodules:
-        part: {Part};
+        part: Part;
     connections:
         // connect to parent module gates
-        for i=0..4 do
+        for i=0..4 {
             part.out++ --> out++;
             part.in++ <-- in++;
-        endfor
-endmodule
+        }
+}
 
-module {Network}
+module Test
+{
     submodules:
-        node1: {Node};
-            gatesizes:
-                in[5], out[5];
-        node2: {Node};
-        node3: {Node};
-            gatesizes:
-                in[5], out[5];
-    connections nocheck:
+        node1: Node {
+            gates:
+                in[5];
+                out[5];
+        }
+        node2: Node;
+        node3: Node {
+            gates:
+                in[5];
+                out[5];
+        }
+    connections allowunconnected:
         // node1: connect all gates
-        for i=0..4 do
+        for i=0..4 {
             node1.out[i] --> node1.in[i];
-        endfor
+        }
 
         // node2: same as node1, only we use "++" to create the gates
-        for i=0..4 do
+        for i=0..4 {
             node2.out++ --> node2.in++;
-        endfor
+        }
 
         // node3: ditto, but we leave some gates unconnected
         node3.out[2] --> node3.in[2];
-endmodule
+}
 
-network {network}: {Network}
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 // prevent "no object files" linker error if test is run alone

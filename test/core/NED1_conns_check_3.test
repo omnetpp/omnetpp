@@ -1,22 +1,24 @@
 %description:
 Test that check for unconnected gates takes place
 
-%file: {}.ned
+%file: {}/test.ned
 
-module {Test}
-   gates:
-      out: out;
-      in: in;  // these gates not connected internally --> error
-endmodule
+package {};
 
-module {Compound}
-   submodules:
-      a: {Test};
-   connections nocheck:
-endmodule
 
-network {network}: {Compound}
-endnetwork
+module Compound
+{
+    gates:
+        output out;
+        input in;  // these gates not connected internally --> error
+}
+
+network Test
+{
+    submodules:
+        a: Compound;
+    connections allowunconnected:
+}
 
 %exitcode: 1
 

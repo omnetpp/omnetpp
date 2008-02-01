@@ -3,58 +3,69 @@ Test NED index operator in:
  - submodule parameters
  - module vector sizes
 
-%file: {}.ned
+%file: {}/test.ned
 
-module {Foo}
-endmodule
+package {};
 
-simple {Simple}
+module Foo
+{
+}
+
+simple Simple
+{
     parameters:
-        p0, p1, c0:const, c1:const;
+        double p0;
+        double p1;
+        double c0;
+        double c1;
     gates:
-        in: in1[], in2[];
-endsimple
+        input in1[];
+        input in2[];
+}
 
-module {Compound}
+module Compound
+{
     parameters:
-        a: numeric;
+        double a;
     submodules:
-        sub : {Simple}[3];
+        sub[3]: Simple {
             parameters:
-                p0 = index,
-                p1 = a+index,
-                c0 = index,
+                p0 = index;
+                p1 = a+index;
+                c0 = index;
                 c1 = a+index;
-            gatesizes:
-                in1[index],
+            gates:
+                in1[index];
                 in2[a+index];
-    connections nocheck:
-endmodule
+        }
+    connections allowunconnected:
+}
 
-network {network}: {Compound}
+network Test extends Compound
+{
     parameters:
-        a=100;
-endnetwork
+        a = 100;
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     for (int i=0; i<params(); i++)
         ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
-    ev << fullName() << ".in1[] size=" << gate("in1")->size() << endl;
-    ev << fullName() << ".in2[] size=" << gate("in2")->size() << endl;
+    ev << fullName() << ".in1[] size=" << gateSize("in1") << endl;
+    ev << fullName() << ".in2[] size=" << gateSize("in2") << endl;
 }
 
 %contains: stdout

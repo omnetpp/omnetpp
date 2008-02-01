@@ -1,48 +1,58 @@
 %description:
 Test literals in NED.
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
-   parameters:
-      s1:string, s2:string,
-      b1:bool, b2:bool,
-      n3:numeric, n4:numeric, n5:numeric,
-      nc3:numeric const, nc4:numeric const, nc5:numeric const;
-endsimple
+package {};
 
-network {network}: {Simple}
-   parameters:
-      s1 = "hello",
-      s2 = "",
+simple Simple
+{
+    parameters:
+        string s1;
+        string s2;
+        bool b1;
+        bool b2;
+        double n3;
+        double n4;
+        double n5;
+        double nc3;
+        double nc4;
+        double nc5;
+}
 
-      b1 = true,
-      b2 = false,
+network Test extends Simple
+{
+    parameters:
+        s1 = "hello";
+        s2 = "";
 
-      n3 = 5,
-      n4 = 3.1415,
-      n5 = 6.01e23,
+        b1 = true;
+        b2 = false;
 
-      nc3 = 5,
-      nc4 = 3.1415,
-      nc5 = 6.01e23;
+        n3 = 5;
+        n4 = 3.1415;
+        n5 = 6.01e23;
 
-endnetwork
+        nc3 = 5;
+        nc4 = 3.1415;
+        nc5 = 6.01e23;
 
-%file: {}.cc
+}
+
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     for (int i=0; i<params(); i++)
     {

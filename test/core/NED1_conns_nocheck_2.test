@@ -1,23 +1,24 @@
 %description:
 Test that check for unconnected gates can be turned off
 
-%file: {}.ned
+%file: {}/test.ned
 
-module {Test}
-   gates:
-      out: out;
-      in: in;  // these gates not connected internally
-   connections nocheck:
-endmodule
+package {};
 
-module {Compound}
-   submodules:
-      a: {Test};
-   connections nocheck:
-endmodule
+module Compound
+{
+    gates:
+        output out;
+        input in;  // these gates not connected internally
+    connections allowunconnected:
+}
 
-network {network}: {Compound}
-endnetwork
+network Test
+{
+    submodules:
+        a: Compound;
+    connections allowunconnected:
+}
 
 %exitcode: 0
 

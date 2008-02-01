@@ -1,78 +1,89 @@
 %description:
 Test NED input() operator with various default values
 
-%file: {}.ned
+%file: {}/test.ned
 
-module {Foo}
-endmodule
+package {};
 
-simple {Simple}
-   parameters:
-      p1, p2, p3, p4, p5, p6, p7, p8, p9;
-endsimple
+module Foo
+{
+}
 
-module {Compound}
+simple Simple
+{
     parameters:
-        a: numeric;
-    gates:
-        in: in[];
-    submodules:
-        foo : {Foo}[5];
+        double p1;
+        double p2;
+        double p3;
+        double p4;
+        double p5;
+        double p6;
+        double p7;
+        double p8;
+        double p9;
+}
 
-        sub : {Simple}[3];
+module Compound
+{
+    parameters:
+        double a;
+    gates:
+        input in[];
+    submodules:
+        foo[5]: Foo;
+        sub[3]: Simple {
             parameters:
-                p1 = input(1),
-                p2 = input(1, "Enter param"),
-                p3 = input(a),
-                p4 = input(index),
-                p5 = input(a+index),
-                p6 = input(sizeof(in)),
-                p7 = input(sizeof(foo)),
-                p8 = input(a+sizeof(in)),
-                p9 = input(a+sizeof(foo));
-    connections nocheck:
-endmodule
+                p1 = default(1);
+                p2 = default(1) @prompt("Enter param");
+                p3 = default(a);
+                p4 = default(index);
+                p5 = default(a+index);
+                p6 = default(sizeof(in));
+                p7 = default(sizeof(foo));
+                p8 = default(a+sizeof(in));
+                p9 = default(a+sizeof(foo));
+        }
+    connections allowunconnected:
+}
 
 // we need this only because the top-level module cannot
 // have gates, and we want to test sizeof(gatevector) as well
-module {Wrapper}
+module Test
+{
     submodules:
-        c: {Compound};
-            parameters: a=100;
-            gatesizes: in[8];
-    connections nocheck:
-endmodule
+        c: Compound {
+            parameters:
+                a = 100;
+            gates:
+                in[8];
+        }
+    connections allowunconnected:
+}
 
-network {network}: {Wrapper}
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     for (int i=0; i<params(); i++)
         ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
 }
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-preload-ned-files=*.ned
-network={network}
-
-[Parameters]
-**.use-default=yes  # NOTE THIS LINE
-
+network={}.Test
+cmdenv-express-mode=false
+**.apply-default=true  # NOTE THIS LINE
 
 %contains: stdout
 sub[0].p1=1

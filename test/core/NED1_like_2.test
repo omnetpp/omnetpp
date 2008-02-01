@@ -1,26 +1,27 @@
 %description:
 "like" keyword: check what if given module doesn't exist
 
-%file: {}.ned
+%file: {}/test.ned
 
-module {GenMod}
-endmodule
+package {};
 
-module {Net}
-  parameters:
-    mod_type : string;
-  submodules:
-    specMod: mod_type like {GenMod};
-endmodule
+module GenMod
+{
+}
 
-network {net} : {Net}
-endnetwork
+network Test
+{
+    parameters:
+        string mod_type;
+    submodules:
+        specMod: <mod_type> like GenMod;
+}
 
-%inifile: {}.ini
+%inifile: {}/test.ini
 [General]
-network={net}
+network={}.Test
 warnings=yes
-[Parameters]
+cmdenv-express-mode=false
 *.mod_type = "bla-bla-bla"
 
 %exitcode: 1

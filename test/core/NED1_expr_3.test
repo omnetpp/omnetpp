@@ -1,104 +1,149 @@
 %description:
 Test operators in NED, with const parameters.
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
-   parameters:
-      p00:const, p01:const, p02:const, p03:const, p06:const, p07:const, p08:const, p09:const,
-      p10:const, p11:const, p12:const, p13:const, p14:const, p15:const, p16:const, p17:const, p18:const, p19:const,
-      p20:const, p21:const, p22:const, p23:const, p24:const, p25:const, p26:const, p27:const, p28:const, p29:const,
-      p30:const, p31:const, p32:const, p33:const, p34:const, p35:const, p36:const, p37:const, p38:const, p39:const,
-      p40:const, p41:const, p42:const, p43:const, p44:const, p45:const, p46:const, p47:const;
-endsimple
+package {};
 
-network {network}: {Simple}
-   parameters:
-      p00 = -3,      // unary minus or negative constant
-      p01 = -(4+1),  // unary minus
+simple Simple
+{
+    parameters:
+        double p00;
+        double p01;
+        double p02;
+        double p03;
+        double p06;
+        double p07;
+        double p08;
+        double p09;
+        double p10;
+        double p11;
+        double p12;
+        double p13;
+        double p14;
+        double p15;
+        double p16;
+        double p17;
+        double p18;
+        double p19;
+        double p20;
+        double p21;
+        double p22;
+        double p23;
+        double p24;
+        double p25;
+        double p26;
+        double p27;
+        double p28;
+        double p29;
+        double p30;
+        double p31;
+        double p32;
+        double p33;
+        double p34;
+        double p35;
+        double p36;
+        double p37;
+        double p38;
+        double p39;
+        double p40;
+        double p41;
+        double p42;
+        double p43;
+        double p44;
+        double p45;
+        double p46;
+        double p47;
+}
 
-      p02 = {bool2int}(!true),  // negation
-      p03 = {bool2int}(!false), // negation
+network Test extends Simple
+{
+    parameters:
+        p00 = -3;      // unary minus or negative constant
+        p01 = -(4+1);  // unary minus
 
-      p06 = ~3,      // bitwise complement (FIXME compiled and dynamic NED differ in the sign of the result...)
-      p07 = 12 ^ 3,  // power of
-      p08 = 12 * 3,  // multiply
-      p09 = 12 / 3,  // divide
-      p10 = 12 % 5,  // modulus
-      p11 = 12 + 3,  // add
-      p12 = 12 - 3,  // subtract
+        p02 = bool2int(!true);  // negation
+        p03 = bool2int(!false); // negation
 
-      p13 = 10 << 2, // bitwise shifting
-      p14 = 10 >> 2, // bitwise shifting
+        p06 = ~3;      // bitwise complement (FIXME compiled and dynamic NED differ in the sign of the result...)
+        p07 = 12^3;  // power of
+        p08 = 12*3;  // multiply
+        p09 = 12/3;  // divide
+        p10 = 12%5;  // modulus
+        p11 = 12+3;  // add
+        p12 = 12-3;  // subtract
 
-      p15 = 10 & 3,  // bitwise and
-      p16 = 10 | 3,  // bitwise or
-      p17 = 10 # 3,  // bitwise xor
+        p13 = 10<<2; // bitwise shifting
+        p14 = 10>>2; // bitwise shifting
 
-      p18 = {bool2int}(8 == 3), // equal
-      p19 = {bool2int}(8 == 8), // equal
+        p15 = 10&3;  // bitwise and
+        p16 = 10|3;  // bitwise or
+        p17 = 10#3;  // bitwise xor
 
-      p20 = {bool2int}(8 != 3), // not equal
-      p21 = {bool2int}(8 != 8), // not equal
+        p18 = bool2int(8==3); // equal
+        p19 = bool2int(8==8); // equal
 
-      p22 = {bool2int}(8 > 3),  // greater
-      p23 = {bool2int}(3 > 8),  // greater
-      p24 = {bool2int}(8 > 8),  // greater
+        p20 = bool2int(8!=3); // not equal
+        p21 = bool2int(8!=8); // not equal
 
-      p25 = {bool2int}(8 >= 3), // greater or equal
-      p26 = {bool2int}(3 >= 8), // greater or equal
-      p27 = {bool2int}(8 >= 8), // greater or equal
+        p22 = bool2int(8>3);  // greater
+        p23 = bool2int(3>8);  // greater
+        p24 = bool2int(8>8);  // greater
 
-      p28 = {bool2int}(8 < 3),  // less
-      p29 = {bool2int}(3 < 8),  // less
-      p30 = {bool2int}(8 < 8),  // less
+        p25 = bool2int(8>=3); // greater or equal
+        p26 = bool2int(3>=8); // greater or equal
+        p27 = bool2int(8>=8); // greater or equal
 
-      p31 = {bool2int}(8 <= 3), // less or equal
-      p32 = {bool2int}(3 <= 8), // less or equal
-      p33 = {bool2int}(8 <= 8), // less or equal
+        p28 = bool2int(8<3);  // less
+        p29 = bool2int(3<8);  // less
+        p30 = bool2int(8<8);  // less
 
-      p34 = {bool2int}(true && true),   // logical and
-      p35 = {bool2int}(true && false),  // logical and
-      p36 = {bool2int}(false && true),  // logical and
-      p37 = {bool2int}(false && false), // logical and
+        p31 = bool2int(8<=3); // less or equal
+        p32 = bool2int(3<=8); // less or equal
+        p33 = bool2int(8<=8); // less or equal
 
-      p38 = {bool2int}(true || true),   // logical or
-      p39 = {bool2int}(true || false),  // logical or
-      p40 = {bool2int}(false || true),  // logical or
-      p41 = {bool2int}(false || false), // logical or
+        p34 = bool2int(true && true);   // logical and
+        p35 = bool2int(true && false);  // logical and
+        p36 = bool2int(false && true);  // logical and
+        p37 = bool2int(false && false); // logical and
 
-      p42 = {bool2int}(true ## true),   // logical xor
-      p43 = {bool2int}(true ## false),  // logical xor
-      p44 = {bool2int}(false ## true),  // logical xor
-      p45 = {bool2int}(false ## false), // logical xor
+        p38 = bool2int(true || true);   // logical or
+        p39 = bool2int(true || false);  // logical or
+        p40 = bool2int(false || true);  // logical or
+        p41 = bool2int(false || false); // logical or
 
-      p46 = true ? 5 : 2,  // the C/C++ ``inline if''
-      p47 = false ? 5 : 2; // the C/C++ ``inline if''
+        p42 = bool2int(true ## true);   // logical xor
+        p43 = bool2int(true ## false);  // logical xor
+        p44 = bool2int(false ## true);  // logical xor
+        p45 = bool2int(false ## false); // logical xor
 
-endnetwork
+        p46 = (true ? 5 : 2);  // the C/C++ ``inline if''
+        p47 = (false ? 5 : 2); // the C/C++ ``inline if''
 
-%file: {}.cc
+}
+
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
 typedef cDynamicExpression::StkValue Value;
 
-Value {bool2int}(cComponent *context, Value args[], int numargs) {
+Value bool2int(cComponent *context, Value args[], int numargs) {
     return args[0].bl ? 1L : 0L;
 }
-Define_NED_Function({bool2int}, "B", "L");
+Define_NED_Function(bool2int, "B", "L");
 
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     for (int i=0; i<params(); i++)
         ev << par(i).name() << "=" << par(i).doubleValue() << endl;

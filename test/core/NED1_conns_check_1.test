@@ -1,37 +1,38 @@
 %description:
 Test that check for unconnected gates takes place
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {Simple}
-   gates:
-      out: out;
-      in: in;
-endsimple
+package {};
 
-module {Compound}
-   submodules:
-      a: {Simple};
-      b: {Simple};
-endmodule
+simple Simple
+{
+    gates:
+        output out;
+        input in;
+}
 
-network {network}: {Compound}
-endnetwork
+network Test
+{
+    submodules:
+        a: Simple;
+        b: Simple;
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
 }
 

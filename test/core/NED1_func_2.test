@@ -1,52 +1,52 @@
 %description:
 check NED user-defined functions (Define_Function() macro) in channels
 
-%file: {}.ned
+%file: {}/test.ned
 
-channel {Chan}
-   error {testfunc0}();
-   delay {testfunc3}(10,20,30);
-   datarate {testfunc4}(10,20,30,40);
-endchannel
+package {};
 
-simple {Simple}
-endsimple
+channel Chan extends cBasicChannel
+{
+    parameters:
+        error = testfunc0();
+        delay = testfunc3(10, 20, 30);
+        datarate = testfunc4(10, 20, 30);
+}
 
-network {Net}: {Simple}
-endnetwork
+simple Simple
+{
+}
 
-%file: {}.cc
+network Test extends Simple
+{
+}
+
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-double {testfunc0}() {return 0;}
-double {testfunc1}(double a) {return a;}
-double {testfunc2}(double a, double b) {return a+b;}
-double {testfunc3}(double a, double b, double c) {return a+b+c;}
-double {testfunc4}(double a, double b, double c, double d) {return a+b+c+d;}
+double testfunc0() {return 0;}
+double testfunc1(double a) {return a;}
+double testfunc2(double a, double b) {return a+b;}
+double testfunc3(double a, double b, double c) {return a+b+c;}
+double testfunc4(double a, double b, double c, double d) {return a+b+c+d;}
 
-Define_Function({testfunc0},0);
-Define_Function({testfunc1},1);
-Define_Function({testfunc2},2);
-Define_Function({testfunc3},3);
-Define_Function({testfunc4},4);
+Define_Function(testfunc0,0);
+Define_Function(testfunc1,1);
+Define_Function(testfunc2,2);
+Define_Function(testfunc3,3);
+Define_Function(testfunc4,4);
 
-class {Simple} : public cSimpleModule
+class Simple : public cSimpleModule
 {
   public:
-    {Simple}() : cSimpleModule(16384) { }
+    Simple() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({Simple});
+Define_Module(Simple);
 
-void {Simple}::activity()
+void Simple::activity()
 {
     //FIXME: should check channel or something like that...
 }
-
-
-%inifile: {}.ini
-[General]
-network={Net}
-

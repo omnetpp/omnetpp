@@ -4,42 +4,57 @@ check "gatesizes" in NED:
 - if present, should set gate vector size accordingly
 - explicitly set zero and one vector size should work too
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {GenMod}
-  gates:
-    in: in, in1[], in2[], in3[], in4[];
-    out: out, out1[], out2[], out3[], out4[];
-endsimple
+package {};
 
-module {Net}
-  submodules:
-    specMod: {GenMod}
-      gatesizes:
-        in2[10], in3[0], in4[1], out2[20], out3[0], out4[1];
-  connections nocheck:
-endmodule
+simple GenMod
+{
+    gates:
+        input in;
+        input in1[];
+        input in2[];
+        input in3[];
+        input in4[];
+        output out;
+        output out1[];
+        output out2[];
+        output out3[];
+        output out4[];
+}
 
-network {network} : {Net}
-endnetwork
+module Test
+{
+    submodules:
+        specMod: GenMod {
+            gates:
+                in2[10];
+                in3[0];
+                in4[1];
+                out2[20];
+                out3[0];
+                out4[1];
+        }
+    connections allowunconnected:
+}
 
-%file: {}.cc
+%file: {}/test.cc
 
 #include <omnetpp.h>
 
-class {GenMod} : public cSimpleModule
+class GenMod : public cSimpleModule
 {
   public:
-    {GenMod}() : cSimpleModule(16384) { }
+    GenMod() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module({GenMod});
+Define_Module(GenMod);
 
-#define PRINT(name)  ev << name << (gate(name)->isVector() ? "[]" : "") << ":" \
-                        << gate(name)->size() << "," << gateSize(name) << "\n"
+#define PRINT(name)  ev << name << (isGateVector(name) ? "[]" : "") << ":" \
+                        << gateSize(name) << "," << gateSize(name) << "\n"
 
-void {GenMod}::activity()
+void GenMod::activity()
 {
    PRINT("in");
    PRINT("in1");

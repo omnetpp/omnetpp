@@ -1,24 +1,26 @@
 %description:
-Test parameters taken by the "ancestor" operator
+Test missing C++ module class.
 
-%file: {}.ned
+%file: {}/test.ned
 
-simple {NotImplemented}
-   parameters:
-      p;
-endsimple
+package {};
 
-module {Network}
+simple NotImplemented
+{
+    parameters:
+        double p;
+}
+
+network Test
+{
     submodules:
-        a: {NotImplemented};
-           parameters:
-               p=100;
-endmodule
+        a: NotImplemented {
+            parameters:
+                p = 100;
+        }
+}
 
-network {network}: {Network}
-endnetwork
-
-%file: {}.cc
+%file: {}/test.cc
 
 void dummy()
 {
@@ -27,5 +29,5 @@ void dummy()
 %exitcode: 1
 
 %contains-regex: stdout
-{NotImplemented}.* not found
+NotImplemented.* not found
 
