@@ -401,6 +401,9 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(DataflowManager::execute)
 
 /* ------------- indexfile.h  ----------------- */
 // %include "indexfile.h"
+
+%javamethodmodifiers IndexFile::isIndexFileUpToDate "protected";
+
 class IndexFile
 {
     public:

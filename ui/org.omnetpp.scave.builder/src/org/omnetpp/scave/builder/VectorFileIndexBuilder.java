@@ -106,7 +106,7 @@ public class VectorFileIndexBuilder extends IncrementalProjectBuilder {
 				monitor.subTask("Indexing "+file.getName());
 				try {
 					File path = file.getLocation().toFile();
-					if (path.exists() && !isIndexFileUpToDate(path))
+					if (path.exists() && !isIndexFileUpToDate(file))
 					{
 						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
 						performIndexing(file, subMonitor);

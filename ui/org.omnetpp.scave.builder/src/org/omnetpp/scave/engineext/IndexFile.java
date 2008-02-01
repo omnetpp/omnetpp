@@ -33,27 +33,11 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	}
 	
 	/**
-	 * Returns true, if <code>file</code> is an index file.
-	 * The file need not exist.
-	 */
-	public static boolean isIndexFile(File file) {
-		return isIndexFile(file.getAbsolutePath());
-	}
-	
-	/**
 	 * Returns true, if <code>file</code> is an vector file.
 	 * The file need not exist.
 	 */
 	public static boolean isVectorFile(IFile file) {
 		return isVectorFile(file.getLocation().toOSString());
-	}
-	
-	/**
-	 * Returns true, if <code>file</code> is an vector file.
-	 * The file need not exist.
-	 */
-	public static boolean isVectorFile(File file) {
-		return isVectorFile(file.getAbsolutePath());
 	}
 	
 	/**
@@ -72,8 +56,8 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	 * @param file a vector or index file
 	 * @return true if the index file is up-to-date
 	 */
-	public static boolean isIndexFileUpToDate(File file) {
-		return isIndexFileUpToDate(file.getAbsolutePath());
+	public static boolean isIndexFileUpToDate(String file) {
+		return org.omnetpp.scave.engine.IndexFile.isIndexFileUpToDate(file);
 	}
 	
 	/**
@@ -96,7 +80,7 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 	 * @return the index file
 	 */
 	public static File getIndexFileFor(File vectorFile) {
-		Assert.isLegal(isVectorFile(vectorFile));
+		Assert.isLegal(isVectorFile(vectorFile.getAbsolutePath()));
 		return new File(getIndexFileName(vectorFile.getAbsolutePath()));
 	}
 	
@@ -113,17 +97,6 @@ public class IndexFile extends org.omnetpp.scave.engine.IndexFile {
 		return getWorkspaceFileForOsPath(container, path);
 	}
 
-	/**
-	 * Returns the vector file belongs to the specified index file.
-	 * 
-	 * @param indexFile the index file
-	 * @return the vector file
-	 */
-	public static File getVectorFileFor(File indexFile) {
-		Assert.isLegal(isIndexFile(indexFile));
-		return new File(getVectorFileName(indexFile.getAbsolutePath()));
-	}
-	
 	/**
 	 * Returns the workspace file for the specified absolute path.
 	 * The file need not exists, but the path must be under the
