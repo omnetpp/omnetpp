@@ -269,6 +269,7 @@ sub makemake()
                 $dir =~ s|/[^/]*$||;
             }
             else {
+                $projectDir = ".";
                 last;
             }
         }
