@@ -70,7 +70,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 		String text = "";
 
 		// see where else it is already set
-		if (doc.containsKey(section, key)) {
+		if (doc.containsKey(section, key)) { // FIXME can doc be null
 			text += "<!> Already set in this section.\n\n";
 			return text;
 		}

@@ -72,7 +72,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 			ConfigKey entry = ConfigRegistry.getEntry(key);
 			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_USER_INTERFACE)
 				return true;
-			if (entry == null && entry.getDataType()==ConfigKey.DataType.CFG_BOOL)
+			if (entry != null && entry.getDataType()==ConfigKey.DataType.CFG_BOOL)
 				return true;
 			return false;
 		}
