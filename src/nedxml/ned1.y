@@ -237,7 +237,7 @@ channelheader
                   ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile);
                   ps.channel->setName(toString(@2));
                   ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.channel);
-                  ps.extends->setName("cBasicChannel");  // NED-1 channels are implicitly cBasicChannels
+                  ps.extends->setName("ned.cBasicChannel");  // NED-1 channels are implicitly cBasicChannels
                   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.channel);
                   ps.params->setIsImplicit(true);
                   storeBannerAndRightComments(ps.channel,@1,@2);
