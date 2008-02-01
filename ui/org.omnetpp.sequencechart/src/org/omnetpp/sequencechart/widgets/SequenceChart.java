@@ -547,7 +547,7 @@ public class SequenceChart
 		else
             sequenceChartFacade.undefineTimelineCoordinateSystem();
 
-		if (eventLog != null & !eventLog.isEmpty()) {
+		if (eventLog != null && !eventLog.isEmpty()) {
 			if (eventLog.getLastEvent().getSimulationTime().doubleValue() <= getSimulationTimeForViewportCoordinate(getViewportWidth())) {
 				this.fixPointViewportCoordinate = getViewportWidth();
 				sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getLastEvent());
