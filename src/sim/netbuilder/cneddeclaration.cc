@@ -156,6 +156,15 @@ const char *cNEDDeclaration::interfaceName(int k) const
     return interfacenames[k].c_str();
 }
 
+bool cNEDDeclaration::supportsInterface(const char *qname)
+{
+    //FIXME I hope interfacenames is cumulative, ie base classes don't need to be checked additionally!!!
+    for (int i=0; i<interfacenames.size(); i++)
+        if (interfacenames[i] == qname)
+            return true;
+    return false;
+}
+
 const char *cNEDDeclaration::extendsName(int k) const
 {
     if (k<0 || k>=(int)extendsnames.size())

@@ -325,29 +325,70 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
     cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
         throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
-                            "in (%s)%s not found (type is a channel type)",
+                            "in (%s)%s not found (type is not a module type)",
                             modTypeName, submodname, modp->className(), modp->fullPath().c_str());
     return (cModuleType *)componenttype;
 }
 
-//cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *likeType, const char *modTypeName, cModule *modp, const char *submodname)
-//{
-//    //FIXME cache the result to speed up further lookups
-//    //FIXME same function for channels!!
-//    //FIXME actually use this function!!!
-//
-//    // resolve the interface
-//    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
-//    std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
-//    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : cNEDLoader::instance()->lookup(interfaceqname.c_str());
-//    if (!interfacedecl || interfacedecl->getTree()->getTagCode()!=NED_MODULE_INTERFACE)
-//        throw cRuntimeError("dynamic module builder: interface type `%s' for submodule %s in (%s)%s could not be resolved",
-//                            likeType, submodname, modp->className(), modp->fullPath().c_str());
-//
-//    // if modTypeName contains a dot, it must be a fully qualified name;
-//    // if it's a simple name, do a more casual lookup: if there's only one such module implementing the given interface, use that; only raise error if there's zero or more than one candidate
-//    //TODO...
-//}
+cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *likeType, const char *modTypeName, cModule *modp, const char *submodname)
+{
+    //FIXME cache the result to speed up further lookups
+    //FIXME actually use this function!!!
+
+    // resolve the interface
+    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
+    std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
+    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
+    if (!interfacedecl || interfacedecl->getTree()->getTagCode()!=NED_MODULE_INTERFACE)
+        throw cRuntimeError("dynamic module builder: interface type `%s' for submodule %s in (%s)%s could not be resolved",
+                            likeType, submodname, modp->className(), modp->fullPath().c_str());
+
+    std::vector<std::string> candidates = findTypeWithInterface(modTypeName, interfaceqname.c_str());
+    if (candidates.empty())
+        throw cRuntimeError("dynamic module builder: empty!");  //FIXME
+    if (candidates.size() > 1)
+        throw cRuntimeError("dynamic module builder: more than one!");  //FIXME
+
+    cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
+    if (!dynamic_cast<cModuleType *>(componenttype))
+        throw cRuntimeError("dynamic module builder: module type definition `%s' for 'like' submodule %s "
+                            "in (%s)%s not found (type is not a module type)",
+                            modTypeName, submodname, modp->className(), modp->fullPath().c_str());
+    return (cModuleType *)componenttype;
+}
+
+std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *nedtypename, const char *interfaceqname)
+{
+    std::vector<std::string> candidates;
+    
+    // try to interpret it as a fully qualified name
+    cNEDLoader::ComponentTypeNames qnames;
+    if (qnames.contains(nedtypename)) {
+        cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(nedtypename);
+        ASSERT(decl);
+        if (decl->supportsInterface(interfaceqname)) {
+            candidates.push_back(nedtypename);
+            return candidates;
+        }
+    }
+
+    if (!strchr(nedtypename, '.'))
+    {
+        // no dot: name is an unqualified name (simple name). See how many NED types
+        // implement the given interface; there should be exactly one
+        std::string dot_nedtypename = std::string(".")+nedtypename;
+        for (int i=0; i<qnames.size(); i++) {
+            const char *qname = qnames.get(i);
+            if (opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0) {
+                cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(qname);
+                ASSERT(decl);
+                if (decl->supportsInterface(interfaceqname))
+                    candidates.push_back(qname);
+            }
+        }
+    }
+    return candidates;
+}
 
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
 {
@@ -760,7 +801,34 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltyp
     cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cChannelType *>(componenttype))
         throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
-                            "(given type is a module type)", channeltypename);  //FIXME "in module %s"
+                            "(type is not a channel type)", channeltypename);  //FIXME "in module %s"
+    return (cChannelType *)componenttype;
+}
+
+cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *likeType, const char *channeltypename, cModule *modp)
+{
+    //FIXME cache the result to speed up further lookups
+    //FIXME actually use this function!!!
+
+    // resolve the interface
+    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
+    std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
+    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
+    if (!interfacedecl || interfacedecl->getTree()->getTagCode()!=NED_CHANNEL_INTERFACE)
+        throw cRuntimeError("dynamic module builder: interface type `%s' for channel in (%s)%s could not be resolved",
+                            likeType, modp->className(), modp->fullPath().c_str());
+
+    std::vector<std::string> candidates = findTypeWithInterface(channeltypename, interfaceqname.c_str());
+    if (candidates.empty())
+        throw cRuntimeError("dynamic module builder: empty!");  //FIXME
+    if (candidates.size() > 1)
+        throw cRuntimeError("dynamic module builder: more than one!");  //FIXME
+
+    cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
+    if (!dynamic_cast<cChannelType *>(componenttype))
+        throw cRuntimeError("dynamic module builder: channel type definition `%s' for 'like' channel "
+                            "in (%s)%s not found (type is not a channel type)",
+                            channeltypename, modp->className(), modp->fullPath().c_str());
     return (cChannelType *)componenttype;
 }
 

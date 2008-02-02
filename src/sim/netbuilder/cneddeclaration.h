@@ -168,6 +168,12 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     virtual const char *interfaceName(int k) const;
 
     /**
+     * Returns true if this NED type extends/"is like" the given module interface
+     * or channel interface
+     */
+    virtual bool supportsInterface(const char *qname);
+    
+    /**
      * For simple modules and channels, it returns the name of the C++ class that
      * has to be instantiated; otherwise it returns NULL.
      */

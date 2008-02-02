@@ -44,8 +44,8 @@ class PropertyNode;
  */
 class SIM_API cNEDLoader : public NEDResourceCache
 {
-  protected:
-    class ComponentTypeNames : public NEDTypeNames {
+  public:
+    class ComponentTypeNames : public INEDTypeNames {
       public:
         virtual bool contains(const char *qname) const  {return componentTypes.instance()->lookup(qname)!=NULL;}
         virtual int size() const  {return componentTypes.instance()->size();}
