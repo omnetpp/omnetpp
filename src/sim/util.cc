@@ -385,6 +385,11 @@ void opp_terminate(const char *msgformat...)
 
 //----
 
+#ifdef __GNUC__
+typedef std::map<std::string,std::string> StringMap;
+static StringMap demangledNames;
+#endif
+
 const char *opp_typename(const std::type_info& t)
 {
     if (t == typeid(std::string))
@@ -392,12 +397,50 @@ const char *opp_typename(const std::type_info& t)
 
     const char *s = t.name();
 
-    // correct gcc 2.9x bug: it prepends the type name with its length
-    while (*s>='0' && *s<='9') s++;
-
-    // and MSVC prepends "class "...
-    if (s[0]=='c' && s[1]=='l' && s[2]=='a' && s[3]=='s' && s[4]=='s' && s[5]==' ') s+=6;
+#ifdef __GNUC__
+    // gcc's typeinfo returns mangled name:
+    //   - Foo -> "3Foo"
+    //   - omnetpp::Foo -> "N7omnetpp3FooE"
+    //   - omnetpp::inner::Foo -> "N7omnetpp5inner3FooE"
+    //
+    if (*s>='0' && *s<='9') 
+    {
+        // no namespace: just skip the leading number
+        while (*s>='0' && *s<='9') 
+            s++;
+        return s;
+    }
+    else if (*s=='N') 
+    {
+        // mangled name contains namespace: decode it and cache the result
+        const char *mangledName = s;
+        StringMap::const_iterator it = demangledNames.find(mangledName);
+        if (it == demangledNames.end())
+        {
+            std::string result;
+            result.reserve(strlen(s)+8);
+            s++; // skip leading 'N'
+            while (*s>='0' && *s<='9') {
+                int len = (int)strtol(s, (char **)&s, 10);
+                if (!result.empty()) result += "::";
+                result.append(s, len);
+                s += len;
+            }
+            demangledNames[mangledName] = result;
+            it = demangledNames.find(mangledName);
+        }
+        return it->second.c_str();
+    }
+    else {
+        // dunno how to interpret it, just return it unchanged
+        return s;
+    }
+#else
+    // MSVC prepends the string with "class " (possibly other compilers too)
+    if (s[0]=='c' && s[1]=='l' && s[2]=='a' && s[3]=='s' && s[4]=='s' && s[5]==' ') 
+        s+=6;
     return s;
+#endif
 }
 
 //----
