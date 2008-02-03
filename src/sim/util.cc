@@ -402,6 +402,9 @@ const char *opp_typename(const std::type_info& t)
     //   - Foo -> "3Foo"
     //   - omnetpp::Foo -> "N7omnetpp3FooE"
     //   - omnetpp::inner::Foo -> "N7omnetpp5inner3FooE"
+    // http://theoryx5.uwinnipeg.ca/gnu/gcc/gxxint_15.html
+    // http://www.codesourcery.com/cxx-abi/abi.html#mangling
+    // libiberty/cp_demangle.c
     //
     if (*s>='0' && *s<='9') 
     {
@@ -413,6 +416,7 @@ const char *opp_typename(const std::type_info& t)
     else if (*s=='N') 
     {
         // mangled name contains namespace: decode it and cache the result
+        //XXX better demanging code. use cp_demangle() from libiberty?
         const char *mangledName = s;
         StringMap::const_iterator it = demangledNames.find(mangledName);
         if (it == demangledNames.end())
