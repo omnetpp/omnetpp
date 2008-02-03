@@ -1,4 +1,5 @@
 opp_msgc: now accepts multiple files, and also does dependency check (does not overwrite _m.cc/h file if it's already up to date)
+opp_msgc: added namespace support
 unsupported features of old NED (cannot be converted!):
 	- ancestor, ref parameters
 

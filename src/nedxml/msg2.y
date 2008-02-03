@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-%token CPLUSPLUS CPLUSPLUSBODY
+%token NAMESPACE CPLUSPLUS CPLUSPLUSBODY
 %token MESSAGE CLASS STRUCT ENUM NONCOBJECT
 %token EXTENDS FIELDS PROPERTIES ABSTRACT READONLY
 
@@ -43,6 +43,7 @@
 
 %start networkdescription
 
+/*FIXME accept namespace prefix in fwd decls, base classes etc!!! */
 
 %{
 
@@ -92,6 +93,7 @@ static struct MSG2ParserState
 
     /* MSG-II: message subclassing */
     MsgFileNode *msgfile;
+    NamespaceNode *namespacedecl;
     CplusplusNode *cplusplus;
     StructDeclNode *structdecl;
     ClassDeclNode *classdecl;
@@ -132,7 +134,8 @@ somedefinitions
         ;
 
 definition
-        : cplusplus
+        : namespace_decl
+        | cplusplus
         | struct_decl
         | class_decl
         | message_decl
@@ -146,6 +149,21 @@ definition
                 { if (np->getStoreSourceFlag()) ps.classp->setSourceCode(toString(@1)); }
         | struct
                 { if (np->getStoreSourceFlag()) ps.structp->setSourceCode(toString(@1)); }
+        ;
+/*
+ * namespace declaration
+ */
+namespace_decl
+        : NAMESPACE namespacename ';'
+                {
+                  ps.namespacedecl = (NamespaceNode *)createNodeWithTag(NED_NAMESPACE, ps.msgfile );
+                  ps.namespacedecl->setName(toString(@2));
+                  storeBannerAndRightComments(ps.namespacedecl,@1,@2);
+                }
+
+namespacename
+        : namespacename ':' ':' NAME
+        | NAME
         ;
 
 /*

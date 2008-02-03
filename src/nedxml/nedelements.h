@@ -59,6 +59,7 @@ class FunctionNode;
 class IdentNode;
 class LiteralNode;
 class MsgFileNode;
+class NamespaceNode;
 class CplusplusNode;
 class StructDeclNode;
 class ClassDeclNode;
@@ -116,6 +117,7 @@ enum NEDElementCode {
     NED_IDENT,
     NED_LITERAL,
     NED_MSG_FILE,
+    NED_NAMESPACE,
     NED_CPLUSPLUS,
     NED_STRUCT_DECL,
     NED_CLASS_DECL,
@@ -1895,7 +1897,7 @@ class NEDXML_API LiteralNode : public NEDElement
  * GENERATED CLASS. Represents the &lt;msg-file&gt; XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT msg-file (comment*, (property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
+ * <!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
  *                      enum|message|class|struct)*)>
  * <!ATTLIST msg-file
  *      filename            CDATA     #IMPLIED
@@ -1938,6 +1940,7 @@ class NEDXML_API MsgFileNode : public NEDElement
 
     virtual MsgFileNode *getNextMsgFileNodeSibling() const;
     virtual CommentNode *getFirstCommentChild() const;
+    virtual NamespaceNode *getFirstNamespaceChild() const;
     virtual PropertyDeclNode *getFirstPropertyDeclChild() const;
     virtual PropertyNode *getFirstPropertyChild() const;
     virtual CplusplusNode *getFirstCplusplusChild() const;
@@ -1949,6 +1952,51 @@ class NEDXML_API MsgFileNode : public NEDElement
     virtual MessageNode *getFirstMessageChild() const;
     virtual ClassNode *getFirstClassChild() const;
     virtual StructNode *getFirstStructChild() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the &lt;namespace&gt; XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT namespace (comment*)>
+ * <!ATTLIST namespace
+ *      name                NMTOKEN   #REQUIRED>
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class NEDXML_API NamespaceNode : public NEDElement
+{
+  private:
+    std::string name;
+  public:
+    /** @name Constructors, destructor */
+    //@{
+    NamespaceNode();
+    NamespaceNode(NEDElement *parent);
+    virtual ~NamespaceNode() {}
+    //@}
+
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "namespace";}
+    virtual int getTagCode() const {return NED_NAMESPACE;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    virtual NamespaceNode *dup() const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
+
+    virtual NamespaceNode *getNextNamespaceNodeSibling() const;
+    virtual CommentNode *getFirstCommentChild() const;
     //@}
 };
 

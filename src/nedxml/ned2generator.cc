@@ -919,6 +919,13 @@ void NED2Generator::doMsgFile(MsgFileNode *node, const char *indent, bool, const
     generateChildren(node, indent);
 }
 
+void NED2Generator::doNamespace(NamespaceNode *node, const char *indent, bool islast, const char *)
+{
+    OUT << getBannerComment(node, indent);
+    OUT << indent << "namespace " << node->getName() << ";" << getRightComment(node);
+    OUT << getTrailingComment(node);
+}
+
 void NED2Generator::doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
@@ -1151,6 +1158,8 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
 
         case NED_MSG_FILE:
             doMsgFile((MsgFileNode *)node, indent, islast, arg); break;
+        case NED_NAMESPACE:
+            doNamespace((NamespaceNode *)node, indent, islast, arg); break;
         case NED_CPLUSPLUS:
             doCplusplus((CplusplusNode *)node, indent, islast, arg); break;
         case NED_STRUCT_DECL:

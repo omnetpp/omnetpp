@@ -94,6 +94,7 @@ class NEDXML_API NEDSyntaxValidator : public NEDValidatorBase
     virtual void validateElement(IdentNode *node);
     virtual void validateElement(LiteralNode *node);
     virtual void validateElement(MsgFileNode *node);
+    virtual void validateElement(NamespaceNode *node);
     virtual void validateElement(CplusplusNode *node);
     virtual void validateElement(StructDeclNode *node);
     virtual void validateElement(ClassDeclNode *node);

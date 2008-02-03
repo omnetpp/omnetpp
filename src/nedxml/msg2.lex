@@ -65,6 +65,7 @@ USING_NAMESPACE
 %%
 "//"                    { comment(); }
 
+"namespace"             { count(); return NAMESPACE; }
 "cplusplus"             { count(); return CPLUSPLUS; }
 "struct"                { count(); return STRUCT; }
 "message"               { count(); return MESSAGE; }

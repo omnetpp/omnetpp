@@ -2935,6 +2935,11 @@ CommentNode *MsgFileNode::getFirstCommentChild() const
     return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
+NamespaceNode *MsgFileNode::getFirstNamespaceChild() const
+{
+    return (NamespaceNode *)getFirstChildWithTag(NED_NAMESPACE);
+}
+
 PropertyDeclNode *MsgFileNode::getFirstPropertyDeclChild() const
 {
     return (PropertyDeclNode *)getFirstChildWithTag(NED_PROPERTY_DECL);
@@ -2988,6 +2993,70 @@ ClassNode *MsgFileNode::getFirstClassChild() const
 StructNode *MsgFileNode::getFirstStructChild() const
 {
     return (StructNode *)getFirstChildWithTag(NED_STRUCT);
+}
+
+NamespaceNode::NamespaceNode()
+{
+    applyDefaults();
+}
+
+NamespaceNode::NamespaceNode(NEDElement *parent) : NEDElement(parent)
+{
+    applyDefaults();
+}
+
+int NamespaceNode::getNumAttributes() const
+{
+    return 1;
+}
+
+const char *NamespaceNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        default: return 0;
+    }
+}
+
+const char *NamespaceNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        default: return 0;
+    }
+}
+
+void NamespaceNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        default: ;
+    }
+}
+
+const char *NamespaceNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return NULL;
+        default: return 0;
+    }
+}
+
+NamespaceNode *NamespaceNode::dup() const
+{
+    NamespaceNode *newNode = new NamespaceNode();
+    newNode->name = this->name;
+    return newNode;
+}
+
+NamespaceNode *NamespaceNode::getNextNamespaceNodeSibling() const
+{
+    return (NamespaceNode *)getNextSiblingWithTag(NED_NAMESPACE);
+}
+
+CommentNode *NamespaceNode::getFirstCommentChild() const
+{
+    return (CommentNode *)getFirstChildWithTag(NED_COMMENT);
 }
 
 CplusplusNode::CplusplusNode()
@@ -3990,6 +4059,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='i' && !strcmp(tagname,"ident"))  return new IdentNode();
     if (tagname[0]=='l' && !strcmp(tagname,"literal"))  return new LiteralNode();
     if (tagname[0]=='m' && !strcmp(tagname,"msg-file"))  return new MsgFileNode();
+    if (tagname[0]=='n' && !strcmp(tagname,"namespace"))  return new NamespaceNode();
     if (tagname[0]=='c' && !strcmp(tagname,"cplusplus"))  return new CplusplusNode();
     if (tagname[0]=='s' && !strcmp(tagname,"struct-decl"))  return new StructDeclNode();
     if (tagname[0]=='c' && !strcmp(tagname,"class-decl"))  return new ClassDeclNode();
@@ -4044,6 +4114,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_IDENT: return new IdentNode();
         case NED_LITERAL: return new LiteralNode();
         case NED_MSG_FILE: return new MsgFileNode();
+        case NED_NAMESPACE: return new NamespaceNode();
         case NED_CPLUSPLUS: return new CplusplusNode();
         case NED_STRUCT_DECL: return new StructDeclNode();
         case NED_CLASS_DECL: return new ClassDeclNode();

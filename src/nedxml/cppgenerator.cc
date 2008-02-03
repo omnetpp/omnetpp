@@ -151,6 +151,8 @@ void NEDCppGenerator::generateItem(NEDElement *node, const char *indent, int mod
                     doDisplayString((DisplayStringNode *)node, newindent, mode, arg); break;
                 case NED_EXPRESSION:
                     doExpression((ExpressionNode *)node, newindent, mode, arg); break;
+                case NED_NAMESPACE:
+                    doNamespace((NamespaceNode *)node, newindent, mode, arg); break;
                 case NED_CPLUSPLUS:
                     doCplusplus((CplusplusNode *)node, newindent, mode, arg); break;
                 case NED_STRUCT_DECL:

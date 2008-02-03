@@ -362,6 +362,10 @@ void NEDSemanticValidator::validateElement(MsgFileNode *node)
 {
 }
 
+void NEDSemanticValidator::validateElement(NamespaceNode *node)
+{
+}
+
 void NEDSemanticValidator::validateElement(CplusplusNode *node)
 {
 }

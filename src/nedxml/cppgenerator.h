@@ -145,6 +145,7 @@ class NEDXML_API NEDCppGenerator
     struct ClassDesc;
     struct FieldDesc;
 
+    void doNamespace(NamespaceNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doCplusplus(CplusplusNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doStructDecl(StructDeclNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doClassDecl(ClassDeclNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);

@@ -83,6 +83,7 @@ class NEDXML_API NEDValidatorBase
     virtual void validateElement(IdentNode *node) = 0;
     virtual void validateElement(LiteralNode *node) = 0;
     virtual void validateElement(MsgFileNode *node) = 0;
+    virtual void validateElement(NamespaceNode *node) = 0;
     virtual void validateElement(CplusplusNode *node) = 0;
     virtual void validateElement(StructDeclNode *node) = 0;
     virtual void validateElement(ClassDeclNode *node) = 0;

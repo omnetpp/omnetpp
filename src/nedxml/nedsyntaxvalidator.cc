@@ -637,6 +637,10 @@ void NEDSyntaxValidator::validateElement(MsgFileNode *node)
 {
 }
 
+void NEDSyntaxValidator::validateElement(NamespaceNode *node)
+{
+}
+
 void NEDSyntaxValidator::validateElement(CplusplusNode *node)
 {
 }

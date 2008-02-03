@@ -324,6 +324,30 @@ sub processFile()
     }
     print H "\n";
 
+    # parse namespace decl
+    $namespacename = "";
+    while ($msg =~ s/namespace\s+([A-Za-z0-9_:]+)\s*;//s)
+    {
+        if ($namespacename ne "") {
+            print "$filename: Error: multiple namespace declarations\n"; $ret=1;
+        }
+
+        $namespacename = $1;
+
+        if (!($namespacename =~ /^([A-Za-z_][A-Za-z0-9_]*::)*[A-Za-z_][A-Za-z0-9_]*$/)) {
+            print "$filename: Error: wrong syntax in namespace name '$namespacename'\n"; $ret=1;
+        }
+    }
+    foreach my $i (split("::", $namespacename)) {
+        if ($i =~ /^($reservedwords)$/) {
+            print "$filename: Error: namespace name '$i' is a reserved word\n"; $ret=1;
+        }
+        print H "namespace $i {\n";
+        print CC "namespace $i {\n";
+    }
+    print H "\n";
+    print CC "\n";
+
     # parse imports
     while ($msg =~ s/import\s+(".*?");//s)
     {
@@ -382,7 +406,6 @@ sub processFile()
             push(@enums, $enumname);
         }
     }
-
 
     # parse enums in ned text
     while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
@@ -783,8 +806,14 @@ sub processFile()
         print "'$scrap'\n";
     }
 
-    print H "#endif // $hdef\n";
+    foreach my $i (split("::", $namespacename)) {
+        print H "}; // end namespace $i\n";
+        print CC "}; // end namespace $i\n";
+    }
+    print H "\n";
+    print CC "\n";
 
+    print H "#endif // $hdef\n";
 
     close(H);
     close(CC);

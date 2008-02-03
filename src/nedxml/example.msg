@@ -1,13 +1,15 @@
 //
-// An example for message subclassing. 
+// An example for message subclassing.
 //
-// This file has to be processed by opp_msgc which generates C++ classes you 
-// can use from your models, as well as "reflection" classes that allow Tkenv 
+// This file has to be processed by opp_msgc which generates C++ classes you
+// can use from your models, as well as "reflection" classes that allow Tkenv
 // to inspect these data stuctures.
 //
 // Check doc/msgsubclassing.txt for more information.
 //
 
+// put generated classes into a (nested) namespace
+namespace exam::ple;
 
 // includes necessary to compile the generated C++ header file
 cplusplus {{
@@ -47,80 +49,70 @@ message BlankMsg {
 // message object
 message FooPacket extends BasicPacket
 {
-    fields:
-        char type='x';
-        // not supported: IPAddress *x;
-        short version=2;
-        int protocolId enum(ProtocolTypes);
-        bool hasPayload;
-        long length;
-        unsigned long route[4];
-        string host[];
-        IPAddress src;
-        IPAddress dest;
-        PayloadPacket twoPayloads[2];
-        PayloadPacket payload[];
+    char type='x';
+    // not supported: IPAddress *x;
+    short version=2;
+    int protocolId enum(ProtocolTypes);
+    bool hasPayload;
+    long length;
+    unsigned long route[4];
+    string host[];
+    IPAddress src;
+    IPAddress dest;
+    PayloadPacket twoPayloads[2];
+    PayloadPacket payload[];
 };
 
 // demonstrate subclassing
 message BarPacket extends FooPacket
 {
-    properties:
-        customize = true;
-    fields:
-        int hopcount;
-        double delay;
-        abstract int myvar;
+    @customize(true);
+    int hopcount;
+    double delay;
+    abstract int myvar;
 };
 
 // class without base class (NOT derived from cOwnedObject!)
 class SomeClass
 {
-    fields:
-        int src;
+    int src;
 };
 
 class MyClass
 {
-    properties:
-        customize = true;
-    fields:
-        abstract char type;
-        abstract short version;
+    @customize(true);
+    abstract char type;
+    abstract short version;
 };
 
 // class not derived from cOwnedObject
 class MyDerivedClass extends MyClass
 {
-    fields:
-        char bla='x';
-        short blabla=2;
+    char bla='x';
+    short blabla=2;
 };
 
 // class derived from cOwnedObject
 class MyCObjectClass extends cOwnedObject
 {
-    fields:
-        char type='x';
-        short version=2;
-        mystring vendor;
+    char type='x';
+    short version=2;
+    mystring vendor;
 };
 
 // plain C struct (public members, no getter/setter methods, etc)
 struct MyStruct
 {
-    fields:
-        char array[10];
-        short version = 5;
+    char array[10];
+    short version = 5;
 };
 
 // inheritance with structs
 struct MyDerivedStruct extends MyStruct
 {
-    fields:
-        unsigned char code;
-        short prot enum(ProtocolTypes);
-        MyStruct substruct;  // also as embedded data member
+    unsigned char code;
+    short prot enum(ProtocolTypes);
+    MyStruct substruct;  // also as embedded data member
 };
 
 

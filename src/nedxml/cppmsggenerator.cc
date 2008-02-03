@@ -39,6 +39,11 @@ inline ostream& operator<< (ostream& out, const std::string& str)
 
 //---------------------------------------
 
+void NEDCppGenerator::doNamespace(NamespaceNode *node, const char *indent, int mode, const char *)
+{
+    // todo: surround the whole .cc and .h files with the namespace
+}
+
 void NEDCppGenerator::doCplusplus(CplusplusNode *node, const char *indent, int mode, const char *)
 {
     out << "// cplusplus {{\n";

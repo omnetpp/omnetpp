@@ -153,6 +153,7 @@ class NEDXML_API NED2Generator
 
     // msg stuff
     void doMsgFile(MsgFileNode *node, const char *indent, bool islast, const char *);
+    void doNamespace(NamespaceNode *node, const char *indent, bool islast, const char *);
     void doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *);
     void doStructDecl(StructDeclNode *node, const char *indent, bool islast, const char *);
     void doClassDecl(ClassDeclNode *node, const char *indent, bool islast, const char *);
