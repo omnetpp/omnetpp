@@ -60,7 +60,7 @@ class SIM_API cNEDNetworkBuilder
     bool superTypeAllowsUnconnected() const;
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
-    cModuleType *findAndCheckModuleTypeLike(const char *likeType, const char *modTypeName, cModule *modp, const char *submodname);
+    cModuleType *findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodname);
     std::vector<std::string> findTypeWithInterface(const char *nedtypename, const char *interfaceqname);
 
     void addSubmodule(cModule *modp, SubmoduleNode *submod);
@@ -87,7 +87,7 @@ class SIM_API cNEDNetworkBuilder
     cChannel *createChannel(ChannelSpecNode *channelspec, cModule *parentmodp);
 
     cChannelType *findAndCheckChannelType(const char *channeltypename, cModule *modp);
-    cChannelType *findAndCheckChannelTypeLike(const char *likeType, const char *channeltypename, cModule *modp);
+    cChannelType *findAndCheckChannelTypeLike(const char *channeltypename, const char *likeType, cModule *modp);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
     cParValue *getOrCreateExpression(ExpressionNode *exprNode, cPar::Type type, bool inSubcomponentScope);
     long evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);

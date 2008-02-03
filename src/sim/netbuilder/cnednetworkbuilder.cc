@@ -330,10 +330,9 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
     return (cModuleType *)componenttype;
 }
 
-cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *likeType, const char *modTypeName, cModule *modp, const char *submodname)
+cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodname)
 {
     //FIXME cache the result to speed up further lookups
-    //FIXME actually use this function!!!
 
     // resolve the interface
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
@@ -360,7 +359,7 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *likeType
 std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *nedtypename, const char *interfaceqname)
 {
     std::vector<std::string> candidates;
-    
+
     // try to interpret it as a fully qualified name
     cNEDLoader::ComponentTypeNames qnames;
     if (qnames.contains(nedtypename)) {
@@ -414,15 +413,15 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
             //      because it might be random etc!!!
             submodtypename = evaluateAsString(likeParamExpr, modp, false);
         }
-
     }
 
     ExpressionNode *vectorsizeexpr = findExpression(submod, "vector-size");
 
     if (!vectorsizeexpr)
     {
-        cModuleType *submodtype = findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
-        //FIXME: check submodtype contains likeType as interfaceName!
+        cModuleType *submodtype = opp_isempty(submod->getLikeType()) ?
+            findAndCheckModuleType(submodtypename.c_str(), modp, submodname) :
+            findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
         cModule *submodp = submodtype->create(submodname, modp);
         ModulePtrVector& v = submodMap[submodname];
         v.push_back(submodp);
@@ -441,7 +440,9 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         for (int i=0; i<vectorsize; i++)
         {
             if (!submodtype)
-                submodtype = findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
+                submodtype = opp_isempty(submod->getLikeType()) ?
+                    findAndCheckModuleType(submodtypename.c_str(), modp, submodname) :
+                    findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
             cModule *submodp = submodtype->create(submodname, modp, vectorsize, i);
             v.push_back(submodp);
 
@@ -781,10 +782,12 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
             ASSERT(likeParamExpr); // either attr or expr must be there
             channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
         }
-        //XXX check actual type fulfills likeType
     }
 
-    cChannelType *channeltype = findAndCheckChannelType(channeltypename.c_str(), parentmodp);
+    cChannelType *channeltype = opp_isempty(channelspec->getLikeType()) ?
+                    findAndCheckChannelType(channeltypename.c_str(), parentmodp) :
+                    findAndCheckChannelTypeLike(channeltypename.c_str(), channelspec->getLikeType(), parentmodp);
+
     channelp = channeltype->create("channel", parentmodp); //FIXME must give unique names, otherwise channel properties() won't work!!!
 
     return channelp;
@@ -805,10 +808,9 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltyp
     return (cChannelType *)componenttype;
 }
 
-cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *likeType, const char *channeltypename, cModule *modp)
+cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channeltypename, const char *likeType, cModule *modp)
 {
     //FIXME cache the result to speed up further lookups
-    //FIXME actually use this function!!!
 
     // resolve the interface
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());

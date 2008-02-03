@@ -32,24 +32,60 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
 {
     props = NULL;
 
+    switch (tree->getTagCode()) {
+        case NED_SIMPLE_MODULE: type = SIMPLE_MODULE; break;
+        case NED_COMPOUND_MODULE: type = COMPOUND_MODULE; break;
+        case NED_MODULE_INTERFACE: type = MODULEINTERFACE; break;
+        case NED_CHANNEL: type = CHANNEL; break;
+        case NED_CHANNEL_INTERFACE: type = CHANNELINTERFACE; break;
+        default: throw cRuntimeError(this, "Internal error: element of wrong type (<%s>) passed into constructor", tree->getTagName());
+    }
+    bool isInterface = type==MODULEINTERFACE || type==CHANNELINTERFACE;
+    
     // add "extends" and "like" names, after resolving them
     NEDLookupContext context = cNEDLoader::getParentContextOf(qname, tree); 
     for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
     {
         if (child->getTagCode()==NED_EXTENDS) {
+            // resolve and store base type name
             const char *extendsname = ((ExtendsNode *)child)->getName();
             std::string extendsqname = cNEDLoader::instance()->resolveNedType(context, extendsname);
             ASSERT(!extendsqname.empty());
             extendsnames.push_back(extendsqname);
+            
+            // check the type
+            cNEDDeclaration *decl = (cNEDDeclaration *)cNEDLoader::instance()->lookup(extendsqname.c_str());
+            ASSERT(decl);
+            if (getType() != decl->getType())
+                throw cRuntimeError("%s: base type %s should be a %s", getTree()->getSourceLocation(), extendsqname.c_str(), tree->getTagName());
+
+            // collect interfaces from our base types
+            if (isInterface)
+                for (int i=0; i<decl->numExtendsNames(); i++)
+                    extendsnames.push_back(decl->extendsName(i));
+            else 
+                for (int i=0; i<decl->numInterfaceNames(); i++)
+                    interfacenames.push_back(decl->interfaceName(i));
         }
         if (child->getTagCode()==NED_INTERFACE_NAME) {
+            // resolve and store base type
             const char *interfacename = ((InterfaceNameNode *)child)->getName();
             std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, interfacename);
             ASSERT(!interfaceqname.empty());
             interfacenames.push_back(interfaceqname);
+
+            // check the type (must be an interface)
+            cNEDDeclaration *decl = (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
+            ASSERT(decl);
+            if (decl->getType() != (getType()==CHANNEL ? CHANNELINTERFACE : MODULEINTERFACE))
+                throw cRuntimeError("%s: base type %s should be a %s interface", getTree()->getSourceLocation(), interfaceqname.c_str(), (getType()==CHANNEL ? "channel" : "module"));
+            
+            // we support all interfaces that our base interfaces extend
+            for (int i=0; i<decl->numExtendsNames(); i++)
+                interfacenames.push_back(decl->extendsName(i));
         }
     }
-
+    
     if (numExtendsNames()!=0)
         implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
     else if (tree->getTagCode()==NED_SIMPLE_MODULE || tree->getTagCode()==NED_CHANNEL)
@@ -158,7 +194,7 @@ const char *cNEDDeclaration::interfaceName(int k) const
 
 bool cNEDDeclaration::supportsInterface(const char *qname)
 {
-    //FIXME I hope interfacenames is cumulative, ie base classes don't need to be checked additionally!!!
+    // linear search is OK because #interfaces is typically just one or two
     for (int i=0; i<interfacenames.size(); i++)
         if (interfacenames[i] == qname)
             return true;

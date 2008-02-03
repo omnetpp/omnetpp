@@ -57,10 +57,15 @@ NAMESPACE_BEGIN
  */
 class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo // noncopyable
 {
+  public:
+    enum Type {SIMPLE_MODULE, COMPOUND_MODULE, MODULEINTERFACE, CHANNEL, CHANNELINTERFACE};
+    
   protected:
     typedef std::vector<std::string> StringVector;
     typedef std::map<std::string,int> StringToIntMap;
 
+    Type type;
+    
     // inheritance
     StringVector extendsnames;
     StringVector interfacenames;
@@ -140,6 +145,12 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     virtual std::string detailedInfo() const;
     //@}
 
+    /**
+     * Returns the type of this declaration: simple module, compound module,
+     * channel, etc. 
+     */
+    virtual Type getType() const {return type;}
+    
     /**
      * NED declaration
      */
