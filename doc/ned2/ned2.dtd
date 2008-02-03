@@ -215,7 +215,7 @@
 
 <!ELEMENT namespace (comment*)>
 <!ATTLIST namespace
-     name                NMTOKEN   #REQUIRED>
+     name                CDATA     #REQUIRED>  <!-- note: not NMTOKEN because it may contain "::" -->
 
 <!ELEMENT cplusplus (comment*)>
 <!ATTLIST cplusplus
