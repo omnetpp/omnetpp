@@ -206,12 +206,16 @@
 **
 -->
 
-<!ELEMENT msg-file (comment*, (property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
+<!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
                      enum|message|class|struct)*)>
 
 <!ATTLIST msg-file
      filename            CDATA     #IMPLIED
      version             CDATA     "2">
+
+<!ELEMENT namespace (comment*)>
+<!ATTLIST namespace
+     name                NMTOKEN   #REQUIRED>
 
 <!ELEMENT cplusplus (comment*)>
 <!ATTLIST cplusplus
