@@ -412,7 +412,6 @@ void NEDDTDValidator::validateElement(NamespaceNode *node)
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
-    checkNameAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(CplusplusNode *node)

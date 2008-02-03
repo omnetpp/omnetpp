@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
 
 /**
  * GENERATED CLASS. Validates a NEDElement tree by the DTD.
- *
+ * 
  * @ingroup Validation
  */
 class NEDXML_API NEDDTDValidator : public NEDDTDValidatorBase

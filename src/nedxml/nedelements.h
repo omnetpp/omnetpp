@@ -1961,7 +1961,7 @@ class NEDXML_API MsgFileNode : public NEDElement
  * <pre>
  * <!ELEMENT namespace (comment*)>
  * <!ATTLIST namespace
- *      name                NMTOKEN   #REQUIRED>
+ *      name                CDATA     #REQUIRED>
  * </pre>
  * 
  * @ingroup Data

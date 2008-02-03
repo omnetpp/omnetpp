@@ -44,7 +44,6 @@
 %start networkdescription
 
 /*FIXME accept namespace prefix in fwd decls, base classes etc!!! */
-/*FIXME this cannot parse example.msg!!! */
 
 %{
 
