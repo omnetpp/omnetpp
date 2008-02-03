@@ -662,13 +662,13 @@ void TOmnetTkApp::loadNedFile(const char *fname)
     }
 }
 
-void TOmnetTkApp::newNetwork(const char *network_name)
+void TOmnetTkApp::newNetwork(const char *networkname)
 {
-    cModuleType *network = cModuleType::find( network_name );
+    cModuleType *network = cModuleType::find(networkname);   //FIXME use opt_network_inifiledir too!!
     //FIXME check it can be used as network
     if (!network)
     {
-        CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", network_name, "' not found.} info ok",NULL));
+        CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", networkname, "' not found.} info ok",NULL));
         return;
     }
 

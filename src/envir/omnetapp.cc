@@ -1052,6 +1052,7 @@ void TOmnetApp::readPerRunOptions()
 
     // get options from ini file
     opt_network_name = cfg->getAsString(CFGID_NETWORK);
+    opt_network_inifiledir = cfg->getConfigEntry(CFGID_NETWORK.name()).getBaseDirectory();
     opt_warnings = cfg->getAsBool(CFGID_WARNINGS);
     opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
     opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
