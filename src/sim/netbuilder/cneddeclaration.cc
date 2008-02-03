@@ -86,6 +86,10 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
         }
     }
     
+    if (!isInterface) {
+        //FIXME TODO check that we have all parameters/gates required by the interfaces we support 
+    }
+    
     if (numExtendsNames()!=0)
         implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
     else if (tree->getTagCode()==NED_SIMPLE_MODULE || tree->getTagCode()==NED_CHANNEL)
