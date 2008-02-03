@@ -416,7 +416,7 @@ class SIM_API cTopology : public cOwnedObject
      * the graph all modules whose className() is one of the class names in
      * in the 'types' argument.
      */
-    void extractByModuleType(const std::vector<std::string> types);
+    void extractByModuleType(const std::vector<std::string>& types);
 
     /**
      * Extracts model topology by parameter value. Includes into the graph
