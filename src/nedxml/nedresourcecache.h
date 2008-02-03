@@ -48,7 +48,7 @@ class NEDXML_API NEDResourceCache
 {
   public:
       /** Interface that enumerates NED types; used by resolveType() */
-      class NEDTypeNames {
+      class INEDTypeNames {
         public:
           /** Returns true if the given fully qualified name is an existing NED type */
           virtual bool contains(const char *qname) const = 0;
@@ -60,7 +60,7 @@ class NEDXML_API NEDResourceCache
           virtual const char *get(int k) const = 0;
       };
 
-      class CachedTypeNames : public NEDTypeNames {
+      class CachedTypeNames : public INEDTypeNames {
         protected:
           NEDResourceCache *p;
         public:
@@ -113,7 +113,7 @@ class NEDXML_API NEDResourceCache
     virtual NEDTypeInfo *lookup(const char *qname) const;
 
     /** Resolves the given NED type name in the given context. Returns "" if not found. */
-    virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename, NEDTypeNames *qnames);
+    virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename, INEDTypeNames *qnames);
     
     /** Available NED type names */
     virtual const std::vector<std::string>& getTypeNames() const;

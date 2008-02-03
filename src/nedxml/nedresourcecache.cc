@@ -98,7 +98,7 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
     }
 }
 
-std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, const char *nedtypename, NEDTypeNames *qnames)
+std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, const char *nedtypename, INEDTypeNames *qnames)
 {
     // note: this method is to be kept consistent with NEDResources.lookupNedType() in the Java code
     // note2: partially qualified names are not supported: name must be either simplename or fully qualified
