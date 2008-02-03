@@ -57,7 +57,7 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
             cNEDDeclaration *decl = (cNEDDeclaration *)cNEDLoader::instance()->lookup(extendsqname.c_str());
             ASSERT(decl);
             if (getType() != decl->getType())
-                throw cRuntimeError("%s: base type %s should be a %s", getTree()->getSourceLocation(), extendsqname.c_str(), tree->getTagName());
+                throw cRuntimeError("%s: a %s cannot extend a %s (%s)", getTree()->getSourceLocation(), getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
 
             // collect interfaces from our base types
             if (isInterface)
@@ -78,7 +78,7 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
             cNEDDeclaration *decl = (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
             ASSERT(decl);
             if (decl->getType() != (getType()==CHANNEL ? CHANNELINTERFACE : MODULEINTERFACE))
-                throw cRuntimeError("%s: base type %s should be a %s interface", getTree()->getSourceLocation(), interfaceqname.c_str(), (getType()==CHANNEL ? "channel" : "module"));
+                throw cRuntimeError("%s: base type %s is expected to be a %s interface", getTree()->getSourceLocation(), interfaceqname.c_str(), (getType()==CHANNEL ? "channel" : "module"));
             
             // we support all interfaces that our base interfaces extend
             for (int i=0; i<decl->numExtendsNames(); i++)
