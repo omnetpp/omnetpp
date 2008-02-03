@@ -88,7 +88,7 @@ void InifileReader::readFile(const char *filename)
 void InifileReader::internalReadFile(const char *filename)
 {
     // create an entry for this file, checking against circular inclusion
-    std::string tmpfname = tidyFilename(absolutePath(filename).c_str(),true);
+    std::string tmpfname = tidyFilename(toAbsolutePath(filename).c_str(),true);
     std::string tmpdir = directoryOf(tmpfname.c_str());
     if (filenames.find(tmpfname)!=filenames.end())
         throw cRuntimeError("Ini file `%s' includes itself, directly or indirectly", filename);

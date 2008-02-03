@@ -38,7 +38,7 @@ NEDResourceCache::~NEDResourceCache()
 
 bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
 {
-    std::string key = tidyFilename(absolutePath(fname).c_str());
+    std::string key = tidyFilename(toAbsolutePath(fname).c_str());
     NEDFileMap::iterator it = files.find(key);
     if (it!=files.end())
         return false; // already added
@@ -57,7 +57,7 @@ bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
 NEDElement *NEDResourceCache::getFile(const char *fname)
 {
     // hash table lookup
-    std::string key = tidyFilename(absolutePath(fname).c_str());
+    std::string key = tidyFilename(toAbsolutePath(fname).c_str());
     NEDFileMap::iterator i = files.find(key);
     return i==files.end() ? NULL : i->second;
 }

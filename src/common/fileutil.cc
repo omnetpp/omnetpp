@@ -124,7 +124,7 @@ std::string tidyFilename(const char *pathname, bool slashes)
     return result;
 }
 
-std::string absolutePath(const char *pathname)
+std::string toAbsolutePath(const char *pathname)
 {
 #ifdef _WIN32
     if ((pathname[0] && pathname[1]==':' && (pathname[2]=='/' || pathname[2]=='\\')) ||
@@ -148,13 +148,13 @@ std::string absolutePath(const char *pathname)
     }
     if (!_getcwd(wd,_MAX_PATH))
         return std::string(pathname);  // error, cannot help
-    return std::string(wd) + "\\" + pathname;
+    return std::string(wd) + "\\" + pathname;   //XXX results in double backslash if wd is the root
 #else
     if (pathname[0] == '/')
         return std::string(pathname);  // already absolute
 
     char wd[1024];
-    return std::string(getcwd(wd,1024)) + "/" + pathname;
+    return std::string(getcwd(wd,1024)) + "/" + pathname; //XXX results in double slash if wd is the root
 #endif
 }
 

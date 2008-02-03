@@ -23,7 +23,7 @@ NAMESPACE_BEGIN
 COMMON_API void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly);
 COMMON_API std::string directoryOf(const char *pathname);
 COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
-COMMON_API std::string absolutePath(const char *pathname);
+COMMON_API std::string toAbsolutePath(const char *pathname);
 COMMON_API std::string concatDirAndFile(const char *basedir, const char *pathname);
 COMMON_API bool isDirectory(const char *pathname);
 
