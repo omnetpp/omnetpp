@@ -79,7 +79,8 @@ void cNEDLoader::registerBuiltinDeclarations()
 
     try
     {
-        addFile("[builtin-declarations]", tree);
+        // note: file must be called package.ned so that @namespace("") takes effect
+        addFile("/[builtin-declarations]/package.ned", tree);
     }
     catch (NEDException& e)
     {
@@ -189,7 +190,7 @@ int cNEDLoader::doLoadNedSourceFolder(const char *foldername)
         }
         if (isDirectory(filename))
         {
-            count += doLoadNedSourceFolder(filename); //FIXME not good, because dirname will be lost from loaded file names!!!
+            count += doLoadNedSourceFolder(filename);
         }
         else if (opp_stringendswith(filename, ".ned"))
         {

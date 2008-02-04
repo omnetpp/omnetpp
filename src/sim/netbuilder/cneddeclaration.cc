@@ -101,7 +101,7 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
         else
             implClassName = name();
         
-        // now the namespace: @namespace() properties in package.ned files in this package and above
+        // now the namespace: find first @namespace() property in package.ned of this package and parent packages
         PropertyNode *namespacePropertyNode = NULL;  
         std::string packageName = getPackage(); 
         while (true) {
@@ -110,15 +110,15 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
             namespacePropertyNode = nedfile ? (PropertyNode *)nedfile->getFirstChildWithAttribute(NED_PROPERTY, "name", "namespace") : NULL;
             if (namespacePropertyNode)
                 break;
-           
-            if (packageName.empty())
+
+            if (packageName.empty()) 
                 break;
-            
+
             // go one package up -- drop part after last dot
             size_t k = packageName.rfind(".", packageName.length());
             packageName.resize(k==std::string::npos ? 0 : k);
         }
-        
+
         // if the "namespace" property was found in a package.ned file, prepend implClassName with it
         //FIXME this prefix will cumulate from base classes!!!!
         if (namespacePropertyNode) {

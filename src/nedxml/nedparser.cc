@@ -42,6 +42,7 @@ const char *NEDParser::getBuiltInDeclarations()
 {
     return
         "package ned;\n"
+        "@namespace(\"\");\n"
         "\n"
         "channel cBasicChannel\n"
         "{\n"

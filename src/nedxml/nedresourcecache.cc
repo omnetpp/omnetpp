@@ -65,13 +65,15 @@ NEDElement *NEDResourceCache::getFile(const char *fname)
 NEDElement *NEDResourceCache::getPackageNedFile(const char *packagename) const
 {
     for (NEDFileMap::const_iterator i = files.begin(); i != files.end(); i++) {
-        PackageNode *packageDecl = (PackageNode *) i->second->getFirstChildWithTag(NED_PACKAGE);
+        const char *filepath = i->first.c_str();
+        NEDElement *nedfile = i->second;
+        PackageNode *packageDecl = (PackageNode *) nedfile->getFirstChildWithTag(NED_PACKAGE);
         std::string filePackageName = packageDecl ? packageDecl->getName() : "";
         if (filePackageName == opp_nulltoempty(packagename)) {
             std::string dir, fname;
-            splitFileName(i->first.c_str(), dir, fname);
+            splitFileName(filepath, dir, fname);
             if (fname == "package.ned")
-                return i->second;
+                return nedfile;
         }
     }
     return NULL;
