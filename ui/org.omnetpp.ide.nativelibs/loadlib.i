@@ -13,7 +13,7 @@
 #include "exception.h"
 static void testExceptionHandling() {
     try {
-        throw opp_runtime_error("if you see this exception, omnetpp's native lib (opplibs) was built incorrectly"); 
+        throw opp_runtime_error("if you see this exception, omnetpp's native library (\"opplibs\") was built incorrectly"); 
     } catch (std::exception&) { /*OK!*/ }
 }
 %}

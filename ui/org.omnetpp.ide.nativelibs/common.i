@@ -8,6 +8,7 @@
 %}
 
 %include "commondefs.i"
+%include "loadlib.i"
 
 %exception {
     try {
