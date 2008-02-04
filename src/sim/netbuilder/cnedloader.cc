@@ -89,27 +89,8 @@ void cNEDLoader::registerBuiltinDeclarations()
 
 void cNEDLoader::addNedType(const char *qname, NEDElement *node)
 {
-    if (!areDependenciesResolved(qname, node))
-    {
-        // we'll process it later
-        pendingList.push_back(PendingNedType(qname,node));
-        return;
-    }
-
-    // Note: base class (nedxml's NEDResourceCache) has already checked for duplicates, no need here
-    cNEDDeclaration *decl = buildNEDDeclaration(qname, node);
-    nedTypes[qname] = decl;
-
-    //printf("DBG: registered %s\n",name);
-
-    // if module or channel, register corresponding object which can be used to instantiate it
-    cComponentType *type = NULL;
-    if (node->getTagCode()==NED_SIMPLE_MODULE || node->getTagCode()==NED_COMPOUND_MODULE)
-        type = new cDynamicModuleType(qname);
-    else if (node->getTagCode()==NED_CHANNEL)
-        type = new cDynamicChannelType(qname);
-    if (type)
-        componentTypes.instance()->add(type);
+    // we'll process it later, from done()
+    pendingList.push_back(PendingNedType(qname,node));
 }
 
 cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const
@@ -208,7 +189,7 @@ int cNEDLoader::doLoadNedSourceFolder(const char *foldername)
         }
         if (isDirectory(filename))
         {
-            count += doLoadNedSourceFolder(filename);
+            count += doLoadNedSourceFolder(filename); //FIXME not good, because dirname will be lost from loaded file names!!!
         }
         else if (opp_stringendswith(filename, ".ned"))
         {
@@ -236,7 +217,7 @@ bool cNEDLoader::areDependenciesResolved(const char *qname, NEDElement *node)
     return true;
 }
 
-NEDLookupContext cNEDLoader::getParentContextOf(const char *qname, NEDElement *node) 
+NEDLookupContext cNEDLoader::getParentContextOf(const char *qname, NEDElement *node)
 {
     NEDElement *contextnode = node->getParent();
     if (contextnode->getTagCode()==NED_TYPES)
@@ -246,7 +227,7 @@ NEDLookupContext cNEDLoader::getParentContextOf(const char *qname, NEDElement *n
     return NEDLookupContext(contextnode, contextqname.c_str());
 }
 
-void cNEDLoader::tryResolvePendingDeclarations()
+void cNEDLoader::registerNedTypes()
 {
     bool again = true;
     while (again)
@@ -257,7 +238,7 @@ void cNEDLoader::tryResolvePendingDeclarations()
             PendingNedType type = pendingList[i];
             if (areDependenciesResolved(type.qname.c_str(), type.node))
             {
-                addNedType(type.qname.c_str(), type.node);
+                registerNedType(type.qname.c_str(), type.node);
                 pendingList.erase(pendingList.begin() + i--);
                 again = true;
             }
@@ -265,15 +246,26 @@ void cNEDLoader::tryResolvePendingDeclarations()
     }
 }
 
-cNEDDeclaration *cNEDLoader::buildNEDDeclaration(const char *qname, NEDElement *node)
+void cNEDLoader::registerNedType(const char *qname, NEDElement *node)
 {
-    return new cNEDDeclaration(qname, node);
+    // Note: base class (nedxml's NEDResourceCache) has already checked for duplicates, no need here
+    cNEDDeclaration *decl = new cNEDDeclaration(qname, node);
+    nedTypes[qname] = decl;
+
+    // if module or channel, register corresponding object which can be used to instantiate it
+    cComponentType *type = NULL;
+    if (node->getTagCode()==NED_SIMPLE_MODULE || node->getTagCode()==NED_COMPOUND_MODULE)
+        type = new cDynamicModuleType(qname);
+    else if (node->getTagCode()==NED_CHANNEL)
+        type = new cDynamicChannelType(qname);
+    if (type)
+        componentTypes.instance()->add(type);
 }
 
 void cNEDLoader::done()
 {
-    // we've loaded all NED files now, try resolving those which had missing dependencies
-    tryResolvePendingDeclarations();
+    // register NED types from all the files we've loaded
+    registerNedTypes();
 
     for (int i=0; i<(int)pendingList.size(); i++)
     {
@@ -283,4 +275,3 @@ void cNEDLoader::done()
         delete type.node;
     }
 }
-

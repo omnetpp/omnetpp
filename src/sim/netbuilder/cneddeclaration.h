@@ -152,6 +152,12 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     virtual Type getType() const {return type;}
     
     /**
+     * Returns the package name (from the package declaration of the containing
+     * NED file 
+     */
+    virtual std::string getPackage() const;
+    
+    /**
      * NED declaration
      */
     virtual std::string nedSource() const;

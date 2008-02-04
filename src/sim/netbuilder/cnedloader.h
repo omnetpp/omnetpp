@@ -71,21 +71,21 @@ class SIM_API cNEDLoader : public NEDResourceCache
 
   protected:
     // utility functions
-    void registerBuiltinDeclarations();
-    NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
-    bool areDependenciesResolved(const char *qname, NEDElement *node);
-    void tryResolvePendingDeclarations();
-    cNEDDeclaration *buildNEDDeclaration(const char *qname, NEDElement *node);
-    int doLoadNedSourceFolder(const char *foldername);
+    virtual void registerBuiltinDeclarations();
+    virtual NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
+    virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
+    virtual void registerNedTypes();
+    virtual void registerNedType(const char *qname, NEDElement *node);
+    virtual int doLoadNedSourceFolder(const char *foldername);
 
     // constructor is protected, because we want only one instance
     cNEDLoader();
 
   public:
-    /** Access to singleton instance */
+    /** Access to the singleton instance */
     static cNEDLoader *instance();
 
-    /** Disposes of singleton instance */
+    /** Disposes of the singleton instance */
     static void clear();
 
     /**
@@ -119,7 +119,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
     void done();
 
     /**
-     * Resolves NED module/channel/moduleinterface/channelinterface type name, 
+     * Resolves NED module/channel/moduleinterface/channelinterface type name,
      * based on the NED files loaded. This lookup is need for resolving inheritance
      * ("extends", "like").
      */
@@ -128,9 +128,9 @@ class SIM_API cNEDLoader : public NEDResourceCache
     }
 
     /**
-     * Resolve a NED module/channel type name, for a submodule or channel 
+     * Resolve a NED module/channel type name, for a submodule or channel
      * instance. Lookup is based on component names registered in the simkernel,
-     * NOT on the NED files loaded. This allows the user to instantiate 
+     * NOT on the NED files loaded. This allows the user to instantiate
      * cModuleTypes/cChannelTypes which are not declared in NED.
      */
     virtual std::string resolveComponentType(const NEDLookupContext& context, const char *nedtypename) {

@@ -2082,6 +2082,7 @@ $O/util.obj: util.cc \
   ../../include/cpsquare.h \
   ../../include/cstrtokenizer.h \
   ../../include/cxmlelement.h \
+  ../../include/cbasicchannel.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
   ../../include/platdep/platdefs.h \
@@ -2111,7 +2112,11 @@ $O/util.obj: util.cc \
   ../../include/cconfiguration.h \
   ../../include/mersennetwister.h \
   ../../include/cdensity.h \
-  ../../include/cstat.h
+  ../../include/cstat.h \
+  ../../include/cchannel.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cneddeclarationbase.h \
+  ../../include/cparvalue.h
 $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   netbuilder/cdynamicchanneltype.h \
   netbuilder/cnedloader.h \

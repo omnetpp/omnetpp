@@ -109,6 +109,9 @@ class NEDXML_API NEDResourceCache
     /** Get a file (represented as object tree) from the cache */
     virtual NEDElement *getFile(const char *fname);
 
+    /** Returns the package.ned file for the given package, or NULL. */
+    virtual NEDElement *getPackageNedFile(const char *packagename) const;
+
     /** Look up a fully qualified NED type name from the cache. Returns NULL if not found. */
     virtual NEDTypeInfo *lookup(const char *qname) const;
 

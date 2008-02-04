@@ -90,10 +90,45 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
         //FIXME TODO check that we have all parameters/gates required by the interfaces we support 
     }
     
-    if (numExtendsNames()!=0)
-        implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
-    else if (tree->getTagCode()==NED_SIMPLE_MODULE || tree->getTagCode()==NED_CHANNEL)
-        implClassName = name();  //FIXME not good: honor @class(), @cppnamespace(), etc!
+    // resolve C++ class name
+    if (getType()==SIMPLE_MODULE || getType()==CHANNEL)
+    {
+        cProperty *classProperty = properties()->get("class");
+        if (classProperty)
+            implClassName = classProperty->value("");
+        else if (numExtendsNames()!=0)
+            implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
+        else
+            implClassName = name();
+        
+        // now the namespace: @namespace() properties in package.ned files in this package and above
+        PropertyNode *namespacePropertyNode = NULL;  
+        std::string packageName = getPackage(); 
+        while (true) {
+            // check the package.ned file for this property
+            NEDElement *nedfile = cNEDLoader::instance()->getPackageNedFile(packageName.c_str());
+            namespacePropertyNode = nedfile ? (PropertyNode *)nedfile->getFirstChildWithAttribute(NED_PROPERTY, "name", "namespace") : NULL;
+            if (namespacePropertyNode)
+                break;
+           
+            if (packageName.empty())
+                break;
+            
+            // go one package up -- drop part after last dot
+            size_t k = packageName.rfind(".", packageName.length());
+            packageName.resize(k==std::string::npos ? 0 : k);
+        }
+        
+        // if the "namespace" property was found in a package.ned file, prepend implClassName with it
+        //FIXME this prefix will cumulate from base classes!!!!
+        if (namespacePropertyNode) {
+            NEDElement *propKey = namespacePropertyNode->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
+            LiteralNode *literal = propKey ? (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL) : NULL;
+            std::string value = literal ? literal->getValue() : "";
+            if (!value.empty())
+                implClassName = value + "::" + implClassName;
+        }
+    }
 }
 
 cNEDDeclaration::~cNEDDeclaration()
@@ -114,6 +149,13 @@ void cNEDDeclaration::setName(const char *s)
     //XXX instead of this, add name locking feature to cNamedObject and use that 
     // (it'll be useful with modules, gates, params, coutvectors etc too!)
     throw cRuntimeError(this, "Changing the name is not allowed");  
+}
+
+std::string cNEDDeclaration::getPackage() const
+{
+    NEDElement *nedfile = getTree()->getParentWithTag(NED_NED_FILE);
+    PackageNode *packageDecl = nedfile ? (PackageNode *) nedfile->getFirstChildWithTag(NED_PACKAGE) : NULL;
+    return packageDecl ? packageDecl->getName() : "";
 }
 
 void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)

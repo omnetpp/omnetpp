@@ -62,6 +62,21 @@ NEDElement *NEDResourceCache::getFile(const char *fname)
     return i==files.end() ? NULL : i->second;
 }
 
+NEDElement *NEDResourceCache::getPackageNedFile(const char *packagename) const
+{
+    for (NEDFileMap::const_iterator i = files.begin(); i != files.end(); i++) {
+        PackageNode *packageDecl = (PackageNode *) i->second->getFirstChildWithTag(NED_PACKAGE);
+        std::string filePackageName = packageDecl ? packageDecl->getName() : "";
+        if (filePackageName == opp_nulltoempty(packagename)) {
+            std::string dir, fname;
+            splitFileName(i->first.c_str(), dir, fname);
+            if (fname == "package.ned")
+                return i->second;
+        }
+    }
+    return NULL;
+}
+
 NEDTypeInfo *NEDResourceCache::lookup(const char *qname) const
 {
     // hash table lookup
