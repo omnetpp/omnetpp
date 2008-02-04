@@ -194,7 +194,7 @@ int cNEDLoader::doLoadNedSourceFolder(const char *foldername)
         }
         else if (opp_stringendswith(filename, ".ned"))
         {
-            loadNedFile(filename, false);
+            loadNedFile(filename, false);  //FIXME should pass "expected package" into the function, so that it can check its consistency with "declared package"!
             count++;
         }
     }
