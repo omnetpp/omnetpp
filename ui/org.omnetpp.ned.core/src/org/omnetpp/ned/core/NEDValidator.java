@@ -598,6 +598,11 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 	}
 
 	@Override
+    protected void validateElement(NamespaceElement node) {
+		validateChildren(node);
+	}
+	
+	@Override
     protected void validateElement(CplusplusElement node) {
 		validateChildren(node);
 	}
