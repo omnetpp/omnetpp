@@ -23,7 +23,6 @@ message NetPkt;
 //
 message HTTPMsg extends NetPkt
 {
-    fields:
-        string payload;
+    string payload;
 };
 

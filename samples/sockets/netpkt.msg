@@ -12,7 +12,8 @@
 //
 message NetPkt
 {
-    fields:
-        int srcAddress;
-        int destAddress;
+    int srcAddress;
+    int destAddress;
 };
+
+

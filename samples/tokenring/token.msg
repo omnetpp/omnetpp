@@ -20,9 +20,8 @@ enum TRTypes
 //
 message TRApplicationData
 {
-    fields:
-       int destination;
-       string data;
+    int destination;
+    string data;
 };
 
 
@@ -39,8 +38,7 @@ message TRToken
 //
 message TRFrame
 {
-    fields:
-       int source;
-       int destination;
+    int source;
+    int destination;
 };
 

@@ -13,8 +13,7 @@
 //
 message HCPacket
 {
-    fields:
-       int srcAddress;
-       int destAddress;
-       int hops = 0;
+    int srcAddress;
+    int destAddress;
+    int hops = 0;
 };

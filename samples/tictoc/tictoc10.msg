@@ -10,8 +10,8 @@
 
 message TicTocMsg10
 {
-    fields:
-        int source;
-        int destination;
-        int hopCount = 0;
+    int source;
+    int destination;
+    int hopCount = 0;
 }
+

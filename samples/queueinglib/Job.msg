@@ -22,11 +22,10 @@
 //
 message Job
 {
-    fields:
-        simtime_t totalQueueingTime; // total time spent standing in queues     
-        simtime_t totalServiceTime;  // total time spent in servers
-        simtime_t totalDelayTime;    // total time spent in delay modules
-        int queueCount;              // the number of queue modules visited by the job
-        int delayCount;              // the number of delay modules visiteb by the job
-        int generation;              // how many times the original ancestor was copied
+    simtime_t totalQueueingTime; // total time spent standing in queues
+    simtime_t totalServiceTime;  // total time spent in servers
+    simtime_t totalDelayTime;    // total time spent in delay modules
+    int queueCount;              // the number of queue modules visited by the job
+    int delayCount;              // the number of delay modules visiteb by the job
+    int generation;              // how many times the original ancestor was copied
 }

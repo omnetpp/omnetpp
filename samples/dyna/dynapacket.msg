@@ -19,15 +19,13 @@ enum DynaPacketType
 
 message DynaPacket
 {
-    fields:
-        int srcAddress;
-        int destAddress;
-        int serverProcId;
+    int srcAddress;
+    int destAddress;
+    int serverProcId;
 };
 
 message DynaDataPacket extends DynaPacket
 {
-    fields:
-        string payload;
+    string payload;
 };
 

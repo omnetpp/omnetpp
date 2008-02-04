@@ -20,7 +20,6 @@ message NetPkt;
 //
 message TelnetPkt extends NetPkt
 {
-    fields:
-        string payload;
+    string payload;
 };
 
