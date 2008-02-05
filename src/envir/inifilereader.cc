@@ -80,7 +80,10 @@ const InifileReader::Section& InifileReader::getSection(int sectionId) const
 void InifileReader::readFile(const char *filename)
 {
     rootfilename = filename;
-    defaultbasedir = directoryOf(rootfilename.c_str());
+
+    // use the first ini file's location as default base dir
+    if (defaultbasedir.empty())
+        defaultbasedir = directoryOf(rootfilename.c_str());
 
     internalReadFile(filename);
 }

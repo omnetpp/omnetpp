@@ -29,8 +29,6 @@ Syntax: opp_test [-g|-r] [-v] [-d] [-w <dir>] <testcase-file> ...
   -p <prog>  name of test program (defaults to name of work directory)
   -a <args>  extra command-line arguments for the test program. You may need
              to use quotes: opp_test -a "-f extrasettings.ini"
-  -N         run tests with dynamic NED loading. Runs the test program with an
-             extra ini file which contains the line preload-ned-files=*.ned
 
 Usage in nutshell:
    1. create *.test files
@@ -77,7 +75,6 @@ $workdir = 'work';
 $shell='/bin/sh';
 $testprogram='';
 $extraargs='';
-$dynamicned=0;
 $verbose=0;
 $debug=0;
 
@@ -99,9 +96,6 @@ while (@ARGV)
     elsif ($arg eq "-d") {
         $debug=1;
     }
-    elsif ($arg eq "-N") {
-        $dynamicned=1;
-    }
     elsif ($arg eq "-w") {
         $workdir = shift @ARGV;
     }
@@ -115,19 +109,19 @@ while (@ARGV)
         $extraargs = shift @ARGV;
     }
     elsif ($arg eq "-g") {
-        $mode='gen';
+        $mode = 'gen';
     }
     elsif ($arg eq "--generate-files") {
-        $mode='gen';
+        $mode = 'gen';
     }
     elsif ($arg eq "-r") {
-        $mode='run';
+        $mode = 'run';
     }
     elsif ($arg eq "--run") {
-        $mode='run';
+        $mode = 'run';
     }
     elsif ($arg =~ /^-/) {
-        print STDERR "$arg0: error: unknown switch $arg\n";
+        print STDERR "$arg0: error: unknown option $arg\n";
         exit(1);
     }
     else {
@@ -158,7 +152,6 @@ if (! -d $workdir) {
 
 # produce name of test program
 if ($testprogram eq '') {
-
     $workdir =~ /([^\/\\]*)$/;
     $tmp = $1;
     if ($isWindows) {
@@ -166,7 +159,6 @@ if ($testprogram eq '') {
     } else {
         $testprogram = "./" . $tmp;
     }
-
 }
 
 #
@@ -191,9 +183,9 @@ if ($mode eq 'run')
 {
     print "$arg0: running tests using $testprogram...\n";
 
-    $num_pass=0;
-    $num_fail=0;
-    $num_unresolved=0;
+    $num_pass = 0;
+    $num_fail = 0;
+    $num_unresolved = 0;
 
     @unresolved_tests = ();
     @failed_tests = ();
@@ -241,16 +233,16 @@ sub parse_testfile
         print STDERR "$arg0: error: cannot open test file `$testfilename'\n"; exit(1);
     }
 
-    $body='';
-    $key_index='';
+    $body = '';
+    $key_index = '';
     while (<IN>)
     {
         s/[\r\n]*$//;
         if (/^%#/) {
             # ignore
         } elsif (/^%/) {
-            $bodies{$key_index}=$body;
-            $body='';
+            $bodies{$key_index} = $body;
+            $body = '';
 
             /^%([^:]*):?(.*?)$/;
             $key = $1;
@@ -260,12 +252,12 @@ sub parse_testfile
 
             $count{$key}++;
             $key_index = $key.'('.$count{$key}.')';
-            $values{$key_index}=$value;
+            $values{$key_index} = $value;
         } else {
-            $body.= $_."\n";
+            $body .= $_."\n";
         }
     }
-    $bodies{$key_index}=$body;
+    $bodies{$key_index} = $body;
     close(IN);
 
     # check entries
@@ -342,8 +334,8 @@ sub testcase_generatesources
         if ($key =~ /^file\b/)
         {
             # write out file
-            $outfname = $workdir."/".$testname."/".$values{$key};
-            writefile($outfname, $bodies{$key});
+            my $fname = $workdir."/".$testname."/".$values{$key};
+            writefile($fname, $bodies{$key});
         }
     }
 
@@ -356,9 +348,9 @@ sub testcase_generatesources
         # generate NED
         $ned = $ModuleNEDTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
-        $ned =~ s/\@MODULE\@/$testname/g;
+        $ned =~ s/\@MODULE\@/TestModule/g;
         $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
-        $nedfname = $workdir."/".$testname.'/test.ned';
+        $nedfname = $workdir."/".$testname."/test.ned";
         writefile($nedfname, $ned);
 
         # generate C++
@@ -367,7 +359,7 @@ sub testcase_generatesources
         $cpp =~ s/\@ACTIVITY\@/$activity/g;
         $cpp =~ s/\@GLOBAL\@/$globalcode/g;
         $cpp =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
-        $cppfname = $workdir."/".$testname.'/test.cc';
+        $cppfname = $workdir."/".$testname."/test.cc";
         writefile($cppfname, $cpp);
     }
 
@@ -381,14 +373,14 @@ sub testcase_generatesources
         $ned = $ModuleNEDTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$module/g;
-        $nedfname = $workdir."/".$testname.'/test.ned';
+        $nedfname = $workdir."/".$testname."/test.ned";
         writefile($nedfname, $ned);
 
         # generate C++
         $cpp = $ModuleCPPTemplate;
         $cpp =~ s/\@MODULE\@/$module/g;
         $cpp =~ s/\@MODULE_SRC\@/$module_src/g;
-        $cppfname = $workdir."/".$testname.'/test.cc';
+        $cppfname = $workdir."/".$testname."/test.cc";
         writefile($cppfname, $cpp);
     }
 
@@ -405,7 +397,7 @@ sub testcase_generatesources
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE_A\@/$module_a/g;
         $ned =~ s/\@MODULE_B\@/$module_b/g;
-        $nedfname = $workdir."/".$testname.'/test.ned';
+        $nedfname = $workdir."/".$testname."/test.ned";
         writefile($nedfname, $ned);
 
         # generate C++
@@ -415,16 +407,16 @@ sub testcase_generatesources
         $cpp =~ s/\@MODULE_B\@/$module_b/g;
         $cpp =~ s/\@MODULE_A_SRC\@/$module_a_src/g;
         $cpp =~ s/\@MODULE_B_SRC\@/$module_b_src/g;
-        $cppfname = $workdir."/".$testname.'/test.cc';
+        $cppfname = $workdir."/".$testname."/test.cc";
         writefile($cppfname, $cpp);
     }
 
     # ini file
     $inifname = $values{'inifile(1)'};
     if ($inifname eq '') {
-        $inifname = $testname.'/test.ini';
+        $inifname = "test.ini";
     }
-    $inifname = $workdir."/".$inifname;
+    $inifname = $workdir."/".$testname."/".$inifname;
 
     $inifile = $bodies{'inifile(1)'};
     if ($inifile =~ /^\s*$/s)
@@ -442,8 +434,8 @@ sub testcase_run()
 
     parse_testfile($testfilename);
 
-    $outfname = $testname.'/test.out';
-    $errfname = $testname.'/test.err';
+    $outfname = "test.out";
+    $errfname = "test.err";
 
     # delete temp files before running the test case
     foreach $key (keys(%values))
@@ -458,7 +450,7 @@ sub testcase_run()
                 $infname = $errfname;
             }
             else {
-                $infname = $values{$key};
+                $infname = $testname."/".$values{$key};
             }
 
             if (-f $workdir."/".$infname) {
@@ -471,18 +463,12 @@ sub testcase_run()
     # ini file
     $inifname = $values{'inifile(1)'};
     if ($inifname eq '') {
-        $inifname = $testname.'/test.ini';
-    }
-
-    # dynamic NED
-    $dynamicnedargs='';
-    if ($dynamicned) {
-        writefile("$workdir/_nedfiles.ini","[General]\npreload-ned-files=*.ned\n");
-        $dynamicnedargs="-f _nedfiles.ini";
+        $inifname = "test.ini";
     }
 
     # run the program
-    $exitcode = exec_program("$testprogram -u Cmdenv $extraargs $dynamicnedargs -f $inifname", $workdir, $outfname, $errfname);
+    $sep = $isWindows ? "\\" : "/";
+    $exitcode = exec_program("..$sep$testprogram -u Cmdenv $extraargs -f $inifname", "$workdir/$testname", $outfname, $errfname);
     if ($exitcode != 0) {
         if ($exitcode == -1) {
             unresolved($testfilename, "could not execute test program");
@@ -494,13 +480,13 @@ sub testcase_run()
                 print "  exitcode ok ($exitcode)\n" if ($debug);
             } elsif ($values{'exitcode(1)'} ne '') {
                 fail($testfilename, "test program returned exit code $exitcode instead of $values{'exitcode(1)'}");
-                print_tail("stdout", $workdir."/".$outfname) if ($verbose);
-                print_tail("stderr", $workdir."/".$errfname) if ($verbose);
+                print_tail("stdout", $workdir."/".$testname."/".$outfname) if ($verbose);
+                print_tail("stderr", $workdir."/".$testname."/".$errfname) if ($verbose);
                 return;
             } else {
                 fail($testfilename, "test program returned nonzero exit code: $exitcode");
-                print_tail("stdout", $workdir."/".$outfname) if ($verbose);
-                print_tail("stderr", $workdir."/".$errfname) if ($verbose);
+                print_tail("stdout", $workdir."/".$testname."/".$outfname) if ($verbose);
+                print_tail("stderr", $workdir."/".$testname."/".$errfname) if ($verbose);
                 return;
             }
         }
@@ -524,7 +510,7 @@ sub testcase_run()
 
             print "  checking $infname\n" if ($debug);
 
-            if (!open(IN,$workdir."/".$infname)) {
+            if (!open(IN,$workdir."/".$testname."/".$infname)) {
                 unresolved($testfilename, "cannot read test case output file `$infname'");
                 return;
             }
@@ -719,17 +705,17 @@ sub exec_program()
         # The following line mysteriously fails to redirect on some Windows configuration.
         # This can be observed together with cvs reporting "editor session fails" -- root cause is common?
         #$status = system ("$cmd >$outfile 2>$errfile");
-        $shell=$ENV{'COMSPEC'};
+        $shell = $ENV{'COMSPEC'};
         if ($shell eq "") {
             print STDERR "$arg0: WARNING: no %COMSPEC% environment variable, using cmd.exe\n";
-            $shell="cmd.exe";
+            $shell = "cmd.exe";
         }
         # On the next line, cmd.exe may fail to pass back program exit code.
         # When this happens, use the above (commented out) "system" line.
         $status = system($shell, split(" ", "/c $cmd >$outfile 2>$errfile"));
         print "  returned status = $status\n" if ($debug);
         print "  restoring dir \"$savedir\"\n" if ($debug);
-        if (!chdir(".."))
+        if (!chdir("../.."))
         {
             print "  cannot chdir back\n" if ($debug);
             return -1;
@@ -773,10 +759,10 @@ sub exec_program()
 sub define_templates()
 {
     $ModuleNEDTemplate = '
-package @TESTNAME@;
-
 simple @MODULE@
 {
+    parameters:
+        @class("@TESTNAME@::@MODULE@");
 }
 
 network Test extends @MODULE@
@@ -785,10 +771,10 @@ network Test extends @MODULE@
 ';
 
     $ModuleABNEDTemplate = '
-package @TESTNAME@;
-
 simple @MODULE_A@
 {
+    parameters:
+        @class("@TESTNAME@::@MODULE_A@");
     gates:
         input in;
         output out;
@@ -796,6 +782,8 @@ simple @MODULE_A@
 
 simple @MODULE_B@
 {
+    parameters:
+        @class("@TESTNAME@::@MODULE_B@");
     gates:
         input in;
         output out;
@@ -815,43 +803,55 @@ network Test
     $ActivityCPPTemplate = '
 #include <omnetpp.h>
 
+namespace @TESTNAME@ {
+
 @GLOBAL@
 
-class @TESTNAME@ : public cSimpleModule
+class Test : public cSimpleModule
 {
-  public:
-    @TESTNAME@() : cSimpleModule(16384) {}
-    virtual void activity();
+    public:
+        Test() : cSimpleModule(16384) {}
+        virtual void activity();
 };
 
-Define_Module(@TESTNAME@);
+Define_Module(Test);
 
-void @TESTNAME@::activity()
+void Test::activity()
 {
 @ACTIVITY@
 }
+
+}; //namespace
 ';
 
     $ModuleCPPTemplate = '
 #include <omnetpp.h>
 
+namespace @TESTNAME@ {
+
 @MODULE_SRC@
+
+}; //namespace
 ';
 
     $ModuleABCPPTemplate = '
 #include <omnetpp.h>
 
+namespace @TESTNAME@ {
+
 @MODULE_A_SRC@
 
 @MODULE_B_SRC@
+
+}; //namespace
 ';
 
     $INITemplate = '
 [General]
-network = @TESTNAME@.Test
-output-vector-file = @TESTNAME@.vec
-output-scalar-file = @TESTNAME@.sca
+network = Test
 cmdenv-express-mode = false
+output-vector-file = test.vec
+output-scalar-file = test.sca
 ';
 }
 

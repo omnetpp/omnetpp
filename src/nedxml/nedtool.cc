@@ -592,7 +592,7 @@ int main(int argc, char **argv)
         }
         else if (argv[i][0]=='-')
         {
-            fprintf(stderr,"nedtool: unknown flag %s\n",argv[i]);
+            fprintf(stderr,"nedtool: unknown option %s\n",argv[i]);
             return 1;
         }
         else if (argv[i][0]=='@')
