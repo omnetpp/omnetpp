@@ -61,8 +61,6 @@ void Node1::activity()
     ev << "done\n";
 }
 
-#include <omnetpp.h>
-
 class Node2 : public cSimpleModule
 {
     int errors[5];

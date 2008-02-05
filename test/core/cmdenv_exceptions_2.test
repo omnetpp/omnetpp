@@ -4,8 +4,6 @@ and finish() doesn't get called.
 
 %module: Module
 
-#include <omnetpp.h>
-
 class Module : public cSimpleModule
 {
   public:

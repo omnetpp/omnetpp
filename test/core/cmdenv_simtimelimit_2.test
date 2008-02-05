@@ -3,8 +3,6 @@ Missing [General]/sim-time-limit= setting.
 
 %module: Module
 
-#include <omnetpp.h>
-
 class Module : public cSimpleModule
 {
   public:

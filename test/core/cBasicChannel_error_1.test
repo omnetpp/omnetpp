@@ -62,7 +62,6 @@ void Node1::activity()
     }
 }
 
-#include <omnetpp.h>
 
 class Node2 : public cSimpleModule
 {

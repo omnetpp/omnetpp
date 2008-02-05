@@ -3,8 +3,6 @@ Basic test for cSimpleModule.handleMessage().
 
 %module: Module
 
-#include <omnetpp.h>
-
 class Module : public cSimpleModule
 {
   public:
