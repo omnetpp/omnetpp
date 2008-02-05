@@ -21,7 +21,7 @@ message MyMessage extends Base
 };
 
 %global:
-#include "{}_m.h"
+#include "test_m.h"
 
 void print(const char *what, MyMessage& x)
 {

@@ -5,19 +5,19 @@ Tests for SimTime::ttoa.
 char *endp;
 char buf[64];
 
-ev << "zero0:  " << SimTime::ttoa(buf, 0, 0, false, endp) << "\n";
-ev << "zero10: " << SimTime::ttoa(buf, 0, -10, false, endp) << "\n";
-ev << "zero18: " << SimTime::ttoa(buf, 0, -18, false, endp) << "\n";
+ev << "zero0:  " << SimTime::ttoa(buf, 0, 0, endp) << "\n";
+ev << "zero10: " << SimTime::ttoa(buf, 0, -10, endp) << "\n";
+ev << "zero18: " << SimTime::ttoa(buf, 0, -18, endp) << "\n";
 
 int64 t = 12345;
 for (int exp=0; exp<=18; exp++)
 {
     ev << "exp=" << -exp << ":\n";
-    ev << " " << SimTime::ttoa(buf, -t, -exp, false, endp) << "\n";
-    ev << " " << SimTime::ttoa(buf, t, -exp, false, endp) << "\n";
-    ev << " " << SimTime::ttoa(buf, t*10, -exp, false, endp) << "\n";
-    ev << " " << SimTime::ttoa(buf, t*100, -exp, false, endp) << "\n";
-    ev << " " << SimTime::ttoa(buf, t*1000, -exp, false, endp) << "\n";
+    ev << " " << SimTime::ttoa(buf, -t, -exp, endp) << "\n";
+    ev << " " << SimTime::ttoa(buf, t, -exp, endp) << "\n";
+    ev << " " << SimTime::ttoa(buf, t*10, -exp, endp) << "\n";
+    ev << " " << SimTime::ttoa(buf, t*100, -exp, endp) << "\n";
+    ev << " " << SimTime::ttoa(buf, t*1000, -exp, endp) << "\n";
 }
 ev << ".\n";
 

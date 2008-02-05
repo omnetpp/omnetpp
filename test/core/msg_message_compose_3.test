@@ -17,7 +17,7 @@ message MyMessage
 };
 
 %global:
-#include "{}_m.h"
+#include "test_m.h"
 
 %activity:
 
