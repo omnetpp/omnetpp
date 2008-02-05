@@ -24,9 +24,9 @@ Syntax: opp_test [-g|-r] [-v] [-d] [-w <dir>] <testcase-file> ...
   -r         run test (expects pre-built test executable)
   -v         verbose
   -d         very verbose (debug)
-  -w <dir>   working directory (defaults to `./work\')
+  -w <dir>   work directory (defaults to `./work\')
   -s <prog>  shell to use to run test program (not used on windows)
-  -p <prog>  name of test program (defaults to name of working directory)
+  -p <prog>  name of test program (defaults to name of work directory)
   -a <args>  extra command-line arguments for the test program. You may need
              to use quotes: opp_test -a "-f extrasettings.ini"
   -N         run tests with dynamic NED loading. Runs the test program with an
@@ -38,7 +38,7 @@ Usage in nutshell:
    3. create a makefile (opp_makemake) and build the test program
    4. run opp_test with -r option to execute the tests
 
-All files will be created in the working directory.
+All files will be created in the work directory.
 
 ';
 
@@ -73,7 +73,7 @@ All files will be created in the working directory.
 #
 @filenames = ();
 $mode='';
-$workingdir = 'work';
+$workdir = 'work';
 $shell='/bin/sh';
 $testprogram='';
 $extraargs='';
@@ -103,7 +103,7 @@ while (@ARGV)
         $dynamicned=1;
     }
     elsif ($arg eq "-w") {
-        $workingdir = shift @ARGV;
+        $workdir = shift @ARGV;
     }
     elsif ($arg eq "-s") {
         $shell = shift @ARGV;
@@ -145,21 +145,21 @@ if ($mode eq '')
 # are we on Windows?
 $isWindows = ($ENV{'OS'} =~ /windows/i) ? 1 : 0;
 
-if ($isWindows && $workingdir ne 'work') {
-    print STDERR "$arg0: error: on Windows, working directory MUST be the `work' subdir\n";
+if ($isWindows && $workdir ne 'work') {
+    print STDERR "$arg0: error: on Windows, work directory MUST be the `work' subdir\n";
     exit(1);
 }
 
-# test existence of working directory
-if (! -d $workingdir) {
-    print STDERR "$arg0: error: working directory `$workingdir' does not exist\n";
+# test existence of work directory
+if (! -d $workdir) {
+    print STDERR "$arg0: error: work directory `$workdir' does not exist\n";
     exit(1);
 }
 
 # produce name of test program
 if ($testprogram eq '') {
 
-    $workingdir =~ /([^\/\\]*)$/;
+    $workdir =~ /([^\/\\]*)$/;
     $tmp = $1;
     if ($isWindows) {
         $testprogram = $tmp . ".cmd";
@@ -174,7 +174,7 @@ if ($testprogram eq '') {
 #
 if ($mode eq 'gen')
 {
-    print "$arg0: extracting files from *.test files into $workingdir...\n";
+    print "$arg0: extracting files from *.test files into $workdir...\n";
 
     define_templates();
 
@@ -198,9 +198,9 @@ if ($mode eq 'run')
     @unresolved_tests = ();
     @failed_tests = ();
 
-    if (! -x "$workingdir/$testprogram")
+    if (! -x "$workdir/$testprogram")
     {
-        print STDERR "$arg0: error: test program '$workingdir/$testprogram' not found\n"; exit(1);
+        print STDERR "$arg0: error: test program '$workdir/$testprogram' not found\n"; exit(1);
     }
 
     foreach $testfilename (@filenames)
@@ -342,7 +342,7 @@ sub testcase_generatesources
         if ($key =~ /^file\b/)
         {
             # write out file
-            $outfname = $workingdir."/".$values{$key};
+            $outfname = $workdir."/".$testname."/".$values{$key};
             writefile($outfname, $bodies{$key});
         }
     }
@@ -358,7 +358,7 @@ sub testcase_generatesources
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$testname/g;
         $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
-        $nedfname = $workingdir."/".$testname.'/test.ned';
+        $nedfname = $workdir."/".$testname.'/test.ned';
         writefile($nedfname, $ned);
 
         # generate C++
@@ -367,7 +367,7 @@ sub testcase_generatesources
         $cpp =~ s/\@ACTIVITY\@/$activity/g;
         $cpp =~ s/\@GLOBAL\@/$globalcode/g;
         $cpp =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
-        $cppfname = $workingdir."/".$testname.'/test.cc';
+        $cppfname = $workdir."/".$testname.'/test.cc';
         writefile($cppfname, $cpp);
     }
 
@@ -381,14 +381,14 @@ sub testcase_generatesources
         $ned = $ModuleNEDTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$module/g;
-        $nedfname = $workingdir."/".$testname.'/test.ned';
+        $nedfname = $workdir."/".$testname.'/test.ned';
         writefile($nedfname, $ned);
 
         # generate C++
         $cpp = $ModuleCPPTemplate;
         $cpp =~ s/\@MODULE\@/$module/g;
         $cpp =~ s/\@MODULE_SRC\@/$module_src/g;
-        $cppfname = $workingdir."/".$testname.'/test.cc';
+        $cppfname = $workdir."/".$testname.'/test.cc';
         writefile($cppfname, $cpp);
     }
 
@@ -405,7 +405,7 @@ sub testcase_generatesources
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE_A\@/$module_a/g;
         $ned =~ s/\@MODULE_B\@/$module_b/g;
-        $nedfname = $workingdir."/".$testname.'/test.ned';
+        $nedfname = $workdir."/".$testname.'/test.ned';
         writefile($nedfname, $ned);
 
         # generate C++
@@ -415,7 +415,7 @@ sub testcase_generatesources
         $cpp =~ s/\@MODULE_B\@/$module_b/g;
         $cpp =~ s/\@MODULE_A_SRC\@/$module_a_src/g;
         $cpp =~ s/\@MODULE_B_SRC\@/$module_b_src/g;
-        $cppfname = $workingdir."/".$testname.'/test.cc';
+        $cppfname = $workdir."/".$testname.'/test.cc';
         writefile($cppfname, $cpp);
     }
 
@@ -424,7 +424,7 @@ sub testcase_generatesources
     if ($inifname eq '') {
         $inifname = $testname.'/test.ini';
     }
-    $inifname = $workingdir."/".$inifname;
+    $inifname = $workdir."/".$inifname;
 
     $inifile = $bodies{'inifile(1)'};
     if ($inifile =~ /^\s*$/s)
@@ -461,9 +461,9 @@ sub testcase_run()
                 $infname = $values{$key};
             }
 
-            if (-f $workingdir."/".$infname) {
+            if (-f $workdir."/".$infname) {
                 print "  deleting old copy of file `$infname'\n" if ($debug);
-                unlink $workingdir."/".$infname;
+                unlink $workdir."/".$infname;
             }
         }
     }
@@ -477,12 +477,12 @@ sub testcase_run()
     # dynamic NED
     $dynamicnedargs='';
     if ($dynamicned) {
-        writefile("$workingdir/_nedfiles.ini","[General]\npreload-ned-files=*.ned\n");
+        writefile("$workdir/_nedfiles.ini","[General]\npreload-ned-files=*.ned\n");
         $dynamicnedargs="-f _nedfiles.ini";
     }
 
     # run the program
-    $exitcode = exec_program("$testprogram -u Cmdenv $extraargs $dynamicnedargs -f $inifname", $workingdir, $outfname, $errfname);
+    $exitcode = exec_program("$testprogram -u Cmdenv $extraargs $dynamicnedargs -f $inifname", $workdir, $outfname, $errfname);
     if ($exitcode != 0) {
         if ($exitcode == -1) {
             unresolved($testfilename, "could not execute test program");
@@ -494,13 +494,13 @@ sub testcase_run()
                 print "  exitcode ok ($exitcode)\n" if ($debug);
             } elsif ($values{'exitcode(1)'} ne '') {
                 fail($testfilename, "test program returned exit code $exitcode instead of $values{'exitcode(1)'}");
-                print_tail("stdout", $workingdir."/".$outfname) if ($verbose);
-                print_tail("stderr", $workingdir."/".$errfname) if ($verbose);
+                print_tail("stdout", $workdir."/".$outfname) if ($verbose);
+                print_tail("stderr", $workdir."/".$errfname) if ($verbose);
                 return;
             } else {
                 fail($testfilename, "test program returned nonzero exit code: $exitcode");
-                print_tail("stdout", $workingdir."/".$outfname) if ($verbose);
-                print_tail("stderr", $workingdir."/".$errfname) if ($verbose);
+                print_tail("stdout", $workdir."/".$outfname) if ($verbose);
+                print_tail("stderr", $workdir."/".$errfname) if ($verbose);
                 return;
             }
         }
@@ -524,7 +524,7 @@ sub testcase_run()
 
             print "  checking $infname\n" if ($debug);
 
-            if (!open(IN,$workingdir."/".$infname)) {
+            if (!open(IN,$workdir."/".$infname)) {
                 unresolved($testfilename, "cannot read test case output file `$infname'");
                 return;
             }
@@ -552,7 +552,7 @@ sub testcase_run()
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
-                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in working directory\n" if ($verbose);
+                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in work directory\n" if ($verbose);
                    }
                    return;
                 }
@@ -563,7 +563,7 @@ sub testcase_run()
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
-                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in working directory\n" if ($verbose);
+                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in work directory\n" if ($verbose);
                    }
                    return;
                 }
@@ -574,7 +574,7 @@ sub testcase_run()
                    if (length($txt)<=8192) {
                       print "expected substring:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
-                      print "expected substring:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in working directory\n" if ($verbose);
+                      print "expected substring:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in work directory\n" if ($verbose);
                    }
                    return;
                 }
@@ -585,7 +585,7 @@ sub testcase_run()
                    if (length($txt)<=8192) {
                       print "expected substring:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
-                      print "expected substring:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in working directory\n" if ($verbose);
+                      print "expected substring:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in work directory\n" if ($verbose);
                    }
                    return;
                 }
@@ -696,7 +696,7 @@ sub writefile()
 }
 
 
-# args: command, working-directory, stdout-file, stderr-file
+# args: command, work-directory, stdout-file, stderr-file
 # return: exit code, or -1 if program crashed
 sub exec_program()
 {
@@ -707,7 +707,7 @@ sub exec_program()
 
     if ($isWindows)
     {
-        if ($workingdir ne 'work') {die 'on windows, workingdir MUST be ./work!';}
+        if ($workdir ne 'work') {die 'on windows, workdir MUST be ./work!';}
 
         print "  chdir to \"$dir\"\n" if ($debug);
         if (!chdir($dir))
