@@ -45,6 +45,7 @@ All files will be created in the work directory.
     'description'        => '1b',
 
     'activity'           => '1b',
+    'includes'           => '1b',
     'global'             => '1b',
     'module'             => '1vb',
     'module_a'           => '1vb',
@@ -343,6 +344,7 @@ sub testcase_generatesources
     if (defined($bodies{'activity(1)'}))
     {
         $activity = $bodies{'activity(1)'};
+        $includescode = $bodies{'includes(1)'};
         $globalcode = $bodies{'global(1)'};
 
         # generate NED
@@ -356,8 +358,9 @@ sub testcase_generatesources
         # generate C++
         $cpp = $ActivityCPPTemplate;
         $cpp =~ s/\@TESTNAME\@/$testname/g;
-        $cpp =~ s/\@ACTIVITY\@/$activity/g;
+        $cpp =~ s/\@INCLUDES\@/$includescode/g;
         $cpp =~ s/\@GLOBAL\@/$globalcode/g;
+        $cpp =~ s/\@ACTIVITY\@/$activity/g;
         $cpp =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
         $cppfname = $workdir."/".$testname."/test.cc";
         writefile($cppfname, $cpp);
@@ -379,6 +382,7 @@ sub testcase_generatesources
         # generate C++
         $cpp = $ModuleCPPTemplate;
         $cpp =~ s/\@TESTNAME\@/$testname/g;
+        $cpp =~ s/\@INCLUDES\@/$includescode/g;
         $cpp =~ s/\@MODULE\@/$module/g;
         $cpp =~ s/\@MODULE_SRC\@/$module_src/g;
         $cppfname = $workdir."/".$testname."/test.cc";
@@ -404,6 +408,7 @@ sub testcase_generatesources
         # generate C++
         $cpp = $ModuleABCPPTemplate;
         $cpp =~ s/\@TESTNAME\@/$testname/g;
+        $cpp =~ s/\@INCLUDES\@/$includescode/g;
         $cpp =~ s/\@MODULE_A\@/$module_a/g;
         $cpp =~ s/\@MODULE_B\@/$module_b/g;
         $cpp =~ s/\@MODULE_A_SRC\@/$module_a_src/g;
@@ -804,6 +809,8 @@ network Test
     $ActivityCPPTemplate = '
 #include <omnetpp.h>
 
+@INCLUDES@
+
 namespace @TESTNAME@ {
 
 @GLOBAL@
@@ -828,6 +835,8 @@ void Test::activity()
     $ModuleCPPTemplate = '
 #include <omnetpp.h>
 
+@INCLUDES@
+
 namespace @TESTNAME@ {
 
 @MODULE_SRC@
@@ -837,6 +846,8 @@ namespace @TESTNAME@ {
 
     $ModuleABCPPTemplate = '
 #include <omnetpp.h>
+
+@INCLUDES@
 
 namespace @TESTNAME@ {
 
