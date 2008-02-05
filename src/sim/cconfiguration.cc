@@ -113,7 +113,7 @@ std::vector<std::string> cConfiguration::parseFilenames(const char *s, const cha
 
 //---
 
-#define TRY(CODE)   try { CODE; } catch (std::exception& e) {throw cRuntimeError("Error getting entry %s= from the configuration: %s", name(), e.what());}
+#define TRY(CODE)   try { CODE; } catch (std::exception& e) {throw cRuntimeError("Error getting entry %s= from the configuration: %s", entry->name(), e.what());}
 
 inline const char *fallback(const char *s, const char *defaultValue, const char *fallbackValue)
 {
