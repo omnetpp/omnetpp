@@ -378,6 +378,7 @@ sub testcase_generatesources
 
         # generate C++
         $cpp = $ModuleCPPTemplate;
+        $cpp =~ s/\@TESTNAME\@/$testname/g;
         $cpp =~ s/\@MODULE\@/$module/g;
         $cpp =~ s/\@MODULE_SRC\@/$module_src/g;
         $cppfname = $workdir."/".$testname."/test.cc";
