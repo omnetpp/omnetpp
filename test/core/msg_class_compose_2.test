@@ -1,7 +1,7 @@
 %description:
 Check non-cOwnedObject-class as member in non-cOwnedObject class
 
-%file: {}/test.msg
+%file: test.msg
 
 class Class1
 {

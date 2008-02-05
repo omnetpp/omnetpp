@@ -1,9 +1,7 @@
 %description:
 Test random module parameters
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -23,7 +21,7 @@ network Test extends Simple
         c1 = 1+exponential(1);
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

@@ -1,7 +1,7 @@
 %description:
 Check field initializers in non-cOwnedObject-rooted classes
 
-%file: {}/test.msg
+%file: test.msg
 
 class MyClass
 {

@@ -1,9 +1,7 @@
 %description:
 Test gate++ notation in connections
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 module Node
 {
@@ -32,5 +30,5 @@ module Test
         a.in++ <-- n[1].out++;
 }
 
-%file: {}/test.cc
+%file: test.cc
 // prevent "no object files" linker error if test is run alone

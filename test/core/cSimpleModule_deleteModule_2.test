@@ -3,9 +3,7 @@ Tests that a handleMessage() module can delete itself, and execution of that mod
 stops immediately. Simulation of other modules continue. Scheduled events for
 deleted simple module are discarded.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Node
 {
@@ -22,7 +20,7 @@ network Test
         suicide: Suicide;
 }
 
-%file: {}/test.cc
+%file: test.cc
 #include <omnetpp.h>
 
 class Node : public cSimpleModule
@@ -66,7 +64,7 @@ void Suicide::handleMessage(cMessage *msg)
     ev << "after deleteModule\n";
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 cmdenv-express-mode=false

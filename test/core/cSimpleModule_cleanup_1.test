@@ -18,7 +18,7 @@ Noisy x;
 wait(1000);
 wait(1000);
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 sim-time-limit=5s

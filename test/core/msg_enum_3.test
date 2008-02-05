@@ -1,7 +1,7 @@
 %description:
 Check enum usage in messages and classes
 
-%file: {}/test.msg
+%file: test.msg
 
 enum MyEnum
 {

@@ -1,9 +1,7 @@
 %description:
 check that rng mapping in omnetpp.ini works properly
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -19,7 +17,7 @@ network net extends Net
 {
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 
@@ -47,7 +45,7 @@ int Simple::getRngId(cRNG *rng)
     error("getRngId(): RNG not found");
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network=net
 num-rngs=3

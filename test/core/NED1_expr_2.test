@@ -5,9 +5,7 @@ FIXME explore! *** Known to fail on Linux (on Windows it's OK) because with doub
 (long)d yields 0x80000000  (Linux discards a bit on the double->long conversion).
 This occurs at cpar.cc#827 return (long)doubleValue();
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -21,7 +19,7 @@ network Test extends Simple
         p00 = 192<<24;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

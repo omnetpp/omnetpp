@@ -5,8 +5,6 @@ project, it's rarely if ever useful for normal simulation models.
 
 %file: test.ned
 
-package {};
-
 simple First
 {
 }

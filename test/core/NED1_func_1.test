@@ -2,9 +2,7 @@
 check NED user-defined functions (Define_Function() macro) in modules and
 networks
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -26,7 +24,7 @@ network Test extends Simple
         p4 = testfunc4(10, 20, 30, 40);
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

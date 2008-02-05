@@ -1,7 +1,7 @@
 %description:
 Comments and processing instructions are ignored.
 
-%file: {}/test.xml
+%file: test.xml
 <?xml version="1.0" ?>
 <!-- starting comment -->
 <foo id="1">
@@ -17,7 +17,7 @@ Comments and processing instructions are ignored.
 <!-- trailing comment -->
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("{}/test.xml");
+cXMLElement *node = ev.getXMLDocument("test.xml");
 node->debugDump();
 
 %contains-regex: stdout

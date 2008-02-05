@@ -1,10 +1,7 @@
 %description:
 Test that check for unconnected gates takes place
 
-%file: {}/test.ned
-
-package {};
-
+%file: test.ned
 
 module Compound
 {

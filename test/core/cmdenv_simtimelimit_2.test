@@ -29,7 +29,7 @@ void Module::finish()
    ev << "-" << endl;
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 # sim-time-limit=

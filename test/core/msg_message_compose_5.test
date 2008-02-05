@@ -1,7 +1,7 @@
 %description:
 Check external non-cOwnedObject class as message member
 
-%file: {}/test.msg
+%file: test.msg
 
 cplusplus {{
 

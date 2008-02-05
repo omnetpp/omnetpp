@@ -2,7 +2,7 @@
 Check xmldoc("filename.xml") and xmldoc("filename.xml", "pathexpr")
 functionality in NED assignments
 
-%file: {}/test.xml
+%file: test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -20,9 +20,7 @@ functionality in NED assignments
 #endif
 
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -38,7 +36,7 @@ network Test extends Simple
         xmlconfig2 = xmldoc("NED1_xmldoc_1/test.xml", "foo/foo[1]//*[@color='green']");
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <string.h>
 #include <omnetpp.h>
@@ -64,5 +62,5 @@ void Simple::activity()
 }
 
 %contains: stdout
-foo at {}/test.xml:2
-baz at {}/test.xml:6
+foo at test.xml:2
+baz at test.xml:6

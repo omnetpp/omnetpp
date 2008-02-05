@@ -4,7 +4,7 @@ Missing DTD -- should produce an error.
 
 THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 
-%file: {}/test.xml
+%file: test.xml
 <?xml version="1.0" ?>
 <!DOCTYPE foo SYSTEM "./no-such-file.dtd">
 <foo>
@@ -12,7 +12,7 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("{}/test.xml");
+cXMLElement *node = ev.getXMLDocument("test.xml");
 node->debugDump();
 
 %exitcode: 1

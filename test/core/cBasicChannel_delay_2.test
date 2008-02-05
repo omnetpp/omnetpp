@@ -1,9 +1,7 @@
 %description:
 Basic test for cBasicChannel
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Sender
 {
@@ -26,7 +24,7 @@ network Test
         sender.out --> receiver.in;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

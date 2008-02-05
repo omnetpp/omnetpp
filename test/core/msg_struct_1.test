@@ -1,7 +1,7 @@
 %description:
 Check simple field types in structs
 
-%file: {}/test.msg
+%file: test.msg
 
 struct MyStruct
 {

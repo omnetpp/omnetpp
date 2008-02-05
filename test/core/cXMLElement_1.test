@@ -1,7 +1,7 @@
 %description:
 Check ev.getXMLDocument()'s optional path expression
 
-%file: {}/test.xml
+%file: test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -32,7 +32,7 @@ Check ev.getXMLDocument()'s optional path expression
 
 static void getElement(const char *pathexpr)
 {
-    cXMLElement *node = ev.getXMLDocument("{}/test.xml", pathexpr);
+    cXMLElement *node = ev.getXMLDocument("test.xml", pathexpr);
     ev << (!pathexpr ? "''" : pathexpr) << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
 }
 

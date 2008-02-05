@@ -1,7 +1,7 @@
 %description:
 Check xmldoc(): no such file
 
-%file: {}/test.xml
+%file: test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -19,9 +19,7 @@ Check xmldoc(): no such file
 #endif
 
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -35,7 +33,7 @@ network Test extends Simple
         xmlconfig = xmldoc("nothing.xml");
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <string.h>
 #include <omnetpp.h>

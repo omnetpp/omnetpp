@@ -1,7 +1,7 @@
 %description:
 Check inheriting from a cOwnedObject-rooted class
 
-%file: {}/test.msg
+%file: test.msg
 
 class Base extends cOwnedObject
 {

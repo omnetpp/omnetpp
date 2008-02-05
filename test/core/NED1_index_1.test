@@ -3,9 +3,7 @@ Test NED index operator in:
  - submodule parameters
  - module vector sizes
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 module Foo
 {
@@ -47,7 +45,7 @@ network Test extends Compound
         a = 100;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

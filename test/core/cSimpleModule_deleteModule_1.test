@@ -4,9 +4,7 @@ stops immediately. Simulation of other modules continue.
 
 FIXME test that messages sent to the deleted module stop the simulation with error.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Node
 {
@@ -23,7 +21,7 @@ network Test
         suicide: Suicide;
 }
 
-%file: {}/test.cc
+%file: test.cc
 #include <omnetpp.h>
 
 class Node : public cSimpleModule
@@ -66,7 +64,7 @@ void Suicide::activity()
     ev << "event after deleteModule\n";
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 cmdenv-express-mode=false

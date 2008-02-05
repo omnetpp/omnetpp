@@ -1,9 +1,7 @@
 %description:
 Test channel data rate
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 channel MyConn extends cBasicChannel
 {
@@ -33,7 +31,7 @@ network Test
         node1.out --> MyConn --> node2.in;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 
@@ -108,7 +106,7 @@ void Node2::activity()
 }
 
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 cmdenv-express-mode=false

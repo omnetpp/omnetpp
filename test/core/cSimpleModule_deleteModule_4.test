@@ -1,9 +1,7 @@
 %description:
 Tests deletion of a handleMessage() simple module which has scheduled events.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple NodeA
 {
@@ -20,7 +18,7 @@ network Test
         deleter: Deleter;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 
@@ -68,7 +66,7 @@ void Deleter::activity()
     ev << "Still here at t=" << simTime() << endl;
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 cmdenv-express-mode=false

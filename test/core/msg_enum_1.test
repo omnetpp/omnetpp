@@ -1,7 +1,7 @@
 %description:
 Check enums
 
-%file: {}/test.msg
+%file: test.msg
 
 enum MyEnum
 {

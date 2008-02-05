@@ -1,7 +1,7 @@
 %description:
 Check inheriting from a non-cOwnedObject-rooted class
 
-%file: {}/test.msg
+%file: test.msg
 
 class Base
 {

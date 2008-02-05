@@ -70,7 +70,7 @@ for (int rng=0; rng<=2; rng++)
 }
 ev << "finished\n";
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 num-rngs=10

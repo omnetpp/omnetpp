@@ -1,7 +1,7 @@
 %description:
 Copying and assignment for classes
 
-%file: {}/test.msg
+%file: test.msg
 
 class Base extends cOwnedObject
 {

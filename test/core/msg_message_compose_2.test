@@ -1,7 +1,7 @@
 %description:
 Check static array of structs as message member
 
-%file: {}/test.msg
+%file: test.msg
 
 struct MyStruct
 {

@@ -1,7 +1,7 @@
 %description:
 Check static arrays in messages
 
-%file: {}/test.msg
+%file: test.msg
 
 message MyMessage
 {

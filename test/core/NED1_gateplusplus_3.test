@@ -3,9 +3,7 @@ Test that gate++ notation for parent modules is also accepted,
 and connects the first _existing_ but unconnected gate. It should
 not add new gates in any case.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 module Part
 {
@@ -59,5 +57,5 @@ module Test
         node3.out[2] --> node3.in[2];
 }
 
-%file: {}/test.cc
+%file: test.cc
 // prevent "no object files" linker error if test is run alone

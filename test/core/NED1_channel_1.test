@@ -1,9 +1,7 @@
 %description:
 Tests that NED predefined channels really affect connection properties.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 import ned.*;
 
@@ -92,7 +90,7 @@ network Test
         gen.out[7] --> Conn7 --> sink.in[7];
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

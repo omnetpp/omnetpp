@@ -1,9 +1,7 @@
 %description:
 Similar to NED_sizeof_1, only *const* parameters are tested this time.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 module Foo
 {
@@ -87,7 +85,7 @@ network Test
     connections allowunconnected:
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

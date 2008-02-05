@@ -1,9 +1,7 @@
 %description:
 Test what happens if coroutine cannot be created
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -15,7 +13,7 @@ network Test
         a[1000000]: Simple;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

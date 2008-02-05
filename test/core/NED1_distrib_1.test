@@ -11,9 +11,7 @@ RNGs.
 !!! THIS TEST IS CURRENTLY OUT OF ORDER (%contains always matches) !!!
 The dist/ dir can be used to test the functions.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -69,7 +67,7 @@ network Test extends Simple
         poisson_par = poisson(1.0);
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

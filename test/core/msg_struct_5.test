@@ -1,7 +1,7 @@
 %description:
 Check static arrays in structs are initialized to zero
 
-%file: {}/test.msg
+%file: test.msg
 
 struct MyStruct
 {

@@ -1,9 +1,7 @@
 %description:
 Test operators in NED, with const parameters.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -122,7 +120,7 @@ network Test extends Simple
 
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

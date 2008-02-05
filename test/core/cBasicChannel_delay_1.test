@@ -1,9 +1,7 @@
 %description:
 Test channel delay in NED.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 channel MyConn extends cBasicChannel
 {
@@ -32,7 +30,7 @@ network Test
         node1.out --> MyConn --> node2.in;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

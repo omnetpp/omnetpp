@@ -4,9 +4,7 @@ which
   (a) stays inside a wait() call
   (b) stays inside a receive() call and has scheduled events.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple NodeA
 {
@@ -28,7 +26,7 @@ network Test
         deleter: Deleter;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 
@@ -96,7 +94,7 @@ void Deleter::handleMessage(cMessage *msg)
     ev << "Deleted" << endl;
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 cmdenv-express-mode=false

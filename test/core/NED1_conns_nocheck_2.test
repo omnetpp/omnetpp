@@ -1,9 +1,7 @@
 %description:
 Test that check for unconnected gates can be turned off
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 module Compound
 {

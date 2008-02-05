@@ -1,9 +1,7 @@
 %description:
 "like" keyword: check what if given module doesn't exist
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 module GenMod
 {
@@ -17,7 +15,7 @@ network Test
         specMod: <mod_type> like GenMod;
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 warnings=yes

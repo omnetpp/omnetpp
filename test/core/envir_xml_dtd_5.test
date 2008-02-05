@@ -4,7 +4,7 @@ Document doesn't conform to DTD: extra element -- should be an error.
 
 THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 
-%file: {}/test.dtd
+%file: test.dtd
 <!ELEMENT foo ( bar )>
 <!ATTLIST foo
             one      CDATA "F1"
@@ -16,16 +16,16 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
             two      CDATA "B2"
 >
 
-%file: {}/test.xml
+%file: test.xml
 <?xml version="1.0" ?>
-<!DOCTYPE foo SYSTEM "./{}/test.dtd">
+<!DOCTYPE foo SYSTEM "./test.dtd">
 <foo>
     <bar one="X"/>
     <extraElem/>
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("{}/test.xml");
+cXMLElement *node = ev.getXMLDocument("test.xml");
 node->debugDump();
 
 %exitcode: 1

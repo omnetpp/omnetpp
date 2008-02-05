@@ -1,7 +1,7 @@
 %description:
 Static array out of bounds test for messages
 
-%file: {}/test.msg
+%file: test.msg
 
 message MyMessage
 {

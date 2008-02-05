@@ -1,7 +1,7 @@
 %description:
 Copying and assignment for messages: struct and class members
 
-%file: {}/test.msg
+%file: test.msg
 
 struct MyStruct
 {

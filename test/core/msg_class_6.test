@@ -1,7 +1,7 @@
 %description:
 Static array out of bounds test for non-cOwnedObject rooted classes
 
-%file: {}/test.msg
+%file: test.msg
 
 class MyClass
 {

@@ -1,7 +1,7 @@
 %description:
 Check cXMLElement::getElementByPath() basic functionality: relative paths
 
-%file: {}/test.xml
+%file: test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -33,7 +33,7 @@ Check cXMLElement::getElementByPath() basic functionality: relative paths
 
 static void getElement(const char *pathexpr)
 {
-    cXMLElement *rootelement = ev.getXMLDocument("{}/test.xml", NULL);
+    cXMLElement *rootelement = ev.getXMLDocument("test.xml", NULL);
     cXMLElement *node = rootelement->getElementByPath(pathexpr);
 
     ev << (!pathexpr ? "''" : pathexpr) << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";

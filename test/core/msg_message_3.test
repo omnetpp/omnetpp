@@ -1,7 +1,7 @@
 %description:
 Check string fields in messages
 
-%file: {}/test.msg
+%file: test.msg
 
 message MyMessage
 {

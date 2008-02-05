@@ -1,9 +1,7 @@
 %description:
 Test that parentgate++: try to connect more gates than it has.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 module Part
 {
@@ -57,7 +55,7 @@ module Test
         node3.out[2] --> node3.in[2];
 }
 
-%file: {}/test.cc
+%file: test.cc
 // prevent "no object files" linker error if test is run alone
 
 %exitcode: 1

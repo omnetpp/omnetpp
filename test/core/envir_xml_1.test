@@ -2,7 +2,7 @@
 Check ev.getXMLDocument() basic functionality
 Note: path expr testing is in cXMLElement_1.test.
 
-%file: {}/test.xml
+%file: test.xml
 
 <foo id="1">
     <foo id="2" color="red">one</foo>
@@ -14,11 +14,11 @@ Note: path expr testing is in cXMLElement_1.test.
 
 %activity:
 
-cXMLElement *node = ev.getXMLDocument("{}/test.xml");
+cXMLElement *node = ev.getXMLDocument("test.xml");
 if (!node)
     ev << "NULL\n";
 else
     ev << node->getTagName() << " from " << node->getSourceLocation() << "\n";
 
 %contains: stdout
-foo from {}/test.xml:2
+foo from test.xml:2

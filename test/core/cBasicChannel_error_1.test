@@ -1,9 +1,7 @@
 %description:
 Test channel bit error rate in NED by using messages of different lengths
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 channel MyConn extends cBasicChannel
 {
@@ -33,7 +31,7 @@ network Test
         node1.out --> MyConn --> node2.in;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

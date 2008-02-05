@@ -1,7 +1,7 @@
 %description:
 Customize cOwnedObject-rooted class, abstract fields
 
-%file: {}/test.msg
+%file: test.msg
 
 class MyClass extends cOwnedObject
 {

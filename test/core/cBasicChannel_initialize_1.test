@@ -2,9 +2,7 @@
 Test that when simple modules get stage==0 initialized, channels are already
 initialized.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 channel MyConn extends cBasicChannel
 {
@@ -34,7 +32,7 @@ network Test
         node1.out --> MyConn --> node2.in;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 
@@ -74,7 +72,7 @@ void Node2::handleMessage(cMessage *msg)
     delete msg;
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network=myNet
 cmdenv-express-mode=false

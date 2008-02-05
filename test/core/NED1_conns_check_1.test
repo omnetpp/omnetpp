@@ -1,9 +1,7 @@
 %description:
 Test that check for unconnected gates takes place
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -19,7 +17,7 @@ network Test
         b: Simple;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

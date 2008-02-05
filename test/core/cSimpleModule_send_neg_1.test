@@ -1,9 +1,7 @@
 %description:
 Test assertions in the send() call: gate must be connected
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -18,7 +16,7 @@ network Test
     connections allowunconnected:
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

@@ -1,7 +1,7 @@
 %description:
 Check struct as class member in non-cOwnedObject rooted classes
 
-%file: {}/test.msg
+%file: test.msg
 
 struct MyStruct
 {

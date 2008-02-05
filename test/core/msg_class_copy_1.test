@@ -1,7 +1,7 @@
 %description:
 Copying and assignment for non-cOwnedObject rooted classes
 
-%file: {}/test.msg
+%file: test.msg
 
 class Base
 {

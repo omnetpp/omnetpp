@@ -5,9 +5,7 @@ Tests that:
 - a compound module has its initialize() function called before all its submodules have.
 - initialize(0) is called for all modules, then initialize(1), initialize(2), etc.
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Module
 {
@@ -28,7 +26,7 @@ network Test
         b3: A;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

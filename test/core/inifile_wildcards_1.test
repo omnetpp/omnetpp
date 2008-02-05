@@ -1,9 +1,7 @@
 %description:
 check that wildcards in the ini file work properly
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -40,7 +38,7 @@ network net extends Net
 {
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 
@@ -76,7 +74,7 @@ void Simple::printParametersOf(cModule *mod)
     }
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network=net
 

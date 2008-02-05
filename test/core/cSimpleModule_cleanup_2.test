@@ -15,7 +15,7 @@ class Noisy : public cOwnedObject
 ev << "begin\n";
 new Noisy;
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 perform-gc = true

@@ -2,14 +2,14 @@
 If document has DTD, parser must use it for validation and attribute completion.
 No DOCTYPE -- no complaint.
 
-%file: {}/test.xml
+%file: test.xml
 <?xml version="1.0" ?>
 <foo>
     <bar one="X"/>
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("{}/test.xml");
+cXMLElement *node = ev.getXMLDocument("test.xml");
 node->debugDump();
 
 %contains-regex: stdout

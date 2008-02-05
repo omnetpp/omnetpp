@@ -1,7 +1,7 @@
 %description:
 Check primitive scalar field types in messages
 
-%file: {}/test.msg
+%file: test.msg
 
 message MyMessage
 {

@@ -3,7 +3,7 @@ Entities are substituted.
 
 THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
 
-%file: {}/test.dtd
+%file: test.dtd
 <!ENTITY xrul "xml rulez">
 <!ELEMENT foo ANY>
 <!ELEMENT bar ANY>
@@ -11,15 +11,15 @@ THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
    att   CDATA  #IMPLIED
 >
 
-%file: {}/test.xml
+%file: test.xml
 <?xml version="1.0" ?>
-<!DOCTYPE foo SYSTEM "./{}/test.dtd">
+<!DOCTYPE foo SYSTEM "./test.dtd">
 <foo>
     <bar att="&xrul;!">Hey, &xrul;!</bar>
 </foo>
 
 %activity:
-cXMLElement *node = ev.getXMLDocument("{}/test.xml");
+cXMLElement *node = ev.getXMLDocument("test.xml");
 node->debugDump();
 
 %contains: stdout

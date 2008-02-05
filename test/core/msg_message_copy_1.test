@@ -1,7 +1,7 @@
 %description:
 Copying and assignment for messages
 
-%file: {}/test.msg
+%file: test.msg
 
 message Base
 {

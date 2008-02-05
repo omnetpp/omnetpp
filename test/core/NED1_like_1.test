@@ -1,9 +1,7 @@
 %description:
 check that "like" keyword works
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple GenMod
 {
@@ -17,7 +15,7 @@ network Test
         specMod: <mod_type> like GenMod;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 
@@ -35,7 +33,7 @@ void GenMod::activity()
    ev << "Here!" << endl;
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 warnings=yes

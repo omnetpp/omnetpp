@@ -4,9 +4,7 @@ check "gatesizes" in NED:
 - if present, should set gate vector size accordingly
 - explicitly set zero and one vector size should work too
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple GenMod
 {
@@ -38,7 +36,7 @@ module Test
     connections allowunconnected:
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

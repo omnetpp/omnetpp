@@ -1,9 +1,7 @@
 %description:
 check that 1023 long lines are accepted
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -15,7 +13,7 @@ network Net extends Simple
 {
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <string.h>
 #include <omnetpp.h>
@@ -37,7 +35,7 @@ void Simple::activity()
 }
 
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network=Net
 

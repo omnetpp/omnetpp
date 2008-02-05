@@ -2,9 +2,7 @@
 Test NED sizeof() operators (for zero/nonzero module/gate sizes) in:
 submodule non-const parameters and module vector sizes
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 module Foo
 {
@@ -88,7 +86,7 @@ network Test
     connections allowunconnected:
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

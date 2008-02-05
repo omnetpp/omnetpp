@@ -1,7 +1,7 @@
 %description:
 Check inheritance for structs
 
-%file: {}/test.msg
+%file: test.msg
 
 struct Base
 {

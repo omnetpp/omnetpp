@@ -5,9 +5,7 @@ of the compound module.
 FIXME test that messages sent between modules of the deleted compund
 module do not cause errors (they're removed too).
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Node
 {
@@ -31,7 +29,7 @@ network Test
         deleter: Deleter;
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 
@@ -75,7 +73,7 @@ void Deleter::activity()
     ev << "Still here at t=" << simTime() << endl;
 }
 
-%inifile: {}/test.ini
+%inifile: test.ini
 [General]
 network={}.Test
 cmdenv-express-mode=false

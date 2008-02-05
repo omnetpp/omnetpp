@@ -1,9 +1,7 @@
 %description:
 Test gate++ notation in connections: for loops, and mixing indices with '++'
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 module Node
 {
@@ -29,5 +27,5 @@ module Test
         }
 }
 
-%file: {}/test.cc
+%file: test.cc
 // prevent "no object files" linker error if test is run alone

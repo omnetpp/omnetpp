@@ -1,7 +1,7 @@
 %description:
 Check field initializers in messages
 
-%file: {}/test.msg
+%file: test.msg
 
 message MyMessage
 {

@@ -1,9 +1,7 @@
 %description:
 Test that check for unconnected gates can be turned off
 
-%file: {}/test.ned
-
-package {};
+%file: test.ned
 
 simple Simple
 {
@@ -20,7 +18,7 @@ network Test
     connections allowunconnected:
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 

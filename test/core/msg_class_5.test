@@ -1,7 +1,7 @@
 %description:
 Check static arrays in classes
 
-%file: {}/test.msg
+%file: test.msg
 
 class MyClass
 {

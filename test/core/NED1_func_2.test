@@ -1,7 +1,7 @@
 %description:
 check NED user-defined functions (Define_Function() macro) in channels
 
-%file: {}/test.ned
+%file: test.ned
 
 package {};
 
@@ -21,7 +21,7 @@ network Test extends Simple
 {
 }
 
-%file: {}/test.cc
+%file: test.cc
 
 #include <omnetpp.h>
 
