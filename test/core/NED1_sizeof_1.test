@@ -90,6 +90,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -110,6 +112,8 @@ void Simple::activity()
         if (j()->index()==0)
             ev << j()->name() << " size=" << j()->size() << endl;
 }
+
+}; //namespace
 
 %contains: stdout
 sub.p1=0

@@ -35,6 +35,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 #define NUM_MSGS         2000
 #define BIT_ERROR_RATE   0.1
 
@@ -102,6 +104,8 @@ void Node2::finish()
             ev << "wrong error rate!" << endl;
     }
 }
+
+}; //namespace
 
 %not-contains: stdout
 wrong error rate

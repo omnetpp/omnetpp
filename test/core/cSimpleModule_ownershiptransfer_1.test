@@ -24,6 +24,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class First : public cSimpleModule
 {
   public:
@@ -68,6 +70,8 @@ void Second::activity()
    ev << "receivedMsg: " << receivedMsg->fullPath() << endl;
    ev << "      owner: " << receivedMsg->owner()->fullPath() << endl;
 }
+
+}; //namespace
 
 %inifile: test.ini
 [General]

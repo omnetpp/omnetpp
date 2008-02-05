@@ -71,6 +71,8 @@ network Test extends Simple
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -116,6 +118,8 @@ void Simple::activity()
     // PAR_MEAN_AND_VARIANCE(hypergeometric_par);
     PAR_MEAN_AND_VARIANCE(poisson_par);
 }
+
+}; //namespace
 
 %contains: stdout
 uniform_par

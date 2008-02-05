@@ -41,6 +41,8 @@ network Test extends Simple
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -64,6 +66,8 @@ void Simple::activity()
         ev << "/" << par(i).toString() << endl;
     }
 }
+
+}; //namespace
 
 %contains-regex: stdout
 string s1=hello/"hello"

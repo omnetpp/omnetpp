@@ -22,6 +22,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -34,6 +36,8 @@ Define_Module(Simple);
 void Simple::activity()
 {
 }
+
+}; //namespace
 
 %exitcode: 0
 

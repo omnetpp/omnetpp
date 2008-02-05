@@ -19,10 +19,7 @@ network Test
 }
 
 %file: test.cc
-
-void dummy()
-{
-}
+// needed so that linker gets at least one object file
 
 %exitcode: 1
 

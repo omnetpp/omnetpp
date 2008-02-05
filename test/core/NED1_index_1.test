@@ -49,6 +49,8 @@ network Test extends Compound
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -65,6 +67,8 @@ void Simple::activity()
     ev << fullName() << ".in1[] size=" << gateSize("in1") << endl;
     ev << fullName() << ".in2[] size=" << gateSize("in2") << endl;
 }
+
+}; //namespace
 
 %contains: stdout
 sub[0].p0=0

@@ -40,6 +40,8 @@ module Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class GenMod : public cSimpleModule
 {
   public:
@@ -65,6 +67,8 @@ void GenMod::activity()
    PRINT("out3");
    PRINT("out4");
 }
+
+}; //namespace
 
 
 %contains: stdout

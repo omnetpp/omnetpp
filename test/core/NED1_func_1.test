@@ -28,6 +28,8 @@ network Test extends Simple
 
 #include <omnetpp.h>
 
+namespace {} {
+
 double testfunc0() {return 0;}
 double testfunc1(double a) {return a;}
 double testfunc2(double a, double b) {return a+b;}
@@ -59,6 +61,8 @@ void Simple::activity()
     PRINT_PARAMETER( p3 );
     PRINT_PARAMETER( p4 );
 }
+
+}; //namespace
 
 %contains: stdout
 p0 = 0

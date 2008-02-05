@@ -35,6 +35,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Node1 : public cSimpleModule
 {
   public:
@@ -76,6 +78,8 @@ void Node2::handleMessage(cMessage *msg)
     ev << "received " << msg->name() << "\n";
     delete msg;
 }
+
+}; //namespace
 
 %not-contains: stdout
 received

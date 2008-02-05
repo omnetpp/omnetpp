@@ -30,6 +30,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Module : public cSimpleModule
 {
   public:
@@ -61,6 +63,8 @@ void Module::handleMessage(cMessage *msg)
    ev << "handleMessage() at " << simTime() << endl;
    delete msg;
 }
+
+}; //namespace
 
 %contains: stdout
 Initializing network, stage 0

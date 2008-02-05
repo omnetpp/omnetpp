@@ -20,6 +20,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -34,6 +36,8 @@ void Simple::activity()
     cMessage *msg = new cMessage("msg");
     send(msg, "out");
 }
+
+}; //namespace
 
 %exitcode: 1
 

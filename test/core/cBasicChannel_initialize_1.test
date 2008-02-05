@@ -36,6 +36,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Node1 : public cSimpleModule
 {
     virtual void initialize();
@@ -71,6 +73,8 @@ void Node2::handleMessage(cMessage *msg)
     ev << "msg arrived at T=" << simTime();
     delete msg;
 }
+
+}; //namespace
 
 %inifile: test.ini
 [General]

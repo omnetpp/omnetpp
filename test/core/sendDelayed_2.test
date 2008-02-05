@@ -28,6 +28,8 @@ endnetwork
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Sender : public cSimpleModule
 {
   public:
@@ -57,6 +59,8 @@ void Receiver::activity()
    simtime_t diff = simTime() - msg->timestamp();
    ev << "diff: " << diff << endl;
 }
+
+}; //namespace
 
 %inifile: test.ini
 [General]

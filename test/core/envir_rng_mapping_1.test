@@ -21,6 +21,8 @@ network net extends Net
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -44,6 +46,8 @@ int Simple::getRngId(cRNG *rng)
             return i;
     error("getRngId(): RNG not found");
 }
+
+}; //namespace
 
 %inifile: test.ini
 [General]

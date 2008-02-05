@@ -85,6 +85,8 @@ network net extends Net
 #include <string.h>
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -103,6 +105,7 @@ void Simple::activity()
     }
 }
 
+}; //namespace
 
 %inifile: test.ini
 [General]

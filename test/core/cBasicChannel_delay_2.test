@@ -28,6 +28,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Sender : public cSimpleModule
 {
   public:
@@ -65,6 +67,8 @@ void Receiver::activity()
    simtime_t diff = simTime() - msg->timestamp();
    ev << "diff: " << diff << endl;
 }
+
+}; //namespace
 
 %contains: stdout
 diff: 0.1

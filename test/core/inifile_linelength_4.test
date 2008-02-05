@@ -18,6 +18,8 @@ network Net extends Simple
 #include <string.h>
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -33,6 +35,8 @@ void Simple::activity()
     ev << (const char *)par("verylongstring") << endl;
     ev << "." << endl;
 }
+
+}; //namespace
 
 
 %inifile: test.ini

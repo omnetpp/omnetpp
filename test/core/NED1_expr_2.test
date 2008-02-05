@@ -23,6 +23,8 @@ network Test extends Simple
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -38,6 +40,8 @@ void Simple::activity()
         ev << par(i).name() << "=" << std::hex << (unsigned long)par(i) << endl;
     ev << ".\n";
 }
+
+}; //namespace
 
 %contains: stdout
 p00=c0000000

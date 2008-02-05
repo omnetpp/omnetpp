@@ -37,6 +37,8 @@ network Net extends Simple
 #include <string.h>
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -57,6 +59,7 @@ void Simple::activity()
     ev << "<" << node2->getTagName() << " id='" << node2->getAttribute("id") << "'>\n";
 }
 
+}; //namespace
 
 %inifile: test.ini
 [General]

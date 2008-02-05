@@ -41,6 +41,8 @@ network Test extends Simple
 #include <string.h>
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -60,6 +62,8 @@ void Simple::activity()
     ASSERT(node2);
     ev << node2->getTagName() << " at " << node2->getSourceLocation() << endl;
 }
+
+}; //namespace
 
 %contains: stdout
 foo at test.xml:2

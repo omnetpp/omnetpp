@@ -124,6 +124,8 @@ network Test extends Simple
 
 #include <omnetpp.h>
 
+namespace {} {
+
 typedef cDynamicExpression::StkValue Value;
 
 Value bool2int(cComponent *context, Value args[], int numargs) {
@@ -147,6 +149,8 @@ void Simple::activity()
         ev << par(i).name() << "=" << par(i).doubleValue() << endl;
     ev << ".\n";
 }
+
+}; //namespace
 
 %contains-regex: stdout
 p00=-3

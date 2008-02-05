@@ -38,6 +38,8 @@ network Test extends Simple
 #include <string.h>
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -50,6 +52,8 @@ Define_Module(Simple);
 void Simple::activity()
 {
 }
+
+}; //namespace
 
 %exitcode: 1
 

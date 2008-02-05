@@ -30,6 +30,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class NodeA : public cSimpleModule
 {
   public:
@@ -91,6 +93,8 @@ void Deleter::activity()
     wait(2);
     ev << "Still here at t=" << simTime() << endl;
 }
+
+}; //namespace
 
 %inifile: test.ini
 [General]

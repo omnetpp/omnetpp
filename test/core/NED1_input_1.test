@@ -62,6 +62,8 @@ module Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -76,6 +78,8 @@ void Simple::activity()
     for (int i=0; i<params(); i++)
         ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
 }
+
+}; //namespace
 
 %inifile: test.ini
 [General]

@@ -19,6 +19,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class GenMod : public cSimpleModule
 {
   public:
@@ -32,6 +34,10 @@ void GenMod::activity()
 {
    ev << "Here!" << endl;
 }
+
+};
+
+}; //namespace
 
 %inifile: test.ini
 [General]

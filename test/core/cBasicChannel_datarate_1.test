@@ -35,6 +35,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Node1 : public cSimpleModule
 {
   public:
@@ -104,6 +106,8 @@ void Node2::activity()
         delete msg;
     }
 }
+
+}; //namespace
 
 
 %inifile: test.ini

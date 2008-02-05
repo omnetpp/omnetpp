@@ -94,6 +94,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Gen : public cSimpleModule
 {
   public:
@@ -133,6 +135,8 @@ void Sink::handleMessage(cMessage *msg)
 {
     delete msg;
 }
+
+}; //namespace
 
 %contains: stdout
 0:

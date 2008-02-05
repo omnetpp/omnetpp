@@ -25,6 +25,8 @@ network Test
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Node : public cSimpleModule
 {
   public:
@@ -64,6 +66,8 @@ void Suicide::activity()
     wait(1.0);
     ev << "event after deleteModule\n";
 }
+
+}; //namespace
 
 %inifile: test.ini
 [General]

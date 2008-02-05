@@ -25,6 +25,8 @@ network Test extends Simple
 
 #include <omnetpp.h>
 
+namespace {} {
+
 double testfunc0() {return 0;}
 double testfunc1(double a) {return a;}
 double testfunc2(double a, double b) {return a+b;}
@@ -50,3 +52,6 @@ void Simple::activity()
 {
     //FIXME: should check channel or something like that...
 }
+
+}; //namespace
+

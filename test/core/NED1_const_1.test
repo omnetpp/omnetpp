@@ -25,6 +25,8 @@ network Test extends Simple
 
 #include <omnetpp.h>
 
+namespace {} {
+
 class Simple : public cSimpleModule
 {
   public:
@@ -39,6 +41,8 @@ void Simple::activity()
     for (int i=0; i<params(); i++)
         ev << par(i).name() << ":" << (par(i).isExpression()?"expr":"constant") << endl;
 }
+
+}; //namespace
 
 %contains: stdout
 p0:constant
