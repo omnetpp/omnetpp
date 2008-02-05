@@ -3,6 +3,8 @@ Customize non-cOwnedObject-rooted class, abstract fields
 
 %file: test.msg
 
+namespace {};
+
 class MyClass
 {
     properties:
@@ -12,9 +14,10 @@ class MyClass
         abstract int i;
 }
 
-%global:
+%includes:
 #include "test_m.h"
 
+%global:
 class MyClass : public MyClass_Base
 {
   private:

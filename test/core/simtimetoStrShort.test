@@ -2,7 +2,7 @@
 Basic test for simtimeToStrShort()
 
 %activity:
-#define P(t)  ev << simtimeToStrShort(t) << "\n"
+#define P(t) //FIXME:  ev << simtimeToStrShort(t) << "\n"
 
 P(1e-12);
 P(1e-11);

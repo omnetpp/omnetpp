@@ -3,6 +3,8 @@ Check cobject-class as message member
 
 %file: test.msg
 
+namespace {};
+
 class Class1
 {
     fields:
@@ -16,7 +18,7 @@ message MyMessage
         char c;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

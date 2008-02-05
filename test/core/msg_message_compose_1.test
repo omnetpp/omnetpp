@@ -3,6 +3,8 @@ Check struct as message member
 
 %file: test.msg
 
+namespace {};
+
 struct MyStruct
 {
     fields:
@@ -17,7 +19,7 @@ message MyMessage
         char c;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

@@ -3,6 +3,8 @@ Check external non-cOwnedObject class as member in non-cOwnedObject class
 
 %file: test.msg
 
+namespace {};
+
 cplusplus {{
 
   class A {
@@ -24,7 +26,7 @@ class MyClass extends cOwnedObject
         char c;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

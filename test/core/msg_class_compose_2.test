@@ -3,6 +3,8 @@ Check non-cOwnedObject-class as member in non-cOwnedObject class
 
 %file: test.msg
 
+namespace {};
+
 class Class1
 {
     fields:
@@ -17,7 +19,7 @@ class MyClass extends cOwnedObject
         char c;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

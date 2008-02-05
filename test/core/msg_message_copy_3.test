@@ -3,6 +3,8 @@ Copying and assignment for messages: static arrays of struct and class members
 
 %file: test.msg
 
+namespace {};
+
 struct MyStruct
 {
     fields:
@@ -33,9 +35,10 @@ message MyMessage extends Base
         cQueue q2[7];
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
+%global:
 void print(const char *what, MyMessage& x)
 {
    ev << what << ":" << endl;

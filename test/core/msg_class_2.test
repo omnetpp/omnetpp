@@ -3,6 +3,8 @@ Check field initializers in non-cOwnedObject-rooted classes
 
 %file: test.msg
 
+namespace {};
+
 class MyClass
 {
     fields:
@@ -19,7 +21,7 @@ class MyClass
         double d = 3.1415;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

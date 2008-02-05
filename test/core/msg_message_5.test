@@ -3,6 +3,8 @@ Check static arrays in messages
 
 %file: test.msg
 
+namespace {};
+
 message MyMessage
 {
     fields:
@@ -18,7 +20,7 @@ message MyMessage
         string str[60];
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

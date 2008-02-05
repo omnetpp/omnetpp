@@ -3,13 +3,15 @@ Static array out of bounds test for messages
 
 %file: test.msg
 
+namespace {};
+
 message MyMessage
 {
     fields:
         int aa[3];
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

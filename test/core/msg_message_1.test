@@ -3,6 +3,8 @@ Check primitive scalar field types in messages
 
 %file: test.msg
 
+namespace {};
+
 message MyMessage
 {
     fields:
@@ -17,7 +19,7 @@ message MyMessage
         double d;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

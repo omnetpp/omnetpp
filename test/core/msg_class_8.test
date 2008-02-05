@@ -3,13 +3,15 @@ Dynamic array out of bounds test for non-cOwnedObject rooted classes
 
 %file: test.msg
 
+namespace {};
+
 class MyClass
 {
     fields:
         int aa[];
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

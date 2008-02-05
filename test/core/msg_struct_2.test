@@ -3,6 +3,8 @@ Check static arrays in structs
 
 %file: test.msg
 
+namespace {};
+
 struct MyStruct
 {
     fields:
@@ -17,7 +19,7 @@ struct MyStruct
         double dd[60];
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

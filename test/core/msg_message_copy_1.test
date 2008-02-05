@@ -3,6 +3,8 @@ Copying and assignment for messages
 
 %file: test.msg
 
+namespace {};
+
 message Base
 {
     fields:
@@ -20,9 +22,10 @@ message MyMessage extends Base
 
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
+%global:
 void print(const char *what, MyMessage& x)
 {
    ev << what << ":";

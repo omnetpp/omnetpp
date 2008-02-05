@@ -3,6 +3,8 @@ Check struct as class member in non-cOwnedObject rooted classes
 
 %file: test.msg
 
+namespace {};
+
 struct MyStruct
 {
     fields:
@@ -17,7 +19,7 @@ class MyClass
         char c;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

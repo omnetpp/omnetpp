@@ -3,6 +3,8 @@ Check cOwnedObject-based class as message member
 
 %file: test.msg
 
+namespace {};
+
 class cQueue;
 
 message MyMessage
@@ -12,7 +14,7 @@ message MyMessage
         char c;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

@@ -3,6 +3,8 @@ Check inheriting from a non-cOwnedObject-rooted class
 
 %file: test.msg
 
+namespace {};
+
 class Base
 {
     fields:
@@ -15,7 +17,7 @@ class MyClass extends Base
         char c;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

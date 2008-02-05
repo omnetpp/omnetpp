@@ -3,6 +3,8 @@ Check string fields in messages
 
 %file: test.msg
 
+namespace {};
+
 message MyMessage
 {
     fields:
@@ -10,7 +12,7 @@ message MyMessage
         string s2 = "test";
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

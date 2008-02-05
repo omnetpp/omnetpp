@@ -3,6 +3,8 @@ Check enums
 
 %file: test.msg
 
+namespace {};
+
 enum MyEnum
 {
     ECC = 1;
@@ -10,7 +12,7 @@ enum MyEnum
     KIMEHECC = 5;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

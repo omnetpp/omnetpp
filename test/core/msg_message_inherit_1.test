@@ -3,6 +3,8 @@ Check inheritance for messages
 
 %file: test.msg
 
+namespace {};
+
 message Base
 {
     fields:
@@ -15,7 +17,7 @@ message MyMessage extends Base
         char c;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

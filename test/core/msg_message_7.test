@@ -3,6 +3,8 @@ Check dynamic arrays in non-cOwnedObject rooted classes
 
 %file: test.msg
 
+namespace {};
+
 class MyClass
 {
     fields:
@@ -18,7 +20,7 @@ class MyClass
         string str[];
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

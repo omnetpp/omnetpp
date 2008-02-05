@@ -3,6 +3,8 @@ Check primitive scalar field types in cOwnedObject-rooted classes
 
 %file: test.msg
 
+namespace {};
+
 class MyClass extends cOwnedObject
 {
     fields:
@@ -17,7 +19,7 @@ class MyClass extends cOwnedObject
         double d;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

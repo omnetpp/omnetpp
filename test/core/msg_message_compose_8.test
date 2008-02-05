@@ -3,6 +3,8 @@ Check dynamic array of cOwnedObject-based class as message member
 
 %file: test.msg
 
+namespace {};
+
 class cQueue;
 
 message MyMessage
@@ -11,7 +13,7 @@ message MyMessage
         cQueue q[];
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

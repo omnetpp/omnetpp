@@ -3,6 +3,8 @@ Check simple field types in structs
 
 %file: test.msg
 
+namespace {};
+
 struct MyStruct
 {
     fields:
@@ -17,7 +19,7 @@ struct MyStruct
         double d;
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
 %activity:

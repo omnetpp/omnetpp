@@ -3,6 +3,8 @@ Copying and assignment for non-cOwnedObject rooted classes
 
 %file: test.msg
 
+namespace {};
+
 class Base
 {
     fields:
@@ -20,9 +22,10 @@ class MyClass extends Base
 
 };
 
-%global:
+%includes:
 #include "test_m.h"
 
+%global:
 void print(const char *what, MyClass& x)
 {
    ev << what << ":";
