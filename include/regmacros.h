@@ -95,7 +95,7 @@ NAMESPACE_BEGIN
  */
 #define Register_Class(CLASSNAME) \
   static cObject *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,__FILEUNIQUENAME__));)
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__));)
 //@}
 
 
@@ -114,7 +114,7 @@ NAMESPACE_BEGIN
 // Implementation note: this is basically a Register_Class(), making sure the class subclasses from cModule.
 #define Define_Module(CLASSNAME) \
   static cObject *__FILEUNIQUENAME__() {cModule *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,__FILEUNIQUENAME__,"module"));)
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__,"module"));)
 
 /**
  * Announces the C++ simple module class to \opp, and couples it with the
@@ -135,7 +135,7 @@ NAMESPACE_BEGIN
 // Implementation note: this is basically a Register_Class().
 #define Define_Channel(CLASSNAME) \
   static cObject *__FILEUNIQUENAME__() {cChannel *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(#CLASSNAME,__FILEUNIQUENAME__, "channel"));)
+  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__, "channel"));)
 
 /**
  * Announces the C++ channel class to \opp, and couples it with the
