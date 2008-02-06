@@ -41,9 +41,9 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
         default: throw cRuntimeError(this, "Internal error: element of wrong type (<%s>) passed into constructor", tree->getTagName());
     }
     bool isInterface = type==MODULEINTERFACE || type==CHANNELINTERFACE;
-    
+
     // add "extends" and "like" names, after resolving them
-    NEDLookupContext context = cNEDLoader::getParentContextOf(qname, tree); 
+    NEDLookupContext context = cNEDLoader::getParentContextOf(qname, tree);
     for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
     {
         if (child->getTagCode()==NED_EXTENDS) {
@@ -52,18 +52,19 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
             std::string extendsqname = cNEDLoader::instance()->resolveNedType(context, extendsname);
             ASSERT(!extendsqname.empty());
             extendsnames.push_back(extendsqname);
-            
+
             // check the type
             cNEDDeclaration *decl = (cNEDDeclaration *)cNEDLoader::instance()->lookup(extendsqname.c_str());
             ASSERT(decl);
             if (getType() != decl->getType())
-                throw cRuntimeError("%s: a %s cannot extend a %s (%s)", getTree()->getSourceLocation(), getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
+                if (!(getType()==COMPOUND_MODULE && decl->getType()==SIMPLE_MODULE && ((CompoundModuleNode *)getTree())->getIsNetwork()))  // "network extends simple" is allowed
+                    throw cRuntimeError("%s: a %s cannot extend a %s (%s)", getTree()->getSourceLocation(), getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
 
             // collect interfaces from our base types
             if (isInterface)
                 for (int i=0; i<decl->numExtendsNames(); i++)
                     extendsnames.push_back(decl->extendsName(i));
-            else 
+            else
                 for (int i=0; i<decl->numInterfaceNames(); i++)
                     interfacenames.push_back(decl->interfaceName(i));
         }
@@ -79,17 +80,17 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
             ASSERT(decl);
             if (decl->getType() != (getType()==CHANNEL ? CHANNELINTERFACE : MODULEINTERFACE))
                 throw cRuntimeError("%s: base type %s is expected to be a %s interface", getTree()->getSourceLocation(), interfaceqname.c_str(), (getType()==CHANNEL ? "channel" : "module"));
-            
+
             // we support all interfaces that our base interfaces extend
             for (int i=0; i<decl->numExtendsNames(); i++)
                 interfacenames.push_back(decl->extendsName(i));
         }
     }
-    
+
     if (!isInterface) {
-        //FIXME TODO check that we have all parameters/gates required by the interfaces we support 
+        //FIXME TODO check that we have all parameters/gates required by the interfaces we support
     }
-    
+
     // resolve C++ class name
     if (getType()==SIMPLE_MODULE || getType()==CHANNEL)
     {
@@ -100,10 +101,10 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
             implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
         else
             implClassName = name();
-        
+
         // now the namespace: find first @namespace() property in package.ned of this package and parent packages
-        PropertyNode *namespacePropertyNode = NULL;  
-        std::string packageName = getPackage(); 
+        PropertyNode *namespacePropertyNode = NULL;
+        std::string packageName = getPackage();
         while (true) {
             // check the package.ned file for this property
             NEDElement *nedfile = cNEDLoader::instance()->getPackageNedFile(packageName.c_str());
@@ -111,7 +112,7 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
             if (namespacePropertyNode)
                 break;
 
-            if (packageName.empty()) 
+            if (packageName.empty())
                 break;
 
             // go one package up -- drop part after last dot
@@ -146,9 +147,9 @@ cNEDDeclaration::~cNEDDeclaration()
 
 void cNEDDeclaration::setName(const char *s)
 {
-    //XXX instead of this, add name locking feature to cNamedObject and use that 
+    //XXX instead of this, add name locking feature to cNamedObject and use that
     // (it'll be useful with modules, gates, params, coutvectors etc too!)
-    throw cRuntimeError(this, "Changing the name is not allowed");  
+    throw cRuntimeError(this, "Changing the name is not allowed");
 }
 
 std::string cNEDDeclaration::getPackage() const
