@@ -59,13 +59,13 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
 {
   public:
     enum Type {SIMPLE_MODULE, COMPOUND_MODULE, MODULEINTERFACE, CHANNEL, CHANNELINTERFACE};
-    
+
   protected:
     typedef std::vector<std::string> StringVector;
     typedef std::map<std::string,int> StringToIntMap;
 
     Type type;
-    
+
     // inheritance
     StringVector extendsnames;
     StringVector interfacenames;
@@ -95,6 +95,7 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     static void clearExpressionMap(ExpressionMap& exprMap);
     cNEDDeclaration *getSuperDecl() const;
     NEDElement *getSubcomponentNode(const char *subcomponentName) const;
+    std::string getCxxNamespace() const;
 
     static cProperties *mergeProperties(const cProperties *baseprops, NEDElement *parent);
     static void updateProperty(PropertyNode *propNode, cProperty *prop);
@@ -147,16 +148,16 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
 
     /**
      * Returns the type of this declaration: simple module, compound module,
-     * channel, etc. 
+     * channel, etc.
      */
     virtual Type getType() const {return type;}
-    
+
     /**
      * Returns the package name (from the package declaration of the containing
-     * NED file 
+     * NED file
      */
     virtual std::string getPackage() const;
-    
+
     /**
      * NED declaration
      */
@@ -189,7 +190,7 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
      * or channel interface
      */
     virtual bool supportsInterface(const char *qname);
-    
+
     /**
      * For simple modules and channels, it returns the name of the C++ class that
      * has to be instantiated; otherwise it returns NULL.

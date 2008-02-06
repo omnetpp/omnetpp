@@ -93,41 +93,14 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
     // resolve C++ class name
     if (getType()==SIMPLE_MODULE || getType()==CHANNEL)
     {
-        cProperty *classProperty = properties()->get("class");
-        if (classProperty)
-            implClassName = classProperty->value("");
+        // Note: @class() can override inherited implementation class
+        cProperty *classProperty = properties()->get("class"); //XXX check if no value or too many keys/values
+        if (classProperty && !opp_isempty(classProperty->value("")))
+            implClassName = opp_join("::", getCxxNamespace().c_str(), classProperty->value(""));
         else if (numExtendsNames()!=0)
             implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
         else
-            implClassName = name();
-
-        // now the namespace: find first @namespace() property in package.ned of this package and parent packages
-        PropertyNode *namespacePropertyNode = NULL;
-        std::string packageName = getPackage();
-        while (true) {
-            // check the package.ned file for this property
-            NEDElement *nedfile = cNEDLoader::instance()->getPackageNedFile(packageName.c_str());
-            namespacePropertyNode = nedfile ? (PropertyNode *)nedfile->getFirstChildWithAttribute(NED_PROPERTY, "name", "namespace") : NULL;
-            if (namespacePropertyNode)
-                break;
-
-            if (packageName.empty())
-                break;
-
-            // go one package up -- drop part after last dot
-            size_t k = packageName.rfind(".", packageName.length());
-            packageName.resize(k==std::string::npos ? 0 : k);
-        }
-
-        // if the "namespace" property was found in a package.ned file, prepend implClassName with it
-        //FIXME this prefix will cumulate from base classes!!!!
-        if (namespacePropertyNode) {
-            NEDElement *propKey = namespacePropertyNode->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
-            LiteralNode *literal = propKey ? (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL) : NULL;
-            std::string value = literal ? literal->getValue() : "";
-            if (!value.empty())
-                implClassName = value + "::" + implClassName;
-        }
+            implClassName = opp_join("::", getCxxNamespace().c_str(), name());
     }
 }
 
@@ -156,6 +129,39 @@ std::string cNEDDeclaration::getPackage() const
     NEDElement *nedfile = getTree()->getParentWithTag(NED_NED_FILE);
     PackageNode *packageDecl = nedfile ? (PackageNode *) nedfile->getFirstChildWithTag(NED_PACKAGE) : NULL;
     return packageDecl ? packageDecl->getName() : "";
+}
+
+std::string cNEDDeclaration::getCxxNamespace() const
+{
+    // find first @namespace() property in package.ned of this package and parent packages
+    PropertyNode *namespacePropertyNode = NULL;
+    std::string packageName = getPackage();
+    while (true) {
+        // check the package.ned file for this property
+        NEDElement *nedfile = cNEDLoader::instance()->getPackageNedFile(packageName.c_str());
+        namespacePropertyNode = nedfile ? (PropertyNode *)nedfile->getFirstChildWithAttribute(NED_PROPERTY, "name", "namespace") : NULL;
+        if (namespacePropertyNode)
+            break;
+
+        if (packageName.empty())
+            break;
+
+        // go one package up -- drop part after last dot
+        size_t k = packageName.rfind(".", packageName.length());
+        packageName.resize(k==std::string::npos ? 0 : k);
+    }
+
+    // extract default value from it
+    //XXX throw error if not good? (missing value, too many keys/values etc)
+    if (namespacePropertyNode) {
+        NEDElement *propKey = namespacePropertyNode->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
+        LiteralNode *literal = propKey ? (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL) : NULL;
+        if (literal)
+            return literal->getValue();
+    }
+
+    // default: no namespace
+    return "";
 }
 
 void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
