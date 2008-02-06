@@ -71,9 +71,9 @@ void Suicide::activity()
 
 %inifile: test.ini
 [General]
-network={}.Test
-cmdenv-express-mode=false
-cmdenv-event-banners=false
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
 
 %contains: stdout
 t=0: exists=1

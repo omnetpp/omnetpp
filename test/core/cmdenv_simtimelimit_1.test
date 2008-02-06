@@ -29,8 +29,8 @@ void Module::finish()
 
 %inifile: test.ini
 [General]
-network={}.Test
-sim-time-limit=5s
+network = Module
+sim-time-limit = 5s
 
 %not-contains: stdout
 time: 5.

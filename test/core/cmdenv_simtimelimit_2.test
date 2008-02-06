@@ -29,8 +29,8 @@ void Module::finish()
 
 %inifile: test.ini
 [General]
-network={}.Test
-# sim-time-limit=
+network = Module
+# sim-time-limit =
 
 %contains-regex: stdout
 time: 2

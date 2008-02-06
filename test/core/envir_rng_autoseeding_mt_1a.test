@@ -17,9 +17,9 @@ for (int i=0; i<ev.numRNGs(); i++)
 
 %inifile: test.ini
 [General]
-network={}.Test
-cmdenv-express-mode=false
-num-rngs=3
+network = Test
+cmdenv-express-mode = false
+num-rngs = 3
 
 # Runs occurring more than once should get the same seeds every time.
 cmdenv-runs-to-execute = 1,5,4,2,5,1,3

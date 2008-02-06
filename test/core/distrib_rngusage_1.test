@@ -72,8 +72,8 @@ ev << "finished\n";
 
 %inifile: test.ini
 [General]
-network={}.Test
-num-rngs=10
+network = Test
+num-rngs = 10
 
 %contains-regex: stdout
 checking uniform\(1.0, 2.0, rng\)

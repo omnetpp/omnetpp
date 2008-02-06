@@ -8,7 +8,7 @@ recordScalar("two", -1.5);
 
 %inifile: test.ini
 [General]
-network={}.Test
+network = Test
 output-scalar-file = test.sca
 
 [Config 1]

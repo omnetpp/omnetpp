@@ -4,7 +4,7 @@ initialized.
 
 %file: test.ned
 
-channel MyConn extends cBasicChannel
+channel MyConn extends ned.cBasicChannel
 {
     parameters:
         delay = 1;
@@ -79,7 +79,7 @@ void Node2::handleMessage(cMessage *msg)
 %inifile: test.ini
 [General]
 network=myNet
-cmdenv-express-mode=false
+cmdenv-express-mode = false
 cmdenv-event-banners=false
 
 %contains: stdout

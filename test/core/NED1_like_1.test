@@ -39,9 +39,9 @@ void GenMod::activity()
 
 %inifile: test.ini
 [General]
-network={}.Test
-warnings=yes
-cmdenv-express-mode=false
+network = Test
+warnings = yes
+cmdenv-express-mode = false
 *.mod_type = "GenMod"
 
 %contains-regex: stdout

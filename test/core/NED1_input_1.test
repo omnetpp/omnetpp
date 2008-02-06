@@ -83,9 +83,9 @@ void Simple::activity()
 
 %inifile: test.ini
 [General]
-network={}.Test
-cmdenv-express-mode=false
-**.apply-default=true  # NOTE THIS LINE
+network = Test
+cmdenv-express-mode = false
+**.apply-default = true  # NOTE THIS LINE
 
 %contains: stdout
 sub[0].p1=1

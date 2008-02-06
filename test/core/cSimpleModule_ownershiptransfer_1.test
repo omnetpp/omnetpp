@@ -75,7 +75,7 @@ void Second::activity()
 
 %inifile: test.ini
 [General]
-network={}.Test
+network = Test
 
 %contains: stdout
 before:  net.first.hello

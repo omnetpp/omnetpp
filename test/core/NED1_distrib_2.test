@@ -123,9 +123,9 @@ void Simple::activity()
 
 %inifile: test.ini
 [General]
-network={}.Test
-num-rngs=10
-cmdenv-express-mode=false
+network = Test
+num-rngs = 10
+cmdenv-express-mode = false
 
 %contains: stdout
 uniform_par

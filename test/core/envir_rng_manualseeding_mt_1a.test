@@ -17,9 +17,9 @@ for (int i=0; i<ev.numRNGs(); i++)
 
 %inifile: test.ini
 [General]
-network={}.Test
-cmdenv-express-mode=false
-num-rngs=3
+network = Test
+cmdenv-express-mode = false
+num-rngs = 3
 
 seed-0-mt = 873
 seed-1-mt = 885

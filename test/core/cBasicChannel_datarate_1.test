@@ -3,7 +3,7 @@ Test channel data rate
 
 %file: test.ned
 
-channel MyConn extends cBasicChannel
+channel MyConn extends ned.cBasicChannel
 {
     parameters:
         datarate = 1e5;
@@ -112,9 +112,9 @@ void Node2::activity()
 
 %inifile: test.ini
 [General]
-network={}.Test
-cmdenv-express-mode=false
-cmdenv-event-banners=false
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
 
 %contains: stdout
 t=0: busy:0, finishes:0

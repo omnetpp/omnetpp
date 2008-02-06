@@ -5,50 +5,50 @@ Tests that NED predefined channels really affect connection properties.
 
 import ned.*;
 
-channel Conn0 extends cBasicChannel
+channel Conn0 extends ned.cBasicChannel
 {
 }
 
-channel Conn1 extends cBasicChannel
+channel Conn1 extends ned.cBasicChannel
 {
     parameters:
         delay = 0.004;
 }
 
-channel Conn2 extends cBasicChannel
+channel Conn2 extends ned.cBasicChannel
 {
     parameters:
         error = 0.001;
 }
 
-channel Conn3 extends cBasicChannel
+channel Conn3 extends ned.cBasicChannel
 {
     parameters:
         datarate = 64000;
 }
 
-channel Conn4 extends cBasicChannel
+channel Conn4 extends ned.cBasicChannel
 {
     parameters:
         delay = 0.004;
         error = 0.001;
 }
 
-channel Conn5 extends cBasicChannel
+channel Conn5 extends ned.cBasicChannel
 {
     parameters:
         delay = 0.004;
         datarate = 64000;
 }
 
-channel Conn6 extends cBasicChannel
+channel Conn6 extends ned.cBasicChannel
 {
     parameters:
         error = 0.001;
         datarate = 64000;
 }
 
-channel Conn7 extends cBasicChannel
+channel Conn7 extends ned.cBasicChannel
 {
     parameters:
         delay = 0.004;

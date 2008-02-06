@@ -100,9 +100,9 @@ void Deleter::handleMessage(cMessage *msg)
 
 %inifile: test.ini
 [General]
-network={}.Test
-cmdenv-express-mode=false
-cmdenv-event-banners=false
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
 
 %contains: stdout
 NodeA network.nodeA at t=0

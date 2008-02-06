@@ -17,9 +17,9 @@ network Test
 
 %inifile: test.ini
 [General]
-network={}.Test
-warnings=yes
-cmdenv-express-mode=false
+network = Test
+warnings = yes
+cmdenv-express-mode = false
 *.mod_type = "bla-bla-bla"
 
 %exitcode: 1
