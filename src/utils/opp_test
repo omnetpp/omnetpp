@@ -329,16 +329,12 @@ sub testcase_generatesources
 
     print "  generating files for `$testfilename':\n" if ($debug);
 
-    # source files
-    foreach $key (keys(%values))
-    {
-        if ($key =~ /^file\b/)
-        {
-            # write out file
-            my $fname = $workdir."/".$testname."/".$values{$key};
-            writefile($fname, $bodies{$key});
-        }
-    }
+    # generate "package.ned"
+    $ned = $PackageNEDTemplate;
+    $ned =~ s/\@TESTNAME\@/$testname/g;
+    $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
+    $nedfname = $workdir."/".$testname."/package.ned";
+    writefile($nedfname, $ned);
 
     $networkname = "Test";  # by default
 
@@ -438,6 +434,19 @@ sub testcase_generatesources
         $inifile =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
     }
     writefile($inifname, $inifile);
+
+    # source files (export them after the templated files,
+    # so that user can overwrite them if needed)
+    foreach $key (keys(%values))
+    {
+        if ($key =~ /^file\b/)
+        {
+            # write out file
+            my $fname = $workdir."/".$testname."/".$values{$key};
+            writefile($fname, $bodies{$key});
+        }
+    }
+
 }
 
 sub testcase_run()
@@ -770,19 +779,19 @@ sub exec_program()
 
 sub define_templates()
 {
+    $PackageNEDTemplate = '
+@namespace(@TESTNAME@);
+';
+
     $ModuleNEDTemplate = '
 simple @MODULE@
 {
-    parameters:
-        @class("@TESTNAME@::@MODULE@");
 }
 ';
 
     $ModuleABNEDTemplate = '
 simple @MODULE_A@
 {
-    parameters:
-        @class("@TESTNAME@::@MODULE_A@");
     gates:
         input in;
         output out;
@@ -790,8 +799,6 @@ simple @MODULE_A@
 
 simple @MODULE_B@
 {
-    parameters:
-        @class("@TESTNAME@::@MODULE_B@");
     gates:
         input in;
         output out;
