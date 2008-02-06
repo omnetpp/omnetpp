@@ -28,10 +28,6 @@ simple Simple
         xml xmlconfig2;
 }
 
-network Net extends Simple
-{
-}
-
 %file: test.cc
 
 #include <string.h>
@@ -63,9 +59,8 @@ void Simple::activity()
 
 %inifile: test.ini
 [General]
-network=Net
+network = Simple
 
-[Parameters]
 *.xmlconfig1 = xmldoc("test.xml");
 *.xmlconfig2 = xmldoc("test.xml","foo/foo[1]//*[@color='green']");
 

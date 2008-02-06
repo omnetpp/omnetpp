@@ -22,7 +22,7 @@ module Mod
         submod[2]: Simple;
 }
 
-module Net
+network Net
 {
     parameters:
         string p;
@@ -32,10 +32,6 @@ module Net
         submod1: Simple;
         submod2: Mod;
         submod[2]: Mod;
-}
-
-network net extends Net
-{
 }
 
 %file: test.cc
@@ -80,9 +76,8 @@ void Simple::printParametersOf(cModule *mod)
 
 %inifile: test.ini
 [General]
-network=net
+network = Net
 
-[Parameters]
 net.p="1st-level, p"
 net.*.*.*.par="4th-level, par"
 net.*.par="2nd-level, par"

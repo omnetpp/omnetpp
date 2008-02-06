@@ -9,10 +9,6 @@ simple Simple
         string str;
 }
 
-network Net extends Simple
-{
-}
-
 %file: test.cc
 
 #include <omnetpp.h>
@@ -39,10 +35,9 @@ void Simple::activity()
 
 %inifile: test.ini
 [General]
-network=Net
+network = Simple
 
-[Parameters]
-*.str="one \
+*.str = "one \
 two  \
 three\
     four"

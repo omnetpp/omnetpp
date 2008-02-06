@@ -40,33 +40,6 @@ simple Simple
         volatile double poisson_par;
 }
 
-network Net extends Simple
-{
-    parameters:
-        uniform_par;
-        exponential_par;
-        normal_par;
-        truncnormal_par;
-        gamma_d_par;
-        beta_par;
-        erlang_k_par;
-        chi_square_par;
-        student_t_par;
-        cauchy_par;
-        triang_par;
-        lognormal_par;
-        weibull_par;
-        pareto_shifted_par;
-
-        intuniform_par;
-        bernoulli_par;
-        binomial_par;
-        geometric_par;
-        negbinomial_par;
-        // hypergeometric_par = input,
-        poisson_par;
-}
-
 %file: test.cc
 
 #include <omnetpp.h>
@@ -121,9 +94,8 @@ void Simple::activity()
 
 %inifile: test.ini
 [General]
-network=Net
+network = Simple
 
-[Parameters]
 Net.uniform_par =         uniform(1.0, 2.0)
 Net.exponential_par =     exponential(1.0)
 Net.normal_par =          normal(1.0, 1.0)

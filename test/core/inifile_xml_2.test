@@ -70,14 +70,10 @@ module Subnet
         dum3: Dummy;
 }
 
-module Net
+network Net
 {
     submodules:
         subnet[1]: Subnet;
-}
-
-network net extends Net
-{
 }
 
 %file: test.cc
@@ -109,9 +105,8 @@ void Simple::activity()
 
 %inifile: test.ini
 [General]
-network=net
+network = Net
 
-[Parameters]
 **.by_module_fullpath = xmldoc("test.xml","//foo[@att=$MODULE_FULLPATH]");
 **.by_module_fullname = xmldoc("test.xml","//foo[@att=$MODULE_FULLNAME]");
 **.by_module_name =     xmldoc("test.xml","//foo[@att=$MODULE_NAME]");
