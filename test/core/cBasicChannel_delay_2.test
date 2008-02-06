@@ -42,7 +42,7 @@ Define_Module(Sender);
 void Sender::activity()
 {
    // create and set channel
-   cChannelType *channelType = cChannelType::find("cBasicChannel"); //XXX find something more concise to create a basic channel...
+   cChannelType *channelType = cChannelType::find("ned.cBasicChannel"); //XXX find something more concise to create a basic channel...
    cBasicChannel *ch = (cBasicChannel *)channelType->create("chan", parentModule());
    ch->setDelay(0.1);
    gate("out")->setChannel( ch );
