@@ -112,7 +112,7 @@ all: $O/$(TARGET)
 {exe:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@mkdir -p $O
-{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {-out}$O/$(TARGET)
+{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
 {exe:}{nmake:}	echo @^%~dp0\$(O:/=\)\$(TARGET) ^%* > $(TARGET:.exe=.cmd)
 {exe:}{~nmake:}ifeq ("$(EXE_SUFFIX)",".exe")
 {exe:}{~nmake:}	echo "@%~dp0\\\\$(subst /,\\\\,$O)\\\\$(TARGET) %*" > $(subst .exe,.cmd,$(TARGET))
@@ -122,11 +122,11 @@ all: $O/$(TARGET)
 {sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@mkdir -p $O
-{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)}
+{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)} {nmake_inlineend}
 {staticlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O
-{staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) $(OBJS) $(EXTRA_OBJS)
+{staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) {nmake_inlineend}
 {nolink:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
@@ -175,4 +175,3 @@ makefiles:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
-
