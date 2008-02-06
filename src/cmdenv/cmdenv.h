@@ -42,6 +42,7 @@ class CMDENV_API TCmdenvApp : public TOmnetApp
      opp_string opt_outputfile;
 
      bool opt_expressmode;
+     bool opt_interactive;
      bool opt_autoflush; // all modes
      bool opt_modulemsgs;  // if normal mode
      bool opt_eventbanners; // if normal mode

@@ -31,6 +31,7 @@
 #include "args.h"
 #include "speedometer.h"
 #include "timeutil.h"
+#include "stringutil.h"
 #include "cconfigkey.h"
 
 USING_NAMESPACE
@@ -40,6 +41,7 @@ USING_NAMESPACE
 Register_GlobalConfigEntry(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")
 Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, NULL, "Specifies which runs to execute from the selected configuration (see cmdenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
 Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb", CFG_INT,  CMDENV_EXTRASTACK_KB, "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
+Register_GlobalConfigEntry(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_BOOL,  "false", "Defines what Cmdenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Cmdenv stops with an error.")
 Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
 Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
 Register_PerRunConfigEntry(CFGID_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call fflush(stdout) after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
@@ -130,6 +132,7 @@ void TCmdenvApp::readPerRunOptions()
 
     cConfiguration *cfg = getConfig();
     opt_expressmode = cfg->getAsBool(CFGID_EXPRESS_MODE);
+    opt_interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
     opt_autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
     opt_modulemsgs = cfg->getAsBool(CFGID_MODULE_MESSAGES);
     opt_eventbanners = cfg->getAsBool(CFGID_EVENT_BANNERS);
@@ -525,38 +528,53 @@ void TCmdenvApp::flush()
 
 bool TCmdenvApp::gets(const char *promptstr, char *buf, int len)
 {
-    ::fprintf(fout, "%s", promptstr);
-    if (buf[0]) ::fprintf(fout, "(default: %s) ",buf);
-    ::fflush(fout);
-
-    ::fgets(buffer,512,stdin);
-    buffer[strlen(buffer)-1] = '\0'; // chop LF
-
-    if( buffer[0]=='\x1b' ) // ESC?
-       return true;
+    if (!opt_interactive)
+    {
+        throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s\")", promptstr);
+    }
     else
     {
-       if( buffer[0] )
-          strncpy(buf, buffer, len);
-       return false;
+        ::fprintf(fout, "%s", promptstr);
+        if (!opp_isempty(buf))
+            ::fprintf(fout, "(default: %s) ", buf);
+        ::fflush(fout);
+
+        ::fgets(buffer, 512, stdin);
+        buffer[strlen(buffer)-1] = '\0'; // chop LF
+
+        if (buffer[0]=='\x1b') { // ESC?
+           return true;
+        }
+        else {
+           if (buffer[0])
+              strncpy(buf, buffer, len);
+           return false;
+        }
     }
 }
 
-int TCmdenvApp::askYesNo(const char *question )
+int TCmdenvApp::askYesNo(const char *question)
 {
-    // should also return -1 (==CANCEL)
-    for(;;)
+    if (!opt_interactive)
     {
-        ::fprintf(fout, "%s (y/n) ", question);
-        ::fflush(fout);
-        ::fgets(buffer,512,stdin);
-        buffer[strlen(buffer)-1] = '\0'; // chop LF
-        if (opp_toupper(buffer[0])=='Y' && !buffer[1])
-           return 1;
-        else if (opp_toupper(buffer[0])=='N' && !buffer[1])
-           return 0;
-        else
-           putmsg("Please type 'y' or 'n'!\n");
+        throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s (y/n)\")", question);
+    }
+    else
+    {
+        // should also return -1 (==CANCEL)
+        for(;;)
+        {
+            ::fprintf(fout, "%s (y/n) ", question);
+            ::fflush(fout);
+            ::fgets(buffer, 512, stdin);
+            buffer[strlen(buffer)-1] = '\0'; // chop LF
+            if (opp_toupper(buffer[0])=='Y' && !buffer[1])
+               return 1;
+            else if (opp_toupper(buffer[0])=='N' && !buffer[1])
+               return 0;
+            else
+               putmsg("Please type 'y' or 'n'!\n");
+        }
     }
 }
 
