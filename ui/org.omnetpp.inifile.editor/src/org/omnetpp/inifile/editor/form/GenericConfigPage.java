@@ -6,6 +6,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNER_DETAILS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXTRA_STACK_KB;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_INTERACTIVE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_MESSAGE_TRACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_MODULE_MESSAGES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_OUTPUT_FILE;
@@ -24,6 +25,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_INI_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOAD_LIBS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NUM_RNGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUTSCALARMANAGER_CLASS;
@@ -36,18 +38,8 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTO
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTOR_PRECISION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARALLEL_SIMULATION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_COMMUNICATIONS_CLASS;
-//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_DEBUG;
-//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMM_PREFIX;
-//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMM_PRESERVE_READ;
-//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMM_READ_PREFIX;
-//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE;
-//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER;
-//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NAMEDPIPECOMM_PREFIX;
-//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS;
-//import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_SYNCHRONIZATION_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
@@ -235,9 +227,11 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_MESSAGE_TRACE, "Message trace");
 			addSpacer(form);
-			addTextFieldEditor(form, CFGID_CMDENV_EXTRA_STACK_KB, "Cmdenv extra stack (Kb)");
-			addTextFieldEditor(form, CFGID_CMDENV_OUTPUT_FILE, "Redirect stdout to file");
-			addCheckboxFieldEditor(form, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
+            Group group3 = createGroup(form, "Miscellaneus");
+            addCheckboxFieldEditor(group3, CFGID_CMDENV_INTERACTIVE, "Interactive mode");
+            addCheckboxFieldEditor(group3, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
+			addTextFieldEditor(group3, CFGID_CMDENV_OUTPUT_FILE, "Redirect stdout to file");
+			addTextFieldEditor(group3, CFGID_CMDENV_EXTRA_STACK_KB, "Cmdenv extra stack (Kb)");
 		}
 		else if (category.equals(CAT_TKENV)) {
 			Group group0 = createGroup(form, "On startup, set up the following simulation:");

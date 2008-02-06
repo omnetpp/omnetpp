@@ -166,6 +166,11 @@ public class ConfigRegistry {
         "cmdenv-extra-stack-kb", CFG_INT, "8",
         "Specifies the extra amount of stack (in kilobytes) that is reserved for " +
         "each activity() simple module when the simulation is run under Cmdenv.");
+    public static final ConfigKey CFGID_CMDENV_INTERACTIVE = addGlobalEntry(
+        "cmdenv-interactive", CFG_BOOL, "false",
+        "Defines what Cmdenv should do when the model contains unassigned " +
+        "parameters. In interactive mode, it asks the user. In non-interactive mode " +
+        "(which is more suitable for batch execution), Cmdenv stops with an error.");
     public static final ConfigKey CFGID_CMDENV_MESSAGE_TRACE = addPerRunEntry(
         "cmdenv-message-trace", CFG_BOOL, "false",
         "When cmdenv-express-mode=false: print a line per message sending (by " +

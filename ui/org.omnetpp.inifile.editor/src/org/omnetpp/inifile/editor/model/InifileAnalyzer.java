@@ -671,11 +671,11 @@ public class InifileAnalyzer {
 
 			public String resolveLikeType(SubmoduleElementEx submodule) {
 				// Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
-				// resolveLikeParam() relies on the data structure we are currently building
+				// resolveLikeParam() which relies on the data structure we are currently building
 
 				// get like parameter name
 				String likeParamName = submodule.getLikeParam();
-				if (!likeParamName.matches("[A-Za-z0-9_]+"))
+				if (!likeParamName.matches("[A-Za-z_][A-Za-z0-9_]*"))
 					return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
 
 				// look up parameter value (note: we cannot use resolveLikeParam() here yet)

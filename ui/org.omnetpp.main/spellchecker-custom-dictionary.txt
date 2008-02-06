@@ -269,3 +269,4 @@ timestamps
 cc
 msg
 ifdef
+inline
