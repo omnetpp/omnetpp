@@ -17,7 +17,6 @@ option showlayouting	{0}
 option usenewlayouter	{0}
 option bubbles	{1}
 option animation_speed	{1.5}
-option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
 config concurrent-anim	{1}
 config confirm-exit	{1}
