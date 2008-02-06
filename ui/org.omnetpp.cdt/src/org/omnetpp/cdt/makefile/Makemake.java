@@ -276,7 +276,11 @@ public class Makemake {
 
         // determine subpath: the project-relative path of this folder
         String subpath = folder.getProjectRelativePath().toString(); 
-        
+
+        // XP has 8K limit on line length, so we may have to use the inline file feature of nmake
+        int approximateLinkerLineLength = 500 + quoteJoin(objs).length() + quoteJoin(extraObjs).length() + 2*quoteJoin(options.libs).length() + 2*quoteJoin(libDirs).length();
+        boolean isLongLinkerLine = approximateLinkerLineLength > 8000;
+
         // write dependencies
         StringBuilder deps = new StringBuilder();
         //String sep = " ";
@@ -342,6 +346,8 @@ public class Makemake {
         m.put("dllsymbol", StringUtils.nullToEmpty(options.dllSymbol));
         m.put("sourcedirs", sourceDirs);
         m.put("backslashedsourcedirs", backslashedSourceDirs);
+        m.put("nmake_inlinefile", (isNMake && isLongLinkerLine) ? "@<<\n" : "");
+        m.put("nmake_inlineend", (isNMake && isLongLinkerLine) ? "\n<<" : "");
 
         // now generate the makefile
         System.out.println("generating makefile for " + folder.toString());
