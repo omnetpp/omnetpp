@@ -7,16 +7,15 @@ namespace {};
 
 struct MyStruct
 {
-    fields:
-        bool b = true;
-        char c = 'C';
-        short s = -273;
-        unsigned short us = 100;
-        int i = -18;
-        unsigned int ui = 34;
-        long l = -3;
-        unsigned long ul = 256;
-        double d = 3.1415927;
+    bool b = true;
+    char c = 'C';
+    short s = -273;
+    unsigned short us = 100;
+    int i = -18;
+    unsigned int ui = 34;
+    long l = -3;
+    unsigned long ul = 256;
+    double d = 3.1415927;
 };
 
 %includes:

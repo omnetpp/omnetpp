@@ -7,16 +7,14 @@ namespace {};
 
 class Class1
 {
-    fields:
-        int bb;
+    int bb;
 }
 
 
 class MyClass extends cOwnedObject
 {
-    fields:
-        Class1 b;
-        char c;
+    Class1 b;
+    char c;
 };
 
 %includes:

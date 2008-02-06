@@ -7,15 +7,13 @@ namespace {};
 
 struct MyStruct
 {
-    fields:
-        int bb;
+    int bb;
 }
 
 message MyMessage
 {
-    fields:
-        MyStruct b[3];
-        char c;
+    MyStruct b[3];
+    char c;
 };
 
 %includes:

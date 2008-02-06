@@ -9,9 +9,8 @@ class cQueue;
 
 message MyMessage
 {
-    fields:
-        cQueue q[3];
-        char c;
+    cQueue q[3];
+    char c;
 };
 
 %includes:

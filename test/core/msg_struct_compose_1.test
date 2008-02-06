@@ -7,16 +7,14 @@ namespace {};
 
 struct Base
 {
-    fields:
-        int bb;
+    int bb;
 }
 
 
 struct MyStruct
 {
-    fields:
-        Base b;
-        char c;
+    Base b;
+    char c;
 };
 
 %includes:

@@ -7,32 +7,28 @@ namespace {};
 
 struct MyStruct
 {
-    fields:
-        int bb;
+    int bb;
 }
 
 class MyClass
 {
-    fields:
-        int bb;
+    int bb;
 }
 
 class cQueue;
 
 message Base
 {
-    fields:
-        MyStruct ms[2];
-        MyClass mc[3];
-        cQueue q[4];
+    MyStruct ms[2];
+    MyClass mc[3];
+    cQueue q[4];
 }
 
 message MyMessage extends Base
 {
-    fields:
-        MyStruct ms2[5];
-        MyClass mc2[6];
-        cQueue q2[7];
+    MyStruct ms2[5];
+    MyClass mc2[6];
+    cQueue q2[7];
 };
 
 %includes:

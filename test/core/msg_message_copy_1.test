@@ -7,18 +7,16 @@ namespace {};
 
 message Base
 {
-    fields:
-        int a = 7;
-        int b[2];
-        int c[];
+    int a = 7;
+    int b[2];
+    int c[];
 }
 
 message MyMessage extends Base
 {
-    fields:
-        string s1 = "one";
-        string s2[2];
-        string s3[];
+    string s1 = "one";
+    string s2[2];
+    string s3[];
 
 };
 

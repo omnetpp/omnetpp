@@ -7,16 +7,15 @@ namespace {};
 
 class MyClass extends cOwnedObject
 {
-    fields:
-        bool b;
-        char c;
-        short s;
-        unsigned short us;
-        int i;
-        unsigned int ui;
-        long l;
-        unsigned long ul;
-        double d;
+    bool b;
+    char c;
+    short s;
+    unsigned short us;
+    int i;
+    unsigned int ui;
+    long l;
+    unsigned long ul;
+    double d;
 };
 
 %includes:

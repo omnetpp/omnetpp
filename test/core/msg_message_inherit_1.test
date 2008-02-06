@@ -7,14 +7,12 @@ namespace {};
 
 message Base
 {
-    fields:
-        int b;
+    int b;
 }
 
 message MyMessage extends Base
 {
-    fields:
-        char c;
+    char c;
 };
 
 %includes:

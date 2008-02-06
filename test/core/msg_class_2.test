@@ -7,18 +7,17 @@ namespace {};
 
 class MyClass
 {
-    fields:
-        bool b1 = true;
-        bool b2 = false;
-        char c1 = 'a';
-        char c2 = 64;
-        short s = 5;
-        unsigned short us = 6;
-        int i = 7;
-        unsigned int ui = 8;
-        long l = 9;
-        unsigned long ul = 10;
-        double d = 3.1415;
+    bool b1 = true;
+    bool b2 = false;
+    char c1 = 'a';
+    char c2 = 64;
+    short s = 5;
+    unsigned short us = 6;
+    int i = 7;
+    unsigned int ui = 8;
+    long l = 9;
+    unsigned long ul = 10;
+    double d = 3.1415;
 };
 
 %includes:

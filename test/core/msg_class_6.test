@@ -7,8 +7,7 @@ namespace {};
 
 class MyClass
 {
-    fields:
-        int aa[3];
+    int aa[3];
 };
 
 %includes:

@@ -7,17 +7,16 @@ namespace {};
 
 class MyClass
 {
-    fields:
-        bool bb[];
-        char cc[];
-        short ss[];
-        unsigned short uss[];
-        int ii[];
-        unsigned int uii[];
-        long ll[];
-        unsigned long ull[];
-        double dd[];
-        string str[];
+    bool bb[];
+    char cc[];
+    short ss[];
+    unsigned short uss[];
+    int ii[];
+    unsigned int uii[];
+    long ll[];
+    unsigned long ull[];
+    double dd[];
+    string str[];
 };
 
 %includes:

@@ -7,11 +7,9 @@ namespace {};
 
 class MyClass
 {
-    properties:
-        customize = true;
-    fields:
-        int b;
-        abstract int i;
+    @customize(true);
+    int b;
+    abstract int i;
 }
 
 %includes:

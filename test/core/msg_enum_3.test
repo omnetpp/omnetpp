@@ -14,17 +14,15 @@ enum MyEnum
 
 class MyClass
 {
-    fields:
-        short e1 = ECC;
-        int e2 = PECC;
+    short e1 = ECC;
+    int e2 = PECC;
 };
 
 message MyMessage
 {
-    fields:
-        MyClass cc;
-        long e1 = ECC;
-        char e2 = PECC;
+    MyClass cc;
+    long e1 = ECC;
+    char e2 = PECC;
 };
 
 

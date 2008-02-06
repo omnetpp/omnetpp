@@ -7,18 +7,16 @@ namespace {};
 
 class Base extends cOwnedObject
 {
-    fields:
-        int a = 7;
-        int b[2];
-        int c[];
+    int a = 7;
+    int b[2];
+    int c[];
 }
 
 class MyClass extends Base
 {
-    fields:
-        string s1 = "one";
-        string s2[2];
-        string s3[];
+    string s1 = "one";
+    string s2[2];
+    string s3[];
 
 };
 
