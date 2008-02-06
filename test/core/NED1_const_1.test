@@ -1,24 +1,15 @@
 %description:
-Test that const parameters in NED are really converted to constant.
+Test that non-volatile parameters in NED are really converted to constant.
 
 %file: test.ned
 
-simple Simple
+simple Test
 {
     parameters:
-        double p0;
-        double p1;
-        double p2;
-        double p3;
-}
-
-network Test extends Simple
-{
-    parameters:
-        p0 = truncnormal(10, 3);
-        p1 = 1+truncnormal(10, 3);
-        p2 = exponential(1);
-        p3 = 1+exponential(1);
+        double p0 = truncnormal(10, 3);
+        double p1 = 1+truncnormal(10, 3);
+        double p2 = exponential(1);
+        double p3 = 1+exponential(1);
 }
 
 %file: test.cc
@@ -27,16 +18,16 @@ network Test extends Simple
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
-void Simple::activity()
+void Test::activity()
 {
     for (int i=0; i<params(); i++)
         ev << par(i).name() << ":" << (par(i).isExpression()?"expr":"constant") << endl;

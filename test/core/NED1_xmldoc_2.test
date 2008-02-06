@@ -18,19 +18,12 @@ Check xmldoc(): no such file
 #pragma warning(disable:4786)
 #endif
 
-
 %file: test.ned
 
-simple Simple
+simple Test
 {
     parameters:
-        xml xmlconfig;
-}
-
-network Test extends Simple
-{
-    parameters:
-        xmlconfig = xmldoc("nothing.xml");
+        xml xmlconfig = xmldoc("nosuchfile.xml");
 }
 
 %file: test.cc
@@ -40,16 +33,16 @@ network Test extends Simple
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
-void Simple::activity()
+void Test::activity()
 {
 }
 
@@ -58,5 +51,5 @@ void Simple::activity()
 %exitcode: 1
 
 %contains: stdout
-Error reading `nothing.xml'
+Error reading `nosuchfile.xml'
 

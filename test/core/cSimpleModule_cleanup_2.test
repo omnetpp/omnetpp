@@ -18,6 +18,7 @@ new Noisy;
 %inifile: test.ini
 [General]
 network = Test
+cmdenv-express-mode = false
 perform-gc = true
 
 %contains-regex: stdout

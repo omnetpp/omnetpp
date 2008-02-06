@@ -22,18 +22,11 @@ functionality in NED assignments
 
 %file: test.ned
 
-simple Simple
+simple Test
 {
     parameters:
-        xml xmlconfig1;
-        xml xmlconfig2;
-}
-
-network Test extends Simple
-{
-    parameters:
-        xmlconfig1 = xmldoc("NED1_xmldoc_1/test.xml");
-        xmlconfig2 = xmldoc("NED1_xmldoc_1/test.xml", "foo/foo[1]//*[@color='green']");
+        xml xmlconfig1 = xmldoc("test.xml");
+        xml xmlconfig2 = xmldoc("test.xml", "foo/foo[1]//*[@color='green']");
 }
 
 %file: test.cc
@@ -43,16 +36,16 @@ network Test extends Simple
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
-void Simple::activity()
+void Test::activity()
 {
     cXMLElement *node1 = par("xmlconfig1");
     ASSERT(node1);

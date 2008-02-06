@@ -1,22 +1,16 @@
 %description:
 Shift operator in NED (Stefan Feuerhahn's bug)
 
-FIXME explore! *** Known to fail on Linux (on Windows it's OK) because with double d=0xc0000000,
+FIXME may fail on Linux (on Windows it's OK) because with double d=0xc0000000,
 (long)d yields 0x80000000  (Linux discards a bit on the double->long conversion).
 This occurs at cpar.cc#827 return (long)doubleValue();
 
 %file: test.ned
 
-simple Simple
+simple Test
 {
     parameters:
-        double p00;
-}
-
-network Test extends Simple
-{
-    parameters:
-        p00 = 192<<24;
+        double p00 = 192<<24;
 }
 
 %file: test.cc
@@ -25,16 +19,16 @@ network Test extends Simple
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
-void Simple::activity()
+void Test::activity()
 {
     for (int i=0; i<params(); i++)
         ev << par(i).name() << "=" << std::hex << (unsigned long)par(i) << endl;

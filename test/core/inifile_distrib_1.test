@@ -95,6 +95,7 @@ void Simple::activity()
 %inifile: test.ini
 [General]
 network = Simple
+cmdenv-express-mode = false
 
 Net.uniform_par =         uniform(1.0, 2.0)
 Net.exponential_par =     exponential(1.0)

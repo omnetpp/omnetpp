@@ -78,9 +78,9 @@ void Node2::handleMessage(cMessage *msg)
 
 %inifile: test.ini
 [General]
-network=myNet
+network = Test
 cmdenv-express-mode = false
-cmdenv-event-banners=false
+cmdenv-event-banners = false
 
 %contains: stdout
 msg arrived at T=1.1

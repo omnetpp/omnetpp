@@ -4,24 +4,14 @@ networks
 
 %file: test.ned
 
-simple Simple
+simple Test
 {
     parameters:
-        double p0;
-        double p1;
-        double p2;
-        double p3;
-        double p4;
-}
-
-network Test extends Simple
-{
-    parameters:
-        p0 = testfunc0();
-        p1 = testfunc1(10);
-        p2 = testfunc2(10, 20);
-        p3 = testfunc3(10, 20, 30);
-        p4 = testfunc4(10, 20, 30, 40);
+        double p0 = testfunc0();
+        double p1 = testfunc1(10);
+        double p2 = testfunc2(10, 20);
+        double p3 = testfunc3(10, 20, 30);
+        double p4 = testfunc4(10, 20, 30, 40);
 }
 
 %file: test.cc
@@ -42,18 +32,18 @@ Define_Function(testfunc2,2);
 Define_Function(testfunc3,3);
 Define_Function(testfunc4,4);
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
 #define PRINT_PARAMETER(x) ev << #x << " = " << (double)par(#x) << endl;
 
-void Simple::activity()
+void Test::activity()
 {
     PRINT_PARAMETER( p0 );
     PRINT_PARAMETER( p1 );

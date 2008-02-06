@@ -7,14 +7,10 @@ simple Simple
 {
 }
 
-module Net
+module Test
 {
     submodules:
         a[5]: Simple;
-}
-
-network net extends Net
-{
 }
 
 %file: test.cc
@@ -51,8 +47,9 @@ int Simple::getRngId(cRNG *rng)
 
 %inifile: test.ini
 [General]
-network=net
-num-rngs=3
+network = Test
+cmdenv-express-mode = false
+num-rngs = 3
 
 *.a[0].rng-0 = 1
 *.a[*].rng-0 = 2

@@ -73,18 +73,14 @@ void Second::activity()
 
 }; //namespace
 
-%inifile: test.ini
-[General]
-network = Test
+%contains: stdout
+before:  Test.first.hello
+  owner: Test.first
+after:   Test.second.hello
+  owner: Test.second
 
 %contains: stdout
-before:  net.first.hello
-  owner: net.first
-after:   net.second.hello
-  owner: net.second
-
-%contains: stdout
-net.second (id=3)
-receivedMsg: net.second.hello
-      owner: net.second
+Test.second (id=3)
+receivedMsg: Test.second.hello
+      owner: Test.second
 

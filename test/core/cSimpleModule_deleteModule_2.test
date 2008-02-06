@@ -73,7 +73,7 @@ void Suicide::handleMessage(cMessage *msg)
 [General]
 network = Test
 cmdenv-express-mode = false
-cmdenv-event-banners = no
+cmdenv-event-banners = false
 
 %contains: stdout
 t=0: exists=1

@@ -13,58 +13,31 @@ The dist/ dir can be used to test the functions.
 
 %file: test.ned
 
-simple Simple
+simple Test
 {
     parameters:
-        volatile double uniform_par;
-        volatile double exponential_par;
-        volatile double normal_par;
-        volatile double truncnormal_par;
-        volatile double gamma_d_par;
-        volatile double beta_par;
-        volatile double erlang_k_par;
-        volatile double chi_square_par;
-        volatile double student_t_par;
-        volatile double cauchy_par;
-        volatile double triang_par;
-        volatile double lognormal_par;
-        volatile double weibull_par;
-        volatile double pareto_shifted_par;
+        volatile double uniform_par = uniform(1.0, 2.0, 9);
+        volatile double exponential_par = exponential(1.0, 9);
+        volatile double normal_par = normal(1.0, 1.0, 9);
+        volatile double truncnormal_par = truncnormal(1.0, 1.0, 9);
+        volatile double gamma_d_par = gamma_d(2.0, 2.0, 9);
+        volatile double beta_par = beta(1.0, 1.0, 9);
+        volatile double erlang_k_par = erlang_k(1, 1.0, 9);
+        volatile double chi_square_par = chi_square(2, 9);
+        volatile double student_t_par = student_t(1, 9);
+        volatile double cauchy_par = cauchy(1.0, 2.0, 9);
+        volatile double triang_par = triang(1.0, 2.0, 3.0);
+        volatile double lognormal_par = lognormal(1.0, 1.0, 9);
+        volatile double weibull_par = weibull(1.0, 2.0, 9);
+        volatile double pareto_shifted_par = pareto_shifted(1.0, 2.0, 3.0);
 
-        volatile double intuniform_par;
-        volatile double bernoulli_par;
-        volatile double binomial_par;
-        volatile double geometric_par;
-        volatile double negbinomial_par;
-        // hypergeometric_par,
-        volatile double poisson_par;
-}
-
-network Test extends Simple
-{
-    parameters:
-        uniform_par = uniform(1.0, 2.0, 9);
-        exponential_par = exponential(1.0, 9);
-        normal_par = normal(1.0, 1.0, 9);
-        truncnormal_par = truncnormal(1.0, 1.0, 9);
-        gamma_d_par = gamma_d(2.0, 2.0, 9);
-        beta_par = beta(1.0, 1.0, 9);
-        erlang_k_par = erlang_k(1, 1.0, 9);
-        chi_square_par = chi_square(2, 9);
-        student_t_par = student_t(1, 9);
-        cauchy_par = cauchy(1.0, 2.0, 9);
-        triang_par = triang(1.0, 2.0, 3.0);
-        lognormal_par = lognormal(1.0, 1.0, 9);
-        weibull_par = weibull(1.0, 2.0, 9);
-        pareto_shifted_par = pareto_shifted(1.0, 2.0, 3.0);
-
-        intuniform_par = intuniform(0, 10, 9);
-        bernoulli_par = bernoulli(0.3, 9);
-        binomial_par = binomial(10, 0.3, 9);
-        geometric_par = geometric(0.3, 9);
-        negbinomial_par = negbinomial(10, 0.3, 9);
-        // hypergeometric_par =  hypergeometric(1, 2, 2, 9),
-        poisson_par = poisson(1.0, 9);
+        volatile int intuniform_par = intuniform(0, 10, 9);
+        volatile int bernoulli_par = bernoulli(0.3, 9);
+        volatile int binomial_par = binomial(10, 0.3, 9);
+        volatile int geometric_par = geometric(0.3, 9);
+        volatile int negbinomial_par = negbinomial(10, 0.3, 9);
+        // volatile int hypergeometric_par =  hypergeometric(1, 2, 2, 9),
+        volatile int poisson_par = poisson(1.0, 9);
 }
 
 %file: test.cc
@@ -73,14 +46,14 @@ network Test extends Simple
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
 #define PAR_MEAN_AND_VARIANCE(PARNAME) \
  {\
@@ -89,7 +62,7 @@ Define_Module(Simple);
    ev.printf("%s: m=%lg v=%lg\n", #PARNAME, s.mean(), s.variance()); \
  }
 
-void Simple::activity()
+void Test::activity()
 {
     int numrepl=10000;
 

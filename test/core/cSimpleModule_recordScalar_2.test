@@ -9,6 +9,7 @@ recordScalar("two", -1.5);
 %inifile: test.ini
 [General]
 network = Test
+cmdenv-express-mode = false
 output-scalar-file = test.sca
 
 [Config 1]

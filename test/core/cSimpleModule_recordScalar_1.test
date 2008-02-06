@@ -7,7 +7,7 @@ recordScalar("one", 24.2);
 recordScalar("two", -1.3);
 
 %contains: test.sca
-run 1  {}_network
-scalar {}_network 	one 	24.2
-scalar {}_network 	two 	-1.3
+run 1  Test
+scalar Test 	one 	24.2
+scalar Test 	two 	-1.3
 

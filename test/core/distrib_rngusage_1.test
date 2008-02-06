@@ -73,6 +73,7 @@ ev << "finished\n";
 %inifile: test.ini
 [General]
 network = Test
+cmdenv-express-mode = false
 num-rngs = 10
 
 %contains-regex: stdout

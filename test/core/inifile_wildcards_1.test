@@ -77,6 +77,7 @@ void Simple::printParametersOf(cModule *mod)
 %inifile: test.ini
 [General]
 network = Net
+cmdenv-express-mode = false
 
 net.p="1st-level, p"
 net.*.*.*.par="4th-level, par"

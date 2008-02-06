@@ -3,22 +3,13 @@ Test random module parameters
 
 %file: test.ned
 
-simple Simple
+simple Test
 {
     parameters:
-        volatile double p0;
-        volatile double p1;
-        double c0;
-        double c1;
-}
-
-network Test extends Simple
-{
-    parameters:
-        p0 = truncnormal(10, 3);
-        p1 = 1+truncnormal(10, 3);
-        c0 = exponential(1);
-        c1 = 1+exponential(1);
+        volatile double p0 = truncnormal(10, 3);
+        volatile double p1 = 1+truncnormal(10, 3);
+        double c0 = exponential(1);
+        double c1 = 1+exponential(1);
 }
 
 %file: test.cc
@@ -27,16 +18,16 @@ network Test extends Simple
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
-void Simple::activity()
+void Test::activity()
 {
     for (int i=0; i<params(); i++)
         ev << par(i).name() << ":" << (par(i).isExpression()?0:1) << ":" << par(i).doubleValue() << "," << par(i).doubleValue() << endl;

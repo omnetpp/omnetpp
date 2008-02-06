@@ -3,24 +3,23 @@
 
 %file: test.ned
 
-module GenMod
+moduleinterface IFoo
 {
 }
 
 network Test
 {
     parameters:
-        string mod_type;
+        string modType;
     submodules:
-        specMod: <mod_type> like GenMod;
+        specMod: <modType> like IFoo;
 }
 
 %inifile: test.ini
 [General]
 network = Test
-warnings = yes
 cmdenv-express-mode = false
-*.mod_type = "bla-bla-bla"
+*.modType = "bla-bla-bla"
 
 %exitcode: 1
 

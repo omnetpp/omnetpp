@@ -1,18 +1,22 @@
 %description:
-check that "like" keyword works
+check that "like" keyword works for modules (TODO check for channels too)
 
 %file: test.ned
 
-simple GenMod
+moduleinterface IFoo
+{
+}
+
+simple Foo like IFoo
 {
 }
 
 network Test
 {
     parameters:
-        string mod_type;
+        string modType;
     submodules:
-        specMod: <mod_type> like GenMod;
+        specMod: <modType> like IFoo;
 }
 
 %file: test.cc
@@ -21,16 +25,16 @@ network Test
 
 namespace {} {
 
-class GenMod : public cSimpleModule
+class Foo : public cSimpleModule
 {
   public:
-    GenMod() : cSimpleModule(16384) { }
+    Foo() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(GenMod);
+Define_Module(Foo);
 
-void GenMod::activity()
+void Foo::activity()
 {
    ev << "Here!" << endl;
 }
@@ -40,9 +44,8 @@ void GenMod::activity()
 %inifile: test.ini
 [General]
 network = Test
-warnings = yes
 cmdenv-express-mode = false
-*.mod_type = "GenMod"
+*.modType = "Foo"
 
 %contains-regex: stdout
 Here!

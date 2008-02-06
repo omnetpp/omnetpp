@@ -27,10 +27,10 @@ simple Simple
         xml xmlconfig;
 }
 
-network Test extends Simple
+simple Test extends Simple
 {
     parameters:
-        xmlconfig = xmldoc("NED1_xmldoc_3/test.xml", "foo/nothing");
+        xmlconfig = xmldoc("test.xml", "foo/nothing");
 }
 
 %file: test.cc

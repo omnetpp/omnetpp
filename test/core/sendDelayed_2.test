@@ -4,25 +4,25 @@ Basic test for cSimpleModule.sendDelayed().
 %file: test.ned
 
 simple Sender
+{
   gates:
-    out: out;
-endsimple
+    output out;
+}
 
 simple Receiver
+{
   gates:
-    in: in;
-endsimple
+    input in;
+}
 
-module Net
+network Test
+{
   submodules:
     sender : Sender;
     receiver : Receiver;
   connections:
     sender.out --> receiver.in;
-endmodule
-
-network net : Net
-endnetwork
+}
 
 %file: modules.cc
 
@@ -61,10 +61,6 @@ void Receiver::activity()
 }
 
 }; //namespace
-
-%inifile: test.ini
-[General]
-network=net
 
 %contains: stdout
 diff: 0.3456

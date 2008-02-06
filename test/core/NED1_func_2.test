@@ -3,8 +3,6 @@ check NED user-defined functions (Define_Function() macro) in channels
 
 %file: test.ned
 
-package {};
-
 channel Chan extends ned.cBasicChannel
 {
     parameters:
@@ -17,8 +15,10 @@ simple Simple
 {
 }
 
-network Test extends Simple
+network Test
 {
+    submodules:
+        m : Simple;
 }
 
 %file: test.cc

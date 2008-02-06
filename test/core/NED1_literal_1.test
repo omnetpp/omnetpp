@@ -3,37 +3,22 @@ Test literals in NED.
 
 %file: test.ned
 
-simple Simple
+simple Test
 {
     parameters:
-        string s1;
-        string s2;
-        bool b1;
-        bool b2;
-        double n3;
-        double n4;
-        double n5;
-        double nc3;
-        double nc4;
-        double nc5;
-}
+        string s1 = "hello";
+        string s2 = "";
 
-network Test extends Simple
-{
-    parameters:
-        s1 = "hello";
-        s2 = "";
+        bool b1 = true;
+        bool b2 = false;
 
-        b1 = true;
-        b2 = false;
+        volatile double n3 = 5;
+        volatile double n4 = 3.1415;
+        volatile double n5 = 6.01e23;
 
-        n3 = 5;
-        n4 = 3.1415;
-        n5 = 6.01e23;
-
-        nc3 = 5;
-        nc4 = 3.1415;
-        nc5 = 6.01e23;
+        double nc3 = 5;
+        double nc4 = 3.1415;
+        double nc5 = 6.01e23;
 
 }
 
@@ -43,16 +28,16 @@ network Test extends Simple
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
-void Simple::activity()
+void Test::activity()
 {
     for (int i=0; i<params(); i++)
     {

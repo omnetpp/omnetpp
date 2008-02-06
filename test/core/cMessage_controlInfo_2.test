@@ -29,9 +29,9 @@ delete msg;
 ev << "done\n";
 
 %contains: stdout
-1. owner:network
+1. owner:Test
 2. owner:msg
-3. owner:network
+3. owner:Test
 4. owner:msg
 control info deleted
 done

@@ -12,7 +12,6 @@ network Test
 %inifile: test.ini
 [General]
 network = Test
-warnings = yes
 cmdenv-express-mode = false
 *.param* = 42
 

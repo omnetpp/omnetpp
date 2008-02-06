@@ -106,6 +106,7 @@ void Simple::activity()
 %inifile: test.ini
 [General]
 network = Net
+cmdenv-express-mode = false
 
 **.by_module_fullpath = xmldoc("test.xml","//foo[@att=$MODULE_FULLPATH]");
 **.by_module_fullname = xmldoc("test.xml","//foo[@att=$MODULE_FULLNAME]");
