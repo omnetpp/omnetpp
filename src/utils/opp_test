@@ -340,17 +340,21 @@ sub testcase_generatesources
         }
     }
 
+    $networkname = "Test";  # by default
+
     # 'activity' template
     if (defined($bodies{'activity(1)'}))
     {
+        $module = "Test";
         $activity = $bodies{'activity(1)'};
         $includescode = $bodies{'includes(1)'};
         $globalcode = $bodies{'global(1)'};
+        $networkname = $module;
 
         # generate NED
         $ned = $ModuleNEDTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
-        $ned =~ s/\@MODULE\@/TestModule/g;
+        $ned =~ s/\@MODULE\@/Test/g;
         $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
         $nedfname = $workdir."/".$testname."/test.ned";
         writefile($nedfname, $ned);
@@ -371,6 +375,7 @@ sub testcase_generatesources
     {
         $module = $values{'module(1)'};
         $module_src = $bodies{'module(1)'};
+        $networkname = $module;
 
         # generate NED
         $ned = $ModuleNEDTemplate;
@@ -429,6 +434,7 @@ sub testcase_generatesources
     {
         $inifile = $INITemplate;
         $inifile =~ s/\@TESTNAME\@/$testname/g;
+        $inifile =~ s/\@NETWORKNAME\@/$networkname/g;
         $inifile =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
     }
     writefile($inifname, $inifile);
@@ -770,10 +776,6 @@ simple @MODULE@
     parameters:
         @class("@TESTNAME@::@MODULE@");
 }
-
-network Test extends @MODULE@
-{
-}
 ';
 
     $ModuleABNEDTemplate = '
@@ -860,7 +862,7 @@ namespace @TESTNAME@ {
 
     $INITemplate = '
 [General]
-network = Test
+network = @NETWORKNAME@
 cmdenv-express-mode = false
 output-vector-file = test.vec
 output-scalar-file = test.sca

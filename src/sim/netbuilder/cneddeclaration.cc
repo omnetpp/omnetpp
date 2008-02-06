@@ -57,8 +57,7 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
             cNEDDeclaration *decl = (cNEDDeclaration *)cNEDLoader::instance()->lookup(extendsqname.c_str());
             ASSERT(decl);
             if (getType() != decl->getType())
-                if (!(getType()==COMPOUND_MODULE && decl->getType()==SIMPLE_MODULE && ((CompoundModuleNode *)getTree())->getIsNetwork()))  // "network extends simple" is allowed
-                    throw cRuntimeError("%s: a %s cannot extend a %s (%s)", getTree()->getSourceLocation(), getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
+                throw cRuntimeError("%s: a %s cannot extend a %s (%s)", getTree()->getSourceLocation(), getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
 
             // collect interfaces from our base types
             if (isInterface)
