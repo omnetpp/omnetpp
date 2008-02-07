@@ -125,9 +125,25 @@ Register_PerRunConfigEntry(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number
 Register_PerRunConfigEntry(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
 Register_PerRunConfigEntry(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
 Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, NULL, "Name of the event log file to generate. If empty, no file is generated.");
-//FIXME why is this global:
-Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL, "A list of patterns separated by '|' character which will be used to write message detail information into the event log for each message sent during the simulation. The message detail will be presented in the sequence chart tool. Each pattern starts with an object pattern optionally followed by ':' character and a comma separated list of field patterns. In both patterns and/or/not/* and various matcher expressions can be used. The object pattern matches to class name, the field pattern matches to field name by default.");
-
+//FIXME why is this global and not per-run???
+Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL,
+        "A list of patterns separated by '|' character which will be used to write "
+        "message detail information into the event log for each message sent during "
+        "the simulation. The message detail will be presented in the sequence chart "
+        "tool. Each pattern starts with an object pattern optionally followed by ':' "
+        "character and a comma separated list of field patterns. In both "
+        "patterns and/or/not/* and various field matcher expressions can be used. "
+        "The object pattern matches to class name, the field pattern matches to field name by default.\n"
+        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN\n"
+        "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n"
+        "  OBJECT-PATTERN := MATCHER-EXPRESSION\n"
+        "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n"
+        "  FIELD-PATTERN := MATCHER-EXPRESSION\n"
+        "Examples (enter them without quotes):\n"
+        "  \"*\": captures all fields of all messages\n"
+        "  \"*Frame:*Address,*Id\": captures all fields named ...Address and ...Id from messages of any class named ...Frame\n"
+        "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage recording the fields declared on the MyMessage class\n"
+        "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not declaredOn(cObject))\": records user-defined fields from all messages");
 Register_PerObjectConfigEntry(CFGID_PARTITION_ID, "partition-id", CFG_INT, NULL, "With parallel simulation: in which partition the module should be instantiated.");
 //FIXME register "rng-*" ?
 

@@ -51,9 +51,9 @@ Register_Class(cFileOutputVectorManager);
 
 #define DEFAULT_PRECISION  "14"
 
-Register_PerRunConfigEntry(CFGID_EXPERIMENT, "experiment", CFG_STRING, "${configname}", "Experiment label. This string gets recorded into result files, and may be referred to during result analysis.");
-Register_PerRunConfigEntry(CFGID_MEASUREMENT, "measurement", CFG_STRING, "${iterationvars}", "Measurement label. This string gets recorded into result files, and may be referred to during result analysis.");
-Register_PerRunConfigEntry(CFGID_REPLICATION, "replication", CFG_STRING, "#${repetition}, seedset=@", "Replication label. This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_EXPERIMENT_LABEL, "experiment-label", CFG_STRING, "${configname}", "Identifies the simulation experiment (which consists of several, potentially repeated measurements). This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STRING, "${iterationvars}", "Identifies the measurement within the experiment. This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_REPLICATION_LABEL, "replication-label", CFG_STRING, "#${repetition}, seedset=@", "Identifies one replication of a measurement (see repeat= and measurement-label= as well). This string gets recorded into result files, and may be referred to during result analysis.");
 
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${configname}-${runnumber}.vec", "Name for the output vector file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output vector file. The maximum value is ~15 (IEEE double precision). This setting has no effect on the \"time\" column of output vectors, which are represented as fixed-point numbers and always get recorded precisely.");
@@ -133,9 +133,9 @@ void cFileOutputVectorManager::initRun()
         }
 
         std::string seedset = opp_stringf("%ld", cfg->getAsInt(CFGID_SEED_SET));
-        run.attributes["experiment"] = cfg->getAsString(CFGID_EXPERIMENT); //TODO if not already in there
-        run.attributes["measurement"] = cfg->getAsString(CFGID_MEASUREMENT);
-        run.attributes["replication"] = opp_replacesubstring(cfg->getAsString(CFGID_REPLICATION).c_str(), "@", seedset.c_str(), true);
+        run.attributes["experiment"] = cfg->getAsString(CFGID_EXPERIMENT_LABEL); //TODO if not already in there
+        run.attributes["measurement"] = cfg->getAsString(CFGID_MEASUREMENT_LABEL);
+        run.attributes["replication"] = opp_replacesubstring(cfg->getAsString(CFGID_REPLICATION_LABEL).c_str(), "@", seedset.c_str(), true);
         run.attributes["seed-set"] = seedset;
 
         //FIXME todo: fill in run.moduleParams[]

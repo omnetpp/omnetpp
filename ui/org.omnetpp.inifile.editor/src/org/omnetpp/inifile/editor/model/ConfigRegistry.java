@@ -14,14 +14,14 @@ import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
 
 /**
  * Contains the list of supported configuration keys.
- * 
+ *
  * This must be kept in sync with the C++ code. Procedure to do it:
  *   1. run any simulation executable with the "-q jconfig" option,
- *       and copy/paste the Java code it generates into this file 
+ *       and copy/paste the Java code it generates into this file
  *   2. run svn diff to see the damage.
  *   3. check that the form editor covers all config keys:
- *      open InifileFormEditor.java, and temporarily set 
- *      DUMP_FORGOTTEN_CONFIG_KEYS = true. Then run the IDE and watch 
+ *      open InifileFormEditor.java, and temporarily set
+ *      DUMP_FORGOTTEN_CONFIG_KEYS = true. Then run the IDE and watch
  *      the output.
  *
  * @author Andras
@@ -38,7 +38,7 @@ public class ConfigRegistry {
 
 	/** Predefined inifile iteration variables */
 	public static final String[] PREDEFINED_CONFIGVARS = {
-	    "configname", 
+	    "configname",
 	    "runnumber",
 	    "network",
 	    "processid",
@@ -48,10 +48,10 @@ public class ConfigRegistry {
 	    "iterationvars",
 	    "iterationvars2"
 	};
-	
-	private static HashMap<String, ConfigKey> entries = new HashMap<String, ConfigKey>(); 
-	private static HashMap<String, ConfigKey> perObjectEntries = new HashMap<String, ConfigKey>(); 
-	
+
+	private static HashMap<String, ConfigKey> entries = new HashMap<String, ConfigKey>();
+	private static HashMap<String, ConfigKey> perObjectEntries = new HashMap<String, ConfigKey>();
+
 	private static ConfigKey addGlobalEntry(String name, DataType type, String defaultValue, String description) {
     	ConfigKey e = new ConfigKey(name, false, true, type, null, defaultValue, description);
     	entries.put(name, e);
@@ -63,7 +63,7 @@ public class ConfigRegistry {
     	entries.put(name, e);
     	return e;
     }
-    
+
 	private static ConfigKey addPerRunEntry(String name, DataType type, String defaultValue, String description) {
     	ConfigKey e = new ConfigKey(name, false, false, type, null, defaultValue, description);
     	entries.put(name, e);
@@ -94,7 +94,7 @@ public class ConfigRegistry {
 		for (ConfigKey e : map.values()) {
 			if (e.containsWildcard()) {
 				String pattern = e.getKey().replace("*", ".+").replace("%", "[0-9]+");
-				if (key.matches(pattern)) 
+				if (key.matches(pattern))
 					return e;
 			}
 		}
@@ -103,8 +103,8 @@ public class ConfigRegistry {
 
 	/**
 	 * Returns the ConfigKey with the given name, or null. It also finds and returns
-	 * wildcard keys that match the given name, for example it will return "seed-%-mt" 
-	 * for "seed-1-mt". 
+	 * wildcard keys that match the given name, for example it will return "seed-%-mt"
+	 * for "seed-1-mt".
 	 */
 	public static ConfigKey getEntry(String name) {
 		ConfigKey e = entries.get(name);
@@ -114,9 +114,9 @@ public class ConfigRegistry {
 	}
 
 	/**
-	 * Returns the per-object ConfigKey with the given name, or null. It also finds 
+	 * Returns the per-object ConfigKey with the given name, or null. It also finds
 	 * and returns wildcard keys that match the given name, for example it will return
-	 * "rng-%" for "rng-1". 
+	 * "rng-%" for "rng-1".
 	 */
 	public static ConfigKey getPerObjectEntry(String name) {
 		ConfigKey e = perObjectEntries.get(name);
@@ -124,7 +124,7 @@ public class ConfigRegistry {
 			e = lookupWildcardConfigKey(perObjectEntries, name);
 		return e;
 	}
-	
+
 	public static ConfigKey[] getEntries() {
 		return (ConfigKey[]) entries.values().toArray(new ConfigKey[entries.size()]);
 	}
@@ -240,21 +240,18 @@ public class ConfigRegistry {
         "tool. Each pattern starts with an object pattern optionally followed by ':' " +
         "character and a comma separated list of field patterns. In both " +
         "patterns and/or/not/* and various field matcher expressions can be used. " +
-        "The object pattern matches to class name, the field pattern matches to field name by default." +
-        // TODO: FIXME: KLUDGE: XXX: copy this to omnetapp.cc and use a common formatting infrastructure [we need at least new lines)
-        "<pre>\n\n" +
-        "EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN\n" +
-        "DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n" +
-        "OBJECT-PATTERN := MATCHER-EXPRESSION\n" +
-        "FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n" +
-        "FIELD-PATTERN := MATCHER-EXPRESSION\n" +
-        "</pre>" +
-        "Examples:</br>" +
-        " * - captures all fields of all messages</br>" +
-        " MyMessage:declaredOn(MyMessage) - captures instances of MyMessage recording the fields declared on the MyMessage class</br>" +
-        " *Frame:*Address,*Id - captures all various Address and Id fields from various Frame message instances");
-    public static final ConfigKey CFGID_EXPERIMENT = addPerRunEntry(
-        "experiment", CFG_STRING, "${configname}",
+        "The object pattern matches to class name, the field pattern matches to field name by default.\n" +
+        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN\n" +
+        "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n" +
+        "  OBJECT-PATTERN := MATCHER-EXPRESSION\n" +
+        "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n" +
+        "  FIELD-PATTERN := MATCHER-EXPRESSION\n" +
+        "Examples:\n" +
+        "  *: captures all fields of all messages\n" +
+        "  MyMessage:declaredOn(MyMessage): captures instances of MyMessage recording the fields declared on the MyMessage class\n" +
+        "  *Frame:*Address,*Id: captures all fields named ...Address and ...Id from messages of any class named ...Frame");
+    public static final ConfigKey CFGID_EXPERIMENT_LABEL = addPerRunEntry(
+        "experiment-label", CFG_STRING, "${configname}",
         "Experiment label. This string gets recorded into result files, and may be " +
         "referred to during result analysis.");
     public static final ConfigKey CFGID_EXTENDS = addPerRunEntry(
@@ -284,7 +281,7 @@ public class ConfigRegistry {
         "max-buffered-samples", CFG_INT, null,
         "For output vectors: the maximum number of values to buffer per vector, " +
         "before writing out a block into the output vector file.");
-    public static final ConfigKey CFGID_MEASUREMENT = addPerRunEntry(
+    public static final ConfigKey CFGID_MEASUREMENT_LABEL = addPerRunEntry(
         "measurement", CFG_STRING, "${iterationvars}",
         "Measurement label. This string gets recorded into result files, and may be " +
         "referred to during result analysis.");
@@ -381,7 +378,7 @@ public class ConfigRegistry {
         "parameters (iteration variables). This is typically used to perform " +
         "multiple runs with different random number seeds. The loop variable is " +
         "available as ${repetition}. See also: seed-set= key.");
-    public static final ConfigKey CFGID_REPLICATION = addPerRunEntry(
+    public static final ConfigKey CFGID_REPLICATION_LABEL = addPerRunEntry(
         "replication", CFG_STRING, "#${repetition}, seedset=@",
         "Replication label. This string gets recorded into result files, and may be " +
         "referred to during result analysis.");
@@ -469,7 +466,7 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_WARNINGS = addPerRunEntry(
         "warnings", CFG_BOOL, "true",
         "Enables warnings.");
-    
+
     static {
     	 EXTENDS = CFGID_EXTENDS.getKey();
     }

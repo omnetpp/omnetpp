@@ -144,6 +144,14 @@ std::string cMessage::info() const
         out << " dest=" << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
 #undef MODNAME
+
+    if (encapmsg)
+        // #ifdef REFCOUNTING const_cast<cMessage *>(this)->_detachEncapMsg();  // see _detachEncapMsg() comment why this might be needed
+        out << "  encapsulates: (" << encapmsg->className() << ")" << encapmsg->fullName();
+
+    if (ctrlp)
+        out << "  control info: (" << ctrlp->className() << ") " << ctrlp->fullName() << "\n";
+
     return out.str();
 }
 
@@ -162,38 +170,7 @@ void cMessage::forEachChild(cVisitor *v)
 
 std::string cMessage::detailedInfo() const
 {
-    std::stringstream os;
-    os << "  sender:    id=" << senderModuleId() << '\n';
-    os << "  dest.:     id=" << arrivalModuleId() << '\n';
-    os << "  sent:      " << sendingTime() << '\n';
-    os << "  arrived:   " << arrivalTime() << '\n';
-    os << "  length:    " << length() << '\n';
-    os << "  kind:      " << kind() << '\n';
-    os << "  priority:  " << priority() << '\n';
-    os << "  error:     " << (hasBitError() ? "true" : "false") << '\n';
-    os << "  timestamp: " << timestamp() << '\n';
-    if (parlistp)
-    {
-        os << "  parameter list:\n";
-        os << parlistp->detailedInfo();
-    } else
-    {
-        os << "  no parameter list\n";
-    }
-
-    if (encapmsg)
-    {
-        os << "  encapsulated message:\n";
-#ifdef REFCOUNTING
-        const_cast<cMessage *>(this)->_detachEncapMsg();  // see method comment why this is needed
-#endif
-        os << encapmsg->detailedInfo();
-    }
-
-    if (ctrlp)
-        os << "  control info: (" << ctrlp->className() << ") " << ctrlp->detailedInfo() << "\n";
-
-    return os.str();
+    return "";  // all fields are available via reflection, no point in repeating them here
 }
 
 void cMessage::netPack(cCommBuffer *buffer)

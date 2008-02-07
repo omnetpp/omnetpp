@@ -19,12 +19,12 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CPU_TIME_LIM
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERRORS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_INI_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOAD_LIBS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NUM_RNGS;
@@ -43,7 +43,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
@@ -81,13 +81,13 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
 
 /**
  * Form page for configuration entries.
- * 
+ *
  * @author Andras
  */
 public class GenericConfigPage extends ScrolledFormPage {
 	private ArrayList<FieldEditor> fieldEditors = new ArrayList<FieldEditor>();
 	private String category;
-	
+
     public static final String CAT_GENERAL = "General";
     public static final String CAT_ADVANCED = "Advanced";
     public static final String CAT_SCENARIO = "Scenarios";
@@ -100,10 +100,10 @@ public class GenericConfigPage extends ScrolledFormPage {
     //XXX public static final String CAT_OUTPUTVECTORS = "Output Vectors";
 
 	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png"); //XXX
-    
+
     public static String[] getCategoryNames() {
     	return new String[] {
-    			CAT_GENERAL, 
+    			CAT_GENERAL,
     			CAT_ADVANCED,
     			CAT_SCENARIO,
     			CAT_RANDOMNUMBERS,
@@ -114,21 +114,21 @@ public class GenericConfigPage extends ScrolledFormPage {
     			CAT_PARSIM,
     	};
     }
-    
+
 	public GenericConfigPage(Composite parent, String category, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
 		this.category = category;
-		
+
 		GridLayout gridLayout = new GridLayout(1,false);
 		gridLayout.verticalSpacing = 0;
 		form.setLayout(gridLayout);
-		
+
 		createTitleArea(form, category);
 		addSpacer(form);
 
 		createFieldEditors(form, category);
 		layoutForm();
-		
+
 		// obtain focus if background is clicked
 		form.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
@@ -175,9 +175,9 @@ public class GenericConfigPage extends ScrolledFormPage {
 		}
 		else if (category.equals(CAT_SCENARIO)) {
 			Group group1 = createGroup(form, "Run labeling");
-			addTextFieldEditor(group1, CFGID_EXPERIMENT, "Experiment label");
-			addTextFieldEditor(group1, CFGID_MEASUREMENT, "Measurement label");
-			addTextFieldEditor(group1, CFGID_REPLICATION, "Replication label");
+			addTextFieldEditor(group1, CFGID_EXPERIMENT_LABEL, "Experiment label");
+			addTextFieldEditor(group1, CFGID_MEASUREMENT_LABEL, "Measurement label");
+			addTextFieldEditor(group1, CFGID_REPLICATION_LABEL, "Replication label");
 			addSpacer(form);
 			Group group2 = createGroup(form, "Scenario generation");
 			addTextFieldEditor(group2, CFGID_REPEAT, "Repeat count");
@@ -274,7 +274,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 //		Composite warnPanel = new Composite(parent, SWT.NONE);
 //		warnPanel.setLayout(new GridLayout(2,false));
 //		Label warnImageLabel = new Label(warnPanel, SWT.NONE);
-//		warnImageLabel.setImage(image); //XXX 
+//		warnImageLabel.setImage(image); //XXX
 //		Label warnLabel = new Label(warnPanel, SWT.NONE);
 //		warnLabel.setText(text);
 //	}
@@ -292,7 +292,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 		gridLayout.verticalSpacing = 0;
 		gridLayout.marginHeight = 5;
 		group.setLayout(gridLayout);
-		
+
 		// when group background is clicked, transfer focus to first field editor in it
 		group.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
@@ -301,26 +301,26 @@ public class GenericConfigPage extends ScrolledFormPage {
 						{c.setFocus(); return;}
 			}
 		});
-		
+
 		return group;
 	}
 
 	protected void addTextFieldEditor(Composite parent, ConfigKey e, String label) {
-		FieldEditor editor = e.isGlobal() ? 
+		FieldEditor editor = e.isGlobal() ?
 				new TextFieldEditor(parent, e, getInifileDocument(), this, label) :
 				new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label);
-		addFieldEditor(editor);		
+		addFieldEditor(editor);
 	}
 
 	protected void addCheckboxFieldEditor(Composite parent, ConfigKey e, String label) {
-		FieldEditor editor = e.isGlobal() ? 
+		FieldEditor editor = e.isGlobal() ?
 				new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label) :
 				new ExpandableCheckboxFieldEditor(parent, e, getInifileDocument(), this, label);
-		addFieldEditor(editor);		
+		addFieldEditor(editor);
 	}
 
 	protected void addFieldEditor(FieldEditor editor) {
-		fieldEditors.add(editor);		
+		fieldEditors.add(editor);
 		editor.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 	}
 
@@ -331,12 +331,12 @@ public class GenericConfigPage extends ScrolledFormPage {
 				return true;
 		return false;
 	}
-	
+
 	@Override
 	public String getPageCategory() {
 		return category;
 	}
-	
+
 	@Override
 	public boolean setFocus() {
 		return fieldEditors.isEmpty() ? false : fieldEditors.get(0).setFocus();
@@ -348,7 +348,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 		for (FieldEditor e : fieldEditors)
 			e.reread();
 	}
-	
+
 	@Override
 	public List<ConfigKey> getSupportedKeys() {
 		List<ConfigKey> result = new ArrayList<ConfigKey>();
@@ -356,5 +356,5 @@ public class GenericConfigPage extends ScrolledFormPage {
 			result.add(e.getConfigKey());
 		return result;
 	}
-	
+
 }
