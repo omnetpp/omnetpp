@@ -17,7 +17,7 @@ Define_Module(Sender);
 
 cChannel *Sender::createChannel(double delay)
 {
-    cChannelType *channelType = cChannelType::find("ned.cBasicChannel"); //XXX find something more concise to create a basic channel...
+    cChannelType *channelType = cChannelType::find("ned.BasicChannel"); //XXX find something more concise to create a basic channel...
     cBasicChannel *ch = (cBasicChannel *)channelType->create("chan", parentModule());
     ch->setDelay(delay);
     return ch;

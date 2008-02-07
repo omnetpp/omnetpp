@@ -4,7 +4,7 @@ initialized.
 
 %file: test.ned
 
-channel MyConn extends ned.cBasicChannel
+channel MyConn extends ned.BasicChannel
 {
     parameters:
         delay = 1;

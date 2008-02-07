@@ -28,13 +28,13 @@ import org.omnetpp.ned.model.pojo.*;
 //FIXME finish validator functions! e.g. turn on expression parsing
 //FIXME todo: validation of embedded types!!!!
 //FIXME should be re-though -- it very much under-uses INedTypeInfo!!!
-//FIXME asap: validate extends chain (cycles!!) 
+//FIXME asap: validate extends chain (cycles!!)
 //FIXME validate 2 submods with the same name! etc
 //FIXME validate imports (what if there're clashes)
 //FIXME validate like-param: must me a string parameter, etc!
 public class NEDValidator extends AbstractNEDValidatorEx {
 
-	private static final String DEFAULT_CHANNEL_TYPE = "ned.cBasicChannel";
+	private static final String DEFAULT_CHANNEL_TYPE = "ned.BasicChannel";
 
 	private INEDTypeResolver resolver;
 
@@ -42,7 +42,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 
 	// the project in whose context fully qualified type names should be visible
 	private IProject contextProject;
-	
+
 	// the component currently being validated
 	private INedTypeElement componentNode;
 
@@ -60,7 +60,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 	// contents of the "types:" section of the component currently being validated
 	private HashMap<String, INEDTypeInfo> innerTypes = new HashMap<String, INEDTypeInfo>();
 
-	
+
 	/**
 	 * Constructor.
 	 */
@@ -91,12 +91,12 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		IFile file = resolver.getNedFile(node);
 		String expectedPackage = resolver.getExpectedPackageFor(file);
 		String declaredPackage = StringUtils.nullToEmpty(node.getPackage());
-		
+
 		if (expectedPackage != null && !expectedPackage.equals(declaredPackage)) {
 			INEDElement errorNode = node.getFirstPackageChild()!=null ? node.getFirstPackageChild() : node;
 			errors.addError(errorNode, "declared package \""+declaredPackage+"\" does not match expected package \"" + expectedPackage +"\"");
 		}
-		
+
 		validateChildren(node);
 	}
 
@@ -142,7 +142,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		Assert.isTrue(componentNode!=null);
 
 		//FIXME detect cycles, etc
-		
+
 		// referenced component must exist and must be the same type as this one
 		String name = node.getName();
 		INEDTypeInfo e = resolver.lookupNedType(name, componentNode.getParentLookupContext());
@@ -429,7 +429,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		String gateIndex = doSrcGate ? conn.getSrcGateIndex() : conn.getDestGateIndex();
 		boolean gatePlusPlus  = doSrcGate ? conn.getSrcGatePlusplus() : conn.getDestGatePlusplus();
 		boolean gateUsedAsVector = gatePlusPlus || StringUtils.isNotEmpty(gateIndex);
-		
+
 		// gate is vector / not vector
 		String prefix = doSrcGate ? "wrong source gate: " : "wrong destination gate: ";
 		GateElementEx gate = module.getGateDeclarations().get(gateName);
@@ -443,19 +443,19 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 			errors.addError(conn, prefix + "$i/$o syntax only allowed for inout gates ('"+gateName+"' is an "+getGateTypeAsString(gate.getType())+" gate)");
 		else {
 			// check gate direction
-			int gateDir = subgate==NED_SUBGATE_I ? NED_GATETYPE_INPUT : subgate==NED_SUBGATE_O ? NED_GATETYPE_OUTPUT : gate.getType(); 
+			int gateDir = subgate==NED_SUBGATE_I ? NED_GATETYPE_INPUT : subgate==NED_SUBGATE_O ? NED_GATETYPE_OUTPUT : gate.getType();
 
 			boolean connectedToParent = StringUtils.isEmpty(doSrcGate ? conn.getSrcModule() : conn.getDestModule());
 			int expectedGateDir;
 			if (conn.getArrowDirection()==NED_ARROWDIR_BIDIR)
 				expectedGateDir = NED_GATETYPE_INOUT;
-			else 
+			else
 				expectedGateDir = (doSrcGate==connectedToParent) ? NED_GATETYPE_INPUT : NED_GATETYPE_OUTPUT;
 
 			if (gateDir != expectedGateDir) {
 				String gateDirString = getGateTypeAsString(gateDir);
 				String expectedGateDirString = getGateTypeAsString(expectedGateDir);
-				String fullGateName = subgate==NED_SUBGATE_I ? (gateName+"$i") : subgate==NED_SUBGATE_O ? (gateName+"$o") : gateName; 
+				String fullGateName = subgate==NED_SUBGATE_I ? (gateName+"$i") : subgate==NED_SUBGATE_O ? (gateName+"$o") : gateName;
 				errors.addError(conn, prefix + expectedGateDirString+" gate expected but '"+fullGateName+"' is an "+gateDirString+" gate");
 			}
 		}
@@ -470,7 +470,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 		String submodIndex = doSrcGate ? conn.getSrcModuleIndex() : conn.getDestModuleIndex();
 		String gateName = doSrcGate ? conn.getSrcGate() : conn.getDestGate();
 		boolean hasSubmodIndex = StringUtils.isNotEmpty(submodIndex);
-		
+
 		CompoundModuleElementEx compoundModule = (CompoundModuleElementEx) componentNode;
 	    String prefix = doSrcGate ? "wrong source gate: " : "wrong destination gate: ";
 	    if (StringUtils.isEmpty(submodName)) {
@@ -601,7 +601,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
     protected void validateElement(NamespaceElement node) {
 		validateChildren(node);
 	}
-	
+
 	@Override
     protected void validateElement(CplusplusElement node) {
 		validateChildren(node);

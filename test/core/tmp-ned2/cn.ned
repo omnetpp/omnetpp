@@ -5,7 +5,7 @@ module Node {  // for testing that the local Node type takes precedence (this on
 network Cn {
   types:
     channel Bogus extends NuSuchChannel { }  //XXX test that corresponding warning is printed correctly
-    channel C extends cBasicChannel {
+    channel C extends BasicChannel {
       parameters:
         delay = 1ms;
         datarate = 1Gbps;
@@ -18,7 +18,7 @@ network Cn {
       connections allowunconnected:
     }
   submodules:
-    n1: Node;  
+    n1: Node;
     n2: Node;
   connections:
     n1.out++ --> C --> n2.in++;
@@ -27,4 +27,3 @@ network Cn {
     //n1.scalarOut++ --> C --> n2.in++;
     //n1.out++ --> C --> n2.nope++;
 }
- 

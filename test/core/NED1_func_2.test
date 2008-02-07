@@ -3,7 +3,7 @@ check NED user-defined functions (Define_Function() macro) in channels
 
 %file: test.ned
 
-channel Chan extends ned.cBasicChannel
+channel Chan extends ned.BasicChannel
 {
     parameters:
         error = testfunc0();

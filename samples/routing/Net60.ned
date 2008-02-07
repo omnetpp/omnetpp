@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-import ned.cBasicChannel;
+import ned.BasicChannel;
 
 //
 // A network topology commonly known as the "NTT backbone".
@@ -15,7 +15,7 @@ import ned.cBasicChannel;
 network Net60
 {
     types:
-        channel C extends cBasicChannel
+        channel C extends BasicChannel
         {
             parameters:
                 delay = 0.1ms;

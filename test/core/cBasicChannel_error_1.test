@@ -3,7 +3,7 @@ Test channel bit error rate in NED by using messages of different lengths
 
 %file: test.ned
 
-channel MyConn extends ned.cBasicChannel
+channel MyConn extends ned.BasicChannel
 {
     parameters:
         delay = 0.004;

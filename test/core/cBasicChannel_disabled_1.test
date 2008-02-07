@@ -3,7 +3,7 @@ Test "disabled" parameter of channels
 
 %file: test.ned
 
-channel MyConn extends ned.cBasicChannel
+channel MyConn extends ned.BasicChannel
 {
     parameters:
         delay = 0.004;
