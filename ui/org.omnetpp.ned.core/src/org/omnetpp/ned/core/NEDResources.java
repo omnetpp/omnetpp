@@ -79,6 +79,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
     private static final String NED_EXTENSION = "ned";
 
+    // singleton instance
+    private static NEDResources instance = null;
     // list of objects that listen on *all* NED changes
     private NEDChangeListenerList nedModelChangeListenerList = null;
 
@@ -169,9 +171,24 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     /**
      * Constructor.
      */
-    public NEDResources() {
+    protected NEDResources() {
 		NEDElement.setDefaultNedTypeResolver(this);
         createBuiltInNEDTypes();
+        // build the project table on init
+        rebuildProjectsTable();
+        // register as a workspace listener
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+    }
+    
+    public void dispose() {
+        // remove ourselves from the listener list
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+    }
+    
+    public static NEDResources getInstance() {
+        if (instance == null) 
+            instance = new NEDResources();
+        return instance;
     }
 
     /**

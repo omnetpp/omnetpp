@@ -27,6 +27,9 @@ import org.omnetpp.ned.model.interfaces.IMsgTypeResolver;
  */
 public class MsgResources implements IMsgTypeResolver {
     private static final String MSG_EXTENSION = "msg";
+    
+    // instance variable
+    private static MsgResources instance = null;
 
     // associate IFiles with their NEDElement trees
     private final Map<IFile, MsgFileElementEx> msgFiles = new HashMap<IFile, MsgFileElementEx>();
@@ -34,31 +37,50 @@ public class MsgResources implements IMsgTypeResolver {
     
     private final Map<String, IMsgTypeElement> msgTypes = new HashMap<String, IMsgTypeElement>();
     
-    public MsgResources() {
+    protected MsgResources() {
         NEDElement.setDefaultMsgTypeResolver(this);
+        readAllMsgFiles();
+    }
+    
+    public static MsgResources getInstance() {
+        if (instance == null) 
+            instance = new MsgResources();
+        return instance;
     }
 
-    public synchronized void readAllMsgFiles() throws CoreException, IOException {
+    public synchronized void readAllMsgFiles() {
         IProject[] omnetppProjects = ProjectUtils.getOmnetppProjects();
 
         for (IProject project : omnetppProjects) {
             for (IFile file : getMsgFiles(project))
                 if (!msgFiles.containsKey(file))
-                    readMsgFile(file);
+                    try {
+                        readMsgFile(file);
+                    }
+                    catch (IOException e) {
+                        NEDResourcesPlugin.logError("Error during reading message file: "+file.getName(), e);
+                    }
+                    catch (CoreException e) {
+                        NEDResourcesPlugin.logError("Error during gathering message files: "+file.getName(), e);
+                    }
         }
     }
 
-    public synchronized Set<IFile> getMsgFiles(IProject project) throws CoreException {
+    public synchronized Set<IFile> getMsgFiles(IProject project) {
         final Set<IFile> files = new HashSet<IFile>();
 
-        project.accept(new IResourceVisitor() {
-            public boolean visit(IResource resource) throws CoreException {
-                if (isMsgFile(resource))
-                    files.add((IFile)resource);
-                return true;
-            }
-        });
-        
+        try {
+            project.accept(new IResourceVisitor() {
+                public boolean visit(IResource resource) {
+                    if (isMsgFile(resource))
+                        files.add((IFile)resource);
+                    return true;
+                }
+            });
+        }
+        catch (CoreException e) {
+            NEDResourcesPlugin.logError("Error during gathering message files", e);
+        }
         return files;
     }
 

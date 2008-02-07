@@ -28,19 +28,11 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	// The shared instance.
 	private static NEDResourcesPlugin plugin;
 
-	// The actual NED type resolver
-	private NEDResources nedResources;
-
-    // The actual MSG type resolver
-    private MsgResources msgResources;
-
 	/**
 	 * The constructor.
 	 */
 	public NEDResourcesPlugin() {
 		plugin = this;
-		nedResources = new NEDResources();
-        msgResources = new MsgResources();
 	}
 
 	/**
@@ -49,13 +41,8 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	@Override
     public void start(BundleContext context) throws Exception {
 		super.start(context);
-		
         PLUGIN_ID = getBundle().getSymbolicName();
         // System.out.println("NEDResourcesPlugin started");
-
-        nedResources.rebuildProjectsTable();
-        msgResources.readAllMsgFiles();
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(NEDResourcesPlugin.getNEDResources());
 	}
 
 	/**
@@ -63,7 +50,8 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 */
 	@Override
     public void stop(BundleContext context) throws Exception {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(NEDResourcesPlugin.getNEDResources());
+	    NEDResources.getInstance().dispose();
+	    
 		plugin = null;
         super.stop(context);
 	}
@@ -79,14 +67,14 @@ public class NEDResourcesPlugin extends AbstractUIPlugin {
 	 * Returns the NED file cache of the shared instance of the plugin
 	 */
 	public static NEDResources getNEDResources() {
-		return plugin.nedResources;
+		return NEDResources.getInstance();
 	}
 
     /**
      * Returns the MSG file cache of the shared instance of the plugin
      */
     public static MsgResources getMSGResources() {
-        return plugin.msgResources;
+        return MsgResources.getInstance();
     }
 
 	/**
