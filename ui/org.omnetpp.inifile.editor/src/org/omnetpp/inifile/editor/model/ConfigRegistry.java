@@ -238,22 +238,28 @@ public class ConfigRegistry {
         "message detail information into the event log for each message sent during " +
         "the simulation. The message detail will be presented in the sequence chart " +
         "tool. Each pattern starts with an object pattern optionally followed by ':' " +
-        "character and a comma separated list of field patterns. In both " +
-        "patterns and/or/not/* and various field matcher expressions can be used. " +
-        "The object pattern matches to class name, the field pattern matches to field name by default.\n" +
-        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN\n" +
-        "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n" +
-        "  OBJECT-PATTERN := MATCHER-EXPRESSION\n" +
-        "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n" +
-        "  FIELD-PATTERN := MATCHER-EXPRESSION\n" +
-        "Examples:\n" +
-        "  *: captures all fields of all messages\n" +
-        "  MyMessage:declaredOn(MyMessage): captures instances of MyMessage recording the fields declared on the MyMessage class\n" +
-        "  *Frame:*Address,*Id: captures all fields named ...Address and ...Id from messages of any class named ...Frame");
+        "character and a comma separated list of field patterns. In both patterns " +
+        "and/or/not/* and various field matcher expressions can be used. The object " +
+        "pattern matches to class name, the field pattern matches to field name by " +
+        "default. " +
+        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN " +
+        "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ] " +
+        "  OBJECT-PATTERN := MATCHER-EXPRESSION " +
+        "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN " +
+        "  FIELD-PATTERN := MATCHER-EXPRESSION " +
+        "Examples (enter them without quotes): " +
+        "  \"*\": captures all fields of all messages " +
+        "  \"*Frame:*Address,*Id\": captures all fields named ...Address and ...Id " +
+        "from messages of any class named ...Frame " +
+        "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage " +
+        "recording the fields declared on the MyMessage class " +
+        "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not " +
+        "declaredOn(cObject))\": records user-defined fields from all messages");
     public static final ConfigKey CFGID_EXPERIMENT_LABEL = addPerRunEntry(
         "experiment-label", CFG_STRING, "${configname}",
-        "Experiment label. This string gets recorded into result files, and may be " +
-        "referred to during result analysis.");
+        "Identifies the simulation experiment (which consists of several, " +
+        "potentially repeated measurements). This string gets recorded into result " +
+        "files, and may be referred to during result analysis.");
     public static final ConfigKey CFGID_EXTENDS = addPerRunEntry(
         "extends", CFG_STRING, null,
         "Name of the configuration this section is based on. Entries from that " +
@@ -282,9 +288,9 @@ public class ConfigRegistry {
         "For output vectors: the maximum number of values to buffer per vector, " +
         "before writing out a block into the output vector file.");
     public static final ConfigKey CFGID_MEASUREMENT_LABEL = addPerRunEntry(
-        "measurement", CFG_STRING, "${iterationvars}",
-        "Measurement label. This string gets recorded into result files, and may be " +
-        "referred to during result analysis.");
+        "measurement-label", CFG_STRING, "${iterationvars}",
+        "Identifies the measurement within the experiment. This string gets recorded " +
+        "into result files, and may be referred to during result analysis.");
     public static final ConfigKey CFGID_NED_PATH = addGlobalEntry(
         "ned-path", CFG_STRING, null,
         "A semicolon-separated list of directories which will be appended to the " +
@@ -379,9 +385,10 @@ public class ConfigRegistry {
         "multiple runs with different random number seeds. The loop variable is " +
         "available as ${repetition}. See also: seed-set= key.");
     public static final ConfigKey CFGID_REPLICATION_LABEL = addPerRunEntry(
-        "replication", CFG_STRING, "#${repetition}, seedset=@",
-        "Replication label. This string gets recorded into result files, and may be " +
-        "referred to during result analysis.");
+        "replication-label", CFG_STRING, "#${repetition}, seedset=@",
+        "Identifies one replication of a measurement (see repeat= and " +
+        "measurement-label= as well). This string gets recorded into result files, " +
+        "and may be referred to during result analysis.");
     public static final ConfigKey CFGID_RNG_CLASS = addPerRunEntry(
         "rng-class", CFG_STRING, "cMersenneTwister",
         "The random number generator class to be used. It can be `cMersenneTwister', " +
