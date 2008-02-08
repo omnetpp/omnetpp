@@ -1,7 +1,11 @@
 %description:
-Test "like" connections: "channel interface cannot be resolved"
+Test "like" connections: "no such channel type"
 
 %file: test.ned
+
+channelinterface IFooChannel
+{
+}
 
 module Node
 {
@@ -18,11 +22,11 @@ network Test
         a: Node;
         b: Node;
     connections:
-        a.p <--> <channelType> like IMissingType <--> b.p;
+        a.p <--> <channelType> like IFooChannel <--> b.p;
 }
 
 %exitcode: 1
 
 %contains-regex: stdout
-cannot resolve channel interface `IMissingType'
+no channel type named `foo'
 

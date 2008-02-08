@@ -1,0 +1,44 @@
+%description:
+Test "like" connections: "ambiguous channel type"
+
+%file: package1/test.ned
+package package1;
+channel FooChannel extends ned.BasicChannel like IFooChannel
+{
+}
+
+%file: package2/test.ned
+package package2;
+channel FooChannel extends ned.BasicChannel like IFooChannel
+{
+}
+
+%file: test.ned
+
+channelinterface IFooChannel
+{
+}
+
+module Node
+{
+    gates:
+        inout p;
+    connections allowunconnected:
+}
+
+network Test
+{
+    parameters:
+        string channelType = "FooChannel";
+    submodules:
+        a: Node;
+        b: Node;
+    connections:
+        a.p <--> <channelType> like IFooChannel <--> b.p;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+more than one channel types named `FooChannel'
+
