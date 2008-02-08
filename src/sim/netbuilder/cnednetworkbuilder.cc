@@ -349,7 +349,7 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
         throw cRuntimeError(modp, "dynamic network builder: submodule %s: no module type named `%s' found that implements module interface %s (not in the loaded NED files?)",
                             submodname, modTypeName, interfaceqname.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError(modp, "dynamic network builder: submodule %s: more than one module types named `%s' found that implement module interface %s (use fully qualified name to disabiguate)",
+        throw cRuntimeError(modp, "dynamic network builder: submodule %s: more than one module types named `%s' found that implement module interface %s (use fully qualified name to disambiguate)",
                             submodname, modTypeName, interfaceqname.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
@@ -824,7 +824,7 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
         throw cRuntimeError(modp, "dynamic network builder: no channel type named `%s' found that implements channel interface %s (not in the loaded NED files?)",
                             channeltypename, interfaceqname.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError(modp, "dynamic network builder: more than one channel types named `%s' found that implement channel interface %s (use fully qualified name to disabiguate)",
+        throw cRuntimeError(modp, "dynamic network builder: more than one channel types named `%s' found that implement channel interface %s (use fully qualified name to disambiguate)",
                             channeltypename, interfaceqname.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
