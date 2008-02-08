@@ -1,0 +1,28 @@
+%description:
+Test "like" connections: test error message when channel interface cannot be resolved
+
+%file: test.ned
+
+module Node 
+{
+    gates:
+        inout p;
+    connections allowunconnected:
+}
+
+network Test
+{
+    parameters:
+        string channelType = "foo";
+    submodules:
+        a: Node;
+        b: Node;
+    connections:
+        a.p <--> <channelType> like IMissingType <--> b.p;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+IMissingType.*could not be resolved
+
