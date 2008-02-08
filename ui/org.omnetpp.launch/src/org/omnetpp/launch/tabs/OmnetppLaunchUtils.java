@@ -131,7 +131,7 @@ public class OmnetppLaunchUtils {
     public static class ExecutableWorkbenchContentProvider extends WorkbenchContentProvider {
         private boolean isExecutable(IFile file) {
             return file.getResourceAttributes().isExecutable() ||
-                    StringUtils.contains("exe.cmd.bat",file.getFileExtension()) && SWT.getPlatform().equals("win32");
+                    StringUtils.containsIgnoreCase("exe.cmd.bat",file.getFileExtension()) && SWT.getPlatform().equals("win32");
         }
 
         @Override

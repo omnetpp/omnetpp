@@ -107,10 +107,8 @@ public class SimulationTab extends AbstractLaunchConfigurationTab
 		SWTFactory.createLabel(notOmnetppProjectMessageComposite, "This project is not an OMNEST/OMNeT++ project.", 1);
 		simComposite = SWTFactory.createComposite(mainComposite, 1, 1, GridData.FILL_HORIZONTAL);
 		createLibraryGroup(simComposite, 1);
-		createIniGroup(simComposite, 1);
-        createConfigGroup(simComposite, 1);
+        createConfigurationGroup(simComposite, 1);
         createUIGroup(simComposite, 1);
-        createNedPathGroup(simComposite, 1);
         createAdditionalGroup(simComposite, 1);
         setControl(mainComposite);
 
@@ -124,36 +122,30 @@ public class SimulationTab extends AbstractLaunchConfigurationTab
     	super.activated(workingCopy);
     }
 
-	protected void createIniGroup(Composite parent, int colSpan) {
-		Composite comp = SWTFactory.createComposite(parent, 3, colSpan, GridData.FILL_HORIZONTAL);
-        GridLayout ld = (GridLayout)comp.getLayout();
-        ld.marginHeight = 1;
+    protected void createConfigurationGroup(Composite parent, int colSpan) {
+		Composite comp = SWTFactory.createGroup(parent, "Configuration", 4, colSpan, GridData.FILL_HORIZONTAL);
 
-		SWTFactory.createLabel(comp, "Initialization file(s):", 1);
+        SWTFactory.createLabel(comp, "Initialization file(s):", 1);
 
-		fInifileText = SWTFactory.createSingleText(comp, 1);
-		fInifileText.setToolTipText("The INI file(s) defining parameters and configuration blocks (default: omnetpp.ini, relative to the working directory)");
-		fInifileText.addModifyListener(this);
-		fInifileText.addFocusListener(new FocusAdapter() {
+        fInifileText = SWTFactory.createSingleText(comp, 2);
+        fInifileText.setToolTipText("The INI file(s) defining parameters and configuration blocks (default: omnetpp.ini, relative to the working directory)");
+        fInifileText.addModifyListener(this);
+        fInifileText.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
                 updateConfigCombo();
                 updateNedPathText();
             }
-		});
+        });
 
-		Button browseInifileButton = SWTFactory.createPushButton(comp, "Browse...", null);
-		browseInifileButton.addSelectionListener(new SelectionAdapter() {
-			@Override
+        Button browseInifileButton = SWTFactory.createPushButton(comp, "Browse...", null);
+        browseInifileButton.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent evt) {
-				handleBrowseInifileButtonSelected();
-				updateLaunchConfigurationDialog();
-			}
-		});
-	}
-
-    protected void createConfigGroup(Composite parent, int colSpan) {
-		Composite comp = SWTFactory.createGroup(parent, "Configuration", 4, colSpan, GridData.FILL_HORIZONTAL);
+                handleBrowseInifileButtonSelected();
+                updateLaunchConfigurationDialog();
+            }
+        });
 
         SWTFactory.createLabel(comp, "Configuration name:",1);
 
@@ -216,7 +208,7 @@ public class SimulationTab extends AbstractLaunchConfigurationTab
     }
 
     protected void createLibraryGroup(Composite parent, int colSpan) {
-        Composite comp = SWTFactory.createComposite(parent, 3, colSpan, GridData.FILL_HORIZONTAL);
+        Composite comp = SWTFactory.createGroup(parent, "Simulation Program", 3, colSpan, GridData.FILL_HORIZONTAL);
         GridLayout ld = (GridLayout)comp.getLayout();
         ld.marginHeight = 1;
 
@@ -234,15 +226,9 @@ public class SimulationTab extends AbstractLaunchConfigurationTab
                 updateLaunchConfigurationDialog();
             }
         });
-    }
-
-    protected void createNedPathGroup(Composite parent, int colSpan) {
-        Composite comp = SWTFactory.createComposite(parent, 2, colSpan, GridData.FILL_HORIZONTAL);
-        GridLayout ld = (GridLayout)comp.getLayout();
-        ld.marginHeight = 1;
 
         SWTFactory.createLabel(comp, "NED Source Path:", 1);
-        fNedPathText = SWTFactory.createSingleText(comp, 1);
+        fNedPathText = SWTFactory.createSingleText(comp, 2);
         fNedPathText.setToolTipText("Specify the directories where NED files read from (relative to the first selected INI file)");
         fNedPathText.addModifyListener(this);
     }

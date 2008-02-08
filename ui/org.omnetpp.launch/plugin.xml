@@ -4,28 +4,44 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="org.omnetpp.launch.StandaloneOmnetppSimulationLaunchConfiguration"
-            delegateName="OMNeT++ Simulation Launcher"
-            id="org.omnetpp.launch.standaloneLaunchConfigurationType"
-            modes="run"
-            name="OMNeT++ Simulation"
+            id="org.omnetpp.launch.simulationLaunchConfigurationType"
+            name="OMNEST/OMNeT++ Simulation"
             public="true">
       </launchConfigurationType>
    </extension>
    <extension
+         point="org.eclipse.debug.core.launchDelegates">
+      <launchDelegate
+            delegate="org.omnetpp.launch.SimulationLaunchConfigurationDelegate"
+            delegateDescription="Allows running an OMNEST/OMNeT++ simulation in standalone or batched mode"
+            id="org.omnetpp.launch.simulationLaunchDelegate"
+            modes="run"
+            name="OMNEST/OMNeT++ Batched Simulation Launcher"
+            type="org.omnetpp.launch.simulationLaunchConfigurationType">
+      </launchDelegate>
+      <launchDelegate
+            delegate="org.omnetpp.launch.SimulationDebugConfigurationDelegate"
+            delegateDescription="Allows debugging an OMNEST/OMNeT++ simulation with CDT"
+            id="org.omnetpp.launch.simulationDebugDelegate"
+            modes="debug"
+            name="OMNEST/OMNeT++ Simulation Debugger"
+            type="org.omnetpp.launch.simulationLaunchConfigurationType">
+      </launchDelegate>
+   </extension>
+   <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
-            class="org.omnetpp.launch.StandaloneOmnetppLaunchConfigurationTabGroup"
-            id="org.omnetpp.launch.standaloneLaunchConfigurationTabGroup"
-            type="org.omnetpp.launch.standaloneLaunchConfigurationType">
+            class="org.omnetpp.launch.SimulationLaunchConfigurationTabGroup"
+            id="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
+            type="org.omnetpp.launch.simulationLaunchConfigurationType">
       </launchConfigurationTabGroup>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
-            configTypeID="org.omnetpp.launch.standaloneLaunchConfigurationType"
+            configTypeID="org.omnetpp.launch.simulationLaunchConfigurationType"
             icon="icons/full/ctool16/omnetsim.gif"
-            id="org.omnetpp.launch.standaloneLaunchConfigurationTypeImage">
+            id="org.omnetpp.launch.simulationLaunchConfigurationTypeImage">
       </launchConfigurationTypeImage>
    </extension>
    <extension

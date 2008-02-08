@@ -67,7 +67,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         GridLayout ld = (GridLayout)mainComp.getLayout();
         ld.marginHeight = 1;
 
-		SWTFactory.createLabel(mainComp, "Simulation Program:",1);
+		SWTFactory.createLabel(mainComp, "Executable:",1);
 
 		fProgText = SWTFactory.createSingleText(mainComp, 1);
 		fProgText.addModifyListener(this);
@@ -103,9 +103,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
         }
-        simulationBlock.initializeFrom(config);
-        workingDirBlock.setExecutableLocation(fProgText.getText().trim());
         workingDirBlock.initializeFrom(config);
+        simulationBlock.initializeFrom(config);
 	}
 
     public void performApply(ILaunchConfigurationWorkingCopy config) {
@@ -186,7 +185,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
     public void modifyText(ModifyEvent e) {
         if (e.getSource() == fProgText) {
-            workingDirBlock.setExecutableLocation(fProgText.getText().trim());
             simulationBlock.updateNedPathText();
             simulationBlock.updateConfigCombo();
         }

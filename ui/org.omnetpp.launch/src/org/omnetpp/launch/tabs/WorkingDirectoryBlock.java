@@ -42,14 +42,10 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
 
     // Local directory
     private Button fWorkspaceButton;
-    private Button fFileSystemButton;
     private Button fVariablesButton;
 
     //bug 29565 fix
-    private Button fUseDefaultDirButton = null;
-    private Button fUseOtherDirButton = null;
-    private Text fOtherWorkingText = null;
-    private Text fWorkingDirText;
+    private Text workingDirText = null;
 
     private String executableLoc;
     private IChangeListener changeListener;
@@ -66,45 +62,15 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
      */
     public void createControl(Composite parent) {
-        Group group = SWTFactory.createGroup(parent, "Working directory", 5, 1, GridData.FILL_HORIZONTAL);
+        Group group = SWTFactory.createGroup(parent, "Working directory", 3, 1, GridData.FILL_HORIZONTAL);
         setControl(group);
-    //default choice
-        fUseDefaultDirButton = SWTFactory.createRadioButton(group, "Default:");
-        fUseDefaultDirButton.addSelectionListener(this);
-        fWorkingDirText = SWTFactory.createSingleText(group, 4);
-        fWorkingDirText.addModifyListener(this);
-        fWorkingDirText.setEnabled(false);
-    //user enter choice
-        fUseOtherDirButton = SWTFactory.createRadioButton(group, "Other:");
-        fUseOtherDirButton.addSelectionListener(this);
-        fOtherWorkingText = SWTFactory.createSingleText(group, 1);
-        fOtherWorkingText.addModifyListener(this);
+        workingDirText = SWTFactory.createSingleText(group, 1);
+        workingDirText.addModifyListener(this);
     //buttons
-        fWorkspaceButton = createPushButton(group, "Workspace...", null);
+        fWorkspaceButton = createPushButton(group, "Browse...", null);
         fWorkspaceButton.addSelectionListener(this);
-        fFileSystemButton = createPushButton(group, "File System...", null);
-        fFileSystemButton.addSelectionListener(this);
         fVariablesButton = createPushButton(group, "Variables...", null);
         fVariablesButton.addSelectionListener(this);
-    }
-
-    /**
-     * Show a dialog that lets the user select a working directory
-     */
-    private void handleWorkingDirBrowseButtonSelected() {
-        DirectoryDialog dialog = new DirectoryDialog(getShell());
-        dialog.setMessage("Select a workspace relative working directory:");
-        String currentWorkingDir = getWorkingDirectoryText();
-        if (!currentWorkingDir.trim().equals("")) {
-            File path = new File(currentWorkingDir);
-            if (path.exists()) {
-                dialog.setFilterPath(currentWorkingDir);
-            }
-        }
-        String selectedDirectory = dialog.open();
-        if (selectedDirectory != null) {
-            fOtherWorkingText.setText(selectedDirectory);
-        }
     }
 
     /**
@@ -123,7 +89,7 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
         if (results != null && results.length > 0 && results[0] instanceof IPath) {
             IPath path = (IPath)results[0];
             String containerName = path.makeRelative().toString();
-            setOtherWorkingDirectoryText("${workspace_loc:" + containerName + "}");
+            setWorkingDirectoryText("${workspace_loc:" + containerName + "}");
         }
     }
 
@@ -156,28 +122,6 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
     }
 
     /**
-     * Runs when the default working dir radio button has been selected.
-     */
-    private void handleUseDefaultWorkingDirButtonSelected() {
-        fWorkspaceButton.setEnabled(false);
-        fOtherWorkingText.setEnabled(false);
-        fVariablesButton.setEnabled(false);
-        fFileSystemButton.setEnabled(false);
-        fUseOtherDirButton.setSelection(false);
-    }
-
-    /**
-     * Runs when the other working dir radio button has been selected
-     */
-    private void handleUseOtherWorkingDirButtonSelected() {
-        fOtherWorkingText.setEnabled(true);
-        fWorkspaceButton.setEnabled(true);
-        fVariablesButton.setEnabled(true);
-        fFileSystemButton.setEnabled(true);
-        updateLaunchConfigurationDialog();
-    }
-
-    /**
      * Runs when the working dir variables button has been selected
      */
     private void handleWorkingDirVariablesButtonSelected() {
@@ -185,27 +129,8 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
         dialog.open();
         String variableText = dialog.getVariableExpression();
         if (variableText != null) {
-            fOtherWorkingText.insert(variableText);
+            workingDirText.insert(variableText);
         }
-    }
-
-    /**
-     * Sets the default working directory
-     */
-    protected void setDefaultWorkingDir() {
-        if (StringUtils.isBlank(executableLoc))
-            setDefaultWorkingDirectoryText("${project_loc}");
-        else
-            setDefaultWorkingDirectoryText("${container_loc:"+executableLoc+"}");
-
-    }
-
-    /**
-     * Sets the executable files workspace relative path so the default working directory can be set correctly
-     */
-    public void setExecutableLocation(String exeLoc) {
-        executableLoc = exeLoc;
-        setDefaultWorkingDir();
     }
 
     /* (non-Javadoc)
@@ -259,16 +184,7 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
     public void initializeFrom(ILaunchConfiguration configuration) {
         try {
             String wd = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, (String)null);
-            if (StringUtils.isEmpty(wd)) {
-                setDefaultWorkingDir();
-                fUseDefaultDirButton.setSelection(true);
-                handleUseDefaultWorkingDirButtonSelected();
-            }
-            else {
-                setOtherWorkingDirectoryText(wd);
-                fUseOtherDirButton.setSelection(true);
-                handleUseOtherWorkingDirButtonSelected();
-            }
+            setWorkingDirectoryText(wd);
         }
         catch (CoreException e) {
             setErrorMessage("Problem occurred during reading the configuration: " + e.getStatus().getMessage());
@@ -280,12 +196,7 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
      */
     public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-        if (fUseDefaultDirButton.getSelection()) {
-            configuration.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, (String)null);
-        }
-        else {
-            configuration.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, getWorkingDirectoryText());
-        }
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, getWorkingDirectoryText());
     }
 
     /* (non-Javadoc)
@@ -299,44 +210,15 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
      * Gets the path from the working directory text box
      */
     protected String getWorkingDirectoryText() {
-        if (fUseDefaultDirButton.getSelection())
-            return fWorkingDirText.getText().trim();
-        return fOtherWorkingText.getText().trim();
-    }
-
-    /**
-     * Sets the default working directory text
-     */
-    protected void setDefaultWorkingDirectoryText(String dir) {
-        if (dir != null) {
-            fWorkingDirText.setText(dir);
-        }
+        return workingDirText.getText().trim();
     }
 
     /**
      * Sets the other dir text
      */
-    protected void setOtherWorkingDirectoryText(String dir) {
+    protected void setWorkingDirectoryText(String dir) {
         if (dir != null) {
-            fOtherWorkingText.setText(dir);
-        }
-    }
-
-    /**
-     * Allows this entire block to be enabled/disabled
-     */
-    protected void setEnabled(boolean enabled) {
-        fUseDefaultDirButton.setEnabled(enabled);
-        fUseOtherDirButton.setEnabled(enabled);
-        if (fOtherWorkingText.isEnabled()) {
-            fOtherWorkingText.setEnabled(enabled);
-            fWorkspaceButton.setEnabled(enabled);
-            fVariablesButton.setEnabled(enabled);
-            fFileSystemButton.setEnabled(enabled);
-        }
-        // in the case where the 'other' text is selected and we want to enable
-        if (fUseOtherDirButton.getSelection() && enabled == true) {
-            fOtherWorkingText.setEnabled(enabled);
+            workingDirText.setText(dir);
         }
     }
 
@@ -345,24 +227,8 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
         if (source == fWorkspaceButton) {
             handleWorkspaceDirBrowseButtonSelected();
         }
-        else if (source == fFileSystemButton) {
-            handleWorkingDirBrowseButtonSelected();
-        }
         else if (source == fVariablesButton) {
             handleWorkingDirVariablesButtonSelected();
-        }
-        else if (source == fUseDefaultDirButton) {
-            //only perform the action if this is the button that was selected
-            if (fUseDefaultDirButton.getSelection()) {
-                setDefaultWorkingDir();
-                handleUseDefaultWorkingDirButtonSelected();
-            }
-        }
-        else if (source == fUseOtherDirButton) {
-            //only perform the action if this is the button that was selected
-            if (fUseOtherDirButton.getSelection()) {
-                handleUseOtherWorkingDirButtonSelected();
-            }
         }
 
         if (changeListener != null)

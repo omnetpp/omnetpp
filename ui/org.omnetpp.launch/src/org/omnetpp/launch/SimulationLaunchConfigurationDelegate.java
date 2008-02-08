@@ -20,11 +20,12 @@ import org.omnetpp.common.util.StringUtils;
 
 
 /**
- * TODO add documentation
+ * Can launch a single or multiple simulation process. Understands OMNeT++ specific launch attributes. 
+ * see IOmnetppLaunchConstants.
  *
  * @author rhornig
  */
-public class StandaloneOmnetppSimulationLaunchConfiguration extends LaunchConfigurationDelegate {
+public class SimulationLaunchConfigurationDelegate extends LaunchConfigurationDelegate {
 
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
             throws CoreException {

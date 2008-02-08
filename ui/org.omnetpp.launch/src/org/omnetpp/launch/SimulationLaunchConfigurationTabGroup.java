@@ -13,9 +13,9 @@ import org.omnetpp.launch.tabs.OmnetppMainTab;
  *
  * @author rhornig
  */
-public class StandaloneOmnetppLaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
+public class SimulationLaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
 
-    public StandaloneOmnetppLaunchConfigurationTabGroup() {
+    public SimulationLaunchConfigurationTabGroup() {
     }
 
     public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
