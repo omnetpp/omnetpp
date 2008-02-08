@@ -319,14 +319,12 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
     std::string qname = cNEDLoader::instance()->resolveComponentType(context, modTypeName);
     if (qname.empty())
-        throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
-                            "in (%s)%s not found (not in the loaded NED files?)",
-                            modTypeName, submodname, modp->className(), modp->fullPath().c_str());
+        throw cRuntimeError(modp, "dynamic network builder: submodule %s: cannot resolve module type `%s' (not in the loaded NED files?)",
+                            submodname, modTypeName);
     cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
-        throw cRuntimeError("dynamic module builder: module type definition `%s' for submodule %s "
-                            "in (%s)%s not found (type is not a module type)",
-                            modTypeName, submodname, modp->className(), modp->fullPath().c_str());
+        throw cRuntimeError(modp, "dynamic network builder: submodule %s: `%s' is not a module type",
+                            submodname, qname.c_str());
     return (cModuleType *)componenttype;
 }
 
@@ -338,22 +336,26 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
     std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
     cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
-    if (!interfacedecl || interfacedecl->getTree()->getTagCode()!=NED_MODULE_INTERFACE)
-        throw cRuntimeError("dynamic module builder: interface type `%s' for submodule %s in (%s)%s could not be resolved",
-                            likeType, submodname, modp->className(), modp->fullPath().c_str());
+    if (!interfacedecl)
+        throw cRuntimeError(modp, "dynamic network builder: submodule %s: cannot resolve module interface `%s'",
+                            submodname, likeType);
+    if (interfacedecl->getTree()->getTagCode()!=NED_MODULE_INTERFACE)
+        throw cRuntimeError(modp, "dynamic network builder: submodule %s: `%s' is not a module interface",
+                            submodname, interfaceqname.c_str());
 
+    // search for module type that implements the interface
     std::vector<std::string> candidates = findTypeWithInterface(modTypeName, interfaceqname.c_str());
     if (candidates.empty())
-        throw cRuntimeError("dynamic module builder: submodule %s in (%s)%s: no module type named %s found that implements module interface %s (not in the loaded NED files?)",
-                            submodname, modp->className(), modp->fullPath().c_str(), modTypeName, interfaceqname.c_str());
+        throw cRuntimeError(modp, "dynamic network builder: submodule %s: no module type named `%s' found that implements module interface %s (not in the loaded NED files?)",
+                            submodname, modTypeName, interfaceqname.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError("dynamic module builder: submodule %s in (%s)%s: more than one module types named %s found that implement module interface %s (use fully qualified name to disabiguate)",
-                            submodname, modp->className(), modp->fullPath().c_str(), modTypeName, interfaceqname.c_str());
+        throw cRuntimeError(modp, "dynamic network builder: submodule %s: more than one module types named `%s' found that implement module interface %s (use fully qualified name to disabiguate)",
+                            submodname, modTypeName, interfaceqname.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
-        throw cRuntimeError("dynamic module builder: submodule %s in (%s)%s: %s: not a module type",
-                            submodname, modp->className(), modp->fullPath().c_str(), candidates[0].c_str());
+        throw cRuntimeError(modp, "dynamic network builder: submodule %s: `%s' is not a module type",
+                            submodname, candidates[0].c_str());
     return (cModuleType *)componenttype;
 }
 
@@ -588,9 +590,8 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
         if (destg->ownerModule()==modp ? destg->type()!=cGate::OUTPUT : destg->type()!=cGate::INPUT)
             errg = destg;
         if (errg)
-            throw cRuntimeError("dynamic module builder: gate %s in (%s)%s is being "
-                                "connected the wrong way: directions don't match",
-                                errg->fullPath().c_str(), modp->className(), modp->fullPath().c_str());
+            throw cRuntimeError(modp, "dynamic network builder: gate %s is being connected in the wrong direction",
+                                errg->fullPath().c_str());
 
         doConnectGates(modp, srcg, destg, conn);
     }
@@ -598,9 +599,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
     {
         // find gates and create connection in both ways
         if (conn->getSrcGateSubg()!=NED_SUBGATE_NONE || conn->getDestGateSubg()!=NED_SUBGATE_NONE)
-            throw cRuntimeError("dynamic module builder: error is module (%s)%s: gate$i or gate$o syntax "
-                                "cannot be used with bidirectional connections",
-                                modp->className(), modp->fullPath().c_str());
+            throw cRuntimeError(modp, "dynamic network builder: gate$i or gate$o used with bidirectional connections");
 
         // now: 1 is input, 2 is output, except for parent module gates where it is the other way round
         // (because we connect xx.out --> yy.in, but xx.out --> out!)
@@ -649,7 +648,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     //TRACE("resolveGate(mod=%s, %s.%s, subg=%d, plusplus=%d)", parentmodp->fullPath().c_str(), modname, gatename, subg, isplusplus);
 
     if (isplusplus && gateindexp)
-        throw cRuntimeError("dynamic module builder: \"++\" and gate index expression cannot exist together");
+        throw cRuntimeError(parentmodp, "dynamic network builder: both `++' and gate index expression used in a connection");
 
     cModule *modp = resolveModuleForConnection(parentmodp, modname, modindexp);
 
@@ -676,7 +675,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
         {
             gatep = modp->getOrCreateFirstUnconnectedGate(gatename2, 0, true, false); // inside, don't expand
             if (!gatep)
-                throw cRuntimeError("%s.%s[] gates are all connected, no gate left for `++' operator", modp->fullPath().c_str(), gatename);
+                throw cRuntimeError(modp, "dynamic network builder: %s[] gates are all connected, no gate left for `++' operator", gatename);
         }
         else
         {
@@ -699,7 +698,7 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
                                           cGate *&gate1, cGate *&gate2)
 {
     if (isplusplus && gateindexp)
-        throw cRuntimeError("dynamic module builder: \"++\" and gate index expression cannot exist together");
+        throw cRuntimeError(parentmodp, "dynamic network builder: both `++' and gate index expression used in a connection");
 
     cModule *modp = resolveModuleForConnection(parentmodp, modname, modindexp);
 
@@ -716,7 +715,7 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
         {
             modp->getOrCreateFirstUnconnectedGatePair(gatename, true, false, gate1, gate2); // inside, don't expand
             if (!gate1 || !gate2)
-                throw cRuntimeError("%s.%s[] gates are all connected, no gate left for `++' operator", modp->fullPath().c_str(), gatename);
+                throw cRuntimeError(parentmodp, "dynamic network builder: %s[] gates are all connected, no gate left for `++' operator", gatename);
         }
         else
         {
@@ -751,11 +750,9 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
         if (!modp)
         {
             if (!modindexp)
-                throw cRuntimeError("dynamic module builder: submodule `%s' in (%s)%s not found",
-                                        modname, parentmodp->className(), parentmodp->fullPath().c_str());
+                throw cRuntimeError(modp, "dynamic network builder: no submodule `%s' to be connected", modname);
             else
-                throw cRuntimeError("dynamic module builder: submodule `%s[%d]' in (%s)%s not found",
-                                        modname, modindex, parentmodp->className(), parentmodp->fullPath().c_str());
+                throw cRuntimeError(modp, "dynamic network builder: no submodule `%s[%d]' to be connected", modname, modindex);
         }
         return modp;
     }
@@ -800,12 +797,11 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltyp
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
     std::string qname = cNEDLoader::instance()->resolveComponentType(context, channeltypename);
     if (qname.empty())
-        throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
-                            "(not in the loaded NED files?)", channeltypename);  //FIXME "in module %s"
+        throw cRuntimeError(modp, "dynamic network builder: cannot resolve channel type `%s' (not in the loaded NED files?)", channeltypename);
+
     cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cChannelType *>(componenttype))
-        throw cRuntimeError("dynamic network builder: channel type definition `%s' not found "
-                            "(type is not a channel type)", channeltypename);  //FIXME "in module %s"
+        throw cRuntimeError(modp, "dynamic network builder: `%s' is not a channel type", qname.c_str());
     return (cChannelType *)componenttype;
 }
 
@@ -817,22 +813,23 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
     std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
     cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
-    if (!interfacedecl || interfacedecl->getTree()->getTagCode()!=NED_CHANNEL_INTERFACE)
-        throw cRuntimeError("dynamic module builder: interface type `%s' for channel in (%s)%s could not be resolved",
-                            likeType, modp->className(), modp->fullPath().c_str());
+    if (!interfacedecl)
+        throw cRuntimeError(modp, "dynamic network builder: cannot resolve channel interface `%s'", likeType);
+    if (interfacedecl->getTree()->getTagCode()!=NED_CHANNEL_INTERFACE)
+        throw cRuntimeError(modp, "dynamic network builder: `%s' is not a channel interface", interfaceqname.c_str());
 
+    // search for channel type that implements the interface
     std::vector<std::string> candidates = findTypeWithInterface(channeltypename, interfaceqname.c_str());
     if (candidates.empty())
-        throw cRuntimeError("dynamic module builder: channel in (%s)%s: no channel type named %s found that implements channel interface %s (not in the loaded NED files?)",
-                            modp->className(), modp->fullPath().c_str(), channeltypename, interfaceqname.c_str());
+        throw cRuntimeError(modp, "dynamic network builder: no channel type named `%s' found that implements channel interface %s (not in the loaded NED files?)",
+                            channeltypename, interfaceqname.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError("dynamic module builder: channel in (%s)%s: more than one channel types named %s found that implement channel interface %s (use fully qualified name to disabiguate)",
-                            modp->className(), modp->fullPath().c_str(), channeltypename, interfaceqname.c_str());
+        throw cRuntimeError(modp, "dynamic network builder: more than one channel types named `%s' found that implement channel interface %s (use fully qualified name to disabiguate)",
+                            channeltypename, interfaceqname.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
-        throw cRuntimeError("dynamic module builder: channel in (%s)%s: %s: not a channel type",
-                            modp->className(), modp->fullPath().c_str(), candidates[0].c_str());
+        throw cRuntimeError(modp, "dynamic network builder: `%s' is not a channel type", candidates[0].c_str());
     return (cChannelType *)componenttype;
 }
 
