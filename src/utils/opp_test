@@ -359,7 +359,7 @@ sub testcase_generatesources
         # generate C++
         $cpp = $ActivityCPPTemplate;
         $cpp =~ s/\@TESTNAME\@/$testname/g;
-        $ned =~ s/\@MODULE\@/$module/g;
+        $cpp =~ s/\@MODULE\@/$module/g;
         $cpp =~ s/\@INCLUDES\@/$includescode/g;
         $cpp =~ s/\@GLOBAL\@/$globalcode/g;
         $cpp =~ s/\@ACTIVITY\@/$activity/g;
