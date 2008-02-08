@@ -344,15 +344,16 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
 
     std::vector<std::string> candidates = findTypeWithInterface(modTypeName, interfaceqname.c_str());
     if (candidates.empty())
-        throw cRuntimeError("dynamic module builder: empty!");  //FIXME
+        throw cRuntimeError("dynamic module builder: submodule %s in (%s)%s: no module type named %s found that implements module interface %s (not in the loaded NED files?)",
+                            submodname, modp->className(), modp->fullPath().c_str(), modTypeName, interfaceqname.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError("dynamic module builder: more than one!");  //FIXME
+        throw cRuntimeError("dynamic module builder: submodule %s in (%s)%s: more than one module types named %s found that implement module interface %s (use fully qualified name to disabiguate)",
+                            submodname, modp->className(), modp->fullPath().c_str(), modTypeName, interfaceqname.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
-        throw cRuntimeError("dynamic module builder: module type definition `%s' for 'like' submodule %s "
-                            "in (%s)%s not found (type is not a module type)",
-                            modTypeName, submodname, modp->className(), modp->fullPath().c_str());
+        throw cRuntimeError("dynamic module builder: submodule %s in (%s)%s: %s: not a module type",
+                            submodname, modp->className(), modp->fullPath().c_str(), candidates[0].c_str());
     return (cModuleType *)componenttype;
 }
 
@@ -822,15 +823,16 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
 
     std::vector<std::string> candidates = findTypeWithInterface(channeltypename, interfaceqname.c_str());
     if (candidates.empty())
-        throw cRuntimeError("dynamic module builder: empty!");  //FIXME
+        throw cRuntimeError("dynamic module builder: channel in (%s)%s: no channel type named %s found that implements channel interface %s (not in the loaded NED files?)",
+                            modp->className(), modp->fullPath().c_str(), channeltypename, interfaceqname.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError("dynamic module builder: more than one!");  //FIXME
+        throw cRuntimeError("dynamic module builder: channel in (%s)%s: more than one channel types named %s found that implement channel interface %s (use fully qualified name to disabiguate)",
+                            modp->className(), modp->fullPath().c_str(), channeltypename, interfaceqname.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
-    if (!dynamic_cast<cChannelType *>(componenttype))
-        throw cRuntimeError("dynamic module builder: channel type definition `%s' for 'like' channel "
-                            "in (%s)%s not found (type is not a channel type)",
-                            channeltypename, modp->className(), modp->fullPath().c_str());
+    if (!dynamic_cast<cModuleType *>(componenttype))
+        throw cRuntimeError("dynamic module builder: channel in (%s)%s: %s: not a channel type",
+                            modp->className(), modp->fullPath().c_str(), candidates[0].c_str());
     return (cChannelType *)componenttype;
 }
 

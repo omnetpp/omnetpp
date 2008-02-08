@@ -86,7 +86,8 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
         }
     }
 
-    if (!isInterface) {
+    if (!isInterface){
+
         //FIXME TODO check that we have all parameters/gates required by the interfaces we support
     }
 
