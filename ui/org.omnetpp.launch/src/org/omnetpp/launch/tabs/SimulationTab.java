@@ -76,7 +76,7 @@ public class SimulationTab extends AbstractLaunchConfigurationTab
 	private Composite notOmnetppProjectMessageComposite;
 	private Composite simComposite;
     private ILaunchConfiguration config;
-    private EmbeddableBlock changeListener;
+    private IChangeListener changeListener;
 
 
     /**
@@ -92,7 +92,7 @@ public class SimulationTab extends AbstractLaunchConfigurationTab
      * @param cdtContributed Whether we are contributing to CDT (true) or using the stand-alone launcher (false)
      *        default is true (CDT contribution)
      */
-    SimulationTab(EmbeddableBlock changeListener, boolean cdtContributed) {
+    SimulationTab(IChangeListener changeListener, boolean cdtContributed) {
         this.changeListener = changeListener;
         this.cdtContributed = cdtContributed;
     }

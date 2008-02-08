@@ -32,7 +32,7 @@ import org.omnetpp.launch.LaunchPlugin;
  * @author rhornig
  */
 public class OmnetppMainTab extends AbstractLaunchConfigurationTab 
-    implements ModifyListener, EmbeddableBlock {
+    implements ModifyListener, IChangeListener {
 
 	// UI widgets
 	protected Text fProgText;

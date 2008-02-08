@@ -52,13 +52,13 @@ public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab
     private Text fWorkingDirText;
 
     private String executableLoc;
-    private EmbeddableBlock changeListener;
+    private IChangeListener changeListener;
 
     public WorkingDirectoryBlock() {
         super();
     }
 
-    public WorkingDirectoryBlock(EmbeddableBlock listener) {
+    public WorkingDirectoryBlock(IChangeListener listener) {
         this.changeListener = listener;
     }
 
