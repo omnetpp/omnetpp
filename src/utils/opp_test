@@ -53,6 +53,7 @@ All files will be created in the work directory.
 
     'file'               => 'vbf',
     'inifile'            => '1vbf',
+    'network'            => '1v',
 
     'contains'           => 'vbf',
     'not-contains'       => 'vbf',
@@ -336,21 +337,21 @@ sub testcase_generatesources
     $nedfname = $workdir."/".$testname."/package.ned";
     writefile($nedfname, $ned);
 
-    $networkname = "Test";  # by default
+    # let the user specify the network explicitly
+    $networkname = $values{'network(1)'} ? $values{'network(1)'} : "Test";
 
     # 'activity' template
     if (defined($bodies{'activity(1)'}))
     {
-        $module = "Test";
+        $module = $networkname;
         $activity = $bodies{'activity(1)'};
         $includescode = $bodies{'includes(1)'};
         $globalcode = $bodies{'global(1)'};
-        $networkname = $module;
 
         # generate NED
         $ned = $ModuleNEDTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
-        $ned =~ s/\@MODULE\@/Test/g;
+        $ned =~ s/\@MODULE\@/$module/g;
         $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
         $nedfname = $workdir."/".$testname."/test.ned";
         writefile($nedfname, $ned);
@@ -358,6 +359,7 @@ sub testcase_generatesources
         # generate C++
         $cpp = $ActivityCPPTemplate;
         $cpp =~ s/\@TESTNAME\@/$testname/g;
+        $ned =~ s/\@MODULE\@/$module/g;
         $cpp =~ s/\@INCLUDES\@/$includescode/g;
         $cpp =~ s/\@GLOBAL\@/$globalcode/g;
         $cpp =~ s/\@ACTIVITY\@/$activity/g;
@@ -401,6 +403,7 @@ sub testcase_generatesources
         # generate NED
         $ned = $ModuleABNEDTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
+        $ned =~ s/\@NETWORKNAME\@/$networkname/g;
         $ned =~ s/\@MODULE_A\@/$module_a/g;
         $ned =~ s/\@MODULE_B\@/$module_b/g;
         $nedfname = $workdir."/".$testname."/test.ned";
@@ -804,7 +807,7 @@ simple @MODULE_B@
         output out;
 }
 
-network Test
+network @NETWORKNAME@
 {
     submodules:
         the@MODULE_A@ : @MODULE_A@;
@@ -824,16 +827,16 @@ namespace @TESTNAME@ {
 
 @GLOBAL@
 
-class Test : public cSimpleModule
+class @MODULE@ : public cSimpleModule
 {
     public:
-        Test() : cSimpleModule(16384) {}
+        @MODULE@() : cSimpleModule(16384) {}
         virtual void activity();
 };
 
-Define_Module(Test);
+Define_Module(@MODULE@);
 
-void Test::activity()
+void @MODULE@::activity()
 {
 @ACTIVITY@
 }

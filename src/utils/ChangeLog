@@ -1,7 +1,7 @@
 opp_test: 
  - each test gets its own directory
  - new section %includes -- it goes outside the C++ namespace (%global goes inside)  TODO add to the docu!!!
- - problem: 8K command-line limit on windows -- test suite cannot be linked into 1 executable
+ - new entry %network: it sets the network name in the ini file, possibly in the generated ned files too
 
 opp_(n)makemake: unified unix and windows versions in a new template substitution
 based implementation
