@@ -828,7 +828,7 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
                             channeltypename, interfaceqname.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
-    if (!dynamic_cast<cModuleType *>(componenttype))
+    if (!dynamic_cast<cChannelType *>(componenttype))
         throw cRuntimeError(modp, "dynamic network builder: `%s' is not a channel type", candidates[0].c_str());
     return (cChannelType *)componenttype;
 }
