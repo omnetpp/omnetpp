@@ -86,18 +86,19 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
         }
     }
 
-    if (!isInterface){
-
+    if (!isInterface)
+    {
         //FIXME TODO check that we have all parameters/gates required by the interfaces we support
     }
 
     // resolve C++ class name
     if (getType()==SIMPLE_MODULE || getType()==CHANNEL)
     {
-        // Note: @class() can override inherited implementation class
-        cProperty *classProperty = properties()->get("class"); //XXX check if no value or too many keys/values
-        if (classProperty && !opp_isempty(classProperty->value("")))
-            implClassName = opp_join("::", getCxxNamespace().c_str(), classProperty->value(""));
+        // Note: @class() be used to override inherited implementation class.
+        // The @class property itself does NOT get inherited.
+        const char *explicitClassName = getSingleValueLocalProperty(getTree()->getFirstChildWithTag(NED_PARAMETERS), "class");
+        if (!opp_isempty(explicitClassName))
+            implClassName = opp_join("::", getCxxNamespace().c_str(), explicitClassName);
         else if (numExtendsNames()!=0)
             implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
         else
@@ -135,13 +136,13 @@ std::string cNEDDeclaration::getPackage() const
 std::string cNEDDeclaration::getCxxNamespace() const
 {
     // find first @namespace() property in package.ned of this package and parent packages
-    PropertyNode *namespacePropertyNode = NULL;
     std::string packageName = getPackage();
+    const char *namespaceName = NULL;
     while (true) {
         // check the package.ned file for this property
         NEDElement *nedfile = cNEDLoader::instance()->getPackageNedFile(packageName.c_str());
-        namespacePropertyNode = nedfile ? (PropertyNode *)nedfile->getFirstChildWithAttribute(NED_PROPERTY, "name", "namespace") : NULL;
-        if (namespacePropertyNode)
+        namespaceName = nedfile ? getSingleValueLocalProperty(nedfile, "namespace") : NULL;
+        if (namespaceName)
             break;
 
         if (packageName.empty())
@@ -152,17 +153,23 @@ std::string cNEDDeclaration::getCxxNamespace() const
         packageName.resize(k==std::string::npos ? 0 : k);
     }
 
-    // extract default value from it
-    //XXX throw error if not good? (missing value, too many keys/values etc)
-    if (namespacePropertyNode) {
-        NEDElement *propKey = namespacePropertyNode->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
-        LiteralNode *literal = propKey ? (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL) : NULL;
-        if (literal)
-            return literal->getValue();
-    }
+    return opp_nulltoempty(namespaceName);
+}
 
-    // default: no namespace
-    return "";
+const char *cNEDDeclaration::getSingleValueLocalProperty(NEDElement *parent, const char *name)
+{
+    if (!parent)
+        return NULL;
+
+    PropertyNode *propNode = (PropertyNode *)parent->getFirstChildWithAttribute(NED_PROPERTY, "name", name);
+    if (!propNode)
+        return NULL;
+
+    NEDElement *propKey = propNode->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", ""); //FIXME this must be the only child
+    LiteralNode *literal = propKey ? (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL) : NULL;  //FIXME there must be exactly one value
+    if (literal)
+        return literal->getValue();
+    return NULL; //FIXME error no value given
 }
 
 void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)

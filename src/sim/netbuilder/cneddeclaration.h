@@ -100,6 +100,7 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     static cProperties *mergeProperties(const cProperties *baseprops, NEDElement *parent);
     static void updateProperty(PropertyNode *propNode, cProperty *prop);
     static void updateDisplayProperty(PropertyNode *propNode, cProperty *prop);
+    static const char *getSingleValueLocalProperty(NEDElement *parent, const char *name);
 
   public:
     /** @name Constructors, destructor, assignment */
