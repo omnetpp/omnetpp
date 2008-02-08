@@ -16,12 +16,16 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.internal.ui.SWTFactory;
+import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -32,9 +36,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
+
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -51,7 +55,8 @@ import org.omnetpp.launch.LaunchPlugin;
  *
  * @author rhornig
  */
-public class SimulationTab extends OmnetppLaunchTab  {
+public class SimulationTab extends AbstractLaunchConfigurationTab 
+    implements SelectionListener, ModifyListener {
     protected final String DEFAULT_RUNTOOLTIP= "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for ALL runs) (default: 0)";
 	// UI widgets
 	protected Text fInifileText;
@@ -68,129 +73,38 @@ public class SimulationTab extends OmnetppLaunchTab  {
     protected Text fAdditionalText;
     private boolean cdtContributed = true;
     private String infoText = null;
-	private Composite messageComposite;
+	private Composite notOmnetppProjectMessageComposite;
 	private Composite simComposite;
+    private ILaunchConfiguration config;
+    private EmbeddableBlock changeListener;
+
 
     /**
-     * Reads the ini file and enumerates all config sections. resolves include directives recursively
+     * called if we are contributing to the CDT launch type
      */
-    protected class ConfigEnumeratorCallback extends InifileParser.ParserAdapter {
-        class Section {
-            String name;
-            String network;
-            String extnds;
-            String descr;
-            @Override
-            public String toString() {
-                String additional = (StringUtils.isEmpty(descr)? "" : " "+descr)+
-                                    (StringUtils.isEmpty(extnds)? "" : " (extends: "+extnds+")")+
-                                    (StringUtils.isEmpty(network)? "" : " (network: "+network+")");
-                return name +(StringUtils.isEmpty(additional) ? "" : " --"+additional);
-            }
-        }
-        
-        IFile currentFile;
-        Section currentSection;
-        Map<String, Section> result;
-
-        public ConfigEnumeratorCallback(IFile file, Map<String, Section> result) {
-            this.currentFile = file;
-            this.result = result;
-        }
-
-        @Override
-        public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String comment) {
-            if (directive.equals("include")) {
-                // recursively parse the included file
-                try {
-                    IFile file = currentFile.getParent().getFile(new Path(args));
-                    new InifileParser().parse(file, new ConfigEnumeratorCallback(file, result));
-                }
-                catch (Exception e) {
-                    setErrorMessage("Error reading inifile: "+e.getMessage());
-                }
-            }
-            else {
-                setErrorMessage("Unknown directive in inifile");
-            }
-        }
-
-        @Override
-        public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
-            if ("extends".equals(key))
-                currentSection.extnds = value;
-            
-            if ("description".equals(key))
-                currentSection.descr = value;
-            
-            if ("network".equals(key))
-                currentSection.network = value;
-        }
-
-        @Override
-        public void sectionHeadingLine(int lineNumber, int numLines, String rawLine, String sectionName, String comment) {
-            String name = StringUtils.removeStart(sectionName,"Config ");
-            if (result.containsKey(name))
-                currentSection = result.get(name);
-            else {
-                currentSection = new Section();
-                currentSection.name = name;
-                result.put(name, currentSection);
-            }
-        }
-
-    }
-
-    /**
-     * A workbench content provider that returns only files with a given extension
-     * @author rhornig
-     */
-    protected class FilteredWorkbenchContentProvider extends WorkbenchContentProvider {
-        private final String regexp;
-
-        /**
-         * @param regexp The regular expression where matches should be displayed
-         */
-        public FilteredWorkbenchContentProvider(String regexp) {
-            super();
-            this.regexp = regexp;
-        }
-
-        @Override
-        public Object[] getChildren(Object element) {
-            List<Object> filteredChildren = new ArrayList<Object>();
-            for (Object child : super.getChildren(element)) {
-                if (child instanceof IFile && ((IFile)child).getName().matches(regexp)
-                                || getChildren(child).length > 0)
-                        filteredChildren.add(child);
-            }
-            return filteredChildren.toArray();
-        }
-    };
-
     public SimulationTab() {
         super();
     }
 
     /**
+     * Called when 
      * @param embeddingTab
      * @param cdtContributed Whether we are contributing to CDT (true) or using the stand-alone launcher (false)
      *        default is true (CDT contribution)
      */
-    SimulationTab(OmnetppLaunchTab embeddingTab, boolean cdtContributed) {
-        super(embeddingTab);
+    SimulationTab(EmbeddableBlock changeListener, boolean cdtContributed) {
+        this.changeListener = changeListener;
         this.cdtContributed = cdtContributed;
     }
 
     public void createControl(Composite parent) {
-    	Composite mainComposite = new Composite(parent, SWT.NONE);
+        Composite mainComposite = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
     	GridLayout mainGridLayout = new GridLayout();
     	mainGridLayout.marginHeight = mainGridLayout.marginWidth = 0;
 		mainComposite.setLayout(mainGridLayout);
 
-		messageComposite = SWTFactory.createComposite(mainComposite, 1, 1, GridData.FILL_HORIZONTAL);
-		SWTFactory.createLabel(messageComposite, "The currently selected project is not an OMNEST/OMNeT++ project.", 1);
-    	
+		notOmnetppProjectMessageComposite = SWTFactory.createComposite(mainComposite, 1, 1, GridData.FILL_HORIZONTAL);
+		SWTFactory.createLabel(notOmnetppProjectMessageComposite, "This project is not an OMNEST/OMNeT++ project.", 1);
 		simComposite = SWTFactory.createComposite(mainComposite, 1, 1, GridData.FILL_HORIZONTAL);
 		createLibraryGroup(simComposite, 1);
 		createIniGroup(simComposite, 1);
@@ -199,25 +113,16 @@ public class SimulationTab extends OmnetppLaunchTab  {
         createNedPathGroup(simComposite, 1);
         createAdditionalGroup(simComposite, 1);
         setControl(mainComposite);
+
+        updateMessageVisibility();
 	}
     
     @Override
     public void activated(ILaunchConfigurationWorkingCopy workingCopy) {
     	// hide the tab content if not an omnetpp project
-    	boolean isOmnetProject = isOmnetppProject();
-    	
-    	((GridData)simComposite.getLayoutData()).exclude = !isOmnetProject;
-    	((GridData)messageComposite.getLayoutData()).exclude = isOmnetProject;
-    	simComposite.setVisible(isOmnetProject);
-    	messageComposite.setVisible(!isOmnetProject);
-    	((Composite)getControl()).layout();
+    	updateMessageVisibility();
     	super.activated(workingCopy);
     }
-
-	protected boolean isOmnetppProject() {
-		IProject project = getProject();
-    	return project != null && ProjectUtils.hasOmnetppNature(project);
-	}
 
 	protected void createIniGroup(Composite parent, int colSpan) {
 		Composite comp = SWTFactory.createComposite(parent, 3, colSpan, GridData.FILL_HORIZONTAL);
@@ -267,7 +172,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
                 if (infoText == null)
-                    infoText = LaunchPlugin.getSimulationRunInfo(getCurrentLaunchConfiguration());
+                    infoText = LaunchPlugin.getSimulationRunInfo(config);
                 outPreferredSize.preferredWidth = 350;
                 return HoverSupport.addHTMLStyleSheet(DEFAULT_RUNTOOLTIP+"<pre>"+infoText+"</pre>");
             }
@@ -358,9 +263,9 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
     private enum ArgType {INI, CONFIG, RUN, UI, LIB, NEDPATH, UNKNOWN};
-	@Override
+
     public void initializeFrom(ILaunchConfiguration config) {
-	    super.initializeFrom(config);
+	    this.config = config;
         try {
             ArgType nextType = ArgType.UNKNOWN;
             String args[] = StringUtils.split(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""));
@@ -455,7 +360,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
     protected void updateNedPathText() {
         // skip updating if not yet initialized
-        if (getCurrentLaunchConfiguration() == null)
+        if (config == null)
             return;
         IFile[] inifiles = getIniFiles();
 
@@ -470,7 +375,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 
     protected void updateConfigCombo() {
         IFile[] inifiles = getIniFiles();
-        if (inifiles == null)
+        if (config == null || inifiles == null)
             fConfigCombo.setItems(new String[] {});
         else {
             String currentSelection = getConfigName();
@@ -481,6 +386,16 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 setConfigName(currentSelection);
             }
         }
+    }
+
+    protected void updateMessageVisibility() {
+        boolean showNotOmnetppProjMessage = !isOmnetppProject() && cdtContributed;
+        
+        ((GridData)simComposite.getLayoutData()).exclude = showNotOmnetppProjMessage;
+        ((GridData)notOmnetppProjectMessageComposite.getLayoutData()).exclude = !showNotOmnetppProjMessage;
+        simComposite.setVisible(!showNotOmnetppProjMessage);
+        notOmnetppProjectMessageComposite.setVisible(showNotOmnetppProjMessage);
+        ((Composite)getControl()).layout();
     }
 
 	public void performApply(ILaunchConfigurationWorkingCopy config) {
@@ -525,7 +440,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	protected void handleBrowseInifileButtonSelected() {
         ElementTreeSelectionDialog dialog
             = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
-                                                         new FilteredWorkbenchContentProvider(".*\\.ini"));
+                                                         new OmnetppLaunchUtils.FilteredWorkbenchContentProvider(".*\\.ini"));
         dialog.setTitle("Select INI Files");
         dialog.setMessage("Select the initialization file(s) for the simulation.\n" +
         		          "Multiple files can be selected.");
@@ -535,7 +450,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             String inifiles = "";
             for (Object resource : dialog.getResult()) {
                 if (resource instanceof IFile)
-                        inifiles += makeRelativePathTo(((IFile)resource).getRawLocation(),
+                        inifiles += OmnetppLaunchUtils.makeRelativePathTo(((IFile)resource).getRawLocation(),
                                                        getWorkingDirectoryPath()).toString()+" ";
             }
             fInifileText.setText(inifiles.trim());
@@ -554,7 +469,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             extensionRegexp += "so";
 	    ElementTreeSelectionDialog dialog
 	        = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
-	            new FilteredWorkbenchContentProvider(extensionRegexp));
+	            new OmnetppLaunchUtils.FilteredWorkbenchContentProvider(extensionRegexp));
 	    dialog.setTitle("Select Shared Libraries");
 	    dialog.setMessage("Select the library file(s) you want to load at the beginning of the simulation.\n" +
 	    		          "Multiple files can be selected.");
@@ -564,7 +479,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	        String libfiles = "";
 	        for (Object resource : dialog.getResult()) {
 	            if (resource instanceof IFile)
-                    libfiles += makeRelativePathTo(((IFile)resource).getRawLocation(),
+                    libfiles += OmnetppLaunchUtils.makeRelativePathTo(((IFile)resource).getRawLocation(),
                             getWorkingDirectoryPath()).toString()+" ";
 	        }
 	        fLibraryText.setText(libfiles.trim());
@@ -625,7 +540,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy config) {
-		// FIXME not added correctly if first we assign a non omnet project and we want to chnage
+		// FIXME not added correctly if first we assign a non omnet project and we want to change
 		// it only later
 		if (isOmnetppProject())
 			config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "-n ${ned_path:/}");
@@ -645,15 +560,6 @@ public class SimulationTab extends OmnetppLaunchTab  {
         return IOmnetppLaunchConstants.OMNETPP_LAUNCH_ID+".simulationTab";
     }
 
-    public void widgetDefaultSelected(SelectionEvent e) {
-        super.widgetDefaultSelected(e);
-    }
-
-    public void widgetSelected(SelectionEvent e) {
-        updateUIGroup();
-        super.widgetSelected(e);
-    }
-
     /**
      * updates the control states in the UI group
      */
@@ -670,7 +576,59 @@ public class SimulationTab extends OmnetppLaunchTab  {
     }
 
     /**
-     * Returns the selected library files. Returns null on on error
+     * Expands and returns the working directory attribute of the given launch
+     * configuration. Returns <code>null</code> if a working directory is not
+     * specified. If specified, the working is verified to point to an existing
+     * directory in the local file system.
+     *
+     * @return an absolute path to a directory in the local file system, or
+     * <code>null</code> if unspecified
+     * @throws CoreException if unable to retrieve the associated launch
+     * configuration attribute, if unable to resolve any variables, or if the
+     * resolved location does not point to an existing directory in the local
+     * file system
+     */
+    private IPath getWorkingDirectoryPath(){
+        if (config == null)
+            return null;
+        return LaunchPlugin.getWorkingDirectoryPath(config);
+    }
+
+    /**
+     * Returns the project in which the currently selected EXE file is located
+     */
+    protected IProject getProject() {
+        if (config == null)
+            return null;
+        
+        try {
+            // if we are contributing to cdt we can get the project attribute
+            if (cdtContributed) {
+                String projectName = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
+                return StringUtils.isNotBlank(projectName) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
+            }
+            else {
+                String name = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
+                IFile exeFile = StringUtils.isNotBlank(name) ? ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name)) : null;
+                return exeFile != null ? exeFile.getProject() : null;
+            }
+        }
+        catch (CoreException e) {
+            // if the config attribute cannot be retrieved we dont know what project we are in
+            return null;
+        }
+    }
+
+    /**
+     * true if project is specified (directly or indirectly in the exe file name) and it ha omnetpp nature 
+     */
+    protected boolean isOmnetppProject() {
+        IProject project = getProject();
+        return project != null && ProjectUtils.hasOmnetppNature(project);
+    }
+
+    /**
+     * Returns the selected library files. Returns null on error
      */
     private IFile[] getLibFiles() {
         List<IFile> result = new ArrayList<IFile>();
@@ -693,13 +651,16 @@ public class SimulationTab extends OmnetppLaunchTab  {
      */
     private IFile[] getIniFiles() {
         List<IFile> result = new ArrayList<IFile>();
+        IPath workingDirectoryPath = getWorkingDirectoryPath();
+        if (workingDirectoryPath == null)
+            return null;
         String names[] =  StringUtils.split(fInifileText.getText().trim());
         // default ini file is omnetpp ini
         if (names.length == 0)
             names = new String[] {"omnetpp.ini"};
 
         for (String name : names) {
-            IPath iniPath = getWorkingDirectoryPath().append(name).makeAbsolute();
+            IPath iniPath = workingDirectoryPath.append(name).makeAbsolute();
             IFile[] ifiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(iniPath);
             if (ifiles.length == 1)
                 result.add(ifiles[0]);
@@ -713,12 +674,13 @@ public class SimulationTab extends OmnetppLaunchTab  {
      * Returns all the configuration names found in the supplied inifiles
      */
     private String [] getConfigNames(IFile[] inifiles) {
-        Map<String,ConfigEnumeratorCallback.Section> sections = new LinkedHashMap<String, ConfigEnumeratorCallback.Section>();
+        Map<String,OmnetppLaunchUtils.ConfigEnumeratorCallback.Section> sections 
+            = new LinkedHashMap<String, OmnetppLaunchUtils.ConfigEnumeratorCallback.Section>();
         if (inifiles != null)
             for (IFile inifile : inifiles) {
                 InifileParser iparser = new InifileParser();
                 try {
-                    iparser.parse(inifile, new ConfigEnumeratorCallback(inifile, sections));
+                    iparser.parse(inifile, new OmnetppLaunchUtils.ConfigEnumeratorCallback(inifile, sections));
                 } catch (ParseException e) {
                     setErrorMessage("Error reading inifile: "+e.getMessage());
                 } catch (CoreException e) {
@@ -729,7 +691,7 @@ public class SimulationTab extends OmnetppLaunchTab  {
             }
         List<String> result = new ArrayList<String>();
         result.add("");
-        for (ConfigEnumeratorCallback.Section sec : sections.values())
+        for (OmnetppLaunchUtils.ConfigEnumeratorCallback.Section sec : sections.values())
             result.add(sec.toString());
         return result.toArray(new String[] {});
     }
@@ -760,6 +722,25 @@ public class SimulationTab extends OmnetppLaunchTab  {
                 fConfigCombo.setText(line);
                 return;
             }
+    }
+
+    public void modifyText(ModifyEvent e) {
+        if (changeListener != null)
+            changeListener.widgetChanged();
+        updateLaunchConfigurationDialog();
+    }
+
+    public void widgetDefaultSelected(SelectionEvent e) {
+        if (changeListener != null)
+            changeListener.widgetChanged();
+        updateLaunchConfigurationDialog();
+    }
+
+    public void widgetSelected(SelectionEvent e) {
+        updateUIGroup();
+        if (changeListener != null)
+            changeListener.widgetChanged();
+        updateLaunchConfigurationDialog();
     }
 
 }

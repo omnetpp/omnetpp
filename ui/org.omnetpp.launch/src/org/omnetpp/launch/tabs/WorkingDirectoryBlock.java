@@ -14,8 +14,12 @@ import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.internal.ui.SWTFactory;
+import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.StringVariableSelectionDialog;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -24,16 +28,17 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
-//FIXME default working directory should be the directory of the chosen executable file (not the project root)
 /**
- * A little modified version of the JDT's working block code
+ * A modified version of the JDT's working dir block code to make it play nicely with OmnetppMainTab
  *
  * @author rhornig
  */
-public class WorkingDirectoryBlock extends OmnetppLaunchTab {
+public class WorkingDirectoryBlock extends AbstractLaunchConfigurationTab 
+    implements SelectionListener, ModifyListener {
 
     // Local directory
     private Button fWorkspaceButton;
@@ -47,13 +52,14 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     private Text fWorkingDirText;
 
     private String executableLoc;
+    private EmbeddableBlock changeListener;
 
     public WorkingDirectoryBlock() {
         super();
     }
 
-    public WorkingDirectoryBlock(OmnetppLaunchTab embeddingTab) {
-        super(embeddingTab);
+    public WorkingDirectoryBlock(EmbeddableBlock listener) {
+        this.changeListener = listener;
     }
 
     /* (non-Javadoc)
@@ -187,7 +193,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
      * Sets the default working directory
      */
     protected void setDefaultWorkingDir() {
-        if (executableLoc == null)
+        if (StringUtils.isBlank(executableLoc))
             setDefaultWorkingDirectoryText("${project_loc}");
         else
             setDefaultWorkingDirectoryText("${container_loc:"+executableLoc+"}");
@@ -250,14 +256,18 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     /* (non-Javadoc)
      * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
      */
-    @Override
     public void initializeFrom(ILaunchConfiguration configuration) {
-        super.initializeFrom(configuration);
         try {
             String wd = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, (String)null);
-            setDefaultWorkingDir();
-            if (wd != null) {
+            if (StringUtils.isEmpty(wd)) {
+                setDefaultWorkingDir();
+                fUseDefaultDirButton.setSelection(true);
+                handleUseDefaultWorkingDirButtonSelected();
+            }
+            else {
                 setOtherWorkingDirectoryText(wd);
+                fUseOtherDirButton.setSelection(true);
+                handleUseOtherWorkingDirButtonSelected();
             }
         }
         catch (CoreException e) {
@@ -300,8 +310,6 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     protected void setDefaultWorkingDirectoryText(String dir) {
         if (dir != null) {
             fWorkingDirText.setText(dir);
-            fUseDefaultDirButton.setSelection(true);
-            handleUseDefaultWorkingDirButtonSelected();
         }
     }
 
@@ -311,9 +319,6 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
     protected void setOtherWorkingDirectoryText(String dir) {
         if (dir != null) {
             fOtherWorkingText.setText(dir);
-            fUseDefaultDirButton.setSelection(false);
-            fUseOtherDirButton.setSelection(true);
-            handleUseOtherWorkingDirButtonSelected();
         }
     }
 
@@ -335,9 +340,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
         }
     }
 
-    @Override
     public void widgetSelected(SelectionEvent e) {
-        super.widgetSelected(e);
         Object source= e.getSource();
         if (source == fWorkspaceButton) {
             handleWorkspaceDirBrowseButtonSelected();
@@ -352,6 +355,7 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
             //only perform the action if this is the button that was selected
             if (fUseDefaultDirButton.getSelection()) {
                 setDefaultWorkingDir();
+                handleUseDefaultWorkingDirButtonSelected();
             }
         }
         else if (source == fUseOtherDirButton) {
@@ -360,6 +364,22 @@ public class WorkingDirectoryBlock extends OmnetppLaunchTab {
                 handleUseOtherWorkingDirButtonSelected();
             }
         }
+
+        if (changeListener != null)
+            changeListener.widgetChanged();
+        updateLaunchConfigurationDialog();
+    }
+
+    public void widgetDefaultSelected(SelectionEvent e) {
+        if (changeListener != null)
+            changeListener.widgetChanged();
+        updateLaunchConfigurationDialog();
+    }
+
+    public void modifyText(ModifyEvent e) {
+        if (changeListener != null)
+            changeListener.widgetChanged();
+        updateLaunchConfigurationDialog();
     }
 
 }

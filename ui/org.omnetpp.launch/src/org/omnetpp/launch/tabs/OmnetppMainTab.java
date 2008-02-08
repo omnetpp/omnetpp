@@ -1,32 +1,28 @@
 package org.omnetpp.launch.tabs;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.internal.ui.SWTFactory;
+import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
@@ -35,7 +31,8 @@ import org.omnetpp.launch.LaunchPlugin;
  *
  * @author rhornig
  */
-public class OmnetppMainTab extends OmnetppLaunchTab {
+public class OmnetppMainTab extends AbstractLaunchConfigurationTab 
+    implements ModifyListener, EmbeddableBlock {
 
 	// UI widgets
 	protected Text fProgText;
@@ -43,62 +40,23 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 
     private final WorkingDirectoryBlock workingDirBlock = new WorkingDirectoryBlock(this);
     private final SimulationTab simulationBlock = new SimulationTab(this, false);
-
-    /**
-     * Content provider displaying possible projects in the workspace
-     * @author rhornig
-     */
-    protected class ProjectWorkbenchContentProvider extends WorkbenchContentProvider {
-        @Override
-        public Object[] getChildren(Object element) {
-            List<Object> filteredChildren = new ArrayList<Object>();
-            for (Object child : super.getChildren(element)) {
-                if (child instanceof IProject && ((IProject)child).isAccessible())
-                    filteredChildren.add(child);
-            }
-            return filteredChildren.toArray();
-        }
-    };
-
-    /**
-     * A workbench content provider that returns only executable files
-     * @author rhornig
-     */
-    protected class ExecutableWorkbenchContentProvider extends WorkbenchContentProvider {
-        private boolean isExecutable(IFile file) {
-            return file.getResourceAttributes().isExecutable() ||
-                    StringUtils.contains("exe.cmd.bat",file.getFileExtension()) && SWT.getPlatform().equals("win32");
-        }
-
-        @Override
-        public Object[] getChildren(Object element) {
-            List<Object> filteredChildren = new ArrayList<Object>();
-            for (Object child : super.getChildren(element)) {
-                if (child instanceof IFile && isExecutable((IFile)child)
-                        || getChildren(child).length > 0)
-                        filteredChildren.add(child);
-            }
-            return filteredChildren.toArray();
-        }
-    };
+    private boolean updateInProgress = false;
 
 
     public OmnetppMainTab() {
         super();
     }
 
-    public OmnetppMainTab(OmnetppLaunchTab embeddingTab) {
-        super(embeddingTab);
-    }
-
     public void createControl(Composite parent) {
         Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
+        workingDirBlock.createControl(comp);
+
         createExeFileGroup(comp, 1);
+        
         simulationBlock.createControl(comp);
         GridLayout ld = (GridLayout)((Composite)simulationBlock.getControl()).getLayout();
         ld.marginWidth = ld.marginHeight = 0;
 
-        workingDirBlock.createControl(comp);
         // additional options
         createOptionsGroup(comp, 1);
         setControl(comp);
@@ -138,9 +96,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
         });
     }
 
-    @Override
     public void initializeFrom(ILaunchConfiguration config) {
-	    super.initializeFrom(config);
         try {
             fProgText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, ""));
             fShowDebugViewButton.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false));
@@ -174,8 +130,11 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
      */
 	@Override
     public boolean isValid(ILaunchConfiguration config) {
-	    if (!workingDirBlock.isValid(config))
+	    setErrorMessage(null);
+	    if (!workingDirBlock.isValid(config)) {
+	        setErrorMessage(workingDirBlock.getErrorMessage());
 	        return false;
+	    }
 
 	    String name = fProgText.getText().trim();
 	    if (name.length() == 0) {
@@ -188,23 +147,21 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
 	        return false;
 	    }
 
-	    if (!simulationBlock.isValid(config))
+	    if (!simulationBlock.isValid(config)) {
+            setErrorMessage(simulationBlock.getErrorMessage());
             return false;
+	    }
 
-		return super.isValid(config);
+        return super.isValid(config);
 	}
+
+    @Override
+    public Image getImage() {
+        return LaunchPlugin.getImage("/icons/full/ctool16/omnetsim.gif");
+    }
 
     public String getName() {
         return "Main";
-    }
-
-    @Override
-    public void modifyText(ModifyEvent e) {
-        if (e.getSource() == fProgText) {
-            workingDirBlock.setExecutableLocation(fProgText.getText().trim());
-            simulationBlock.updateNedPathText();
-        }
-        super.modifyText(e);
     }
 
     /**
@@ -215,7 +172,7 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
     protected void handleBinaryBrowseButtonSelected() {
         ElementTreeSelectionDialog dialog
             = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
-                                                         new ExecutableWorkbenchContentProvider());
+                                                         new OmnetppLaunchUtils.ExecutableWorkbenchContentProvider());
         dialog.setAllowMultiple(false);
         dialog.setTitle("Select Executable File");
         dialog.setMessage("Select the executable file that should be started.\n");
@@ -224,6 +181,24 @@ public class OmnetppMainTab extends OmnetppLaunchTab {
         if (dialog.open() == IDialogConstants.OK_ID && dialog.getFirstResult() instanceof IFile) {
             String exefile = ((IFile)dialog.getFirstResult()).getFullPath().toString();
             fProgText.setText(exefile);
+        }
+    }
+
+    public void modifyText(ModifyEvent e) {
+        if (e.getSource() == fProgText) {
+            workingDirBlock.setExecutableLocation(fProgText.getText().trim());
+            simulationBlock.updateNedPathText();
+            simulationBlock.updateConfigCombo();
+        }
+        widgetChanged();
+    }
+        
+    public void widgetChanged() {
+        if (!updateInProgress) {
+            updateInProgress = true;
+            simulationBlock.updateConfigCombo();
+            updateLaunchConfigurationDialog();
+            updateInProgress = false;
         }
     }
 }
