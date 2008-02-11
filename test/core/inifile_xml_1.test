@@ -62,8 +62,8 @@ void Simple::activity()
 network = Simple
 cmdenv-express-mode = false
 
-*.xmlconfig1 = xmldoc("test.xml");
-*.xmlconfig2 = xmldoc("test.xml","foo/foo[1]//*[@color='green']");
+*.xmlconfig1 = xmldoc("test.xml")
+*.xmlconfig2 = xmldoc("test.xml","foo/foo[1]//*[@color='green']")
 
 %contains-regex: stdout
 <foo id='1'>
