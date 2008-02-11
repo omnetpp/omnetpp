@@ -118,6 +118,10 @@ class ENVIR_API TOmnetApp
     timeval elapsedtime; // time spent simulating
     simtime_t simulatedtime;  // sim. time after finishing simulation
 
+  protected:
+    // utility function; never returns NULL
+    cModuleType *resolveNetwork(const char *networkname);
+
   public:
     /**
      * Constructor takes command-line args and ini file instance.

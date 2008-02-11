@@ -1417,3 +1417,23 @@ void TOmnetApp::checkFingerprint()
                ", actual: "+simulation.hasher()->toString()).c_str());
 }
 
+cModuleType *TOmnetApp::resolveNetwork(const char *networkname)
+{
+    cModuleType *network = NULL;
+    bool hasInifilePackage = !opt_network_inifilepackage.empty() && strcmp(opt_network_inifilepackage.c_str(),"-")!=0;
+    if (hasInifilePackage)
+        network = cModuleType::find(opp_join(".", opt_network_inifilepackage.c_str(), opt_network_name.c_str()).c_str());
+    if (!network)
+        network = cModuleType::find(opt_network_name.c_str());
+    if (!network) {
+        if (hasInifilePackage)
+            throw cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
+        else
+            throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files", opt_network_name.c_str(),
+                                opp_join(".", opt_network_inifilepackage.c_str(), opt_network_name.c_str()).c_str());
+    }
+    //FIXME check it can be used as network (isNetwork==true)
+    return network;
+}
+
+

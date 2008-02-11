@@ -665,16 +665,6 @@ void TOmnetTkApp::loadNedFile(const char *fname, const char *expectedPackage, bo
 
 void TOmnetTkApp::newNetwork(const char *networkname)
 {
-    cModuleType *network = cModuleType::find(networkname);
-    if (!network && strchr(networkname, '.')==NULL && !opt_network_inifilepackage.empty())
-        network = cModuleType::find(opp_join(".", opt_network_inifilepackage.c_str(), networkname).c_str());
-    //FIXME check it can be used as network (isNetwork==true)
-    if (!network)
-    {
-        CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", networkname, "' not found.} info ok",NULL));
-        return;
-    }
-
     try
     {
         // finish & cleanup previous run if we haven't done so yet
@@ -684,6 +674,9 @@ void TOmnetTkApp::newNetwork(const char *networkname)
             simulation.deleteNetwork();
             simstate = SIM_NONET;
         }
+
+        cModuleType *network = resolveNetwork(opt_network_name.c_str());
+        ASSERT(network);
 
         CHK(Tcl_VarEval(interp, "clear_windows", NULL));
 
@@ -736,14 +729,8 @@ void TOmnetTkApp::newRun(const char *configname, int runnumber)
             return;
         }
 
-        cModuleType *network = cModuleType::find(opt_network_name.c_str());
-        //FIXME look up with inifile prefix too
-        //FIXME check if it can be instantiated as network
-        if (!network)
-        {
-            CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", opt_network_name.c_str(), "' not found.} info ok",NULL));
-            return;
-        }
+        cModuleType *network = resolveNetwork(opt_network_name.c_str());
+        ASSERT(network);
 
         CHK(Tcl_VarEval(interp, "clear_windows", NULL));
 
