@@ -31,7 +31,7 @@ public class ToggleLink extends Composite {
 
         link.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
-                widgetDefaultSelected(e);
+                widgetSelected(e);
             }
             public void widgetSelected(SelectionEvent e) {
                 toggle();
