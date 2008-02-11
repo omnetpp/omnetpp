@@ -69,7 +69,7 @@ x.setD(3.1415); PRINT(x.getD());
 
 %contains: stdout
 cMessage
-MyMessage:msg
+msg_message_1::MyMessage:msg
 x.getB():0
 (int)x.getC():0
 x.getS():0
