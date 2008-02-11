@@ -1,0 +1,23 @@
+%description:
+Check network name lookup in inifiles. Simple names are checked
+first in the inifile's package, then in the default package.
+
+Test "network not found" error when inifile is in the default package
+
+%file: foo/test.ned
+package foo;
+network TestNet {
+}
+
+%file: test.cc
+// so that linker gets some input
+
+%inifile: test.ini
+[General]
+network = TestNet  # but no <default package>.TestNet
+cmdenv-express-mode = false
+
+%exitcode: 1
+
+%contains-regex: stdout
+Network `TestNet' not found

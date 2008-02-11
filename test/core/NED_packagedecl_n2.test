@@ -1,0 +1,17 @@
+%description:
+Test that "expected package" should match "declared package"
+
+%file: foo/test.ned
+package bar;
+
+%network: test.Test
+
+%file: test.cc
+// so that linker gets at least one file
+
+%exitcode: 1
+
+%contains-regex: stdout
+declared package `bar' does not match expected package `foo'.
+
+

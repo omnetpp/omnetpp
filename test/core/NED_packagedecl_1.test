@@ -1,0 +1,26 @@
+%description:
+Test that "expected package" should match "declared package"
+
+%file: package.ned
+package org.omnetpp.test;
+
+%file: test.ned
+package org.omnetpp.test;
+
+%file: foo/test.ned
+package org.omnetpp.test.foo;
+
+%file: foo/bar/test.ned
+package org.omnetpp.test.foo.bar;
+
+network Test {
+}
+
+%file: test.cc
+// so that linker gets at least one file
+
+%network: org.omnetpp.test.foo.bar.Test
+
+%exitcode: 0
+
+

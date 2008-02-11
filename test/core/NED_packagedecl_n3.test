@@ -1,0 +1,19 @@
+%description:
+Test that "expected package" should match "declared package"
+
+%file: package.ned
+package org.omnetpp.test;
+
+%file: foo/test.ned
+
+%network: test.Test
+
+%file: test.cc
+// so that linker gets at least one file
+
+%exitcode: 1
+
+%contains-regex: stdout
+declared package `' does not match expected package `org.omnetpp.test.foo'.
+
+

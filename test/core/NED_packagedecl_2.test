@@ -1,0 +1,22 @@
+%description:
+Test that "expected package" should match "declared package"
+
+%file: test.ned
+
+%file: foo/test.ned
+package foo;
+
+%file: foo/bar/test.ned
+package foo.bar;
+
+network Test {
+}
+
+%file: test.cc
+// so that linker gets at least one file
+
+%network: foo.bar.Test
+
+%exitcode: 0
+
+
