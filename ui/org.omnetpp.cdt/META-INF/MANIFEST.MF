@@ -24,6 +24,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.cdt.refactoring,
  org.eclipse.cdt.ui,
  org.eclipse.core.variables,
+ org.eclipse.debug.core,
  org.omnetpp.common,
  org.omnetpp.main,
  org.omnetpp.ide.nativelibs

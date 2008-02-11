@@ -19,14 +19,6 @@
             name="OMNEST/OMNeT++ Batched Simulation Launcher"
             type="org.omnetpp.launch.simulationLaunchConfigurationType">
       </launchDelegate>
-      <launchDelegate
-            delegate="org.omnetpp.launch.SimulationDebugConfigurationDelegate"
-            delegateDescription="Allows debugging an OMNEST/OMNeT++ simulation with CDT"
-            id="org.omnetpp.launch.simulationDebugDelegate"
-            modes="debug"
-            name="OMNEST/OMNeT++ Simulation Debugger"
-            type="org.omnetpp.launch.simulationLaunchConfigurationType">
-      </launchDelegate>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
