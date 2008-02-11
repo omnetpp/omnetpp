@@ -54,7 +54,7 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
       double sumSqr;        // sum of squares of values
 
       sBlock() { reset(); }
-      void reset() { offset=-1; size=0; count=0; min=DBL_MAX; sum=0.0; sumSqr=0.0; }
+      void reset() { offset=-1; size=0; count=0; min=DBL_MAX; max=-DBL_MAX; sum=0.0; sumSqr=0.0; }
     };
 
     typedef std::vector<sBlock> Blocks;

@@ -259,14 +259,17 @@ int TCmdenvApp::run()
                 ::fprintf(fout, "Scenario: %s\n", itervars);
             ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
 
-            cfg->dump(); //XXX for debugging
+            //cfg->dump();
 
             readPerRunOptions();
 
             // find network
-            cModuleType *network = cModuleType::find(opt_network_name.c_str()); //FIXME use opt_network_inifiledir too!!
+            cModuleType *network = cModuleType::find(opt_network_name.c_str());
+            if (!network && strchr(opt_network_name.c_str(), '.')==NULL && !opt_network_inifilepackage.empty())
+                network = cModuleType::find(opp_join(".", opt_network_inifilepackage.c_str(), opt_network_name.c_str()).c_str());
             if (!network)
                 throw cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
+            //FIXME check it can be used as network (isNetwork==true)
 
             // set up network
             ::fprintf(fout, "Setting up network `%s'...\n", opt_network_name.c_str());

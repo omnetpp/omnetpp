@@ -677,7 +677,7 @@ cGate *cModule::gate(const char *gatename, int index)
             throw cRuntimeError(this, "has no gate named `%s' -- name not found", fullgatename.c_str());
         const cGate::Desc& desc = gatedescv[descId];
         if (index==-1 && desc.isVector())
-            throw cRuntimeError(this, "has no gate named `%s' -- "
+            throw cRuntimeError(this, "has no gate named `%s' -- "   //FIXME say "attempt to access a vector gate as a scalar gate"
                 "use gate(\"%s\", 0) to refer to first gate of gate vector `%s[]', and "
                 "occurrences of gate(\"%s\")->size() should be replaced with gateSize(\"%s\")",
                 gatename, gatename, gatename, gatename, gatename);
@@ -685,7 +685,7 @@ cGate *cModule::gate(const char *gatename, int index)
             throw cRuntimeError(this, "has no gate named `%s' -- use gate(\"%s\") to refer to scalar gate `%s'",
                                 fullgatename.c_str(), gatename, gatename);
         if (!suffix && desc.isInout())
-            throw cRuntimeError(this, "has no gate named `%s' -- "
+            throw cRuntimeError(this, "has no gate named `%s' -- "   //FIXME say "attempt to access a scalar gate as a vector gate"
                 "one cannot reference an inout gate as a whole, only its input or output "
                 "component, by appending \"$i\" or \"$o\" to the gate name",
                 fullgatename.c_str());

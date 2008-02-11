@@ -40,6 +40,7 @@
 #include "inspfactory.h"
 #include "modinsp.h"
 #include "timeutil.h"
+#include "stringutil.h"
 #include "../utils/ver.h"
 
 
@@ -650,11 +651,11 @@ void TOmnetTkApp::finishSimulation()
     updateInspectors();
 }
 
-void TOmnetTkApp::loadNedFile(const char *fname)
+void TOmnetTkApp::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
 {
     try
     {
-        simulation.loadNedFile(fname);
+        simulation.loadNedFile(fname, expectedPackage, isXML);
     }
     catch (std::exception& e)
     {
@@ -664,8 +665,10 @@ void TOmnetTkApp::loadNedFile(const char *fname)
 
 void TOmnetTkApp::newNetwork(const char *networkname)
 {
-    cModuleType *network = cModuleType::find(networkname);   //FIXME use opt_network_inifiledir too!!
-    //FIXME check it can be used as network
+    cModuleType *network = cModuleType::find(networkname);
+    if (!network && strchr(networkname, '.')==NULL && !opt_network_inifilepackage.empty())
+        network = cModuleType::find(opp_join(".", opt_network_inifilepackage.c_str(), networkname).c_str());
+    //FIXME check it can be used as network (isNetwork==true)
     if (!network)
     {
         CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", networkname, "' not found.} info ok",NULL));

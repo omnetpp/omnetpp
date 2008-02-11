@@ -241,10 +241,10 @@ void cSimulation::setScheduler(cScheduler *sched)
     schedulerp = sched;
 }
 
-void cSimulation::loadNedFile(const char *nedfile, bool isXML)
+void cSimulation::loadNedFile(const char *nedfile, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::instance()->loadNedFile(nedfile, isXML);
+    cNEDLoader::instance()->loadNedFile(nedfile, expectedPackage, isXML);
 #else
     throw cRuntimeError("cannot load `%s': simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
@@ -261,10 +261,19 @@ int cSimulation::loadNedSourceFolder(const char *folder)
 #endif
 }
 
+const char *cSimulation::getNedPackageForFolder(const char *folder) const
+{
+#ifdef WITH_NETBUILDER
+    return cNEDLoader::instance()->getNedPackageForFolder(folder);
+#else
+    return NULL;
+#endif
+}
+
 void cSimulation::doneLoadingNedFiles()
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::instance()->done();
+    cNEDLoader::instance()->doneLoadingNedFiles();
 #endif
 }
 

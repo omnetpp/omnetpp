@@ -76,7 +76,9 @@ class SIM_API cNEDLoader : public NEDResourceCache
     virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
     virtual void registerNedTypes();
     virtual void registerNedType(const char *qname, NEDElement *node);
-    virtual int doLoadNedSourceFolder(const char *foldername);
+    virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage);
+    virtual void doLoadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
+    virtual std::string determineRootPackageName(const char *foldername);
 
     // constructor is protected, because we want only one instance
     cNEDLoader();
@@ -95,16 +97,6 @@ class SIM_API cNEDLoader : public NEDResourceCache
     virtual cNEDDeclaration *getDecl(const char *qname) const;
 
     /**
-     * Parses the given NED file, and converts modules/channels/interfaces to
-     * cNEDDeclaration. Components that depend on other components
-     * (e.g. contain "extends") may be temporarily put off until all
-     * dependencies are loaded.
-     *
-     * Invokes base class's addNEDFile() internally.
-     */
-    void loadNedFile(const char *nedfname, bool isXML);
-
-    /**
      * Load all NED files from a NED source folder. This involves visiting
      * each subdirectory, and loading all "*.ned" files from there.
      * The given folder is assumed to be the root of the NED package hierarchy.
@@ -113,10 +105,26 @@ class SIM_API cNEDLoader : public NEDResourceCache
     int loadNedSourceFolder(const char *foldername);
 
     /**
-     * Issues errors for components that are still unresolved because of
-     * missing (unloaded) dependencies.
+     * Issues errors for components that are unresolved because of missing
+     * dependencies.
      */
-    void done();
+    void doneLoadingNedFiles();
+
+    /**
+     * For loading additional NED files after doneLoadingNedFiles().
+     * This method resolves dependencies (base types, etc) immediately,
+     * and throws an error if something is missing. (So this method is
+     * not useful if two or more NED files mutually depend on each other.)
+     * If the expected package is given (non-NULL), it should match the
+     * package declaration inside the NED file.
+     */
+    void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
+
+    /**
+     * Returns the NED package that corresponds to the given folder. Returns ""
+     * for the default package, and NULL if the folder is outside all NED folders.
+     */
+    const char *getNedPackageForFolder(const char *folder) const;
 
     /**
      * Resolves NED module/channel/moduleinterface/channelinterface type name,

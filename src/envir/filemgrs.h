@@ -47,7 +47,7 @@ class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
        sRunData() : initialized(false) {}
     };
 
-    struct sVectorData {
+    struct sVectorData { //XXX use stringPool for vectorname etc?
        int id;              // vector ID
        opp_string modulename; // module of cOutVector object
        opp_string vectorname; // cOutVector object name

@@ -181,7 +181,7 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
 
-      void loadNedFile(const char *fname);
+      void loadNedFile(const char *fname, const char *expectedPackage=NULL, bool isXML=false);
 
       void doPuts(const char *quotedstr);
 

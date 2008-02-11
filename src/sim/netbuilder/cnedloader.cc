@@ -90,7 +90,7 @@ void cNEDLoader::registerBuiltinDeclarations()
 
 void cNEDLoader::addNedType(const char *qname, NEDElement *node)
 {
-    // we'll process it later, from done()
+    // we'll process it later, from doneLoadingNedFiles()
     pendingList.push_back(PendingNedType(qname,node));
 }
 
@@ -122,7 +122,7 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
     if (errors.containsError())
     {
         delete tree;
-        throw cRuntimeError("errors while loading or parsing file `%s'", fname);
+        throw cRuntimeError("errors while loading or parsing file `%s'", fname);  //FIXME these errors print relative path????
     }
 
     // DTD validation and additional syntax validation
@@ -144,7 +144,7 @@ NEDElement *cNEDLoader::parseAndValidateNedFile(const char *fname, bool isXML)
     return tree;
 }
 
-void cNEDLoader::loadNedFile(const char *nedfname, bool isXML)
+void cNEDLoader::doLoadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
 {
     if (getFile(nedfname))
         return;  // already loaded
@@ -152,6 +152,14 @@ void cNEDLoader::loadNedFile(const char *nedfname, bool isXML)
     // parse file
     NEDElement *tree = parseAndValidateNedFile(nedfname, isXML);
 
+    // check that declared package matches expected package
+    PackageNode *packageDecl = (PackageNode *)tree->getFirstChildWithTag(NED_PACKAGE);
+    std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
+    if (declaredPackage != expectedPackage)
+        throw cRuntimeError("NED error in file `%s': declared package `%s' does not match expected package `%s'",
+                            nedfname, declaredPackage.c_str(), expectedPackage);  //FIXME fname misses directory here
+
+    // register it
     try
     {
         addFile(nedfname, tree);
@@ -166,8 +174,8 @@ int cNEDLoader::loadNedSourceFolder(const char *foldername)
 {
     try
     {
-        //FIXME somehow store what's the NED source folder with each file, so we can check if everything is in the right package?
-        return doLoadNedSourceFolder(foldername);
+        std::string rootPackageName = determineRootPackageName(foldername);
+        return doLoadNedSourceFolder(foldername, rootPackageName.c_str());
     }
     catch (std::exception& e)
     {
@@ -175,7 +183,33 @@ int cNEDLoader::loadNedSourceFolder(const char *foldername)
     }
 }
 
-int cNEDLoader::doLoadNedSourceFolder(const char *foldername)
+void cNEDLoader::loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
+{
+    //FIXME revise this, and compare with documentation!!!!!!!!
+    //FIXME potentially change it so that one needs to call doneLoadingNedFiles() after it (but then mutually dependent files can be loaded too)
+    doLoadNedFile(nedfname, expectedPackage, isXML);
+    doneLoadingNedFiles();
+}
+
+std::string cNEDLoader::determineRootPackageName(const char *foldername)
+{
+    // determine if a package.ned file exists
+    std::string packageNedFilename = std::string(foldername) + "/package.ned";
+    FILE *f = fopen(packageNedFilename.c_str(), "r");
+    if (!f)
+        return "";
+    fclose(f);
+
+    // read package declaration from it
+    NEDElement *tree = parseAndValidateNedFile(packageNedFilename.c_str(), false);
+    ASSERT(tree);
+    PackageNode *packageDecl = (PackageNode *)tree->getFirstChildWithTag(NED_PACKAGE);
+    std::string result = packageDecl ? packageDecl->getName() : "";
+    delete tree;
+    return result;
+}
+
+int cNEDLoader::doLoadNedSourceFolder(const char *foldername, const char *expectedPackage)
 {
     PushDir pushDir(foldername);
     int count = 0;
@@ -190,11 +224,11 @@ int cNEDLoader::doLoadNedSourceFolder(const char *foldername)
         }
         if (isDirectory(filename))
         {
-            count += doLoadNedSourceFolder(filename);
+            count += doLoadNedSourceFolder(filename, opp_join(".", expectedPackage, filename).c_str());
         }
         else if (opp_stringendswith(filename, ".ned"))
         {
-            loadNedFile(filename, false);  //FIXME should pass "expected package" into the function, so that it can check its consistency with "declared package"!
+            doLoadNedFile(filename, expectedPackage, false);
             count++;
         }
     }
@@ -263,7 +297,7 @@ void cNEDLoader::registerNedType(const char *qname, NEDElement *node)
         componentTypes.instance()->add(type);
 }
 
-void cNEDLoader::done()
+void cNEDLoader::doneLoadingNedFiles()
 {
     // register NED types from all the files we've loaded
     registerNedTypes();
@@ -276,3 +310,19 @@ void cNEDLoader::done()
         delete type.node;
     }
 }
+
+const char *cNEDLoader::getNedPackageForFolder(const char *folder) const
+{
+    toAbsolutePath(folder);
+//    //FIXME TODO
+//    for (nedFolder in nedFolders)
+//    {
+//        if (opp_beginswith(folder, nedFolder) {
+//            removePrefix;
+//            replace "/" with "."
+//            return
+//        }
+//    }
+    return NULL;
+}
+

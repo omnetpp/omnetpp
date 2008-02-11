@@ -67,7 +67,7 @@ class ENVIR_API TOmnetApp
     opp_string opt_parsimsynch_class; // if opt_parsim: cParsimSynchronizer class to use
 // end
     opp_string opt_network_name;
-    opp_string opt_network_inifiledir;
+    opp_string opt_network_inifilepackage;
 
     int opt_num_rngs;
     opp_string opt_rng_class;
