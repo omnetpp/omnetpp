@@ -84,12 +84,12 @@ cmdenv-express-mode = false
 cmdenv-event-banners = false
 
 %contains: stdout
-Node network.compound.node1 at t=0
-Node network.compound.node2 at t=0
-Node network.compound.node1 at t=1
-Node network.compound.node2 at t=1
-Node network.compound.node1 at t=2
-Node network.compound.node2 at t=2
+Node Test.compound.node1 at t=0
+Node Test.compound.node2 at t=0
+Node Test.compound.node1 at t=1
+Node Test.compound.node2 at t=1
+Node Test.compound.node1 at t=2
+Node Test.compound.node2 at t=2
 Deleting compound t=3
 Deleted
 Still here at t=5

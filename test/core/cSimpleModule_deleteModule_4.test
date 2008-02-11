@@ -78,9 +78,9 @@ cmdenv-event-banners = false
 
 
 %contains: stdout
-NodeA network.nodeA at t=0
-NodeA network.nodeA at t=1
-NodeA network.nodeA at t=2
+NodeA Test.nodeA at t=0
+NodeA Test.nodeA at t=1
+NodeA Test.nodeA at t=2
 Deleting nodeA at t=3
 Deleted
 Still here at t=5

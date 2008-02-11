@@ -10,16 +10,15 @@ recordScalar("two", -1.5);
 [General]
 network = Test
 cmdenv-express-mode = false
-output-scalar-file = test.sca
+#output-scalar-file = test.sca
+repeat = 2
 
-[Config 1]
-[Config 2]
+%contains-regex: General-0.sca
+run General-0-.*?
+scalar Test 	one 	24.2
+scalar Test 	two 	-1.5
 
-%contains: test.sca
-run 1  {}_network
-scalar {}_network 	one 	24.2
-scalar {}_network 	two 	-1.5
-run 2  {}_network
-scalar {}_network 	one 	24.2
-scalar {}_network 	two 	-1.5
-
+%contains-regex: General-1.sca
+run General-1-.*?
+scalar Test 	one 	24.2
+scalar Test 	two 	-1.5

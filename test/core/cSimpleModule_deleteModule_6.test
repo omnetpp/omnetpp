@@ -105,12 +105,12 @@ cmdenv-express-mode = false
 cmdenv-event-banners = false
 
 %contains: stdout
-NodeA network.nodeA at t=0
-NodeB network.nodeB at t=0
-NodeA network.nodeA at t=1
-NodeB network.nodeB at t=1
-NodeA network.nodeA at t=2
-NodeB network.nodeB at t=2
+NodeA Test.nodeA at t=0
+NodeB Test.nodeB at t=0
+NodeA Test.nodeA at t=1
+NodeB Test.nodeB at t=1
+NodeA Test.nodeA at t=2
+NodeB Test.nodeB at t=2
 Deleting nodeA, nodeB at t=3
 Deleted
 

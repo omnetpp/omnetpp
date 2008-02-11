@@ -67,45 +67,39 @@ void Module::handleMessage(cMessage *msg)
 }; //namespace
 
 %contains: stdout
-Initializing network, stage 0
-Initializing network.b1, stage 0
-Initializing network.b1.a1, stage 0
-   network.b1.a1: initialize stage=0 called
-Initializing network.b1.a2, stage 0
-   network.b1.a2: initialize stage=0 called
-Initializing network.b2, stage 0
-   network.b2: initialize stage=0 called
-Initializing network.b3, stage 0
-Initializing network.b3.a1, stage 0
-   network.b3.a1: initialize stage=0 called
-Initializing network.b3.a2, stage 0
-   network.b3.a2: initialize stage=0 called
-Initializing network, stage 1
-Initializing network.b1, stage 1
-Initializing network.b1.a1, stage 1
-   network.b1.a1: initialize stage=1 called
-Initializing network.b1.a2, stage 1
-   network.b1.a2: initialize stage=1 called
-Initializing network.b2, stage 1
-   network.b2: initialize stage=1 called
-Initializing network.b3, stage 1
-Initializing network.b3.a1, stage 1
-   network.b3.a1: initialize stage=1 called
-Initializing network.b3.a2, stage 1
-   network.b3.a2: initialize stage=1 called
-Initializing network, stage 2
-Initializing network.b1, stage 2
-Initializing network.b1.a1, stage 2
-   network.b1.a1: initialize stage=2 called
-Initializing network.b1.a2, stage 2
-   network.b1.a2: initialize stage=2 called
-Initializing network.b2, stage 2
-   network.b2: initialize stage=2 called
-Initializing network.b3, stage 2
-Initializing network.b3.a1, stage 2
-   network.b3.a1: initialize stage=2 called
-Initializing network.b3.a2, stage 2
-   network.b3.a2: initialize stage=2 called
+Initializing module Test, stage 0
+Initializing module Test.b1, stage 0
+Initializing module Test.b1.a1, stage 0
+   Test.b1.a1: initialize stage=0 called
+Initializing module Test.b1.a2, stage 0
+   Test.b1.a2: initialize stage=0 called
+Initializing module Test.b2, stage 0
+   Test.b2: initialize stage=0 called
+Initializing module Test.b3, stage 0
+Initializing module Test.b3.a1, stage 0
+   Test.b3.a1: initialize stage=0 called
+Initializing module Test.b3.a2, stage 0
+   Test.b3.a2: initialize stage=0 called
+Initializing module Test.b1.a1, stage 1
+   Test.b1.a1: initialize stage=1 called
+Initializing module Test.b1.a2, stage 1
+   Test.b1.a2: initialize stage=1 called
+Initializing module Test.b2, stage 1
+   Test.b2: initialize stage=1 called
+Initializing module Test.b3.a1, stage 1
+   Test.b3.a1: initialize stage=1 called
+Initializing module Test.b3.a2, stage 1
+   Test.b3.a2: initialize stage=1 called
+Initializing module Test.b1.a1, stage 2
+   Test.b1.a1: initialize stage=2 called
+Initializing module Test.b1.a2, stage 2
+   Test.b1.a2: initialize stage=2 called
+Initializing module Test.b2, stage 2
+   Test.b2: initialize stage=2 called
+Initializing module Test.b3.a1, stage 2
+   Test.b3.a1: initialize stage=2 called
+Initializing module Test.b3.a2, stage 2
+   Test.b3.a2: initialize stage=2 called
 
 %not-contains: stdout
 stage=3

@@ -6,8 +6,8 @@ check that recordScalar() methods work OK.
 recordScalar("one", 24.2);
 recordScalar("two", -1.3);
 
-%contains: test.sca
-run 1  Test
+%contains-regex: test.sca
+run General.*?
 scalar Test 	one 	24.2
 scalar Test 	two 	-1.3
 
