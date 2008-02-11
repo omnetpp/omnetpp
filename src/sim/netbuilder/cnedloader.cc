@@ -321,6 +321,7 @@ std::string cNEDLoader::getNedPackageForFolder(const char *folder) const
         if (opp_stringbeginswith(folderName.c_str(), it->first.c_str()))
         {
             std::string suffix = folderName.substr(it->first.size());
+            if (suffix[0] == '/') suffix = suffix.substr(1);
             std::string subpackage = opp_replacesubstring(suffix.c_str(), "/", ".", true);
             return opp_join(".", it->second.c_str(), subpackage.c_str());
         }

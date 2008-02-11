@@ -1427,10 +1427,10 @@ cModuleType *TOmnetApp::resolveNetwork(const char *networkname)
         network = cModuleType::find(opt_network_name.c_str());
     if (!network) {
         if (hasInifilePackage)
-            throw cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
-        else
             throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files", opt_network_name.c_str(),
                                 opp_join(".", opt_network_inifilepackage.c_str(), opt_network_name.c_str()).c_str());
+        else
+            throw cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
     }
     if (!network->isNetwork())
         throw cRuntimeError("Module type `%s' is not a network", network->fullName());
