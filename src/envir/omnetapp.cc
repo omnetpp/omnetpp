@@ -1432,7 +1432,8 @@ cModuleType *TOmnetApp::resolveNetwork(const char *networkname)
             throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files", opt_network_name.c_str(),
                                 opp_join(".", opt_network_inifilepackage.c_str(), opt_network_name.c_str()).c_str());
     }
-    //FIXME check it can be used as network (isNetwork==true)
+    if (!network->isNetwork())
+        throw cRuntimeError("Module type `%s' is not a network", network->fullName());
     return network;
 }
 
