@@ -156,7 +156,8 @@ cFileOutputVectorManager::sVectorData *cIndexedFileOutputVectorManager::createVe
 void cIndexedFileOutputVectorManager::deregisterVector(void *vectorhandle)
 {
     sVector *vp = (sVector *)vectorhandle;
-    std::remove(vectors.begin(), vectors.end(), vp);
+    Vectors::iterator newEnd = std::remove(vectors.begin(), vectors.end(), vp);
+    vectors.erase(newEnd, vectors.end());
     finalizeVector(vp);
     delete[] vp->intervals;
     delete vp;
