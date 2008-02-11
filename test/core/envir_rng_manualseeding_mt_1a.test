@@ -20,69 +20,30 @@ for (int i=0; i<ev.numRNGs(); i++)
 network = Test
 cmdenv-express-mode = false
 num-rngs = 3
+repeat = 3
 
-seed-0-mt = 873
-seed-1-mt = 885
-seed-2-mt = 848
+seed-0-mt = ${873,793,434!repetition}
+seed-1-mt = ${885,717,467!repetition}
+seed-2-mt = ${848,745,497!repetition}
 
 # Runs occurring more than once should get the same seeds every time.
 # Also, Run 2 and Run 4 must have the same seeds because they both use [General].
-cmdenv-runs-to-execute = 1,2,3,4,2,1,4,3
-
-[Run 1]
-seed-0-mt = 793
-seed-1-mt = 717
-seed-2-mt = 745
-
-[Run 2]
-# use seeds from [General]
-
-[Run 3]
-seed-0-mt = 434
-seed-1-mt = 467
-seed-2-mt = 497
-
-[Run 4]
-# use seeds from [General]
+cmdenv-runs-to-execute = 0,1,2,1
 
 %contains-regex: stdout
-Preparing for Run #1\..*
+.*General-0.*
+ev.rng-0: 2254393713  1261982705, drawn 2
+ev.rng-1: 1858543364  225661242, drawn 2
+ev.rng-2: 741472848  1938224766, drawn 2
+.*General-1.*
 ev.rng-0: 1773256507  3374371453, drawn 2
 ev.rng-1: 345413299  2799562883, drawn 2
 ev.rng-2: 227844297  4101779991, drawn 2
-.*
-Preparing for Run #2\..*
-ev.rng-0: 2254393713  1261982705, drawn 2
-ev.rng-1: 1858543364  225661242, drawn 2
-ev.rng-2: 741472848  1938224766, drawn 2
-.*
-Preparing for Run #3\..*
+.*General-2.*
 ev.rng-0: 1485903282  1518241553, drawn 2
 ev.rng-1: 2355297642  3233577405, drawn 2
 ev.rng-2: 762090162  3944582764, drawn 2
-.*
-Preparing for Run #4\..*
-ev.rng-0: 2254393713  1261982705, drawn 2
-ev.rng-1: 1858543364  225661242, drawn 2
-ev.rng-2: 741472848  1938224766, drawn 2
-.*
-Preparing for Run #2\..*
-ev.rng-0: 2254393713  1261982705, drawn 2
-ev.rng-1: 1858543364  225661242, drawn 2
-ev.rng-2: 741472848  1938224766, drawn 2
-.*
-Preparing for Run #1\..*
+.*General-1.*
 ev.rng-0: 1773256507  3374371453, drawn 2
 ev.rng-1: 345413299  2799562883, drawn 2
 ev.rng-2: 227844297  4101779991, drawn 2
-.*
-Preparing for Run #4\..*
-ev.rng-0: 2254393713  1261982705, drawn 2
-ev.rng-1: 1858543364  225661242, drawn 2
-ev.rng-2: 741472848  1938224766, drawn 2
-.*
-Preparing for Run #3\..*
-ev.rng-0: 1485903282  1518241553, drawn 2
-ev.rng-1: 2355297642  3233577405, drawn 2
-ev.rng-2: 762090162  3944582764, drawn 2
-

@@ -65,6 +65,7 @@ void Receiver::activity()
 {
     cMessage *msg = receive();
     ev << "arrived:" << msg->name() << endl;
+    delete msg;
 }
 
 %exitcode: 1

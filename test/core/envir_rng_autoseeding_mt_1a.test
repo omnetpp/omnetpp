@@ -20,37 +20,38 @@ for (int i=0; i<ev.numRNGs(); i++)
 network = Test
 cmdenv-express-mode = false
 num-rngs = 3
+repeat = 5
 
 # Runs occurring more than once should get the same seeds every time.
-cmdenv-runs-to-execute = 1,5,4,2,5,1,3
+cmdenv-runs-to-execute = 0,4,3,1,4,0,2
 
 %contains-regex: stdout
-.*Run #1.*
-ev.rng-0: 303761048  2365658986, drawn 2
-ev.rng-1: 3868139694  4153361530, drawn 2
-ev.rng-2: 236996814  953453411, drawn 2
-.*Run #5.*
-ev.rng-0: 3494301429  3645644232, drawn 2
-ev.rng-1: 1402977518  959027881, drawn 2
-ev.rng-2: 780729585  1265576559, drawn 2
-.*Run #4.*
+.*General-0.*
+ev.rng-0: 2546248239  2357136044, drawn 2
+ev.rng-1: 4282876139  1791095845, drawn 2
+ev.rng-2: 794921487  1872583848, drawn 2
+.*General-4.*
 ev.rng-0: 1916507803  662124363, drawn 2
 ev.rng-1: 2608511152  3340206418, drawn 2
 ev.rng-2: 3959502168  2207369835, drawn 2
-.*Run #2.*
-ev.rng-0: 4069378761  3834805130, drawn 2
-ev.rng-1: 976413892  327741615, drawn 2
-ev.rng-2: 47736148  3751350723, drawn 2
-.*Run #5.*
-ev.rng-0: 3494301429  3645644232, drawn 2
-ev.rng-1: 1402977518  959027881, drawn 2
-ev.rng-2: 780729585  1265576559, drawn 2
-.*Run #1.*
-ev.rng-0: 303761048  2365658986, drawn 2
-ev.rng-1: 3868139694  4153361530, drawn 2
-ev.rng-2: 236996814  953453411, drawn 2
-.*Run #3.*
+.*General-3.*
 ev.rng-0: 1565348188  44556670, drawn 2
 ev.rng-1: 1283169405  3312796937, drawn 2
 ev.rng-2: 293375679  774252441, drawn 2
+.*General-1.*
+ev.rng-0: 303761048  2365658986, drawn 2
+ev.rng-1: 3868139694  4153361530, drawn 2
+ev.rng-2: 236996814  953453411, drawn 2
+.*General-4.*
+ev.rng-0: 1916507803  662124363, drawn 2
+ev.rng-1: 2608511152  3340206418, drawn 2
+ev.rng-2: 3959502168  2207369835, drawn 2
+.*General-0.*
+ev.rng-0: 2546248239  2357136044, drawn 2
+ev.rng-1: 4282876139  1791095845, drawn 2
+ev.rng-2: 794921487  1872583848, drawn 2
+.*General-2.*
+ev.rng-0: 4069378761  3834805130, drawn 2
+ev.rng-1: 976413892  327741615, drawn 2
+ev.rng-2: 47736148  3751350723, drawn 2
 

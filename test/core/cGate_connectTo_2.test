@@ -20,6 +20,7 @@ cChannel *Sender::createChannel(double delay)
     cChannelType *channelType = cChannelType::find("ned.BasicChannel"); //XXX find something more concise to create a basic channel...
     cBasicChannel *ch = (cBasicChannel *)channelType->create("chan", parentModule());
     ch->setDelay(delay);
+    ch->callInitialize();
     return ch;
 }
 
@@ -90,6 +91,7 @@ void Receiver::activity()
     {
         cMessage *msg = receive();
         ev << msg->name() << " arrived at " << simTime() << endl;
+        delete msg;
     }
 }
 
@@ -101,6 +103,7 @@ out->channel\(\):chan
 hello1 arrived at 0.5
 .*
 out->channel\(\):NULL
+.*
 out->channel\(\):chan
 .*
 hello2 arrived at 1.25
