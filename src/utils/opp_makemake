@@ -330,8 +330,9 @@ sub makemake()
     }
 
     foreach my $i (@sourceDirs) {
-       $i =~ s|/|\\|g;
-       push(@backslashedSourceDirs, $i);
+        my $i2 = $i;
+        $i2 =~ s|/|\\|g;
+        push(@backslashedSourceDirs, $i2);
     }
 
     # include dirs and lib dirs
