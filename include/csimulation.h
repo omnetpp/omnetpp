@@ -234,9 +234,9 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
 
     /**
      * Returns the NED package that corresponds to the given folder. Returns ""
-     * for the default package, and NULL if the folder is outside all NED folders.
+     * for the default package, and "-" if the folder is outside all NED folders.
      */
-    const char *getNedPackageForFolder(const char *folder) const;
+    std::string getNedPackageForFolder(const char *folder) const;
 
     /**
      * Builds a new network.
