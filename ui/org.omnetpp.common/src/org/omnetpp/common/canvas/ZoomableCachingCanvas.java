@@ -274,8 +274,8 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 		double y = fromCanvasY(r.y);
 
 		// adjust zoom
-		zoomXBy((getViewportWidth()) / r.width);
-		zoomYBy((getViewportHeight()) / r.height);
+		zoomXBy(((double)getViewportWidth()) / r.width);
+		zoomYBy(((double)getViewportHeight()) / r.height);
 		
 		// position to original top-left corner
 		scrollHorizontalTo(toVirtualX(x));
