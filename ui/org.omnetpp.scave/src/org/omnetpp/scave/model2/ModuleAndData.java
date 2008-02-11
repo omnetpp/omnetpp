@@ -85,7 +85,7 @@ public class ModuleAndData implements Comparable<ModuleAndData>
 	public int compareTo(ModuleAndData other) {
 		int result = StringUtils.dictionaryCompare(this.moduleName, other.moduleName);
 		if (result == 0)
-			return result = StringUtils.dictionaryCompare(this.dataName, other.dataName);
+			result = StringUtils.dictionaryCompare(this.dataName, other.dataName);
 		return result;
 	}
 }

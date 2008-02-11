@@ -449,7 +449,7 @@ public class DataflowNetworkBuilder {
 		}
 	}
 	
-	class PortWrapper {
+	static class PortWrapper {
 		long id;
 		String name;
 		NodeWrapper owner;
@@ -465,7 +465,7 @@ public class DataflowNetworkBuilder {
 		}
 	}
 	
-	class ChannelWrapper {
+	static class ChannelWrapper {
 		PortWrapper out;
 		PortWrapper in;
 		boolean created;

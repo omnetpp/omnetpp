@@ -40,7 +40,7 @@ public class MatlabExportWizard extends AbstractExportWizard {
 	 *        Pages
 	 *---------------------*/
 	
-	class MatlabExportPage extends ExportWizardPage
+	static class MatlabExportPage extends ExportWizardPage
 	{
 		protected MatlabExportPage(String pageName, String title,
 				ImageDescriptor titleImage) {

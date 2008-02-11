@@ -179,11 +179,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		if (tracker!=null) {
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(tracker);
 		}
-		if (adapterFactory instanceof IChangeNotifier) {
-			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
-			if (tracker != null) notifier.removeListener(tracker);
-			notifier.removeListener(pageUpdater);
-		}
+
+		if (tracker != null) adapterFactory.removeListener(tracker);
+		adapterFactory.removeListener(pageUpdater);
+		
 		if (manager != null) {
 			manager.dispose(); // it would get garbage-collected anyway, but the sooner the better because it may have allocated large amounts of data
 			if (tracker != null)      // deactivate the tracker explicitly, because it might receive a notification
@@ -216,11 +215,8 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath());
 
 		// listen to model changes
-		if (adapterFactory instanceof IChangeNotifier) {
-			IChangeNotifier notifier = (IChangeNotifier)adapterFactory;
-			notifier.addListener(tracker);
-			notifier.addListener(pageUpdater);
-		}
+		adapterFactory.addListener(tracker);
+		adapterFactory.addListener(pageUpdater);
 
 		// listen to resource changes: create, delete, modify
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(tracker);

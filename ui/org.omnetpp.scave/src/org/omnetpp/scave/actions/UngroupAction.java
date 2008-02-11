@@ -25,22 +25,24 @@ public class UngroupAction extends AbstractScaveAction {
 	@Override
 	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
 		Group group = getSelectedGroup(selection);
-		EObject parent = group.eContainer();
-		Collection items = new ArrayList(group.getItems());
-		if (group != null && parent != null && items.size() > 0) {
-			Object elist = parent.eGet(group.eContainingFeature());
-			if (elist instanceof EList) {
-				CompoundCommand command = new CompoundCommand("Ungroup");
-				command.append(RemoveCommand.create(
-								editor.getEditingDomain(),
-								items));
-				command.append(ReplaceCommand.create(
-								editor.getEditingDomain(),
-								group.eContainer(),
-								group.eContainingFeature(),
-								group,
-								items));
-				editor.executeCommand(command);
+		if (group != null) {
+			EObject parent = group.eContainer();
+			Collection items = new ArrayList(group.getItems());
+			if (parent != null && items.size() > 0) {
+				Object elist = parent.eGet(group.eContainingFeature());
+				if (elist instanceof EList) {
+					CompoundCommand command = new CompoundCommand("Ungroup");
+					command.append(RemoveCommand.create(
+									editor.getEditingDomain(),
+									items));
+					command.append(ReplaceCommand.create(
+									editor.getEditingDomain(),
+									group.eContainer(),
+									group.eContainingFeature(),
+									group,
+									items));
+					editor.executeCommand(command);
+				}
 			}
 		}
 	}

@@ -389,7 +389,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		}
 	}
 	
-	protected class ColorEdit {
+	protected static class ColorEdit {
 		Text text;
 		Label label;
 		

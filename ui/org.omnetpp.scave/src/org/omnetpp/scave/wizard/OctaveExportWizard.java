@@ -35,7 +35,7 @@ public class OctaveExportWizard extends AbstractExportWizard {
 	 *        Pages
 	 *---------------------*/
 	
-	class OctaveExportPage extends ExportWizardPage
+	static class OctaveExportPage extends ExportWizardPage
 	{
 		protected OctaveExportPage(String pageName, String title,
 				ImageDescriptor titleImage) {

@@ -208,7 +208,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 	}
 	
 	private void addToSelection(Control control) {
-		Assert.isTrue(control.getParent()==this);
+		Assert.isTrue(control == null || control.getParent()==this);
 		if (control!=null && !selection.contains(control))
 			selection.add(control);
 	}

@@ -88,8 +88,10 @@ public class ExportJob extends WorkspaceJob
 				if (!StringUtils.isEmpty(fileName)) {
 					try {
 						File file = new File(fileName); 
-						if (file.exists())
-							file.delete();
+						if (file.exists()) {
+							if (!file.delete())
+								ScavePlugin.logError("Cannot delete export file: "+fileName, null);
+						}
 					} catch (Exception e) {
 						ScavePlugin.logError("Cannot delete export file: "+fileName, e);
 					}

@@ -265,7 +265,7 @@ public class ScaveModelWizard extends Wizard implements INewWizard {
 	/**
 	 * This is the one page of the wizard.
 	 */
-	public class NewFileCreationPage extends WizardNewFileCreationPage {
+	public static class NewFileCreationPage extends WizardNewFileCreationPage {
 		/**
 		 * Pass in the selection.
 		 */

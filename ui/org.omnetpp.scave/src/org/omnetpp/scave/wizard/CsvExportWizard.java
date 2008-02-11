@@ -71,7 +71,7 @@ public class CsvExportWizard extends AbstractExportWizard {
 	 *        Pages
 	 *---------------------*/
 	
-	class CsvExportPage extends ExportWizardPage
+	static class CsvExportPage extends ExportWizardPage
 	{
 		private Combo separatorCombo;
 		private Combo eolCombo;

@@ -346,6 +346,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			if ((decorators & DEC_SP_AFTER) != 0) position++;
 			return position;
 		}
+		
 		public String getDescription() {
 			return description;
 		}

@@ -64,8 +64,10 @@ class LinePlot {
 						numOfPoints += n;
 					}
 				}
-				long duration = System.currentTimeMillis() - startTime;
-				if (debug) System.out.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
+				if (debug) {
+					long duration = System.currentTimeMillis() - startTime;
+					System.out.format("calculatePlotArea(): %d ms (%d points)%n", duration, numOfPoints);
+				}
 			}
 			else {
 				minX = dataset.getMinX();

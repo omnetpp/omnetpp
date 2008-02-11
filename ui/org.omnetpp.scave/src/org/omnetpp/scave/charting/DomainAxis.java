@@ -8,6 +8,7 @@ import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_LABELS_ROTATED_
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
@@ -53,7 +54,14 @@ class DomainAxis {
 		}
 	}
 	
-	static class LineData implements Comparable<LineData> {
+	final static Comparator<LineData> lineDataRightEdgeComparator = new Comparator<LineData>() {
+		public int compare(LineData first, LineData second) {
+			return first.right == second.right ? 0 :
+					first.right < second.right ? -1 : 1;
+		}
+	};
+	
+	static class LineData {
 		int height;
 		int right;
 		List<LabelData> labels = new ArrayList<LabelData>();
@@ -61,11 +69,6 @@ class DomainAxis {
 		public LineData() {
 			height = 0;
 			right = Integer.MIN_VALUE;
-		}
-		
-		public int compareTo(LineData o) {
-			return this.right == o.right ? 0 :
-					this.right < o.right ? -1 : 1;
 		}
 	}
 	
@@ -108,7 +111,7 @@ class DomainAxis {
 				int left = plot.getBarRectangle(row, 0).x;
 				int right = plot.getBarRectangle(row, cColumns - 1).right();
 				
-				LineData line = Collections.min(lines);
+				LineData line = Collections.min(lines, lineDataRightEdgeComparator);
 				LabelData label;
 				
 				if (wrapLabels) {

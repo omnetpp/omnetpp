@@ -203,8 +203,8 @@ class BarPlot {
 						x += hgapMajor;
 					break;
 				case Overlap:
-					bar.minX = x + widthBar * column / 2;
-					bar.maxX = bar.minX + widthBar * cColumns / 2;
+					bar.minX = x + widthBar * column / 2.0;
+					bar.maxX = bar.minX + widthBar * cColumns / 2.0;
 					if (column == cColumns - 1 && row < cRows - 1)
 						x += widthBar * cColumns + hgapMajor;
 					break;

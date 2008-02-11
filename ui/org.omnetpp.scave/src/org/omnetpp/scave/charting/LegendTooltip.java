@@ -28,7 +28,7 @@ class LegendTooltip
 	Button button;
 	List<Item> items = new ArrayList<Item>();
 	
-	class Item
+	static class Item
 	{
 		Color color;
 		String label;

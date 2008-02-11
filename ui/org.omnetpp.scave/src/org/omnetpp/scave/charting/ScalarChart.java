@@ -125,8 +125,8 @@ public class ScalarChart extends ChartCanvas {
 		IChartSymbol symbol = new SquareSymbol();
 		if (dataset != null) {
 			for (int i = 0; i < dataset.getColumnCount(); ++i) {
-				legend.addLegendItem(plot.getBarColor(i), dataset.getColumnKey(i).toString(), symbol, false);
-				legendTooltip.addItem(plot.getBarColor(i), dataset.getColumnKey(i).toString(), symbol, false);
+				legend.addLegendItem(plot.getBarColor(i), dataset.getColumnKey(i), symbol, false);
+				legendTooltip.addItem(plot.getBarColor(i), dataset.getColumnKey(i), symbol, false);
 			}
 		}
 	}

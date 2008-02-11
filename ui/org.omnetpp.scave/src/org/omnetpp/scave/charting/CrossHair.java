@@ -59,7 +59,7 @@ class CrossHair {
 	protected static class DataPoint {
 		int series;
 		int index;
-		int multiplicity;
+		// int multiplicity;
 
 		public DataPoint(int series, int index) {
 			this.series = series;

@@ -22,7 +22,7 @@ public class AddWildcardResultFileAction extends AbstractScaveAction {
 		setToolTipText("Use wildcards to specify a set of scalar or vector files");
 	}
 
-	private class InputValidator implements IInputValidator {
+	static class InputValidator implements IInputValidator {
 		public String isValid(String text) {
 			text = text.trim();
 			if (text.length() == 0)
