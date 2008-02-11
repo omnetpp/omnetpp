@@ -16,7 +16,7 @@ vec.record(1/zero);
 vec.record(-1/zero);
 
 %contains-regex: test.vec
-vector 0  {}_network  vec  1
-0	1	((1\.#INF)|(inf))
-0	1	-((1\.#INF)|(inf))
+vector 0  Test  vec  ETV
+0	1	1	((1\.#INF)|(inf))
+0	1	1	-((1\.#INF)|(inf))
 
