@@ -69,7 +69,7 @@ x.setD(3.1415); PRINT(x.getD());
 
 %contains: stdout
 cOwnedObject
-MyClass:myclass
+msg_cobject_1::MyClass:myclass
 x.getB():0
 (int)x.getC():0
 x.getS():0

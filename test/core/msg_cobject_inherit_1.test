@@ -31,7 +31,7 @@ x.setC('x'); PRINT(x.getC());
 
 %contains: stdout
 cOwnedObject
-MyClass:myclass
+msg_cobject_inherit_1::MyClass:myclass
 x.getB():11
 x.getC():x
 
