@@ -3,6 +3,7 @@ package org.omnetpp.launch.tabs;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -98,7 +99,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
     public void initializeFrom(ILaunchConfiguration config) {
         try {
-            fProgText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, ""));
+        	// append the project path and the program name. Both of them are
+            IPath projPath = new Path(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, ""));
+            String progName = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
+			fProgText.setText(projPath.append(progName).toString());
             fShowDebugViewButton.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false));
         } catch (CoreException ce) {
             LaunchPlugin.logError(ce);
@@ -108,7 +112,9 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 	}
 
     public void performApply(ILaunchConfigurationWorkingCopy config) {
-        config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, fProgText.getText());
+        Path progPath = new Path(fProgText.getText());
+		config.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, progPath.segment(0));
+		config.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, progPath.removeFirstSegments(1).toString());
         config.setAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, fShowDebugViewButton.getSelection());
         simulationBlock.performApply(config);
         workingDirBlock.performApply(config);
@@ -140,7 +146,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 	        setErrorMessage("Simulation program not specified");
 	        return false;
 	    }
-	    IFile exefile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name));
+	    Path exePath = new Path(name);
+		IFile exefile = exePath.segmentCount() >1 ? ResourcesPlugin.getWorkspace().getRoot().getFile(exePath) : null;
 	    if (exefile == null || !exefile.isAccessible()) {
 	        setErrorMessage("Simulation program does not exist or not accessible in workspace");
 	        return false;

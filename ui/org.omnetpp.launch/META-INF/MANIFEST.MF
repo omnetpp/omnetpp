@@ -14,3 +14,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.common,
  org.omnetpp.inifile.editor
 Eclipse-LazyStart: true
+Export-Package: org.omnetpp.launch,
+ org.omnetpp.launch.tabs

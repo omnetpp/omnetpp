@@ -218,7 +218,9 @@ public class LaunchPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * TODO document
+     * Create a full command line (including executable path/name) from the provided configuration.
+     * Additional arguments are right after the exe name so they can override the parameters
+     * specified in the configuration.
      */
     public static String[] createCommandLine(ILaunchConfiguration configuration, String additionalArgs) throws CoreException {
         IStringVariableManager varman = VariablesPlugin.getDefault().getStringVariableManager();

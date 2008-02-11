@@ -589,15 +589,15 @@ public class SimulationTab extends AbstractLaunchConfigurationTab
         
         try {
             // if we are contributing to cdt we can get the project attribute
-            if (cdtContributed) {
+//            if (cdtContributed) {
                 String projectName = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
                 return StringUtils.isNotBlank(projectName) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
-            }
-            else {
-                String name = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
-                IFile exeFile = StringUtils.isNotBlank(name) ? ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name)) : null;
-                return exeFile != null ? exeFile.getProject() : null;
-            }
+//            }
+//            else {
+//                String name = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
+//                IFile exeFile = StringUtils.isNotBlank(name) ? ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(name)) : null;
+//                return exeFile != null ? exeFile.getProject() : null;
+//            }
         }
         catch (CoreException e) {
             // if the config attribute cannot be retrieved we dont know what project we are in
@@ -610,7 +610,7 @@ public class SimulationTab extends AbstractLaunchConfigurationTab
      */
     protected boolean isOmnetppProject() {
         IProject project = getProject();
-        return project != null && ProjectUtils.hasOmnetppNature(project);
+        return project != null && project.exists() && ProjectUtils.hasOmnetppNature(project);
     }
 
     /**

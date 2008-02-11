@@ -34,14 +34,15 @@ public class NedPathResolver implements IDynamicVariableResolver {
 		// resolve the ned path files
 		try {
 			result = "";
+			String pathSep = System.getProperty("path.separator"); 
 			// read the actual projects nedfolders file
 			for(IContainer folder : ProjectUtils.readNedFoldersFile(project))
-				result += ";" + folder.getLocation().toOSString();
+				result += pathSep + folder.getLocation().toOSString();
 
 			// do the same for the referenced projects
 			for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project)) 
 				for(IContainer folder : ProjectUtils.readNedFoldersFile(p))
-					result += ";" + folder.getLocation().toOSString();
+					result += pathSep + folder.getLocation().toOSString();
 		}
 		catch (Exception e) {
 			LaunchPlugin.logError(e);

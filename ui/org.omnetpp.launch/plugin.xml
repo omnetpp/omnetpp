@@ -7,6 +7,10 @@
             id="org.omnetpp.launch.simulationLaunchConfigurationType"
             name="OMNEST/OMNeT++ Simulation"
             public="true">
+         <fileExtension
+               default="true"
+               extension="ini">
+         </fileExtension>
       </launchConfigurationType>
    </extension>
    <extension
@@ -24,6 +28,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
             class="org.omnetpp.launch.SimulationLaunchConfigurationTabGroup"
+            description="Allows running and debugging an OMNEST/OMNeT++ simulation"
             id="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
             type="org.omnetpp.launch.simulationLaunchConfigurationType">
       </launchConfigurationTabGroup>
@@ -35,18 +40,6 @@
             icon="icons/full/ctool16/omnetsim.gif"
             id="org.omnetpp.launch.simulationLaunchConfigurationTypeImage">
       </launchConfigurationTypeImage>
-   </extension>
-   <extension
-         point="org.eclipse.debug.ui.launchConfigurationTabs">
-      <tab
-            class="org.omnetpp.launch.tabs.SimulationTab"
-            group="org.eclipse.cdt.launch.localRunLaunchTabGroup"
-            id="org.omnetpp.launch.omnetppmain"
-            name="Simulation">
-         <placement
-               after="org.eclipse.debug.ui.environmentTab">
-         </placement>
-      </tab>
    </extension>
    <extension
          point="org.eclipse.core.variables.dynamicVariables">
