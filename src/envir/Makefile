@@ -88,14 +88,14 @@ endif
 
 depend:
 	$(MAKEDEPEND) -I. -I../../include -P\$$O/ -- *.cc
- 
+
 
 clean:
 	rm -f eventlogwriter.cc eventlogwriter.h
 	rm -rf $O
 	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
-	cd $(OMNETPP_BIN_DIR) && rm -f opp_run$(EXE_SUFFIX)                                                  
- 
+	cd $(OMNETPP_BIN_DIR) && rm -f opp_run$(EXE_SUFFIX)
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/akaroarng.o: akaroarng.cc \
   ../../include/cenvir.h \

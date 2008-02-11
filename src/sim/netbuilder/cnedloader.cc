@@ -174,7 +174,9 @@ int cNEDLoader::loadNedSourceFolder(const char *foldername)
 {
     try
     {
+        std::string canonicalFolderName = tidyFilename(toAbsolutePath(foldername).c_str(), true);
         std::string rootPackageName = determineRootPackageName(foldername);
+        folderPackages[canonicalFolderName] = rootPackageName;
         return doLoadNedSourceFolder(foldername, rootPackageName.c_str());
     }
     catch (std::exception& e)
@@ -311,18 +313,18 @@ void cNEDLoader::doneLoadingNedFiles()
     }
 }
 
-const char *cNEDLoader::getNedPackageForFolder(const char *folder) const
+std::string cNEDLoader::getNedPackageForFolder(const char *folder) const
 {
-    toAbsolutePath(folder);
-//    //FIXME TODO
-//    for (nedFolder in nedFolders)
-//    {
-//        if (opp_beginswith(folder, nedFolder) {
-//            removePrefix;
-//            replace "/" with "."
-//            return
-//        }
-//    }
-    return NULL;
+    std::string folderName = tidyFilename(toAbsolutePath(folder).c_str(), true);
+    for (StringMap::const_iterator it = folderPackages.begin(); it!=folderPackages.end(); ++it)
+    {
+        if (opp_stringbeginswith(folderName.c_str(), it->first.c_str()))
+        {
+            std::string suffix = folderName.substr(it->first.size());
+            std::string subpackage = opp_replacesubstring(suffix.c_str(), "/", ".", true);
+            return opp_join(".", it->second.c_str(), subpackage.c_str());
+        }
+    }
+    return "-";
 }
 

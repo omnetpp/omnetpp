@@ -114,6 +114,11 @@ COMMON_API std::string opp_breaklines(const char *text, int maxLineLength);
 COMMON_API std::string opp_indentlines(const char *text, const char *indent);
 
 /**
+ * Returns true if the first string begins with the second string.
+ */
+COMMON_API bool opp_stringbeginswith(const char *s, const char *prefix);
+
+/**
  * Returns true if the first string ends in the second string.
  */
 COMMON_API bool opp_stringendswith(const char *s, const char *ending);

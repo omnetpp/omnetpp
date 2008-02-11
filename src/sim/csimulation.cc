@@ -261,12 +261,12 @@ int cSimulation::loadNedSourceFolder(const char *folder)
 #endif
 }
 
-const char *cSimulation::getNedPackageForFolder(const char *folder) const
+std::string cSimulation::getNedPackageForFolder(const char *folder) const
 {
 #ifdef WITH_NETBUILDER
     return cNEDLoader::instance()->getNedPackageForFolder(folder);
 #else
-    return NULL;
+    return "-";
 #endif
 }
 

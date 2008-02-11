@@ -65,6 +65,11 @@ class SIM_API cNEDLoader : public NEDResourceCache
     // storage for NED components not resolved yet because of missing dependencies
     std::vector<PendingNedType> pendingList;
 
+    // maps the loaded source NED folders (as absolute paths, canonical representation)
+    // to package names
+    typedef std::map<std::string,std::string> StringMap;
+    StringMap folderPackages;
+
   protected:
     /** Redefined to return a cNEDDeclaration. */
     virtual void addNedType(const char *qname, NEDElement *node);
@@ -122,9 +127,9 @@ class SIM_API cNEDLoader : public NEDResourceCache
 
     /**
      * Returns the NED package that corresponds to the given folder. Returns ""
-     * for the default package, and NULL if the folder is outside all NED folders.
+     * for the default package, and "-" if the folder is outside all NED folders.
      */
-    const char *getNedPackageForFolder(const char *folder) const;
+    std::string getNedPackageForFolder(const char *folder) const;
 
     /**
      * Resolves NED module/channel/moduleinterface/channelinterface type name,

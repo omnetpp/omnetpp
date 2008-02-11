@@ -233,11 +233,16 @@ std::string opp_indentlines(const char *text, const char *indent)
     return std::string(indent) + opp_replacesubstring(text, "\n", (std::string("\n")+indent).c_str(), true);
 }
 
+bool opp_stringbeginswith(const char *s, const char *prefix)
+{
+    return strlen(s) >= strlen(prefix) && strncmp(s, prefix, strlen(prefix))==0;
+}
+
 bool opp_stringendswith(const char *s, const char *ending)
 {
-    int endinglen = strlen(ending);
     int slen = strlen(s);
-    return endinglen>slen ? false : strcmp(s+slen-endinglen, ending)==0;
+    int endinglen = strlen(ending);
+    return slen >= endinglen && strcmp(s+slen-endinglen, ending)==0;
 }
 
 std::string opp_join(const char *separator, const char *s1, const char *s2)
