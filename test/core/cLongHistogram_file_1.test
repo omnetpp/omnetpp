@@ -18,7 +18,7 @@ h.collect(12);
 h.collect(20);
 
 // save it
-FILE *f=fopen("{}_h.dat","w");
+FILE *f=fopen("h.dat","w");
 h.saveToFile(f);
 fclose(f);
 
@@ -26,17 +26,17 @@ fclose(f);
 // if it was correctly loaded
 cLongHistogram h2;
 
-FILE *f2=fopen("{}_h.dat","r");
+FILE *f2=fopen("h.dat","r");
 h2.loadFromFile(f2);
 fclose(f2);
 
-FILE *f3=fopen("{}_h2.dat","w");
+FILE *f3=fopen("h2.dat","w");
 h2.saveToFile(f3);
 fclose(f3);
 
-%contains: {}_h.dat
+%contains: h.dat
 #
-# (cLongHistogram) {}_network.
+# (cLongHistogram) Test.
 #
 7	 #= num_samples
 9 20	 #= min, max
@@ -63,9 +63,9 @@ fclose(f3);
  1
 1	 #= cellsize
 
-%contains: {}_h2.dat
+%contains: h2.dat
 #
-# (cLongHistogram) {}_network.
+# (cLongHistogram) Test.
 #
 7	 #= num_samples
 9 20	 #= min, max
