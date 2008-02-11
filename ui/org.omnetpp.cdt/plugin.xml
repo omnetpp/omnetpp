@@ -258,8 +258,31 @@
             id="org.omnetpp.launch.simulationDebugDelegate"
             modes="debug"
             name="OMNEST/OMNeT++ Simulation Debugger"
+            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
             type="org.omnetpp.launch.simulationLaunchConfigurationType">
       </launchDelegate>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabs">
+      <tab
+            class="org.eclipse.debug.ui.sourcelookup.SourceLookupTab"
+            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
+            id="org.omnetpp.cdt.csourcetab"
+            name="Source">
+         <placement
+               after="org.eclipse.debug.ui.environmentTab">
+         </placement>
+      </tab>
+      <tab
+            class="org.omnetpp.cdt.launch.OmnetppCDebuggerTab"
+            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
+            id="org.omnetpp.cdt.cdebugtab"
+            name="Debugger">
+         <placement
+               after="org.eclipse.debug.ui.environmentTab">
+         </placement>
+      </tab>
    </extension>
 
 </plugin>

@@ -6,8 +6,11 @@ Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.cdt.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
+ org.eclipse.core.variables,
  org.eclipse.ui,
  org.eclipse.ui.ide,
+ org.eclipse.debug.core,
+ org.eclipse.debug.ui,
  org.eclipse.cdt,
  org.eclipse.cdt.core,
  org.eclipse.cdt.debug.core,
@@ -23,10 +26,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.cdt.managedbuilder.ui,
  org.eclipse.cdt.refactoring,
  org.eclipse.cdt.ui,
- org.eclipse.core.variables,
- org.eclipse.debug.core,
  org.omnetpp.common,
  org.omnetpp.main,
+ org.omnetpp.launch,
  org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
