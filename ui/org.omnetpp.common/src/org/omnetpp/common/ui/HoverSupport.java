@@ -256,7 +256,7 @@ public class HoverSupport {
                     	// and transferred to the browser (this would close the infoControl on browser creation)
             			Display.getCurrent().asyncExec(new Runnable() {
             				public void run() {
-            					if (informationControl == null || !informationControl.isFocusControl())
+            					if (informationControl != null && !informationControl.isFocusControl())
             						informationControl.dispose();
             				}
             			});

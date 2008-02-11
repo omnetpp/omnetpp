@@ -932,17 +932,17 @@ public class VirtualTable<T>
 	}
 
 	private boolean elementListEquals(List<T> a, List<T> b) {
-		if (a == null || b == null)
-			return a == b;
+		if (a == b)
+			return true;
 		
-		if (a.size() != b.size())
+		if (a == null || b == null || a.size() != b.size())
 			return false;
 
 		for (int i = 0; i < a.size(); i++) {
 			T ae = a.get(i);
 			T be = b.get(i);
 
-			if ((ae == null && be != null) || !ae.equals(be))
+			if (!(ae == null ? be == null : ae.equals(be)))
 				return false;
 		}
 		
