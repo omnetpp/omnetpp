@@ -737,6 +737,7 @@ void TOmnetTkApp::newRun(const char *configname, int runnumber)
         }
 
         cModuleType *network = cModuleType::find(opt_network_name.c_str());
+        //FIXME look up with inifile prefix too
         //FIXME check if it can be instantiated as network
         if (!network)
         {

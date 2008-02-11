@@ -264,11 +264,20 @@ int TCmdenvApp::run()
             readPerRunOptions();
 
             // find network
-            cModuleType *network = cModuleType::find(opt_network_name.c_str());
-            if (!network && strchr(opt_network_name.c_str(), '.')==NULL && !opt_network_inifilepackage.empty())
+            cModuleType *network = NULL;
+            bool hasInifilePackage = !opt_network_inifilepackage.empty() && strcmp(opt_network_inifilepackage.c_str(),"-")!=0;
+            if (hasInifilePackage)
                 network = cModuleType::find(opp_join(".", opt_network_inifilepackage.c_str(), opt_network_name.c_str()).c_str());
             if (!network)
-                throw cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
+                network = cModuleType::find(opt_network_name.c_str());
+            if (!network)
+            {
+                if (hasInifilePackage)
+                    throw cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
+                else
+                    throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files", opt_network_name.c_str(),
+                                        opp_join(".", opt_network_inifilepackage.c_str(), opt_network_name.c_str()).c_str());
+            }
             //FIXME check it can be used as network (isNetwork==true)
 
             // set up network
