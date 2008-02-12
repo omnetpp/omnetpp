@@ -1,5 +1,5 @@
 //=========================================================================
-//  CNAMEDOBJECT.CC - part of
+//  COWNEDOBJECT.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -64,6 +64,7 @@ cDefaultList defaultList;
 
 cOwnedObject::cOwnedObject()
 {
+    //TODO: in DEBUG mode, assert that this is not a static member / global variable! (using cStaticFlag)
     defaultowner->doInsert(this);
 
     // statistics

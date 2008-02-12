@@ -1,5 +1,5 @@
 //========================================================================
-//  CPOLYMORPHIC.CC - part of
+//  COBJECT.CC - part of
 //
 //                 OMNeT++/OMNEST
 //              Discrete System Simulation in C++
