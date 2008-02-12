@@ -433,8 +433,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 	
 	
+	// make public
 	@Override
-	protected ICoordsMapping getOptimizedCoordinateMapper() {
+	public ICoordsMapping getOptimizedCoordinateMapper() {
 		return super.getOptimizedCoordinateMapper();
 	}
 

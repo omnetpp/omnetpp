@@ -47,11 +47,7 @@ public class LinearAxis {
 	private Rectangle bounds;
 	private Insets insets;  // plot area = bounds minus insets
 
-	/* Area -> Canvas coords */
-	private ICoordsMapping mapping;
-	
-	public LinearAxis(ICoordsMapping mapping, boolean vertical, boolean logarithmic, boolean drawAxisToPlot) {
-		this.mapping = mapping;
+	public LinearAxis(boolean vertical, boolean logarithmic, boolean drawAxisToPlot) {
 		this.vertical = vertical;
 		this.logarithmic = logarithmic;
 		this.drawAxisToPlot = drawAxisToPlot;
@@ -62,14 +58,14 @@ public class LinearAxis {
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience. 
 	 */
-	public Insets layoutHint(GC gc, Rectangle bounds, Insets insets) {
+	public Insets layoutHint(GC gc, Rectangle bounds, Insets insets, ICoordsMapping mapping) {
 		// invalidate: they will have to be set via setLayout()
 		this.bounds = null;
 		this.insets = null;
 		
 		gc.setFont(tickFont);
 		if (vertical) {
-			int labelWidth = calculateTickLabelLength(gc, bounds);
+			int labelWidth = calculateTickLabelLength(gc, bounds, mapping);
 			int titleHeight = calculateTitleSize(gc).y;  // but will be drawn 90 deg rotated
 			insets.left = Math.max(insets.left, gap + majorTickLength + labelWidth + titleHeight + 4);
 			insets.right = Math.max(insets.right, gap + majorTickLength + labelWidth + 4);
@@ -96,11 +92,11 @@ public class LinearAxis {
 		return labelHeight;
 	}
 
-	private int calculateTickLabelLength(GC gc, Rectangle bounds) {
+	private int calculateTickLabelLength(GC gc, Rectangle bounds, ICoordsMapping mapping) {
 		// calculate longest tick label length
 		if (!drawTickLabels)
 			return 0;
-		ITicks ticks = createTicks(bounds);
+		ITicks ticks = createTicks(bounds, mapping);
 		int labelWidth = 0;
 		if (ticks != null) {
 			gc.setFont(tickFont);
@@ -121,14 +117,14 @@ public class LinearAxis {
 		this.insets = new Insets(insets);  
 	}
 	
-	public void drawGrid(GC gc) {
+	public void drawGrid(GC gc, ICoordsMapping mapping) {
 		if (showGrid == ShowGrid.None)
 			return;
 
 		// Note: when canvas caching is on, gc is the cached image, so the grid must be drawn 
 		// to the whole clipping region (cached image area) not just the plot area    
 		Rectangle rect = new Rectangle(gc.getClipping());
-		ITicks ticks = createTicks(rect);
+		ITicks ticks = createTicks(rect, mapping);
 		if (ticks != null) {
 			gc.setLineStyle(Graphics.LINE_DOT);
 			gc.setForeground(DEFAULT_GRID_COLOR);
@@ -151,7 +147,7 @@ public class LinearAxis {
 		}
 	}
 
-	public void drawAxis(GC gc) {
+	public void drawAxis(GC gc, ICoordsMapping mapping) {
 		Rectangle plotArea = bounds.getCopy().crop(insets);
 		
 		// draw axis line and title
@@ -187,7 +183,7 @@ public class LinearAxis {
 		}
 
 		// draw ticks and labels
-		ITicks ticks = createTicks(plotArea);
+		ITicks ticks = createTicks(plotArea, mapping);
 		if (ticks != null) {
 			gc.setFont(tickFont);
 			for (BigDecimal tick : ticks) {
@@ -220,7 +216,7 @@ public class LinearAxis {
 		}
 	}
 
-	protected ITicks createTicks(Rectangle plotArea) {
+	protected ITicks createTicks(Rectangle plotArea, ICoordsMapping mapping) {
 		if (vertical)
 			return createTicks(mapping.fromCanvasY(plotArea.bottom()), mapping.fromCanvasY(plotArea.y), plotArea.height);
 		else

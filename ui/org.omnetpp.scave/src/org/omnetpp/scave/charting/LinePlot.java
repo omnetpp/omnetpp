@@ -103,10 +103,9 @@ class LinePlot {
 	}
 	
 	
-	protected void draw(GC gc) {
+	protected void draw(GC gc, ICoordsMapping coordsMapping) {
 		if (getDataset() != null) {
 			IXYDataset dataset = getDataset();
-			ICoordsMapping mapper = chart.getOptimizedCoordinateMapper();
 			long startTime = System.currentTimeMillis();
 			for (int series=0; series<dataset.getSeriesCount(); series++) {
 				LineProperties props = chart.getLineProperties(series);
@@ -120,14 +119,14 @@ class LinePlot {
 					gc.setForeground(color);
 					gc.setBackground(color);
 
-					if (smartMode && plotter.getNumPointsInXRange(dataset, series, gc, mapper) >= smartModeLimit) {
+					if (smartMode && plotter.getNumPointsInXRange(dataset, series, gc, coordsMapping) >= smartModeLimit) {
 						//XXX this may have unwanted effects when caching is on,
 						// i.e. parts of a line w/ symbols, other parts the SAME line w/o symbols....
 						if (debug) System.out.println("\"smart mode\": turning off symbols");
 						symbol = null;
 					}
 
-					plotter.plot(dataset, series, gc, mapper, symbol);
+					plotter.plot(dataset, series, gc, coordsMapping, symbol);
 
 					// if drawing is taking too long, display busy cursor
 					if (System.currentTimeMillis() - startTime > 1000) {

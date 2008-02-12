@@ -11,6 +11,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
+import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
@@ -50,7 +51,7 @@ class BarPlot {
 		return rect;
 	}
 	
-	public void draw(GC gc) {
+	public void draw(GC gc, ICoordsMapping coordsMapping) {
 
 		if (bars != null && bars.length > 0 && bars[0].length > 0) {
 			Graphics graphics = new SWTGraphics(gc);
@@ -62,20 +63,20 @@ class BarPlot {
 			for (int i = indices[1]; i >= indices[0]; --i) {
 				int row = i / cColumns;
 				int column = i % cColumns;
-				drawBar(graphics, row, column);
+				drawBar(graphics, row, column, coordsMapping);
 			}
 			graphics.popState();
 			graphics.dispose();
 		}
 	}
 	
-	public void drawBaseline(GC gc) {
+	public void drawBaseline(GC gc, ICoordsMapping coordsMapping) {
 		double baseline = getTransformedBaseline();
 		if (!Double.isInfinite(baseline)) {
 			Graphics graphics = new SWTGraphics(gc);
 			graphics.pushState();
 			
-			int y = chart.toCanvasY(baseline);
+			int y = coordsMapping.toCanvasY(baseline);
 			graphics.setForegroundColor(ChartDefaults.DEFAULT_BAR_BASELINE_COLOR);
 			graphics.drawLine(rect.x + 1, y, rect.x + rect.width - 1, y);
 			
@@ -84,8 +85,8 @@ class BarPlot {
 		}
 	}
 	
-	protected void drawBar(Graphics graphics, int row, int column) {
-		Rectangle rect = getBarRectangle(row, column);
+	protected void drawBar(Graphics graphics, int row, int column, ICoordsMapping coordsMapping) {
+		Rectangle rect = getBarRectangle(row, column, coordsMapping);
 		rect.width = Math.max(rect.width, 1);
 		rect.height = Math.max(rect.height, 1);
 		graphics.setBackgroundColor(getBarColor(column));
@@ -133,7 +134,7 @@ class BarPlot {
 			return ColorFactory.getGoodDarkColor(column);
 	}
 	
-	protected Rectangle getBarRectangle(int row, int column) {
+	protected Rectangle getBarRectangle(int row, int column, ICoordsMapping coordsMapping) {
 		RectangularArea bar = bars[row][column];
 		double top =  bar.maxY;
 		double bottom = bar.minY;
@@ -145,10 +146,10 @@ class BarPlot {
 		if (Double.isInfinite(bottom))
 			bottom = bottom < 0.0 ? chart.chartArea.minY : chart.chartArea.maxY;
 		
-		int x = chart.toCanvasX(left);
-		int y = chart.toCanvasY(top);
-		int width = chart.toCanvasDistX(right - left);
-		int height = chart.toCanvasDistY(top - bottom);
+		int x = coordsMapping.toCanvasX(left);
+		int y = coordsMapping.toCanvasY(top);
+		int width = coordsMapping.toCanvasDistX(right - left);
+		int height = coordsMapping.toCanvasDistY(top - bottom);
 		return new Rectangle(x, y, width, height);
 	}
 	

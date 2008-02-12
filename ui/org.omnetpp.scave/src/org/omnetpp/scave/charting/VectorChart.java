@@ -40,6 +40,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.Converter;
@@ -67,8 +68,8 @@ public class VectorChart extends ChartCanvas {
 	private List<LineProperties> lineProperties;
 	private LineProperties defaultProperties;
 
-	private LinearAxis xAxis = new LinearAxis(this, false, false, true);
-	private LinearAxis yAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC, true);
+	private LinearAxis xAxis = new LinearAxis(false, false, true);
+	private LinearAxis yAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, true);
 	private CrossHair crosshair = new CrossHair(this);
 	private LinePlot plot;
 	
@@ -233,7 +234,7 @@ public class VectorChart extends ChartCanvas {
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
 				List<CrossHair.DataPoint> points = new ArrayList<CrossHair.DataPoint>();
-				int count = crosshair.dataPointsNear(e.x, e.y, 3, points, 1);
+				int count = crosshair.dataPointsNear(e.x, e.y, 3, points, 1, getOptimizedCoordinateMapper());
 				if (count > 0) {
 					CrossHair.DataPoint point = points.get(0);
 					setSelection(new VectorChartSelection(VectorChart.this, point));
@@ -472,22 +473,23 @@ public class VectorChart extends ChartCanvas {
 	protected void doLayoutChart() {
 		GC gc = new GC(Display.getCurrent());
 		try {
+			Rectangle area = new Rectangle(getClientArea());
+			if (area.isEmpty())
+				return;
+			
 			// preserve zoomed-out state while resizing
 			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
 			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
 
 			// Calculate space occupied by title and legend and set insets accordingly
-			Rectangle area = new Rectangle(getClientArea());
-			if (area.isEmpty())
-				return;
-			
+			ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
 			Rectangle remaining = legendTooltip.layout(gc, area);
 			remaining = title.layout(gc, area);
 			remaining = legend.layout(gc, remaining);
 
 			Rectangle mainArea = remaining.getCopy();
 			Insets insetsToMainArea = new Insets();
-			xAxis.layoutHint(gc, mainArea, insetsToMainArea);
+			xAxis.layoutHint(gc, mainArea, insetsToMainArea, coordsMapping);
 			// postpone yAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
 			insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
 
@@ -503,7 +505,8 @@ public class VectorChart extends ChartCanvas {
 
 			// now the coordinate mapping is set up, so the y axis knows what tick labels
 			// will appear, and can calculate the occupied space from the longest tick label.
-			yAxis.layoutHint(gc, mainArea, insetsToMainArea);
+			coordsMapping = getOptimizedCoordinateMapper();
+			yAxis.layoutHint(gc, mainArea, insetsToMainArea, coordsMapping);
 
 			// now we have the final insets, set it everywhere again 
 			xAxis.setLayout(mainArea, insetsToMainArea);
@@ -539,19 +542,15 @@ public class VectorChart extends ChartCanvas {
 		if (getClientArea().isEmpty())
 			return;
 		
-		
+		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
 		resetDrawingStylesAndColors(gc);
 		gc.fillRectangle(gc.getClipping());
-		xAxis.drawGrid(gc);
-		yAxis.drawGrid(gc);
-		plot.draw(gc);
+		xAxis.drawGrid(gc, coordsMapping);
+		yAxis.drawGrid(gc, coordsMapping);
+		plot.draw(gc, coordsMapping);
 
-		if (getNumCoordinateOverflows()>0) {
-			resetDrawingStylesAndColors(gc);
-			gc.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
-					    "may not be accurate. Please decrease zoom level.", 
-					    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
-		}
+		if (coordsMapping.getNumCoordinateOverflows()>0)
+			displayCoordinatesOverflowMessage(gc);
 	}
 	
 	@Override
@@ -560,19 +559,31 @@ public class VectorChart extends ChartCanvas {
 		if (getClientArea().isEmpty())
 			return;
 		
+		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
+
 		resetDrawingStylesAndColors(gc);
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 
 		paintInsets(gc);
 		title.draw(gc);
 		legend.draw(gc);
-		xAxis.drawAxis(gc);
-		yAxis.drawAxis(gc);
+		xAxis.drawAxis(gc, coordsMapping);
+		yAxis.drawAxis(gc, coordsMapping);
 		legendTooltip.draw(gc);
 		drawStatusText(gc);
 		if (getSelection() != null)
-			getSelection().draw(gc);
+			getSelection().draw(gc, coordsMapping);
 		drawRubberband(gc);
-		crosshair.draw(gc);
+		crosshair.draw(gc, coordsMapping);
+		
+		if (coordsMapping.getNumCoordinateOverflows() > 0)
+			displayCoordinatesOverflowMessage(gc);
+	}
+	
+	private void displayCoordinatesOverflowMessage(GC gc) {
+		resetDrawingStylesAndColors(gc);
+		gc.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
+				    "may not be accurate. Please decrease zoom level.", 
+				    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
 	}
 }

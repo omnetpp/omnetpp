@@ -78,12 +78,11 @@ public class VectorChartSelection implements IChartSelection {
 		return y;
 	}
 
-	protected void draw(GC gc) {
+	protected void draw(GC gc, ICoordsMapping coordsMapping) {
 		LineProperties props = this.vectorChart.getLineProperties(series);
 		if (props != null && props.getDisplayLine()) {
-			ICoordsMapping mapper = vectorChart.getOptimizedCoordinateMapper();
-			int xx = mapper.toCanvasX(this.vectorChart.transformX(x));
-			int yy = mapper.toCanvasY(this.vectorChart.transformY(y));
+			int xx = coordsMapping.toCanvasX(this.vectorChart.transformX(x));
+			int yy = coordsMapping.toCanvasY(this.vectorChart.transformY(y));
 			gc.setForeground(ColorFactory.RED);
 			gc.setLineWidth(1);
 			gc.drawOval(xx-5, yy-5, 10, 10);

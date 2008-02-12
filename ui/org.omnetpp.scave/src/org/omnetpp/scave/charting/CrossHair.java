@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.HoverSupport;
@@ -172,7 +173,7 @@ class CrossHair {
 		hoverSupport.setHoverSizeConstaints(500, 400);
 		hoverSupport.adapt(chart, new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-				return getHoverText(x, y, outSizeConstraint);
+				return getHoverText(x, y, outSizeConstraint, finalChart.getOptimizedCoordinateMapper());
 			}
 		});
 	}
@@ -188,7 +189,7 @@ class CrossHair {
 		return rect;
 	}
 
-	public void draw(GC gc) {
+	public void draw(GC gc, ICoordsMapping coordsMapping) {
 		if (plotArea != null && plotArea.contains(canvasX, canvasY)) {
 			int[] saveLineDash = gc.getLineDash();
 			int saveLineWidth = gc.getLineWidth();
@@ -196,7 +197,7 @@ class CrossHair {
 
 			// collect points close to cursor (x,y)
 			ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
-			int totalFound = dataPointsNear(canvasX, canvasY, HALO, dataPoints, 1); 
+			int totalFound = dataPointsNear(canvasX, canvasY, HALO, dataPoints, 1, coordsMapping); 
 
 			// snap to data point
 			DataPoint dataPoint = dataPoints.isEmpty() ? null : dataPoints.get(0);
@@ -204,8 +205,8 @@ class CrossHair {
 				IXYDataset dataset = chart.getDataset();
 				double x = chart.transformX(dataset.getX(dataPoint.series, dataPoint.index));
 				double y = chart.transformY(dataset.getY(dataPoint.series, dataPoint.index));
-				canvasX = chart.toCanvasX(x);
-				canvasY = chart.toCanvasY(y);
+				canvasX = coordsMapping.toCanvasX(x);
+				canvasY = coordsMapping.toCanvasY(y);
 			}
 
 			// draw crosshair
@@ -222,7 +223,7 @@ class CrossHair {
 //			tempGC.drawRoundRectangle(0, 0, 50, 20, 5, 5);
 
 			// draw tooltip
-			drawTooltip(gc, dataPoints, totalFound);
+			drawTooltip(gc, dataPoints, totalFound, coordsMapping);
 
 			gc.setLineDash(saveLineDash);
 			gc.setLineWidth(saveLineWidth);
@@ -230,15 +231,15 @@ class CrossHair {
 		}
 	}
 
-	private void drawTooltip(GC gc, ArrayList<DataPoint> dataPoints, int totalFound) {
+	private void drawTooltip(GC gc, ArrayList<DataPoint> dataPoints, int totalFound, ICoordsMapping coordsMapping) {
 		gc.setForeground(ColorFactory.BLACK);
 		gc.setBackground(TOOLTIP_COLOR);
 		gc.setLineStyle(SWT.LINE_SOLID);
 		gc.setFont(CROSSHAIR_NORMAL_FONT);
 
 		if (dataPoints.isEmpty() || !detailedTooltip) {
-			double x = chart.inverseTransformX(chart.fromCanvasX(canvasX));
-			double y = chart.inverseTransformY(chart.fromCanvasY(canvasY));
+			double x = chart.inverseTransformX(coordsMapping.fromCanvasX(canvasX));
+			double y = chart.inverseTransformY(coordsMapping.fromCanvasY(canvasY));
 			String coordinates = String.format("%g, %g", x, y); //FIXME precision: the x distance one pixel represents!
 			Point size = gc.textExtent(coordinates);
 			int left = canvasX + 3;
@@ -253,9 +254,9 @@ class CrossHair {
 		}
 	}
 	
-	private String getHoverText(int x, int y, SizeConstraint preferredSize) {
+	private String getHoverText(int x, int y, SizeConstraint preferredSize, ICoordsMapping coordsMapping) {
 		ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
-		int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT); 
+		int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT, coordsMapping); 
 		
 		if (!dataPoints.isEmpty()) {
 			StringBuilder htmlText = new StringBuilder();
@@ -336,7 +337,7 @@ class CrossHair {
 	}
 	
 	// XXX move this method into a VectorPlot class
-	protected int dataPointsNear(int x, int y, int d, List<DataPoint> result, int maxCount) {
+	protected int dataPointsNear(int x, int y, int d, List<DataPoint> result, int maxCount, ICoordsMapping coordsMapping) {
 		IXYDataset dataset = chart.getDataset();
 		if (dataset==null)
 			return 0;
@@ -348,14 +349,14 @@ class CrossHair {
 			if (!props.getDisplayLine())
 				continue;
 			// find data point nearest to cursor x, using binary search
-			int mid = DatasetUtils.findXLowerLimit(dataset, series, chart.inverseTransformX(chart.fromCanvasX(x)));
+			int mid = DatasetUtils.findXLowerLimit(dataset, series, chart.inverseTransformX(coordsMapping.fromCanvasX(x)));
 
 			// then search downwards and upwards for data points close to (x,y)
 			for (int i = mid; i >= 0; --i) {
 				double xx = chart.transformX(dataset.getX(series, i));
 				double yy = chart.transformY(dataset.getY(series, i));
-				int dx = chart.toCanvasX(xx) - x;
-				int dy = chart.toCanvasY(yy) - y;
+				int dx = coordsMapping.toCanvasX(xx) - x;
+				int dy = coordsMapping.toCanvasY(yy) - y;
 				if (dx * dx + dy * dy <= d * d) {
 					totalFound++;
 					if (result.size() < maxCount)  //XXX add at least one point for each series
@@ -367,8 +368,8 @@ class CrossHair {
 			for (int i = mid + 1; i < dataset.getItemCount(series); ++i) {
 				double xx = chart.transformX(dataset.getX(series, i));
 				double yy = chart.transformY(dataset.getY(series, i));
-				int dx = chart.toCanvasX(xx) - x;
-				int dy = chart.toCanvasY(yy) - y;
+				int dx = coordsMapping.toCanvasX(xx) - x;
+				int dy = coordsMapping.toCanvasY(yy) - y;
 				if (dx * dx + dy * dy <= d * d) {
 					totalFound++;
 					if (result.size() < maxCount)

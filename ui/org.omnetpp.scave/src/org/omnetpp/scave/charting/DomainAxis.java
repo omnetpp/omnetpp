@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextLayout;
+import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
@@ -87,7 +88,7 @@ class DomainAxis {
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience. 
 	 */
-	public Insets layoutHint(GC gc, Rectangle rect, Insets insets) {
+	public Insets layoutHint(GC gc, Rectangle rect, Insets insets, ICoordsMapping coordsMapping) {
 
 		// measure title height and labels height
 		gc.setFont(titleFont);
@@ -108,8 +109,8 @@ class DomainAxis {
 			int cColumns = dataset.getColumnCount();
 			int cRows = dataset.getRowCount();
 			for (int row = 0; row < cRows; ++row) {
-				int left = plot.getBarRectangle(row, 0).x;
-				int right = plot.getBarRectangle(row, cColumns - 1).right();
+				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
+				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
 				
 				LineData line = Collections.min(lines, lineDataRightEdgeComparator);
 				LabelData label;
@@ -178,7 +179,7 @@ class DomainAxis {
 		rect.width -= insets.getWidth();
 	}
 	
-	public void draw(GC gc) {
+	public void draw(GC gc, ICoordsMapping coordsMapping) {
 		org.eclipse.swt.graphics.Rectangle oldClip = gc.getClipping(); // graphics.popState() doesn't restore it!
 		Graphics graphics = new SWTGraphics(gc);
 		graphics.pushState();
@@ -200,8 +201,8 @@ class DomainAxis {
 			
 			// draw lines
 			for (int row = 0; row < cRows; ++row) {
-				int left = plot.getBarRectangle(row, 0).x;
-				int right = plot.getBarRectangle(row, cColumns - 1).right();
+				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
+				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
 				graphics.drawLine(left, rect.y + gap, right, rect.y + gap);
 			}
 			
@@ -212,8 +213,8 @@ class DomainAxis {
 			for (LineData line : lines) {
 				for (LabelData label : line.labels) {
 					graphics.restoreState();
-					int left = plot.getBarRectangle(label.row, 0).x;
-					int right = plot.getBarRectangle(label.row, cColumns - 1).right();
+					int left = plot.getBarRectangle(label.row, 0, coordsMapping).x;
+					int right = plot.getBarRectangle(label.row, cColumns - 1, coordsMapping).right();
 					Dimension size = label.size;
 					Dimension rotatedSize = label.rotatedSize;
 					

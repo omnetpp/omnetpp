@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
@@ -61,7 +62,7 @@ import org.omnetpp.scave.charting.plotter.SquareSymbol;
 public class ScalarChart extends ChartCanvas {
 	private IScalarDataset dataset;
 
-	private LinearAxis valueAxis = new LinearAxis(this, true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
+	private LinearAxis valueAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
 	private DomainAxis domainAxis = new DomainAxis(this);
 	private BarPlot plot;
 
@@ -324,6 +325,8 @@ public class ScalarChart extends ChartCanvas {
 		GC gc = new GC(Display.getCurrent());
 
 		try {
+			ICoordsMapping mapping = getOptimizedCoordinateMapper();
+
 			// preserve zoomed-out state while resizing
 			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
 			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
@@ -336,7 +339,7 @@ public class ScalarChart extends ChartCanvas {
 
 			Rectangle mainArea = remaining.getCopy();
 			Insets insetsToMainArea = new Insets();
-			domainAxis.layoutHint(gc, mainArea, insetsToMainArea);
+			domainAxis.layoutHint(gc, mainArea, insetsToMainArea, mapping);
 			// postpone valueAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
 			insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
 
@@ -350,9 +353,11 @@ public class ScalarChart extends ChartCanvas {
 				zoomToFitY();
 			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
 
+			mapping = getOptimizedCoordinateMapper();
+			
 			// now the coordinate mapping is set up, so the y axis knows what tick labels
 			// will appear, and can calculate the occupied space from the longest tick label.
-			valueAxis.layoutHint(gc, mainArea, insetsToMainArea);
+			valueAxis.layoutHint(gc, mainArea, insetsToMainArea, mapping);
 
 			// now we have the final insets, set it everywhere again 
 			domainAxis.setLayout(mainArea, insetsToMainArea);
@@ -379,25 +384,27 @@ public class ScalarChart extends ChartCanvas {
 	
 	@Override
 	protected void paintCachableLayer(GC gc) {
+		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
 		resetDrawingStylesAndColors(gc);
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 		gc.fillRectangle(gc.getClipping());
 		
-		valueAxis.drawGrid(gc);
-		plot.draw(gc);
+		valueAxis.drawGrid(gc, coordsMapping);
+		plot.draw(gc, coordsMapping);
 	}
 	
 	@Override
 	protected void paintNoncachableLayer(GC gc) {
+		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
 		resetDrawingStylesAndColors(gc);
 		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 		
 		paintInsets(gc);
-		plot.drawBaseline(gc);
+		plot.drawBaseline(gc, coordsMapping);
 		title.draw(gc);
 		legend.draw(gc);
-		valueAxis.drawAxis(gc);
-		domainAxis.draw(gc);
+		valueAxis.drawAxis(gc, coordsMapping);
+		domainAxis.draw(gc, coordsMapping);
 		drawRubberband(gc);
 		legendTooltip.draw(gc);
 		drawStatusText(gc);
