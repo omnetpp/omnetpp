@@ -1,0 +1,72 @@
+%description:
+Test @class property without C++ namespace.
+
+%file: package.ned
+
+// don't use @namespace
+
+%file: test.ned
+
+simple Simple
+{
+    parameters:
+        @class("{}::Simple");
+    gates:
+        inout g;
+}
+
+channel ChannelWithoutNamespace extends ned.IdealChannel
+{
+    parameters:
+        @class(ChannelWithoutNamespace);
+}
+
+network Test
+{
+    submodules:
+        a: Simple;
+        b: Simple;
+    connections:
+        a.g <--> ChannelWithoutNamespace <--> b.g;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+class ChannelWithoutNamespace: public cIdealChannel
+{
+  public:
+    ChannelWithoutNamespace() { }
+    virtual bool deliver(cMessage *msg, simtime_t t);
+};
+
+Define_Channel(ChannelWithoutNamespace);
+
+bool ChannelWithoutNamespace::deliver(cMessage *msg, simtime_t t)
+{
+    ev << "ChannelWithoutNamespace\n";
+    return cIdealChannel::deliver(msg, t);
+}
+
+namespace {} {
+
+class Simple : public cSimpleModule
+{
+  public:
+    Simple() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Simple);
+
+void Simple::activity()
+{
+    send(new cMessage(), gate("g$o"));
+    delete receive();
+}
+
+}; // namespace
+
+%contains: stdout
+ChannelWithoutNamespace

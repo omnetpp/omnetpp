@@ -1,0 +1,45 @@
+%description:
+Test combined @namespace and @class properties.
+
+%file: package.ned
+
+@namespace(ClassNamespace);
+
+%file: test.ned
+
+simple Simple
+{
+    parameters:
+        @class(SimpleClass);
+}
+
+network Test
+{
+    submodules:
+        a: Simple;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace ClassNamespace {
+
+class SimpleClass : public cSimpleModule
+{
+  public:
+    SimpleClass() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(SimpleClass);
+
+void SimpleClass::activity()
+{
+    ev << "SimpleClass\n";
+}
+
+}; //namespace
+
+%contains: stdout
+SimpleClass

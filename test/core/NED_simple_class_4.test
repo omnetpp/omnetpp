@@ -1,0 +1,47 @@
+%description:
+Test @class property overriding.
+
+%file: test.ned
+
+simple Super
+{
+    parameters:
+        @class(SuperClass);
+}
+
+simple SimpleOverride extends Super
+{
+    parameters:
+        @class(OverrideClass);
+}
+
+network Test
+{
+    submodules:
+        a: SimpleOverride;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class OverrideClass : public cSimpleModule
+{
+  public:
+    OverrideClass() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(OverrideClass);
+
+void OverrideClass::activity()
+{
+    ev << "OverrideClass\n";
+}
+
+}; //namespace
+
+%contains: stdout
+OverrideClass
