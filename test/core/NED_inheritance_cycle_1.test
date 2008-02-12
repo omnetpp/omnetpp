@@ -1,0 +1,21 @@
+%description:
+Test simple module inheritance cycle.
+
+%file: test.ned
+
+simple Simple1 extends Simple2
+{
+}
+
+simple Simple2 extends Simple1
+{
+}
+
+network Test
+{
+    submodules:
+        a: Simple1;
+}
+
+%contains: stdout
+// TODO: report an error

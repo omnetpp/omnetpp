@@ -1,0 +1,28 @@
+%description:
+Test simple module inheritance cycle.
+
+%file: test.ned
+
+module Module1
+{
+    submodules:
+        module2: Module2;
+}
+
+module Module2
+{
+    submodules:
+        module1: Module1;
+}
+
+network Test
+{
+    submodules:
+        m: Module1;
+}
+
+// the following prevents hanging up
+THIS HANGS UP NOW!
+
+%contains: stdout
+// TODO: report an error
