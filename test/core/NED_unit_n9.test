@@ -1,0 +1,44 @@
+%description:
+Test units in NED.
+
+%file: test.ned
+
+// unit cases: not provided, SI, non-SI, unknown
+simple Simple
+{
+    parameters:
+        double p1 = 1unknownA @unit(unknownB); // non convertible units
+}
+
+network Test
+{
+    submodules:
+        a: Simple;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class Simple : public cSimpleModule
+{
+  public:
+    Simple() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Simple);
+
+void Simple::activity()
+{
+   ev << "This should not be printed: " << par("p1").doubleValue() << "\n";
+}
+
+}; //namespace
+
+%exitcode: 1
+
+%contains: stdout
+wrong units: should be 'unknownB' instead of 'unknownA'.
