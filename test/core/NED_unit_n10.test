@@ -1,13 +1,12 @@
 %description:
-Negative test case for assignment with units in NED.
+Negative test for expressions that they do not have units in NED.
 
 %file: test.ned
 
-// unit cases: not provided, SI, non-SI, unknown
 simple Simple
 {
     parameters:
-        double p1 = 1s @unit(w); // non convertible units
+        double p1 = floor(10.2ms) + 0.5 @unit(s); // expression units are not supported
 }
 
 network Test
@@ -41,4 +40,4 @@ void Simple::activity()
 %exitcode: 1
 
 %contains: stdout
-wrong units: should be 'w' instead of 's' (second).
+// TODO:

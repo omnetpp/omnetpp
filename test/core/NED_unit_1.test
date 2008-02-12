@@ -1,5 +1,5 @@
 %description:
-Test units in NED.
+Positive test cases for assignments with units in NED.
 
 %file: test.ned
 
