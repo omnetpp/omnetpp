@@ -168,6 +168,13 @@ public class BrowseDataPageAccess extends CompositeAccess {
 		return getSelectedTable().getTableColumn(columnName);
 	}
 	
+	@UIStep
+	public void sortByTableColumn(String columnName, int direction) {
+		TableColumnAccess column = getColumn(columnName);
+		column.sort(direction);
+		
+	}
+	
 	protected TableAccess findDataTable(Composite composite) {
 		return (TableAccess)createAccess(Access.findDescendantControl(composite, Table.class));
 	}

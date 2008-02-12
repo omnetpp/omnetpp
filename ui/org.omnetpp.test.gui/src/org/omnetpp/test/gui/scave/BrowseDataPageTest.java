@@ -1,5 +1,6 @@
 package org.omnetpp.test.gui.scave;
 
+import static org.omnetpp.test.gui.access.BrowseDataPageAccess.FILE_NAME;
 import static org.omnetpp.test.gui.access.BrowseDataPageAccess.RUN_ID;
 import static org.omnetpp.test.gui.access.BrowseDataPageAccess.SCALARS;
 import static org.omnetpp.test.gui.access.BrowseDataPageAccess.VECTORS;
@@ -37,10 +38,12 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		Assert.assertNotNull(browseDataPage);
 		browseDataPage.ensureScalarsSelected();
 		browseDataPage.showAllTableColumns();
+		browseDataPage.sortByTableColumn(FILE_NAME, SWT.UP);
 		browseDataPage.getScalarsTable().assertContent(buildScalarsTableContent());
 		
 		browseDataPage.ensureVectorsSelected();
 		browseDataPage.showAllTableColumns();
+		browseDataPage.sortByTableColumn(FILE_NAME, SWT.UP);
 		browseDataPage.getVectorsTable().assertContent(buildVectorsTableContent());
 
 		browseDataPage.ensureHistogramsSelected();
@@ -205,7 +208,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 	protected String[][] buildVectorsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
-			content[i] = buildVectorsTableRow(2-i); // TODO sorting
+			content[i] = buildVectorsTableRow(i+1);
 		return content;
 	}
 	
@@ -239,7 +242,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 	protected String[][] buildScalarsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
-			content[i] = buildScalarsTableRow(2-i);
+			content[i] = buildScalarsTableRow(i+1);
 		return content;
 	}
 	
