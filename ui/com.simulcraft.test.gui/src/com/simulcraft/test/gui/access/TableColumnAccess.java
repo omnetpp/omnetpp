@@ -33,11 +33,10 @@ public class TableColumnAccess extends ClickableWidgetAccess
 	
 	@Override
 	protected Point getAbsolutePointToClick() {
-        // center of the header. Note: header is at NEGATIVE table coordinates! (origin is top-left of data area)
 	    getTable().assertHeaderVisible();
         Table tree = (Table)getWidget().getParent();
-        Point point = tree.toDisplay(getX() + getWidget().getWidth()/2, -tree.getHeaderHeight()/2);
-        Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(point));
+        Point point = tree.toDisplay(getX() + getWidget().getWidth()/2, tree.getHeaderHeight()/2);
+       	Assert.assertTrue("point to click is scrolled out",	getTable().getAbsoluteBounds().contains(point));
         Assert.assertTrue("column has zero width, cannot click", getWidget().getWidth() > 0);
         return point;
 	}
@@ -73,5 +72,21 @@ public class TableColumnAccess extends ClickableWidgetAccess
 	    }
 	    Assert.assertTrue("column is not in the tree", false);
 	    return 0;
+	}
+	
+	/**
+	 * Sorts the table by this column in SWT.UP or SWT.DOWN direction.
+	 */
+	@UIStep
+	public void sort(int direction) {
+		Table table = getWidget().getParent();
+		if (table.getSortColumn() != getWidget() || table.getSortDirection() != direction) {
+			click();
+			if (table.getSortDirection() != direction)
+				click();
+		}
+		Assert.assertTrue("failed to sort table by " + getWidget().getText(),
+				table.getSortColumn() == getWidget() && table.getSortDirection() == direction);
+		
 	}
 }
