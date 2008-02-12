@@ -139,7 +139,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 
 	private void createFieldEditors(Composite form, String category) {
 		if (category.equals(CAT_GENERAL)) {
-			addTextFieldEditor(form, CFGID_NETWORK, "Network to simulate");
+			addTextFieldEditor(form, CFGID_NETWORK, "Network to simulate"); //FIXME use ComboBoxFieldEditor
 			addSpacer(form);
 			Group group1 = createGroup(form, "Setup");
 			addTextFieldEditor(group1, CFGID_NED_PATH, "NED file path");
@@ -158,7 +158,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
 			addCheckboxFieldEditor(group2, CFGID_INI_WARNINGS, "Ini warnings"); //XXX
 			addSpacer(form);
-			addTextFieldEditor(form, CFGID_SIMTIME_SCALE, "Simtime scale exponent");
+			addTextFieldEditor(form, CFGID_SIMTIME_SCALE, "Simtime scale exponent"); //FIXME use ComboBoxFieldEditor (which displays "ms", "us", "ns", etc)
 			addTextFieldEditor(form, CFGID_TOTAL_STACK_KB, "Total activity() stack (Kb)");
 			addTextFieldEditor(form, CFGID_FINGERPRINT, "Fingerprint to verify");
 			addCheckboxFieldEditor(form, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
@@ -240,7 +240,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addSpacer(form);
 			Group group4 = createGroup(form, "Paths");
 			addTextFieldEditor(group4, CFGID_TKENV_IMAGE_PATH, "Image path");
-			addTextFieldEditor(group4, CFGID_TKENV_PLUGIN_PATH, "Plugin path");
+			addTextFieldEditor(group4, CFGID_TKENV_PLUGIN_PATH, "Plugin path");  //FIXME remove (not needed)
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK_KB, "Tkenv extra stack (Kb)");
 		}

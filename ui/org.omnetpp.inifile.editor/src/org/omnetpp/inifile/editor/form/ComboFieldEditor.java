@@ -2,6 +2,8 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
@@ -31,6 +33,7 @@ import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
  * 
  * @author Andras
  */
+//FIXME this is unfinished code.
 //XXX disable Combo when value is not editable (comes from included file)?
 public class ComboFieldEditor extends FieldEditor {
 	private Combo combo;
@@ -122,6 +125,15 @@ public class ComboFieldEditor extends FieldEditor {
 		redraw(); // otherwise an obsolete error decoration doesn't disappear 
 	}
 
+	public void setComboContents(List<String> list) {
+        String oldValue = combo.getText();
+	    combo.removeAll();
+	    for (String i : list)
+	        combo.add(i);
+	    combo.setText(oldValue);
+	    reread();
+	}
+	
 	@Override
 	public void commit() {
 		if (isEdited) {

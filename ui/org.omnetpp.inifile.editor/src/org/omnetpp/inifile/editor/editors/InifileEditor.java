@@ -57,6 +57,7 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 // that's because forms are filled in an asyncExec() that refers to InifileAnalyzer, 
 // and InifileAnalyzer is synchronized on NEDResources and has to wait until NED validation ends.
 // Solution: NED validation shouldn't lock NEDResources? (ie run validation on a *clone* of the trees)
+//TODO for units, tooltip should display "seconds" not only "s" 
 public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
 	/* editor pages */
 	private InifileTextEditor textEditor;
