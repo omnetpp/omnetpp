@@ -408,8 +408,9 @@ public class DatasetManager {
 	 * the format string. 
 	 */
 	private static String getLineNameFormat(ResultItem[] items) {
-		if (items.length == 0)
-			return "";
+
+		if (items.length <= 1)
+			return "{module} {name}";
 		
 		StringBuffer sbFormat = new StringBuffer();
 		char separator = ' ';
@@ -428,7 +429,7 @@ public class DatasetManager {
 		if (sbFormat.length() > 0)
 			sbFormat.deleteCharAt(sbFormat.length() - 1);
 		else
-			sbFormat.append("{index}");
+			sbFormat.append("{module} {name} - {index}");
 		
 		return sbFormat.toString();
 	}
