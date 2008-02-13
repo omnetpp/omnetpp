@@ -79,7 +79,7 @@ class NEDXML_API NEDResourceCache
     // table of NED type declarations; key is fully qualified name, and
     // elements point into the files map
     NEDTypeInfoMap nedTypes;
-    
+
     // cached keys of the nedTypes map, for getTypeNames(); zero size means out of date
     mutable std::vector<std::string> nedTypeNames;
 
@@ -118,7 +118,7 @@ class NEDXML_API NEDResourceCache
     virtual int loadNedSourceFolder(const char *foldername);
 
     /**
-     * To be called after all NED folders / files have been loaded. May be redefined 
+     * To be called after all NED folders / files have been loaded. May be redefined
      * to issue errors for components that are unresolved because of missing
      * dependencies.
      */
@@ -133,7 +133,7 @@ class NEDXML_API NEDResourceCache
      * package declaration inside the NED file.
      */
     virtual void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
-    
+
     /**
      * Add a file (parsed into an object tree) to the cache. If the file
      * was already added, no processing takes place and the function
@@ -150,9 +150,17 @@ class NEDXML_API NEDResourceCache
     /** Look up a fully qualified NED type name from the cache. Returns NULL if not found. */
     virtual NEDTypeInfo *lookup(const char *qname) const;
 
-    /** Resolves the given NED type name in the given context. Returns "" if not found. */
+    /** Like lookup(), but asserts non-NULL return value */
+    virtual NEDTypeInfo *getDecl(const char *qname) const;
+
+    /** Resolves the given NED type name in the given context, among the given type names. Returns "" if not found. */
     virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename, INEDTypeNames *qnames);
-    
+
+    /** Resolves NED type name, based on the NED files loaded */
+    virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename) {
+        return NEDResourceCache::resolveNedType(context, nedtypename, &NEDResourceCache::CachedTypeNames(this));
+    }
+
     /** Available NED type names */
     virtual const std::vector<std::string>& getTypeNames() const;
 

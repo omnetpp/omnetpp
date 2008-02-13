@@ -61,9 +61,8 @@ void cNEDLoader::addNedType(const char *qname, NEDElement *node)
 
 cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const
 {
-    cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(lookup(qname));
-    if (!decl)
-        throw cRuntimeError("NED declaration '%s' not found", qname);
+    cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(NEDResourceCache::getDecl(qname));
+    ASSERT(decl);
     return decl;
 }
 
@@ -106,7 +105,7 @@ void cNEDLoader::registerNedTypes()
 void cNEDLoader::registerNedType(const char *qname, NEDElement *node)
 {
     // Note: base class (nedxml's NEDResourceCache) has already checked for duplicates, no need here
-    cNEDDeclaration *decl = new cNEDDeclaration(qname, node);
+    cNEDDeclaration *decl = new cNEDDeclaration(this, qname, node);
     nedTypes[qname] = decl;
 
     // if module or channel, register corresponding object which can be used to instantiate it
@@ -122,7 +121,7 @@ void cNEDLoader::registerNedType(const char *qname, NEDElement *node)
 void cNEDLoader::doneLoadingNedFiles()
 {
     NEDResourceCache::doneLoadingNedFiles();
-    
+
     // register NED types from all the files we've loaded
     registerNedTypes();
 

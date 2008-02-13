@@ -88,20 +88,8 @@ class SIM_API cNEDLoader : public NEDResourceCache
     /** Reimplemented from NEDResourceCache */
     virtual void doneLoadingNedFiles();
 
-    /**
-     * Like lookup(), but throws an error if the declaration is not found,
-     * so it never returns NULL.
-     */
+    /** Redefined to make return type more specific. */
     virtual cNEDDeclaration *getDecl(const char *qname) const;
-
-    /**
-     * Resolves NED module/channel/moduleinterface/channelinterface type name,
-     * based on the NED files loaded. This lookup is need for resolving inheritance
-     * ("extends", "like").
-     */
-    virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename) {
-        return NEDResourceCache::resolveNedType(context, nedtypename, &NEDResourceCache::CachedTypeNames(this));
-    }
 
     /**
      * Resolve a NED module/channel type name, for a submodule or channel

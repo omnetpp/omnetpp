@@ -352,6 +352,8 @@ $O/nedtools.obj: nedtools.cc \
 $O/nedtypeinfo.obj: nedtypeinfo.cc \
   nederror.h \
   nedtypeinfo.h \
+  nedresourcecache.h \
+  ned2generator.h \
   nedelement.h \
   nedxmldefs.h \
   nedelements.h

@@ -232,9 +232,17 @@ NEDTypeInfo *NEDResourceCache::lookup(const char *qname) const
     return i==nedTypes.end() ? NULL : i->second;
 }
 
+NEDTypeInfo *NEDResourceCache::getDecl(const char *qname) const
+{
+    NEDTypeInfo *decl = lookup(qname);
+    if (!decl)
+        throw NEDException("NED declaration '%s' not found", qname);
+    return decl;
+}
+
 void NEDResourceCache::addNedType(const char *qname, NEDElement *node)
 {
-    NEDTypeInfo *component = new NEDTypeInfo(qname, node);
+    NEDTypeInfo *component = new NEDTypeInfo(this, qname, node);
     nedTypes[qname] = component;
     nedTypeNames.clear(); // invalidate
 }
