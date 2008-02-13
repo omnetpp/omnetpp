@@ -1,0 +1,21 @@
+%description:
+Test "like" submodules: "no such module type"
+
+%file: test.ned
+
+moduleinterface IFooModule
+{
+}
+
+network Test
+{
+    parameters:
+        string moduleType = "foo";
+    submodules:
+        a: <moduleType> like IFooModule;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+no module type named `foo'

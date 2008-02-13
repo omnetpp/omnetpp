@@ -1,0 +1,37 @@
+%description:
+Test "like" modules
+
+%file: test.ned
+module DefaultPackageModule like test.IFooModule
+{
+}
+
+%file: chan/test.ned
+package chan;
+module ChanPackageModule like test.IFooModule
+{
+}
+
+%file: test/test.ned
+package test;
+
+moduleinterface IFooModule
+{
+}
+
+network Test
+{
+    parameters:
+        string moduleType1 = "DefaultPackageModule";
+        string moduleType2 = "ChanPackageModule";
+    submodules:
+        a: <moduleType1> like IFooModule;
+        b: <moduleType2> like IFooModule;
+}
+
+%exitcode: 0
+
+%network: test.Test
+
+%contains-regex: stdout
+TODO need some way to test what's been built

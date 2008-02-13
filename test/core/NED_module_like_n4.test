@@ -1,0 +1,33 @@
+%description:
+Test "like" submodules: "ambiguous module type"
+
+%file: package1/test.ned
+package package1;
+module FooModule like IFooModule
+{
+}
+
+%file: package2/test.ned
+package package2;
+module FooModule like IFooModule
+{
+}
+
+%file: test.ned
+
+moduleinterface IFooModule
+{
+}
+
+network Test
+{
+    parameters:
+        string moduleType = "FooModule";
+    submodules:
+        a: <moduleType> like IFooModule;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+more than one module types named `FooModule'

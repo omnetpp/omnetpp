@@ -1,0 +1,17 @@
+%description:
+Test "like" submodules: "module interface cannot be resolved"
+
+%file: test.ned
+
+network Test
+{
+    parameters:
+        string moduleType = "foo";
+    submodules:
+        a: <moduleType> like IMissingType;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+cannot resolve module interface `IMissingType'

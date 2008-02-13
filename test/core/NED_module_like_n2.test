@@ -1,0 +1,21 @@
+%description:
+Test "like" submodules: "given interface is not a module interface"
+
+%file: test.ned
+
+channelinterface IFoo
+{
+}
+
+network Test
+{
+    parameters:
+        string moduleType = "foo";
+    submodules:
+        a: <moduleType> like IFoo;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+`IFoo' is not a module interface
