@@ -24,8 +24,12 @@
 
 NAMESPACE_BEGIN
 
+
+//XXX *** CURRENTLY NOT IN USE ***
+
+
 using std::ostream;
-class NEDSymbolTable;
+class NEDTypeResolver;
 
 
 /**
@@ -59,7 +63,7 @@ class NEDXML_API CppExpressionGenerator
 
     static int count;
     ostream& out;
-    NEDSymbolTable *symboltable;
+    NEDTypeResolver *resolver;
     NEDExpressionMap exprMap;
 
     enum {
@@ -91,7 +95,7 @@ class NEDXML_API CppExpressionGenerator
     /**
      * Constructor.
      */
-    CppExpressionGenerator(ostream& out, NEDSymbolTable *symboltable);
+    CppExpressionGenerator(ostream& out, NEDTypeResolver *resolver);
 
     /**
      * Destructor.

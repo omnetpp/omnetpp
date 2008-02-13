@@ -35,8 +35,7 @@ OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o \
       $O/nedxmlparser.o $O/nedsaxhandler.o $O/saxparser_$(XMLPARSER).o \
       $O/ned1.tab.o $O/lex.ned1yy.o \
       $O/msg2.tab.o $O/lex.msg2yy.o \
-      $O/nedresourcecache.o $O/nedtypeinfo.o \
-      $O/nedcompiler.o
+      $O/nedresourcecache.o $O/nedtypeinfo.o
 
 #
 # Automatic rules

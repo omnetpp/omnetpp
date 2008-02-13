@@ -27,6 +27,8 @@ NAMESPACE_BEGIN
 
 class NEDResourceCache;
 
+//XXX *** CURRENTLY NOT IN USE ***
+
 /**
  * Performs semantic validation. Should be called after tree passed
  * DTD validation and syntax validation.
@@ -37,7 +39,7 @@ class NEDXML_API NEDSemanticValidator : public NEDValidatorBase
 {
   protected:
     bool parsedExpressions;
-    NEDResourceCache *nedresourcecache;
+    NEDResourceCache *resolver;
 
     // temporary variables:
     NEDElement *moduletypedecl;
@@ -51,7 +53,7 @@ class NEDXML_API NEDSemanticValidator : public NEDValidatorBase
     // internal helper
     NEDElement *getXXXDeclaration(const char *name, int tagcode1, int tagcode2=-1);
 
-    // these utility methods look up name in nedresourcecache, and add an error if the type doesn't match
+    // these utility methods look up name in resolver, and add an error if the type doesn't match
     NEDElement *getModuleDeclaration(const char *name);
     NEDElement *getChannelDeclaration(const char *name);
     NEDElement *getModuleInterfaceDeclaration(const char *name);
@@ -62,7 +64,7 @@ class NEDXML_API NEDSemanticValidator : public NEDValidatorBase
 
   public:
     /** Constructor */
-    NEDSemanticValidator(bool parsedExpr, NEDResourceCache *nedcache, NEDErrorStore *e);
+    NEDSemanticValidator(bool parsedExpr, NEDResourceCache *resolver, NEDErrorStore *e);
 
     /** Destructor */
     virtual ~NEDSemanticValidator();

@@ -23,17 +23,20 @@
 
 #include "nedelements.h"
 #include "cppexprgenerator.h"
-#include "nedcompiler.h" // for NEDSymbolTable
+#include "nedcompiler.h" // for NEDTypeResolver
+
+
+//XXX *** CURRENTLY NOT IN USE ***
+
 
 NAMESPACE_BEGIN
-
 
 /**
  * Simple front-end to NEDCppGenerator.
  *
  * @ingroup CppGenerator
  */
-void generateCpp(std::ostream& out, std::ostream& outh, NEDElement *node, NEDSymbolTable *symtab, NEDErrorStore *errors);
+void generateCpp(std::ostream& out, std::ostream& outh, NEDElement *node, NEDTypeResolver *resolver, NEDErrorStore *errors);
 
 
 /**
@@ -62,7 +65,7 @@ class NEDXML_API NEDCppGenerator
 
     CppExpressionGenerator exprgen;
 
-    NEDSymbolTable *symboltable;
+    NEDTypeResolver *resolver;
 
   public:
     /**
@@ -70,7 +73,7 @@ class NEDXML_API NEDCppGenerator
      * (stream for the C++ source code and stream for the C++ header),
      * and the symbol table.
      */
-    NEDCppGenerator(std::ostream& out, std::ostream& outh, NEDSymbolTable *symtab, NEDErrorStore *e);
+    NEDCppGenerator(std::ostream& out, std::ostream& outh, NEDTypeResolver *resolver, NEDErrorStore *e);
 
     /**
      * Destructor.

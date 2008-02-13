@@ -235,8 +235,8 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         return false;
     }
 
-    // symbol table is needed for further validation and C++ code generation
-//XXX    NEDSymbolTable symboltable;
+    // NED type resolver is needed for further validation and C++ code generation
+//XXX    NEDTypeResolver resolver;
 
     // semantic validation (will load imports too)
     if (!opt_novalidation)
@@ -244,13 +244,13 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         if (!opt_noimports)
         {
             // invoke NEDCompiler (will process imports and do semantic validation)
-//XXX            NEDCompiler nedc(&filecache, &symboltable, &importresolver, errors);
+//XXX            NEDCompiler nedc(&filecache, &resolver, &importresolver, errors);
 //XXX            nedc.validate(tree);
         }
         else
         {
             // simple semantic validation (without imports)
-//XXX            NEDSemanticValidator validator(!opt_unparsedexpr,&symboltable, errors);
+//XXX            NEDSemanticValidator validator(!opt_unparsedexpr,&resolver, errors);
 //XXX            validator.validate(tree);
         }
     }
@@ -358,7 +358,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
             ofstream out(outfname);
             //ofstream outh(outhdrfname);
             ofstream outh; // TBD open if we process msg files (not yet supported)
-//XXX            generateCpp(out, outh, tree, &symboltable);
+//XXX            generateCpp(out, outh, tree, &resolver);
             out.close();
             outh.close();
         }

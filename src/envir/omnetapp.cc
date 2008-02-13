@@ -737,7 +737,7 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
     {
         // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
         if (!parentmod->parentModule())
-            throw new cRuntimeError("incomplete partitioning: missing value for '%s'",parname);
+            throw cRuntimeError("incomplete partitioning: missing value for '%s'",parname);
         // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into
         return true;
     }
@@ -753,15 +753,15 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
         // is the Id of the local partition, otherwise false.
         EnumStringIterator procIdIter(procIds);
         if (procIdIter.error())
-            throw new cRuntimeError("wrong partitioning: syntax error in value '%s' for '%s' "
-                                    "(allowed syntax: '', '*', '1', '0,3,5-7')", procIds, parname);
+            throw cRuntimeError("wrong partitioning: syntax error in value '%s' for '%s' "
+                                "(allowed syntax: '', '*', '1', '0,3,5-7')", procIds, parname);
         int numPartitions = parsimcomm->getNumPartitions();
         int myProcId = parsimcomm->getProcId();
         for (; procIdIter()!=-1; procIdIter++)
         {
             if (procIdIter() >= numPartitions)
-                throw new cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
-                                        procIdIter(), parname, numPartitions);
+                throw cRuntimeError("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
+                                    procIdIter(), parname, numPartitions);
             if (procIdIter() == myProcId)
                 return true;
         }

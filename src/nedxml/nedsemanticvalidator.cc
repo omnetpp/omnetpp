@@ -24,11 +24,11 @@
 USING_NAMESPACE
 
 
-NEDSemanticValidator::NEDSemanticValidator(bool parsedExpr, NEDResourceCache *nedcache, NEDErrorStore *e)
+NEDSemanticValidator::NEDSemanticValidator(bool parsedExpr, NEDResourceCache *res, NEDErrorStore *e)
    : NEDValidatorBase(e)
 {
     parsedExpressions = parsedExpr;
-    nedresourcecache = nedcache;
+    resolver = res;
 }
 
 NEDSemanticValidator::~NEDSemanticValidator()
@@ -37,7 +37,7 @@ NEDSemanticValidator::~NEDSemanticValidator()
 
 NEDElement *NEDSemanticValidator::getXXXDeclaration(const char *name, int tagcode1, int tagcode2)
 {
-    NEDTypeInfo *component = nedresourcecache->lookup(name);
+    NEDTypeInfo *component = resolver->lookup(name);
     if (!component)
         return NULL;
 

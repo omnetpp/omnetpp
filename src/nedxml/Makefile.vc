@@ -34,8 +34,7 @@ OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj \
       $O/nedxmlparser.obj $O/nedsaxhandler.obj $O/saxparser_$(XMLPARSER).obj \
       $O/ned1.tab.obj $O/lex.ned1yy.obj \
       $O/msg2.tab.obj $O/lex.msg2yy.obj \
-      $O/nedresourcecache.obj $O/nedtypeinfo.obj \
-      $O/nedcompiler.obj
+      $O/nedresourcecache.obj $O/nedtypeinfo.obj
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DNEDXML_EXPORT
@@ -133,34 +132,25 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/cppexprgenerator.obj: cppexprgenerator.cc \
-  nedcompiler.h \
   cppexprgenerator.h \
   nederror.h \
   nedelements.h \
-  nedresourcecache.h \
   nedelement.h \
-  nedxmldefs.h \
-  nedtypeinfo.h
+  nedxmldefs.h
 $O/cppgenerator.obj: cppgenerator.cc \
   nedelements.h \
   cppgenerator.h \
   nederror.h \
   nedelement.h \
   nedxmldefs.h \
-  cppexprgenerator.h \
-  nedcompiler.h \
-  nedresourcecache.h \
-  nedtypeinfo.h
+  cppexprgenerator.h
 $O/cppmsggenerator.obj: cppmsggenerator.cc \
   nedelements.h \
   cppgenerator.h \
   nederror.h \
   nedelement.h \
   nedxmldefs.h \
-  cppexprgenerator.h \
-  nedcompiler.h \
-  nedresourcecache.h \
-  nedtypeinfo.h
+  cppexprgenerator.h
 $O/example_m.obj: example_m.cc \
   example_m.h
 $O/lex.msg2yy.obj: lex.msg2yy.cc \
@@ -224,21 +214,6 @@ $O/ned2generator.obj: ned2generator.cc \
   nedelements.h \
   nedelement.h \
   nedxmldefs.h
-$O/nedcompiler.obj: nedcompiler.cc \
-  nederror.h \
-  nedcompiler.h \
-  nedparser.h \
-  neddtdvalidator.h \
-  nedsyntaxvalidator.h \
-  nedsemanticvalidator.h \
-  nedelement.h \
-  nedxmldefs.h \
-  nedelements.h \
-  nedresourcecache.h \
-  nedtypeinfo.h \
-  nedyydefs.h \
-  neddtdvalidatorbase.h \
-  nedvalidator.h
 $O/neddtdvalidator.obj: neddtdvalidator.cc \
   nederror.h \
   neddtdvalidator.h \

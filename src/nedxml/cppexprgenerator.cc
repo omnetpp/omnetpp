@@ -108,8 +108,8 @@ static void isGateOrSubmodule(ObsoleteIdentElement *ident, bool& isgate, bool& i
 
 int CppExpressionGenerator::count = 0;
 
-CppExpressionGenerator::CppExpressionGenerator(ostream& _out, NEDSymbolTable *_symboltable) :
-  out(_out), symboltable(_symboltable)
+CppExpressionGenerator::CppExpressionGenerator(ostream& o, NEDTypeResolver *res) :
+  out(o), resolver(res)
 {
 }
 
@@ -126,7 +126,7 @@ void CppExpressionGenerator::doCollectExpressions(NEDElement *node, NEDElement *
     if (node->getTagCode()==NED_SUBMODULE || node->getTagCode()==NED_NETWORK)
     {
         const char *typeName = node->getAttribute("type-name");
-        NEDElement *typeDecl = symboltable->getModuleDeclaration(typeName);
+        NEDElement *typeDecl = resolver->getModuleDeclaration(typeName);
         if (!typeDecl)
             INTERNAL_ERROR1(node,"doCollectExpressions(): module type not found: %s", typeName);
         currentSubmodTypeDecl = typeDecl;

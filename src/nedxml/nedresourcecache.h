@@ -69,6 +69,7 @@ class NEDXML_API NEDResourceCache
           virtual int size() const {return p->getTypeNames().size();}
           virtual const char *get(int k) const {return p->getTypeNames()[k].c_str();}
       };
+
   protected:
     typedef std::map<std::string, NEDElement *> NEDFileMap;
     typedef std::map<std::string, NEDTypeInfo *> NEDTypeInfoMap;
@@ -88,19 +89,26 @@ class NEDXML_API NEDResourceCache
     typedef std::map<std::string,std::string> StringMap;
     StringMap folderPackages;
 
+    struct PendingNedType {
+        std::string qname;
+        NEDElement *node;
+        PendingNedType(const char *q, NEDElement *e) {qname=q;node=e;}
+    };
+
+    // storage for NED components not resolved yet because of missing dependencies
+    std::vector<PendingNedType> pendingList;
+
   protected:
     virtual void registerBuiltinDeclarations();
     virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage);
     virtual void doLoadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
     virtual NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
     virtual std::string determineRootPackageName(const char *foldername);
-    virtual void collectComponents(NEDElement *node, const std::string& namespaceprefix);
-
-    /**
-     * Wrap the given NEDElement into a NEDTypeInfo and add it to the table.
-     * Redefine it if you want to subclass NEDTypeInfo.
-     */
-    virtual void addNedType(const char *qname, NEDElement *node);
+    virtual void collectNedTypes(NEDElement *node, const std::string& namespaceprefix);
+    virtual void collectNedType(const char *qname, NEDElement *node);
+    virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
+    virtual void registerPendingNedTypes();
+    virtual void registerNedType(const char *qname, NEDElement *node);
 
   public:
     /** Constructor */

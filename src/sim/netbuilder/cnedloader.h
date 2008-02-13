@@ -23,16 +23,6 @@
 
 NAMESPACE_BEGIN
 
-class cProperties;
-class cProperty;
-
-class NEDElement;
-class ParamElement;
-class GateElement;
-class PropertyElement;
-
-
-
 /**
  * Stores dynamically loaded NED files, and one can look up NED declarations
  * of modules, channels, module interfaces and channel interfaces in them.
@@ -54,29 +44,14 @@ class SIM_API cNEDLoader : public NEDResourceCache
 
   protected:
     // the singleton instance
-    static cNEDLoader *instance_;
-
-    struct PendingNedType {
-        std::string qname;
-        NEDElement *node;
-        PendingNedType(const char *q, NEDElement *e) {qname=q;node=e;}
-    };
-
-    // storage for NED components not resolved yet because of missing dependencies
-    std::vector<PendingNedType> pendingList;
+    static cNEDLoader *inst;
 
   protected:
-    /** Redefined to return a cNEDDeclaration. */
-    virtual void addNedType(const char *qname, NEDElement *node);
-
-  protected:
-    // utility functions
-    virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
-    virtual void registerNedTypes();
-    virtual void registerNedType(const char *qname, NEDElement *node);
-
     // constructor is protected, because we want only one instance
     cNEDLoader()  {}
+
+    // reimplemented so that we can add cModuleType/cChannelType
+    virtual void registerNedType(const char *qname, NEDElement *node);
 
   public:
     /** Access to the singleton instance */
@@ -84,9 +59,6 @@ class SIM_API cNEDLoader : public NEDResourceCache
 
     /** Disposes of the singleton instance */
     static void clear();
-
-    /** Reimplemented from NEDResourceCache */
-    virtual void doneLoadingNedFiles();
 
     /** Redefined to make return type more specific. */
     virtual cNEDDeclaration *getDecl(const char *qname) const;

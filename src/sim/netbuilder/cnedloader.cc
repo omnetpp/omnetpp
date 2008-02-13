@@ -36,75 +36,26 @@
 
 USING_NAMESPACE
 
-cNEDLoader *cNEDLoader::instance_;
+cNEDLoader *cNEDLoader::inst;
 
 cNEDLoader *cNEDLoader::instance()
 {
-    if (!instance_) {
-        instance_ = new cNEDLoader();
-        instance_->registerBuiltinDeclarations();
+    if (!inst) {
+        inst = new cNEDLoader();
+        inst->registerBuiltinDeclarations();
     }
-    return instance_;
+    return inst;
 }
 
 void cNEDLoader::clear()
 {
-    delete instance_;
-    instance_ = NULL;
-}
-
-void cNEDLoader::addNedType(const char *qname, NEDElement *node)
-{
-    // we'll process it later, from doneLoadingNedFiles()
-    pendingList.push_back(PendingNedType(qname,node));
-}
-
-cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const
-{
-    cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(NEDResourceCache::getDecl(qname));
-    ASSERT(decl);
-    return decl;
-}
-
-bool cNEDLoader::areDependenciesResolved(const char *qname, NEDElement *node)
-{
-    // check that all base types are resolved
-    NEDLookupContext context = getParentContextOf(qname, node);
-    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-    {
-        if (child->getTagCode()!=NED_EXTENDS && child->getTagCode()!=NED_INTERFACE_NAME)
-            continue;
-
-        const char *name = child->getAttribute("name");
-        std::string qname = resolveNedType(context, name);
-        if (qname.empty())
-            return false;
-    }
-    return true;
-}
-
-void cNEDLoader::registerNedTypes()
-{
-    bool again = true;
-    while (again)
-    {
-        again = false;
-        for (int i=0; i<(int)pendingList.size(); i++)
-        {
-            PendingNedType type = pendingList[i];
-            if (areDependenciesResolved(type.qname.c_str(), type.node))
-            {
-                registerNedType(type.qname.c_str(), type.node);
-                pendingList.erase(pendingList.begin() + i--);
-                again = true;
-            }
-        }
-    }
+    delete inst;
+    inst = NULL;
 }
 
 void cNEDLoader::registerNedType(const char *qname, NEDElement *node)
 {
-    // Note: base class (nedxml's NEDResourceCache) has already checked for duplicates, no need here
+    // wrap, and add to the table (Note: we cannot reuse base class impl, because it creates a NEDTypeInfo)
     cNEDDeclaration *decl = new cNEDDeclaration(this, qname, node);
     nedTypes[qname] = decl;
 
@@ -118,20 +69,10 @@ void cNEDLoader::registerNedType(const char *qname, NEDElement *node)
         componentTypes.instance()->add(type);
 }
 
-void cNEDLoader::doneLoadingNedFiles()
+cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const
 {
-    NEDResourceCache::doneLoadingNedFiles();
-
-    // register NED types from all the files we've loaded
-    registerNedTypes();
-
-    for (int i=0; i<(int)pendingList.size(); i++)
-    {
-        PendingNedType type = pendingList[i];
-        ev.printfmsg("WARNING: Type `%s' at %s could not be fully resolved, dropped (base type or interface missing)",
-                     type.node->getAttribute("name"), type.node->getSourceLocation()); // FIXME create an ev.warning() or something...
-        delete type.node;
-    }
+    cNEDDeclaration *decl = dynamic_cast<cNEDDeclaration *>(NEDResourceCache::getDecl(qname));
+    ASSERT(decl);
+    return decl;
 }
-
 

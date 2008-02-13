@@ -31,16 +31,16 @@ using std::ostream;
 #define NEDC_VERSION_HEX "0x0400"
 
 
-void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab, NEDErrorStore *errors)
+void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDTypeResolver *resolver, NEDErrorStore *errors)
 {
-    NEDCppGenerator cppgen(out, outh, symtab, errors);
+    NEDCppGenerator cppgen(out, outh, resolver, errors);
     cppgen.generate(node);
 }
 
 //-----------------------------------------------------------------------
 
-NEDCppGenerator::NEDCppGenerator(ostream& _out, ostream& _outh, NEDSymbolTable *symtab, NEDErrorStore *e) :
-  out(_out), outh(_outh), exprgen(_out,symtab), symboltable(symtab)
+NEDCppGenerator::NEDCppGenerator(ostream& o, ostream& oh, NEDTypeResolver *resolver, NEDErrorStore *e) :
+  out(o), outh(oh), exprgen(o,resolver), resolver(resolver)
 {
     indentsize = 4;
     in_network = false;
