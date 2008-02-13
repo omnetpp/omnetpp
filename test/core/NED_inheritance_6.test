@@ -1,0 +1,87 @@
+%description:
+
+Test parameter and gate multiple inheritance for module interfaces.
+
+%file: test.ned
+
+moduleinterface IModule
+{
+    parameters:
+        string p0;
+}
+
+moduleinterface IModule1 extends IModule
+{
+    parameters:
+        int p1;
+    gates:
+        input in;
+}
+
+moduleinterface IModule2 extends IModule
+{
+    parameters:
+        double p2;
+    gates:
+        output out;
+        inout g;
+}
+
+simple Simple like IModule1, IModule2
+{
+    parameters:
+        string p0;
+        int p1;
+        double p2;
+    gates:
+        input in;
+        output out;
+        inout g;
+}
+
+network Test
+{
+    parameters:
+        string aType = "Simple";
+    submodules:
+        a: <aType> like IModule1 {
+            parameters:
+                p0 = "Hello";
+                p1 = 1;
+                p2 = 2;
+        }
+        b: <aType> like IModule2 {
+            parameters:
+                p0 = "Hello";
+                p1 = 1;
+                p2 = 2;
+        }
+    connections:
+        a.out --> b.in;
+        b.out --> a.in;
+        a.g <--> b.g;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class Simple : public cSimpleModule
+{
+  public:
+    Simple() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Simple);
+
+void Simple::activity()
+{
+}
+
+}; //namespace
+
+%contains: stdout
+// TODO:

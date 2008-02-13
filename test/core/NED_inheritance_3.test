@@ -1,0 +1,38 @@
+%description:
+
+Test submodule and connection inheritance.
+
+%file: test.ned
+
+module Node
+{
+    gates:
+        inout g1;
+        inout g2;
+    connections allowunconnected:
+}
+
+module Super
+{
+    submodules:
+        a1: Node;
+        a2: Node;
+    connections:
+        a1.g1 <--> a2.g1;
+}
+
+network Test extends Super
+{
+    submodules:
+        b1: Node;
+        b2: Node;
+    connections:
+        b1.g1 <--> b2.g1;
+        a1.g2 <--> b1.g2;
+        b2.g2 <--> a2.g2;
+}
+
+%file: test.cc
+
+%contains: stdout
+// TODO:

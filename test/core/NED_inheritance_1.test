@@ -1,0 +1,101 @@
+%description:
+
+Test parameter and gate inheritance for simple modules.
+
+%file: test.ned
+
+simple Super
+{
+    parameters:
+        @documentation("http://omnetpp.org");
+        int p1;
+        double p2 @unit(s);
+    gates:
+        input in1 @kind(L);
+        output out1;
+        inout g1 @kind(K);
+}
+
+simple Sub extends Super
+{
+    parameters:
+        int p3;
+        double p4;
+    gates:
+        input in2;
+        output out2;
+        inout g2;
+}
+
+network Test
+{
+    submodules:
+        sub: Sub {
+            parameters:
+                p1 = 1;
+                p2 = 2;
+                p3 = 3;
+                p4 = 4;
+        }
+    connections:
+        sub.out1 --> sub.in2;
+        sub.g1 <--> sub.g2;
+        sub.out2 --> sub.in1;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class Super: public cSimpleModule
+{
+  public:
+    Super() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Super);
+
+static void printProperties(cProperties *properties)
+{
+    if (properties) {
+        for (int i = 0; i < (int)properties->numProperties(); i++)
+            ev << properties->get(i)->info() << "\n";
+    }
+}
+
+void Super::activity()
+{
+    printProperties(properties());
+    for (int i=0; i<params(); i++) {
+        ev << par(i).name() << "=" << par(i).doubleValue() << "\n";
+        printProperties(par(i).properties());
+    }
+    for (int i=0; i<gates(); i++) {
+        ev << gate(i)->name() << "\n";
+        printProperties(gate(i)->properties());
+    }
+}
+
+}; // namespace
+
+%contains: stdout
+@documentation(http://omnetpp.org)
+p1=1
+p2=2
+@unit(s)
+p3=3
+p4=4
+in1
+@kind(L)
+out1
+g1$i
+@kind(K)
+g1$o
+@kind(K)
+in2
+out2
+g2$i
+g2$o

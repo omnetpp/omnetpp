@@ -1,0 +1,55 @@
+%description:
+
+Test parameter multiple inheritance for channel interfaces.
+
+%file: test.ned
+
+channelinterface IChannel
+{
+    parameters:
+        string p0;
+}
+
+channelinterface IChannel1 extends IChannel
+{
+    parameters:
+        int p1;
+}
+
+channelinterface IChannel2 extends IChannel
+{
+    parameters:
+        double p2;
+}
+
+channel TestChannel extends ned.IdealChannel like IChannel1, IChannel2
+{
+    parameters:
+        string p0;
+        int p1;
+        double p2;
+}
+
+module Node
+{
+    gates:
+        inout g;
+    connections allowunconnected:
+}
+
+network Test
+{
+    parameters:
+        string aType = "TestChannel";
+    submodules:
+        a: Node;
+        b: Node;
+    connections:
+        a.g$o --> <aType> like IChannel1 { parameters: p0 = "hello"; p1 = 1; p2 = 2; }--> b.g$i;
+        b.g$o --> <aType> like IChannel2 { parameters: p0 = "hello"; p1 = 1; p2 = 2; }--> a.g$i;
+}
+
+%file: test.cc
+
+%contains: stdout
+// TODO:
