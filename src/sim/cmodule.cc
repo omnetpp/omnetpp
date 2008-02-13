@@ -561,12 +561,11 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
 
 bool cModule::checkInternalConnections() const
 {
-    int j;
     // Note: This routine only checks if all gates are connected or not.
-    //       Does not NOT check where and how they are connected!
+    // It does NOT check where and how they are connected!
 
-    // check this module compound module if its inside is connected ok
-    for(j=0; j<gates(); j++)
+    // check this compound module if its inside is connected ok
+    for(int j=0; j<gates(); j++)
     {
        const cGate *g = gate(j);
        if (g && g->size()!=0 && !g->isConnectedInside())
@@ -577,7 +576,7 @@ bool cModule::checkInternalConnections() const
     for (SubmoduleIterator submod(this); !submod.end(); submod++)
     {
        cModule *m = submod();
-       for(j=0; j<m->gates(); j++)
+       for(int j=0; j<m->gates(); j++)
        {
           cGate *g = m->gate(j);
           if (g && g->size()!=0 && !g->isConnectedOutside())

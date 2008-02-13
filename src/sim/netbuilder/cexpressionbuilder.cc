@@ -56,19 +56,19 @@ void cExpressionBuilder::doNode(NEDElement *node)
     switch (tagcode)
     {
         case NED_OPERATOR:
-            doOperator((OperatorNode *)node); break;
+            doOperator((OperatorElement *)node); break;
         case NED_FUNCTION:
-            doFunction((FunctionNode *)node); break;
+            doFunction((FunctionElement *)node); break;
         case NED_IDENT:
-            doIdent((IdentNode *)node); break;
+            doIdent((IdentElement *)node); break;
         case NED_LITERAL:
-            doLiteral((LiteralNode *)node); break;
+            doLiteral((LiteralElement *)node); break;
         default:
             throw cRuntimeError("dynamic module builder: unexpected tag in expression: %s", node->getTagName());
     }
 }
 
-void cExpressionBuilder::doOperator(OperatorNode *node)
+void cExpressionBuilder::doOperator(OperatorElement *node)
 {
     // push args first
     for (NEDElement *op=node->getFirstChild(); op; op=op->getNextSibling())
@@ -154,7 +154,7 @@ void cExpressionBuilder::doOperator(OperatorNode *node)
     }
 }
 
-void cExpressionBuilder::doFunction(FunctionNode *node)
+void cExpressionBuilder::doFunction(FunctionElement *node)
 {
     // get function name, arg count, args
     const char *funcname = node->getName();
@@ -174,7 +174,7 @@ void cExpressionBuilder::doFunction(FunctionNode *node)
     else if (!strcmp(funcname,"sizeof"))
     {
         // operands are in a child "ident" node
-        IdentNode *identnode = node->getFirstIdentChild();
+        IdentElement *identnode = node->getFirstIdentChild();
         ASSERT(identnode);
 
         const char *ident = identnode->getName();
@@ -227,7 +227,7 @@ bool cExpressionBuilder::isLoopVar(const char *parname)
     return false;
 }
 
-void cExpressionBuilder::doIdent(IdentNode *node)
+void cExpressionBuilder::doIdent(IdentElement *node)
 {
     const char *parname = node->getName();
     const char *modulename = node->getModule();
@@ -242,7 +242,7 @@ void cExpressionBuilder::doIdent(IdentNode *node)
         elems[pos++] = new NEDSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
 }
 
-void cExpressionBuilder::doLiteral(LiteralNode *node)
+void cExpressionBuilder::doLiteral(LiteralElement *node)
 {
     const char *val = node->getValue();
     switch (node->getType())
@@ -257,7 +257,7 @@ void cExpressionBuilder::doLiteral(LiteralNode *node)
     }
 }
 
-cDynamicExpression *cExpressionBuilder::process(ExpressionNode *node,
+cDynamicExpression *cExpressionBuilder::process(ExpressionElement *node,
                                                 bool inSubcomponentScope)
 {
     // create dynamically evaluated expression (reverse Polish).

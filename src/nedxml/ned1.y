@@ -131,30 +131,30 @@ static struct NED1ParserState
     bool isReadonly;
 
     /* NED-I: modules, channels, networks */
-    NedFileNode *nedfile;
-    CommentNode *comment;
-    ImportNode *import;
-    ExtendsNode *extends;
-    ChannelNode *channel;
-    NEDElement *module;  // in fact, CompoundModuleNode* or SimpleModule*
-    ParametersNode *params;
-    ParamNode *param;
-    ParametersNode *substparams;
-    ParamNode *substparam;
-    PropertyNode *property;
-    PropertyKeyNode *propkey;
-    GatesNode *gates;
-    GateNode *gate;
-    GatesNode *gatesizes;
-    GateNode *gatesize;
-    SubmodulesNode *submods;
-    SubmoduleNode *submod;
-    ConnectionsNode *conns;
-    ConnectionGroupNode *conngroup;
-    ConnectionNode *conn;
-    ChannelSpecNode *chanspec;
-    LoopNode *loop;
-    ConditionNode *condition;
+    NedFileElement *nedfile;
+    CommentElement *comment;
+    ImportElement *import;
+    ExtendsElement *extends;
+    ChannelElement *channel;
+    NEDElement *module;  // in fact, CompoundModuleElement* or SimpleModule*
+    ParametersElement *params;
+    ParamElement *param;
+    ParametersElement *substparams;
+    ParamElement *substparam;
+    PropertyElement *property;
+    PropertyKeyElement *propkey;
+    GatesElement *gates;
+    GateElement *gate;
+    GatesElement *gatesizes;
+    GateElement *gatesize;
+    SubmodulesElement *submods;
+    SubmoduleElement *submod;
+    ConnectionsElement *conns;
+    ConnectionGroupElement *conngroup;
+    ConnectionElement *conn;
+    ChannelSpecElement *chanspec;
+    LoopElement *loop;
+    ConditionElement *condition;
 } ps;
 
 static void resetParserState()
@@ -163,10 +163,10 @@ static void resetParserState()
     ps = cleanps;
 }
 
-ChannelSpecNode *createChannelSpec(NEDElement *conn);
+ChannelSpecElement *createChannelSpec(NEDElement *conn);
 void removeRedundantChanSpecParams();
-void createSubstparamsNodeIfNotExists();
-void createGatesizesNodeIfNotExists();
+void createSubstparamsElementIfNotExists();
+void createGatesizesElementIfNotExists();
 
 %}
 
@@ -213,7 +213,7 @@ filenames
 filename
         : STRINGCONSTANT
                 {
-                  ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile );
+                  ps.import = (ImportElement *)createElementWithTag(NED_IMPORT, ps.nedfile );
                   ps.import->setImportSpec(toString(trimQuotes(@1)));
                   storeBannerAndRightComments(ps.import,@1);
                   storePos(ps.import, @$);
@@ -234,11 +234,11 @@ channeldefinition
 channelheader
         : CHANNEL NAME
                 {
-                  ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile);
+                  ps.channel = (ChannelElement *)createElementWithTag(NED_CHANNEL, ps.nedfile);
                   ps.channel->setName(toString(@2));
-                  ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.channel);
+                  ps.extends = (ExtendsElement *)createElementWithTag(NED_EXTENDS, ps.channel);
                   ps.extends->setName("ned.BasicChannel");  // NED-1 channels are implicitly BasicChannels
-                  ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.channel);
+                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.channel);
                   ps.params->setIsImplicit(true);
                   storeBannerAndRightComments(ps.channel,@1,@2);
                 }
@@ -291,8 +291,8 @@ simpledefinition
 simpleheader
         : SIMPLE NAME
                 {
-                  ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
-                  ((SimpleModuleNode *)ps.module)->setName(toString(@2));
+                  ps.module = (SimpleModuleElement *)createElementWithTag(NED_SIMPLE_MODULE, ps.nedfile );
+                  ((SimpleModuleElement *)ps.module)->setName(toString(@2));
                   storeBannerAndRightComments(ps.module,@1,@2);
                 }
         ;
@@ -322,8 +322,8 @@ moduledefinition
 moduleheader
         : MODULE NAME
                 {
-                  ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
-                  ((CompoundModuleNode *)ps.module)->setName(toString(@2));
+                  ps.module = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.nedfile );
+                  ((CompoundModuleElement *)ps.module)->setName(toString(@2));
                   storeBannerAndRightComments(ps.module,@1,@2);
                 }
         ;
@@ -345,9 +345,9 @@ displayblock
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
                   ps.property = addComponentProperty(ps.module, "display");
-                  ps.params = (ParametersNode *)ps.module->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
-                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  LiteralNode *literal = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+                  ps.params = (ParametersElement *)ps.module->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
+                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  LiteralElement *literal = (LiteralElement *)createElementWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
                   try {
                       std::string displaystring = DisplayStringUtil::upgradeBackgroundDisplayString(opp_parsequotedstr(toString(@3)).c_str());
@@ -376,7 +376,7 @@ opt_paramblock
 paramblock
         : PARAMETERS ':'
                 {
-                  ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.module );
+                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.module );
                   storeBannerAndRightComments(ps.params,@1,@2);
                 }
           opt_parameters
@@ -472,7 +472,7 @@ opt_gateblock
 gateblock
         : GATES ':'
                 {
-                  ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.module );
+                  ps.gates = (GatesElement *)createElementWithTag(NED_GATES, ps.module );
                   storeBannerAndRightComments(ps.gates,@1,@2);
                 }
           opt_gates
@@ -550,7 +550,7 @@ opt_submodblock
 submodblock
         : SUBMODULES ':'
                 {
-                  ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.module );
+                  ps.submods = (SubmodulesElement *)createElementWithTag(NED_SUBMODULES, ps.module );
                   storeBannerAndRightComments(ps.submods,@1,@2);
                 }
           opt_submodules
@@ -572,7 +572,7 @@ submodules
 submodule
         : NAME ':' NAME opt_semicolon
                 {
-                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setType(toString(@3));
                   storeBannerAndRightComments(ps.submod,@1,@4);
@@ -583,7 +583,7 @@ submodule
                 }
         | NAME ':' NAME vector opt_semicolon
                 {
-                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setType(toString(@3));
                   addVector(ps.submod, "vector-size",@4,$4);
@@ -595,7 +595,7 @@ submodule
                 }
         | NAME ':' NAME LIKE NAME opt_semicolon
                 {
-                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@5));
                   ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
@@ -607,7 +607,7 @@ submodule
                 }
         | NAME ':' NAME vector LIKE NAME opt_semicolon
                 {
-                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@6));
                   ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
@@ -643,13 +643,13 @@ substparamblocks
 substparamblock
         : PARAMETERS ':' /*FIXME empty "parameters:" in submodule doesn't get accepted! WFT??? */
                 {
-                  createSubstparamsNodeIfNotExists();
+                  createSubstparamsElementIfNotExists();
                   storeBannerAndRightComments(ps.substparams,@1,@2);
                 }
           opt_substparameters
         | PARAMETERS IF expression ':'
                 {
-                  createSubstparamsNodeIfNotExists();
+                  createSubstparamsElementIfNotExists();
                   delete $3;
                   np->getErrors()->addError(ps.substparams,
                                     "conditional parameters no longer supported -- "
@@ -694,8 +694,8 @@ inputvalue
                 {
                   addExpression(ps.substparam, "value",@2,$2);
 
-                  PropertyNode *prop = addProperty(ps.substparam, "prompt");
-                  PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
+                  PropertyElement *prop = addProperty(ps.substparam, "prompt");
+                  PropertyKeyElement *propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, prop);
                   propkey->appendChild(createStringLiteral(@4));
                 }
         | '(' expression ')'
@@ -723,13 +723,13 @@ gatesizeblocks
 gatesizeblock
         : GATESIZES ':'
                 {
-                  createGatesizesNodeIfNotExists();
+                  createGatesizesElementIfNotExists();
                   storeBannerAndRightComments(ps.gatesizes,@1,@2);
                 }
           opt_gatesizes
         | GATESIZES IF expression ':'
                 {
-                  createSubstparamsNodeIfNotExists();
+                  createSubstparamsElementIfNotExists();
                   delete $3;
                   np->getErrors()->addError(ps.substparams,
                                     "conditional gatesizes no longer supported -- "
@@ -767,9 +767,9 @@ opt_submod_displayblock
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
                   ps.property = addComponentProperty(ps.submod, "display");
-                  ps.substparams = (ParametersNode *)ps.submod->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
-                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  LiteralNode *literal = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+                  ps.substparams = (ParametersElement *)ps.submod->getFirstChildWithTag(NED_PARAMETERS); // previous line doesn't set it
+                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  LiteralElement *literal = (LiteralElement *)createElementWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
                   try {
                       std::string displaystring = DisplayStringUtil::upgradeSubmoduleDisplayString(opp_parsequotedstr(toString(@3)).c_str());
@@ -799,7 +799,7 @@ opt_connblock
 connblock
         : CONNECTIONS NOCHECK ':'
                 {
-                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
+                  ps.conns = (ConnectionsElement *)createElementWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setAllowUnconnected(true);
                   storeBannerAndRightComments(ps.conns,@1,@3);
                 }
@@ -809,7 +809,7 @@ connblock
                 }
         | CONNECTIONS ':'
                 {
-                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
+                  ps.conns = (ConnectionsElement *)createElementWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setAllowUnconnected(false);
                   storeBannerAndRightComments(ps.conns,@1,@2);
                 }
@@ -837,7 +837,7 @@ connection
 loopconnection
         : FOR
                 {
-                  ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
+                  ps.conngroup = (ConnectionGroupElement *)createElementWithTag(NED_CONNECTION_GROUP, ps.conns);
                   ps.inLoop=1;
                 }
           loopvarlist DO notloopconnections ENDFOR opt_semicolon
@@ -857,7 +857,7 @@ loopvarlist
 loopvar
         : NAME '=' expression TO expression
                 {
-                  ps.loop = (LoopNode *)createNodeWithTag(NED_LOOP, ps.conngroup);
+                  ps.loop = (LoopElement *)createElementWithTag(NED_LOOP, ps.conngroup);
                   ps.loop->setParamName( toString(@1) );
                   addExpression(ps.loop, "from-value",@3,$3);
                   addExpression(ps.loop, "to-value",@5,$5);
@@ -869,7 +869,7 @@ opt_conncondition
         : IF expression
                 {
                   // add condition to conn
-                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION, ps.conn);
+                  ps.condition = (ConditionElement *)createElementWithTag(NED_CONDITION, ps.conn);
                   addExpression(ps.condition, "condition",@2,$2);
                   storePos(ps.condition, @$);
                 }
@@ -883,8 +883,8 @@ opt_conn_displaystr
                   if (!ps.chanspec)
                       ps.chanspec = createChannelSpec(ps.conn);
                   ps.property = addComponentProperty(ps.chanspec, "display");
-                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
-                  LiteralNode *literal = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
+                  LiteralElement *literal = (LiteralElement *)createElementWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
                   try {
                       std::string displaystring = DisplayStringUtil::upgradeConnectionDisplayString(opp_parsequotedstr(toString(@2)).c_str());
@@ -948,14 +948,14 @@ leftgatespec
 leftmod
         : NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   addVector(ps.conn, "src-module-index",@2,$2);
                   ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
@@ -981,7 +981,7 @@ leftgate
 parentleftgate
         : NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   addVector(ps.conn, "src-gate-index",@2,$2);
@@ -989,14 +989,14 @@ parentleftgate
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         | NAME PLUSPLUS
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGatePlusplus(true);
@@ -1103,10 +1103,10 @@ networkdefinition
 networkheader
         : NETWORK NAME ':' NAME opt_semicolon
                 {
-                  ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
-                  ((CompoundModuleNode *)ps.module)->setName(toString(@2));
-                  ((CompoundModuleNode *)ps.module)->setIsNetwork(true);
-                  ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.module);
+                  ps.module = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.nedfile );
+                  ((CompoundModuleElement *)ps.module)->setName(toString(@2));
+                  ((CompoundModuleElement *)ps.module)->setIsNetwork(true);
+                  ps.extends = (ExtendsElement *)createElementWithTag(NED_EXTENDS, ps.module);
                   ps.extends->setName(toString(@4));
                   storeBannerAndRightComments(ps.module,@1,@5);
                   storePos(ps.extends, @4);
@@ -1333,10 +1333,10 @@ NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
     if (!handle)
         {np->getErrors()->addError("", "unable to allocate work memory"); return false;}
 
-    // create parser state and NEDFileNode
+    // create parser state and NEDFileElement
     np = p;
     resetParserState();
-    ps.nedfile = new NedFileNode();
+    ps.nedfile = new NedFileElement();
 
     // store file name with slashes always, even on Windows -- neddoc relies on that
     ps.nedfile->setFilename(slashifyFilename(np->getFileName()).c_str());
@@ -1379,29 +1379,29 @@ void yyerror(const char *s)
 }
 
 // this function depends too much on ps, cannot be put into nedyylib.cc
-ChannelSpecNode *createChannelSpec(NEDElement *conn)
+ChannelSpecElement *createChannelSpec(NEDElement *conn)
 {
-   ChannelSpecNode *chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
-   ps.params = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, chanspec);
+   ChannelSpecElement *chanspec = (ChannelSpecElement *)createElementWithTag(NED_CHANNEL_SPEC, ps.conn);
+   ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, chanspec);
    ps.params->setIsImplicit(true);
    return chanspec;
 }
 
-void createSubstparamsNodeIfNotExists()
+void createSubstparamsElementIfNotExists()
 {
    // check if already exists (multiple blocks must be merged)
    NEDElement *parent = ps.inNetwork ? (NEDElement *)ps.module : (NEDElement *)ps.submod;
-   ps.substparams = (ParametersNode *)parent->getFirstChildWithTag(NED_PARAMETERS);
+   ps.substparams = (ParametersElement *)parent->getFirstChildWithTag(NED_PARAMETERS);
    if (!ps.substparams)
-       ps.substparams = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, parent);
+       ps.substparams = (ParametersElement *)createElementWithTag(NED_PARAMETERS, parent);
 }
 
-void createGatesizesNodeIfNotExists()
+void createGatesizesElementIfNotExists()
 {
    // check if already exists (multiple blocks must be merged)
-   ps.gatesizes = (GatesNode *)ps.submod->getFirstChildWithTag(NED_GATES);
+   ps.gatesizes = (GatesElement *)ps.submod->getFirstChildWithTag(NED_GATES);
    if (!ps.gatesizes)
-       ps.gatesizes = (GatesNode *)createNodeWithTag(NED_GATES, ps.submod);
+       ps.gatesizes = (GatesElement *)createElementWithTag(NED_GATES, ps.submod);
 }
 
 void removeRedundantChanSpecParams()

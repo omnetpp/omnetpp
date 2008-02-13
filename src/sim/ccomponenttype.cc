@@ -75,9 +75,9 @@ cProperties *cComponentType::getPropertiesFor(const cGate *gate)
     cProperties *props;
     if (parent)
         props = parent->componentType()->declaration()->subcomponentGateProperties(
-            component->name(), component->componentType()->fullName(), gate->name());
+            component->name(), component->componentType()->fullName(), gate->baseName());
     else
-        props = component->componentType()->declaration()->gateProperties(gate->name());
+        props = component->componentType()->declaration()->gateProperties(gate->baseName());
     return props;
 }
 

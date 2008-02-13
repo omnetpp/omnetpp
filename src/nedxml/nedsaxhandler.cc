@@ -46,11 +46,11 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
     NEDElement *node;
     bool unknown = false;
     try {
-        node = NEDElementFactory::getInstance()->createNodeWithTag(name);
+        node = NEDElementFactory::getInstance()->createElementWithTag(name);
     }
     catch (NEDException& e) {
         errors->addError(current, "error: %s", e.what());
-        node = new UnknownNode();
+        node = new UnknownElement();
         node->setAttribute("element", name);
     }
 

@@ -24,55 +24,55 @@
 
 NAMESPACE_BEGIN
 
-class FilesNode;
-class NedFileNode;
-class CommentNode;
-class PackageNode;
-class ImportNode;
-class PropertyDeclNode;
-class ExtendsNode;
-class InterfaceNameNode;
-class SimpleModuleNode;
-class ModuleInterfaceNode;
-class CompoundModuleNode;
-class ChannelInterfaceNode;
-class ChannelNode;
-class ParametersNode;
-class ParamNode;
-class PatternNode;
-class PropertyNode;
-class PropertyKeyNode;
-class GatesNode;
-class GateNode;
-class TypesNode;
-class SubmodulesNode;
-class SubmoduleNode;
-class ConnectionsNode;
-class ConnectionNode;
-class ChannelSpecNode;
-class ConnectionGroupNode;
-class LoopNode;
-class ConditionNode;
-class ExpressionNode;
-class OperatorNode;
-class FunctionNode;
-class IdentNode;
-class LiteralNode;
-class MsgFileNode;
-class NamespaceNode;
-class CplusplusNode;
-class StructDeclNode;
-class ClassDeclNode;
-class MessageDeclNode;
-class EnumDeclNode;
-class EnumNode;
-class EnumFieldsNode;
-class EnumFieldNode;
-class MessageNode;
-class ClassNode;
-class StructNode;
-class FieldNode;
-class UnknownNode;
+class FilesElement;
+class NedFileElement;
+class CommentElement;
+class PackageElement;
+class ImportElement;
+class PropertyDeclElement;
+class ExtendsElement;
+class InterfaceNameElement;
+class SimpleModuleElement;
+class ModuleInterfaceElement;
+class CompoundModuleElement;
+class ChannelInterfaceElement;
+class ChannelElement;
+class ParametersElement;
+class ParamElement;
+class PatternElement;
+class PropertyElement;
+class PropertyKeyElement;
+class GatesElement;
+class GateElement;
+class TypesElement;
+class SubmodulesElement;
+class SubmoduleElement;
+class ConnectionsElement;
+class ConnectionElement;
+class ChannelSpecElement;
+class ConnectionGroupElement;
+class LoopElement;
+class ConditionElement;
+class ExpressionElement;
+class OperatorElement;
+class FunctionElement;
+class IdentElement;
+class LiteralElement;
+class MsgFileElement;
+class NamespaceElement;
+class CplusplusElement;
+class StructDeclElement;
+class ClassDeclElement;
+class MessageDeclElement;
+class EnumDeclElement;
+class EnumElement;
+class EnumFieldsElement;
+class EnumFieldElement;
+class MessageElement;
+class ClassElement;
+class StructElement;
+class FieldElement;
+class UnknownElement;
 
 
 /**
@@ -150,15 +150,15 @@ enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};
  * 
  * @ingroup Data
  */
-class NEDXML_API FilesNode : public NEDElement
+class NEDXML_API FilesElement : public NEDElement
 {
   private:
   public:
     /** @name Constructors, destructor */
     //@{
-    FilesNode();
-    FilesNode(NEDElement *parent);
-    virtual ~FilesNode() {}
+    FilesElement();
+    FilesElement(NEDElement *parent);
+    virtual ~FilesElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -170,15 +170,15 @@ class NEDXML_API FilesNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual FilesNode *dup() const;
+    virtual FilesElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
     //@{
 
-    virtual FilesNode *getNextFilesNodeSibling() const;
-    virtual NedFileNode *getFirstNedFileChild() const;
-    virtual MsgFileNode *getFirstMsgFileChild() const;
+    virtual FilesElement *getNextFilesSibling() const;
+    virtual NedFileElement *getFirstNedFileChild() const;
+    virtual MsgFileElement *getFirstMsgFileChild() const;
     //@}
 };
 
@@ -195,7 +195,7 @@ class NEDXML_API FilesNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API NedFileNode : public NEDElement
+class NEDXML_API NedFileElement : public NEDElement
 {
   private:
     std::string filename;
@@ -203,9 +203,9 @@ class NEDXML_API NedFileNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    NedFileNode();
-    NedFileNode(NEDElement *parent);
-    virtual ~NedFileNode() {}
+    NedFileElement();
+    NedFileElement(NEDElement *parent);
+    virtual ~NedFileElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -217,7 +217,7 @@ class NEDXML_API NedFileNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual NedFileNode *dup() const;
+    virtual NedFileElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -227,17 +227,17 @@ class NEDXML_API NedFileNode : public NEDElement
     const char * getVersion() const  {return version.c_str();}
     void setVersion(const char * val)  {version = val;}
 
-    virtual NedFileNode *getNextNedFileNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual PackageNode *getFirstPackageChild() const;
-    virtual ImportNode *getFirstImportChild() const;
-    virtual PropertyDeclNode *getFirstPropertyDeclChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
-    virtual ChannelNode *getFirstChannelChild() const;
-    virtual ChannelInterfaceNode *getFirstChannelInterfaceChild() const;
-    virtual SimpleModuleNode *getFirstSimpleModuleChild() const;
-    virtual CompoundModuleNode *getFirstCompoundModuleChild() const;
-    virtual ModuleInterfaceNode *getFirstModuleInterfaceChild() const;
+    virtual NedFileElement *getNextNedFileSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual PackageElement *getFirstPackageChild() const;
+    virtual ImportElement *getFirstImportChild() const;
+    virtual PropertyDeclElement *getFirstPropertyDeclChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
+    virtual ChannelElement *getFirstChannelChild() const;
+    virtual ChannelInterfaceElement *getFirstChannelInterfaceChild() const;
+    virtual SimpleModuleElement *getFirstSimpleModuleChild() const;
+    virtual CompoundModuleElement *getFirstCompoundModuleChild() const;
+    virtual ModuleInterfaceElement *getFirstModuleInterfaceChild() const;
     //@}
 };
 
@@ -253,7 +253,7 @@ class NEDXML_API NedFileNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API CommentNode : public NEDElement
+class NEDXML_API CommentElement : public NEDElement
 {
   private:
     std::string locid;
@@ -261,9 +261,9 @@ class NEDXML_API CommentNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    CommentNode();
-    CommentNode(NEDElement *parent);
-    virtual ~CommentNode() {}
+    CommentElement();
+    CommentElement(NEDElement *parent);
+    virtual ~CommentElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -275,7 +275,7 @@ class NEDXML_API CommentNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual CommentNode *dup() const;
+    virtual CommentElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -285,7 +285,7 @@ class NEDXML_API CommentNode : public NEDElement
     const char * getContent() const  {return content.c_str();}
     void setContent(const char * val)  {content = val;}
 
-    virtual CommentNode *getNextCommentNodeSibling() const;
+    virtual CommentElement *getNextCommentSibling() const;
     //@}
 };
 
@@ -300,16 +300,16 @@ class NEDXML_API CommentNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API PackageNode : public NEDElement
+class NEDXML_API PackageElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    PackageNode();
-    PackageNode(NEDElement *parent);
-    virtual ~PackageNode() {}
+    PackageElement();
+    PackageElement(NEDElement *parent);
+    virtual ~PackageElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -321,7 +321,7 @@ class NEDXML_API PackageNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual PackageNode *dup() const;
+    virtual PackageElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -329,8 +329,8 @@ class NEDXML_API PackageNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual PackageNode *getNextPackageNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual PackageElement *getNextPackageSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -345,16 +345,16 @@ class NEDXML_API PackageNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ImportNode : public NEDElement
+class NEDXML_API ImportElement : public NEDElement
 {
   private:
     std::string importSpec;
   public:
     /** @name Constructors, destructor */
     //@{
-    ImportNode();
-    ImportNode(NEDElement *parent);
-    virtual ~ImportNode() {}
+    ImportElement();
+    ImportElement(NEDElement *parent);
+    virtual ~ImportElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -366,7 +366,7 @@ class NEDXML_API ImportNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ImportNode *dup() const;
+    virtual ImportElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -374,8 +374,8 @@ class NEDXML_API ImportNode : public NEDElement
     const char * getImportSpec() const  {return importSpec.c_str();}
     void setImportSpec(const char * val)  {importSpec = val;}
 
-    virtual ImportNode *getNextImportNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual ImportElement *getNextImportSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -391,7 +391,7 @@ class NEDXML_API ImportNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API PropertyDeclNode : public NEDElement
+class NEDXML_API PropertyDeclElement : public NEDElement
 {
   private:
     std::string name;
@@ -399,9 +399,9 @@ class NEDXML_API PropertyDeclNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    PropertyDeclNode();
-    PropertyDeclNode(NEDElement *parent);
-    virtual ~PropertyDeclNode() {}
+    PropertyDeclElement();
+    PropertyDeclElement(NEDElement *parent);
+    virtual ~PropertyDeclElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -413,7 +413,7 @@ class NEDXML_API PropertyDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual PropertyDeclNode *dup() const;
+    virtual PropertyDeclElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -423,10 +423,10 @@ class NEDXML_API PropertyDeclNode : public NEDElement
     bool getIsArray() const  {return isArray;}
     void setIsArray(bool val)  {isArray = val;}
 
-    virtual PropertyDeclNode *getNextPropertyDeclNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertyKeyNode *getFirstPropertyKeyChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
+    virtual PropertyDeclElement *getNextPropertyDeclSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual PropertyKeyElement *getFirstPropertyKeyChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
     //@}
 };
 
@@ -441,16 +441,16 @@ class NEDXML_API PropertyDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ExtendsNode : public NEDElement
+class NEDXML_API ExtendsElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    ExtendsNode();
-    ExtendsNode(NEDElement *parent);
-    virtual ~ExtendsNode() {}
+    ExtendsElement();
+    ExtendsElement(NEDElement *parent);
+    virtual ~ExtendsElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -462,7 +462,7 @@ class NEDXML_API ExtendsNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ExtendsNode *dup() const;
+    virtual ExtendsElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -470,8 +470,8 @@ class NEDXML_API ExtendsNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual ExtendsNode *getNextExtendsNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual ExtendsElement *getNextExtendsSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -486,16 +486,16 @@ class NEDXML_API ExtendsNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API InterfaceNameNode : public NEDElement
+class NEDXML_API InterfaceNameElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    InterfaceNameNode();
-    InterfaceNameNode(NEDElement *parent);
-    virtual ~InterfaceNameNode() {}
+    InterfaceNameElement();
+    InterfaceNameElement(NEDElement *parent);
+    virtual ~InterfaceNameElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -507,7 +507,7 @@ class NEDXML_API InterfaceNameNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual InterfaceNameNode *dup() const;
+    virtual InterfaceNameElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -515,8 +515,8 @@ class NEDXML_API InterfaceNameNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual InterfaceNameNode *getNextInterfaceNameNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual InterfaceNameElement *getNextInterfaceNameSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -532,7 +532,7 @@ class NEDXML_API InterfaceNameNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API SimpleModuleNode : public NEDElement
+class NEDXML_API SimpleModuleElement : public NEDElement
 {
   private:
     std::string name;
@@ -540,9 +540,9 @@ class NEDXML_API SimpleModuleNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    SimpleModuleNode();
-    SimpleModuleNode(NEDElement *parent);
-    virtual ~SimpleModuleNode() {}
+    SimpleModuleElement();
+    SimpleModuleElement(NEDElement *parent);
+    virtual ~SimpleModuleElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -554,7 +554,7 @@ class NEDXML_API SimpleModuleNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual SimpleModuleNode *dup() const;
+    virtual SimpleModuleElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -564,12 +564,12 @@ class NEDXML_API SimpleModuleNode : public NEDElement
     bool getIsNetwork() const  {return isNetwork;}
     void setIsNetwork(bool val)  {isNetwork = val;}
 
-    virtual SimpleModuleNode *getNextSimpleModuleNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExtendsNode *getFirstExtendsChild() const;
-    virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
-    virtual ParametersNode *getFirstParametersChild() const;
-    virtual GatesNode *getFirstGatesChild() const;
+    virtual SimpleModuleElement *getNextSimpleModuleSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExtendsElement *getFirstExtendsChild() const;
+    virtual InterfaceNameElement *getFirstInterfaceNameChild() const;
+    virtual ParametersElement *getFirstParametersChild() const;
+    virtual GatesElement *getFirstGatesChild() const;
     //@}
 };
 
@@ -584,16 +584,16 @@ class NEDXML_API SimpleModuleNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ModuleInterfaceNode : public NEDElement
+class NEDXML_API ModuleInterfaceElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    ModuleInterfaceNode();
-    ModuleInterfaceNode(NEDElement *parent);
-    virtual ~ModuleInterfaceNode() {}
+    ModuleInterfaceElement();
+    ModuleInterfaceElement(NEDElement *parent);
+    virtual ~ModuleInterfaceElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -605,7 +605,7 @@ class NEDXML_API ModuleInterfaceNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ModuleInterfaceNode *dup() const;
+    virtual ModuleInterfaceElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -613,11 +613,11 @@ class NEDXML_API ModuleInterfaceNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual ModuleInterfaceNode *getNextModuleInterfaceNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExtendsNode *getFirstExtendsChild() const;
-    virtual ParametersNode *getFirstParametersChild() const;
-    virtual GatesNode *getFirstGatesChild() const;
+    virtual ModuleInterfaceElement *getNextModuleInterfaceSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExtendsElement *getFirstExtendsChild() const;
+    virtual ParametersElement *getFirstParametersChild() const;
+    virtual GatesElement *getFirstGatesChild() const;
     //@}
 };
 
@@ -634,7 +634,7 @@ class NEDXML_API ModuleInterfaceNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API CompoundModuleNode : public NEDElement
+class NEDXML_API CompoundModuleElement : public NEDElement
 {
   private:
     std::string name;
@@ -642,9 +642,9 @@ class NEDXML_API CompoundModuleNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    CompoundModuleNode();
-    CompoundModuleNode(NEDElement *parent);
-    virtual ~CompoundModuleNode() {}
+    CompoundModuleElement();
+    CompoundModuleElement(NEDElement *parent);
+    virtual ~CompoundModuleElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -656,7 +656,7 @@ class NEDXML_API CompoundModuleNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual CompoundModuleNode *dup() const;
+    virtual CompoundModuleElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -666,15 +666,15 @@ class NEDXML_API CompoundModuleNode : public NEDElement
     bool getIsNetwork() const  {return isNetwork;}
     void setIsNetwork(bool val)  {isNetwork = val;}
 
-    virtual CompoundModuleNode *getNextCompoundModuleNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExtendsNode *getFirstExtendsChild() const;
-    virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
-    virtual ParametersNode *getFirstParametersChild() const;
-    virtual GatesNode *getFirstGatesChild() const;
-    virtual TypesNode *getFirstTypesChild() const;
-    virtual SubmodulesNode *getFirstSubmodulesChild() const;
-    virtual ConnectionsNode *getFirstConnectionsChild() const;
+    virtual CompoundModuleElement *getNextCompoundModuleSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExtendsElement *getFirstExtendsChild() const;
+    virtual InterfaceNameElement *getFirstInterfaceNameChild() const;
+    virtual ParametersElement *getFirstParametersChild() const;
+    virtual GatesElement *getFirstGatesChild() const;
+    virtual TypesElement *getFirstTypesChild() const;
+    virtual SubmodulesElement *getFirstSubmodulesChild() const;
+    virtual ConnectionsElement *getFirstConnectionsChild() const;
     //@}
 };
 
@@ -689,16 +689,16 @@ class NEDXML_API CompoundModuleNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ChannelInterfaceNode : public NEDElement
+class NEDXML_API ChannelInterfaceElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelInterfaceNode();
-    ChannelInterfaceNode(NEDElement *parent);
-    virtual ~ChannelInterfaceNode() {}
+    ChannelInterfaceElement();
+    ChannelInterfaceElement(NEDElement *parent);
+    virtual ~ChannelInterfaceElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -710,7 +710,7 @@ class NEDXML_API ChannelInterfaceNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ChannelInterfaceNode *dup() const;
+    virtual ChannelInterfaceElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -718,10 +718,10 @@ class NEDXML_API ChannelInterfaceNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual ChannelInterfaceNode *getNextChannelInterfaceNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExtendsNode *getFirstExtendsChild() const;
-    virtual ParametersNode *getFirstParametersChild() const;
+    virtual ChannelInterfaceElement *getNextChannelInterfaceSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExtendsElement *getFirstExtendsChild() const;
+    virtual ParametersElement *getFirstParametersChild() const;
     //@}
 };
 
@@ -736,16 +736,16 @@ class NEDXML_API ChannelInterfaceNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ChannelNode : public NEDElement
+class NEDXML_API ChannelElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelNode();
-    ChannelNode(NEDElement *parent);
-    virtual ~ChannelNode() {}
+    ChannelElement();
+    ChannelElement(NEDElement *parent);
+    virtual ~ChannelElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -757,7 +757,7 @@ class NEDXML_API ChannelNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ChannelNode *dup() const;
+    virtual ChannelElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -765,11 +765,11 @@ class NEDXML_API ChannelNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual ChannelNode *getNextChannelNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExtendsNode *getFirstExtendsChild() const;
-    virtual InterfaceNameNode *getFirstInterfaceNameChild() const;
-    virtual ParametersNode *getFirstParametersChild() const;
+    virtual ChannelElement *getNextChannelSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExtendsElement *getFirstExtendsChild() const;
+    virtual InterfaceNameElement *getFirstInterfaceNameChild() const;
+    virtual ParametersElement *getFirstParametersChild() const;
     //@}
 };
 
@@ -784,16 +784,16 @@ class NEDXML_API ChannelNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ParametersNode : public NEDElement
+class NEDXML_API ParametersElement : public NEDElement
 {
   private:
     bool isImplicit;
   public:
     /** @name Constructors, destructor */
     //@{
-    ParametersNode();
-    ParametersNode(NEDElement *parent);
-    virtual ~ParametersNode() {}
+    ParametersElement();
+    ParametersElement(NEDElement *parent);
+    virtual ~ParametersElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -805,7 +805,7 @@ class NEDXML_API ParametersNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ParametersNode *dup() const;
+    virtual ParametersElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -813,11 +813,11 @@ class NEDXML_API ParametersNode : public NEDElement
     bool getIsImplicit() const  {return isImplicit;}
     void setIsImplicit(bool val)  {isImplicit = val;}
 
-    virtual ParametersNode *getNextParametersNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
-    virtual ParamNode *getFirstParamChild() const;
-    virtual PatternNode *getFirstPatternChild() const;
+    virtual ParametersElement *getNextParametersSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
+    virtual ParamElement *getFirstParamChild() const;
+    virtual PatternElement *getFirstPatternChild() const;
     //@}
 };
 
@@ -836,7 +836,7 @@ class NEDXML_API ParametersNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ParamNode : public NEDElement
+class NEDXML_API ParamElement : public NEDElement
 {
   private:
     int type;
@@ -847,9 +847,9 @@ class NEDXML_API ParamNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ParamNode();
-    ParamNode(NEDElement *parent);
-    virtual ~ParamNode() {}
+    ParamElement();
+    ParamElement(NEDElement *parent);
+    virtual ~ParamElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -861,7 +861,7 @@ class NEDXML_API ParamNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ParamNode *dup() const;
+    virtual ParamElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -877,10 +877,10 @@ class NEDXML_API ParamNode : public NEDElement
     bool getIsDefault() const  {return isDefault;}
     void setIsDefault(bool val)  {isDefault = val;}
 
-    virtual ParamNode *getNextParamNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
+    virtual ParamElement *getNextParamSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExpressionElement *getFirstExpressionChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
     //@}
 };
 
@@ -897,7 +897,7 @@ class NEDXML_API ParamNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API PatternNode : public NEDElement
+class NEDXML_API PatternElement : public NEDElement
 {
   private:
     std::string pattern;
@@ -906,9 +906,9 @@ class NEDXML_API PatternNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    PatternNode();
-    PatternNode(NEDElement *parent);
-    virtual ~PatternNode() {}
+    PatternElement();
+    PatternElement(NEDElement *parent);
+    virtual ~PatternElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -920,7 +920,7 @@ class NEDXML_API PatternNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual PatternNode *dup() const;
+    virtual PatternElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -932,10 +932,10 @@ class NEDXML_API PatternNode : public NEDElement
     bool getIsDefault() const  {return isDefault;}
     void setIsDefault(bool val)  {isDefault = val;}
 
-    virtual PatternNode *getNextPatternNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
+    virtual PatternElement *getNextPatternSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExpressionElement *getFirstExpressionChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
     //@}
 };
 
@@ -952,7 +952,7 @@ class NEDXML_API PatternNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API PropertyNode : public NEDElement
+class NEDXML_API PropertyElement : public NEDElement
 {
   private:
     bool isImplicit;
@@ -961,9 +961,9 @@ class NEDXML_API PropertyNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    PropertyNode();
-    PropertyNode(NEDElement *parent);
-    virtual ~PropertyNode() {}
+    PropertyElement();
+    PropertyElement(NEDElement *parent);
+    virtual ~PropertyElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -975,7 +975,7 @@ class NEDXML_API PropertyNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual PropertyNode *dup() const;
+    virtual PropertyElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -987,9 +987,9 @@ class NEDXML_API PropertyNode : public NEDElement
     const char * getIndex() const  {return index.c_str();}
     void setIndex(const char * val)  {index = val;}
 
-    virtual PropertyNode *getNextPropertyNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertyKeyNode *getFirstPropertyKeyChild() const;
+    virtual PropertyElement *getNextPropertySibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual PropertyKeyElement *getFirstPropertyKeyChild() const;
     //@}
 };
 
@@ -1004,16 +1004,16 @@ class NEDXML_API PropertyNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API PropertyKeyNode : public NEDElement
+class NEDXML_API PropertyKeyElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    PropertyKeyNode();
-    PropertyKeyNode(NEDElement *parent);
-    virtual ~PropertyKeyNode() {}
+    PropertyKeyElement();
+    PropertyKeyElement(NEDElement *parent);
+    virtual ~PropertyKeyElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1025,7 +1025,7 @@ class NEDXML_API PropertyKeyNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual PropertyKeyNode *dup() const;
+    virtual PropertyKeyElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1033,9 +1033,9 @@ class NEDXML_API PropertyKeyNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual PropertyKeyNode *getNextPropertyKeyNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual LiteralNode *getFirstLiteralChild() const;
+    virtual PropertyKeyElement *getNextPropertyKeySibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual LiteralElement *getFirstLiteralChild() const;
     //@}
 };
 
@@ -1049,15 +1049,15 @@ class NEDXML_API PropertyKeyNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API GatesNode : public NEDElement
+class NEDXML_API GatesElement : public NEDElement
 {
   private:
   public:
     /** @name Constructors, destructor */
     //@{
-    GatesNode();
-    GatesNode(NEDElement *parent);
-    virtual ~GatesNode() {}
+    GatesElement();
+    GatesElement(NEDElement *parent);
+    virtual ~GatesElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1069,15 +1069,15 @@ class NEDXML_API GatesNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual GatesNode *dup() const;
+    virtual GatesElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
     //@{
 
-    virtual GatesNode *getNextGatesNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual GateNode *getFirstGateChild() const;
+    virtual GatesElement *getNextGatesSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual GateElement *getFirstGateChild() const;
     //@}
 };
 
@@ -1095,7 +1095,7 @@ class NEDXML_API GatesNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API GateNode : public NEDElement
+class NEDXML_API GateElement : public NEDElement
 {
   private:
     std::string name;
@@ -1105,9 +1105,9 @@ class NEDXML_API GateNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    GateNode();
-    GateNode(NEDElement *parent);
-    virtual ~GateNode() {}
+    GateElement();
+    GateElement(NEDElement *parent);
+    virtual ~GateElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1119,7 +1119,7 @@ class NEDXML_API GateNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual GateNode *dup() const;
+    virtual GateElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1133,10 +1133,10 @@ class NEDXML_API GateNode : public NEDElement
     const char * getVectorSize() const  {return vectorSize.c_str();}
     void setVectorSize(const char * val)  {vectorSize = val;}
 
-    virtual GateNode *getNextGateNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
+    virtual GateElement *getNextGateSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExpressionElement *getFirstExpressionChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
     //@}
 };
 
@@ -1151,15 +1151,15 @@ class NEDXML_API GateNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API TypesNode : public NEDElement
+class NEDXML_API TypesElement : public NEDElement
 {
   private:
   public:
     /** @name Constructors, destructor */
     //@{
-    TypesNode();
-    TypesNode(NEDElement *parent);
-    virtual ~TypesNode() {}
+    TypesElement();
+    TypesElement(NEDElement *parent);
+    virtual ~TypesElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1171,19 +1171,19 @@ class NEDXML_API TypesNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual TypesNode *dup() const;
+    virtual TypesElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
     //@{
 
-    virtual TypesNode *getNextTypesNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ChannelNode *getFirstChannelChild() const;
-    virtual ChannelInterfaceNode *getFirstChannelInterfaceChild() const;
-    virtual SimpleModuleNode *getFirstSimpleModuleChild() const;
-    virtual CompoundModuleNode *getFirstCompoundModuleChild() const;
-    virtual ModuleInterfaceNode *getFirstModuleInterfaceChild() const;
+    virtual TypesElement *getNextTypesSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ChannelElement *getFirstChannelChild() const;
+    virtual ChannelInterfaceElement *getFirstChannelInterfaceChild() const;
+    virtual SimpleModuleElement *getFirstSimpleModuleChild() const;
+    virtual CompoundModuleElement *getFirstCompoundModuleChild() const;
+    virtual ModuleInterfaceElement *getFirstModuleInterfaceChild() const;
     //@}
 };
 
@@ -1197,15 +1197,15 @@ class NEDXML_API TypesNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API SubmodulesNode : public NEDElement
+class NEDXML_API SubmodulesElement : public NEDElement
 {
   private:
   public:
     /** @name Constructors, destructor */
     //@{
-    SubmodulesNode();
-    SubmodulesNode(NEDElement *parent);
-    virtual ~SubmodulesNode() {}
+    SubmodulesElement();
+    SubmodulesElement(NEDElement *parent);
+    virtual ~SubmodulesElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1217,15 +1217,15 @@ class NEDXML_API SubmodulesNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual SubmodulesNode *dup() const;
+    virtual SubmodulesElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
     //@{
 
-    virtual SubmodulesNode *getNextSubmodulesNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual SubmoduleNode *getFirstSubmoduleChild() const;
+    virtual SubmodulesElement *getNextSubmodulesSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual SubmoduleElement *getFirstSubmoduleChild() const;
     //@}
 };
 
@@ -1244,7 +1244,7 @@ class NEDXML_API SubmodulesNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API SubmoduleNode : public NEDElement
+class NEDXML_API SubmoduleElement : public NEDElement
 {
   private:
     std::string name;
@@ -1255,9 +1255,9 @@ class NEDXML_API SubmoduleNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    SubmoduleNode();
-    SubmoduleNode(NEDElement *parent);
-    virtual ~SubmoduleNode() {}
+    SubmoduleElement();
+    SubmoduleElement(NEDElement *parent);
+    virtual ~SubmoduleElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1269,7 +1269,7 @@ class NEDXML_API SubmoduleNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual SubmoduleNode *dup() const;
+    virtual SubmoduleElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1285,11 +1285,11 @@ class NEDXML_API SubmoduleNode : public NEDElement
     const char * getVectorSize() const  {return vectorSize.c_str();}
     void setVectorSize(const char * val)  {vectorSize = val;}
 
-    virtual SubmoduleNode *getNextSubmoduleNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual ParametersNode *getFirstParametersChild() const;
-    virtual GatesNode *getFirstGatesChild() const;
+    virtual SubmoduleElement *getNextSubmoduleSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExpressionElement *getFirstExpressionChild() const;
+    virtual ParametersElement *getFirstParametersChild() const;
+    virtual GatesElement *getFirstGatesChild() const;
     //@}
 };
 
@@ -1304,16 +1304,16 @@ class NEDXML_API SubmoduleNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ConnectionsNode : public NEDElement
+class NEDXML_API ConnectionsElement : public NEDElement
 {
   private:
     bool allowUnconnected;
   public:
     /** @name Constructors, destructor */
     //@{
-    ConnectionsNode();
-    ConnectionsNode(NEDElement *parent);
-    virtual ~ConnectionsNode() {}
+    ConnectionsElement();
+    ConnectionsElement(NEDElement *parent);
+    virtual ~ConnectionsElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1325,7 +1325,7 @@ class NEDXML_API ConnectionsNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ConnectionsNode *dup() const;
+    virtual ConnectionsElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1333,10 +1333,10 @@ class NEDXML_API ConnectionsNode : public NEDElement
     bool getAllowUnconnected() const  {return allowUnconnected;}
     void setAllowUnconnected(bool val)  {allowUnconnected = val;}
 
-    virtual ConnectionsNode *getNextConnectionsNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ConnectionNode *getFirstConnectionChild() const;
-    virtual ConnectionGroupNode *getFirstConnectionGroupChild() const;
+    virtual ConnectionsElement *getNextConnectionsSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ConnectionElement *getFirstConnectionChild() const;
+    virtual ConnectionGroupElement *getFirstConnectionGroupChild() const;
     //@}
 };
 
@@ -1363,7 +1363,7 @@ class NEDXML_API ConnectionsNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ConnectionNode : public NEDElement
+class NEDXML_API ConnectionElement : public NEDElement
 {
   private:
     std::string srcModule;
@@ -1382,9 +1382,9 @@ class NEDXML_API ConnectionNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ConnectionNode();
-    ConnectionNode(NEDElement *parent);
-    virtual ~ConnectionNode() {}
+    ConnectionElement();
+    ConnectionElement(NEDElement *parent);
+    virtual ~ConnectionElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1396,7 +1396,7 @@ class NEDXML_API ConnectionNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ConnectionNode *dup() const;
+    virtual ConnectionElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1428,12 +1428,12 @@ class NEDXML_API ConnectionNode : public NEDElement
     int getArrowDirection() const  {return arrowDirection;}
     void setArrowDirection(int val);
 
-    virtual ConnectionNode *getNextConnectionNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual ChannelSpecNode *getFirstChannelSpecChild() const;
-    virtual LoopNode *getFirstLoopChild() const;
-    virtual ConditionNode *getFirstConditionChild() const;
+    virtual ConnectionElement *getNextConnectionSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExpressionElement *getFirstExpressionChild() const;
+    virtual ChannelSpecElement *getFirstChannelSpecChild() const;
+    virtual LoopElement *getFirstLoopChild() const;
+    virtual ConditionElement *getFirstConditionChild() const;
     //@}
 };
 
@@ -1450,7 +1450,7 @@ class NEDXML_API ConnectionNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ChannelSpecNode : public NEDElement
+class NEDXML_API ChannelSpecElement : public NEDElement
 {
   private:
     std::string type;
@@ -1459,9 +1459,9 @@ class NEDXML_API ChannelSpecNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ChannelSpecNode();
-    ChannelSpecNode(NEDElement *parent);
-    virtual ~ChannelSpecNode() {}
+    ChannelSpecElement();
+    ChannelSpecElement(NEDElement *parent);
+    virtual ~ChannelSpecElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1473,7 +1473,7 @@ class NEDXML_API ChannelSpecNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ChannelSpecNode *dup() const;
+    virtual ChannelSpecElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1485,10 +1485,10 @@ class NEDXML_API ChannelSpecNode : public NEDElement
     const char * getLikeParam() const  {return likeParam.c_str();}
     void setLikeParam(const char * val)  {likeParam = val;}
 
-    virtual ChannelSpecNode *getNextChannelSpecNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
-    virtual ParametersNode *getFirstParametersChild() const;
+    virtual ChannelSpecElement *getNextChannelSpecSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExpressionElement *getFirstExpressionChild() const;
+    virtual ParametersElement *getFirstParametersChild() const;
     //@}
 };
 
@@ -1502,15 +1502,15 @@ class NEDXML_API ChannelSpecNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ConnectionGroupNode : public NEDElement
+class NEDXML_API ConnectionGroupElement : public NEDElement
 {
   private:
   public:
     /** @name Constructors, destructor */
     //@{
-    ConnectionGroupNode();
-    ConnectionGroupNode(NEDElement *parent);
-    virtual ~ConnectionGroupNode() {}
+    ConnectionGroupElement();
+    ConnectionGroupElement(NEDElement *parent);
+    virtual ~ConnectionGroupElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1522,17 +1522,17 @@ class NEDXML_API ConnectionGroupNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ConnectionGroupNode *dup() const;
+    virtual ConnectionGroupElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
     //@{
 
-    virtual ConnectionGroupNode *getNextConnectionGroupNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual LoopNode *getFirstLoopChild() const;
-    virtual ConditionNode *getFirstConditionChild() const;
-    virtual ConnectionNode *getFirstConnectionChild() const;
+    virtual ConnectionGroupElement *getNextConnectionGroupSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual LoopElement *getFirstLoopChild() const;
+    virtual ConditionElement *getFirstConditionChild() const;
+    virtual ConnectionElement *getFirstConnectionChild() const;
     //@}
 };
 
@@ -1549,7 +1549,7 @@ class NEDXML_API ConnectionGroupNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API LoopNode : public NEDElement
+class NEDXML_API LoopElement : public NEDElement
 {
   private:
     std::string paramName;
@@ -1558,9 +1558,9 @@ class NEDXML_API LoopNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    LoopNode();
-    LoopNode(NEDElement *parent);
-    virtual ~LoopNode() {}
+    LoopElement();
+    LoopElement(NEDElement *parent);
+    virtual ~LoopElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1572,7 +1572,7 @@ class NEDXML_API LoopNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual LoopNode *dup() const;
+    virtual LoopElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1584,9 +1584,9 @@ class NEDXML_API LoopNode : public NEDElement
     const char * getToValue() const  {return toValue.c_str();}
     void setToValue(const char * val)  {toValue = val;}
 
-    virtual LoopNode *getNextLoopNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
+    virtual LoopElement *getNextLoopSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExpressionElement *getFirstExpressionChild() const;
     //@}
 };
 
@@ -1601,16 +1601,16 @@ class NEDXML_API LoopNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ConditionNode : public NEDElement
+class NEDXML_API ConditionElement : public NEDElement
 {
   private:
     std::string condition;
   public:
     /** @name Constructors, destructor */
     //@{
-    ConditionNode();
-    ConditionNode(NEDElement *parent);
-    virtual ~ConditionNode() {}
+    ConditionElement();
+    ConditionElement(NEDElement *parent);
+    virtual ~ConditionElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1622,7 +1622,7 @@ class NEDXML_API ConditionNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ConditionNode *dup() const;
+    virtual ConditionElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1630,9 +1630,9 @@ class NEDXML_API ConditionNode : public NEDElement
     const char * getCondition() const  {return condition.c_str();}
     void setCondition(const char * val)  {condition = val;}
 
-    virtual ConditionNode *getNextConditionNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual ExpressionNode *getFirstExpressionChild() const;
+    virtual ConditionElement *getNextConditionSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual ExpressionElement *getFirstExpressionChild() const;
     //@}
 };
 
@@ -1647,16 +1647,16 @@ class NEDXML_API ConditionNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ExpressionNode : public NEDElement
+class NEDXML_API ExpressionElement : public NEDElement
 {
   private:
     std::string target;
   public:
     /** @name Constructors, destructor */
     //@{
-    ExpressionNode();
-    ExpressionNode(NEDElement *parent);
-    virtual ~ExpressionNode() {}
+    ExpressionElement();
+    ExpressionElement(NEDElement *parent);
+    virtual ~ExpressionElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1668,7 +1668,7 @@ class NEDXML_API ExpressionNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ExpressionNode *dup() const;
+    virtual ExpressionElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1676,12 +1676,12 @@ class NEDXML_API ExpressionNode : public NEDElement
     const char * getTarget() const  {return target.c_str();}
     void setTarget(const char * val)  {target = val;}
 
-    virtual ExpressionNode *getNextExpressionNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual OperatorNode *getFirstOperatorChild() const;
-    virtual FunctionNode *getFirstFunctionChild() const;
-    virtual IdentNode *getFirstIdentChild() const;
-    virtual LiteralNode *getFirstLiteralChild() const;
+    virtual ExpressionElement *getNextExpressionSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual OperatorElement *getFirstOperatorChild() const;
+    virtual FunctionElement *getFirstFunctionChild() const;
+    virtual IdentElement *getFirstIdentChild() const;
+    virtual LiteralElement *getFirstLiteralChild() const;
     //@}
 };
 
@@ -1696,16 +1696,16 @@ class NEDXML_API ExpressionNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API OperatorNode : public NEDElement
+class NEDXML_API OperatorElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    OperatorNode();
-    OperatorNode(NEDElement *parent);
-    virtual ~OperatorNode() {}
+    OperatorElement();
+    OperatorElement(NEDElement *parent);
+    virtual ~OperatorElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1717,7 +1717,7 @@ class NEDXML_API OperatorNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual OperatorNode *dup() const;
+    virtual OperatorElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1725,12 +1725,12 @@ class NEDXML_API OperatorNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual OperatorNode *getNextOperatorNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual OperatorNode *getFirstOperatorChild() const;
-    virtual FunctionNode *getFirstFunctionChild() const;
-    virtual IdentNode *getFirstIdentChild() const;
-    virtual LiteralNode *getFirstLiteralChild() const;
+    virtual OperatorElement *getNextOperatorSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual OperatorElement *getFirstOperatorChild() const;
+    virtual FunctionElement *getFirstFunctionChild() const;
+    virtual IdentElement *getFirstIdentChild() const;
+    virtual LiteralElement *getFirstLiteralChild() const;
     //@}
 };
 
@@ -1745,16 +1745,16 @@ class NEDXML_API OperatorNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API FunctionNode : public NEDElement
+class NEDXML_API FunctionElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    FunctionNode();
-    FunctionNode(NEDElement *parent);
-    virtual ~FunctionNode() {}
+    FunctionElement();
+    FunctionElement(NEDElement *parent);
+    virtual ~FunctionElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1766,7 +1766,7 @@ class NEDXML_API FunctionNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual FunctionNode *dup() const;
+    virtual FunctionElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1774,12 +1774,12 @@ class NEDXML_API FunctionNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual FunctionNode *getNextFunctionNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual OperatorNode *getFirstOperatorChild() const;
-    virtual FunctionNode *getFirstFunctionChild() const;
-    virtual IdentNode *getFirstIdentChild() const;
-    virtual LiteralNode *getFirstLiteralChild() const;
+    virtual FunctionElement *getNextFunctionSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual OperatorElement *getFirstOperatorChild() const;
+    virtual FunctionElement *getFirstFunctionChild() const;
+    virtual IdentElement *getFirstIdentChild() const;
+    virtual LiteralElement *getFirstLiteralChild() const;
     //@}
 };
 
@@ -1795,7 +1795,7 @@ class NEDXML_API FunctionNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API IdentNode : public NEDElement
+class NEDXML_API IdentElement : public NEDElement
 {
   private:
     std::string module;
@@ -1803,9 +1803,9 @@ class NEDXML_API IdentNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    IdentNode();
-    IdentNode(NEDElement *parent);
-    virtual ~IdentNode() {}
+    IdentElement();
+    IdentElement(NEDElement *parent);
+    virtual ~IdentElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1817,7 +1817,7 @@ class NEDXML_API IdentNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual IdentNode *dup() const;
+    virtual IdentElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1827,12 +1827,12 @@ class NEDXML_API IdentNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual IdentNode *getNextIdentNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual OperatorNode *getFirstOperatorChild() const;
-    virtual FunctionNode *getFirstFunctionChild() const;
-    virtual IdentNode *getFirstIdentChild() const;
-    virtual LiteralNode *getFirstLiteralChild() const;
+    virtual IdentElement *getNextIdentSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual OperatorElement *getFirstOperatorChild() const;
+    virtual FunctionElement *getFirstFunctionChild() const;
+    virtual IdentElement *getFirstIdentChild() const;
+    virtual LiteralElement *getFirstLiteralChild() const;
     //@}
 };
 
@@ -1850,7 +1850,7 @@ class NEDXML_API IdentNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API LiteralNode : public NEDElement
+class NEDXML_API LiteralElement : public NEDElement
 {
   private:
     int type;
@@ -1860,9 +1860,9 @@ class NEDXML_API LiteralNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    LiteralNode();
-    LiteralNode(NEDElement *parent);
-    virtual ~LiteralNode() {}
+    LiteralElement();
+    LiteralElement(NEDElement *parent);
+    virtual ~LiteralElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1874,7 +1874,7 @@ class NEDXML_API LiteralNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual LiteralNode *dup() const;
+    virtual LiteralElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1888,8 +1888,8 @@ class NEDXML_API LiteralNode : public NEDElement
     const char * getValue() const  {return value.c_str();}
     void setValue(const char * val)  {value = val;}
 
-    virtual LiteralNode *getNextLiteralNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual LiteralElement *getNextLiteralSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -1906,7 +1906,7 @@ class NEDXML_API LiteralNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API MsgFileNode : public NEDElement
+class NEDXML_API MsgFileElement : public NEDElement
 {
   private:
     std::string filename;
@@ -1914,9 +1914,9 @@ class NEDXML_API MsgFileNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    MsgFileNode();
-    MsgFileNode(NEDElement *parent);
-    virtual ~MsgFileNode() {}
+    MsgFileElement();
+    MsgFileElement(NEDElement *parent);
+    virtual ~MsgFileElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1928,7 +1928,7 @@ class NEDXML_API MsgFileNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual MsgFileNode *dup() const;
+    virtual MsgFileElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1938,20 +1938,20 @@ class NEDXML_API MsgFileNode : public NEDElement
     const char * getVersion() const  {return version.c_str();}
     void setVersion(const char * val)  {version = val;}
 
-    virtual MsgFileNode *getNextMsgFileNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual NamespaceNode *getFirstNamespaceChild() const;
-    virtual PropertyDeclNode *getFirstPropertyDeclChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
-    virtual CplusplusNode *getFirstCplusplusChild() const;
-    virtual StructDeclNode *getFirstStructDeclChild() const;
-    virtual ClassDeclNode *getFirstClassDeclChild() const;
-    virtual MessageDeclNode *getFirstMessageDeclChild() const;
-    virtual EnumDeclNode *getFirstEnumDeclChild() const;
-    virtual EnumNode *getFirstEnumChild() const;
-    virtual MessageNode *getFirstMessageChild() const;
-    virtual ClassNode *getFirstClassChild() const;
-    virtual StructNode *getFirstStructChild() const;
+    virtual MsgFileElement *getNextMsgFileSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual NamespaceElement *getFirstNamespaceChild() const;
+    virtual PropertyDeclElement *getFirstPropertyDeclChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
+    virtual CplusplusElement *getFirstCplusplusChild() const;
+    virtual StructDeclElement *getFirstStructDeclChild() const;
+    virtual ClassDeclElement *getFirstClassDeclChild() const;
+    virtual MessageDeclElement *getFirstMessageDeclChild() const;
+    virtual EnumDeclElement *getFirstEnumDeclChild() const;
+    virtual EnumElement *getFirstEnumChild() const;
+    virtual MessageElement *getFirstMessageChild() const;
+    virtual ClassElement *getFirstClassChild() const;
+    virtual StructElement *getFirstStructChild() const;
     //@}
 };
 
@@ -1966,16 +1966,16 @@ class NEDXML_API MsgFileNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API NamespaceNode : public NEDElement
+class NEDXML_API NamespaceElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    NamespaceNode();
-    NamespaceNode(NEDElement *parent);
-    virtual ~NamespaceNode() {}
+    NamespaceElement();
+    NamespaceElement(NEDElement *parent);
+    virtual ~NamespaceElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -1987,7 +1987,7 @@ class NEDXML_API NamespaceNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual NamespaceNode *dup() const;
+    virtual NamespaceElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -1995,8 +1995,8 @@ class NEDXML_API NamespaceNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual NamespaceNode *getNextNamespaceNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual NamespaceElement *getNextNamespaceSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -2011,16 +2011,16 @@ class NEDXML_API NamespaceNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API CplusplusNode : public NEDElement
+class NEDXML_API CplusplusElement : public NEDElement
 {
   private:
     std::string body;
   public:
     /** @name Constructors, destructor */
     //@{
-    CplusplusNode();
-    CplusplusNode(NEDElement *parent);
-    virtual ~CplusplusNode() {}
+    CplusplusElement();
+    CplusplusElement(NEDElement *parent);
+    virtual ~CplusplusElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2032,7 +2032,7 @@ class NEDXML_API CplusplusNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual CplusplusNode *dup() const;
+    virtual CplusplusElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2040,8 +2040,8 @@ class NEDXML_API CplusplusNode : public NEDElement
     const char * getBody() const  {return body.c_str();}
     void setBody(const char * val)  {body = val;}
 
-    virtual CplusplusNode *getNextCplusplusNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual CplusplusElement *getNextCplusplusSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -2056,16 +2056,16 @@ class NEDXML_API CplusplusNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API StructDeclNode : public NEDElement
+class NEDXML_API StructDeclElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    StructDeclNode();
-    StructDeclNode(NEDElement *parent);
-    virtual ~StructDeclNode() {}
+    StructDeclElement();
+    StructDeclElement(NEDElement *parent);
+    virtual ~StructDeclElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2077,7 +2077,7 @@ class NEDXML_API StructDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual StructDeclNode *dup() const;
+    virtual StructDeclElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2085,8 +2085,8 @@ class NEDXML_API StructDeclNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual StructDeclNode *getNextStructDeclNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual StructDeclElement *getNextStructDeclSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -2102,7 +2102,7 @@ class NEDXML_API StructDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ClassDeclNode : public NEDElement
+class NEDXML_API ClassDeclElement : public NEDElement
 {
   private:
     std::string name;
@@ -2110,9 +2110,9 @@ class NEDXML_API ClassDeclNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ClassDeclNode();
-    ClassDeclNode(NEDElement *parent);
-    virtual ~ClassDeclNode() {}
+    ClassDeclElement();
+    ClassDeclElement(NEDElement *parent);
+    virtual ~ClassDeclElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2124,7 +2124,7 @@ class NEDXML_API ClassDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ClassDeclNode *dup() const;
+    virtual ClassDeclElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2134,8 +2134,8 @@ class NEDXML_API ClassDeclNode : public NEDElement
     bool getIsCobject() const  {return isCobject;}
     void setIsCobject(bool val)  {isCobject = val;}
 
-    virtual ClassDeclNode *getNextClassDeclNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual ClassDeclElement *getNextClassDeclSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -2150,16 +2150,16 @@ class NEDXML_API ClassDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API MessageDeclNode : public NEDElement
+class NEDXML_API MessageDeclElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    MessageDeclNode();
-    MessageDeclNode(NEDElement *parent);
-    virtual ~MessageDeclNode() {}
+    MessageDeclElement();
+    MessageDeclElement(NEDElement *parent);
+    virtual ~MessageDeclElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2171,7 +2171,7 @@ class NEDXML_API MessageDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual MessageDeclNode *dup() const;
+    virtual MessageDeclElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2179,8 +2179,8 @@ class NEDXML_API MessageDeclNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual MessageDeclNode *getNextMessageDeclNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual MessageDeclElement *getNextMessageDeclSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -2195,16 +2195,16 @@ class NEDXML_API MessageDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API EnumDeclNode : public NEDElement
+class NEDXML_API EnumDeclElement : public NEDElement
 {
   private:
     std::string name;
   public:
     /** @name Constructors, destructor */
     //@{
-    EnumDeclNode();
-    EnumDeclNode(NEDElement *parent);
-    virtual ~EnumDeclNode() {}
+    EnumDeclElement();
+    EnumDeclElement(NEDElement *parent);
+    virtual ~EnumDeclElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2216,7 +2216,7 @@ class NEDXML_API EnumDeclNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual EnumDeclNode *dup() const;
+    virtual EnumDeclElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2224,8 +2224,8 @@ class NEDXML_API EnumDeclNode : public NEDElement
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
 
-    virtual EnumDeclNode *getNextEnumDeclNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual EnumDeclElement *getNextEnumDeclSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -2242,7 +2242,7 @@ class NEDXML_API EnumDeclNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API EnumNode : public NEDElement
+class NEDXML_API EnumElement : public NEDElement
 {
   private:
     std::string name;
@@ -2251,9 +2251,9 @@ class NEDXML_API EnumNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    EnumNode();
-    EnumNode(NEDElement *parent);
-    virtual ~EnumNode() {}
+    EnumElement();
+    EnumElement(NEDElement *parent);
+    virtual ~EnumElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2265,7 +2265,7 @@ class NEDXML_API EnumNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual EnumNode *dup() const;
+    virtual EnumElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2277,9 +2277,9 @@ class NEDXML_API EnumNode : public NEDElement
     const char * getSourceCode() const  {return sourceCode.c_str();}
     void setSourceCode(const char * val)  {sourceCode = val;}
 
-    virtual EnumNode *getNextEnumNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual EnumFieldsNode *getFirstEnumFieldsChild() const;
+    virtual EnumElement *getNextEnumSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual EnumFieldsElement *getFirstEnumFieldsChild() const;
     //@}
 };
 
@@ -2293,15 +2293,15 @@ class NEDXML_API EnumNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API EnumFieldsNode : public NEDElement
+class NEDXML_API EnumFieldsElement : public NEDElement
 {
   private:
   public:
     /** @name Constructors, destructor */
     //@{
-    EnumFieldsNode();
-    EnumFieldsNode(NEDElement *parent);
-    virtual ~EnumFieldsNode() {}
+    EnumFieldsElement();
+    EnumFieldsElement(NEDElement *parent);
+    virtual ~EnumFieldsElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2313,15 +2313,15 @@ class NEDXML_API EnumFieldsNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual EnumFieldsNode *dup() const;
+    virtual EnumFieldsElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
     //@{
 
-    virtual EnumFieldsNode *getNextEnumFieldsNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual EnumFieldNode *getFirstEnumFieldChild() const;
+    virtual EnumFieldsElement *getNextEnumFieldsSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual EnumFieldElement *getFirstEnumFieldChild() const;
     //@}
 };
 
@@ -2337,7 +2337,7 @@ class NEDXML_API EnumFieldsNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API EnumFieldNode : public NEDElement
+class NEDXML_API EnumFieldElement : public NEDElement
 {
   private:
     std::string name;
@@ -2345,9 +2345,9 @@ class NEDXML_API EnumFieldNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    EnumFieldNode();
-    EnumFieldNode(NEDElement *parent);
-    virtual ~EnumFieldNode() {}
+    EnumFieldElement();
+    EnumFieldElement(NEDElement *parent);
+    virtual ~EnumFieldElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2359,7 +2359,7 @@ class NEDXML_API EnumFieldNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual EnumFieldNode *dup() const;
+    virtual EnumFieldElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2369,8 +2369,8 @@ class NEDXML_API EnumFieldNode : public NEDElement
     const char * getValue() const  {return value.c_str();}
     void setValue(const char * val)  {value = val;}
 
-    virtual EnumFieldNode *getNextEnumFieldNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual EnumFieldElement *getNextEnumFieldSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -2387,7 +2387,7 @@ class NEDXML_API EnumFieldNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API MessageNode : public NEDElement
+class NEDXML_API MessageElement : public NEDElement
 {
   private:
     std::string name;
@@ -2396,9 +2396,9 @@ class NEDXML_API MessageNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    MessageNode();
-    MessageNode(NEDElement *parent);
-    virtual ~MessageNode() {}
+    MessageElement();
+    MessageElement(NEDElement *parent);
+    virtual ~MessageElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2410,7 +2410,7 @@ class NEDXML_API MessageNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual MessageNode *dup() const;
+    virtual MessageElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2422,10 +2422,10 @@ class NEDXML_API MessageNode : public NEDElement
     const char * getSourceCode() const  {return sourceCode.c_str();}
     void setSourceCode(const char * val)  {sourceCode = val;}
 
-    virtual MessageNode *getNextMessageNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
-    virtual FieldNode *getFirstFieldChild() const;
+    virtual MessageElement *getNextMessageSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
+    virtual FieldElement *getFirstFieldChild() const;
     //@}
 };
 
@@ -2442,7 +2442,7 @@ class NEDXML_API MessageNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API ClassNode : public NEDElement
+class NEDXML_API ClassElement : public NEDElement
 {
   private:
     std::string name;
@@ -2451,9 +2451,9 @@ class NEDXML_API ClassNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    ClassNode();
-    ClassNode(NEDElement *parent);
-    virtual ~ClassNode() {}
+    ClassElement();
+    ClassElement(NEDElement *parent);
+    virtual ~ClassElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2465,7 +2465,7 @@ class NEDXML_API ClassNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual ClassNode *dup() const;
+    virtual ClassElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2477,10 +2477,10 @@ class NEDXML_API ClassNode : public NEDElement
     const char * getSourceCode() const  {return sourceCode.c_str();}
     void setSourceCode(const char * val)  {sourceCode = val;}
 
-    virtual ClassNode *getNextClassNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
-    virtual FieldNode *getFirstFieldChild() const;
+    virtual ClassElement *getNextClassSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
+    virtual FieldElement *getFirstFieldChild() const;
     //@}
 };
 
@@ -2497,7 +2497,7 @@ class NEDXML_API ClassNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API StructNode : public NEDElement
+class NEDXML_API StructElement : public NEDElement
 {
   private:
     std::string name;
@@ -2506,9 +2506,9 @@ class NEDXML_API StructNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    StructNode();
-    StructNode(NEDElement *parent);
-    virtual ~StructNode() {}
+    StructElement();
+    StructElement(NEDElement *parent);
+    virtual ~StructElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2520,7 +2520,7 @@ class NEDXML_API StructNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual StructNode *dup() const;
+    virtual StructElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2532,10 +2532,10 @@ class NEDXML_API StructNode : public NEDElement
     const char * getSourceCode() const  {return sourceCode.c_str();}
     void setSourceCode(const char * val)  {sourceCode = val;}
 
-    virtual StructNode *getNextStructNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
-    virtual PropertyNode *getFirstPropertyChild() const;
-    virtual FieldNode *getFirstFieldChild() const;
+    virtual StructElement *getNextStructSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
+    virtual PropertyElement *getFirstPropertyChild() const;
+    virtual FieldElement *getFirstFieldChild() const;
     //@}
 };
 
@@ -2557,7 +2557,7 @@ class NEDXML_API StructNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API FieldNode : public NEDElement
+class NEDXML_API FieldElement : public NEDElement
 {
   private:
     std::string name;
@@ -2571,9 +2571,9 @@ class NEDXML_API FieldNode : public NEDElement
   public:
     /** @name Constructors, destructor */
     //@{
-    FieldNode();
-    FieldNode(NEDElement *parent);
-    virtual ~FieldNode() {}
+    FieldElement();
+    FieldElement(NEDElement *parent);
+    virtual ~FieldElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2585,7 +2585,7 @@ class NEDXML_API FieldNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual FieldNode *dup() const;
+    virtual FieldElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2607,8 +2607,8 @@ class NEDXML_API FieldNode : public NEDElement
     const char * getDefaultValue() const  {return defaultValue.c_str();}
     void setDefaultValue(const char * val)  {defaultValue = val;}
 
-    virtual FieldNode *getNextFieldNodeSibling() const;
-    virtual CommentNode *getFirstCommentChild() const;
+    virtual FieldElement *getNextFieldSibling() const;
+    virtual CommentElement *getFirstCommentChild() const;
     //@}
 };
 
@@ -2623,16 +2623,16 @@ class NEDXML_API FieldNode : public NEDElement
  * 
  * @ingroup Data
  */
-class NEDXML_API UnknownNode : public NEDElement
+class NEDXML_API UnknownElement : public NEDElement
 {
   private:
     std::string element;
   public:
     /** @name Constructors, destructor */
     //@{
-    UnknownNode();
-    UnknownNode(NEDElement *parent);
-    virtual ~UnknownNode() {}
+    UnknownElement();
+    UnknownElement(NEDElement *parent);
+    virtual ~UnknownElement() {}
     //@}
 
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
@@ -2644,7 +2644,7 @@ class NEDXML_API UnknownNode : public NEDElement
     virtual const char *getAttribute(int k) const;
     virtual void setAttribute(int k, const char *val);
     virtual const char *getAttributeDefault(int k) const;
-    virtual UnknownNode *dup() const;
+    virtual UnknownElement *dup() const;
     //@}
 
     /** @name Typed access to attributes, children and siblings */
@@ -2652,7 +2652,7 @@ class NEDXML_API UnknownNode : public NEDElement
     const char * getElement() const  {return element.c_str();}
     void setElement(const char * val)  {element = val;}
 
-    virtual UnknownNode *getNextUnknownNodeSibling() const;
+    virtual UnknownElement *getNextUnknownSibling() const;
     //@}
 };
 
@@ -2673,9 +2673,9 @@ class NEDXML_API NEDElementFactory
     /** Returns factory instance */
     static NEDElementFactory *getInstance();
     /** Creates NEDElement subclass which corresponds to tagname */
-    virtual NEDElement *createNodeWithTag(const char *tagname);
+    virtual NEDElement *createElementWithTag(const char *tagname);
     /** Creates NEDElement subclass which corresponds to tagcode */
-    virtual NEDElement *createNodeWithTag(int tagcode);
+    virtual NEDElement *createElementWithTag(int tagcode);
 };
 
 NAMESPACE_END

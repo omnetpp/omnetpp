@@ -153,7 +153,7 @@ void cNEDLoader::doLoadNedFile(const char *nedfname, const char *expectedPackage
     NEDElement *tree = parseAndValidateNedFile(nedfname, isXML);
 
     // check that declared package matches expected package
-    PackageNode *packageDecl = (PackageNode *)tree->getFirstChildWithTag(NED_PACKAGE);
+    PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
     if (declaredPackage != expectedPackage)
         throw cRuntimeError("NED error in file `%s': declared package `%s' does not match expected package `%s'",
@@ -205,7 +205,7 @@ std::string cNEDLoader::determineRootPackageName(const char *foldername)
     // read package declaration from it
     NEDElement *tree = parseAndValidateNedFile(packageNedFilename.c_str(), false);
     ASSERT(tree);
-    PackageNode *packageDecl = (PackageNode *)tree->getFirstChildWithTag(NED_PACKAGE);
+    PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
     std::string result = packageDecl ? packageDecl->getName() : "";
     delete tree;
     return result;

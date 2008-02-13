@@ -92,89 +92,89 @@ void NEDCppGenerator::generateItem(NEDElement *node, const char *indent, int mod
             switch (tagcode)
             {
                 case NED_NED_FILES:
-                    doNedFiles((FilesNode *)node, newindent, mode, arg); break;
+                    doNedFiles((FilesElement *)node, newindent, mode, arg); break;
                 case NED_NED_FILE:
-                    doNedFile((NedFileNode *)node, newindent, mode, arg); break;
+                    doNedFile((NedFileElement *)node, newindent, mode, arg); break;
                 case NED_IMPORT:
-                    doImports((ImportNode *)node, newindent, mode, arg); break;
+                    doImports((ImportElement *)node, newindent, mode, arg); break;
                 case NED_IMPORTED_FILE:
-                    doImport((ImportedFileNode *)node, newindent, mode, arg); break;
+                    doImport((ImportedFileElement *)node, newindent, mode, arg); break;
                 case NED_CHANNEL:
-                    doChannel((ChannelNode *)node, newindent, mode, arg); break;
+                    doChannel((ChannelElement *)node, newindent, mode, arg); break;
                 case NED_CHANNEL_ATTR:
-                    doChannelAttr((ChannelAttrNode *)node, newindent, mode, arg); break;
+                    doChannelAttr((ChannelAttrElement *)node, newindent, mode, arg); break;
                 case NED_NETWORK:
-                    doNetwork((NetworkNode *)node, newindent, mode, arg); break;
+                    doNetwork((NetworkElement *)node, newindent, mode, arg); break;
                 case NED_SIMPLE_MODULE:
-                    doSimple((SimpleModuleNode *)node, newindent, mode, arg); break;
+                    doSimple((SimpleModuleElement *)node, newindent, mode, arg); break;
                 case NED_COMPOUND_MODULE:
-                    doModule((CompoundModuleNode *)node, newindent, mode, arg); break;
+                    doModule((CompoundModuleElement *)node, newindent, mode, arg); break;
                 case NED_PARAMETERS:
-                    doParams((ParamsNode *)node, newindent, mode, arg); break;
+                    doParams((ParamsElement *)node, newindent, mode, arg); break;
                 case NED_PARAM:
-                    doParam((ParamNode *)node, newindent, mode, arg); break;
+                    doParam((ParamElement *)node, newindent, mode, arg); break;
                 case NED_GATES:
-                    doGates((GatesNode *)node, newindent, mode, arg); break;
+                    doGates((GatesElement *)node, newindent, mode, arg); break;
                 case NED_GATE:
-                    doGate((GateNode *)node, newindent, mode, arg); break;
+                    doGate((GateElement *)node, newindent, mode, arg); break;
                 case NED_MACHINES:
-                    doMachines((MachinesNode *)node, newindent, mode, arg); break;
+                    doMachines((MachinesElement *)node, newindent, mode, arg); break;
                 case NED_MACHINE:
-                    doMachine((MachineNode *)node, newindent, mode, arg); break;
+                    doMachine((MachineElement *)node, newindent, mode, arg); break;
                 case NED_SUBMODULES:
-                    doSubmodules((SubmodulesNode *)node, newindent, mode, arg); break;
+                    doSubmodules((SubmodulesElement *)node, newindent, mode, arg); break;
                 case NED_SUBMODULE:
-                    doSubmodule((SubmoduleNode *)node, newindent, mode, arg); break;
+                    doSubmodule((SubmoduleElement *)node, newindent, mode, arg); break;
                 case NED_SUBSTPARAMS:
-                    doSubstparams((SubstparamsNode *)node, newindent, mode, arg); break;
+                    doSubstparams((SubstparamsElement *)node, newindent, mode, arg); break;
                 case NED_SUBSTPARAM:
-                    doSubstparam((SubstparamNode *)node, newindent, mode, arg); break;
+                    doSubstparam((SubstparamElement *)node, newindent, mode, arg); break;
                 case NED_GATESIZES:
-                    doGatesizes((GatesizesNode *)node, newindent, mode, arg); break;
+                    doGatesizes((GatesizesElement *)node, newindent, mode, arg); break;
                 case NED_GATESIZE:
-                    doGatesize((GatesizeNode *)node, newindent, mode, arg); break;
+                    doGatesize((GatesizeElement *)node, newindent, mode, arg); break;
                 case NED_SUBSTMACHINES:
-                    doSubstmachines((SubstmachinesNode *)node, newindent, mode, arg); break;
+                    doSubstmachines((SubstmachinesElement *)node, newindent, mode, arg); break;
                 case NED_SUBSTMACHINE:
-                    doSubstmachine((SubstmachineNode *)node, newindent, mode, arg); break;
+                    doSubstmachine((SubstmachineElement *)node, newindent, mode, arg); break;
                 case NED_CONNECTIONS:
-                    doConnections((ConnectionsNode *)node, newindent, mode, arg); break;
+                    doConnections((ConnectionsElement *)node, newindent, mode, arg); break;
                 case NED_CONNECTION:
-                    doConnection((ConnectionNode *)node, newindent, mode, arg); break;
+                    doConnection((ConnectionElement *)node, newindent, mode, arg); break;
                 case NED_CONN_ATTR:
-                    doConnattr((ConnAttrNode *)node, newindent, mode, arg); break;
+                    doConnattr((ConnAttrElement *)node, newindent, mode, arg); break;
                 case NED_FOR_LOOP:
-                    doForloop((ForLoopNode *)node, newindent, mode, arg); break;
+                    doForloop((ForLoopElement *)node, newindent, mode, arg); break;
                 case NED_LOOP_VAR:
-                    doLoopvar((LoopVarNode *)node, newindent, mode, arg); break;
+                    doLoopvar((LoopVarElement *)node, newindent, mode, arg); break;
                 case NED_DISPLAY_STRING:
-                    doDisplayString((DisplayStringNode *)node, newindent, mode, arg); break;
+                    doDisplayString((DisplayStringElement *)node, newindent, mode, arg); break;
                 case NED_EXPRESSION:
-                    doExpression((ExpressionNode *)node, newindent, mode, arg); break;
+                    doExpression((ExpressionElement *)node, newindent, mode, arg); break;
                 case NED_NAMESPACE:
-                    doNamespace((NamespaceNode *)node, newindent, mode, arg); break;
+                    doNamespace((NamespaceElement *)node, newindent, mode, arg); break;
                 case NED_CPLUSPLUS:
-                    doCplusplus((CplusplusNode *)node, newindent, mode, arg); break;
+                    doCplusplus((CplusplusElement *)node, newindent, mode, arg); break;
                 case NED_STRUCT_DECL:
-                    doStructDecl((StructDeclNode *)node, newindent, mode, arg); break;
+                    doStructDecl((StructDeclElement *)node, newindent, mode, arg); break;
                 case NED_CLASS_DECL:
-                    doClassDecl((ClassDeclNode *)node, newindent, mode, arg); break;
+                    doClassDecl((ClassDeclElement *)node, newindent, mode, arg); break;
                 case NED_MESSAGE_DECL:
-                    doMessageDecl((MessageDeclNode *)node, newindent, mode, arg); break;
+                    doMessageDecl((MessageDeclElement *)node, newindent, mode, arg); break;
                 case NED_ENUM_DECL:
-                    doEnumDecl((EnumDeclNode *)node, newindent, mode, arg); break;
+                    doEnumDecl((EnumDeclElement *)node, newindent, mode, arg); break;
                 case NED_ENUM:
-                    doEnum((EnumNode *)node, newindent, mode, arg); break;
+                    doEnum((EnumElement *)node, newindent, mode, arg); break;
                 case NED_ENUM_FIELDS:
-                    doEnumFields((EnumFieldsNode *)node, newindent, mode, arg); break;
+                    doEnumFields((EnumFieldsElement *)node, newindent, mode, arg); break;
                 case NED_ENUM_FIELD:
-                    doEnumField((EnumFieldNode *)node, newindent, mode, arg); break;
+                    doEnumField((EnumFieldElement *)node, newindent, mode, arg); break;
                 case NED_MESSAGE:
-                    doMessage((MessageNode *)node, newindent, mode, arg); break;
+                    doMessage((MessageElement *)node, newindent, mode, arg); break;
                 case NED_CLASS:
-                    doClass((ClassNode *)node, newindent, mode, arg); break;
+                    doClass((ClassElement *)node, newindent, mode, arg); break;
                 case NED_STRUCT:
-                    doStruct((StructNode *)node, newindent, mode, arg); break;
+                    doStruct((StructElement *)node, newindent, mode, arg); break;
                 case NED_FIELDS:
                 case NED_FIELD:
                 case NED_PROPERTIES:
@@ -188,7 +188,7 @@ void NEDCppGenerator::generateItem(NEDElement *node, const char *indent, int mod
             switch (tagcode)
             {
                 case NED_SUBMODULE:
-                    doSubmoduleFinally((SubmoduleNode *)node, newindent, mode, arg); break;
+                    doSubmoduleFinally((SubmoduleElement *)node, newindent, mode, arg); break;
                 default:
                     generateChildren(node, newindent, mode, arg);
             }
@@ -224,27 +224,27 @@ void NEDCppGenerator::generateChildrenExceptTags(NEDElement *node, const char *t
     }
 }
 
-ExpressionNode *NEDCppGenerator::findExpression(NEDElement *parent, const char *target)
+ExpressionElement *NEDCppGenerator::findExpression(NEDElement *parent, const char *target)
 {
     if (!parent)
         return NULL;
     for (NEDElement *child=parent->getFirstChildWithTag(NED_EXPRESSION); child; child = child->getNextSiblingWithTag(NED_EXPRESSION))
     {
-        ExpressionNode *expr = (ExpressionNode *)child;
+        ExpressionElement *expr = (ExpressionElement *)child;
         if (!strcmp(expr->getTarget(),target))
             return expr;
     }
     return NULL;
 }
 
-LiteralNode *NEDCppGenerator::getConstantExpression(ExpressionNode *node)
+LiteralElement *NEDCppGenerator::getConstantExpression(ExpressionElement *node)
 {
     if (!node)
         return NULL;
     NEDElement *firstchild = node->getFirstChild();
     if (!firstchild || firstchild->getTagCode()!=NED_LITERAL || firstchild->getNextSibling())
         return NULL;
-    return (LiteralNode *)firstchild;
+    return (LiteralElement *)firstchild;
 }
 
 //--------------------------------------
@@ -265,7 +265,7 @@ void NEDCppGenerator::printTemporaryVariables(const char *indent)
 
 void NEDCppGenerator::beginConditionalBlock(NEDElement *node, const char *&indent, int mode, const char *)
 {
-    ExpressionNode *condition = findExpression(node, "condition");
+    ExpressionElement *condition = findExpression(node, "condition");
     if (condition)
     {
         out << indent << "if (";
@@ -278,7 +278,7 @@ void NEDCppGenerator::beginConditionalBlock(NEDElement *node, const char *&inden
 
 void NEDCppGenerator::endConditionalBlock(NEDElement *node, const char *&indent, int mode, const char *)
 {
-    ExpressionNode *condition = findExpression(node, "condition");
+    ExpressionElement *condition = findExpression(node, "condition");
     if (condition)
     {
         indent = decreaseIndent(indent);
@@ -437,39 +437,39 @@ void NEDCppGenerator::writeProlog(ostream& out)
 }
 
 // generators
-void NEDCppGenerator::doNedFiles(FilesNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doNedFiles(FilesElement *node, const char *indent, int mode, const char *)
 {
     generateChildren(node, increaseIndent(indent));
 }
 
-void NEDCppGenerator::doNedFile(NedFileNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doNedFile(NedFileElement *node, const char *indent, int mode, const char *)
 {
     // generate children
     generateChildren(node, indent);
 }
 
-void NEDCppGenerator::doImports(ImportNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doImports(ImportElement *node, const char *indent, int mode, const char *)
 {
     // no code to be generated
 }
 
-void NEDCppGenerator::doImport(ImportedFileNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doImport(ImportedFileElement *node, const char *indent, int mode, const char *)
 {
     // no code to be generated
 }
 
-ChannelAttrNode *findChannelAttribute(ChannelNode *node, const char *attrname)
+ChannelAttrElement *findChannelAttribute(ChannelElement *node, const char *attrname)
 {
     for (NEDElement *child=node->getFirstChildWithTag(NED_CHANNEL_ATTR); child; child = child->getNextSiblingWithTag(NED_CHANNEL_ATTR))
     {
-        ChannelAttrNode *attr = (ChannelAttrNode *)child;
+        ChannelAttrElement *attr = (ChannelAttrElement *)child;
         if (!strcmp(attr->getName(), attrname))
             return attr;
     }
     return 0;
 }
 
-void NEDCppGenerator::doChannel(ChannelNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doChannel(ChannelElement *node, const char *indent, int mode, const char *)
 {
     // generate expression shells
     exprgen.collectExpressions(node);
@@ -501,19 +501,19 @@ void NEDCppGenerator::doChannel(ChannelNode *node, const char *indent, int mode,
     out << "};\n\n";
 }
 
-void NEDCppGenerator::doChannelAttr(ChannelAttrNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doChannelAttr(ChannelAttrElement *node, const char *indent, int mode, const char *)
 {
     const char *attrname = node->getName();    // attribute name
 
     out << "    p = new cPar(\"" << attrname << "\");\n";
-    ExpressionNode *value = findExpression(node, "value");
+    ExpressionElement *value = findExpression(node, "value");
     out << "    *p = ";
     generateItem(value, indent, mode);
     out << ";\n";
     out << "    chan->addPar(p);\n\n";
 }
 
-void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doNetwork(NetworkElement *node, const char *indent, int mode, const char *)
 {
     in_network = true;
     const char *networkname = node->getName();
@@ -572,7 +572,7 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     in_network = false;
 }
 
-void NEDCppGenerator::doSimple(SimpleModuleNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doSimple(SimpleModuleElement *node, const char *indent, int mode, const char *)
 {
     // generate Interface() stuff
     const char *module_name = node->getName();
@@ -600,7 +600,7 @@ void NEDCppGenerator::doSimple(SimpleModuleNode *node, const char *indent, int m
     out << "//\n\n";
 }
 
-void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doModule(CompoundModuleElement *node, const char *indent, int mode, const char *)
 {
     // generate Interface() stuff
     const char *module_name = node->getName();
@@ -641,7 +641,7 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     generateChildrenWithTags(node, "connections", indent);
 
     // check if there are unconnected gates left
-    ConnectionsNode *conns = (ConnectionsNode *)node->getFirstChildWithTag(NED_CONNECTIONS);
+    ConnectionsElement *conns = (ConnectionsElement *)node->getFirstChildWithTag(NED_CONNECTIONS);
     if (!conns || conns->getCheckUnconnected())
     {
        out << indent << "// check all gates are connected:\n";
@@ -658,14 +658,14 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     out << indent << "}\n\n";
 }
 
-void NEDCppGenerator::doParams(ParamsNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doParams(ParamsElement *node, const char *indent, int mode, const char *)
 {
     // generate children
     out << indent << "// parameters:\n";
     generateChildren(node, indent, mode);
 }
 
-void NEDCppGenerator::doParam(ParamNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doParam(ParamElement *node, const char *indent, int mode, const char *)
 {
     const char *typecode;
     const char *datatype = node->getDataType();
@@ -687,31 +687,31 @@ void NEDCppGenerator::doParam(ParamNode *node, const char *indent, int mode, con
     out << indent << "Parameter(" << node->getName() << ", " << typecode << ")\n";
 }
 
-void NEDCppGenerator::doGates(GatesNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doGates(GatesElement *node, const char *indent, int mode, const char *)
 {
     // generate children
     out << indent << "// gates:\n";
     generateChildren(node, indent, mode);
 }
 
-void NEDCppGenerator::doGate(GateNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doGate(GateElement *node, const char *indent, int mode, const char *)
 {
     out << indent << "Gate(" << node->getName();
     out << (node->getIsVector() ? "[]" : "") << ", ";
     out << (node->getType()==NED_GATETYPE_INPUT ? "GateDir_Input" : "GateDir_Output") << ")\n";
 }
 
-void NEDCppGenerator::doMachines(MachinesNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doMachines(MachinesElement *node, const char *indent, int mode, const char *)
 {
     // ignore machines (obsolete)
 }
 
-void NEDCppGenerator::doMachine(MachineNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doMachine(MachineElement *node, const char *indent, int mode, const char *)
 {
     // ignore machines (obsolete)
 }
 
-void NEDCppGenerator::doSubmodules(SubmodulesNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doSubmodules(SubmodulesElement *node, const char *indent, int mode, const char *)
 {
     // prolog
     out << indent << "// submodules:\n";
@@ -722,7 +722,7 @@ void NEDCppGenerator::doSubmodules(SubmodulesNode *node, const char *indent, int
     generateChildren(node, indent, mode);
 }
 
-void NEDCppGenerator::resolveSubmoduleType(SubmoduleNode *node, const char *indent)
+void NEDCppGenerator::resolveSubmoduleType(SubmoduleElement *node, const char *indent)
 {
     // find module descriptor
     if (opp_isempty(node->getLikeParam()))
@@ -736,7 +736,7 @@ void NEDCppGenerator::resolveSubmoduleType(SubmoduleNode *node, const char *inde
     }
 }
 
-void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doSubmodule(SubmoduleElement *node, const char *indent, int mode, const char *)
 {
     out << indent << "//\n";
     out << indent << "// submodule '" << node->getName() << "':\n";
@@ -745,7 +745,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     // create module
     const char *submodule_name = node->getName();
 
-    ExpressionNode *vectorsize = findExpression(node, "vector-size");
+    ExpressionElement *vectorsize = findExpression(node, "vector-size");
     if (!vectorsize)
     {
         out << indent << "int " << node->getName() << "_size = 1;\n";
@@ -792,7 +792,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     out << indent << "_readModuleParameters(" << submodule_var.c_str() << ");\n";
 
     // add display string
-    DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
+    DisplayStringElement *dispstr = (DisplayStringElement *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
         out << indent << submodule_var.c_str() << "->setDisplayString(" << opp_quotestr(dispstr->getValue()) << ");\n";
@@ -804,7 +804,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     out << indent << "}\n\n";
 }
 
-void NEDCppGenerator::doSubmoduleFinally(SubmoduleNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doSubmoduleFinally(SubmoduleElement *node, const char *indent, int mode, const char *)
 {
     // generate buildInside() call, and if necessary, free up array of cModule pointers
     const char *submodname = node->getName();
@@ -820,7 +820,7 @@ void NEDCppGenerator::doSubmoduleFinally(SubmoduleNode *node, const char *indent
     }
 }
 
-void NEDCppGenerator::doSubstparams(SubstparamsNode *node, const char *indent, int mode, const char *arg)
+void NEDCppGenerator::doSubstparams(SubstparamsElement *node, const char *indent, int mode, const char *arg)
 {
     // prolog
     out << indent << "// parameter assignments:\n";
@@ -833,16 +833,16 @@ void NEDCppGenerator::doSubstparams(SubstparamsNode *node, const char *indent, i
     out << "\n";
 }
 
-void NEDCppGenerator::doSubstparam(SubstparamNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doSubstparam(SubstparamElement *node, const char *indent, int mode, const char *)
 {
     // set parameter value
     out << indent << submodule_var.c_str() << "->par(\"" << node->getName() << "\") = ";
-    ExpressionNode *paramvalue = findExpression(node, "value");
+    ExpressionElement *paramvalue = findExpression(node, "value");
     if (paramvalue)  generateItem(paramvalue, indent, mode);
     out << ";\n";
 }
 
-void NEDCppGenerator::doGatesizes(GatesizesNode *node, const char *indent, int mode, const char *arg)
+void NEDCppGenerator::doGatesizes(GatesizesElement *node, const char *indent, int mode, const char *arg)
 {
     // prolog
     out << indent << "// gatesizes:\n";
@@ -856,27 +856,27 @@ void NEDCppGenerator::doGatesizes(GatesizesNode *node, const char *indent, int m
     out << "\n";
 }
 
-void NEDCppGenerator::doGatesize(GatesizeNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doGatesize(GatesizeElement *node, const char *indent, int mode, const char *)
 {
     out << indent << submodule_var.c_str() << "->setGateSize(\"" << node->getName() << "\", (int)(";
 
-    ExpressionNode *vectorsize = findExpression(node, "vector-size");
+    ExpressionElement *vectorsize = findExpression(node, "vector-size");
     if (vectorsize)  generateItem(vectorsize, indent, mode);
 
     out << "));\n";
 }
 
-void NEDCppGenerator::doSubstmachines(SubstmachinesNode *node, const char *indent, int mode, const char *arg)
+void NEDCppGenerator::doSubstmachines(SubstmachinesElement *node, const char *indent, int mode, const char *arg)
 {
     // ignore machines (obsolete)
 }
 
-void NEDCppGenerator::doSubstmachine(SubstmachineNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doSubstmachine(SubstmachineElement *node, const char *indent, int mode, const char *)
 {
     // ignore machines (obsolete)
 }
 
-void NEDCppGenerator::doConnections(ConnectionsNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doConnections(ConnectionsElement *node, const char *indent, int mode, const char *)
 {
     // prolog
     out << indent << "//\n";
@@ -892,7 +892,7 @@ void NEDCppGenerator::doConnections(ConnectionsNode *node, const char *indent, i
     // epilog: checkInternalConnections() is invoked from doModule(), because it also has to take place if there's no "connections:" at all
 }
 
-void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex, bool isplusplus)
+void NEDCppGenerator::resolveGate(const char *modname, ExpressionElement *modindex, const char *gatename, ExpressionElement *gateindex, bool isplusplus)
 {
     if (isplusplus && gateindex)
         INTERNAL_ERROR0(NULL,"resolveGate(): \"++\" and gate index expression cannot exist together");
@@ -932,13 +932,13 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
     out << ")";
 }
 
-void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const char *indent, int mode)
+void NEDCppGenerator::resolveConnectionAttributes(ConnectionElement *node, const char *indent, int mode)
 {
     // emit code that creates channel and puts its ptr to "channel" variable
 
     // channel?
-    ConnAttrNode *channelAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","channel");
-    LiteralNode *channel = getConstantExpression(findExpression(channelAttr,"value"));
+    ConnAttrElement *channelAttr = (ConnAttrElement *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","channel");
+    LiteralElement *channel = getConstantExpression(findExpression(channelAttr,"value"));
     if (channel)
     {
         out << indent << "channel = _createChannel(\"" << channel->getValue() << "\");\n";
@@ -946,14 +946,14 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
     }
 
     // optimization: assess if simplified code can be generated
-    ConnAttrNode *delayAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","delay");
-    LiteralNode *delay = getConstantExpression(findExpression(delayAttr,"value"));
+    ConnAttrElement *delayAttr = (ConnAttrElement *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","delay");
+    LiteralElement *delay = getConstantExpression(findExpression(delayAttr,"value"));
     bool isDelaySimple =  !delayAttr ? true : delay!=NULL;
-    ConnAttrNode *errorAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","error");
-    LiteralNode *error = getConstantExpression(findExpression(errorAttr,"value"));
+    ConnAttrElement *errorAttr = (ConnAttrElement *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","error");
+    LiteralElement *error = getConstantExpression(findExpression(errorAttr,"value"));
     bool isErrorSimple =  !errorAttr ? true : error!=NULL;
-    ConnAttrNode *datarateAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","datarate");
-    LiteralNode *datarate = getConstantExpression(findExpression(datarateAttr,"value"));
+    ConnAttrElement *datarateAttr = (ConnAttrElement *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","datarate");
+    LiteralElement *datarate = getConstantExpression(findExpression(datarateAttr,"value"));
     bool isDatarateSimple =  !datarateAttr ? true : datarate!=NULL;
 
     if (isDelaySimple && isErrorSimple && isDatarateSimple)
@@ -967,7 +967,7 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
         // add possible other attributes in the normal way
         for (NEDElement *child=node->getFirstChildWithTag(NED_CONN_ATTR); child; child = child->getNextSiblingWithTag(NED_CONN_ATTR))
         {
-            ConnAttrNode *connattr = (ConnAttrNode *)child;
+            ConnAttrElement *connattr = (ConnAttrElement *)child;
             if (strcmp(connattr->getName(),"delay")!=0 &&
                 strcmp(connattr->getName(),"error")!=0 &&
                 strcmp(connattr->getName(),"datarate")!=0)
@@ -985,7 +985,7 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
     }
 }
 
-void NEDCppGenerator::doConnection(ConnectionNode *node, const char *indent, int mode, const char *arg)
+void NEDCppGenerator::doConnection(ConnectionElement *node, const char *indent, int mode, const char *arg)
 {
     // prolog
     out << indent << "// connection\n";
@@ -1019,7 +1019,7 @@ void NEDCppGenerator::doConnection(ConnectionNode *node, const char *indent, int
     }
 
     // display string
-    DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
+    DisplayStringElement *dispstr = (DisplayStringElement *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
         out << indent << "srcgate->setDisplayString(" << opp_quotestr(dispstr->getValue()) << ");\n\n";
@@ -1030,9 +1030,9 @@ void NEDCppGenerator::doConnection(ConnectionNode *node, const char *indent, int
     out << "\n";
 }
 
-void NEDCppGenerator::doConnattr(ConnAttrNode *node, const char *indent, int mode, const char *arrow)
+void NEDCppGenerator::doConnattr(ConnAttrElement *node, const char *indent, int mode, const char *arrow)
 {
-    ExpressionNode *value = findExpression(node, "value");
+    ExpressionElement *value = findExpression(node, "value");
     out << indent << "par = new cPar(\"" << node->getName() << "\");\n";
     out << indent << "(*par) = ";
     generateItem(value, indent, mode);
@@ -1040,7 +1040,7 @@ void NEDCppGenerator::doConnattr(ConnAttrNode *node, const char *indent, int mod
     out << indent << "channel->addPar(par);\n";
 }
 
-void NEDCppGenerator::doForloop(ForLoopNode *node, const char *indent, int mode, const char *arg)
+void NEDCppGenerator::doForloop(ForLoopElement *node, const char *indent, int mode, const char *arg)
 {
     // prolog
     out << indent << "// for loop:\n";
@@ -1072,10 +1072,10 @@ void NEDCppGenerator::doForloop(ForLoopNode *node, const char *indent, int mode,
     out << indent << "}\n";
 }
 
-void NEDCppGenerator::doLoopvar(LoopVarNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doLoopvar(LoopVarElement *node, const char *indent, int mode, const char *)
 {
-    ExpressionNode *fromvalue = findExpression(node, "from-value");
-    ExpressionNode *tovalue = findExpression(node, "to-value");
+    ExpressionElement *fromvalue = findExpression(node, "from-value");
+    ExpressionElement *tovalue = findExpression(node, "to-value");
 
     out << indent << "long start = (long)(";
     generateItem(fromvalue, indent, mode);
@@ -1086,14 +1086,14 @@ void NEDCppGenerator::doLoopvar(LoopVarNode *node, const char *indent, int mode,
     out << indent << "for (long " << node->getParamName() << "_var=start; " << node->getParamName() << "_var<=end; " << node->getParamName() << "_var++)\n";
 }
 
-void NEDCppGenerator::doDisplayString(DisplayStringNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doDisplayString(DisplayStringElement *node, const char *indent, int mode, const char *)
 {
     // unused
 }
 
 
-void NEDCppGenerator::doExpression(ExpressionNode *node, const char *indent, int mode, const char *arg)
+void NEDCppGenerator::doExpression(ExpressionElement *node, const char *indent, int mode, const char *arg)
 {
-    exprgen.generateExpressionUsage((ExpressionNode *)node,indent);
+    exprgen.generateExpressionUsage((ExpressionElement *)node,indent);
 }
 

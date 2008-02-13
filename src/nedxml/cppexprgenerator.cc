@@ -52,19 +52,19 @@ USING_NAMESPACE
 //    {NULL,0}
 // };
 
-static ParamNode *getParameterDecl(NEDElement *moduletypedecl, const char *paramName)
+static ParamElement *getParameterDecl(NEDElement *moduletypedecl, const char *paramName)
 {
     if (!moduletypedecl)
         return NULL;
-    ParamsNode *paramsdecl = (ParamsNode *)moduletypedecl->getFirstChildWithTag(NED_PARAMETERS);
+    ParamsElement *paramsdecl = (ParamsElement *)moduletypedecl->getFirstChildWithTag(NED_PARAMETERS);
     if (!paramsdecl)
         return NULL;
-    return (ParamNode *) paramsdecl->getFirstChildWithAttribute(NED_PARAM, "name", paramName);
+    return (ParamElement *) paramsdecl->getFirstChildWithAttribute(NED_PARAM, "name", paramName);
 }
 
 static bool isParameterConst(NEDElement *moduletypedecl, const char *paramName)
 {
-    ParamNode *param = getParameterDecl(moduletypedecl, paramName);
+    ParamElement *param = getParameterDecl(moduletypedecl, paramName);
     if (!param)
         return false;
     return strstr(param->getDataType(), "const")!=NULL;
@@ -72,15 +72,15 @@ static bool isParameterConst(NEDElement *moduletypedecl, const char *paramName)
 
 inline bool isIndexOp(NEDElement *node)
 {
-    return node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"index");
+    return node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionElement *)node)->getName(),"index");
 }
 
 inline bool isSizeofOp(NEDElement *node)
 {
-    return node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"sizeof");
+    return node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionElement *)node)->getName(),"sizeof");
 }
 
-static void isGateOrSubmodule(ObsoleteIdentNode *ident, bool& isgate, bool& issubmod)
+static void isGateOrSubmodule(ObsoleteIdentElement *ident, bool& isgate, bool& issubmod)
 {
     // decide if "name" is a gate or a submodule
     isgate = issubmod = false;
@@ -91,14 +91,14 @@ static void isGateOrSubmodule(ObsoleteIdentNode *ident, bool& isgate, bool& issu
         mod1 = mod1->getParent();
     if (!mod1)
         INTERNAL_ERROR0(ident, "sizeof can only be within a compound module declaration");
-    CompoundModuleNode *mod = (CompoundModuleNode *)mod1;
-    GatesNode *gates = mod->getFirstGatesChild();
+    CompoundModuleElement *mod = (CompoundModuleElement *)mod1;
+    GatesElement *gates = mod->getFirstGatesChild();
     if (gates && gates->getFirstChildWithAttribute(NED_GATE,"name",name))
         isgate = true;
 
     if (!isgate)
     {
-        SubmodulesNode *submods = mod->getFirstSubmodulesChild();
+        SubmodulesElement *submods = mod->getFirstSubmodulesChild();
         if (submods && submods->getFirstChildWithAttribute(NED_SUBMODULE,"name",name))
             issubmod = true;
     }
@@ -138,8 +138,8 @@ void CppExpressionGenerator::doCollectExpressions(NEDElement *node, NEDElement *
         if (child->getTagCode()==NED_EXPRESSION)
         {
             // stop recursion at expressions: embedded expressions are merged into their parents
-            if (needsExpressionClass((ExpressionNode *)child, currentSubmodTypeDecl))
-                collectExpressionInfo((ExpressionNode *)child, currentSubmodTypeDecl);
+            if (needsExpressionClass((ExpressionElement *)child, currentSubmodTypeDecl))
+                collectExpressionInfo((ExpressionElement *)child, currentSubmodTypeDecl);
         }
         else
         {
@@ -155,7 +155,7 @@ void CppExpressionGenerator::doCollectExpressions(NEDElement *node, NEDElement *
 
 }
 
-bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDElement *currentSubmodTypeDecl)
+bool CppExpressionGenerator::needsExpressionClass(ExpressionElement *expr, NEDElement *currentSubmodTypeDecl)
 {
     // if simple expr, no expression class necessary
     NEDElement *node = expr->getFirstChild();
@@ -168,7 +168,7 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDEleme
         return false;
 
     // also: if the parameter is non-volatile (that is, const), we don't need expr class
-    if (parenttag==NED_SUBSTPARAM && isParameterConst(currentSubmodTypeDecl, ((SubstparamNode *)expr->getParent())->getName()))
+    if (parenttag==NED_SUBSTPARAM && isParameterConst(currentSubmodTypeDecl, ((SubstparamElement *)expr->getParent())->getName()))
         return false;
 
     // identifiers and constants never need expression classes
@@ -176,13 +176,13 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDEleme
         return false;
 
     // a single parameter as expression doesn't need expression class, except "ancestor ref param"
-    if (tag==NED_PARAM_REF && (!((IdentNode *)node)->getIsRef() || !((IdentNode *)node)->getIsAncestor()))
+    if (tag==NED_PARAM_REF && (!((IdentElement *)node)->getIsRef() || !((IdentElement *)node)->getIsAncestor()))
         return false;
 
     // special functions (INPUT, INDEX, SIZEOF) may also go without expression classes
     if (tag==NED_FUNCTION)
     {
-        const char *funcname = ((FunctionNode *)node)->getName();
+        const char *funcname = ((FunctionElement *)node)->getName();
         if (!strcmp(funcname,"input"))
             return false; // we MUST NOT generate expression class
         if (!strcmp(funcname,"index"))
@@ -195,7 +195,7 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDEleme
     return true;
 }
 
-void CppExpressionGenerator::collectExpressionInfo(ExpressionNode *expr, NEDElement *currentSubmodTypeDecl)
+void CppExpressionGenerator::collectExpressionInfo(ExpressionElement *expr, NEDElement *currentSubmodTypeDecl)
 {
     char buf[32];
     sprintf(buf,"Expr%d",count++);
@@ -232,7 +232,7 @@ void CppExpressionGenerator::doExtractArgs(ExpressionInfo& info, NEDElement *nod
              isctorarg = true;
         else if (tag==NED_FUNCTION)
              iscachedvar = true;
-        else if (tag==NED_PARAM_REF && !((IdentNode *)child)->getIsRef())
+        else if (tag==NED_PARAM_REF && !((IdentElement *)child)->getIsRef())
              isctorarg = true;
 
         if (isctorarg)
@@ -327,11 +327,11 @@ const char *CppExpressionGenerator::getTypeForArg(NEDElement *node)
 const char *CppExpressionGenerator::getNameForArg(NEDElement *node)
 {
     if (node->getTagCode()==NED_OBSOLETE_IDENT)
-        return ((ObsoleteIdentNode *)node)->getName();
+        return ((ObsoleteIdentElement *)node)->getName();
     else if (node->getTagCode()==NED_FUNCTION)
-        return ((FunctionNode *)node)->getName();
+        return ((FunctionElement *)node)->getName();
     else if (node->getTagCode()==NED_PARAM_REF)
-        return ((IdentNode *)node)->getParamName();
+        return ((IdentElement *)node)->getParamName();
     else
         {INTERNAL_ERROR1(node, "getNameForArg(): unexpected tag '%s'", node->getTagName());return NULL;}
 }
@@ -339,13 +339,13 @@ const char *CppExpressionGenerator::getNameForArg(NEDElement *node)
 void CppExpressionGenerator::doValueForArg(NEDElement *node)
 {
     if (node->getTagCode()==NED_OBSOLETE_IDENT)
-        out << ((ObsoleteIdentNode *)node)->getName() << "_var";
+        out << ((ObsoleteIdentElement *)node)->getName() << "_var";
     else if (isIndexOp(node))
         out << "submodindex";
     else if (isSizeofOp(node))
-        doFunction((FunctionNode *)node, "", MODE_INLINE_EXPRESSION);
+        doFunction((FunctionElement *)node, "", MODE_INLINE_EXPRESSION);
     else if (node->getTagCode()==NED_PARAM_REF)
-        doParamref((IdentNode *)node, "", MODE_INLINE_EXPRESSION);
+        doParamref((IdentElement *)node, "", MODE_INLINE_EXPRESSION);
     else
         {INTERNAL_ERROR1(node, "doValueForArg(): unexpected tag '%s'", node->getTagName());}
 }
@@ -354,8 +354,8 @@ void CppExpressionGenerator::doValueForCachedVar(NEDElement *node)
 {
     if (node->getTagCode()==NED_FUNCTION)
     {
-        const char *funcname = ((FunctionNode *)node)->getName();
-        int argcount = ((FunctionNode *)node)->getNumChildren();
+        const char *funcname = ((FunctionElement *)node)->getName();
+        int argcount = ((FunctionElement *)node)->getNumChildren();
         const char *methods[] = {"mathFuncNoArg()", "mathFunc1Arg()", "mathFunc2Args()",
                                  "mathFunc3Args()", "mathFunc4Args()"};
         out << "_getFunction(\"" << funcname << "\"," << argcount << ")->" << methods[argcount];
@@ -375,7 +375,7 @@ void CppExpressionGenerator::generateExpressionClasses()
    }
 }
 
-void CppExpressionGenerator::generateExpressionUsage(ExpressionNode *expr, const char *indent)
+void CppExpressionGenerator::generateExpressionUsage(ExpressionElement *expr, const char *indent)
 {
     // find name in hash table
     NEDExpressionMap::iterator e = exprMap.find(expr);
@@ -417,23 +417,23 @@ void CppExpressionGenerator::generateItem(NEDElement *node, const char *indent, 
     switch (tagcode)
     {
         case NED_OPERATOR:
-            doOperator((OperatorNode *)node, indent, mode); break;
+            doOperator((OperatorElement *)node, indent, mode); break;
         case NED_FUNCTION:
-            doFunction((FunctionNode *)node, indent, mode); break;
+            doFunction((FunctionElement *)node, indent, mode); break;
         case NED_PARAM_REF:
-            doParamref((IdentNode *)node, indent, mode); break;
+            doParamref((IdentElement *)node, indent, mode); break;
         case NED_OBSOLETE_IDENT:
-            doIdent((ObsoleteIdentNode *)node, indent, mode); break;
+            doIdent((ObsoleteIdentElement *)node, indent, mode); break;
         case NED_LITERAL:
-            doConst((LiteralNode *)node, indent, mode); break;
+            doConst((LiteralElement *)node, indent, mode); break;
         case NED_EXPRESSION:
-            doExpression((ExpressionNode *)node, indent, mode); break;
+            doExpression((ExpressionElement *)node, indent, mode); break;
         default:
             INTERNAL_ERROR1(node,"generateItem(): unexpected tag %s", node->getTagName());
     }
 }
 
-void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doOperator(OperatorElement *node, const char *indent, int mode)
 {
     NEDElement *op1 = node->getFirstChild();
     NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
@@ -502,7 +502,7 @@ void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, 
     }
 }
 
-void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doFunction(FunctionElement *node, const char *indent, int mode)
 {
     // get function name, arg count, args
     const char *funcname = node->getName();
@@ -529,7 +529,7 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
         // code for MODE_INLINE_EXPRESSION follows
 
         // sizeof gate or submodule vector?
-        ObsoleteIdentNode *op1 = node->getFirstIdentChild();
+        ObsoleteIdentElement *op1 = node->getFirstIdentChild();
         assert(op1);
         bool isgate, issubmod;
         isGateOrSubmodule(op1, isgate, issubmod);
@@ -608,7 +608,7 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     out << ")";
 }
 
-void CppExpressionGenerator::doParamref(IdentNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doParamref(IdentElement *node, const char *indent, int mode)
 {
     if (mode==MODE_EXPRESSION_CLASS)
     {
@@ -629,7 +629,7 @@ void CppExpressionGenerator::doParamref(IdentNode *node, const char *indent, int
             {
                 // TBD implement: parameter of another submodule
                 out << "->submodule(\"" << node->getModule() << "\")";
-                ExpressionNode *modindex = (ExpressionNode *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
+                ExpressionElement *modindex = (ExpressionElement *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
                 if (modindex)
                 {
                     out << "[_checkModuleIndex((int)(";
@@ -658,7 +658,7 @@ void CppExpressionGenerator::doParamref(IdentNode *node, const char *indent, int
             if (!opp_isempty(node->getModule()))
             {
                 out << node->getModule() << "_p";
-                ExpressionNode *modindex = (ExpressionNode *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
+                ExpressionElement *modindex = (ExpressionElement *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
                 if (modindex)
                 {
                     out << "[_checkModuleIndex((int)(";
@@ -676,7 +676,7 @@ void CppExpressionGenerator::doParamref(IdentNode *node, const char *indent, int
     }
 }
 
-void CppExpressionGenerator::doIdent(ObsoleteIdentNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doIdent(ObsoleteIdentElement *node, const char *indent, int mode)
 {
     if (mode==MODE_EXPRESSION_CLASS)
     {
@@ -688,7 +688,7 @@ void CppExpressionGenerator::doIdent(ObsoleteIdentNode *node, const char *indent
     }
 }
 
-void CppExpressionGenerator::doConst(LiteralNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doConst(LiteralElement *node, const char *indent, int mode)
 {
     if (node->getType()==NED_CONST_STRING)
         out << opp_quotestr(node->getValue());
@@ -696,7 +696,7 @@ void CppExpressionGenerator::doConst(LiteralNode *node, const char *indent, int 
         out << node->getValue();
 }
 
-void CppExpressionGenerator::doExpression(ExpressionNode *node, const char *indent, int mode)
+void CppExpressionGenerator::doExpression(ExpressionElement *node, const char *indent, int mode)
 {
     generateItem(node->getFirstChild(), indent, mode);
 }

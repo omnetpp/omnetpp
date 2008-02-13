@@ -27,9 +27,9 @@ class cProperties;
 class cProperty;
 
 class NEDElement;
-class ParamNode;
-class GateNode;
-class PropertyNode;
+class ParamElement;
+class GateElement;
+class PropertyElement;
 
 
 

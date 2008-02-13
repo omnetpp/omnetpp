@@ -36,10 +36,10 @@ class NEDXML_API NEDTools
     static void repairNEDElementTree(NEDElement *tree);
 
     /**
-     * Splits each NEDFile under FilesNode to several files, to place
+     * Splits each NEDFile under FilesElement to several files, to place
      * every module or interface into its own file.
      */
-    static void splitToFiles(FilesNode *tree);
+    static void splitToFiles(FilesElement *tree);
 };
 
 NAMESPACE_END

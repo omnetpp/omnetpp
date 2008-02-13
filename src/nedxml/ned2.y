@@ -128,30 +128,30 @@ static struct NED2ParserState
     bool isReadonly;
 
     /* NED-II: modules, channels */
-    NedFileNode *nedfile;
-    CommentNode *comment;
-    PackageNode *package;
-    ImportNode *import;
-    PropertyDeclNode *propertydecl;
-    ExtendsNode *extends;
-    InterfaceNameNode *interfacename;
+    NedFileElement *nedfile;
+    CommentElement *comment;
+    PackageElement *package;
+    ImportElement *import;
+    PropertyDeclElement *propertydecl;
+    ExtendsElement *extends;
+    InterfaceNameElement *interfacename;
     NEDElement *component;  // compound/simple module, module interface, channel or channel interface
-    ParametersNode *parameters;
-    ParamNode *param;
-    PatternNode *pattern;
-    PropertyNode *property;
-    PropertyKeyNode *propkey;
-    TypesNode *types;
-    GatesNode *gates;
-    GateNode *gate;
-    SubmodulesNode *submods;
-    SubmoduleNode *submod;
-    ConnectionsNode *conns;
-    ConnectionGroupNode *conngroup;
-    ConnectionNode *conn;
-    ChannelSpecNode *chanspec;
-    LoopNode *loop;
-    ConditionNode *condition;
+    ParametersElement *parameters;
+    ParamElement *param;
+    PatternElement *pattern;
+    PropertyElement *property;
+    PropertyKeyElement *propkey;
+    TypesElement *types;
+    GatesElement *gates;
+    GateElement *gate;
+    SubmodulesElement *submods;
+    SubmoduleElement *submod;
+    ConnectionsElement *conns;
+    ConnectionGroupElement *conngroup;
+    ConnectionElement *conn;
+    ChannelSpecElement *chanspec;
+    LoopElement *loop;
+    ConditionElement *condition;
 } ps;
 
 
@@ -244,7 +244,7 @@ definition
 packagedeclaration
         : PACKAGE dottedname ';'
                 {
-                  ps.package = (PackageNode *)createNodeWithTag(NED_PACKAGE, ps.nedfile);
+                  ps.package = (PackageElement *)createElementWithTag(NED_PACKAGE, ps.nedfile);
                   ps.package->setName(removeSpaces(@2).c_str());
                   storePos(ps.package,@$);
                   storeBannerAndRightComments(ps.package,@$);
@@ -262,7 +262,7 @@ dottedname
 import
         : IMPORT importspec ';'
                 {
-                  ps.import = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile);
+                  ps.import = (ImportElement *)createElementWithTag(NED_IMPORT, ps.nedfile);
                   ps.import->setImportSpec(removeSpaces(@2).c_str());
                   storePos(ps.import,@$);
                   storeBannerAndRightComments(ps.import,@$);
@@ -302,12 +302,12 @@ propertydecl
 propertydecl_header
         : PROPERTY '@' NAME
                 {
-                  ps.propertydecl = (PropertyDeclNode *)createNodeWithTag(NED_PROPERTY_DECL, ps.nedfile);
+                  ps.propertydecl = (PropertyDeclElement *)createElementWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
                 }
         | PROPERTY '@' NAME '[' ']'
                 {
-                  ps.propertydecl = (PropertyDeclNode *)createNodeWithTag(NED_PROPERTY_DECL, ps.nedfile);
+                  ps.propertydecl = (PropertyDeclElement *)createElementWithTag(NED_PROPERTY_DECL, ps.nedfile);
                   ps.propertydecl->setName(toString(@3));
                   ps.propertydecl->setIsArray(true);
                 }
@@ -326,7 +326,7 @@ propertydecl_keys
 propertydecl_key
         : NAME
                 {
-                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.propertydecl);
+                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.propertydecl);
                   ps.propkey->setName(toString(@1));
                   storePos(ps.propkey, @$);
                 }
@@ -351,7 +351,7 @@ channeldefinition
                 {
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
-                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.component);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
@@ -372,8 +372,8 @@ channeldefinition
 channelheader
         : CHANNEL NAME
                 {
-                  ps.component = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
-                  ((ChannelNode *)ps.component)->setName(toString(@2));
+                  ps.component = (ChannelElement *)createElementWithTag(NED_CHANNEL, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ((ChannelElement *)ps.component)->setName(toString(@2));
                 }
            opt_inheritance
                 { storeBannerAndRightComments(ps.component,@$); }
@@ -389,7 +389,7 @@ opt_inheritance
 extendsname
         : dottedname
                 {
-                  ps.extends = (ExtendsNode *)createNodeWithTag(NED_EXTENDS, ps.component);
+                  ps.extends = (ExtendsElement *)createElementWithTag(NED_EXTENDS, ps.component);
                   ps.extends->setName(removeSpaces(@1).c_str());
                   storePos(ps.extends, @$);
                 }
@@ -403,7 +403,7 @@ likenames
 likename
         : dottedname
                 {
-                  ps.interfacename = (InterfaceNameNode *)createNodeWithTag(NED_INTERFACE_NAME, ps.component);
+                  ps.interfacename = (InterfaceNameElement *)createElementWithTag(NED_INTERFACE_NAME, ps.component);
                   ps.interfacename->setName(removeSpaces(@1).c_str());
                   storePos(ps.interfacename, @$);
                 }
@@ -417,7 +417,7 @@ channelinterfacedefinition
                 {
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
-                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.component);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
@@ -438,8 +438,8 @@ channelinterfacedefinition
 channelinterfaceheader
         : CHANNELINTERFACE NAME
                 {
-                  ps.component = (ChannelInterfaceNode *)createNodeWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
-                  ((ChannelInterfaceNode *)ps.component)->setName(toString(@2));
+                  ps.component = (ChannelInterfaceElement *)createElementWithTag(NED_CHANNEL_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ((ChannelInterfaceElement *)ps.component)->setName(toString(@2));
                 }
            opt_interfaceinheritance
                 { storeBannerAndRightComments(ps.component,@$); }
@@ -463,7 +463,7 @@ simplemoduledefinition
                 {
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
-                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.component);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
@@ -485,8 +485,8 @@ simplemoduledefinition
 simplemoduleheader
         : SIMPLE NAME
                 {
-                  ps.component = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
-                  ((SimpleModuleNode *)ps.component)->setName(toString(@2));
+                  ps.component = (SimpleModuleElement *)createElementWithTag(NED_SIMPLE_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
+                  ((SimpleModuleElement *)ps.component)->setName(toString(@2));
                 }
           opt_inheritance
                 { storeBannerAndRightComments(ps.component,@$); }
@@ -500,7 +500,7 @@ compoundmoduledefinition
                 {
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
-                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.component);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
@@ -525,8 +525,8 @@ compoundmoduledefinition
 compoundmoduleheader
         : MODULE NAME
                 {
-                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
-                  ((CompoundModuleNode *)ps.component)->setName(toString(@2));
+                  ps.component = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
+                  ((CompoundModuleElement *)ps.component)->setName(toString(@2));
                 }
           opt_inheritance
                 { storeBannerAndRightComments(ps.component,@$); }
@@ -540,7 +540,7 @@ networkdefinition
                 {
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
-                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.component);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
@@ -565,9 +565,9 @@ networkdefinition
 networkheader
         : NETWORK NAME
                 {
-                  ps.component = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
-                  ((CompoundModuleNode *)ps.component)->setName(toString(@2));
-                  ((CompoundModuleNode *)ps.component)->setIsNetwork(true);
+                  ps.component = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
+                  ((CompoundModuleElement *)ps.component)->setName(toString(@2));
+                  ((CompoundModuleElement *)ps.component)->setIsNetwork(true);
                 }
           opt_inheritance
                 { storeBannerAndRightComments(ps.component,@$); }
@@ -581,7 +581,7 @@ moduleinterfacedefinition
                 {
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
-                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.component);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
@@ -603,8 +603,8 @@ moduleinterfacedefinition
 moduleinterfaceheader
         : MODULEINTERFACE NAME
                 {
-                  ps.component = (ModuleInterfaceNode *)createNodeWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
-                  ((ModuleInterfaceNode *)ps.component)->setName(toString(@2));
+                  ps.component = (ModuleInterfaceElement *)createElementWithTag(NED_MODULE_INTERFACE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile);
+                  ((ModuleInterfaceElement *)ps.component)->setName(toString(@2));
                 }
            opt_interfaceinheritance
                 { storeBannerAndRightComments(ps.component,@$); }
@@ -708,7 +708,7 @@ param_typenamevalue
 pattern_value
         : '/' pattern '/' '=' paramvalue
                 {
-                  ps.pattern = (PatternNode *)createNodeWithTag(NED_PATTERN, ps.parameters);
+                  ps.pattern = (PatternElement *)createElementWithTag(NED_PATTERN, ps.parameters);
                   ps.pattern->setPattern(toString(@2));
                   addExpression(ps.pattern, "value",ps.exprPos,$5);
                   ps.pattern->setIsDefault(ps.isDefault);
@@ -821,7 +821,7 @@ property_keys
 property_key
         : NAME '=' property_values
                 {
-                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->setName(toString(@1));
                   for (int i=0; i<(int)ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
@@ -830,7 +830,7 @@ property_key
                 }
         | property_values
                 {
-                  ps.propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, ps.property);
+                  ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
                   ps.propkey->appendChild($1);
                   for (int i=0; i<(int)ps.propvals.size(); i++)
                       ps.propkey->appendChild(ps.propvals[i]);
@@ -867,7 +867,7 @@ property_value
                 { $$ = createLiteral(NED_CONST_SPEC, @1, @1); }
         |  /* nothing (no value) */
                 {
-                  LiteralNode *node = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+                  LiteralElement *node = (LiteralElement *)createElementWithTag(NED_LITERAL);
                   node->setType(NED_CONST_SPEC); // and leave both value and text at ""
                   $$ = node;
                 }
@@ -885,7 +885,7 @@ gateblock
         : GATES ':'
                 {
                   assertNonEmpty(ps.blockscope);
-                  ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.blockscope.top());
+                  ps.gates = (GatesElement *)createElementWithTag(NED_GATES, ps.blockscope.top());
                   storeBannerAndRightComments(ps.gates,@1,@2);
                 }
           opt_gates
@@ -982,7 +982,7 @@ typeblock
         : TYPES ':'
                 {
                   assertNonEmpty(ps.blockscope);
-                  ps.types = (TypesNode *)createNodeWithTag(NED_TYPES, ps.blockscope.top());
+                  ps.types = (TypesElement *)createElementWithTag(NED_TYPES, ps.blockscope.top());
                   storeBannerAndRightComments(ps.types,@1,@2);
                   if (ps.inTypes)
                      np->getErrors()->addError(ps.types,"more than one level of type nesting is not allowed");
@@ -1028,7 +1028,7 @@ submodblock
         : SUBMODULES ':'
                 {
                   assertNonEmpty(ps.blockscope);
-                  ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.blockscope.top());
+                  ps.submods = (SubmodulesElement *)createElementWithTag(NED_SUBMODULES, ps.blockscope.top());
                   storeBannerAndRightComments(ps.submods,@1,@2);
                 }
           opt_submodules
@@ -1056,7 +1056,7 @@ submodule
         | submoduleheader '{'
                 {
                   ps.blockscope.push(ps.submod);
-                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.submod);
+                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.submod);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                   storeBannerAndRightComments(ps.submod,@1,@2);
@@ -1087,12 +1087,12 @@ submoduleheader
 submodulename
         : NAME
                 {
-                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                 }
         |  NAME vector
                 {
-                  ps.submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE, ps.submods);
+                  ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   addVector(ps.submod, "vector-size",@2,$2);
                 }
@@ -1130,7 +1130,7 @@ connblock
         : CONNECTIONS ALLOWUNCONNECTED ':'
                 {
                   assertNonEmpty(ps.blockscope);
-                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
+                  ps.conns = (ConnectionsElement *)createElementWithTag(NED_CONNECTIONS, ps.blockscope.top());
                   ps.conns->setAllowUnconnected(true);
                   storeBannerAndRightComments(ps.conns,@1,@3);
                 }
@@ -1141,7 +1141,7 @@ connblock
         | CONNECTIONS ':'
                 {
                   assertNonEmpty(ps.blockscope);
-                  ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.blockscope.top());
+                  ps.conns = (ConnectionsElement *)createElementWithTag(NED_CONNECTIONS, ps.blockscope.top());
                   storeBannerAndRightComments(ps.conns,@1,@2);
                 }
           opt_connections
@@ -1164,7 +1164,7 @@ connectionsitem
         : connectiongroup
         | connection opt_loops_and_conditions ';'
                 {
-                  ps.chanspec = (ChannelSpecNode *)ps.conn->getFirstChildWithTag(NED_CHANNEL_SPEC);
+                  ps.chanspec = (ChannelSpecElement *)ps.conn->getFirstChildWithTag(NED_CHANNEL_SPEC);
                   if (ps.chanspec)
                       ps.conn->appendChild(ps.conn->removeChild(ps.chanspec)); // move channelspec to conform DTD
                   if ($2) {
@@ -1181,9 +1181,9 @@ connectiongroup
                 {
                   if (ps.inConnGroup)
                       np->getErrors()->addError(ps.conngroup,"nested connection groups are not allowed");
-                  ps.conngroup = (ConnectionGroupNode *)createNodeWithTag(NED_CONNECTION_GROUP, ps.conns);
+                  ps.conngroup = (ConnectionGroupElement *)createElementWithTag(NED_CONNECTION_GROUP, ps.conns);
                   if ($1) {
-                      // for's and if's were collected in a temporary UnknownNode, put them under conngroup now
+                      // for's and if's were collected in a temporary UnknownElement, put them under conngroup now
                       transferChildren($1, ps.conngroup);
                       delete $1;
                   }
@@ -1213,7 +1213,7 @@ loops_and_conditions
                 }
         | loop_or_condition
                 {
-                  $$ = new UnknownNode();
+                  $$ = new UnknownElement();
                   $$->appendChild($1);
                 }
         ;
@@ -1226,7 +1226,7 @@ loop_or_condition
 loop
         : FOR NAME '=' expression TO expression
                 {
-                  ps.loop = (LoopNode *)createNodeWithTag(NED_LOOP);
+                  ps.loop = (LoopElement *)createElementWithTag(NED_LOOP);
                   ps.loop->setParamName( toString(@2) );
                   addExpression(ps.loop, "from-value",@4,$4);
                   addExpression(ps.loop, "to-value",@6,$6);
@@ -1275,13 +1275,13 @@ leftgatespec
 leftmod
         : NAME vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                   addVector(ps.conn, "src-module-index",@2,$2);
                 }
         | NAME
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
                 }
         ;
@@ -1309,14 +1309,14 @@ leftgate
 parentleftgate
         : NAME opt_subgate
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGateSubg(ps.subgate);
                 }
         | NAME opt_subgate vector
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGateSubg(ps.subgate);
@@ -1324,7 +1324,7 @@ parentleftgate
                 }
         | NAME opt_subgate PLUSPLUS
                 {
-                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGateSubg(ps.subgate);
@@ -1409,7 +1409,7 @@ channelspec
                 { storePos(ps.chanspec, @$); }
         | channelspec_header '{'
                 {
-                  ps.parameters = (ParametersNode *)createNodeWithTag(NED_PARAMETERS, ps.chanspec);
+                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.chanspec);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
@@ -1425,16 +1425,16 @@ channelspec
 channelspec_header
         :
                 {
-                  ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
+                  ps.chanspec = (ChannelSpecElement *)createElementWithTag(NED_CHANNEL_SPEC, ps.conn);
                 }
         | dottedname
                 {
-                  ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
+                  ps.chanspec = (ChannelSpecElement *)createElementWithTag(NED_CHANNEL_SPEC, ps.conn);
                   ps.chanspec->setType(removeSpaces(@1).c_str());
                 }
         | likeparam LIKE dottedname
                 {
-                  ps.chanspec = (ChannelSpecNode *)createNodeWithTag(NED_CHANNEL_SPEC, ps.conn);
+                  ps.chanspec = (ChannelSpecElement *)createElementWithTag(NED_CHANNEL_SPEC, ps.conn);
                   addLikeParam(ps.chanspec, "like-param", @1, $1);
                   ps.chanspec->setLikeType(removeSpaces(@3).c_str());
                 }
@@ -1446,7 +1446,7 @@ channelspec_header
 condition
         : IF expression
                 {
-                  ps.condition = (ConditionNode *)createNodeWithTag(NED_CONDITION);
+                  ps.condition = (ConditionElement *)createElementWithTag(NED_CONDITION);
                   addExpression(ps.condition, "condition",@2,$2);
                   storePos(ps.condition, @$);
                   $$ = ps.condition;
@@ -1651,10 +1651,10 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     if (!handle)
         {np->getErrors()->addError("", "unable to allocate work memory"); return false;}
 
-    // create parser state and NEDFileNode
+    // create parser state and NEDFileElement
     np = p;
     resetParserState();
-    ps.nedfile = new NedFileNode();
+    ps.nedfile = new NedFileElement();
 
     // store file name with slashes always, even on Windows -- neddoc relies on that
     ps.nedfile->setFilename(slashifyFilename(np->getFileName()).c_str());

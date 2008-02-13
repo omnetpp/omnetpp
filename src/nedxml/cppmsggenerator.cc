@@ -39,39 +39,39 @@ inline ostream& operator<< (ostream& out, const std::string& str)
 
 //---------------------------------------
 
-void NEDCppGenerator::doNamespace(NamespaceNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doNamespace(NamespaceElement *node, const char *indent, int mode, const char *)
 {
     // todo: surround the whole .cc and .h files with the namespace
 }
 
-void NEDCppGenerator::doCplusplus(CplusplusNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doCplusplus(CplusplusElement *node, const char *indent, int mode, const char *)
 {
     out << "// cplusplus {{\n";
     out << node->getBody();
     out << "// }}\n";
 }
 
-void NEDCppGenerator::doStructDecl(StructDeclNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doStructDecl(StructDeclElement *node, const char *indent, int mode, const char *)
 {
     // nothing to output
 }
 
-void NEDCppGenerator::doClassDecl(ClassDeclNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doClassDecl(ClassDeclElement *node, const char *indent, int mode, const char *)
 {
     // nothing to output
 }
 
-void NEDCppGenerator::doMessageDecl(MessageDeclNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doMessageDecl(MessageDeclElement *node, const char *indent, int mode, const char *)
 {
     // nothing to output
 }
 
-void NEDCppGenerator::doEnumDecl(EnumDeclNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doEnumDecl(EnumDeclElement *node, const char *indent, int mode, const char *)
 {
     // nothing to output
 }
 
-void NEDCppGenerator::doEnum(EnumNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doEnum(EnumElement *node, const char *indent, int mode, const char *)
 {
     outh << "enum " << node->getName() << " {\n";
     if (opp_isempty(node->getExtendsName()))
@@ -86,12 +86,12 @@ void NEDCppGenerator::doEnum(EnumNode *node, const char *indent, int mode, const
     out << ");\n\n";
 }
 
-void NEDCppGenerator::doEnumFields(EnumFieldsNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doEnumFields(EnumFieldsElement *node, const char *indent, int mode, const char *)
 {
     generateChildren(node, indent, mode);
 }
 
-void NEDCppGenerator::doEnumField(EnumFieldNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doEnumField(EnumFieldElement *node, const char *indent, int mode, const char *)
 {
     outh << indent << node->getName() << " = " << node->getValue() << ",\n";
     out << indent << node->getName() << ", \"" << node->getName() << "\",\n";
@@ -153,7 +153,7 @@ struct NEDCppGenerator::FieldDesc
     std::string fromstring;
 };
 
-void NEDCppGenerator::doMessage(MessageNode *node, const char *, int, const char *)
+void NEDCppGenerator::doMessage(MessageElement *node, const char *, int, const char *)
 {
     ClassDesc cld;
     FieldDesc *fld;
@@ -164,7 +164,7 @@ void NEDCppGenerator::doMessage(MessageNode *node, const char *, int, const char
     delete [] fld;
 }
 
-void NEDCppGenerator::doClass(ClassNode *node, const char *, int, const char *)
+void NEDCppGenerator::doClass(ClassElement *node, const char *, int, const char *)
 {
     ClassDesc cld;
     FieldDesc *fld;
@@ -175,7 +175,7 @@ void NEDCppGenerator::doClass(ClassNode *node, const char *, int, const char *)
     delete [] fld;
 }
 
-void NEDCppGenerator::doStruct(StructNode *node, const char *, int, const char *)
+void NEDCppGenerator::doStruct(StructElement *node, const char *, int, const char *)
 {
     ClassDesc cld;
     FieldDesc *fld;
@@ -306,18 +306,18 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
     // process fields
     //
     numfields = 0;
-    FieldsNode *fieldsnode = (FieldsNode *)node->getFirstChildWithTag(NED_FIELDS);
+    FieldsElement *fieldsnode = (FieldsElement *)node->getFirstChildWithTag(NED_FIELDS);
     if (fieldsnode && fieldsnode->getFirstFieldChild())
     {
         // count fields
-        FieldNode *field;
-        for (field=fieldsnode->getFirstFieldChild(); field; field=field->getNextFieldNodeSibling())
+        FieldElement *field;
+        for (field=fieldsnode->getFirstFieldChild(); field; field=field->getNextFieldSibling())
             numfields++;
 
         // allocate array and fill fld[] array
         fld = new FieldDesc[numfields];
         int i;
-        for (field=fieldsnode->getFirstFieldChild(),i=0; field; field=field->getNextFieldNodeSibling(),i++)
+        for (field=fieldsnode->getFirstFieldChild(),i=0; field; field=field->getNextFieldSibling(),i++)
         {
             fld[i].fieldname = field->getName();
             fld[i].ftype = field->getDataType();

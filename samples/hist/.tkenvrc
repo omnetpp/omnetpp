@@ -46,8 +46,8 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "HistogramDemo" "HistogramDemo" "1" "460x312+72+93"
 inspector "component types.Histograms" "cDynamicModuleType" "1" "647x494+48+62"
 inspector "Histograms.DoubleHistogram" "cDoubleHistogram" "2" "386x344+120+155"
 inspector "Histograms" "Histograms" "1" "460x312+120+155"
+inspector "HistogramDemo" "HistogramDemo" "1" "460x312+72+93"
 

@@ -48,7 +48,7 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
     {
         if (child->getTagCode()==NED_EXTENDS) {
             // resolve and store base type name
-            const char *extendsname = ((ExtendsNode *)child)->getName();
+            const char *extendsname = ((ExtendsElement *)child)->getName();
             std::string extendsqname = cNEDLoader::instance()->resolveNedType(context, extendsname);
             ASSERT(!extendsqname.empty());
             extendsnames.push_back(extendsqname);
@@ -69,7 +69,7 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
         }
         if (child->getTagCode()==NED_INTERFACE_NAME) {
             // resolve and store base type
-            const char *interfacename = ((InterfaceNameNode *)child)->getName();
+            const char *interfacename = ((InterfaceNameElement *)child)->getName();
             std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, interfacename);
             ASSERT(!interfaceqname.empty());
             interfacenames.push_back(interfaceqname);
@@ -129,7 +129,7 @@ void cNEDDeclaration::setName(const char *s)
 std::string cNEDDeclaration::getPackage() const
 {
     NEDElement *nedfile = getTree()->getParentWithTag(NED_NED_FILE);
-    PackageNode *packageDecl = nedfile ? (PackageNode *) nedfile->getFirstChildWithTag(NED_PACKAGE) : NULL;
+    PackageElement *packageDecl = nedfile ? (PackageElement *) nedfile->getFirstChildWithTag(NED_PACKAGE) : NULL;
     return packageDecl ? packageDecl->getName() : "";
 }
 
@@ -161,12 +161,12 @@ const char *cNEDDeclaration::getSingleValueLocalProperty(NEDElement *parent, con
     if (!parent)
         return NULL;
 
-    PropertyNode *propNode = (PropertyNode *)parent->getFirstChildWithAttribute(NED_PROPERTY, "name", name);
+    PropertyElement *propNode = (PropertyElement *)parent->getFirstChildWithAttribute(NED_PROPERTY, "name", name);
     if (!propNode)
         return NULL;
 
     NEDElement *propKey = propNode->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", ""); //FIXME this must be the only child
-    LiteralNode *literal = propKey ? (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL) : NULL;  //FIXME there must be exactly one value
+    LiteralElement *literal = propKey ? (LiteralElement *)propKey->getFirstChildWithTag(NED_LITERAL) : NULL;  //FIXME there must be exactly one value
     if (literal)
         return literal->getValue();
     return NULL; //FIXME error no value given
@@ -293,10 +293,10 @@ cNEDDeclaration *cNEDDeclaration::getSuperDecl() const
     return cNEDLoader::instance()->getDecl(superName);
 }
 
-NEDElement *cNEDDeclaration::getSubcomponentNode(const char *subcomponentName) const
+NEDElement *cNEDDeclaration::getSubcomponentElement(const char *subcomponentName) const
 {
     // try as submodule
-    SubmodulesNode *submodulesNode = getSubmodulesNode();
+    SubmodulesElement *submodulesNode = getSubmodulesElement();
     if (submodulesNode)
     {
         NEDElement *submoduleNode = submodulesNode->getFirstChildWithAttribute(NED_SUBMODULE, "name", subcomponentName);
@@ -305,7 +305,7 @@ NEDElement *cNEDDeclaration::getSubcomponentNode(const char *subcomponentName) c
     }
 
     // try as connection
-    ConnectionsNode *connectionsNode = getConnectionsNode();
+    ConnectionsElement *connectionsNode = getConnectionsElement();
     if (connectionsNode)
     {
         //FIXME try to find a channel named subcomponentName here...
@@ -323,7 +323,7 @@ cProperties *cNEDDeclaration::properties() const
         props = getSuperDecl()->properties();
 
     // update with local properties
-    props = mergeProperties(props, getParametersNode());
+    props = mergeProperties(props, getParametersElement());
     props->addRef();
     return props;
 }
@@ -339,7 +339,7 @@ cProperties *cNEDDeclaration::paramProperties(const char *paramName) const
         props = getSuperDecl()->paramProperties(paramName);
 
     // update with local properties
-    ParametersNode *paramsNode = getParametersNode();
+    ParametersElement *paramsNode = getParametersElement();
     NEDElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : NULL;
     if (!paramNode && !props)
         return NULL;  // error: parameter not found anywhere
@@ -359,7 +359,7 @@ cProperties *cNEDDeclaration::gateProperties(const char *gateName) const
         props = getSuperDecl()->gateProperties(gateName);
 
     // update with local properties
-    GatesNode *gatesNode = getGatesNode();
+    GatesElement *gatesNode = getGatesElement();
     NEDElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : NULL;
     if (!gateNode && !props)
         return NULL;  // error: gate not found anywhere
@@ -383,7 +383,7 @@ cProperties *cNEDDeclaration::subcomponentProperties(const char *subcomponentNam
         props = cNEDLoader::instance()->getDecl(subcomponentType)->properties();
 
     // update with local properties
-    NEDElement *subcomponentNode = getSubcomponentNode(subcomponentName);
+    NEDElement *subcomponentNode = getSubcomponentElement(subcomponentName);
     if (!subcomponentNode && !props)
         return NULL; // error: no such submodule or channel
     NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
@@ -407,7 +407,7 @@ cProperties *cNEDDeclaration::subcomponentParamProperties(const char *subcompone
         props = cNEDLoader::instance()->getDecl(subcomponentType)->paramProperties(paramName);
 
     // update with local properties
-    NEDElement *subcomponentNode = getSubcomponentNode(subcomponentName);
+    NEDElement *subcomponentNode = getSubcomponentElement(subcomponentName);
     if (!subcomponentNode && !props)
         return NULL; // error: no such submodule or channel
     NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
@@ -434,7 +434,7 @@ cProperties *cNEDDeclaration::subcomponentGateProperties(const char *subcomponen
         props = cNEDLoader::instance()->getDecl(subcomponentType)->gateProperties(gateName);
 
     // update with local properties
-    NEDElement *subcomponentNode = getSubcomponentNode(subcomponentName);
+    NEDElement *subcomponentNode = getSubcomponentElement(subcomponentName);
     if (!subcomponentNode && !props)
         return NULL; // error: no such submodule or channel
     NEDElement *gatesNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_GATES) : NULL;
@@ -462,7 +462,7 @@ cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDE
     props = props ? props->dup() : new cProperties();
     for (NEDElement *child=firstPropertyChild; child; child=child->getNextSiblingWithTag(NED_PROPERTY))
     {
-        PropertyNode *propNode = (PropertyNode *)child;
+        PropertyElement *propNode = (PropertyElement *)child;
         const char *propName = propNode->getName();
         const char *propIndex = propNode->getIndex();
         if (!propIndex[0]) propIndex = NULL;  // no index is NULL not ""
@@ -477,13 +477,13 @@ cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDE
     return props;
 }
 
-void cNEDDeclaration::updateProperty(PropertyNode *propNode, cProperty *prop)
+void cNEDDeclaration::updateProperty(PropertyElement *propNode, cProperty *prop)
 {
     prop->setIsImplicit(propNode->getIsImplicit());
 
     for (NEDElement *child=propNode->getFirstChildWithTag(NED_PROPERTY_KEY); child; child=child->getNextSiblingWithTag(NED_PROPERTY_KEY))
     {
-        PropertyKeyNode *propKeyNode = (PropertyKeyNode *)child;
+        PropertyKeyElement *propKeyNode = (PropertyKeyElement *)child;
         const char *key = propKeyNode->getName();
         if (!prop->hasKey(key))
             prop->addKey(key);
@@ -492,7 +492,7 @@ void cNEDDeclaration::updateProperty(PropertyNode *propNode, cProperty *prop)
         int k = 0;
         for (NEDElement *child2=propKeyNode->getFirstChildWithTag(NED_LITERAL); child2; child2=child2->getNextSiblingWithTag(NED_LITERAL), k++)
         {
-            LiteralNode *literalNode = (LiteralNode *)child2;
+            LiteralElement *literalNode = (LiteralElement *)child2;
             const char *value = literalNode->getValue(); //XXX what about unitType()?
             if (value && *value)
             {
@@ -505,14 +505,14 @@ void cNEDDeclaration::updateProperty(PropertyNode *propNode, cProperty *prop)
     }
 }
 
-void cNEDDeclaration::updateDisplayProperty(PropertyNode *propNode, cProperty *prop)
+void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty *prop)
 {
     // @display() has to be treated specially
     // find new display string
-    PropertyKeyNode *propKeyNode = (PropertyKeyNode *)propNode->getFirstChildWithTag(NED_PROPERTY_KEY);
+    PropertyKeyElement *propKeyNode = (PropertyKeyElement *)propNode->getFirstChildWithTag(NED_PROPERTY_KEY);
     if (!propKeyNode)
         return;
-    LiteralNode *literalNode = (LiteralNode *)propKeyNode->getFirstChildWithTag(NED_LITERAL);
+    LiteralElement *literalNode = (LiteralElement *)propKeyNode->getFirstChildWithTag(NED_LITERAL);
     if (!literalNode)
         return;
     const char *newdisplaystring = literalNode->getValue();
@@ -534,34 +534,34 @@ void cNEDDeclaration::updateDisplayProperty(PropertyNode *propNode, cProperty *p
     prop->setValue(cProperty::DEFAULTKEY, 0, d.toString());
 }
 
-ParametersNode *cNEDDeclaration::getParametersNode() const
+ParametersElement *cNEDDeclaration::getParametersElement() const
 {
-    return (ParametersNode *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
+    return (ParametersElement *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
 }
 
-GatesNode *cNEDDeclaration::getGatesNode() const
+GatesElement *cNEDDeclaration::getGatesElement() const
 {
-    return (GatesNode *)getTree()->getFirstChildWithTag(NED_GATES);
+    return (GatesElement *)getTree()->getFirstChildWithTag(NED_GATES);
 }
 
-SubmodulesNode *cNEDDeclaration::getSubmodulesNode() const
+SubmodulesElement *cNEDDeclaration::getSubmodulesElement() const
 {
-    return (SubmodulesNode *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
+    return (SubmodulesElement *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
 }
 
-ConnectionsNode *cNEDDeclaration::getConnectionsNode() const
+ConnectionsElement *cNEDDeclaration::getConnectionsElement() const
 {
-    return (ConnectionsNode *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
+    return (ConnectionsElement *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
 }
 
-cParValue *cNEDDeclaration::getCachedExpression(ExpressionNode *expr)
+cParValue *cNEDDeclaration::getCachedExpression(ExpressionElement *expr)
 {
     ExpressionMap::const_iterator it = expressionMap.find(expr->getId());
     //XXX printf("      getExpr: %ld -> %p\n", expr->getId(), it==expressionMap.end() ? NULL : it->second);
     return it==expressionMap.end() ? NULL : it->second;
 }
 
-void cNEDDeclaration::putCachedExpression(ExpressionNode *expr, cParValue *value)
+void cNEDDeclaration::putCachedExpression(ExpressionElement *expr, cParValue *value)
 {
     //XXX printf("      putExpr: %ld -> %p\n", expr->getId(), value);
     ExpressionMap::const_iterator it = expressionMap.find(expr->getId());

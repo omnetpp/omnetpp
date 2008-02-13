@@ -23,14 +23,14 @@
 
 NAMESPACE_BEGIN
 
-void NEDDTDValidator::validateElement(FilesNode *node)
+void NEDDTDValidator::validateElement(FilesElement *node)
 {
     int tags[] = {NED_NED_FILE,NED_MSG_FILE, NED_NULL};
     checkChoice(node, tags, '*');
 
 }
 
-void NEDDTDValidator::validateElement(NedFileNode *node)
+void NEDDTDValidator::validateElement(NedFileElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -41,7 +41,7 @@ void NEDDTDValidator::validateElement(NedFileNode *node)
     checkRequiredAttribute(node, "filename");
 }
 
-void NEDDTDValidator::validateElement(CommentNode *node)
+void NEDDTDValidator::validateElement(CommentElement *node)
 {
     checkEmpty(node);
 
@@ -49,7 +49,7 @@ void NEDDTDValidator::validateElement(CommentNode *node)
     checkNameAttribute(node, "locid");
 }
 
-void NEDDTDValidator::validateElement(PackageNode *node)
+void NEDDTDValidator::validateElement(PackageElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -58,7 +58,7 @@ void NEDDTDValidator::validateElement(PackageNode *node)
     checkRequiredAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(ImportNode *node)
+void NEDDTDValidator::validateElement(ImportElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -67,7 +67,7 @@ void NEDDTDValidator::validateElement(ImportNode *node)
     checkRequiredAttribute(node, "import-spec");
 }
 
-void NEDDTDValidator::validateElement(PropertyDeclNode *node)
+void NEDDTDValidator::validateElement(PropertyDeclElement *node)
 {
     int tags[] = {NED_COMMENT,NED_PROPERTY_KEY,NED_PROPERTY, NED_NULL};
     char mult[] = {'*','*','*', 0};
@@ -79,7 +79,7 @@ void NEDDTDValidator::validateElement(PropertyDeclNode *node)
     checkEnumeratedAttribute(node, "is-array", vals1, sizeof(vals1)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(ExtendsNode *node)
+void NEDDTDValidator::validateElement(ExtendsElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -88,7 +88,7 @@ void NEDDTDValidator::validateElement(ExtendsNode *node)
     checkRequiredAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(InterfaceNameNode *node)
+void NEDDTDValidator::validateElement(InterfaceNameElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -97,7 +97,7 @@ void NEDDTDValidator::validateElement(InterfaceNameNode *node)
     checkRequiredAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(SimpleModuleNode *node)
+void NEDDTDValidator::validateElement(SimpleModuleElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS,NED_GATES, NED_NULL};
     char mult[] = {'*','?','*','?','?', 0};
@@ -109,7 +109,7 @@ void NEDDTDValidator::validateElement(SimpleModuleNode *node)
     checkEnumeratedAttribute(node, "is-network", vals1, sizeof(vals1)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(ModuleInterfaceNode *node)
+void NEDDTDValidator::validateElement(ModuleInterfaceElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXTENDS,NED_PARAMETERS,NED_GATES, NED_NULL};
     char mult[] = {'*','*','?','?', 0};
@@ -119,7 +119,7 @@ void NEDDTDValidator::validateElement(ModuleInterfaceNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(CompoundModuleNode *node)
+void NEDDTDValidator::validateElement(CompoundModuleElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS,NED_GATES,NED_TYPES,NED_SUBMODULES,NED_CONNECTIONS, NED_NULL};
     char mult[] = {'*','?','*','?','?','?','?','?', 0};
@@ -131,7 +131,7 @@ void NEDDTDValidator::validateElement(CompoundModuleNode *node)
     checkEnumeratedAttribute(node, "is-network", vals1, sizeof(vals1)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(ChannelInterfaceNode *node)
+void NEDDTDValidator::validateElement(ChannelInterfaceElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXTENDS,NED_PARAMETERS, NED_NULL};
     char mult[] = {'*','*','?', 0};
@@ -141,7 +141,7 @@ void NEDDTDValidator::validateElement(ChannelInterfaceNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(ChannelNode *node)
+void NEDDTDValidator::validateElement(ChannelElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXTENDS,NED_INTERFACE_NAME,NED_PARAMETERS, NED_NULL};
     char mult[] = {'*','?','*','?', 0};
@@ -151,7 +151,7 @@ void NEDDTDValidator::validateElement(ChannelNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(ParametersNode *node)
+void NEDDTDValidator::validateElement(ParametersElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -163,7 +163,7 @@ void NEDDTDValidator::validateElement(ParametersNode *node)
     checkEnumeratedAttribute(node, "is-implicit", vals0, sizeof(vals0)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(ParamNode *node)
+void NEDDTDValidator::validateElement(ParamElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXPRESSION,NED_PROPERTY, NED_NULL};
     char mult[] = {'*','?','*', 0};
@@ -179,7 +179,7 @@ void NEDDTDValidator::validateElement(ParamNode *node)
     checkEnumeratedAttribute(node, "is-default", vals4, sizeof(vals4)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(PatternNode *node)
+void NEDDTDValidator::validateElement(PatternElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXPRESSION,NED_PROPERTY, NED_NULL};
     char mult[] = {'*','?','*', 0};
@@ -190,7 +190,7 @@ void NEDDTDValidator::validateElement(PatternNode *node)
     checkEnumeratedAttribute(node, "is-default", vals2, sizeof(vals2)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(PropertyNode *node)
+void NEDDTDValidator::validateElement(PropertyElement *node)
 {
     int tags[] = {NED_COMMENT,NED_PROPERTY_KEY, NED_NULL};
     char mult[] = {'*','*', 0};
@@ -203,7 +203,7 @@ void NEDDTDValidator::validateElement(PropertyNode *node)
     checkNameAttribute(node, "index");
 }
 
-void NEDDTDValidator::validateElement(PropertyKeyNode *node)
+void NEDDTDValidator::validateElement(PropertyKeyElement *node)
 {
     int tags[] = {NED_COMMENT,NED_LITERAL, NED_NULL};
     char mult[] = {'*','*', 0};
@@ -211,7 +211,7 @@ void NEDDTDValidator::validateElement(PropertyKeyNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(GatesNode *node)
+void NEDDTDValidator::validateElement(GatesElement *node)
 {
     int tags[] = {NED_COMMENT,NED_GATE, NED_NULL};
     char mult[] = {'*','*', 0};
@@ -219,7 +219,7 @@ void NEDDTDValidator::validateElement(GatesNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(GateNode *node)
+void NEDDTDValidator::validateElement(GateElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXPRESSION,NED_PROPERTY, NED_NULL};
     char mult[] = {'*','?','*', 0};
@@ -233,7 +233,7 @@ void NEDDTDValidator::validateElement(GateNode *node)
     checkEnumeratedAttribute(node, "is-vector", vals2, sizeof(vals2)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(TypesNode *node)
+void NEDDTDValidator::validateElement(TypesElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -243,7 +243,7 @@ void NEDDTDValidator::validateElement(TypesNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(SubmodulesNode *node)
+void NEDDTDValidator::validateElement(SubmodulesElement *node)
 {
     int tags[] = {NED_COMMENT,NED_SUBMODULE, NED_NULL};
     char mult[] = {'*','*', 0};
@@ -251,7 +251,7 @@ void NEDDTDValidator::validateElement(SubmodulesNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(SubmoduleNode *node)
+void NEDDTDValidator::validateElement(SubmoduleElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXPRESSION,NED_PARAMETERS,NED_GATES, NED_NULL};
     char mult[] = {'*','*','?','?', 0};
@@ -261,7 +261,7 @@ void NEDDTDValidator::validateElement(SubmoduleNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(ConnectionsNode *node)
+void NEDDTDValidator::validateElement(ConnectionsElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -273,7 +273,7 @@ void NEDDTDValidator::validateElement(ConnectionsNode *node)
     checkEnumeratedAttribute(node, "allow-unconnected", vals0, sizeof(vals0)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(ConnectionNode *node)
+void NEDDTDValidator::validateElement(ConnectionElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -302,7 +302,7 @@ void NEDDTDValidator::validateElement(ConnectionNode *node)
     checkEnumeratedAttribute(node, "arrow-direction", vals12, sizeof(vals12)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(ChannelSpecNode *node)
+void NEDDTDValidator::validateElement(ChannelSpecElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXPRESSION,NED_PARAMETERS, NED_NULL};
     char mult[] = {'*','*','?', 0};
@@ -310,7 +310,7 @@ void NEDDTDValidator::validateElement(ChannelSpecNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(ConnectionGroupNode *node)
+void NEDDTDValidator::validateElement(ConnectionGroupElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -321,7 +321,7 @@ void NEDDTDValidator::validateElement(ConnectionGroupNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(LoopNode *node)
+void NEDDTDValidator::validateElement(LoopElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXPRESSION, NED_NULL};
     char mult[] = {'*','*', 0};
@@ -331,7 +331,7 @@ void NEDDTDValidator::validateElement(LoopNode *node)
     checkNameAttribute(node, "param-name");
 }
 
-void NEDDTDValidator::validateElement(ConditionNode *node)
+void NEDDTDValidator::validateElement(ConditionElement *node)
 {
     int tags[] = {NED_COMMENT,NED_EXPRESSION, NED_NULL};
     char mult[] = {'*','?', 0};
@@ -339,7 +339,7 @@ void NEDDTDValidator::validateElement(ConditionNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(ExpressionNode *node)
+void NEDDTDValidator::validateElement(ExpressionElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -349,7 +349,7 @@ void NEDDTDValidator::validateElement(ExpressionNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(OperatorNode *node)
+void NEDDTDValidator::validateElement(OperatorElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -360,7 +360,7 @@ void NEDDTDValidator::validateElement(OperatorNode *node)
     checkRequiredAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(FunctionNode *node)
+void NEDDTDValidator::validateElement(FunctionElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -372,7 +372,7 @@ void NEDDTDValidator::validateElement(FunctionNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(IdentNode *node)
+void NEDDTDValidator::validateElement(IdentElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -384,7 +384,7 @@ void NEDDTDValidator::validateElement(IdentNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(LiteralNode *node)
+void NEDDTDValidator::validateElement(LiteralElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -395,7 +395,7 @@ void NEDDTDValidator::validateElement(LiteralNode *node)
     checkEnumeratedAttribute(node, "type", vals0, sizeof(vals0)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(MsgFileNode *node)
+void NEDDTDValidator::validateElement(MsgFileElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -405,7 +405,7 @@ void NEDDTDValidator::validateElement(MsgFileNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(NamespaceNode *node)
+void NEDDTDValidator::validateElement(NamespaceElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -414,7 +414,7 @@ void NEDDTDValidator::validateElement(NamespaceNode *node)
     checkRequiredAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(CplusplusNode *node)
+void NEDDTDValidator::validateElement(CplusplusElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -423,7 +423,7 @@ void NEDDTDValidator::validateElement(CplusplusNode *node)
     checkRequiredAttribute(node, "body");
 }
 
-void NEDDTDValidator::validateElement(StructDeclNode *node)
+void NEDDTDValidator::validateElement(StructDeclElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -433,7 +433,7 @@ void NEDDTDValidator::validateElement(StructDeclNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(ClassDeclNode *node)
+void NEDDTDValidator::validateElement(ClassDeclElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -445,7 +445,7 @@ void NEDDTDValidator::validateElement(ClassDeclNode *node)
     checkEnumeratedAttribute(node, "is-cobject", vals1, sizeof(vals1)/sizeof(const char *));
 }
 
-void NEDDTDValidator::validateElement(MessageDeclNode *node)
+void NEDDTDValidator::validateElement(MessageDeclElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -455,7 +455,7 @@ void NEDDTDValidator::validateElement(MessageDeclNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(EnumDeclNode *node)
+void NEDDTDValidator::validateElement(EnumDeclElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -465,7 +465,7 @@ void NEDDTDValidator::validateElement(EnumDeclNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(EnumNode *node)
+void NEDDTDValidator::validateElement(EnumElement *node)
 {
     int tags[] = {NED_COMMENT,NED_ENUM_FIELDS, NED_NULL};
     char mult[] = {'*','?', 0};
@@ -476,7 +476,7 @@ void NEDDTDValidator::validateElement(EnumNode *node)
     checkNameAttribute(node, "extends-name");
 }
 
-void NEDDTDValidator::validateElement(EnumFieldsNode *node)
+void NEDDTDValidator::validateElement(EnumFieldsElement *node)
 {
     int tags[] = {NED_COMMENT,NED_ENUM_FIELD, NED_NULL};
     char mult[] = {'*','*', 0};
@@ -484,7 +484,7 @@ void NEDDTDValidator::validateElement(EnumFieldsNode *node)
 
 }
 
-void NEDDTDValidator::validateElement(EnumFieldNode *node)
+void NEDDTDValidator::validateElement(EnumFieldElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -494,7 +494,7 @@ void NEDDTDValidator::validateElement(EnumFieldNode *node)
     checkNameAttribute(node, "name");
 }
 
-void NEDDTDValidator::validateElement(MessageNode *node)
+void NEDDTDValidator::validateElement(MessageElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -507,7 +507,7 @@ void NEDDTDValidator::validateElement(MessageNode *node)
     checkNameAttribute(node, "extends-name");
 }
 
-void NEDDTDValidator::validateElement(ClassNode *node)
+void NEDDTDValidator::validateElement(ClassElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -520,7 +520,7 @@ void NEDDTDValidator::validateElement(ClassNode *node)
     checkNameAttribute(node, "extends-name");
 }
 
-void NEDDTDValidator::validateElement(StructNode *node)
+void NEDDTDValidator::validateElement(StructElement *node)
 {
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
@@ -533,7 +533,7 @@ void NEDDTDValidator::validateElement(StructNode *node)
     checkNameAttribute(node, "extends-name");
 }
 
-void NEDDTDValidator::validateElement(FieldNode *node)
+void NEDDTDValidator::validateElement(FieldElement *node)
 {
     int tags[] = {NED_COMMENT, NED_NULL};
     char mult[] = {'*', 0};
@@ -550,7 +550,7 @@ void NEDDTDValidator::validateElement(FieldNode *node)
     checkNameAttribute(node, "enum-name");
 }
 
-void NEDDTDValidator::validateElement(UnknownNode *node)
+void NEDDTDValidator::validateElement(UnknownElement *node)
 {
     // ANY
 

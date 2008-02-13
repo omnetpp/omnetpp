@@ -26,15 +26,15 @@ NAMESPACE_BEGIN
 std::string slashifyFilename(const char *fname);
 const char *currentLocation();
 
-NEDElement *createNodeWithTag(int tagcode, NEDElement *parent=NULL);
+NEDElement *createElementWithTag(int tagcode, NEDElement *parent=NULL);
 void storePos(NEDElement *node, YYLTYPE pos);
 void storePos(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
-PropertyNode *addProperty(NEDElement *node, const char *name);  // directly under the node
-PropertyNode *addComponentProperty(NEDElement *node, const char *name); // into ParametersNode child of node
+PropertyElement *addProperty(NEDElement *node, const char *name);  // directly under the node
+PropertyElement *addComponentProperty(NEDElement *node, const char *name); // into ParametersElement child of node
 
-PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
-PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos); // into ParametersNode child
+PropertyElement *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
+PropertyElement *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos); // into ParametersElement child
 
 void addComment(NEDElement *node, const char *locId, const char *comment, const char *defaultValue);
 void storeFileComment(NEDElement *node);
@@ -45,8 +45,8 @@ void storeBannerAndRightComments(NEDElement *node, YYLTYPE pos);
 void storeBannerAndRightComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 void storeInnerComments(NEDElement *node, YYLTYPE pos);
 
-ParamNode *addParameter(NEDElement *params, YYLTYPE namepos);
-GateNode *addGate(NEDElement *gates, YYLTYPE namepos);
+ParamElement *addParameter(NEDElement *params, YYLTYPE namepos);
+GateElement *addGate(NEDElement *gates, YYLTYPE namepos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
 YYLTYPE trimAngleBrackets(YYLTYPE vectorpos);
@@ -61,14 +61,14 @@ const char *toString(YYLTYPE);
 const char *toString(long);
 std::string removeSpaces(YYLTYPE pos);
 
-ExpressionNode *createExpression(NEDElement *expr);
-OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
-FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
-IdentNode *createIdent(YYLTYPE parampos);
-IdentNode *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand=NULL);
-LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
-LiteralNode *createStringLiteral(YYLTYPE textpos);
-LiteralNode *createQuantityLiteral(YYLTYPE textpos);
+ExpressionElement *createExpression(NEDElement *expr);
+OperatorElement *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
+FunctionElement *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
+IdentElement *createIdent(YYLTYPE parampos);
+IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand=NULL);
+LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
+LiteralElement *createStringLiteral(YYLTYPE textpos);
+LiteralElement *createQuantityLiteral(YYLTYPE textpos);
 NEDElement *unaryMinus(NEDElement *node);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);

@@ -136,11 +136,12 @@ foreach $element (@elements)
     $childcount = $#children+1;
 
     # element class
-    $elementclass = $element."Node";
+    $elementclass = $element;
     $elementclass =~ s/-(.)/-uc($1)/eg;
     $elementclass =~ s/[^a-zA-Z0-9_]//g;
     $elementclass =~ s/(.)(.*)/uc($1).$2/e;
-    $elementclass{$element} = $elementclass;
+    $elementclass{$element} = $elementclass."Element";
+    $shortelementclass{$element} = $elementclass;
 
     # enum name
     $enumname = 'NED_'.uc($element);
@@ -292,6 +293,7 @@ print CC "\n";
 foreach $element (@elements)
 {
     $elementclass = $elementclass{$element};
+    $shortelementclass = $shortelementclass{$element};
 
     @attnames = @{$att_names{$element}};
     @atttypes = @{$att_types{$element}};
@@ -372,7 +374,7 @@ foreach $element (@elements)
     }
 
     print H "\n";
-    print H "    virtual $elementclass *getNext${elementclass}Sibling() const;\n";
+    print H "    virtual $elementclass *getNext${shortelementclass}Sibling() const;\n";
     for ($i=0; $i<$childcount; $i++)
     {
         print H "    virtual $elementclass{$children[$i]} *getFirst$childvars[$i]Child() const;\n";
@@ -475,15 +477,15 @@ foreach $element (@elements)
 
     print CC "$elementclass *$elementclass\:\:dup() const\n";
     print CC "{\n";
-    print CC "    $elementclass *newNode = new $elementclass();\n";
+    print CC "    $elementclass *element = new $elementclass();\n";
     for ($i=0; $i<$attcount; $i++)
     {
-        print CC "    newNode->$varnames[$i] = this->$varnames[$i];\n"
+        print CC "    element->$varnames[$i] = this->$varnames[$i];\n"
     }
-    print CC "    return newNode;\n";
+    print CC "    return element;\n";
     print CC "}\n\n";
 
-    print CC "$elementclass *$elementclass\:\:getNext${elementclass}Sibling() const\n";
+    print CC "$elementclass *$elementclass\:\:getNext${shortelementclass}Sibling() const\n";
     print CC "{\n";
     print CC "    return ($elementclass *)getNextSiblingWithTag($enumname{$element});\n";
     print CC "}\n\n";
@@ -520,9 +522,9 @@ print H "    virtual ~NEDElementFactory() {}\n";
 print H "    /** Returns factory instance */\n";
 print H "    static NEDElementFactory *getInstance();\n";
 print H "    /** Creates NEDElement subclass which corresponds to tagname */\n";
-print H "    virtual NEDElement *createNodeWithTag(const char *tagname);\n";
+print H "    virtual NEDElement *createElementWithTag(const char *tagname);\n";
 print H "    /** Creates NEDElement subclass which corresponds to tagcode */\n";
-print H "    virtual NEDElement *createNodeWithTag(int tagcode);\n";
+print H "    virtual NEDElement *createElementWithTag(int tagcode);\n";
 print H "};\n\nNAMESPACE_END\n\n";
 print H "#endif\n\n";
 
@@ -532,7 +534,7 @@ print CC "{\n";
 print CC "    if (!f) f=new NEDElementFactory();\n";
 print CC "    return f;\n";
 print CC "}\n\n";
-print CC "NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)\n";
+print CC "NEDElement *NEDElementFactory::createElementWithTag(const char *tagname)\n";
 print CC "{\n";
 foreach $element (@elements)
 {
@@ -542,7 +544,7 @@ foreach $element (@elements)
 }
 print CC "    throw NEDException(\"unknown tag '%s', cannot create object to represent it\", tagname);\n";
 print CC "}\n\n";
-print CC "NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)\n";
+print CC "NEDElement *NEDElementFactory::createElementWithTag(int tagcode)\n";
 print CC "{\n";
 print CC "    switch (tagcode) {\n";
 foreach $element (@elements)

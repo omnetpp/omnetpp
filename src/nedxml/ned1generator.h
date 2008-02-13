@@ -95,8 +95,8 @@ class NEDXML_API NED1Generator
     bool hasExpression(NEDElement *node, const char *attr);
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
-    std::string getDisplayStringOf(NEDElement *node, PropertyNode *&outDisplayProp);
-    const char *getPromptTextOf(ParamNode *param);
+    std::string getDisplayStringOf(NEDElement *node, PropertyElement *&outDisplayProp);
+    const char *getPromptTextOf(ParamElement *param);
     //@}
 
     /** @name Getters for comments */
@@ -110,56 +110,56 @@ class NEDXML_API NED1Generator
 
     /** @name Generate NED code from the given element */
     //@{
-    void doNedfiles(FilesNode *node, const char *indent, bool islast, const char *);
-    void doNedfile(NedFileNode *node, const char *indent, bool islast, const char *);
-    void doImport(ImportNode *node, const char *indent, bool islast, const char *);
-    void doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *);
-    void doExtends(ExtendsNode *node, const char *indent, bool islast, const char *);
-    void doInterfaceName(InterfaceNameNode *node, const char *indent, bool islast, const char *);
-    void doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *);
-    void doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *);
-    void doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *);
-    void doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *);
-    void doChannel(ChannelNode *node, const char *indent, bool islast, const char *);
-    void doParameters(ParametersNode *node, const char *indent, bool islast, const char *);
-    void doModuleParameters(ParametersNode *node, const char *indent);
-    void doChannelParameters(ParametersNode *node, const char *indent);
-    void doSubstParameters(ParametersNode *node, const char *indent);
-    void doConnectionAttributes(ParametersNode *node, const char *indent);
-    void doParam(ParamNode *node, const char *indent, bool islast, const char *);
-    void doModuleParam(ParamNode *node, const char *indent, bool islast, const char *);
-    void doSubstParam(ParamNode *node, const char *indent, bool islast, const char *);
-    void doChannelParam(ParamNode *node, const char *indent);
-    void doPattern(PatternNode *node, const char *indent, bool islast, const char *);
-    void doProperty(PropertyNode *node, const char *indent, bool islast, const char *);
-    void doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *);
-    void doGates(GatesNode *node, const char *indent, bool islast, const char *);
-    void doModuleGates(GatesNode *node, const char *indent);
-    void doSubmoduleGatesizes(GatesNode *node, const char *indent);
-    void doGate(GateNode *node, const char *indent, bool islast, const char *);
-    void doModuleGate(GateNode *node, const char *indent, bool islast, const char *);
-    void doGatesize(GateNode *node, const char *indent, bool islast, const char *);
-    void doTypes(TypesNode *node, const char *indent, bool islast, const char *);
-    void doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *);
-    void doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *);
-    void doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *);
-    void doConnection(ConnectionNode *node, const char *indent, bool islast, const char *);
-    void doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *);
-    void doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *);
-    void doLoop(LoopNode *node, const char *indent, bool islast, const char *);
-    void doCondition(ConditionNode *node, const char *indent, bool islast, const char *);
+    void doNedfiles(FilesElement *node, const char *indent, bool islast, const char *);
+    void doNedfile(NedFileElement *node, const char *indent, bool islast, const char *);
+    void doImport(ImportElement *node, const char *indent, bool islast, const char *);
+    void doPropertyDecl(PropertyDeclElement *node, const char *indent, bool islast, const char *);
+    void doExtends(ExtendsElement *node, const char *indent, bool islast, const char *);
+    void doInterfaceName(InterfaceNameElement *node, const char *indent, bool islast, const char *);
+    void doSimpleModule(SimpleModuleElement *node, const char *indent, bool islast, const char *);
+    void doModuleInterface(ModuleInterfaceElement *node, const char *indent, bool islast, const char *);
+    void doCompoundModule(CompoundModuleElement *node, const char *indent, bool islast, const char *);
+    void doChannelInterface(ChannelInterfaceElement *node, const char *indent, bool islast, const char *);
+    void doChannel(ChannelElement *node, const char *indent, bool islast, const char *);
+    void doParameters(ParametersElement *node, const char *indent, bool islast, const char *);
+    void doModuleParameters(ParametersElement *node, const char *indent);
+    void doChannelParameters(ParametersElement *node, const char *indent);
+    void doSubstParameters(ParametersElement *node, const char *indent);
+    void doConnectionAttributes(ParametersElement *node, const char *indent);
+    void doParam(ParamElement *node, const char *indent, bool islast, const char *);
+    void doModuleParam(ParamElement *node, const char *indent, bool islast, const char *);
+    void doSubstParam(ParamElement *node, const char *indent, bool islast, const char *);
+    void doChannelParam(ParamElement *node, const char *indent);
+    void doPattern(PatternElement *node, const char *indent, bool islast, const char *);
+    void doProperty(PropertyElement *node, const char *indent, bool islast, const char *);
+    void doPropertyKey(PropertyKeyElement *node, const char *indent, bool islast, const char *);
+    void doGates(GatesElement *node, const char *indent, bool islast, const char *);
+    void doModuleGates(GatesElement *node, const char *indent);
+    void doSubmoduleGatesizes(GatesElement *node, const char *indent);
+    void doGate(GateElement *node, const char *indent, bool islast, const char *);
+    void doModuleGate(GateElement *node, const char *indent, bool islast, const char *);
+    void doGatesize(GateElement *node, const char *indent, bool islast, const char *);
+    void doTypes(TypesElement *node, const char *indent, bool islast, const char *);
+    void doSubmodules(SubmodulesElement *node, const char *indent, bool islast, const char *);
+    void doSubmodule(SubmoduleElement *node, const char *indent, bool islast, const char *);
+    void doConnections(ConnectionsElement *node, const char *indent, bool islast, const char *);
+    void doConnection(ConnectionElement *node, const char *indent, bool islast, const char *);
+    void doChannelSpec(ChannelSpecElement *node, const char *indent, bool islast, const char *);
+    void doConnectionGroup(ConnectionGroupElement *node, const char *indent, bool islast, const char *);
+    void doLoop(LoopElement *node, const char *indent, bool islast, const char *);
+    void doCondition(ConditionElement *node, const char *indent, bool islast, const char *);
     void printConnectionGate(NEDElement *conn, const char *modname, const char *modindexattr,
                              const char *gatename, const char *gateindexattr, bool isplusplus,
                              int gatesubg, const char *indent);
 
     // expressions
-    void doExpression(ExpressionNode *node, const char *indent, bool islast, const char *);
+    void doExpression(ExpressionElement *node, const char *indent, bool islast, const char *);
     int getOperatorPriority(const char *op, int args);
     bool isOperatorLeftAssoc(const char *op);
-    void doOperator(OperatorNode *node, const char *indent, bool islast, const char *);
-    void doFunction(FunctionNode *node, const char *indent, bool islast, const char *);
-    void doIdent(IdentNode *node, const char *indent, bool islast, const char *);
-    void doLiteral(LiteralNode *node, const char *indent, bool islast, const char *);
+    void doOperator(OperatorElement *node, const char *indent, bool islast, const char *);
+    void doFunction(FunctionElement *node, const char *indent, bool islast, const char *);
+    void doIdent(IdentElement *node, const char *indent, bool islast, const char *);
+    void doLiteral(LiteralElement *node, const char *indent, bool islast, const char *);
     //@}
 };
 

@@ -46,17 +46,17 @@ class SIM_API cExpressionBuilder
 
   protected:
     void doNode(NEDElement *node);
-    void doOperator(OperatorNode *node);
-    void doFunction(FunctionNode *node);
-    void doIdent(IdentNode *node);
-    void doLiteral(LiteralNode *node);
+    void doOperator(OperatorElement *node);
+    void doFunction(FunctionElement *node);
+    void doIdent(IdentElement *node);
+    void doLiteral(LiteralElement *node);
     bool isLoopVar(const char *parname);
 
   public:
     cExpressionBuilder();
     ~cExpressionBuilder();
 
-    cDynamicExpression *process(ExpressionNode *node, bool inSubcomponentScope);
+    cDynamicExpression *process(ExpressionElement *node, bool inSubcomponentScope);
 
     /**
      * Sets cPar to the given cDynamicExpression, performing basic optimizations:

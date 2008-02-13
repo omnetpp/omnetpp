@@ -65,10 +65,10 @@ const char *currentLocation()
     return buf;
 }
 
-NEDElement *createNodeWithTag(int tagcode, NEDElement *parent)
+NEDElement *createElementWithTag(int tagcode, NEDElement *parent)
 {
     // create via a factory
-    NEDElement *e = NEDElementFactory::getInstance()->createNodeWithTag(tagcode);
+    NEDElement *e = NEDElementFactory::getInstance()->createElementWithTag(tagcode);
     e->setSourceLocation(currentLocation());
 
     // add to parent
@@ -103,20 +103,20 @@ void storePos(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
 // Properties
 //
 
-PropertyNode *addProperty(NEDElement *node, const char *name)
+PropertyElement *addProperty(NEDElement *node, const char *name)
 {
-    PropertyNode *prop = (PropertyNode *)createNodeWithTag(NED_PROPERTY, node);
+    PropertyElement *prop = (PropertyElement *)createElementWithTag(NED_PROPERTY, node);
     prop->setName(name);
     return prop;
 }
 
-PropertyNode *addComponentProperty(NEDElement *node, const char *name)
+PropertyElement *addComponentProperty(NEDElement *node, const char *name)
 {
-    // add propery under the ParametersNode; create that if not yet exists
+    // add propery under the ParametersElement; create that if not yet exists
     NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
     if (!params)
     {
-        params = createNodeWithTag(NED_PARAMETERS, node);
+        params = createElementWithTag(NED_PARAMETERS, node);
 
         // move parameters section in front of potential gates, types, etc sections
         NEDElement *prev;
@@ -128,7 +128,7 @@ PropertyNode *addComponentProperty(NEDElement *node, const char *name)
             node->insertChildBefore(prev, params);
         }
     }
-    PropertyNode *prop = (PropertyNode *)createNodeWithTag(NED_PROPERTY, params);
+    PropertyElement *prop = (PropertyElement *)createElementWithTag(NED_PROPERTY, params);
     prop->setName(name);
     return prop;
 }
@@ -137,20 +137,20 @@ PropertyNode *addComponentProperty(NEDElement *node, const char *name)
 // Spec Properties: source code, display string
 //
 
-PropertyNode *storeSourceCode(NEDElement *node, YYLTYPE tokenpos)
+PropertyElement *storeSourceCode(NEDElement *node, YYLTYPE tokenpos)
 {
-    PropertyNode *prop = addProperty(node, "sourcecode");
+    PropertyElement *prop = addProperty(node, "sourcecode");
     prop->setIsImplicit(true);
-    PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
+    PropertyKeyElement *propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, prop);
     propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
     return prop;
 }
 
-PropertyNode *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
+PropertyElement *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
 {
-    PropertyNode *prop = addComponentProperty(node, "sourcecode");
+    PropertyElement *prop = addComponentProperty(node, "sourcecode");
     prop->setIsImplicit(true);
-    PropertyKeyNode *propkey = (PropertyKeyNode *)createNodeWithTag(NED_PROPERTY_KEY, prop);
+    PropertyKeyElement *propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, prop);
     propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
     return prop;
 }
@@ -164,7 +164,7 @@ void addComment(NEDElement *node, const char *locId, const char *text, const cha
     if (!text[0] || strcmp(text,defaultValue)==0)
         return;
 
-    CommentNode *comment = (CommentNode *)createNodeWithTag(NED_COMMENT);
+    CommentElement *comment = (CommentElement *)createElementWithTag(NED_COMMENT);
     comment->setLocid(locId);
     comment->setContent(text);
     node->insertChildBefore(node->getFirstChild(), comment);
@@ -220,16 +220,16 @@ void storeInnerComments(NEDElement *node, YYLTYPE pos)
     }
 }
 
-ParamNode *addParameter(NEDElement *params, YYLTYPE namepos)
+ParamElement *addParameter(NEDElement *params, YYLTYPE namepos)
 {
-    ParamNode *param = (ParamNode *)createNodeWithTag(NED_PARAM,params);
+    ParamElement *param = (ParamElement *)createElementWithTag(NED_PARAM,params);
     param->setName( toString( namepos) );
     return param;
 }
 
-GateNode *addGate(NEDElement *gates, YYLTYPE namepos)
+GateElement *addGate(NEDElement *gates, YYLTYPE namepos)
 {
-    GateNode *gate = (GateNode *)createNodeWithTag(NED_GATE,gates);
+    GateElement *gate = (GateElement *)createElementWithTag(NED_GATE,gates);
     gate->setName( toString( namepos) );
     return gate;
 }
@@ -282,7 +282,7 @@ void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDEl
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
 {
     if (np->getParseExpressionsFlag()) {
-        ((ExpressionNode *)expr)->setTarget(attrname);
+        ((ExpressionElement *)expr)->setTarget(attrname);
 
         // in the DTD, whilespaces and expressions are at front, insert there
         NEDElement *insertPos = elem->getFirstChild();
@@ -320,11 +320,11 @@ void swapAttributes(NEDElement *node, const char *attr1, const char *attr2)
 
 void swapExpressionChildren(NEDElement *node, const char *attr1, const char *attr2)
 {
-    ExpressionNode *expr1, *expr2;
-    for (expr1=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr1; expr1=expr1->getNextExpressionNodeSibling())
+    ExpressionElement *expr1, *expr2;
+    for (expr1=(ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr1; expr1=expr1->getNextExpressionSibling())
         if (!strcmp(expr1->getTarget(),attr1))
             break;
-    for (expr2=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr2; expr2=expr2->getNextExpressionNodeSibling())
+    for (expr2=(ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr2; expr2=expr2->getNextExpressionSibling())
         if (!strcmp(expr2->getTarget(),attr2))
             break;
 
@@ -338,9 +338,9 @@ void transferChildren(NEDElement *from, NEDElement *to)
         to->appendChild(from->removeChild(from->getFirstChild()));
 }
 
-OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2, NEDElement *operand3)
+OperatorElement *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2, NEDElement *operand3)
 {
-    OperatorNode *opnode = (OperatorNode *)createNodeWithTag(NED_OPERATOR);
+    OperatorElement *opnode = (OperatorElement *)createElementWithTag(NED_OPERATOR);
     opnode->setName(op);
     opnode->appendChild(operand1);
     if (operand2) opnode->appendChild(operand2);
@@ -348,9 +348,9 @@ OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *o
     return opnode;
 }
 
-FunctionNode *createFunction(const char *funcname, NEDElement *arg1, NEDElement *arg2, NEDElement *arg3, NEDElement *arg4)
+FunctionElement *createFunction(const char *funcname, NEDElement *arg1, NEDElement *arg2, NEDElement *arg3, NEDElement *arg4)
 {
-    FunctionNode *funcnode = (FunctionNode *)createNodeWithTag(NED_FUNCTION);
+    FunctionElement *funcnode = (FunctionElement *)createElementWithTag(NED_FUNCTION);
     funcnode->setName(funcname);
     if (arg1) funcnode->appendChild(arg1);
     if (arg2) funcnode->appendChild(arg2);
@@ -359,23 +359,23 @@ FunctionNode *createFunction(const char *funcname, NEDElement *arg1, NEDElement 
     return funcnode;
 }
 
-ExpressionNode *createExpression(NEDElement *expr)
+ExpressionElement *createExpression(NEDElement *expr)
 {
-    ExpressionNode *expression = (ExpressionNode *)createNodeWithTag(NED_EXPRESSION);
+    ExpressionElement *expression = (ExpressionElement *)createElementWithTag(NED_EXPRESSION);
     expression->appendChild(expr);
     return expression;
 }
 
-IdentNode *createIdent(YYLTYPE parampos)
+IdentElement *createIdent(YYLTYPE parampos)
 {
-    IdentNode *ident = (IdentNode *)createNodeWithTag(NED_IDENT);
+    IdentElement *ident = (IdentElement *)createElementWithTag(NED_IDENT);
     ident->setName(toString(parampos));
     return ident;
 }
 
-IdentNode *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand)
+IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand)
 {
-    IdentNode *ident = (IdentNode *)createNodeWithTag(NED_IDENT);
+    IdentElement *ident = (IdentElement *)createElementWithTag(NED_IDENT);
     ident->setName(toString(parampos));
     ident->setModule(toString(modulepos));
     if (moduleindexoperand)
@@ -383,18 +383,18 @@ IdentNode *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *modulein
     return ident;
 }
 
-LiteralNode *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
+LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
 {
-    LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+    LiteralElement *c = (LiteralElement *)createElementWithTag(NED_LITERAL);
     c->setType(type);
     c->setValue(toString(valuepos));
     c->setText(toString(textpos));
     return c;
 }
 
-LiteralNode *createStringLiteral(YYLTYPE textpos)
+LiteralElement *createStringLiteral(YYLTYPE textpos)
 {
-    LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+    LiteralElement *c = (LiteralElement *)createElementWithTag(NED_LITERAL);
     c->setType(NED_CONST_STRING);
 
     const char *text = toString(textpos);
@@ -410,9 +410,9 @@ LiteralNode *createStringLiteral(YYLTYPE textpos)
     return c;
 }
 
-LiteralNode *createQuantityLiteral(YYLTYPE textpos)
+LiteralElement *createQuantityLiteral(YYLTYPE textpos)
 {
-    LiteralNode *c = (LiteralNode *)createNodeWithTag(NED_LITERAL);
+    LiteralElement *c = (LiteralElement *)createElementWithTag(NED_LITERAL);
     c->setType(NED_CONST_DOUBLE);
 
     const char *text = toString(textpos);
@@ -445,7 +445,7 @@ NEDElement *unaryMinus(NEDElement *node)
     if (node->getTagCode()!=NED_LITERAL)
         return createOperator("-", node);
 
-    LiteralNode *constNode = (LiteralNode *)node;
+    LiteralElement *constNode = (LiteralElement *)node;
 
     // only int and real constants can be negative, string, bool, etc cannot
     if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_DOUBLE)

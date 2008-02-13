@@ -77,51 +77,38 @@ NEDElement *NEDSemanticValidator::getClassDeclaration(const char *name)
     return getXXXDeclaration(name, NED_CLASS);
 }
 
-void NEDSemanticValidator::validateElement(FilesNode *node)
+void NEDSemanticValidator::validateElement(FilesElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(NedFileNode *node)
+void NEDSemanticValidator::validateElement(NedFileElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(CommentNode *node)
+void NEDSemanticValidator::validateElement(CommentElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(ImportNode *node)
+void NEDSemanticValidator::validateElement(ImportElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(PropertyDeclNode *node)
-{
-    // FIXME revise
-}
-
-void NEDSemanticValidator::validateElement(ExtendsNode *node)
+void NEDSemanticValidator::validateElement(PropertyDeclElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(InterfaceNameNode *node)
+void NEDSemanticValidator::validateElement(ExtendsElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(SimpleModuleNode *node)
-{
-    // FIXME revise
-    // make sure module type name does not exist yet
-    if (getModuleDeclaration(node->getName()))
-        errors->addError(node, "redefinition of module with name '%s'",node->getName());
-}
-
-void NEDSemanticValidator::validateElement(ModuleInterfaceNode *node)
+void NEDSemanticValidator::validateElement(InterfaceNameElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(CompoundModuleNode *node)
+void NEDSemanticValidator::validateElement(SimpleModuleElement *node)
 {
     // FIXME revise
     // make sure module type name does not exist yet
@@ -129,12 +116,25 @@ void NEDSemanticValidator::validateElement(CompoundModuleNode *node)
         errors->addError(node, "redefinition of module with name '%s'",node->getName());
 }
 
-void NEDSemanticValidator::validateElement(ParametersNode *node)
+void NEDSemanticValidator::validateElement(ModuleInterfaceElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(ParamNode *node)
+void NEDSemanticValidator::validateElement(CompoundModuleElement *node)
+{
+    // FIXME revise
+    // make sure module type name does not exist yet
+    if (getModuleDeclaration(node->getName()))
+        errors->addError(node, "redefinition of module with name '%s'",node->getName());
+}
+
+void NEDSemanticValidator::validateElement(ParametersElement *node)
+{
+    // FIXME revise
+}
+
+void NEDSemanticValidator::validateElement(ParamElement *node)
 {
     // FIXME code comes from substparamnode -- REVISE
     if (!moduletypedecl)
@@ -149,27 +149,27 @@ void NEDSemanticValidator::validateElement(ParamNode *node)
     // TBD compile-time check for type mismatch
 }
 
-void NEDSemanticValidator::validateElement(PatternNode *node)
+void NEDSemanticValidator::validateElement(PatternElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(PropertyNode *node)
+void NEDSemanticValidator::validateElement(PropertyElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(PropertyKeyNode *node)
+void NEDSemanticValidator::validateElement(PropertyKeyElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(GatesNode *node)
+void NEDSemanticValidator::validateElement(GatesElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(GateNode *node)
+void NEDSemanticValidator::validateElement(GateElement *node)
 {
     // FIXME the following lines come from gatesizenode -- REVISE!
     if (!moduletypedecl)
@@ -177,13 +177,13 @@ void NEDSemanticValidator::validateElement(GateNode *node)
 
     // make sure gate exists in module type
     const char *gatename = node->getName();
-    GatesNode *gatesdecl = (GatesNode *)moduletypedecl->getFirstChildWithTag(NED_GATES);
+    GatesElement *gatesdecl = (GatesElement *)moduletypedecl->getFirstChildWithTag(NED_GATES);
     if (!gatesdecl)
     {
         errors->addError(node, "module type does not have gates");
         return;
     }
-    GateNode *gatedecl = (GateNode *)gatesdecl->getFirstChildWithAttribute(NED_GATE, "name", gatename);
+    GateElement *gatedecl = (GateElement *)gatesdecl->getFirstChildWithAttribute(NED_GATE, "name", gatename);
     if (!gatedecl)
     {
         errors->addError(node, "module type does not have a gate named '%s'",gatename);
@@ -195,17 +195,17 @@ void NEDSemanticValidator::validateElement(GateNode *node)
 //        errors->addError(node, "gate '%s' is not a vector gate",gatename);
 }
 
-void NEDSemanticValidator::validateElement(TypesNode *node)
+void NEDSemanticValidator::validateElement(TypesElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(SubmodulesNode *node)
+void NEDSemanticValidator::validateElement(SubmodulesElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(SubmoduleNode *node)
+void NEDSemanticValidator::validateElement(SubmoduleElement *node)
 {
     // FIXME revise
     // make sure module type exists
@@ -215,12 +215,12 @@ void NEDSemanticValidator::validateElement(SubmoduleNode *node)
         errors->addError(node, "unknown module type '%s'",type_name);
 }
 
-void NEDSemanticValidator::validateElement(ConnectionsNode *node)
+void NEDSemanticValidator::validateElement(ConnectionsElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrc)
+void NEDSemanticValidator::checkGate(GateElement *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrc)
 {
     // FIXME revise
     // check gate direction, check if vector
@@ -247,8 +247,8 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
     {
         // connected to parent module: check such gate is declared
         NEDElement *gates = parent->getFirstChildWithTag(NED_GATES);
-        GateNode *gate;
-        if (!gates || (gate=(GateNode*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
+        GateElement *gate;
+        if (!gates || (gate=(GateElement*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
             errors->addError(conn, "%s: compound module has no gate named '%s'", q, gateName);
         else
             checkGate(gate, hasGateIndex, isSrc, conn, isSrc);
@@ -257,8 +257,8 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
     {
         // check such submodule is declared
         NEDElement *submods = parent->getFirstChildWithTag(NED_SUBMODULES);
-        SubmoduleNode *submod = NULL;
-        if (!submods || (submod=(SubmoduleNode*)submods->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodName))==NULL)
+        SubmoduleElement *submod = NULL;
+        if (!submods || (submod=(SubmoduleElement*)submods->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodName))==NULL)
         {
             errors->addError(conn, "%s: compound module has no submodule named '%s'", q, submodName);
         }
@@ -275,8 +275,8 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
             if (!submodType)
                 return; // we gave error earlier if submod type is not present
             NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);
-            GateNode *gate;
-            if (!gates || (gate=(GateNode*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
+            GateElement *gate;
+            if (!gates || (gate=(GateElement*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
                 errors->addError(conn, "%s: submodule '%s' has no gate named '%s'", q, submodName, gateName);
             else
                 checkGate(gate, hasGateIndex, !isSrc, conn, isSrc);
@@ -284,7 +284,7 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
     }
 }
 
-void NEDSemanticValidator::validateElement(ConnectionNode *node)
+void NEDSemanticValidator::validateElement(ConnectionElement *node)
 {
     // FIXME revise
     // make sure submodule and gate names are valid, gate direction is OK
@@ -301,17 +301,17 @@ void NEDSemanticValidator::validateElement(ConnectionNode *node)
     validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
 }
 
-void NEDSemanticValidator::validateElement(ChannelSpecNode *node)
+void NEDSemanticValidator::validateElement(ChannelSpecElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(ChannelInterfaceNode *node)
+void NEDSemanticValidator::validateElement(ChannelInterfaceElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(ChannelNode *node)
+void NEDSemanticValidator::validateElement(ChannelElement *node)
 {
     // FIXME revise
     // make sure channel type name does not exist yet
@@ -319,74 +319,74 @@ void NEDSemanticValidator::validateElement(ChannelNode *node)
         errors->addError(node, "redefinition of channel with name '%s'",node->getName());
 }
 
-void NEDSemanticValidator::validateElement(ConnectionGroupNode *node)
+void NEDSemanticValidator::validateElement(ConnectionGroupElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(LoopNode *node)
+void NEDSemanticValidator::validateElement(LoopElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(ConditionNode *node)
+void NEDSemanticValidator::validateElement(ConditionElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(ExpressionNode *node)
+void NEDSemanticValidator::validateElement(ExpressionElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(OperatorNode *node)
+void NEDSemanticValidator::validateElement(OperatorElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(FunctionNode *node)
+void NEDSemanticValidator::validateElement(FunctionElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(IdentNode *node)
+void NEDSemanticValidator::validateElement(IdentElement *node)
 {
     // FIXME revise
 }
 
-void NEDSemanticValidator::validateElement(LiteralNode *node)
+void NEDSemanticValidator::validateElement(LiteralElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(MsgFileNode *node)
+void NEDSemanticValidator::validateElement(MsgFileElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(NamespaceNode *node)
+void NEDSemanticValidator::validateElement(NamespaceElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(CplusplusNode *node)
+void NEDSemanticValidator::validateElement(CplusplusElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(StructDeclNode *node)
+void NEDSemanticValidator::validateElement(StructDeclElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(ClassDeclNode *node)
+void NEDSemanticValidator::validateElement(ClassDeclElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(MessageDeclNode *node)
+void NEDSemanticValidator::validateElement(MessageDeclElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(EnumDeclNode *node)
+void NEDSemanticValidator::validateElement(EnumDeclElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(EnumNode *node)
+void NEDSemanticValidator::validateElement(EnumElement *node)
 {
     // check extends-name
     const char *baseName = node->getExtendsName();
@@ -395,24 +395,15 @@ void NEDSemanticValidator::validateElement(EnumNode *node)
         errors->addError(node, "unknown base enum type '%s'",baseName);
 }
 
-void NEDSemanticValidator::validateElement(EnumFieldsNode *node)
+void NEDSemanticValidator::validateElement(EnumFieldsElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(EnumFieldNode *node)
+void NEDSemanticValidator::validateElement(EnumFieldElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(MessageNode *node)
-{
-    // check extends-name
-    const char *baseClassName = node->getExtendsName();
-    NEDElement *baseClass = getClassDeclaration(baseClassName);
-    if (!baseClass)
-        errors->addError(node, "unknown base class '%s'",baseClassName);
-}
-
-void NEDSemanticValidator::validateElement(ClassNode *node)
+void NEDSemanticValidator::validateElement(MessageElement *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();
@@ -421,7 +412,7 @@ void NEDSemanticValidator::validateElement(ClassNode *node)
         errors->addError(node, "unknown base class '%s'",baseClassName);
 }
 
-void NEDSemanticValidator::validateElement(StructNode *node)
+void NEDSemanticValidator::validateElement(ClassElement *node)
 {
     // check extends-name
     const char *baseClassName = node->getExtendsName();
@@ -430,11 +421,20 @@ void NEDSemanticValidator::validateElement(StructNode *node)
         errors->addError(node, "unknown base class '%s'",baseClassName);
 }
 
-void NEDSemanticValidator::validateElement(FieldNode *node)
+void NEDSemanticValidator::validateElement(StructElement *node)
+{
+    // check extends-name
+    const char *baseClassName = node->getExtendsName();
+    NEDElement *baseClass = getClassDeclaration(baseClassName);
+    if (!baseClass)
+        errors->addError(node, "unknown base class '%s'",baseClassName);
+}
+
+void NEDSemanticValidator::validateElement(FieldElement *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(UnknownNode *node)
+void NEDSemanticValidator::validateElement(UnknownElement *node)
 {
 }
 

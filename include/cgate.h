@@ -190,7 +190,12 @@ class SIM_API cGate : public cObject, noncopyable
     /** @name Information about the gate. */
     //@{
     /**
-     * Return the properties for this gate. Properties cannot be changed
+     * Returns the gate name without index and potential "$i"/"$o" suffix.
+     */
+    const char *baseName() const  {return desc->namep;}
+
+    /**
+     * Returns the properties for this gate. Properties cannot be changed
      * at runtime.
      */
     cProperties *properties() const;

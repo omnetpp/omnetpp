@@ -55,6 +55,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup Internals
  */
+//XXX this is like NedTypeInfo? except for ExpressionMap, PropertiesMap etc
 class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo // noncopyable
 {
   public:
@@ -82,7 +83,7 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     mutable PropertiesMap subcomponentParamPropsMap;
     mutable PropertiesMap subcomponentGatePropsMap;
 
-    // cached expressions: NED expressions (ExpressionNode) compiled into
+    // cached expressions: NED expressions (ExpressionElement) compiled into
     // cParValue get cached here, indexed by exprNode->id().
     typedef std::map<long, cParValue *> ExpressionMap;
     ExpressionMap expressionMap;
@@ -94,12 +95,12 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     static void clearPropsMap(PropertiesMap& propsMap);
     static void clearExpressionMap(ExpressionMap& exprMap);
     cNEDDeclaration *getSuperDecl() const;
-    NEDElement *getSubcomponentNode(const char *subcomponentName) const;
+    NEDElement *getSubcomponentElement(const char *subcomponentName) const;
     std::string getCxxNamespace() const;
 
     static cProperties *mergeProperties(const cProperties *baseprops, NEDElement *parent);
-    static void updateProperty(PropertyNode *propNode, cProperty *prop);
-    static void updateDisplayProperty(PropertyNode *propNode, cProperty *prop);
+    static void updateProperty(PropertyElement *propNode, cProperty *prop);
+    static void updateDisplayProperty(PropertyElement *propNode, cProperty *prop);
     static const char *getSingleValueLocalProperty(NEDElement *parent, const char *name);
 
   public:
@@ -198,6 +199,7 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
      */
     virtual const char *implementationClassName() const;
 
+    //FIXME the following could become protected methods of cModuleType / cChannelType
     /**
      * Returns the properties for this component.
      */
@@ -231,29 +233,29 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
 
     /** @name Expression caching */
     //@{
-    virtual cParValue *getCachedExpression(ExpressionNode *expr);
-    virtual void putCachedExpression(ExpressionNode *expr, cParValue *value);
+    virtual cParValue *getCachedExpression(ExpressionElement *expr);
+    virtual void putCachedExpression(ExpressionElement *expr, cParValue *value);
     //@}
 
     /** @name Help for the dynamic builder */
     //@{
-    ParametersNode *getParametersNode() const;         //XXX
+    ParametersElement *getParametersElement() const;         //XXX
 
-    GatesNode *getGatesNode() const;
+    GatesElement *getGatesElement() const;
 
     /**
      * Returns the <submodules> element from the NEDElement tree of this
      * NED component declaration.
      * Returns NULL if this declaration doesn't contain submodules.
      */
-    virtual SubmodulesNode *getSubmodulesNode() const;
+    virtual SubmodulesElement *getSubmodulesElement() const;
 
     /**
      * Returns the <connections> element from the NEDElement tree of this
      * NED component declaration.
      * Returns NULL if this declaration doesn't contain connections.
      */
-    virtual ConnectionsNode *getConnectionsNode() const;
+    virtual ConnectionsElement *getConnectionsElement() const;
     //@}
 };
 

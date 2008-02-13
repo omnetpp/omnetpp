@@ -104,7 +104,7 @@
  * is represented by an object. The central class is NEDElement, which provides
  * DOM-like generic methods to navigate the tree, enumerate and query attributes,
  * etc. Each XML element has a corresponding class, subclassed from NEDElement,
- * e.g. for the &lt;param&gt; element the class is called ParamNode. Specific
+ * e.g. for the &lt;param&gt; element the class is called ParamElement. Specific
  * element classes provide a stricter, more typed interface to access the data
  * tree.
  *

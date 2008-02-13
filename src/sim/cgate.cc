@@ -71,7 +71,7 @@ const char *cGate::name() const
     else {
         // this is one half of an inout gate, append "$i" or "$o"
         const char *suffix = type()==INPUT ? "$i" : "$o";
-        return stringPool.peek((std::string(desc->namep)+suffix).c_str()); //FIXME use opp_concat?
+        return stringPool.get((std::string(desc->namep)+suffix).c_str()); //FIXME use opp_concat?
     }
 }
 

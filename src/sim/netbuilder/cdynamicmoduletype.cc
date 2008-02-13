@@ -54,7 +54,7 @@ cNEDDeclaration *cDynamicModuleType::getDecl() const
 bool cDynamicModuleType::isNetwork() const
 {
     NEDElement *tree = getDecl()->getTree();
-    return tree->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleNode *)tree)->getIsNetwork();
+    return tree->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleElement *)tree)->getIsNetwork();
 }
 
 cModule *cDynamicModuleType::createModuleObject()

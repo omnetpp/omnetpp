@@ -45,7 +45,7 @@ bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
 
     files[key] = node;
 
-    PackageNode *packageDecl = (PackageNode *) node->getFirstChildWithTag(NED_PACKAGE);
+    PackageElement *packageDecl = (PackageElement *) node->getFirstChildWithTag(NED_PACKAGE);
     std::string packagePrefix = packageDecl ? packageDecl->getName() : "";
     if (!packagePrefix.empty())
         packagePrefix += ".";
@@ -67,7 +67,7 @@ NEDElement *NEDResourceCache::getPackageNedFile(const char *packagename) const
     for (NEDFileMap::const_iterator i = files.begin(); i != files.end(); i++) {
         const char *filepath = i->first.c_str();
         NEDElement *nedfile = i->second;
-        PackageNode *packageDecl = (PackageNode *) nedfile->getFirstChildWithTag(NED_PACKAGE);
+        PackageElement *packageDecl = (PackageElement *) nedfile->getFirstChildWithTag(NED_PACKAGE);
         std::string filePackageName = packageDecl ? packageDecl->getName() : "";
         if (filePackageName == opp_nulltoempty(packagename)) {
             std::string dir, fname;
@@ -129,10 +129,10 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
         if (qnames->contains(qname.c_str()))
             return qname;
 
-        NedFileNode *nedfileNode = dynamic_cast<NedFileNode *>(context.element->getParentWithTag(NED_NED_FILE));
+        NedFileElement *nedfileNode = dynamic_cast<NedFileElement *>(context.element->getParentWithTag(NED_NED_FILE));
 
         // from the same package?
-        PackageNode *packageNode = nedfileNode->getFirstPackageChild();
+        PackageElement *packageNode = nedfileNode->getFirstPackageChild();
         const char *packageName = packageNode ? packageNode->getName() : "";
         qname = opp_isempty(packageName) ? nedtypename : std::string(packageName) + "." + nedtypename;
         if (qnames->contains(qname.c_str()))
@@ -140,7 +140,7 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
 
         // collect imports, for convenience
         std::vector<const char *> imports;
-        for (ImportNode *import = nedfileNode->getFirstImportChild(); import; import = import->getNextImportNodeSibling())
+        for (ImportElement *import = nedfileNode->getFirstImportChild(); import; import = import->getNextImportSibling())
             imports.push_back(import->getImportSpec());
 
         // imported type?
@@ -171,7 +171,7 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
 
 const std::vector<std::string>& NEDResourceCache::getTypeNames() const
 {
-    if (nedTypeNames.empty() && !nedTypes.empty()) 
+    if (nedTypeNames.empty() && !nedTypes.empty())
     {
         // fill in nedTypeNames vector
         for (NEDTypeInfoMap::const_iterator i=nedTypes.begin(); i!=nedTypes.end(); ++i)

@@ -63,12 +63,12 @@ class SIM_API cNEDNetworkBuilder
     cModuleType *findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodname);
     std::vector<std::string> findTypeWithInterface(const char *nedtypename, const char *interfaceqname);
 
-    void addSubmodule(cModule *modp, SubmoduleNode *submod);
+    void addSubmodule(cModule *modp, SubmoduleElement *submod);
     void setConnDisplayString(cGate *srcgatep);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
-    void doParams(cComponent *component, ParametersNode *paramsNode, bool isSubcomponent);
-    void doGates(cModule *component, GatesNode *gatesNode, bool isSubcomponent);
+    void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent);
+    void doGates(cModule *component, GatesElement *gatesNode, bool isSubcomponent);
     void assignSubcomponentParams(cComponent *subcomponent, NEDElement *subcomponentNode);
     void setupGateVectors(cModule *submodule, NEDElement *submoduleNode);
 
@@ -76,23 +76,23 @@ class SIM_API cNEDNetworkBuilder
     void doConnOrConnGroupBody(cModule *modp, NEDElement *connOrConnGroup, NEDElement *loopOrCondition);
     void doLoopOrCondition(cModule *modp, NEDElement *loopOrCondition);
     void doAddConnOrConnGroup(cModule *modp, NEDElement *connOrConnGroup);
-    void doAddConnection(cModule *modp, ConnectionNode *conn);
-    void doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionNode *conn);
-    cGate *resolveGate(cModule *parentmodp, const char *modname, ExpressionNode *modindexp,
-                       const char *gatename, ExpressionNode *gateindexp, int subg, bool isplusplus);
-    void resolveInoutGate(cModule *parentmodp, const char *modname, ExpressionNode *modindexp,
-                       const char *gatename, ExpressionNode *gateindexp, bool isplusplus,
+    void doAddConnection(cModule *modp, ConnectionElement *conn);
+    void doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionElement *conn);
+    cGate *resolveGate(cModule *parentmodp, const char *modname, ExpressionElement *modindexp,
+                       const char *gatename, ExpressionElement *gateindexp, int subg, bool isplusplus);
+    void resolveInoutGate(cModule *parentmodp, const char *modname, ExpressionElement *modindexp,
+                       const char *gatename, ExpressionElement *gateindexp, bool isplusplus,
                        cGate *&gate1, cGate *&gate2);
-    cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionNode *modindexp);
-    cChannel *createChannel(ChannelSpecNode *channelspec, cModule *parentmodp);
+    cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionElement *modindexp);
+    cChannel *createChannel(ChannelSpecElement *channelspec, cModule *parentmodp);
 
     cChannelType *findAndCheckChannelType(const char *channeltypename, cModule *modp);
     cChannelType *findAndCheckChannelTypeLike(const char *channeltypename, const char *likeType, cModule *modp);
-    ExpressionNode *findExpression(NEDElement *node, const char *exprname);
-    cParValue *getOrCreateExpression(ExpressionNode *exprNode, cPar::Type type, bool inSubcomponentScope);
-    long evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
-    bool evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
-    std::string evaluateAsString(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope);
+    ExpressionElement *findExpression(NEDElement *node, const char *exprname);
+    cParValue *getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, bool inSubcomponentScope);
+    long evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);
+    bool evaluateAsBool(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);
+    std::string evaluateAsString(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);
 
   public:
     /** Constructor */

@@ -110,7 +110,7 @@ void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char 
         // Expression children that are not in the list
         for (NEDElement *child=node->getFirstChildWithTag(NED_EXPRESSION); child; child=child->getNextSiblingWithTag(NED_EXPRESSION))
         {
-            ExpressionNode *expr = (ExpressionNode *) child;
+            ExpressionElement *expr = (ExpressionElement *) child;
             const char *target = expr->getTarget();
             int i;
             for (i=0; i<n; i++)
@@ -135,8 +135,8 @@ void NEDSyntaxValidator::checkExpressionAttributes(NEDElement *node, const char 
            if (parsedExpressions)
            {
                // check: Expression element must be there
-               ExpressionNode *expr;
-               for (expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
+               ExpressionElement *expr;
+               for (expr=(ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionSibling())
                    if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attrs[i]))
                        break;
                if (!expr)
@@ -163,65 +163,65 @@ void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *
             {errors->addError(node,"validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
 }
 
-void NEDSyntaxValidator::validateElement(FilesNode *node)
+void NEDSyntaxValidator::validateElement(FilesElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(NedFileNode *node)
+void NEDSyntaxValidator::validateElement(NedFileElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(CommentNode *node)
+void NEDSyntaxValidator::validateElement(CommentElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(PackageNode *node)
+void NEDSyntaxValidator::validateElement(PackageElement *node)
 {
     checkDottedNameAttribute(node, "name", false);
 }
 
-void NEDSyntaxValidator::validateElement(ImportNode *node)
+void NEDSyntaxValidator::validateElement(ImportElement *node)
 {
     checkDottedNameAttribute(node, "import-spec", true);
 }
 
-void NEDSyntaxValidator::validateElement(PropertyDeclNode *node)
+void NEDSyntaxValidator::validateElement(PropertyDeclElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(ExtendsNode *node)
+void NEDSyntaxValidator::validateElement(ExtendsElement *node)
 {
     checkDottedNameAttribute(node, "name", false);
 }
 
-void NEDSyntaxValidator::validateElement(InterfaceNameNode *node)
+void NEDSyntaxValidator::validateElement(InterfaceNameElement *node)
 {
     checkDottedNameAttribute(node, "name", false);
 }
 
-void NEDSyntaxValidator::validateElement(SimpleModuleNode *node)
+void NEDSyntaxValidator::validateElement(SimpleModuleElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(ModuleInterfaceNode *node)
+void NEDSyntaxValidator::validateElement(ModuleInterfaceElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(CompoundModuleNode *node)
+void NEDSyntaxValidator::validateElement(CompoundModuleElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(ParametersNode *node)
+void NEDSyntaxValidator::validateElement(ParametersElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(ParamNode *node)
+void NEDSyntaxValidator::validateElement(ParamElement *node)
 {
     // param declarations cannot occur in submodules
     if (node->getType() != NED_PARTYPE_NONE)
@@ -234,32 +234,32 @@ void NEDSyntaxValidator::validateElement(ParamNode *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(PatternNode *node)
+void NEDSyntaxValidator::validateElement(PatternElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(PropertyNode *node)
+void NEDSyntaxValidator::validateElement(PropertyElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(PropertyKeyNode *node)
+void NEDSyntaxValidator::validateElement(PropertyKeyElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(GatesNode *node)
+void NEDSyntaxValidator::validateElement(GatesElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(TypesNode *node)
+void NEDSyntaxValidator::validateElement(TypesElement *node)
 {
     // make sure type names are unique
 }
 
-void NEDSyntaxValidator::validateElement(GateNode *node)
+void NEDSyntaxValidator::validateElement(GateElement *node)
 {
     // param declarations cannot occur in submodules
     if (node->getType() != NED_GATETYPE_NONE)
@@ -272,12 +272,12 @@ void NEDSyntaxValidator::validateElement(GateNode *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(SubmodulesNode *node)
+void NEDSyntaxValidator::validateElement(SubmodulesElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(SubmoduleNode *node)
+void NEDSyntaxValidator::validateElement(SubmoduleElement *node)
 {
     //FIXME revise
     const char *expr[] = {"like-param", "vector-size"};
@@ -301,7 +301,7 @@ void NEDSyntaxValidator::validateElement(SubmoduleNode *node)
 //    }
 }
 
-//void NEDSyntaxValidator::validateElement(SubstparamsNode *node)
+//void NEDSyntaxValidator::validateElement(SubstparamsElement *node)
 //{
 //    const char *expr[] = {"condition"};
 //    bool opt[] = {true};
@@ -312,7 +312,7 @@ void NEDSyntaxValidator::validateElement(SubmoduleNode *node)
 //}
 
 // TODO merge into 'parameters'
-//void NEDSyntaxValidator::validateElement(SubstparamNode *node)
+//void NEDSyntaxValidator::validateElement(SubstparamElement *node)
 //{
 //    const char *expr[] = {"value"};
 //    bool opt[] = {false};
@@ -320,7 +320,7 @@ void NEDSyntaxValidator::validateElement(SubmoduleNode *node)
 //}
 
 // TODO merge into 'gates'
-//void NEDSyntaxValidator::validateElement(GatesizesNode *node)
+//void NEDSyntaxValidator::validateElement(GatesizesElement *node)
 //{
 //    const char *expr[] = {"condition"};
 //    bool opt[] = {true};
@@ -331,20 +331,20 @@ void NEDSyntaxValidator::validateElement(SubmoduleNode *node)
 //}
 
 // TODO merge into 'gates'
-//void NEDSyntaxValidator::validateElement(GatesizeNode *node)
+//void NEDSyntaxValidator::validateElement(GatesizeElement *node)
 //{
 //    const char *expr[] = {"vector-size"};
 //    bool opt[] = {true};
 //    checkExpressionAttributes(node, expr, opt, 1);
 //}
 
-void NEDSyntaxValidator::validateElement(ConnectionsNode *node)
+void NEDSyntaxValidator::validateElement(ConnectionsElement *node)
 {
     //FIXME revise
     // TBD if check=true, make sure all gates are connected
 }
 
-void NEDSyntaxValidator::validateElement(ConnectionNode *node)
+void NEDSyntaxValidator::validateElement(ConnectionElement *node)
 {
     //FIXME revise
     const char *expr[] = {"condition", "src-module-index", "src-gate-index", "dest-module-index", "dest-gate-index"};
@@ -360,30 +360,30 @@ void NEDSyntaxValidator::validateElement(ConnectionNode *node)
         errors->addError(node, "wrong destination gate: cannot have both gate index and '++' operator specified");
 }
 
-void NEDSyntaxValidator::validateElement(ChannelSpecNode *node)
+void NEDSyntaxValidator::validateElement(ChannelSpecElement *node)
 {
     checkDottedNameAttribute(node, "type", false);
     checkDottedNameAttribute(node, "like-type", false);
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(ChannelInterfaceNode *node)
+void NEDSyntaxValidator::validateElement(ChannelInterfaceElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(ChannelNode *node)
+void NEDSyntaxValidator::validateElement(ChannelElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(ConnectionGroupNode *node)
+void NEDSyntaxValidator::validateElement(ConnectionGroupElement *node)
 {
     //FIXME revise
     // TODO check loop vars are unique etc
 }
 
-void NEDSyntaxValidator::validateElement(LoopNode *node)
+void NEDSyntaxValidator::validateElement(LoopElement *node)
 {
     //TODO adapt
     //const char *expr[] = {"from-value", "to-value"};
@@ -391,17 +391,17 @@ void NEDSyntaxValidator::validateElement(LoopNode *node)
     //checkExpressionAttributes(node, expr, opt, 2);
 }
 
-void NEDSyntaxValidator::validateElement(ConditionNode *node)
+void NEDSyntaxValidator::validateElement(ConditionElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(ExpressionNode *node)
+void NEDSyntaxValidator::validateElement(ExpressionElement *node)
 {
     //FIXME revise
 }
 
-void NEDSyntaxValidator::validateElement(OperatorNode *node)
+void NEDSyntaxValidator::validateElement(OperatorElement *node)
 {
     //FIXME revise
     // check operator name is valid and argument count matches
@@ -449,7 +449,7 @@ void NEDSyntaxValidator::validateElement(OperatorNode *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(FunctionNode *node)
+void NEDSyntaxValidator::validateElement(FunctionElement *node)
 {
     //FIXME revise
     // if we know the function, check argument count
@@ -497,7 +497,7 @@ void NEDSyntaxValidator::validateElement(FunctionNode *node)
          NEDElement *op1 = node->getFirstChild();
          NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
          if (args==2)
-             if (op2->getTagCode()!=NED_LITERAL || ((LiteralNode *)op2)->getType()!=NED_CONST_STRING)
+             if (op2->getTagCode()!=NED_LITERAL || ((LiteralElement *)op2)->getType()!=NED_CONST_STRING)
                  errors->addError(node, "second argument to 'input()' must be a string literal (prompt text)");
          NEDElement *parent = node->getParent();
          if (parent->getTagCode()!=NED_EXPRESSION)
@@ -510,8 +510,8 @@ void NEDSyntaxValidator::validateElement(FunctionNode *node)
              {errors->addError(node, "'xmldoc()' takes 1 or 2 arguments");return;}
          NEDElement *op1 = node->getFirstChild();
          NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-         if (op1->getTagCode()!=NED_LITERAL || ((LiteralNode *)op1)->getType()!=NED_CONST_STRING ||
-             (op2 && (op2->getTagCode()!=NED_LITERAL || ((LiteralNode *)op2)->getType()!=NED_CONST_STRING)))
+         if (op1->getTagCode()!=NED_LITERAL || ((LiteralElement *)op1)->getType()!=NED_CONST_STRING ||
+             (op2 && (op2->getTagCode()!=NED_LITERAL || ((LiteralElement *)op2)->getType()!=NED_CONST_STRING)))
              errors->addError(node, "'xmldoc()' arguments must be string literals");
          return;
     }
@@ -537,14 +537,14 @@ void NEDSyntaxValidator::validateElement(FunctionNode *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(IdentNode *node)
+void NEDSyntaxValidator::validateElement(IdentElement *node)
 {
     //FIXME revise
     const char *expr[] = {"module-index", "param-index"};
     bool opt[] = {true, true};
     checkExpressionAttributes(node, expr, opt, 2);
 
-    // FIXME loopvar and gatename for sizeof is also represented as IdentNode!!!
+    // FIXME loopvar and gatename for sizeof is also represented as IdentElement!!!
     //FIXME also: if we don't find a param, it may still come from a submodule --this can only be done with semantic validation
 
 /*
@@ -569,11 +569,11 @@ void NEDSyntaxValidator::validateElement(IdentNode *node)
 }
 
 // TODO merge into Ref code
-//void NEDSyntaxValidator::validateElement(ObsoleteIdentNode *node)
+//void NEDSyntaxValidator::validateElement(ObsoleteIdentElement *node)
 //{
-//    // ObsoleteIdentNode may occur: (1) as loop variable inside for-loops (2) argument to sizeof
+//    // ObsoleteIdentElement may occur: (1) as loop variable inside for-loops (2) argument to sizeof
 //    if (node->getParent()->getTagCode()==NED_FUNCTION &&
-//        !strcmp(((FunctionNode*)node->getParent())->getName(),"sizeof"))
+//        !strcmp(((FunctionElement*)node->getParent())->getName(),"sizeof"))
 //        return;
 //
 //    // make sure ident (loop variable) exists
@@ -585,7 +585,7 @@ void NEDSyntaxValidator::validateElement(IdentNode *node)
 //        errors->addError(node, "no loop variable named '%s' in enclosing for loop", name);
 //}
 
-void NEDSyntaxValidator::validateElement(LiteralNode *node)
+void NEDSyntaxValidator::validateElement(LiteralElement *node)
 {
     // verify syntax of constant
     int type = node->getType();
@@ -633,59 +633,59 @@ void NEDSyntaxValidator::validateElement(LiteralNode *node)
     }
 }
 
-void NEDSyntaxValidator::validateElement(MsgFileNode *node)
+void NEDSyntaxValidator::validateElement(MsgFileElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(NamespaceNode *node)
+void NEDSyntaxValidator::validateElement(NamespaceElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(CplusplusNode *node)
+void NEDSyntaxValidator::validateElement(CplusplusElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(StructDeclNode *node)
+void NEDSyntaxValidator::validateElement(StructDeclElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(ClassDeclNode *node)
+void NEDSyntaxValidator::validateElement(ClassDeclElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(MessageDeclNode *node)
+void NEDSyntaxValidator::validateElement(MessageDeclElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(EnumDeclNode *node)
+void NEDSyntaxValidator::validateElement(EnumDeclElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(EnumNode *node)
+void NEDSyntaxValidator::validateElement(EnumElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(EnumFieldsNode *node)
+void NEDSyntaxValidator::validateElement(EnumFieldsElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(EnumFieldNode *node)
+void NEDSyntaxValidator::validateElement(EnumFieldElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(MessageNode *node)
+void NEDSyntaxValidator::validateElement(MessageElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(ClassNode *node)
+void NEDSyntaxValidator::validateElement(ClassElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(StructNode *node)
+void NEDSyntaxValidator::validateElement(StructElement *node)
 {
 }
 
-void NEDSyntaxValidator::validateElement(FieldNode *node)
+void NEDSyntaxValidator::validateElement(FieldElement *node)
 {
     NEDElement *classNode = node->getParent()->getParent();
     bool isStruct = !strcmp(classNode->getTagName(), "struct");
@@ -726,7 +726,7 @@ void NEDSyntaxValidator::validateElement(FieldNode *node)
 
 }
 
-void NEDSyntaxValidator::validateElement(UnknownNode *node)
+void NEDSyntaxValidator::validateElement(UnknownElement *node)
 {
 }
 

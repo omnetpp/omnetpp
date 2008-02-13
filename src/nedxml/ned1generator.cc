@@ -92,8 +92,8 @@ const char *NED1Generator::decreaseIndent(const char *indent)
 
 static bool _isNetworkNode(NEDElement *node)
 {
-    return (node->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleNode *)node)->getIsNetwork())
-        || (node->getTagCode()==NED_SIMPLE_MODULE && ((SimpleModuleNode *)node)->getIsNetwork());
+    return (node->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleElement *)node)->getIsNetwork())
+        || (node->getTagCode()==NED_SIMPLE_MODULE && ((SimpleModuleElement *)node)->getIsNetwork());
 }
 
 //---------------------------------------------------------------------------
@@ -153,7 +153,7 @@ void NED1Generator::printInheritance(NEDElement *node, const char *indent)
         if (!extendsNode)
             errors->addWarning(node, "network must extend a module type");
         else
-            OUT << " : " << ((ExtendsNode *)extendsNode)->getName();
+            OUT << " : " << ((ExtendsElement *)extendsNode)->getName();
     }
     else if (node->getFirstChildWithTag(NED_EXTENDS) || node->getFirstChildWithTag(NED_INTERFACE_NAME))
     {
@@ -169,7 +169,7 @@ bool NED1Generator::hasExpression(NEDElement *node, const char *attr)
     }
     else
     {
-        for (ExpressionNode *expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
+        for (ExpressionElement *expr=(ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionSibling())
             if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
                 return true;
         return false;
@@ -184,7 +184,7 @@ void NED1Generator::printExpression(NEDElement *node, const char *attr, const ch
     }
     else
     {
-        for (ExpressionNode *expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
+        for (ExpressionElement *expr=(ExpressionElement *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionSibling())
             if (!opp_isempty(expr->getTarget()) && !strcmp(expr->getTarget(),attr))
                 generateNedItem(expr, indent, false, NULL);
     }
@@ -204,7 +204,7 @@ void NED1Generator::printOptVector(NEDElement *node, const char *attr, const cha
 
 static const char *getComment(NEDElement *node, const char *locId)
 {
-    CommentNode *comment = (CommentNode *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
+    CommentElement *comment = (CommentElement *)node->getFirstChildWithAttribute(NED_COMMENT, "locid", locId);
     return (comment && !opp_isempty(comment->getContent())) ? comment->getContent() : NULL;
 }
 
@@ -241,7 +241,7 @@ std::string NED1Generator::concatInnerComments(NEDElement *node)
     std::string ret;
     for (NEDElement *child=node->getFirstChildWithTag(NED_COMMENT); child; child = child->getNextSiblingWithTag(NED_COMMENT))
     {
-        CommentNode *comment = (CommentNode *)child;
+        CommentElement *comment = (CommentElement *)child;
         if (!strcmp(comment->getLocid(), "inner"))
             ret += comment->getContent();
     }
@@ -275,18 +275,18 @@ std::string NED1Generator::getTrailingComment(NEDElement *node)
 
 //---------------------------------------------------------------------------
 
-void NED1Generator::doNedfiles(FilesNode *node, const char *indent, bool, const char *)
+void NED1Generator::doNedfiles(FilesElement *node, const char *indent, bool, const char *)
 {
     generateChildren(node, indent);
 }
 
-void NED1Generator::doNedfile(NedFileNode *node, const char *indent, bool, const char *)
+void NED1Generator::doNedfile(NedFileElement *node, const char *indent, bool, const char *)
 {
     OUT << getBannerComment(node, indent);
     generateChildren(node, indent);
 }
 
-void NED1Generator::doImport(ImportNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doImport(ImportElement *node, const char *indent, bool islast, const char *)
 {
     // In NED2 style, it would be just these 2 lines:
     //OUT << getBannerComment(node, indent);
@@ -304,22 +304,22 @@ void NED1Generator::doImport(ImportNode *node, const char *indent, bool islast, 
     OUT << (isLastImport ? ";" : ",") << getRightComment(node);
 }
 
-void NED1Generator::doPropertyDecl(PropertyDeclNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doPropertyDecl(PropertyDeclElement *node, const char *indent, bool islast, const char *)
 {
     errors->addWarning(node, NED2FEATURE "properties");
 }
 
-void NED1Generator::doExtends(ExtendsNode *node, const char *indent, bool islast, const char *sep)
+void NED1Generator::doExtends(ExtendsElement *node, const char *indent, bool islast, const char *sep)
 {
     INTERNAL_ERROR0(node,"should never come here");
 }
 
-void NED1Generator::doInterfaceName(InterfaceNameNode *node, const char *indent, bool islast, const char *sep)
+void NED1Generator::doInterfaceName(InterfaceNameElement *node, const char *indent, bool islast, const char *sep)
 {
     INTERNAL_ERROR0(node,"should never come here");
 }
 
-void NED1Generator::doSimpleModule(SimpleModuleNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doSimpleModule(SimpleModuleElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "simple " << node->getName();
@@ -332,12 +332,12 @@ void NED1Generator::doSimpleModule(SimpleModuleNode *node, const char *indent, b
     OUT << indent << "endsimple" << getTrailingComment(node);
 }
 
-void NED1Generator::doModuleInterface(ModuleInterfaceNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doModuleInterface(ModuleInterfaceElement *node, const char *indent, bool islast, const char *)
 {
     errors->addWarning(node, NED2FEATURE "interfaces");
 }
 
-void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doCompoundModule(CompoundModuleElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << (node->getIsNetwork() ? "network" : "module") << " " << node->getName();
@@ -350,7 +350,7 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
     generateChildrenWithType(node, NED_SUBMODULES, increaseIndent(indent));
     generateChildrenWithType(node, NED_CONNECTIONS, increaseIndent(indent));
 
-    PropertyNode *displayProp;
+    PropertyElement *displayProp;
     std::string dispstr = getDisplayStringOf(node, displayProp);
     if (!dispstr.empty())
     {
@@ -367,12 +367,12 @@ void NED1Generator::doCompoundModule(CompoundModuleNode *node, const char *inden
     OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << getTrailingComment(node);
 }
 
-void NED1Generator::doChannelInterface(ChannelInterfaceNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doChannelInterface(ChannelInterfaceElement *node, const char *indent, bool islast, const char *)
 {
     errors->addWarning(node, NED2FEATURE "channel interfaces");
 }
 
-void NED1Generator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doChannel(ChannelElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "channel ";
@@ -385,7 +385,7 @@ void NED1Generator::doChannel(ChannelNode *node, const char *indent, bool islast
     OUT << indent << "endchannel" << getTrailingComment(node);
 }
 
-void NED1Generator::doParameters(ParametersNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doParameters(ParametersElement *node, const char *indent, bool islast, const char *)
 {
     // in NED-1, parameters followed different syntaxes at different places
     int parentTag = node->getParent()->getTagCode();
@@ -401,7 +401,7 @@ void NED1Generator::doParameters(ParametersNode *node, const char *indent, bool 
         INTERNAL_ERROR0(node,"unexpected parameters section");
 }
 
-void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
+void NED1Generator::doModuleParameters(ParametersElement *node, const char *indent)
 {
     OUT << getBannerComment(node, indent);
     if (node->getFirstChildWithTag(NED_PARAM))
@@ -413,9 +413,9 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
         if (childTag==NED_COMMENT)
             ; // ignore whitespace
         else if (childTag==NED_PROPERTY)
-            doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
+            doProperty((PropertyElement *)child, increaseIndent(indent), false, NULL);
         else if (childTag==NED_PARAM)
-            doModuleParam((ParamNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
+            doModuleParam((ParamElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
         else if (childTag==NED_PATTERN)
             errors->addWarning(node, NED2FEATURE "assigment by pattern matching");
         else
@@ -423,7 +423,7 @@ void NED1Generator::doModuleParameters(ParametersNode *node, const char *indent)
     }
 }
 
-void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
+void NED1Generator::doSubstParameters(ParametersElement *node, const char *indent)
 {
     OUT << getBannerComment(node, indent);
     if (node->getFirstChildWithTag(NED_PARAM))
@@ -435,9 +435,9 @@ void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
         if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_PROPERTY)
-            doProperty((PropertyNode *)child, increaseIndent(indent), false, NULL);
+            doProperty((PropertyElement *)child, increaseIndent(indent), false, NULL);
         else if (childTag==NED_PARAM)
-            doSubstParam((ParamNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
+            doSubstParam((ParamElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_PARAM)==NULL, NULL);
         else if (childTag==NED_PATTERN)
             errors->addWarning(node, NED2FEATURE "assignment by pattern matching");
         else
@@ -445,7 +445,7 @@ void NED1Generator::doSubstParameters(ParametersNode *node, const char *indent)
     }
 }
 
-void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent)
+void NED1Generator::doChannelParameters(ParametersElement *node, const char *indent)
 {
     // only "delay", "error", "datarate" parameters need to be recognized
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
@@ -454,9 +454,9 @@ void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent
         if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_PROPERTY)
-            doProperty((PropertyNode *)child, indent, false, NULL);
+            doProperty((PropertyElement *)child, indent, false, NULL);
         else if (childTag==NED_PARAM)
-            doChannelParam((ParamNode *)child, indent);
+            doChannelParam((ParamElement *)child, indent);
         else if (childTag==NED_PATTERN)
             errors->addWarning(node, NED2FEATURE "assignment by pattern matching");
         else
@@ -464,7 +464,7 @@ void NED1Generator::doChannelParameters(ParametersNode *node, const char *indent
     }
 }
 
-void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *indent)
+void NED1Generator::doConnectionAttributes(ParametersElement *node, const char *indent)
 {
     // only "delay", "error", "datarate" parameters need to be recognized
     for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
@@ -473,9 +473,9 @@ void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *ind
         if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_PROPERTY)
-            doProperty((PropertyNode *)child, indent, false, NULL);
+            doProperty((PropertyElement *)child, indent, false, NULL);
         else if (childTag==NED_PARAM)
-            doChannelParam((ParamNode *)child, NULL);
+            doChannelParam((ParamElement *)child, NULL);
         else if (childTag==NED_PATTERN)
             errors->addWarning(node, NED2FEATURE "patterns");
         else
@@ -483,7 +483,7 @@ void NED1Generator::doConnectionAttributes(ParametersNode *node, const char *ind
     }
 }
 
-void NED1Generator::doChannelParam(ParamNode *node, const char *indent)
+void NED1Generator::doChannelParam(ParamElement *node, const char *indent)
 {
     // this is used both in channel definitions and in connections
     OUT << getBannerComment(node, indent);
@@ -503,14 +503,14 @@ void NED1Generator::doChannelParam(ParamNode *node, const char *indent)
     }
 }
 
-void NED1Generator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doParam(ParamElement *node, const char *indent, bool islast, const char *)
 {
     // we use doModuleParam() and doSubstParam() instead
     // doParameters() ensures we never get here
     INTERNAL_ERROR0(node, "should never get here");
 }
 
-void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doModuleParam(ParamElement *node, const char *indent, bool islast, const char *)
 {
     const char *parType = NULL;
     switch (node->getType())
@@ -538,21 +538,21 @@ void NED1Generator::doModuleParam(ParamNode *node, const char *indent, bool isla
     OUT << (islast ? ";" : ",") << getRightComment(node);
 }
 
-const char *NED1Generator::getPromptTextOf(ParamNode *param)
+const char *NED1Generator::getPromptTextOf(ParamElement *param)
 {
-    PropertyNode *promptProp = (PropertyNode *)param->getFirstChildWithAttribute(NED_PROPERTY, "name", "prompt");
+    PropertyElement *promptProp = (PropertyElement *)param->getFirstChildWithAttribute(NED_PROPERTY, "name", "prompt");
     if (!promptProp)
         return NULL;
-    PropertyKeyNode *propKey = (PropertyKeyNode *)promptProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
+    PropertyKeyElement *propKey = (PropertyKeyElement *)promptProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
     if (!propKey)
         return NULL;
-    LiteralNode *literal = (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL);
+    LiteralElement *literal = (LiteralElement *)propKey->getFirstChildWithTag(NED_LITERAL);
     if (!literal)
         return NULL;
     return literal->getText(); //FIXME use value if text is not present!!!! (see doLiteral())
 }
 
-void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doSubstParam(ParamElement *node, const char *indent, bool islast, const char *)
 {
     if (node->getType()!=NED_PARTYPE_NONE)
         errors->addWarning(node, NED2FEATURE "defining new parameter for a submodule");
@@ -583,12 +583,12 @@ void NED1Generator::doSubstParam(ParamNode *node, const char *indent, bool islas
     OUT << (islast ? ";" : ",") << getRightComment(node);
 }
 
-void NED1Generator::doPattern(PatternNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doPattern(PatternElement *node, const char *indent, bool islast, const char *)
 {
     errors->addWarning(node, NED2FEATURE "assignment by pattern matching");
 }
 
-void NED1Generator::doProperty(PropertyNode *node, const char *indent, bool islast, const char *sep)
+void NED1Generator::doProperty(PropertyElement *node, const char *indent, bool islast, const char *sep)
 {
     // issue a warning, except for those few accepted occurrences of @display and @prompt
     // note: no code needs to be generated here, that is done separately
@@ -610,12 +610,12 @@ void NED1Generator::doProperty(PropertyNode *node, const char *indent, bool isla
         errors->addWarning(node, NED2FEATURE "property (except @display and @prompt)");
 }
 
-void NED1Generator::doPropertyKey(PropertyKeyNode *node, const char *indent, bool islast, const char *sep)
+void NED1Generator::doPropertyKey(PropertyKeyElement *node, const char *indent, bool islast, const char *sep)
 {
     INTERNAL_ERROR0(node,"should never come here");
 }
 
-void NED1Generator::doGates(GatesNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doGates(GatesElement *node, const char *indent, bool islast, const char *)
 {
     // in NED-1, distingish between "gates" and "gatesizes"
     int parentTag = node->getParent()->getTagCode();
@@ -627,7 +627,7 @@ void NED1Generator::doGates(GatesNode *node, const char *indent, bool islast, co
         INTERNAL_ERROR0(node,"unexpected gates section");
 }
 
-void NED1Generator::doModuleGates(GatesNode *node, const char *indent)
+void NED1Generator::doModuleGates(GatesElement *node, const char *indent)
 {
     OUT << getBannerComment(node, indent);
     if (node->getFirstChildWithTag(NED_GATE))
@@ -639,13 +639,13 @@ void NED1Generator::doModuleGates(GatesNode *node, const char *indent)
         if (childTag==NED_COMMENT)
             ; // ignore whitespace
         else if (childTag==NED_GATE)
-            doModuleGate((GateNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
+            doModuleGate((GateElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
 }
 
-void NED1Generator::doSubmoduleGatesizes(GatesNode *node, const char *indent)
+void NED1Generator::doSubmoduleGatesizes(GatesElement *node, const char *indent)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "gatesizes:" << getRightComment(node);
@@ -656,20 +656,20 @@ void NED1Generator::doSubmoduleGatesizes(GatesNode *node, const char *indent)
         if (childTag==NED_COMMENT)
             ; //ignore
         else if (childTag==NED_GATE)
-            doGatesize((GateNode *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
+            doGatesize((GateElement *)child, increaseIndent(indent), child->getNextSiblingWithTag(NED_GATE)==NULL, NULL);
         else
             INTERNAL_ERROR0(node,"unexpected element");
     }
 }
 
-void NED1Generator::doGate(GateNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doGate(GateElement *node, const char *indent, bool islast, const char *)
 {
     // we use doModuleGate()/doGatesize() instead
     // doGates() ensures we never get here
     INTERNAL_ERROR0(node, "should never get here");
 }
 
-void NED1Generator::doModuleGate(GateNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doModuleGate(GateElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent;
@@ -690,7 +690,7 @@ void NED1Generator::doModuleGate(GateNode *node, const char *indent, bool islast
     OUT << ";" << getRightComment(node);
 }
 
-void NED1Generator::doGatesize(GateNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doGatesize(GateElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent;
@@ -705,19 +705,19 @@ void NED1Generator::doGatesize(GateNode *node, const char *indent, bool islast, 
     OUT << (islast ? ";" : ",") << getRightComment(node);
 }
 
-void NED1Generator::doTypes(TypesNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doTypes(TypesElement *node, const char *indent, bool islast, const char *)
 {
     errors->addWarning(node, NED2FEATURE "inner type");
 }
 
-void NED1Generator::doSubmodules(SubmodulesNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doSubmodules(SubmodulesElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "submodules:" << getRightComment(node);
     generateChildren(node, increaseIndent(indent));
 }
 
-void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doSubmodule(SubmoduleElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << node->getName() << ": ";
@@ -740,7 +740,7 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
     generateChildrenWithType(node, NED_GATES, increaseIndent(indent));
 
-    PropertyNode *displayProp;
+    PropertyElement *displayProp;
     std::string dispstr = getDisplayStringOf(node, displayProp);
     if (!dispstr.empty())
     {
@@ -755,27 +755,27 @@ void NED1Generator::doSubmodule(SubmoduleNode *node, const char *indent, bool is
     }
 }
 
-std::string NED1Generator::getDisplayStringOf(NEDElement *node, PropertyNode *&outDisplayProp)
+std::string NED1Generator::getDisplayStringOf(NEDElement *node, PropertyElement *&outDisplayProp)
 {
     // node must be a module, submodule or a connection-spec
     outDisplayProp = NULL;
-    ParametersNode *parameters = (ParametersNode *)node->getFirstChildWithTag(NED_PARAMETERS);
+    ParametersElement *parameters = (ParametersElement *)node->getFirstChildWithTag(NED_PARAMETERS);
     if (!parameters)
         return "";
-    PropertyNode *displayProp = (PropertyNode *)parameters->getFirstChildWithAttribute(NED_PROPERTY, "name", "display");
+    PropertyElement *displayProp = (PropertyElement *)parameters->getFirstChildWithAttribute(NED_PROPERTY, "name", "display");
     if (!displayProp)
         return "";
-    PropertyKeyNode *propKey = (PropertyKeyNode *)displayProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
+    PropertyKeyElement *propKey = (PropertyKeyElement *)displayProp->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
     if (!propKey)
         return "";
-    LiteralNode *literal = (LiteralNode *)propKey->getFirstChildWithTag(NED_LITERAL);
+    LiteralElement *literal = (LiteralElement *)propKey->getFirstChildWithTag(NED_LITERAL);
     if (!literal)
         return "";
     outDisplayProp = displayProp;
     return !opp_isempty(literal->getText()) ? literal->getText() : opp_quotestr(literal->getValue());
 }
 
-void NED1Generator::doConnections(ConnectionsNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doConnections(ConnectionsElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     if (node->getAllowUnconnected())
@@ -785,7 +785,7 @@ void NED1Generator::doConnections(ConnectionsNode *node, const char *indent, boo
     generateChildren(node, increaseIndent(indent));
 }
 
-void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doConnection(ConnectionElement *node, const char *indent, bool islast, const char *)
 {
     //  direction
     const char *arrow;
@@ -832,13 +832,13 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
 
     NEDElement *condition = node->getFirstChildWithTag(NED_CONDITION);
     if (condition)
-        doCondition((ConditionNode *)condition, indent, false, NULL);
+        doCondition((ConditionElement *)condition, indent, false, NULL);
 
     // display string
     NEDElement *chanSpecNode = node->getFirstChildWithTag(NED_CHANNEL_SPEC);
     if (chanSpecNode)
     {
-        PropertyNode *dummy;
+        PropertyElement *dummy;
         std::string dispstr = getDisplayStringOf(chanSpecNode, dummy);
         if (!dispstr.empty())
         {
@@ -855,7 +855,7 @@ void NED1Generator::doConnection(ConnectionNode *node, const char *indent, bool 
     OUT << ";" << getRightComment(node);
 }
 
-void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, bool islast, const char *arrow)
+void NED1Generator::doChannelSpec(ChannelSpecElement *node, const char *indent, bool islast, const char *arrow)
 {
     NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
     bool hasParams = params && params->getFirstChildWithTag(NED_PARAM);
@@ -880,7 +880,7 @@ void NED1Generator::doChannelSpec(ChannelSpecNode *node, const char *indent, boo
     }
 }
 
-void NED1Generator::doConnectionGroup(ConnectionGroupNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doConnectionGroup(ConnectionGroupElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
     OUT << indent << "for ";
@@ -892,7 +892,7 @@ void NED1Generator::doConnectionGroup(ConnectionGroupNode *node, const char *ind
     OUT << indent << "endfor;" << getTrailingComment(node);
 }
 
-void NED1Generator::doLoop(LoopNode *node, const char *indent, bool islast, const char *sep)
+void NED1Generator::doLoop(LoopElement *node, const char *indent, bool islast, const char *sep)
 {
     OUT << node->getParamName() << "=";
     printExpression(node, "from-value",indent);
@@ -903,7 +903,7 @@ void NED1Generator::doLoop(LoopNode *node, const char *indent, bool islast, cons
         OUT << (sep ? sep : "");
 }
 
-void NED1Generator::doCondition(ConditionNode *node, const char *indent, bool islast, const char *sep)
+void NED1Generator::doCondition(ConditionElement *node, const char *indent, bool islast, const char *sep)
 {
     OUT << " if ";
     printExpression(node, "condition",indent);
@@ -931,7 +931,7 @@ void NED1Generator::printConnectionGate(NEDElement *conn, const char *modname, c
         errors->addWarning(conn, NED2FEATURE "subgate of inout gate");
 }
 
-void NED1Generator::doExpression(ExpressionNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doExpression(ExpressionElement *node, const char *indent, bool islast, const char *)
 {
     generateChildren(node,indent);
 }
@@ -1003,7 +1003,7 @@ bool NED1Generator::isOperatorLeftAssoc(const char *op)
     return true;
 }
 
-void NED1Generator::doOperator(OperatorNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doOperator(OperatorElement *node, const char *indent, bool islast, const char *)
 {
     NEDElement *op1 = node->getFirstChild();
     NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
@@ -1026,7 +1026,7 @@ void NED1Generator::doOperator(OperatorNode *node, const char *indent, bool isla
 
         NEDElement *parent = node->getParent();
         if (parent && parent->getTagCode()==NED_OPERATOR) {
-            OperatorNode *parentop = (OperatorNode *)parent;
+            OperatorElement *parentop = (OperatorElement *)parent;
             int parentprio = getOperatorPriority(parentop->getName(),2 ); //FIXME 2 ???
             if (parentprio>prio) {
                 needsParen = true;
@@ -1061,7 +1061,7 @@ void NED1Generator::doOperator(OperatorNode *node, const char *indent, bool isla
     }
 }
 
-void NED1Generator::doFunction(FunctionNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doFunction(FunctionElement *node, const char *indent, bool islast, const char *)
 {
     NEDElement *op1 = node->getFirstChild();
     NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
@@ -1087,7 +1087,7 @@ void NED1Generator::doFunction(FunctionNode *node, const char *indent, bool isla
     OUT << ")";
 }
 
-void NED1Generator::doIdent(IdentNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doIdent(IdentElement *node, const char *indent, bool islast, const char *)
 {
     if (!opp_isempty(node->getModule())) {
         OUT << node->getModule();
@@ -1098,7 +1098,7 @@ void NED1Generator::doIdent(IdentNode *node, const char *indent, bool islast, co
     OUT << node->getName();
 }
 
-void NED1Generator::doLiteral(LiteralNode *node, const char *indent, bool islast, const char *)
+void NED1Generator::doLiteral(LiteralElement *node, const char *indent, bool islast, const char *)
 {
     if (!opp_isempty(node->getText()))
     {
@@ -1123,69 +1123,69 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
     switch (tagcode)
     {
         case NED_FILES:
-            doNedfiles((FilesNode *)node, indent, islast, arg); break;
+            doNedfiles((FilesElement *)node, indent, islast, arg); break;
         case NED_NED_FILE:
-            doNedfile((NedFileNode *)node, indent, islast, arg); break;
+            doNedfile((NedFileElement *)node, indent, islast, arg); break;
         case NED_IMPORT:
-            doImport((ImportNode *)node, indent, islast, arg); break;
+            doImport((ImportElement *)node, indent, islast, arg); break;
         case NED_PROPERTY_DECL:
-            doPropertyDecl((PropertyDeclNode *)node, indent, islast, arg); break;
+            doPropertyDecl((PropertyDeclElement *)node, indent, islast, arg); break;
         case NED_EXTENDS:
-            doExtends((ExtendsNode *)node, indent, islast, arg); break;
+            doExtends((ExtendsElement *)node, indent, islast, arg); break;
         case NED_INTERFACE_NAME:
-            doInterfaceName((InterfaceNameNode *)node, indent, islast, arg); break;
+            doInterfaceName((InterfaceNameElement *)node, indent, islast, arg); break;
         case NED_SIMPLE_MODULE:
-            doSimpleModule((SimpleModuleNode *)node, indent, islast, arg); break;
+            doSimpleModule((SimpleModuleElement *)node, indent, islast, arg); break;
         case NED_MODULE_INTERFACE:
-            doModuleInterface((ModuleInterfaceNode *)node, indent, islast, arg); break;
+            doModuleInterface((ModuleInterfaceElement *)node, indent, islast, arg); break;
         case NED_COMPOUND_MODULE:
-            doCompoundModule((CompoundModuleNode *)node, indent, islast, arg); break;
+            doCompoundModule((CompoundModuleElement *)node, indent, islast, arg); break;
         case NED_CHANNEL_INTERFACE:
-            doChannelInterface((ChannelInterfaceNode *)node, indent, islast, arg); break;
+            doChannelInterface((ChannelInterfaceElement *)node, indent, islast, arg); break;
         case NED_CHANNEL:
-            doChannel((ChannelNode *)node, indent, islast, arg); break;
+            doChannel((ChannelElement *)node, indent, islast, arg); break;
         case NED_PARAMETERS:
-            doParameters((ParametersNode *)node, indent, islast, arg); break;
+            doParameters((ParametersElement *)node, indent, islast, arg); break;
         case NED_PARAM:
-            doParam((ParamNode *)node, indent, islast, arg); break;
+            doParam((ParamElement *)node, indent, islast, arg); break;
         case NED_PATTERN:
-            doPattern((PatternNode *)node, indent, islast, arg); break;
+            doPattern((PatternElement *)node, indent, islast, arg); break;
         case NED_PROPERTY:
-            doProperty((PropertyNode *)node, indent, islast, arg); break;
+            doProperty((PropertyElement *)node, indent, islast, arg); break;
         case NED_PROPERTY_KEY:
-            doPropertyKey((PropertyKeyNode *)node, indent, islast, arg); break;
+            doPropertyKey((PropertyKeyElement *)node, indent, islast, arg); break;
         case NED_GATES:
-            doGates((GatesNode *)node, indent, islast, arg); break;
+            doGates((GatesElement *)node, indent, islast, arg); break;
         case NED_GATE:
-            doGate((GateNode *)node, indent, islast, arg); break;
+            doGate((GateElement *)node, indent, islast, arg); break;
         case NED_TYPES:
-            doTypes((TypesNode *)node, indent, islast, arg); break;
+            doTypes((TypesElement *)node, indent, islast, arg); break;
         case NED_SUBMODULES:
-            doSubmodules((SubmodulesNode *)node, indent, islast, arg); break;
+            doSubmodules((SubmodulesElement *)node, indent, islast, arg); break;
         case NED_SUBMODULE:
-            doSubmodule((SubmoduleNode *)node, indent, islast, arg); break;
+            doSubmodule((SubmoduleElement *)node, indent, islast, arg); break;
         case NED_CONNECTIONS:
-            doConnections((ConnectionsNode *)node, indent, islast, arg); break;
+            doConnections((ConnectionsElement *)node, indent, islast, arg); break;
         case NED_CONNECTION:
-            doConnection((ConnectionNode *)node, indent, islast, arg); break;
+            doConnection((ConnectionElement *)node, indent, islast, arg); break;
         case NED_CHANNEL_SPEC:
-            doChannelSpec((ChannelSpecNode *)node, indent, islast, arg); break;
+            doChannelSpec((ChannelSpecElement *)node, indent, islast, arg); break;
         case NED_CONNECTION_GROUP:
-            doConnectionGroup((ConnectionGroupNode *)node, indent, islast, arg); break;
+            doConnectionGroup((ConnectionGroupElement *)node, indent, islast, arg); break;
         case NED_LOOP:
-            doLoop((LoopNode *)node, indent, islast, arg); break;
+            doLoop((LoopElement *)node, indent, islast, arg); break;
         case NED_CONDITION:
-            doCondition((ConditionNode *)node, indent, islast, arg); break;
+            doCondition((ConditionElement *)node, indent, islast, arg); break;
         case NED_EXPRESSION:
-            doExpression((ExpressionNode *)node, indent, islast, arg); break;
+            doExpression((ExpressionElement *)node, indent, islast, arg); break;
         case NED_OPERATOR:
-            doOperator((OperatorNode *)node, indent, islast, arg); break;
+            doOperator((OperatorElement *)node, indent, islast, arg); break;
         case NED_FUNCTION:
-            doFunction((FunctionNode *)node, indent, islast, arg); break;
+            doFunction((FunctionElement *)node, indent, islast, arg); break;
         case NED_IDENT:
-            doIdent((IdentNode *)node, indent, islast, arg); break;
+            doIdent((IdentElement *)node, indent, islast, arg); break;
         case NED_LITERAL:
-            doLiteral((LiteralNode *)node, indent, islast, arg); break;
+            doLiteral((LiteralElement *)node, indent, islast, arg); break;
         default:
             ;//XXX: add back this line: INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
     }

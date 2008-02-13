@@ -43,16 +43,16 @@ void NEDTools::repairNEDElementTree(NEDElement *tree)
     }
 }
 
-void NEDTools::splitToFiles(FilesNode *tree)
+void NEDTools::splitToFiles(FilesElement *tree)
 {
-    FilesNode *tmpTree = new FilesNode();
+    FilesElement *tmpTree = new FilesElement();
     for (NEDElement *child=tree->getFirstChild(); child; child = child->getNextSibling())
     {
         // ignore msg files
         if (child->getTagCode()!=NED_NED_FILE)
             continue;
 
-        NedFileNode *fileNode = (NedFileNode *)child;
+        NedFileElement *fileNode = (NedFileElement *)child;
 
         // we'll generate new files into the directory of the original file
         std::string directory;
@@ -76,7 +76,7 @@ void NEDTools::splitToFiles(FilesNode *tree)
             const char *componentName = componentNode->getAttribute("name");
 
             // create new file for it
-            NedFileNode *newFileNode = fileNode->dup();
+            NedFileElement *newFileNode = fileNode->dup();
             std::string newFileName = directory + "/" + componentName + ".ned";
             newFileNode->setFilename(newFileName.c_str());
             tmpTree->appendChild(newFileNode);

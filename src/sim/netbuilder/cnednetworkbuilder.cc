@@ -77,7 +77,7 @@ void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration 
     }
 
     // add this decl parameters / assignments
-    ParametersNode *paramsNode = decl->getParametersNode();
+    ParametersElement *paramsNode = decl->getParametersElement();
     if (paramsNode)
     {
         currentDecl = decl; // switch "context"
@@ -103,14 +103,14 @@ cGate::Type cNEDNetworkBuilder::translateGateType(int t)
            (cGate::Type)-1;
 }
 
-void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsNode, bool isSubcomponent)
+void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent)
 {
     ASSERT(paramsNode!=NULL);
     for (NEDElement *child=paramsNode->getFirstChildWithTag(NED_PARAM); child; child=child->getNextSiblingWithTag(NED_PARAM))
     {
-        ParamNode *paramNode = (ParamNode *)child;
+        ParamElement *paramNode = (ParamElement *)child;
         const char *paramName = paramNode->getName();
-        ExpressionNode *exprNode = paramNode->getFirstExpressionChild();
+        ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
 
         cParValue *value = NULL;
         if (exprNode)
@@ -155,7 +155,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
             {
                 value = cParValue::createWithType(translateParamType(paramNode->getType()));
                 value->setName(paramName);
-                value->setIsShared(false); //XXX cannot cache: there'no ExpressionNode to piggyback on!!!
+                value->setIsShared(false); //XXX cannot cache: there'no ExpressionElement to piggyback on!!!
                 value->setIsInput(true);
                 value->setIsVolatile(paramNode->getIsVolatile());
             }
@@ -165,14 +165,14 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersNode *paramsN
     }
 }
 
-void cNEDNetworkBuilder::doGates(cModule *module, GatesNode *gatesNode, bool isSubcomponent)
+void cNEDNetworkBuilder::doGates(cModule *module, GatesElement *gatesNode, bool isSubcomponent)
 {
     ASSERT(gatesNode!=NULL);
     for (NEDElement *child=gatesNode->getFirstChildWithTag(NED_GATE); child; child=child->getNextSiblingWithTag(NED_GATE))
     {
-        GateNode *gateNode = (GateNode *)child;
+        GateElement *gateNode = (GateElement *)child;
         const char *gateName = gateNode->getName();
-        ExpressionNode *exprNode = gateNode->getFirstExpressionChild();
+        ExpressionElement *exprNode = gateNode->getFirstExpressionChild();
 
         // determine gatesize
         int gatesize = -1;
@@ -226,7 +226,7 @@ void cNEDNetworkBuilder::addGatesTo(cModule *module, cNEDDeclaration *decl)
     }
 
     // add this decl gates / gatesizes
-    GatesNode *gatesNode = decl->getGatesNode();
+    GatesElement *gatesNode = decl->getGatesElement();
     if (gatesNode)
     {
         currentDecl = decl; // switch "context"
@@ -272,17 +272,17 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
     //TRACE("addSubmodulesAndConnections(%s), decl=%s", modp->fullPath().c_str(), currentDecl->name()); //XXX
     //dump(currentDecl->getTree()); XXX
 
-    SubmodulesNode *submods = currentDecl->getSubmodulesNode();
+    SubmodulesElement *submods = currentDecl->getSubmodulesElement();
     if (submods)
     {
-        for (SubmoduleNode *submod=submods->getFirstSubmoduleChild(); submod; submod=submod->getNextSubmoduleNodeSibling())
+        for (SubmoduleElement *submod=submods->getFirstSubmoduleChild(); submod; submod=submod->getNextSubmoduleSibling())
         {
             addSubmodule(modp, submod);
         }
     }
 
     // loop through connections and add them
-    ConnectionsNode *conns = currentDecl->getConnectionsNode();
+    ConnectionsElement *conns = currentDecl->getConnectionsElement();
     if (conns)
     {
         for (NEDElement *child=conns->getFirstChild(); child; child=child->getNextSibling())
@@ -306,7 +306,7 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
         const char *superName = decl->extendsName(0);
         decl = cNEDLoader::instance()->getDecl(superName);
         ASSERT(decl); // all super classes must be loaded before we start building
-        ConnectionsNode *conns = decl->getConnectionsNode();
+        ConnectionsElement *conns = decl->getConnectionsElement();
         if (conns && conns->getAllowUnconnected())
             return true;
     }
@@ -392,7 +392,7 @@ std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *n
     return candidates;
 }
 
-void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
+void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
 {
     // create submodule
     const char *submodname = submod->getName();
@@ -403,14 +403,14 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     }
     else
     {
-        // type may be given either in ExpressionNode child or "like-param" attribute
+        // type may be given either in ExpressionElement child or "like-param" attribute
         if (!opp_isempty(submod->getLikeParam()))
         {
             submodtypename = modp->par(submod->getLikeParam()).stringValue();
         }
         else
         {
-            ExpressionNode *likeParamExpr = findExpression(submod, "like-param");
+            ExpressionElement *likeParamExpr = findExpression(submod, "like-param");
             ASSERT(likeParamExpr); // either attr or expr must be there
             //FIXME if module vector: store it as expression, don't evaluate it now,
             //      because it might be random etc!!!
@@ -418,7 +418,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         }
     }
 
-    ExpressionNode *vectorsizeexpr = findExpression(submod, "vector-size");
+    ExpressionElement *vectorsizeexpr = findExpression(submod, "vector-size");
 
     if (!vectorsizeexpr)
     {
@@ -475,14 +475,14 @@ void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep)
 
 void cNEDNetworkBuilder::assignSubcomponentParams(cComponent *subcomponent, NEDElement *subcomponentNode)
 {
-    ParametersNode *paramsNode = (ParametersNode *) subcomponentNode->getFirstChildWithTag(NED_PARAMETERS);
+    ParametersElement *paramsNode = (ParametersElement *) subcomponentNode->getFirstChildWithTag(NED_PARAMETERS);
     if (paramsNode)
         doParams(subcomponent, paramsNode, true);
 }
 
 void cNEDNetworkBuilder::setupGateVectors(cModule *submodule, NEDElement *submoduleNode)
 {
-    GatesNode *gatesNode = (GatesNode *) submoduleNode->getFirstChildWithTag(NED_GATES);
+    GatesElement *gatesNode = (GatesElement *) submoduleNode->getFirstChildWithTag(NED_GATES);
     if (gatesNode)
         doGates(submodule, gatesNode, true);
 }
@@ -490,8 +490,8 @@ void cNEDNetworkBuilder::setupGateVectors(cModule *submodule, NEDElement *submod
 void cNEDNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NEDElement *connOrConnGroup)
 {
     // this is tricky: elements representing "for" and "if" in NED are children
-    // of the ConnectionNode or ConnectionGroupNode. So, first we have to go through
-    // and execute the LoopNode and ConditionNode children recursively to get
+    // of the ConnectionElement or ConnectionGroupElement. So, first we have to go through
+    // and execute the LoopElement and ConditionElement children recursively to get
     // nested loops etc, then after (inside) the last one create the connection(s)
     // themselves, which is (are) then parent of the LoopNode/ConditionNode.
     NEDSupport::LoopVar::reset();
@@ -517,8 +517,8 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
     if (loopOrCondition->getTagCode()==NED_CONDITION)
     {
         // check condition
-        ConditionNode *condition = (ConditionNode *)loopOrCondition;
-        ExpressionNode *condexpr = findExpression(condition, "condition");
+        ConditionElement *condition = (ConditionElement *)loopOrCondition;
+        ExpressionElement *condexpr = findExpression(condition, "condition");
         if (condexpr && evaluateAsBool(condexpr, modp, false)==true)
         {
             // do the body of the "if": either further "for"'s and "if"'s, or
@@ -528,7 +528,7 @@ void cNEDNetworkBuilder::doLoopOrCondition(cModule *modp, NEDElement *loopOrCond
     }
     else if (loopOrCondition->getTagCode()==NED_LOOP)
     {
-        LoopNode *loop = (LoopNode *)loopOrCondition;
+        LoopElement *loop = (LoopElement *)loopOrCondition;
         long start = evaluateAsLong(findExpression(loop, "from-value"), modp, false);
         long end = evaluateAsLong(findExpression(loop, "to-value"), modp, false);
 
@@ -552,12 +552,12 @@ void cNEDNetworkBuilder::doAddConnOrConnGroup(cModule *modp, NEDElement *connOrC
 {
     if (connOrConnGroup->getTagCode()==NED_CONNECTION)
     {
-        doAddConnection(modp, (ConnectionNode *)connOrConnGroup);
+        doAddConnection(modp, (ConnectionElement *)connOrConnGroup);
     }
     else if (connOrConnGroup->getTagCode()==NED_CONNECTION_GROUP)
     {
-        ConnectionGroupNode *conngroup = (ConnectionGroupNode *)connOrConnGroup;
-        for (ConnectionNode *conn=conngroup->getFirstConnectionChild(); conn; conn=conn->getNextConnectionNodeSibling())
+        ConnectionGroupElement *conngroup = (ConnectionGroupElement *)connOrConnGroup;
+        for (ConnectionElement *conn=conngroup->getFirstConnectionChild(); conn; conn=conn->getNextConnectionSibling())
         {
             doConnOrConnGroupBody(modp, conn, conn->getFirstChild());
         }
@@ -568,7 +568,7 @@ void cNEDNetworkBuilder::doAddConnOrConnGroup(cModule *modp, NEDElement *connOrC
     }
 }
 
-void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
+void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
 {
 //FIXME spurious error message comes when trying to connect INOUT gate with "-->"
     if (conn->getArrowDirection()!=NED_ARROWDIR_BIDIR)
@@ -621,10 +621,10 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionNode *conn)
     }
 }
 
-void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionNode *conn)
+void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionElement *conn)
 {
     // connect
-    ChannelSpecNode *channelspec = conn->getFirstChannelSpecChild();
+    ChannelSpecElement *channelspec = conn->getFirstChannelSpecChild();
     if (!channelspec)
     {
         srcg->connectTo(destg);
@@ -641,8 +641,8 @@ void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg
 }
 
 cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
-                                       const char *modname, ExpressionNode *modindexp,
-                                       const char *gatename, ExpressionNode *gateindexp,
+                                       const char *modname, ExpressionElement *modindexp,
+                                       const char *gatename, ExpressionElement *gateindexp,
                                        int subg, bool isplusplus)
 {
     //TRACE("resolveGate(mod=%s, %s.%s, subg=%d, plusplus=%d)", parentmodp->fullPath().c_str(), modname, gatename, subg, isplusplus);
@@ -692,8 +692,8 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
 }
 
 void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
-                                          const char *modname, ExpressionNode *modindexp,
-                                          const char *gatename, ExpressionNode *gateindexp,
+                                          const char *modname, ExpressionElement *modindexp,
+                                          const char *gatename, ExpressionElement *gateindexp,
                                           bool isplusplus,
                                           cGate *&gate1, cGate *&gate2)
 {
@@ -737,7 +737,7 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
     }
 }
 
-cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionNode *modindexp)
+cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionElement *modindexp)
 {
     if (opp_isempty(modname))
     {
@@ -758,7 +758,7 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
     }
 }
 
-cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModule *parentmodp)
+cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecElement *channelspec, cModule *parentmodp)
 {
     // create channel object
     cChannel *channelp = NULL;
@@ -769,14 +769,14 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecNode *channelspec, cModul
     }
     else
     {
-        // type may be given either in ExpressionNode child or "like-param" attribute
+        // type may be given either in ExpressionElement child or "like-param" attribute
         if (!opp_isempty(channelspec->getLikeParam()))
         {
             channeltypename = parentmodp->par(channelspec->getLikeParam()).stringValue();
         }
         else
         {
-            ExpressionNode *likeParamExpr = findExpression(channelspec, "like-param");
+            ExpressionElement *likeParamExpr = findExpression(channelspec, "like-param");
             ASSERT(likeParamExpr); // either attr or expr must be there
             channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
         }
@@ -833,21 +833,21 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
     return (cChannelType *)componenttype;
 }
 
-ExpressionNode *cNEDNetworkBuilder::findExpression(NEDElement *node, const char *exprname)
+ExpressionElement *cNEDNetworkBuilder::findExpression(NEDElement *node, const char *exprname)
 {
     // find expression with given name in node
     if (!node)
         return NULL;
     for (NEDElement *child=node->getFirstChildWithTag(NED_EXPRESSION); child; child = child->getNextSiblingWithTag(NED_EXPRESSION))
     {
-        ExpressionNode *expr = (ExpressionNode *)child;
+        ExpressionElement *expr = (ExpressionElement *)child;
         if (!strcmp(expr->getTarget(),exprname))
             return expr;
     }
     return NULL;
 }
 
-cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionNode *exprNode, cPar::Type type, bool inSubcomponentScope)
+cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, bool inSubcomponentScope)
 {
     cParValue *p = currentDecl->getCachedExpression(exprNode);
     if (!p)
@@ -860,19 +860,19 @@ cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionNode *exprNode, c
     return p;
 }
 
-long cNEDNetworkBuilder::evaluateAsLong(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
+long cNEDNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     cParValue *p = getOrCreateExpression(exprNode, cPar::LONG, inSubcomponentScope);
     return p->longValue(context);
 }
 
-bool cNEDNetworkBuilder::evaluateAsBool(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
+bool cNEDNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     cParValue *p = getOrCreateExpression(exprNode, cPar::BOOL, inSubcomponentScope);
     return p->boolValue(context);
 }
 
-std::string cNEDNetworkBuilder::evaluateAsString(ExpressionNode *exprNode, cComponent *context, bool inSubcomponentScope)
+std::string cNEDNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     cParValue *p = getOrCreateExpression(exprNode, cPar::STRING, inSubcomponentScope);
     return p->stdstringValue(context);

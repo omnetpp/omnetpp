@@ -76,7 +76,7 @@ bool opt_splitnedfiles = false;    // -u
 //XXX NEDFileCache filecache;
 //XXX NEDClassicImportResolver importresolver;
 
-FilesNode *outputtree;
+FilesElement *outputtree;
 
 
 void printUsage()
@@ -316,22 +316,22 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         {
              if (tree->getTagCode()==NED_NED_FILE || tree->getTagCode()==NED_MSG_FILE)
              {
-                 // wrap the tree into a FilesNode
+                 // wrap the tree into a FilesElement
                  NEDElement *file = tree;
-                 tree = new FilesNode();
+                 tree = new FilesElement();
                  tree->appendChild(file);
              }
 
              if (opt_splitnedfiles)
-                NEDTools::splitToFiles((FilesNode *)tree);
+                NEDTools::splitToFiles((FilesElement *)tree);
 
             for (NEDElement *child=tree->getFirstChild(); child; child=child->getNextSibling())
             {
                 // extract file name
                 if (child->getTagCode()==NED_NED_FILE)
-                    strcpy(outfname, ((NedFileNode *)child)->getFilename());
+                    strcpy(outfname, ((NedFileElement *)child)->getFilename());
                 else if (child->getTagCode()==NED_MSG_FILE)
-                    strcpy(outfname, ((MsgFileNode *)child)->getFilename());
+                    strcpy(outfname, ((MsgFileElement *)child)->getFilename());
                 else
                     continue; // if there's anything else, ignore it
 
@@ -571,7 +571,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-m"))
         {
             opt_mergeoutput = true;
-            outputtree = new FilesNode;
+            outputtree = new FilesElement;
         }
         else if (!strcmp(argv[i],"-o"))
         {
