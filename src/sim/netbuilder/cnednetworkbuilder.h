@@ -57,7 +57,7 @@ class SIM_API cNEDNetworkBuilder
   protected:
     cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
     void addSubmodulesAndConnections(cModule *modp);
-    bool superTypeAllowsUnconnected() const;
+    bool superTypeAllowsUnconnected(cNEDDeclaration *decl) const;
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     cModuleType *findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodname);

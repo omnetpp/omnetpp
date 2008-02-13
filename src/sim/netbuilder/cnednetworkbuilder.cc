@@ -244,6 +244,11 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
     submodMap.clear();
     buildRecursively(modp, decl);
 
+    // check if there are unconnected gates left -- unless unconnected gates were already permitted in the super type
+    ConnectionsNode *conns = decl->getConnectionsNode();
+    if ((!conns || !conns->getAllowUnconnected()) && !superTypeAllowsUnconnected(decl))
+        modp->checkInternalConnections();
+
     // recursively build the submodules too (top-down)
     currentDecl = decl;
     for (cSubModIterator submod(*modp); !submod.end(); submod++)
@@ -291,16 +296,11 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
                 addConnectionOrConnectionGroup(modp, child);
         }
     }
-
-    // check if there are unconnected gates left -- unless unconnected gates were already permitted in the super type
-    if ((!conns || !conns->getAllowUnconnected()) && !superTypeAllowsUnconnected())
-        modp->checkInternalConnections();
 }
 
-bool cNEDNetworkBuilder::superTypeAllowsUnconnected() const
+bool cNEDNetworkBuilder::superTypeAllowsUnconnected(cNEDDeclaration *decl) const
 {
     // follow through the inheritance chain, and return true if we find an "allowunconnected" anywhere
-    cNEDDeclaration *decl = currentDecl;
     while (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
