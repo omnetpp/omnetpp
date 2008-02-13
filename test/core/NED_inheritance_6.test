@@ -84,4 +84,8 @@ void Simple::activity()
 }; //namespace
 
 %contains: stdout
-// TODO:
+Initializing module Test, stage 0
+Initializing module Test.a, stage 0
+Initializing module Test.b, stage 0
+
+Running simulation...

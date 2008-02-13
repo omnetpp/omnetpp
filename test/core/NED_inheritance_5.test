@@ -38,4 +38,8 @@ network Test
 %file: test.cc
 
 %contains: stdout
-// TODO:
+Initializing channel Test.channel, stage 0
+Initializing module Test, stage 0
+Initializing module Test.a, stage 0
+
+Running simulation...

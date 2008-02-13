@@ -35,4 +35,10 @@ network Test extends Super
 %file: test.cc
 
 %contains: stdout
-// TODO:
+Initializing module Test, stage 0
+Initializing module Test.a1, stage 0
+Initializing module Test.a2, stage 0
+Initializing module Test.b1, stage 0
+Initializing module Test.b2, stage 0
+
+Running simulation...
