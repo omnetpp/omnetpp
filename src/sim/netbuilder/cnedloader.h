@@ -65,28 +65,18 @@ class SIM_API cNEDLoader : public NEDResourceCache
     // storage for NED components not resolved yet because of missing dependencies
     std::vector<PendingNedType> pendingList;
 
-    // maps the loaded source NED folders (as absolute paths, canonical representation)
-    // to package names
-    typedef std::map<std::string,std::string> StringMap;
-    StringMap folderPackages;
-
   protected:
     /** Redefined to return a cNEDDeclaration. */
     virtual void addNedType(const char *qname, NEDElement *node);
 
   protected:
     // utility functions
-    virtual void registerBuiltinDeclarations();
-    virtual NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
     virtual bool areDependenciesResolved(const char *qname, NEDElement *node);
     virtual void registerNedTypes();
     virtual void registerNedType(const char *qname, NEDElement *node);
-    virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage);
-    virtual void doLoadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
-    virtual std::string determineRootPackageName(const char *foldername);
 
     // constructor is protected, because we want only one instance
-    cNEDLoader();
+    cNEDLoader()  {}
 
   public:
     /** Access to the singleton instance */
@@ -95,41 +85,14 @@ class SIM_API cNEDLoader : public NEDResourceCache
     /** Disposes of the singleton instance */
     static void clear();
 
+    /** Reimplemented from NEDResourceCache */
+    virtual void doneLoadingNedFiles();
+
     /**
      * Like lookup(), but throws an error if the declaration is not found,
      * so it never returns NULL.
      */
     virtual cNEDDeclaration *getDecl(const char *qname) const;
-
-    /**
-     * Load all NED files from a NED source folder. This involves visiting
-     * each subdirectory, and loading all "*.ned" files from there.
-     * The given folder is assumed to be the root of the NED package hierarchy.
-     * Returns the number of files loaded.
-     */
-    int loadNedSourceFolder(const char *foldername);
-
-    /**
-     * Issues errors for components that are unresolved because of missing
-     * dependencies.
-     */
-    void doneLoadingNedFiles();
-
-    /**
-     * For loading additional NED files after doneLoadingNedFiles().
-     * This method resolves dependencies (base types, etc) immediately,
-     * and throws an error if something is missing. (So this method is
-     * not useful if two or more NED files mutually depend on each other.)
-     * If the expected package is given (non-NULL), it should match the
-     * package declaration inside the NED file.
-     */
-    void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
-
-    /**
-     * Returns the NED package that corresponds to the given folder. Returns ""
-     * for the default package, and "-" if the folder is outside all NED folders.
-     */
-    std::string getNedPackageForFolder(const char *folder) const;
 
     /**
      * Resolves NED module/channel/moduleinterface/channelinterface type name,
@@ -149,12 +112,6 @@ class SIM_API cNEDLoader : public NEDResourceCache
     virtual std::string resolveComponentType(const NEDLookupContext& context, const char *nedtypename) {
         return NEDResourceCache::resolveNedType(context, nedtypename, &ComponentTypeNames());
     }
-
-    /**
-     * Utility method, useful with resolveNedType()/resolveComponentType()
-     */
-    static NEDLookupContext getParentContextOf(const char *qname, NEDElement *node);
-
 };
 
 NAMESPACE_END

@@ -83,7 +83,17 @@ class NEDXML_API NEDResourceCache
     // cached keys of the nedTypes map, for getTypeNames(); zero size means out of date
     mutable std::vector<std::string> nedTypeNames;
 
+    // maps the loaded source NED folders (as absolute paths, canonical representation)
+    // to package names
+    typedef std::map<std::string,std::string> StringMap;
+    StringMap folderPackages;
+
   protected:
+    virtual void registerBuiltinDeclarations();
+    virtual int doLoadNedSourceFolder(const char *foldername, const char *expectedPackage);
+    virtual void doLoadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
+    virtual NEDElement *parseAndValidateNedFile(const char *nedfname, bool isXML);
+    virtual std::string determineRootPackageName(const char *foldername);
     virtual void collectComponents(NEDElement *node, const std::string& namespaceprefix);
 
     /**
@@ -100,11 +110,36 @@ class NEDXML_API NEDResourceCache
     virtual ~NEDResourceCache();
 
     /**
+     * Load all NED files from a NED source folder. This involves visiting
+     * each subdirectory, and loading all "*.ned" files from there.
+     * The given folder is assumed to be the root of the NED package hierarchy.
+     * Returns the number of files loaded.
+     */
+    virtual int loadNedSourceFolder(const char *foldername);
+
+    /**
+     * To be called after all NED folders / files have been loaded. May be redefined 
+     * to issue errors for components that are unresolved because of missing
+     * dependencies.
+     */
+    virtual void doneLoadingNedFiles();
+
+    /**
+     * For loading additional NED files after doneLoadingNedFiles().
+     * This method resolves dependencies (base types, etc) immediately,
+     * and throws an error if something is missing. (So this method is
+     * not useful if two or more NED files mutually depend on each other.)
+     * If the expected package is given (non-NULL), it should match the
+     * package declaration inside the NED file.
+     */
+    virtual void loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML);
+    
+    /**
      * Add a file (parsed into an object tree) to the cache. If the file
      * was already added, no processing takes place and the function
      * returns false; otherwise it returns true.
      */
-    virtual bool addFile(const char *fname, NEDElement *node);
+    virtual bool addFile(const char *fname, NEDElement *node);  //XXX make protected?
 
     /** Get a file (represented as object tree) from the cache */
     virtual NEDElement *getFile(const char *fname);
@@ -120,6 +155,17 @@ class NEDXML_API NEDResourceCache
     
     /** Available NED type names */
     virtual const std::vector<std::string>& getTypeNames() const;
+
+    /**
+     * Returns the NED package that corresponds to the given folder. Returns ""
+     * for the default package, and "-" if the folder is outside all NED folders.
+     */
+    virtual std::string getNedPackageForFolder(const char *folder) const;
+
+    /**
+     * Utility method, useful with resolveNedType()/resolveComponentType()
+     */
+    static NEDLookupContext getParentContextOf(const char *qname, NEDElement *node);
 
 };
 

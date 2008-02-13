@@ -287,10 +287,18 @@ $O/nedparser.obj: nedparser.cc \
 $O/nedresourcecache.obj: nedresourcecache.cc \
   nederror.h \
   nedresourcecache.h \
+  nedparser.h \
+  nedxmlparser.h \
+  neddtdvalidator.h \
+  nedsyntaxvalidator.h \
+  nedsemanticvalidator.h \
   nedelement.h \
   nedxmldefs.h \
   nedelements.h \
-  nedtypeinfo.h
+  nedtypeinfo.h \
+  nedyydefs.h \
+  neddtdvalidatorbase.h \
+  nedvalidator.h
 $O/nedsaxhandler.obj: nedsaxhandler.cc \
   nedsaxhandler.h \
   nedelements.h \

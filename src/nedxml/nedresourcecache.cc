@@ -17,8 +17,14 @@
 #include <string.h>
 #include "nederror.h"
 #include "nedresourcecache.h"
+#include "nedparser.h"
+#include "nedxmlparser.h"
+#include "neddtdvalidator.h"
+#include "nedsyntaxvalidator.h"
+#include "nedsemanticvalidator.h"
 #include "fileutil.h"
 #include "stringutil.h"
+#include "fileglobber.h"
 #include "patternmatcher.h"
 
 USING_NAMESPACE
@@ -34,6 +40,146 @@ NEDResourceCache::~NEDResourceCache()
         delete i->second;
     for (NEDTypeInfoMap::iterator i = nedTypes.begin(); i!=nedTypes.end(); ++i)
         delete i->second;
+}
+
+void NEDResourceCache::registerBuiltinDeclarations()
+{
+    // NED code to define built-in types
+    const char *nedcode = NEDParser::getBuiltInDeclarations();
+
+    NEDErrorStore errors;
+    NEDParser parser(&errors);
+    NEDElement *tree = parser.parseNEDText(nedcode);
+    if (errors.containsError())
+    {
+        delete tree;
+        throw NEDException("error during parsing of internal NED declarations");
+    }
+    //FIXME check errors; run validation perhaps, etc!
+
+    // note: file must be called package.ned so that @namespace("") takes effect
+    addFile("/[builtin-declarations]/package.ned", tree);
+}
+
+NEDElement *NEDResourceCache::parseAndValidateNedFile(const char *fname, bool isXML)
+{
+    // load file
+    NEDElement *tree = 0;
+    NEDErrorStore errors;
+    errors.setPrintToStderr(true); //XXX
+    if (isXML)
+    {
+        tree = parseXML(fname, &errors);
+    }
+    else
+    {
+        NEDParser parser(&errors);
+        parser.setParseExpressions(true);
+        parser.setStoreSource(false);
+        tree = parser.parseNEDFile(fname);
+    }
+    if (errors.containsError())
+    {
+        delete tree;
+        throw NEDException("errors while loading or parsing file `%s'", fname);  //FIXME these errors print relative path????
+    }
+
+    // DTD validation and additional syntax validation
+    NEDDTDValidator dtdvalidator(&errors);
+    dtdvalidator.validate(tree);
+    if (errors.containsError())
+    {
+        delete tree;
+        throw NEDException("errors during DTD validation of file `%s'", fname);
+    }
+
+    NEDSyntaxValidator syntaxvalidator(true, &errors);
+    syntaxvalidator.validate(tree);
+    if (errors.containsError())
+    {
+        delete tree;
+        throw NEDException("errors during validation of file `%s'", fname);
+    }
+    return tree;
+}
+
+int NEDResourceCache::loadNedSourceFolder(const char *foldername)
+{
+    try
+    {
+        std::string canonicalFolderName = tidyFilename(toAbsolutePath(foldername).c_str(), true);
+        std::string rootPackageName = determineRootPackageName(foldername);
+        folderPackages[canonicalFolderName] = rootPackageName;
+        return doLoadNedSourceFolder(foldername, rootPackageName.c_str());
+    }
+    catch (std::exception& e)
+    {
+        throw NEDException("Error loading NED sources from `%s': %s", foldername, e.what());
+    }
+}
+
+int NEDResourceCache::doLoadNedSourceFolder(const char *foldername, const char *expectedPackage)
+{
+    PushDir pushDir(foldername);
+    int count = 0;
+
+    FileGlobber globber("*");
+    const char *filename;
+    while ((filename=globber.getNext())!=NULL)
+    {
+        if (filename[0] == '.')
+        {
+            continue;  // ignore ".", "..", and dotfiles
+        }
+        if (isDirectory(filename))
+        {
+            count += doLoadNedSourceFolder(filename, opp_join(".", expectedPackage, filename).c_str());
+        }
+        else if (opp_stringendswith(filename, ".ned"))
+        {
+            doLoadNedFile(filename, expectedPackage, false);
+            count++;
+        }
+    }
+    return count;
+}
+
+void NEDResourceCache::doLoadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
+{
+    if (getFile(nedfname))
+        return;  // already loaded
+
+    // parse file
+    NEDElement *tree = parseAndValidateNedFile(nedfname, isXML);
+
+    // check that declared package matches expected package
+    PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
+    std::string declaredPackage = packageDecl ? packageDecl->getName() : "";
+    if (declaredPackage != expectedPackage)
+        throw NEDException("NED error in file `%s': declared package `%s' does not match expected package `%s'",
+                           nedfname, declaredPackage.c_str(), expectedPackage);  //FIXME fname misses directory here
+
+    // register it
+    try
+    {
+        addFile(nedfname, tree);
+    }
+    catch (NEDException& e)
+    {
+        throw NEDException("NED error: %s", e.what());
+    }
+}
+
+void NEDResourceCache::doneLoadingNedFiles()
+{
+}
+
+void NEDResourceCache::loadNedFile(const char *nedfname, const char *expectedPackage, bool isXML)
+{
+    //FIXME revise this, and compare with documentation!!!!!!!!
+    //FIXME potentially change it so that one needs to call doneLoadingNedFiles() after it (but then mutually dependent files can be loaded too)
+    doLoadNedFile(nedfname, expectedPackage, isXML);
+    doneLoadingNedFiles();
 }
 
 bool NEDResourceCache::addFile(const char *fname, NEDElement *node)
@@ -115,6 +261,16 @@ void NEDResourceCache::collectComponents(NEDElement *node, const std::string& na
     }
 }
 
+NEDLookupContext NEDResourceCache::getParentContextOf(const char *qname, NEDElement *node)
+{
+    NEDElement *contextnode = node->getParent();
+    if (contextnode->getTagCode()==NED_TYPES)
+        contextnode = contextnode->getParent();
+    const char *lastdot = strrchr(qname, '.');
+    std::string contextqname = !lastdot ? "" : std::string(qname, lastdot-qname);
+    return NEDLookupContext(contextnode, contextqname.c_str());
+}
+
 std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, const char *nedtypename, INEDTypeNames *qnames)
 {
     // note: this method is to be kept consistent with NEDResources.lookupNedType() in the Java code
@@ -179,3 +335,38 @@ const std::vector<std::string>& NEDResourceCache::getTypeNames() const
     }
     return nedTypeNames;
 }
+
+std::string NEDResourceCache::determineRootPackageName(const char *foldername)
+{
+    // determine if a package.ned file exists
+    std::string packageNedFilename = std::string(foldername) + "/package.ned";
+    FILE *f = fopen(packageNedFilename.c_str(), "r");
+    if (!f)
+        return "";
+    fclose(f);
+
+    // read package declaration from it
+    NEDElement *tree = parseAndValidateNedFile(packageNedFilename.c_str(), false);
+    Assert(tree);
+    PackageElement *packageDecl = (PackageElement *)tree->getFirstChildWithTag(NED_PACKAGE);
+    std::string result = packageDecl ? packageDecl->getName() : "";
+    delete tree;
+    return result;
+}
+
+std::string NEDResourceCache::getNedPackageForFolder(const char *folder) const
+{
+    std::string folderName = tidyFilename(toAbsolutePath(folder).c_str(), true);
+    for (StringMap::const_iterator it = folderPackages.begin(); it!=folderPackages.end(); ++it)
+    {
+        if (opp_stringbeginswith(folderName.c_str(), it->first.c_str()))
+        {
+            std::string suffix = folderName.substr(it->first.size());
+            if (suffix[0] == '/') suffix = suffix.substr(1);
+            std::string subpackage = opp_replacesubstring(suffix.c_str(), "/", ".", true);
+            return opp_join(".", it->second.c_str(), subpackage.c_str());
+        }
+    }
+    return "-";
+}
+
