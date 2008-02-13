@@ -3,16 +3,10 @@ Negative test for a value with multiple units in NED.
 
 %file: test.ned
 
-simple Simple
+simple Test
 {
     parameters:
         double p1 = 1h 22s 550ms @unit(s); // values may not have multiple units
-}
-
-network Test
-{
-    submodules:
-        a: Simple;
 }
 
 %file: test.cc
@@ -21,16 +15,16 @@ network Test
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
-void Simple::activity()
+void Test::activity()
 {
    ev << "This should not be printed: " << par("p1").doubleValue() << "\n";
 }

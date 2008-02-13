@@ -4,7 +4,7 @@ Positive test cases for assignments with units in NED.
 %file: test.ned
 
 // unit cases: not provided, SI, non SI, unknown
-simple Simple
+simple Test
 {
     parameters:
         // TODO: swap declaration type and value type
@@ -22,28 +22,22 @@ simple Simple
         double p9 = 9unknown @unit(unknown); // unknown      - unknown
 }
 
-network Test
-{
-    submodules:
-        a: Simple;
-}
-
 %file: test.cc
 
 #include <omnetpp.h>
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
-void Simple::activity()
+void Test::activity()
 {
     for (int i=0; i<params(); i++)
         ev << par(i).name() << "=" << par(i).doubleValue() << "\n";

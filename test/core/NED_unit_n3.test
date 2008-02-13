@@ -4,16 +4,10 @@ Negative test case for assignment with units in NED.
 %file: test.ned
 
 // unit cases: not provided, SI, non SI, unknown
-simple Simple
+simple Test
 {
     parameters:
         double p1 = 1s @unit(unknown); // SI - unknown
-}
-
-network Test
-{
-    submodules:
-        a: Simple;
 }
 
 %file: test.cc
@@ -22,16 +16,16 @@ network Test
 
 namespace {} {
 
-class Simple : public cSimpleModule
+class Test : public cSimpleModule
 {
   public:
-    Simple() : cSimpleModule(16384) { }
+    Test() : cSimpleModule(16384) { }
     virtual void activity();
 };
 
-Define_Module(Simple);
+Define_Module(Test);
 
-void Simple::activity()
+void Test::activity()
 {
    ev << "This should not be printed: " << par("p1").doubleValue() << "\n";
 }
