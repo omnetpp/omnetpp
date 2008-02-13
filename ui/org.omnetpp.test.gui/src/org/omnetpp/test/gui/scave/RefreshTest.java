@@ -1,6 +1,7 @@
 package org.omnetpp.test.gui.scave;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.swt.SWT;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
 import org.omnetpp.test.gui.access.DatasetViewAccess;
@@ -235,12 +236,14 @@ public class RefreshTest extends ScaveFileTestCase {
 	protected void assertBrowseDataPageScalarsTableContent(String[]... content) {
 		BrowseDataPageAccess browseDataPage = editor.ensureBrowseDataPageActive();
 		browseDataPage.ensureScalarsSelected();
+		browseDataPage.sortByTableColumn(BrowseDataPageAccess.FILE_NAME, SWT.UP);
 		browseDataPage.getScalarsTable().assertContent(content);
 	}
 	
 	protected void assertBrowseDataPageVectorsTableContent(String[]... content) {
 		BrowseDataPageAccess browseDataPage = editor.ensureBrowseDataPageActive();
 		browseDataPage.ensureVectorsSelected();
+		browseDataPage.sortByTableColumn(BrowseDataPageAccess.FILE_NAME, SWT.UP);
 		browseDataPage.getVectorsTable().assertContent(content);
 	}
 
@@ -248,6 +251,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		editor.ensureDatasetsPageActive().getDatasetsTree().findTreeItemByContent("dataset.*test-dataset.*").click();
 		datasetView.activateWithMouseClick();
 		datasetView.ensureScalarsPanelActivated();
+		datasetView.sortByTableColumn(DatasetViewAccess.FILE_NAME, SWT.UP);
 		datasetView.getScalarsTable().assertContent(content);
 	}
 	
@@ -255,6 +259,7 @@ public class RefreshTest extends ScaveFileTestCase {
 		editor.ensureDatasetsPageActive().getDatasetsTree().findTreeItemByContent("dataset.*test-dataset.*").click();
 		datasetView.activateWithMouseClick();
 		datasetView.ensureVectorsPanelActivated();
+		datasetView.sortByTableColumn(DatasetViewAccess.FILE_NAME, SWT.UP);
 		datasetView.getVectorsTable().assertContent(content);
 	}
 	

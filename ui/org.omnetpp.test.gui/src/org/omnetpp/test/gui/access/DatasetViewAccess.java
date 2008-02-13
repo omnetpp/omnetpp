@@ -10,10 +10,29 @@ import com.simulcraft.test.gui.access.CompositeAccess;
 import com.simulcraft.test.gui.access.TableAccess;
 import com.simulcraft.test.gui.access.ToolItemAccess;
 import com.simulcraft.test.gui.access.ViewPartAccess;
-import com.simulcraft.test.gui.core.UIStep;
 import com.simulcraft.test.gui.core.InBackgroundThread;
+import com.simulcraft.test.gui.core.UIStep;
 
 public class DatasetViewAccess extends ViewPartAccess {
+	
+	// column names
+	public static final String
+		DIRECTORY = "Dir.*",
+		FILE_NAME = "File.*",
+		CONFIG_NAME = "Config.*",
+		RUN_NUMBER = "Run num.*",
+		RUN_ID = "Run [iI][dD].*",
+		MODULE = "Module.*",
+		NAME = "Name.*",
+		EXPERIMENT = "Experiment.*",
+		MEASUREMENT = "Measurement.*",
+		REPLICATION = "Replication.*",
+		VALUE = "Value.*",
+		COUNT = "Count.*",
+		MEAN = "Mean.*",
+		STDDEV = "St.*[dD]ev.*",
+		MIN = "Min.*",
+		MAX = "Max.*";
 
 	public DatasetViewAccess(IViewPart viewPart) {
 		super(viewPart);
@@ -95,8 +114,23 @@ public class DatasetViewAccess extends ViewPartAccess {
 	}
 	
 	@UIStep
+	public TableAccess getActiveTable() {
+		if (isScalarsPanelActivated())
+			return getScalarsTable();
+		else if (isVectorsPanelActivated())
+			return getVectorsTable();
+		else
+			return null;
+	}
+	
+	@UIStep
 	protected ToolItemAccess findToolButton(String tooltip) {
 		return getViewToolbar().findToolItemWithTooltip(tooltip);
+	}
+	
+	@UIStep
+	public void sortByTableColumn(String columnName, int direction) {
+		getActiveTable().getTableColumn(columnName).sort(direction);
 	}
 	
 	public ToolItemAccess getShowScalarsButton() {

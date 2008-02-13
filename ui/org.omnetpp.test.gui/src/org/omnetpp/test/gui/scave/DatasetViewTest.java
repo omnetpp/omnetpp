@@ -1,5 +1,8 @@
 package org.omnetpp.test.gui.scave;
 
+import static org.omnetpp.test.gui.access.DatasetViewAccess.FILE_NAME;
+
+import org.eclipse.swt.SWT;
 import org.omnetpp.test.gui.access.DatasetViewAccess;
 import org.omnetpp.test.gui.access.DatasetsAndChartsPageAccess;
 
@@ -36,19 +39,21 @@ public class DatasetViewTest extends ScaveFileTestCase {
 		datasetView.assertScalarsPanelActivated();
 		datasetView.getScalarsTable().assertContent(buildScalarsTableContent());
 		datasetView.ensureVectorsPanelActivated();
+		datasetView.sortByTableColumn(FILE_NAME, SWT.UP);
 		datasetView.getVectorsTable().assertEmpty();
 		
 		datasetsPage.getDatasetsTree().findTreeItemByContent("dataset.*vector-dataset.*").click();
 		datasetView.assertVectorsPanelActivated();
 		datasetView.getVectorsTable().assertContent(buildVectorsTableContent());
 		datasetView.ensureScalarsPanelActivated();
+		datasetView.sortByTableColumn(FILE_NAME, SWT.UP);
 		datasetView.getScalarsTable().assertEmpty();
 	}
 	
 	protected String[][] buildScalarsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
-			content[i] = buildScalarsTableRow(2-i);
+			content[i] = buildScalarsTableRow(i+1);
 		return content;
 	}
 	
@@ -72,7 +77,7 @@ public class DatasetViewTest extends ScaveFileTestCase {
 	protected String[][] buildVectorsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
-			content[i] = buildVectorsTableRow(2-i); // TODO sorting
+			content[i] = buildVectorsTableRow(i+1);
 		return content;
 	}
 	
