@@ -71,6 +71,8 @@ import org.omnetpp.scave.model.util.ScaveModelSwitch;
  * @author tomi
  */
 public class DatasetManager {
+	
+	private static final boolean debug = false;
 
 	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem lastItemToProcess, ResultType type) {
 		return getIDListFromDataset(manager, dataset, lastItemToProcess, false, type);
@@ -196,15 +198,29 @@ public class DatasetManager {
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		DataflowManager dataflowManager = builder.build(dataset, lastItemToProcess, true);
 		List<Node> arrayBuilders = builder.getArrayBuilders();
-		dataflowManager.dump();
-		return executeDataflowNetwork(dataflowManager, arrayBuilders, null);
+		if (debug) dataflowManager.dump();
+		XYArray[] result;
+		try {
+			result = executeDataflowNetwork(dataflowManager, arrayBuilders, null);
+		}
+		finally {
+			dataflowManager.delete();
+		}
+		return result;
 	}
 	
 	public static XYArray[] getDataOfVectors(ResultFileManager manager, IDList idlist, IProgressMonitor monitor) {
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
 		DataflowManager dataflowManager = builder.build(idlist);
 		List<Node> arrayBuilders = builder.getArrayBuilders();
-		return executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
+		XYArray[] result;
+		try {
+			result = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
+		}
+		finally {
+			dataflowManager.delete();
+		}
+		return result;
 	}
 	
 	private static XYArray[] executeDataflowNetwork(DataflowManager manager, List<Node> arrayBuilders, IProgressMonitor monitor) {
@@ -250,8 +266,14 @@ public class DatasetManager {
 		XYArray[] dataValues = null;
 		if (dataflowManager != null) {
 			List<Node> arrayBuilders = builder.getArrayBuilders();
-			dataflowManager.dump();
-			dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders, progressMonitor);
+			if (debug) dataflowManager.dump();
+			try {
+				dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders, progressMonitor);
+			}
+			finally {
+				dataflowManager.delete();
+				dataflowManager = null;
+			}
 		}
 		
 		if (progressMonitor != null && progressMonitor.isCanceled())
@@ -263,7 +285,6 @@ public class DatasetManager {
 	}
 	
 	public static Pair<IDList,XYArray[]> readAndComputeVectorData(Dataset dataset, DatasetItem target, ResultFileManager manager, IProgressMonitor monitor) {
-		//TODO update progressMonitor
 		Assert.isNotNull(dataset);
 		
 		DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
@@ -271,8 +292,14 @@ public class DatasetManager {
 		IDList idlist = builder.getDisplayedIDs();
 
 		List<Node> arrayBuilders = builder.getArrayBuilders();
-		dataflowManager.dump();
-		XYArray[] dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
+		if (debug) dataflowManager.dump();
+		XYArray[] dataValues;
+		try {
+			dataValues = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
+		}
+		finally {
+			dataflowManager.delete();
+		}
 		
 		return new Pair<IDList, XYArray[]>(idlist, dataValues);
 	}
@@ -345,8 +372,14 @@ public class DatasetManager {
 
 				if (dataflowManager != null) {
 					List<Node> arrayBuilders = builder.getArrayBuilders();
-					dataflowManager.dump();
-					xyVectors = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
+					if (debug) dataflowManager.dump();
+					try {
+						xyVectors = executeDataflowNetwork(dataflowManager, arrayBuilders, monitor);
+					}
+					finally {
+						dataflowManager.delete();
+						dataflowManager = null;
+					}
 					if (xyVectors != null) {
 						for (int i = 0; i < xyVectors.length; ++i)
 							xyVectors[i].sortByX();

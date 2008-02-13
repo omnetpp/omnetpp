@@ -75,7 +75,13 @@ public class GenerateComputedFileJob extends WorkspaceJob
 				subMonitor = new SubProgressMonitor(monitor, 90);
 			}
 			
-			network.execute(subMonitor);
+			try {
+				network.execute(subMonitor);
+			}
+			finally {
+				network.delete();
+				network = null;
+			}
 			
 			if (monitor != null && monitor.isCanceled())
 				return Status.CANCEL_STATUS;
