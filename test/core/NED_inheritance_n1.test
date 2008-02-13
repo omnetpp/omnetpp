@@ -1,0 +1,39 @@
+%description:
+
+Test incorrect parameter inheritance for module interfaces.
+
+%file: test.ned
+
+moduleinterface IModule
+{
+    parameters:
+        int p1;
+}
+
+simple Test like IModule
+{
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+}
+
+}; //namespace
+
+%contains: stdout
+// TODO:

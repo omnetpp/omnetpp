@@ -1,0 +1,37 @@
+%description:
+
+Test incorrect parameter inheritance for channel interfaces.
+
+%file: test.ned
+
+channelinterface IChannel
+{
+    parameters:
+        int p1;
+}
+
+channel TestChannel extends ned.IdealChannel like IChannel
+{
+}
+
+module Node
+{
+    gates:
+        inout g;
+    connections allowunconnected:
+}
+
+network Test
+{
+    parameters:
+        string aType = "TestChannel";
+    submodules:
+        a: Node;
+    connections:
+        a.g$o --> <aType> like IChannel --> a.g$i;
+}
+
+%file: test.cc
+
+%contains: stdout
+// TODO:
