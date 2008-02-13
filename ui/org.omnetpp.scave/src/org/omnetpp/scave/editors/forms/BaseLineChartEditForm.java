@@ -284,7 +284,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		if (!symbolType.equals(NO_CHANGE))
 			newProps.setProperty(PROP_SYMBOL_TYPE+suffix, isAutoOrEmpty(symbolType) ? null : resolveEnum(symbolType, SymbolType.class).name());
 		if (!symbolSize.equals(NO_CHANGE))
-			newProps.setProperty(PROP_SYMBOL_SIZE+suffix, isAutoOrEmpty(symbolSize) ? null : symbolSize);
+			newProps.setProperty(PROP_SYMBOL_SIZE+suffix, isAutoOrEmpty(symbolSize) ? null : Converter.stringToInteger(symbolSize));
 		if (!lineType.equals(NO_CHANGE))
 			newProps.setProperty(PROP_LINE_TYPE+suffix, isAutoOrEmpty(lineType) ? null : resolveEnum(lineType, LineType.class).name());
 		if (!lineColor.equals(NO_CHANGE))
