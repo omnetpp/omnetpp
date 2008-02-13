@@ -209,27 +209,6 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     virtual cParValue *getCachedExpression(ExpressionElement *expr);
     virtual void putCachedExpression(ExpressionElement *expr, cParValue *value);
     //@}
-
-    /** @name Help for the dynamic builder */
-    //@{
-    ParametersElement *getParametersElement() const;         //XXX
-
-    GatesElement *getGatesElement() const;
-
-    /**
-     * Returns the <submodules> element from the NEDElement tree of this
-     * NED component declaration.
-     * Returns NULL if this declaration doesn't contain submodules.
-     */
-    virtual SubmodulesElement *getSubmodulesElement() const;
-
-    /**
-     * Returns the <connections> element from the NEDElement tree of this
-     * NED component declaration.
-     * Returns NULL if this declaration doesn't contain connections.
-     */
-    virtual ConnectionsElement *getConnectionsElement() const;
-    //@}
 };
 
 NAMESPACE_END

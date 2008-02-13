@@ -49,6 +49,25 @@ NEDElement *NEDTypeInfo::getTree() const
     return tree;
 }
 
+ParametersElement *NEDTypeInfo::getParametersElement() const
+{
+    return (ParametersElement *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
+}
+
+GatesElement *NEDTypeInfo::getGatesElement() const
+{
+    return (GatesElement *)getTree()->getFirstChildWithTag(NED_GATES);
+}
+
+SubmodulesElement *NEDTypeInfo::getSubmodulesElement() const
+{
+    return (SubmodulesElement *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
+}
+
+ConnectionsElement *NEDTypeInfo::getConnectionsElement() const
+{
+    return (ConnectionsElement *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
+}
 
 
 

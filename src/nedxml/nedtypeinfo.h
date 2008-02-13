@@ -53,6 +53,14 @@ class NEDXML_API NEDTypeInfo
 
     /** Returns the raw NEDElement tree representing the component */
     virtual NEDElement *getTree() const;
+
+    /** @name Return one element from the tree */
+    //@{
+    virtual ParametersElement *getParametersElement() const;
+    virtual GatesElement *getGatesElement() const;
+    virtual SubmodulesElement *getSubmodulesElement() const;
+    virtual ConnectionsElement *getConnectionsElement() const;
+    //@}
 };
 
 NAMESPACE_END

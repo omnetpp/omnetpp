@@ -503,26 +503,6 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     prop->setValue(cProperty::DEFAULTKEY, 0, d.toString());
 }
 
-ParametersElement *cNEDDeclaration::getParametersElement() const
-{
-    return (ParametersElement *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
-}
-
-GatesElement *cNEDDeclaration::getGatesElement() const
-{
-    return (GatesElement *)getTree()->getFirstChildWithTag(NED_GATES);
-}
-
-SubmodulesElement *cNEDDeclaration::getSubmodulesElement() const
-{
-    return (SubmodulesElement *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
-}
-
-ConnectionsElement *cNEDDeclaration::getConnectionsElement() const
-{
-    return (ConnectionsElement *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
-}
-
 cParValue *cNEDDeclaration::getCachedExpression(ExpressionElement *expr)
 {
     ExpressionMap::const_iterator it = expressionMap.find(expr->getId());
