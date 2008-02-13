@@ -245,7 +245,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
     buildRecursively(modp, decl);
 
     // check if there are unconnected gates left -- unless unconnected gates were already permitted in the super type
-    ConnectionsNode *conns = decl->getConnectionsNode();
+    ConnectionsElement *conns = decl->getConnectionsElement();
     if ((!conns || !conns->getAllowUnconnected()) && !superTypeAllowsUnconnected(decl))
         modp->checkInternalConnections();
 
