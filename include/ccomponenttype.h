@@ -19,7 +19,6 @@
 #include "cownedobject.h"
 #include "cpar.h"
 #include "cgate.h"
-#include "cneddeclarationbase.h"
 
 NAMESPACE_BEGIN
 
@@ -43,7 +42,6 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
   protected:
     std::string qualifiedName;
-    std::string desc;  //FIXME should be removed (delegate getter to NED decl!)
     cParValueCache parvaluecache;
     cParValueCache2 parvaluecache2;
   public:
@@ -52,14 +50,38 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // internal use
     cParValueCache2 *parValueCache2() {return &parvaluecache2;}
 
+  protected:
+    friend class cComponent;
+    friend class cPar;
+    friend class cGate;
+    
+    // internal: returns the properties for this component.
+    virtual cProperties *properties() const = 0;
+
+    // internal: returns the properties of parameter
+    virtual cProperties *paramProperties(const char *paramName) const = 0;
+
+    // internal: returns the properties of gate
+    virtual cProperties *gateProperties(const char *gateName) const = 0;
+
+    // internal: returns the properties of a submodule or a contained channel.
+    // (Subcomponent type is needed because with the NED "like" syntax,
+    // we need the runtime type not the NED type of the submodule.)
+    virtual cProperties *subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const = 0;
+
+    // internal: returns the properties of a parameter of a submodule or a contained channel.
+    virtual cProperties *subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const = 0;
+
+    // internal: returns the properties of a submodule gate.
+    virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const = 0;
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{
     /**
-     * Constructor. Takes the fully qualified component name plus an optional
-     * description string.
+     * Constructor. Takes the fully qualified component type name.
      */
-    cComponentType(const char *qname=NULL, const char *description=NULL);
+    cComponentType(const char *qname=NULL);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -69,48 +91,17 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
      * with the package name and any existing enclosing NED type names).
      */
     virtual const char *fullName() const  {return qualifiedName.c_str();}
-
-    /**
-     * Produces a one-line description of object contents.
-     * See cObject for more details.
-     */
-    virtual std::string info() const;
     //@}
 
-    /** @name Extra information */
-    //@{
     /**
-     * Sets a description string.
-     * FIXME why not delegate this too?
-     */
-    void setDescription(const char *s)  {desc = s?s:"";}
-
-    /**
-     * Returns a description string.
-     * FIXME the comment from the NED file or what?
-     */
-    const char *description() const  {return desc.c_str();}
-
-    /**
-     * Returns the NED declaration as text, if available.
-     */
-    virtual cNEDDeclarationBase *declaration() const = 0;
-    //@}
-
-    //FIXME comment
-    static cProperties *getPropertiesFor(const cComponent *component);
-    static cProperties *getPropertiesFor(const cPar *par);
-    static cProperties *getPropertiesFor(const cGate *gate);
-
-    /**
-     * Find a component type by fully qualified name.
+     * Find a component type by fully qualified name. Returns NULL if not found.
      */
     static cComponentType *find(const char *qname);
 
     /**
      * Performs lookup of a name that occurs in a context. First looks into the
      * context namespace, then searches up by discarding the last elements of
-     * the context one by one.
+     * the context one by one. Returns NULL if not found.
      */
     static cComponentType *find(const char *name, const char *contextNamespace);
 };
@@ -170,7 +161,7 @@ class SIM_API cModuleType : public cComponentType
     /**
      * Constructor.
      */
-    cModuleType(const char *qname=NULL, const char *description=NULL);
+    cModuleType(const char *qname=NULL);
     //@}
 
     /** @name Misc */
@@ -261,7 +252,7 @@ class SIM_API cChannelType : public cComponentType
     /**
      * Constructor.
      */
-    cChannelType(const char *qname=NULL, const char *description=NULL);
+    cChannelType(const char *qname=NULL);
 
     /** @name Channel object creation */
     //@{

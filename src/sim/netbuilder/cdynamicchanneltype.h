@@ -39,6 +39,14 @@ class SIM_API cDynamicChannelType : public cChannelType
     // internal utility function
     cNEDDeclaration *getDecl() const;
 
+    // methods redefined from cComponentType
+    virtual cProperties *properties() const;
+    virtual cProperties *paramProperties(const char *paramName) const;
+    virtual cProperties *gateProperties(const char *gateName) const;
+    virtual cProperties *subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const;
+    virtual cProperties *subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const;
+    virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const;
+
   public:
     /**
      * Constructor.
@@ -55,12 +63,6 @@ class SIM_API cDynamicChannelType : public cChannelType
      */
     virtual std::string detailedInfo() const;
     //@}
-
-    /**
-     * Returns the NED text, if available.
-     */
-    virtual cNEDDeclarationBase *declaration() const {return getDecl();} //XXX
-
 };
 
 

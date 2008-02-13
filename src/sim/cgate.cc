@@ -170,7 +170,15 @@ int cGate::index() const
 
 cProperties *cGate::properties() const
 {
-    return cComponentType::getPropertiesFor(this);
+    cComponent *component = check_and_cast<cComponent *>(owner());
+    cComponentType *componentType = component->componentType();
+    cModule *parent = component->parentModule();
+    cProperties *props;
+    if (parent)
+        props = parent->componentType()->subcomponentGateProperties(component->name(), componentType->fullName(), baseName());
+    else
+        props = componentType->gateProperties(baseName());
+    return props;
 }
 
 void cGate::take(cChannel *channelp)

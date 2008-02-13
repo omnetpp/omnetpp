@@ -45,6 +45,14 @@ class SIM_API cDynamicModuleType : public cModuleType
     // internal utility function
     cNEDDeclaration *getDecl() const;
 
+    // methods redefined from cComponentType
+    virtual cProperties *properties() const;
+    virtual cProperties *paramProperties(const char *paramName) const;
+    virtual cProperties *gateProperties(const char *gateName) const;
+    virtual cProperties *subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const;
+    virtual cProperties *subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const;
+    virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const;
+    
   public:
     /**
      * Constructor.
@@ -65,12 +73,6 @@ class SIM_API cDynamicModuleType : public cModuleType
      * Returns true if the module type was declared with the "network" keyword.
      */
     virtual bool isNetwork() const;
-
-    /**
-     * Returns the NED declaration
-     */
-    virtual cNEDDeclarationBase *declaration() const {return getDecl();}  //XXX merge the two funcs
-
 };
 
 NAMESPACE_END

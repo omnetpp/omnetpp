@@ -274,9 +274,7 @@ $O/filemgrs.obj: filemgrs.cc \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h
+  ../../include/cexpression.h
 $O/fsutils.obj: fsutils.cc \
   fsutils.h \
   ../../include/onstartup.h \
@@ -485,8 +483,6 @@ $O/omnetapp.obj: omnetapp.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   matchablefield.h \

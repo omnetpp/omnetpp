@@ -139,7 +139,6 @@ $O/inspector.obj: inspector.cc \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -230,7 +229,6 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -315,17 +313,15 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/globals.h \
-  ../../include/cparvalue.h \
-  ../../include/onstartup.h \
-  ../../include/cclassfactory.h \
-  ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/cfunction.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/cexpression.h \
   tkutil.h \
   tkdefs.h
 $O/modinsp.obj: modinsp.cc \
@@ -374,11 +370,9 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponenttype.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
-  ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
+  ../../include/cexpression.h \
   tkutil.h \
   tkdefs.h
 $O/objinsp.obj: objinsp.cc \
@@ -424,7 +418,6 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -557,8 +550,6 @@ $O/tkapp.obj: tkapp.cc \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
   ../../include/platdep/timeutil.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   tkutil.h \
@@ -615,8 +606,6 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
@@ -699,8 +688,6 @@ $O/visitor.obj: visitor.cc \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
   ../../include/ccomponenttype.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   tkapp.h \
   tkdefs.h
 $O/tkImgPNG.obj: tkImgPNG.c

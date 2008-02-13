@@ -21,6 +21,7 @@
 #include "cproperty.h"
 #include "ccomponent.h"
 #include "ccomponenttype.h"
+#include "cmodule.h"
 #include "csimulation.h"
 #include "unitconversion.h"
 #include "commonutil.h"
@@ -113,7 +114,15 @@ void cPar::operator=(const cPar& other)
 
 cProperties *cPar::properties() const
 {
-    return cComponentType::getPropertiesFor(this);
+    cComponent *component = check_and_cast<cComponent *>(owner());
+    cComponentType *componentType = component->componentType();
+    cModule *parent = component->parentModule();
+    cProperties *props;
+    if (parent)
+        props = parent->componentType()->subcomponentParamProperties(component->name(), componentType->fullName(), name());
+    else
+        props = componentType->paramProperties(name());
+    return props;
 }
 
 const char *cPar::typeName(Type t)

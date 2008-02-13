@@ -38,7 +38,7 @@ cNEDDeclaration::cNEDDeclaration(const char *qname, NEDElement *tree) : NEDTypeI
         case NED_MODULE_INTERFACE: type = MODULEINTERFACE; break;
         case NED_CHANNEL: type = CHANNEL; break;
         case NED_CHANNEL_INTERFACE: type = CHANNELINTERFACE; break;
-        default: throw cRuntimeError(this, "Internal error: element of wrong type (<%s>) passed into constructor", tree->getTagName());
+        default: throw cRuntimeError("cNEDDeclaration: element of wrong type (<%s>) passed into constructor", tree->getTagName());
     }
     bool isInterface = type==MODULEINTERFACE || type==CHANNELINTERFACE;
 
@@ -117,13 +117,6 @@ cNEDDeclaration::~cNEDDeclaration()
     clearPropsMap(subcomponentGatePropsMap);
     //XXX printf("%s: %d cached expressions\n", name(), expressionMap.size());
     clearExpressionMap(expressionMap);
-}
-
-void cNEDDeclaration::setName(const char *s)
-{
-    //XXX instead of this, add name locking feature to cNamedObject and use that
-    // (it'll be useful with modules, gates, params, coutvectors etc too!)
-    throw cRuntimeError(this, "Changing the name is not allowed");
 }
 
 std::string cNEDDeclaration::getPackage() const
@@ -213,30 +206,6 @@ std::string cNEDDeclaration::info() const
     return out.str();
 }
 
-std::string cNEDDeclaration::detailedInfo() const
-{
-    std::stringstream out;
-    out << "Name: " << name();
-    if (numExtendsNames()>0)
-    {
-        out << "extends ";
-        for (int i=0; i<numExtendsNames(); i++)
-            out << (i?", ":"") << extendsName(i);
-        out << "  ";
-    }
-
-    if (numInterfaceNames()>0)
-    {
-        out << "like ";
-        for (int i=0; i<numInterfaceNames(); i++)
-            out << (i?", ":"") << interfaceName(i);
-        out << "  ";
-    }
-    if (!implClassName.empty())
-        out << "\nC++ class: " << implClassName << "\n";
-    return out.str();
-}
-
 std::string cNEDDeclaration::nedSource() const
 {
     std::stringstream out;
@@ -248,7 +217,7 @@ std::string cNEDDeclaration::nedSource() const
 const char *cNEDDeclaration::interfaceName(int k) const
 {
     if (k<0 || k>=(int)interfacenames.size())
-        throw cRuntimeError(this, "interface index %d out of range 0..%d", k, interfacenames.size()-1);
+        throw cRuntimeError("cNEDDeclaration: interface index %d out of range 0..%d", k, interfacenames.size()-1);
     return interfacenames[k].c_str();
 }
 
@@ -264,7 +233,7 @@ bool cNEDDeclaration::supportsInterface(const char *qname)
 const char *cNEDDeclaration::extendsName(int k) const
 {
     if (k<0 || k>=(int)extendsnames.size())
-        throw cRuntimeError(this, "extendsName(): index %d out of range 0..%d", k, extendsnames.size()-1);
+        throw cRuntimeError("cNEDDeclaration: extendsName(): index %d out of range 0..%d", k, extendsnames.size()-1);
     return extendsnames[k].c_str();
 }
 

@@ -25,7 +25,6 @@
 #include "cownedobject.h"
 #include "cparvalue.h"
 #include "cgate.h"
-#include "cneddeclarationbase.h"
 #include "cproperties.h"
 #include "cproperty.h"
 
@@ -55,8 +54,8 @@ NAMESPACE_BEGIN
  *
  * @ingroup Internals
  */
-//XXX this is like NedTypeInfo? except for ExpressionMap, PropertiesMap etc
-class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo // noncopyable
+//XXX move more stuff into the base class NEDTypeInfo? except for ExpressionMap, PropertiesMap etc
+class SIM_API cNEDDeclaration : public NEDTypeInfo
 {
   public:
     enum Type {SIMPLE_MODULE, COMPOUND_MODULE, MODULEINTERFACE, CHANNEL, CHANNELINTERFACE};
@@ -117,37 +116,6 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     virtual ~cNEDDeclaration();
     //@}
 
-    /** @name Redefined cObject member functions */
-    //@{
-
-    /**
-     * Returns the fully qualified name (i.e. the simple name prefixed
-     * with the package name and any existing enclosing NED type names).
-     */
-    virtual const char *name() const  {return NEDTypeInfo::name();}
-
-    /**
-     * Returns the fully qualified name (i.e. the simple name prefixed
-     * with the package name and any existing enclosing NED type names).
-     */
-    virtual const char *fullName() const  {return NEDTypeInfo::fullName();}
-
-    /**
-     * Changing the name is not possible after creation.
-     */
-    virtual void setName(const char *s);
-
-    /**
-     * Produces a one-line description of object contents.
-     */
-    virtual std::string info() const;
-
-    /**
-     * Returns detailed info including gates and parameters in a multi-line string.
-     */
-    virtual std::string detailedInfo() const;
-    //@}
-
     /**
      * Returns the type of this declaration: simple module, compound module,
      * channel, etc.
@@ -161,7 +129,12 @@ class SIM_API cNEDDeclaration : public cNEDDeclarationBase, public NEDTypeInfo /
     virtual std::string getPackage() const;
 
     /**
-     * NED declaration
+     * Returns a one-line summary (base class, implemented interfaces, etc)
+     */
+    virtual std::string info() const;
+
+    /**
+     * Returns the NED declaration.
      */
     virtual std::string nedSource() const;
 

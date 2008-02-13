@@ -39,15 +39,15 @@ std::string cDynamicModuleType::info() const
 
 std::string cDynamicModuleType::detailedInfo() const
 {
-    return getDecl()->detailedInfo();
+    return getDecl()->nedSource();
 }
 
 cNEDDeclaration *cDynamicModuleType::getDecl() const
 {
-    // do store the pointer, because the declaration object
-    // may have been thrown NEDLoader to conserve memory
+    // do not store the pointer, because the declaration object may have been 
+    // thrown out of cNEDLoader to conserve memory
     cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(fullName());
-    //FIXME assert that it's a module decl
+    ASSERT(decl->getType()==cNEDDeclaration::SIMPLE_MODULE || decl->getType()==cNEDDeclaration::COMPOUND_MODULE);
     return decl;
 }
 
@@ -84,4 +84,39 @@ void cDynamicModuleType::buildInside(cModule *module)
     cNEDNetworkBuilder().buildInside(module, decl);
 }
 
+cProperties *cDynamicModuleType::properties() const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->properties();
+}
+
+cProperties *cDynamicModuleType::paramProperties(const char *paramName) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->paramProperties(paramName);
+}
+
+cProperties *cDynamicModuleType::gateProperties(const char *gateName) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->paramProperties(gateName);
+}
+
+cProperties *cDynamicModuleType::subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->subcomponentProperties(subcomponentName, subcomponentType);
+}
+
+cProperties *cDynamicModuleType::subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->subcomponentParamProperties(subcomponentName, subcomponentType, paramName);
+}
+
+cProperties *cDynamicModuleType::subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->subcomponentParamProperties(subcomponentName, subcomponentType, gateName);
+}
 

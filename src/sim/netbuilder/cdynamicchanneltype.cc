@@ -32,10 +32,10 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 
 cNEDDeclaration *cDynamicChannelType::getDecl() const
 {
-    // do store the pointer, because the declaration object
-    // may have been thrown NEDLoader to conserve memory
+    // do not store the pointer, because the declaration object may have been 
+    // thrown out of cNEDLoader to conserve memory
     cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(fullName());
-    //FIXME assert that it's a channel decl
+    ASSERT(decl->getType()==cNEDDeclaration::CHANNEL);
     return decl;
 }
 
@@ -46,7 +46,7 @@ std::string cDynamicChannelType::info() const
 
 std::string cDynamicChannelType::detailedInfo() const
 {
-    return getDecl()->detailedInfo();
+    return getDecl()->nedSource();
 }
 
 cChannel *cDynamicChannelType::createChannelObject()
@@ -59,5 +59,39 @@ void cDynamicChannelType::addParametersTo(cChannel *channel)
 {
     cNEDDeclaration *decl = getDecl();
     cNEDNetworkBuilder().addParametersTo(channel, decl);
+}
+
+cProperties *cDynamicChannelType::properties() const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->properties();
+}
+
+cProperties *cDynamicChannelType::paramProperties(const char *paramName) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->paramProperties(paramName);
+}
+
+cProperties *cDynamicChannelType::gateProperties(const char *gateName) const
+{
+    throw cRuntimeError("cDynamicChannelType::gateProperties(): channels have no gates");
+}
+
+cProperties *cDynamicChannelType::subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->subcomponentProperties(subcomponentName, subcomponentType);
+}
+
+cProperties *cDynamicChannelType::subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->subcomponentParamProperties(subcomponentName, subcomponentType, paramName);
+}
+
+cProperties *cDynamicChannelType::subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const
+{
+    throw cRuntimeError("cDynamicChannelType::subcomponentGateProperties(): channels have no gates");
 }
 

@@ -194,8 +194,6 @@ $O/cbasicchannel.obj: cbasicchannel.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/carray.h \
   ../../include/cmsgpar.h \
@@ -256,8 +254,6 @@ $O/cchannel.obj: cchannel.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/carray.h \
   ../../include/cmsgpar.h \
@@ -344,6 +340,7 @@ $O/ccommbuffer.obj: ccommbuffer.cc \
 $O/ccomponent.obj: ccomponent.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
+  ../../include/cmodule.h \
   ../../include/cproperties.h \
   ../../include/cpar.h \
   ../../include/cparvalue.h \
@@ -367,11 +364,13 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cgate.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/globals.h \
+  ../../include/csimulation.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
   ../../include/cexpression.h
 $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/ccomponenttype.h \
@@ -385,7 +384,6 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cgate.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -398,7 +396,6 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
-  ../../include/cparvalue.h \
   ../../include/ccomponent.h \
   ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
@@ -440,8 +437,6 @@ $O/ccompoundmodule.obj: ccompoundmodule.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h
 $O/cconfigkey.obj: cconfigkey.cc \
@@ -790,9 +785,7 @@ $O/cgate.obj: cgate.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
-  ../../include/cclassfactory.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h
+  ../../include/cclassfactory.h
 $O/chasher.obj: chasher.cc \
   ../../include/chasher.h \
   ../../include/simkerneldefs.h \
@@ -1050,8 +1043,6 @@ $O/cmodule.obj: cmodule.cc \
   ../../include/cfunction.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h
 $O/cmsgheap.obj: cmsgheap.cc \
@@ -1235,6 +1226,7 @@ $O/cpar.obj: cpar.cc \
   ../../include/cproperty.h \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
+  ../../include/cmodule.h \
   ../../include/csimulation.h \
   ../../include/ccommbuffer.h \
   ../../include/cownedobject.h \
@@ -1259,7 +1251,6 @@ $O/cpar.obj: cpar.cc \
   ../../include/cclassfactory.h \
   ../../include/cdefaultlist.h \
   ../../include/cgate.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
 $O/cparsimcomm.obj: cparsimcomm.cc \
@@ -1520,7 +1511,6 @@ $O/csimulation.obj: csimulation.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/timeutil.h \
   ../../include/opp_string.h \
-  ../../include/cneddeclarationbase.h \
   netbuilder/cneddeclaration.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h
@@ -1874,9 +1864,7 @@ $O/globals.obj: globals.cc \
   ../../include/regmacros.h \
   ../../include/cpar.h \
   ../../include/cgate.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cexpression.h \
-  ../../include/cparvalue.h
+  ../../include/cexpression.h
 $O/lex.expryy.obj: lex.expryy.cc \
   expryydefs.h \
   ../../include/cexception.h \
@@ -1998,7 +1986,6 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -2114,9 +2101,7 @@ $O/util.obj: util.cc \
   ../../include/cdensity.h \
   ../../include/cstat.h \
   ../../include/cchannel.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h
+  ../../include/ccomponenttype.h
 $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   netbuilder/cdynamicchanneltype.h \
   netbuilder/cnedloader.h \
@@ -2144,14 +2129,13 @@ $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/globals.h \
   ../../include/cparvalue.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
-  ../../include/cclassfactory.h \
-  ../../include/cproperties.h \
-  ../../include/cproperty.h
+  ../../include/cclassfactory.h
 $O/netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   netbuilder/cdynamicmoduletype.h \
   netbuilder/cneddeclaration.h \
@@ -2187,7 +2171,6 @@ $O/netbuilder/cdynamicmoduletype.obj: netbuilder/cdynamicmoduletype.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h
@@ -2232,7 +2215,6 @@ $O/netbuilder/cneddeclaration.obj: netbuilder/cneddeclaration.cc \
   ../../include/globals.h \
   ../../include/cownedobject.h \
   ../../include/cparvalue.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cproperty.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
@@ -2279,7 +2261,6 @@ $O/netbuilder/cnedloader.obj: netbuilder/cnedloader.cc \
   ../../include/cownedobject.h \
   ../../include/cparvalue.h \
   ../../include/cgate.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/errmsg.h \
@@ -2341,7 +2322,6 @@ $O/netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cparvalue.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
@@ -2390,9 +2370,7 @@ $O/parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h
+  ../../include/ccomponenttype.h
 $O/parsim/ccommbufferbase.obj: parsim/ccommbufferbase.cc \
   parsim/ccommbufferbase.h \
   ../../include/cexception.h \
@@ -2574,9 +2552,7 @@ $O/parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h
+  ../../include/ccomponenttype.h
 $O/parsim/cmemcommbuffer.obj: parsim/cmemcommbuffer.cc \
   parsim/cmemcommbuffer.h \
   ../../include/util.h \
@@ -2755,9 +2731,7 @@ $O/parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/cscheduler.h \
   ../../include/platdep/timeutil.h \
   parsim/cnmplookahead.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h
+  ../../include/ccomponenttype.h
 $O/parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/cmessage.h \
   ../../include/errmsg.h \

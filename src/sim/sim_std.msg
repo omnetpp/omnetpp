@@ -158,21 +158,8 @@ class cCompoundModule extends cModule
 
 //----
 
-class cNEDDeclarationBase extends cNamedObject
-{
-        @omitGetVerb(true);
-        //XXX string extendsName @getter(extendsName) @hint(the component it extends);
-        //XXX string interfaceNames[] @getter(interfaceName) @sizeGetter(numInterfaceNames) @hint(the interfaces it implements using the 'like' keyword);
-        string implementationClass @getter(implementationClassName) @hint(the underlying C++ class that provides active behaviour);
-        string nedSource @hint(the NED source code, if available);
-}
-
-
 class cComponentType extends cNoncopyableOwnedObject
 {
-        @omitGetVerb(true);
-        string description @group(general); //XXX what's this
-        cNEDDeclarationBase *declaration @hint(the NED declaration of the component);
 }
 
 class cModuleType extends cComponentType

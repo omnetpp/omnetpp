@@ -28,57 +28,12 @@
 
 USING_NAMESPACE
 
-cComponentType::cComponentType(const char *qname, const char *description) : cNoncopyableOwnedObject(qname,false)
+cComponentType::cComponentType(const char *qname) : cNoncopyableOwnedObject(qname,false)
 {
     // store fully qualified name, and set name to simple (unqualified) name
     qualifiedName = qname;
     const char *lastDot = strrchr(qname, '.');
     setName(!lastDot ? qname : lastDot + 1);
-
-    setDescription(description);
-}
-
-std::string cComponentType::info() const
-{
-    return desc;
-}
-
-cProperties *cComponentType::getPropertiesFor(const cComponent *component)
-{
-    cModule *parent = component->parentModule();
-    cProperties *props;
-    if (parent)
-        props = parent->componentType()->declaration()->subcomponentProperties(
-            component->name(), component->componentType()->fullName());
-    else
-        props = component->componentType()->declaration()->properties();
-    return props;
-}
-
-cProperties *cComponentType::getPropertiesFor(const cPar *par)
-{
-    cComponent *component = check_and_cast<cComponent *>(par->owner());
-    cModule *parent = component->parentModule();
-    cProperties *props;
-    if (parent)
-        props = parent->componentType()->declaration()->subcomponentParamProperties(
-            component->name(), component->componentType()->fullName(), par->name());
-    else
-        props = component->componentType()->declaration()->paramProperties(par->name());
-    return props;
-}
-
-cProperties *cComponentType::getPropertiesFor(const cGate *gate)
-{
-    cComponent *component = check_and_cast<cComponent *>(gate->owner());
-    cModule *parent = component->parentModule();
-    cProperties *props;
-    if (parent)
-        props = parent->componentType()->declaration()->subcomponentGateProperties(
-            component->name(), component->componentType()->fullName(), gate->baseName());
-    else
-        props = component->componentType()->declaration()->gateProperties(gate->baseName());
-    return props;
 }
 
 cComponentType *cComponentType::find(const char *qname)
@@ -93,7 +48,7 @@ cComponentType *cComponentType::find(const char *name, const char *contextNamesp
 
 //----
 
-cModuleType::cModuleType(const char *name, const char *description) : cComponentType(name, description)
+cModuleType::cModuleType(const char *name) : cComponentType(name)
 {
 }
 
@@ -191,7 +146,7 @@ cModuleType *cModuleType::find(const char *name, const char *contextNamespace)
 
 //----
 
-cChannelType::cChannelType(const char *name, const char *description) : cComponentType(name, description)
+cChannelType::cChannelType(const char *name) : cComponentType(name)
 {
 }
 
