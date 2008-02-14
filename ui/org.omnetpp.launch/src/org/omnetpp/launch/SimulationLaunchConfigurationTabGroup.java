@@ -9,12 +9,12 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.omnetpp.launch.tabs.OmnetppMainTab;
 
 /**
- * TODO add documentation
+ * Defines the tab group for OMNeT simulation specific launches
  *
  * @author rhornig
  */
 public class SimulationLaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
-
+	
     public SimulationLaunchConfigurationTabGroup() {
     }
 

@@ -120,13 +120,6 @@ public class LaunchPlugin extends AbstractUIPlugin {
     public static IPath getWorkingDirectoryPath(ILaunchConfiguration config){
         String location = "${workspace_loc}";
         try {
-            // get the working directory. the default will be the project root of the currently selected exe file
-            String projname = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, "");
-            String progname = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
-            if (StringUtils.isNotBlank(projname) && StringUtils.isNotBlank(progname))
-                location = "${project_loc:/"+projname+"/"+progname+"}";
-            if (StringUtils.isBlank(projname) && StringUtils.isNotBlank(progname))
-                location = "${container_loc:/"+progname+"}";
             location = config.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, location);
 
             if (location != null) {
@@ -262,7 +255,8 @@ public class LaunchPlugin extends AbstractUIPlugin {
                  return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(stringBuffer.toString(), "Number of runs:", "End run of OMNeT++"));
 
         } catch (CoreException e) {
-            LaunchPlugin.logError("Error starting the executable", e);
+            // LaunchPlugin.logError("Error starting the executable", e);
+        	// its not a big deal if we cannot start the simulation. dont put anything in the log
         } catch (IOException e) {
             LaunchPlugin.logError("Error getting output stream from the executable", e);
         } catch (InterruptedException e) {

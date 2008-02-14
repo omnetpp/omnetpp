@@ -7,10 +7,6 @@
             id="org.omnetpp.launch.simulationLaunchConfigurationType"
             name="OMNEST/OMNeT++ Simulation"
             public="true">
-         <fileExtension
-               default="true"
-               extension="ini">
-         </fileExtension>
       </launchConfigurationType>
    </extension>
    <extension
