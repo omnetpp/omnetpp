@@ -57,26 +57,5 @@
             name="Configuration Launcher">
       </editor>
    </extension>
-   <extension
-         point="org.eclipse.debug.ui.launchShortcuts">
-<shortcut
-      class="org.omnetpp.launch.SimulationShortcut"
-      icon="icons/full/ctool16/omnetsim.gif"
-      id="org.omnetpp.launch.shortcut"
-      label="OMNeT++ Simulation..."
-      modes="run, debug">
-         <contextualLaunch>
-           <enablement>
-             <with variable="selection">
-               <count value="1"/>
-               <iterate>
-                 <test property="org.eclipse.debug.ui.matchesPattern" value="*.ini"/>
-               </iterate>
-             </with>
-           </enablement>
-  		 </contextualLaunch>
-      </shortcut>   
-      
-    </extension>
 
 </plugin>

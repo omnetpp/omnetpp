@@ -65,8 +65,6 @@ import org.omnetpp.launch.LaunchPlugin;
 public class OmnetppMainTab extends AbstractLaunchConfigurationTab 
     implements ModifyListener {
 
-	private ILaunchConfiguration config;
-
 	// UI widgets
 	protected Text fProgText;
 	protected Button fShowDebugViewButton;
@@ -77,8 +75,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     private Text workingDirText = null;
 
     // simulation parameters group
-    protected final String DEFAULT_RUNTOOLTIP= "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for ALL runs) (default: 0)";
-	// UI widgets
+    protected String runTooltip;
+	// configuration
 	protected Text fInifileText;
 	protected Combo fConfigCombo;
     protected Text fRunText;
@@ -91,15 +89,20 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     protected Text fOtherEnvText;
     protected Text fLibraryText;
     protected Text fAdditionalText;
+    
+	private ILaunchConfiguration config;
+	private boolean updateDialogStateInProgress = false;
     private boolean debugLaunchMode = false;
     private String infoText = null;
-    
+
     public OmnetppMainTab() {
         super();
     }
 
     public void createControl(Composite parent) {
         debugLaunchMode = ILaunchManager.DEBUG_MODE.equals(getLaunchConfigurationDialog().getMode());
+        runTooltip = debugLaunchMode ? "The run number that should be executed (default: 0)"
+        				: "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for ALL runs) (default: 0)";
         Composite comp = SWTFactory.createComposite(parent, 1, 1, GridData.FILL_HORIZONTAL);
         createWorkingDirGroup(comp, 1);
 		createSimulationGroup(comp, 1);
@@ -115,7 +118,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
     public void initializeFrom(ILaunchConfiguration config) {
     	this.config = config;
-        
         try {
         	// working directory init
         	String wd = config.getAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, "");
@@ -205,15 +207,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
                 }
             }
             fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
-            updateUIGroup();
-            updateConfigCombo();
+            updateDialogState();
             setConfigName(configArg.trim());
 
             if (debugLaunchMode) {
-				// if this is a debug launch the value from the command line
-                fRunText.setText(runArg.trim());
+                fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN_FOR_DEBUG, ""));
 			} else
-                // otherwise we get it from a separate attribute
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.ATTR_RUN, ""));
 
             if (fParallelismSpinner != null)
@@ -228,7 +227,11 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     /**
      * Fills the config combo with the config section values from the inifiles 
      */
-    protected void updateConfigCombo() {
+    protected void updateDialogState() {
+    	if (updateDialogStateInProgress)
+    		return;
+    	updateDialogStateInProgress = true;
+    	// update the confog combo
         IFile[] inifiles = getIniFiles();
         if (config == null || inifiles == null)
             fConfigCombo.setItems(new String[] {});
@@ -241,21 +244,20 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
                 setConfigName(currentSelection);
             }
         }
-    }
-
-    /**
-     * updates the control states in the UI group
-     */
-    private void updateUIGroup() {
+        // update the UI (env) state
         if (!fOtherEnvButton.getSelection())
-            fOtherEnvText.setText("");
+        	fOtherEnvText.setText("");
         fOtherEnvText.setEnabled(fOtherEnvButton.getSelection());
 
         if (fParallelismSpinner != null) {
-            fParallelismSpinner.setEnabled(fCmdEnvButton.getSelection());
-            if (!fCmdEnvButton.getSelection())
-                fParallelismSpinner.setSelection(1);
+        	fParallelismSpinner.setEnabled(fCmdEnvButton.getSelection());
+        	if (!fCmdEnvButton.getSelection())
+        		fParallelismSpinner.setSelection(1);
         }
+
+        // update the state of apply and other system buttons
+        updateLaunchConfigurationDialog();
+    	updateDialogStateInProgress = false;
     }
 
     /**
@@ -430,16 +432,15 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 		else
 			arg += "-n "+getDefaultNedSourcePath() +" ";
 		
-        // if we are in debug mode, we should store the run parameter into the command line
+        // if we are in debug mode, we should store the run parameter into the command line too
         String strippedRun = StringUtils.deleteWhitespace(fRunText.getText());
         if (debugLaunchMode) {
             if (StringUtils.isNotBlank(fRunText.getText()))
                 arg += "-r "+strippedRun+" ";
+        	configuration.setAttribute(IOmnetppLaunchConstants.ATTR_RUN_FOR_DEBUG, strippedRun);
         }
-        else {
-            // otherwise (stand-alone starter) we store it into a separate attribute
-            configuration.setAttribute(IOmnetppLaunchConstants.ATTR_RUN, strippedRun);
-        }
+        else 
+        	configuration.setAttribute(IOmnetppLaunchConstants.ATTR_RUN, strippedRun);
 
         if (fParallelismSpinner != null)
             configuration.setAttribute(IOmnetppLaunchConstants.ATTR_NUM_CONCURRENT_PROCESSES, fParallelismSpinner.getSelection());
@@ -457,17 +458,37 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     }
 
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-    	// check the current selection and figure out the needed values if possible
-    	// TODO detect selection and adjust the parameters accordingly
-    	IResource selected = DebugUITools.getSelectedResource();
-    	String defProject = selected == null || selected.getProject() == null 
-    							? null : "/"+selected.getProject().getName();
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, defProject);
-        
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
+    	// check the current selection and figure out the initial values if possible
+    	String defWorkDir = ""; 
+    	String defProg = "";
+    	String defProj = "";
+    	String defArgs = "";
+    	IResource selectedResource = DebugUITools.getSelectedResource();
+    	if (selectedResource != null) {
+    		if (selectedResource instanceof IFile) {
+    			IFile selFile = (IFile)selectedResource;
+    			defWorkDir = "${workspace_loc:" + selFile.getParent().getFullPath().toString() + "}";
+    			// an ini file selected but (not omnetpp.ini) set the ini file name too
+    			if (StringUtils.equalsIgnoreCase("ini", selFile.getFileExtension()) && 
+    				   !StringUtils.equalsIgnoreCase("omnetpp.ini", selFile.getName()))
+    				defArgs = "-f " + selFile.getName();
+    			// if executable set the project and program name
+    			if (OmnetppLaunchUtils.isExecutable(selFile)) { 
+    				defProj = selFile.getProject().getFullPath().toString();
+    				defProg = selFile.getProjectRelativePath().toString();
+    			}
+    		}
+    		// if we just selected a directory or project use it as working dir
+    		if (selectedResource instanceof IContainer) {
+    			defWorkDir = "${workspace_loc:" + selectedResource.getFullPath().toString() + "}";
+    		}
+    	}
+    	
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, defProj);
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, defProg);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false);
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, "");
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, defWorkDir);
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, defArgs);
     }
 
     /**
@@ -664,7 +685,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
                                                        getWorkingDirectoryPath()).toString()+" ";
             }
             fInifileText.setText(inifiles.trim());
-            updateConfigCombo();
+            updateDialogState();
         }
 	}
 
@@ -733,10 +754,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 	// event listeners
 	
     public void modifyText(ModifyEvent e) {
-        if (e.getSource() == fProgText || e.getSource() == workingDirText) {
-            updateConfigCombo();
-        }
-        updateLaunchConfigurationDialog();
+    	updateDialogState();
     }
     
     // ********************************************************************
@@ -836,7 +854,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
                 if (infoText == null)
                     infoText = LaunchPlugin.getSimulationRunInfo(config);
                 outPreferredSize.preferredWidth = 350;
-                return HoverSupport.addHTMLStyleSheet(DEFAULT_RUNTOOLTIP+"<pre>"+infoText+"</pre>");
+                return HoverSupport.addHTMLStyleSheet(runTooltip+"<pre>"+infoText+"</pre>");
             }
         });
 
@@ -854,8 +872,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     	SelectionAdapter selectionAdapter = new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-    			updateUIGroup();
-    	        updateLaunchConfigurationDialog();
+    			updateDialogState();
     		}
     	};
     	

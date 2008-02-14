@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
@@ -129,11 +130,6 @@ public class OmnetppLaunchUtils {
      * A workbench content provider that returns only executable files
      */
     public static class ExecutableWorkbenchContentProvider extends WorkbenchContentProvider {
-        private boolean isExecutable(IFile file) {
-            return file.getResourceAttributes().isExecutable() ||
-                    StringUtils.containsIgnoreCase("exe.cmd.bat",file.getFileExtension()) && SWT.getPlatform().equals("win32");
-        }
-
         @Override
         public Object[] getChildren(Object element) {
             List<Object> filteredChildren = new ArrayList<Object>();
@@ -147,6 +143,14 @@ public class OmnetppLaunchUtils {
     };
 
     /**
+     * Checks whether the resource is an executable file.
+     */
+    public static boolean isExecutable(IResource file) {
+        return file.getResourceAttributes().isExecutable() ||
+                StringUtils.containsIgnoreCase("exe.cmd.bat",file.getFileExtension()) && SWT.getPlatform().equals("win32");
+    }
+    
+    /**
      * Utility function: constructs a path that is relative to the relativeTo.
      */
     public static IPath makeRelativePathTo(IPath path, IPath relativeTo) {
@@ -159,5 +163,4 @@ public class OmnetppLaunchUtils {
         // add the rest of the path (non common part)
         return resultPath.append(path.removeFirstSegments(path.matchingFirstSegments(relativeTo))).makeRelative();
     }
-
 }

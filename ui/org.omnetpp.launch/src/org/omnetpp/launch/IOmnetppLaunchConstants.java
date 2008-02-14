@@ -35,6 +35,11 @@ public interface IOmnetppLaunchConstants {
     public static final String ATTR_RUN = OMNETPP_LAUNCH_ID + ".RUN"; 
 
     /**
+     * Attribute used to store the run number when debugging is used.
+     */
+    public static final String ATTR_RUN_FOR_DEBUG = OMNETPP_LAUNCH_ID + ".RUN.FOR_DEBUG"; 
+    
+    /**
      * Launch configuration attribute key. The value is a string specifying a
      * path to the working directory to use when launching the application.
      * When unspecified, the working directory is inherited from the current
