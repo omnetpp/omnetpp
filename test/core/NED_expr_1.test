@@ -9,8 +9,8 @@ simple Test
         volatile double p00 = -3;      // unary minus or negative constant
         volatile double p01 = -(4+1);  // unary minus
 
-        volatile double p02 = bool2int(!true);  // negation
-        volatile double p03 = bool2int(!false); // negation
+        volatile double p02 = toint(!true);  // negation
+        volatile double p03 = toint(!false); // negation
 
         volatile double p06 = ~3;    // bitwise complement (yields positive number)
         volatile double p07 = 12^3;  // power of
@@ -27,42 +27,42 @@ simple Test
         volatile double p16 = 10|3;  // bitwise or
         volatile double p17 = 10#3;  // bitwise xor
 
-        volatile double p18 = bool2int(8==3); // equal
-        volatile double p19 = bool2int(8==8); // equal
+        volatile double p18 = toint(8==3); // equal
+        volatile double p19 = toint(8==8); // equal
 
-        volatile double p20 = bool2int(8!=3); // not equal
-        volatile double p21 = bool2int(8!=8); // not equal
+        volatile double p20 = toint(8!=3); // not equal
+        volatile double p21 = toint(8!=8); // not equal
 
-        volatile double p22 = bool2int(8>3);  // greater
-        volatile double p23 = bool2int(3>8);  // greater
-        volatile double p24 = bool2int(8>8);  // greater
+        volatile double p22 = toint(8>3);  // greater
+        volatile double p23 = toint(3>8);  // greater
+        volatile double p24 = toint(8>8);  // greater
 
-        volatile double p25 = bool2int(8>=3); // greater or equal
-        volatile double p26 = bool2int(3>=8); // greater or equal
-        volatile double p27 = bool2int(8>=8); // greater or equal
+        volatile double p25 = toint(8>=3); // greater or equal
+        volatile double p26 = toint(3>=8); // greater or equal
+        volatile double p27 = toint(8>=8); // greater or equal
 
-        volatile double p28 = bool2int(8<3);  // less
-        volatile double p29 = bool2int(3<8);  // less
-        volatile double p30 = bool2int(8<8);  // less
+        volatile double p28 = toint(8<3);  // less
+        volatile double p29 = toint(3<8);  // less
+        volatile double p30 = toint(8<8);  // less
 
-        volatile double p31 = bool2int(8<=3); // less or equal
-        volatile double p32 = bool2int(3<=8); // less or equal
-        volatile double p33 = bool2int(8<=8); // less or equal
+        volatile double p31 = toint(8<=3); // less or equal
+        volatile double p32 = toint(3<=8); // less or equal
+        volatile double p33 = toint(8<=8); // less or equal
 
-        volatile double p34 = bool2int(true && true);   // logical and
-        volatile double p35 = bool2int(true && false);  // logical and
-        volatile double p36 = bool2int(false && true);  // logical and
-        volatile double p37 = bool2int(false && false); // logical and
+        volatile double p34 = toint(true && true);   // logical and
+        volatile double p35 = toint(true && false);  // logical and
+        volatile double p36 = toint(false && true);  // logical and
+        volatile double p37 = toint(false && false); // logical and
 
-        volatile double p38 = bool2int(true || true);   // logical or
-        volatile double p39 = bool2int(true || false);  // logical or
-        volatile double p40 = bool2int(false || true);  // logical or
-        volatile double p41 = bool2int(false || false); // logical or
+        volatile double p38 = toint(true || true);   // logical or
+        volatile double p39 = toint(true || false);  // logical or
+        volatile double p40 = toint(false || true);  // logical or
+        volatile double p41 = toint(false || false); // logical or
 
-        volatile double p42 = bool2int(true ## true);   // logical xor
-        volatile double p43 = bool2int(true ## false);  // logical xor
-        volatile double p44 = bool2int(false ## true);  // logical xor
-        volatile double p45 = bool2int(false ## false); // logical xor
+        volatile double p42 = toint(true ## true);   // logical xor
+        volatile double p43 = toint(true ## false);  // logical xor
+        volatile double p44 = toint(false ## true);  // logical xor
+        volatile double p45 = toint(false ## false); // logical xor
 
         volatile double p46 = (true ? 5 : 2);  // the C/C++ ``inline if''
         volatile double p47 = (false ? 5 : 2); // the C/C++ ``inline if''
@@ -73,14 +73,6 @@ simple Test
 #include <omnetpp.h>
 
 namespace {} {
-
-typedef cDynamicExpression::StkValue Value;
-
-Value bool2int(cComponent *context, Value args[], int numargs) {
-    return args[0].bl ? 1L : 0L;
-}
-Define_NED_Function(bool2int, "B", "L");
-
 
 class Test : public cSimpleModule
 {
