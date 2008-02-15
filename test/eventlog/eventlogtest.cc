@@ -35,16 +35,16 @@ void checkEvent(IEvent *event)
         throw opp_runtime_error("*** Event without simulation time", event->getEventNumber());
 
     // check causes
-    MessageDependencyList *causes = event->getCauses();
-    for (MessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
-        MessageDependency *messageDependency = *it;
+    IMessageDependencyList *causes = event->getCauses();
+    for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
+        IMessageDependency *messageDependency = *it;
         IEvent *causeEvent = messageDependency->getCauseEvent();
 
         if (causeEvent) {
             bool foundCauseConsequence = false;
-            MessageDependencyList *causeConseqences = causeEvent->getConsequences();
+            IMessageDependencyList *causeConseqences = causeEvent->getConsequences();
 
-            for (MessageDependencyList::iterator ot = causeConseqences->begin(); ot != causeConseqences->end(); ot++) {
+            for (IMessageDependencyList::iterator ot = causeConseqences->begin(); ot != causeConseqences->end(); ot++) {
                 if ((*ot)->getConsequenceEvent() == event) {
                     foundCauseConsequence = true;
                     break;
@@ -58,16 +58,16 @@ void checkEvent(IEvent *event)
     }
 
     // check consequences
-    MessageDependencyList *consequences = event->getConsequences();
-    for (MessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
-        MessageDependency *messageDependency = *it;
+    IMessageDependencyList *consequences = event->getConsequences();
+    for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
+        IMessageDependency *messageDependency = *it;
         IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
         if (consequenceEvent) {
             bool foundConsequenceCause = false;
-            MessageDependencyList *consequenceCauses = consequenceEvent->getCauses();
+            IMessageDependencyList *consequenceCauses = consequenceEvent->getCauses();
 
-            for (MessageDependencyList::iterator ot = consequenceCauses->begin(); ot != consequenceCauses->end(); ot++) {
+            for (IMessageDependencyList::iterator ot = consequenceCauses->begin(); ot != consequenceCauses->end(); ot++) {
                 if ((*ot)->getCauseEvent() == event) {
                     foundConsequenceCause = true;
                     break;

@@ -13,7 +13,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 COPTS=$(CFLAGS) -I. -I../../src/common -I../../src/eventlog -I../../include/platdep /Fd"eventlogtest.pdb"
 
 OBJS= eventlogindextest.obj eventlogtest.obj
-LIBS= ../../lib/eventlog.lib ../../lib/common.lib
+LIBS= $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/eventlogd.lib $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/commond.lib
 
 #
 # Automatic rules
