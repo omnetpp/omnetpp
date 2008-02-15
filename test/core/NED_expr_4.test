@@ -1,0 +1,113 @@
+%description:
+Test operators in NED, with constant (non-volatile) parameters.
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        string p00 = "" + "";
+        string p01 = "Hello" + "";
+        int    p02 = length("");
+        int    p03 = length("Hello");
+        bool   p04 = contains("Hello", "ell");
+        bool   p05 = contains("Hello", "bubu");
+
+        string p10 = substring("Hello", 0, 2);
+        string p11 = substring("Hello", 2, 5);
+        string p12 = substring("Hello", 2, 3);
+
+        bool   p20 = startswith("Hello", "He");
+        bool   p21 = startswith("Hello", "ell");
+        bool   p22 = endswith("Hello", "lo");
+        bool   p23 = endswith("Hello", "ell");
+        string p24 = startof("Hello", 2);
+        string p25 = startof("Hello", 10);
+        string p26 = endof("Hello", 2);
+        string p27 = endof("Hello", 10);
+        string p28 = leftof("Hello", 2);
+        string p29 = rightof("Hello", 2);
+
+        string p30 = replace("Hello", "e", "x");
+        string p31 = replace("Hello", "l", "x");
+        string p32 = replace("Hello", "e", "e");
+        string p33 = replace("Hello", "e", "");
+        string p34 = replace("Hello", "", "x");
+        int    p35 = indexof("Hello", "ell");
+        int    p36 = indexof("Hello", "bubu");
+        string p37 = toupper("Hello");
+        string p38 = tolower("HeLLo");
+
+        int    p41 = toint(true);
+        int    p42 = toint(3.5);
+        int    p43 = toint("12");
+        double p44 = todouble(false);
+        double p45 = todouble(7);
+        double p46 = todouble("4");
+        string p47 = tostring(false);
+        string p48 = tostring(13);
+        string p49 = tostring(4.72);
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+    for (int i=0; i<params(); i++)
+        ev << par(i).name() << "=" << par(i).toString() << endl;
+    ev << ".\n";
+}
+
+}; //namespace
+
+%contains: stdout
+p00=""
+p01="Hello"
+p02=0
+p03=5
+p04=true
+p05=false
+p10="He"
+p11="llo"
+p12="l"
+p20=true
+p21=false
+p22=true
+p23=false
+p24="He"
+p25="Hello"
+p26="lo"
+p27="Hello"
+p28="He"
+p29="llo"
+p30="Hxllo"
+p31="Hexxo"
+p32="Hello"
+p33="Hllo"
+p34="xHxexlxlxox"
+p35=1
+p36=-1
+p37="HELLO"
+p38="hello"
+p41=1
+p42=3
+p43=12
+p44=0
+p45=7
+p46=4
+p47="false"
+p48="13"
+p49="4.72"
