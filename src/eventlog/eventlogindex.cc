@@ -254,7 +254,11 @@ template <typename T> file_offset_t EventLogIndex::searchForOffset(std::map<T, C
     // first try to look up it the cache, this may result in an exact offset or a range around the offset being searched
     bool found = cacheSearchForOffset(map, key, matchKind, lowerKey, upperKey, foundOffset, lowerOffset, upperOffset);
 
-    if (!found) {
+    // no events in cache (not even the first and last which is always cached)
+    // so there are no events at all
+    if (lowerKey == -1 && upperKey == -1)
+        foundOffset = -1;
+    else if (!found) {
         Assert(lowerKey <= key && key <= upperKey);
         Assert(foundOffset == -1 || (lowerOffset <= foundOffset && foundOffset <= upperOffset));
 

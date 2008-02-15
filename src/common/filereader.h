@@ -25,7 +25,7 @@ NAMESPACE_BEGIN
 
 /**
  * Reads a file line by line. It has to be very efficient since
- * it may be used up to gigabyte-sized files (output vector files
+ * it may be used up to several gigabyte-sized files (output vector files
  * and event logs). File reading is done in large chunks, and
  * the code avoids string copying and duplicating. The in memory
  * buffer must be able to contain at least two lines, therefore
@@ -41,22 +41,25 @@ class COMMON_API FileReader
 {
   private:
     // the file
-    std::string fileName;
+    const std::string fileName;
     FILE *f;
+    bool checkFileChanged;
     bool synchronizeWhenAppended;
 
     // the buffer
-    size_t bufferSize;
-    char *bufferBegin;
-    char *bufferEnd;  // = buffer + bufferSize
+    const size_t bufferSize;
+    const char *bufferBegin;
+    const char *bufferEnd; // = buffer + bufferSize
+    const size_t maxLineSize;
+
+    // file positions and size
     file_offset_t bufferFileOffset;
     file_offset_t storedBufferFileOffset;
     int64 fileSize;
 
     // the currently used (filled with data) region in buffer
-    size_t maxLineSize;
-    char *dataBegin;
-    char *dataEnd;
+    char *dataBegin; // must point between bufferBegin and bufferEnd
+    char *dataEnd; // must point between bufferBegin and bufferEnd
 
     // the very last line of the file as currently known
     file_offset_t lastLineOffset;
@@ -64,7 +67,7 @@ class COMMON_API FileReader
     std::string lastLine;
 
     // the position where readNextLine() or readPreviousLine() starts from
-    char *currentDataPointer;
+    char *currentDataPointer; // must point between dataBegin and dataEnd when used
     char *storedDataPointer;
 
     // the pointer returned by readNextLine() or readPreviousLine()
@@ -77,6 +80,13 @@ class COMMON_API FileReader
     // total bytes read in so far
     int64 numReadBytes;
 
+  public:
+    enum FileChangedState {
+        UNCHANGED,
+        APPENDED,
+        OVERWRITTEN,
+    };
+
   private:
     /**
      * Reads data into the buffer till the end of the buffer in the given direction
@@ -85,20 +95,24 @@ class COMMON_API FileReader
      */
     void fillBuffer(bool forward);
 
+    void ensureFileOpenInternal();
+
     // assert data structure consistence
-    void checkConsistence();
-    void checkFileChangedAndSynchronize();
+    void checkConsistence(bool checkDataPointer = false) const;
+    FileChangedState checkFileChangedAndSynchronize();
 
     // store and restore state to be able to read at another position
     void storePosition();
     void restorePosition();
 
-    file_offset_t pointerToFileOffset(char *pointer);
-    char* fileOffsetToPointer(file_offset_t offset) { return offset - bufferFileOffset + bufferBegin; }
+    file_offset_t pointerToFileOffset(char *pointer) const;
+    char* fileOffsetToPointer(file_offset_t offset) const { return offset - bufferFileOffset + (char *)bufferBegin; }
 
-    file_offset_t getDataBeginFileOffset() { return pointerToFileOffset(dataBegin); }
-    file_offset_t getDataEndFileOffset() { return pointerToFileOffset(dataEnd); }
-    bool hasData() { return dataBegin != dataEnd; }
+    file_offset_t getDataBeginFileOffset() const { return pointerToFileOffset(dataBegin); }
+    file_offset_t getDataEndFileOffset() const { return pointerToFileOffset(dataEnd); }
+    bool hasData() const { return dataBegin != dataEnd; }
+
+    void setCurrentDataPointer(char *pointer);
 
     bool isLineStart(char *s);
     char *findNextLineStart(char *s, bool bufferFilled = false);
@@ -107,12 +121,6 @@ class COMMON_API FileReader
     int64 getFileSizeInternal();
 
   public:
-    enum FileChangedState {
-        UNCHANGED,
-        APPENDED,
-        OVERWRITTEN,
-    };
-
     /**
      * Creates a tokenizer object for the given file, with the given buffer size.
      * The file doesn't get opened yet.
@@ -125,7 +133,12 @@ class COMMON_API FileReader
     virtual ~FileReader();
 
     /**
-     * Controls what happens when new content is appended to the file.
+     * Controls whether file is checked for changes each time before physically accessing it.
+     */
+    void setCheckFileChanged(bool value) { checkFileChanged = value; }
+
+    /**
+     * Controls what happens when it is determined that new content has been appended to the file.
      */
     void setSynchronizeWhenAppended(bool value) { synchronizeWhenAppended = value; }
 
@@ -142,7 +155,7 @@ class COMMON_API FileReader
 
     /**
      * Checks if file has been changed on disk. A file change is considered to be an append if it did not change the
-     * content of the line (starting at the very same offset) which was the last before the change.
+     * content of the last line (starting at the very same offset).
      */
     FileChangedState getFileChangedState();
 
@@ -155,12 +168,12 @@ class COMMON_API FileReader
     /**
      * Returns the first line from the file, see getNextLineBufferPointer.
      */
-    char *getFirstLineBufferPointer(bool checkFileChanged = true);
+    char *getFirstLineBufferPointer();
 
     /**
      * Returns the last line from the file, see getPreviousLineBufferPointer.
      */
-    char *getLastLineBufferPointer(bool checkFileChanged = true);
+    char *getLastLineBufferPointer();
 
     /**
      * Reads the next line from the file starting from the current position, and returns a pointer to its first character.
@@ -169,14 +182,14 @@ class COMMON_API FileReader
      * calls will return non NULL and continue reading lines from that on.
      * Moves the current position to the end of the line just returned.
      */
-    char *getNextLineBufferPointer(bool checkFileChanged = true);
+    char *getNextLineBufferPointer();
 
     /**
      * Reads the previous line from the file ending at the current position, and returns a pointer to its first character.
      * It returns NULL when the beginning of file reached.
      * Moves the current position to the beginning of the line just returned.
      */
-    char *getPreviousLineBufferPointer(bool checkFileChanged = true);
+    char *getPreviousLineBufferPointer();
 
     /**
      * Searches through the file from the current position for the given text and returns the first matching line.
@@ -215,7 +228,7 @@ class COMMON_API FileReader
     void seekTo(file_offset_t offset, unsigned int ensureBufferSizeAround = 0);
 
     /**
-     * Returns the total number of lines read in so far.
+     * Returns the total number of lines requested so far.
      */
     int64 getNumReadLines() { return numReadLines; };
 

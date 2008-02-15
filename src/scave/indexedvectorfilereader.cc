@@ -128,7 +128,7 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
     char *line;
     for (long k = 0; k < count /*&& (line=reader.getNextLineBufferPointer())!=NULL*/; ++k)
     {
-       	TIME(readTime,line=reader.getNextLineBufferPointer(false));
+       	TIME(readTime,line=reader.getNextLineBufferPointer());
 
        	if (!line)
         	break;

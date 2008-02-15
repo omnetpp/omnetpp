@@ -25,19 +25,14 @@ USING_NAMESPACE
 
 #define PRINT_DEBUG_MESSAGES false
 
-
 FileReader::FileReader(const char *fileName, size_t bufferSize)
+   : fileName(fileName), bufferSize(bufferSize),
+     bufferBegin(new char[bufferSize]), bufferEnd(bufferBegin + bufferSize),
+     maxLineSize(bufferSize / 2)
 {
-    this->fileName = fileName;
-    this->bufferSize = bufferSize;
-
     f = NULL;
+    checkFileChanged = true;
     synchronizeWhenAppended = true;
-
-    bufferBegin = new char[bufferSize];
-    bufferEnd = bufferBegin + bufferSize;
-
-    maxLineSize = bufferSize / 2;
 
     numReadLines = 0;
     numReadBytes = 0;
@@ -65,7 +60,7 @@ FileReader::~FileReader()
     ensureFileClosed();
 }
 
-void FileReader::ensureFileOpen()
+void FileReader::ensureFileOpenInternal()
 {
     if (!f) {
         // Note: 'b' mode turns off CR/LF translation and might be faster
@@ -76,7 +71,13 @@ void FileReader::ensureFileOpen()
 
         if (bufferFileOffset == -1)
             seekTo(0);
+    }
+}
 
+void FileReader::ensureFileOpen()
+{
+    if (!f) {
+        ensureFileOpenInternal();
         synchronize();
     }
 }
@@ -100,13 +101,13 @@ void FileReader::restorePosition()
 {
     Assert(storedBufferFileOffset != -1 && storedDataPointer);
     bufferFileOffset = storedBufferFileOffset;
-    currentDataPointer = storedDataPointer;
+    setCurrentDataPointer(storedDataPointer);
     dataBegin = dataEnd = NULL;
     storedBufferFileOffset = -1;
     storedDataPointer = NULL;
 }
 
-file_offset_t FileReader::pointerToFileOffset(char *pointer)
+file_offset_t FileReader::pointerToFileOffset(char *pointer) const
 {
     file_offset_t fileOffset = pointer - bufferBegin + bufferFileOffset;
     Assert(fileOffset >= 0 && fileOffset <= fileSize);
@@ -120,7 +121,13 @@ FileReader::FileChangedState FileReader::getFileChangedState()
     if (newFileSize > fileSize) {
         // compare the stored last line with the one in the file
         storePosition();
-        char *currentLastLine = getLastLineBufferPointer(false);
+
+        // avoid recursively checking the file for changes
+        bool oldCheckFileChanged = checkFileChanged;
+        checkFileChanged = false;
+        char *currentLastLine = getLastLineBufferPointer();
+        checkFileChanged = oldCheckFileChanged;
+
         int currentLineLength = getCurrentLineLength();
         restorePosition();
 
@@ -137,6 +144,7 @@ FileReader::FileChangedState FileReader::getFileChangedState()
 
 void FileReader::synchronize()
 {
+    ensureFileOpenInternal();
     int64 newFileSize = getFileSizeInternal();
 
     if (newFileSize != fileSize || lastLineOffset == -1) {
@@ -145,32 +153,44 @@ void FileReader::synchronize()
 
         // read in the last line from the file
         storePosition();
-        char *line = getLastLineBufferPointer(false);
+
+        // avoid recursively checking the file for changes
+        bool oldCheckFileChanged = checkFileChanged;
+        checkFileChanged = false;
+        char *line = getLastLineBufferPointer();
+        checkFileChanged = oldCheckFileChanged;
 
         if (line) {
             lastLineLength = getCurrentLineLength();
             lastLineOffset = getCurrentLineStartOffset();
             lastLine.assign(line, lastLineLength);
         }
+        else {
+            lastLineLength = -1;
+            lastLineOffset = -1;
+            lastLine.clear();
+        }
 
         restorePosition();
     }
 }
 
-void FileReader::checkConsistence()
+void FileReader::checkConsistence(bool checkDataPointer) const
 {
     bool ok = (size_t)(bufferEnd - bufferBegin) == bufferSize &&
       ((!dataBegin && !dataEnd) || 
        dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd &&
-       dataBegin <= currentDataPointer && currentDataPointer <= dataEnd);
+       (!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd)));
 
     if (!ok)
         throw opp_runtime_error("FileReader: internal error");
 }
 
-void FileReader::checkFileChangedAndSynchronize()
+FileReader::FileChangedState FileReader::checkFileChangedAndSynchronize()
 {
-    switch (getFileChangedState()) {
+    FileReader::FileChangedState changed = getFileChangedState();
+
+    switch (changed) {
         case OVERWRITTEN:
             throw opp_runtime_error("File changed: `%s' has been overwritten", fileName.c_str());
         case APPENDED:
@@ -181,15 +201,30 @@ void FileReader::checkFileChangedAndSynchronize()
         default:
            break;
     }
+
+    return changed;
+}
+
+void FileReader::setCurrentDataPointer(char *pointer)
+{
+    currentDataPointer = pointer;
+
+#ifndef NDEBUG
+    checkConsistence();
+#endif
 }
 
 void FileReader::fillBuffer(bool forward)
 {
+#ifndef NDEBUG
+    checkConsistence();
+#endif
+
     char *dataPointer;
     int dataLength;
 
     if (!hasData()) {
-        dataPointer = bufferBegin;
+        dataPointer = (char *)bufferBegin;
         dataLength = bufferSize;
     }
     else if (forward) {
@@ -212,12 +247,20 @@ void FileReader::fillBuffer(bool forward)
             dataLength = currentDataPointer - dataEnd;
         }
         else {
-            dataPointer = bufferBegin;
+            dataPointer = (char *)bufferBegin;
             dataLength = dataBegin - bufferBegin;
         }
     }
 
     if (dataLength > 0) {
+        // check for changes before reading the file
+        if (checkFileChanged) {
+            if (checkFileChangedAndSynchronize() != UNCHANGED) {
+                fillBuffer(forward);
+                return;
+            }
+        }
+
         file_offset_t fileOffset = pointerToFileOffset(dataPointer);
         opp_fseek(f, fileOffset, SEEK_SET);
         if (ferror(f))
@@ -227,7 +270,9 @@ void FileReader::fillBuffer(bool forward)
         if (ferror(f))
             throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
 
+#ifndef NDEBUG
         if (PRINT_DEBUG_MESSAGES) printf("Reading data at file offset: %lld, length: %d\n", fileOffset, bytesRead);
+#endif
 
         if (!hasData()) {
             dataBegin = dataPointer;
@@ -243,11 +288,15 @@ void FileReader::fillBuffer(bool forward)
             if (currentDataPointer > dataEnd)
                 dataEnd = currentDataPointer;
             else
-                dataBegin = bufferBegin;
+                dataBegin = (char *)bufferBegin;
         }
 
         numReadBytes += bytesRead;
     }
+
+#ifndef NDEBUG
+    checkConsistence(true);
+#endif
 }
 
 bool FileReader::isLineStart(char *s) {
@@ -361,28 +410,26 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
     return s;
 }
 
-char *FileReader::getNextLineBufferPointer(bool checkFileChanged)
+char *FileReader::getNextLineBufferPointer()
 {
     numReadLines++;
     ensureFileOpen();
 
     Assert(currentDataPointer);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
-
-    if (checkFileChanged)
-        checkFileChangedAndSynchronize();
-
-    fillBuffer(true);
 #ifndef NDEBUG
-    checkConsistence();
+    if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 #endif
 
+    // read forward if needed
+    fillBuffer(true);
+
+    // when starting in the middle of a line
     if (!isLineStart(currentDataPointer)) {
         char *nextLineDataPointer = findNextLineStart(currentDataPointer);
 
         if (nextLineDataPointer)
-            currentDataPointer = nextLineDataPointer;
+            setCurrentDataPointer(nextLineDataPointer);
         else {
             currentLineStartOffset = currentLineEndOffset = -1;
 
@@ -394,7 +441,7 @@ char *FileReader::getNextLineBufferPointer(bool checkFileChanged)
     char *nextLineDataPointer = findNextLineStart(currentDataPointer);
 
     if (nextLineDataPointer) {
-        currentDataPointer = nextLineDataPointer;
+        setCurrentDataPointer(nextLineDataPointer);
         currentLineEndOffset = pointerToFileOffset(currentDataPointer);
 
         return fileOffsetToPointer(currentLineStartOffset);
@@ -406,28 +453,26 @@ char *FileReader::getNextLineBufferPointer(bool checkFileChanged)
     }
 }
 
-char *FileReader::getPreviousLineBufferPointer(bool checkFileChanged)
+char *FileReader::getPreviousLineBufferPointer()
 {
     numReadLines++;
     ensureFileOpen();
 
     Assert(currentDataPointer);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
-
-    if (checkFileChanged)
-        checkFileChangedAndSynchronize();
-
-    fillBuffer(false);
 #ifndef NDEBUG
-    checkConsistence();
+    if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %lld\n", pointerToFileOffset(currentDataPointer));
 #endif
 
+    // read backward if needed
+    fillBuffer(false);
+
+    // when starting in the middle of a line
     if (!isLineStart(currentDataPointer)) {
         char *previousLineDataPointer = findPreviousLineStart(currentDataPointer);
 
         if (previousLineDataPointer)
-            currentDataPointer = previousLineDataPointer;
+            setCurrentDataPointer(previousLineDataPointer);
         else {
             currentLineStartOffset = currentLineEndOffset = -1;
 
@@ -439,7 +484,7 @@ char *FileReader::getPreviousLineBufferPointer(bool checkFileChanged)
     char *previousLineDataPointer = findPreviousLineStart(currentDataPointer);
 
     if (previousLineDataPointer) {
-        currentDataPointer = previousLineDataPointer;
+        setCurrentDataPointer(previousLineDataPointer);
         currentLineStartOffset = pointerToFileOffset(currentDataPointer);
 
         return fileOffsetToPointer(currentLineStartOffset);
@@ -451,19 +496,16 @@ char *FileReader::getPreviousLineBufferPointer(bool checkFileChanged)
     }
 }
 
-char *FileReader::getFirstLineBufferPointer(bool checkFileChanged)
+char *FileReader::getFirstLineBufferPointer()
 {
     seekTo(0);
-    return getNextLineBufferPointer(checkFileChanged);
+    return getNextLineBufferPointer();
 }
 
-char *FileReader::getLastLineBufferPointer(bool checkFileChanged)
+char *FileReader::getLastLineBufferPointer()
 {
-    if (checkFileChanged)
-        checkFileChangedAndSynchronize();
-
     seekTo(getFileSize());
-    return getPreviousLineBufferPointer(checkFileChanged);
+    return getPreviousLineBufferPointer();
 }
 
 const char *strnistr(const char *haystack, const char *needle, int n)
@@ -519,44 +561,56 @@ int64 FileReader::getFileSizeInternal()
 
 void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeAround)
 {
+#ifndef NDEBUG
     if (PRINT_DEBUG_MESSAGES) printf("Seeking to file offset: %lld\n", fileOffset);
+    checkConsistence();
+#endif
 
     if (fileOffset < 0 || fileOffset > getFileSize())
         throw opp_runtime_error("Invalid file offset: %lld", fileOffset);
 
     ensureFileOpen();
 
+    // check if requested offset is already in memory
     if (bufferFileOffset != -1 &&
         bufferFileOffset + ensureBufferSizeAround <= fileOffset &&
         fileOffset <= (file_offset_t)(bufferFileOffset + bufferSize - ensureBufferSizeAround))
     {
-        currentDataPointer = fileOffsetToPointer(fileOffset);
+        setCurrentDataPointer(fileOffsetToPointer(fileOffset));
         Assert(currentDataPointer);
         return;
     }
 
     file_offset_t newBufferFileOffset = std::min(std::max((int64)0L, getFileSize() - (int64)bufferSize), std::max((int64)0L, fileOffset - (int64)bufferSize / 2));
-    currentDataPointer = bufferBegin + fileOffset - newBufferFileOffset;
+    setCurrentDataPointer((char *)bufferBegin + fileOffset - newBufferFileOffset);
     Assert(currentDataPointer);
 
+#ifndef NDEBUG
     if (PRINT_DEBUG_MESSAGES) printf("Setting buffer file offset to: %lld\n", newBufferFileOffset);
+#endif
 
+    // try to keep as much data as possible
     if (hasData()) {
         file_offset_t oldDataBeginFileOffset = getDataBeginFileOffset();
         file_offset_t oldDataEndFileOffset = getDataEndFileOffset();
 
+#ifndef NDEBUG
         if (PRINT_DEBUG_MESSAGES) printf("Data before: from file offset: %lld to file offset: %lld\n", oldDataBeginFileOffset, oldDataEndFileOffset);
+#endif
 
         file_offset_t newBufferBeginFileOffset = newBufferFileOffset;
         file_offset_t newBufferEndFileOffset = newBufferFileOffset + bufferSize;
         file_offset_t moveSrcBeginFileOffset = std::min(newBufferEndFileOffset, std::max(newBufferBeginFileOffset, oldDataBeginFileOffset));
         file_offset_t moveSrcEndFileOffset = std::min(newBufferEndFileOffset, std::max(newBufferBeginFileOffset, oldDataEndFileOffset));
         char *moveSrc = fileOffsetToPointer(moveSrcBeginFileOffset);
-        char *moveDest = moveSrcBeginFileOffset - newBufferBeginFileOffset + bufferBegin;
+        char *moveDest = moveSrcBeginFileOffset - newBufferBeginFileOffset + (char *)bufferBegin;
         int moveSize = moveSrcEndFileOffset - moveSrcBeginFileOffset;
 
         if (moveSize > 0 && moveSrc != moveDest) {
+#ifndef NDEBUG
             if (PRINT_DEBUG_MESSAGES) printf("Keeping data from file offset: %lld with length: %d\n", pointerToFileOffset(moveSrc), moveSize);
+#endif
+
             fflush(stdout);
 
             memmove(moveDest, moveSrc, moveSize);
@@ -566,13 +620,19 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
         dataBegin = moveDest;
         dataEnd = moveDest + moveSize;
 
+#ifndef NDEBUG
         if (PRINT_DEBUG_MESSAGES) printf("Data after: from file offset: %lld to file offset: %lld\n", getDataBeginFileOffset(), getDataEndFileOffset());
+#endif
     }
     else {
         bufferFileOffset = newBufferFileOffset;
         dataBegin = currentDataPointer;
         dataEnd = currentDataPointer;
     }
+
+#ifndef NDEBUG
+    checkConsistence();
+#endif
 }
 
 /*
@@ -598,5 +658,4 @@ int main(int argc, char **argv)
 
     return 0;
 }
-
 */
