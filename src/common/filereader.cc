@@ -554,7 +554,7 @@ int64 FileReader::getFileSizeInternal()
 {
     ensureFileOpen();
 
-    struct opp_stat s;
+    struct opp_stat_t s;
     opp_fstat(fileno(f), &s);
     return s.st_size;
 }

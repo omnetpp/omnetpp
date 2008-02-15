@@ -133,17 +133,20 @@ typedef int64 file_offset_t;  // off_t on Linux
 #if defined _MSC_VER && (_MSC_VER >= 1400)
 #define opp_ftell _ftelli64
 #define opp_fseek _fseeki64
-#define opp_stat _stat64
+#define opp_stat_t __stat64	// name of the struct
+#define opp_stat _stat64	// name of the function
 #define opp_fstat _fstati64
 #elif defined _MSC_VER || __MINGW32__ // FIXME: no 64 bit version under mingw?
 // for Visual C++ 7.1, fall back to 32-bit functions
 #define opp_ftell ftell
 #define opp_fseek fseek
+#define opp_stat_t stat
 #define opp_stat stat
 #define opp_fstat fstat
 #else
 #define opp_ftell ftello64
 #define opp_fseek fseeko64
+#define opp_stat_t stat64
 #define opp_stat stat64
 #define opp_fstat fstat64
 #endif

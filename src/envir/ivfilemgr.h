@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <float.h>
 #include <deque>
+#include "platmisc.h"
 #include "envirext.h"
 #include "util.h"
 #include "filemgrs.h"
@@ -41,8 +42,8 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
 {
   protected:
     struct sBlock {
-      long offset;          // file offset of the block
-      long size;            // size of the block
+      file_offset_t offset; // file offset of the block
+      file_offset_t size;   // size of the block
       long startEventNum;   // event number of the first sample in the block
       long endEventNum;     // event number of the last sample in the block
       simtime_t startTime;  // simulation time of the first sample in the block
