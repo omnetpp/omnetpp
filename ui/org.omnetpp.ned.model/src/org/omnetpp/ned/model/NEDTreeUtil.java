@@ -264,7 +264,7 @@ public class NEDTreeUtil {
 	public static NEDElement pojo2swig(INEDElement pojoNode) {
 
 		NEDElement swigNode = org.omnetpp.ned.engine.NEDElementFactory.getInstance()
-				.createNodeWithTag(pojoNode.getTagCode());
+				.createElementWithTag(pojoNode.getTagCode());
 
 		// set the attributes
 		for (int i = 0; i < pojoNode.getNumAttributes(); ++i) {
