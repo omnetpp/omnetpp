@@ -56,7 +56,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
                 line = fileReader.getPreviousLineBufferPointer();
 
                 if (line) {
-                    printf("Read previous line: %.*s", fileReader.getLastLineLength(), line);
+                    printf("Read previous line: %.*s", fileReader.getCurrentLineLength(), line);
 
                     // calculate expected line number based on previous expected if any
                     if (expectedLineNumber != -1) {
@@ -78,7 +78,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
                 line = fileReader.getNextLineBufferPointer();
 
                 if (line) {
-                    printf("Read next line: %.*s", fileReader.getLastLineLength(), line);
+                    printf("Read next line: %.*s", fileReader.getCurrentLineLength(), line);
 
                     // calculate expected line number based on previous expected if any
                     if (expectedLineNumber != -1) {
@@ -100,7 +100,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
             // compare expected and actual line numbers
             long lineNumber = parseLineNumber(line);
             if (lineNumber != -1 && lineNumber != expectedLineNumber)
-                throw opp_runtime_error("*** Line number %ld, %ld comparison failed for line: %.*s", lineNumber, expectedLineNumber, fileReader.getLastLineLength(), line);
+                throw opp_runtime_error("*** Line number %ld, %ld comparison failed for line: %.*s", lineNumber, expectedLineNumber, fileReader.getCurrentLineLength(), line);
         }
     }
 }
