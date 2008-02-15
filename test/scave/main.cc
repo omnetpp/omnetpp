@@ -49,42 +49,49 @@ static void parseIntList(const char *str, int *&result, int &len)
 	len = 0;
 	
 	vector<int> ids;
-	istrstream in(str);
 	
 	int start, end;
-	char sep;
-	while (!in.eof())
+    int num = 0;
+    const char *ptr = str;
+	
+    while (*ptr)
 	{
-		in >> start;
-		if (in.fail())
+        if (!isdigit(*ptr))
 			throw exception("Malformed interval start");
-		
-		ids.push_back(start);
-		if (in.eof())
-			break;
-		
-		in >> sep;
-		if (sep == '-') 
-		{
-			if (in.eof())
+
+        start = 0;
+        while(isdigit(*ptr))
+            start = 10 * start + (*(ptr++) - '0');
+
+        if (*ptr == ',' || *ptr == '\0')
+        {
+            end = start;
+        }
+        else if (*ptr == '-')
+        {
+            if (!isdigit(*(++ptr)))
 				throw exception("Missing interval end");
-			in >> end;
-			if (in.fail())
-				throw exception("Malformed interval end");
-			
-			if (start < end)
-            {
-                for (int id = start+1; id <= end; ++id)
-				    ids.push_back(id);
-            }
-            else if (end < start)
-            {
-                for (int id = start-1; id >= end; --id)
-				    ids.push_back(id);
-            }
-		}
-		else if (sep != ',')
+
+            end = 0;
+            while(isdigit(*ptr))
+                end = 10 * end + (*(ptr++) - '0');
+        }
+        else if (*ptr)
 			throw exception("Unexpected char in int list");
+
+		if (start <= end)
+        {
+            for (int id = start; id <= end; ++id)
+			    ids.push_back(id);
+        }
+        else
+        {
+            for (int id = start; id >= end; --id)
+			    ids.push_back(id);
+        }
+
+        if (*ptr == ',')
+            ptr++;
 	}
 	
 	result = new int[ids.size()];
