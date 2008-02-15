@@ -294,7 +294,9 @@ public class EventLogTable
     }
 
     private void eventLogChanged() {
-        if (!eventLog.isEmpty() && fixPointElement == null)
+        if (eventLog.isEmpty())
+            fixPointElement = null;
+        else if (fixPointElement == null)
             scrollToBegin();
 
         if (debug)

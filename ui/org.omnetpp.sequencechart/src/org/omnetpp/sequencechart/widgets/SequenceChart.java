@@ -1308,17 +1308,19 @@ public class SequenceChart
 	 * Calculates initial pixelPerTimelineUnit.
 	 */
 	private void calculatePixelPerTimelineUnit(int viewportWidth) {
-	    IEvent referenceEvent = sequenceChartFacade.getTimelineCoordinateSystemOriginEvent();
-		int distance = Math.min(20, eventLog.getApproximateNumberOfEvents());
-
-		if (distance > 1) {
-			double referenceEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(referenceEvent);
-			double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(referenceEvent, distance - 1));
-			double timelineCoordinateDelta = otherEventTimelineCoordinate - referenceEventTimelineCoordinate;
-			setPixelPerTimelineCoordinate(viewportWidth / timelineCoordinateDelta);
-		}
-		else
-            setPixelPerTimelineCoordinate(1);
+	    if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1) {
+    	    IEvent referenceEvent = sequenceChartFacade.getTimelineCoordinateSystemOriginEvent();
+    		int distance = Math.min(20, eventLog.getApproximateNumberOfEvents());
+    
+    		if (distance > 1) {
+    			double referenceEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(referenceEvent);
+    			double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(referenceEvent, distance - 1));
+    			double timelineCoordinateDelta = otherEventTimelineCoordinate - referenceEventTimelineCoordinate;
+    			setPixelPerTimelineCoordinate(viewportWidth / timelineCoordinateDelta);
+    		}
+    		else
+                setPixelPerTimelineCoordinate(1);
+	    }
 	}
 
 	/**
@@ -1519,7 +1521,7 @@ public class SequenceChart
 		graphics.setFont(font);
 		int x = getViewportWidth() / 2;
 		int y = getViewportHeight() / 2;
-		String text = "Processing  of a long running event log operation was cancelled, therefore the chart is incomplete and cannot be drawn.";
+		String text = "Processing of a long running event log operation was cancelled, therefore the chart is incomplete and cannot be drawn.";
 		Point p = getTextExtent(graphics, text);
 		graphics.fillString(text, x - p.x / 2, y - p.y);
 		text = "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.";
