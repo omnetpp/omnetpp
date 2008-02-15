@@ -106,5 +106,48 @@ inline bool opp_loadlibrary(const char *libname)
 #endif
 }
 
+//
+// 64-bit file offsets
+//
+#include "inttypes.h"
+
+typedef int64 file_offset_t;  // off_t on Linux
+
+/*
+#if defined _MSC_VER
+# define opp_ftell _ftelli64
+# define opp_fseek _fseeki64
+# if _MSC_VER < 1400
+   // Kludge: in Visual C++ 7.1, 64-bit fseek/ftell is not part of the public
+   // API, but the functions are there in the CRT. Declare them here.
+   int __cdecl _fseeki64 (FILE *str, __int64 offset, int whence);
+   __int64 __cdecl _ftelli64 (FILE *stream);
+# endif
+#else
+# define opp_ftell ftello64
+# define opp_fseek fseeko64
+#endif
+*/
+
+//FIXME replace this with the above code!!! once it compiles with 7.1
+#if defined _MSC_VER && (_MSC_VER >= 1400)
+#define opp_ftell _ftelli64
+#define opp_fseek _fseeki64
+#define opp_stat _stat64
+#define opp_fstat _fstati64
+#elif defined _MSC_VER || __MINGW32__ // FIXME: no 64 bit version under mingw?
+// for Visual C++ 7.1, fall back to 32-bit functions
+#define opp_ftell ftell
+#define opp_fseek fseek
+#define opp_stat stat
+#define opp_fstat fstat
+#else
+#define opp_ftell ftello64
+#define opp_fseek fseeko64
+#define opp_stat stat64
+#define opp_fstat fstat64
+#endif
+
+
 #endif
 

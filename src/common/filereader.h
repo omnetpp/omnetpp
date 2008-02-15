@@ -17,45 +17,9 @@
 
 #include <vector>
 #include <string>
+#include "platmisc.h"
 #include "commondefs.h"
 #include "inttypes.h"   // for int64
-
-typedef int64 file_offset_t;  // off_t on Linux
-
-/*
-#if defined _MSC_VER
-# define filereader_ftell _ftelli64
-# define filereader_fseek _fseeki64
-# if _MSC_VER < 1400
-   // Kludge: in Visual C++ 7.1, 64-bit fseek/ftell is not part of the public
-   // API, but the functions are there in the CRT. Declare them here.
-   int __cdecl _fseeki64 (FILE *str, __int64 offset, int whence);
-   __int64 __cdecl _ftelli64 (FILE *stream);
-# endif
-#else
-# define filereader_ftell ftello64
-# define filereader_fseek fseeko64
-#endif
-*/
-
-//FIXME replace this with the above code!!! once it compiles with 7.1
-#if defined _MSC_VER && (_MSC_VER >= 1400)
-#define filereader_ftell _ftelli64
-#define filereader_fseek _fseeki64
-#define filereader_stat _stat64
-#define filereader_fstat _fstati64
-#elif defined _MSC_VER || __MINGW32__ // FIXME: no 64 bit version under mingw?
-// for Visual C++ 7.1, fall back to 32-bit functions
-#define filereader_ftell ftell
-#define filereader_fseek fseek
-#define filereader_stat stat
-#define filereader_fstat fstat
-#else
-#define filereader_ftell ftello64
-#define filereader_fseek fseeko64
-#define filereader_stat stat64
-#define filereader_fstat fstat64
-#endif
 
 NAMESPACE_BEGIN
 

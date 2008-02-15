@@ -219,7 +219,7 @@ void FileReader::fillBuffer(bool forward)
 
     if (dataLength > 0) {
         file_offset_t fileOffset = pointerToFileOffset(dataPointer);
-        filereader_fseek(f, fileOffset, SEEK_SET);
+        opp_fseek(f, fileOffset, SEEK_SET);
         if (ferror(f))
             throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
 
@@ -260,7 +260,7 @@ bool FileReader::isLineStart(char *s) {
         else { // slow path
            file_offset_t fileOffset = pointerToFileOffset(s) - 1;
 
-           filereader_fseek(f, fileOffset, SEEK_SET);
+           opp_fseek(f, fileOffset, SEEK_SET);
            if (ferror(f))
                throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
 
@@ -512,8 +512,8 @@ int64 FileReader::getFileSizeInternal()
 {
     ensureFileOpen();
 
-    struct filereader_stat s;
-    filereader_fstat(fileno(f), &s);
+    struct opp_stat s;
+    opp_fstat(fileno(f), &s);
     return s.st_size;
 }
 
