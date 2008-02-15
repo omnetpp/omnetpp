@@ -219,7 +219,7 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
                  throw cRuntimeError(this,eESTKUFLOW);
              const char *argtypes = e.af->argTypes();
              for (int i=0; i<numargs; i++)
-                 if (stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
+                 if (argtypes[i] != '*' && stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
                      throw cRuntimeError(this,eEBADARGS,e.af->name());
              stk[argpos] = e.af->functionPointer()(context, stk+argpos, numargs);
              tos = argpos;
@@ -234,7 +234,7 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
                  throw cRuntimeError(this,eESTKUFLOW);
              const char *argtypes = e.fu->argTypes();
              for (int i=0; i<numargs; i++)
-                 if (stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
+                 if (argtypes[i] != '*' && stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
                      throw cRuntimeError(this,eEBADARGS,e.fu->fullName());
              stk[argpos] = e.fu->evaluate(context, stk+argpos, numargs);
              tos = argpos;
