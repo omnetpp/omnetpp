@@ -19,8 +19,7 @@ simple HTTPClient
         volatile double sendIaTime;
         @display("i=device/pc2");
     gates:
-        input in;
-        output out;
+        inout g;
 }
 
 

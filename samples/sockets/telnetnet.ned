@@ -23,8 +23,7 @@ network TelnetNet
             parameters:
                 @display("p=274,182");
             gates:
-                in[numClients+2];
-                out[numClients+2];
+                g[numClients+2];
         };
         extClient: ExtTelnetClient {
             parameters:
@@ -39,14 +38,9 @@ network TelnetNet
                 @display("p=102,162,col");
         };
     connections:
-        server.out --> cloud.in[0];
-        server.in <-- cloud.out[0];
-        extClient.out --> cloud.in[1];
-        extClient.in <-- cloud.out[1];
-        for i=0..numClients-1 {
-            client[i].out --> cloud.in[i+2];
-            client[i].in <-- cloud.out[i+2];
-        };
+        server.g <--> cloud.g[0];
+        extClient.g <--> cloud.g[1];
+        client[i].g <--> cloud.g[i+2] for i=0..numClients-1;
 }
 
 

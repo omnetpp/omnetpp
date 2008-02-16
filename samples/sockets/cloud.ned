@@ -17,7 +17,6 @@ simple Cloud
         double propDelay;
         @display("i=misc/cloud");
     gates:
-        input in[];
-        output out[];
+        inout g[];
 }
 

@@ -36,7 +36,7 @@ void TelnetServer::endService(cMessage *msg)
     telnetPkt->setDestAddress(clientAddr);
     telnetPkt->setSrcAddress(srvAddr);
 
-    send(msg, "out");
+    send(msg, "g$o");
 }
 
 std::string TelnetServer::processChars(const char *chars)

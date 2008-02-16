@@ -82,7 +82,7 @@ void ExtTelnetClient::handleSocketEvent()
     telnetPkt->setDestAddress(srvAddr);
     telnetPkt->setSrcAddress(addr);
 
-    send(telnetPkt,"out");
+    send(telnetPkt,"g$o");
 }
 
 void ExtTelnetClient::handleReply(TelnetPkt *telnetReply)

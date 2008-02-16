@@ -25,7 +25,7 @@ class Cloud : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module( Cloud );
+Define_Module(Cloud);
 
 void Cloud::initialize()
 {
@@ -40,7 +40,7 @@ void Cloud::handleMessage(cMessage *msg)
     ev << "Relaying packet to addr=" << dest << endl;
 
     // send msg to destination after the delay
-    sendDelayed(pkt, propDelay, "out", dest);
+    sendDelayed(pkt, propDelay, "g$o", dest);
 }
 
 

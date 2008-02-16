@@ -43,7 +43,7 @@ void HTTPServer::endService(cMessage *msg)
     httpMsg->setDestAddress(clientAddr);
     httpMsg->setSrcAddress(srvAddr);
 
-    send(msg, "out");
+    send(msg, "g$o");
 }
 
 

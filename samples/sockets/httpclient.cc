@@ -59,7 +59,7 @@ void HTTPClient::sendHTTPRequest()
     httpMsg->setDestAddress(srvAddr);
     httpMsg->setSrcAddress(addr);
 
-    send(httpMsg,"out");
+    send(httpMsg,"g$o");
 }
 
 void HTTPClient::processHTTPReply(HTTPMsg *httpMsg)

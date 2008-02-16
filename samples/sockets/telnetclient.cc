@@ -60,7 +60,7 @@ void TelnetClient::simulateUserTyping()
     telnetPkt->setDestAddress(srvAddr);
     telnetPkt->setSrcAddress(addr);
 
-    send(telnetPkt,"out");
+    send(telnetPkt,"g$o");
 }
 
 void TelnetClient::processEcho(TelnetPkt *telnetPkt)

@@ -98,7 +98,7 @@ void ExtHTTPClient::handleSocketEvent()
     httpMsg->setDestAddress(srvAddr);
     httpMsg->setSrcAddress(addr);
 
-    send(httpMsg,"out");
+    send(httpMsg,"g$o");
 }
 
 void ExtHTTPClient::handleReply(HTTPMsg *httpReply)
