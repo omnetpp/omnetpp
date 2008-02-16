@@ -17,9 +17,8 @@ simple Txc2
 }
 
 //
-// Here we make the model look a bit prettier in the GUI. We assign
-// the "proc1" icon (bitmaps/proc1.gif), and paint it cyan for `tic'
-// and yellow for `toc'.
+// Here we make the model look a bit prettier in the GUI. We assign the
+// "block/process" icon, and paint it cyan for `tic', and yellow for `toc'.
 //
 network Tictoc2
 {
