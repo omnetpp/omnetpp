@@ -10,7 +10,7 @@
 
 #include <omnetpp.h>
 #include "HttpMsg_m.h"
-#include "csocketrtscheduler.h"
+#include "SocketRTScheduler.h"
 
 
 /**

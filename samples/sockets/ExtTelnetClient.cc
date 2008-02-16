@@ -10,7 +10,7 @@
 
 #include <omnetpp.h>
 #include "TelnetPkt_m.h"
-#include "csocketrtscheduler.h"
+#include "SocketRTScheduler.h"
 
 
 /**

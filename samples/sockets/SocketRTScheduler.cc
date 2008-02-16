@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 
-#include "csocketrtscheduler.h"
+#include "SocketRTScheduler.h"
 
 Register_Class(cSocketRTScheduler);
 
