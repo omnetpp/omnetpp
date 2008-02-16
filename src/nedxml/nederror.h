@@ -62,32 +62,32 @@ class NEDXML_API NEDErrorStore
         /**
          * Add an error message with the severity ERROR.
          */
-        void addError(NEDElement *context, const char *message, ...);
+        void addError(NEDElement *context, const char *messagefmt, ...);
 
         /**
          * Add an error message with the severity ERROR.
          */
-        void addError(const char *location, const char *message, ...);
+        void addError(const char *location, const char *messagefmt, ...);
 
         /**
          * Add an error message with the severity WARNING.
          */
-        void addWarning(NEDElement *context, const char *message, ...);
+        void addWarning(NEDElement *context, const char *messagefmt, ...);
 
         /**
          * Add an error message with the severity WARNING.
          */
-        void addWarning(const char *location, const char *message, ...);
+        void addWarning(const char *location, const char *messagefmt, ...);
 
         /**
          * Add an error message.
          */
-        void add(NEDElement *context, int severity, const char *message, ...);
+        void add(NEDElement *context, int severity, const char *messagefmt, ...);
 
         /**
          * Add an error message.
          */
-        void add(const char *location, int severity, const char *message, ...);
+        void add(const char *location, int severity, const char *messagefmt, ...);
 
         /**
          * Return true if there're no messages stored.
@@ -141,7 +141,7 @@ class NEDXML_API NEDErrorStore
  * This method is typically used via the INTERNAL_ERROR0()...INTERNAL_ERROR4() macros that
  * add the __FILE__, __LINE__ args implicitly.
  */
-void NEDInternalError(const char *file, int line, NEDElement *context, const char *message, ...);
+void NEDInternalError(const char *file, int line, NEDElement *context, const char *messagefmt, ...);
 
 
 NAMESPACE_END

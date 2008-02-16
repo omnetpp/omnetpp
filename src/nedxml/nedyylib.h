@@ -27,6 +27,8 @@ std::string slashifyFilename(const char *fname);
 const char *currentLocation();
 
 NEDElement *createElementWithTag(int tagcode, NEDElement *parent=NULL);
+NEDElement *getOrCreateElementWithTag(int tagcode, NEDElement *parent);
+
 void storePos(NEDElement *node, YYLTYPE pos);
 void storePos(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
@@ -35,6 +37,7 @@ PropertyElement *addComponentProperty(NEDElement *node, const char *name); // in
 
 PropertyElement *storeSourceCode(NEDElement *node, YYLTYPE tokenpos);  // directly under the node
 PropertyElement *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos); // into ParametersElement child
+PropertyElement *setIsNetworkProperty(NEDElement *node); // into ParametersElement child
 
 void addComment(NEDElement *node, const char *locId, const char *comment, const char *defaultValue);
 void storeFileComment(NEDElement *node);
@@ -67,6 +70,7 @@ FunctionElement *createFunction(const char *funcname, NEDElement *arg1=NULL, NED
 IdentElement *createIdent(YYLTYPE parampos);
 IdentElement *createIdent(YYLTYPE parampos, YYLTYPE modulepos, NEDElement *moduleindexoperand=NULL);
 LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos);
+LiteralElement *createLiteral(int type, const char *value, const char *text);
 LiteralElement *createStringLiteral(YYLTYPE textpos);
 LiteralElement *createQuantityLiteral(YYLTYPE textpos);
 NEDElement *unaryMinus(NEDElement *node);

@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# detects the platform and architecture and starts the IDE
+# Detects the platform and architecture, and starts the IDE
 #
 IDEDIR=`dirname $0`/../ide
 $IDEDIR/eclipse >/dev/null &

@@ -541,7 +541,7 @@ networkdefinition
                 {
                   ps.typescope.push(ps.component);
                   ps.blockscope.push(ps.component);
-                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.component);
+                  ps.parameters = (ParametersElement *)ps.component->getFirstChildWithTag(NED_PARAMETERS); // networkheader already created it for @isNetwork
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
@@ -568,10 +568,12 @@ networkheader
                 {
                   ps.component = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleElement *)ps.component)->setName(toString(@2));
-                  //FIXME add back: ((CompoundModuleElement *)ps.component)->setIsNetwork(true);
                 }
           opt_inheritance
-                { storeBannerAndRightComments(ps.component,@$); }
+                {
+                  setIsNetworkProperty(ps.component);
+                  storeBannerAndRightComments(ps.component,@$);
+                }
         ;
 
 /*

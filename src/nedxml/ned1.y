@@ -377,7 +377,7 @@ opt_paramblock
 paramblock
         : PARAMETERS ':'
                 {
-                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.module );
+                  ps.params = (ParametersElement *)getOrCreateElementWithTag(NED_PARAMETERS, ps.module); // network header may have created it for @isNetwork
                   storeBannerAndRightComments(ps.params,@1,@2);
                 }
           opt_parameters
@@ -1106,11 +1106,11 @@ networkheader
                 {
                   ps.module = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleElement *)ps.module)->setName(toString(@2));
-                  //FIXME ((CompoundModuleElement *)ps.module)->setIsNetwork(true);
                   ps.extends = (ExtendsElement *)createElementWithTag(NED_EXTENDS, ps.module);
                   ps.extends->setName(toString(@4));
                   storeBannerAndRightComments(ps.module,@1,@5);
                   storePos(ps.extends, @4);
+                  setIsNetworkProperty(ps.module);
                   ps.inNetwork=1;
                 }
         ;

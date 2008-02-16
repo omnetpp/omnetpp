@@ -78,6 +78,13 @@ NEDElement *createElementWithTag(int tagcode, NEDElement *parent)
     return e;
 }
 
+NEDElement *getOrCreateElementWithTag(int tagcode, NEDElement *parent)
+{
+    assert(parent);
+    NEDElement *e = parent->getFirstChildWithTag(tagcode);
+    return e!=NULL ? e : createElementWithTag(tagcode, parent);
+}
+
 void storePos(NEDElement *node, YYLTYPE pos)
 {
     np->getSource()->trimSpaceAndComments(pos);
@@ -152,6 +159,16 @@ PropertyElement *storeComponentSourceCode(NEDElement *node, YYLTYPE tokenpos)
     prop->setIsImplicit(true);
     PropertyKeyElement *propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, prop);
     propkey->appendChild(createLiteral(NED_CONST_STRING, tokenpos, makeEmptyYYLTYPE()));  // don't store it twice
+    return prop;
+}
+
+PropertyElement *setIsNetworkProperty(NEDElement *node)
+{
+    PropertyElement *prop = addComponentProperty(node, "isNetwork");
+    prop->setIsImplicit(true);
+    // Note: the following is not needed, because @isNetwork already means @isNetwork(true)
+    // PropertyKeyElement *propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, prop);
+    // propkey->appendChild(createLiteral(NED_CONST_BOOL, "true", ""));
     return prop;
 }
 
@@ -389,6 +406,15 @@ LiteralElement *createLiteral(int type, YYLTYPE valuepos, YYLTYPE textpos)
     c->setType(type);
     c->setValue(toString(valuepos));
     c->setText(toString(textpos));
+    return c;
+}
+
+LiteralElement *createLiteral(int type, const char *value, const char *text)
+{
+    LiteralElement *c = (LiteralElement *)createElementWithTag(NED_LITERAL);
+    c->setType(type);
+    c->setValue(value);
+    c->setText(text);
     return c;
 }
 

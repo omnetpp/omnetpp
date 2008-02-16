@@ -21,11 +21,11 @@
 
 NAMESPACE_BEGIN
 
-#define DO_VSPRINTF()  \
+#define VSPRINTF_MESSAGE(formatstring)  \
     va_list va; \
-    va_start(va, message); \
-    char messagebuf[1024]; \
-    vsprintf(messagebuf,message,va); \
+    va_start(va, formatstring); \
+    char message[1024]; \
+    vsprintf(message, formatstring, va); \
     va_end(va);
 
 
@@ -54,40 +54,40 @@ void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, co
    }
 }
 
-void NEDErrorStore::addError(NEDElement *context, const char *message, ...)
+void NEDErrorStore::addError(NEDElement *context, const char *messagefmt, ...)
 {
-    DO_VSPRINTF();
-    doAdd(context, NULL, NED_SEVERITY_ERROR, messagebuf);
+    VSPRINTF_MESSAGE(messagefmt);
+    doAdd(context, NULL, NED_SEVERITY_ERROR, message);
 }
 
-void NEDErrorStore::addError(const char *location, const char *message, ...)
+void NEDErrorStore::addError(const char *location, const char *messagefmt, ...)
 {
-    DO_VSPRINTF();
-    doAdd(NULL, location, NED_SEVERITY_ERROR, messagebuf);
+    VSPRINTF_MESSAGE(messagefmt);
+    doAdd(NULL, location, NED_SEVERITY_ERROR, message);
 }
 
-void NEDErrorStore::addWarning(NEDElement *context, const char *message, ...)
+void NEDErrorStore::addWarning(NEDElement *context, const char *messagefmt, ...)
 {
-    DO_VSPRINTF();
-    doAdd(context, NULL, NED_SEVERITY_WARNING, messagebuf);
+    VSPRINTF_MESSAGE(messagefmt);
+    doAdd(context, NULL, NED_SEVERITY_WARNING, message);
 }
 
-void NEDErrorStore::addWarning(const char *location, const char *message, ...)
+void NEDErrorStore::addWarning(const char *location, const char *messagefmt, ...)
 {
-    DO_VSPRINTF();
-    doAdd(NULL, location, NED_SEVERITY_WARNING, messagebuf);
+    VSPRINTF_MESSAGE(messagefmt);
+    doAdd(NULL, location, NED_SEVERITY_WARNING, message);
 }
 
-void NEDErrorStore::add(NEDElement *context, int severity, const char *message, ...)
+void NEDErrorStore::add(NEDElement *context, int severity, const char *messagefmt, ...)
 {
-    DO_VSPRINTF();
-    doAdd(context, NULL, severity, messagebuf);
+    VSPRINTF_MESSAGE(messagefmt);
+    doAdd(context, NULL, severity, message);
 }
 
-void NEDErrorStore::add(const char *location, int severity, const char *message, ...)
+void NEDErrorStore::add(const char *location, int severity, const char *messagefmt, ...)
 {
-    DO_VSPRINTF();
-    doAdd(NULL, location, severity, messagebuf);
+    VSPRINTF_MESSAGE(messagefmt);
+    doAdd(NULL, location, severity, message);
 }
 
 bool NEDErrorStore::containsError() const
@@ -149,21 +149,17 @@ const char *NEDErrorStore::severityName(int severity)
 
 //---
 
-void NEDInternalError(const char *file, int line, NEDElement *context, const char *message, ...)
+void NEDInternalError(const char *file, int line, NEDElement *context, const char *messagefmt, ...)
 {
-    va_list va;
-    va_start(va, message);
-    char messagebuf[1024];
-    vsprintf(messagebuf,message,va);
-    va_end(va);
+    VSPRINTF_MESSAGE(messagefmt);
 
     const char *loc = context ? context->getSourceLocation() : NULL;
     if (loc)
-        fprintf(stderr, "INTERNAL ERROR: %s:%d: %s: %s\n", file, line, loc, messagebuf);
+        fprintf(stderr, "INTERNAL ERROR: %s:%d: %s: %s\n", file, line, loc, message);
     else if (context)
-        fprintf(stderr, "INTERNAL ERROR: %s:%d: <%s>: %s\n", file, line, context->getTagName(), messagebuf);
+        fprintf(stderr, "INTERNAL ERROR: %s:%d: <%s>: %s\n", file, line, context->getTagName(), message);
     else
-        fprintf(stderr, "INTERNAL ERROR: %s:%d: %s\n", file, line, messagebuf);
+        fprintf(stderr, "INTERNAL ERROR: %s:%d: %s\n", file, line, message);
     // exit(-1);
     //__asm int 3; //FIXME this windows-only
 }

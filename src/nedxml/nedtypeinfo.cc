@@ -97,7 +97,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
     {
         // Note: @class() be used to override inherited implementation class.
         // The @class property itself does NOT get inherited.
-        const char *explicitClassName = NEDElementUtil::getLocalStringProperty(getTree()->getFirstChildWithTag(NED_PARAMETERS), "class");
+        const char *explicitClassName = NEDElementUtil::getLocalStringProperty(getTree(), "class");
         if (!opp_isempty(explicitClassName))
             implClassName = opp_join("::", getCxxNamespace().c_str(), explicitClassName);
         else if (numExtendsNames()!=0)

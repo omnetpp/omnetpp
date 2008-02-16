@@ -21,22 +21,22 @@
 
 NAMESPACE_BEGIN
 
-#define DO_VSPRINTF()  \
+#define VSPRINTF_MESSAGE(formatstring)  \
     va_list va; \
-    va_start(va, message); \
-    char messagebuf[1024]; \
-    vsprintf(messagebuf,message,va); \
+    va_start(va, formatstring); \
+    char message[1024]; \
+    vsprintf(message, formatstring, va); \
     va_end(va);
 
-NEDException::NEDException(const char *message...) : std::runtime_error("")
+NEDException::NEDException(const char *messagefmt...) : std::runtime_error("")
 {
-    DO_VSPRINTF();
+    VSPRINTF_MESSAGE(messagefmt);
     errormsg = message;
 }
 
-NEDException::NEDException(NEDElement *context, const char *message...) : std::runtime_error("")
+NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std::runtime_error("")
 {
-    DO_VSPRINTF();
+    VSPRINTF_MESSAGE(messagefmt);
 
     const char *loc = context ? context->getSourceLocation() : NULL;
     if (loc)

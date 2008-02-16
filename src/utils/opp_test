@@ -789,6 +789,7 @@ sub define_templates()
     $ModuleNEDTemplate = '
 simple @MODULE@
 {
+    @isNetwork(true);
 }
 ';
 

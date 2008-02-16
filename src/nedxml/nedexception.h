@@ -37,12 +37,12 @@ class NEDXML_API NEDException : public std::runtime_error
     /**
      * The error message can be generated in a printf-like manner.
      */
-    NEDException(const char *msg,...);
+    NEDException(const char *messagefmt,...);
 
     /**
      * The error message can be generated in a printf-like manner.
      */
-    NEDException(NEDElement *context, const char *msg,...);
+    NEDException(NEDElement *context, const char *messagefmt,...);
 
     /**
      * Empty desctructor with throw clause for gcc.
