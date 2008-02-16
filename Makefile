@@ -43,7 +43,7 @@ components: base samples
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils
-SAMPLES=aloha cqn dyna fifo hcube hist neddemo queueinglib queuenet routing tictoc tokenring sockets
+SAMPLES=aloha cqn dyna fifo hypercube histograms neddemo queueinglib queuenet routing tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
 #
@@ -118,7 +118,7 @@ tests: check-env base
 
 check-env:
 	@echo "***** Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX) ****"
-	@echo ===== Checking environment =====                                      
+	@echo ===== Checking environment =====
 	@probefile=__probe__; \
 	if (echo '#!/bin/sh' >$(OMNETPP_BIN_DIR)/$$probefile && \
 	    chmod +x $(OMNETPP_BIN_DIR)/$$probefile) 2>/dev/null; then \

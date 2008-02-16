@@ -58,7 +58,7 @@ components: base samples
 #=====================================================================
 
 BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils
-SAMPLES=aloha cqn dyna fifo hcube hist neddemo queueinglib queuenet routing tictoc tokenring sockets
+SAMPLES=aloha cqn dyna fifo hypercube histograms neddemo queueinglib queuenet routing tictoc tokenring sockets
 JNILIBS=org.omnetpp.ned.model  org.omnetpp.ide.nativelibs
         # org.omnetpp.experimental.simkernel   FIXME this does not build currently, to be added back
 
@@ -136,7 +136,7 @@ tests: check-env base
 
 check-env:
 	@echo +++++ Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX)
-	@echo ===== Checking environment =====                                      
+	@echo ===== Checking environment =====
 	@if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0, Win2K or XP! && exit 1
 	@echo  Checking if $(CXX) works...
 	@$(CXX) /? /nologo <nul > nul || echo ERROR: Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1
