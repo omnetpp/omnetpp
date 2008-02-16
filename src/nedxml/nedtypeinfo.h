@@ -70,8 +70,6 @@ class NEDXML_API NEDTypeInfo
     std::string implClassName;
 
   protected:
-    // utility function
-    static const char *getSingleValueLocalProperty(NEDElement *parent, const char *name);
     // utility function: XXX needed here? or move to subclass?
     NEDElement *getSubcomponentElement(const char *subcomponentName) const;
 
@@ -93,14 +91,6 @@ class NEDXML_API NEDTypeInfo
 
     /** The NED type resolver this type is registered in */
     NEDResourceCache *getResolver() const  {return resolver;}
-
-    /** @name Return one element from the tree */
-    //@{
-    virtual ParametersElement *getParametersElement() const;
-    virtual GatesElement *getGatesElement() const;
-    virtual SubmodulesElement *getSubmodulesElement() const;
-    virtual ConnectionsElement *getConnectionsElement() const;
-    //@}
 
     /**
      * Returns the type of this declaration: simple module, compound module,
@@ -153,6 +143,12 @@ class NEDXML_API NEDTypeInfo
     virtual bool supportsInterface(const char *qname);
 
     /**
+     * Returns true if this NED type has a local (non-inherited)
+     * @network (or @network(true)) property.
+     */
+    virtual bool isNetwork();
+
+    /**
      * For simple modules and channels, it returns the name of the C++ class that
      * has to be instantiated; otherwise it returns NULL.
      */
@@ -163,6 +159,15 @@ class NEDXML_API NEDTypeInfo
 
     /** Returns the first "extends" clause, or NULL */
     virtual NEDTypeInfo *getSuperDecl() const;
+
+    /** @name Convenience method to query the tree */
+    //@{
+    ParametersElement *getParametersElement() const;
+    GatesElement *getGatesElement() const;
+    SubmodulesElement *getSubmodulesElement() const;
+    ConnectionsElement *getConnectionsElement() const;
+    //@}
+
 };
 
 NAMESPACE_END

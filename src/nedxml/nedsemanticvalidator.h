@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
 
 class NEDResourceCache;
 
-//XXX *** CURRENTLY NOT IN USE ***
+// *** CURRENTLY NOT IN USE ***
 
 /**
  * Performs semantic validation. Should be called after tree passed

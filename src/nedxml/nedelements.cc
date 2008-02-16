@@ -19,6 +19,7 @@
 
 #include <string.h>
 #include "nederror.h"
+#include "nedexception.h"
 #include "nedelements.h"
 
 NAMESPACE_BEGIN
@@ -624,26 +625,23 @@ CommentElement *InterfaceNameElement::getFirstCommentChild() const
 
 SimpleModuleElement::SimpleModuleElement()
 {
-    isNetwork = false;
     applyDefaults();
 }
 
 SimpleModuleElement::SimpleModuleElement(NEDElement *parent) : NEDElement(parent)
 {
-    isNetwork = false;
     applyDefaults();
 }
 
 int SimpleModuleElement::getNumAttributes() const
 {
-    return 2;
+    return 1;
 }
 
 const char *SimpleModuleElement::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "is-network";
         default: return 0;
     }
 }
@@ -652,7 +650,6 @@ const char *SimpleModuleElement::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return boolToString(isNetwork);
         default: return 0;
     }
 }
@@ -661,7 +658,6 @@ void SimpleModuleElement::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: isNetwork = stringToBool(val); break;
         default: ;
     }
 }
@@ -670,7 +666,6 @@ const char *SimpleModuleElement::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
-        case 1: return "false";
         default: return 0;
     }
 }
@@ -679,7 +674,6 @@ SimpleModuleElement *SimpleModuleElement::dup() const
 {
     SimpleModuleElement *element = new SimpleModuleElement();
     element->name = this->name;
-    element->isNetwork = this->isNetwork;
     return element;
 }
 
@@ -794,26 +788,23 @@ GatesElement *ModuleInterfaceElement::getFirstGatesChild() const
 
 CompoundModuleElement::CompoundModuleElement()
 {
-    isNetwork = false;
     applyDefaults();
 }
 
 CompoundModuleElement::CompoundModuleElement(NEDElement *parent) : NEDElement(parent)
 {
-    isNetwork = false;
     applyDefaults();
 }
 
 int CompoundModuleElement::getNumAttributes() const
 {
-    return 2;
+    return 1;
 }
 
 const char *CompoundModuleElement::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "is-network";
         default: return 0;
     }
 }
@@ -822,7 +813,6 @@ const char *CompoundModuleElement::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return boolToString(isNetwork);
         default: return 0;
     }
 }
@@ -831,7 +821,6 @@ void CompoundModuleElement::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: isNetwork = stringToBool(val); break;
         default: ;
     }
 }
@@ -840,7 +829,6 @@ const char *CompoundModuleElement::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return NULL;
-        case 1: return "false";
         default: return 0;
     }
 }
@@ -849,7 +837,6 @@ CompoundModuleElement *CompoundModuleElement::dup() const
 {
     CompoundModuleElement *element = new CompoundModuleElement();
     element->name = this->name;
-    element->isNetwork = this->isNetwork;
     return element;
 }
 

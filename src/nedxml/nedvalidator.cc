@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include "nederror.h"
+#include "nedexception.h"
 #include "nedvalidator.h"
 
 NAMESPACE_BEGIN

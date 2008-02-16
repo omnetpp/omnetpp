@@ -18,6 +18,7 @@
 #include <string>
 #include <sstream>
 #include "ned2generator.h"
+#include "nedutil.h"
 #include "stringutil.h"
 #include "nederror.h"
 
@@ -83,6 +84,14 @@ const char *NED2Generator::increaseIndent(const char *indent)
 const char *NED2Generator::decreaseIndent(const char *indent)
 {
     return indent + indentsize;
+}
+
+//---------------------------------------------------------------------------
+
+static bool _isNetwork(NEDElement *node)
+{
+    Assert(node->getTagCode()==NED_COMPOUND_MODULE || node->getTagCode()==NED_SIMPLE_MODULE);
+    return NEDElementUtil::getLocalBoolProperty(node, "isNetwork");
 }
 
 //---------------------------------------------------------------------------
@@ -343,7 +352,7 @@ void NED2Generator::doModuleInterface(ModuleInterfaceElement *node, const char *
 void NED2Generator::doCompoundModule(CompoundModuleElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
-    OUT << indent << (node->getIsNetwork() ? "network" : "module") << " " << node->getName();
+    OUT << indent << (_isNetwork(node) ? "network" : "module") << " " << node->getName();
     printInheritance(node, indent);
     OUT << getRightComment(node);
     OUT << indent << "{\n";

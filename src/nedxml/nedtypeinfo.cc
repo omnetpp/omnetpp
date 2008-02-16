@@ -18,6 +18,8 @@
 #include <sstream>
 #include "stringutil.h"
 #include "nederror.h"
+#include "nedutil.h"
+#include "nedexception.h"
 #include "nedtypeinfo.h"
 #include "nedresourcecache.h"
 #include "ned2generator.h"
@@ -56,7 +58,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
             NEDTypeInfo *decl = getResolver()->lookup(extendsqname.c_str());
             Assert(decl);
             if (getType() != decl->getType())
-                throw NEDException("%s: a %s cannot extend a %s (%s)", getTree()->getSourceLocation(), getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
+                throw NEDException(getTree(), "a %s cannot extend a %s (%s)", getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
 
             // collect interfaces from our base types
             if (isInterface)
@@ -77,7 +79,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
             NEDTypeInfo *decl = getResolver()->lookup(interfaceqname.c_str());
             Assert(decl);
             if (decl->getType() != (getType()==CHANNEL ? CHANNELINTERFACE : MODULEINTERFACE))
-                throw NEDException("%s: base type %s is expected to be a %s interface", getTree()->getSourceLocation(), interfaceqname.c_str(), (getType()==CHANNEL ? "channel" : "module"));
+                throw NEDException(getTree(), "base type %s is expected to be a %s interface", interfaceqname.c_str(), (getType()==CHANNEL ? "channel" : "module"));
 
             // we support all interfaces that our base interfaces extend
             for (int i=0; i<decl->numExtendsNames(); i++)
@@ -95,7 +97,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
     {
         // Note: @class() be used to override inherited implementation class.
         // The @class property itself does NOT get inherited.
-        const char *explicitClassName = getSingleValueLocalProperty(getTree()->getFirstChildWithTag(NED_PARAMETERS), "class");
+        const char *explicitClassName = NEDElementUtil::getLocalStringProperty(getTree()->getFirstChildWithTag(NED_PARAMETERS), "class");
         if (!opp_isempty(explicitClassName))
             implClassName = opp_join("::", getCxxNamespace().c_str(), explicitClassName);
         else if (numExtendsNames()!=0)
@@ -128,27 +130,6 @@ NEDElement *NEDTypeInfo::getTree() const
     return tree;
 }
 
-ParametersElement *NEDTypeInfo::getParametersElement() const
-{
-    return (ParametersElement *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
-}
-
-GatesElement *NEDTypeInfo::getGatesElement() const
-{
-    return (GatesElement *)getTree()->getFirstChildWithTag(NED_GATES);
-}
-
-SubmodulesElement *NEDTypeInfo::getSubmodulesElement() const
-{
-    return (SubmodulesElement *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
-}
-
-ConnectionsElement *NEDTypeInfo::getConnectionsElement() const
-{
-    return (ConnectionsElement *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
-}
-
-
 std::string NEDTypeInfo::getPackage() const
 {
     NEDElement *nedfile = getTree()->getParentWithTag(NED_NED_FILE);
@@ -164,7 +145,7 @@ std::string NEDTypeInfo::getCxxNamespace() const
     while (true) {
         // check the package.ned file for this property
         NEDElement *nedfile = getResolver()->getPackageNedFile(packageName.c_str());
-        namespaceName = nedfile ? getSingleValueLocalProperty(nedfile, "namespace") : NULL;
+        namespaceName = nedfile ? NEDElementUtil::getLocalStringProperty(nedfile, "namespace") : NULL;
         if (namespaceName)
             break;
 
@@ -177,22 +158,6 @@ std::string NEDTypeInfo::getCxxNamespace() const
     }
 
     return opp_nulltoempty(namespaceName);
-}
-
-const char *NEDTypeInfo::getSingleValueLocalProperty(NEDElement *parent, const char *name)
-{
-    if (!parent)
-        return NULL;
-
-    PropertyElement *propNode = (PropertyElement *)parent->getFirstChildWithAttribute(NED_PROPERTY, "name", name);
-    if (!propNode)
-        return NULL;
-
-    NEDElement *propKey = propNode->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", ""); //FIXME this must be the only child
-    LiteralElement *literal = propKey ? (LiteralElement *)propKey->getFirstChildWithTag(NED_LITERAL) : NULL;  //FIXME there must be exactly one value
-    if (literal)
-        return literal->getValue();
-    return NULL; //FIXME error no value given
 }
 
 std::string NEDTypeInfo::info() const
@@ -262,6 +227,31 @@ NEDTypeInfo *NEDTypeInfo::getSuperDecl() const
     return getResolver()->getDecl(superName);
 }
 
+bool NEDTypeInfo::isNetwork()
+{
+    return NEDElementUtil::getLocalBoolProperty(getTree(), "isNetwork");
+}
+
+ParametersElement *NEDTypeInfo::getParametersElement() const
+{
+    return (ParametersElement *)getTree()->getFirstChildWithTag(NED_PARAMETERS);
+}
+
+GatesElement *NEDTypeInfo::getGatesElement() const
+{
+    return (GatesElement *)getTree()->getFirstChildWithTag(NED_GATES);
+}
+
+SubmodulesElement *NEDTypeInfo::getSubmodulesElement() const
+{
+    return (SubmodulesElement *)getTree()->getFirstChildWithTag(NED_SUBMODULES);
+}
+
+ConnectionsElement *NEDTypeInfo::getConnectionsElement() const
+{
+    return (ConnectionsElement *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
+}
+
 NEDElement *NEDTypeInfo::getSubcomponentElement(const char *subcomponentName) const
 {
     // try as submodule
@@ -281,6 +271,5 @@ NEDElement *NEDTypeInfo::getSubcomponentElement(const char *subcomponentName) co
     }
     return NULL;
 }
-
 
 

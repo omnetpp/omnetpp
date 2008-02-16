@@ -19,10 +19,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "nederror.h"
+#include "nedexception.h"
 #include "nedutil.h"
 #include "stringutil.h"
 #include "displaystring.h"
+#include "nedelements.h"
 
 USING_NAMESPACE
 
@@ -71,7 +72,7 @@ std::string DisplayStringUtil::upgradeConnectionDisplayString(const char *s)
     parseDisplayString(s, ds);
     renameTag(ds, "o", "ls");
     // FIXME TT tag: the color parameter (old format 2nd) should go to the 3rd position in the new format
-    // the 2nd par is position (was not supported previously)    
+    // the 2nd par is position (was not supported previously)
     return ds.toString();
 }
 
@@ -128,5 +129,67 @@ std::string DisplayStringUtil::toOldConnectionDisplayString(const char *s)
     parseDisplayString(s, ds);
     renameTag(ds, "ls", "o");
     return ds.toString();
+}
+
+//----
+
+const char *NEDElementUtil::getLocalStringProperty(NEDElement *parent, const char *name)
+{
+    return propertyAsString(getLocalProperty(parent, name));
+}
+
+bool NEDElementUtil::getLocalBoolProperty(NEDElement *parent, const char *name)
+{
+    return propertyAsBool(getLocalProperty(parent, name));
+}
+
+PropertyElement *NEDElementUtil::getLocalProperty(NEDElement *parent, const char *name)
+{
+    // find first as direct child, then in potential "parameters" section
+    PropertyElement *result = (PropertyElement *)parent->getFirstChildWithAttribute(NED_PROPERTY, "name", name);
+    if (result)
+        return result;
+    parent = parent->getFirstChildWithTag(NED_PARAMETERS);
+    if (parent)
+        result = (PropertyElement *)parent->getFirstChildWithAttribute(NED_PROPERTY, "name", name);
+    return result;
+}
+
+LiteralElement *NEDElementUtil::getTheOnlyValueFrom(PropertyElement *property)
+{
+    // first (only?) value of the default (only?) key
+    if (!property)
+        return NULL;
+    NEDElement *propertyKey = property->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", "");
+    int count = property->getNumChildrenWithTag(NED_PROPERTY_KEY);
+    if (count != (propertyKey ? 1 : 0))
+        throw NEDException(property, "should contain a single value");
+    if (!propertyKey)
+        return NULL;
+    if (propertyKey->getNumChildrenWithTag(NED_LITERAL) >= 2)
+        throw NEDException(property, "should contain a single value");
+    return (LiteralElement *)propertyKey->getFirstChildWithTag(NED_LITERAL);
+}
+
+bool NEDElementUtil::propertyAsBool(PropertyElement *property)
+{
+    if (!property)
+        return false;
+    LiteralElement *literal = getTheOnlyValueFrom(property);
+    if (!literal)
+        return true;  // so that @isNetwork is equivalent to @isNetwork(true)
+    if (literal->getType() != NED_CONST_BOOL)
+        throw NEDException(property, "boolean value expected");
+    return literal->getValue()[0]=='t';
+}
+
+const char *NEDElementUtil::propertyAsString(PropertyElement *property)
+{
+    if (!property)
+        return NULL;
+    LiteralElement *literal = getTheOnlyValueFrom(property);
+    if (!literal)
+        return NULL;
+    return literal->getValue(); // return anything as string
 }
 

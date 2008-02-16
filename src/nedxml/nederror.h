@@ -19,10 +19,11 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
-#include "nedelement.h"
+#include "nedxmldefs.h"
 
 NAMESPACE_BEGIN
 
+class NEDElement;
 
 // Note: this cannot be inner type because of swig wrapping
 enum NEDErrorSeverity {NED_SEVERITY_INFO, NED_SEVERITY_WARNING, NED_SEVERITY_ERROR};
@@ -141,32 +142,6 @@ class NEDXML_API NEDErrorStore
  * add the __FILE__, __LINE__ args implicitly.
  */
 void NEDInternalError(const char *file, int line, NEDElement *context, const char *message, ...);
-
-
-/**
- * Low-level routines throw an exception instead of calling NEDErrorStore->add().
- */
-class NEDXML_API NEDException : public std::runtime_error   //FIXME into separate header file
-{
-  protected:
-    std::string errormsg;
-
-  public:
-    /**
-     * The error message can be generated in a printf-like manner.
-     */
-    NEDException(const char *msg,...);
-
-    /**
-     * Empty desctructor with throw clause for gcc.
-     */
-    virtual ~NEDException() throw() {}
-
-    /**
-     * Returns the text of the error. Redefined from std::exception.
-     */
-    virtual const char *what() const throw() {return errormsg.c_str();}
-};
 
 
 NAMESPACE_END

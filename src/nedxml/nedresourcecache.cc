@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "nederror.h"
+#include "nedexception.h"
 #include "nedresourcecache.h"
 #include "nedparser.h"
 #include "nedxmlparser.h"

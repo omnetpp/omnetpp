@@ -16,10 +16,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "nederror.h"
-#include "nedsemanticvalidator.h"
-#include "nedresourcecache.h"
 #include "stringutil.h"
+#include "nederror.h"
+#include "nedexception.h"
+#include "nedresourcecache.h"
+#include "nedsemanticvalidator.h"
 
 USING_NAMESPACE
 

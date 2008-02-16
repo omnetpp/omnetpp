@@ -21,6 +21,7 @@
 
 #include "nedelement.h"
 #include "nederror.h"
+#include "nedexception.h"
 
 USING_NAMESPACE
 

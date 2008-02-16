@@ -25,7 +25,11 @@
 
 NAMESPACE_BEGIN
 
+//FIXME split to several files
+
 class DisplayString;
+class PropertyElement;
+class LiteralElement;
 
 /**
  * Display string conversions.
@@ -41,6 +45,20 @@ class DisplayStringUtil
     static std::string toOldBackgroundDisplayString(const char *s);
     static std::string toOldSubmoduleDisplayString(const char *s);
     static std::string toOldConnectionDisplayString(const char *s);
+};
+
+class NEDElementUtil
+{
+  public:
+    /** @name Utilities for accessing properties */
+    //@{
+    static const char *getLocalStringProperty(NEDElement *parent, const char *name);
+    static bool getLocalBoolProperty(NEDElement *parent, const char *name);
+    static PropertyElement *getLocalProperty(NEDElement *parent, const char *name);
+    static LiteralElement *getTheOnlyValueFrom(PropertyElement *property);
+    static bool propertyAsBool(PropertyElement *property);
+    static const char *propertyAsString(PropertyElement *property);
+    //@}
 };
 
 NAMESPACE_END

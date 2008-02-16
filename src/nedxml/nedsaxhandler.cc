@@ -17,6 +17,7 @@
 #include "nedsaxhandler.h"
 #include "nedelements.h"
 #include "nederror.h"
+#include "nedexception.h"
 
 USING_NAMESPACE
 

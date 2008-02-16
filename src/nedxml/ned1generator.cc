@@ -90,10 +90,10 @@ const char *NED1Generator::decreaseIndent(const char *indent)
 
 //---------------------------------------------------------------------------
 
-static bool _isNetworkNode(NEDElement *node)
+static bool _isNetwork(NEDElement *node)
 {
-    return (node->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleElement *)node)->getIsNetwork())
-        || (node->getTagCode()==NED_SIMPLE_MODULE && ((SimpleModuleElement *)node)->getIsNetwork());
+    Assert(node->getTagCode()==NED_COMPOUND_MODULE || node->getTagCode()==NED_SIMPLE_MODULE);
+    return NEDElementUtil::getLocalBoolProperty(node, "isNetwork");
 }
 
 //---------------------------------------------------------------------------
@@ -145,7 +145,7 @@ void NED1Generator::generateChildrenWithTypes(NEDElement *node, int tagcodes[], 
 void NED1Generator::printInheritance(NEDElement *node, const char *indent)
 {
     // for network...endnetwork, print " : type", otherwise warn for any "extends" or "like"
-    if (_isNetworkNode(node))
+    if (_isNetwork(node))
     {
         if (node->getNumChildrenWithTag(NED_INTERFACE_NAME)>0)
             errors->addWarning(node, NED2FEATURE "inheritance");
@@ -340,7 +340,7 @@ void NED1Generator::doModuleInterface(ModuleInterfaceElement *node, const char *
 void NED1Generator::doCompoundModule(CompoundModuleElement *node, const char *indent, bool islast, const char *)
 {
     OUT << getBannerComment(node, indent);
-    OUT << indent << (node->getIsNetwork() ? "network" : "module") << " " << node->getName();
+    OUT << indent << (_isNetwork(node) ? "network" : "module") << " " << node->getName();
     printInheritance(node, indent);
     OUT << getRightComment(node);
 
@@ -364,7 +364,7 @@ void NED1Generator::doCompoundModule(CompoundModuleElement *node, const char *in
         }
     }
 
-    OUT << indent << (node->getIsNetwork() ? "endnetwork" : "endmodule") << getTrailingComment(node);
+    OUT << indent << (_isNetwork(node) ? "endnetwork" : "endmodule") << getTrailingComment(node);
 }
 
 void NED1Generator::doChannelInterface(ChannelInterfaceElement *node, const char *indent, bool islast, const char *)
@@ -389,7 +389,7 @@ void NED1Generator::doParameters(ParametersElement *node, const char *indent, bo
 {
     // in NED-1, parameters followed different syntaxes at different places
     int parentTag = node->getParent()->getTagCode();
-    if (parentTag==NED_SUBMODULE || _isNetworkNode(node->getParent()))
+    if (parentTag==NED_SUBMODULE || _isNetwork(node->getParent()))
         doSubstParameters(node, indent);
     else if (parentTag==NED_SIMPLE_MODULE || parentTag==NED_COMPOUND_MODULE)
         doModuleParameters(node, indent);

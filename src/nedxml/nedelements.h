@@ -526,8 +526,7 @@ class NEDXML_API InterfaceNameElement : public NEDElement
  * <pre>
  * <!ELEMENT simple-module (comment*, extends?, interface-name*, parameters?, gates?)>
  * <!ATTLIST simple-module
- *      name               NMTOKEN   #REQUIRED
- *      is-network         (true|false) "false">
+ *      name               NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -536,7 +535,6 @@ class NEDXML_API SimpleModuleElement : public NEDElement
 {
   private:
     std::string name;
-    bool isNetwork;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -561,8 +559,6 @@ class NEDXML_API SimpleModuleElement : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    bool getIsNetwork() const  {return isNetwork;}
-    void setIsNetwork(bool val)  {isNetwork = val;}
 
     virtual SimpleModuleElement *getNextSimpleModuleSibling() const;
     virtual CommentElement *getFirstCommentChild() const;
@@ -628,8 +624,7 @@ class NEDXML_API ModuleInterfaceElement : public NEDElement
  * <!ELEMENT compound-module (comment*, extends?, interface-name*,
  *                            parameters?, gates?, types?, submodules?, connections?)>
  * <!ATTLIST compound-module
- *      name               NMTOKEN   #REQUIRED
- *      is-network         (true|false) "false">
+ *      name               NMTOKEN   #REQUIRED>
  * </pre>
  * 
  * @ingroup Data
@@ -638,7 +633,6 @@ class NEDXML_API CompoundModuleElement : public NEDElement
 {
   private:
     std::string name;
-    bool isNetwork;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -663,8 +657,6 @@ class NEDXML_API CompoundModuleElement : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
-    bool getIsNetwork() const  {return isNetwork;}
-    void setIsNetwork(bool val)  {isNetwork = val;}
 
     virtual CompoundModuleElement *getNextCompoundModuleSibling() const;
     virtual CommentElement *getFirstCommentChild() const;

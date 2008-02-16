@@ -20,6 +20,8 @@
 #ifndef __NEDVALIDATOR_H
 #define __NEDVALIDATOR_H
 
+#include "nederror.h"
+#include "nedexception.h"
 #include "nedelements.h"
 
 NAMESPACE_BEGIN

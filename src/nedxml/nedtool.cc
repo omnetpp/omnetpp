@@ -25,6 +25,7 @@
 
 #include "nedparser.h"
 #include "nederror.h"
+#include "nedexception.h"
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"

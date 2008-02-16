@@ -17,6 +17,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include "nederror.h"
+#include "nedelement.h"
 
 NAMESPACE_BEGIN
 
@@ -165,17 +166,6 @@ void NEDInternalError(const char *file, int line, NEDElement *context, const cha
         fprintf(stderr, "INTERNAL ERROR: %s:%d: %s\n", file, line, messagebuf);
     // exit(-1);
     //__asm int 3; //FIXME this windows-only
-}
-
-NEDException::NEDException(const char *msgformat...) : std::runtime_error("")
-{
-    va_list va;
-    va_start(va, msgformat);
-    char message[1024];
-    vsprintf(message,msgformat,va);
-    va_end(va);
-
-    errormsg = message;
 }
 
 NAMESPACE_END
