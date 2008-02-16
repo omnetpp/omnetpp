@@ -1,0 +1,15 @@
+%description:
+Test that @isNetwork(false) works
+
+%file: test.ned
+
+module Test
+{
+    parameters:
+        @isNetwork(false);
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+Module type `Test' is not a network

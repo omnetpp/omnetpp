@@ -1,0 +1,19 @@
+%description:
+Test that @isNetwork is NOT inherited (rationale: subclass may add gates)
+
+%file: test.ned
+
+module Base
+{
+    parameters:
+        @isNetwork(true);
+}
+
+module Test extends Base
+{
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+Module type `Test' is not a network

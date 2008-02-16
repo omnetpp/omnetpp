@@ -1,0 +1,12 @@
+%description:
+Test that @isNetwork(true) is equivalent to the "network" keyword
+
+%file: test.ned
+
+module Test
+{
+    parameters:
+        @isNetwork(true);
+}
+
+%exitcode: 0

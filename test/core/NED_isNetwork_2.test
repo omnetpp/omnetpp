@@ -1,0 +1,12 @@
+%description:
+Test that @isNetwork is the same as @isNetwork(true)
+
+%file: test.ned
+
+module Test
+{
+    parameters:
+        @isNetwork;
+}
+
+%exitcode: 0

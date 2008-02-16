@@ -1,0 +1,35 @@
+%description:
+Test that if @isNetwork is missing, simple module cannot be used as network
+
+%file: test.ned
+
+simple Test
+{
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+    ev << "Hello\n";
+}
+
+}; //namespace
+
+%exitcode: 1
+
+%contains-regex: stdout
+Module type `Test' is not a network
