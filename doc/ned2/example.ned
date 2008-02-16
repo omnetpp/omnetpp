@@ -272,6 +272,10 @@ simple TCP1
         inout toNetw @labels(TCPSegment);       // inout; label means "sends/expects TCPSegment"
 }
 
+simple Test
+{
+    @isNetwork;
+}
 
 module MobileHost1
 {

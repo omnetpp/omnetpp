@@ -49,8 +49,7 @@
 
 <!ELEMENT simple-module (comment*, extends?, interface-name*, parameters?, gates?)>
 <!ATTLIST simple-module
-     name               NMTOKEN   #REQUIRED
-     is-network         (true|false) "false">
+     name               NMTOKEN   #REQUIRED>
 
 <!ELEMENT module-interface (comment*, extends*, parameters?, gates?)>
 <!ATTLIST module-interface
@@ -59,8 +58,7 @@
 <!ELEMENT compound-module (comment*, extends?, interface-name*,
                            parameters?, gates?, types?, submodules?, connections?)>
 <!ATTLIST compound-module
-     name               NMTOKEN   #REQUIRED
-     is-network         (true|false) "false">
+     name               NMTOKEN   #REQUIRED>
 
 <!ELEMENT channel-interface (comment*, extends*, parameters?)>
 <!ATTLIST channel-interface
