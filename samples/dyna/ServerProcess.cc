@@ -8,7 +8,7 @@
 //
 
 
-#include "dynapacket_m.h"
+#include "DynaPacket_m.h"
 
 #define STACKSIZE 16384
 
