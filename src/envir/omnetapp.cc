@@ -1422,15 +1422,15 @@ cModuleType *TOmnetApp::resolveNetwork(const char *networkname)
     cModuleType *network = NULL;
     bool hasInifilePackage = !opt_network_inifilepackage.empty() && strcmp(opt_network_inifilepackage.c_str(),"-")!=0;
     if (hasInifilePackage)
-        network = cModuleType::find(opp_join(".", opt_network_inifilepackage.c_str(), opt_network_name.c_str()).c_str());
+        network = cModuleType::find(opp_join(".", opt_network_inifilepackage.c_str(), networkname).c_str());
     if (!network)
-        network = cModuleType::find(opt_network_name.c_str());
+        network = cModuleType::find(networkname);
     if (!network) {
         if (hasInifilePackage)
-            throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files", opt_network_name.c_str(),
-                                opp_join(".", opt_network_inifilepackage.c_str(), opt_network_name.c_str()).c_str());
+            throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files", networkname,
+                                opp_join(".", opt_network_inifilepackage.c_str(), networkname).c_str());
         else
-            throw cRuntimeError("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
+            throw cRuntimeError("Network `%s' not found, check .ini and .ned files", networkname);
     }
     if (!network->isNetwork())
         throw cRuntimeError("Module type `%s' is not a network", network->fullName());

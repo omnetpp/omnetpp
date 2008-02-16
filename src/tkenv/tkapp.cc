@@ -675,7 +675,7 @@ void TOmnetTkApp::newNetwork(const char *networkname)
             simstate = SIM_NONET;
         }
 
-        cModuleType *network = resolveNetwork(opt_network_name.c_str());
+        cModuleType *network = resolveNetwork(networkname);
         ASSERT(network);
 
         CHK(Tcl_VarEval(interp, "clear_windows", NULL));
