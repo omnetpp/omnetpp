@@ -19,7 +19,8 @@ WISH="wish"; if [ -f ~/.wishname ]; then WISH=`cat ~/.wishname`; fi; exec $WISH 
 # Configuration
 #
 set wantScrollbar 1
-set unixbrowser "netscape"
+set unixbrowser "firefox"
+#set unixbrowser "netscape"
 #set unixbrowser "mozilla"
 #set unixbrowser "konqueror"
 
@@ -53,7 +54,7 @@ foreach line {
    {color3  "Hist"             "histograms"       "./histograms"    "histograms.cmd"}
    {color4  "Fifo"             "fifo"             "./fifo"          "fifo.cmd"}
    {color4  "CQN"              "cqn"              "./cqn"           "cqn.cmd"}
-   {color4  "QueueNet"         "queuenet"         "./queuenet"      "queuenet"}
+   {color4  "QueueNet"         "queuenet"         "./queuenet"      "queuenet.cmd"}
    {color5  "Aloha"            "aloha"            "./aloha"         "aloha.cmd"}
    {color5  "Dyna"             "dyna"             "./dyna"          "dyna.cmd"}
    {color5  "TokenRing"        "tokenring"        "./tokenring"     "tokenring.cmd"}
@@ -284,11 +285,12 @@ proc loadFile {t filename} {
 proc runSample {sample} {
     global samples db tcl_platform
 
-   if {$tcl_platform(platform) == "unix"} {
-      set prog $db($sample,uprog)
-   } else {
+   if {$tcl_platform(platform) == "windows"} {
       set prog $db($sample,wprog)
       regsub -- {\\} $prog {\\\\} prog
+      set prog "cmd.exe /c $prog"
+   } else {
+      set prog $db($sample,uprog)
    }
 
    set pwd [pwd]
