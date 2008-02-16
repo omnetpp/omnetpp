@@ -21,7 +21,7 @@ simple GenMod
         output out4[];
 }
 
-module Test
+network Test
 {
     submodules:
         specMod: GenMod {

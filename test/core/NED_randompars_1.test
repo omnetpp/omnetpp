@@ -6,6 +6,7 @@ Test random module parameters
 simple Test
 {
     parameters:
+        @isNetwork(true);
         volatile double p0 = truncnormal(10, 3);
         volatile double p1 = 1+truncnormal(10, 3);
         double c0 = exponential(1);

@@ -6,6 +6,7 @@ Negative test for a value with multiple units in NED.
 simple Test
 {
     parameters:
+        @isNetwork(true);
         double p1 = 1h 22s 550ms @unit(s); // values may not have multiple units
 }
 

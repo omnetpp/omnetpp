@@ -6,6 +6,7 @@ Test that non-volatile parameters in NED are really converted to constant.
 simple Test
 {
     parameters:
+        @isNetwork(true);
         double p0 = truncnormal(10, 3);
         double p1 = 1+truncnormal(10, 3);
         double p2 = exponential(1);

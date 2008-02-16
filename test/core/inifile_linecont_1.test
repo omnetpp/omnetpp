@@ -6,6 +6,7 @@ check that backslash line continuation works
 simple Simple
 {
     parameters:
+        @isNetwork(true);
         string str;
 }
 

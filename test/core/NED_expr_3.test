@@ -6,6 +6,7 @@ Test operators in NED, with constant (non-volatile) parameters.
 simple Test
 {
     parameters:
+        @isNetwork(true);
         double p00 = -3;      // unary minus or negative constant
         double p01 = -(4+1);  // unary minus
 

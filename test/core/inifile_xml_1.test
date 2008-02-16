@@ -24,6 +24,7 @@ Check xmldoc("filename.xml") and xmldoc("filename.xml", "pathexpr") functionalit
 simple Simple
 {
     parameters:
+        @isNetwork(true);
         xml xmlconfig1;
         xml xmlconfig2;
 }

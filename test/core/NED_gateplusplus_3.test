@@ -28,7 +28,7 @@ module Node
         }
 }
 
-module Test
+network Test
 {
     submodules:
         node1: Node {

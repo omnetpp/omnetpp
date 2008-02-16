@@ -1,5 +1,5 @@
 %description:
-Test simple module inheritance cycle.
+Test module usage cycle.
 
 %file: test.ned
 
@@ -21,8 +21,8 @@ network Test
         m: Module1;
 }
 
-// the following prevents hanging up
-THIS HANGS UP NOW!
+// the following prevents hanging
+THIS HANGS NOW!
 
 %contains: stdout
 // TODO: report an error

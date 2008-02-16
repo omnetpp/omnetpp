@@ -16,6 +16,7 @@ The dist/ dir can be used to test the functions.
 simple Test
 {
     parameters:
+        @isNetwork(true);
         volatile double uniform_par = uniform(1.0, 2.0, 9);
         volatile double exponential_par = exponential(1.0, 9);
         volatile double normal_par = normal(1.0, 1.0, 9);

@@ -6,6 +6,7 @@ Negative test for expressions that they do not have units in NED.
 simple Test
 {
     parameters:
+        @isNetwork(true);
         double p1 = floor(10.2ms) + 0.5 @unit(s); // expression units are not supported
 }
 

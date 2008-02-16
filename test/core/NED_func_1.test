@@ -7,6 +7,7 @@ networks
 simple Test
 {
     parameters:
+        @isNetwork(true);
         double p0 = testfunc0();
         double p1 = testfunc1(10);
         double p2 = testfunc2(10, 20);

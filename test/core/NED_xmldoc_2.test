@@ -23,6 +23,7 @@ Check xmldoc(): no such file
 simple Test
 {
     parameters:
+        @isNetwork(true);
         xml xmlconfig = xmldoc("nosuchfile.xml");
 }
 

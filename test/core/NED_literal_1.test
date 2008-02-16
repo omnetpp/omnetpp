@@ -6,6 +6,7 @@ Test literals in NED.
 simple Test
 {
     parameters:
+        @isNetwork(true);
         string s1 = "hello";
         string s2 = "";
 

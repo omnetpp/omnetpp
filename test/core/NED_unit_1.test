@@ -7,6 +7,7 @@ Positive test cases for assignments with units in NED.
 simple Test
 {
     parameters:
+        @isNetwork(true);
         // TODO: swap declaration type and value type
         double p1 = 1;                       // not provided - not provided
         double p2 = 2 @unit(s);              // not provided - SI

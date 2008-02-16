@@ -12,6 +12,7 @@ moduleinterface IModule
 
 simple Test like IModule
 {
+    @isNetwork(true);
 }
 
 %file: test.cc

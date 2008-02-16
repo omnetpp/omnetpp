@@ -11,7 +11,7 @@ module Node
     connections allowunconnected:
 }
 
-module Test
+network Test
 {
     submodules:
         a: Node;

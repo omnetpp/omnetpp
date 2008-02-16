@@ -7,6 +7,7 @@ Negative test case for assignment with units in NED.
 simple Test
 {
     parameters:
+        @isNetwork(true);
         double p1 = 1unknownA @unit(unknownB); // non convertible units
 }
 

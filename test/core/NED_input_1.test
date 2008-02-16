@@ -46,7 +46,7 @@ module Compound
 
 // we need this only because the top-level module cannot
 // have gates, and we want to test sizeof(gatevector) as well
-module Test
+network Test
 {
     submodules:
         c: Compound {

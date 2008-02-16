@@ -25,6 +25,7 @@ functionality in NED assignments
 simple Test
 {
     parameters:
+        @isNetwork(true);
         xml xmlconfig1 = xmldoc("test.xml");
         xml xmlconfig2 = xmldoc("test.xml", "foo/foo[1]//*[@color='green']");
 }

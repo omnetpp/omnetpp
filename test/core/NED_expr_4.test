@@ -6,6 +6,7 @@ Test operators in NED, with constant (non-volatile) parameters.
 simple Test
 {
     parameters:
+        @isNetwork(true);
         string p00 = "" + "";
         string p01 = "Hello" + "";
         int    p02 = length("");

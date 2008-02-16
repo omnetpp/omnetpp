@@ -30,6 +30,7 @@ simple Simple
 simple Test extends Simple
 {
     parameters:
+        @isNetwork(true);
         xmlconfig = xmldoc("test.xml", "foo/nothing");
 }
 
