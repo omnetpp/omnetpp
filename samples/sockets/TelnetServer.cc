@@ -8,12 +8,12 @@
 //
 
 
-#include "telnetserver.h"
-#include "telnetpkt_m.h"
 #include <ctype.h>
+#include "TelnetServer.h"
+#include "TelnetPkt_m.h"
 
 
-Define_Module( TelnetServer );
+Define_Module(TelnetServer);
 
 simtime_t TelnetServer::startService(cMessage *msg)
 {

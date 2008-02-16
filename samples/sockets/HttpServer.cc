@@ -12,8 +12,8 @@
 #endif
 
 #include <fstream>
-#include "httpserver.h"
-#include "httpmsg_m.h"
+#include "HttpServer.h"
+#include "HttpMsg_m.h"
 
 
 Define_Module( HTTPServer );

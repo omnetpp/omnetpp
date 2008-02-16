@@ -9,7 +9,7 @@
 
 
 #include <omnetpp.h>
-#include "netpkt_m.h"
+#include "NetPkt_m.h"
 
 /**
  * Represents the network "cloud" between clients and the server;

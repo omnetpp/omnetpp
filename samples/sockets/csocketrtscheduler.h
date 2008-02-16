@@ -18,8 +18,8 @@
 #ifndef __CSOCKETRTSCHEDULER_H__
 #define __CSOCKETRTSCHEDULER_H__
 
-#include "platdep/timeutil.h"
-#include "platdep/sockets.h"
+#include <platdep/timeutil.h>
+#include <platdep/sockets.h>
 #include <omnetpp.h>
 
 

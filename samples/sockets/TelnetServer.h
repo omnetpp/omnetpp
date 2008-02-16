@@ -11,7 +11,7 @@
 #ifndef __TELNETSERVER_H
 #define __TELNETSERVER_H
 
-#include "queuebase.h"
+#include "QueueBase.h"
 
 /**
  * Simple model of a Telnet server.

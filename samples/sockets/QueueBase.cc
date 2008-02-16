@@ -9,7 +9,7 @@
 
 
 #include <omnetpp.h>
-#include "queuebase.h"
+#include "QueueBase.h"
 
 
 QueueBase::QueueBase()

@@ -9,7 +9,7 @@
 
 
 #include <omnetpp.h>
-#include "httpmsg_m.h"
+#include "HttpMsg_m.h"
 
 
 class HTTPClient : public cSimpleModule

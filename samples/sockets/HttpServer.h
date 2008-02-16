@@ -13,7 +13,7 @@
 
 #include <map>
 #include <string>
-#include "queuebase.h"
+#include "QueueBase.h"
 
 /**
  * Simple model of an HTTP server.
