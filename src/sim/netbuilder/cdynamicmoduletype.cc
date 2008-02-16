@@ -44,7 +44,7 @@ std::string cDynamicModuleType::detailedInfo() const
 
 cNEDDeclaration *cDynamicModuleType::getDecl() const
 {
-    // do not store the pointer, because the declaration object may have been 
+    // do not store the pointer, because the declaration object may have been
     // thrown out of cNEDLoader to conserve memory
     cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(fullName());
     ASSERT(decl->getType()==cNEDDeclaration::SIMPLE_MODULE || decl->getType()==cNEDDeclaration::COMPOUND_MODULE);
@@ -53,8 +53,7 @@ cNEDDeclaration *cDynamicModuleType::getDecl() const
 
 bool cDynamicModuleType::isNetwork() const
 {
-    NEDElement *tree = getDecl()->getTree();
-    return tree->getTagCode()==NED_COMPOUND_MODULE && ((CompoundModuleElement *)tree)->getIsNetwork();
+    return getDecl()->isNetwork();
 }
 
 cModule *cDynamicModuleType::createModuleObject()
