@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+package node;
 
 //
 // Bursty message source.

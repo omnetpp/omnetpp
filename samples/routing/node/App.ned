@@ -7,20 +7,19 @@
 // `license' for details on this and other legal matters.
 //
 
-
+package node;
 
 //
-// Models a router.
+// Application model to generate traffic for the network.
 //
-simple Routing
+simple App
 {
     parameters:
-        @display("i=block/switch");
+        string destAddresses;
+        @display("i=block/browser");
     gates:
-        input in[];
-        output out[];
-        input localIn;
-        output localOut;
+        input in;
+        output out;
 }
 
 

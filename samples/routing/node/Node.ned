@@ -8,6 +8,7 @@
 //
 
 
+package node;
 
 //
 // A "Node" consists of a Router plus an App module which represents the

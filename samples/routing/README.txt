@@ -24,10 +24,3 @@ and for every packet it randomly chooses a destination from the list.
 There are two apps provided: App generates packets with exponential interarrival
 times, while BurstyApp alternates between active and idle periods. BurstyApp's
 implementation demonstrates the use of the FSMs (Finite State Machine).
-
-The networks/ subdirectory contains further networks that can be tested with
-the "routing" executable -- provided OMNeT++ was compiled with support for
-dynamic loading of NED files (WITH_NETBUILDER option).
-
-
-

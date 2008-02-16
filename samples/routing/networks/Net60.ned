@@ -7,6 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
+package networks;
+
+import node.Node;
 import ned.BasicChannel;
 
 //

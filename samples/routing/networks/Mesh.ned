@@ -6,9 +6,10 @@
 // This file is distributed WITHOUT ANY WARRANTY. See the file
 // `license' for details on this and other legal matters.
 //
+
 package networks;
 
-import Node;
+import node.Node;
 
 network Mesh
 {
@@ -24,12 +25,9 @@ network Mesh
                 port[4];
         };
     connections allowunconnected:
-        //FIXME this has to be rewritten to use port[] instead of in[] / out[]
         for i=0..height-1, for j=0..width-1 {
-            node[i*width+j].out[0] --> node[(i+1)*width+j].in[1] if i!=height-1;
-            node[i*width+j].in[0] <-- node[(i+1)*width+j].out[1] if i!=height-1;
-            node[i*width+j].out[2] --> node[(i*width+j)+1].in[3] if j!=width-1;
-            node[i*width+j].in[2] <-- node[(i*width+j)+1].out[3] if j!=width-1;
+            node[i*width+j].port[0] <--> node[(i+1)*width+j].port[1] if i!=height-1;
+            node[i*width+j].port[2] --> node[(i*width+j)+1].port[3] if j!=width-1;
         };
 }
 
