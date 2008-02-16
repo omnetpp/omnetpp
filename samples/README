@@ -5,9 +5,9 @@ details.
 
 There is a step-by-step tutorial (TicToc), some queueing simulations (Fifo,
 Queueing, CQN), many which borrow their topic from the field of
-communication networks (Aloha, HCube, TokenRing, P-to-P, etc.) and
+communication networks (Aloha, HyperCube, TokenRing, P-to-P, etc.) and
 also some which show off certain features of the simulation framework (such
-as NEDDemo for topology description, and Hist for histograms).
+as NEDDemo for topology description, and Histograms).
 
 The source code for all models are provided for you to study. While we have
 done our best to comment the sources, it is probably necessary to browse
