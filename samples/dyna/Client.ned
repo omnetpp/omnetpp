@@ -21,8 +21,7 @@ simple Client
         volatile int numQuery;
         @display("i=device/pc2");
     gates:
-        output out;
-        input in;
+        inout port;
 }
 
 

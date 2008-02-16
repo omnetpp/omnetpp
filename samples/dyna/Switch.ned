@@ -21,8 +21,7 @@ simple Switch
         int queueMaxLen;
         @display("i=block/switch;q=queue");
     gates:
-        output out[];
-        input in[];
+        inout port[];
 }
 
 

@@ -30,7 +30,7 @@ void ServerProcess::activity()
     // retrieve parameters
     cPar& processingTime = parentModule()->par("processingTime");
 
-    cGate *serverOutGate = parentModule()->gate("out");
+    cGate *serverOutGate = parentModule()->gate("port$o");
 
     int clientAddr=0, ownAddr=0;
     WATCH(clientAddr); WATCH(ownAddr);

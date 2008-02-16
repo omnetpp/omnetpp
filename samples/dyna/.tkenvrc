@@ -46,7 +46,8 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
+inspector "ClientServer" "ClientServer" "2" "467x340+96+124"
 inspector "dyna" "ClientServer" "2" "405x417+70+60"
-inspector "dyna" "dyna" "2" "405x418+-10+32"
 inspector "dyna.client[1].out" "cGate" "2" "213x181+120+155"
+inspector "dyna" "dyna" "2" "405x418+-10+32"
 

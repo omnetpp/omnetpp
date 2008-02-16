@@ -38,8 +38,8 @@ void Client::activity()
     WATCH(actNumQuery); WATCH(i);
 
     // assign address: index of Switch's gate to which we are connected
-    int ownAddr = gate("out")->toGate()->index();
-    int serverAddr = gate("out")->toGate()->size()-1;
+    int ownAddr = gate("port$o")->toGate()->index();
+    int serverAddr = gate("port$o")->toGate()->size()-1;
     int serverprocId = 0;
     WATCH(ownAddr); WATCH(serverAddr); WATCH(serverprocId);
 
@@ -57,7 +57,7 @@ void Client::activity()
         connReq = new DynaPacket("DYNA_CONN_REQ", DYNA_CONN_REQ);
         connReq->setSrcAddress(ownAddr);
         connReq->setDestAddress(serverAddr);
-        send( connReq, "out" );
+        send( connReq, "port$o" );
 
         ev << "waiting for DYNA_CONN_ACK\n";
         connAck = (DynaPacket *) receive( timeout );
@@ -84,7 +84,7 @@ void Client::activity()
             query->setDestAddress(serverAddr);
             query->setServerProcId(serverprocId);
             query->setPayload("query");
-            send(query, "out");
+            send(query, "port$o");
 
             ev << "waiting for DATA(result)\n";
             answer = (DynaDataPacket *) receive( timeout );
@@ -104,7 +104,7 @@ void Client::activity()
         discReq->setSrcAddress(ownAddr);
         discReq->setDestAddress(serverAddr);
         discReq->setServerProcId(serverprocId);
-        send(discReq, "out");
+        send(discReq, "port$o");
 
         ev << "waiting for DYNA_DISC_ACK\n";
         discAck = (DynaPacket *) receive( timeout );

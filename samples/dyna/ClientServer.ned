@@ -22,15 +22,13 @@ network ClientServer
         };
         switch: Switch {
             parameters:
-                // switchPkRate should be >= numClients, otherwise switch will
-                // become the bottleneck
+                // pkRate should be >= numClients, otherwise switch will become the bottleneck
                 pkRate = 1.5*numClients;
                 // buffer max 20 packets
                 queueMaxLen = 20;
                 @display("p=210,170");
             gates:
-                in[numClients+1];
-                out[numClients+1];
+                port[numClients+1];
         };
         client[numClients]: Client {
             parameters:
@@ -42,11 +40,9 @@ network ClientServer
         };
     connections:
         for i=0..numClients-1 {
-            client[i].out --> {  delay = 10ms; } --> switch.in[i];
-            client[i].in <-- {  delay = 10ms; } <-- switch.out[i];
+            client[i].port <--> {delay = 10ms;} <--> switch.port[i];
         };
-        server.out --> {  delay = 10ms; } --> switch.in[numClients];
-        server.in <-- {  delay = 10ms; } <-- switch.out[numClients];
+        server.port <--> {delay = 10ms;} <--> switch.port[numClients];
 }
 
 

@@ -45,7 +45,7 @@ void Switch::activity()
         DynaPacket *pk = check_and_cast<DynaPacket *>(msg);
         int dest = pk->getDestAddress();
         ev << "Relaying msg to addr=" << dest << "\n";
-        send( msg, "out", dest);
+        send(msg, "port$o", dest);
 
         // display status: normal=queue empty, yellow=queued packets; red=queue overflow
         int qLen = queue.length();

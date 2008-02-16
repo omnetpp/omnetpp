@@ -19,8 +19,7 @@ simple Server
         double processingTime;
         @display("i=device/server");
     gates:
-        output out;
-        input in;
+        inout port;
 }
 
 
