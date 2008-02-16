@@ -266,7 +266,7 @@ class SIM_API cPar : public cObject
     void read();
 
     /**
-     * Replaces for non-const values, replaces the stored expression with its
+     * For non-const values, replaces the stored expression with its
      * evaluation.
      */
     void convertToConst();
