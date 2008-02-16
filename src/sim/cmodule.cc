@@ -673,7 +673,7 @@ cGate *cModule::gate(const char *gatename, int index)
         char suffix;
         int descId = findGateDesc(gatename, suffix);
         if (descId<0)
-            throw cRuntimeError(this, "has no gate named `%s' -- name not found", fullgatename.c_str());
+            throw cRuntimeError(this, "has no gate named `%s'", fullgatename.c_str());
         const cGate::Desc& desc = gatedescv[descId];
         if (index==-1 && desc.isVector())
             throw cRuntimeError(this, "has no gate named `%s' -- "   //FIXME say "attempt to access a vector gate as a scalar gate"
