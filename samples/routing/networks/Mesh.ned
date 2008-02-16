@@ -16,6 +16,12 @@ network Mesh
     parameters:
         double height = default(9) @prompt("Number of rows");
         double width = default(7) @prompt("Number of columns");
+    types:
+        channel C extends ned.BasicChannel {
+            parameters:
+                delay = 0.1ms;
+                datarate = 1Gbps;
+        }
     submodules:
         node[height*width]: Node {
             parameters:
@@ -26,8 +32,8 @@ network Mesh
         };
     connections allowunconnected:
         for i=0..height-1, for j=0..width-1 {
-            node[i*width+j].port[0] <--> node[(i+1)*width+j].port[1] if i!=height-1;
-            node[i*width+j].port[2] --> node[(i*width+j)+1].port[3] if j!=width-1;
+            node[i*width+j].port[0] <--> C <--> node[(i+1)*width+j].port[1] if i!=height-1;
+            node[i*width+j].port[2] <--> C <--> node[(i*width+j)+1].port[3] if j!=width-1;
         };
 }
 

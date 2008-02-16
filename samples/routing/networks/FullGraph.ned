@@ -23,9 +23,9 @@ network FullGraph
             gates:
                 port[n];
         };
-    connections:
-        for i=0..(n-2), for j=(i+1)..(n-1) {
-            node[i].port[j] <--> node[j].port[i];
+    connections allowunconnected:
+        for i=0..n-2, for j=i+1..n-1 {
+            node[i].port[j] <--> {delay=0.1ms; datarate=1Gbps;} <--> node[j].port[i];
         };
 }
 
