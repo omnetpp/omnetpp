@@ -8,62 +8,11 @@
 //
 
 
-#include <omnetpp.h>
-#include "fifo.h"
+#include "Fifo.h"
 
 namespace fifo {
 
-AbstractFifo::AbstractFifo()
-{
-    msgServiced = endServiceMsg = NULL;
-}
-
-AbstractFifo::~AbstractFifo()
-{
-    delete msgServiced;
-    cancelAndDelete(endServiceMsg);
-}
-
-void AbstractFifo::initialize()
-{
-    endServiceMsg = new cMessage("end-service");
-    queue.setName("queue");
-}
-
-void AbstractFifo::handleMessage(cMessage *msg)
-{
-    if (msg==endServiceMsg)
-    {
-        endService( msgServiced );
-        if (queue.empty())
-        {
-            msgServiced = NULL;
-        }
-        else
-        {
-            msgServiced = (cMessage *) queue.pop();
-            simtime_t serviceTime = startService( msgServiced );
-            scheduleAt( simTime()+serviceTime, endServiceMsg );
-        }
-    }
-    else if (!msgServiced)
-    {
-        arrival( msg );
-        msgServiced = msg;
-        simtime_t serviceTime = startService( msgServiced );
-        scheduleAt( simTime()+serviceTime, endServiceMsg );
-
-    }
-    else
-    {
-        arrival( msg );
-        queue.insert( msg );
-    }
-}
-
-//------------------------------------------------
-
-Define_Module( PacketFifo );
+Define_Module(PacketFifo);
 
 simtime_t PacketFifo::startService(cMessage *msg)
 {
@@ -77,9 +26,9 @@ void PacketFifo::endService(cMessage *msg)
     send( msg, "out" );
 }
 
-//------------------------------------------------
+//----
 
-Define_Module( BitFifo );
+Define_Module(BitFifo);
 
 simtime_t BitFifo::startService(cMessage *msg)
 {
