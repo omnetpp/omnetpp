@@ -51,6 +51,7 @@
 #include <stdlib.h>
 #include "nedyydefs.h"
 #include "nederror.h"
+#include "nedexception.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */

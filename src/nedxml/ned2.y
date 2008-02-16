@@ -33,7 +33,7 @@
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
 %token SHIFT_LEFT SHIFT_RIGHT
 
-%token EXPRESSION_SELECTOR   /* forces parsing text as a singe expression */
+%token EXPRESSION_SELECTOR   /* forces parsing text as a single expression */
 
 %token INVALID_CHAR   /* just to generate parse error */
 
@@ -74,6 +74,7 @@
 #include <stack>
 #include "nedyydefs.h"
 #include "nederror.h"
+#include "nedexception.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -567,7 +568,7 @@ networkheader
                 {
                   ps.component = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.inTypes ? (NEDElement *)ps.types : (NEDElement *)ps.nedfile );
                   ((CompoundModuleElement *)ps.component)->setName(toString(@2));
-                  ((CompoundModuleElement *)ps.component)->setIsNetwork(true);
+                  //FIXME add back: ((CompoundModuleElement *)ps.component)->setIsNetwork(true);
                 }
           opt_inheritance
                 { storeBannerAndRightComments(ps.component,@$); }

@@ -87,6 +87,7 @@
 #include "nedyydefs.h"
 #include "nedutil.h"
 #include "nederror.h"
+#include "nedexception.h"
 #include "stringutil.h"
 
 #define YYDEBUG 1           /* allow debugging */
@@ -1105,7 +1106,7 @@ networkheader
                 {
                   ps.module = (CompoundModuleElement *)createElementWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleElement *)ps.module)->setName(toString(@2));
-                  ((CompoundModuleElement *)ps.module)->setIsNetwork(true);
+                  //FIXME ((CompoundModuleElement *)ps.module)->setIsNetwork(true);
                   ps.extends = (ExtendsElement *)createElementWithTag(NED_EXTENDS, ps.module);
                   ps.extends->setName(toString(@4));
                   storeBannerAndRightComments(ps.module,@1,@5);

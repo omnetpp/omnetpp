@@ -26,7 +26,7 @@ COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/
 
 IMPLIBS= -L$L -lcommon$D $(XML_LIBS)
 
-OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o \
+OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o $O/nedexception.o \
       $O/nedvalidator.o $O/neddtdvalidator.o $O/neddtdvalidatorbase.o \
       $O/nedsyntaxvalidator.o $O/nedsemanticvalidator.o \
       $O/nedfilebuffer.o $O/nedparser.o $O/nedyylib.o \

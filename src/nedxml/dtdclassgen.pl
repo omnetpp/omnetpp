@@ -233,6 +233,7 @@ print H "NAMESPACE_BEGIN\n\n";
 print CC "$copyright\n";
 print CC "#include <string.h>\n";
 print CC "#include \"nederror.h\"\n";
+print CC "#include \"nedexception.h\"\n";
 print CC "#include \"$hfile\"\n\n";
 print CC "NAMESPACE_BEGIN\n\n";
 
@@ -568,12 +569,15 @@ open(VAL_CC,">$validatorccfile") || die "*** cannot open output file $validatorc
 print VAL_H "$copyright\n";
 print VAL_H "#ifndef __NEDVALIDATOR_H\n";
 print VAL_H "#define __NEDVALIDATOR_H\n\n";
+print VAL_H "#include \"nederror.h\"\n";
+print VAL_H "#include \"nedexception.h\"\n";
 print VAL_H "#include \"nedelements.h\"\n\n";
 print VAL_H "NAMESPACE_BEGIN\n\n";
 
 print VAL_CC "$copyright\n";
 print VAL_CC "#include <stdio.h>\n";
 print VAL_CC "#include \"nederror.h\"\n";
+print VAL_CC "#include \"nedexception.h\"\n";
 print VAL_CC "#include \"$validatorhfile\"\n\n";
 print VAL_CC "NAMESPACE_BEGIN\n\n";
 

@@ -43,7 +43,7 @@ S  [ \t\v\n\r\f]
 %{
 #include <string.h>
 #include "nedyydefs.h"
-#include "nederror.h"
+#include "nedexception.h"
 #include "ned2.tab.h"
 
 #define yylloc ned2yylloc
