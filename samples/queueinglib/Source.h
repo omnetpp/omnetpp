@@ -21,6 +21,8 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 /**
  * Generates packets; see NED file for more info.
  */
@@ -40,5 +42,7 @@ class Source : public cSimpleModule
         virtual void handleMessage(cMessage *msg);
         virtual void finish();
 };
+
+}; //namespace
 
 #endif

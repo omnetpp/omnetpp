@@ -21,8 +21,10 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 /**
- * All messages received on ANY INPUT gate will be sent out on the OUTPUT gate 
+ * All messages received on ANY INPUT gate will be sent out on the OUTPUT gate
  */
 class Join : public cSimpleModule
 {
@@ -30,17 +32,7 @@ class Join : public cSimpleModule
         virtual void handleMessage(cMessage *msg);
 };
 
+}; //namespace
+
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
 

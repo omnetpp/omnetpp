@@ -20,7 +20,9 @@
 #include "Fork.h"
 #include "Job_m.h"
 
-Define_Module( Fork );
+namespace queueing {
+
+Define_Module(Fork);
 
 void Fork::initialize()
 {
@@ -57,4 +59,5 @@ void Fork::handleMessage(cMessage *msg)
     send(msg, "out", 0);
 }
 
+}; //namespace
 

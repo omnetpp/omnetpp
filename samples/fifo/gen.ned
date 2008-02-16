@@ -12,7 +12,7 @@
 // Generates jobs (messages) with the given interarrival time and length.
 // Both can be random variates, returning different values for each job.
 //
-simple FFGenerator
+simple Source
 {
     parameters:
         volatile double sendIaTime;

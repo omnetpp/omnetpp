@@ -18,7 +18,9 @@
 
 #include "Classifier.h"
 
-Define_Module( Classifier );
+namespace queueing {
+
+Define_Module(Classifier);
 
 void Classifier::initialize()
 {
@@ -42,5 +44,5 @@ void Classifier::handleMessage(cMessage *msg)
         send(msg, "out", outGateIndex);
 }
 
-
+}; //namespace
 

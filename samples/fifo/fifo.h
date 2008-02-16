@@ -13,10 +13,12 @@
 
 #include <omnetpp.h>
 
+namespace fifo {
+
 /**
  * Abstract base class for single-server queues.
  */
-class FFAbstractFifo : public cSimpleModule
+class AbstractFifo : public cSimpleModule
 {
   protected:
     cMessage *msgServiced;
@@ -24,8 +26,8 @@ class FFAbstractFifo : public cSimpleModule
     cQueue queue;
 
   public:
-    FFAbstractFifo();
-    virtual ~FFAbstractFifo();
+    AbstractFifo();
+    virtual ~AbstractFifo();
 
   protected:
     virtual void initialize();
@@ -40,7 +42,7 @@ class FFAbstractFifo : public cSimpleModule
 /**
  * Single-server queue with given service time.
  */
-class FFPacketFifo : public FFAbstractFifo
+class PacketFifo : public AbstractFifo
 {
   protected:
     virtual simtime_t startService(cMessage *msg);
@@ -50,11 +52,13 @@ class FFPacketFifo : public FFAbstractFifo
 /**
  * Single-server queue with service time based on message length.
  */
-class FFBitFifo : public FFAbstractFifo
+class BitFifo : public AbstractFifo
 {
   protected:
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);
 };
+
+}; //namespace
 
 #endif

@@ -21,6 +21,8 @@
 #include "PQueue.h"
 #include "Server.h"
 
+namespace queueing {
+
 SelectionStrategy::SelectionStrategy(cSimpleModule *module, bool selectOnInGate)
 {
     hostModule = module;
@@ -184,4 +186,5 @@ int LongestQueueSelectionStrategy::select()
     return result;
 }
 
+}; //namespace
 

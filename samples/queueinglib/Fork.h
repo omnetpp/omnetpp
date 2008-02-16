@@ -21,6 +21,8 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 /**
  * See the NED declaration for more info.
  */
@@ -32,6 +34,8 @@ class Fork : public cSimpleModule
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
 };
+
+}; //namespace
 
 #endif
 

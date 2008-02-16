@@ -51,14 +51,14 @@ foreach line {
    {color1  "About..."         "README"}
    {color2  "Tictoc"           "tictoc"           "./tictoc"        "tictoc.cmd"}
    {color3  "NEDDemo"          "neddemo"          "./neddemo"       "neddemo.cmd"}
-   {color3  "Hist"             "histograms"       "./histograms"    "histograms.cmd"}
+   {color3  "Histograms"       "histograms"       "./histograms"    "histograms.cmd"}
    {color4  "Fifo"             "fifo"             "./fifo"          "fifo.cmd"}
    {color4  "CQN"              "cqn"              "./cqn"           "cqn.cmd"}
    {color4  "QueueNet"         "queuenet"         "./queuenet"      "queuenet.cmd"}
    {color5  "Aloha"            "aloha"            "./aloha"         "aloha.cmd"}
    {color5  "Dyna"             "dyna"             "./dyna"          "dyna.cmd"}
    {color5  "TokenRing"        "tokenring"        "./tokenring"     "tokenring.cmd"}
-   {color5  "HCube"            "hypercube"        "./hypercube"     "hypercube.cmd"}
+   {color5  "Hypercube"        "hypercube"        "./hypercube"     "hypercube.cmd"}
    {color5  "Routing"          "routing"          "./routing"       "routing.cmd"}
    {color5  "Routing/Networks" "routing/networks" "../routing"      "..\\routing.cmd"}
    {color7  "Database"         "database/README"}

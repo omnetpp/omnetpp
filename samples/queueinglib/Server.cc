@@ -17,10 +17,13 @@
 //
 
 #include <omnetpp.h>
+
 #include "Server.h"
 #include "PQueue.h"
 #include "Job_m.h"
 #include "SelectionStrategies.h"
+
+namespace queueing {
 
 Define_Module(Server);
 
@@ -97,4 +100,6 @@ bool Server::isIdle()
 {
     return jobServiced == NULL;
 }
+
+}; //namespace
 

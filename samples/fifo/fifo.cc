@@ -11,24 +11,26 @@
 #include <omnetpp.h>
 #include "fifo.h"
 
-FFAbstractFifo::FFAbstractFifo()
+namespace fifo {
+
+AbstractFifo::AbstractFifo()
 {
     msgServiced = endServiceMsg = NULL;
 }
 
-FFAbstractFifo::~FFAbstractFifo()
+AbstractFifo::~AbstractFifo()
 {
     delete msgServiced;
     cancelAndDelete(endServiceMsg);
 }
 
-void FFAbstractFifo::initialize()
+void AbstractFifo::initialize()
 {
     endServiceMsg = new cMessage("end-service");
     queue.setName("queue");
 }
 
-void FFAbstractFifo::handleMessage(cMessage *msg)
+void AbstractFifo::handleMessage(cMessage *msg)
 {
     if (msg==endServiceMsg)
     {
@@ -61,15 +63,15 @@ void FFAbstractFifo::handleMessage(cMessage *msg)
 
 //------------------------------------------------
 
-Define_Module( FFPacketFifo );
+Define_Module( PacketFifo );
 
-simtime_t FFPacketFifo::startService(cMessage *msg)
+simtime_t PacketFifo::startService(cMessage *msg)
 {
     ev << "Starting service of " << msg->name() << endl;
     return par("serviceTime");
 }
 
-void FFPacketFifo::endService(cMessage *msg)
+void PacketFifo::endService(cMessage *msg)
 {
     ev << "Completed service of " << msg->name() << endl;
     send( msg, "out" );
@@ -77,17 +79,19 @@ void FFPacketFifo::endService(cMessage *msg)
 
 //------------------------------------------------
 
-Define_Module( FFBitFifo );
+Define_Module( BitFifo );
 
-simtime_t FFBitFifo::startService(cMessage *msg)
+simtime_t BitFifo::startService(cMessage *msg)
 {
     ev << "Starting service of " << msg->name() << endl;
     return msg->length() / (double)par("bitsPerSec");
 }
 
-void FFBitFifo::endService(cMessage *msg)
+void BitFifo::endService(cMessage *msg)
 {
     ev << "Completed service of " << msg->name() << endl;
     send( msg, "out" );
 }
+
+}; //namespace
 

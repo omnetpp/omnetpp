@@ -19,7 +19,9 @@
 #include "Source.h"
 #include "Job_m.h"
 
-Define_Module( Source );
+namespace queueing {
+
+Define_Module(Source);
 
 void Source::initialize()
 {
@@ -64,3 +66,6 @@ void Source::finish()
     cancelAndDelete(selfMsg);
     selfMsg = NULL;
 }
+
+}; //namespace
+

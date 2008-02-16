@@ -21,6 +21,8 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 class PQueue;
 class Job;
 class SelectionStrategy;
@@ -38,7 +40,7 @@ class Server : public cSimpleModule
 
         int numQueues;
         SelectionStrategy *selectionStrategy;
-        
+
         simtime_t prevEventTimeStamp;
         Job *jobServiced;
         cMessage *endServiceMsg;
@@ -57,6 +59,8 @@ class Server : public cSimpleModule
         // The following method is called from PQueue:
         virtual bool isIdle();
 };
+
+}; //namespace
 
 #endif
 

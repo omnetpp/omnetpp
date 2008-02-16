@@ -21,6 +21,8 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 /**
  * Delays the incoming messages
  */
@@ -33,6 +35,8 @@ class Delay : public cSimpleModule
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
 };
+
+}; //namespace
 
 #endif
 

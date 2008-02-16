@@ -19,7 +19,9 @@
 #include "Delay.h"
 #include "Job_m.h"
 
-Define_Module( Delay );
+namespace queueing {
+
+Define_Module(Delay);
 
 void Delay::initialize()
 {
@@ -57,4 +59,6 @@ void Delay::handleMessage(cMessage *msg)
     if (ev.isGUI())
         displayString().setTagArg("i",1, currentlyStored==0 ? "" : "cyan4");
 }
+
+}; //namespace
 

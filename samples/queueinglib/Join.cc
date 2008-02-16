@@ -18,10 +18,14 @@
 
 #include "Join.h"
 
-Define_Module( Join );
+namespace queueing {
+
+Define_Module(Join);
 
 void Join::handleMessage(cMessage *msg)
 {
     send(msg, "out");
 }
+
+}; //namespace
 

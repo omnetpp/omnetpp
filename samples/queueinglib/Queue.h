@@ -21,6 +21,8 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 class Job;
 
 /**
@@ -64,5 +66,7 @@ class Queue : public cSimpleModule
         virtual simtime_t startService(Job *job);
         virtual void endService(Job *job);
 };
+
+}; //namespace
 
 #endif

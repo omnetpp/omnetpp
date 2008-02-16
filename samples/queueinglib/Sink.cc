@@ -19,7 +19,9 @@
 #include "Sink.h"
 #include "Job_m.h"
 
-Define_Module( Sink );
+namespace queueing {
+
+Define_Module(Sink);
 
 void Sink::initialize()
 {
@@ -34,22 +36,25 @@ void Sink::initialize()
 }
 
 void Sink::handleMessage(cMessage *msg) {
-	Job *job = check_and_cast<Job *>(msg);
+    Job *job = check_and_cast<Job *>(msg);
 
-	// gather statistics
-	lifeTimeStats.record(simTime()- job->creationTime());
-	queueingTimeStats.record(job->getTotalQueueingTime());
-	queueStats.record(job->getQueueCount());
-	serviceTimeStats.record(job->getTotalServiceTime());
-	delayTimeStats.record(job->getTotalDelayTime());
-	delayStats.record(job->getDelayCount());
-	generationStats.record(job->getGeneration());
+    // gather statistics
+    lifeTimeStats.record(simTime()- job->creationTime());
+    queueingTimeStats.record(job->getTotalQueueingTime());
+    queueStats.record(job->getQueueCount());
+    serviceTimeStats.record(job->getTotalServiceTime());
+    delayTimeStats.record(job->getTotalDelayTime());
+    delayStats.record(job->getDelayCount());
+    generationStats.record(job->getGeneration());
 
-	if (!keepJobs)
-		delete msg;
+    if (!keepJobs)
+        delete msg;
 }
 
 void Sink::finish()
 {
     // TODO missing scalar statistics
 }
+
+}; //namespace
+

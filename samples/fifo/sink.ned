@@ -11,7 +11,7 @@
 //
 // Destroys the packets and collects statistics
 //
-simple FFSink
+simple Sink
 {
     parameters:
         @display("i=block/sink");

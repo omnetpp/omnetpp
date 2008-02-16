@@ -18,7 +18,9 @@
 
 #include "Router.h"
 
-Define_Module( Router );
+namespace queueing {
+
+Define_Module(Router);
 
 void Router::initialize()
 {
@@ -73,3 +75,6 @@ void Router::handleMessage(cMessage *msg)
 
     send(msg, "out", outGateIndex);
 }
+
+}; //namespace
+

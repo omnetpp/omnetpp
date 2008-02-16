@@ -21,6 +21,8 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 /**
  * Consumes jobs; see NED file for more info.
  */
@@ -42,17 +44,7 @@ class Sink : public cSimpleModule
     virtual void finish();
 };
 
+}; //namespace
+
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -21,6 +21,8 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 class SelectionStrategy;
 
 /**
@@ -57,6 +59,8 @@ class PQueue : public cSimpleModule
         virtual int length();
         virtual void request(int gateIndex);
 };
+
+}; //namespace
 
 #endif
 

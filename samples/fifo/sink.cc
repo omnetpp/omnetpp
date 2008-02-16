@@ -9,11 +9,12 @@
 
 #include <omnetpp.h>
 
+namespace fifo {
 
 /**
  * Packet sink; see NED file for more info.
  */
-class FFSink : public cSimpleModule
+class Sink : public cSimpleModule
 {
   private:
     cStdDev qstats;
@@ -25,15 +26,15 @@ class FFSink : public cSimpleModule
     virtual void finish();
 };
 
-Define_Module( FFSink );
+Define_Module( Sink );
 
-void FFSink::initialize()
+void Sink::initialize()
 {
     qstats.setName("queueing time stats");
     qtime.setName("queueing time vector");
 }
 
-void FFSink::handleMessage(cMessage *msg)
+void Sink::handleMessage(cMessage *msg)
 {
     simtime_t d = simTime()-msg->creationTime();
     ev << "Received " << msg->name() << ", queueing time: " << d << "sec" << endl;
@@ -42,11 +43,13 @@ void FFSink::handleMessage(cMessage *msg)
     delete msg;
 }
 
-void FFSink::finish()
+void Sink::finish()
 {
     ev << "Total jobs processed: " << qstats.samples() << endl;
     ev << "Avg queueing time:    " << qstats.mean() << endl;
     ev << "Max queueing time:    " << qstats.max() << endl;
     ev << "Standard deviation:   " << qstats.stddev() << endl;
 }
+
+}; //namespace
 

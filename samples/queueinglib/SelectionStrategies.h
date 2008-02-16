@@ -21,6 +21,8 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 /**
  * Selection strategies used in queue, server and router classes to decide
  * which module to choose for further interaction.
@@ -101,6 +103,8 @@ class LongestQueueSelectionStrategy : public SelectionStrategy
         LongestQueueSelectionStrategy(cSimpleModule *module, bool selectOnInGate);
         virtual int select();
 };
+
+}; //namespace
 
 #endif
 

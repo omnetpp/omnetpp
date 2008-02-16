@@ -11,7 +11,7 @@
 //
 // Single-server queue, service rate independent of message length
 //
-simple FFPacketFifo
+simple PacketFifo
 {
     parameters:
         volatile double serviceTime;
@@ -25,7 +25,7 @@ simple FFPacketFifo
 //
 // Single-server queue, service rate based on message length
 //
-simple FFBitFifo
+simple BitFifo
 {
     parameters:
         volatile double bitsPerSec;

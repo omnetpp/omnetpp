@@ -21,6 +21,8 @@
 
 #include <omnetpp.h>
 
+namespace queueing {
+
 // routing algorithms
 enum {
      ALG_RANDOM,
@@ -42,5 +44,7 @@ class Router : public cSimpleModule
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
 };
+
+}; //namespace
 
 #endif

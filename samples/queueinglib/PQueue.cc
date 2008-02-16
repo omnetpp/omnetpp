@@ -17,10 +17,13 @@
 //
 
 #include <omnetpp.h>
+
 #include "PQueue.h"
 #include "Server.h"
 #include "Job_m.h"
 #include "SelectionStrategies.h"
+
+namespace queueing {
 
 Define_Module(PQueue);
 
@@ -150,4 +153,5 @@ void PQueue::finish()
     recordScalar("dropped jobs", droppedJobs);
 }
 
+}; //namespace
 

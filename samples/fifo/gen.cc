@@ -10,43 +10,44 @@
 
 #include <omnetpp.h>
 
+namespace fifo {
 
 /**
  * Generates messages or jobs; see NED file for more info.
  */
-class FFGenerator : public cSimpleModule
+class Source : public cSimpleModule
 {
   private:
     cMessage *sendMessageEvent;
 
   public:
-     FFGenerator();
-     virtual ~FFGenerator();
+     Source();
+     virtual ~Source();
 
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module(FFGenerator);
+Define_Module(Source);
 
-FFGenerator::FFGenerator()
+Source::Source()
 {
     sendMessageEvent = NULL;
 }
 
-FFGenerator::~FFGenerator()
+Source::~Source()
 {
     cancelAndDelete(sendMessageEvent);
 }
 
-void FFGenerator::initialize()
+void Source::initialize()
 {
     sendMessageEvent = new cMessage("sendMessageEvent");
     scheduleAt(0.0, sendMessageEvent);
 }
 
-void FFGenerator::handleMessage(cMessage *msg)
+void Source::handleMessage(cMessage *msg)
 {
     ASSERT(msg==sendMessageEvent);
 
@@ -57,4 +58,5 @@ void FFGenerator::handleMessage(cMessage *msg)
     scheduleAt(simTime()+(double)par("sendIaTime"), sendMessageEvent);
 }
 
+}; //namespace
 

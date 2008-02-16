@@ -13,15 +13,15 @@
 network FifoNet
 {
     submodules:
-        gen: FFGenerator {
+        gen: Source {
             parameters:
                 @display("p=89,100");
         };
-        fifo: FFBitFifo {
+        fifo: BitFifo {
             parameters:
                 @display("p=209,100");
         };
-        sink: FFSink {
+        sink: Sink {
             parameters:
                 @display("p=329,100");
         };

@@ -17,8 +17,11 @@
 //
 
 #include <omnetpp.h>
+
 #include "Queue.h"
 #include "Job_m.h"
+
+namespace queueing {
 
 Define_Module(Queue);
 
@@ -174,4 +177,6 @@ void Queue::finish()
     recordScalar("utilization",scalarUtilizationStats.mean());
     recordScalar("dropped jobs", droppedJobs);
 }
+
+}; //namespace
 
