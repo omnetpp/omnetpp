@@ -172,7 +172,7 @@ depend:
 
 makefiles:
 	for %%i in ( $(SAMPLES) ) do \
-	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f && nmake -f Makefile.vc depend
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f --deep && nmake -f Makefile.vc depend
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\queuenet && call opp_nmakemake -f -n
 
 reminder:
