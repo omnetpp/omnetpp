@@ -58,7 +58,7 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof CompoundModuleElementEx) {
             CompoundModuleElementEx node = (CompoundModuleElementEx)model;
-            label = (node.getIsNetwork() ? "network " : "module ")+node.getName();
+            label = (node.isNetwork() ? "network " : "module ")+node.getName();
         }
         else if (model instanceof SubmoduleElementEx) {
             SubmoduleElementEx node = (SubmoduleElementEx)model;

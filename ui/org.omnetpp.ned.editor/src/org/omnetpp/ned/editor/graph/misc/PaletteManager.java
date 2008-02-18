@@ -290,7 +290,7 @@ public class PaletteManager {
 
             // skip this type if it is a top level network
             if (typeElement instanceof CompoundModuleElementEx &&
-                    ((CompoundModuleElementEx)typeElement).getIsNetwork()) {
+                    ((CompoundModuleElementEx)typeElement).isNetwork()) {
                 continue;
             }
 

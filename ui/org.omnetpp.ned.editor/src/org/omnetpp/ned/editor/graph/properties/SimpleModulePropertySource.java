@@ -71,7 +71,7 @@ public class SimpleModulePropertySource extends MergedPropertySource {
 
         public Object getPropertyValue(Object propName) {
             if (Prop.Network.equals(propName))
-                return model.getIsNetwork();
+                return model.isNetwork();
 
             return null;
         }

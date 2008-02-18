@@ -886,7 +886,7 @@ public class DocumentationGenerator {
         withGeneratingNavigationHTMLFile("networks", new Runnable() {
             public void run() throws Exception {
                 for (ITypeElement typeElement : typeElements)
-                    if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).getIsNetwork())
+                    if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
                         generateTypeIndexEntry(typeElement);
             }
         });
@@ -1082,7 +1082,7 @@ public class DocumentationGenerator {
                 if (userElement instanceof CompoundModuleElementEx) {
                     CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)userElement;
 
-                    if (compoundModule.getIsNetwork())
+                    if (compoundModule.isNetwork())
                         networks.add(compoundModule);
                     else
                         compoundModules.add(compoundModule);
@@ -1888,7 +1888,7 @@ public class DocumentationGenerator {
                 append("[URL=\"" + getOutputFileName(typeElement) + "\",");
     
                 String color = "#ff0000";
-                if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).getIsNetwork())
+                if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
                     color = highlight ? "#9090ff" : "#d0d0ff";
                 else if (typeElement instanceof CompoundModuleElementEx)
                     color = highlight ? "#fff700" : "#fffcaf";
