@@ -89,7 +89,12 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
 
     if (!isInterface)
     {
-        //FIXME TODO check that we have all parameters/gates required by the interfaces we support
+        // check that we have all parameters and gates required by the interfaces we support
+        for (int i=0; i<interfacenames.size(); i++) {
+            NEDTypeInfo *interfaceDecl = getResolver()->lookup(interfacenames[i].c_str());
+            Assert(interfaceDecl);
+            checkComplianceToInterface(interfaceDecl);
+        }
     }
 
     // resolve C++ class name
@@ -271,5 +276,73 @@ NEDElement *NEDTypeInfo::getSubcomponentElement(const char *subcomponentName) co
     }
     return NULL;
 }
+
+void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *ifDecl)
+{
+/*FIXME TODO
+    // check properties
+    //XXX
+
+    // check parameters
+    for (int i=0; i<ifDecl->numPars(); i++)
+    {
+        int k = findPar(ifDecl->parName(i));
+        if (k<0)
+            throw cRuntimeError(this, "has no parameter `%s' required by interface `%s'", ifdecl->parName(i), interfacename);
+        verifyParameterMatch(params[k].value, ifdecl->par(i), ifdecl->parName(i), interfacename);
+    }
+
+    // check gates
+    for (int i=0; i<ifdecl->numGates(); i++)
+    {
+        int k = findGate(ifdecl->gateName(i));
+        if (k<0)
+            throw cRuntimeError(this, "has no gate `%s' required by interface `%s'", ifdecl->gateName(i), interfacename);
+        GateDescription& g = gates[k];
+        if (g.type != ifdecl->gateType(i))
+            throw cRuntimeError(this, "type of gate `%s' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
+        if (g.isvector != ifdecl->gateIsVector(i))
+            throw cRuntimeError(this, "vectorness of gate `%s' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
+        if (ifdecl->gateSize(i)!=-1 && g.gatesize!=ifdecl->gateSize(i))
+            throw cRuntimeError(this, "size of gate vector `%s[]' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
+    }
+*/
+}
+
+/*
+void NEDTypeInfo::assertParMatchesBase(cPar *par, const cPar *basepar,
+                                                const char *parname, const char *basename)
+{
+    if (basepar->isSet() && par->isSet())
+        throw cRuntimeError(this, "parameter `%s' already set in base `%s', it cannot be overridden", parname, basename);
+
+    if (par->type()!=basepar->type() || par->isVolatile()!=ifpar->isVolatile())
+        throw cRuntimeError(this, "type of parameter `%s' differs from that in base `%s'", parname, basename);
+}
+
+bool NEDTypeInfo::parMatchesInterface(cPar *par, const cPar *ifpar)
+{
+    if (par->type()!=basepar->type() || par->isVolatile()!=ifpar->isVolatile())
+        throw cRuntimeError(this, "type of parameter `%s' differs from that in interface `%s'", parname, interfacename);
+
+    if (ifpar->isSet()) // values must match as well
+    {
+        if (!par->isSet())
+            throw cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
+
+        if (ifpar->isConstant())
+        {
+            if (!par->isConstant())
+                throw cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
+            if (!const_cast<cPar&>(ifpar).equals(*par))   //FIXME const_cast -- eliminate
+                throw cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
+        }
+        else
+        {
+            // we accept expressions without any check -- comparison cannot be performed 100% accurately
+        }
+    }
+}
+*/
 
 

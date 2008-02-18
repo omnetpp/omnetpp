@@ -64,6 +64,7 @@ class NEDXML_API NEDTypeInfo
   protected:
     // utility function: XXX needed here? or move to subclass?
     NEDElement *getSubcomponentElement(const char *subcomponentName) const;
+    void checkComplianceToInterface(NEDTypeInfo *interfaceDecl);
 
   public:
     /** Constructor. It expects fully qualified name */
