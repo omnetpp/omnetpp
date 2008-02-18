@@ -18,6 +18,7 @@
 #include "cnedfunction.h"
 #include "globals.h"
 #include "cexception.h"
+#include "opp_ctype.h"
 
 USING_NAMESPACE
 
@@ -222,7 +223,7 @@ Value toupper(cComponent *context, Value args[], int numargs)
     std::string tmp = args[0].str;
     int length = tmp.length();
     for (int i=0; i<length; i++)
-        tmp[i] = std::toupper(tmp[i]);
+        tmp[i] = opp_toupper(tmp[i]);
     return tmp;
 }
 Define_NED_Function(toupper, "S", "S");
@@ -233,7 +234,7 @@ Value tolower(cComponent *context, Value args[], int numargs)
     std::string tmp = args[0].str;
     int length = tmp.length();
     for (int i=0; i<length; i++)
-        tmp[i] = std::tolower(tmp[i]);
+        tmp[i] = opp_tolower(tmp[i]);
     return tmp;
 }
 Define_NED_Function(tolower, "S", "S");
