@@ -38,10 +38,10 @@ import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
@@ -345,12 +345,16 @@ public class InifileAnalyzer {
 			IProject contextProject = doc.getDocumentFile().getProject();
 			INEDTypeInfo network = ned.getToplevelNedType(value, contextProject);
 			if (network == null) {
-				addError(section, key, "No such NED network: "+value);
+				addError(section, key, "No such NED type: "+value);
 				return;
 			}
 			INedTypeElement node = network.getNEDElement();
-			if (!(node instanceof CompoundModuleElement) || ((CompoundModuleElement)node).getIsNetwork()==false) {
-				addError(section, key, "Type '"+value+"' was not declared in NED with the keyword 'network'");
+            if (!(node instanceof IModuleTypeElement)) {
+                addError(section, key, "Not a module type: "+value);
+                return;
+            }
+			if (((IModuleTypeElement)node).isNetwork()) {
+				addError(section, key, "Module type '"+value+"' was not declared to be a network");
 				return;
 			}
 		}
