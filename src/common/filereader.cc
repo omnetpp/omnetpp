@@ -178,7 +178,7 @@ void FileReader::synchronize()
 void FileReader::checkConsistence(bool checkDataPointer) const
 {
     bool ok = (size_t)(bufferEnd - bufferBegin) == bufferSize &&
-      ((!dataBegin && !dataEnd) || 
+      ((!dataBegin && !dataEnd) ||
        dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd &&
        (!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd)));
 
@@ -351,7 +351,7 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
 
         if (s != start && isLineStart(s)) // line just ends at the end of data buffer
             return s;
-        else if (fileOffset == getFileSize()) // searching form the end of the file
+        else if (fileOffset == getFileSize()) // searching from the end of the file
             return NULL;
         else if (!bufferFilled) { // refill buffer
             seekTo(fileOffset, maxLineSize);

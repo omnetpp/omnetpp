@@ -22,7 +22,7 @@
 /**
  * Replacement for the standard C characher type macros.
  * Reason: in Visual C++ 8.0, isspace() etc abort for characters above 128,
- * which renders them unusable. More precisely: they isspace() abort if the
+ * which renders them unusable. More precisely: they abort if the
  * "int" they receive is outside the 0..255 range and not EOF -- which can
  * very easily happen when signed chars are converted to int.
  *

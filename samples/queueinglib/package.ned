@@ -25,5 +25,5 @@
 
 package org.omnetpp.samples.queueing;
 
-// C++ classes are in the following namespace:
+// C++ classes of simple modules are in the 'queueing' namespace
 @namespace(queueing);

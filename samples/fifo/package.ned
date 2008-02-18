@@ -1,7 +1,3 @@
 
-//
-// Tell OMNeT++ that C++ classes implementing simple module behaviour
-// will be in the "fifo" C++ namespace.
-//
-
+// C++ classes of simple modules are in the 'fifo' namespace
 @namespace(fifo);
