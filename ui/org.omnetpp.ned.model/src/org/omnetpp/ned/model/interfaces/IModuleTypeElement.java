@@ -7,4 +7,13 @@ package org.omnetpp.ned.model.interfaces;
  * @author Andras
  */
 public interface IModuleTypeElement extends IModuleKindTypeElement {
+    /**
+     * Maps to the @isNetwork property.
+     */
+    boolean isNetwork();
+
+    /**
+     * Adds/removes the @isNetwork property.
+     */
+    void setIsNetwork(boolean value);
 }
