@@ -22,7 +22,7 @@
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
-#include "nedsemanticvalidator.h"
+#include "nedcrossvalidator.h"
 #include "fileutil.h"
 #include "stringutil.h"
 #include "fileglobber.h"

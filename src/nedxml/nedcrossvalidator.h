@@ -1,11 +1,11 @@
 //==========================================================================
-// nedsemanticvalidator.h - part of
+// nedcrossvalidator.h - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 // Contents:
-//   class NEDSemanticValidator
+//   class NEDCrossValidator
 //
 //==========================================================================
 
@@ -17,8 +17,8 @@
 *--------------------------------------------------------------*/
 
 
-#ifndef __NEDSEMANTICVALIDATOR_H
-#define __NEDSEMANTICVALIDATOR_H
+#ifndef __NEDCROSSVALIDATOR_H
+#define __NEDCROSSVALIDATOR_H
 
 #include <string.h>
 #include "nedvalidator.h"
@@ -30,12 +30,12 @@ class NEDResourceCache;
 // *** CURRENTLY NOT IN USE ***
 
 /**
- * Performs semantic validation. Should be called after tree passed
+ * Performs cross validation. Should be called after tree passed
  * DTD validation and syntax validation.
  *
  * @ingroup Validation
  */
-class NEDXML_API NEDSemanticValidator : public NEDValidatorBase
+class NEDXML_API NEDCrossValidator : public NEDValidatorBase
 {
   protected:
     bool parsedExpressions;
@@ -64,10 +64,10 @@ class NEDXML_API NEDSemanticValidator : public NEDValidatorBase
 
   public:
     /** Constructor */
-    NEDSemanticValidator(bool parsedExpr, NEDResourceCache *resolver, NEDErrorStore *e);
+    NEDCrossValidator(bool parsedExpr, NEDResourceCache *resolver, NEDErrorStore *e);
 
     /** Destructor */
-    virtual ~NEDSemanticValidator();
+    virtual ~NEDCrossValidator();
 
   protected:
     /** @name Validator methods */

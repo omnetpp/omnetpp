@@ -29,13 +29,12 @@
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
-#include "nedsemanticvalidator.h"
+#include "nedcrossvalidator.h"
 #include "ned2generator.h"
 #include "ned1generator.h"
 #include "xmlgenerator.h"
 #include "nedtools.h"
 //XXX #include "cppgenerator.h"
-//XXX #include "nedcompiler.h"
 #include "fileglobber.h"
 #include "fileutil.h"
 #include "stringutil.h"
@@ -251,7 +250,7 @@ bool processFile(const char *fname, NEDErrorStore *errors)
         else
         {
             // simple semantic validation (without imports)
-//XXX            NEDSemanticValidator validator(!opt_unparsedexpr,&resolver, errors);
+//XXX            NEDCrossValidator validator(!opt_unparsedexpr,&resolver, errors);
 //XXX            validator.validate(tree);
         }
     }

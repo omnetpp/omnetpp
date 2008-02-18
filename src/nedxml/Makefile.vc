@@ -27,7 +27,7 @@ IMPLIBS= $O/../common/common$D.lib $(XML_LIBS)
 
 OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj $O/nedexception.obj \
       $O/nedvalidator.obj $O/neddtdvalidator.obj $O/neddtdvalidatorbase.obj \
-      $O/nedsyntaxvalidator.obj $O/nedsemanticvalidator.obj \
+      $O/nedsyntaxvalidator.obj $O/nedcrossvalidator.obj \
       $O/nedfilebuffer.obj $O/nedparser.obj $O/nedyylib.obj \
       $O/ned2.tab.obj $O/lex.ned2yy.obj $O/nedtools.obj \
       $O/nedutil.obj $O/ned2generator.obj $O/ned1generator.obj $O/xmlgenerator.obj \
@@ -274,7 +274,7 @@ $O/nedresourcecache.obj: nedresourcecache.cc \
   nedxmlparser.h \
   neddtdvalidator.h \
   nedsyntaxvalidator.h \
-  nedsemanticvalidator.h \
+  nedcrossvalidator.h \
   nedxmldefs.h \
   nedelements.h \
   nedtypeinfo.h \
@@ -290,11 +290,11 @@ $O/nedsaxhandler.obj: nedsaxhandler.cc \
   nedelement.h \
   saxparser.h \
   nedxmldefs.h
-$O/nedsemanticvalidator.obj: nedsemanticvalidator.cc \
+$O/nedcrossvalidator.obj: nedcrossvalidator.cc \
   nederror.h \
   nedexception.h \
   nedresourcecache.h \
-  nedsemanticvalidator.h \
+  nedcrossvalidator.h \
   nedxmldefs.h \
   nedelements.h \
   nedtypeinfo.h \
@@ -315,7 +315,7 @@ $O/nedtool.obj: nedtool.cc \
   nedxmlparser.h \
   neddtdvalidator.h \
   nedsyntaxvalidator.h \
-  nedsemanticvalidator.h \
+  nedcrossvalidator.h \
   ned2generator.h \
   ned1generator.h \
   xmlgenerator.h \
