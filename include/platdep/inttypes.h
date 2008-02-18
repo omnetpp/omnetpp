@@ -28,7 +28,7 @@
 #else
     // the following should work on 32-bit and 64-bit architectures too
     // XXX this may need to be refined for different platforms
-    // note: main.cc contains asserts to ensure that these typedefs are correct
+    // note: cenvir.cc contains asserts to ensure that these typedefs are correct
     typedef char                int8;
     typedef short               int16;
     typedef int                 int32;
@@ -37,6 +37,14 @@
     typedef unsigned short      uint16;
     typedef unsigned int        uint32;
     typedef unsigned long long  uint64;
+#endif
+
+// Note: %I64d is only used with VC++ 7.1 and MinGW gcc 3.4.x; once we
+// drop support for these compilers, this macro can be dropped altogether
+#if defined(_MSC_VER) || defined(__MINGW32__)
+#   define INT64_PRINTF_FORMAT   "I64"
+#else
+#   define INT64_PRINTF_FORMAT   "ll"
 #endif
 
 #endif

@@ -19,6 +19,8 @@
 #include "exception.h"
 #include "filereader.h"
 
+#define LL  INT64_PRINTF_FORMAT
+
 int parseLineNumber(char *line)
 {
     return !line || *line == '\r' || *line == '\n' ? -1 : atol(line);
@@ -41,7 +43,7 @@ void testFileReader(const char *file, long numberOfLines, int numberOfSeeks, int
         else
             offset = random.next01() * fileSize;
 
-        printf("Seeking to offset: %lld\n", offset);
+        printf("Seeking to offset: %"LL"d\n", offset);
         fileReader.seekTo(offset);
 
         int j = numberOfReadLines;

@@ -111,7 +111,7 @@ cEnvir::~cEnvir()
 
 static void verifyIntTypes()
 {
-#define VERIFY(t,size) if (sizeof(t)!=size) {printf("INTERNAL ERROR: sizeof(%s)!=%d, please check typedefs in include/inttypes.h, and report this bug!", #t, size); exit(1);}
+#define VERIFY(t,size) if (sizeof(t)!=size) {printf("INTERNAL ERROR: sizeof(%s)!=%d, please check typedefs in include/inttypes.h, and report this bug!\n\n", #t, size); abort();}
     VERIFY(int8,  1);
     VERIFY(int16, 2);
     VERIFY(int32, 4);
@@ -122,6 +122,13 @@ static void verifyIntTypes()
     VERIFY(uint32,4);
     VERIFY(uint64,8);
 #undef VERIFY
+
+#define LL  INT64_PRINTF_FORMAT
+    char buf[32];
+    int64 a=1, b=2;
+    sprintf(buf, "%"LL"d %"LL"d", a, b);
+    if (strcmp(buf, "1 2")!=0) {printf("INTERNAL ERROR: INT64_PRINTF_FORMAT incorrectly defined in include/inttypes.h, please report this bug!\n\n"); abort();}
+#undef LL
 }
 
 void cEnvir::setup(int argc, char *argv[])

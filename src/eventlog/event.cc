@@ -20,10 +20,12 @@
 
 USING_NAMESPACE
 
+#define LL  INT64_PRINTF_FORMAT
+
 Event::Event(EventLog *eventLog)
 {
     this->eventLog = eventLog;
-    
+
     clearInternalState();
 }
 
@@ -105,7 +107,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
     beginOffset = offset;
     reader->seekTo(offset);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %lld\n", offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %"LL"d\n", offset);
 
     std::deque<int> contextModuleIds;
 

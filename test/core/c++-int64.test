@@ -1,0 +1,22 @@
+%description:
+Test the int64 data type and its printf format. The trend is
+long long and %lld, but not all compilers support it yet.
+
+                64-bit integer type    printf format
+Linux gcc 4.1        long long             %"LL"d
+MinGW (gcc3.4.5)     long long            %I64d (!!!)
+Visual C++ 7.1        __int64              %I64d
+Visual C++ 8.0+         both                both
+
+%activity:
+#define LL  INT64_PRINTF_FORMAT
+
+int64 a=1, b=2;
+ev.printf("sizeof(a)=%d\n", sizeof(a));
+ev.printf("a=%"LL"d b=%"LL"d pi=%g\n", a, b, 3.14);
+
+%contains: stdout
+sizeof(a)=8
+a=1 b=2 pi=3.14
+
+

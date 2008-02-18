@@ -22,6 +22,8 @@
 
 USING_NAMESPACE
 
+#define LL  INT64_PRINTF_FORMAT
+
 class Options
 {
     public:
@@ -207,21 +209,21 @@ void offsets(Options options)
             file_offset_t offset = eventLogIndex.getOffsetForEventNumber(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%ld --> file offset %lld (0x%llx)\n", *it, offset, offset);
+                fprintf(stdout, "# Event #%ld --> file offset %"LL"d (0x%"LL"x)\n", *it, offset, offset);
 
             if (offset != -1 && options.verbose) {
                 fileReader->seekTo(offset);
                 fprintf(stdout, "#  - line at that offset: %.*s", fileReader->getCurrentLineLength(), fileReader->getNextLineBufferPointer());
             }
 
-            fprintf(options.outputFile, "%lld\n", offset);
+            fprintf(options.outputFile, "%"LL"d\n", offset);
         }
     }
 
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing offsets for %d events while reading %lld lines and %lld bytes from log file %s completed in %g seconds\n", (int)options.eventNumbers.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing offsets for %d events while reading %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", (int)options.eventNumbers.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void events(Options options)
@@ -239,7 +241,7 @@ void events(Options options)
             IEvent *event = eventLog.getEventForBeginOffset(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%ld found at file offset %lld (0x%llx)\n", event->getEventNumber(), *it, *it);
+                fprintf(stdout, "# Event #%ld found at file offset %"LL"d (0x%"LL"x)\n", event->getEventNumber(), *it, *it);
 
             event->print(options.outputFile);
         }
@@ -248,7 +250,7 @@ void events(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing events for %d offsets while reading %lld lines and %lld bytes from log file %s completed in %g seconds\n", (int)options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing events for %d offsets while reading %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", (int)options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void ranges(Options options)
@@ -278,7 +280,7 @@ void ranges(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing coherent ranges while reading %lld lines and %lld bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing coherent ranges while reading %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void echo(Options options)
@@ -294,7 +296,7 @@ void echo(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Echoing of %ld events, %lld lines and %lld bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Echoing of %ld events, %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     options.deleteEventLog(eventLog);
 }
@@ -313,7 +315,7 @@ void cat(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Cating of %lld lines and %lld bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Cating of %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void filter(Options options)
@@ -332,7 +334,7 @@ void filter(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Filtering of %ld events, %lld lines and %lld bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Filtering of %ld events, %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     options.deleteEventLog(eventLog);
 }

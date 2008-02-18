@@ -18,6 +18,8 @@
 
 USING_NAMESPACE
 
+#define LL  INT64_PRINTF_FORMAT
+
 static bool isEventNumber(long eventNumber)
 {
     return true;
@@ -229,7 +231,7 @@ file_offset_t EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind
     Assert(eventNumber >= 0);
     file_offset_t offset = searchForOffset(eventNumberToCacheEntryMap, eventNumber, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld for match kind: %d at offset: %lld\n", eventNumber, matchKind, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld for match kind: %d at offset: %"LL"d\n", eventNumber, matchKind, offset);
 
     return offset;
 }
@@ -239,7 +241,7 @@ file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime
     Assert(simulationTime >= 0);
     file_offset_t offset = searchForOffset(simulationTimeToCacheEntryMap, simulationTime, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Found simulation time: %.*g for match kind: %d at offset: %lld\n", 12, simulationTime.dbl(), matchKind, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Found simulation time: %.*g for match kind: %d at offset: %"LL"d\n", 12, simulationTime.dbl(), matchKind, offset);
 
     return offset;
 }
@@ -320,7 +322,7 @@ template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, Cache
             // for simulation times we must consider whether the cache entry is complete or not by looking around it
             typename std::map<T, CacheEntry>::iterator itUpper = it;
             typename std::map<T, CacheEntry>::iterator itLower = it;
-    
+
             ++itUpper;
             if (itLower != map.begin())
                 --itLower;
@@ -540,7 +542,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
 
     char *line;
 
-    if (PRINT_DEBUG_MESSAGES) printf("Reading to first event line from offset: %lld in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
+    if (PRINT_DEBUG_MESSAGES) printf("Reading to first event line from offset: %"LL"d in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
 
     // find first "E" line, return false if none found
     while (true)
@@ -613,10 +615,10 @@ void EventLogIndex::dump()
     printf("eventNumberToCacheEntryMap:\n");
 
     for (EventNumberToCacheEntryMap::iterator it = eventNumberToCacheEntryMap.begin(); it != eventNumberToCacheEntryMap.end(); ++it)
-        printf("  #%ld --> offset %lld (0x%llx)\n", it->first, it->second.beginOffset, it->second.beginOffset);
+        printf("  #%ld --> offset %"LL"d (0x%"LL"x)\n", it->first, it->second.beginOffset, it->second.beginOffset);
 
     printf("simulationTimeToCacheEntryMap:\n");
 
     for (SimulationTimeToCacheEntryMap::iterator it = simulationTimeToCacheEntryMap.begin(); it != simulationTimeToCacheEntryMap.end(); ++it)
-        printf("  %.*g --> offset %lld (0x%llx)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
+        printf("  %.*g --> offset %"LL"d (0x%"LL"x)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
 }

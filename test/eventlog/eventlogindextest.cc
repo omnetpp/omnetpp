@@ -18,6 +18,8 @@
 #include "filereader.h"
 #include "eventlogindex.h"
 
+#define LL  INT64_PRINTF_FORMAT
+
 bool getReadForward(MatchKind matchKind)
 {
     switch (matchKind)
@@ -40,14 +42,14 @@ void checkOffset(EventLogIndex& eventLogIndex, file_offset_t offset)
 
     file_offset_t endOffset = eventLogIndex.getEndOffsetForBeginOffset(offset);
     if (endOffset == -1)
-        throw opp_runtime_error("*** No end offset for begin offset: %lld\n", offset);
+        throw opp_runtime_error("*** No end offset for begin offset: %"LL"d\n", offset);
 
     file_offset_t beginOffset = eventLogIndex.getBeginOffsetForEndOffset(endOffset);
     if (beginOffset == -1)
-        throw opp_runtime_error("*** No begin offset for end offset: %lld\n", endOffset);
+        throw opp_runtime_error("*** No begin offset for end offset: %"LL"d\n", endOffset);
 
     if (offset != beginOffset)
-        throw opp_runtime_error("*** Inconsistent begin and end offsets for offset: %lld\n", offset);
+        throw opp_runtime_error("*** Inconsistent begin and end offsets for offset: %"LL"d\n", offset);
 }
 
 void checkEventNumberOffset(EventLogIndex& eventLogIndex, file_offset_t offset, MatchKind matchKind, long eventNumber)

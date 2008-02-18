@@ -19,6 +19,8 @@
 
 USING_NAMESPACE
 
+#define LL  INT64_PRINTF_FORMAT
+
 EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
     setDisplayMode(DESCRIPTIVE);
@@ -231,7 +233,7 @@ EventLogEntry *EventLogTableFacade::getEntryInEvent(IEvent *event, int index)
         }
     }
 
-    throw opp_runtime_error("No event log entry with index: %d in event: %lld", index, event->getEventNumber());
+    throw opp_runtime_error("No event log entry with index: %d in event: %"LL"d", index, event->getEventNumber());
 }
 
 int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
@@ -252,7 +254,7 @@ int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
         }
     }
 
-    throw opp_runtime_error("No event log entry found in event: %lld", event->getEventNumber());
+    throw opp_runtime_error("No event log entry found in event: %"LL"d", event->getEventNumber());
 }
 
 long EventLogTableFacade::getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit)
