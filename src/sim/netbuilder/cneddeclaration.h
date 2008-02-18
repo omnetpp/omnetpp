@@ -41,6 +41,14 @@ NAMESPACE_BEGIN
  * creation) to add gates and parameters to the freshly created module
  * object, and also to verify that module parameters are set correctly.
  *
+ * Adds the following to NEDTypeInfo:
+ *
+ *  - parameter and gate descriptions extracted from the NEDElement trees,
+ *    also following the inheritance chain. Inherited parameters and
+ *    gates are included, and values (parameters and gate sizes) are
+ *    converted into and stored in cPar form.
+ *  - properties, merged along the inheritance chain.
+ *
  * @ingroup Internals
  */
 class SIM_API cNEDDeclaration : public NEDTypeInfo

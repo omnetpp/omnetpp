@@ -35,14 +35,6 @@ class NEDResourceCache;
  * channels and channel interfaces. All instances are created and managed
  * by NEDResourceCache.
  *
- * NEDTypeInfo stores:
- *  - a pointer to the complete NEDElement tree of the NED declaration;
- *    this pointer points into the NEDResourceCache.
- *  - parameter and gate descriptions extracted from the NEDElement trees,
- *    also following the inheritance chain. Inherited parameters and
- *    gates are included, and values (parameters and gate sizes) are
- *    converted into and stored in cPar form.
- *
  * @ingroup NEDCompiler
  */
 class NEDXML_API NEDTypeInfo

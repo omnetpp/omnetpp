@@ -213,6 +213,16 @@ $O/ned2generator.obj: ned2generator.cc \
   nedelements.h \
   nedelement.h \
   nedxmldefs.h
+$O/nedcrossvalidator.obj: nedcrossvalidator.cc \
+  nederror.h \
+  nedexception.h \
+  nedresourcecache.h \
+  nedcrossvalidator.h \
+  nedxmldefs.h \
+  nedelements.h \
+  nedtypeinfo.h \
+  nedelement.h \
+  nedvalidator.h
 $O/neddtdvalidator.obj: neddtdvalidator.cc \
   nederror.h \
   neddtdvalidator.h \
@@ -290,16 +300,6 @@ $O/nedsaxhandler.obj: nedsaxhandler.cc \
   nedelement.h \
   saxparser.h \
   nedxmldefs.h
-$O/nedcrossvalidator.obj: nedcrossvalidator.cc \
-  nederror.h \
-  nedexception.h \
-  nedresourcecache.h \
-  nedcrossvalidator.h \
-  nedxmldefs.h \
-  nedelements.h \
-  nedtypeinfo.h \
-  nedelement.h \
-  nedvalidator.h
 $O/nedsyntaxvalidator.obj: nedsyntaxvalidator.cc \
   nederror.h \
   nedsyntaxvalidator.h \

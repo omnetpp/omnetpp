@@ -19,8 +19,10 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "globals.h"
 #include "cpar.h"
 #include "nedelements.h"
+#include "nedresourcecache.h"
 
 NAMESPACE_BEGIN
 
@@ -39,6 +41,14 @@ class cNEDDeclaration;
  */
 class SIM_API cNEDNetworkBuilder
 {
+  protected:
+    class ComponentTypeNames : public NEDResourceCache::INEDTypeNames {
+      public:
+        virtual bool contains(const char *qname) const  {return componentTypes.instance()->lookup(qname)!=NULL;}
+        virtual int size() const  {return componentTypes.instance()->size();}
+        virtual const char *get(int k) const  {return componentTypes.instance()->get(k)->fullName();}
+    };
+
   protected:
     // the current NED declaration we're working with. Stored here to
     // avoid having to pass it around as a parameter.
@@ -59,6 +69,7 @@ class SIM_API cNEDNetworkBuilder
     void addSubmodulesAndConnections(cModule *modp);
     bool superTypeAllowsUnconnected(cNEDDeclaration *decl) const;
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
+    std::string resolveComponentType(const NEDLookupContext& context, const char *nedtypename);
     cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
     cModuleType *findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodname);
     std::vector<std::string> findTypeWithInterface(const char *nedtypename, const char *interfaceqname);

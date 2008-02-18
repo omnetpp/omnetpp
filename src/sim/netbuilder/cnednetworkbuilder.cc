@@ -37,7 +37,6 @@
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
 #include "nedsyntaxvalidator.h"
-#include "nedsemanticvalidator.h"
 #include "xmlgenerator.h"  // for debugging
 
 #include "cneddeclaration.h"
@@ -313,11 +312,21 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected(cNEDDeclaration *decl) const
     return false;
 }
 
+std::string cNEDNetworkBuilder::resolveComponentType(const NEDLookupContext& context, const char *nedtypename)
+{
+    // Resolve a NED module/channel type name, for a submodule or channel
+    // instance. Lookup is based on component names registered in the simkernel,
+    // NOT on the NED files loaded. This allows the user to instantiate
+    // cModuleTypes/cChannelTypes which are not declared in NED.
+    ComponentTypeNames qnames;
+    return cNEDLoader::instance()->resolveNedType(context, nedtypename, &qnames);
+}
+
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodname)
 {
     //FIXME cache the result to speed up further lookups
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
-    std::string qname = cNEDLoader::instance()->resolveComponentType(context, modTypeName);
+    std::string qname = resolveComponentType(context, modTypeName);
     if (qname.empty())
         throw cRuntimeError(modp, "dynamic network builder: submodule %s: cannot resolve module type `%s' (not in the loaded NED files?)",
                             submodname, modTypeName);
@@ -364,7 +373,7 @@ std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *n
     std::vector<std::string> candidates;
 
     // try to interpret it as a fully qualified name
-    cNEDLoader::ComponentTypeNames qnames;
+    ComponentTypeNames qnames;
     if (qnames.contains(nedtypename)) {
         cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(nedtypename);
         ASSERT(decl);
@@ -795,7 +804,7 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltyp
 {
     //FIXME cache the result to speed up further lookups
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
-    std::string qname = cNEDLoader::instance()->resolveComponentType(context, channeltypename);
+    std::string qname = resolveComponentType(context, channeltypename);
     if (qname.empty())
         throw cRuntimeError(modp, "dynamic network builder: cannot resolve channel type `%s' (not in the loaded NED files?)", channeltypename);
 

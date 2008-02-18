@@ -34,14 +34,6 @@ NAMESPACE_BEGIN
  */
 class SIM_API cNEDLoader : public NEDResourceCache
 {
-  public:
-    class ComponentTypeNames : public INEDTypeNames {
-      public:
-        virtual bool contains(const char *qname) const  {return componentTypes.instance()->lookup(qname)!=NULL;}
-        virtual int size() const  {return componentTypes.instance()->size();}
-        virtual const char *get(int k) const  {return componentTypes.instance()->get(k)->fullName();}
-    };
-
   protected:
     // the singleton instance
     static cNEDLoader *inst;
@@ -62,16 +54,6 @@ class SIM_API cNEDLoader : public NEDResourceCache
 
     /** Redefined to make return type more specific. */
     virtual cNEDDeclaration *getDecl(const char *qname) const;
-
-    /**
-     * Resolve a NED module/channel type name, for a submodule or channel
-     * instance. Lookup is based on component names registered in the simkernel,
-     * NOT on the NED files loaded. This allows the user to instantiate
-     * cModuleTypes/cChannelTypes which are not declared in NED.
-     */
-    virtual std::string resolveComponentType(const NEDLookupContext& context, const char *nedtypename) {
-        return NEDResourceCache::resolveNedType(context, nedtypename, &ComponentTypeNames());
-    }
 };
 
 NAMESPACE_END
