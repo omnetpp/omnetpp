@@ -342,8 +342,7 @@ public class InifileAnalyzer {
 			// note: we do not validate "extends=" here -- that's all done in validateSections()!
 		}
 		else if (e==CFGID_NETWORK) {
-			IProject contextProject = doc.getDocumentFile().getProject();
-			INEDTypeInfo network = ned.getToplevelNedType(value, contextProject);
+			INEDTypeInfo network = resolveNetwork(ned, value);
 			if (network == null) {
 				addError(section, key, "No such NED type: "+value);
 				return;
@@ -353,11 +352,26 @@ public class InifileAnalyzer {
                 addError(section, key, "Not a module type: "+value);
                 return;
             }
-			if (((IModuleTypeElement)node).isNetwork()) {
+			if (!((IModuleTypeElement)node).isNetwork()) {
 				addError(section, key, "Module type '"+value+"' was not declared to be a network");
 				return;
 			}
 		}
+	}
+
+	public INEDTypeInfo resolveNetwork(INEDTypeResolver ned, String value) {
+		INEDTypeInfo network = null;
+		IFile iniFile = doc.getDocumentFile();
+		String inifilePackage = ned.getExpectedPackageFor(iniFile);
+		IProject contextProject = iniFile.getProject();
+		if (inifilePackage != null) {
+			String networkName = inifilePackage + (inifilePackage.length()!=0 && value.length()!=0 ? "." : "")+value;
+			network = ned.getToplevelNedType(networkName, contextProject);
+		}
+		if (network == null)
+			network = ned.getToplevelNedType(value, contextProject);
+		
+		return network;
 	}
 
 	protected boolean validateValueWithIterationVars(String section, String key) {
@@ -615,18 +629,21 @@ public class InifileAnalyzer {
 	}
 
 	protected List<ParamResolution> collectParameters(final String activeSection) {
+		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		if (networkName == null)
 			networkName = CFGID_NETWORK.getDefaultValue();
 		if (networkName == null)
 			return new ArrayList<ParamResolution>();
+		INEDTypeInfo network = resolveNetwork(res, networkName);
+		if (network == null )
+			return new ArrayList<ParamResolution>();
 
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
-		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 		IProject contextProject = doc.getDocumentFile().getProject();
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));
-		treeTraversal.traverse(networkName, contextProject);
+		treeTraversal.traverse(network.getFullyQualifiedName(), contextProject);
 		return list;
 	}
 

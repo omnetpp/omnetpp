@@ -145,8 +145,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     public static final IPredicate CHANNELINTERFACE_FILTER = new InstanceofPredicate(ChannelInterfaceElementEx.class);
     public static final IPredicate NETWORK_FILTER = new IPredicate() {
         public boolean matches(INEDTypeInfo component) {
-            return component.getNEDElement() instanceof CompoundModuleElementEx &&
-                   ((CompoundModuleElementEx)component.getNEDElement()).isNetwork();
+            return component.getNEDElement() instanceof IModuleTypeElement &&
+                   ((IModuleTypeElement)component.getNEDElement()).isNetwork();
         }
     };
 

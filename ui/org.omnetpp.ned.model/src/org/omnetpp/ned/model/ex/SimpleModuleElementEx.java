@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElement;
@@ -54,11 +55,16 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     }
 
     public boolean isNetwork() {
-        return false; //FIXME
+    	// this isNetwork property should not be inherited so we look only among the local properties  
+    	PropertyElementEx networkPropertyElementEx = getNEDTypeInfo().getLocalProperties().get(IS_NETWORK_PROPERTY);
+    	if (networkPropertyElementEx == null)
+    		return false;
+    	String propValue = NEDElementUtilEx.getPropertyValue(networkPropertyElementEx);
+        return !StringUtils.equalsIgnoreCase("false", propValue); 
     }
 
     public void setIsNetwork(boolean val) {
-        // FIXME
+        NEDElementUtilEx.setNetworkProperty(this, val);
     }
 
     public DisplayString getDisplayString() {

@@ -56,7 +56,10 @@ import org.omnetpp.inifile.editor.model.ParseException;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
-
+// TODO assign resources to the tab (exe file, working dir, ini file)
+// TODO add support for modifying the environment (eg. adding the BIN directory of all dependent projects on windows)
+// and setting the LD_LIBRARY_PATH correctly
+// TODO support launching of shared objects by leaving the program field empty (and using opp_run to start the simlation)
 /**
  * A launch configuration tab that displays and edits omnetpp project
  *

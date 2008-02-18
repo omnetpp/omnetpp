@@ -20,20 +20,22 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**
  * TODO add documentation
  *
  * @author rhornig
  */
-//XXX New NED File Wizard should generate "package" line into the file
 public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 
-    private static String[] NEDFILE_TEMPLATES = {
-        "//\n// TODO Place comment here\n//\n\n",
-        "//\n// TODO Place comment here\n//\n\nsimple #NAME# {\n  parameters:\n  gates:\n}\n",
-        "//\n// TODO Place comment here\n//\n\nmodule #NAME# {\n  parameters:\n  gates:\n  submodules:\n  connections:\n}\n",
-        "//\n// TODO Place comment here\n//\n\nnetwork #NAME# {\n  parameters:\n  submodules:\n  connections:\n}\n"
+    private static final String[] NEDFILE_TEMPLATES = {
+        "//\n// TODO Place comment here\n//\n#PACKAGEDECL#\n",
+        "//\n// TODO Place comment here\n//\n#PACKAGEDECL#\nsimple #NAME# {\n  parameters:\n  gates:\n}\n",
+        "//\n// TODO Place comment here\n//\n#PACKAGEDECL#\nmodule #NAME# {\n  parameters:\n  gates:\n  submodules:\n  connections:\n}\n",
+        "//\n// TODO Place comment here\n//\n#PACKAGEDECL#\nnetwork #NAME# {\n  parameters:\n  submodules:\n  connections:\n}\n"
     };
     
 	private IWorkbench workbench;
@@ -101,7 +103,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         compoundButton.addSelectionListener(listener);
 
         networkButton = new Button(group, SWT.RADIO);
-        networkButton.setText("A new toplevel Network");
+        networkButton.setText("A new Network");
         networkButton.addSelectionListener(listener);
 
         //new Label(composite, SWT.NONE);
@@ -117,7 +119,12 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         
         name = name.substring(0, name.lastIndexOf('.'));
         
-		String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", name);
+        IFile newFile = createFileHandle(getContainerFullPath().append(getFileName()));
+        String packagedecl = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
+        packagedecl = StringUtils.isNotEmpty(packagedecl) ? "package "+packagedecl+";\n" : "";
+
+        String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", name);
+		contents = contents.replaceAll("#PACKAGEDECL#", packagedecl);
 		return new ByteArrayInputStream(contents.getBytes());
 	}
     
@@ -134,7 +141,7 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
 			if (page != null)
 				IDE.openEditor(page, newFile, true);
 		} catch (org.eclipse.ui.PartInitException e) {
-			e.printStackTrace();
+			NedEditorPlugin.logError(e);
 			return false;
 		}
 		exampleCount++;

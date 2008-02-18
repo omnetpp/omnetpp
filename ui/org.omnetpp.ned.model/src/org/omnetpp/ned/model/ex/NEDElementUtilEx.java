@@ -13,9 +13,11 @@ import org.omnetpp.ned.model.NEDElementConstants;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.pojo.CommentElement;
+import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
@@ -136,6 +138,37 @@ public class NEDElementUtilEx implements NEDElementTags, NEDElementConstants {
 		return literalElement;
 	}
 
+	/**
+	 * Sets the value of the isNetwork boolean property on a module. If value is true adds it to the tree otherwise removes it.
+	 * @param isNetwork
+	 */
+	public static void setNetworkProperty(IModuleTypeElement node, boolean isNetwork) {
+		// look for the "parameters" block
+		INEDElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
+		
+		if (paramsNode == null) {
+			if (!isNetwork) return;  // do nothing if node is not a network and no parameters section is present
+			
+			paramsNode = NEDElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
+            ((ParametersElement)paramsNode).setIsImplicit(true);
+			node.appendChild(paramsNode);
+		}
+
+		// look for the first property parameter named "display"
+		INEDElement isNetworkPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyElement.ATT_NAME, IModuleTypeElement.IS_NETWORK_PROPERTY);
+
+		// first we always remove the original node (so all its children will be discarded)
+		if (isNetworkPropertyNode !=null)
+			paramsNode.removeChild(isNetworkPropertyNode);
+		// create and add a new node if needed
+		if (isNetwork) {
+			isNetworkPropertyNode = NEDElementFactoryEx.getInstance().createElement(NED_PROPERTY);
+			((PropertyElement)isNetworkPropertyNode).setIsImplicit(node instanceof CompoundModuleElement);
+			((PropertyElement)isNetworkPropertyNode).setName(IModuleTypeElement.IS_NETWORK_PROPERTY);
+			paramsNode.appendChild(isNetworkPropertyNode);
+		}
+	}
+	
     /**
      * Returns the name of the first "extends" node (or null if none present)
      */

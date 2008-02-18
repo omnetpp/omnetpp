@@ -80,6 +80,7 @@ public interface INEDTypeResolver {
 	 * (which in fact is used to *define* the package, so it has no "expected"
 	 * package name), and for files outside the NED source folders defined
 	 * for the project (i.e. for which getNedSourceFolder() returns null.)
+	 * Works for ANY file (not just for NED files)
 	 */
     public String getExpectedPackageFor(IFile file);
 

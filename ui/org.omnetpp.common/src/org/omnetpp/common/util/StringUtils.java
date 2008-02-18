@@ -560,6 +560,17 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     public static String quoteStringIfNeeded(String text) {
     	return Common.quoteStringIfNeeded(text);
     }
+    
+    /**
+     * Joins two string with a separator, s1 and s2 can be NULL. 
+     */
+    public static String join(String s1, String separator, String s2) {
+    	if (isEmpty(s1))
+    		return nullToEmpty(s2);
+    	if (isEmpty(s2))
+    		return nullToEmpty(s1);
+    	return s1+separator+s2;
+    }
 
     /**
      * Performs template substitution. Constructs understood are:

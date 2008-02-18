@@ -3,7 +3,6 @@ package org.omnetpp.inifile.editor.contentassist;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
@@ -127,11 +126,32 @@ s	 * before getting presented to the user.
 		if (entry==CFGID_NETWORK) {
 			IProject contextProject = doc.getDocumentFile().getProject();
 			NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+			// first 
+			List<IContentProposal> p1 = new ArrayList<IContentProposal>();
+			String iniFilePackage = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(doc.getDocumentFile());
+			if (StringUtils.isNotEmpty(iniFilePackage)) {
+				for (String networkName : nedResources.getNetworkQNames(contextProject)) {
+					INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNEDElement();
+					if ((iniFilePackage+".").equals(network.getNEDTypeInfo().getNamePrefix())) {
+						String docu = StringUtils.makeTextDocu(network.getComment());
+						p1.add(new ContentProposal(network.getName(), network.getName()+" - "+iniFilePackage, docu));
+					}
+				}
+				sort(p1);
+			}
+			List<IContentProposal> p2 = new ArrayList<IContentProposal>();
 			for (String networkName : nedResources.getNetworkQNames(contextProject)) {
 				INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNEDElement();
-				p.add(new ContentProposal(networkName, networkName, StringUtils.makeTextDocu(network.getComment())));
+				String docu = StringUtils.makeTextDocu(network.getComment());
+				// TODO make a better presentation ( name - package ) = prefix filtering should be correctly implemented (prefix should match the name ONLY excluding the package)
+//				String namePrefix = StringUtils.removeEnd(network.getNEDTypeInfo().getNamePrefix(),".");
+//				String label = StringUtils.join(network.getName(), " - ", namePrefix);
+				p2.add(new ContentProposal(networkName, networkName, docu));
 			}
-			sort(p);
+			sort(p2);
+			p.addAll(p1);
+			p.addAll(p2);
+			
 		}
 		else if (entry==CFGID_USER_INTERFACE) {
 			p.addAll(toProposals(new String[] {"Cmdenv", "Tkenv"}));

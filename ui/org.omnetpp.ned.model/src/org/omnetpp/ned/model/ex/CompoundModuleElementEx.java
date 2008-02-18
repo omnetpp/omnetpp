@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.NEDElement;
@@ -75,11 +76,16 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     public boolean isNetwork() {
-        return false; //FIXME
+    	// this isNetwork property should not be inherited so we look only among the local properties  
+    	PropertyElementEx networkPropertyElementEx = getNEDTypeInfo().getLocalProperties().get(IS_NETWORK_PROPERTY);
+    	if (networkPropertyElementEx == null)
+    		return false;
+    	String propValue = NEDElementUtilEx.getPropertyValue(networkPropertyElementEx);
+        return !StringUtils.equalsIgnoreCase("false", propValue); 
     }
 
     public void setIsNetwork(boolean val) {
-        // FIXME
+        NEDElementUtilEx.setNetworkProperty(this, val);
     }
     
     public DisplayString getDisplayString() {
@@ -159,7 +165,8 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 	}
 
     /**
-     * Remove a specific child from this module.
+     * Remove a specific submodule child from this module.
+     * Submodules node will be removed if iw was the last child
      */
 	public void removeSubmodule(SubmoduleElementEx child) {
         child.removeFromParent();
@@ -169,9 +176,8 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 	}
 
     /**
-     * Insert the child at the give position.
-     * @param child Child to be inserted
-     * @param insertBefore Sibling element where the child will be inserted
+     * Insert the submodule child at the given position. (Internally, a
+     * "submodules:" node will be created if not yet present).
      */
 	public void insertSubmodule(int index, SubmoduleElementEx child) {
 		// check whether Submodules node exists and create one if doesn't
