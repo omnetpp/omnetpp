@@ -48,7 +48,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 
     @Override
     public String getReadableTagName() {
-        if (getIsNetwork())
+        if (isNetwork())
             return "Network";
         else
             return super.getReadableTagName();
@@ -74,6 +74,14 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     	super.fireModelEvent(event);
     }
 
+    public boolean isNetwork() {
+        return false; //FIXME
+    }
+
+    public void setIsNetwork(boolean val) {
+        // FIXME
+    }
+    
     public DisplayString getDisplayString() {
     	if (displayString == null)
     		displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
