@@ -38,9 +38,10 @@ const char *cErrorMessages::get(ErrorCode e)
       case eCUSTOM:    return "%s";
       case eENDEDOK:   return "No more events -- simulation ended";
       case eENDSIM:    return "Simulation stopped with endSimulation()";
-      case eESTKOFLOW: return "Error in dynamic expression: stack overflow";
-      case eESTKUFLOW: return "Error in dynamic expression: stack underflow";
-      case eEBADARGS:  return "Error in dynamic expression: `%s': wrong argument type(s)";
+      case eESTKOFLOW: return "Expression stack overflow";
+      case eESTKUFLOW: return "Expression stack underflow";
+      case eEBADARGS:  return "Error in expression: `%s': wrong argument type(s)";
+      case eDIMLESS:   return "Error in expression: `%s': argument(s) should be dimensionless";
       case eECANTCAST: return "Cannot cast result of expression to %s";
       case eENOPARENT: return "Expression cannot be interpreted on network level";
       case eFINISH:    return "All finish() functions called, simulation ended";

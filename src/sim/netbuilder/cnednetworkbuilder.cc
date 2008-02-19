@@ -111,7 +111,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *para
         const char *paramName = paramNode->getName();
         ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
 
-        cProperties *paramProps = currentDecl->paramProperties(paramName);
+        cProperties *paramProps = currentDecl->paramProperties(paramName);  // FIXME won't work for submodule params (that's subcomponentParamProperties())
         cProperty *unitProp = paramProps->get("unit");
         const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
 
@@ -132,7 +132,7 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *para
                     : paramNode->getIsVolatile();
 
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-                value = cParValue::createWithType(parType);
+                value = cParValue::createWithType(parType);   //FIXME just dup() and assign the expression? if param already exists...
                 cExpressionBuilder::assign(value, dynamicExpr);
                 value->setName(paramName);
                 value->setIsShared(true);
