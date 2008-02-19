@@ -127,6 +127,47 @@ void cDynamicExpression::setExpression(Elem e[], int n)
     nelems = n;
 }
 
+bool cDynamicExpression::boolValue(cComponent *context)
+{
+    Value v = evaluate(context);
+    if (v.type!=Value::BOOL)
+        throw cRuntimeError(this, eECANTCAST, "bool");
+    return v.bl;
+}
+
+//FIXME rename these methods!!! evaluateToLong() etc
+long cDynamicExpression::longValue(cComponent *context, const char *expectedUnit)
+{
+    Value v = evaluate(context);
+    if (v.type!=Value::DBL)
+        throw cRuntimeError(this, eECANTCAST, "long");
+    return double_to_long(UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit));
+}
+
+double cDynamicExpression::doubleValue(cComponent *context, const char *expectedUnit)
+{
+    Value v = evaluate(context);
+    if (v.type!=Value::DBL)
+        throw cRuntimeError(this, eECANTCAST, "double");
+    return UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
+}
+
+std::string cDynamicExpression::stringValue(cComponent *context)
+{
+    Value v = evaluate(context);
+    if (v.type!=Value::STR)
+        throw cRuntimeError(this, eECANTCAST, "string");
+    return v.str;
+}
+
+cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
+{
+    Value v = evaluate(context);
+    if (v.type!=Value::XML)
+        throw cRuntimeError(this, eECANTCAST, "XML element");
+    return v.xml;
+}
+
 #define ulong(x) ((unsigned long)(x))
 
 cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) const
@@ -428,46 +469,6 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
     return stk[tos];
 }
 
-bool cDynamicExpression::boolValue(cComponent *context)
-{
-    Value v = evaluate(context);
-    if (v.type!=Value::BOOL)
-        throw cRuntimeError(this, eECANTCAST, "bool");
-    return v.bl;
-}
-
-//FIXME rename these methods!!! evaluateToLong() etc
-long cDynamicExpression::longValue(cComponent *context, const char *expectedUnit)
-{
-    Value v = evaluate(context);
-    if (v.type!=Value::DBL)
-        throw cRuntimeError(this, eECANTCAST, "long");
-    return double_to_long(UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit));
-}
-
-double cDynamicExpression::doubleValue(cComponent *context, const char *expectedUnit)
-{
-    Value v = evaluate(context);
-    if (v.type!=Value::DBL)
-        throw cRuntimeError(this, eECANTCAST, "double");
-    return UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
-}
-
-std::string cDynamicExpression::stringValue(cComponent *context)
-{
-    Value v = evaluate(context);
-    if (v.type!=Value::STR)
-        throw cRuntimeError(this, eECANTCAST, "string");
-    return v.str;
-}
-
-cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
-{
-    Value v = evaluate(context);
-    if (v.type!=Value::XML)
-        throw cRuntimeError(this, eECANTCAST, "XML element");
-    return v.xml;
-}
 
 std::string cDynamicExpression::toString() const
 {
