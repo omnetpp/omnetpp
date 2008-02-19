@@ -20,10 +20,9 @@
 USING_NAMESPACE
 
 UnitConversion::UnitDesc UnitConversion::unitTable[] = {
-//FIXME accept longer names too ("byte", "bytes", "sec", "second", "seconds"...)
     { "d",   86400, "s",    "day" },
     { "h",    3600, "s",    "hour" },
-    { "min",    60, "s",    "minute" },
+    { "min",    60, "s",    "minute" }, // "m" is meter
     { "s",       1, "s",    "second" },
     { "ms",   1e-3, "s",    "millisecond" },
     { "us",   1e-6, "s",    "microsecond" },
@@ -49,14 +48,38 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {
     { "MHz",   1e6, "Hz",   "megaherz" },
     { "kHz",   1e3, "Hz",   "kiloherz" },
     { "Hz",      1, "Hz",   "herz" },
-    { NULL,      0, NULL,   NULL }
+    { "kg",      1, "kg",   "kilogram" },
+    { "g",    1e-3, "kg",   "gram" },
+    { "J",       1, "J",    "joule" },
+    { "kJ",    1e3, "J",    "kilojoule" },
+    { "MJ",    1e6, "J",    "megajoule" },
+    { "V",       1, "V",    "volt" },
+    { "kV",    1e3, "V",    "kilovolt" },
+    { "mV",   1e-3, "V",    "millivolt" },
+    { "A",       1, "A",    "amper" },
+    { "mA",   1e-3, "A",    "milliamper" },
+    { "uA",   1e-6, "A",    "microamper" },
+    // this many should be enough
+    { NULL,      0, NULL,   NULL }  
 };
 
 UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
 {
+    // short name ("Hz", "mW")
     for (int i=0; unitTable[i].unit; i++)
         if (!strcmp(unitTable[i].unit, unit))
             return unitTable+i;
+    // long name, case insensitive ("herz", "milliwatt")
+    for (int i=0; unitTable[i].unit; i++)
+        if (!strcasecmp(unitTable[i].longName, unit))
+            return unitTable+i;
+    // long name in plural, case insensitive ("milliwatts")
+    if (unit[strlen(unit)-1]=='s') {
+        std::string tmp = std::string(unit, strlen(unit)-1);
+        for (int i=0; unitTable[i].unit; i++) 
+            if (!strcasecmp(unitTable[i].longName, tmp.c_str()))
+                return unitTable+i;
+    }
     return NULL;
 }
 
@@ -94,80 +117,47 @@ bool UnitConversion::readUnit(const char *&s, std::string& unit)
 
 double UnitConversion::parseQuantity(const char *str, const char *expectedUnit)
 {
-    std::string dummy;
-    return doParseQuantity(str, expectedUnit, dummy);
+    std::string unit;
+    double d = parseQuantity(str, unit);
+    return convertUnit(d, unit.c_str(), expectedUnit);
 }
 
-double UnitConversion::parseQuantity(const char *str, std::string& outActualUnit)
+double UnitConversion::parseQuantity(const char *str, std::string& unit)
 {
-    return doParseQuantity(str, NULL, outActualUnit);
-}
-
-double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit, std::string& unit)
-{
-//FIXME only convert if there are several numbers (like "2h 5min")
-    //FIXME warn if unit only differs from a "known" unit in uppercase/lowercase!!!!
-    //FIXME handle "dimensionless" units too (expectedUnit=="-"; make it expectedUnit=="1" !!!)
-
+    double result = 0;
     unit = "";
     const char *s = str;
 
-    // read first number
-    double num;
-    if (!readNumber(s, num))
+    // read first number and unit
+    if (!readNumber(s, result))
         throw opp_runtime_error("syntax error parsing quantity '%s': must begin with a number", str);
-
-    // first, deal with special case: just a plain number without unit
-    std::string tmpUnit;
-    if (!readUnit(s, tmpUnit))
-    {
+    if (!readUnit(s, unit)) {
+        // special case: plain number without unit
         if (*s)
             throw opp_runtime_error("syntax error parsing quantity '%s': garbage after first number", str);
-        return num;
+        return result;
     }
-
-    // check first unit against expected unit
-    UnitDesc *tmpUnitDesc = lookupUnit(tmpUnit.c_str());
-
-    // we'll only want to perform conversion if expected unit is a base unit (s, m, bps, B, W, etc)
-    UnitDesc *expectedUnitDesc = expectedUnit ? lookupUnit(expectedUnit) : NULL;
-    bool performConversion = !expectedUnit ? tmpUnitDesc!=NULL : expectedUnitDesc ? expectedUnitDesc->mult==1 : false;
-
-#define DESC(u) UnitConversion::unitDescription(u).c_str()
-
-    // check it matches expected unit ("meters given but seconds expected")
-    if (!performConversion && expectedUnit && tmpUnit!=expectedUnit)
-        throw opp_runtime_error("error in quantity '%s': supplied unit %s does not match expected unit %s "
-                            "(note that conversion is only performed into base units: s, m, Hz, B, bps, W)",
-                            str, DESC(tmpUnit.c_str()), DESC(expectedUnit));
-
-    if (performConversion && expectedUnit && (!tmpUnitDesc || std::string(tmpUnitDesc->baseUnit)!=expectedUnit))
-        throw opp_runtime_error("error in quantity '%s': supplied unit %s does not match expected unit %s",
-                            str, DESC(tmpUnit.c_str()), DESC(expectedUnit));
-    unit = performConversion ? tmpUnitDesc->baseUnit : tmpUnit;
-
-    double result = performConversion ? tmpUnitDesc->mult * num : num;
 
     // now process the rest: [<number> <unit>]*
     while (*s)
     {
-        // read number
-        double num;
-        if (!readNumber(s, num))
+        // read number and unit
+        double d;
+        if (!readNumber(s, d))
             break;
-
-        // read unit
+        std::string tmpUnit;
         if (!readUnit(s, tmpUnit))
             throw opp_runtime_error("syntax error parsing quantity '%s': missing unit", str);
 
         // check unit
-        UnitDesc *tmpUnitDesc = lookupUnit(tmpUnit.c_str());
-        if (performConversion ? (!tmpUnitDesc || unit!=tmpUnitDesc->baseUnit) : unit!=tmpUnit)
+        double factor = getConversionFactor(unit.c_str(), tmpUnit.c_str());
+        if (factor == 0)
             throw opp_runtime_error("error in quantity '%s': unit %s does not match %s",
-                                str, DESC(tmpUnit.c_str()), DESC(unit.c_str()));
+                    str, unitDescription(tmpUnit.c_str()).c_str(), unitDescription(unit.c_str()).c_str());
 
-        // convert kilometers to meters, etc
-        result += performConversion ? tmpUnitDesc->mult * num : num;
+        // do the conversion
+        result = result * factor + d;
+        unit = tmpUnit;
     }
 
     // must be at the end of the input string
@@ -180,8 +170,7 @@ double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit
 
 std::string UnitConversion::formatQuantity(double d, const char *unit)
 {
-    printf("FIXME formatQuantity() to be implemented\n");
-    return "FIXME";
+    return opp_stringf("%g%s", d, opp_nulltoempty(unit));
 }
 
 std::string UnitConversion::unitDescription(const char *unit)
@@ -193,25 +182,33 @@ std::string UnitConversion::unitDescription(const char *unit)
     return result;
 }
 
-double UnitConversion::convertUnit(double d, const char *unit, const char *targetUnit)
+double UnitConversion::getConversionFactor(const char *unit, const char *targetUnit)
 {
-    // if units are the same (or there are no units), no conversion is needed
+    // if there are no units or if units are the same, no conversion is needed
     if (unit==targetUnit || opp_strcmp(unit, targetUnit)==0)
-        return d;
+        return 1.0;
 
     // if only one unit is given, that's an error
     if (unit==NULL || targetUnit==NULL)
-        throw opp_runtime_error("value is given in wrong units: expected %s and got %s",
-                (opp_isempty(targetUnit) ? "none" : unitDescription(targetUnit).c_str()),
-                (opp_isempty(unit) ? "none" : unitDescription(unit).c_str()));
+        return 0; // cannot convert
 
     // we'll need to convert
     UnitDesc *unitDesc = lookupUnit(unit);
     UnitDesc *targetUnitDesc = lookupUnit(targetUnit);
     if (unitDesc==NULL || targetUnitDesc==NULL || strcmp(unitDesc->baseUnit, targetUnitDesc->baseUnit)!=0)
-        throw opp_runtime_error("value is given in incompatible units: expected %s and got %s",
+        return 0; // cannot convert
+
+    // the solution
+    return unitDesc->mult / targetUnitDesc->mult;
+}
+
+double UnitConversion::convertUnit(double d, const char *unit, const char *targetUnit)
+{
+    double factor = getConversionFactor(unit, targetUnit);
+    if (factor == 0)
+        throw opp_runtime_error("value is given in wrong units: expected %s and got %s",
                 (opp_isempty(targetUnit) ? "none" : unitDescription(targetUnit).c_str()),
                 (opp_isempty(unit) ? "none" : unitDescription(unit).c_str()));
-    return d * unitDesc->mult / targetUnitDesc->mult;
+    return factor * d;
 }
 

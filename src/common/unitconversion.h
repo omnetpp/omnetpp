@@ -21,7 +21,8 @@
 NAMESPACE_BEGIN
 
 /**
- * XXX
+ * Unit conversion utilities. This class has built-in knowledge of some 
+ * physical units (seconds, watts, etc); see internal unitTable[].
  */
 class COMMON_API UnitConversion
 {
@@ -33,7 +34,6 @@ class COMMON_API UnitConversion
     static UnitDesc *lookupUnit(const char *unit);
     static bool readNumber(const char *&s, double& number);
     static bool readUnit(const char *&s, std::string& unit);
-    static double doParseQuantity(const char *str, const char *expectedUnit, std::string& actualUnit);
 
   private:
     // all methods are static, no reason to instantiate
@@ -41,40 +41,26 @@ class COMMON_API UnitConversion
 
   public:
     /**
-     * Converts a quantity given as string to a double, and returns it.
-     * Performs unit conversion and unit checking as needed.
-     * Ths class has knowledge about some units (minutes, milliseconds,
-     * microseconds, kilobit/sec, megabit/sec, etc) and how to convert them
-     * to a base unit (seconds, bit/sec, etc.) If there's a syntax error,
-     * or if unit mismatch is found (i.e. distance is given instead of time),
-     * the method throws an exception.
-     *
-     * Operation:
-     * - if string does not contain a unit (just a number), return the number
-     *   without conversion.
-     * - if string contains a single unit (e.g. "5.1
-     * ....
-     * XXX todo
-     * ....
-     * - if the expected unit is a recognized but non-base unit (like ms, Kbps),
-     *   the quantity must be given in exactly the same unit (ms, Kbps).
-     *   No conversion takes place. The reason is (1) to encourage models to
-     *   standardise on expecting parameter values to be in the base units (s, bps);
-     *   and (2) to prevent silently changing actual values of parameters if
-     *   @unit is accidentally removed from the parameter's NED declaration.
+     * Invokes parseQuantity(), and converts the result into the given unit.
+     * If conversion is not possible (unrelated or unknown units), and error
+     * is thrown.
      */
     static double parseQuantity(const char *str, const char *expectedUnit=NULL);
 
     /**
-     * XXX. todo docu. like the one above, but expectedUnit==NULL assumed,
-     * and returns actual unit too (if there was one). The expectedUnit param
-     * is left out, because if given, outActualUnit would be exactly the
-     * same (else exception!), so the two don't make sense together.
+     * Converts a quantity given as string to a double, and returns it, together
+     * with the unit it was given in. If there are several numbers and units 
+     * (see syntax), everything is converted into the last unit.
+     * 
+     * Syntax: <number> | (<number> <unit>)+ 
+     * 
+     * If there's a syntax error, or if unit mismatch is found (i.e. distance 
+     * is given instead of time), the method throws an exception.
      */
     static double parseQuantity(const char *str, std::string& outActualUnit);
 
     /**
-     *
+     * Returns a concatenation of the number and the unit.
      */
     static std::string formatQuantity(double d, const char *unit=NULL);
 
@@ -83,7 +69,12 @@ class COMMON_API UnitConversion
      * it returns the input string itself in quotes.
      */
     static std::string unitDescription(const char *unit);
-    
+
+    /**
+     * Returns 0.0 if conversion is not possible (unrelated or unrecognized units).
+     */
+    static double getConversionFactor(const char *sourceUnit, const char *targetUnit);
+
     /**
      * Converts the given value with unit into the given target unit.
      * Throws an error if the conversion is not possible. 
@@ -92,7 +83,6 @@ class COMMON_API UnitConversion
 };
 
 NAMESPACE_END
-
 
 #endif
 
