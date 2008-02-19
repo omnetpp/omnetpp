@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <stdio.h>
 #include <stdarg.h>
 #include "exception.h"

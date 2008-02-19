@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "opp_ctype.h"
 #include "channel.h"
 #include "scaveutils.h"
@@ -121,7 +117,7 @@ void VectorFileReaderNode::process()
 
         int numtokens = tokenizer.numTokens();
         char **vec = tokenizer.tokens();
-        
+
         if (vec[0][0] == 'v' && strcmp(vec[0], "vector") == 0)
         {
             if (numtokens < 4)
@@ -131,7 +127,7 @@ void VectorFileReaderNode::process()
             if (!parseInt(vec[1], vectorId))
                 throw ResultFileFormatException("vector file reader: malformed vector in vector declaration", file, lineNo);
             if (ports.find(vectorId) != ports.end())
-            	columns[vectorId] = (numtokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]); 
+                columns[vectorId] = (numtokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
         }
         else if (numtokens>=3 && opp_isdigit(vec[0][0]))  // silently ignore incomplete lines
         {
@@ -145,7 +141,7 @@ void VectorFileReaderNode::process()
             {
                 ColumnMap::iterator columnSpec = columns.find(vectorId);
                 if (columnSpec == columns.end())
-                	throw ResultFileFormatException("vector file reader: missing vector declaration", file, lineNo);
+                    throw ResultFileFormatException("vector file reader: missing vector declaration", file, lineNo);
 
                 // parse columns
                 Datum a = parseColumns(vec, numtokens, columnSpec->second, file, lineNo, -1);

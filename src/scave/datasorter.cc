@@ -13,10 +13,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <algorithm>
 #include <utility>
 #include <stdio.h>
@@ -427,7 +423,7 @@ XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char
             ResultItemFields rowFields, ResultItemFields columnFields)
 {
     XYDataset dataset = groupAndAggregate(idlist, rowFields, columnFields);
-    
+
     // find row of x values and move it to row 0
     int row;
     for (row = 0; row < dataset.getRowCount(); ++row)
@@ -445,7 +441,7 @@ XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char
     }
     else
         throw opp_runtime_error("Data for X axis not found.");
-    
+
     // sort columns so that X values are in ascending order
     dataset.sortColumnsAccordingToFirstRowMean();
 
@@ -454,107 +450,107 @@ XYDataset ScalarDataSorter::prepareScatterPlot2(const IDList& idlist, const char
 
 struct IsoGroupingFn : public std::binary_function<ResultItem, ResultItem, bool>
 {
-	typedef map<Run*, vector<double> > RunIsoValueMap;
-	typedef map<pair<string, string>, int> IsoAttrIndexMap; 
-	RunIsoValueMap map;
-	
-	IsoGroupingFn() {}
-	IDList init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames, ResultFileManager *manager);
-	bool operator()(const ResultItem &d1, const ResultItem &d2) const;
+    typedef map<Run*, vector<double> > RunIsoValueMap;
+    typedef map<pair<string, string>, int> IsoAttrIndexMap;
+    RunIsoValueMap map;
+
+    IsoGroupingFn() {}
+    IDList init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames, ResultFileManager *manager);
+    bool operator()(const ResultItem &d1, const ResultItem &d2) const;
 };
 
 IDList IsoGroupingFn::init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames, ResultFileManager *manager)
 {
-	//assert(moduleNames.size() == scalarNames.size());
-	int numOfIsoValues = scalarNames.size();
-	IDList result;
-	
-	// build iso (module,scalar) -> index map
-	IsoAttrIndexMap indexMap;
-	for (int i = 0; i < numOfIsoValues; ++i)
-	{
-		pair<string,string> key = make_pair(moduleNames[i], scalarNames[i]);
-		indexMap[key] = i;
-	}
-	
-	// build run -> iso values map
-	int sz = idlist.size();
-	for (int i = 0; i < sz; ++i)
-	{
-		ID id = idlist.get(i);
-		const ScalarResult &scalar = manager->getScalar(id);
-		pair<string,string> key = make_pair(*scalar.moduleNameRef, *scalar.nameRef);
-		IsoAttrIndexMap::iterator it = indexMap.find(key);
-		if (it != indexMap.end())
-		{
-			int index = it->second;
-			Run *run = scalar.fileRunRef->runRef;
-			RunIsoValueMap::iterator it2 = map.find(run);
-			if (it2 == map.end())
-			{
-				it2 = map.insert(make_pair(run, vector<double>(numOfIsoValues, dblNaN))).first;
-			}
-			it2->second[index] = scalar.value;
-		}
-		else
-			result.add(id);
-	}
-	
-	return result;
+    //assert(moduleNames.size() == scalarNames.size());
+    int numOfIsoValues = scalarNames.size();
+    IDList result;
+
+    // build iso (module,scalar) -> index map
+    IsoAttrIndexMap indexMap;
+    for (int i = 0; i < numOfIsoValues; ++i)
+    {
+        pair<string,string> key = make_pair(moduleNames[i], scalarNames[i]);
+        indexMap[key] = i;
+    }
+
+    // build run -> iso values map
+    int sz = idlist.size();
+    for (int i = 0; i < sz; ++i)
+    {
+        ID id = idlist.get(i);
+        const ScalarResult &scalar = manager->getScalar(id);
+        pair<string,string> key = make_pair(*scalar.moduleNameRef, *scalar.nameRef);
+        IsoAttrIndexMap::iterator it = indexMap.find(key);
+        if (it != indexMap.end())
+        {
+            int index = it->second;
+            Run *run = scalar.fileRunRef->runRef;
+            RunIsoValueMap::iterator it2 = map.find(run);
+            if (it2 == map.end())
+            {
+                it2 = map.insert(make_pair(run, vector<double>(numOfIsoValues, dblNaN))).first;
+            }
+            it2->second[index] = scalar.value;
+        }
+        else
+            result.add(id);
+    }
+
+    return result;
 }
 
 bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
 {
-	if (d1.fileRunRef->runRef == d2.fileRunRef->runRef)
-		return true;
+    if (d1.fileRunRef->runRef == d2.fileRunRef->runRef)
+        return true;
 
     if (map.empty())
         return true;
-	
-	RunIsoValueMap::const_iterator it1 = map.find(d1.fileRunRef->runRef);
-	RunIsoValueMap::const_iterator it2 = map.find(d2.fileRunRef->runRef);
-	if (it1 == map.end() || it2 == map.end())
-		return false;
-	
-	const vector<double> &v1 = it1->second;
-	const vector<double> &v2 = it2->second;
-	
-	assert(v1.size() == v2.size());
-	
-	for (int i = 0; i < (int)v1.size(); ++i)
-		if(v1[i] != v2[i])
-			return false;
-	
-	return true;
+
+    RunIsoValueMap::const_iterator it1 = map.find(d1.fileRunRef->runRef);
+    RunIsoValueMap::const_iterator it2 = map.find(d2.fileRunRef->runRef);
+    if (it1 == map.end() || it2 == map.end())
+        return false;
+
+    const vector<double> &v1 = it1->second;
+    const vector<double> &v2 = it2->second;
+
+    assert(v1.size() == v2.size());
+
+    for (int i = 0; i < (int)v1.size(); ++i)
+        if(v1[i] != v2[i])
+            return false;
+
+    return true;
 }
 
 XYDatasetVector ScalarDataSorter::prepareScatterPlot3(const IDList& idlist, const char *moduleName, const char *scalarName,
         ResultItemFields rowFields, ResultItemFields columnFields,
         const StringVector isoModuleNames, const StringVector isoScalarNames)
 {
-	// group data according to iso fields
-	IsoGroupingFn grouping;
-	IDList nonIsoScalars = grouping.init(idlist, isoModuleNames, isoScalarNames, resultFileMgr);
-	IDVectorVector groupedScalars = doGrouping(nonIsoScalars, grouping);
-	
-	XYDatasetVector datasets;
-	for (IDVectorVector::iterator group = groupedScalars.begin(); group != groupedScalars.end(); ++group)
-	{
-		IDList groupAsIDList;
-		for (IDVector::iterator id = group->begin(); id != group->end(); id++)
-			groupAsIDList.add(*id);
-		
-		try
-		{
-			XYDataset dataset = prepareScatterPlot2(groupAsIDList, moduleName, scalarName, rowFields, columnFields);
-			datasets.push_back(dataset);
-		}
-		catch (opp_runtime_error &e) {
-			// no X data for some iso values -> omit from the result
-		}
-	}
-	
-	return datasets;
+    // group data according to iso fields
+    IsoGroupingFn grouping;
+    IDList nonIsoScalars = grouping.init(idlist, isoModuleNames, isoScalarNames, resultFileMgr);
+    IDVectorVector groupedScalars = doGrouping(nonIsoScalars, grouping);
+
+    XYDatasetVector datasets;
+    for (IDVectorVector::iterator group = groupedScalars.begin(); group != groupedScalars.end(); ++group)
+    {
+        IDList groupAsIDList;
+        for (IDVector::iterator id = group->begin(); id != group->end(); id++)
+            groupAsIDList.add(*id);
+
+        try
+        {
+            XYDataset dataset = prepareScatterPlot2(groupAsIDList, moduleName, scalarName, rowFields, columnFields);
+            datasets.push_back(dataset);
+        }
+        catch (opp_runtime_error &e) {
+            // no X data for some iso values -> omit from the result
+        }
+    }
+
+    return datasets;
 }
 
 IDList ScalarDataSorter::getModuleAndNamePairs(const IDList& idlist, int maxcount)

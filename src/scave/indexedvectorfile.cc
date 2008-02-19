@@ -20,10 +20,6 @@
 #include "indexedvectorfile.h"
 #include "scaveutils.h"
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 USING_NAMESPACE
 
 //=========================================================================
@@ -35,10 +31,10 @@ IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vect
     IndexFileReader indexReader(ifname.c_str());
     index = indexReader.readAll(); // XXX do not read whole index
     vector = index->getVectorById(vectorId);
-    
+
     if (!vector)
-    	throw opp_runtime_error("Vector with vectorId %ld not found in file '%s'",
-    			vectorId, filename);
+        throw opp_runtime_error("Vector with vectorId %ld not found in file '%s'",
+                vectorId, filename);
 }
 
 IndexedVectorFileReader::~IndexedVectorFileReader()
@@ -300,14 +296,14 @@ void IndexedVectorFileWriterNode::process()
         VectorInputPort *port=*it;
         if (!port->finished)
         {
-	        if (port->channel()->length()>0)
-	            writeRecordsToBuffer(port);
-	        if (port->channel()->eof()) {
-	            if (port->hasBufferedData())
-	                writeBufferToFile(port);
-	            writeIndex(port);
-	            port->finished = true;
-	        }
+            if (port->channel()->length()>0)
+                writeRecordsToBuffer(port);
+            if (port->channel()->eof()) {
+                if (port->hasBufferedData())
+                    writeBufferToFile(port);
+                writeIndex(port);
+                port->finished = true;
+            }
         }
     }
 
@@ -485,16 +481,16 @@ Port *IndexedVectorFileWriterNodeType::getPort(Node *node, const char *portname)
     char **tokens = tokenizer.tokens();
     if (numTokens < 3 || numTokens > 4)
     {
-    	throw opp_runtime_error(
-    			"IndexedVectorFileWriterNodeType::getPort(): "
-    			"expected '<vectorId> <module> <name> [<columns>]', received '%s' ",
-    			portname);
+        throw opp_runtime_error(
+                "IndexedVectorFileWriterNodeType::getPort(): "
+                "expected '<vectorId> <module> <name> [<columns>]', received '%s' ",
+                portname);
     }
     if (!parseInt(tokens[0], vectorId))
-    	throw opp_runtime_error(
-    			"IndexedVectorFileWriterNodeType::getPort(): "
-    			"expected an integer as vectorId, received '%s'",
-    			tokens[0]);
+        throw opp_runtime_error(
+                "IndexedVectorFileWriterNodeType::getPort(): "
+                "expected an integer as vectorId, received '%s'",
+                tokens[0]);
 
     const char* moduleName = tokens[1];
     const char* name = tokens[2];

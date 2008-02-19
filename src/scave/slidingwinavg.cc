@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "channel.h"
 #include "slidingwinavg.h"
 
@@ -95,6 +91,6 @@ Node *SlidingWindowAverageNodeType::create(DataflowManager *mgr, StringMap& attr
 
 void SlidingWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
 {
-	attrs["type"] = "double";
+    attrs["type"] = "double";
 }
 

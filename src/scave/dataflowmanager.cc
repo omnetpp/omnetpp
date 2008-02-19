@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "channel.h"
 #include "nodetype.h"
 #include "commonnodes.h"
@@ -90,53 +86,53 @@ void DataflowManager::execute(IProgressMonitor *monitor)
     int readPercentage = 0;
     if (monitor)
     {
-    	onePercentFileSize = totalBytesToBeRead() / 100;
-    	monitor->beginTask("Executing dataflow network", 100);
+        onePercentFileSize = totalBytesToBeRead() / 100;
+        monitor->beginTask("Executing dataflow network", 100);
     }
-    
+
     while (true)
     {
         ReaderNode *readerNode = NULL;
         int64 readBefore = 0;
-    	Node *node = selectNode();
+        Node *node = selectNode();
         if (!node)
             break;
-        
+
         if (monitor)
         {
-        	if (monitor->isCanceled())
-        	{
-        		monitor->done();
-       			return;
-        	}
-        	if (isReaderNode(node))
-        	{
-	        	readerNode = dynamic_cast<ReaderNode *>(node);
-	        	readBefore = readerNode->getNumReadBytes();
-        	}
+            if (monitor->isCanceled())
+            {
+                monitor->done();
+                return;
+            }
+            if (isReaderNode(node))
+            {
+                readerNode = dynamic_cast<ReaderNode *>(node);
+                readBefore = readerNode->getNumReadBytes();
+            }
         }
-        	
+
         DBG(("execute: invoking %s\n", node->nodeType()->name()));
         node->process();
-        
+
         if (monitor)
         {
-        	if (onePercentFileSize > 0 && readerNode)
-        	{
-	    		bytesRead += (readerNode->getNumReadBytes() - readBefore);
-	    		int currentPercentage = bytesRead / onePercentFileSize;
-	    		if (currentPercentage > readPercentage)
-	    		{
-	    			monitor->worked(currentPercentage - readPercentage);
-	    			readPercentage = currentPercentage;
-	    		}
-        	}
+            if (onePercentFileSize > 0 && readerNode)
+            {
+                bytesRead += (readerNode->getNumReadBytes() - readBefore);
+                int currentPercentage = bytesRead / onePercentFileSize;
+                if (currentPercentage > readPercentage)
+                {
+                    monitor->worked(currentPercentage - readPercentage);
+                    readPercentage = currentPercentage;
+                }
+            }
         }
     }
-    
+
     if (monitor)
-    	monitor->done();
-    
+        monitor->done();
+
     DBG(("execute: processing finished\n"));
 
     // propagate finished state to all nodes (transitive closure)
@@ -244,21 +240,21 @@ Node *DataflowManager::selectNode()
 
 bool DataflowManager::isReaderNode(Node *node)
 {
-	return strcmp(node->nodeType()->category(), "reader-node") == 0;
+    return strcmp(node->nodeType()->category(), "reader-node") == 0;
 }
 
 int64 DataflowManager::totalBytesToBeRead()
 {
-	int64 totalFileSize = 0;
-	for (int i = 0; i < nodes.size(); ++i)
-	{
-		if (isReaderNode(nodes[i]))
-		{
-			ReaderNode *readerNode = dynamic_cast<ReaderNode *>(nodes[i]);
-			totalFileSize += readerNode->getFileSize();
-		}
-	}
-	return totalFileSize;
+    int64 totalFileSize = 0;
+    for (int i = 0; i < nodes.size(); ++i)
+    {
+        if (isReaderNode(nodes[i]))
+        {
+            ReaderNode *readerNode = dynamic_cast<ReaderNode *>(nodes[i]);
+            totalFileSize += readerNode->getFileSize();
+        }
+    }
+    return totalFileSize;
 }
 
 void DataflowManager::dump()

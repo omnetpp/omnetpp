@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "channel.h"
 #include "vectorfilewriter.h"
 #include "stringutil.h"
@@ -133,7 +129,7 @@ void VectorFileWriterNode::process()
                         }
                         break;
                     case 'V': CHECK(fprintf(f,"%.*g", prec, a.y)); break;
-                    case 'E': CHECK(fprintf(f,"%ld", a.eventNumber)); break; 
+                    case 'E': CHECK(fprintf(f,"%ld", a.eventNumber)); break;
                     default: throw opp_runtime_error("unknown column type: '%c' while writing %s", columns[j], fileName.c_str());
                     }
                 }
@@ -185,7 +181,7 @@ Port *VectorFileWriterNodeType::getPort(Node *node, const char *portname) const
     vector.vectorId = atoi(portname);  // FIXME check it's numeric at all
     vector.moduleNameRef = &moduleName;
     vector.nameRef = &name;
-    vector.columns = "TV";             // old vector file format 
+    vector.columns = "TV";             // old vector file format
     return node1->addVector(vector);
 }
 

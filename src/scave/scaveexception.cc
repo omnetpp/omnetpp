@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <sstream>
 #include "scaveexception.h"
 
@@ -28,9 +24,9 @@ ResultFileFormatException::ResultFileFormatException(const char *message, const 
     std::ostringstream msg;
     msg << message << ", file " << file;
     if (line >= 0)
-    	msg << ", line " << line;
+        msg << ", line " << line;
     if (offset >= 0)
-    	msg << ", offset " << offset;
-    
-    errormsg = msg.str(); 
+        msg << ", offset " << offset;
+
+    errormsg = msg.str();
 }

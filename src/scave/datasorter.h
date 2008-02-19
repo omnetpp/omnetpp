@@ -16,11 +16,6 @@
 #ifndef _DATASORTER_H_
 #define _DATASORTER_H_
 
-
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <algorithm>
 #include <functional>
 #include <stdio.h>
@@ -60,7 +55,7 @@ class SCAVE_API XYDataset
         std::vector<int> rowOrder;         // permutation of a subset of rows
         std::vector<int> columnOrder;      // permutation of a subset of columns
     public:
-    	XYDataset() {};
+        XYDataset() {};
         XYDataset(ResultItemFields rowFields, ResultItemFields columnFields)
             : rowFields(rowFields), columnFields(columnFields),
             rowKeyToIndexMap(ResultItemFieldsLess(rowFields)),
@@ -100,7 +95,7 @@ inline Statistics XYDataset::getValue(int row, int column)
 {
     if (row < 0 || column < 0 || row >= getRowCount() || column >= getColumnCount())
         return Statistics();
-    return values.at(rowOrder[row]).at(columnOrder[column]); 
+    return values.at(rowOrder[row]).at(columnOrder[column]);
 }
 
 /**
@@ -136,7 +131,7 @@ class SCAVE_API ScalarDataSorter
      */
     template<class GroupingFn>
     IDVectorVector doGrouping(const IDList& idlist, GroupingFn sameGroup);
-    
+
     /**
      * Sort every group (IDVectors) in place by the sorting function given
      * and aligns.
@@ -197,8 +192,8 @@ class SCAVE_API ScalarDataSorter
      * by x coordinate. For missing points in y1, y2, etc, the row contains NaN.
      */
     XYDataset prepareScatterPlot2(const IDList& idlist, const char *xModuleName, const char *xScalarName,
-    		ResultItemFields rowFields, ResultItemFields columnFields);
-    
+            ResultItemFields rowFields, ResultItemFields columnFields);
+
     /**
      * TODO
      */

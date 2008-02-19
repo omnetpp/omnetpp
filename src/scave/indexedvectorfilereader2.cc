@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "opp_ctype.h"
 #include "channel.h"
 #include "scaveutils.h"
@@ -59,7 +55,7 @@ void IndexedVectorFileReaderNode2::process()
         readIndexFile();
 
     // read one block from each vector
-    
+
     // FIXME read the blocks sequentially instead of round-robin
     bool found = false;
     for (PortMap::iterator it = ports.begin(); it != ports.end(); ++it)

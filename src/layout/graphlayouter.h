@@ -16,10 +16,6 @@
 #ifndef __GRAPHLAYOUTER_H
 #define __GRAPHLAYOUTER_H
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "layoutdefs.h"
 #include "lcgrandom.h"
 

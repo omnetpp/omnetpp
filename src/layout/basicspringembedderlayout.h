@@ -16,10 +16,6 @@
 #ifndef __BASICSPRINGEMBEDDERLAYOUT_H
 #define __BASICSPRINGEMBEDDERLAYOUT_H
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <vector>
 #include <string>
 

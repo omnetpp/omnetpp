@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "commonutil.h"
 #include "compoundfilter.h"
 #include "filternodes.h"
@@ -202,10 +198,10 @@ Port *CompoundFilterType::getPort(Node *node, const char *name) const
 void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     int n = numSubfilters();
-	for (int i=0; i<n; i++)
-	{
-		const char *nodetypename = subfilter(i).nodeType();
-		NodeType *nodeType = NodeTypeRegistry::instance()->getNodeType(nodetypename);
-		nodeType->mapVectorAttributes(attrs, warnings);
-	}
+    for (int i=0; i<n; i++)
+    {
+        const char *nodetypename = subfilter(i).nodeType();
+        NodeType *nodeType = NodeTypeRegistry::instance()->getNodeType(nodetypename);
+        nodeType->mapVectorAttributes(attrs, warnings);
+    }
 }

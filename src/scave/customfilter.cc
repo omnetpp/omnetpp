@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <math.h>
 #include "channel.h"
 #include "customfilter.h"
@@ -59,7 +55,7 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
 
 ExpressionFilterNode::ExpressionFilterNode(const char *text)
 {
-	skipFirstDatum = false;
+    skipFirstDatum = false;
     expr = new Expression();
     Resolver resolver(this);
     expr->parse(text, &resolver);
@@ -80,9 +76,9 @@ void ExpressionFilterNode::process()
 {
     int n = in()->length();
     if (skipFirstDatum && n > 0) {
-    	in()->read(&prevDatum,1);
-    	n--;
-    	skipFirstDatum = false;
+        in()->read(&prevDatum,1);
+        n--;
+        skipFirstDatum = false;
     }
     for (int i=0; i<n; i++)
     {
@@ -132,5 +128,5 @@ Node *ExpressionFilterNodeType::create(DataflowManager *mgr, StringMap& attrs) c
 
 void ExpressionFilterNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
 {
-	attrs["type"] = "double";
+    attrs["type"] = "double";
 }

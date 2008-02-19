@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "commonutil.h"
 #include "nodetype.h"
 
@@ -54,7 +50,7 @@ void NodeType::checkAttrNames(const StringMap& attrs) const
 
 void NodeType::mapVectorAttributes(StringMap &attrs, /*out*/StringVector &warnings) const
 {
-	// identity map by default
+    // identity map by default
 }
 
 

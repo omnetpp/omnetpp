@@ -15,13 +15,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-
-#ifdef _MSC_VER
-// disable "identifier was truncated to '255' characters in the debug information" warnings
-#pragma warning(disable:4786)
-#endif
-
-
 #include "cobject.h"
 #include "cxmldoccache.h"
 #include "cxmlelement.h"

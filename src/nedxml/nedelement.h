@@ -20,9 +20,8 @@
 #define __NEDELEMENT_H
 
 #ifdef _MSC_VER
-// disable 4786: "identifier was truncated to '255' characters" for STL in VC6.0
 // disable 4996: VC8.0 warnings on Unix syscalls
-#pragma warning(disable:4786 4996)
+#pragma warning(disable: 4996)
 #endif
 
 #include <string>

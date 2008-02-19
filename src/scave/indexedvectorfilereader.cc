@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <algorithm>
 #include "opp_ctype.h"
 #include "channel.h"
@@ -58,12 +54,12 @@ void IndexedVectorFileReaderNode::process()
 {
     if (!index)
         readIndexFile();
-    
+
     long bytesRead = 0;
     while (currentBlockIndex < blocksToRead.size() && bytesRead < 64 * 1024)
     {
-    	BlockAndPortData &blockAndPort = blocksToRead[currentBlockIndex++];
-    	bytesRead += readBlock(blockAndPort.blockPtr, blockAndPort.portDataPtr);
+        BlockAndPortData &blockAndPort = blocksToRead[currentBlockIndex++];
+        bytesRead += readBlock(blockAndPort.blockPtr, blockAndPort.portDataPtr);
     }
 }
 
@@ -95,21 +91,21 @@ void IndexedVectorFileReaderNode::readIndexFile()
         if (!portData.vector)
             throw opp_runtime_error("indexed vector file reader: vector %d not found, file %s",
                                         vectorId, indexFileName.c_str());
-        
+
         Blocks &blocks = portData.vector->blocks;
         for (Blocks::iterator it = blocks.begin(); it != blocks.end(); ++it)
-        	blocksToRead.push_back(BlockAndPortData(&(*it), &portData));
+            blocksToRead.push_back(BlockAndPortData(&(*it), &portData));
     }
-    
+
     sort(blocksToRead.begin(), blocksToRead.end());
 }
 
 
 long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortData *portDataPtr)
 {
-	assert(blockPtr);
+    assert(blockPtr);
     assert(portDataPtr->vector);
-	
+
     const char *file = filename.c_str();
     long offset;
 #define CHECK(cond, msg) {if (!cond) throw opp_runtime_error(msg ", file %s, offset %ld", file, offset); }
@@ -120,19 +116,19 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
     reader.seekTo(startOffset);
 
-	long readTime=0;
-	long tokenizeTime = 0;
-	long parseTime = 0;
-//	printf("readBlock ");
-	
+    long readTime=0;
+    long tokenizeTime = 0;
+    long parseTime = 0;
+//  printf("readBlock ");
+
     char *line;
     for (long k = 0; k < count /*&& (line=reader.getNextLineBufferPointer())!=NULL*/; ++k)
     {
-       	TIME(readTime,line=reader.getNextLineBufferPointer());
+        TIME(readTime,line=reader.getNextLineBufferPointer());
 
-       	if (!line)
-        	break;
-        
+        if (!line)
+            break;
+
 
         offset = reader.getCurrentLineStartOffset();
         int length = reader.getCurrentLineLength();
@@ -155,9 +151,9 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
         for (PortVector::const_iterator port = portDataPtr->ports.begin(); port != portDataPtr->ports.end(); ++port)
             port->channel()->write(&a,1);
     }
-    
+
 //    printf("read: %ldms tokenize: %ldms parse: %ldms\n",
-//    		readTime/1000, tokenizeTime/1000, parseTime/1000);
+//          readTime/1000, tokenizeTime/1000, parseTime/1000);
 
     return blockPtr->size;
 }

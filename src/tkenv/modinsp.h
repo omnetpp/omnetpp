@@ -16,14 +16,8 @@
 #ifndef __MODINSP_H
 #define __MODINSP_H
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <map>
-
 #include <tk.h>
-
 #include "csimplemodule.h"
 #include "cchannel.h"
 #include "cgate.h"

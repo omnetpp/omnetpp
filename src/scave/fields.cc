@@ -13,10 +13,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +42,7 @@ StringVector ResultItemAttribute::getAttributeNames()
 
 bool ResultItemAttribute::isAttributeName(const string name)
 {
-	return name == TYPE || name == ENUM;
+    return name == TYPE || name == ENUM;
 }
 
 /*----------------------------------------
@@ -75,9 +71,9 @@ StringVector RunAttribute::getAttributeNames()
 
 bool RunAttribute::isAttributeName(const string name)
 {
-	return name == EXPERIMENT || name == MEASUREMENT || name == REPLICATION ||
-			name == CONFIG || name == RUNNUMBER || name == NETWORKNAME ||
-			name == DATETIME;
+    return name == EXPERIMENT || name == MEASUREMENT || name == REPLICATION ||
+            name == CONFIG || name == RUNNUMBER || name == NETWORKNAME ||
+            name == DATETIME;
 }
 
 /*----------------------------------------
@@ -90,13 +86,13 @@ char *const ResultItemField::NAME   = "name";
 
 ResultItemField::ResultItemField(const string fieldName)
 {
-	this->id = getFieldID(fieldName);
-	this->name = fieldName;
+    this->id = getFieldID(fieldName);
+    this->name = fieldName;
 }
 
 int ResultItemField::getFieldID(const string fieldName)
 {
-	if (fieldName == ResultItemField::FILE) return ResultItemField::FILE_ID;
+    if (fieldName == ResultItemField::FILE) return ResultItemField::FILE_ID;
     else if (fieldName == ResultItemField::RUN) return ResultItemField::RUN_ID;
     else if (fieldName == ResultItemField::MODULE) return ResultItemField::MODULE_ID;
     else if (fieldName == ResultItemField::NAME) return ResultItemField::NAME_ID;
@@ -126,41 +122,41 @@ StringVector ResultItemFields::getFieldNames()
 
 ResultItemFields::ResultItemFields(ResultItemField field)
 {
-	this->fields.push_back(field);
+    this->fields.push_back(field);
 }
 
 ResultItemFields::ResultItemFields(const string fieldName)
 {
-	this->fields.push_back(ResultItemField(fieldName));
+    this->fields.push_back(ResultItemField(fieldName));
 }
 
 ResultItemFields::ResultItemFields(const StringVector &fieldNames)
 {
     for (StringVector::const_iterator fieldName = fieldNames.begin(); fieldName != fieldNames.end(); ++fieldName)
-    	this->fields.push_back(ResultItemField(*fieldName));
+        this->fields.push_back(ResultItemField(*fieldName));
 }
 
 bool ResultItemFields::hasField(ResultItemField field)
 {
-	return hasField(field.getName());
+    return hasField(field.getName());
 }
 
 bool ResultItemFields::hasField(const string fieldName)
 {
-	for (vector<ResultItemField>::iterator field = fields.begin(); field != fields.end(); ++field)
-		if (field->getName() == fieldName)
-			return true;
-	return false;
+    for (vector<ResultItemField>::iterator field = fields.begin(); field != fields.end(); ++field)
+        if (field->getName() == fieldName)
+            return true;
+    return false;
 }
 
 ResultItemFields ResultItemFields::complement()
 {
-	StringVector complementFields;
-	StringVector fieldNames = getFieldNames();
-	for (StringVector::iterator fieldName = fieldNames.begin(); fieldName != fieldNames.end(); ++fieldName)
-		if (!hasField(*fieldName))
-			complementFields.push_back(*fieldName);
-	return ResultItemFields(complementFields);
+    StringVector complementFields;
+    StringVector fieldNames = getFieldNames();
+    for (StringVector::iterator fieldName = fieldNames.begin(); fieldName != fieldNames.end(); ++fieldName)
+        if (!hasField(*fieldName))
+            complementFields.push_back(*fieldName);
+    return ResultItemFields(complementFields);
 }
 
 bool ResultItemFields::equal(ID id1, ID id2, ResultFileManager *manager) const
@@ -173,9 +169,9 @@ bool ResultItemFields::equal(ID id1, ID id2, ResultFileManager *manager) const
 
 bool ResultItemFields::equal(const ResultItem& d1, const ResultItem& d2) const
 {
-	for (vector<ResultItemField>::const_iterator field = fields.begin(); field != fields.end(); ++field)
-		if (!field->equal(d1, d2))
-			return false;
+    for (vector<ResultItemField>::const_iterator field = fields.begin(); field != fields.end(); ++field)
+        if (!field->equal(d1, d2))
+            return false;
     return true;
 }
 
@@ -190,12 +186,12 @@ bool ResultItemFields::less(ID id1, ID id2, ResultFileManager *manager) const
 
 bool ResultItemFields::less(const ResultItem &d1, const ResultItem &d2) const
 {
-	for (vector<ResultItemField>::const_iterator field = fields.begin(); field != fields.end(); ++field)
-	{
-		int cmp = field->compare(d1, d2); 
-		if (cmp)
-			return cmp < 0;
-	}
+    for (vector<ResultItemField>::const_iterator field = fields.begin(); field != fields.end(); ++field)
+    {
+        int cmp = field->compare(d1, d2);
+        if (cmp)
+            return cmp < 0;
+    }
     return false; // ==
 }
 

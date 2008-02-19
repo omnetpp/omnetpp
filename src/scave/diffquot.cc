@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "channel.h"
 #include "diffquot.h"
 
@@ -84,6 +80,6 @@ Node *DifferenceQuotientNodeType::create(DataflowManager *mgr, StringMap& attrs)
 
 void DifferenceQuotientNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
 {
-	attrs["type"] = "double";
+    attrs["type"] = "double";
 }
 

@@ -12,10 +12,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include "channel.h"
 #include "windowavg.h"
 
@@ -91,7 +87,7 @@ Node *WindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
 
 void WindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
-	if (attrs["type"] == "enum")
-		warnings.push_back(std::string("Applying '") + name() + "' to an enum");
-	attrs["type"] = "double";
+    if (attrs["type"] == "enum")
+        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+    attrs["type"] = "double";
 }
