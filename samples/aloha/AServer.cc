@@ -10,24 +10,24 @@
 
 #include "AServer.h"
 
+namespace aloha {
+
+Define_Module(Server);
 
 
-Define_Module(AServer);
-
-
-AServer::AServer()
+Server::Server()
 {
     endRxEvent = NULL;
 }
 
 
-AServer::~AServer()
+Server::~Server()
 {
     cancelAndDelete(endRxEvent);
 }
 
 
-void AServer::initialize()
+void Server::initialize()
 {
     txRate = par("txRate");
     endRxEvent = new cMessage("end-reception");
@@ -64,7 +64,7 @@ void AServer::initialize()
 }
 
 
-void AServer::handleMessage(cMessage *msg)
+void Server::handleMessage(cMessage *msg)
 {
     if (msg==endRxEvent)
     {
@@ -145,7 +145,7 @@ void AServer::handleMessage(cMessage *msg)
 }
 
 
-void AServer::finish()
+void Server::finish()
 {
     ev << "duration: " << simTime() << endl;
     ev << "total frames: " << totalFrames << endl;
@@ -162,3 +162,4 @@ void AServer::finish()
     recordScalar("channel utilization", currentChannelUtilization);
 }
 
+}; //namespace

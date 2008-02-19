@@ -11,7 +11,7 @@
 //
 // A computer in the ALOHAnet network.
 //
-simple AHost
+simple Host
 {
     parameters:
         double txRate @unit(bps);  // transmission rate

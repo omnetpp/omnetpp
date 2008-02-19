@@ -8,16 +8,17 @@
 //
 
 
-#ifndef __ASERVER_H_
-#define __ASERVER_H_
+#ifndef __ALOHA_SERVER_H_
+#define __ALOHA_SERVER_H_
 
 #include <omnetpp.h>
 
+namespace aloha {
 
 /**
  * Aloha server; see NED file for more info.
  */
-class AServer : public cSimpleModule
+class Server : public cSimpleModule
 {
   private:
     // state variables, event pointers
@@ -40,14 +41,16 @@ class AServer : public cSimpleModule
     cOutVector channelUtilizationVector;
 
   public:
-    AServer();
-    virtual ~AServer();
+    Server();
+    virtual ~Server();
 
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
 };
+
+}; //namespace
 
 #endif
 

@@ -7,16 +7,17 @@
 // `license' for details on this and other legal matters.
 //
 
-#ifndef __AHOST_H_
-#define __AHOST_H_
+#ifndef __ALOHA_HOST_H_
+#define __ALOHA_HOST_H_
 
 #include <omnetpp.h>
 
+namespace aloha {
 
 /**
  * Aloha host; see NED file for more info.
  */
-class AHost : public cSimpleModule
+class Host : public cSimpleModule
 {
   private:
     // parameters
@@ -34,13 +35,15 @@ class AHost : public cSimpleModule
     int pkCounter;
 
   public:
-    AHost();
-    virtual ~AHost();
+    Host();
+    virtual ~Host();
 
   protected:
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
+
+}; //namespace
 
 #endif
 

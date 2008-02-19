@@ -10,24 +10,24 @@
 
 #include "AHost.h"
 
+namespace aloha {
+
+Define_Module(Host);
 
 
-Define_Module(AHost);
-
-
-AHost::AHost()
+Host::Host()
 {
     endTxEvent = NULL;
 }
 
 
-AHost::~AHost()
+Host::~Host()
 {
     cancelAndDelete(endTxEvent);
 }
 
 
-void AHost::initialize()
+void Host::initialize()
 {
     server = simulation.moduleByPath("server");
     if (!server) error("server not found");
@@ -55,7 +55,7 @@ void AHost::initialize()
 }
 
 
-void AHost::handleMessage(cMessage *msg)
+void Host::handleMessage(cMessage *msg)
 {
     ASSERT(msg==endTxEvent);
 
@@ -113,3 +113,4 @@ void AHost::handleMessage(cMessage *msg)
     }
 }
 
+}; //namespace

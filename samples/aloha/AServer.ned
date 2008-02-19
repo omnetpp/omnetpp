@@ -10,7 +10,7 @@
 //
 // The central computer in the ALOHAnet network.
 //
-simple AServer
+simple Server
 {
     parameters:
         double txRate @unit(bps); // transmission rate (needed to calculate lengths of packet receptions)

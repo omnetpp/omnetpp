@@ -20,11 +20,11 @@ network Aloha
         double slotTime;  // zero means no slots (pure Aloha)
         @display("bgb=,,white");
     submodules:
-        server: AServer {
+        server: Server {
             parameters:
                 txRate = txRate;
         };
-        host[numHosts]: AHost {
+        host[numHosts]: Host {
             parameters:
                 txRate = txRate;
                 slotTime = slotTime;
