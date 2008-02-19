@@ -15,6 +15,7 @@
 #include <assert.h>
 #include "opp_ctype.h"
 #include "stringutil.h"
+#include "platmisc.h"  //strcasecmp
 #include "unitconversion.h"
 
 USING_NAMESPACE
@@ -60,7 +61,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {
     { "mA",   1e-3, "A",    "milliamper" },
     { "uA",   1e-6, "A",    "microamper" },
     // this many should be enough
-    { NULL,      0, NULL,   NULL }  
+    { NULL,      0, NULL,   NULL }
 };
 
 UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
@@ -76,7 +77,7 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
     // long name in plural, case insensitive ("milliwatts")
     if (unit[strlen(unit)-1]=='s') {
         std::string tmp = std::string(unit, strlen(unit)-1);
-        for (int i=0; unitTable[i].unit; i++) 
+        for (int i=0; unitTable[i].unit; i++)
             if (!strcasecmp(unitTable[i].longName, tmp.c_str()))
                 return unitTable+i;
     }
@@ -206,9 +207,9 @@ double UnitConversion::convertUnit(double d, const char *unit, const char *targe
 {
     double factor = getConversionFactor(unit, targetUnit);
     if (factor == 0)
-        throw opp_runtime_error("value is given in wrong units: expected %s and got %s",
-                (opp_isempty(targetUnit) ? "none" : unitDescription(targetUnit).c_str()),
-                (opp_isempty(unit) ? "none" : unitDescription(unit).c_str()));
+        throw opp_runtime_error("cannot convert unit %s to %s",
+                (opp_isempty(unit) ? "none" : unitDescription(unit).c_str()),
+                (opp_isempty(targetUnit) ? "none" : unitDescription(targetUnit).c_str()));
     return factor * d;
 }
 
