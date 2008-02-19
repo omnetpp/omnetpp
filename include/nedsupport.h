@@ -23,7 +23,7 @@ NAMESPACE_BEGIN
 
 namespace NEDSupport {
 
-typedef cDynamicExpression::StkValue StkValue; // abbreviation for local use
+typedef cDynamicExpression::Value Value; // abbreviation for local use
 
 class ModuleIndex : public cDynamicExpression::Functor
 {
@@ -33,7 +33,7 @@ class ModuleIndex : public cDynamicExpression::Functor
     virtual const char *fullName() const {return "index";}
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return 'L';}
-    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual Value evaluate(cComponent *context, Value args[], int numargs);
     virtual std::string toString(std::string args[], int numargs);
 };
 
@@ -52,7 +52,7 @@ class ParameterRef : public cDynamicExpression::Functor
     virtual const char *fullName() const {return paramName.c_str();}
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return '*';}
-    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual Value evaluate(cComponent *context, Value args[], int numargs);
     virtual std::string toString(std::string args[], int numargs);
 };
 
@@ -72,7 +72,7 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
     virtual const char *fullName() const {return paramName.c_str();}
     virtual const char *argTypes() const {return withModuleIndex ? "L" : "";}
     virtual char returnType() const {return '*';}
-    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual Value evaluate(cComponent *context, Value args[], int numargs);
     virtual std::string toString(std::string args[], int numargs);
 };
 
@@ -101,7 +101,7 @@ class LoopVar : public cDynamicExpression::Functor
     virtual const char *fullName() const {return varName.c_str();}
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return 'L';}
-    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual Value evaluate(cComponent *context, Value args[], int numargs);
     virtual std::string toString(std::string args[], int numargs);
 };
 
@@ -121,7 +121,7 @@ class Sizeof : public cDynamicExpression::Functor
     virtual const char *fullName() const {return ident.c_str();}
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return 'L';}
-    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual Value evaluate(cComponent *context, Value args[], int numargs);
     virtual std::string toString(std::string args[], int numargs);
 };
 
@@ -138,16 +138,16 @@ class XMLDoc : public cDynamicExpression::Functor
     virtual const char *fullName() const {return "xmldoc";}
     virtual const char *argTypes() const {return withXPath ? "SS" : "S";}
     virtual char returnType() const {return 'X';}
-    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual Value evaluate(cComponent *context, Value args[], int numargs);
     virtual std::string toString(std::string args[], int numargs);
 };
 
 /*XXX TODO
-static StkValue sizeofIdent(cComponent *context, StkValue args[], int numargs);
-static StkValue sizeofGate(cComponent *context, StkValue args[], int numargs);
-static StkValue sizeofParentModuleGate(cComponent *context, StkValue args[], int numargs);
-static StkValue sizeofSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
-static StkValue sizeofIndexedSiblingModuleGate(cComponent *context, StkValue args[], int numargs);
+static Value sizeofIdent(cComponent *context, Value args[], int numargs);
+static Value sizeofGate(cComponent *context, Value args[], int numargs);
+static Value sizeofParentModuleGate(cComponent *context, Value args[], int numargs);
+static Value sizeofSiblingModuleGate(cComponent *context, Value args[], int numargs);
+static Value sizeofIndexedSiblingModuleGate(cComponent *context, Value args[], int numargs);
 
 class Sizeof : public Functor
 {
@@ -158,7 +158,7 @@ class Sizeof : public Functor
   public:
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return 'L';}
-    virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs);
+    virtual Value evaluate(cComponent *context, Value args[], int numargs);
     virtual std::string toString(std::string args[], int numargs) {return "index";}
 };
 */

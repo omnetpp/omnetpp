@@ -87,7 +87,7 @@ Scenario::~Scenario()
 {
 }
 
-Expression::StkValue Scenario::getIterationVariable(const char *varname)
+Expression::Value Scenario::getIterationVariable(const char *varname)
 {
     std::string value = getVariable(varname);
     try

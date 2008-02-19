@@ -145,24 +145,24 @@ class COMMON_API Expression
     };
 
     /**
-     * The dynamic expression evaluator calculates in StkValues.
+     * The dynamic expression evaluator calculates in Values.
      * There's no "long" field in it: all numeric calculations are performed
      * in double. XXX This is fine for 32-bit longs, but not for 64-bit ones,
      * as double's mantissa is only 53 bits.
      */
-    struct StkValue
+    struct Value
     {
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
         bool bl;
         double dbl;
         std::string str;
 
-        StkValue()  {type=UNDEF;}
-        StkValue(bool b)  {*this=b;}
-        StkValue(long l)  {*this=l;}
-        StkValue(double d)  {*this=d;}
-        StkValue(const char *s)  {*this=s;}
-        StkValue(const std::string& s)  {*this=s;}
+        Value()  {type=UNDEF;}
+        Value(bool b)  {*this=b;}
+        Value(long l)  {*this=l;}
+        Value(double d)  {*this=d;}
+        Value(const char *s)  {*this=s;}
+        Value(const std::string& s)  {*this=s;}
         void operator=(bool b)  {type=BOOL; bl=b;}
         void operator=(long l)  {type=DBL; dbl=l;}
         void operator=(double d)  {type=DBL; dbl=d;}
@@ -183,7 +183,7 @@ class COMMON_API Expression
         virtual const char *argTypes() const = 0;
         virtual int numArgs() const {return strlen(argTypes());}
         virtual char returnType() const = 0;
-        virtual StkValue evaluate(StkValue args[], int numargs) = 0;
+        virtual Value evaluate(Value args[], int numargs) = 0;
         virtual std::string toString(std::string args[], int numargs) = 0;
     };
 
@@ -242,11 +242,11 @@ class COMMON_API Expression
     virtual void setExpression(Elem e[], int nelems);
 
     /**
-     * Evaluate the expression, and return the results as a StkValue.
+     * Evaluate the expression, and return the results as a Value.
      * Throws an error if the expression has some problem (i.e. stack
      * overflow/underflow, "cannot cast", "function not found", etc.)
      */
-    virtual StkValue evaluate() const;
+    virtual Value evaluate() const;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;
@@ -318,7 +318,7 @@ class COMMON_API MathFunction : public Expression::Functor
     virtual const char *name() const;
     virtual const char *argTypes() const;
     virtual char returnType() const;
-    virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs);
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs);
     virtual std::string toString(std::string args[], int numargs);
 };
 

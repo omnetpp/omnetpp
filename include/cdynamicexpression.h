@@ -67,7 +67,7 @@ class SIM_API cDynamicExpression : public cExpression
         //  - pointer to an "external" cXMLElement
         //  - pointer to an "external" cPar object
         //  - cMathFunction: function with 0/1/2/3/4 double arguments
-        //  - cNEDFunction: function taking/returning StkValue (NEDFunction)
+        //  - cNEDFunction: function taking/returning Value (NEDFunction)
         //  - math operator (+-*/%^...)
         //  - functor
         //  - constant subexpression
@@ -165,7 +165,7 @@ class SIM_API cDynamicExpression : public cExpression
 
         /**
          * Effect during evaluation of the expression: call a function
-         * that function takes an array of StkValues and returns a StkValue.
+         * that function takes an array of Values and returns a Value.
          */
         void operator=(cNEDFunction *_f)  {type=NEDFUNC; ASSERT(_f); af=_f;}
 
@@ -187,12 +187,12 @@ class SIM_API cDynamicExpression : public cExpression
     };
 
     /**
-     * The dynamic expression evaluator calculates in StkValues.
+     * The dynamic expression evaluator calculates in Values.
      * There's no "long" field in it: all numeric calculations are performed
      * in double. XXX This is fine for 32-bit longs, but not for 64-bit ones,
      * as double's mantissa is only 53 bits.
      */
-    struct StkValue
+    struct Value
     {
         // Note: char codes need to be present and be consistent with cNEDFunction::argTypes()
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
@@ -202,15 +202,15 @@ class SIM_API cDynamicExpression : public cExpression
         std::string str;
         cXMLElement *xml;
 
-        StkValue()  {type=UNDEF;}
-        StkValue(bool b)  {*this=b;}
-        StkValue(long l)  {*this=l;}
-        StkValue(double d)  {*this=d;}
-        StkValue(double d, const char *unit)  {set(d,unit);}
-        StkValue(const char *s)  {*this=s;}
-        StkValue(const std::string& s)  {*this=s;}
-        StkValue(cXMLElement *x)  {*this=x;}
-        StkValue(const cPar& par) {*this=par;}
+        Value()  {type=UNDEF;}
+        Value(bool b)  {*this=b;}
+        Value(long l)  {*this=l;}
+        Value(double d)  {*this=d;}
+        Value(double d, const char *unit)  {set(d,unit);}
+        Value(const char *s)  {*this=s;}
+        Value(const std::string& s)  {*this=s;}
+        Value(cXMLElement *x)  {*this=x;}
+        Value(const cPar& par) {*this=par;}
         void operator=(bool b)  {type=BOOL; bl=b;}
         void operator=(long l)  {type=DBL; dbl=l;}
         void operator=(double d)  {type=DBL; dbl=d; dblunit=NULL;}
@@ -233,7 +233,7 @@ class SIM_API cDynamicExpression : public cExpression
         virtual const char *argTypes() const = 0;
         virtual int numArgs() const {return strlen(argTypes());}
         virtual char returnType() const = 0;
-        virtual StkValue evaluate(cComponent *context, StkValue args[], int numargs) = 0;
+        virtual Value evaluate(cComponent *context, Value args[], int numargs) = 0;
         virtual std::string toString(std::string args[], int numargs) = 0;
     };
 
@@ -293,11 +293,11 @@ class SIM_API cDynamicExpression : public cExpression
     virtual void setExpression(Elem e[], int nelems);
 
     /**
-     * Evaluate the expression, and return the results as a StkValue.
+     * Evaluate the expression, and return the results as a Value.
      * Throws an error if the expression has some problem (i.e. stack
      * overflow/underflow, "cannot cast", "function not found", etc.)
      */
-    virtual StkValue evaluate(cComponent *context) const;
+    virtual Value evaluate(cComponent *context) const;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;

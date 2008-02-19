@@ -112,7 +112,10 @@ $O/commonutil.obj: commonutil.cc \
 $O/displaystring.obj: displaystring.cc \
   opp_ctype.h \
   displaystring.h \
-  commondefs.h
+  stringutil.h \
+  commondefs.h \
+  commonutil.h \
+  exception.h
 $O/enumstr.obj: enumstr.cc \
   enumstr.h \
   commondefs.h
@@ -208,6 +211,8 @@ $O/stringutil.obj: stringutil.cc \
   exception.h
 $O/unitconversion.obj: unitconversion.cc \
   opp_ctype.h \
+  stringutil.h \
   unitconversion.h \
   commondefs.h \
+  commonutil.h \
   exception.h

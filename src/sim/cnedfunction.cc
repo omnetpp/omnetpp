@@ -93,7 +93,7 @@ cNEDFunction *cNEDFunction::findByPointer(NEDFunction f)
 // Implementation of NED string manipulation functions.
 //
 
-typedef cDynamicExpression::StkValue Value;
+typedef cDynamicExpression::Value Value;
 
 // length(S) -> L
 Value length(cComponent *context, Value args[], int numargs)
@@ -243,16 +243,16 @@ Define_NED_Function(tolower, "S", "S");
 Value toint(cComponent *context, Value args[], int numargs)
 {
     switch (args[0].type) {
-        case cDynamicExpression::StkValue::BOOL:
+        case cDynamicExpression::Value::BOOL:
             return args[0].bl ? 1L : 0L;
-        case cDynamicExpression::StkValue::DBL:
+        case cDynamicExpression::Value::DBL:
             return (long)floor(args[0].dbl);
-        case cDynamicExpression::StkValue::STR:
+        case cDynamicExpression::Value::STR:
             return atol(args[0].str.c_str());
-        case cDynamicExpression::StkValue::XML:
+        case cDynamicExpression::Value::XML:
             throw cRuntimeError("toint(): cannot convert xml to int");
         default:
-            throw cRuntimeError("internal error: bad StkValue type");
+            throw cRuntimeError("internal error: bad Value type");
     }
 }
 Define_NED_Function(toint, "*", "L");
@@ -261,16 +261,16 @@ Define_NED_Function(toint, "*", "L");
 Value todouble(cComponent *context, Value args[], int numargs)
 {
     switch (args[0].type) {
-        case cDynamicExpression::StkValue::BOOL:
+        case cDynamicExpression::Value::BOOL:
             return args[0].bl ? 1.0 : 0.0;
-        case cDynamicExpression::StkValue::DBL:
+        case cDynamicExpression::Value::DBL:
             return args[0].dbl;
-        case cDynamicExpression::StkValue::STR:
+        case cDynamicExpression::Value::STR:
             return atof(args[0].str.c_str());
-        case cDynamicExpression::StkValue::XML:
+        case cDynamicExpression::Value::XML:
             throw cRuntimeError("todouble(): cannot convert xml to double");
         default:
-            throw cRuntimeError("internal error: bad StkValue type");
+            throw cRuntimeError("internal error: bad Value type");
     }
 }
 Define_NED_Function(todouble, "*", "D");

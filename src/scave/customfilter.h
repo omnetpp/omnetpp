@@ -49,13 +49,13 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
             std::string varname;
           public:
             NodeVar(ExpressionFilterNode *node, const char *name)
-            	{hostnode = node; varname = name; hostnode->skipFirstDatum |= (varname=="xprev" || varname=="yprev"); }
+                {hostnode = node; varname = name; hostnode->skipFirstDatum |= (varname=="xprev" || varname=="yprev"); }
             virtual ~NodeVar() {}
             virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
             virtual const char *name() const {return varname.c_str();}
             virtual const char *argTypes() const {return "";}
-            virtual char returnType() const {return Expression::StkValue::DBL;}
-            virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs)
+            virtual char returnType() const {return Expression::Value::DBL;}
+            virtual Expression::Value evaluate(Expression::Value args[], int numargs)
                 {return hostnode->getVariable(varname.c_str());}
             virtual std::string toString(std::string args[], int numargs) {return name();}
         };

@@ -30,9 +30,9 @@ NAMESPACE_BEGIN
  * @see cNEDFunction, Define_NED_Function().
  * @ingroup EnumsTypes
  */
-typedef cDynamicExpression::StkValue (*NEDFunction)(cComponent *context,
-                                                    cDynamicExpression::StkValue args[],
-                                                    int numargs);
+typedef cDynamicExpression::Value (*NEDFunction)(cComponent *context,
+                                                 cDynamicExpression::Value args[],
+                                                 int numargs);
 
 
 /**

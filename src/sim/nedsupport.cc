@@ -32,7 +32,7 @@ ModuleIndex::ModuleIndex()
 {
 }
 
-StkValue ModuleIndex::evaluate(cComponent *context, StkValue args[], int numargs)
+Value ModuleIndex::evaluate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==0 && context!=NULL);
     cModule *module = dynamic_cast<cModule *>(context);
@@ -55,7 +55,7 @@ ParameterRef::ParameterRef(const char *paramName, bool ofParent, bool printThis)
     this->printThis = printThis;
 }
 
-StkValue ParameterRef::evaluate(cComponent *context, StkValue args[], int numargs)
+Value ParameterRef::evaluate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==0 && context!=NULL);
     cModule *module = dynamic_cast<cModule *>(ofParent ? context->parentModule() : context);
@@ -82,10 +82,10 @@ SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, con
     this->withModuleIndex = withModuleIndex;
 }
 
-StkValue SiblingModuleParameterRef::evaluate(cComponent *context, StkValue args[], int numargs)
+Value SiblingModuleParameterRef::evaluate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(context!=NULL);
-    ASSERT(!withModuleIndex || (withModuleIndex && numargs==1 && args[0].type==StkValue::DBL));
+    ASSERT(!withModuleIndex || (withModuleIndex && numargs==1 && args[0].type==Value::DBL));
     cModule *compoundModule = dynamic_cast<cModule *>(ofParent ? context->parentModule() : context); // this works for channels too
     if (!compoundModule)
         throw cRuntimeError(context,eENOPARENT);
@@ -129,7 +129,7 @@ void LoopVar::reset()
     varCount = 0;
 }
 
-StkValue LoopVar::evaluate(cComponent *context, StkValue args[], int numargs)
+Value LoopVar::evaluate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==0);
     const char *var = varName.c_str();
@@ -154,7 +154,7 @@ Sizeof::Sizeof(const char *ident, bool ofParent, bool printThis)
     this->printThis = printThis;
 }
 
-StkValue Sizeof::evaluate(cComponent *context, StkValue args[], int numargs)
+Value Sizeof::evaluate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==0 && context!=NULL);
     cModule *module = dynamic_cast<cModule *>(ofParent ? context->parentModule() : context);
@@ -187,9 +187,9 @@ std::string Sizeof::toString(std::string args[], int numargs)
 
 //---
 
-StkValue XMLDoc::evaluate(cComponent *context, StkValue args[], int numargs)
+Value XMLDoc::evaluate(cComponent *context, Value args[], int numargs)
 {
-    ASSERT((numargs==1 || numargs==2) && args[0].type==StkValue::STR && (numargs==1 || args[1].type==StkValue::STR));
+    ASSERT((numargs==1 || numargs==2) && args[0].type==Value::STR && (numargs==1 || args[1].type==Value::STR));
     cXMLElement *node;
     if (numargs==1)
     {
@@ -222,14 +222,14 @@ NAMESPACE_END
 /*
 //FIXME make error messages consistent
 
-typedef cDynamicExpression::StkValue StkValue; // abbreviation for local use
+typedef cDynamicExpression::Value Value; // abbreviation for local use
 
 //
 // internal function to support NED: resolves a sizeof(moduleOrGateVectorName) reference
 //
-StkValue cDynamicExpression::sizeofIdent(cComponent *context, StkValue args[], int numargs)
+Value cDynamicExpression::sizeofIdent(cComponent *context, Value args[], int numargs)
 {
-    ASSERT(numargs==1 && args[0].type==StkValue::STR);
+    ASSERT(numargs==1 && args[0].type==Value::STR);
     const char *ident = args[0].str.c_str();
 
     // ident might be a gate vector of the *parent* module, or a sibling submodule vector
@@ -256,9 +256,9 @@ StkValue cDynamicExpression::sizeofIdent(cComponent *context, StkValue args[], i
 //
 // internal function to support NED: resolves a sizeof(this.gateVectorName) reference
 //
-StkValue cDynamicExpression::sizeofGate(cComponent *context, StkValue args[], int numargs)
+Value cDynamicExpression::sizeofGate(cComponent *context, Value args[], int numargs)
 {
-    ASSERT(numargs==1 && args[0].type==StkValue::STR);
+    ASSERT(numargs==1 && args[0].type==Value::STR);
     const char *gateName = args[0].str.c_str();
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module || !module->hasGate(gateName))
@@ -269,9 +269,9 @@ StkValue cDynamicExpression::sizeofGate(cComponent *context, StkValue args[], in
 //
 // internal function to support NED: resolves a sizeof(parent.gateVectorName) reference
 //
-StkValue cDynamicExpression::sizeofParentModuleGate(cComponent *context, StkValue args[], int numargs)
+Value cDynamicExpression::sizeofParentModuleGate(cComponent *context, Value args[], int numargs)
 {
-    ASSERT(numargs==1 && args[0].type==StkValue::STR);
+    ASSERT(numargs==1 && args[0].type==Value::STR);
     const char *gateName = args[0].str.c_str();
     cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     if (!parentModule)
@@ -284,9 +284,9 @@ StkValue cDynamicExpression::sizeofParentModuleGate(cComponent *context, StkValu
 //
 // internal function to support NED: resolves a sizeof(module.gateName) reference
 //
-StkValue cDynamicExpression::sizeofSiblingModuleGate(cComponent *context, StkValue args[], int numargs)
+Value cDynamicExpression::sizeofSiblingModuleGate(cComponent *context, Value args[], int numargs)
 {
-    ASSERT(numargs==2 && args[0].type==StkValue::STR && args[1].type==StkValue::STR);
+    ASSERT(numargs==2 && args[0].type==Value::STR && args[1].type==Value::STR);
     const char *siblingModuleName = args[0].str.c_str();
     const char *gateName = args[1].str.c_str();
 
@@ -302,9 +302,9 @@ StkValue cDynamicExpression::sizeofSiblingModuleGate(cComponent *context, StkVal
 //
 // internal function to support NED: resolves a sizeof(module.gateName) reference
 //
-StkValue cDynamicExpression::sizeofIndexedSiblingModuleGate(cComponent *context, StkValue args[], int numargs)
+Value cDynamicExpression::sizeofIndexedSiblingModuleGate(cComponent *context, Value args[], int numargs)
 {
-    ASSERT(numargs==3 && args[0].type==StkValue::STR && args[1].type==StkValue::STR && args[2].type==StkValue::DBL);
+    ASSERT(numargs==3 && args[0].type==Value::STR && args[1].type==Value::STR && args[2].type==Value::DBL);
     const char *gateName = args[1].str.c_str();
     const char *siblingModuleName = args[1].str.c_str();
     int siblingModuleIndex = (int)args[2].dbl;

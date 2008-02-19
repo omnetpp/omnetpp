@@ -47,7 +47,7 @@ class ENVIR_API Scenario
   private:
     bool inc();
     bool evaluateConstraint();
-    Expression::StkValue getIterationVariable(const char *varname);
+    Expression::Value getIterationVariable(const char *varname);
 
   public:
     /**
@@ -65,8 +65,8 @@ class ENVIR_API Scenario
         virtual Expression::Functor *dup() const {return new VariableReference(hostnode, varname.c_str());}
         virtual const char *name() const {return varname.c_str();}
         virtual const char *argTypes() const {return "";}
-        virtual char returnType() const {return Expression::StkValue::DBL;}
-        virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs)
+        virtual char returnType() const {return Expression::Value::DBL;}
+        virtual Expression::Value evaluate(Expression::Value args[], int numargs)
             {return hostnode->getIterationVariable(varname.c_str());}
         virtual std::string toString(std::string args[], int numargs) {return name();}
     };

@@ -761,8 +761,8 @@ $O/cgate.obj: cgate.cc \
   ../../include/cchannel.h \
   ../../include/cbasicchannel.h \
   ../../include/cdisplaystring.h \
-  ../../include/util.h \
   ../../include/ccomponenttype.h \
+  ../../include/util.h \
   ../../include/cownedobject.h \
   ../../include/cmsgpar.h \
   ../../include/simkerneldefs.h \
