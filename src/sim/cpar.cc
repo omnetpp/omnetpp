@@ -23,7 +23,6 @@
 #include "ccomponenttype.h"
 #include "cmodule.h"
 #include "csimulation.h"
-#include "unitconversion.h"
 #include "commonutil.h"
 
 #ifdef WITH_PARSIM
@@ -194,6 +193,11 @@ double cPar::doubleValue() const
     TRY(return p->doubleValue(ownercomponent));
 }
 
+const char *cPar::unit() const
+{
+    return p->unit();
+}
+
 const char *cPar::stringValue() const
 {
     TRY(return p->stringValue(ownercomponent));
@@ -294,19 +298,6 @@ void cPar::read()
         copyIfShared();
         p->evaluateConstSubexpressions(ownercomponent); //XXX sharing?
     }
-
-    // make sure unit matches
-    const char *actualUnit = p->unit();
-    if (actualUnit && actualUnit[0])
-    {
-        cProperties *props = properties();
-        cProperty *unitProp = props->get("unit");
-        const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
-        if (declUnit && declUnit[0] && strcmp(actualUnit, declUnit)!=0)
-            throw cRuntimeError(this, "value is given in wrong units: should be %s instead of %s",
-                                    UnitConversion::unitDescription(declUnit).c_str(),
-                                    UnitConversion::unitDescription(actualUnit).c_str());
-    }
 }
 
 void cPar::acceptDefault()
@@ -372,7 +363,7 @@ void cPar::parse(const char *text)
     }
     else
     {
-        // not found: clone existing parameter, then parse text into it
+        // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
         cParValue *tmp = p->dup();
         tmp->setIsInput(false);
         try

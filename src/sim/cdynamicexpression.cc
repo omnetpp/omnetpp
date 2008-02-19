@@ -24,6 +24,7 @@
 #include "cenvir.h"
 #include "cmodule.h"
 #include "stringutil.h"
+#include "unitconversion.h"
 
 USING_NAMESPACE
 
@@ -67,7 +68,7 @@ void cDynamicExpression::StkValue::operator=(const cPar& par)
     switch (par.type())
     {
       case cPar::BOOL: *this = par.boolValue(); break;
-      case cPar::DOUBLE: *this = par.doubleValue(); break;
+      case cPar::DOUBLE: *this = par.doubleValue(); dblunit = par.unit(); break;
       case cPar::LONG: *this = par.doubleValue(); break;
       case cPar::STRING: *this = par.stringValue(); break;
       case cPar::XML: *this = par.xmlValue(); break;
@@ -81,9 +82,10 @@ std::string cDynamicExpression::StkValue::toString()
     switch (type)
     {
       case BOOL: return bl ? "true" : "false";
-      case DBL:  sprintf(buf, "%g", dbl); return buf;
+      case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf; 
       case STR:  return opp_quotestr(str.c_str());
-      case XML:  return std::string("<")+xml->getTagName()+">"; //XXX
+      case XML:  return xml->detailedInfo(); 
+                 //or: return std::string("<")+xml->getTagName()+" ... >, " + opp_nulltoempty(xml->getSourceLocation()); 
       default:   throw cRuntimeError("internal error: bad StkValue type");
     }
 }
@@ -129,7 +131,8 @@ void cDynamicExpression::setExpression(Elem e[], int n)
 
 cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) const
 {
-    //XXX printf("    evaluating: %s\n", toString().c_str());
+    printf("    evaluating: %s\n", toString().c_str()); //XXX
+    
     const int stksize = 20;
     StkValue stk[stksize];
 
@@ -149,6 +152,7 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
              if (tos>=stksize-1)
                  throw cRuntimeError(this,eESTKOFLOW);
              stk[++tos] = e.d.d;
+             stk[tos].dblunit = e.d.unit;
              break;
 
            case Elem::STR:
@@ -167,6 +171,7 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
              if (tos>=stksize-1)
                  throw cRuntimeError(this,eESTKOFLOW);
              stk[++tos] = *(e.p); break;
+             stk[tos].dblunit = e.p->unit();
              break;
 
            case Elem::MATHFUNC:
@@ -418,7 +423,7 @@ cDynamicExpression::StkValue cDynamicExpression::evaluate(cComponent *context) c
     if (tos!=0)
         throw cRuntimeError(this,eBADEXP);
 
-    //XXX printf("        ==> returning %s\n", stk[tos].toString().c_str());
+    printf("        ==> returning %s\n", stk[tos].toString().c_str()); //XXX
 
     return stk[tos];
 }
@@ -427,31 +432,32 @@ bool cDynamicExpression::boolValue(cComponent *context)
 {
     StkValue v = evaluate(context);
     if (v.type!=StkValue::BOOL)
-        throw cRuntimeError(this, eECANTCAST,"bool");
+        throw cRuntimeError(this, eECANTCAST, "bool");
     return v.bl;
 }
 
-long cDynamicExpression::longValue(cComponent *context)
+//FIXME rename these methods!!! evaluateToLong() etc
+long cDynamicExpression::longValue(cComponent *context, const char *expectedUnit)
 {
     StkValue v = evaluate(context);
     if (v.type!=StkValue::DBL)
-        throw cRuntimeError(this, eECANTCAST,"long");
-    return double_to_long(v.dbl);
+        throw cRuntimeError(this, eECANTCAST, "long");
+    return double_to_long(UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit));
 }
 
-double cDynamicExpression::doubleValue(cComponent *context)
+double cDynamicExpression::doubleValue(cComponent *context, const char *expectedUnit)
 {
     StkValue v = evaluate(context);
     if (v.type!=StkValue::DBL)
-        throw cRuntimeError(this, eECANTCAST,"double");
-    return v.dbl;
+        throw cRuntimeError(this, eECANTCAST, "double");
+    return UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
 }
 
 std::string cDynamicExpression::stringValue(cComponent *context)
 {
     StkValue v = evaluate(context);
     if (v.type!=StkValue::STR)
-        throw cRuntimeError(this, eECANTCAST,"string");
+        throw cRuntimeError(this, eECANTCAST, "string");
     return v.str;
 }
 
@@ -459,7 +465,7 @@ cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
 {
     StkValue v = evaluate(context);
     if (v.type!=StkValue::XML)
-        throw cRuntimeError(this, eECANTCAST,"XML element");
+        throw cRuntimeError(this, eECANTCAST, "XML element");
     return v.xml;
 }
 
@@ -492,7 +498,7 @@ std::string cDynamicExpression::toString() const
                  if (tos>=stksize-1)
                      throw cRuntimeError(this,eESTKOFLOW);
                  char buf[32];
-                 sprintf(buf, "%g", e.d.d);
+                 sprintf(buf, "%g%s", e.d.d, opp_nulltoempty(e.d.unit));
                  strstk[++tos] = buf;
                  pristk[tos] = 0;
                  }

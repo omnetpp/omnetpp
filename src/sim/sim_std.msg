@@ -372,6 +372,7 @@ class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
         @omitGetVerb(true);
         string value @getter(toString) @setter(parse) @editable;
         char type @enum(cPar_Type) @hint(parameter type);
+        string unit @getter(unit) @hint(for long and double types only);
         bool isNumeric @group(flags) @hint(whether parameter type is numeric, i.e. double or long);
         bool isVolatile @group(flags) @hint(whether parameter was declared volatile in the NED file);
         bool isExpression@group(flags) @hint(whether parameter value is a constant or an expression);

@@ -175,16 +175,14 @@ class SIM_API cParValue : public cNamedObject
     virtual void setIsInput(bool f) {if (f) flags|=FL_ISINPUT; else flags&=~FL_ISINPUT;}
 
     /**
-     * Returns the parameter value's unit ("s", "mW", "Hz", "bps", etc).
-     * This normally comes from the assignment, possibly after performing
-     * conversion ("64kbps" get stored as d=64000, unit="bps") and must match
-     * the @unit property of the parameter, declared in NED. Unit is only
-     * meaningful with numeric parameters.
+     * Returns the parameter's unit ("s", "mW", "Hz", "bps", etc),
+     * as declared in the @unit property of the parameter in NED.
+     * Unit is only meaningful with numeric parameters.
      */
     virtual const char *unit() const;
 
     /**
-     * Sets the parameter value's unit ("s", "mW", "Hz", "bps", etc).
+     * Initialize the parameter's unit (normally from the @unit property).
      */
     virtual void setUnit(const char *s);
     //@}

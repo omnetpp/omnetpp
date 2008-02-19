@@ -89,7 +89,6 @@ void cDoublePar::setExpression(cExpression *e)
     deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_HASVALUE;
-    setUnit(e->unit());
 }
 
 bool cDoublePar::boolValue(cComponent *) const
@@ -129,7 +128,7 @@ cExpression *cDoublePar::expression() const
 
 double cDoublePar::evaluate(cComponent *context) const
 {
-    return (flags & FL_ISEXPR) ? expr->doubleValue(context) : val;
+    return (flags & FL_ISEXPR) ? expr->doubleValue(context, unit()) : val;
 }
 
 void cDoublePar::deleteOld()
@@ -168,22 +167,6 @@ std::string cDoublePar::toString() const
 
 void cDoublePar::parse(const char *text)
 {
-/*XXX not really needed
-    // maybe it's just a number
-    cStringTokenizer tok(text);
-    const char *word = tok.nextToken();
-    if (word!=NULL && !tok.hasMoreTokens())
-    {
-        char *endp;
-        double num = strtod(word, &endp);  // FIXME TBD try as "units" as well
-        if (*endp == '\0')
-        {
-            setDoubleValue(num);
-            return;
-        }
-    }
-*/
-
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
     try

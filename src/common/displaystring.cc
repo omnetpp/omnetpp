@@ -16,41 +16,10 @@
 #include <stdio.h>
 #include "opp_ctype.h"
 #include "displaystring.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
-
-//FIXME migrate (part of) sim/utils.cc here, and use these functions from there?
-
-static char *opp_strdup(const char *s)
-{
-    if (!s || !s[0]) return NULL;
-    char *p = new char[ strlen(s)+1 ];
-    if (p) strcpy(p,s);
-    return p;
-}
-
-static int opp_strcmp(const char *s1, const char *s2)
-{
-    // case-sensitive comparison
-    if (s1 && s2)       return strcmp(s1,s2);
-    else if (!s1 && s2) return -1;
-    else if (s1 && !s2) return 1;
-    else                return 0;
-}
-
-static int opp_strlen(const char *s)
-{
-    if (!s) return 0;
-    return strlen(s);
-}
-
-inline const char *opp_nulltoempty(const char *s)
-{
-   return s ? s : "";
-}
-
-//---
 
 DisplayString::DisplayString()
 {

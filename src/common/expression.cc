@@ -35,7 +35,7 @@ void Expression::Elem::operator=(const Elem& other)
     memcpy(this, &other, sizeof(Elem));
 
     if (type==STR)
-        s = opp_clonestr(s);
+        s = opp_strdup(s);
     else if (type==FUNCTOR)
         fu = (Functor *) fu->dup();
 }

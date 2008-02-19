@@ -15,8 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __UTIL_H
-#define __UTIL_H
+#ifndef __SIM_UTIL_H
+#define __SIM_UTIL_H
 
 #include <stdarg.h>  // for va_list
 #include <stdio.h>   // for sprintf
@@ -115,45 +115,28 @@ SIM_API double max(double a, double b);
 //@{
 //FIXME reduce the number of these string util functions...
 /**
- * Duplicates the string. If the pointer passed is NULL or points
- * to a null string (""), NULL is returned.
+ * Same as the standard strlen() function, except that does not crash
+ * on NULL pointers but returns 0.
  */
-SIM_API char *opp_strdup(const char *);
+inline int opp_strlen(const char *);
+
+/**
+ * Duplicates the string, using <tt>new char[]</tt>. For NULLs and empty
+ * strings it returns NULL.
+ */
+inline char *opp_strdup(const char *);
 
 /**
  * Same as the standard strcpy() function, except that NULL pointers
  * in the second argument are treated like pointers to a null string ("").
  */
-SIM_API char *opp_strcpy(char *,const char *);
+inline char *opp_strcpy(char *,const char *);
 
 /**
  * Same as the standard strcmp() function, except that NULL pointers
  * are treated like pointers to a null string ("").
  */
-SIM_API int opp_strcmp(const char *, const char *);
-
-/**
- * Returns true if the two strings are identical up to the length of the
- * shorter one. NULL pointers are treated like pointers to a null string ("").
- */
-SIM_API bool opp_strmatch(const char *, const char *);
-
-/**
- * Same as the standard strlen() function, except that does not crash
- * on NULL pointers but returns 0.
- */
-SIM_API int opp_strlen(const char *);
-
-/**
- * Creates a string like "component[35]" into dest, the first argument.
- */
-SIM_API char *opp_mkindexedname(char *dest, const char *name, int index);
-
-/**
- * Concatenates up to four strings. Returns a pointer to a static buffer
- * of length 256. If the result length would exceed 256, it is truncated.
- */
-SIM_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
+inline int opp_strcmp(const char *, const char *);
 
 /**
  * Copies src string into desc, and if its length would exceed maxlen,
@@ -175,11 +158,6 @@ SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
  */
 inline bool equal(double a, double b, double epsilon);
 //@}
-
-//
-// INTERNAL: a restricted vsscanf implementation used by cStatistic::freadvarsf()
-//
-SIM_API int opp_vsscanf(const char *s, const char *fmt, va_list va);
 
 /**
  * DEPRECATED: Error handling functions.
@@ -360,6 +338,36 @@ inline bool equal(double a, double b, double epsilon)
    double d = a-b;
    return (d>=0.0 ? d : -d) < epsilon;
 }
+
+#ifndef _STRINGUTIL_H_   // avoid clash with similar defs in common/stringutil.h
+
+inline char *opp_strcpy(char *s1,const char *s2)
+{
+    return strcpy(s1, s2 ? s2 : "");
+}
+
+inline int opp_strlen(const char *s)
+{
+    return s ? strlen(s) : 0;
+}
+
+inline char *opp_strdup(const char *s)
+{
+    if (!s || !s[0]) return NULL;
+    char *p = new char[strlen(s)+1];
+    strcpy(p,s);
+    return p;
+}
+
+inline int opp_strcmp(const char *s1, const char *s2)
+{
+    if (s1)
+        return s2 ? strcmp(s1,s2) : 1;
+    else
+        return s2 ? -1 : 0;
+}
+
+#endif //_STRINGUTIL_H_
 
 // internally used: appends [num] to the given string
 inline void opp_appendindex(char *s, unsigned int i)

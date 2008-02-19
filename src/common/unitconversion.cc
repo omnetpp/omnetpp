@@ -14,6 +14,7 @@
 
 #include <assert.h>
 #include "opp_ctype.h"
+#include "stringutil.h"
 #include "unitconversion.h"
 
 USING_NAMESPACE
@@ -22,7 +23,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {
 //FIXME accept longer names too ("byte", "bytes", "sec", "second", "seconds"...)
     { "d",   86400, "s",    "day" },
     { "h",    3600, "s",    "hour" },
-    { "mi",     60, "s",    "minute" },
+    { "min",    60, "s",    "minute" },
     { "s",       1, "s",    "second" },
     { "ms",   1e-3, "s",    "millisecond" },
     { "us",   1e-6, "s",    "microsecond" },
@@ -104,6 +105,7 @@ double UnitConversion::parseQuantity(const char *str, std::string& outActualUnit
 
 double UnitConversion::doParseQuantity(const char *str, const char *expectedUnit, std::string& unit)
 {
+//FIXME only convert if there are several numbers (like "2h 5min")
     //FIXME warn if unit only differs from a "known" unit in uppercase/lowercase!!!!
     //FIXME handle "dimensionless" units too (expectedUnit=="-"; make it expectedUnit=="1" !!!)
 
@@ -191,4 +193,25 @@ std::string UnitConversion::unitDescription(const char *unit)
     return result;
 }
 
+double UnitConversion::convertUnit(double d, const char *unit, const char *targetUnit)
+{
+    // if units are the same (or there are no units), no conversion is needed
+    if (unit==targetUnit || opp_strcmp(unit, targetUnit)==0)
+        return d;
+
+    // if only one unit is given, that's an error
+    if (unit==NULL || targetUnit==NULL)
+        throw opp_runtime_error("value is given in wrong units: expected %s and got %s",
+                (opp_isempty(targetUnit) ? "none" : unitDescription(targetUnit).c_str()),
+                (opp_isempty(unit) ? "none" : unitDescription(unit).c_str()));
+
+    // we'll need to convert
+    UnitDesc *unitDesc = lookupUnit(unit);
+    UnitDesc *targetUnitDesc = lookupUnit(targetUnit);
+    if (unitDesc==NULL || targetUnitDesc==NULL || strcmp(unitDesc->baseUnit, targetUnitDesc->baseUnit)!=0)
+        throw opp_runtime_error("value is given in incompatible units: expected %s and got %s",
+                (opp_isempty(targetUnit) ? "none" : unitDescription(targetUnit).c_str()),
+                (opp_isempty(unit) ? "none" : unitDescription(unit).c_str()));
+    return d * unitDesc->mult / targetUnitDesc->mult;
+}
 

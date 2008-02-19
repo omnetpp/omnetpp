@@ -46,6 +46,5 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "Aloha" "Aloha" "2" "627x598+24+31"
 inspector "classes" "cSymTable" "1" "460x312+96+124"
 

@@ -38,8 +38,8 @@ NAMESPACE_BEGIN
 double min(double a, double b)      {return a<b ? a : b;}
 double max(double a, double b)      {return a<b ? b : a;}
 
-Define_Function( min,  2 )
-Define_Function( max,  2 )
+Define_Function(min, 2)
+Define_Function(max, 2)
 
 
 //----
@@ -156,72 +156,6 @@ double strToSimtime0(const char *&str)
 }
 #endif //USE_DOUBLE_SIMTIME
 
-char *opp_strdup(const char *s)
-{
-    if (!s || !s[0]) return NULL;
-    char *p = new char[ strlen(s)+1 ];
-    if (p) strcpy(p,s);
-    return p;
-}
-
-char *opp_strcpy(char *s1, const char *s2)
-{
-    if (s1 && s2)       return strcpy(s1,s2);
-    else if (!s1 && s2) return NULL;
-    else {s1[0]='\x0';  return s1;}
-}
-
-int opp_strcmp(const char *s1, const char *s2)
-{
-    // case-sensitive comparison
-    if (s1 && s2)       return strcmp(s1,s2);
-    else if (!s1 && s2) return -1;
-    else if (s1 && !s2) return 1;
-    else                return 0;
-}
-
-bool opp_strmatch(const char *s1, const char *s2)
-{
-    // case-sensitive comparison until
-    // the length of the shorter string
-    if (!s1 || !s2) {
-         return true;
-    } else {
-         int l = Min(strlen(s1), strlen(s2));
-         return strncmp( s1, s1, l)==0;
-    }
-}
-
-int opp_strlen(const char *s)
-{
-    if (!s) return 0;
-    return strlen(s);
-}
-
-char *opp_concat(const char *s1,
-                 const char *s2,
-                 const char *s3,
-                 const char *s4)
-{
-    // concatenate strings into static buffer
-    static char buf[256];
-    char *dest=buf;
-    if (s1) while( *s1 && dest!=buf+255 ) *dest++ = *s1++;
-    if (s2) while( *s2 && dest!=buf+255 ) *dest++ = *s2++;
-    if (s3) while( *s3 && dest!=buf+255 ) *dest++ = *s3++;
-    if (s4) while( *s4 && dest!=buf+255 ) *dest++ = *s4++;
-    *dest = 0;
-    return buf;
-}
-
-char *opp_mkindexedname(char *dest, const char *name, int index)
-{
-    static char buf[64];
-    if (dest==NULL) dest=buf;
-    sprintf(dest,"%.54s[%d]",name,index);
-    return dest;
-}
-
 char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
 {
     if (!src) {
@@ -235,68 +169,6 @@ char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen)
             dest[maxlen-1] = dest[maxlen-2] = dest[maxlen-3] = '.';
     }
     return dest;
-}
-
-int opp_vsscanf(const char *s, const char *fmt, va_list va)
-{
-    // A simplified vsscanf implementation, solely for cStatistic::freadvarsf.
-    // Only recognizes %d, %u, %ld, %g and whitespace. '#' terminates scanning
-
-    int k=0;
-    while (1)
-    {
-        if (*fmt=='%')
-        {
-            int n;
-            if (fmt[1]=='d')
-            {
-                k+=sscanf(s,"%d%n",va_arg(va,int*),&n);
-                s+=n; fmt+=2;
-            }
-            else if (fmt[1]=='u')
-            {
-                k+=sscanf(s,"%u%n",va_arg(va,unsigned int*),&n);
-                s+=n; fmt+=2;
-            }
-            else if (fmt[1]=='l' && fmt[2]=='d')
-            {
-                k+=sscanf(s,"%ld%n",va_arg(va,long*),&n);
-                s+=n; fmt+=3;
-            }
-            else if (fmt[1]=='l' && fmt[2]=='u')
-            {
-                k+=sscanf(s,"%lu%n",va_arg(va,unsigned long*),&n);
-                s+=n; fmt+=3;
-            }
-            else if (fmt[1]=='l' && fmt[2]=='g')
-            {
-                k+=sscanf(s,"%lg%n",va_arg(va,double*),&n);
-                s+=n; fmt+=3;
-            }
-            else if (fmt[1]=='g')
-            {
-                k+=sscanf(s,"%lg%n",va_arg(va,double*),&n);
-                s+=n; fmt+=2;
-            }
-            else
-            {
-                throw cRuntimeError("opp_vsscanf: unsupported format '%s'",fmt);
-            }
-        }
-        else if (opp_isspace(*fmt))
-        {
-            while (opp_isspace(*s)) s++;
-            fmt++;
-        }
-        else if (*fmt=='\0' || *fmt=='#')
-        {
-            return k;
-        }
-        else
-        {
-            throw cRuntimeError("opp_vsscanf: unexpected char in format: '%s'",fmt);
-        }
-    }
 }
 
 //----
@@ -406,14 +278,14 @@ const char *opp_typename(const std::type_info& t)
     // http://www.codesourcery.com/cxx-abi/abi.html#mangling
     // libiberty/cp_demangle.c
     //
-    if (*s>='0' && *s<='9') 
+    if (*s>='0' && *s<='9')
     {
         // no namespace: just skip the leading number
-        while (*s>='0' && *s<='9') 
+        while (*s>='0' && *s<='9')
             s++;
         return s;
     }
-    else if (*s=='N') 
+    else if (*s=='N')
     {
         // mangled name contains namespace: decode it and cache the result
         //XXX better demanging code. use cp_demangle() from libiberty?
@@ -441,7 +313,7 @@ const char *opp_typename(const std::type_info& t)
     }
 #else
     // MSVC prepends the string with "class " (possibly other compilers too)
-    if (s[0]=='c' && s[1]=='l' && s[2]=='a' && s[3]=='s' && s[4]=='s' && s[5]==' ') 
+    if (s[0]=='c' && s[1]=='l' && s[2]=='a' && s[3]=='s' && s[4]=='s' && s[5]==' ')
         s+=6;
     return s;
 #endif

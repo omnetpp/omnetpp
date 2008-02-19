@@ -111,6 +111,11 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *para
         const char *paramName = paramNode->getName();
         ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
 
+        cProperties *paramProps = currentDecl->paramProperties(paramName);
+        cProperty *unitProp = paramProps->get("unit");
+        const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
+
+        // if param is assigned here, prepare the cParValue
         cParValue *value = NULL;
         if (exprNode)
         {
@@ -133,30 +138,32 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *para
                 value->setIsShared(true);
                 value->setIsInput(paramNode->getIsDefault());
                 value->setIsVolatile(isVolatile);
+                value->setUnit(declUnit);
+
                 currentDecl->putCachedExpression(exprNode, value);
             }
         }
 
-        // find or add parameter
         if (isSubcomponent || paramNode->getType()==NED_PARTYPE_NONE)
         {
+            // assignment to an existing parameter
             if (value)
             {
-                // parameter must exist already
-                cPar &par = component->par(paramName);
+                cPar &par = component->par(paramName); // must exist already
                 par.reassign(value);
             }
         }
         else
         {
-            // add it now
+            // new parameter
             if (!value)
             {
                 value = cParValue::createWithType(translateParamType(paramNode->getType()));
                 value->setName(paramName);
-                value->setIsShared(false); //XXX cannot cache: there'no ExpressionElement to piggyback on!!!
+                value->setIsShared(false); //XXX cannot cache: there'no ExpressionElement to piggyback on. FIXME use ParamNode's id!!!!!
                 value->setIsInput(true);
                 value->setIsVolatile(paramNode->getIsVolatile());
+                value->setUnit(declUnit);
             }
             //XXX printf("   +++ adding param %s\n", paramName);
             component->addPar(value);
@@ -856,7 +863,7 @@ ExpressionElement *cNEDNetworkBuilder::findExpression(NEDElement *node, const ch
     return NULL;
 }
 
-cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, bool inSubcomponentScope)
+cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope)
 {
     cParValue *p = currentDecl->getCachedExpression(exprNode);
     if (!p)
@@ -864,6 +871,8 @@ cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode
         cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
         p = cParValue::createWithType(type);
         cExpressionBuilder::assign(p, e);
+        p->setUnit(unit);
+
         currentDecl->putCachedExpression(exprNode, p);
     }
     return p;
@@ -871,19 +880,19 @@ cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode
 
 long cNEDNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
-    cParValue *p = getOrCreateExpression(exprNode, cPar::LONG, inSubcomponentScope);
+    cParValue *p = getOrCreateExpression(exprNode, cPar::LONG, NULL, inSubcomponentScope);
     return p->longValue(context);
 }
 
 bool cNEDNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
-    cParValue *p = getOrCreateExpression(exprNode, cPar::BOOL, inSubcomponentScope);
+    cParValue *p = getOrCreateExpression(exprNode, cPar::BOOL, NULL, inSubcomponentScope);
     return p->boolValue(context);
 }
 
 std::string cNEDNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
-    cParValue *p = getOrCreateExpression(exprNode, cPar::STRING, inSubcomponentScope);
+    cParValue *p = getOrCreateExpression(exprNode, cPar::STRING, NULL, inSubcomponentScope);
     return p->stdstringValue(context);
 }
 

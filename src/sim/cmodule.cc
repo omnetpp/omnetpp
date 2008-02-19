@@ -30,6 +30,7 @@
 #include "cchannel.h"
 #include "cproperties.h"
 #include "cproperty.h"
+#include "stringutil.h"
 #include "util.h"
 
 USING_NAMESPACE
@@ -100,13 +101,11 @@ cModule::~cModule()
     for (int i=0; i<numgatedescs; i++)
     {
         cGate::Desc& desc = gatedescv[i];
-        cGate::stringPool.release(desc.namep);
-        if (desc.isInout())
-        {
-            std::string gatename = gatedescv[i].namep;
-            cGate::stringPool.release(cGate::stringPool.peek((gatename+"$i").c_str()));  //FIXME use opp_concat?
-            cGate::stringPool.release(cGate::stringPool.peek((gatename+"$o").c_str()));
+        if (desc.isInout()) {
+            cGate::stringPool.release(cGate::stringPool.peek(opp_concat(desc.namep,"$i")));
+            cGate::stringPool.release(cGate::stringPool.peek(opp_concat(desc.namep,"$o")));
         }
+        cGate::stringPool.release(desc.namep);
     }
 
     // deregister ourselves
@@ -327,8 +326,8 @@ void cModule::addGate(const char *gatename, cGate::Type type, bool isvector)
     // allocate two other strings as well, for cGate::name
     if (type==cGate::INOUT)
     {
-        cGate::stringPool.get((std::string(gatename)+"$i").c_str()); //FIXME use opp_concat?
-        cGate::stringPool.get((std::string(gatename)+"$o").c_str());
+        cGate::stringPool.get(opp_concat(gatename,"$i"));
+        cGate::stringPool.get(opp_concat(gatename,"$o"));
     }
 
     // now: create gate object, maybe two (name$i and name$o)
@@ -668,8 +667,8 @@ cGate *cModule::gate(const char *gatename, int index)
     int i = findGate(gatename, index);
     if (i==-1)
     {
-        // no such gate -- do some extra effort to issue a helpful error message
-        std::string fullgatename = index<0 ? gatename : opp_mkindexedname(NULL, gatename, index);
+        // no such gate -- make some extra effort to issue a helpful error message
+        std::string fullgatename = index<0 ? gatename : opp_stringf("%s[%d]", gatename, index);
         char suffix;
         int descId = findGateDesc(gatename, suffix);
         if (descId<0)

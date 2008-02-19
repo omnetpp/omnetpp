@@ -110,11 +110,12 @@ int cParValue::compare(const cParValue *other) const
     unsigned short flags2 = flags & ~FL_ISSHARED; // ignore "isShared" flag
     unsigned short otherflags2 = other->flags & ~FL_ISSHARED;
     if (flags2!=otherflags2)
-        return flags2 < otherflags2;
+        return flags2 < otherflags2 ? -1 : 1;
 
     if (type()!=other->type())
         return type() < other->type() ? -1 : 1;
-    return 0;
+
+    return opp_strcmp(unitp, other->unitp);
 }
 
 //----

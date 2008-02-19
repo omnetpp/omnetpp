@@ -89,7 +89,6 @@ void cLongPar::setExpression(cExpression *e)
     deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_HASVALUE;
-    setUnit(e->unit());
 }
 
 bool cLongPar::boolValue(cComponent *) const
@@ -129,7 +128,7 @@ cExpression *cLongPar::expression() const
 
 long cLongPar::evaluate(cComponent *context) const
 {
-    return (flags & FL_ISEXPR) ? expr->longValue(context) : val;
+    return (flags & FL_ISEXPR) ? expr->longValue(context, unit()) : val;
 }
 
 void cLongPar::deleteOld()

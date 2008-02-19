@@ -168,12 +168,65 @@ std::string opp_vstringf(const char *fmt, va_list& args)
     return buf;
 }
 
-char *opp_clonestr(const char *s)
+int opp_vsscanf(const char *s, const char *fmt, va_list va)
 {
-    if (s==NULL) return NULL;
-    char *p = new char[strlen(s)+1];
-    strcpy(p,s);
-    return p;
+    // A simplified vsscanf implementation, solely for cStatistic::freadvarsf.
+    // Only recognizes %d, %u, %ld, %g and whitespace. '#' terminates scanning
+    int k = 0;
+    while (true)
+    {
+        if (*fmt=='%')
+        {
+            int n;
+            if (fmt[1]=='d')
+            {
+                k+=sscanf(s,"%d%n",va_arg(va,int*),&n);
+                s+=n; fmt+=2;
+            }
+            else if (fmt[1]=='u')
+            {
+                k+=sscanf(s,"%u%n",va_arg(va,unsigned int*),&n);
+                s+=n; fmt+=2;
+            }
+            else if (fmt[1]=='l' && fmt[2]=='d')
+            {
+                k+=sscanf(s,"%ld%n",va_arg(va,long*),&n);
+                s+=n; fmt+=3;
+            }
+            else if (fmt[1]=='l' && fmt[2]=='u')
+            {
+                k+=sscanf(s,"%lu%n",va_arg(va,unsigned long*),&n);
+                s+=n; fmt+=3;
+            }
+            else if (fmt[1]=='l' && fmt[2]=='g')
+            {
+                k+=sscanf(s,"%lg%n",va_arg(va,double*),&n);
+                s+=n; fmt+=3;
+            }
+            else if (fmt[1]=='g')
+            {
+                k+=sscanf(s,"%lg%n",va_arg(va,double*),&n);
+                s+=n; fmt+=2;
+            }
+            else
+            {
+                throw opp_runtime_error("opp_vsscanf: unsupported format '%s'",fmt);
+            }
+        }
+        else if (opp_isspace(*fmt))
+        {
+            while (opp_isspace(*s)) s++;
+            fmt++;
+        }
+        else if (*fmt=='\0' || *fmt=='#')
+        {
+            return k;
+        }
+        else
+        {
+            throw opp_runtime_error("opp_vsscanf: unexpected char in format: '%s'",fmt);
+        }
+    }
 }
 
 std::string opp_replacesubstring(const char *s, const char *substring, const char *replacement, bool replaceAll)
@@ -243,6 +296,24 @@ bool opp_stringendswith(const char *s, const char *ending)
     int slen = strlen(s);
     int endinglen = strlen(ending);
     return slen >= endinglen && strcmp(s+slen-endinglen, ending)==0;
+}
+
+char *opp_concat(const char *s1,
+                 const char *s2,
+                 const char *s3,
+                 const char *s4)
+{
+    // concatenate strings into a static buffer
+    //FIXME throw error if string overflows!!!
+    static char buf[256];
+    char *bufEnd = buf+255;
+    char *dest=buf;
+    if (s1) while (*s1 && dest!=bufEnd) *dest++ = *s1++;
+    if (s2) while (*s2 && dest!=bufEnd) *dest++ = *s2++;
+    if (s3) while (*s3 && dest!=bufEnd) *dest++ = *s3++;
+    if (s4) while (*s4 && dest!=bufEnd) *dest++ = *s4++;
+    *dest = 0;
+    return buf;
 }
 
 std::string opp_join(const char *separator, const char *s1, const char *s2)

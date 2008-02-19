@@ -83,6 +83,12 @@ class COMMON_API UnitConversion
      * it returns the input string itself in quotes.
      */
     static std::string unitDescription(const char *unit);
+    
+    /**
+     * Converts the given value with unit into the given target unit.
+     * Throws an error if the conversion is not possible. 
+     */
+    static double convertUnit(double d, const char *unit, const char *targetUnit);
 };
 
 NAMESPACE_END

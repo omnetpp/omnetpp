@@ -130,7 +130,7 @@ class COMMON_API Expression
          * Effect during evaluation of the expression: pushes the given string
          * to the evaluation stack.
          */
-        void operator=(const char *_s)  {type=STR; Assert(_s); s=opp_clonestr(_s);}
+        void operator=(const char *_s)  {type=STR; Assert(_s); s=opp_strdup(_s);}
 
         /**
          * Function object, with an interface not unlike cNEDFunction.

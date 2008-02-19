@@ -89,20 +89,22 @@ class SIM_API cExpression : public cObject
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-//FIXME perhaps rename these methods to evaluateXXX()
+//FIXME perhaps rename these methods to evaluateToXXX()
     virtual bool boolValue(cComponent *context=NULL) = 0;
 
     /**
      * Evaluate the expression and convert the result to long if possible;
      * throw an error if conversion from that type is not supported.
+     * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual long longValue(cComponent *context=NULL) = 0;
+    virtual long longValue(cComponent *context=NULL, const char *expectedUnit=NULL) = 0;
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
+     * Also throws an error if the actual unit does not match the expected unit.
      */
-    virtual double doubleValue(cComponent *context=NULL) = 0;
+    virtual double doubleValue(cComponent *context=NULL, const char *expectedUnit=NULL) = 0;
 
     /**
      * Evaluate the expression and convert the result to string if possible;
@@ -134,7 +136,7 @@ class SIM_API cExpression : public cObject
     virtual void parse(const char *text) = 0;
 
     /**
-     * Returns the unit of the expression if it can be determined, or NULL.
+     * Returns the unit of the expression.
      */
     virtual const char *unit() const {return NULL;}
     //@}

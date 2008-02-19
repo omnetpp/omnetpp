@@ -99,7 +99,7 @@ Expression::StkValue Scenario::getIterationVariable(const char *varname)
         else if (strcmp(value.c_str(), "false")==0)
             return false;
         else
-            return UnitConversion::parseQuantity(value.c_str()); // converts to double
+            return UnitConversion::parseQuantity(value.c_str()); // converts to double  FIXME units should NOT be accepted here!!!!!
     }
     catch (std::exception& e)
     {

@@ -360,7 +360,7 @@ cMsgPar& cMsgPar::setStringValue(const char *s)
      if (!s)
          {ls.sht=true; *ss.str='\0';}
      else if ((ls.sht=(strlen(s)<=SHORTSTR))!=0)
-         opp_strcpy(ss.str, s);
+         strcpy(ss.str, s);
      else
          ls.str = opp_strdup(s);
      afterChange();

@@ -198,6 +198,7 @@ class SIM_API cDynamicExpression : public cExpression
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
         bool bl;
         double dbl;  //FIXME better names! this is part of the public interface!!!!
+        const char *dblunit; // stringpooled, may be NULL
         std::string str;
         cXMLElement *xml;
 
@@ -205,13 +206,15 @@ class SIM_API cDynamicExpression : public cExpression
         StkValue(bool b)  {*this=b;}
         StkValue(long l)  {*this=l;}
         StkValue(double d)  {*this=d;}
+        StkValue(double d, const char *unit)  {set(d,unit);}
         StkValue(const char *s)  {*this=s;}
         StkValue(const std::string& s)  {*this=s;}
         StkValue(cXMLElement *x)  {*this=x;}
         StkValue(const cPar& par) {*this=par;}
         void operator=(bool b)  {type=BOOL; bl=b;}
         void operator=(long l)  {type=DBL; dbl=l;}
-        void operator=(double d)  {type=DBL; dbl=d;}
+        void operator=(double d)  {type=DBL; dbl=d; dblunit=NULL;}
+        void set(double d, const char *unit) {type=DBL; dbl=d; dblunit=unit;}
         void operator=(const char *s)  {type=STR; str=s?s:"";}
         void operator=(const std::string& s)  {type=STR; str=s;}
         void operator=(cXMLElement *x)  {type=XML; xml=x;}
@@ -306,13 +309,13 @@ class SIM_API cDynamicExpression : public cExpression
      * Evaluate the expression and convert the result to long if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual long longValue(cComponent *context);
+    virtual long longValue(cComponent *context, const char *expectedUnit=NULL);
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual double doubleValue(cComponent *context);
+    virtual double doubleValue(cComponent *context, const char *expectedUnit=NULL);
 
     /**
      * Evaluate the expression and convert the result to string if possible;
@@ -346,7 +349,7 @@ class SIM_API cDynamicExpression : public cExpression
     virtual bool isAConstant() const;
 
     /**
-     * Returns the unit of the expression if it can be determined, or NULL.
+     * Returns the unit of the expression.
      */
     virtual const char *unit() const;
     //@}

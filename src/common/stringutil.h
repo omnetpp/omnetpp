@@ -38,6 +38,55 @@ inline const char *opp_nulltoempty(const char *s)  {return s ? s : "";}
  */
 COMMON_API bool opp_isblank(const char *txt);
 
+//
+// The following few inline functions are present in the simkernel's utils.h too;
+// define them conditionally to prevent clashes.
+//
+#ifndef __SIM_UTIL_H
+
+/**
+ * Same as the standard strlen() function, except that does not crash
+ * on NULL pointers but returns 0.
+ */
+inline int opp_strlen(const char *s)
+{
+    return s ? strlen(s) : 0;
+}
+
+/**
+ * Duplicates the string, using <tt>new char[]</tt>. For NULLs and empty
+ * strings it returns NULL.
+ */
+inline char *opp_strdup(const char *s)
+{
+    if (!s || !s[0]) return NULL;
+    char *p = new char[strlen(s)+1];
+    strcpy(p,s);
+    return p;
+}
+
+/**
+ * Same as the standard strcpy() function, except that NULL pointers
+ * in the second argument are treated like pointers to a null string ("").
+ */
+inline char *opp_strcpy(char *s1, const char *s2)
+{
+    return strcpy(s1, s2 ? s2 : "");
+}
+
+/**
+ * Same as the standard strcmp() function, except that NULL pointers
+ * are treated like pointers to a null string ("").
+ */
+inline int opp_strcmp(const char *s1, const char *s2)
+{
+    if (s1)
+        return s2 ? strcmp(s1,s2) : 1;
+    else
+        return s2 ? -1 : 0;
+}
+#endif //__SIM_UTIL_H
+
 /**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
  *
@@ -93,10 +142,9 @@ COMMON_API std::string opp_stringf(const char *fmt, ...);
 COMMON_API std::string opp_vstringf(const char *fmt, va_list& args);
 
 /**
- * Duplicates a string, the result should be freed with delete[].
- * Named so in order to avoid clash with the simkernel's opp_strdup().
+ * A limited vsscanf implementation, used by cStatistic::freadvarsf()
  */
-COMMON_API char *opp_clonestr(const char *s);
+COMMON_API int opp_vsscanf(const char *s, const char *fmt, va_list va);
 
 /**
  * Performs find/replace within a string.
@@ -122,6 +170,12 @@ COMMON_API bool opp_stringbeginswith(const char *s, const char *prefix);
  * Returns true if the first string ends in the second string.
  */
 COMMON_API bool opp_stringendswith(const char *s, const char *ending);
+
+/**
+ * Concatenates up to four strings. Returns a pointer to a static buffer
+ * of length 256. If the result length would exceed 256, it is truncated.
+ */
+COMMON_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
 
 /**
  * If either s1 or s2 is empty, returns the other one, otherwise returns

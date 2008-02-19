@@ -34,6 +34,7 @@
 #include "csimplemodule.h"
 #include "cexception.h"
 #include "cenvir.h"
+#include "stringutil.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"

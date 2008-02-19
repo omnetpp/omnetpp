@@ -166,7 +166,7 @@ char *SimTime::ttoa(char *buf, int64 t, int scaleexp, char *&endp)
 
 const SimTime SimTime::parse(const char *s)
 {
-    // Note: UnitConversion calculates in double, so we may lose some precision during conversion
+    // Note: UnitConversion calculates in double, so we may lose precision during conversion
     return UnitConversion::parseQuantity(s, "s");
 }
 
@@ -181,7 +181,7 @@ const SimTime SimTime::parse(const char *s, const char *&endp)
     while (opp_isalnum(*endp) || opp_isspace(*endp) || *endp=='+' || *endp=='-' || *endp=='.')
         endp++;
 
-    // Note: UnitConversion calculates in double, so we may lose some precision during conversion
+    // Note: UnitConversion calculates in double, so we may lose precision during conversion
     return UnitConversion::parseQuantity(std::string(s, endp-s).c_str(), "s");
 }
 
