@@ -129,8 +129,8 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
 
     /** @name Expression caching */
     //@{
-    virtual cParValue *getCachedExpression(ExpressionElement *expr);
-    virtual void putCachedExpression(ExpressionElement *expr, cParValue *value);
+    virtual cParValue *getCachedExpression(NEDElement *node);
+    virtual void putCachedExpression(NEDElement *node, cParValue *value);
     //@}
 };
 

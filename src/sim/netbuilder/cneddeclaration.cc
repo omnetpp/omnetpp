@@ -303,20 +303,20 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     prop->setValue(cProperty::DEFAULTKEY, 0, d.toString());
 }
 
-cParValue *cNEDDeclaration::getCachedExpression(ExpressionElement *expr)
+cParValue *cNEDDeclaration::getCachedExpression(NEDElement *node)
 {
-    ExpressionMap::const_iterator it = expressionMap.find(expr->getId());
-    //XXX printf("      getExpr: %ld -> %p\n", expr->getId(), it==expressionMap.end() ? NULL : it->second);
+    ExpressionMap::const_iterator it = expressionMap.find(node->getId());
+    //XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==expressionMap.end() ? NULL : it->second);
     return it==expressionMap.end() ? NULL : it->second;
 }
 
-void cNEDDeclaration::putCachedExpression(ExpressionElement *expr, cParValue *value)
+void cNEDDeclaration::putCachedExpression(NEDElement *node, cParValue *value)
 {
-    //XXX printf("      putExpr: %ld -> %p\n", expr->getId(), value);
-    ExpressionMap::const_iterator it = expressionMap.find(expr->getId());
+    //XXX printf("      putExpr: %ld -> %p\n", node->getId(), value);
+    ExpressionMap::const_iterator it = expressionMap.find(node->getId());
     ASSERT(it==expressionMap.end()); //XXX or?
     if (it==expressionMap.end())
-        expressionMap[expr->getId()] = value;
+        expressionMap[node->getId()] = value;
 }
 
 
