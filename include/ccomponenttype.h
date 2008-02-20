@@ -42,19 +42,19 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
   protected:
     std::string qualifiedName;
-    cParValueCache parvaluecache;
-    cParValueCache2 parvaluecache2;
+    cParImplCache parimplcache;
+    cParImplCache2 parimplcache2;
   public:
     // internal use
-    cParValueCache *parValueCache() {return &parvaluecache;}
+    cParImplCache *parImplCache() {return &parimplcache;}
     // internal use
-    cParValueCache2 *parValueCache2() {return &parvaluecache2;}
+    cParImplCache2 *parImplCache2() {return &parimplcache2;}
 
   protected:
     friend class cComponent;
     friend class cPar;
     friend class cGate;
-    
+
     // internal: returns the properties for this component.
     virtual cProperties *properties() const = 0;
 

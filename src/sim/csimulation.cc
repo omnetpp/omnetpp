@@ -390,7 +390,7 @@ void cSimulation::setupNetwork(cModuleType *network)
     //    throw cRuntimeError("unknown exception occurred");
     //}
 
-    printf("setupNetwork finished, cParValue objects in use: %ld\n", cParValue::liveParValueObjectCount()); //XXX
+    printf("setupNetwork finished, cParImpl objects in use: %ld\n", cParImpl::liveParImplObjectCount()); //XXX
 }
 
 void cSimulation::startRun()
@@ -456,7 +456,7 @@ void cSimulation::deleteNetwork()
 
     networktype = NULL;
 
-    //FIXME todo delete cParValue caches too (cParValueCache, cParValueCache2)
+    //FIXME todo delete cParImpl caches too (cParImplCache, cParImplCache2)
 
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
     msgQueue.clear();

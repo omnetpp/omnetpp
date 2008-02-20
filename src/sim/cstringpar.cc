@@ -37,7 +37,7 @@ void cStringPar::operator=(const cStringPar& other)
 
     deleteOld();
 
-    cParValue::operator=(other);
+    cParImpl::operator=(other);
     if (flags & FL_ISEXPR)
         expr = (cExpression *) other.expr->dup();
     else
@@ -195,9 +195,9 @@ void cStringPar::parse(const char *text)
         convertToConst(NULL);
 }
 
-int cStringPar::compare(const cParValue *other) const
+int cStringPar::compare(const cParImpl *other) const
 {
-    int ret = cParValue::compare(other);
+    int ret = cParImpl::compare(other);
     if (ret!=0)
         return ret;
 

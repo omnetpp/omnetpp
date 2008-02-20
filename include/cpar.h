@@ -25,7 +25,7 @@
 
 NAMESPACE_BEGIN
 
-class cParValue;
+class cParImpl;
 class cExpression;
 class cXMLElement;
 class cProperties;
@@ -34,7 +34,7 @@ class cComponent;
 /**
  * FIXME
  *
- * Delegates everything to cParValue.
+ * Delegates everything to cParImpl.
  *
  * Not meant for subclassing. This is also the reason why none of the
  * methods are virtual.
@@ -46,7 +46,7 @@ class SIM_API cPar : public cObject
     friend class cComponent;
   private:
     cComponent *ownercomponent;
-    cParValue *p;
+    cParImpl *p;
   public:
     enum Type {
         BOOL = 'B',
@@ -59,7 +59,7 @@ class SIM_API cPar : public cObject
   private:
     cPar() {ownercomponent = NULL; p = NULL;}
     // internal, called from cComponent
-    void assign(cComponent *ownercomponent, cParValue *p);
+    void assign(cComponent *ownercomponent, cParImpl *p);   //FIXME rename to setup()?
     // internal
     void moveto(cPar& other);
     // internal utility function
@@ -69,9 +69,11 @@ class SIM_API cPar : public cObject
 
   public:
     // internal, called from network building code
-    void reassign(cParValue *p);
+    void reassign(cParImpl *p);   //FIXME rename to setImpl() ?
     // internal: clears the isInput flag; called from network building code
     void acceptDefault();
+    // internal, called from network building code
+    cParImpl *impl() const {return p;}
 
   public:
     /**
@@ -227,7 +229,7 @@ class SIM_API cPar : public cObject
      * types.
      */
     const char *unit() const;
-    
+
     /**
      * Returns value as const char *. The cPar type must be STRING.
      * This method may can only be invoked when the parameter's value is a
@@ -451,34 +453,34 @@ class SIM_API cPar : public cObject
 //
 // internal class for sharing parameter values coming from ini files
 //
-class cParValueCache
+class cParImplCache
 {
   private:
-    typedef std::map<std::string, cParValue *> StringToParMap;
+    typedef std::map<std::string, cParImpl *> StringToParMap;
     StringToParMap parMap;
   public:
-    cParValueCache() {}
-    ~cParValueCache();
-    cParValue *get(const char *key) const;
-    void put(const char *key, cParValue *value);
+    cParImplCache() {}
+    ~cParImplCache();
+    cParImpl *get(const char *key) const;
+    void put(const char *key, cParImpl *value);
 };
 
 //
 // internal class for sharing parameters converted to constants
 //
-class cParValueCache2
+class cParImplCache2
 {
   private:
     struct Less {
-      bool operator()(cParValue *a, cParValue *b) const;
+      bool operator()(cParImpl *a, cParImpl *b) const;
     };
-    typedef std::set<cParValue *, Less> ParValueSet;
-    ParValueSet parSet;
+    typedef std::set<cParImpl *, Less> ParImplSet;
+    ParImplSet parSet;
   public:
-    cParValueCache2() {}
-    ~cParValueCache2();
-    cParValue *get(cParValue *p) const;
-    void put(cParValue *p);
+    cParImplCache2() {}
+    ~cParImplCache2();
+    cParImpl *get(cParImpl *p) const;
+    void put(cParImpl *p);
 };
 
 NAMESPACE_END

@@ -287,12 +287,12 @@ cDynamicExpression *cExpressionBuilder::process(ExpressionElement *node,
     return ret;
 }
 
-void cExpressionBuilder::assign(cParValue *par, cDynamicExpression *expr)
+void cExpressionBuilder::setExpression(cParImpl *par, cDynamicExpression *expr)
 {
     par->setExpression(expr);
 
     // simplify if possible: store as constant instead of expression
     if (expr->isAConstant())
-        par->convertToConst(NULL); 
+        par->convertToConst(NULL);
 }
 

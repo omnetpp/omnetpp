@@ -17,7 +17,7 @@ network ClientServer
     submodules:
         server: Server {
             parameters:
-                processingTime = default(0.2s) @prompt("Time to process a query");
+                processingTime = default(0.2s) @unit(s) @prompt("Time to process a query");
                 @display("p=210,70");
         };
         switch: Switch {

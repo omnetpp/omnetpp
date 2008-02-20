@@ -38,14 +38,14 @@ cPar::~cPar()
         delete p;
 }
 
-void cPar::assign(cComponent *component, cParValue *newp)
+void cPar::assign(cComponent *component, cParImpl *newp)
 {
     ASSERT(!p && newp);
     ownercomponent = component;
     p = newp;
 }
 
-void cPar::reassign(cParValue *newp)
+void cPar::reassign(cParImpl *newp)
 {
     ASSERT(p && newp);
     if (!p->isShared())
@@ -278,14 +278,14 @@ void cPar::afterChange()
 
 void cPar::read()
 {
-    //TRACE("read() of par=%s", fullPath().c_str());
+    TRACE("read() of par=%s", fullPath().c_str());
 
     // obtain value if parameter is not set yet
     if (p->isInput())
     {
-        //XXX printf("           before ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
+        printf("           before ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
         ev.readParameter(this);
-        //XXX printf("           after ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
+        printf("           after ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
     }
 
     // convert non-volatile expressions to constant
@@ -309,7 +309,7 @@ void cPar::acceptDefault()
         // try to look up the value in the value cache (temporarily setting isInput=false)
         p->setIsInput(false);
         cComponentType *componentType = ownercomponent->componentType();
-        cParValue *cachedValue = componentType->parValueCache2()->get(p);
+        cParImpl *cachedValue = componentType->parImplCache2()->get(p);
         p->setIsInput(true);
 
         // use the cached value, or create a value and put it into the cache
@@ -318,7 +318,7 @@ void cPar::acceptDefault()
         else {
             copyIfShared();
             p->setIsInput(false);
-            componentType->parValueCache2()->put(p);
+            componentType->parImplCache2()->put(p);
         }
     }
 }
@@ -334,16 +334,16 @@ void cPar::convertToConst()
 
     // maybe replace it with a shared copy
     cComponentType *componentType = ownercomponent->componentType();
-    cParValue *cachedValue = componentType->parValueCache2()->get(p);
+    cParImpl *cachedValue = componentType->parImplCache2()->get(p);
     if (cachedValue)
         reassign(cachedValue);
     else
-        componentType->parValueCache2()->put(p);
+        componentType->parImplCache2()->put(p);
 }
 
 void cPar::parse(const char *text)
 {
-    // Implementation note: we are trying to share cParValue objects for
+    // Implementation note: we are trying to share cParImpl objects for
     // values coming from the configuration. This is possible because an
     // expression's representation does not contain pointers to concrete
     // modules or other parameters. The context is always passed in separately
@@ -355,7 +355,7 @@ void cPar::parse(const char *text)
     //
     cComponentType *componentType = ownercomponent->componentType();
     std::string key = std::string(componentType->name()) + ":" + name() + ":" + text;
-    cParValue *cachedValue = componentType->parValueCache()->get(key.c_str());
+    cParImpl *cachedValue = componentType->parImplCache()->get(key.c_str());
     if (cachedValue)
     {
         // an identical value found in the map -- use it
@@ -364,7 +364,7 @@ void cPar::parse(const char *text)
     else
     {
         // not found: clone existing parameter (to preserve name, type, unit etc), then parse text into it
-        cParValue *tmp = p->dup();
+        cParImpl *tmp = p->dup();
         tmp->setIsInput(false);
         try
         {
@@ -377,27 +377,27 @@ void cPar::parse(const char *text)
         }
 
         // successfully parsed: install it
-        componentType->parValueCache()->put(key.c_str(), tmp);
+        componentType->parImplCache()->put(key.c_str(), tmp);
         reassign(tmp);
     }
 }
 
 //---
 
-cParValueCache::~cParValueCache()
+cParImplCache::~cParImplCache()
 {
     for (StringToParMap::iterator it = parMap.begin(); it!=parMap.end(); ++it)
         delete it->second;
     parMap.clear();
 }
 
-cParValue *cParValueCache::get(const char *key) const
+cParImpl *cParImplCache::get(const char *key) const
 {
     StringToParMap::const_iterator it = parMap.find(key);
     return it==parMap.end() ? NULL : it->second;
 }
 
-void cParValueCache::put(const char *key, cParValue *value)
+void cParImplCache::put(const char *key, cParImpl *value)
 {
     ASSERT(parMap.find(key)==parMap.end()); // not yet in there
     value->setIsShared(true);
@@ -407,25 +407,25 @@ void cParValueCache::put(const char *key, cParValue *value)
 //---
 
 // cannot go inline due to declaration order
-bool cParValueCache2::Less::operator()(cParValue *a, cParValue *b) const
+bool cParImplCache2::Less::operator()(cParImpl *a, cParImpl *b) const
 {
     return a->compare(b) < 0;
 }
 
-cParValueCache2::~cParValueCache2()
+cParImplCache2::~cParImplCache2()
 {
-    for (ParValueSet::iterator it = parSet.begin(); it!=parSet.end(); ++it)
+    for (ParImplSet::iterator it = parSet.begin(); it!=parSet.end(); ++it)
         delete *it;
     parSet.clear();
 }
 
-cParValue *cParValueCache2::get(cParValue *value) const
+cParImpl *cParImplCache2::get(cParImpl *value) const
 {
-    ParValueSet::const_iterator it = parSet.find(value);
+    ParImplSet::const_iterator it = parSet.find(value);
     return it==parSet.end() ? NULL : *it;
 }
 
-void cParValueCache2::put(cParValue *value)
+void cParImplCache2::put(cParImpl *value)
 {
     ASSERT(parSet.find(value)==parSet.end()); // not yet in there
     value->setIsShared(true);

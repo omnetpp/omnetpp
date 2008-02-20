@@ -134,7 +134,7 @@ inline char *opp_strcpy(char *,const char *);
 
 /**
  * Same as the standard strcmp() function, except that NULL pointers
- * are treated like pointers to a null string ("").
+ * are treated exactly as empty strings ("").
  */
 inline int opp_strcmp(const char *, const char *);
 
@@ -362,9 +362,9 @@ inline char *opp_strdup(const char *s)
 inline int opp_strcmp(const char *s1, const char *s2)
 {
     if (s1)
-        return s2 ? strcmp(s1,s2) : 1;
+        return s2 ? strcmp(s1,s2) : (*s1 ? 1 : 0);
     else
-        return s2 ? -1 : 0;
+        return (s2 && *s2) ? -1 : 0;
 }
 
 #endif //_STRINGUTIL_H_

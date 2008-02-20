@@ -15,8 +15,8 @@ module TandemQueue
     parameters:
         int numQueues;
         int ownIndex;
-        double sDelay;
-        double qDelay;
+        double sDelay @unit(s);
+        double qDelay @unit(s);
         @display("i=misc/cloud2_l");
     gates:
         input in[];

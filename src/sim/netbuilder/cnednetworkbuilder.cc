@@ -127,68 +127,67 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *para
 
 void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent)
 {
+    const char *paramName = paramNode->getName();
+
+    // isSubComponent==true: we are called from cModuleType::addParametersTo();
+    // isSubComponent==false: we are called from assignSubcomponentParams().
+    // if type==NONE, this is an inherited parameter (must have been added already)
+    bool isNewParam = !isSubcomponent && paramNode->getType()!=NED_PARTYPE_NONE;
+    ASSERT(component->hasPar(paramName) != isNewParam);
+
+    cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
+    if (impl)
+    {
+        printf("   +++ reusing param impl for %s\n", paramName);
+
+        // we've already been at this point in the NED files sometime,
+        // so we can reuse what we produced then
+        ASSERT(impl->isName(paramName));
+        if (isNewParam)
+            component->addPar(impl);
+        else {
+            cPar& par = component->par(paramName); // must exist already
+            par.reassign(impl);
+        }
+        return;
+    }
+
     try {
-        const char *paramName = paramNode->getName();
+        if (isNewParam) {
+            printf("   +++ adding param %s\n", paramName);
+            impl = cParImpl::createWithType(translateParamType(paramNode->getType()));
+            impl->setName(paramName);
+            impl->setIsShared(false);
+            impl->setIsInput(true);
+            impl->setIsVolatile(paramNode->getIsVolatile());
+
+            component->addPar(impl);
+
+            cProperties *paramProps = component->par(paramName).properties();
+            cProperty *unitProp = paramProps->get("unit");
+            const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
+            impl->setUnit(declUnit);
+        }
+        else {
+            impl = component->par(paramName).impl();
+        }
+
         ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
-
-        cProperties *paramProps = currentDecl->paramProperties(paramName);  // FIXME won't work for submodule params (that's subcomponentParamProperties())
-        cProperty *unitProp = paramProps->get("unit");
-        const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
-
-        // if param is assigned here, prepare the cParValue
-        cParValue *value = NULL;
         if (exprNode)
         {
-            value = currentDecl->getPrebuiltParValueFor(exprNode);
-            ASSERT(!value || value->isName(paramName));
-            if (!value)
-            {
-                cPar::Type parType = paramNode->getType()==NED_PARTYPE_NONE
-                    ? component->par(paramName).type()
-                    : translateParamType(paramNode->getType());
-
-                bool isVolatile = paramNode->getType()==NED_PARTYPE_NONE
-                    ? component->par(paramName).isVolatile()
-                    : paramNode->getIsVolatile();
-
-                cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-                value = cParValue::createWithType(parType);   //FIXME just dup() and assign the expression? if param already exists...
-                value->setName(paramName);
-                value->setIsShared(true);
-                value->setIsInput(paramNode->getIsDefault());
-                value->setIsVolatile(isVolatile);
-                value->setUnit(declUnit);
-
-                cExpressionBuilder::assign(value, dynamicExpr); //XXX may throw exception
-
-                currentDecl->putPrebuiltParValueFor(exprNode, value);
+            printf("   +++ assigning param %s\n", paramName);
+            cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
+            if (impl->isShared()) {
+                impl = impl->dup();
+                component->par(paramName).reassign(impl);
             }
+            impl->setIsInput(paramNode->getIsDefault());
+            cExpressionBuilder::setExpression(impl, dynamicExpr);
         }
 
-        if (isSubcomponent || paramNode->getType()==NED_PARTYPE_NONE)
-        {
-            // assignment to an existing parameter
-            if (value)
-            {
-                cPar &par = component->par(paramName); // must exist already
-                par.reassign(value);
-            }
-        }
-        else
-        {
-            // new parameter
-            if (!value)
-            {
-                value = cParValue::createWithType(translateParamType(paramNode->getType()));
-                value->setName(paramName);
-                value->setIsShared(false); //XXX cannot cache: there'no ExpressionElement to piggyback on. FIXME use ParamNode's id!!!!!
-                value->setIsInput(true);
-                value->setIsVolatile(paramNode->getIsVolatile());
-                value->setUnit(declUnit);
-            }
-            //XXX printf("   +++ adding param %s\n", paramName);
-            component->addPar(value);
-        }
+        impl->setIsShared(true);
+        currentDecl->putSharedParImplFor(paramNode, impl);
+
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, paramNode); throw;
@@ -212,14 +211,14 @@ void cNEDNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isS
         int gatesize = -1;
         if (gateNode->getIsVector() && exprNode)
         {
-            cParValue *value = currentDecl->getPrebuiltParValueFor(exprNode);
+            cParImpl *value = currentDecl->getSharedParImplFor(exprNode);
             if (!value)
             {
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
                 value = new cLongPar();
                 value->setName("gatesize-expression");
-                cExpressionBuilder::assign(value, dynamicExpr);
-                currentDecl->putPrebuiltParValueFor(exprNode, value);
+                cExpressionBuilder::setExpression(value, dynamicExpr);
+                currentDecl->putSharedParImplFor(exprNode, value);
             }
             gatesize = value->longValue(module);
         }
@@ -904,17 +903,17 @@ ExpressionElement *cNEDNetworkBuilder::findExpression(NEDElement *node, const ch
     return NULL;
 }
 
-cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope)
+cParImpl *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope)
 {
-    cParValue *p = currentDecl->getPrebuiltParValueFor(exprNode);
+    cParImpl *p = currentDecl->getSharedParImplFor(exprNode);
     if (!p)
     {
         cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
-        p = cParValue::createWithType(type);
-        cExpressionBuilder::assign(p, e);
+        p = cParImpl::createWithType(type);
+        cExpressionBuilder::setExpression(p, e);
         p->setUnit(unit);
 
-        currentDecl->putPrebuiltParValueFor(exprNode, p);
+        currentDecl->putSharedParImplFor(exprNode, p);
     }
     return p;
 }
@@ -922,7 +921,7 @@ cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode
 long cNEDNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     try {
-        cParValue *p = getOrCreateExpression(exprNode, cPar::LONG, NULL, inSubcomponentScope);
+        cParImpl *p = getOrCreateExpression(exprNode, cPar::LONG, NULL, inSubcomponentScope);
         return p->longValue(context);
     }
     catch (std::exception& e) {
@@ -933,7 +932,7 @@ long cNEDNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent 
 bool cNEDNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     try {
-        cParValue *p = getOrCreateExpression(exprNode, cPar::BOOL, NULL, inSubcomponentScope);
+        cParImpl *p = getOrCreateExpression(exprNode, cPar::BOOL, NULL, inSubcomponentScope);
         return p->boolValue(context);
     }
     catch (std::exception& e) {
@@ -944,7 +943,7 @@ bool cNEDNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent 
 std::string cNEDNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
     try {
-        cParValue *p = getOrCreateExpression(exprNode, cPar::STRING, NULL, inSubcomponentScope);
+        cParImpl *p = getOrCreateExpression(exprNode, cPar::STRING, NULL, inSubcomponentScope);
         return p->stdstringValue(context);
     }
     catch (std::exception& e) {

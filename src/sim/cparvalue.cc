@@ -1,5 +1,5 @@
 //=========================================================================
-//  CPARVALUE.CC - part of
+//  CPARIMPL.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -26,47 +26,47 @@
 
 USING_NAMESPACE
 
-long cParValue::total_parvalue_objs;
-long cParValue::live_parvalue_objs;
-cStringPool cParValue::unitStringPool;
+long cParImpl::total_parimpl_objs;
+long cParImpl::live_parimpl_objs;
+cStringPool cParImpl::unitStringPool;
 
 
-cParValue::cParValue()
+cParImpl::cParImpl()
 {
     unitp = NULL;
-    total_parvalue_objs++;
-    live_parvalue_objs++;
+    total_parimpl_objs++;
+    live_parimpl_objs++;
 }
 
-cParValue::~cParValue()
+cParImpl::~cParImpl()
 {
     unitStringPool.release(unitp);
-    live_parvalue_objs--;
+    live_parimpl_objs--;
 }
 
-cParValue& cParValue::operator=(const cParValue& other)
+cParImpl& cParImpl::operator=(const cParImpl& other)
 {
     cNamedObject::operator=(other);
     setUnit(other.unit());
     return *this;
 }
 
-void cParValue::netPack(cCommBuffer *buffer)
+void cParImpl::netPack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cParValue::netUnpack(cCommBuffer *buffer)
+void cParImpl::netUnpack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-std::string cParValue::info() const
+std::string cParImpl::info() const
 {
     return toString();
 }
 
-std::string cParValue::detailedInfo() const
+std::string cParImpl::detailedInfo() const
 {
     std::stringstream out;
     out << cPar::typeName(type()) << " " << name();
@@ -85,23 +85,23 @@ std::string cParValue::detailedInfo() const
     return out.str();
 }
 
-cParValue *cParValue::dup() const
+cParImpl *cParImpl::dup() const
 {
-    throw cRuntimeError(this, eCANTDUP);  // cannot dup because this is an abstract class
+    throw cRuntimeError(this, eCANTDUP);  // cannot instantiate an abstract class
 }
 
-const char *cParValue::unit() const
+const char *cParImpl::unit() const
 {
     return unitp;
 }
 
-void cParValue::setUnit(const char *s)
+void cParImpl::setUnit(const char *s)
 {
     unitStringPool.release(unitp);
     unitp = unitStringPool.get(s);
 }
 
-int cParValue::compare(const cParValue *other) const
+int cParImpl::compare(const cParImpl *other) const
 {
     int res = strcmp(name(), other->name());
     if (res!=0)
@@ -125,7 +125,7 @@ int cParValue::compare(const cParValue *other) const
 #include "cstringpar.h"
 #include "cxmlpar.h"
 
-cParValue *cParValue::createWithType(Type type)
+cParImpl *cParImpl::createWithType(Type type)
 {
     switch (type)
     {
@@ -134,7 +134,7 @@ cParValue *cParValue::createWithType(Type type)
         case cPar::LONG:    return new cLongPar();
         case cPar::STRING:  return new cStringPar();
         case cPar::XML:     return new cXMLPar();
-        default: throw cRuntimeError("cParValue::createWithType(): no such type: %d", type);
+        default: throw cRuntimeError("cParImpl::createWithType(): no such type: %d", type);
     }
 }
 

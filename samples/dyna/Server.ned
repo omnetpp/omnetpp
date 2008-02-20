@@ -16,7 +16,7 @@
 simple Server
 {
     parameters:
-        double processingTime;
+        double processingTime @unit(s);
         @display("i=device/server");
     gates:
         inout port;

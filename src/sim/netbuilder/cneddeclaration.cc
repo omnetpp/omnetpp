@@ -41,8 +41,8 @@ cNEDDeclaration::~cNEDDeclaration()
     clearPropsMap(subcomponentPropsMap);
     clearPropsMap(subcomponentParamPropsMap);
     clearPropsMap(subcomponentGatePropsMap);
-    //XXX printf("%s: %d cached expressions\n", name(), parvaluesMap.size());
-    clearPrebuiltParValuesMap(parvaluesMap);
+    //XXX printf("%s: %d cached expressions\n", name(), parimplMap.size());
+    clearSharedParImplMap(parimplMap);
 }
 
 void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
@@ -54,11 +54,11 @@ void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
     propsMap.clear();
 }
 
-void cNEDDeclaration::clearPrebuiltParValuesMap(PrebuiltParValuesMap& parvaluesMap)
+void cNEDDeclaration::clearSharedParImplMap(SharedParImplMap& parimplMap)
 {
-    for (PrebuiltParValuesMap::iterator it = parvaluesMap.begin(); it!=parvaluesMap.end(); ++it)
+    for (SharedParImplMap::iterator it = parimplMap.begin(); it!=parimplMap.end(); ++it)
         delete it->second;
-    parvaluesMap.clear();
+    parimplMap.clear();
 }
 
 cNEDDeclaration *cNEDDeclaration::getSuperDecl() const
@@ -303,20 +303,20 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     prop->setValue(cProperty::DEFAULTKEY, 0, d.toString());
 }
 
-cParValue *cNEDDeclaration::getPrebuiltParValueFor(NEDElement *node)
+cParImpl *cNEDDeclaration::getSharedParImplFor(NEDElement *node)
 {
-    PrebuiltParValuesMap::const_iterator it = parvaluesMap.find(node->getId());
-    //XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==parvaluesMap.end() ? NULL : it->second);
-    return it==parvaluesMap.end() ? NULL : it->second;
+    SharedParImplMap::const_iterator it = parimplMap.find(node->getId());
+    //XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==parimplMap.end() ? NULL : it->second);
+    return it==parimplMap.end() ? NULL : it->second;
 }
 
-void cNEDDeclaration::putPrebuiltParValueFor(NEDElement *node, cParValue *value)
+void cNEDDeclaration::putSharedParImplFor(NEDElement *node, cParImpl *value)
 {
     //XXX printf("      putExpr: %ld -> %p\n", node->getId(), value);
-    PrebuiltParValuesMap::const_iterator it = parvaluesMap.find(node->getId());
-    ASSERT(it==parvaluesMap.end()); //XXX or?
-    if (it==parvaluesMap.end())
-        parvaluesMap[node->getId()] = value;
+    SharedParImplMap::const_iterator it = parimplMap.find(node->getId());
+    ASSERT(it==parimplMap.end()); //XXX or?
+    if (it==parimplMap.end())
+        parimplMap[node->getId()] = value;
 }
 
 

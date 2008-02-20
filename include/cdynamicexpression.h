@@ -212,7 +212,7 @@ class SIM_API cDynamicExpression : public cExpression
         Value(cXMLElement *x)  {*this=x;}
         Value(const cPar& par) {*this=par;}
         void operator=(bool b)  {type=BOOL; bl=b;}
-        void operator=(long l)  {type=DBL; dbl=l;}
+        void operator=(long l)  {type=DBL; dbl=l; dblunit=NULL;}
         void operator=(double d)  {type=DBL; dbl=d; dblunit=NULL;}
         void set(double d, const char *unit) {type=DBL; dbl=d; dblunit=unit;}
         void operator=(const char *s)  {type=STR; str=s?s:"";}

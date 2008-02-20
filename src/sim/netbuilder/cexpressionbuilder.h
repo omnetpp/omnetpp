@@ -25,7 +25,7 @@
 
 NAMESPACE_BEGIN
 
-class cParValue;
+class cParImpl;
 
 /**
  * Utility classes for dynamic NED loading.
@@ -64,7 +64,7 @@ class SIM_API cExpressionBuilder
      * expressions (i.e. it is just a constant number), it does so and deletes
      * the expression.
      */
-    static void assign(cParValue *par, cDynamicExpression *expr);
+    static void setExpression(cParImpl *par, cDynamicExpression *expr);
 };
 
 NAMESPACE_END

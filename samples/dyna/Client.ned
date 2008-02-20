@@ -15,9 +15,9 @@
 simple Client
 {
     parameters:
-        double timeout;
-        volatile double connIaTime;
-        volatile double queryIaTime;
+        double timeout @unit(s);
+        volatile double connIaTime @unit(s);
+        volatile double queryIaTime @unit(s);
         volatile int numQuery;
         @display("i=device/pc2");
     gates:

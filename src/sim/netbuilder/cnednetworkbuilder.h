@@ -102,7 +102,7 @@ class SIM_API cNEDNetworkBuilder
     cChannelType *findAndCheckChannelType(const char *channeltypename, cModule *modp);
     cChannelType *findAndCheckChannelTypeLike(const char *channeltypename, const char *likeType, cModule *modp);
     ExpressionElement *findExpression(NEDElement *node, const char *exprname);
-    cParValue *getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope);
+    cParImpl *getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope);
     long evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);
     bool evaluateAsBool(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);
     std::string evaluateAsString(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);

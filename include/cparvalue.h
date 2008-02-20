@@ -1,5 +1,5 @@
 //==========================================================================
-//   CPARVALUE.H  - part of
+//   CPARIMPL.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CPARVALUE_H
-#define __CPARVALUE_H
+#ifndef __CPARIMPL_H
+#define __CPARIMPL_H
 
 #include "cpar.h"
 #include "cexpression.h"
@@ -32,15 +32,15 @@ class cComponent;
 
 /**
  * Internal class that stores parameter values. cPar delegates almost all
- * methods to cParValue. Delegation was introduced to save memory by using
+ * methods to cParImpl. Delegation was introduced to save memory by using
  * shared storage for module parameters of the same values.
  *
- * cParValue is an abstract base class, which supports several data types via
+ * cParImpl is an abstract base class, which supports several data types via
  * subclasses: cLongPar, cDoublePar, cBoolPar, cStringPar, cXMLPar.
  *
  * @ingroup Internals
  */
-class SIM_API cParValue : public cNamedObject
+class SIM_API cParImpl : public cNamedObject
 {
   protected:
     // various flags, stored in cNamedObject::flags
@@ -57,8 +57,8 @@ class SIM_API cParValue : public cNamedObject
     const char *unitp; // stringpooled
 
     // global variables for statistics
-    static long total_parvalue_objs;
-    static long live_parvalue_objs;
+    static long total_parimpl_objs;
+    static long live_parimpl_objs;
     static cStringPool unitStringPool;
 
   public:
@@ -71,22 +71,22 @@ class SIM_API cParValue : public cNamedObject
     /**
      * Constructor.
      */
-    explicit cParValue();
+    explicit cParImpl();
 
     /**
      * Copy constructor.
      */
-    cParValue(const cParValue& other);
+    cParImpl(const cParImpl& other);
 
     /**
      * Destructor.
      */
-    virtual ~cParValue();
+    virtual ~cParImpl();
 
     /**
      * Assignment operator.
      */
-    cParValue& operator=(const cParValue& otherpar);
+    cParImpl& operator=(const cParImpl& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -103,9 +103,9 @@ class SIM_API cParValue : public cNamedObject
     virtual std::string detailedInfo() const;
 
     /**
-     * Redefined change return type to cParValue.
+     * Redefined change return type to cParImpl.
      */
-    virtual cParValue *dup() const;
+    virtual cParImpl *dup() const;
 
     /**
      * Serializes the object into a buffer.
@@ -207,7 +207,7 @@ class SIM_API cParValue : public cNamedObject
 
     /**
      * Sets the value to the given string value.
-     * The cParValue will make its own copy of the string. NULL is also accepted
+     * The cParImpl will make its own copy of the string. NULL is also accepted
      * and treated as an empty string.
      */
     virtual void setStringValue(const char *s) = 0;
@@ -228,7 +228,7 @@ class SIM_API cParValue : public cNamedObject
      *
      * Note: if the parameter is marked as non-volatile (isVolatile()==false),
      * one should not set an expression as value. This is not enforced
-     * by cParValue though.
+     * by cParImpl though.
      */
     virtual void setExpression(cExpression *e) = 0;
     //@}
@@ -237,17 +237,17 @@ class SIM_API cParValue : public cNamedObject
     //@{
 
     /**
-     * Returns value as a boolean. The cParValue type must be BOOL.
+     * Returns value as a boolean. The cParImpl type must be BOOL.
      */
     virtual bool boolValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as long. The cParValue type must be LONG or DOUBLE.
+     * Returns value as long. The cParImpl type must be LONG or DOUBLE.
      */
     virtual long longValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as long. The cParValue type must be LONG or DOUBLE.
+     * Returns value as long. The cParImpl type must be LONG or DOUBLE.
      */
     virtual double doubleValue(cComponent *context) const = 0;
 
@@ -267,7 +267,7 @@ class SIM_API cParValue : public cNamedObject
     virtual std::string stdstringValue(cComponent *context) const = 0;
 
     /**
-     * Returns value as pointer to cXMLElement. The cParValue type must be XML.
+     * Returns value as pointer to cXMLElement. The cParImpl type must be XML.
      */
     virtual cXMLElement *xmlValue(cComponent *context) const = 0;
 
@@ -312,17 +312,17 @@ class SIM_API cParValue : public cNamedObject
     /**
      * Factory method: creates a parameter object representing the given type.
      */
-    static cParValue *createWithType(Type type);
+    static cParImpl *createWithType(Type type);
     //@}
 
     /** @name Compare functions */
     //@{
 
     /**
-     * Compares two cParValues, including name, type, flags, stored value or expression.
-     * Makes it possible to use cParValue as a key in std::map or std::set.
+     * Compares two cParImpls, including name, type, flags, stored value or expression.
+     * Makes it possible to use cParImpl as a key in std::map or std::set.
      */
-    virtual int compare(const cParValue *other) const;
+    virtual int compare(const cParImpl *other) const;
     //@}
 
     /** @name Statistics. */
@@ -334,7 +334,7 @@ class SIM_API cParValue : public cNamedObject
      * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long totalParValueObjectCount() {return total_parvalue_objs;}
+    static long totalParImplObjectCount() {return total_parimpl_objs;}
 
     /**
      * Returns the number of objects that currently exist in the program.
@@ -342,13 +342,13 @@ class SIM_API cParValue : public cNamedObject
      * the destructor.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long liveParValueObjectCount() {return live_parvalue_objs;}
+    static long liveParImplObjectCount() {return live_parimpl_objs;}
 
     /**
      * Reset counters used by totalObjectCount() and liveObjectCount().
      * (Note that liveObjectCount() may go negative after a reset call.)
      */
-    static void resetParValueObjectCounters()  {total_parvalue_objs=live_parvalue_objs=0L;}
+    static void resetParImplObjectCounters()  {total_parimpl_objs=live_parimpl_objs=0L;}
     //@}
 };
 

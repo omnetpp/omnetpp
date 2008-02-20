@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup Internals
  */
-class SIM_API cXMLPar : public cParValue
+class SIM_API cXMLPar : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
@@ -86,7 +86,7 @@ class SIM_API cXMLPar : public cParValue
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
-    /** @name Redefined cParValue setter functions. */
+    /** @name Redefined cParImpl setter functions. */
     //@{
 
     /**
@@ -121,7 +121,7 @@ class SIM_API cXMLPar : public cParValue
     virtual void setExpression(cExpression *e);
     //@}
 
-    /** @name Redefined cParValue getter functions. */
+    /** @name Redefined cParImpl getter functions. */
     //@{
 
     /**
@@ -174,7 +174,7 @@ class SIM_API cXMLPar : public cParValue
     virtual bool isNumeric() const;
     //@}
 
-    /** @name Redefined cParValue misc functions. */
+    /** @name Redefined cParImpl misc functions. */
     //@{
 
     /**
@@ -196,7 +196,7 @@ class SIM_API cXMLPar : public cParValue
     /**
      * Object comparison.
      */
-    virtual int compare(const cParValue *other) const;
+    virtual int compare(const cParImpl *other) const;
     //@}
 };
 

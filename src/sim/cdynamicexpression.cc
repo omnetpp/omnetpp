@@ -237,7 +237,7 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
              if (tos>=stksize-1)
                  throw cRuntimeError(eESTKOFLOW);
              stk[++tos] = *(e.p); break;
-             stk[tos].dblunit = e.p->unit();
+             stk[tos].dblunit = e.p->unit(); //FIXME move this into op=(cPar&)
              break;
 
            case Elem::MATHFUNC:
@@ -490,9 +490,9 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
                                      stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit); \
                                      stk[tos-1] = (stk[tos-1].dbl RELATION stk[tos].dbl); \
                                  } else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR) \
-                                     stk[tos-1].str = (stk[tos-1].str RELATION stk[tos].str); \
+                                     stk[tos-1] = (stk[tos-1].str RELATION stk[tos].str); \
                                  else if (stk[tos-1].type==Value::BOOL && stk[tos].type==Value::BOOL) \
-                                     stk[tos-1].bl = (stk[tos-1].bl RELATION stk[tos].bl); \
+                                     stk[tos-1] = (stk[tos-1].bl RELATION stk[tos].bl); \
                                  else \
                                      throw cRuntimeError(eEBADARGS,#RELATION); \
                                  tos--;

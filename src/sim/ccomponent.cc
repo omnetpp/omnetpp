@@ -108,7 +108,7 @@ void cComponent::reallocParamv(int size)
     paramvsize = (short)size;
 }
 
-void cComponent::addPar(cParValue *value)
+void cComponent::addPar(cParImpl *value)
 {
     if (findPar(value->name())>=0)
         throw cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), value->name());
