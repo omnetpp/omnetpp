@@ -1,0 +1,231 @@
+%description:
+Test unit checking/conversion in NED expressions (they are implemented
+with cDynamicExpression).
+
+%global:
+
+void test(const char *expr)
+{
+    cDynamicExpression e;
+    e.parse(expr);
+    std::string result;
+    try {
+        cDynamicExpression::Value v = e.evaluate(NULL);
+        result = v.toString();
+    } catch (std::exception& e) {
+        result = e.what();
+    }
+    ev << expr << " ==> " << result << "\n";
+}
+
+void test(const char *s1, const std::string& s2, const char *s3)
+{
+    test((std::string(s1) + " " + s2 + " " + s3).c_str());
+}
+
+%activity:
+// constants
+test("2m");
+test("2 meter");
+test("2 meters");
+test("3km");
+test("3 kilometer");
+test("3 kilometers");
+ev << "\n";
+
+// unary operators
+test("-(1+1)");
+test("-(1m+1m)");
+test("-(1km+1km)");
+ev << "\n";
+
+test("~(1+1)");
+test("~(1m+1m)");
+test("~(1km+1km)");
+ev << "\n";
+
+// binary operators
+std::vector<std::string> ops = cStringTokenizer("+ - * / % ^  & | # << >> == != > >= < <=").asVector();
+for (int i=0; i<ops.size(); i++)
+{
+    std::string op = ops[i];
+    test("3",  op, "2");
+    test("3m", op, "2m");
+    test("3m", op, "2km");
+    test("3km",op, "2m");
+    test("3",  op, "2m");
+    test("3m", op, "2");
+    test("3m", op, "2s");
+    ev << "\n";
+}
+
+// tertiary operators
+test("true ? 2 : 3");
+test("true ? 2m : 3m");
+test("true ? 2m : 3km");
+test("true ? 2km : 3m");
+test("true ? 2 : 3m");
+test("true ? 2m : 3");
+
+ev << ".\n";
+
+%contains: stdout
+2m ==> 2m
+2 meter ==> 2meter
+2 meters ==> 2meters
+3km ==> 3km
+3 kilometer ==> 3kilometer
+3 kilometers ==> 3kilometers
+
+-(1+1) ==> -2
+-(1m+1m) ==> -2m
+-(1km+1km) ==> -2km
+
+~(1+1) ==> 4.29497e+009
+~(1m+1m) ==> Error in expression: `~': argument(s) must be dimensionless
+~(1km+1km) ==> Error in expression: `~': argument(s) must be dimensionless
+
+3 + 2 ==> 5
+3m + 2m ==> 5m
+3m + 2km ==> 2003m
+3km + 2m ==> 3.002km
+3 + 2m ==> Cannot convert unit 'm' (meter) to none
+3m + 2 ==> Cannot convert unit none to 'm' (meter)
+3m + 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+3 - 2 ==> 1
+3m - 2m ==> 1m
+3m - 2km ==> -1997m
+3km - 2m ==> 2.998km
+3 - 2m ==> Cannot convert unit 'm' (meter) to none
+3m - 2 ==> Cannot convert unit none to 'm' (meter)
+3m - 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+3 * 2 ==> 6
+3m * 2m ==> Multiplying two quantities with units is not supported
+3m * 2km ==> Multiplying two quantities with units is not supported
+3km * 2m ==> Multiplying two quantities with units is not supported
+3 * 2m ==> 6m
+3m * 2 ==> 6m
+3m * 2s ==> Multiplying two quantities with units is not supported
+
+3 / 2 ==> 1.5
+3m / 2m ==> 1.5
+3m / 2km ==> 0.0015
+3km / 2m ==> 1500
+3 / 2m ==> Cannot convert unit 'm' (meter) to none
+3m / 2 ==> 1.5m
+3m / 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+3 % 2 ==> 1
+3m % 2m ==> 1m
+3m % 2km ==> 3m
+3km % 2m ==> 0.002km
+3 % 2m ==> Cannot convert unit 'm' (meter) to none
+3m % 2 ==> Cannot convert unit none to 'm' (meter)
+3m % 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+3 ^ 2 ==> 9
+3m ^ 2m ==> Error in expression: `^': argument(s) must be dimensionless
+3m ^ 2km ==> Error in expression: `^': argument(s) must be dimensionless
+3km ^ 2m ==> Error in expression: `^': argument(s) must be dimensionless
+3 ^ 2m ==> Error in expression: `^': argument(s) must be dimensionless
+3m ^ 2 ==> Error in expression: `^': argument(s) must be dimensionless
+3m ^ 2s ==> Error in expression: `^': argument(s) must be dimensionless
+
+3 & 2 ==> 2
+3m & 2m ==> Error in expression: `&': argument(s) must be dimensionless
+3m & 2km ==> Error in expression: `&': argument(s) must be dimensionless
+3km & 2m ==> Error in expression: `&': argument(s) must be dimensionless
+3 & 2m ==> Error in expression: `&': argument(s) must be dimensionless
+3m & 2 ==> Error in expression: `&': argument(s) must be dimensionless
+3m & 2s ==> Error in expression: `&': argument(s) must be dimensionless
+
+3 | 2 ==> 3
+3m | 2m ==> Error in expression: `|': argument(s) must be dimensionless
+3m | 2km ==> Error in expression: `|': argument(s) must be dimensionless
+3km | 2m ==> Error in expression: `|': argument(s) must be dimensionless
+3 | 2m ==> Error in expression: `|': argument(s) must be dimensionless
+3m | 2 ==> Error in expression: `|': argument(s) must be dimensionless
+3m | 2s ==> Error in expression: `|': argument(s) must be dimensionless
+
+3 # 2 ==> 1
+3m # 2m ==> Error in expression: `#': argument(s) must be dimensionless
+3m # 2km ==> Error in expression: `#': argument(s) must be dimensionless
+3km # 2m ==> Error in expression: `#': argument(s) must be dimensionless
+3 # 2m ==> Error in expression: `#': argument(s) must be dimensionless
+3m # 2 ==> Error in expression: `#': argument(s) must be dimensionless
+3m # 2s ==> Error in expression: `#': argument(s) must be dimensionless
+
+3 << 2 ==> 12
+3m << 2m ==> Error in expression: `<<': argument(s) must be dimensionless
+3m << 2km ==> Error in expression: `<<': argument(s) must be dimensionless
+3km << 2m ==> Error in expression: `<<': argument(s) must be dimensionless
+3 << 2m ==> Error in expression: `<<': argument(s) must be dimensionless
+3m << 2 ==> Error in expression: `<<': argument(s) must be dimensionless
+3m << 2s ==> Error in expression: `<<': argument(s) must be dimensionless
+
+3 >> 2 ==> 0
+3m >> 2m ==> Error in expression: `>>': argument(s) must be dimensionless
+3m >> 2km ==> Error in expression: `>>': argument(s) must be dimensionless
+3km >> 2m ==> Error in expression: `>>': argument(s) must be dimensionless
+3 >> 2m ==> Error in expression: `>>': argument(s) must be dimensionless
+3m >> 2 ==> Error in expression: `>>': argument(s) must be dimensionless
+3m >> 2s ==> Error in expression: `>>': argument(s) must be dimensionless
+
+3 == 2 ==> false
+3m == 2m ==> false
+3m == 2km ==> false
+3km == 2m ==> false
+3 == 2m ==> Cannot convert unit 'm' (meter) to none
+3m == 2 ==> Cannot convert unit none to 'm' (meter)
+3m == 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+3 != 2 ==> true
+3m != 2m ==> true
+3m != 2km ==> true
+3km != 2m ==> true
+3 != 2m ==> Cannot convert unit 'm' (meter) to none
+3m != 2 ==> Cannot convert unit none to 'm' (meter)
+3m != 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+3 > 2 ==> true
+3m > 2m ==> true
+3m > 2km ==> false
+3km > 2m ==> true
+3 > 2m ==> Cannot convert unit 'm' (meter) to none
+3m > 2 ==> Cannot convert unit none to 'm' (meter)
+3m > 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+3 >= 2 ==> true
+3m >= 2m ==> true
+3m >= 2km ==> false
+3km >= 2m ==> true
+3 >= 2m ==> Cannot convert unit 'm' (meter) to none
+3m >= 2 ==> Cannot convert unit none to 'm' (meter)
+3m >= 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+3 < 2 ==> false
+3m < 2m ==> false
+3m < 2km ==> true
+3km < 2m ==> false
+3 < 2m ==> Cannot convert unit 'm' (meter) to none
+3m < 2 ==> Cannot convert unit none to 'm' (meter)
+3m < 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+3 <= 2 ==> false
+3m <= 2m ==> false
+3m <= 2km ==> true
+3km <= 2m ==> false
+3 <= 2m ==> Cannot convert unit 'm' (meter) to none
+3m <= 2 ==> Cannot convert unit none to 'm' (meter)
+3m <= 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+true ? 2 : 3 ==> 2
+true ? 2m : 3m ==> 2m
+true ? 2m : 3km ==> 2m
+true ? 2km : 3m ==> 2km
+true ? 2 : 3m ==> 2
+true ? 2m : 3 ==> 2m
+.
+
