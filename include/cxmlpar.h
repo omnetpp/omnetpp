@@ -1,5 +1,5 @@
 //==========================================================================
-//   CXMLPAR.H  - part of
+//   CXMLPARIMPL.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CXMLPAR_H
-#define __CXMLPAR_H
+#ifndef __CXMLPARIMPL_H
+#define __CXMLPARIMPL_H
 
 #include "cparvalue.h"
 
@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup Internals
  */
-class SIM_API cXMLPar : public cParImpl
+class SIM_API cXMLParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
@@ -44,22 +44,22 @@ class SIM_API cXMLPar : public cParImpl
     /**
      * Constructor.
      */
-    explicit cXMLPar();
+    explicit cXMLParImpl();
 
     /**
      * Copy constructor.
      */
-    cXMLPar(const cXMLPar& other) {setName(other.name()); operator=(other);}
+    cXMLParImpl(const cXMLParImpl& other) {setName(other.name()); operator=(other);}
 
     /**
      * Destructor.
      */
-    virtual ~cXMLPar();
+    virtual ~cXMLParImpl();
 
     /**
      * Assignment operator.
      */
-    void operator=(const cXMLPar& otherpar);
+    void operator=(const cXMLParImpl& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -68,7 +68,7 @@ class SIM_API cXMLPar : public cParImpl
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cXMLPar *dup() const  {return new cXMLPar(*this);}
+    virtual cXMLParImpl *dup() const  {return new cXMLParImpl(*this);}
 
     /**
      * Returns a multi-line description of the contained XML element.

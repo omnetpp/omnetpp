@@ -20,7 +20,7 @@
 
 USING_NAMESPACE
 
-UnitConversion::UnitDesc UnitConversion::unitTable[] = {
+UnitConversion::UnitDesc UnitConversion::unitTable[] = {    //TODO mile,foot,yard,kmph, mps, mph
     { "d",   86400, "s",    "day" },
     { "h",    3600, "s",    "hour" },
     { "min",    60, "s",    "minute" }, // "m" is meter

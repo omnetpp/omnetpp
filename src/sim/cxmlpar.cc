@@ -23,17 +23,17 @@
 USING_NAMESPACE
 
 
-cXMLPar::cXMLPar()
+cXMLParImpl::cXMLParImpl()
 {
     val = NULL;
 }
 
-cXMLPar::~cXMLPar()
+cXMLParImpl::~cXMLParImpl()
 {
     deleteOld();
 }
 
-void cXMLPar::operator=(const cXMLPar& other)
+void cXMLParImpl::operator=(const cXMLParImpl& other)
 {
     if (this==&other) return;
 
@@ -46,96 +46,96 @@ void cXMLPar::operator=(const cXMLPar& other)
         val = other.val;
 }
 
-std::string cXMLPar::detailedInfo() const
+std::string cXMLParImpl::detailedInfo() const
 {
     return (flags & FL_ISEXPR) ? "<expression>" : val==NULL ? "NULL" : val->detailedInfo();
 }
 
-void cXMLPar::netPack(cCommBuffer *buffer)
+void cXMLParImpl::netPack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cXMLPar::netUnpack(cCommBuffer *buffer)
+void cXMLParImpl::netUnpack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cXMLPar::setBoolValue(bool b)
+void cXMLParImpl::setBoolValue(bool b)
 {
     throw cRuntimeError(this, eBADCAST, "bool", "XML");
 }
 
-void cXMLPar::setLongValue(long l)
+void cXMLParImpl::setLongValue(long l)
 {
     throw cRuntimeError(this, eBADCAST, "int/long", "XML");
 }
 
-void cXMLPar::setDoubleValue(double d)
+void cXMLParImpl::setDoubleValue(double d)
 {
     throw cRuntimeError(this, eBADCAST, "double", "XML");
 }
 
-void cXMLPar::setStringValue(const char *s)
+void cXMLParImpl::setStringValue(const char *s)
 {
     throw cRuntimeError(this, eBADCAST, "string", "XML");
 }
 
-void cXMLPar::setXMLValue(cXMLElement *node)
+void cXMLParImpl::setXMLValue(cXMLElement *node)
 {
     deleteOld();
     val = node;
     flags |= FL_HASVALUE;
 }
 
-void cXMLPar::setExpression(cExpression *e)
+void cXMLParImpl::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_HASVALUE;
 }
 
-bool cXMLPar::boolValue(cComponent *) const
+bool cXMLParImpl::boolValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "XML", "bool");
 }
 
-long cXMLPar::longValue(cComponent *) const
+long cXMLParImpl::longValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "XML", "int/long");
 }
 
-double cXMLPar::doubleValue(cComponent *) const
+double cXMLParImpl::doubleValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "XML", "double");
 }
 
-const char *cXMLPar::stringValue(cComponent *) const
+const char *cXMLParImpl::stringValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "XML", "string");
 }
 
-std::string cXMLPar::stdstringValue(cComponent *) const
+std::string cXMLParImpl::stdstringValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "XML", "string");
 }
 
-cXMLElement *cXMLPar::xmlValue(cComponent *context) const
+cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
 {
     return evaluate(context);
 }
 
-cExpression *cXMLPar::expression() const
+cExpression *cXMLParImpl::expression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
 
-cXMLElement *cXMLPar::evaluate(cComponent *context) const
+cXMLElement *cXMLParImpl::evaluate(cComponent *context) const
 {
     return (flags & FL_ISEXPR) ? expr->xmlValue(context) : val;
 }
 
-void cXMLPar::deleteOld()
+void cXMLParImpl::deleteOld()
 {
     if (flags & FL_ISEXPR)
     {
@@ -144,22 +144,22 @@ void cXMLPar::deleteOld()
     }
 }
 
-cPar::Type cXMLPar::type() const
+cPar::Type cXMLParImpl::type() const
 {
     return cPar::XML;
 }
 
-bool cXMLPar::isNumeric() const
+bool cXMLParImpl::isNumeric() const
 {
     return false;
 }
 
-void cXMLPar::convertToConst(cComponent *context)
+void cXMLParImpl::convertToConst(cComponent *context)
 {
     setXMLValue(xmlValue(context));
 }
 
-std::string cXMLPar::toString() const
+std::string cXMLParImpl::toString() const
 {
     if (flags & FL_ISEXPR)
         return expr->toString();
@@ -170,7 +170,7 @@ std::string cXMLPar::toString() const
         return std::string("NULL");
 }
 
-void cXMLPar::parse(const char *text)
+void cXMLParImpl::parse(const char *text)
 {
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
@@ -190,13 +190,13 @@ void cXMLPar::parse(const char *text)
         convertToConst(NULL);
 }
 
-int cXMLPar::compare(const cParImpl *other) const
+int cXMLParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
     if (ret!=0)
         return ret;
 
-    const cXMLPar *other2 = dynamic_cast<const cXMLPar *>(other);
+    const cXMLParImpl *other2 = dynamic_cast<const cXMLParImpl *>(other);
     if (flags & FL_ISEXPR)
         throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
     else

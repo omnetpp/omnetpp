@@ -1,5 +1,5 @@
 //==========================================================================
-//   CLONGPAR.H  - part of
+//   CLONGPARIMPL.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CLONGPAR_H
-#define __CLONGPAR_H
+#ifndef __CLONGPARIMPL_H
+#define __CLONGPARIMPL_H
 
 #include "cparvalue.h"
 
@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup Internals
  */
-class SIM_API cLongPar : public cParImpl
+class SIM_API cLongParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
@@ -46,22 +46,22 @@ class SIM_API cLongPar : public cParImpl
     /**
      * Constructor.
      */
-    explicit cLongPar();
+    explicit cLongParImpl();
 
     /**
      * Copy constructor.
      */
-    cLongPar(const cLongPar& other) {setName(other.name()); operator=(other);}
+    cLongParImpl(const cLongParImpl& other) {setName(other.name()); operator=(other);}
 
     /**
      * Destructor.
      */
-    virtual ~cLongPar();
+    virtual ~cLongParImpl();
 
     /**
      * Assignment operator.
      */
-    void operator=(const cLongPar& otherpar);
+    void operator=(const cLongParImpl& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -70,7 +70,7 @@ class SIM_API cLongPar : public cParImpl
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cLongPar *dup() const  {return new cLongPar(*this);}
+    virtual cLongParImpl *dup() const  {return new cLongParImpl(*this);}
 
     /**
      * Serializes the object into a buffer.

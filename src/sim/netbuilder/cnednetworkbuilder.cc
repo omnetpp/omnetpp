@@ -215,7 +215,7 @@ void cNEDNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isS
             if (!value)
             {
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-                value = new cLongPar();
+                value = new cLongParImpl();
                 value->setName("gatesize-expression");
                 cExpressionBuilder::setExpression(value, dynamicExpr);
                 currentDecl->putSharedParImplFor(exprNode, value);

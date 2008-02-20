@@ -22,16 +22,16 @@
 USING_NAMESPACE
 
 
-cStringPar::cStringPar()
+cStringParImpl::cStringParImpl()
 {
 }
 
-cStringPar::~cStringPar()
+cStringParImpl::~cStringParImpl()
 {
     deleteOld();
 }
 
-void cStringPar::operator=(const cStringPar& other)
+void cStringParImpl::operator=(const cStringParImpl& other)
 {
     if (this==&other) return;
 
@@ -44,66 +44,66 @@ void cStringPar::operator=(const cStringPar& other)
         val = other.val;
 }
 
-void cStringPar::netPack(cCommBuffer *buffer)
+void cStringParImpl::netPack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cStringPar::netUnpack(cCommBuffer *buffer)
+void cStringParImpl::netUnpack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cStringPar::setBoolValue(bool b)
+void cStringParImpl::setBoolValue(bool b)
 {
     throw cRuntimeError(this, eBADCAST, "bool", "string");
 }
 
-void cStringPar::setLongValue(long l)
+void cStringParImpl::setLongValue(long l)
 {
     throw cRuntimeError(this, eBADCAST, "int/long", "string");
 }
 
-void cStringPar::setDoubleValue(double d)
+void cStringParImpl::setDoubleValue(double d)
 {
     throw cRuntimeError(this, eBADCAST, "double", "string");
 }
 
-void cStringPar::setStringValue(const char *s)
+void cStringParImpl::setStringValue(const char *s)
 {
     deleteOld();
     val = (s ? s : "");
     flags |= FL_HASVALUE;
 }
 
-void cStringPar::setXMLValue(cXMLElement *node)
+void cStringParImpl::setXMLValue(cXMLElement *node)
 {
     throw cRuntimeError(this, eBADCAST, "XML", "string");
 }
 
-void cStringPar::setExpression(cExpression *e)
+void cStringParImpl::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_HASVALUE;
 }
 
-bool cStringPar::boolValue(cComponent *context) const
+bool cStringParImpl::boolValue(cComponent *context) const
 {
     throw cRuntimeError(this, eBADCAST, "string", "bool");
 }
 
-long cStringPar::longValue(cComponent *) const
+long cStringParImpl::longValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "string", "int/long");
 }
 
-double cStringPar::doubleValue(cComponent *) const
+double cStringParImpl::doubleValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "string", "double");
 }
 
-const char *cStringPar::stringValue(cComponent *context) const
+const char *cStringParImpl::stringValue(cComponent *context) const
 {
     if (flags & FL_ISEXPR)
         throw cRuntimeError(this, "stringValue() and conversion to `const char *' cannot be invoked "
@@ -112,27 +112,27 @@ const char *cStringPar::stringValue(cComponent *context) const
     return val.c_str();
 }
 
-std::string cStringPar::stdstringValue(cComponent *context) const
+std::string cStringParImpl::stdstringValue(cComponent *context) const
 {
     return evaluate(context);
 }
 
-cXMLElement *cStringPar::xmlValue(cComponent *) const
+cXMLElement *cStringParImpl::xmlValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "string", "XML");
 }
 
-cExpression *cStringPar::expression() const
+cExpression *cStringParImpl::expression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
 
-std::string cStringPar::evaluate(cComponent *context) const
+std::string cStringParImpl::evaluate(cComponent *context) const
 {
     return (flags & FL_ISEXPR) ? expr->stringValue(context) : val;
 }
 
-void cStringPar::deleteOld()
+void cStringParImpl::deleteOld()
 {
     if (flags & FL_ISEXPR)
     {
@@ -141,22 +141,22 @@ void cStringPar::deleteOld()
     }
 }
 
-cPar::Type cStringPar::type() const
+cPar::Type cStringParImpl::type() const
 {
     return cPar::STRING;
 }
 
-bool cStringPar::isNumeric() const
+bool cStringParImpl::isNumeric() const
 {
     return false;
 }
 
-void cStringPar::convertToConst(cComponent *context)
+void cStringParImpl::convertToConst(cComponent *context)
 {
     setStringValue(stdstringValue(context).c_str());
 }
 
-std::string cStringPar::toString() const
+std::string cStringParImpl::toString() const
 {
     if (flags & FL_ISEXPR)
         return expr->toString();
@@ -164,7 +164,7 @@ std::string cStringPar::toString() const
     return opp_quotestr(val.c_str());
 }
 
-void cStringPar::parse(const char *text)
+void cStringParImpl::parse(const char *text)
 {
 /*XXX not really needed
     // try fast track: maybe it's just a string literal in quotes
@@ -195,13 +195,13 @@ void cStringPar::parse(const char *text)
         convertToConst(NULL);
 }
 
-int cStringPar::compare(const cParImpl *other) const
+int cStringParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
     if (ret!=0)
         return ret;
 
-    const cStringPar *other2 = dynamic_cast<const cStringPar *>(other);
+    const cStringParImpl *other2 = dynamic_cast<const cStringParImpl *>(other);
     if (flags & FL_ISEXPR)
         throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
     else

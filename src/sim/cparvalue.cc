@@ -129,11 +129,11 @@ cParImpl *cParImpl::createWithType(Type type)
 {
     switch (type)
     {
-        case cPar::BOOL:    return new cBoolPar();
-        case cPar::DOUBLE:  return new cDoublePar();
-        case cPar::LONG:    return new cLongPar();
-        case cPar::STRING:  return new cStringPar();
-        case cPar::XML:     return new cXMLPar();
+        case cPar::BOOL:    return new cBoolParImpl();
+        case cPar::DOUBLE:  return new cDoubleParImpl();
+        case cPar::LONG:    return new cLongParImpl();
+        case cPar::STRING:  return new cStringParImpl();
+        case cPar::XML:     return new cXMLParImpl();
         default: throw cRuntimeError("cParImpl::createWithType(): no such type: %d", type);
     }
 }

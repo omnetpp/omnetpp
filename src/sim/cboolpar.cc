@@ -22,17 +22,17 @@
 USING_NAMESPACE
 
 
-cBoolPar::cBoolPar()
+cBoolParImpl::cBoolParImpl()
 {
     val = false;
 }
 
-cBoolPar::~cBoolPar()
+cBoolParImpl::~cBoolParImpl()
 {
     deleteOld();
 }
 
-void cBoolPar::operator=(const cBoolPar& other)
+void cBoolParImpl::operator=(const cBoolParImpl& other)
 {
     if (this==&other) return;
 
@@ -45,91 +45,91 @@ void cBoolPar::operator=(const cBoolPar& other)
         val = other.val;
 }
 
-void cBoolPar::netPack(cCommBuffer *buffer)
+void cBoolParImpl::netPack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cBoolPar::netUnpack(cCommBuffer *buffer)
+void cBoolParImpl::netUnpack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cBoolPar::setBoolValue(bool b)
+void cBoolParImpl::setBoolValue(bool b)
 {
     deleteOld();
     val = b;
     flags |= FL_HASVALUE;
 }
 
-void cBoolPar::setLongValue(long l)
+void cBoolParImpl::setLongValue(long l)
 {
     throw cRuntimeError(this, eBADCAST, "int/long", "double");
 }
 
-void cBoolPar::setDoubleValue(double d)
+void cBoolParImpl::setDoubleValue(double d)
 {
     throw cRuntimeError(this, eBADCAST, "double", "bool");
 }
 
-void cBoolPar::setStringValue(const char *s)
+void cBoolParImpl::setStringValue(const char *s)
 {
     throw cRuntimeError(this, eBADCAST, "string", "bool");
 }
 
-void cBoolPar::setXMLValue(cXMLElement *node)
+void cBoolParImpl::setXMLValue(cXMLElement *node)
 {
     throw cRuntimeError(this, eBADCAST, "XML", "bool");
 }
 
-void cBoolPar::setExpression(cExpression *e)
+void cBoolParImpl::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_HASVALUE;
 }
 
-bool cBoolPar::boolValue(cComponent *context) const
+bool cBoolParImpl::boolValue(cComponent *context) const
 {
     return evaluate(context);
 }
 
-long cBoolPar::longValue(cComponent *) const
+long cBoolParImpl::longValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "bool", "int/long");
 }
 
-double cBoolPar::doubleValue(cComponent *) const
+double cBoolParImpl::doubleValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "bool", "double");
 }
 
-const char *cBoolPar::stringValue(cComponent *) const
+const char *cBoolParImpl::stringValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "bool", "string");
 }
 
-std::string cBoolPar::stdstringValue(cComponent *) const
+std::string cBoolParImpl::stdstringValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "bool", "string");
 }
 
-cXMLElement *cBoolPar::xmlValue(cComponent *) const
+cXMLElement *cBoolParImpl::xmlValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "bool", "XML");
 }
 
-cExpression *cBoolPar::expression() const
+cExpression *cBoolParImpl::expression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
 
-bool cBoolPar::evaluate(cComponent *context) const
+bool cBoolParImpl::evaluate(cComponent *context) const
 {
     return (flags & FL_ISEXPR) ? expr->boolValue(context) : val;
 }
 
-void cBoolPar::deleteOld()
+void cBoolParImpl::deleteOld()
 {
     if (flags & FL_ISEXPR)
     {
@@ -138,29 +138,29 @@ void cBoolPar::deleteOld()
     }
 }
 
-cPar::Type cBoolPar::type() const
+cPar::Type cBoolParImpl::type() const
 {
     return cPar::BOOL;
 }
 
-bool cBoolPar::isNumeric() const
+bool cBoolParImpl::isNumeric() const
 {
     return true;
 }
 
-void cBoolPar::convertToConst(cComponent *context)
+void cBoolParImpl::convertToConst(cComponent *context)
 {
     setBoolValue(boolValue(context));
 }
 
-std::string cBoolPar::toString() const
+std::string cBoolParImpl::toString() const
 {
     if (flags & FL_ISEXPR)
         return expr->toString();
     return val ? "true" : "false";
 }
 
-void cBoolPar::parse(const char *text)
+void cBoolParImpl::parse(const char *text)
 {
 /*XXX not really needed
     // maybe it's a single word, "true" or "false"
@@ -199,13 +199,13 @@ void cBoolPar::parse(const char *text)
         convertToConst(NULL);
 }
 
-int cBoolPar::compare(const cParImpl *other) const
+int cBoolParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
     if (ret!=0)
         return ret;
 
-    const cBoolPar *other2 = dynamic_cast<const cBoolPar *>(other);
+    const cBoolParImpl *other2 = dynamic_cast<const cBoolParImpl *>(other);
     if (flags & FL_ISEXPR)
         throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
     else

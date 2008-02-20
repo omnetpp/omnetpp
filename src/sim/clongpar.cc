@@ -22,17 +22,17 @@
 USING_NAMESPACE
 
 
-cLongPar::cLongPar()
+cLongParImpl::cLongParImpl()
 {
     val = 0;
 }
 
-cLongPar::~cLongPar()
+cLongParImpl::~cLongParImpl()
 {
     deleteOld();
 }
 
-void cLongPar::operator=(const cLongPar& other)
+void cLongParImpl::operator=(const cLongParImpl& other)
 {
     if (this==&other) return;
 
@@ -45,93 +45,93 @@ void cLongPar::operator=(const cLongPar& other)
         val = other.val;
 }
 
-void cLongPar::netPack(cCommBuffer *buffer)
+void cLongParImpl::netPack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cLongPar::netUnpack(cCommBuffer *buffer)
+void cLongParImpl::netUnpack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cLongPar::setBoolValue(bool b)
+void cLongParImpl::setBoolValue(bool b)
 {
     throw cRuntimeError(this, eBADCAST, "bool", "int/long");
 }
 
-void cLongPar::setLongValue(long l)
+void cLongParImpl::setLongValue(long l)
 {
     deleteOld();
     val = l;
     flags |= FL_HASVALUE;
 }
 
-void cLongPar::setDoubleValue(double d)
+void cLongParImpl::setDoubleValue(double d)
 {
     deleteOld();
     val = double_to_long(d);
     flags |= FL_HASVALUE;
 }
 
-void cLongPar::setStringValue(const char *s)
+void cLongParImpl::setStringValue(const char *s)
 {
     throw cRuntimeError(this, eBADCAST, "string", "int/long");
 }
 
-void cLongPar::setXMLValue(cXMLElement *node)
+void cLongParImpl::setXMLValue(cXMLElement *node)
 {
     throw cRuntimeError(this, eBADCAST, "XML", "int/long");
 }
 
-void cLongPar::setExpression(cExpression *e)
+void cLongParImpl::setExpression(cExpression *e)
 {
     deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_HASVALUE;
 }
 
-bool cLongPar::boolValue(cComponent *) const
+bool cLongParImpl::boolValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "int/long", "bool");
 }
 
-long cLongPar::longValue(cComponent *context) const
+long cLongParImpl::longValue(cComponent *context) const
 {
     return evaluate(context);
 }
 
-double cLongPar::doubleValue(cComponent *context) const
+double cLongParImpl::doubleValue(cComponent *context) const
 {
     return evaluate(context);
 }
 
-const char *cLongPar::stringValue(cComponent *) const
+const char *cLongParImpl::stringValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "int/long", "string");
 }
 
-std::string cLongPar::stdstringValue(cComponent *) const
+std::string cLongParImpl::stdstringValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "int/long", "string");
 }
 
-cXMLElement *cLongPar::xmlValue(cComponent *) const
+cXMLElement *cLongParImpl::xmlValue(cComponent *) const
 {
     throw cRuntimeError(this, eBADCAST, "int/long", "XML");
 }
 
-cExpression *cLongPar::expression() const
+cExpression *cLongParImpl::expression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
 
-long cLongPar::evaluate(cComponent *context) const
+long cLongParImpl::evaluate(cComponent *context) const
 {
     return (flags & FL_ISEXPR) ? expr->longValue(context, unit()) : val;
 }
 
-void cLongPar::deleteOld()
+void cLongParImpl::deleteOld()
 {
     if (flags & FL_ISEXPR)
     {
@@ -140,22 +140,22 @@ void cLongPar::deleteOld()
     }
 }
 
-cPar::Type cLongPar::type() const
+cPar::Type cLongParImpl::type() const
 {
     return cPar::LONG;
 }
 
-bool cLongPar::isNumeric() const
+bool cLongParImpl::isNumeric() const
 {
     return true;
 }
 
-void cLongPar::convertToConst(cComponent *context)
+void cLongParImpl::convertToConst(cComponent *context)
 {
     setLongValue(longValue(context));
 }
 
-std::string cLongPar::toString() const
+std::string cLongParImpl::toString() const
 {
     if (flags & FL_ISEXPR)
         return expr->toString();
@@ -165,7 +165,7 @@ std::string cLongPar::toString() const
     return buf;
 }
 
-void cLongPar::parse(const char *text)
+void cLongParImpl::parse(const char *text)
 {
 /*XXX not really needed
     // maybe it's just a number
@@ -201,13 +201,13 @@ void cLongPar::parse(const char *text)
         convertToConst(NULL);
 }
 
-int cLongPar::compare(const cParImpl *other) const
+int cLongParImpl::compare(const cParImpl *other) const
 {
     int ret = cParImpl::compare(other);
     if (ret!=0)
         return ret;
 
-    const cLongPar *other2 = dynamic_cast<const cLongPar *>(other);
+    const cLongParImpl *other2 = dynamic_cast<const cLongParImpl *>(other);
     if (flags & FL_ISEXPR)
         throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
     else

@@ -36,7 +36,7 @@ class cComponent;
  * shared storage for module parameters of the same values.
  *
  * cParImpl is an abstract base class, which supports several data types via
- * subclasses: cLongPar, cDoublePar, cBoolPar, cStringPar, cXMLPar.
+ * subclasses: cLongParImpl, cDoubleParImpl, cBoolParImpl, cStringParImpl, cXMLParImpl.
  *
  * @ingroup Internals
  */

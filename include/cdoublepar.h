@@ -1,5 +1,5 @@
 //==========================================================================
-//   CDOUBLEPAR.H  - part of
+//   CDOUBLEPARIMPL.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDOUBLEPAR_H
-#define __CDOUBLEPAR_H
+#ifndef __CDOUBLEPARIMPL_H
+#define __CDOUBLEPARIMPL_H
 
 #include "cparvalue.h"
 
@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup Internals
  */
-class SIM_API cDoublePar : public cParImpl
+class SIM_API cDoubleParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
@@ -46,22 +46,22 @@ class SIM_API cDoublePar : public cParImpl
     /**
      * Constructor.
      */
-    explicit cDoublePar();
+    explicit cDoubleParImpl();
 
     /**
      * Copy constructor.
      */
-    cDoublePar(const cDoublePar& other) {setName(other.name()); operator=(other);}
+    cDoubleParImpl(const cDoubleParImpl& other) {setName(other.name()); operator=(other);}
 
     /**
      * Destructor.
      */
-    virtual ~cDoublePar();
+    virtual ~cDoubleParImpl();
 
     /**
      * Assignment operator.
      */
-    void operator=(const cDoublePar& otherpar);
+    void operator=(const cDoubleParImpl& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -70,7 +70,7 @@ class SIM_API cDoublePar : public cParImpl
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cDoublePar *dup() const  {return new cDoublePar(*this);}
+    virtual cDoubleParImpl *dup() const  {return new cDoubleParImpl(*this);}
 
     /**
      * Serializes the object into a buffer.

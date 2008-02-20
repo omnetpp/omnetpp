@@ -1,5 +1,5 @@
 //==========================================================================
-//   CBOOLPAR.H  - part of
+//   CBOOLPARIMPL.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CBOOLPAR_H
-#define __CBOOLPAR_H
+#ifndef __CBOOLPARIMPL_H
+#define __CBOOLPARIMPL_H
 
 #include "cparvalue.h"
 
@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup Internals
  */
-class SIM_API cBoolPar : public cParImpl
+class SIM_API cBoolParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
@@ -46,22 +46,22 @@ class SIM_API cBoolPar : public cParImpl
     /**
      * Constructor.
      */
-    explicit cBoolPar();
+    explicit cBoolParImpl();
 
     /**
      * Copy constructor.
      */
-    cBoolPar(const cBoolPar& other) {setName(other.name()); operator=(other);}
+    cBoolParImpl(const cBoolParImpl& other) {setName(other.name()); operator=(other);}
 
     /**
      * Destructor.
      */
-    virtual ~cBoolPar();
+    virtual ~cBoolParImpl();
 
     /**
      * Assignment operator.
      */
-    void operator=(const cBoolPar& otherpar);
+    void operator=(const cBoolParImpl& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -70,7 +70,7 @@ class SIM_API cBoolPar : public cParImpl
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cBoolPar *dup() const  {return new cBoolPar(*this);}
+    virtual cBoolParImpl *dup() const  {return new cBoolParImpl(*this);}
 
     /**
      * Serializes the object into a buffer.
