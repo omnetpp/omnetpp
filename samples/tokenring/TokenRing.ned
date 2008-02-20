@@ -19,9 +19,9 @@ network TokenRing
 {
     parameters:
         int numStations = default(5) @prompt("Number of stations in the ring");
-        double THT = default(20ms) @prompt("Token Holding Time (s)");
-        double dataRate = 4 Mbps; // Token Ring data rate
-        double cableDelay = 1us; // Delay of the cable connecting adjacent stations
+        double THT = default(20ms) @unit(s);
+        double dataRate = 4 Mbps @unit(bps); // Token Ring data rate
+        double cableDelay = 1us @unit(s); // Delay of the cable connecting adjacent stations
     submodules:
         comp[numStations]: Station {
             parameters:
@@ -32,10 +32,10 @@ network TokenRing
                 @display("p=80,80,ring");
         };
     connections:
-        comp[numStations-1].out --> {  delay = cableDelay; } --> comp[0].in;
+        comp[numStations-1].out --> { delay = cableDelay; } --> comp[0].in;
 
         for i=0..numStations-2 {
-            comp[i].out --> {  delay = cableDelay; } --> comp[i+1].in;
+            comp[i].out --> { delay = cableDelay; } --> comp[i+1].in;
         };
 }
 

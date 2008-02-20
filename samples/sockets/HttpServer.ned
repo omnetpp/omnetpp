@@ -14,7 +14,7 @@
 simple HTTPServer
 {
     parameters:
-        volatile double serviceTime;
+        volatile double serviceTime @unit(s);
         @display("i=device/server");
     gates:
         inout g;
