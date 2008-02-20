@@ -17,7 +17,7 @@
 #ifndef __CSTRINGPARIMPL_H
 #define __CSTRINGPARIMPL_H
 
-#include "cparvalue.h"
+#include "cparimpl.h"
 
 NAMESPACE_BEGIN
 

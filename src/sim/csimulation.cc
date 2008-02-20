@@ -32,7 +32,7 @@
 #include "ccomponenttype.h"
 #include "cstat.h"
 #include "cexception.h"
-#include "cparvalue.h"
+#include "cparimpl.h"
 #include "chasher.h"
 #include "cconfiguration.h"
 

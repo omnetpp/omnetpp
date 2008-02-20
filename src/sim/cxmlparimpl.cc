@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cxmlpar.h"
+#include "cxmlparimpl.h"
 #include "cxmlelement.h"
 #include "cstrtokenizer.h"
 #include "cdynamicexpression.h"

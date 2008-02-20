@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "clongpar.h"
+#include "clongparimpl.h"
 #include "cstrtokenizer.h"
 #include "cdynamicexpression.h"
 #include "ccomponent.h"

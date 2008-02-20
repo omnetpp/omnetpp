@@ -24,7 +24,7 @@
 #include "cexpressionbuilder.h"
 #include "cfunction.h"
 #include "cnedfunction.h"
-#include "cparvalue.h"
+#include "cparimpl.h"
 #include "xmlgenerator.h"
 #include "nedsupport.h"
 #include "stringutil.h"

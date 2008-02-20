@@ -23,7 +23,7 @@
 #include "simkerneldefs.h"
 #include "globals.h"
 #include "cownedobject.h"
-#include "cparvalue.h"
+#include "cparimpl.h"
 #include "cgate.h"
 #include "cproperties.h"
 #include "cproperty.h"

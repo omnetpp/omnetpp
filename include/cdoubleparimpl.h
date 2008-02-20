@@ -17,7 +17,7 @@
 #ifndef __CDOUBLEPARIMPL_H
 #define __CDOUBLEPARIMPL_H
 
-#include "cparvalue.h"
+#include "cparimpl.h"
 
 NAMESPACE_BEGIN
 

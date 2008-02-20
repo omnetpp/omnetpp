@@ -26,9 +26,9 @@
 #include "cchannel.h"
 #include "cbasicchannel.h"
 #include "ccomponenttype.h"
-#include "clongpar.h"
-#include "cboolpar.h"
-#include "cstringpar.h"
+#include "clongparimpl.h"
+#include "cboolparimpl.h"
+#include "cstringparimpl.h"
 
 #include "nedelements.h"
 #include "nederror.h"

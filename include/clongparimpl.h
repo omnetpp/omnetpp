@@ -1,5 +1,5 @@
 //==========================================================================
-//   CXMLPARIMPL.H  - part of
+//   CLONGPARIMPL.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CXMLPARIMPL_H
-#define __CXMLPARIMPL_H
+#ifndef __CLONGPARIMPL_H
+#define __CLONGPARIMPL_H
 
-#include "cparvalue.h"
+#include "cparimpl.h"
 
 NAMESPACE_BEGIN
 
@@ -26,15 +26,17 @@ NAMESPACE_BEGIN
  *
  * @ingroup Internals
  */
-class SIM_API cXMLParImpl : public cParImpl
+class SIM_API cLongParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
-    cExpression *expr;
-    cXMLElement *val;
+    union {
+      cExpression *expr;
+      long val;
+    };
 
   protected:
-    cXMLElement *evaluate(cComponent *context) const;
+    long evaluate(cComponent *context) const;
     void deleteOld();
 
   public:
@@ -44,22 +46,22 @@ class SIM_API cXMLParImpl : public cParImpl
     /**
      * Constructor.
      */
-    explicit cXMLParImpl();
+    explicit cLongParImpl();
 
     /**
      * Copy constructor.
      */
-    cXMLParImpl(const cXMLParImpl& other) {setName(other.name()); operator=(other);}
+    cLongParImpl(const cLongParImpl& other) {setName(other.name()); operator=(other);}
 
     /**
      * Destructor.
      */
-    virtual ~cXMLParImpl();
+    virtual ~cLongParImpl();
 
     /**
      * Assignment operator.
      */
-    void operator=(const cXMLParImpl& otherpar);
+    void operator=(const cLongParImpl& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -68,12 +70,7 @@ class SIM_API cXMLParImpl : public cParImpl
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cXMLParImpl *dup() const  {return new cXMLParImpl(*this);}
-
-    /**
-     * Returns a multi-line description of the contained XML element.
-     */
-    virtual std::string detailedInfo() const;
+    virtual cLongParImpl *dup() const  {return new cLongParImpl(*this);}
 
     /**
      * Serializes the object into a buffer.
@@ -90,27 +87,27 @@ class SIM_API cXMLParImpl : public cParImpl
     //@{
 
     /**
-     * Raises an error: cannot convert bool to XML.
+     * Raises an error: cannot convert bool to long.
      */
     virtual void setBoolValue(bool b);
 
     /**
-     * Raises an error: cannot convert long to XML.
+     * Sets the value to the given constant.
      */
     virtual void setLongValue(long l);
 
     /**
-     * Raises an error: cannot convert double to XML.
+     * Converts from double.
      */
     virtual void setDoubleValue(double d);
 
     /**
-     * Raises an error: cannot convert string to XML.
+     * Raises an error: cannot convert string to long.
      */
     virtual void setStringValue(const char *s);
 
     /**
-     * Sets the value to the given cXMLElement tree.
+     * Raises an error: cannot convert XML to long.
      */
     virtual void setXMLValue(cXMLElement *node);
 
@@ -125,32 +122,32 @@ class SIM_API cXMLParImpl : public cParImpl
     //@{
 
     /**
-     * Raises an error: cannot convert XML to bool.
+     * Raises an error: cannot convert long to bool.
      */
     virtual bool boolValue(cComponent *context) const;
 
     /**
-     * Raises an error: cannot convert XML to long.
+     * Returns the value of the parameter.
      */
     virtual long longValue(cComponent *context) const;
 
     /**
-     * Raises an error: cannot convert XML to double.
+     * Converts the value to double.
      */
     virtual double doubleValue(cComponent *context) const;
 
     /**
-     * Raises an error: cannot convert XML to string.
+     * Raises an error: cannot convert long to string.
      */
     virtual const char *stringValue(cComponent *context) const;
 
     /**
-     * Raises an error: cannot convert XML to string.
+     * Raises an error: cannot convert long to string.
      */
     virtual std::string stdstringValue(cComponent *context) const;
 
     /**
-     * Returns the value of the parameter.
+     * Raises an error: cannot convert long to XML.
      */
     virtual cXMLElement *xmlValue(cComponent *context) const;
 
@@ -164,12 +161,12 @@ class SIM_API cXMLParImpl : public cParImpl
     //@{
 
     /**
-     * Returns XML.
+     * Returns LONG.
      */
     virtual Type type() const;
 
     /**
-     * Returns false.
+     * Returns true.
      */
     virtual bool isNumeric() const;
     //@}

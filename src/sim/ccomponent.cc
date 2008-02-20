@@ -17,7 +17,7 @@
 #include "cmodule.h"
 #include "cproperties.h"
 #include "cpar.h"
-#include "cparvalue.h"
+#include "cparimpl.h"
 #include "crng.h"
 #include "cconfiguration.h"
 #include "cconfigkey.h"

@@ -15,7 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cparvalue.h"
+#include "cparimpl.h"
 #include "cproperties.h"
 #include "ccomponent.h"
 #include "csimulation.h"
@@ -119,11 +119,11 @@ int cParImpl::compare(const cParImpl *other) const
 }
 
 //----
-#include "cboolpar.h"
-#include "clongpar.h"
-#include "cdoublepar.h"
-#include "cstringpar.h"
-#include "cxmlpar.h"
+#include "cboolparimpl.h"
+#include "clongparimpl.h"
+#include "cdoubleparimpl.h"
+#include "cstringparimpl.h"
+#include "cxmlparimpl.h"
 
 cParImpl *cParImpl::createWithType(Type type)
 {

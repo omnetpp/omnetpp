@@ -1,5 +1,5 @@
 //==========================================================================
-//   CBOOLPARIMPL.H  - part of
+//   CXMLPARIMPL.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,10 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CBOOLPARIMPL_H
-#define __CBOOLPARIMPL_H
+#ifndef __CXMLPARIMPL_H
+#define __CXMLPARIMPL_H
 
-#include "cparvalue.h"
+#include "cparimpl.h"
 
 NAMESPACE_BEGIN
 
@@ -26,17 +26,15 @@ NAMESPACE_BEGIN
  *
  * @ingroup Internals
  */
-class SIM_API cBoolParImpl : public cParImpl
+class SIM_API cXMLParImpl : public cParImpl
 {
   protected:
     // selector: flags & FL_ISEXPR
-    union {
-      cExpression *expr;
-      bool val;
-    };
+    cExpression *expr;
+    cXMLElement *val;
 
   protected:
-    bool evaluate(cComponent *context) const;
+    cXMLElement *evaluate(cComponent *context) const;
     void deleteOld();
 
   public:
@@ -46,22 +44,22 @@ class SIM_API cBoolParImpl : public cParImpl
     /**
      * Constructor.
      */
-    explicit cBoolParImpl();
+    explicit cXMLParImpl();
 
     /**
      * Copy constructor.
      */
-    cBoolParImpl(const cBoolParImpl& other) {setName(other.name()); operator=(other);}
+    cXMLParImpl(const cXMLParImpl& other) {setName(other.name()); operator=(other);}
 
     /**
      * Destructor.
      */
-    virtual ~cBoolParImpl();
+    virtual ~cXMLParImpl();
 
     /**
      * Assignment operator.
      */
-    void operator=(const cBoolParImpl& otherpar);
+    void operator=(const cXMLParImpl& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -70,7 +68,12 @@ class SIM_API cBoolParImpl : public cParImpl
     /**
      * Creates and returns an exact copy of this object.
      */
-    virtual cBoolParImpl *dup() const  {return new cBoolParImpl(*this);}
+    virtual cXMLParImpl *dup() const  {return new cXMLParImpl(*this);}
+
+    /**
+     * Returns a multi-line description of the contained XML element.
+     */
+    virtual std::string detailedInfo() const;
 
     /**
      * Serializes the object into a buffer.
@@ -87,27 +90,27 @@ class SIM_API cBoolParImpl : public cParImpl
     //@{
 
     /**
-     * Sets the value to the given constant.
+     * Raises an error: cannot convert bool to XML.
      */
     virtual void setBoolValue(bool b);
 
     /**
-     * Raises an error: cannot convert long to bool.
+     * Raises an error: cannot convert long to XML.
      */
     virtual void setLongValue(long l);
 
     /**
-     * Raises an error: cannot convert double to bool.
+     * Raises an error: cannot convert double to XML.
      */
     virtual void setDoubleValue(double d);
 
     /**
-     * Raises an error: cannot convert string to bool.
+     * Raises an error: cannot convert string to XML.
      */
     virtual void setStringValue(const char *s);
 
     /**
-     * Raises an error: cannot convert XML to bool.
+     * Sets the value to the given cXMLElement tree.
      */
     virtual void setXMLValue(cXMLElement *node);
 
@@ -122,32 +125,32 @@ class SIM_API cBoolParImpl : public cParImpl
     //@{
 
     /**
-     * Returns the value of the parameter.
+     * Raises an error: cannot convert XML to bool.
      */
     virtual bool boolValue(cComponent *context) const;
 
     /**
-     * Raises an error: cannot convert bool to long.
+     * Raises an error: cannot convert XML to long.
      */
     virtual long longValue(cComponent *context) const;
 
     /**
-     * Raises an error: cannot convert bool to double.
+     * Raises an error: cannot convert XML to double.
      */
     virtual double doubleValue(cComponent *context) const;
 
     /**
-     * Raises an error: cannot convert bool to string.
+     * Raises an error: cannot convert XML to string.
      */
     virtual const char *stringValue(cComponent *context) const;
 
     /**
-     * Raises an error: cannot convert bool to string.
+     * Raises an error: cannot convert XML to string.
      */
     virtual std::string stdstringValue(cComponent *context) const;
 
     /**
-     * Raises an error: cannot convert bool to XML.
+     * Returns the value of the parameter.
      */
     virtual cXMLElement *xmlValue(cComponent *context) const;
 
@@ -161,12 +164,12 @@ class SIM_API cBoolParImpl : public cParImpl
     //@{
 
     /**
-     * Returns BOOL.
+     * Returns XML.
      */
     virtual Type type() const;
 
     /**
-     * Returns true.
+     * Returns false.
      */
     virtual bool isNumeric() const;
     //@}

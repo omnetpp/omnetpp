@@ -16,7 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include "cpar.h"
-#include "cparvalue.h"
+#include "cparimpl.h"
 #include "cproperties.h"
 #include "cproperty.h"
 #include "ccomponent.h"

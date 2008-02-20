@@ -27,19 +27,19 @@ COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/plat
 IMPLIBS=-L$L -lenvir$D -lcommon$D
 
 OBJS_STD=\
-    $O/carray.o $O/cbasicchannel.o $O/cboolpar.o $O/cchannel.o \
+    $O/carray.o $O/cbasicchannel.o $O/cboolparimpl.o $O/cchannel.o \
     $O/cclassfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigkey.o \
     $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensity.o \
-    $O/cdetect.o $O/cdisplaystring.o $O/cdoublepar.o $O/cdynamicexpression.o \
+    $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o \
     $O/cenum.o $O/cexception.o $O/cfsm.o $O/cfunction.o $O/cgate.o $O/chist.o \
-    $O/cksplit.o $O/clcg32.o $O/cllist.o $O/clongpar.o $O/cmersennetwister.o \
+    $O/cksplit.o $O/clcg32.o $O/cllist.o $O/clongparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cmsgpar.o $O/cmodule.o $O/cmsgheap.o $O/chasher.o \
     $O/cnedfunction.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o \
-    $O/cpar.o $O/cparvalue.o $O/cownedobject.o $O/cproperties.o $O/cproperty.o \
+    $O/cpar.o $O/cparimpl.o $O/cownedobject.o $O/cproperties.o $O/cproperty.o \
     $O/cpsquare.o $O/cqueue.o $O/cscheduler.o $O/csimplemodule.o \
-    $O/csimulation.o $O/cstat.o $O/cstlwatch.o $O/cstringpar.o \
+    $O/csimulation.o $O/cstat.o $O/cstlwatch.o $O/cstringparimpl.o \
     $O/cstringpool.o $O/cstrtokenizer.o $O/cclassdescriptor.o $O/ctopo.o $O/cvarhist.o \
-    $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlpar.o $O/distrib.o $O/nedfunctions.o \
+    $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlparimpl.o $O/distrib.o $O/nedfunctions.o \
     $O/errmsg.o $O/globals.o $O/lex.expryy.o $O/minixpath.o $O/onstartup.o \
     $O/simtime.o $O/task.o $O/util.o $O/expr.tab.o $O/nedsupport.o $O/sim_std_m.o \
     $O/ccommbuffer.o $O/cparsimcomm.o
@@ -194,11 +194,11 @@ $O/cbasicchannel.o: cbasicchannel.cc \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h
 $O/cboolpar.o: cboolpar.cc \
-  ../../include/cboolpar.h \
+  ../../include/cboolparimpl.h \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
   ../../include/cstringpool.h \
@@ -332,7 +332,7 @@ $O/ccomponent.o: ccomponent.cc \
   ../../include/cmodule.h \
   ../../include/cproperties.h \
   ../../include/cpar.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/crng.h \
   ../../include/cconfiguration.h \
   ../../include/cconfigkey.h \
@@ -572,11 +572,11 @@ $O/cdisplaystring.o: cdisplaystring.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
 $O/cdoublepar.o: cdoublepar.cc \
-  ../../include/cdoublepar.h \
+  ../../include/cdoubleparimpl.h \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
   ../../include/cstringpool.h \
@@ -908,11 +908,11 @@ $O/cllist.o: cllist.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
 $O/clongpar.o: clongpar.cc \
-  ../../include/clongpar.h \
+  ../../include/clongparimpl.h \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
   ../../include/cstringpool.h \
@@ -1210,7 +1210,7 @@ $O/cownedobject.o: cownedobject.cc \
   ../../include/errmsg.h
 $O/cpar.o: cpar.cc \
   ../../include/cpar.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
   ../../include/ccomponent.h \
@@ -1258,16 +1258,16 @@ $O/cparsimcomm.o: cparsimcomm.cc \
   ../../include/regmacros.h \
   ../../include/opp_string.h
 $O/cparvalue.o: cparvalue.cc \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cproperties.h \
   ../../include/ccomponent.h \
   ../../include/csimulation.h \
   ../../include/ccommbuffer.h \
-  ../../include/cboolpar.h \
-  ../../include/clongpar.h \
-  ../../include/cdoublepar.h \
-  ../../include/cstringpar.h \
-  ../../include/cxmlpar.h \
+  ../../include/cboolparimpl.h \
+  ../../include/clongparimpl.h \
+  ../../include/cdoubleparimpl.h \
+  ../../include/cstringparimpl.h \
+  ../../include/cxmlparimpl.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
   ../../include/cstringpool.h \
@@ -1468,7 +1468,7 @@ $O/csimulation.o: csimulation.cc \
   ../../include/ccomponenttype.h \
   ../../include/cstat.h \
   ../../include/cexception.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/chasher.h \
   ../../include/cconfiguration.h \
   ../../include/ccommbuffer.h \
@@ -1563,10 +1563,10 @@ $O/cstlwatch.o: cstlwatch.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h
 $O/cstringpar.o: cstringpar.cc \
-  ../../include/cstringpar.h \
+  ../../include/cstringparimpl.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
   ../../include/cstringpool.h \
@@ -1739,12 +1739,12 @@ $O/cxmlelement.o: cxmlelement.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h
 $O/cxmlpar.o: cxmlpar.cc \
-  ../../include/cxmlpar.h \
+  ../../include/cxmlparimpl.h \
   ../../include/cxmlelement.h \
   ../../include/cstrtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
   ../../include/cstringpool.h \
@@ -1989,7 +1989,7 @@ $O/netbuilder/cdynamicchanneltype.o: netbuilder/cdynamicchanneltype.cc \
   ../../include/cexpression.h \
   ../../include/cgate.h \
   ../../include/globals.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
   ../../include/onstartup.h \
@@ -2030,14 +2030,14 @@ $O/netbuilder/cdynamicmoduletype.o: netbuilder/cdynamicmoduletype.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h
 $O/netbuilder/cexpressionbuilder.o: netbuilder/cexpressionbuilder.cc \
   netbuilder/cexpressionbuilder.h \
   ../../include/cfunction.h \
   ../../include/cnedfunction.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/nedsupport.h \
   ../../include/cdynamicexpression.h \
   ../../include/cexception.h \
@@ -2073,7 +2073,7 @@ $O/netbuilder/cneddeclaration.o: netbuilder/cneddeclaration.cc \
   ../../include/simkerneldefs.h \
   ../../include/globals.h \
   ../../include/cownedobject.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cproperty.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
@@ -2106,8 +2106,8 @@ $O/netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   ../../include/cenvir.h \
   netbuilder/cexpressionbuilder.h \
   ../../include/cpar.h \
-  ../../include/clongpar.h \
-  ../../include/cdoublepar.h \
+  ../../include/clongparimpl.h \
+  ../../include/cdoubleparimpl.h \
   ../../include/globals.h \
   netbuilder/cdynamicmoduletype.h \
   netbuilder/cdynamicchanneltype.h \
@@ -2118,7 +2118,7 @@ $O/netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/cownedobject.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cgate.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -2147,9 +2147,9 @@ $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/cchannel.h \
   ../../include/cbasicchannel.h \
   ../../include/ccomponenttype.h \
-  ../../include/clongpar.h \
-  ../../include/cboolpar.h \
-  ../../include/cstringpar.h \
+  ../../include/clongparimpl.h \
+  ../../include/cboolparimpl.h \
+  ../../include/cstringparimpl.h \
   netbuilder/cneddeclaration.h \
   netbuilder/cnednetworkbuilder.h \
   netbuilder/cnedloader.h \
@@ -2181,7 +2181,7 @@ $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
   ../../include/cdynamicexpression.h

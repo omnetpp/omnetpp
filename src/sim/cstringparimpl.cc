@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cstringpar.h"
+#include "cstringparimpl.h"
 #include "cdynamicexpression.h"
 #include "ccomponent.h"
 #include "stringutil.h"
