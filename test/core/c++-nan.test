@@ -1,8 +1,8 @@
 %description:
-Test NaN: 0/0 to produce it, isnan() to check for it, and that x!=x if x is NaN
+Test NaN: 0/0 to produce it, and that x!=x if x is NaN
 
 %global:
-#include <float.h>
+static bool isNaN(double d) { return d != d; }
 
 %activity:
 #define PRINT(x) ev << #x << ":" << (x) << endl;
@@ -13,10 +13,10 @@ PRINT(nan);
 PRINT(nan*2);
 PRINT(-nan);
 
-PRINT(_isnan(nan));
-PRINT(_isnan(3.14));
-PRINT(_isnan(1/zero));
-PRINT(_isnan(-1/zero));
+PRINT(isNaN(nan));
+PRINT(isNaN(3.14));
+PRINT(isNaN(1/zero));
+PRINT(isNaN(-1/zero));
 
 PRINT(nan==nan);
 PRINT(nan!=nan);
@@ -30,10 +30,10 @@ ev << ".\n";
 nan:-1.#IND
 nan*2:-1.#IND
 -nan:1.#QNAN
-_isnan(nan):1
-_isnan(3.14):0
-_isnan(1/zero):0
-_isnan(-1/zero):0
+isNaN(nan):1
+isNaN(3.14):0
+isNaN(1/zero):0
+isNaN(-1/zero):0
 nan==nan:0
 nan!=nan:1
 nan<nan:0
