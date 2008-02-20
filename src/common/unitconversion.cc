@@ -70,10 +70,12 @@ UnitConversion::UnitDesc *UnitConversion::lookupUnit(const char *unit)
     for (int i=0; unitTable[i].unit; i++)
         if (!strcmp(unitTable[i].unit, unit))
             return unitTable+i;
+
     // long name, case insensitive ("herz", "milliwatt")
     for (int i=0; unitTable[i].unit; i++)
         if (!strcasecmp(unitTable[i].longName, unit))
             return unitTable+i;
+
     // long name in plural, case insensitive ("milliwatts")
     if (unit[strlen(unit)-1]=='s') {
         std::string tmp = std::string(unit, strlen(unit)-1);
@@ -131,11 +133,11 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
 
     // read first number and unit
     if (!readNumber(s, result))
-        throw opp_runtime_error("syntax error parsing quantity '%s': must begin with a number", str);
+        throw opp_runtime_error("Syntax error parsing quantity '%s': must begin with a number", str);
     if (!readUnit(s, unit)) {
         // special case: plain number without unit
         if (*s)
-            throw opp_runtime_error("syntax error parsing quantity '%s': garbage after first number", str);
+            throw opp_runtime_error("Syntax error parsing quantity '%s': garbage after first number", str);
         return result;
     }
 
@@ -207,7 +209,7 @@ double UnitConversion::convertUnit(double d, const char *unit, const char *targe
 {
     double factor = getConversionFactor(unit, targetUnit);
     if (factor == 0)
-        throw opp_runtime_error("cannot convert unit %s to %s",
+        throw opp_runtime_error("Cannot convert unit %s to %s",
                 (opp_isempty(unit) ? "none" : unitDescription(unit).c_str()),
                 (opp_isempty(targetUnit) ? "none" : unitDescription(targetUnit).c_str()));
     return factor * d;

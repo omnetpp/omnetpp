@@ -38,7 +38,7 @@ OBJS_STD=\
     $O/cpsquare.obj $O/cqueue.obj $O/cscheduler.obj $O/csimplemodule.obj \
     $O/csimulation.obj $O/cstat.obj $O/cstlwatch.obj $O/cstringpar.obj \
     $O/cstringpool.obj $O/cstrtokenizer.obj $O/cclassdescriptor.obj $O/ctopo.obj $O/cvarhist.obj \
-    $O/cvisitor.obj $O/cwatch.obj $O/cxmlelement.obj $O/cxmlpar.obj $O/distrib.obj \
+    $O/cvisitor.obj $O/cwatch.obj $O/cxmlelement.obj $O/cxmlpar.obj $O/distrib.obj $O/nedfunctions.obj \
     $O/errmsg.obj $O/globals.obj $O/lex.expryy.obj $O/minixpath.obj $O/onstartup.obj \
     $O/simtime.obj $O/task.obj $O/util.obj  $O/expr.tab.obj $O/nedsupport.obj $O/sim_std_m.obj \
     $O/ccommbuffer.obj $O/cparsimcomm.obj

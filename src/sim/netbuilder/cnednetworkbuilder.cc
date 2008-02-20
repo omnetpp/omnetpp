@@ -106,8 +106,12 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *para
 {
     ASSERT(paramsNode!=NULL);
     for (NEDElement *child=paramsNode->getFirstChildWithTag(NED_PARAM); child; child=child->getNextSiblingWithTag(NED_PARAM))
-    {
-        ParamElement *paramNode = (ParamElement *)child;
+        doParam(component, (ParamElement *)child, isSubcomponent);
+}
+
+void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent)
+{
+    try {
         const char *paramName = paramNode->getName();
         ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
 
@@ -133,12 +137,13 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *para
 
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
                 value = cParValue::createWithType(parType);   //FIXME just dup() and assign the expression? if param already exists...
-                cExpressionBuilder::assign(value, dynamicExpr);
                 value->setName(paramName);
                 value->setIsShared(true);
                 value->setIsInput(paramNode->getIsDefault());
                 value->setIsVolatile(isVolatile);
                 value->setUnit(declUnit);
+
+                cExpressionBuilder::assign(value, dynamicExpr); //XXX may throw exception
 
                 currentDecl->putCachedExpression(exprNode, value);
             }
@@ -169,14 +174,21 @@ void cNEDNetworkBuilder::doParams(cComponent *component, ParametersElement *para
             component->addPar(value);
         }
     }
+    catch (std::exception& e) {
+        throw NEDException(paramNode, "%s", e.what());
+    }
 }
 
 void cNEDNetworkBuilder::doGates(cModule *module, GatesElement *gatesNode, bool isSubcomponent)
 {
     ASSERT(gatesNode!=NULL);
     for (NEDElement *child=gatesNode->getFirstChildWithTag(NED_GATE); child; child=child->getNextSiblingWithTag(NED_GATE))
-    {
-        GateElement *gateNode = (GateElement *)child;
+        doGate(module, (GateElement *)child, isSubcomponent);
+}
+
+void cNEDNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isSubcomponent)
+{
+    try {
         const char *gateName = gateNode->getName();
         ExpressionElement *exprNode = gateNode->getFirstExpressionChild();
 
@@ -203,6 +215,9 @@ void cNEDNetworkBuilder::doGates(cModule *module, GatesElement *gatesNode, bool 
         // set gate vector size
         if (gatesize!=-1)
             module->setGateSize(gateName, gatesize);
+    }
+    catch (std::exception& e) {
+        throw NEDException(gateNode, "%s", e.what());
     }
 }
 
@@ -285,23 +300,15 @@ void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 
     SubmodulesElement *submods = currentDecl->getSubmodulesElement();
     if (submods)
-    {
         for (SubmoduleElement *submod=submods->getFirstSubmoduleChild(); submod; submod=submod->getNextSubmoduleSibling())
-        {
             addSubmodule(modp, submod);
-        }
-    }
 
     // loop through connections and add them
     ConnectionsElement *conns = currentDecl->getConnectionsElement();
     if (conns)
-    {
         for (NEDElement *child=conns->getFirstChild(); child; child=child->getNextSibling())
-        {
             if (child->getTagCode()==NED_CONNECTION || child->getTagCode()==NED_CONNECTION_GROUP)
                 addConnectionOrConnectionGroup(modp, child);
-        }
-    }
 }
 
 bool cNEDNetworkBuilder::superTypeAllowsUnconnected(cNEDDeclaration *decl) const
@@ -438,9 +445,16 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
 
     if (!vectorsizeexpr)
     {
-        cModuleType *submodtype = opp_isempty(submod->getLikeType()) ?
-            findAndCheckModuleType(submodtypename.c_str(), modp, submodname) :
-            findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
+        cModuleType *submodtype;
+        try {
+            submodtype = opp_isempty(submod->getLikeType()) ?
+                findAndCheckModuleType(submodtypename.c_str(), modp, submodname) :
+                findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
+        }
+        catch (std::exception& e) {
+            throw NEDException(submod, "%s", e.what());
+        }
+
         cModule *submodp = submodtype->create(submodname, modp);
         ModulePtrVector& v = submodMap[submodname];
         v.push_back(submodp);
@@ -456,12 +470,17 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
         int vectorsize = (int) evaluateAsLong(vectorsizeexpr, modp, false);
         ModulePtrVector& v = submodMap[submodname];
         cModuleType *submodtype = NULL;
-        for (int i=0; i<vectorsize; i++)
-        {
-            if (!submodtype)
-                submodtype = opp_isempty(submod->getLikeType()) ?
-                    findAndCheckModuleType(submodtypename.c_str(), modp, submodname) :
-                    findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
+        for (int i=0; i<vectorsize; i++) {
+            if (!submodtype) {
+                try {
+                    submodtype = opp_isempty(submod->getLikeType()) ?
+                        findAndCheckModuleType(submodtypename.c_str(), modp, submodname) :
+                        findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
+                }
+                catch (std::exception& e) {
+                    throw NEDException(submod, "%s", e.what());
+                }
+            }
             cModule *submodp = submodtype->create(submodname, modp, vectorsize, i);
             v.push_back(submodp);
 
@@ -587,53 +606,59 @@ void cNEDNetworkBuilder::doAddConnOrConnGroup(cModule *modp, NEDElement *connOrC
 void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
 {
 //FIXME spurious error message comes when trying to connect INOUT gate with "-->"
-    if (conn->getArrowDirection()!=NED_ARROWDIR_BIDIR)
+    try
     {
-        // find gates and create connection
-        cGate *srcg = resolveGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
-                                        conn->getSrcGate(), findExpression(conn, "src-gate-index"),
-                                        conn->getSrcGateSubg(), conn->getSrcGatePlusplus());
-        cGate *destg = resolveGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
-                                         conn->getDestGate(), findExpression(conn, "dest-gate-index"),
-                                         conn->getDestGateSubg(), conn->getDestGatePlusplus());
+        if (conn->getArrowDirection()!=NED_ARROWDIR_BIDIR)
+        {
+            // find gates and create connection
+            cGate *srcg = resolveGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
+                                            conn->getSrcGate(), findExpression(conn, "src-gate-index"),
+                                            conn->getSrcGateSubg(), conn->getSrcGatePlusplus());
+            cGate *destg = resolveGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
+                                             conn->getDestGate(), findExpression(conn, "dest-gate-index"),
+                                             conn->getDestGateSubg(), conn->getDestGatePlusplus());
 
-        //printf("creating connection: %s --> %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str());
+            //printf("creating connection: %s --> %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str());
 
-        // check directions
-        cGate *errg = NULL;
-        if (srcg->ownerModule()==modp ? srcg->type()!=cGate::INPUT : srcg->type()!=cGate::OUTPUT)
-            errg = srcg;
-        if (destg->ownerModule()==modp ? destg->type()!=cGate::OUTPUT : destg->type()!=cGate::INPUT)
-            errg = destg;
-        if (errg)
-            throw cRuntimeError(modp, "dynamic network builder: gate %s is being connected in the wrong direction",
-                                errg->fullPath().c_str());
+            // check directions
+            cGate *errg = NULL;
+            if (srcg->ownerModule()==modp ? srcg->type()!=cGate::INPUT : srcg->type()!=cGate::OUTPUT)
+                errg = srcg;
+            if (destg->ownerModule()==modp ? destg->type()!=cGate::OUTPUT : destg->type()!=cGate::INPUT)
+                errg = destg;
+            if (errg)
+                throw cRuntimeError(modp, "dynamic network builder: gate %s is being connected in the wrong direction",
+                                    errg->fullPath().c_str());
 
-        doConnectGates(modp, srcg, destg, conn);
+            doConnectGates(modp, srcg, destg, conn);
+        }
+        else
+        {
+            // find gates and create connection in both ways
+            if (conn->getSrcGateSubg()!=NED_SUBGATE_NONE || conn->getDestGateSubg()!=NED_SUBGATE_NONE)
+                throw cRuntimeError(modp, "dynamic network builder: gate$i or gate$o used with bidirectional connections");
+
+            // now: 1 is input, 2 is output, except for parent module gates where it is the other way round
+            // (because we connect xx.out --> yy.in, but xx.out --> out!)
+            cGate *srcg1, *srcg2, *destg1, *destg2;
+            resolveInoutGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
+                             conn->getSrcGate(), findExpression(conn, "src-gate-index"),
+                             conn->getSrcGatePlusplus(),
+                             srcg1, srcg2);
+            resolveInoutGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
+                             conn->getDestGate(), findExpression(conn, "dest-gate-index"),
+                             conn->getDestGatePlusplus(),
+                             destg1, destg2);
+
+            //printf("Creating bidir conn: %s --> %s\n", srcg2->fullPath().c_str(), destg1->fullPath().c_str());
+            //printf("                and: %s <-- %s\n", srcg1->fullPath().c_str(), destg2->fullPath().c_str());
+
+            doConnectGates(modp, srcg2, destg1, conn);
+            doConnectGates(modp, destg2, srcg1, conn);
+        }
     }
-    else
-    {
-        // find gates and create connection in both ways
-        if (conn->getSrcGateSubg()!=NED_SUBGATE_NONE || conn->getDestGateSubg()!=NED_SUBGATE_NONE)
-            throw cRuntimeError(modp, "dynamic network builder: gate$i or gate$o used with bidirectional connections");
-
-        // now: 1 is input, 2 is output, except for parent module gates where it is the other way round
-        // (because we connect xx.out --> yy.in, but xx.out --> out!)
-        cGate *srcg1, *srcg2, *destg1, *destg2;
-        resolveInoutGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
-                         conn->getSrcGate(), findExpression(conn, "src-gate-index"),
-                         conn->getSrcGatePlusplus(),
-                         srcg1, srcg2);
-        resolveInoutGate(modp, conn->getDestModule(), findExpression(conn, "dest-module-index"),
-                         conn->getDestGate(), findExpression(conn, "dest-gate-index"),
-                         conn->getDestGatePlusplus(),
-                         destg1, destg2);
-
-        //printf("Creating bidir conn: %s --> %s\n", srcg2->fullPath().c_str(), destg1->fullPath().c_str());
-        //printf("                and: %s <-- %s\n", srcg1->fullPath().c_str(), destg2->fullPath().c_str());
-
-        doConnectGates(modp, srcg2, destg1, conn);
-        doConnectGates(modp, destg2, srcg1, conn);
+    catch (std::exception& e) {
+        throw NEDException(conn, "%s", e.what());
     }
 }
 
@@ -880,19 +905,36 @@ cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode
 
 long cNEDNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
-    cParValue *p = getOrCreateExpression(exprNode, cPar::LONG, NULL, inSubcomponentScope);
-    return p->longValue(context);
+    try {
+        cParValue *p = getOrCreateExpression(exprNode, cPar::LONG, NULL, inSubcomponentScope);
+        return p->longValue(context);
+    }
+    catch (std::exception& e) {
+        throw NEDException(exprNode, "%s", e.what()); //FIXME all use of NEDException
+        // in this file is WRONG, because contextModule will NOT be printed in the error dialog!!! (it's lost)
+        // Re-throw the cRuntimeError??? (if it's that)
+    }
 }
 
 bool cNEDNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
-    cParValue *p = getOrCreateExpression(exprNode, cPar::BOOL, NULL, inSubcomponentScope);
-    return p->boolValue(context);
+    try {
+        cParValue *p = getOrCreateExpression(exprNode, cPar::BOOL, NULL, inSubcomponentScope);
+        return p->boolValue(context);
+    }
+    catch (std::exception& e) {
+        throw NEDException(exprNode, "%s", e.what());
+    }
 }
 
 std::string cNEDNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope)
 {
-    cParValue *p = getOrCreateExpression(exprNode, cPar::STRING, NULL, inSubcomponentScope);
-    return p->stdstringValue(context);
+    try {
+        cParValue *p = getOrCreateExpression(exprNode, cPar::STRING, NULL, inSubcomponentScope);
+        return p->stdstringValue(context);
+    }
+    catch (std::exception& e) {
+        throw NEDException(exprNode, "%s", e.what());
+    }
 }
 

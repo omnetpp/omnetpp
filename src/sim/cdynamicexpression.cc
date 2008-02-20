@@ -76,7 +76,7 @@ void cDynamicExpression::Value::operator=(const cPar& par)
     }
 }
 
-std::string cDynamicExpression::Value::toString()
+std::string cDynamicExpression::Value::toString() const
 {
     char buf[32];
     switch (type)
@@ -89,7 +89,6 @@ std::string cDynamicExpression::Value::toString()
       default:   throw cRuntimeError("internal error: bad Value type");
     }
 }
-
 
 cDynamicExpression::cDynamicExpression()
 {
@@ -127,11 +126,38 @@ void cDynamicExpression::setExpression(Elem e[], int n)
     nelems = n;
 }
 
+
+void cDynamicExpression::parse(const char *text)
+{
+    // throws exception if something goes wrong
+    ::doParseExpression(text, elems, nelems);
+}
+
+bool cDynamicExpression::isAConstant() const
+{
+    for (int i=0; i<nelems; i++)
+    {
+        switch(elems[i].type)
+        {
+            // literals and anything calculated from them are OK
+            case Elem::BOOL:
+            case Elem::DBL:
+            case Elem::STR:
+            case Elem::XML:
+            case Elem::OP:
+                continue; //OK
+            default:
+                return false;
+        }
+    }
+    return true;
+}
+
 bool cDynamicExpression::boolValue(cComponent *context)
 {
     Value v = evaluate(context);
     if (v.type!=Value::BOOL)
-        throw cRuntimeError(this, eECANTCAST, "bool");
+        throw cRuntimeError(eECANTCAST, "bool");
     return v.bl;
 }
 
@@ -140,7 +166,7 @@ long cDynamicExpression::longValue(cComponent *context, const char *expectedUnit
 {
     Value v = evaluate(context);
     if (v.type!=Value::DBL)
-        throw cRuntimeError(this, eECANTCAST, "long");
+        throw cRuntimeError(eECANTCAST, "long");
     return double_to_long(UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit));
 }
 
@@ -148,7 +174,7 @@ double cDynamicExpression::doubleValue(cComponent *context, const char *expected
 {
     Value v = evaluate(context);
     if (v.type!=Value::DBL)
-        throw cRuntimeError(this, eECANTCAST, "double");
+        throw cRuntimeError(eECANTCAST, "double");
     return UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
 }
 
@@ -156,7 +182,7 @@ std::string cDynamicExpression::stringValue(cComponent *context)
 {
     Value v = evaluate(context);
     if (v.type!=Value::STR)
-        throw cRuntimeError(this, eECANTCAST, "string");
+        throw cRuntimeError(eECANTCAST, "string");
     return v.str;
 }
 
@@ -164,7 +190,7 @@ cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
 {
     Value v = evaluate(context);
     if (v.type!=Value::XML)
-        throw cRuntimeError(this, eECANTCAST, "XML element");
+        throw cRuntimeError(eECANTCAST, "XML element");
     return v.xml;
 }
 
@@ -172,7 +198,7 @@ cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
 
 cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) const
 {
-    printf("    evaluating: %s\n", toString().c_str()); //XXX
+    //printf("    evaluating: %s\n", toString().c_str()); //XXX
 
     const int stksize = 20;
     Value stk[stksize];
@@ -185,31 +211,31 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
        {
            case Elem::BOOL:
              if (tos>=stksize-1)
-                 throw cRuntimeError(this,eESTKOFLOW);
+                 throw cRuntimeError(eESTKOFLOW);
              stk[++tos] = e.b;
              break;
 
            case Elem::DBL:
              if (tos>=stksize-1)
-                 throw cRuntimeError(this,eESTKOFLOW);
+                 throw cRuntimeError(eESTKOFLOW);
              stk[++tos].set(e.d.d, e.d.unit);
              break;
 
            case Elem::STR:
              if (tos>=stksize-1)
-                 throw cRuntimeError(this,eESTKOFLOW);
+                 throw cRuntimeError(eESTKOFLOW);
              stk[++tos] = e.s;
              break;
 
            case Elem::XML:
              if (tos>=stksize-1)
-                 throw cRuntimeError(this,eESTKOFLOW);
+                 throw cRuntimeError(eESTKOFLOW);
              stk[++tos] = e.x;
              break;
 
            case Elem::CPAR:
              if (tos>=stksize-1)
-                 throw cRuntimeError(this,eESTKOFLOW);
+                 throw cRuntimeError(eESTKOFLOW);
              stk[++tos] = *(e.p); break;
              stk[tos].dblunit = e.p->unit();
              break;
@@ -222,45 +248,45 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
                    break;
                case 1:
                    if (tos<0)
-                       throw cRuntimeError(this,eESTKUFLOW);
+                       throw cRuntimeError(eESTKUFLOW);
                    if (stk[tos].type!=Value::DBL)
-                       throw cRuntimeError(this,eEBADARGS,e.f->name());
+                       throw cRuntimeError(eEBADARGS,e.f->name());
                    if (stk[tos].dblunit!=NULL)
-                       throw cRuntimeError(this,eDIMLESS,e.f->name());
+                       throw cRuntimeError(eDIMLESS,e.f->name());
                    stk[tos] = e.f->mathFunc1Arg()(stk[tos].dbl);
                    break;
                case 2:
                    if (tos<1)
-                       throw cRuntimeError(this,eESTKUFLOW);
+                       throw cRuntimeError(eESTKUFLOW);
                    if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                       throw cRuntimeError(this,eEBADARGS,e.f->name());
+                       throw cRuntimeError(eEBADARGS,e.f->name());
                    if (stk[tos].dblunit!=NULL || stk[tos-1].dblunit!=NULL)
-                       throw cRuntimeError(this,eDIMLESS,e.f->name());
+                       throw cRuntimeError(eDIMLESS,e.f->name());
                    stk[tos-1] = e.f->mathFunc2Args()(stk[tos-1].dbl, stk[tos].dbl);
                    tos--;
                    break;
                case 3:
                    if (tos<2)
-                       throw cRuntimeError(this,eESTKUFLOW);
+                       throw cRuntimeError(eESTKUFLOW);
                    if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL || stk[tos-2].type!=Value::DBL)
-                       throw cRuntimeError(this,eEBADARGS,e.f->name());
+                       throw cRuntimeError(eEBADARGS,e.f->name());
                    if (stk[tos].dblunit!=NULL || stk[tos-1].dblunit!=NULL || stk[tos-2].dblunit!=NULL)
-                       throw cRuntimeError(this,eDIMLESS,e.f->name());
+                       throw cRuntimeError(eDIMLESS,e.f->name());
                    stk[tos-2] = e.f->mathFunc3Args()(stk[tos-2].dbl, stk[tos-1].dbl, stk[tos].dbl);
                    tos-=2;
                    break;
                case 4:
                    if (tos<3)
-                       throw cRuntimeError(this,eESTKUFLOW);
+                       throw cRuntimeError(eESTKUFLOW);
                    if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL || stk[tos-2].type!=Value::DBL || stk[tos-3].type!=Value::DBL)
-                       throw cRuntimeError(this,eEBADARGS,e.f->name());
+                       throw cRuntimeError(eEBADARGS,e.f->name());
                    if (stk[tos].dblunit!=NULL || stk[tos-1].dblunit!=NULL || stk[tos-2].dblunit!=NULL || stk[tos-3].dblunit!=NULL)
-                       throw cRuntimeError(this,eDIMLESS,e.f->name());
+                       throw cRuntimeError(eDIMLESS,e.f->name());
                    stk[tos-3] = e.f->mathFunc4Args()(stk[tos-3].dbl, stk[tos-2].dbl, stk[tos-1].dbl, stk[tos].dbl);
                    tos-=3;
                    break;
                default:
-                   throw cRuntimeError(this,eBADEXP);
+                   throw cRuntimeError(eBADEXP);
              }
              break;
 
@@ -269,11 +295,11 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
              int numargs = e.af->numArgs();
              int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
              if (argpos<0)
-                 throw cRuntimeError(this,eESTKUFLOW);
+                 throw cRuntimeError(eESTKUFLOW);
              const char *argtypes = e.af->argTypes();
              for (int i=0; i<numargs; i++)
                  if (argtypes[i] != '*' && stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
-                     throw cRuntimeError(this,eEBADARGS,e.af->name());
+                     throw cRuntimeError(eEBADARGS,e.af->name());
              // note: unit checking is left to the function itself
              stk[argpos] = e.af->functionPointer()(context, stk+argpos, numargs);
              tos = argpos;
@@ -285,11 +311,11 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
              int numargs = e.fu->numArgs();
              int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
              if (argpos<0)
-                 throw cRuntimeError(this,eESTKUFLOW);
+                 throw cRuntimeError(eESTKUFLOW);
              const char *argtypes = e.fu->argTypes();
              for (int i=0; i<numargs; i++)
                  if (argtypes[i] != '*' && stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
-                     throw cRuntimeError(this,eEBADARGS,e.fu->fullName());
+                     throw cRuntimeError(eEBADARGS,e.fu->fullName());
              // note: unit checking is left to the function itself
              stk[argpos] = e.fu->evaluate(context, stk+argpos, numargs);
              tos = argpos;
@@ -298,32 +324,32 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
 
            case Elem::CONSTSUBEXPR:
              // this should not occur
-             throw cRuntimeError("evaluate: constant subexpressions should have already been evaluated");
+             throw cRuntimeError("evaluate: constant subexpressions must have already been evaluated");
 
            case Elem::OP:
              if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)
              {
                  // unary
                  if (tos<0)
-                     throw cRuntimeError(this,eESTKUFLOW);
+                     throw cRuntimeError(eESTKUFLOW);
                  switch (e.op)
                  {
                      case NEG:
                          if (stk[tos].type!=Value::DBL)
-                             throw cRuntimeError(this,eEBADARGS,"-");
+                             throw cRuntimeError(eEBADARGS,"-");
                          stk[tos].dbl = -stk[tos].dbl;
                          break;
                      case NOT:
                          if (stk[tos].type!=Value::BOOL)
-                             throw cRuntimeError(this,eEBADARGS,"!");
+                             throw cRuntimeError(eEBADARGS,"!");
                          stk[tos].bl = !stk[tos].bl;
                          break;
                      case BIN_NOT:
                          if (stk[tos].type!=Value::DBL)
-                             throw cRuntimeError(this,eEBADARGS,"~");
+                             throw cRuntimeError(eEBADARGS,"~");
                          if (stk[tos].dblunit!=NULL)
-                             throw cRuntimeError(this,eDIMLESS,"~");
-                         stk[tos].dbl = (double)~ulong(stk[tos].dbl);
+                             throw cRuntimeError(eDIMLESS,"~");
+                         stk[tos].dbl = ~ulong(stk[tos].dbl);
                          break;
                      default: ASSERT(false);
                  }
@@ -332,10 +358,10 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
              {
                  // tertiary
                  if (tos<2)
-                     throw cRuntimeError(this,eESTKUFLOW);
+                     throw cRuntimeError(eESTKUFLOW);
                  // 1st arg must be bool, others 2nd and 3rd can be anything
                  if (stk[tos-2].type!=Value::BOOL)
-                     throw cRuntimeError(this,eEBADARGS,"?:");
+                     throw cRuntimeError(eEBADARGS,"?:");
                  stk[tos-2] = (stk[tos-2].bl ? stk[tos-1] : stk[tos]);
                  tos-=2;
              }
@@ -343,7 +369,7 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
              {
                  // binary
                  if (tos<1)
-                     throw cRuntimeError(this,eESTKUFLOW);
+                     throw cRuntimeError(eESTKUFLOW);
                  switch(e.op)
                  {
                    case ADD:
@@ -355,108 +381,107 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
                        else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR)
                            stk[tos-1].str = stk[tos-1].str + stk[tos].str;
                        else
-                           throw cRuntimeError(this,eEBADARGS,"+");
+                           throw cRuntimeError(eEBADARGS,"+");
                        tos--;
                        break;
                    case SUB:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,"-");
+                           throw cRuntimeError(eEBADARGS,"-");
                        stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
                        stk[tos-1].dbl = stk[tos-1].dbl - stk[tos].dbl;
                        tos--;
                        break;
                    case MUL:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,"*");
+                           throw cRuntimeError(eEBADARGS,"*");
                        if (stk[tos].dblunit!=NULL && stk[tos-1].dblunit!=NULL)
-                           throw cRuntimeError(this,"multiplying two quantities with units is not supported");
+                           throw cRuntimeError("Multiplying two quantities with units is not supported");
                        stk[tos-1].dbl = stk[tos-1].dbl * stk[tos].dbl;
-                       if (stk[tos-1].dblunit==NULL) 
+                       if (stk[tos-1].dblunit==NULL)
                            stk[tos-1].dblunit = stk[tos].dblunit;
                        tos--;
                        break;
                    case DIV:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,"/");
+                           throw cRuntimeError(eEBADARGS,"/");
                        // for now we only support num/num, unit/num, and unit/unit if the two units are convertible
                        if (stk[tos].dblunit!=NULL)
                            stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
                        stk[tos-1].dbl = stk[tos-1].dbl / stk[tos].dbl;
-                       stk[tos-1].dblunit = NULL;
+                       if (stk[tos].dblunit!=NULL)
+                           stk[tos-1].dblunit = NULL;
                        tos--;
                        break;
                    case MOD:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,"%");
-                       // for now we only support num/num, unit/num, and unit/unit if the two units are convertible
-                       if (stk[tos].dblunit!=NULL)
-                           stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
-                       stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) % ulong(stk[tos].dbl));
+                           throw cRuntimeError(eEBADARGS,"%");
+                       stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
+                       stk[tos-1].dbl = fmod(stk[tos-1].dbl, stk[tos].dbl);
                        tos--;
                        break;
                    case POW:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,"^");
+                           throw cRuntimeError(eEBADARGS,"^");
                        if (stk[tos].dblunit!=NULL || stk[tos-1].dblunit!=NULL)
-                           throw cRuntimeError(this,eDIMLESS,"^");
+                           throw cRuntimeError(eDIMLESS,"^");
                        stk[tos-1].dbl = pow(stk[tos-1].dbl, stk[tos].dbl);
                        tos--;
                        break;
                    case AND:
                        if (stk[tos].type!=Value::BOOL || stk[tos-1].type!=Value::BOOL)
-                           throw cRuntimeError(this,eEBADARGS,"&&");
+                           throw cRuntimeError(eEBADARGS,"&&");
                        stk[tos-1].bl = stk[tos-1].bl && stk[tos].bl;
                        tos--;
                        break;
                    case OR:
                        if (stk[tos].type!=Value::BOOL || stk[tos-1].type!=Value::BOOL)
-                           throw cRuntimeError(this,eEBADARGS,"||");
+                           throw cRuntimeError(eEBADARGS,"||");
                        stk[tos-1].bl = stk[tos-1].bl || stk[tos].bl;
                        tos--;
                        break;
                    case XOR:
                        if (stk[tos].type!=Value::BOOL || stk[tos-1].type!=Value::BOOL)
-                           throw cRuntimeError(this,eEBADARGS,"##");
+                           throw cRuntimeError(eEBADARGS,"##");
                        stk[tos-1].bl = stk[tos-1].bl != stk[tos].bl;
                        tos--;
                        break;
                    case BIN_AND:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,"&");
+                           throw cRuntimeError(eEBADARGS,"&");
                        if (stk[tos].dblunit!=NULL || stk[tos-1].dblunit!=NULL)
-                           throw cRuntimeError(this,eDIMLESS,"&");
+                           throw cRuntimeError(eDIMLESS,"&");
                        stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) & ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case BIN_OR:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,"|");
+                           throw cRuntimeError(eEBADARGS,"|");
                        if (stk[tos].dblunit!=NULL || stk[tos-1].dblunit!=NULL)
-                           throw cRuntimeError(this,eDIMLESS,"|");
+                           throw cRuntimeError(eDIMLESS,"|");
                        stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) | ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case BIN_XOR:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,"#");
+                           throw cRuntimeError(eEBADARGS,"#");
                        if (stk[tos].dblunit!=NULL || stk[tos-1].dblunit!=NULL)
-                           throw cRuntimeError(this,eDIMLESS,"#");
+                           throw cRuntimeError(eDIMLESS,"#");
                        stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) ^ ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case LSHIFT:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,"<<");
+                           throw cRuntimeError(eEBADARGS,"<<");
                        if (stk[tos].dblunit!=NULL || stk[tos-1].dblunit!=NULL)
-                           throw cRuntimeError(this,eDIMLESS,"<<");
+                           throw cRuntimeError(eDIMLESS,"<<");
                        stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) << ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case RSHIFT:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                           throw cRuntimeError(this,eEBADARGS,">>");
+                           throw cRuntimeError(eEBADARGS,">>");
                        if (stk[tos].dblunit!=NULL || stk[tos-1].dblunit!=NULL)
-                           throw cRuntimeError(this,eDIMLESS,">>");
+                           throw cRuntimeError(eDIMLESS,">>");
                        stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) >> ulong(stk[tos].dbl));
                        tos--;
                        break;
@@ -469,7 +494,7 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
                                  else if (stk[tos-1].type==Value::BOOL && stk[tos].type==Value::BOOL) \
                                      stk[tos-1].bl = (stk[tos-1].bl RELATION stk[tos].bl); \
                                  else \
-                                     throw cRuntimeError(this,eEBADARGS,#RELATION); \
+                                     throw cRuntimeError(eEBADARGS,#RELATION); \
                                  tos--;
                    case EQ:
                        COMPARISON(==);
@@ -491,18 +516,18 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
                        break;
 #undef COMPARISON
                    default:
-                       throw cRuntimeError(this,eBADEXP);
+                       throw cRuntimeError(eBADEXP);
                  }
              }
              break;
            default:
-             throw cRuntimeError(this,eBADEXP);
+             throw cRuntimeError(eBADEXP);
        }
     }
     if (tos!=0)
-        throw cRuntimeError(this,eBADEXP);
+        throw cRuntimeError(eBADEXP);
 
-    printf("        ==> returning %s\n", stk[tos].toString().c_str()); //XXX
+    //printf("        ==> returning %s\n", stk[tos].toString().c_str()); //XXX
 
     return stk[tos];
 }
@@ -528,14 +553,14 @@ std::string cDynamicExpression::toString() const
            {
                case Elem::BOOL:
                  if (tos>=stksize-1)
-                     throw cRuntimeError(this,eESTKOFLOW);
+                     throw cRuntimeError(eESTKOFLOW);
                  strstk[++tos] = (e.b ? "true" : "false");
                  pristk[tos] = 0;
                  break;
                case Elem::DBL:
                  {
                  if (tos>=stksize-1)
-                     throw cRuntimeError(this,eESTKOFLOW);
+                     throw cRuntimeError(eESTKOFLOW);
                  char buf[32];
                  sprintf(buf, "%g%s", e.d.d, opp_nulltoempty(e.d.unit));
                  strstk[++tos] = buf;
@@ -544,19 +569,19 @@ std::string cDynamicExpression::toString() const
                  break;
                case Elem::STR:
                  if (tos>=stksize-1)
-                     throw cRuntimeError(this,eESTKOFLOW);
+                     throw cRuntimeError(eESTKOFLOW);
                  strstk[++tos] = opp_quotestr(e.s ? e.s : "");
                  pristk[tos] = 0;
                  break;
                case Elem::XML:
                  if (tos>=stksize-1)
-                     throw cRuntimeError(this,eESTKOFLOW);
+                     throw cRuntimeError(eESTKOFLOW);
                  strstk[++tos] = std::string("<") + (e.x ? e.x->getTagName() : "null") +">"; //FIXME plus location info?
                  pristk[tos] = 0;
                  break;
                case Elem::CPAR:
                  if (!e.p || tos>=stksize-1)
-                     throw cRuntimeError(this,eESTKOFLOW);
+                     throw cRuntimeError(eESTKOFLOW);
                  strstk[++tos] = e.p->fullPath();
                  pristk[tos] = 0;
                  break;
@@ -567,7 +592,7 @@ std::string cDynamicExpression::toString() const
                  std::string name = (e.type==Elem::MATHFUNC) ? e.f->name() : e.af->name();
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
-                     throw cRuntimeError(this,eESTKUFLOW);
+                     throw cRuntimeError(eESTKUFLOW);
                  std::string tmp = name+"(";
                  for (int i=0; i<numargs; i++)
                      tmp += (i==0 ? "" : ", ") + strstk[argpos+i];
@@ -582,7 +607,7 @@ std::string cDynamicExpression::toString() const
                  int numargs = e.fu->numArgs();
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
-                     throw cRuntimeError(this,eESTKUFLOW);
+                     throw cRuntimeError(eESTKUFLOW);
                  strstk[argpos] = e.fu->toString(strstk+argpos, numargs);
                  tos = argpos;
                  break;
@@ -594,7 +619,7 @@ std::string cDynamicExpression::toString() const
                  if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)
                  {
                      if (tos<0)
-                         throw cRuntimeError(this,eESTKUFLOW);
+                         throw cRuntimeError(eESTKUFLOW);
                      const char *op;
                      switch (e.op)
                      {
@@ -609,7 +634,7 @@ std::string cDynamicExpression::toString() const
                  else if (e.op==IIF)  // conditional (tertiary)
                  {
                      if (tos<2)
-                         throw cRuntimeError(this,eESTKUFLOW);
+                         throw cRuntimeError(eESTKUFLOW);
                      strstk[tos-2] = strstk[tos-2] + " ? " + strstk[tos-1] + " : " + strstk[tos];
                      tos-=2;
                      pristk[tos] = 8;
@@ -618,7 +643,7 @@ std::string cDynamicExpression::toString() const
                  {
                      // binary
                      if (tos<1)
-                         throw cRuntimeError(this,eESTKUFLOW);
+                         throw cRuntimeError(eESTKUFLOW);
                      int pri;
                      const char *op;
                      switch(e.op)
@@ -675,11 +700,11 @@ std::string cDynamicExpression::toString() const
                  }
                  break;
                default:
-                 throw cRuntimeError(this,eBADEXP);
+                 throw cRuntimeError(eBADEXP);
            }
         }
         if (tos!=0)
-            throw cRuntimeError(this,eBADEXP);
+            throw cRuntimeError(eBADEXP);
         return strstk[tos];
     }
     catch (std::exception& e)
@@ -687,39 +712,5 @@ std::string cDynamicExpression::toString() const
         std::string ret = std::string("[[ ") + e.what() + " ]]";
         return ret;
     }
-}
-
-void cDynamicExpression::parse(const char *text)
-{
-    // throws exception if something goes wrong
-    ::doParseExpression(text, elems, nelems);
-}
-
-bool cDynamicExpression::isAConstant() const
-{
-    for (int i=0; i<nelems; i++)
-    {
-        switch(elems[i].type)
-        {
-            // literals and anything calculated from them are OK
-            case Elem::BOOL:
-            case Elem::DBL:
-            case Elem::STR:
-            case Elem::XML:
-            case Elem::OP:
-                continue; //OK
-            default:
-                return false;
-        }
-    }
-    return true;
-}
-
-const char *cDynamicExpression::unit() const
-{
-    // this can be made more sophisticated, like unit of (3*5s) is still "s"
-    if (nelems==1 && elems[0].type==Elem::DBL)
-        return elems[0].d.unit;
-    return NULL;
 }
 

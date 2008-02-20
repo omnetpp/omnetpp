@@ -56,7 +56,7 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * One element in a (reverse Polish) expression
      */
-    class Elem
+    class SIM_API Elem
     {
       friend class cDynamicExpression;
       private:
@@ -192,7 +192,7 @@ class SIM_API cDynamicExpression : public cExpression
      * in double. XXX This is fine for 32-bit longs, but not for 64-bit ones,
      * as double's mantissa is only 53 bits.
      */
-    struct Value
+    struct SIM_API Value
     {
         // Note: char codes need to be present and be consistent with cNEDFunction::argTypes()
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
@@ -219,7 +219,7 @@ class SIM_API cDynamicExpression : public cExpression
         void operator=(const std::string& s)  {type=STR; str=s;}
         void operator=(cXMLElement *x)  {type=XML; xml=x;}
         void operator=(const cPar& par);
-        std::string toString();
+        std::string toString() const;
     };
 
     /**
@@ -227,7 +227,7 @@ class SIM_API cDynamicExpression : public cExpression
      * references, "index" and "sizeof" operators, and references to NED "for" loop
      * variables.
      */
-    class Functor : public cObject
+    class SIM_API Functor : public cObject
     {
       public:
         virtual const char *argTypes() const = 0;
@@ -347,11 +347,6 @@ class SIM_API cDynamicExpression : public cExpression
      * like "2+2").
      */
     virtual bool isAConstant() const;
-
-    /**
-     * Returns the unit of the expression.
-     */
-    virtual const char *unit() const;
     //@}
 };
 

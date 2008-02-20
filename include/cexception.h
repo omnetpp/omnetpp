@@ -40,10 +40,10 @@ class SIM_API cException : public std::exception
 {
   protected:
     int errorcode;
-    opp_string msg;
+    std::string msg;
     bool hascontext;
-    opp_string contextclassname;
-    opp_string contextfullpath;
+    std::string contextclassname;
+    std::string contextfullpath;
     int moduleid;
 
     /**
@@ -132,6 +132,16 @@ class SIM_API cException : public std::exception
      */
     virtual const char *what() const throw() {return msg.c_str();}
 
+    /**
+     * Modifies the error text
+     */
+    virtual void append(const char *txt) {msg += txt;}
+
+    /**
+     * Modifies the error text
+     */
+    virtual void prepend(const char *txt) {msg += txt;}
+    
     /**
      * Returns true if the exception has "context info", that is, it occurred
      * within a known module or channel. contextClassName() and contextFullPath()

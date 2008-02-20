@@ -79,7 +79,9 @@ class SIM_API cNEDNetworkBuilder
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
     void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent);
+    void doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent);
     void doGates(cModule *component, GatesElement *gatesNode, bool isSubcomponent);
+    void doGate(cModule *component, GateElement *gateNode, bool isSubcomponent);
     void assignSubcomponentParams(cComponent *subcomponent, NEDElement *subcomponentNode);
     void setupGateVectors(cModule *submodule, NEDElement *submoduleNode);
 

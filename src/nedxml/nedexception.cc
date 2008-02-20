@@ -40,7 +40,7 @@ NEDException::NEDException(NEDElement *context, const char *messagefmt...) : std
 
     const char *loc = context ? context->getSourceLocation() : NULL;
     if (loc)
-        errormsg = std::string(loc) + ": " + message;
+        errormsg = std::string(message) + ", at " + std::string(loc);
     else if (context)
         errormsg = std::string(context->getTagName()) + ": " + message;
     else

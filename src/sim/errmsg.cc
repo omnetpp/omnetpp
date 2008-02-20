@@ -41,7 +41,7 @@ const char *cErrorMessages::get(ErrorCode e)
       case eESTKOFLOW: return "Expression stack overflow";
       case eESTKUFLOW: return "Expression stack underflow";
       case eEBADARGS:  return "Error in expression: `%s': wrong argument type(s)";
-      case eDIMLESS:   return "Error in expression: `%s': argument(s) should be dimensionless";
+      case eDIMLESS:   return "Error in expression: `%s': argument(s) must be dimensionless";
       case eECANTCAST: return "Cannot cast result of expression to %s";
       case eENOPARENT: return "Expression cannot be interpreted on network level";
       case eFINISH:    return "All finish() functions called, simulation ended";

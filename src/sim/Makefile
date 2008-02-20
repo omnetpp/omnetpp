@@ -39,7 +39,7 @@ OBJS_STD=\
     $O/cpsquare.o $O/cqueue.o $O/cscheduler.o $O/csimplemodule.o \
     $O/csimulation.o $O/cstat.o $O/cstlwatch.o $O/cstringpar.o \
     $O/cstringpool.o $O/cstrtokenizer.o $O/cclassdescriptor.o $O/ctopo.o $O/cvarhist.o \
-    $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlpar.o $O/distrib.o \
+    $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlpar.o $O/distrib.o $O/nedfunctions.o \
     $O/errmsg.o $O/globals.o $O/lex.expryy.o $O/minixpath.o $O/onstartup.o \
     $O/simtime.o $O/task.o $O/util.o $O/expr.tab.o $O/nedsupport.o $O/sim_std_m.o \
     $O/ccommbuffer.o $O/cparsimcomm.o

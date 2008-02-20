@@ -110,6 +110,21 @@ class SIM_API opp_string
      * Comparison.
      */
     bool operator<(const opp_string& s) const  {return opp_strcmp(str,s.str) < 0;}
+    
+    /**
+     * Concatenation
+     */
+    opp_string& operator+=(const char *s) {return operator=(std::string(str)+s);}
+    
+    /**
+     * Concatenation
+     */
+    opp_string& operator+=(const opp_string& s) {operator+=(s.str); return *this;}
+    
+    /**
+     * Concatenation
+     */
+    opp_string& operator+=(const std::string& s) {operator+=(s.c_str()); return *this;}
 };
 
 inline std::ostream& operator<<(std::ostream& out, const opp_string& s)

@@ -402,6 +402,7 @@ USING_NAMESPACE
 
 //void _dummy_for_env();
 void std_sim_descriptor_dummy();
+void nedfunctions_dummy();
 void _sim_dummy_func()
 {
       bool bb;
@@ -425,6 +426,7 @@ void _sim_dummy_func()
       std_sim_descriptor_dummy();
       cXMLElement a(0,0,0);
       cBasicChannel c(NULL);
+      nedfunctions_dummy();
       //_dummy_for_env();
 }
 

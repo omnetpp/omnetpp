@@ -134,11 +134,6 @@ class SIM_API cExpression : public cObject
      * does not support parsing.
      */
     virtual void parse(const char *text) = 0;
-
-    /**
-     * Returns the unit of the expression.
-     */
-    virtual const char *unit() const {return NULL;}
     //@}
 };
 
