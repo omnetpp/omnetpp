@@ -26,12 +26,12 @@ import org.omnetpp.common.util.StringUtils;
 public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
     private static String INCLUDE_DIRS_MACRO = "IncludeDirs"; // all non excluded dirs containing a *.h file in the project
     private static String MESSAGE_DIRS_MACRO = "MessageDirs";  // all non excluded dirs containing a *.msg file in the project
-    private static String PRIMARY_SOURCE_DIRS_MACRO = "PrimarySourceDir";  // the first source directory
+    private static String PRIMARY_SOURCE_DIR_MACRO = "PrimarySourceDir";  // the first source directory
 
     private static final String fProjectMacros[] = new String[]{
         INCLUDE_DIRS_MACRO,
         MESSAGE_DIRS_MACRO,
-        PRIMARY_SOURCE_DIRS_MACRO,
+        PRIMARY_SOURCE_DIR_MACRO,
     };
     
     class SourcePathMacro implements IBuildMacro {
@@ -139,7 +139,7 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
         }
 
         public String getName() {
-            return PRIMARY_SOURCE_DIRS_MACRO;
+            return PRIMARY_SOURCE_DIR_MACRO;
         }
 
         public int getMacroValueType() {
@@ -157,7 +157,7 @@ public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
             macro = new SourcePathMacro(macroName, project, "-I", ".*\\.h");
         if(MESSAGE_DIRS_MACRO.equals(macroName)) 
             macro = new SourcePathMacro(macroName, project, "", ".*\\.msg");
-        if(PRIMARY_SOURCE_DIRS_MACRO.equals(macroName))
+        if(PRIMARY_SOURCE_DIR_MACRO.equals(macroName))
             macro = new PrimarySourceDirMacro(project);
         return macro;
     }

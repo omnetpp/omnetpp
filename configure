@@ -1877,45 +1877,45 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 # OMNeT++/OMNEST version number
 #
 OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
-OMNETPP_EDITION="Academic Public License"
+OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
 #
 #  Figure out target platform
 #
 #FIXME too early: if configure.user sets $TARGET_PLATFORM, we'll be in trouble
 if test "$TARGET_PLATFORM" == "mingw"; then
-	mingw=yes
-	windows=yes
-	jni_platform=win32
-	ECLIPSE_PLATFORM=win32.x86
+    mingw=yes
+    windows=yes
+    jni_platform=win32
+    ECLIPSE_PLATFORM=win32.x86
 else
-	jni_platform=$host_os
-	case $host in
-	*-*-cygwin*)
-		cygwin=yes
-		windows=yes
-		jni_platform=win32
-		ECLIPSE_PLATFORM=win32.x86
-		;;
-	*-*-mingw32*)
-		mingw=yes
-		windows=yes
-		jni_platform=win32
-		ECLIPSE_PLATFORM=win32.x86
-		;;
-	*linux*)
-		jni_platform=linux
-		ECLIPSE_PLATFORM=linux.x86
-		;;
-	*-hp-hpux*)
-		SO_LIB_SUFFIX=".sl"
-		;;
-	sparc-sun-*)
-		CFLAGS_ARCH="-DSUNSPARC"
-		;;
-	*)
-		;;
-	esac
+    jni_platform=$host_os
+    case $host in
+    *-*-cygwin*)
+        cygwin=yes
+        windows=yes
+        jni_platform=win32
+        ECLIPSE_PLATFORM=win32.x86
+        ;;
+    *-*-mingw32*)
+        mingw=yes
+        windows=yes
+        jni_platform=win32
+        ECLIPSE_PLATFORM=win32.x86
+        ;;
+    *linux*)
+        jni_platform=linux
+        ECLIPSE_PLATFORM=linux.x86
+        ;;
+    *-hp-hpux*)
+        SO_LIB_SUFFIX=".sl"
+        ;;
+    sparc-sun-*)
+        CFLAGS_ARCH="-DSUNSPARC"
+        ;;
+    *)
+        ;;
+    esac
 fi
 
 # We'll collect in this variable the components we've detected problems with
@@ -1928,14 +1928,14 @@ OPP_PROBLEM_PACKAGES=
 # determine OMNETPP_ROOT; note that 'case' branches on *host* platform not the target platform
 case $host in
 *-*-cygwin*)
-   	OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
-	;;
+    OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
+    ;;
 *-*-mingw32*)
-   	OMNETPP_ROOT=`pwd -W`
-	;;
+    OMNETPP_ROOT=`pwd -W`
+    ;;
 *)
-	OMNETPP_ROOT=`pwd`
-	;;
+    OMNETPP_ROOT=`pwd`
+    ;;
 esac
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
@@ -2032,12 +2032,12 @@ MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
 #----------------------
 
 if test "$TARGET_PLATFORM" = "mingw"; then
-	cc_candidates="i586-mingw32msvc-gcc"
-	cxx_candidates="i586-mingw32msvc-g++"
+    cc_candidates="i586-mingw32msvc-gcc"
+    cxx_candidates="i586-mingw32msvc-g++"
 else
-	# icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
-	cc_candidates="icc gcc cc xlc"
-	cxx_candidates="icpc g++ c++ cxx xlC"
+    # icc, icpc: Intel compiler (further ones: Sun Studio: cxx, IBM: xlC)
+    cc_candidates="icc gcc cc xlc"
+    cxx_candidates="icpc g++ c++ cxx xlC"
 fi
 # the below macros should be present only ONCE in the whole file (otherwise bad things will happen)
 ac_ext=c
@@ -3129,41 +3129,41 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 if test "$TARGET_PLATFORM" = "mingw"; then
-	AS=${AS:-i586-mingw32msvc-as}
-	AR=${AR:-i586-mingw32msvc-ar cr}
-	SHLIB_LD=${SHLIB_LD:-$CXX -shared}
-	DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
-	RANLIB=${RANLIB:-i586-mingw32msvc-ranlib}
+    AS=${AS:-i586-mingw32msvc-as}
+    AR=${AR:-i586-mingw32msvc-ar cr}
+    SHLIB_LD=${SHLIB_LD:-$CXX -shared}
+    DLLTOOL=${DLLTOOL:-i586-mingw32msvc-dlltool}
+    RANLIB=${RANLIB:-i586-mingw32msvc-ranlib}
 else
-	if test "$CXX" = "icpc"; then
-		# disable useless warnings and 'remarks' with the Intel compiler:
-		#
-		# warning #654: overloaded virtual function "NEDElement::setAttribute" is only partially overridden
-		# warning #177: label "yyerrlab1" was declared but never referenced
-		# remark #869: parameter "node" was never referenced
-		# remark #981: operands are evaluated in unspecified order
-		# remark #279: controlling expression is constant  (occurs in unfinished cppmsggenerator.cc code)
-		# remark #1572: floating-point equality and inequality comparisons are unreliable
-		# remark #424: extra ";" ignored
-		# remark #1682: implicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
-		# remark #1683: explicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
-		# remark #810: conversion from "unsigned int" to "char" may lose significant bits
-		# remark #810: conversion from "long" to "double" may lose significant bits
-		# remark #1418: external definition with no prior declaration
-		# remark #1419: external declaration in primary source file
-		# remark #383: value copied to temporary, reference to temporary used
-		#
-		#CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
+    if test "$CXX" = "icpc"; then
+        # disable useless warnings and 'remarks' with the Intel compiler:
+        #
+        # warning #654: overloaded virtual function "NEDElement::setAttribute" is only partially overridden
+        # warning #177: label "yyerrlab1" was declared but never referenced
+        # remark #869: parameter "node" was never referenced
+        # remark #981: operands are evaluated in unspecified order
+        # remark #279: controlling expression is constant  (occurs in unfinished cppmsggenerator.cc code)
+        # remark #1572: floating-point equality and inequality comparisons are unreliable
+        # remark #424: extra ";" ignored
+        # remark #1682: implicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
+        # remark #1683: explicit conversion of a 64-bit integral type to a smaller integral type (potential portability..
+        # remark #810: conversion from "unsigned int" to "char" may lose significant bits
+        # remark #810: conversion from "long" to "double" may lose significant bits
+        # remark #1418: external definition with no prior declaration
+        # remark #1419: external declaration in primary source file
+        # remark #383: value copied to temporary, reference to temporary used
+        #
+        #CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
 
-		# -w1 disables all remarks
-		CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
-		CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
-	fi
-	AS=${AS:-as}
-	AR=${AR:-ar cr}
-	SHLIB_LD=${SHLIB_LD:-$CXX -shared}
-	DLLTOOL=${DLLTOOL:-dlltool}
-	if test -n "$ac_tool_prefix"; then
+        # -w1 disables all remarks
+        CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
+        CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
+    fi
+    AS=${AS:-as}
+    AR=${AR:-ar cr}
+    SHLIB_LD=${SHLIB_LD:-$CXX -shared}
+    DLLTOOL=${DLLTOOL:-dlltool}
+    if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
@@ -3273,14 +3273,16 @@ if test "$TOOLCHAIN_NAME" = ""; then
     fi
 fi
 
-# check and disable stack checking to avoid dependence on glibc 2.4
+#----------------------
+# check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
+#----------------------
 
 
-	{ echo "$as_me:$LINENO: checking whether $CC supports -fno-stack-protector" >&5
-echo $ECHO_N "checking whether $CC supports -fno-stack-protector... $ECHO_C" >&6; }
-	ac_save_CC="$CC"
-	CC="$CC -fno-stack-protector"
-	cat >conftest.$ac_ext <<_ACEOF
+    { echo "$as_me:$LINENO: checking whether $CXX supports -fno-stack-protector" >&5
+echo $ECHO_N "checking whether $CXX supports -fno-stack-protector... $ECHO_C" >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX -fno-stack-protector"
+    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
@@ -3313,20 +3315,20 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest.$ac_objext; then
 
-		{ echo "$as_me:$LINENO: result: yes" >&5
+        { echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6; }
 
-		CC="$ac_save_CC"
-		CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-stack-protector"
+        CXX="$ac_save_CXX"
+        CFLAGS_RELEASE="-fno-stack-protector $CFLAGS_RELEASE"
 
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 
-		{ echo "$as_me:$LINENO: result: no" >&5
+        { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
-		CC="$ac_save_CC"
+        CXX="$ac_save_CXX"
 
 
 fi
@@ -3334,11 +3336,11 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
 
-	{ echo "$as_me:$LINENO: checking whether $CC supports -fno-stack-protector" >&5
-echo $ECHO_N "checking whether $CC supports -fno-stack-protector... $ECHO_C" >&6; }
-	ac_save_CC="$CC"
-	CC="$CC -fno-stack-protector"
-	cat >conftest.$ac_ext <<_ACEOF
+    { echo "$as_me:$LINENO: checking whether $CXX supports -fno-stack-protector" >&5
+echo $ECHO_N "checking whether $CXX supports -fno-stack-protector... $ECHO_C" >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX -fno-stack-protector"
+    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
@@ -3371,20 +3373,20 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
 	 test ! -s conftest.err
        } && test -s conftest.$ac_objext; then
 
-		{ echo "$as_me:$LINENO: result: yes" >&5
+        { echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6; }
 
-		CC="$ac_save_CC"
-		CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector"
+        CXX="$ac_save_CXX"
+        CFLAGS_DEBUG="-fno-stack-protector $CFLAGS_DEBUG"
 
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
 
-		{ echo "$as_me:$LINENO: result: no" >&5
+        { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
-		CC="$ac_save_CC"
+        CXX="$ac_save_CXX"
 
 
 fi

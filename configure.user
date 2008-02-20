@@ -55,8 +55,8 @@ WITH_PARSIM=no
 #
 # With gcc, settings typically look like this:
 #
-# TK_CFLAGS="-I/usr/local/include"
-# TK_LIBS="-L/usr/local/lib -ltk8.4 -ltcl8.4"
+# exaple:TK_CFLAGS="-I/usr/local/include"
+# example:TK_LIBS="-L/usr/local/lib -ltk8.4 -ltcl8.4"
 #
 # /usr/local/include should be replaced with the directory where tcl.h and tk.h
 # live. If they are in two different directories, use two -I switches.
@@ -72,21 +72,18 @@ WITH_PARSIM=no
 # Note that we are using the "bin" directory as the LIB dir. 
 # i.e. directly linking to the DLLs instead of the importlibs in the "lib" directory.
 #
-# TK_CFLAGS="-I/c/tools/Tcl-8.4.11/include"
-# TK_LIBS="-L/c/tools/Tcl-8.4.11/bin -ltk84 -ltcl84"
+#TK_CFLAGS="-I/c/Tools/Tcl-8.4.11/include"
+#TK_LIBS="-L/c/Tools/Tcl-8.4.11/bin -ltk84 -ltcl84"
 #
 # With Cygwin, you can try:
-#  TK_CFLAGS=
-#  TK_LIBS="-ltk84 -ltcl84"
+# examle:TK_CFLAGS=
+# examle:TK_LIBS="-ltk84 -ltcl84"
 #
 # If commented out, the configure script will try to autodetect it
 #
 # If you don't have Tcl/Tk installed, adding
 #  NO_TCL=true
 # below lets you build just the non-GUI components.
-#
-#TK_CFLAGS=
-#TK_LIBS=
 
 #
 # BLT is a Tcl/Tk extension needed by the Tkenv component of OMNeT++.
@@ -181,5 +178,5 @@ NEDC="$OMNETPP_BIN_DIR/nedtool"
 
 #
 # On MinGW we use the following
-# JDK=/c/Tools/jdk1.6.0 
+#JDK=/c/Tools/jdk1.6.0 
 # SWIG=/c/Tools/swigwin-1.3.31

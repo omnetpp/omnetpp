@@ -2,55 +2,6 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
-            class="org.omnetpp.cdt.ui.MakemakeFolderPropertyPage"
-            id="org.omnetpp.cdt.BuildSpec"
-            name="Makemake (OMNEST/OMNeT++)">
-         <enabledWhen>
-	            <or>
-	               <adapt
-	                     type="org.eclipse.core.resources.IProject">
-                   <test
-                         property="org.eclipse.core.resources.projectNature"
-                         value="org.omnetpp.main.omnetppnature">
-                   </test>
-	               </adapt>
-	               <adapt
-	                     type="org.eclipse.core.resources.IFolder">
-                   <test
-                         property="org.eclipse.core.resources.projectNature"
-                         value="org.omnetpp.main.omnetppnature">
-                   </test>
-	               </adapt>
-	            </or>
-         </enabledWhen>
-      </page>
-   </extension>
-   <extension
-         id="MakefileBuilder"
-         name="OMNeT++ Makefile Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            hasNature="false">
-         <run
-               class="org.omnetpp.cdt.makefile.MakefileBuilder">
-         </run>
-      </builder>
-   </extension>
-   <extension
-         id="makefileproblem"
-         name="Makefile Problem"
-         point="org.eclipse.core.resources.markers">
-      <persistent
-            value="false">
-      </persistent>
-      <super
-            type="org.eclipse.core.resources.problemmarker">
-      </super>
-   </extension>
-   <extension
          point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
       <managedBuildRevision
             fileVersion="4.0.0">
@@ -217,7 +168,7 @@
                </builder>
             </toolChain>
          </configuration>
-      </projectType>      
+      </projectType>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
@@ -226,29 +177,47 @@
             class="org.omnetpp.cdt.wizard.OmnetppCCProjectWizard"
             icon="icons/full/obj16/newoproject.gif"
             id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard"
-            name="OMNEST/OMNeT++ Project for C++ Development"
+            name="OMNEST/OMNeT++ Project for C++"
             project="true">
          <description>
             Create a Project that can handle OMNEST/OMNeT++ specific files and supports C++ development using CDT.
          </description>
       </wizard>
    </extension>
-   <extension point="org.eclipse.cdt.core.templates">
-      <template
-            id="org.omnetpp.cdt.templates.EmptyMake"
-            filterPattern=".*"
-            location="templates/make/empty/template.xml"
-            projectType="org.omnetpp.cdt.omnetppProjectType">
-      </template>
-   </extension>
    <extension
-         id="omnetppConfigDiscoveryProfile"
-         name="OMNEST/OMNeT++ Scanner Info Provider"
-         point="org.eclipse.cdt.make.core.ScannerConfigurationDiscoveryProfile">
-      <scannerInfoCollector
-            class="org.omnetpp.cdt.OmnetppScannerInfoCollector"
-            scope="project">
-      </scannerInfoCollector>
+         point="org.eclipse.ui.propertyPages">
+      <page
+            category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
+            class="org.omnetpp.cdt.ui.MakemakeFolderPropertyPage"
+            id="org.omnetpp.cdt.BuildSpec"
+            name="Makemake (OMNEST/OMNeT++)">
+         <enabledWhen>
+            <and>
+               <or>
+               <instanceof
+                     value="org.eclipse.core.resources.IContainer">
+               </instanceof>
+               <instanceof
+                     value="org.eclipse.cdt.core.model.ICContainer">
+               </instanceof>
+               </or>
+               <adapt
+                     type="org.eclipse.core.resources.IResource">
+                 <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
+                 </test>
+               </adapt>
+               <adapt
+                     type="org.eclipse.core.resources.IResource">
+                 <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="org.omnetpp.main.omnetppnature">
+                 </test>
+               </adapt>
+            </and>
+         </enabledWhen>
+      </page>
    </extension>
    <extension
          point="org.eclipse.debug.core.launchDelegates">
@@ -283,6 +252,35 @@
                after="org.eclipse.debug.ui.environmentTab">
          </placement>
       </tab>
+   </extension>
+   <extension
+         id="MakefileBuilder"
+         name="OMNEST/OMNeT++ Makefile Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="false">
+         <run
+               class="org.omnetpp.cdt.makefile.MakefileBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="makefileproblem"
+         name="Makefile Problem"
+         point="org.eclipse.core.resources.markers">
+      <persistent
+            value="false">
+      </persistent>
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+   </extension>
+   <extension point="org.eclipse.cdt.core.templates">
+      <template
+            id="org.omnetpp.cdt.templates.EmptyMake"
+            location="templates/make/empty/template.xml"
+            projectType="DISABLEDFORNOW.org.omnetpp.cdt.omnetppProjectType">
+      </template>
    </extension>
 
 </plugin>

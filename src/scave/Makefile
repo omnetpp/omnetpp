@@ -323,6 +323,29 @@ $O/indexedvectorfilereader.o: indexedvectorfilereader.cc \
   enumtype.h \
   statistics.h \
   indexfile.h
+$O/indexedvectorfilereader2.o: indexedvectorfilereader2.cc \
+  ../common/opp_ctype.h \
+  channel.h \
+  scaveutils.h \
+  vectorfilereader.h \
+  indexedvectorfilereader2.h \
+  ../common/commondefs.h \
+  ../common/commonutil.h \
+  node.h \
+  ../common/exception.h \
+  scavedefs.h \
+  ../common/bigdecimal.h \
+  nodetype.h \
+  commonnodes.h \
+  ../common/filereader.h \
+  ../common/linetokenizer.h \
+  resultfilemanager.h \
+  dataflowmanager.h \
+  ../common/progressmonitor.h \
+  idlist.h \
+  enumtype.h \
+  statistics.h \
+  indexfile.h
 $O/indexfile.o: indexfile.cc \
   ../common/exception.h \
   ../common/filereader.h \
@@ -370,6 +393,7 @@ $O/nodetyperegistry.o: nodetyperegistry.cc \
   vectorfilewriter.h \
   indexedvectorfile.h \
   indexedvectorfilereader.h \
+  indexedvectorfilereader2.h \
   filewriter.h \
   windowavg.h \
   slidingwinavg.h \

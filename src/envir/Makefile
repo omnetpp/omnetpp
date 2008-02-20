@@ -219,17 +219,6 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
-$O/eventlogwriter.o: eventlogwriter.cc \
-  eventlogwriter.h \
-  envdefs.h \
-  ../../include/cexception.h \
-  ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h
 $O/filemgrs.o: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -269,9 +258,7 @@ $O/filemgrs.o: filemgrs.cc \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h
+  ../../include/cexpression.h
 $O/fsutils.o: fsutils.cc \
   fsutils.h \
   ../../include/onstartup.h \
@@ -358,6 +345,24 @@ $O/main.o: main.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h
+$O/matchablefield.o: matchablefield.cc \
+  matchablefield.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/cobject.h \
+  ../../include/simkerneldefs.h \
+  ../../include/util.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/cstringpool.h
 $O/matchableobject.o: matchableobject.cc \
   matchableobject.h \
   ../../include/cclassdescriptor.h \
@@ -408,13 +413,13 @@ $O/objectprinter.o: objectprinter.cc \
   ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  matchablefield.h \
   matchableobject.h
 $O/omnetapp.o: omnetapp.cc \
   args.h \
   omnetapp.h \
   appreg.h \
   fsutils.h \
-  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
@@ -461,10 +466,9 @@ $O/omnetapp.o: omnetapp.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
+  matchablefield.h \
   matchableobject.h
 $O/opp_run.o: opp_run.cc \
   ../../include/cenvir.h \

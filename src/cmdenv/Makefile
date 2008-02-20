@@ -110,7 +110,5 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h

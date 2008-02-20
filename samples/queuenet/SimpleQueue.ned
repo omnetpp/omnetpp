@@ -20,7 +20,7 @@ network SimpleQueue
         @display("i=block/network2");
     submodules:
         sink: Sink {
-            @display("p=276.0,79.0");
+            @display("p=273,101");
         }
         queue: Queue {
             @display("p=165.0,79.0");

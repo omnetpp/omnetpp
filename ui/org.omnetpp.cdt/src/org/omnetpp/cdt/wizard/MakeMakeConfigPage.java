@@ -2,13 +2,17 @@ package org.omnetpp.cdt.wizard;
 
 import org.eclipse.cdt.managedbuilder.ui.wizards.MBSCustomPage;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public class MakeMakeConfigPage extends MBSCustomPage {
 
-    public MakeMakeConfigPage() {
+    private Composite composite;
+
+	public MakeMakeConfigPage() {
+    	this("org.omnetpp.cdt.wizardPage1");
         // TODO Auto-generated constructor stub
     }
 
@@ -25,12 +29,11 @@ public class MakeMakeConfigPage extends MBSCustomPage {
 
     public String getName() {
         // TODO Auto-generated method stub
-        return null;
+        return "test";
     }
 
     public void createControl(Composite parent) {
-        // TODO Auto-generated method stub
-
+    	composite = new Composite(parent, SWT.NONE);
     }
 
     public void dispose() {
@@ -39,17 +42,15 @@ public class MakeMakeConfigPage extends MBSCustomPage {
     }
 
     public Control getControl() {
-        // TODO Auto-generated method stub
-        return null;
+        return composite;
     }
 
     public String getDescription() {
         // TODO Auto-generated method stub
-        return null;
+        return "";
     }
 
     public String getErrorMessage() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -60,7 +61,7 @@ public class MakeMakeConfigPage extends MBSCustomPage {
 
     public String getMessage() {
         // TODO Auto-generated method stub
-        return null;
+        return "msg";
     }
 
     public String getTitle() {
@@ -92,5 +93,7 @@ public class MakeMakeConfigPage extends MBSCustomPage {
         // TODO Auto-generated method stub
 
     }
+    
+    
 
 }

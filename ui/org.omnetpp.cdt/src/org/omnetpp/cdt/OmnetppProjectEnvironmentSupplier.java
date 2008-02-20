@@ -59,8 +59,6 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
 
     public IBuildEnvironmentVariable[] getVariables(IManagedProject project,
             IEnvironmentVariableProvider provider) {
-//        OmnetppBinPathEnvironmentVariable omnetppBinPathEnvironmentVariable 
-//            = new OmnetppBinPathEnvironmentVariable(project, provider);
         return new IBuildEnvironmentVariable[] {omnetppBinPathEnvironmentVariable};
     }
     

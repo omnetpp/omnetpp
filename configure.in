@@ -59,18 +59,18 @@ AC_DEFUN(OPP_CHECK_LIB_NOLINK,[
 # add this option to $(CC) if it is supported by the compiler
 # if no sc
 # Martin Waitz <tali@admingilde.org>
-AC_DEFUN([AC_PROG_CC_OPTION], [
-    AC_MSG_CHECKING([whether $CC supports $1])
-    ac_save_CC="$CC"
-    CC="$CC $1"
+AC_DEFUN([AC_PROG_CXX_OPTION], [
+    AC_MSG_CHECKING([whether $CXX supports $1])
+    ac_save_CXX="$CXX"
+    CXX="$CXX $1"
     AC_COMPILE_IFELSE(AC_LANG_PROGRAM(),[
         AC_MSG_RESULT([yes])
         ifelse($2, , [], [
-        CC="$ac_save_CC"
+        CXX="$ac_save_CXX"
         $2])
     ], [
         AC_MSG_RESULT([no])
-        CC="$ac_save_CC"
+        CXX="$ac_save_CXX"
         $3
     ])
 ])
@@ -304,8 +304,8 @@ fi
 #----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
 #----------------------
-AC_PROG_CC_OPTION(-fno-stack-protector, CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-stack-protector")
-AC_PROG_CC_OPTION(-fno-stack-protector, CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector")
+AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_RELEASE="-fno-stack-protector $CFLAGS_RELEASE")
+AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_DEBUG="-fno-stack-protector $CFLAGS_DEBUG")
 
 #----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)

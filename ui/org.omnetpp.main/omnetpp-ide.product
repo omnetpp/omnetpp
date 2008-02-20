@@ -21,7 +21,7 @@
 
    <splash
       location="org.omnetpp.main"
-      startupProgressRect="10,10,300,10"
+      startupProgressRect="10,10,298,10"
       startupMessageRect="10,20,500,25"
       startupForegroundColor="000000" />
    <launcher>

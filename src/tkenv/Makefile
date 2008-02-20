@@ -142,7 +142,6 @@ $O/inspector.o: inspector.cc \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -236,7 +235,6 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -325,17 +323,15 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/globals.h \
-  ../../include/cparvalue.h \
-  ../../include/onstartup.h \
-  ../../include/cclassfactory.h \
-  ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/cfunction.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
+  ../../include/cexpression.h \
   tkutil.h \
   tkdefs.h \
   ../envir/args.h \
@@ -389,11 +385,9 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponenttype.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
-  ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
+  ../../include/cexpression.h \
   tkutil.h \
   tkdefs.h \
   ../envir/args.h \
@@ -443,7 +437,6 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
   ../../include/cmsgheap.h \
-  ../../include/cneddeclarationbase.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -542,7 +535,6 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cconfiguration.h \
   inspector.h \
   tkutil.h
-$O/tclcode.o: tclcode.cc
 $O/tkapp.o: tkapp.cc \
   ../envir/appreg.h \
   ../../include/cenvir.h \
@@ -561,7 +553,6 @@ $O/tkapp.o: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
-  tclcode.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -589,8 +580,6 @@ $O/tkapp.o: tkapp.cc \
   ../../include/cfunction.h \
   ../envir/envdefs.h \
   ../../include/platdep/timeutil.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
@@ -652,8 +641,6 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   ../../include/cexpression.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
@@ -772,8 +759,6 @@ $O/visitor.o: visitor.cc \
   ../../include/cfunction.h \
   ../../include/cexpression.h \
   ../../include/ccomponenttype.h \
-  ../../include/cneddeclarationbase.h \
-  ../../include/cparvalue.h \
   tkapp.h \
   ../envir/matchableobject.h \
   tkdefs.h \
