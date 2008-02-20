@@ -11,7 +11,7 @@
 simple Txc6
 {
     parameters:
-        volatile double delayTime;   // delay before sending back message
+        volatile double delayTime @unit(s);   // delay before sending back message
         @display("i=block/process");
     gates:
         input in;
@@ -30,7 +30,7 @@ network Tictoc6
                 @display("i=,gold");
         };
     connections:
-        tic.out --> {  delay = 100ms; } --> toc.in;
-        tic.in <-- {  delay = 100ms; } <-- toc.out;
+        tic.out --> { delay = 100ms; } --> toc.in;
+        tic.in <-- { delay = 100ms; } <-- toc.out;
 }
 

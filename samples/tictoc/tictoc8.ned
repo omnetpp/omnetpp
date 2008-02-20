@@ -41,7 +41,7 @@ network Tictoc8
                 @display("i=,gold");
         };
     connections:
-        tic.out --> {  delay = 100ms; } --> toc.in;
-        tic.in <-- {  delay = 100ms; } <-- toc.out;
+        tic.out --> { delay = 100ms; } --> toc.in;
+        tic.in <-- { delay = 100ms; } <-- toc.out;
 }
 

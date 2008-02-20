@@ -32,7 +32,7 @@ network Tictoc2
                 @display("i=block/process,gold"); // here too
         };
     connections:
-        tic.out --> {  delay = 100ms; } --> toc.in;
-        tic.in <-- {  delay = 100ms; } <-- toc.out;
+        tic.out --> { delay = 100ms; } --> toc.in;
+        tic.in <-- { delay = 100ms; } <-- toc.out;
 }
 
