@@ -65,8 +65,8 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
 
     // cached expressions: NED expressions (ExpressionElement) compiled into
     // cParValue get cached here, indexed by exprNode->id().
-    typedef std::map<long, cParValue *> ExpressionMap;
-    ExpressionMap expressionMap;
+    typedef std::map<long, cParValue *> PrebuiltParValuesMap;
+    PrebuiltParValuesMap parvaluesMap;
 
   protected:
     void putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props) const;
@@ -75,7 +75,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     virtual cNEDDeclaration *getSuperDecl() const; // covariant return value
 
     static void clearPropsMap(PropertiesMap& propsMap);
-    static void clearExpressionMap(ExpressionMap& exprMap);
+    static void clearPrebuiltParValuesMap(PrebuiltParValuesMap& parvaluesMap);
 
     static cProperties *mergeProperties(const cProperties *baseprops, NEDElement *parent);
     static void updateProperty(PropertyElement *propNode, cProperty *prop);
@@ -127,10 +127,10 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const;
     //@}
 
-    /** @name Expression caching */
+    /** @name Caching of pre-built cParValues, so that we we don't have to build them from NEDElements every time */
     //@{
-    virtual cParValue *getCachedExpression(NEDElement *node);
-    virtual void putCachedExpression(NEDElement *node, cParValue *value);
+    virtual cParValue *getPrebuiltParValueFor(NEDElement *node);
+    virtual void putPrebuiltParValueFor(NEDElement *node, cParValue *value);
     //@}
 };
 

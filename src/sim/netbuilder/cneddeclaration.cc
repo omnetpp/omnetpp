@@ -41,8 +41,8 @@ cNEDDeclaration::~cNEDDeclaration()
     clearPropsMap(subcomponentPropsMap);
     clearPropsMap(subcomponentParamPropsMap);
     clearPropsMap(subcomponentGatePropsMap);
-    //XXX printf("%s: %d cached expressions\n", name(), expressionMap.size());
-    clearExpressionMap(expressionMap);
+    //XXX printf("%s: %d cached expressions\n", name(), parvaluesMap.size());
+    clearPrebuiltParValuesMap(parvaluesMap);
 }
 
 void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
@@ -54,11 +54,11 @@ void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
     propsMap.clear();
 }
 
-void cNEDDeclaration::clearExpressionMap(ExpressionMap& exprMap)
+void cNEDDeclaration::clearPrebuiltParValuesMap(PrebuiltParValuesMap& parvaluesMap)
 {
-    for (ExpressionMap::iterator it = exprMap.begin(); it!=exprMap.end(); ++it)
+    for (PrebuiltParValuesMap::iterator it = parvaluesMap.begin(); it!=parvaluesMap.end(); ++it)
         delete it->second;
-    exprMap.clear();
+    parvaluesMap.clear();
 }
 
 cNEDDeclaration *cNEDDeclaration::getSuperDecl() const
@@ -303,20 +303,20 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     prop->setValue(cProperty::DEFAULTKEY, 0, d.toString());
 }
 
-cParValue *cNEDDeclaration::getCachedExpression(NEDElement *node)
+cParValue *cNEDDeclaration::getPrebuiltParValueFor(NEDElement *node)
 {
-    ExpressionMap::const_iterator it = expressionMap.find(node->getId());
-    //XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==expressionMap.end() ? NULL : it->second);
-    return it==expressionMap.end() ? NULL : it->second;
+    PrebuiltParValuesMap::const_iterator it = parvaluesMap.find(node->getId());
+    //XXX printf("      getExpr: %ld -> %p\n", node->getId(), it==parvaluesMap.end() ? NULL : it->second);
+    return it==parvaluesMap.end() ? NULL : it->second;
 }
 
-void cNEDDeclaration::putCachedExpression(NEDElement *node, cParValue *value)
+void cNEDDeclaration::putPrebuiltParValueFor(NEDElement *node, cParValue *value)
 {
     //XXX printf("      putExpr: %ld -> %p\n", node->getId(), value);
-    ExpressionMap::const_iterator it = expressionMap.find(node->getId());
-    ASSERT(it==expressionMap.end()); //XXX or?
-    if (it==expressionMap.end())
-        expressionMap[node->getId()] = value;
+    PrebuiltParValuesMap::const_iterator it = parvaluesMap.find(node->getId());
+    ASSERT(it==parvaluesMap.end()); //XXX or?
+    if (it==parvaluesMap.end())
+        parvaluesMap[node->getId()] = value;
 }
 
 

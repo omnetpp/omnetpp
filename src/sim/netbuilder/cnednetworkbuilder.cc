@@ -139,7 +139,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         cParValue *value = NULL;
         if (exprNode)
         {
-            value = currentDecl->getCachedExpression(exprNode);
+            value = currentDecl->getPrebuiltParValueFor(exprNode);
             ASSERT(!value || value->isName(paramName));
             if (!value)
             {
@@ -161,7 +161,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 
                 cExpressionBuilder::assign(value, dynamicExpr); //XXX may throw exception
 
-                currentDecl->putCachedExpression(exprNode, value);
+                currentDecl->putPrebuiltParValueFor(exprNode, value);
             }
         }
 
@@ -212,14 +212,14 @@ void cNEDNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isS
         int gatesize = -1;
         if (gateNode->getIsVector() && exprNode)
         {
-            cParValue *value = currentDecl->getCachedExpression(exprNode);
+            cParValue *value = currentDecl->getPrebuiltParValueFor(exprNode);
             if (!value)
             {
                 cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
                 value = new cLongPar();
                 value->setName("gatesize-expression");
                 cExpressionBuilder::assign(value, dynamicExpr);
-                currentDecl->putCachedExpression(exprNode, value);
+                currentDecl->putPrebuiltParValueFor(exprNode, value);
             }
             gatesize = value->longValue(module);
         }
@@ -906,7 +906,7 @@ ExpressionElement *cNEDNetworkBuilder::findExpression(NEDElement *node, const ch
 
 cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope)
 {
-    cParValue *p = currentDecl->getCachedExpression(exprNode);
+    cParValue *p = currentDecl->getPrebuiltParValueFor(exprNode);
     if (!p)
     {
         cDynamicExpression *e = cExpressionBuilder().process(exprNode, inSubcomponentScope);
@@ -914,7 +914,7 @@ cParValue *cNEDNetworkBuilder::getOrCreateExpression(ExpressionElement *exprNode
         cExpressionBuilder::assign(p, e);
         p->setUnit(unit);
 
-        currentDecl->putCachedExpression(exprNode, p);
+        currentDecl->putPrebuiltParValueFor(exprNode, p);
     }
     return p;
 }
