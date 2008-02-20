@@ -55,13 +55,29 @@ USING_NAMESPACE
   TODO connection display string
 */
 
-/* for debugging
-static void dump(NEDElement *node)
+
+
+// for debugging
+//static void dump(NEDElement *node)
+//{
+//    generateXML(std::cout, node, false);
+//    std::cout.flush();
+//}
+
+// utility function for exception handling: adds NED file+line to the exception text
+static void updateOrRethrowException(std::exception& e, NEDElement *context)
 {
-    generateXML(std::cout, node, false);
-    std::cout.flush();
+    const char *loc = context ? context->getSourceLocation() : NULL;
+    if (!opp_isempty(loc))
+    {
+        std::string msg = std::string(e.what()) + ", at " + loc;
+        cException *ce = dynamic_cast<cException *>(&e);
+        if (ce)
+           ce->setMessage(msg.c_str());
+        else
+           throw cRuntimeError("%s", msg.c_str()); // cannot set msg on existing exception object, throw new one
+    }
 }
-*/
 
 void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration *decl)
 {
@@ -175,7 +191,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         }
     }
     catch (std::exception& e) {
-        throw NEDException(paramNode, "%s", e.what());
+        updateOrRethrowException(e, paramNode); throw;
     }
 }
 
@@ -217,7 +233,7 @@ void cNEDNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isS
             module->setGateSize(gateName, gatesize);
     }
     catch (std::exception& e) {
-        throw NEDException(gateNode, "%s", e.what());
+        updateOrRethrowException(e, gateNode); throw;
     }
 }
 
@@ -342,11 +358,11 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName,
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
     std::string qname = resolveComponentType(context, modTypeName);
     if (qname.empty())
-        throw cRuntimeError(modp, "dynamic network builder: submodule %s: cannot resolve module type `%s' (not in the loaded NED files?)",
+        throw cRuntimeError(modp, "Submodule %s: cannot resolve module type `%s' (not in the loaded NED files?)",
                             submodname, modTypeName);
     cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
-        throw cRuntimeError(modp, "dynamic network builder: submodule %s: `%s' is not a module type",
+        throw cRuntimeError(modp, "Submodule %s: `%s' is not a module type",
                             submodname, qname.c_str());
     return (cModuleType *)componenttype;
 }
@@ -360,24 +376,24 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
     std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
     cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
     if (!interfacedecl)
-        throw cRuntimeError(modp, "dynamic network builder: submodule %s: cannot resolve module interface `%s'",
+        throw cRuntimeError(modp, "Submodule %s: cannot resolve module interface `%s'",
                             submodname, likeType);
     if (interfacedecl->getTree()->getTagCode()!=NED_MODULE_INTERFACE)
-        throw cRuntimeError(modp, "dynamic network builder: submodule %s: `%s' is not a module interface",
+        throw cRuntimeError(modp, "Submodule %s: `%s' is not a module interface",
                             submodname, interfaceqname.c_str());
 
     // search for module type that implements the interface
     std::vector<std::string> candidates = findTypeWithInterface(modTypeName, interfaceqname.c_str());
     if (candidates.empty())
-        throw cRuntimeError(modp, "dynamic network builder: submodule %s: no module type named `%s' found that implements module interface %s (not in the loaded NED files?)",
+        throw cRuntimeError(modp, "Submodule %s: no module type named `%s' found that implements module interface %s (not in the loaded NED files?)",
                             submodname, modTypeName, interfaceqname.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError(modp, "dynamic network builder: submodule %s: more than one module types named `%s' found that implement module interface %s (use fully qualified name to disambiguate)",
+        throw cRuntimeError(modp, "Submodule %s: more than one module types named `%s' found that implement module interface %s (use fully qualified name to disambiguate)",
                             submodname, modTypeName, interfaceqname.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
-        throw cRuntimeError(modp, "dynamic network builder: submodule %s: `%s' is not a module type",
+        throw cRuntimeError(modp, "Submodule %s: `%s' is not a module type",
                             submodname, candidates[0].c_str());
     return (cModuleType *)componenttype;
 }
@@ -452,7 +468,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
                 findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
         }
         catch (std::exception& e) {
-            throw NEDException(submod, "%s", e.what());
+            updateOrRethrowException(e, submod); throw;
         }
 
         cModule *submodp = submodtype->create(submodname, modp);
@@ -478,7 +494,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
                         findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
                 }
                 catch (std::exception& e) {
-                    throw NEDException(submod, "%s", e.what());
+                    updateOrRethrowException(e, submod); throw;
                 }
             }
             cModule *submodp = submodtype->create(submodname, modp, vectorsize, i);
@@ -627,7 +643,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
             if (destg->ownerModule()==modp ? destg->type()!=cGate::OUTPUT : destg->type()!=cGate::INPUT)
                 errg = destg;
             if (errg)
-                throw cRuntimeError(modp, "dynamic network builder: gate %s is being connected in the wrong direction",
+                throw cRuntimeError(modp, "Gate %s is being connected in the wrong direction",
                                     errg->fullPath().c_str());
 
             doConnectGates(modp, srcg, destg, conn);
@@ -636,7 +652,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
         {
             // find gates and create connection in both ways
             if (conn->getSrcGateSubg()!=NED_SUBGATE_NONE || conn->getDestGateSubg()!=NED_SUBGATE_NONE)
-                throw cRuntimeError(modp, "dynamic network builder: gate$i or gate$o used with bidirectional connections");
+                throw cRuntimeError(modp, "gate$i or gate$o used with bidirectional connections");
 
             // now: 1 is input, 2 is output, except for parent module gates where it is the other way round
             // (because we connect xx.out --> yy.in, but xx.out --> out!)
@@ -658,7 +674,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
         }
     }
     catch (std::exception& e) {
-        throw NEDException(conn, "%s", e.what());
+        updateOrRethrowException(e, conn); throw;
     }
 }
 
@@ -689,7 +705,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     //TRACE("resolveGate(mod=%s, %s.%s, subg=%d, plusplus=%d)", parentmodp->fullPath().c_str(), modname, gatename, subg, isplusplus);
 
     if (isplusplus && gateindexp)
-        throw cRuntimeError(parentmodp, "dynamic network builder: both `++' and gate index expression used in a connection");
+        throw cRuntimeError(parentmodp, "Both `++' and gate index expression used in a connection");
 
     cModule *modp = resolveModuleForConnection(parentmodp, modname, modindexp);
 
@@ -716,7 +732,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
         {
             gatep = modp->getOrCreateFirstUnconnectedGate(gatename2, 0, true, false); // inside, don't expand
             if (!gatep)
-                throw cRuntimeError(modp, "dynamic network builder: %s[] gates are all connected, no gate left for `++' operator", gatename);
+                throw cRuntimeError(modp, "%s[] gates are all connected, no gate left for `++' operator", gatename);
         }
         else
         {
@@ -739,7 +755,7 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
                                           cGate *&gate1, cGate *&gate2)
 {
     if (isplusplus && gateindexp)
-        throw cRuntimeError(parentmodp, "dynamic network builder: both `++' and gate index expression used in a connection");
+        throw cRuntimeError(parentmodp, "Both `++' and gate index expression used in a connection");
 
     cModule *modp = resolveModuleForConnection(parentmodp, modname, modindexp);
 
@@ -756,7 +772,7 @@ void cNEDNetworkBuilder::resolveInoutGate(cModule *parentmodp,
         {
             modp->getOrCreateFirstUnconnectedGatePair(gatename, true, false, gate1, gate2); // inside, don't expand
             if (!gate1 || !gate2)
-                throw cRuntimeError(parentmodp, "dynamic network builder: %s[] gates are all connected, no gate left for `++' operator", gatename);
+                throw cRuntimeError(parentmodp, "%s[] gates are all connected, no gate left for `++' operator", gatename);
         }
         else
         {
@@ -791,9 +807,9 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
         if (!modp)
         {
             if (!modindexp)
-                throw cRuntimeError(modp, "dynamic network builder: no submodule `%s' to be connected", modname);
+                throw cRuntimeError(modp, "No submodule `%s' to be connected", modname);
             else
-                throw cRuntimeError(modp, "dynamic network builder: no submodule `%s[%d]' to be connected", modname, modindex);
+                throw cRuntimeError(modp, "No submodule `%s[%d]' to be connected", modname, modindex);
         }
         return modp;
     }
@@ -838,11 +854,11 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltyp
     NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
     std::string qname = resolveComponentType(context, channeltypename);
     if (qname.empty())
-        throw cRuntimeError(modp, "dynamic network builder: cannot resolve channel type `%s' (not in the loaded NED files?)", channeltypename);
+        throw cRuntimeError(modp, "Cannot resolve channel type `%s' (not in the loaded NED files?)", channeltypename);
 
     cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cChannelType *>(componenttype))
-        throw cRuntimeError(modp, "dynamic network builder: `%s' is not a channel type", qname.c_str());
+        throw cRuntimeError(modp, "`%s' is not a channel type", qname.c_str());
     return (cChannelType *)componenttype;
 }
 
@@ -855,22 +871,22 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
     std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
     cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
     if (!interfacedecl)
-        throw cRuntimeError(modp, "dynamic network builder: cannot resolve channel interface `%s'", likeType);
+        throw cRuntimeError(modp, "Cannot resolve channel interface `%s'", likeType);
     if (interfacedecl->getTree()->getTagCode()!=NED_CHANNEL_INTERFACE)
-        throw cRuntimeError(modp, "dynamic network builder: `%s' is not a channel interface", interfaceqname.c_str());
+        throw cRuntimeError(modp, "`%s' is not a channel interface", interfaceqname.c_str());
 
     // search for channel type that implements the interface
     std::vector<std::string> candidates = findTypeWithInterface(channeltypename, interfaceqname.c_str());
     if (candidates.empty())
-        throw cRuntimeError(modp, "dynamic network builder: no channel type named `%s' found that implements channel interface %s (not in the loaded NED files?)",
+        throw cRuntimeError(modp, "No channel type named `%s' found that implements channel interface %s (not in the loaded NED files?)",
                             channeltypename, interfaceqname.c_str());
     if (candidates.size() > 1)
-        throw cRuntimeError(modp, "dynamic network builder: more than one channel types named `%s' found that implement channel interface %s (use fully qualified name to disambiguate)",
+        throw cRuntimeError(modp, "More than one channel types named `%s' found that implement channel interface %s (use fully qualified name to disambiguate)",
                             channeltypename, interfaceqname.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
     if (!dynamic_cast<cChannelType *>(componenttype))
-        throw cRuntimeError(modp, "dynamic network builder: `%s' is not a channel type", candidates[0].c_str());
+        throw cRuntimeError(modp, "`%s' is not a channel type", candidates[0].c_str());
     return (cChannelType *)componenttype;
 }
 
@@ -910,9 +926,7 @@ long cNEDNetworkBuilder::evaluateAsLong(ExpressionElement *exprNode, cComponent 
         return p->longValue(context);
     }
     catch (std::exception& e) {
-        throw NEDException(exprNode, "%s", e.what()); //FIXME all use of NEDException
-        // in this file is WRONG, because contextModule will NOT be printed in the error dialog!!! (it's lost)
-        // Re-throw the cRuntimeError??? (if it's that)
+        updateOrRethrowException(e, exprNode); throw;
     }
 }
 
@@ -923,7 +937,7 @@ bool cNEDNetworkBuilder::evaluateAsBool(ExpressionElement *exprNode, cComponent 
         return p->boolValue(context);
     }
     catch (std::exception& e) {
-        throw NEDException(exprNode, "%s", e.what());
+        updateOrRethrowException(e, exprNode); throw;
     }
 }
 
@@ -934,7 +948,7 @@ std::string cNEDNetworkBuilder::evaluateAsString(ExpressionElement *exprNode, cC
         return p->stdstringValue(context);
     }
     catch (std::exception& e) {
-        throw NEDException(exprNode, "%s", e.what());
+        updateOrRethrowException(e, exprNode); throw;
     }
 }
 

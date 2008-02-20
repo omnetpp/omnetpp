@@ -133,14 +133,9 @@ class SIM_API cException : public std::exception
     virtual const char *what() const throw() {return msg.c_str();}
 
     /**
-     * Modifies the error text
+     * Modifies the error text.
      */
-    virtual void append(const char *txt) {msg += txt;}
-
-    /**
-     * Modifies the error text
-     */
-    virtual void prepend(const char *txt) {msg += txt;}
+    virtual void setMessage(const char *txt) {msg = txt;}
     
     /**
      * Returns true if the exception has "context info", that is, it occurred
