@@ -539,14 +539,14 @@ Define_Function2(poisson, _wrap_poisson_with_rng, 2);
 // Meaningful error for obsolete genk_ functions
 //
 
-static double obsolete_genk_function()
+static double obsolete_genk_function(...)
 {
     throw cRuntimeError("Obsolete function -- use the one without the \"genk_\" prefix, and rng as last argument");
 }
 
-Define_Function2(genk_uniform, obsolete_genk_function, 3);
-Define_Function2(genk_intuniform, obsolete_genk_function, 3);
-Define_Function2(genk_exponential, obsolete_genk_function, 2);
-Define_Function2(genk_normal, obsolete_genk_function, 3);
-Define_Function2(genk_truncnormal, obsolete_genk_function, 3);
+Define_Function2(genk_uniform, (MathFunc3Args)obsolete_genk_function, 3);
+Define_Function2(genk_intuniform, (MathFunc3Args)obsolete_genk_function, 3);
+Define_Function2(genk_exponential, (MathFunc2Args)obsolete_genk_function, 2);
+Define_Function2(genk_normal, (MathFunc3Args)obsolete_genk_function, 3);
+Define_Function2(genk_truncnormal, (MathFunc3Args)obsolete_genk_function, 3);
 
