@@ -73,7 +73,6 @@ NAMESPACE_BEGIN
  *
  * @hideinitializer
  */
-//FIXME argtypes without quote, and then it can be included in varname too?
 #define Define_NED_Function2(NAME,FUNCTION,RETURNTYPE,ARGTYPES) \
   EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cMathFunction(#NAME,FUNCTION,RETURNTYPE,ARGTYPES));)
 //@}

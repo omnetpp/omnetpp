@@ -22,7 +22,7 @@
 
 USING_NAMESPACE
 
-//XXX use a single string for args, so that it's open to extensions? like "S;SD[D]"
+//XXX use a single string for args, so that it's open to extensions? like "SDu/Du->S"   "/" means end of mandatory args; "u" means unit allowed; space, comma and hyphen gets ignored
 //XXX also: wrap invocation of function, so that cNEDFunction checks arg types etc
 //XXX also: old Define_Function be implemented with cNEDFunction (ie an adapter func)
 
