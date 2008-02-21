@@ -20,6 +20,7 @@
 #include "cnedfunction.h"
 #include "cexception.h"
 #include "unitconversion.h"
+#include "stringutil.h"
 #include "opp_ctype.h"
 
 USING_NAMESPACE
@@ -112,10 +113,10 @@ DEF(unitof, "S", "D", {
 // String manipulation functions.
 //
 
-inline assertDimless(Value argv[], int k)
+inline void assertDimless(Value argv[], int k)
 {
     if (!opp_isempty(argv[k].dblunit))
-       throw cRuntimeException("Argument %d must be dimensionless", k);
+       throw cRuntimeError("Argument %d must be dimensionless", k);
 }
 
 DEF(length, "L", "S", {
