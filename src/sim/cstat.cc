@@ -311,11 +311,11 @@ void cStdDev::clearResult()
 
 double cStdDev::random() const
 {
-    switch( num_samples )
+    switch (num_samples)
     {
         case 0:  return 0.0;
         case 1:  return min_samples;
-        default: return genk_normal(genk, mean(), stddev());
+        default: return normal(mean(), stddev(), genk);
     }
 }
 

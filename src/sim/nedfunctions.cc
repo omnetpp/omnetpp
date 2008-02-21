@@ -19,6 +19,7 @@
 #include "cfunction.h"
 #include "cnedfunction.h"
 #include "cexception.h"
+#include "unitconversion.h"
 #include "opp_ctype.h"
 
 USING_NAMESPACE
@@ -27,16 +28,14 @@ typedef cDynamicExpression::Value Value;  // abbreviation for local use
 
 void nedfunctions_dummy() {} //see util.cc
 
+#define DEF(NAME, RETURNTYPE, ARGTYPES, BODY) \
+    Value NAME(cComponent *context, Value argv[], int argc) {BODY} \
+    Define_NED_Function(NAME, RETURNTYPE, ARGTYPES);
+
+
 //
 // NED math.h functions
 //
-
-double min(double a, double b)      {return a<b ? a : b;}
-double max(double a, double b)      {return a<b ? b : a;}
-
-Define_Function(min, 2)
-Define_Function(max, 2)
-
 Define_Function(acos, 1)
 Define_Function(asin, 1)
 Define_Function(atan, 1)
@@ -53,13 +52,30 @@ Define_Function(exp, 1)
 Define_Function(pow, 2)
 Define_Function(sqrt, 1)
 
-Define_Function(fabs, 1)
-Define_Function(fmod, 2)
+Define_Function(fabs, 1)  //FIXME any unit!
+Define_Function(fmod, 2)  //FIXME accept units!
 
 Define_Function(hypot, 2)
 
 Define_Function(log, 1)
 Define_Function(log10, 1)
+
+
+//
+// Other mathematical functions
+//
+DEF(min, "D", "DD", {
+    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
+    return argv[0].dbl < argv1converted ? argv[0] : argv[1];
+})
+
+DEF(max, "D", "DD", {
+    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
+    return argv[0].dbl < argv1converted ? argv[1] : argv[0];
+})
+
+//TODO add: replaceunit(var, "m"); dropunit(var); convertunit(var, "m"); unitof(var)
+
 
 //----
 
@@ -68,196 +84,135 @@ Define_Function(log10, 1)
 //
 
 //FIXME check units!
-//TODO add: replaceunit(var, "m"); dropunit(var); convertunit(var, "m"); unitof(var)
 
-// length(S) -> L
-Value length(cComponent *context, Value args[], int numargs)
-{
-    return (long)args[0].str.size();
-}
-Define_NED_Function(length, "S", "L");
+DEF(length, "L", "S", {
+    return (long)argv[0].str.size();
+})
 
-// contains(S, S) -> B
-Value contains(cComponent *context, Value args[], int numargs)
-{
-    return args[0].str.find(args[1].str) != std::string::npos;
-}
-Define_NED_Function(contains, "SS", "B");
+DEF(contains, "B", "SS", {
+    return argv[0].str.find(argv[1].str) != std::string::npos;
+})
 
-// substring(S, L, L) -> S
-Value substring(cComponent *context, Value args[], int numargs)
-{
-    int size = args[0].str.size();
-    int index1 = (int)args[1].dbl;
-    int index2 = (int)args[2].dbl;
+DEF(substring, "S", "SLL", {
+    int size = argv[0].str.size();
+    int index1 = (int)argv[1].dbl;
+    int index2 = (int)argv[2].dbl;
 
     if (index1 < 0 || index1 > size)
         throw cRuntimeError("substring(): index1 out of range");
     else if (index2 < 0 || index2 > size)
         throw cRuntimeError("substring(): index2 out of range");
 
-    return args[0].str.substr(index1, index2 - index1);
-}
-Define_NED_Function(substring, "SLL", "S");
+    return argv[0].str.substr(index1, index2 - index1);
+})
 
-// startswith(S, S) -> B
-Value startswith(cComponent *context, Value args[], int numargs)
-{
-    return args[0].str.find(args[1].str) == 0;
-}
-Define_NED_Function(startswith, "SS", "B");
+DEF(startswith, "B", "SS", {
+    return argv[0].str.find(argv[1].str) == 0;
+})
 
-// endswith(S, S) -> B
-Value endswith(cComponent *context, Value args[], int numargs)
-{
-    return args[0].str.rfind(args[1].str) == args[0].str.size() - args[1].str.size();
-}
-Define_NED_Function(endswith, "SS", "B");
+DEF(endswith, "B", "SS", {
+    return argv[0].str.rfind(argv[1].str) == argv[0].str.size() - argv[1].str.size();
+})
 
-// startof(S, L) -> S
-Value startof(cComponent *context, Value args[], int numargs)
-{
-    int length = (int)args[1].dbl;
-
+DEF(startof, "S", "SL", {
+    int length = (int)argv[1].dbl;
     if (length < 0)
         throw cRuntimeError("startof(): length is negative");
+    return argv[0].str.substr(0, min(argv[0].str.size(), length));
+})
 
-    return args[0].str.substr(0, min(args[0].str.size(), length));
-}
-Define_NED_Function(startof, "SL", "S");
-
-// endof(S, L) -> S
-Value endof(cComponent *context, Value args[], int numargs)
-{
-    int length = (int)args[1].dbl;
-
+DEF(endof, "S", "SL", {
+    int length = (int)argv[1].dbl;
     if (length < 0)
         throw cRuntimeError("endof(): length is negative");
+    int size = argv[0].str.size();
+    return argv[0].str.substr(max(0, size - length), size);
+})
 
-    int size = args[0].str.size();
-    return args[0].str.substr(max(0, size - length), size);
-}
-Define_NED_Function(endof, "SL", "S");
-
-// leftof(S, L) -> S
-Value leftof(cComponent *context, Value args[], int numargs)
-{
-    int size = args[0].str.size();
-    int index = (int)args[1].dbl;
-
+DEF(leftof, "S", "SL", {
+    int size = argv[0].str.size();
+    int index = (int)argv[1].dbl;
     if (index < 0 || index > size)
         throw cRuntimeError("leftof(): index out of range");
+    return startof(context, argv, argc);
+})
 
-    return startof(context, args, numargs);
-}
-Define_NED_Function(leftof, "SL", "S");
-
-// rightof(S, L) -> S
-Value rightof(cComponent *context, Value args[], int numargs)
-{
-    int size = args[0].str.size();
-    int index = (int)args[1].dbl;
-
+DEF(rightof, "S", "SL", {
+    int size = argv[0].str.size();
+    int index = (int)argv[1].dbl;
     if (index < 0 || index > size)
         throw cRuntimeError("rightof(): index out of range");
+    return argv[0].str.substr(index, size);
+})
 
-    return args[0].str.substr(index, size);
-}
-Define_NED_Function(rightof, "SL", "S");
-
-// replace(S, S, S) -> S
-Value replace(cComponent *context, Value args[], int numargs)
-{
-    std::string str = args[0].str;
-    std::string &search = args[1].str;
-    std::string &replacement = args[2].str;
+DEF(replace, "S", "SSS", {
+    std::string str = argv[0].str;
+    std::string &search = argv[1].str;
+    std::string &replacement = argv[2].str;
 
     int searchSize = search.size();
     int replacementSize = replacement.size();
     int index = 0;
-
     while ((index = str.find(search, index)) != std::string::npos) {
         str.replace(index, searchSize, replacement);
         index += replacementSize - searchSize + 1;
     }
-
     return str;
-}
-Define_NED_Function(replace, "SSS", "S");
+})
 
-// indexof(S, S) -> L
-Value indexof(cComponent *context, Value args[], int numargs)
-{
-    return (long)args[0].str.find(args[1].str);
-}
-Define_NED_Function(indexof, "SS", "L");
+DEF(indexof, "L", "SS", {
+    return (long)argv[0].str.find(argv[1].str);
+})
 
-// toupper(S) -> S
-Value toupper(cComponent *context, Value args[], int numargs)
-{
-    std::string tmp = args[0].str;
+DEF(toupper, "S", "S", {
+    std::string tmp = argv[0].str;
     int length = tmp.length();
     for (int i=0; i<length; i++)
         tmp[i] = opp_toupper(tmp[i]);
     return tmp;
-}
-Define_NED_Function(toupper, "S", "S");
+})
 
-// tolower(S) -> S
-Value tolower(cComponent *context, Value args[], int numargs)
-{
-    std::string tmp = args[0].str;
+DEF(tolower, "S", "S", {
+    std::string tmp = argv[0].str;
     int length = tmp.length();
     for (int i=0; i<length; i++)
         tmp[i] = opp_tolower(tmp[i]);
     return tmp;
-}
-Define_NED_Function(tolower, "S", "S");
+})
 
-// toint(*) -> L
-Value toint(cComponent *context, Value args[], int numargs)
-{
-    switch (args[0].type) {
+DEF(toint, "L", "*", {
+    switch (argv[0].type) {
         case cDynamicExpression::Value::BOOL:
-            return args[0].bl ? 1L : 0L;
+            return argv[0].bl ? 1L : 0L;
         case cDynamicExpression::Value::DBL:
-            return (long)floor(args[0].dbl);
+            return (long)floor(argv[0].dbl);
         case cDynamicExpression::Value::STR:
-            return atol(args[0].str.c_str());
+            return atol(argv[0].str.c_str());
         case cDynamicExpression::Value::XML:
             throw cRuntimeError("toint(): cannot convert xml to int");
         default:
             throw cRuntimeError("internal error: bad Value type");
     }
-}
-Define_NED_Function(toint, "*", "L");
+})
 
-// todouble(*) -> D
-Value todouble(cComponent *context, Value args[], int numargs)
-{
-    switch (args[0].type) {
+DEF(todouble, "L", "*", {
+    switch (argv[0].type) {
         case cDynamicExpression::Value::BOOL:
-            return args[0].bl ? 1.0 : 0.0;
+            return argv[0].bl ? 1.0 : 0.0;
         case cDynamicExpression::Value::DBL:
-            return args[0].dbl;
+            return argv[0].dbl;
         case cDynamicExpression::Value::STR:
-            return atof(args[0].str.c_str());
+            return atof(argv[0].str.c_str());
         case cDynamicExpression::Value::XML:
             throw cRuntimeError("todouble(): cannot convert xml to double");
         default:
             throw cRuntimeError("internal error: bad Value type");
     }
-}
-Define_NED_Function(todouble, "*", "D");
+})
 
-// tostring(*) -> S
-Value tostring(cComponent *context, Value args[], int numargs)
-{
-    return args[0].toString();
-}
-Define_NED_Function(tostring, "*", "S");
-
-
+DEF(tostring, "S", "*", {
+    return argv[0].toString();
+})
 
 //
 // Random variate generation.

@@ -64,8 +64,8 @@ NAMESPACE_BEGIN
  *
  * @hideinitializer
  */
-#define Define_NED_Function(NAME,ARGTYPES,RETURNTYPE) \
-  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,NAME,ARGTYPES,RETURNTYPE));)
+#define Define_NED_Function(NAME,RETURNTYPE,ARGTYPES) \
+  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,NAME,RETURNTYPE,ARGTYPES));)
 
 /**
  * Like Define_NED_Function(), but it allows registering a function with a
@@ -74,8 +74,8 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 //FIXME argtypes without quote, and then it can be included in varname too?
-#define Define_NED_Function2(NAME,FUNCTION,ARGTYPES,RETURNTYPE) \
-  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cMathFunction(#NAME,FUNCTION,ARGTYPES,RETURNTYPE));)
+#define Define_NED_Function2(NAME,FUNCTION,RETURNTYPE,ARGTYPES) \
+  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cMathFunction(#NAME,FUNCTION,RETURNTYPE,ARGTYPES));)
 //@}
 
 

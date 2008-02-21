@@ -1,0 +1,45 @@
+%description:
+Test registed NED functions. For convenience we use cDynamicExpression,
+not NED directly.
+
+%global:
+
+void test(const char *expr)
+{
+    cDynamicExpression e;
+    e.parse(expr);
+    std::string result;
+    try {
+        cDynamicExpression::Value v = e.evaluate(NULL);
+        result = v.toString();
+    } catch (std::exception& e) {
+        result = e.what();
+    }
+    ev << expr << " ==> " << result << "\n";
+}
+
+void test(const char *s1, const std::string& s2, const char *s3)
+{
+    test((std::string(s1) + " " + s2 + " " + s3).c_str());
+}
+
+%activity:
+test("min(3, 2)");
+test("min(3m, 2m)");
+test("min(3m, 2km)");
+test("min(2km, 3m)");
+test("min(1m, 1)");
+test("min(1m, 1s)");
+ev << "\n";
+
+ev << ".\n";
+
+%contains: stdout
+min(3, 2) ==> 2
+min(3m, 2m) ==> 2m
+min(3m, 2km) ==> 3m
+min(2km, 3m) ==> 3m
+min(1m, 1) ==> Cannot convert unit none to 'm' (meter)
+min(1m, 1s) ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+

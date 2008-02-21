@@ -1895,28 +1895,40 @@ $O/minixpath.obj: minixpath.cc \
   ../../include/util.h \
   ../../include/errmsg.h
 $O/nedfunctions.obj: nedfunctions.cc \
+  ../../include/distrib.h \
+  ../../include/cfunction.h \
   ../../include/cnedfunction.h \
   ../../include/cexception.h \
   ../../include/simkerneldefs.h \
-  ../../include/globals.h \
-  ../../include/cownedobject.h \
-  ../../include/cdynamicexpression.h \
+  ../../include/random.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/csimulation.h \
+  ../../include/cmodule.h \
+  ../../include/crng.h \
+  ../../include/util.h \
+  ../../include/globals.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
   ../../include/cenvir.h \
-  ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/opp_string.h \
-  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cexpression.h
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  ../../include/cdynamicexpression.h
 $O/nedsupport.obj: nedsupport.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cxmlelement.h \

@@ -23,7 +23,7 @@
 USING_NAMESPACE
 
 
-cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *argtypes, const char *rettype) : cNoncopyableOwnedObject(name,false)
+cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *rettype, const char *argtypes) : cNoncopyableOwnedObject(name,false)
 {
     this->f = f;
 
@@ -32,7 +32,7 @@ cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *argtypes
     if (strspn(argtypes,"BLDSX*")!=strlen(argtypes))
         throw cRuntimeError("Define_NED_Function(%s): invalid type character in argtypes string \"%s\"", name, argtypes);
     if (strlen(rettype)!=1 || strspn(rettype,"BLDSX*")!=strlen(rettype))
-        throw cRuntimeError("Define_NED_Function(%s): invalid return type \"%s\"", name, argtypes);
+        throw cRuntimeError("Define_NED_Function(%s): invalid return type \"%s\"", name, rettype);
 
     this->rettype = rettype[0];
     this->argtypes = argtypes;

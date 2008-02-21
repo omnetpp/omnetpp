@@ -85,7 +85,7 @@ SIM_API char *simtimeToStrShort(double t, char *buf=NULL);
 
 
 /**
- * @name Utility functions to support nedtool-compiled expressions.
+ * @name Utility functions
  * @ingroup Functions
  */
 //@{
@@ -93,12 +93,17 @@ SIM_API char *simtimeToStrShort(double t, char *buf=NULL);
 /**
  * Returns the minimum of a and b.
  */
-SIM_API double min(double a, double b);
+inline double min(double a, double b) {return a<b ? a : b;}
 
 /**
  * Returns the maximum of a and b.
  */
-SIM_API double max(double a, double b);
+inline double max(double a, double b) {return a<b ? b : a;}
+
+/**
+ * Tests equality of two doubles, with the given precision.
+ */
+inline bool equal(double a, double b, double epsilon);
 //@}
 
 
@@ -113,7 +118,6 @@ SIM_API double max(double a, double b);
  * @ingroup Functions
  */
 //@{
-//FIXME reduce the number of these string util functions...
 /**
  * Same as the standard strlen() function, except that does not crash
  * on NULL pointers but returns 0.
@@ -145,18 +149,6 @@ inline int opp_strcmp(const char *, const char *);
  */
 SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
 
-//@}
-
-/**
- * @name Miscellaneous functions.
- * @ingroup Functions
- */
-//@{
-
-/**
- * Tests equality of two doubles, with the given precision.
- */
-inline bool equal(double a, double b, double epsilon);
 //@}
 
 /**

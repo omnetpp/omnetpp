@@ -31,8 +31,8 @@ NAMESPACE_BEGIN
  * @ingroup EnumsTypes
  */
 typedef cDynamicExpression::Value (*NEDFunction)(cComponent *context,
-                                                 cDynamicExpression::Value args[],
-                                                 int numargs);
+                                                 cDynamicExpression::Value argv[],
+                                                 int argc);
 
 
 /**
@@ -56,7 +56,7 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     /**
      * Constructor. FIXME document
      */
-    cNEDFunction(const char *name, NEDFunction f, const char *argtypes, const char *returntype);
+    cNEDFunction(const char *name, NEDFunction f, const char *returntype, const char *argtypes);
 
     /**
      * Destructor.
