@@ -31,35 +31,6 @@
 
 USING_NAMESPACE
 
-// Functions  (register them for findFunction())
-Define_Function( acos,  1 )
-Define_Function( asin,  1 )
-Define_Function( atan,  1 )
-Define_Function( atan2, 2 )
-
-Define_Function( sin,  1 )
-Define_Function( cos,  1 )
-Define_Function( tan,  1 )
-
-Define_Function( ceil,  1 )
-Define_Function( floor, 1 )
-
-Define_Function( exp,  1 )
-Define_Function( pow,  2 )
-Define_Function( sqrt, 1 )
-
-Define_Function( fabs, 1 )
-Define_Function( fmod, 2 )
-
-Define_Function( hypot, 2 )
-
-Define_Function( log,   1 )
-Define_Function( log10, 1 )
-
-//XXX add Define_Function( intrand, 1 )
-//XXX add Define_Function( dblrand, 0 )
-
-
 cMathFunction::cMathFunction(const char *name, MathFuncNoArg f, int ac) : cNoncopyableOwnedObject(name)
 {
     this->f = (MathFunc)f;

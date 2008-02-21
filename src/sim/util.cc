@@ -33,18 +33,6 @@
 
 NAMESPACE_BEGIN
 
-// functions to support expressions compiled by nedtool
-
-double min(double a, double b)      {return a<b ? a : b;}
-double max(double a, double b)      {return a<b ? b : a;}
-
-Define_Function(min, 2)
-Define_Function(max, 2)
-
-
-//----
-// utility functions
-
 #ifdef USE_DOUBLE_SIMTIME
 //
 // This function is legacy from OMNeT++ 3.x, and it is only used if simtime_t
