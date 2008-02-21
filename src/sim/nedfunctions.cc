@@ -535,41 +535,18 @@ Define_Function2(hypergeometric, _wrap_hypergeometric_with_rng, 4);
 Define_Function2(poisson, _wrap_poisson_with_rng, 2);
 
 
-// compatibility genk_ versions:
+//
+// Meaningful error for obsolete genk_ functions
+//
 
-double genk_uniform(double rng, double a, double b)
+static double obsolete_genk_function()
 {
-    return uniform(a, b, (int)rng);
+    throw cRuntimeError("Obsolete function -- use the one without the \"genk_\" prefix, and rng as last argument");
 }
 
-double genk_intuniform(double rng, double a, double b)
-{
-    return intuniform((int)a, (int)b, (int)rng);
-}
-
-double genk_exponential(double rng, double p)
-{
-    return exponential(p, (int)rng);
-}
-
-double genk_normal(double rng, double m, double d)
-{
-    return normal(m, d, (int)rng);
-}
-
-double genk_truncnormal(double rng, double m, double d)
-{
-    return truncnormal(m, d, (int)rng);
-}
-
-// register functions for findFunction()
-Define_Function(genk_uniform, 3);
-Define_Function(genk_intuniform, 3);
-Define_Function(genk_exponential, 2);
-Define_Function(genk_normal, 3);
-Define_Function(genk_truncnormal, 3);
-
-//Define_Function(intrand, 1)
-//Define_Function(dblrand, 0)
-
+Define_Function2(genk_uniform, obsolete_genk_function, 3);
+Define_Function2(genk_intuniform, obsolete_genk_function, 3);
+Define_Function2(genk_exponential, obsolete_genk_function, 2);
+Define_Function2(genk_normal, obsolete_genk_function, 3);
+Define_Function2(genk_truncnormal, obsolete_genk_function, 3);
 
