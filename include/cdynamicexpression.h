@@ -30,6 +30,8 @@ class cNEDFunction;
 /**
  * FIXME revise docu in the whole class!!!!!!
  *
+ * NOTE: Experimental class -- API is subject to change.
+ *
  * @ingroup SimCore
  */
 class SIM_API cDynamicExpression : public cExpression
@@ -81,7 +83,7 @@ class SIM_API cDynamicExpression : public cExpression
             cXMLElement *x;
             cPar *p;
             cMathFunction *f;
-            cNEDFunction *af;
+            cNEDFunction *af;     //FIXME + numargs, so that we can have default params in NEDFunction
             Functor *fu;
             OpType op;
             cExpression *constexpr;
@@ -191,6 +193,8 @@ class SIM_API cDynamicExpression : public cExpression
      * There's no "long" field in it: all numeric calculations are performed
      * in double. XXX This is fine for 32-bit longs, but not for 64-bit ones,
      * as double's mantissa is only 53 bits.
+     *
+     * NOTE: Experimental class -- API is subject to change.
      */
     struct SIM_API Value
     {
@@ -220,6 +224,7 @@ class SIM_API cDynamicExpression : public cExpression
         void operator=(cXMLElement *x)  {type=XML; xml=x;}
         void operator=(const cPar& par);
         std::string toString() const;
+        Value& convertTo(const char *unit) {dbl=convertUnit(dbl, dblunit, unit); dblunit=unit; return *this;}
     };
 
     /**
@@ -347,6 +352,12 @@ class SIM_API cDynamicExpression : public cExpression
      * like "2+2").
      */
     virtual bool isAConstant() const;
+
+    /**
+     * Convert the given number into the target unit (e.g. milliwatt to watt).
+     * Throws an exception if conversion is not possible (unknown/unrelated units).
+     */
+    static double convertUnit(double d, const char *unit, const char *targetUnit);
     //@}
 };
 

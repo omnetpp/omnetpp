@@ -133,6 +133,12 @@ void cDynamicExpression::parse(const char *text)
     ::doParseExpression(text, elems, nelems);
 }
 
+double cDynamicExpression::convertUnit(double d, const char *unit, const char *targetUnit)
+{
+    // not inline because simkernel header files cannot refer to common/ headers (unitconversion.h)
+    return UnitConversion::convertUnit(d, unit, targetUnit);
+}
+
 bool cDynamicExpression::isAConstant() const
 {
     for (int i=0; i<nelems; i++)

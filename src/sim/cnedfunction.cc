@@ -22,6 +22,7 @@
 
 USING_NAMESPACE
 
+//XXX use a single string for args, so that it's open to extensions? like "S;SD[D]"
 
 cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *rettype, const char *argtypes) : cNoncopyableOwnedObject(name,false)
 {
