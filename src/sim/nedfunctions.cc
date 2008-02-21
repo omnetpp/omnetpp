@@ -27,7 +27,7 @@ USING_NAMESPACE
 
 //FIXME support optional args in cNEDFunction (then revise leftof, startof, rightof, endof)
 //FIXME cDynamicExpression to add function name to exceptions thrown from functions
-//FIXME cDynamicExpression to add function name to exceptions thrown from functions
+//FIXME use camelCase for functions?
 
 void nedfunctions_dummy() {} //see util.cc
 
@@ -57,18 +57,21 @@ Define_Function(exp, 1)
 Define_Function(pow, 2)
 Define_Function(sqrt, 1)
 
-Define_Function(fabs, 1)  //FIXME any unit!
-Define_Function(fmod, 2)  //FIXME accept units!
-
 Define_Function(hypot, 2)
 
 Define_Function(log, 1)
 Define_Function(log10, 1)
 
+DEF(fabs, "D", "D", {
+    argv[0].dbl = fabs(argv[0].dbl);  // preserve unit
+    return argv[0];
+})
 
-//
-// Other mathematical functions
-//
+DEF(fmod, "D", "DD", {
+    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
+    argv[0].dbl = fmod(argv[0].dbl, argv1converted);
+    return argv[0];
+})
 
 DEF(min, "D", "DD", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
@@ -113,8 +116,7 @@ DEF(unitof, "S", "D", {
 // String manipulation functions.
 //
 
-inline void assertDimless(Value argv[], int k)
-{
+inline void assertDimless(Value argv[], int k) {
     if (!opp_isempty(argv[k].dblunit))
        throw cRuntimeError("Argument %d must be dimensionless", k);
 }
@@ -258,26 +260,30 @@ DEF(tostring, "S", "*", {
 //
 
 // continuous
+DEF(uniform, "D", "DD", {
+    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
+    argv[0].dbl = uniform(argv[0].dbl, argv1converted);
+    return argv[0];
+})
 
-static double _wrap_uniform(double a, double b)
-{
-    return uniform(a, b);
-}
+DEF(exponential, "D", "D", {
+    argv[0].dbl = exponential(argv[0].dbl);
+    return argv[0];
+})
 
-static double _wrap_exponential(double p)
-{
-    return exponential(p);
-}
+DEF(normal, "D", "DD", {
+    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
+    argv[0].dbl = normal(argv[0].dbl, argv1converted);
+    return argv[0];
+})
 
-static double _wrap_normal(double m, double d)
-{
-    return normal(m, d);
-}
+DEF(truncnormal, "D", "DD", {
+    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
+    argv[0].dbl = truncnormal(argv[0].dbl, argv1converted);
+    return argv[0];
+})
 
-static double _wrap_truncnormal(double m, double d)
-{
-    return truncnormal(m, d);
-}
+//FIXME convert the rest!
 
 static double _wrap_gamma_d(double alpha, double theta)
 {
@@ -369,10 +375,6 @@ static double _wrap_poisson(double lambda)
 }
 
 
-Define_Function2(uniform, _wrap_uniform, 2);
-Define_Function2(exponential, _wrap_exponential, 1);
-Define_Function2(normal, _wrap_normal, 2);
-Define_Function2(truncnormal, _wrap_truncnormal, 2);
 Define_Function2(gamma_d, _wrap_gamma_d, 2);
 Define_Function2(beta, _wrap_beta, 2);
 Define_Function2(erlang_k, _wrap_erlang_k, 2);
