@@ -25,22 +25,22 @@
 
 USING_NAMESPACE
 
-//FIXME support optional args in cNEDFunction (then revise leftof, startof, rightof, endof)
+//TODO add "list handling" functions (like Tcl lists): lindex "SL->S", "SL->D" etc
 //FIXME cDynamicExpression to add function name to exceptions thrown from functions
-//FIXME use camelCase for functions?
 
 void nedfunctions_dummy() {} //see util.cc
 
 typedef cDynamicExpression::Value Value;  // abbreviation for local use
 
-#define DEF(NAME, RETURNTYPE, ARGTYPES, BODY) \
-    static Value NAME(cComponent *context, Value argv[], int argc) {BODY} \
-    Define_NED_Function(NAME, RETURNTYPE, ARGTYPES);
+#define DEF(NAME, SIGNATURE, BODY) \
+    static Value NAME##_f(cComponent *context, Value argv[], int argc) {BODY} \
+    Define_NED_Function2(NAME, NAME##_f, SIGNATURE);
 
 
 //
 // NED math.h functions
 //
+
 Define_Function(acos, 1)
 Define_Function(asin, 1)
 Define_Function(atan, 1)
@@ -62,23 +62,24 @@ Define_Function(hypot, 2)
 Define_Function(log, 1)
 Define_Function(log10, 1)
 
-DEF(fabs, "D", "D", {
+
+DEF(fabs, "Q->Q", {
     argv[0].dbl = fabs(argv[0].dbl);  // preserve unit
     return argv[0];
 })
 
-DEF(fmod, "D", "DD", {
+DEF(fmod, "QQ->Q", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = fmod(argv[0].dbl, argv1converted);
     return argv[0];
 })
 
-DEF(min, "D", "DD", {
+DEF(min, "QQ->Q", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     return argv[0].dbl < argv1converted ? argv[0] : argv[1];
 })
 
-DEF(max, "D", "DD", {
+DEF(max, "QQ->Q", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     return argv[0].dbl < argv1converted ? argv[1] : argv[0];
 })
@@ -90,24 +91,24 @@ DEF(max, "D", "DD", {
 
 static cStringPool stringPool;
 
-DEF(dropunit, "D", "D", {
+DEF(dropUnit, "Q->D", {
     argv[0].dblunit = NULL;
     return argv[0];
 })
 
-DEF(replaceunit, "D", "DS", {
+DEF(replaceUnit, "QS->Q", {
     argv[0].dblunit = stringPool.get(argv[1].str.c_str());
     return argv[0];
 })
 
-DEF(convertunit, "D", "DS", {
+DEF(convertUnit, "QS->Q", {
     const char *newUnit = stringPool.get(argv[1].str.c_str());
     argv[0].dbl = UnitConversion::convertUnit(argv[0].dbl, argv[0].dblunit, newUnit);
     argv[0].dblunit = newUnit;
     return argv[0];
 })
 
-DEF(unitof, "S", "D", {
+DEF(unitOf, "Q->S", {
     return argv[0].dblunit;
 })
 
@@ -116,22 +117,15 @@ DEF(unitof, "S", "D", {
 // String manipulation functions.
 //
 
-inline void assertDimless(Value argv[], int k) {
-    if (!opp_isempty(argv[k].dblunit))
-       throw cRuntimeError("Argument %d must be dimensionless", k);
-}
-
-DEF(length, "L", "S", {
+DEF(length, "S->L", {
     return (long)argv[0].str.size();
 })
 
-DEF(contains, "B", "SS", {
+DEF(contains, "SS->B", {
     return argv[0].str.find(argv[1].str) != std::string::npos;
 })
 
-DEF(substring, "S", "SLL", {
-    assertDimless(argv,1);
-    assertDimless(argv,2);
+DEF(substring, "SLL->S", {  //FIXME make 3rd arg optional: "SS/L->S"
     int size = argv[0].str.size();
     int index1 = (int)argv[1].dbl;
     int index2 = (int)argv[2].dbl;
@@ -143,50 +137,23 @@ DEF(substring, "S", "SLL", {
     return argv[0].str.substr(index1, index2 - index1);
 })
 
-DEF(startswith, "B", "SS", {
+DEF(startsWith, "SS->B", {
     return argv[0].str.find(argv[1].str) == 0;
 })
 
-DEF(endswith, "B", "SS", {
+DEF(endsWith, "SS->B", {
     return argv[0].str.rfind(argv[1].str) == argv[0].str.size() - argv[1].str.size();
 })
 
-DEF(startof, "S", "SL", {
-    assertDimless(argv,1);
+DEF(tail, "SL->S", {
     int length = (int)argv[1].dbl;
     if (length < 0)
-        throw cRuntimeError("startof(): length is negative");
-    return argv[0].str.substr(0, min(argv[0].str.size(), length));
-})
-
-DEF(endof, "S", "SL", {
-    assertDimless(argv,1);
-    int length = (int)argv[1].dbl;
-    if (length < 0)
-        throw cRuntimeError("endof(): length is negative");
+        throw cRuntimeError("tail(): length is negative");
     int size = argv[0].str.size();
     return argv[0].str.substr(max(0, size - length), size);
 })
 
-DEF(leftof, "S", "SL", {
-    assertDimless(argv,1);
-    int size = argv[0].str.size();
-    int index = (int)argv[1].dbl;
-    if (index < 0 || index > size)
-        throw cRuntimeError("leftof(): index out of range");
-    return startof(context, argv, argc);
-})
-
-DEF(rightof, "S", "SL", {
-    assertDimless(argv,1);
-    int size = argv[0].str.size();
-    int index = (int)argv[1].dbl;
-    if (index < 0 || index > size)
-        throw cRuntimeError("rightof(): index out of range");
-    return argv[0].str.substr(index, size);
-})
-
-DEF(replace, "S", "SSS", {
+DEF(replace, "SSS->S", {
     std::string str = argv[0].str;
     std::string &search = argv[1].str;
     std::string &replacement = argv[2].str;
@@ -201,11 +168,11 @@ DEF(replace, "S", "SSS", {
     return str;
 })
 
-DEF(indexof, "L", "SS", {
+DEF(indexOf, "SS->L", {
     return (long)argv[0].str.find(argv[1].str);
 })
 
-DEF(toupper, "S", "S", {
+DEF(toUpper, "S->S", {
     std::string tmp = argv[0].str;
     int length = tmp.length();
     for (int i=0; i<length; i++)
@@ -213,7 +180,7 @@ DEF(toupper, "S", "S", {
     return tmp;
 })
 
-DEF(tolower, "S", "S", {
+DEF(toLower, "S->S", {
     std::string tmp = argv[0].str;
     int length = tmp.length();
     for (int i=0; i<length; i++)
@@ -221,7 +188,7 @@ DEF(tolower, "S", "S", {
     return tmp;
 })
 
-DEF(toint, "L", "*", {
+DEF(int, "*->L", {
     switch (argv[0].type) {
         case cDynamicExpression::Value::BOOL:
             return argv[0].bl ? 1L : 0L;
@@ -236,7 +203,7 @@ DEF(toint, "L", "*", {
     }
 })
 
-DEF(todouble, "L", "*", {
+DEF(double, "*->L", {
     switch (argv[0].type) {
         case cDynamicExpression::Value::BOOL:
             return argv[0].bl ? 1.0 : 0.0;
@@ -251,7 +218,7 @@ DEF(todouble, "L", "*", {
     }
 })
 
-DEF(tostring, "S", "*", {
+DEF(string, "*->S", {
     return argv[0].toString();
 })
 
@@ -260,24 +227,24 @@ DEF(tostring, "S", "*", {
 //
 
 // continuous
-DEF(uniform, "D", "DD", {
+DEF(uniform, "QQ->Q", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = uniform(argv[0].dbl, argv1converted);
     return argv[0];
 })
 
-DEF(exponential, "D", "D", {
+DEF(exponential, "Q->Q", {
     argv[0].dbl = exponential(argv[0].dbl);
     return argv[0];
 })
 
-DEF(normal, "D", "DD", {
+DEF(normal, "QQ->Q", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = normal(argv[0].dbl, argv1converted);
     return argv[0];
 })
 
-DEF(truncnormal, "D", "DD", {
+DEF(truncnormal, "QQ->Q", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = truncnormal(argv[0].dbl, argv1converted);
     return argv[0];

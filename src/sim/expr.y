@@ -97,21 +97,19 @@ static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
     return d;
 }
 
-static void addFunction(const char *funcname, int numargs)
+static void addFunction(const char *funcname, int argcount)
 {
-    cMathFunction *f = cMathFunction::find(funcname, numargs);
-    if (f)
-    {
+    cMathFunction *f = cMathFunction::find(funcname, argcount);
+    if (f) {
         *e++ = f;
         return;
     }
-    cNEDFunction *af = cNEDFunction::find(funcname, numargs);
-    if (af)
-    {
-        *e++ = af;
+    cNEDFunction *nf = cNEDFunction::find(funcname, argcount);
+    if (nf) {
+        (e++)->set(nf,argcount);
         return;
     }
-    yyerror(opp_stringf("function `%s' not found (Define_Function() missing from C++ code?)", funcname).c_str());
+    yyerror(opp_stringf("function `%s' with %d args not found (Define_NED_Function() missing from C++ code?)", funcname, argcount).c_str());
 }
 
 static double parseQuantity(const char *text, std::string& unit)

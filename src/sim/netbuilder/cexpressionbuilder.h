@@ -56,6 +56,9 @@ class SIM_API cExpressionBuilder
     cExpressionBuilder();
     ~cExpressionBuilder();
 
+    /**
+     * Translates a NED expression into a cDynamicExpression
+     */
     cDynamicExpression *process(ExpressionElement *node, bool inSubcomponentScope);
 
     /**

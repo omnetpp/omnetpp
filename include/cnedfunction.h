@@ -45,18 +45,28 @@ typedef cDynamicExpression::Value (*NEDFunction)(cComponent *context,
 class SIM_API cNEDFunction : public cNoncopyableOwnedObject
 {
   private:
+    std::string sign;      // function signature, as passed to the ctor
+    std::string argtypes;  // sequence of B,L,D,Q,S,X,*
+    char rettype;          // one of B,L,D,Q,S,X,*
+    int minargc, maxargc;  // minimum and maximum argument count
     NEDFunction f;         // function ptr
-    char rettype;          // one of B,L,D,S,X,*  FIXME document that "*" is for any/unknown
-    std::string argtypes;  // sequence of type characters B,L,D,S,X,*
-    int numargs;           // cached strlen(argtypes)
+
+  protected:
+      void parseSignature(const char *signature);
+      void checkArgs(cDynamicExpression::Value argv[], int argc);
 
   public:
     /** @name Constructors, destructor, assignment */
     //@{
     /**
-     * Constructor. FIXME document
+     * Constructor. Signature is expected in the following syntax:
+     *  - argument list and return type are separated with "->"
+     *  - argument types and return types are one of: B,L,D,Q,S,X,*
+     *    (for Bool, Long, Double, Quantity, String, XML, any)
+     *  - "/" marks end of mandatory args and start of optional args
+     * Examples: "QQ->D"; "SD/D->S"
      */
-    cNEDFunction(const char *name, NEDFunction f, const char *returntype, const char *argtypes);
+    cNEDFunction(const char *name, NEDFunction f, const char *signature);
 
     /**
      * Destructor.
@@ -70,29 +80,54 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
      * Produces a one-line description of object contents.
      */
     virtual std::string info() const;
+
+    /**
+     * Produces more detailed description of object contents.
+     */
+    virtual std::string detailedInfo() const;
+
     //@}
 
     /** @name Member access. */
     //@{
     /**
-     * Returns the function pointer.
+     * Performs argument type checking, and invokes the function.
+     */
+    cDynamicExpression::Value invoke(cComponent *context, cDynamicExpression::Value argv[], int argc);
+
+    /**
+     * Returns the function pointer. Do not call the function
+     * directly, because that would bypass argument type validation.
      */
     NEDFunction functionPointer() const  {return f;}
 
     /**
-     * Return type B/L/D/S/X.
+     * Returns the functions signature, as passed to the constructor
+     */
+    const char *signature() const {return sign.c_str();}
+
+    /**
+     * Returns the function return type, one of: B,L,D,Q,S,X,*
      */
     char returnType() const  {return rettype;}
 
     /**
-     * Returns the number of arguments
+     * Returns the type of the kth argument; result is
+     * one of: B,L,D,Q,S,X,*
      */
-    int numArgs() const  {return numargs;}
+    char argType(int k) const  {return argtypes[k];}
 
     /**
-     * Argument types as a string of B/L/D/S/X characters.
+     * Returns the minimum number of arguments (i.e. the number
+     * of mandatory arguments).
      */
-    const char *argTypes() const  {return argtypes.c_str();}
+    int minArgs() const  {return minargc;}
+
+    /**
+     * Returns the maximum number of arguments (i.e. the last max-min
+     * args are optional).
+     */
+    int maxArgs() const  {return maxargc;}
     //@}
 
     /**

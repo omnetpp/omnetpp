@@ -64,8 +64,8 @@ NAMESPACE_BEGIN
  *
  * @hideinitializer
  */
-#define Define_NED_Function(NAME,RETURNTYPE,ARGTYPES) \
-  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,NAME,RETURNTYPE,ARGTYPES));)
+#define Define_NED_Function(NAME,SIGNATURE) \
+  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,NAME,SIGNATURE));)
 
 /**
  * Like Define_NED_Function(), but it allows registering a function with a
@@ -73,8 +73,8 @@ NAMESPACE_BEGIN
  *
  * @hideinitializer
  */
-#define Define_NED_Function2(NAME,FUNCTION,RETURNTYPE,ARGTYPES) \
-  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cMathFunction(#NAME,FUNCTION,RETURNTYPE,ARGTYPES));)
+#define Define_NED_Function2(NAME,FUNCTION,SIGNATURE) \
+  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE));)
 //@}
 
 

@@ -298,16 +298,12 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
 
            case Elem::NEDFUNC:
              {
-             int numargs = e.af->numArgs();
+             int numargs = e.nf.argc;
              int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
              if (argpos<0)
                  throw cRuntimeError(eESTKUFLOW);
-             const char *argtypes = e.af->argTypes();
-             for (int i=0; i<numargs; i++)
-                 if (argtypes[i] != '*' && stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
-                     throw cRuntimeError(eEBADARGS,e.af->name());
-             // note: unit checking is left to the function itself
-             stk[argpos] = e.af->functionPointer()(context, stk+argpos, numargs);
+             // note: args checking is left to the function itself
+             stk[argpos] = e.nf.f->invoke(context, stk+argpos, numargs);
              tos = argpos;
              break;
              }
@@ -594,8 +590,8 @@ std::string cDynamicExpression::toString() const
                case Elem::MATHFUNC:
                case Elem::NEDFUNC:
                  {
-                 int numargs = (e.type==Elem::MATHFUNC) ? e.f->numArgs() : e.af->numArgs();
-                 std::string name = (e.type==Elem::MATHFUNC) ? e.f->name() : e.af->name();
+                 int numargs = (e.type==Elem::MATHFUNC) ? e.f->numArgs() : e.nf.argc;
+                 std::string name = (e.type==Elem::MATHFUNC) ? e.f->name() : e.nf.f->name();
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
                      throw cRuntimeError(eESTKUFLOW);

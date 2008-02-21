@@ -354,9 +354,9 @@ class cMathFunction extends cNoncopyableOwnedObject
 class cNEDFunction extends cNoncopyableOwnedObject
 {
         @omitGetVerb(true);
-        char returnType @hint(return type of this function);
-        int numArgs @hint(number of arguments this function takes);
-        string argTypes @hint(number and types of arguments this function takes);
+        string signature @hint(argument types and return value);
+        int minArgs @hint(number of mandatory arguments);
+        int maxArgs @hint(maximum number of arguments);
 }
 
 class cOutVector extends cNoncopyableOwnedObject

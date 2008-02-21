@@ -51,7 +51,7 @@ cExpressionBuilder::~cExpressionBuilder()
 void cExpressionBuilder::doNode(NEDElement *node)
 {
     if (pos > limit)
-        throw cRuntimeError("dynamic module builder: expression too long");
+        throw cRuntimeError("Expression too long");
     int tagcode = node->getTagCode();
     switch (tagcode)
     {
@@ -64,7 +64,7 @@ void cExpressionBuilder::doNode(NEDElement *node)
         case NED_LITERAL:
             doLiteral((LiteralElement *)node); break;
         default:
-            throw cRuntimeError("dynamic module builder: unexpected tag in expression: %s", node->getTagName());
+            throw cRuntimeError("Unexpected tag in expression: %s", node->getTagName());
     }
 }
 
@@ -90,7 +90,7 @@ void cExpressionBuilder::doOperator(OperatorElement *node)
         else if (!strcmp(name,"~"))
             elems[pos++] = cDynamicExpression::BIN_NOT;
         else
-            throw cRuntimeError("dynamic module builder: unexpected operator %s", name);
+            throw cRuntimeError("Unexpected operator %s", name);
     }
     else if (!op3)
     {
@@ -142,7 +142,7 @@ void cExpressionBuilder::doOperator(OperatorElement *node)
         else if (!strcmp(name,">>"))
             elems[pos++] = cDynamicExpression::RSHIFT;
         else
-            throw cRuntimeError("dynamic module builder: unexpected operator %s", name);
+            throw cRuntimeError("Unexpected operator %s", name);
     }
     else
     {
@@ -150,7 +150,7 @@ void cExpressionBuilder::doOperator(OperatorElement *node)
         if (!strcmp(name,"?:"))
             elems[pos++] = cDynamicExpression::IIF;
         else
-            throw cRuntimeError("dynamic module builder: unexpected operator %s", name);
+            throw cRuntimeError("Unexpected operator %s", name);
     }
 }
 
@@ -161,17 +161,17 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
     int argcount = node->getNumChildren();
 
     // operators should be handled specially
-    if (!strcmp(funcname,"index"))
+    if (!strcmp(funcname, "index"))
     {
         if (!inSubcomponentScope)
-            throw cRuntimeError("dynamic module builder: `index' operator is only supported on submodule parameters");
+            throw cRuntimeError("`index' operator is only supported on submodule parameters");
         elems[pos++] = new NEDSupport::ModuleIndex();
     }
-    else if (!strcmp(funcname,"const"))
+    else if (!strcmp(funcname, "const"))
     {
-        throw cRuntimeError("dynamic module builder: `const' operator: not yet!"); //XXX
+        throw cRuntimeError("`const' operator: not yet supported"); //FIXME
     }
-    else if (!strcmp(funcname,"sizeof"))
+    else if (!strcmp(funcname, "sizeof"))
     {
         // operands are in a child "ident" node
         IdentElement *identnode = node->getFirstIdentChild();
@@ -189,7 +189,7 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
             //XXX elems[pos++] = new NEDSupport::Sizeof(modulename, ident, inSubcomponentScope, hasChild);
             throw cRuntimeError("dynamic module builder: sizeof(module.ident): not yet");
     }
-    else if (!strcmp(funcname,"xmldoc"))
+    else if (!strcmp(funcname, "xmldoc"))
     {
         // push args first
         for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
@@ -211,9 +211,9 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
         if (functype)
             elems[pos++] = functype;
         else if (nedfunctype)
-            elems[pos++] = nedfunctype;
+            elems[pos++].set(nedfunctype, argcount);
         else
-            throw cRuntimeError("dynamic module builder: function %s with %d args not found", funcname, argcount);
+            throw cRuntimeError("Function %s with %d args not found (Define_NED_Function() missing from C++ code?)", funcname, argcount);
     }
 }
 
@@ -253,7 +253,7 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
                                elems[pos-1].setUnit(node->getUnit());
                                break;
         case NED_CONST_STRING: elems[pos++] = node->getValue(); break;
-        default: throw cRuntimeError("dynamic module builder: evaluate: internal error: wrong constant type");
+        default: throw cRuntimeError("Internal error: wrong constant type");
     }
 }
 

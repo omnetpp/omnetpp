@@ -83,7 +83,7 @@ class SIM_API cDynamicExpression : public cExpression
             cXMLElement *x;
             cPar *p;
             cMathFunction *f;
-            cNEDFunction *af;     //FIXME + numargs, so that we can have default params in NEDFunction
+            struct {cNEDFunction *f; int argc;} nf;
             Functor *fu;
             OpType op;
             cExpression *constexpr;
@@ -163,19 +163,19 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: Call a function
          * taking 0..4 doubles and returning a double.
          */
-        void operator=(cMathFunction *_f)  {type=MATHFUNC; ASSERT(_f); f=_f;}
+        void operator=(cMathFunction *_f)  {type=MATHFUNC; ASSERT(_f); f=_f;} //FIXME out -- replace with cNEDFunction
 
         /**
          * Effect during evaluation of the expression: call a function
          * that function takes an array of Values and returns a Value.
          */
-        void operator=(cNEDFunction *_f)  {type=NEDFUNC; ASSERT(_f); af=_f;}
+        void set(cNEDFunction *f, int argc)  {type=NEDFUNC; ASSERT(f); nf.f=f; nf.argc=argc;}
 
         /**
          * Function object, with an interface not unlike cNEDFunction.
          * This object will be deleted by expression's destructor.
          */
-        void operator=(Functor *_f)  {type=FUNCTOR; ASSERT(_f); fu=_f;}
+        void operator=(Functor *f)  {type=FUNCTOR; ASSERT(f); fu=f;}
 
         /**
          * Unary, binary or tertiary (?:) operations.
