@@ -125,16 +125,16 @@ DEF(contains, "SS->B", {
     return argv[0].str.find(argv[1].str) != std::string::npos;
 })
 
-DEF(substring, "SLL->S", {  //FIXME make 3rd arg optional: "SS/L->S"
+DEF(substring, "SL/L->S", {  // Note: substring(str,index[,length]), i.e. length is optional
     int size = argv[0].str.size();
-    int index1 = (int)argv[1].dbl;
-    int index2 = (int)argv[2].dbl;
+    int index = (int)argv[1].dbl;
+    int length = argc==3 ? (int)argv[2].dbl : size-index;
 
-    if (index1 < 0 || index1 > size)
-        throw cRuntimeError("substring(): index1 out of range");
-    else if (index2 < 0 || index2 > size)
-        throw cRuntimeError("substring(): index2 out of range");
-    return argv[0].str.substr(index1, index2 - index1);
+    if (index < 0 || index > size)
+        throw cRuntimeError("substring(): index out of range");
+    if (length < 0)
+        throw cRuntimeError("substring(): length is negative");
+    return argv[0].str.substr(index, length);
 })
 
 DEF(startswith, "SS->B", {
