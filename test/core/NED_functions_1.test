@@ -1,6 +1,5 @@
 %description:
-Test registed NED functions. For convenience we use cDynamicExpression,
-not NED directly.
+Test registed NED functions. For convenience we use cDynamicExpression, not NED directly.
 
 %global:
 
@@ -18,20 +17,113 @@ void test(const char *expr)
     ev << expr << " ==> " << result << "\n";
 }
 
-void test(const char *s1, const std::string& s2, const char *s3)
-{
-    test((std::string(s1) + " " + s2 + " " + s3).c_str());
-}
+#define P(expr)  test(#expr)
 
 %activity:
-test("min(3, 2)");
-test("min(3m, 2m)");
-test("min(3m, 2km)");
-test("min(2km, 3m)");
-test("min(1m, 1)");
-test("min(1m, 1s)");
+P( min(3, 2));
+P( min(3m, 2m));
+P( min(3m, 2km));
+P( min(2km, 3m));
+P( min(1m, 1));
+P( min(1m, 1s));
 ev << "\n";
 
+P( max(3, 2));
+P( max(3m, 2m));
+P( max(3m, 2km));
+P( max(2km, 3m));
+P( max(1m, 1));
+P( max(1m, 1s));
+ev << "\n";
+
+P( convertunit(1.5h, "s"));
+P( convertunit(1.5h, ""));
+P( convertunit(1.5h, "kg"));
+ev << "\n";
+
+P( replaceunit(1.5h, "s"));
+P( replaceunit(1.5h, "kg"));
+P( replaceunit(1.5h, ""));
+ev << "\n";
+
+P( dropunit(1.5h));
+P( dropunit(1.5));
+ev << "\n";
+
+P( unitof(1km));
+P( unitof(5 kilometers));
+ev << "\n";
+
+P( length(""));
+P( length("Hello"));
+ev << "\n";
+
+P( contains("", ""));
+P( contains("", "bubu"));
+P( contains("Hello", ""));
+P( contains("Hello", "ell"));
+P( contains("Hello", "bubu"));
+ev << "\n";
+
+P( substring("Hello", 0, 2));
+P( substring("Hello", 2, 5));
+P( substring("Hello", 2, 3));
+P( substring("Hello", 2, 0));
+P( substring("Hello", -1, 3));
+P( substring("Hello", -1, 100));
+P( substring("Hello", 2, 100));
+ev << "\n";
+
+P( startswith("", ""));
+P( startswith("Hello", ""));
+P( startswith("Hello", "He"));
+P( startswith("Hello", "ell"));
+ev << "\n";
+
+P( endswith("", ""));
+P( endswith("Hello", ""));
+P( endswith("Hello", "lo"));
+P( endswith("Hello", "ell"));
+ev << "\n";
+
+P( tail("Hello", 0));
+P( tail("Hello", 2));
+P( tail("Hello", 100));
+ev << "\n";
+
+P( replace("Hello", "ell", "******"));
+P( replace("Hello", "ell", ""));
+P( replace("Hello", "e", "x"));
+P( replace("Hello", "l", "x"));
+P( replace("Hello", "e", "e"));
+P( replace("Hello", "e", ""));
+P( replace("Hello", "", "x"));
+ev << "\n";
+
+P( indexof("", ""));
+P( indexof("Hello", ""));
+P( indexof("Hello", "ell"));
+P( indexof("Hello", "bubu"));
+ev << "\n";
+
+P( toupper("Hello"));
+P( tolower("HeLLo"));
+ev << "\n";
+
+P( int(true));
+P( int(3.14));
+P( int(-3.14));
+P( int("6.28"));
+P( int("-6.28"));
+P( double(false));
+P( double(7.54));
+P( double(-7.54));
+P( double("4.53"));
+P( double("-4.53"));
+P( string(false));
+P( string(13));
+P( string(4.72));
+P( string(-4.72));
 ev << ".\n";
 
 %contains: stdout
@@ -42,4 +134,87 @@ min(2km, 3m) ==> 3m
 min(1m, 1) ==> Cannot convert unit none to 'm' (meter)
 min(1m, 1s) ==> Cannot convert unit 's' (second) to 'm' (meter)
 
+max(3, 2) ==> 3
+max(3m, 2m) ==> 3m
+max(3m, 2km) ==> 2km
+max(2km, 3m) ==> 2km
+max(1m, 1) ==> Cannot convert unit none to 'm' (meter)
+max(1m, 1s) ==> Cannot convert unit 's' (second) to 'm' (meter)
+
+convertunit(1.5h, "s") ==> 5400s
+convertunit(1.5h, "") ==> Cannot convert unit 'h' (hour) to none
+convertunit(1.5h, "kg") ==> Cannot convert unit 'h' (hour) to 'kg' (kilogram)
+
+replaceunit(1.5h, "s") ==> 1.5s
+replaceunit(1.5h, "kg") ==> 1.5kg
+replaceunit(1.5h, "") ==> 1.5
+
+dropunit(1.5h) ==> 1.5
+dropunit(1.5) ==> 1.5
+
+unitof(1km) ==> "km"
+unitof(5 kilometers) ==> "kilometers"
+
+length("") ==> 0
+length("Hello") ==> 5
+
+contains("", "") ==> true
+contains("", "bubu") ==> false
+contains("Hello", "") ==> true
+contains("Hello", "ell") ==> true
+contains("Hello", "bubu") ==> false
+
+substring("Hello", 0, 2) ==> "He"
+substring("Hello", 2, 5) ==> "llo"
+substring("Hello", 2, 3) ==> "l"
+substring("Hello", 2, 0) ==> "llo"
+substring("Hello", -1, 3) ==> substring(): index1 out of range
+substring("Hello", -1, 100) ==> substring(): index1 out of range
+substring("Hello", 2, 100) ==> substring(): index2 out of range
+
+startswith("", "") ==> true
+startswith("Hello", "") ==> true
+startswith("Hello", "He") ==> true
+startswith("Hello", "ell") ==> false
+
+endswith("", "") ==> true
+endswith("Hello", "") ==> true
+endswith("Hello", "lo") ==> true
+endswith("Hello", "ell") ==> false
+
+tail("Hello", 0) ==> ""
+tail("Hello", 2) ==> "lo"
+tail("Hello", 100) ==> "Hello"
+
+replace("Hello", "ell", "******") ==> "H******o"
+replace("Hello", "ell", "") ==> "Ho"
+replace("Hello", "e", "x") ==> "Hxllo"
+replace("Hello", "l", "x") ==> "Hexxo"
+replace("Hello", "e", "e") ==> "Hello"
+replace("Hello", "e", "") ==> "Hllo"
+replace("Hello", "", "x") ==> "xHxexlxlxox"
+
+indexof("", "") ==> 0
+indexof("Hello", "") ==> 0
+indexof("Hello", "ell") ==> 1
+indexof("Hello", "bubu") ==> -1
+
+toupper("Hello") ==> "HELLO"
+tolower("HeLLo") ==> "hello"
+
+int(true) ==> 1
+int(3.14) ==> 3
+int(-3.14) ==> -4
+int("6.28") ==> 6
+int("-6.28") ==> -6
+double(false) ==> 0
+double(7.54) ==> 7.54
+double(-7.54) ==> -7.54
+double("4.53") ==> 4.53
+double("-4.53") ==> -4.53
+string(false) ==> "false"
+string(13) ==> "13"
+string(4.72) ==> "4.72"
+string(-4.72) ==> "-4.72"
+.
 

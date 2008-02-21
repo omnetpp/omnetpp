@@ -278,7 +278,7 @@ void cPar::afterChange()
 
 void cPar::read()
 {
-    TRACE("read() of par=%s", fullPath().c_str());
+    //TRACE("read() of par=%s", fullPath().c_str());
 
     // obtain value if parameter is not set yet
     if (p->isInput())

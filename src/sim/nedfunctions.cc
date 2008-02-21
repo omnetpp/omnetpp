@@ -91,24 +91,24 @@ DEF(max, "QQ->Q", {
 
 static cStringPool stringPool;
 
-DEF(dropUnit, "Q->D", {
+DEF(dropunit, "Q->D", {
     argv[0].dblunit = NULL;
     return argv[0];
 })
 
-DEF(replaceUnit, "QS->Q", {
+DEF(replaceunit, "QS->Q", {
     argv[0].dblunit = stringPool.get(argv[1].str.c_str());
     return argv[0];
 })
 
-DEF(convertUnit, "QS->Q", {
+DEF(convertunit, "QS->Q", {
     const char *newUnit = stringPool.get(argv[1].str.c_str());
     argv[0].dbl = UnitConversion::convertUnit(argv[0].dbl, argv[0].dblunit, newUnit);
     argv[0].dblunit = newUnit;
     return argv[0];
 })
 
-DEF(unitOf, "Q->S", {
+DEF(unitof, "Q->S", {
     return argv[0].dblunit;
 })
 
@@ -137,11 +137,11 @@ DEF(substring, "SLL->S", {  //FIXME make 3rd arg optional: "SS/L->S"
     return argv[0].str.substr(index1, index2 - index1);
 })
 
-DEF(startsWith, "SS->B", {
+DEF(startswith, "SS->B", {
     return argv[0].str.find(argv[1].str) == 0;
 })
 
-DEF(endsWith, "SS->B", {
+DEF(endswith, "SS->B", {
     return argv[0].str.rfind(argv[1].str) == argv[0].str.size() - argv[1].str.size();
 })
 
@@ -168,11 +168,11 @@ DEF(replace, "SSS->S", {
     return str;
 })
 
-DEF(indexOf, "SS->L", {
+DEF(indexof, "SS->L", {
     return (long)argv[0].str.find(argv[1].str);
 })
 
-DEF(toUpper, "S->S", {
+DEF(toupper, "S->S", {
     std::string tmp = argv[0].str;
     int length = tmp.length();
     for (int i=0; i<length; i++)
@@ -180,7 +180,7 @@ DEF(toUpper, "S->S", {
     return tmp;
 })
 
-DEF(toLower, "S->S", {
+DEF(tolower, "S->S", {
     std::string tmp = argv[0].str;
     int length = tmp.length();
     for (int i=0; i<length; i++)
@@ -190,29 +190,29 @@ DEF(toLower, "S->S", {
 
 DEF(int, "*->L", {
     switch (argv[0].type) {
-        case cDynamicExpression::Value::BOOL:
+        case Value::BOOL:
             return argv[0].bl ? 1L : 0L;
-        case cDynamicExpression::Value::DBL:
+        case Value::DBL:
             return (long)floor(argv[0].dbl);
-        case cDynamicExpression::Value::STR:
+        case Value::STR:
             return atol(argv[0].str.c_str());
-        case cDynamicExpression::Value::XML:
-            throw cRuntimeError("toint(): cannot convert xml to int");
+        case Value::XML:
+            throw cRuntimeError("int(): cannot convert xml to int");
         default:
             throw cRuntimeError("internal error: bad Value type");
     }
 })
 
-DEF(double, "*->L", {
+DEF(double, "*->D", {
     switch (argv[0].type) {
-        case cDynamicExpression::Value::BOOL:
+        case Value::BOOL:
             return argv[0].bl ? 1.0 : 0.0;
-        case cDynamicExpression::Value::DBL:
+        case Value::DBL:
             return argv[0].dbl;
-        case cDynamicExpression::Value::STR:
+        case Value::STR:
             return atof(argv[0].str.c_str());
-        case cDynamicExpression::Value::XML:
-            throw cRuntimeError("todouble(): cannot convert xml to double");
+        case Value::XML:
+            throw cRuntimeError("double(): cannot convert xml to double");
         default:
             throw cRuntimeError("internal error: bad Value type");
     }

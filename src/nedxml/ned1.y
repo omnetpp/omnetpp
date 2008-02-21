@@ -1216,6 +1216,13 @@ expr
         | expr '?' expr ':' expr
                 { if (np->getParseExpressionsFlag()) $$ = createOperator("?:", $1, $3, $5); }
 
+        | INTTYPE '(' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3); }
+        | DOUBLETYPE '(' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3); }
+        | STRINGTYPE '(' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3); }
+
         | NAME '(' ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1)); }
         | NAME '(' expr ')'

@@ -154,7 +154,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 
     try {
         if (isNewParam) {
-            printf("   +++ adding param %s\n", paramName);
+            //printf("   +++ adding param %s\n", paramName);
             impl = cParImpl::createWithType(translateParamType(paramNode->getType()));
             impl->setName(paramName);
             impl->setIsShared(false);
@@ -175,7 +175,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
         if (exprNode)
         {
-            printf("   +++ assigning param %s\n", paramName);
+            //printf("   +++ assigning param %s\n", paramName);
             cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
             if (impl->isShared()) {
                 impl = impl->dup();

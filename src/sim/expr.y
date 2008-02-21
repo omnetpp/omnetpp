@@ -206,6 +206,13 @@ expr
         | expr '?' expr ':' expr
                 { *e++ = cDynamicExpression::IIF; }
 
+        | INTTYPE '(' expr ')'
+                { addFunction("int",1); }
+        | DOUBLETYPE '(' expr ')'
+                { addFunction("double",1); }
+        | STRINGTYPE '(' expr ')'
+                { addFunction("string",1); }
+
         | NAME '(' ')'
                 { addFunction($1,0); delete [] $1; }
         | NAME '(' expr ')'

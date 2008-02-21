@@ -10,8 +10,8 @@ simple Test
         double p00 = -3;      // unary minus or negative constant
         double p01 = -(4+1);  // unary minus
 
-        double p02 = toint(!true);  // negation
-        double p03 = toint(!false); // negation
+        double p02 = int(!true);  // negation
+        double p03 = int(!false); // negation
 
         double p06 = ~3;    // bitwise complement (result should be positive)
         double p07 = 12^3;  // power of
@@ -28,42 +28,42 @@ simple Test
         double p16 = 10|3;  // bitwise or
         double p17 = 10#3;  // bitwise xor
 
-        double p18 = toint(8==3); // equal
-        double p19 = toint(8==8); // equal
+        double p18 = int(8==3); // equal
+        double p19 = int(8==8); // equal
 
-        double p20 = toint(8!=3); // not equal
-        double p21 = toint(8!=8); // not equal
+        double p20 = int(8!=3); // not equal
+        double p21 = int(8!=8); // not equal
 
-        double p22 = toint(8>3);  // greater
-        double p23 = toint(3>8);  // greater
-        double p24 = toint(8>8);  // greater
+        double p22 = int(8>3);  // greater
+        double p23 = int(3>8);  // greater
+        double p24 = int(8>8);  // greater
 
-        double p25 = toint(8>=3); // greater or equal
-        double p26 = toint(3>=8); // greater or equal
-        double p27 = toint(8>=8); // greater or equal
+        double p25 = int(8>=3); // greater or equal
+        double p26 = int(3>=8); // greater or equal
+        double p27 = int(8>=8); // greater or equal
 
-        double p28 = toint(8<3);  // less
-        double p29 = toint(3<8);  // less
-        double p30 = toint(8<8);  // less
+        double p28 = int(8<3);  // less
+        double p29 = int(3<8);  // less
+        double p30 = int(8<8);  // less
 
-        double p31 = toint(8<=3); // less or equal
-        double p32 = toint(3<=8); // less or equal
-        double p33 = toint(8<=8); // less or equal
+        double p31 = int(8<=3); // less or equal
+        double p32 = int(3<=8); // less or equal
+        double p33 = int(8<=8); // less or equal
 
-        double p34 = toint(true && true);   // logical and
-        double p35 = toint(true && false);  // logical and
-        double p36 = toint(false && true);  // logical and
-        double p37 = toint(false && false); // logical and
+        double p34 = int(true && true);   // logical and
+        double p35 = int(true && false);  // logical and
+        double p36 = int(false && true);  // logical and
+        double p37 = int(false && false); // logical and
 
-        double p38 = toint(true || true);   // logical or
-        double p39 = toint(true || false);  // logical or
-        double p40 = toint(false || true);  // logical or
-        double p41 = toint(false || false); // logical or
+        double p38 = int(true || true);   // logical or
+        double p39 = int(true || false);  // logical or
+        double p40 = int(false || true);  // logical or
+        double p41 = int(false || false); // logical or
 
-        double p42 = toint(true ## true);   // logical xor
-        double p43 = toint(true ## false);  // logical xor
-        double p44 = toint(false ## true);  // logical xor
-        double p45 = toint(false ## false); // logical xor
+        double p42 = int(true ## true);   // logical xor
+        double p43 = int(true ## false);  // logical xor
+        double p44 = int(false ## true);  // logical xor
+        double p45 = int(false ## false); // logical xor
 
         double p46 = (true ? 5 : 2);  // the C/C++ ``inline if''
         double p47 = (false ? 5 : 2); // the C/C++ ``inline if''
