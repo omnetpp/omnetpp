@@ -65,13 +65,20 @@ P( contains("Hello", "ell"));
 P( contains("Hello", "bubu"));
 ev << "\n";
 
+P( substring("Hello", 0));
+P( substring("Hello", 3));
+P( substring("Hello", 5));
+P( substring("Hello", -1));
+P( substring("Hello", 6));
+ev << "\n";
+
 P( substring("Hello", 0, 2));
-P( substring("Hello", 2, 5));
-P( substring("Hello", 2, 3));
-P( substring("Hello", 2, 0));
+P( substring("Hello", 1, 3));
+P( substring("Hello", 1, 0));
+P( substring("Hello", 1, 10));
+P( substring("Hello", 1, -1));
 P( substring("Hello", -1, 3));
-P( substring("Hello", -1, 100));
-P( substring("Hello", 2, 100));
+P( substring("Hello", -1, 10));
 ev << "\n";
 
 P( startswith("", ""));
@@ -164,13 +171,19 @@ contains("Hello", "") ==> true
 contains("Hello", "ell") ==> true
 contains("Hello", "bubu") ==> false
 
+substring("Hello", 0) ==> "Hello"
+substring("Hello", 3) ==> "lo"
+substring("Hello", 5) ==> ""
+substring("Hello", -1) ==> substring(): index out of range
+substring("Hello", 6) ==> substring(): index out of range
+
 substring("Hello", 0, 2) ==> "He"
-substring("Hello", 2, 5) ==> "llo"
-substring("Hello", 2, 3) ==> "l"
-substring("Hello", 2, 0) ==> "llo"
-substring("Hello", -1, 3) ==> substring(): index1 out of range
-substring("Hello", -1, 100) ==> substring(): index1 out of range
-substring("Hello", 2, 100) ==> substring(): index2 out of range
+substring("Hello", 1, 3) ==> "ell"
+substring("Hello", 1, 0) ==> ""
+substring("Hello", 1, 10) ==> "ello"
+substring("Hello", 1, -1) ==> substring(): length is negative
+substring("Hello", -1, 3) ==> substring(): index out of range
+substring("Hello", -1, 10) ==> substring(): index out of range
 
 startswith("", "") ==> true
 startswith("Hello", "") ==> true
