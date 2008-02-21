@@ -24,12 +24,16 @@
 
 USING_NAMESPACE
 
-typedef cDynamicExpression::Value Value;  // abbreviation for local use
+//FIXME support optional args in cNEDFunction (then revise leftof, startof, rightof, endof)
+//FIXME cDynamicExpression to add function name to exceptions thrown from functions
+//FIXME cDynamicExpression to add function name to exceptions thrown from functions
 
 void nedfunctions_dummy() {} //see util.cc
 
+typedef cDynamicExpression::Value Value;  // abbreviation for local use
+
 #define DEF(NAME, RETURNTYPE, ARGTYPES, BODY) \
-    Value NAME(cComponent *context, Value argv[], int argc) {BODY} \
+    static Value NAME(cComponent *context, Value argv[], int argc) {BODY} \
     Define_NED_Function(NAME, RETURNTYPE, ARGTYPES);
 
 
@@ -64,6 +68,7 @@ Define_Function(log10, 1)
 //
 // Other mathematical functions
 //
+
 DEF(min, "D", "DD", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     return argv[0].dbl < argv1converted ? argv[0] : argv[1];
@@ -74,16 +79,44 @@ DEF(max, "D", "DD", {
     return argv[0].dbl < argv1converted ? argv[1] : argv[0];
 })
 
-//TODO add: replaceunit(var, "m"); dropunit(var); convertunit(var, "m"); unitof(var)
-
-
-//----
 
 //
-// NED string manipulation functions.
+// Unit handling
 //
 
-//FIXME check units!
+static cStringPool stringPool;
+
+DEF(dropunit, "D", "D", {
+    argv[0].dblunit = NULL;
+    return argv[0];
+})
+
+DEF(replaceunit, "D", "DS", {
+    argv[0].dblunit = stringPool.get(argv[1].str.c_str());
+    return argv[0];
+})
+
+DEF(convertunit, "D", "DS", {
+    const char *newUnit = stringPool.get(argv[1].str.c_str());
+    argv[0].dbl = UnitConversion::convertUnit(argv[0].dbl, argv[0].dblunit, newUnit);
+    argv[0].dblunit = newUnit;
+    return argv[0];
+})
+
+DEF(unitof, "S", "D", {
+    return argv[0].dblunit;
+})
+
+
+//
+// String manipulation functions.
+//
+
+inline assertDimless(Value argv[], int k)
+{
+    if (!opp_isempty(argv[k].dblunit))
+       throw cRuntimeException("Argument %d must be dimensionless", k);
+}
 
 DEF(length, "L", "S", {
     return (long)argv[0].str.size();
@@ -94,6 +127,8 @@ DEF(contains, "B", "SS", {
 })
 
 DEF(substring, "S", "SLL", {
+    assertDimless(argv,1);
+    assertDimless(argv,2);
     int size = argv[0].str.size();
     int index1 = (int)argv[1].dbl;
     int index2 = (int)argv[2].dbl;
@@ -102,7 +137,6 @@ DEF(substring, "S", "SLL", {
         throw cRuntimeError("substring(): index1 out of range");
     else if (index2 < 0 || index2 > size)
         throw cRuntimeError("substring(): index2 out of range");
-
     return argv[0].str.substr(index1, index2 - index1);
 })
 
@@ -115,6 +149,7 @@ DEF(endswith, "B", "SS", {
 })
 
 DEF(startof, "S", "SL", {
+    assertDimless(argv,1);
     int length = (int)argv[1].dbl;
     if (length < 0)
         throw cRuntimeError("startof(): length is negative");
@@ -122,6 +157,7 @@ DEF(startof, "S", "SL", {
 })
 
 DEF(endof, "S", "SL", {
+    assertDimless(argv,1);
     int length = (int)argv[1].dbl;
     if (length < 0)
         throw cRuntimeError("endof(): length is negative");
@@ -130,6 +166,7 @@ DEF(endof, "S", "SL", {
 })
 
 DEF(leftof, "S", "SL", {
+    assertDimless(argv,1);
     int size = argv[0].str.size();
     int index = (int)argv[1].dbl;
     if (index < 0 || index > size)
@@ -138,6 +175,7 @@ DEF(leftof, "S", "SL", {
 })
 
 DEF(rightof, "S", "SL", {
+    assertDimless(argv,1);
     int size = argv[0].str.size();
     int index = (int)argv[1].dbl;
     if (index < 0 || index > size)
