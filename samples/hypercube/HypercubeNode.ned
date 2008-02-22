@@ -24,12 +24,12 @@ module HypercubeNode like IHypercubeNode
                 address = address;
                 iaTime = default(exponential(1));
                 @display("p=82,82");
-        };
+        }
         sink: HCSink {
             parameters:
                 address = address;
                 @display("p=176,82");
-        };
+        }
         rte: HCRouter {
             parameters:
                 address = address;
@@ -38,14 +38,14 @@ module HypercubeNode like IHypercubeNode
             gates:
                 in[dim];
                 out[dim];
-        };
+        }
     connections:
         gen.out --> rte.fromGen;
         sink.in <-- rte.toSink;
         for i=0..dim-1 {
             port$i[i] --> rte.in[i];
             port$o[i] <-- rte.out[i];
-        };
+        }
 }
 
 

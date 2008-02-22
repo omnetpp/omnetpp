@@ -14,7 +14,7 @@
 network HypercubeNetwork extends Hypercube
 {
     parameters:
-        dim = default(2) @prompt("Dimension (1,2,3,4,...)");
+        dim @prompt("Dimension (1,2,3,4,...)") = default(2);
         nodetype = "HypercubeNode";
 }
 

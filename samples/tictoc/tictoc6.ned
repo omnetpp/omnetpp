@@ -24,13 +24,13 @@ network Tictoc6
         tic: Txc6 {
             parameters:
                 @display("i=,cyan");
-        };
+        }
         toc: Txc6 {
             parameters:
                 @display("i=,gold");
-        };
+        }
     connections:
-        tic.out --> { delay = 100ms; } --> toc.in;
-        tic.in <-- { delay = 100ms; } <-- toc.out;
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
 }
 

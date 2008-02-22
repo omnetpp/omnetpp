@@ -43,14 +43,14 @@ module Hypercube
             parameters:
                 address = index; // module's position in (2^dim)-size vector
                 dim = dim;
-        };
+        }
     connections:
         for i=0..2^dim-1, for j=0..dim-1 {
             // connect node i to the node whose index differs only in the
             // jth bit (# stands for bitwise XOR); plus we need an "if" so that
             // we don't try to connect a gate from both directions.
             node[i].port[j] <--> node[i#(1<<j)].port[j] if (i < i#(1<<j));
-        };
+        }
 }
 
 

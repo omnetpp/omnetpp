@@ -26,13 +26,13 @@ network Tictoc3
         tic: Txc3 {
             parameters:
                 @display("i=,cyan");  // colorize the default icon
-        };
+        }
         toc: Txc3 {
             parameters:
                 @display("i=,gold");  // here too
-        };
+        }
     connections:
-        tic.out --> { delay = 100ms; } --> toc.in;
-        tic.in <-- { delay = 100ms; } <-- toc.out;
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
 }
 

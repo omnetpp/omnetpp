@@ -28,14 +28,14 @@ network Tictoc4
             parameters:
                 limit = 8;  // tic's limit is 8
                 @display("i=,cyan");
-        };
+        }
         toc: Txc4 {
             parameters:
                 // note that we leave toc's limit unbound here
                 @display("i=,gold");
-        };
+        }
     connections:
-        tic.out --> { delay = 100ms; } --> toc.in;
-        tic.in <-- { delay = 100ms; } <-- toc.out;
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
 }
 

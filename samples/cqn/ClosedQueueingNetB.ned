@@ -23,11 +23,11 @@ network ClosedQueueingNetB
             gates:
                 in[numTandems];
                 out[numTandems];
-        };
+        }
     connections allowunconnected:
         for i=0..numTandems-1, for j=0..numTandems-1 {
-            tandemQueue[i].out[j] --> { delay = sDelay; } --> tandemQueue[j].in[i] if i!=j;
-        };
+            tandemQueue[i].out[j] --> {  delay = sDelay; } --> tandemQueue[j].in[i] if i!=j;
+        }
 }
 
 

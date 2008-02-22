@@ -26,13 +26,13 @@ network Tictoc2
         tic: Txc2 {
             parameters:
                 @display("i=block/process,cyan"); // specify an icon and colorize it
-        };
+        }
         toc: Txc2 {
             parameters:
                 @display("i=block/process,gold"); // here too
-        };
+        }
     connections:
-        tic.out --> { delay = 100ms; } --> toc.in;
-        tic.in <-- { delay = 100ms; } <-- toc.out;
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
 }
 

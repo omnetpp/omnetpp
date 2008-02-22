@@ -35,13 +35,13 @@ network Tictoc8
         tic: Tic8 {
             parameters:
                 @display("i=,cyan");
-        };
+        }
         toc: Toc8 {
             parameters:
                 @display("i=,gold");
-        };
+        }
     connections:
-        tic.out --> { delay = 100ms; } --> toc.in;
-        tic.in <-- { delay = 100ms; } <-- toc.out;
+        tic.out --> {  delay = 100ms; } --> toc.in;
+        tic.in <-- {  delay = 100ms; } <-- toc.out;
 }
 
