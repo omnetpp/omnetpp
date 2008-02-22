@@ -35,17 +35,17 @@ module Station
                 dataRate = dataRate;
                 THT = THT;
                 @display("p=137,166");
-        };
+        }
         gen: Generator {
             parameters:
                 numStations = numStations;
                 address = address;
                 @display("p=79,60");
-        };
+        }
         sink: Sink {
             parameters:
                 @display("p=196,60");
-        };
+        }
     connections:
         in --> mac.phyIn;
         mac.phyOut --> out;

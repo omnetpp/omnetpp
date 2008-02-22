@@ -20,11 +20,11 @@ network RandomGraph
         int n;
         volatile double connectedness = default(0.15); // 0.0<x<1.0
     submodules:
-        node[n]: RandomGraphNode {};
+        node[n]: RandomGraphNode;
     connections:
         for i=0..n-1, for j=0..n-1 {
             node[i].g++ <--> node[j].g++ if i!=j && uniform(0,1)<connectedness;
-        };
+        }
 }
 
 

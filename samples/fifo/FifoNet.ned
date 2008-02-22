@@ -16,15 +16,15 @@ network FifoNet
         gen: Source {
             parameters:
                 @display("p=89,100");
-        };
+        }
         fifo: BitFifo {
             parameters:
                 @display("p=209,100");
-        };
+        }
         sink: Sink {
             parameters:
                 @display("p=329,100");
-        };
+        }
     connections:
         gen.out --> fifo.in;
         fifo.out --> sink.in;

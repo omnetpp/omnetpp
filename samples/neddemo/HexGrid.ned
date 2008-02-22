@@ -23,16 +23,16 @@ simple HexGridNode extends Node
 network HexGrid
 {
     parameters:
-        int rows = default(7) @prompt("Number of rows");
-        int cols = default(3) @prompt("Number of columns");
+        int rows @prompt("Number of rows") = default(7);
+        int cols @prompt("Number of columns") = default(3);
     submodules:
-        node[rows*cols]: HexGridNode {};
+        node[rows*cols]: HexGridNode;
     connections allowunconnected:
         for i=0..rows*cols-1 {
             node[i].n <--> node[i-2*cols].s if i+1>2*cols;
             node[i].nw <--> node[(i-cols)-(i/cols+1)%2].se if i%(2*cols)!=0 && i+1>cols;
             node[i].sw <--> node[((i+cols)-1)+(i/cols)%2].ne if i%(2*cols)!=0 && i<rows*cols-cols;
-        };
+        }
 }
 
 

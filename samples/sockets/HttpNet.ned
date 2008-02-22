@@ -13,30 +13,30 @@
 network HTTPNet
 {
     parameters:
-        int numClients = default(3) @prompt("Number of clients:");
+        int numClients @prompt("Number of clients:") = default(3);
     submodules:
         server: HTTPServer {
             parameters:
                 @display("p=426,178");
-        };
+        }
         cloud: Cloud {
             parameters:
                 @display("p=274,182");
             gates:
                 g[numClients+2];
-        };
+        }
         extClient: ExtHTTPClient {
             parameters:
                 addr = 1;
                 srvAddr = 0;
                 @display("p=102,92;t=Run the simulation\\, then\nenter into your browser:\nhttp://localhost:4242");
-        };
+        }
         client[numClients]: HTTPClient {
             parameters:
                 addr = 2+index;
                 srvAddr = 0;
                 @display("p=102,162,col");
-        };
+        }
     connections:
         server.g <--> cloud.g[0];
         extClient.g <--> cloud.g[1];

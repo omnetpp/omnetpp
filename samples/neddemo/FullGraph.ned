@@ -18,18 +18,18 @@ simple FullGraphNode extends Node
 network FullGraph
 {
     parameters:
-        int n = default(10) @prompt("Number of nodes");
+        int n @prompt("Number of nodes") = default(10);
     submodules:
         node[n]: FullGraphNode {
             parameters:
                 @display("p=,,ring");
             gates:
                 g[n];
-        };
+        }
     connections allowunconnected:
         for i=0..(n-2), for j=(i+1)..(n-1) {
             node[i].g[j] <--> node[j].g[i];
-        };
+        }
 }
 
 

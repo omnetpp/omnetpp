@@ -21,13 +21,13 @@ simple ChainNode extends Node
 network Chain
 {
     parameters:
-        int n = default(5) @prompt("Number of modules");
+        int n @prompt("Number of modules") = default(5);
     submodules:
-        node[n]: ChainNode {};
+        node[n]: ChainNode;
     connections allowunconnected:
         for i=0..n-2 {
             node[i].right <--> node[i+1].left;
-        };
+        }
 }
 
 

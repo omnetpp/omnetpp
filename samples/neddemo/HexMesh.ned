@@ -18,14 +18,14 @@ simple HexMeshNode extends Node
 network HexMesh
 {
     parameters:
-        int rows = default(3) @prompt("HexMesh rows");
-        int cols = default(3) @prompt("HexMesh columns");
+        int rows @prompt("HexMesh rows") = default(3);
+        int cols @prompt("HexMesh columns") = default(3);
         int num = 2*(rows*cols+rows+cols);
     submodules:
-        node[num]: HexMeshNode {};
+        node[num]: HexMeshNode;
     connections:
         for i=0..num-1 {
-              node[i].port++ <--> node[i+1].port++ if i<num-1 && i%(2*cols+2)!=2*cols;
-              node[i].port++ <--> node[i+2*cols+1].port++ if i<num-2*cols-1 && i%2==0;
-        };
+            node[i].port++ <--> node[i+1].port++ if i<num-1 && i%(2*cols+2)!=2*cols;
+            node[i].port++ <--> node[i+2*cols+1].port++ if i<num-2*cols-1 && i%2==0;
+        }
 }

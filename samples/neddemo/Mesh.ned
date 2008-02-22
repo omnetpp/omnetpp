@@ -21,18 +21,18 @@ simple MeshNode extends Node
 network Mesh
 {
     parameters:
-        int height = default(4) @prompt("Number of rows");
-        int width = default(6) @prompt("Number of columns");
+        int height @prompt("Number of rows") = default(4);
+        int width @prompt("Number of columns") = default(6);
     submodules:
         node[height*width]: MeshNode {
             parameters:
                 @display("p=,,m,$width");
-        };
+        }
     connections allowunconnected:
         for i=0..height-1, for j=0..width-1 {
             node[i*width+j].down <--> node[(i+1)*width+j].up if i!=height-1;
             node[i*width+j].right <--> node[(i*width+j)+1].left if j!=width-1;
-        };
+        }
 }
 
 
