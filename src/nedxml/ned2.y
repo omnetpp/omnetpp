@@ -652,21 +652,11 @@ paramsitem
 param
         : param_typenamevalue
                 {
-                  ps.propertyscope.push(ps.param);
-                }
-          opt_inline_properties ';'
-                {
-                  ps.propertyscope.pop();
                   storePos(ps.param, @$);
                   storeBannerAndRightComments(ps.param,@$);
                 }
         | pattern_value
                 {
-                  ps.propertyscope.push(ps.pattern);
-                }
-          opt_inline_properties ';'
-                {
-                  ps.propertyscope.pop();
                   storePos(ps.pattern, @$);
                   storeBannerAndRightComments(ps.pattern,@$);
                 }
@@ -676,35 +666,39 @@ param
  * Parameter
  */
 param_typenamevalue
+        : param_typename opt_inline_properties ';'
+                {
+                  ps.propertyscope.pop();
+                  storePos(ps.param, @$);
+                  storeBannerAndRightComments(ps.param,@$);
+                }
+        | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
+                {
+                  ps.propertyscope.pop();
+                  addExpression(ps.param, "value",ps.exprPos,$4);
+                  ps.param->setIsDefault(ps.isDefault);
+                  storePos(ps.param, @$);
+                  storeBannerAndRightComments(ps.param,@$);
+                }
+        ;
+
+param_typename
         : opt_volatile paramtype NAME
                 {
                   ps.param = addParameter(ps.parameters, @3);
                   ps.param->setType(ps.paramType);
                   ps.param->setIsVolatile(ps.isVolatile);
-                }
-        | opt_volatile paramtype NAME '=' paramvalue
-                {
-                  ps.param = addParameter(ps.parameters, @3);
-                  ps.param->setType(ps.paramType);
-                  ps.param->setIsVolatile(ps.isVolatile);
-                  addExpression(ps.param, "value",ps.exprPos,$5);
-                  ps.param->setIsDefault(ps.isDefault);
-                }
-        | NAME '=' paramvalue
-                {
-                  ps.param = addParameter(ps.parameters, @1);
-                  addExpression(ps.param, "value",ps.exprPos,$3);
-                  ps.param->setIsDefault(ps.isDefault);
+                  ps.propertyscope.push(ps.param);
                 }
         | NAME
                 {
                   ps.param = addParameter(ps.parameters, @1);
+                  ps.propertyscope.push(ps.param);
                 }
-        | TYPENAME '=' paramvalue  /* this is to assign module type with the "<> like Foo" syntax */
+        | TYPENAME /* this is to assign module type with the "<> like Foo" syntax */
                 {
                   ps.param = addParameter(ps.parameters, @1);
-                  addExpression(ps.param, "value", ps.exprPos,$3);
-                  ps.param->setIsDefault(ps.isDefault);
+                  ps.propertyscope.push(ps.param);
                 }
         ;
 

@@ -283,9 +283,9 @@ void cPar::read()
     // obtain value if parameter is not set yet
     if (p->isInput())
     {
-        printf("           before ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
+        //printf("           before ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
         ev.readParameter(this);
-        printf("           after ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
+        //printf("           after ev.readParameter(), p=%p shared=%d input=%d\n", p, p->isShared(), p->isInput());
     }
 
     // convert non-volatile expressions to constant

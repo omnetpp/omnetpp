@@ -138,7 +138,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
     cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
     if (impl)
     {
-        printf("   +++ reusing param impl for %s\n", paramName);
+        //printf("   +++ reusing param impl for %s\n", paramName);
 
         // we've already been at this point in the NED files sometime,
         // so we can reuse what we produced then

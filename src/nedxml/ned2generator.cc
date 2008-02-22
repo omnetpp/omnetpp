@@ -427,6 +427,10 @@ void NED2Generator::doParam(ParamElement *node, const char *indent, bool islast,
         default: INTERNAL_ERROR0(node, "wrong type");
     }
     OUT << node->getName();
+
+    const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
+    generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
+
     if (hasExpression(node,"value"))
     {
         OUT << " = ";
@@ -436,9 +440,6 @@ void NED2Generator::doParam(ParamElement *node, const char *indent, bool islast,
         if (node->getIsDefault())
             OUT << ")";
     }
-
-    const char *subindent = indent ? increaseIndent(indent) : DEFAULTINDENT;
-    generateChildrenWithType(node, NED_PROPERTY, subindent, " ");
 
     if (indent)
         OUT << ";" << getRightComment(node);
