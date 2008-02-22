@@ -1,0 +1,47 @@
+%description:
+Test that the system module's display string gets set properly.
+
+Cases during display string merging:
+ add tag
+ add tagarg
+ set (overwrite) tagarg
+ delete (unset) tagarg
+
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Base {
+    @display("aa=aaa1,aaa2,,aaa4,aaa5;bb=bbb1,bbb2;cc=CCC1");
+}
+
+network Derived extends Base {
+    @display("dd=DDD1,,DDD3");  // add
+}
+
+network Derived2 extends Derived {
+    @display("aa=,,,,,AAA6,AAA7;bb=,,BBB3,BBB4");  // add tagargs
+}
+
+network Derived3 extends Derived2 {
+    @display("aa=AAA1,,,AAA4;bb=,BBB2");  // overwrite tagarg
+}
+
+network Test extends Derived3 {
+    @display("aa=-;bb=,,,-;cc=-");  // delete tagarg
+  submodules:
+    dump: Dump;
+}
+
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+      display: dd=DDD1,,DDD3;aa=,aaa2,,AAA4,aaa5,AAA6,AAA7;bb=bbb1,BBB2,BBB3
+    parameters:
+        @isNetwork
+        @display(dd=DDD1,,DDD3;aa=,aaa2,,AAA4,aaa5,AAA6,AAA7;bb=bbb1,BBB2,BBB3)
+    submodules:
+}
