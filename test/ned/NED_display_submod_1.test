@@ -8,9 +8,11 @@ Cases during display string merging:
  delete (unset) tagarg
 
 
-%file: {}.ned
+%file: test.ned
 
-network {network} {
+import testlib.Dump;
+
+network Test {
   types:
     module Base {
         @display("aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2");
@@ -36,21 +38,33 @@ network {network} {
 %exitcode: 0
 
 %contains: stdout
-module {network}
-  display:
-module {network}.base
-  display: aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
-  @display(aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
-module {network}.addTag
-  display: cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
-  @display(cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
-module {network}.addTagArg
-  display: aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3
-  @display(aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3)
-module {network}.overwrite
-  display: aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2
-  @display(aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2)
-module {network}.unset
-  display: aa=aaa1,,,aaa4
-  @display(aa=aaa1,,,aaa4)
-done
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.base: Test.Base {
+              display: aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
+            parameters:
+                @display(aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
+        }
+        module Test.addTag: Test.Base {
+              display: cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
+            parameters:
+                @display(cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
+        }
+        module Test.addTagArg: Test.Base {
+              display: aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3
+            parameters:
+                @display(aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3)
+        }
+        module Test.overwrite: Test.Base {
+              display: aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2
+            parameters:
+                @display(aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2)
+        }
+        module Test.unset: Test.Base {
+              display: aa=aaa1,,,aaa4
+            parameters:
+                @display(aa=aaa1,,,aaa4)
+        }
+}

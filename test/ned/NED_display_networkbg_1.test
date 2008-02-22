@@ -8,24 +8,27 @@ Cases during display string merging:
  delete (unset) tagarg
 
 
-%file: {}.ned
-network {Base} {
+%file: test.ned
+
+import testlib.Dump;
+
+network Base {
     @display("aa=aaa1,aaa2,,aaa4,aaa5;bb=bbb1,bbb2;cc=CCC1");
 }
 
-network {Derived} extends {Base} {
+network Derived extends Base {
     @display("dd=DDD1,,DDD3");  // add
 }
 
-network {Derived2} extends {Derived} {
+network Derived2 extends Derived {
     @display("aa=,,,,,AAA6,AAA7;bb=,,BBB3,BBB4");  // add tagargs
 }
 
-network {Derived3} extends {Derived2} {
+network Derived3 extends Derived2 {
     @display("aa=AAA1,,,AAA4;bb=,BBB2");  // overwrite tagarg
 }
 
-network {network} extends {Derived3} {
+network Test extends Derived3 {
     @display("aa=-;bb=,,,-;cc=-");  // delete tagarg
   submodules:
     dump: Dump;

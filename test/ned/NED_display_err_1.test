@@ -1,9 +1,11 @@
 %description:
 Test display string inheritance.
 
-%file: {}.ned
+%file: test.ned
 
-network {network} {
+import testlib.Dump;
+
+network Test {
     @display("=foo");  // missing tagname
 }
 
