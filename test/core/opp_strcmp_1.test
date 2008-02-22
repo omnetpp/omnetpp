@@ -12,7 +12,7 @@ for (int i=0; i<4; i++)
     for (int j=0; j<4; j++)
         ev << "opp_strcmp(" << tostr(a[i]) << ", " << tostr(a[j]) << ") ==> " << opp_strcmp(a[i], a[j]) << endl;
 
-%contains-regex: stdout
+%contains: stdout
 opp_strcmp(NULL, NULL) ==> 0
 opp_strcmp(NULL, "") ==> 0
 opp_strcmp(NULL, "alma") ==> -1
