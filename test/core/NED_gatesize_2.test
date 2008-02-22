@@ -1,0 +1,54 @@
+%description:
+Gatesize that depends on parameters
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Submod
+{
+  parameters:
+    int n = default(2);
+  gates:
+    output out[n];
+    input in[n];
+  connections allowunconnected:
+}
+
+network Test
+{
+  submodules:
+    dump: Dump;
+    s: Submod;
+  connections allowunconnected:
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+**.n = 5
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.s: Submod {
+            parameters:
+                n = 5
+            gates:
+                 0 out[0]: not connected
+                 1 out[1]: not connected
+                 2 out[2]: not connected
+                 3 out[3]: not connected
+                 4 out[4]: not connected
+                 5 in[0]: not connected
+                 6 in[1]: not connected
+                 7 in[2]: not connected
+                 8 in[3]: not connected
+                 9 in[4]: not connected
+        }
+}
