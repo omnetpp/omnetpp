@@ -9,7 +9,8 @@ if "x%TESTFILES%" == "x" set TESTFILES=*.test
 
 path %~dp0\..\bin;%PATH%
 mkdir work 2>nul
-del work\work.cmd 2>nul
+xcopy /i /y lib work\lib
+set NEDPATH=.;../lib
 
 call opp_test %OPT% -g -v %TESTFILES% || goto end
 

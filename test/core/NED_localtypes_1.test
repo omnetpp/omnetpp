@@ -1,0 +1,29 @@
+%description:
+Test that the local Node type takes precedence over the global one.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node {  // the global type 
+} 
+
+network Test {
+  types:
+    module Node {  // the local type
+    }
+  submodules:
+    dump: Dump;
+    n: Node;  
+}
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.n: Test.Node {
+        }
+}
