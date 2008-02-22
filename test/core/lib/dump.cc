@@ -24,8 +24,8 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     const char *indent = currentIndent.c_str();
 
     printf("%smodule %s: %s {\n", indent, mod->fullPath().c_str(), mod->componentType()->fullName());
-    if (strlen(mod->displayString().toString())>0)
-        printf("%s      display: %s\n", indent, mod->displayString().toString());
+    //TODO assert that display string is the same as @display
+    // mod->displayString().toString()...
 
     cProperties *props = mod->properties();
     bool paramheadingprinted = false;

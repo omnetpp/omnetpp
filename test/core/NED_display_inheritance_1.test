@@ -51,27 +51,22 @@ module Test: Test {
         @isNetwork
     submodules:
         module Test.base: Base {
-              display: aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
             parameters:
                 @display(aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
         }
         module Test.addtag: AddTag {
-              display: cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2
             parameters:
                 @display(cc=CCC1,,CCC3;aa=aaa1,aaa2,,aaa4;bb=bbb1,bbb2)
         }
         module Test.addtagarg: AddTagArg {
-              display: aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3
             parameters:
                 @display(aa=aaa1,aaa2,,aaa4,AAA5,AAA6;bb=bbb1,bbb2,BBB3)
         }
         module Test.overwrite: Overwrite {
-              display: aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2
             parameters:
                 @display(aa=AAA1,aaa2,,AAA4;bb=bbb1,BBB2)
         }
         module Test.unset: Unset {
-              display: aa=aaa1,,,aaa4
             parameters:
                 @display(aa=aaa1,,,aaa4)
         }

@@ -39,7 +39,6 @@ network Test extends Derived3 {
 
 %contains: stdout
 module Test: Test {
-      display: dd=DDD1,,DDD3;aa=,aaa2,,AAA4,aaa5,AAA6,AAA7;bb=bbb1,BBB2,BBB3
     parameters:
         @isNetwork
         @display(dd=DDD1,,DDD3;aa=,aaa2,,AAA4,aaa5,AAA6,AAA7;bb=bbb1,BBB2,BBB3)
