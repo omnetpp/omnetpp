@@ -7,7 +7,6 @@
 // `license' for details on this and other legal matters.
 //
 
-import "cmysqlnetbuilder";
 
 //
 // Represents a network node. This is just a dummy, but one could of course
@@ -30,6 +29,6 @@ module Node
 network Net60
 {
     submodules:
-        builder: cMySQLNetBuilder {};
+        builder: cMySQLNetBuilder;
 }
 
