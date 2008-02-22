@@ -18,7 +18,8 @@ import ned.BasicChannel;
 network Net60
 {
     types:
-        channel C extends BasicChannel {
+        channel C extends BasicChannel
+        {
             parameters:
                 delay = 0.1ms;
                 datarate = 1Gbps;

@@ -14,10 +14,11 @@ import node.Node;
 network Mesh
 {
     parameters:
-        double height = default(9) @prompt("Number of rows");
-        double width = default(7) @prompt("Number of columns");
+        double height @prompt("Number of rows") = default(9);
+        double width @prompt("Number of columns") = default(7);
     types:
-        channel C extends ned.BasicChannel {
+        channel C extends ned.BasicChannel
+        {
             parameters:
                 delay = 0.1ms;
                 datarate = 1Gbps;
@@ -29,12 +30,12 @@ network Mesh
                 @display("p=,,m,$width,40,40");
             gates:
                 port[4];
-        };
+        }
     connections allowunconnected:
         for i=0..height-1, for j=0..width-1 {
             node[i*width+j].port[0] <--> C <--> node[(i+1)*width+j].port[1] if i!=height-1;
             node[i*width+j].port[2] <--> C <--> node[(i*width+j)+1].port[3] if j!=width-1;
-        };
+        }
 }
 
 

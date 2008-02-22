@@ -13,13 +13,13 @@
 network ClientServer
 {
     parameters:
-        int numClients = default(4) @prompt("Number of clients");
+        int numClients @prompt("Number of clients") = default(4);
     submodules:
         server: Server {
             parameters:
-                processingTime = default(0.2s) @unit(s) @prompt("Time to process a query");
+                processingTime @unit(s) @prompt("Time to process a query") = default(0.2s);
                 @display("p=210,70");
-        };
+        }
         switch: Switch {
             parameters:
                 // pkRate should be >= numClients, otherwise switch will become the bottleneck
@@ -29,20 +29,20 @@ network ClientServer
                 @display("p=210,170");
             gates:
                 port[numClients+1];
-        };
+        }
         client[numClients]: Client {
             parameters:
                 timeout = 5s;
-                connIaTime = default(10s) @prompt("Connection interarrival time");
-                queryIaTime = default(2s) @prompt("Query interarrival time");
-                numQuery = default(5) @prompt("Number of queries per connection");
+                connIaTime @prompt("Connection interarrival time") = default(10s);
+                queryIaTime @prompt("Query interarrival time") = default(2s);
+                numQuery @prompt("Number of queries per connection") = default(5);
                 @display("p=70,270,m,10,80");
-        };
+        }
     connections:
         for i=0..numClients-1 {
-            client[i].port <--> {delay = 10ms;} <--> switch.port[i];
-        };
-        server.port <--> {delay = 10ms;} <--> switch.port[numClients];
+            client[i].port <--> {  delay = 10ms; } <--> switch.port[i];
+        }
+        server.port <--> {  delay = 10ms; } <--> switch.port[numClients];
 }
 
 

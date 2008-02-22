@@ -14,7 +14,7 @@ import node.Node;
 network FullGraph
 {
     parameters:
-        double n = default(15) @prompt("Number of nodes");
+        double n @prompt("Number of nodes") = default(15);
     submodules:
         node[n]: Node {
             parameters:
@@ -22,11 +22,11 @@ network FullGraph
                 @display("p=,,ring");
             gates:
                 port[n];
-        };
+        }
     connections allowunconnected:
         for i=0..n-2, for j=i+1..n-1 {
-            node[i].port[j] <--> {delay=0.1ms; datarate=1Gbps;} <--> node[j].port[i];
-        };
+            node[i].port[j] <--> {  delay = 0.1ms; datarate = 1Gbps; } <--> node[j].port[i];
+        }
 }
 
 

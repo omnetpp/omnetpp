@@ -23,12 +23,12 @@ network Aloha
         server: Server {
             parameters:
                 txRate = txRate;
-        };
+        }
         host[numHosts]: Host {
             parameters:
                 txRate = txRate;
                 slotTime = slotTime;
-        };
+        }
     connections allowunconnected:
 }
 

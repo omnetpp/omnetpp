@@ -25,18 +25,18 @@ module Node
         app: App {
             parameters:
                 @display("p=140,60");
-        };
+        }
         routing: Routing {
             parameters:
                 @display("p=140,130");
             gates:
                 in[sizeof(port)];
                 out[sizeof(port)];
-        };
+        }
         queue[sizeof(port)]: L2Queue {
             parameters:
                 @display("p=80,200,row");
-        };
+        }
     connections:
         routing.localOut --> app.in;
         routing.localIn <-- app.out;
@@ -44,7 +44,7 @@ module Node
             routing.out[i] --> queue[i].in;
             routing.in[i] <-- queue[i].out;
             queue[i].line <--> port[i];
-        };
+        }
 }
 
 

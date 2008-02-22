@@ -15,6 +15,6 @@ package networks;
 network Net60a extends Net60
 {
     connections:
-        rte[55].port++ <--> {delay=0.1ms; datarate=1Gbps;} <--> rte[0].port++;
+        rte[55].port++ <--> {  delay = 0.1ms; datarate = 1Gbps; } <--> rte[0].port++;
 }
 
