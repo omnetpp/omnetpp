@@ -80,12 +80,6 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
      * Produces a one-line description of object contents.
      */
     virtual std::string info() const;
-
-    /**
-     * Produces more detailed description of object contents.
-     */
-    virtual std::string detailedInfo() const;
-
     //@}
 
     /** @name Member access. */

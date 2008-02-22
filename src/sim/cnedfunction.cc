@@ -113,11 +113,6 @@ static const char *typeName(char t)
 
 std::string cNEDFunction::info() const
 {
-    return sign;
-}
-
-std::string cNEDFunction::detailedInfo() const
-{
     std::stringstream out;
     out << "(";
     for (int i = 0; i < maxArgs(); i++)

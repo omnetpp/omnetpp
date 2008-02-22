@@ -227,26 +227,30 @@ DEF(string, "*->S", {
 //
 
 // continuous
-DEF(uniform, "QQ->Q", {
+DEF(uniform, "QQ/L->Q", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
-    argv[0].dbl = uniform(argv[0].dbl, argv1converted);
+    argv[0].dbl = uniform(argv[0].dbl, argv1converted, rng);
     return argv[0];
 })
 
-DEF(exponential, "Q->Q", {
-    argv[0].dbl = exponential(argv[0].dbl);
+DEF(exponential, "Q/L->Q", {
+    int rng = argc==2 ? (int)argv[1].dbl : 0;
+    argv[0].dbl = exponential(argv[0].dbl, rng);
     return argv[0];
 })
 
-DEF(normal, "QQ->Q", {
+DEF(normal, "QQ/L->Q", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
-    argv[0].dbl = normal(argv[0].dbl, argv1converted);
+    argv[0].dbl = normal(argv[0].dbl, argv1converted, rng);
     return argv[0];
 })
 
-DEF(truncnormal, "QQ->Q", {
+DEF(truncnormal, "QQ/L->Q", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
-    argv[0].dbl = truncnormal(argv[0].dbl, argv1converted);
+    argv[0].dbl = truncnormal(argv[0].dbl, argv1converted, rng);
     return argv[0];
 })
 
@@ -304,10 +308,11 @@ static double _wrap_pareto_shifted(double a, double b, double c)
 
 // discrete
 
-static double _wrap_intuniform(double a, double b)
-{
-    return (double) intuniform((int)a, (int)b);
-}
+DEF(intuniform, "LL/L->L", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
+    argv[0].dbl = intuniform((int)argv[0].dbl, (int)argv[1].dbl, rng);
+    return argv[0];
+})
 
 static double _wrap_bernoulli(double p)
 {
