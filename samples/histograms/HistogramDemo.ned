@@ -20,11 +20,11 @@
 simple HistogramDemo
 {
     parameters:
-        int numObservations = default(10000) @prompt("Number of observations");
-        int numCells = default(20) @prompt("Number of histogram cells");
-        bool useFixedRange = default(false) @prompt("Auto (false) or fixed (true) histogram range? ");
-        int numFirstVals = default(50) @prompt("Number of observations used for range estimation");
-        double rangeExtFactor = default(1.3) @prompt("Range extension factor (usually 1.0 .. 2)");
+        int numObservations @prompt("Number of observations") = default(10000);
+        int numCells @prompt("Number of histogram cells") = default(20);
+        bool useFixedRange @prompt("Auto (false) or fixed (true) histogram range? ") = default(false);
+        int numFirstVals @prompt("Number of observations used for range estimation") = default(50);
+        double rangeExtFactor @prompt("Range extension factor (usually 1.0 .. 2)") = default(1.3);
 }
 
 
