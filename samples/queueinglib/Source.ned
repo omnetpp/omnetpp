@@ -29,8 +29,8 @@ simple Source
     parameters:
         @group(Queueing);
         @display("i=block/source");
-        double startTime = default(0) @unit(s); // when the module sends out the first job
-        double stopTime = default(-1) @unit(s); // when the module stops the job generation (-1 means no limit)
+        double startTime @unit(s) = default(0); // when the module sends out the first job
+        double stopTime @unit(s) = default(-1); // when the module stops the job generation (-1 means no limit)
         int numJobs = default(-1);              // number of jobs to be generated (-1 means no limit)
         volatile double interArrivalTime;       // time between generated jobs
         volatile int jobType = default(0);      // the type attribute of the created job (used by classifers and other modules)

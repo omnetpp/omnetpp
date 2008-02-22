@@ -31,7 +31,7 @@ simple Classifier
     parameters:
         @group(Queueing);
         @display("i=block/classifier");
-        string dispatchField = default("type") @enum("type","priority");
+        string dispatchField @enum("type","priority") = default("type");
     gates:
         input in[];
         output out[];

@@ -32,7 +32,7 @@ simple PQueue
         @display("i=block/passiveq;q=queue");
         int capacity = default(-1);  // negative capacity means unlimited queue
         bool fifo = default(true);   // whether the module works as a queue (fifo=true) or a stack (fifo=false)
-        string sendingAlgorithm = default("priority") @enum("priority","random","roundRobin","minDelay");
+        string sendingAlgorithm @enum("priority","random","roundRobin","minDelay") = default("priority");
                                      // how the queue tries to find a suitable server for an incoming job
     gates:
         input in[];

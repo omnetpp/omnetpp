@@ -27,7 +27,7 @@ simple Server
     parameters:
         @group(Queueing);
         @display("i=block/server");
-        string fetchingAlgorithm = default("priority") @enum("priority","random","roundRobin","longestQueue");
+        string fetchingAlgorithm @enum("priority","random","roundRobin","longestQueue") = default("priority");
                                        // how the next job will be choosen from the attached queues
         volatile double serviceTime;   // service time of a job
     gates:
