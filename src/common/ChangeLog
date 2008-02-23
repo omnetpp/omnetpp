@@ -1,1 +1,4 @@
-TODO
+2008-03-01  Andras Varga
+
+	* Added ChangeLog. The Common library was added in omnetpp-4.0, and 
+	it contains classes and functions used by all parts of OMNeT++.

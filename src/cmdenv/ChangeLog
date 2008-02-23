@@ -1,12 +1,38 @@
-progress prints "xx% completed" -- it computes % both from sim-time-limit and cpu-time-limit, and prints the larger one
+2008-03-01  Andras Varga
 
-added -c option
+	Summary of changes for omnetpp-4.0 (2006..2008):
 
-inifile changes (e.g. added cmdenv-config-name)
+	* inifile syntax change: [Cmdenv] config entries became cmdenv-... ones
 
-heap.cc thrown out
+	* new inifile entry: cmdenv-interactive=. When false, Cmdenv will
+	never read stdin, which is better suited for batch execution.
 
-for run iterations, accept both ".." and "-" as range separator
+	* -c option and cmdenv-config-name= inifile entry for specifying the
+	configuration name to run; specific runs for the configuration can
+	be selected with existing -r option or cmdenv-runs-to-execute=.
+	For example,  "-c Foo -r 1..5" does 5 runs from [Config Foo]
+	in the ini file.
+
+	* prints progress percentages "nn% completed" during simulation.
+	It is used by the simulation launcher's progress bar in the IDE.
+	The algorithm computes percentage both from sim-time-limit and
+	cpu-time-limit, and prints the larger one.
+
+	* for run iterations (-r option and cmdenv-runs-to-execute=), accept
+	both ".." and "-" as range separator, i.e. both  "2..5" and "2-5" are
+	valid
+
+	* from now on, you need to specify "-u _cmdenv_lib" (gcc) or 
+	"/include:_cmdenv_lib" (vc++) in addition to -lcmdenv (or cmdenv.lib) 
+	on the linker command line. But: now you can have a program with both 
+	Cmdenv and Tkenv in it.
+
+	* out-of-directory build, and other Makefile changes
+
+	* obsolete source heap.cc removed
+
+	* SEE CHANGES FOR ENVIR TOO. (Envir is the common part of Cmdenv and 
+	Tkenv).
 
 2006-10-21  ------ omnetpp-3.3 released ------
 
@@ -30,22 +56,22 @@ for run iterations, accept both ".." and "-" as range separator
 
 2004-12-29  ------ omnetpp-3.0 released ------
 
-004-12-15  Andras Varga
+2004-12-15  Andras Varga
 
-        * extra-stack= option replaced with extra-stack-kb. (Default is 8K) 
+        * extra-stack= option replaced with extra-stack-kb. (Default is 8K)
 
-22004-11-23  ------ omnetpp-3.0b1 released ------
+2004-11-23  ------ omnetpp-3.0b1 released ------
 
 2004-11-03  ------ omnetpp-3.0a9 released ------
 
 2004-10-27  Andras Varga
 
-	* cmdenv.cc: minor ajustment: makeOptionsEffective() should be called 
+	* cmdenv.cc: minor ajustment: makeOptionsEffective() should be called
 	right after readPerRunOptions()
 
 2004-10-25  Andras Varga
-	
-	* cmdenv.cc: updated for info() and fullPath() signature changes 
+
+	* cmdenv.cc: updated for info() and fullPath() signature changes
 	(see include/ChangeLog)
 
 2004-10-04  ------ omnetpp-3.0a8 released ------

@@ -1,63 +1,96 @@
-removed many tkenv-* config entries, because they took no effect (.tkenvrc took priority)
-    (tkenv-slowexec-delay, tkenv-update-freq-fast, tkenv-animation-enabled, etc)
+2008-03-01  Andras Varga
 
-multiple "r" and "t" tags supported per submodule (as "r1", "r2" etc); 
+	Summary of changes for omnetpp-4.0 (2006..2008):
 
-added "bgt" tag: bgt=<x>,<y>,<text>,<color>; multiple tags supported ("bgt1","bgt2",etc)
+	* inifile syntax change: [Tkenv] config entries became tkenv-...;
+	however, see below:
 
-implemented zooming
+	* inifile entries for options that also appear in the Simulation
+	Options dialog have been REMOVED: tkenv-slowexec-delay=,
+	tkenv-update-freq-fast=, tkenv-animation-enabled=, etc., because
+	they took no effect anyway (when a .tkenvrc file was present,
+	settings were taken from that instead of omnetpp.ini).
 
-implemented "hide module names"
+	* default configuration and default run number (they cause the
+	network to be set up automatically when Tkenv starts up)
+	can be specified with -c and -r command-line options or the
+	tkenv-default-config= and tkenv-default-run= ini file options.
 
-added support for new display string tags: bgi, bgg, bgs, bgg,... ; made consistent with NED editor
+	* OMNETPP_BITMAP_PATH environment variable is now called
+	OMNETPP_IMAGE_PATH
 
-Add to documentation: icon names MUST BE lowercase
+	* likewise, the [Tkenv]/bitmap-path= inifile option is now
+	called tkenv-image-path=.
 
-Added support for reading PNG images from TkPNG package 0.7
-(https://sourceforge.net/projects/tkpng/)
+	* implemented zooming
 
-OMNETPP_BITMAP_PATH now called OMNETPP_IMAGE_PATH
-Tkenv/bitmap-path renamed to image-path
+	* implemented "hide module names" feature
+
+	* display string improvements:
+	 - multiple "r" and "t" tags supported per submodule (as "r1", "r2" etc);
+	 - added "bgt" tag: bgt=<x>,<y>,<text>,<color>; multiple tags supported ("bgt1","bgt2",etc)
+	 - added support for new display string tags: bgi, bgg, bgs, bgg,... ; made consistent with NED editor
+
+	* NOTE: icon names (png/gif file names) MUST BE lowercase
+
+	* added support for reading PNG images as icons, using TkPNG 0.7
+	(https://sourceforge.net/projects/tkpng/). Checking in a copy of
+	the TkPNG sources was felt more practical than adding TkPNG as an
+	external dependency.
+
+	* from now on, you need to specify "-u _tkenv_lib" (gcc) or
+	"/include:_tkenv_lib" (vc++) in addition to -ltkenv (or tkenv.lib)
+	on the linker command line. But: now you can have a program with both
+	Cmdenv and Tkenv in it.
+
+	* out-of-directory build, and other Makefile changes
+
+	* SEE CHANGES FOR ENVIR TOO. (Envir is the common part of Cmdenv and
+	Tkenv).
+
+2006-11-19  ------ omnetpp-3.4b2 released ------
 
 2006-11-14  Andras Varga
 
 	* implemented filtering for the timeline
 
-	* implemented scrolback buffer limiting (default is 100,000 lines)
+	* implemented scrollback buffer limiting (default is 100,000 lines)
 
 2006-11-12  Andras Varga
 
 	* fix: existing inspector windows didn't come to the front and didn't get
 	the focus. This was observed on Kubuntu with kwin 3.0, but maybe
 	affected other platforms as well.
-	
+
 2006-11-06  Andras Varga
 
 	* enhancement: all non-graphical inspectors replaced with consistent
 	treeview-based inspectors
 
 	* enhancement: broadcast animation feature, which is thought to
-	significantly improve the animation of wireless simulations (MF!), and 
+	significantly improve the animation of wireless simulations (MF!), and
 	generally simulations where broadcast sends occur (e.g. Ethernet).
 	When the feature is turned on, then if multiple send() or sendDirect()
-	calls occur within a handleMessage(), they are animated	concurrently. 
-	This also means that send/sendDirect calls are NOT animated at the 
-	place of the call as previously, but together at the end of processing 
-	the event (that is, after handleMessage() has already returned). 
+	calls occur within a handleMessage(), they are animated	concurrently.
+	This also means that send/sendDirect calls are NOT animated at the
+	place of the call as previously, but together at the end of processing
+	the event (that is, after handleMessage() has already returned).
 	This is done because Tkenv first has to collect all message sendings
 	within the event in order to be able to animate them. This out-of-
-	sequence animation processing may cause occasional surprise. The 
-	broadcast animation feature can be turned off in the Simulation Options 
+	sequence animation processing may cause occasional surprise. The
+	broadcast animation feature can be turned off in the Simulation Options
 	dialog.
 
 	* internal refactoring (opp_object_nullpointer renamed to opp_null;
 	split animate.tcl and timeline.tcl from modinsp2.tcl, etc)
 
+	* Simulation Options dialog to use tabs (it was too crowded already)
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-10-19  Andras Varga
 
-	* modinsp2.tcl: connection arrows with zero thickness ("o=,0") are 
+	* modinsp2.tcl: connection arrows with zero thickness ("o=,0") are
 	not drawn.
 
 	* "Save window contents" toolbar icon added to text windows
@@ -71,12 +104,12 @@ Tkenv/bitmap-path renamed to image-path
 
 2006-04-13  Andras Varga
 
-	* tkutil.cc: fixed a bug in setObjectListResult() [crash reported by 
+	* tkutil.cc: fixed a bug in setObjectListResult() [crash reported by
 	Rodolfo Ribeiro Gomes and others]
 
 2006-03-19  Andras Varga
 
-	* tkapp.cc: use simulation.guessNextSimtime() to display the time of 
+	* tkapp.cc: use simulation.guessNextSimtime() to display the time of
 	the [probable] next event
 
 2006-01-12  ------ omnetpp-3.2p1 released ------
@@ -129,7 +162,7 @@ Tkenv/bitmap-path renamed to image-path
 
 2005-07-20  Andras Varga
 
-	* inspector.tcl, structinsp.cc: in message inspector Fields and 
+	* inspector.tcl, structinsp.cc: in message inspector Fields and
 	Control Info pages, indented 2nd, 3rd etc lines of very long entries,
 	to make it more legible (Tk text tag -lmargin2 option)
 
@@ -154,7 +187,7 @@ Tkenv/bitmap-path renamed to image-path
 
 2005-03-19  Andras Varga
 
-	* gate inspector dialog revised (connection display string made 
+	* gate inspector dialog revised (connection display string made
 	editable)
 
 	* modinsp2.tcl, inspector.tcl: implemented new display string
@@ -178,7 +211,7 @@ Tkenv/bitmap-path renamed to image-path
 
 2005-03-07  Andras Varga
 
-	* tkapp.cc: added support for -r <run-number> command-line option, 
+	* tkapp.cc: added support for -r <run-number> command-line option,
 	which has the same effect as (but takes priority over) [Tkenv]/
 	default-run ini file entry.
 
@@ -193,23 +226,23 @@ Tkenv/bitmap-path renamed to image-path
 
 2005-02-07  Andras Varga
 
-	* enhancement: in omnetpp.ini, description="some text" entries can be 
+	* enhancement: in omnetpp.ini, description="some text" entries can be
 	added under the [Run 1], [Run 2] etc sections. These descriptions will
 	appear in the Tkenv run selection dialog.
 
 2005-02-06  Andras Varga
 
-	* gateinsp.tcl, modinsp.cc: fixed cGate inspector error introduced 
+	* gateinsp.tcl, modinsp.cc: fixed cGate inspector error introduced
 	in 3.0
 
 2005-01-17  Andras Varga
 
-	* combobox.tcl updated to version 2.3 which also works on Mac OS/X 
+	* combobox.tcl updated to version 2.3 which also works on Mac OS/X
 	[suggested by Michael Tuexen]
 
 2005-01-10  Andras Varga
 
-	* tkapp.cc, tkcmd.cc: factored out platform dependencies to 
+	* tkapp.cc, tkcmd.cc: factored out platform dependencies to
 	include/platdep
 
 2004-12-29  ------ omnetpp-3.0 released ------
@@ -221,14 +254,14 @@ Tkenv/bitmap-path renamed to image-path
 
 2004-12-10  Andras Varga
 
-	* default background color changed from #c0c0c0 to #d0d0d0 
+	* default background color changed from #c0c0c0 to #d0d0d0
 
 2004-11-29  Andras Varga
 
-  	* tkapp.cc: on Mac OS/X, implement ftime() with gettimeofday() [patch 
+  	* tkapp.cc: on Mac OS/X, implement ftime() with gettimeofday() [patch
   	from Michael Tuexen]
 
-  	* tkutil.cc: hide gatev and paramv in "Contents" page of a simple 
+  	* tkutil.cc: hide gatev and paramv in "Contents" page of a simple
   	module inspector
 
 2004-11-25  Andras Varga

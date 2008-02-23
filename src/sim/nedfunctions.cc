@@ -358,7 +358,7 @@ Define_Function2(lognormal, _wrap_lognormal, 2);
 Define_Function2(weibull, _wrap_weibull, 2);
 Define_Function2(pareto_shifted, _wrap_pareto_shifted, 3);
 
-Define_Function2(intuniform, _wrap_intuniform, 2);
+//done: Define_Function2(intuniform, _wrap_intuniform, 2);
 Define_Function2(bernoulli, _wrap_bernoulli, 1);
 Define_Function2(binomial, _wrap_binomial, 2);
 Define_Function2(geometric, _wrap_geometric, 1);
@@ -443,10 +443,11 @@ static double _wrap_pareto_shifted_with_rng(double a, double b, double c, double
 
 // discrete, rng versions
 
-static double _wrap_intuniform_with_rng(double a, double b, double rng)
-{
-    return (double) intuniform((int)a, (int)b, (int)rng);
-}
+//done:
+//static double _wrap_intuniform_with_rng(double a, double b, double rng)
+//{
+//    return (double) intuniform((int)a, (int)b, (int)rng);
+//}
 
 static double _wrap_bernoulli_with_rng(double p, double rng)
 {
@@ -496,7 +497,7 @@ Define_Function2(lognormal, _wrap_lognormal_with_rng, 3);
 Define_Function2(weibull, _wrap_weibull_with_rng, 3);
 Define_Function2(pareto_shifted, _wrap_pareto_shifted_with_rng, 4);
 
-Define_Function2(intuniform, _wrap_intuniform_with_rng, 3);
+//done: Define_Function2(intuniform, _wrap_intuniform_with_rng, 3);
 Define_Function2(bernoulli, _wrap_bernoulli_with_rng, 2);
 Define_Function2(binomial, _wrap_binomial_with_rng, 3);
 Define_Function2(geometric, _wrap_geometric_with_rng, 2);

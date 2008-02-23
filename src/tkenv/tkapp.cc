@@ -156,11 +156,11 @@ void TOmnetTkApp::setup()
         tkenv_dir = OMNETPP_TKENV_DIR;
 #endif
 
-    //FIXME warn if obsolete OMNETPP_BITMAP_PATH is set
-    //FIXME warn if obsolete omnetpp.ini setting Tkenv/bitmap-path is set
-
     // path for icon directories
     const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
+    if (image_path_env==NULL && getenv("OMNETPP_BITMAP_PATH")!=NULL)
+        fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
+                        "please change it to OMNETPP_IMAGE_PATH for OMNeT++ 4.0+\n");
     std::string image_path = image_path_env ? image_path_env : OMNETPP_IMAGE_PATH;
     if (!opt_image_path.empty())
         image_path = std::string(opt_image_path.c_str()) + ";" + image_path;
@@ -283,8 +283,8 @@ void TOmnetTkApp::printUISpecificHelp()
     ev << "                configuration database, this selects the [Config <configname>]\n";
     ev << "                section; the default is the [General] section.\n";
     ev << "                See also: -r.\n";
-    ev << "  -r <run>      Set up the specified run in the configuration selected with the\n";
-    ev << "                -c option\n";
+    ev << "  -r <run>      Set up the specified run number in the configuration selected with\n";
+    ev << "                the -c option\n";
     ev << "\n";
 }
 

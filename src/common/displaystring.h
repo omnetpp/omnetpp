@@ -50,6 +50,10 @@ NAMESPACE_BEGIN
  * </pre>
  *
  * Limitation: a tag may have at most 16 arguments.
+ *
+ * NOTE: this is a modified copy of the cDisplayString class of the simulation
+ * kernel, created because some components not dependent on the simkernel also 
+ * need to manipulate display strings.
  */
 class COMMON_API DisplayString
 {

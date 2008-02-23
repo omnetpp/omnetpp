@@ -1,0 +1,8 @@
+2008-03-01  Andras Varga
+
+	* Added ChangeLog. The Scave library was added in omnetpp-4.0. 
+	It implements reading and processing of result files (output vector
+	files .vec, and output scalar files .sca) and it is used by the 
+	Analysis tool in IDE. A command-line tool scavetool is also provided.
+	Initial code was taken from the 3.x Plove and Scalars tools, then
+	it was significantly expanded by Tamas Borbely.
