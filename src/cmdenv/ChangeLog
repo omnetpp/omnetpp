@@ -4,6 +4,8 @@
 
 	* inifile syntax change: [Cmdenv] config entries became cmdenv-... ones
 
+	* cmdenv-express-mode= now defaults to true
+
 	* new inifile entry: cmdenv-interactive=. When false, Cmdenv will
 	never read stdin, which is better suited for batch execution.
 

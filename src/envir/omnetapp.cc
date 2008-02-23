@@ -96,7 +96,6 @@ using std::ostream;
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings", CFG_BOOL, "false", "Currently ignored. Accepted for backward compatibility.");
-//Register_GlobalConfigEntry(CFGID_PRELOAD_NED_FILES, "preload-ned-files", CFG_FILENAMES, "", "NED files to be loaded dynamically. Wildcards, @ and @@ listfiles accepted.");
 Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb", CFG_INT, NULL, "Specifies the maximum memory for activity() simple module stacks in kilobytes. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
 Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
