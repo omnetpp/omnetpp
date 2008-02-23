@@ -52,6 +52,7 @@ args.cc/h rewritten ("--" can be used to mark end of options, etc...)
 added -q option
 inifile entries are now checked against a database of recognized options
 Cmdenv defaults to express-mode=true
+opp_run added
 
 2006-09-30  Andras Varga
 
