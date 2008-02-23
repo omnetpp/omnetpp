@@ -1,4 +1,4 @@
-2008-03-01  Andras Varga
+2008-02-23  Andras Varga
 
 	Summary of nedxml changes for omnetpp-4.0 (2006..2008):
 
@@ -54,7 +54,7 @@
 	* not yet implemented: full NED validation (NEDCrossValidator); generating
 	C++ code (_n.cc files) from NED files
 
-2008-03-01  Andras Varga
+2008-02-23  Andras Varga
 
 	MERGED src/nedc ChangeLog in into this ChangeLog. The src/nedc source
 	directory got deleted, after moving opp_msgc in here. (src/nedc used to

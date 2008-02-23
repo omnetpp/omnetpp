@@ -1,6 +1,6 @@
-2008-03-01  Andras Varga
+2008-02-23  Andras Varga
 
-	* Added ChangeLog. The Layout library was added in omnetpp-4.0. 
+	* Started the ChangeLog. The Layout library was added in omnetpp-4.0. 
 	It implements graph layouting algorithms, used for rendering networks
 	and compound modules in the IDE (graphical NED editor, NED documentation
 	generator), and in the runtime environment (Tkenv). BasicSpringEmbedderLayout
