@@ -29,6 +29,7 @@ Define_Module(Server);
 
 Server::Server()
 {
+    selectionStrategy = NULL;
     jobServiced = NULL;
     endServiceMsg = NULL;
 }

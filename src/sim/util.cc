@@ -339,6 +339,7 @@ void cMethodCallContextSwitcher::methodCall(const char *fmt,...)
     cComponent *methodContext = simulation.context();
     if (methodContext!=callerContext)
     {
+        //FIXME move vsprintf into componentMethodBegin()! so that it can be skipped when ev.disabled() AND not logging into a file!!! this speeds up simulations a lot! [from Ingmar Baumgart, Dec 15 2006]
         static char buf[MAX_METHODCALL];
         va_list va;
         va_start(va, fmt);

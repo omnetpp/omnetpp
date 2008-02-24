@@ -207,6 +207,9 @@ double UnitConversion::getConversionFactor(const char *unit, const char *targetU
 
 double UnitConversion::convertUnit(double d, const char *unit, const char *targetUnit)
 {
+    if (d == 0 && opp_isempty(unit))
+        return 0; // accept 0 without unit
+
     double factor = getConversionFactor(unit, targetUnit);
     if (factor == 0)
         throw opp_runtime_error("Cannot convert unit %s to %s",

@@ -36,7 +36,7 @@ config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{omnetpp.out}
 config logwindow-scrollbacklines	{100000}
-config mainwin-geom	{640x350+48+62}
+config mainwin-geom	{292x331+48+62}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Express (tracing off)}
@@ -46,6 +46,5 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "Aloha" "Aloha" "2" "443x259+24+31"
 inspector "classes" "cSymTable" "1" "460x312+96+124"
 

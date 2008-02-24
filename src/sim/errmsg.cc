@@ -26,7 +26,7 @@ const char *cErrorMessages::get(ErrorCode e)
     switch (e)
     {
       case eOK:        return "No error -- everything's fine";
-      case eBACKSCHED: return "Cannot schedule message (%s)%s to the past, t=%lg";
+      case eBACKSCHED: return "Cannot schedule message (%s)%s to the past, t=%g";
       case eBADCAST:   return "Cannot cast from type %s to %s";
       case ePARAM:     return "Error evaluating parameter `%s': %s";
       case eBADEXP:    return "Badly formed Reverse Polish expression";

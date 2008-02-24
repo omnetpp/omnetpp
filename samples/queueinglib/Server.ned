@@ -28,8 +28,8 @@ simple Server
         @group(Queueing);
         @display("i=block/server");
         string fetchingAlgorithm @enum("priority","random","roundRobin","longestQueue") = default("priority");
-                                       // how the next job will be choosen from the attached queues
-        volatile double serviceTime;   // service time of a job
+             // how the next job will be choosen from the attached queues
+        volatile double serviceTime @unit(s); // service time of a job
     gates:
         input in[];
         output out;
