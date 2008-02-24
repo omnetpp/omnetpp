@@ -8,7 +8,7 @@
 //
 
 cplusplus {{
-#include "netpkt_m.h"
+#include "NetPkt_m.h"
 }};
 
 message NetPkt;

@@ -382,7 +382,7 @@ class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
 class cMsgPar extends cOwnedObject
 {
         @omitGetVerb(true);
-        string value @getter(getAsText) @setter(setFromText) @editable @hint(parameter value);
+        string value @getter(toString) @setter(parse) @editable @hint(parameter value);
         char type @enum(cPar_Type) @hint(parameter type);
         bool isNumeric @group(flags) @hint(whether parameter is of numeric type);
         bool isConstant @group(flags) @hint(whether the parameter has a constant value);

@@ -403,12 +403,12 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
         // imported type?
         // try a shortcut first: if the import doesn't contain wildcards
         std::string dot_nedtypename = std::string(".")+nedtypename;
-        for (int i=0; i<imports.size(); i++)
+        for (int i=0; i<(int)imports.size(); i++)
             if (qnames->contains(imports[i]) && (opp_stringendswith(imports[i], dot_nedtypename.c_str()) || strcmp(imports[i], nedtypename)==0))
                 return imports[i];
 
         // try harder, using wildcards
-        for (int i=0; i<imports.size(); i++) {
+        for (int i=0; i<(int)imports.size(); i++) {
             PatternMatcher importpattern(imports[i], true, true, true);
             for (int j=0; j<qnames->size(); j++) {
                 const char *qname = qnames->get(j);

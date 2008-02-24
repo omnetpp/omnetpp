@@ -29,6 +29,7 @@
 #include "clongparimpl.h"
 #include "cboolparimpl.h"
 #include "cstringparimpl.h"
+#include "cdisplaystring.h"
 
 #include "nedelements.h"
 #include "nederror.h"
@@ -519,7 +520,7 @@ void cNEDNetworkBuilder::setConnDisplayString(cGate *srcgatep)
         cProperty *prop = props->get("display");
         const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
         if (propValue)
-            srcgatep->setDisplayString(propValue);
+            srcgatep->displayString().parse(propValue);
     }
 }
 

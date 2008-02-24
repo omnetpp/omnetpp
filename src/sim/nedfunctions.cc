@@ -149,18 +149,18 @@ DEF(tail, "SL->S", {
     int length = (int)argv[1].dbl;
     if (length < 0)
         throw cRuntimeError("tail(): length is negative");
-    int size = argv[0].str.size();
-    return argv[0].str.substr(max(0, size - length), size);
+    int size = (int) argv[0].str.size();
+    return argv[0].str.substr(std::max(0, size - length), size);
 })
 
 DEF(replace, "SSS->S", {
     std::string str = argv[0].str;
-    std::string &search = argv[1].str;
-    std::string &replacement = argv[2].str;
+    std::string& search = argv[1].str;
+    std::string& replacement = argv[2].str;
 
-    int searchSize = search.size();
-    int replacementSize = replacement.size();
-    int index = 0;
+    unsigned int searchSize = search.size();
+    unsigned int replacementSize = replacement.size();
+    unsigned int  index = 0;
     while ((index = str.find(search, index)) != std::string::npos) {
         str.replace(index, searchSize, replacement);
         index += replacementSize - searchSize + 1;

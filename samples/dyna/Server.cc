@@ -28,7 +28,7 @@ Define_Module(Server);
 
 void Server::initialize()
 {
-    srvProcType = findModuleType("ServerProcess");
+    srvProcType = cModuleType::find("ServerProcess");
 }
 
 void Server::handleMessage(cMessage *msg)

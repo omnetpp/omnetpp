@@ -36,7 +36,7 @@ $result .=
     "{\n" .
     "  int i;\n" .
     "  unsigned char *s = tcl_code;\n" .
-    "  for (i=0; i<sizeof(tcl_code)-1; i++,s++) {\n" .
+    "  for (i=0; i<(int)sizeof(tcl_code)-1; i++,s++) {\n" .
     "    *s = 255-(*s);\n" .
     "  }\n" .
     "}\n";

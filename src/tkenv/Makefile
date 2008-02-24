@@ -107,7 +107,7 @@ $O/inspector.o: inspector.cc \
   inspector.h \
   ../../include/carray.h \
   ../../include/cbasicchannel.h \
-  ../../include/cboolpar.h \
+  ../../include/cboolparimpl.h \
   ../../include/cchannel.h \
   ../../include/cclassfactory.h \
   ../../include/ccommbuffer.h \
@@ -121,7 +121,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cdetect.h \
   ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
-  ../../include/cdoublepar.h \
+  ../../include/cdoubleparimpl.h \
   ../../include/cdynamicexpression.h \
   ../../include/cenum.h \
   ../../include/cenvir.h \
@@ -135,7 +135,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
   ../../include/cllist.h \
-  ../../include/clongpar.h \
+  ../../include/clongparimpl.h \
   ../../include/cmersennetwister.h \
   ../../include/simtime.h \
   ../../include/cmessage.h \
@@ -148,7 +148,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cownedobject.h \
   ../../include/coutvector.h \
   ../../include/cpar.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cparsimcomm.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
@@ -160,7 +160,7 @@ $O/inspector.o: inspector.cc \
   ../../include/csimulation.h \
   ../../include/cstat.h \
   ../../include/cstlwatch.h \
-  ../../include/cstringpar.h \
+  ../../include/cstringparimpl.h \
   ../../include/cstringpool.h \
   ../../include/cstrtokenizer.h \
   ../../include/cclassdescriptor.h \
@@ -169,7 +169,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cvisitor.h \
   ../../include/cwatch.h \
   ../../include/cxmlelement.h \
-  ../../include/cxmlpar.h \
+  ../../include/cxmlparimpl.h \
   ../../include/simkerneldefs.h \
   ../../include/distrib.h \
   ../../include/envirext.h \
@@ -200,7 +200,7 @@ $O/inspfactory.o: inspfactory.cc \
   inspfactory.h \
   ../../include/carray.h \
   ../../include/cbasicchannel.h \
-  ../../include/cboolpar.h \
+  ../../include/cboolparimpl.h \
   ../../include/cchannel.h \
   ../../include/cclassfactory.h \
   ../../include/ccommbuffer.h \
@@ -214,7 +214,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cdetect.h \
   ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
-  ../../include/cdoublepar.h \
+  ../../include/cdoubleparimpl.h \
   ../../include/cdynamicexpression.h \
   ../../include/cenum.h \
   ../../include/cenvir.h \
@@ -228,7 +228,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
   ../../include/cllist.h \
-  ../../include/clongpar.h \
+  ../../include/clongparimpl.h \
   ../../include/cmersennetwister.h \
   ../../include/simtime.h \
   ../../include/cmessage.h \
@@ -241,7 +241,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cownedobject.h \
   ../../include/coutvector.h \
   ../../include/cpar.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cparsimcomm.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
@@ -253,7 +253,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/csimulation.h \
   ../../include/cstat.h \
   ../../include/cstlwatch.h \
-  ../../include/cstringpar.h \
+  ../../include/cstringparimpl.h \
   ../../include/cstringpool.h \
   ../../include/cstrtokenizer.h \
   ../../include/cclassdescriptor.h \
@@ -262,7 +262,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cvisitor.h \
   ../../include/cwatch.h \
   ../../include/cxmlelement.h \
-  ../../include/cxmlpar.h \
+  ../../include/cxmlparimpl.h \
   ../../include/simkerneldefs.h \
   ../../include/distrib.h \
   ../../include/envirext.h \
@@ -402,7 +402,7 @@ $O/objinsp.o: objinsp.cc \
   objinsp.h \
   ../../include/carray.h \
   ../../include/cbasicchannel.h \
-  ../../include/cboolpar.h \
+  ../../include/cboolparimpl.h \
   ../../include/cchannel.h \
   ../../include/cclassfactory.h \
   ../../include/ccommbuffer.h \
@@ -416,7 +416,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cdetect.h \
   ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
-  ../../include/cdoublepar.h \
+  ../../include/cdoubleparimpl.h \
   ../../include/cdynamicexpression.h \
   ../../include/cenum.h \
   ../../include/cenvir.h \
@@ -430,7 +430,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
   ../../include/cllist.h \
-  ../../include/clongpar.h \
+  ../../include/clongparimpl.h \
   ../../include/cmersennetwister.h \
   ../../include/simtime.h \
   ../../include/cmessage.h \
@@ -443,7 +443,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cownedobject.h \
   ../../include/coutvector.h \
   ../../include/cpar.h \
-  ../../include/cparvalue.h \
+  ../../include/cparimpl.h \
   ../../include/cparsimcomm.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
@@ -455,7 +455,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/csimulation.h \
   ../../include/cstat.h \
   ../../include/cstlwatch.h \
-  ../../include/cstringpar.h \
+  ../../include/cstringparimpl.h \
   ../../include/cstringpool.h \
   ../../include/cstrtokenizer.h \
   ../../include/cclassdescriptor.h \
@@ -464,7 +464,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cvisitor.h \
   ../../include/cwatch.h \
   ../../include/cxmlelement.h \
-  ../../include/cxmlpar.h \
+  ../../include/cxmlparimpl.h \
   ../../include/simkerneldefs.h \
   ../../include/distrib.h \
   ../../include/envirext.h \
@@ -535,6 +535,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cconfiguration.h \
   inspector.h \
   tkutil.h
+$O/tclcode.o: tclcode.cc
 $O/tkapp.o: tkapp.cc \
   ../envir/appreg.h \
   ../../include/cenvir.h \
@@ -553,6 +554,7 @@ $O/tkapp.o: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
+  tclcode.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/carray.h \

@@ -103,7 +103,10 @@ $O/commonutil.o: commonutil.cc \
 $O/displaystring.o: displaystring.cc \
   opp_ctype.h \
   displaystring.h \
-  commondefs.h
+  stringutil.h \
+  commondefs.h \
+  commonutil.h \
+  exception.h
 $O/enumstr.o: enumstr.cc \
   enumstr.h \
   commondefs.h
@@ -199,6 +202,8 @@ $O/stringutil.o: stringutil.cc \
   exception.h
 $O/unitconversion.o: unitconversion.cc \
   opp_ctype.h \
+  stringutil.h \
   unitconversion.h \
   commondefs.h \
+  commonutil.h \
   exception.h

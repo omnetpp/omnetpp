@@ -58,6 +58,8 @@ class NEDXML_API NEDResourceCache
 
           /** Returns the kth fully qualified NED type name */
           virtual const char *get(int k) const = 0;
+
+          virtual ~INEDTypeNames() {}  // make the compiler happy
       };
 
       class CachedTypeNames : public INEDTypeNames {
@@ -166,7 +168,8 @@ class NEDXML_API NEDResourceCache
 
     /** Resolves NED type name, based on the NED files loaded */
     virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename) {
-        return NEDResourceCache::resolveNedType(context, nedtypename, &NEDResourceCache::CachedTypeNames(this));
+        NEDResourceCache::CachedTypeNames names(this);
+        return NEDResourceCache::resolveNedType(context, nedtypename, &names);
     }
 
     /** Available NED type names */

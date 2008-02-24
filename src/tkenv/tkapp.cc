@@ -124,7 +124,7 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
     opt_nexteventmarkers = true;
     opt_senddirect_arrows = true;
     opt_anim_methodcalls = true;
-    opt_methodcalls_delay = 0.2;
+    opt_methodcalls_delay = 200;
     opt_animation_msgnames = true;
     opt_animation_msgclassnames = true;
     opt_animation_msgcolors = true;

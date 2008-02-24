@@ -767,7 +767,7 @@ void cModule::finalizeParameters()
     cProperty *prop = props->get("display");
     const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
     if (propValue)
-        setDisplayString(propValue);
+        displayString().parse(propValue);
 
     // set up gate vectors (their sizes may depend on the parameter settings)
     moduleType()->addGatesTo(this);

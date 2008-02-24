@@ -90,7 +90,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
     if (!isInterface)
     {
         // check that we have all parameters and gates required by the interfaces we support
-        for (int i=0; i<interfacenames.size(); i++) {
+        for (int i=0; i<(int)interfacenames.size(); i++) {
             NEDTypeInfo *interfaceDecl = getResolver()->lookup(interfacenames[i].c_str());
             Assert(interfaceDecl);
             checkComplianceToInterface(interfaceDecl);
@@ -208,7 +208,7 @@ const char *NEDTypeInfo::interfaceName(int k) const
 bool NEDTypeInfo::supportsInterface(const char *qname)
 {
     // linear search is OK because #interfaces is typically just one or two
-    for (int i=0; i<interfacenames.size(); i++)
+    for (int i=0; i<(int)interfacenames.size(); i++)
         if (interfacenames[i] == qname)
             return true;
     return false;

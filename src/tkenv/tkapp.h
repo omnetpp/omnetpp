@@ -77,7 +77,7 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
       bool opt_nexteventmarkers;   // display next event marker (red frame around modules)
       bool opt_senddirect_arrows;  // flash arrows when doing sendDirect() animation
       bool opt_anim_methodcalls;   // animate method calls
-      int  opt_methodcalls_delay;  // hold animation of method calls for this many ms
+      int  opt_methodcalls_delay;  // hold animation of method calls (millisec)
       bool opt_animation_msgnames; // msg animation: display message name or not
       bool opt_animation_msgclassnames; // msg animation: display message class name or not
       bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not

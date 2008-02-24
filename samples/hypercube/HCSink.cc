@@ -29,8 +29,6 @@ int hammingDistance(unsigned long a, unsigned long b)
 
 void HCSink::activity()
 {
-    int my_address = par("address");
-
     cOutVector eed_vec("end-to-end delay");
     cOutVector hops_vec("hops");
     cOutVector hopratio_vec("actual/min hops ratio");
@@ -51,9 +49,9 @@ void HCSink::activity()
         hopratio_vec.record( acthops/(double)minhops );
 
 #ifdef TRACE_MSG
-        ev.printf("sink[%d]: Message received: '%s'\n", my_address, pkt->name());
-        ev.printf("sink[%d]:   - end-to-end delay=%g\n", my_address, eed);
-        ev.printf("sink[%d]:   - distance=%d, actual hops=%d\n", my_address, minhops, acthops);
+        ev.printf("Message received: '%s'\n", pkt->name());
+        ev.printf("  - end-to-end delay=%g\n", eed);
+        ev.printf("  - distance=%d, actual hops=%d\n", minhops, acthops);
 #endif
 
         // message no longer needed
