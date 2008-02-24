@@ -397,7 +397,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * DEPRECATED. Same as toString().
      */
-    _OPPDEPRECATED std::string getAsText() const  {return toString();
+    _OPPDEPRECATED std::string getAsText() const  {return toString();}
 
     /**
      * This function tries to interpret the argument text as a type
