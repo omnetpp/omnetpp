@@ -1,3 +1,189 @@
+2008-02-23  Andras Varga
+
+	Summary of changes for omnetpp-4.0 (2006..2008):
+
+	Simulation time:
+	- simtime_t is now not double but class SimTime (64-bit fixed point number)
+	- simtime exponent is base 10, and set globally
+	- there is no implicit conversion from SimTime to double. However,
+	  to alleviate this pain, at many places overloaded functions have
+	  been added that take simtime_t.
+	- simtimeToStr(), strToSimtime() is no longer (use SimTime methods
+	  instead, or the compatibility macros described below!)
+
+	Simtime compatibility mode:
+	- if needed, the simkernel can be compiled with simtime_t = double.
+	  For that, compile everything with USE_DOUBLE_SIMTIME defined
+	  (add -DUSE_DOUBLE_SIMTIME to CFLAGS). If you want to ensure that
+	  models compile with both int64-based and double simtime_t, use
+	  the following macros to convert simtime_t from/to double and string:
+	  SIMTIME_STR(t), SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf,t).
+	  MAXTIME is also defined correctly for both simtime types.
+
+	Converting source code to the new int64-based simtime_t:
+	- for the large part, code is supposed to compile without much change
+	- most errors come from using "double" variables which should really be
+	  "simtime_t". E.g. if you see variables like double timeout, double
+	  interval, double age, etc, they should all be changed to simtime_t.
+	  This applies to message fields within .msg files as well: some of
+	  the "double" ones may need to be changed to "simtime_t".
+	- when conversion to double is still needed, use SIMTIME_DBL(t) or t.dbl().
+	- ev << simtimeToStr(t) is to be changed to: ev << t;
+
+	Gate handling:
+	- introduced inout gates, which resulted in some changes listed below
+	- with inout gates, gate("gatename") does not work, use gate("gatename$i")
+	  or gate("gatename$o") instead
+	- if a gate vector is zero size, there's no cGate object for it at all.
+	  But hasGate(), gateType(), isGateVector(), gateSize() do work.
+	- for gate direction, use the new cGate::Type enum instead of the
+	  'I' and 'O' characters (though characters continue to work)
+	- getGateSize() return type changed from int to void (if resizing an inout gate, the position of which dir should be returned?)
+	- gate("xxx") now throws error if gate is not found, instead of returning NULL
+	- gate("xxx") now won't return gate "xxx[0]"
+	- gate("out")->size() does not work, because gate("out") throws an error ("not found") if out is a vector gate;
+	  gate("out",0)->size() would work, but only if out[] is of nonzero size (otherwise "out[0] not found" error occurs).
+	  Best is to use gateSize("out"), a cModule member function.
+
+	Channels:
+	- added cNullChannel, which does nothing.
+	- breaking change in cBasicChannel behaviour: implicit queueing is no longer supported:
+	  sending on a busy gate (when simTime() < gate->transmissionFinishes()) results in an
+	  error. Thus, using a special transmitter module (with an internal queue) is now
+	  sort of mandatory when channels with data rate are in use.
+	- TODO: make it easier to find the first gate with datarate (as g->transmissionFinishes()
+	  is "non-transitive"). Add another method? or make transmissionFinishes() transitive?
+
+	Dynamic module/channel creation:
+	- finalizeParameters() must be called (for channels, this reads input params from omnetpp.ini;
+	  for modules, also creates gates [since gate vector sizes may depend on parameter values])
+
+	Exception handling changed:
+	- now all our exceptions subclass from std::exception (e.g. cException extends std::exception)
+	- exceptions are now thrown by value not by pointer (s/throw new/throw/g)
+	- hint: catch std::exception if you don't need the exception to be of a specific type
+	- XXX opp_runtime_error currently doesn't obey debug-on-errors.
+	- TODO before release: make sure there's no "throw new" ANYWHERE in the sources!
+
+	DisplayString:
+	- parse() no longer interprets literal "\t", "\n" escape sequences; it is the job of the
+	  NED or C++ compiler to convert those to 0x09, 0x0a etc. "\;", "\=", "\," can still be
+	  used to escape those special characters, but they have to be entered into the NED or C++
+	  source with *double* backslashes like "t=hello\\,world" (one will be eaten by the NED/C++
+	  compiler, the other by the display string parser).
+	- parse() now throws an error if the display string has invalid syntax. It used to return
+	  a boolean which no one checked.
+
+	cOutVector:
+	- removed half-hearted tuple=2 support from cOutVector and underlying infrastructure
+	- added methods for metadata annotation: setEnum(), setUnit(), setType(), setInterpolationMode(), setMin(), setMax()
+
+	cQueue:
+	- sorting removed
+	- head()/tail() removed, back()/front() added (insert at back, pop from front!);
+	  because of head/tail change, iterator direction and meaning of insertBefore/insertAfter
+	  has changed
+	- compat.h typedef cQueueIterator removed, as iterator semantic was changed in a non-compatible way anyway
+
+	Gross renaming: cObject became cOwnedObject, cPolymorphic became cObject;
+	  - cNamedObject introduced in between.
+	  - cArray, cQueue still handle cObject (old cPolymorphic), i.e. they can work
+	    with non-owned objects as well
+
+	Introduced cComponent:
+
+	cSimpleModule, cSimulation:
+	- removed: pause(), backtomod, pause_in_sendmsg
+	- removed: breakpoint(), and its callback method in cEnvir, in Tkenv, etc..
+	- sendDirect(): added overloaded methods that accept transmissionDelay as well
+
+	cModule:
+	- removed backgroundDisplayString()/setBackgroundDisplayString() and its compat
+	  #defines displayStringAsParent() and setDisplayStringAsParent()
+
+	cMsgPar is the same as the old cPar, but features which are not needed for message parameter objects have been removed:
+	- removed support for interactively prompting the user for a value: input flag, prompt, read() method
+	- removed indirection (redirection) support
+	- removed support for storing expressions
+
+	recordScalar() methods (cSimpleModule, cStatistic):
+	- added optional "const char *unit" argument
+	- moved to cComponent!
+	- see also: **.save-as-scalar = true
+
+	cPar implementation changed
+
+	cPar, etc:
+	- setFromText() -> parse()
+	- getAsText() -> toString()
+	- also cDisplayString: getString() -> toString() (old getString() deprecated)
+	NOTE: inconsistency with INET Framework: IPAddress, IPv6Address, MACAddress: str()
+
+	- cBag class removed
+
+	- global findXXX(const char *name) functions turned into static cXXX::find(const char *name);
+	  findModuleType() left for compatibility
+
+	- cModuleType::buildInside(mod) became protected (was deprecated anyway)
+
+	- removed writeContents() altogether
+
+	- snapshot file became XML
+
+	- deprecated cSubmodIterator -- use cModule::SubmoduleIterator instead! cModule::ChannelIterator also added
+
+	- cSimpleModule::end() -- removed, as there was little value in it. To terminate
+	  an activity() module, simply return from the activity() method, or call the new
+	  halt() method to end the module while preserving the local variables for inspection.
+
+	- added cSimpleModule::halt()
+
+	- cSimpleModule::deleteModule() -- in handleMessage()-based modules, this no longer
+	  throws exception. That is, execution will continue normally after the deleteModule() call.
+
+	- removed cSimpleModule::moduleState()
+
+	- covariant return types for dup(). This might cause incompatibility with customized message
+	  classes (.msg file with customize=true). The hand-coded class still contains cPolymorphic*
+	  return type not the real class type, which results in error messages like:
+	     ../Transport\TCP\TCPSegment.h(68) : error C2555: 'TCPSegment::dup': overriding virtual function
+	     return type differs and is not covariant from 'TCPSegment_Base::dup'
+	  Fix: change dup()'s return type to the real class.
+
+	- several internal classes got removed/reorganized
+
+	- cPar: new method stdstringValue() / operator std::string: this must be used with "volatile string" params
+
+	- cPacket removed
+
+	- cStringTokenizer: added asIntVector() and asDoubleVector() methods; TODO testing
+
+	configuration handling rewritten, inlcuding (cConfiguration)
+
+	Run number handling:
+	- run numbers made entrirely the matter of cEnvir. cSimulation::runNumber()
+	  got removed. Also removed runNumber from the arg list of cEnvir callback
+	  functions.
+
+	Removed obsolete utility functions:
+	- my...() functions removed (they were #defines to opp_...() functions)
+		#define myrandomize      opp_randomize
+		#define genk_myrandomize genk_opp_randomize
+		#define mystrdup         opp_strdup
+		#define mystrcpy         opp_strcpy
+		#define mystrcmp         opp_strcmp
+		#define mystrmatch       opp_strmatch
+		#define fastconcat       opp_concat
+		#define indexedname      opp_mkindexedname
+	  function correct(const char *) renamed to opp_nulltoempty(const char *) with no compat typedef
+
+	* MSVC 6.0 support dropped (the compiler is over 10+ years old, and
+	does not support many modern C++ features like covariant return types)
+
+	* VC++ libs compiled with /MT (mulTithreaded C lib) with VC7.1 as well
+
+	* out-of-directory build, and other Makefile changes
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-10-19  Andras Varga
@@ -10,7 +196,7 @@
 2006-09-28  Andras Varga
 
 	* cmessage.cc: fix in refcounting code: when decrementing refcount
-	for encapsulated msg, its ownerp should be NULL'ed out if it 
+	for encapsulated msg, its ownerp should be NULL'ed out if it
 	originally pointed to this message. This bug caused Tkenv to crash
 	when the encapsulated message's inspector was open (as it tried
 	to print fullPath()).
@@ -18,14 +204,14 @@
 2006-03-19  Andras Varga
 
 	* csimul.cc: added implementation of guessNextEvent() etc. Removed
-	updating simTime() from doOneEvent() which interfered with some 
+	updating simTime() from doOneEvent() which interfered with some
 	parallel simulation algorithms (caused false "causality violation"
 	errors).
 
 2006-03-15  Andras Varga
 
 	* distrib.cc: gamma_d() was bogus for the alpha<1 case [reported by
-	Patrick McDonnell]. For alpha>1, use Marsaglia2000 instead of 
+	Patrick McDonnell]. For alpha>1, use Marsaglia2000 instead of
 	Cheng-Feast79.
 
 2006-02-27  Andras Varga
@@ -50,12 +236,12 @@
 	* cpolymorphic.cc, etc: dup() moved up to cPolymorphic, and return type
 	changed to cPolymorphic. See include/ChangeLog.
 
-	* cmodule.cc, csimplemodule.cc, etc: module constructor signature 
+	* cmodule.cc, csimplemodule.cc, etc: module constructor signature
 	change, see comment in include/ChangeLog
 
 2005-09-12  Andras Varga
 
-	* cxmlelement.cc, minixpath.cc: fixed getElementByPath() bug 
+	* cxmlelement.cc, minixpath.cc: fixed getElementByPath() bug
 	introduced 2005-08-09.
 
 	* cdefaultlist.cc: destructor to use ev.undisposedObject().
@@ -67,8 +253,8 @@
 
 2005-08-07  Andras Varga
 
-	* cxmlelement.cc: the builtin mini-XPath interpreter turned into a 
-	class (MiniXPath), and it now understands parameters ($PARAM) inside 
+	* cxmlelement.cc: the builtin mini-XPath interpreter turned into a
+	class (MiniXPath), and it now understands parameters ($PARAM) inside
 	predicates; parameter values come from a cXMLElement::ParamResolver
 	object.
 
@@ -79,13 +265,13 @@
 
 	* coutvect.cc: implemented recordWithTimestamp() functions.
 
-	* cpar.cc: added call to omodp->handleParameterChange() to cModulePar 
+	* cpar.cc: added call to omodp->handleParameterChange() to cModulePar
 	each time the parameter's value changes.
 
 	* cpar.cc: removed beforeChange()/afterChange() calls from setInput()
 	and setPrompt(), because these methods don't change the stored value.
 
-	* several files: adopted to cCommBuffer change (packObject(), 
+	* several files: adopted to cCommBuffer change (packObject(),
 	unpackObject() moved into the class)
 
 	* cstat.cc: cStdDev::info() now prints mean, stddev, min, max as well
@@ -120,12 +306,12 @@
 
 	* util.cc: implemented simtimeToStrShort().
 
-	* cmessage.cc: changed cMessage::info() to display time *until* 
+	* cmessage.cc: changed cMessage::info() to display time *until*
 	arrivaltime as well
 
 2005-04-05  Andras Varga
 
-	* cstringtokenizer.cc: fix: prepared cStringTokenizer for receiving 
+	* cstringtokenizer.cc: fix: prepared cStringTokenizer for receiving
 	NULL as input/delimiter string. [reported by Tom Parker]
 
 2005-03-31  ------ omnetpp-3.1 released ------
@@ -155,14 +341,14 @@
 	* several files: changed throw new cException to throw new
 	cRuntimeError.
 
-	* new omnetpp.ini entry: 
+	* new omnetpp.ini entry:
 	  [General]
 	  debug-on-errors = true/false  (default: false)
-	If turned on, errors will cause the program to break into the C++ 
+	If turned on, errors will cause the program to break into the C++
 	debugger. More previsely, cRuntimeError's constructor will do
 	__asm int 3 (debugger interrupt) on Windows, and raise(SIGABRT)
-	on other platforms (Linux, etc). This makes it possible to 
-	investigate the context (stack frames, variables etc) of a runtime 
+	on other platforms (Linux, etc). This makes it possible to
+	investigate the context (stack frames, variables etc) of a runtime
 	error.
 
 	* cmessage.cc: setControlInfo(), removeControlInfo(), destructor:
@@ -171,7 +357,7 @@
 
 2005-03-07  Andras Varga
 
-	* chist.cc: changed to eliminate warnings about converting double to 
+	* chist.cc: changed to eliminate warnings about converting double to
 	int
 
 2005-02-06  Andras Varga
@@ -179,7 +365,7 @@
 	* csimplemodule.cc: send()/sendDelayed() fix: check if output gate is
 	connected. If we didn't throw error there, msg would be delivered back
 	to the sender module as a self-message.
-	
+
 2005-01-12  Andras Varga
 
 	csimplemodule.cc, csimul.cc: changed the way scheduled events or sent
