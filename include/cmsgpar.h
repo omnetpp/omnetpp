@@ -397,7 +397,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * DEPRECATED. Same as toString().
      */
-    std::string getAsText() const _OPPDEPRECATED  {return toString();}
+    _OPPDEPRECATED std::string getAsText() const  {return toString();
 
     /**
      * This function tries to interpret the argument text as a type
@@ -411,7 +411,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * DEPRECATED. Same as parse().
      */
-    bool setFromText(const char *text, char type='?') _OPPDEPRECATED  {return parse(text, '?');}
+    _OPPDEPRECATED bool setFromText(const char *text, char type='?')  {return parse(text, '?');}
     //@}
 
     /** @name Overloaded assignment and conversion operators. */

@@ -663,7 +663,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * DEPRECATED. Use displayString() and cDisplayString methods instead.
      */
-    void setDisplayString(const char *dispstr, bool immediate=true) _OPPDEPRECATED;
+    _OPPDEPRECATED void setDisplayString(const char *dispstr, bool immediate=true);
 
     /**
      * When the models is running under Tkenv, it displays the given text

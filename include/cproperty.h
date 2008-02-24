@@ -15,17 +15,17 @@
 #ifndef __CPROPERTY_H
 #define __CPROPERTY_H
 
+#include <map>
+#include <vector>
 #include "simkerneldefs.h"
 #include "globals.h"
 #include "cobject.h"
 #include "cstringpool.h"
-
-#include <map>
-#include <vector>
+#include "cproperties.h"
 
 NAMESPACE_BEGIN
 
-class cProperties;
+//class cProperties;
 
 
 /**
