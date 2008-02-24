@@ -364,39 +364,6 @@ SIM_API int poisson(double lambda, int rng=0);
 
 //@}
 
-/**
- * @name Compatibility
- *
- * @ingroup RandomNumbers
- */
-//@{
-/**
- * DEPRECATED: use uniform() instead.
- */
-SIM_API _OPPDEPRECATED double genk_uniform(double gen_nr, double a, double b);
-
-/**
- * DEPRECATED: use intuniform() instead.
- */
-SIM_API _OPPDEPRECATED double genk_intuniform(double gen_nr, double a, double b);
-
-/**
- * DEPRECATED: use exponential() instead.
- */
-SIM_API _OPPDEPRECATED double genk_exponential(double gen_nr, double p);
-
-/**
- * DEPRECATED: use normal() instead.
- */
-SIM_API _OPPDEPRECATED double genk_normal(double gen_nr, double mean, double variance);
-
-/**
- * DEPRECATED: use truncnormal() instead.
- */
-SIM_API _OPPDEPRECATED double genk_truncnormal(double gen_nr, double mean, double variance);
-//@}
-
-
 NAMESPACE_END
 
 
