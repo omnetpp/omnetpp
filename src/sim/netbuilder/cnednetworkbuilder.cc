@@ -288,7 +288,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 
     // recursively build the submodules too (top-down)
     currentDecl = decl;
-    for (cSubModIterator submod(*modp); !submod.end(); submod++)
+    for (cModule::SubmoduleIterator submod(modp); !submod.end(); submod++)
     {
        cModule *m = submod();
        m->buildInside();

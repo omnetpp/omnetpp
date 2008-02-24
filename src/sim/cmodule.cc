@@ -942,7 +942,7 @@ void cModule::ChannelIterator::init(const cModule *parentmodule)
     // to fill in the channels[] vector
     bool parent = false;
     channels.clear();
-    for (cSubModIterator it(*parentmodule); !parent; it++)
+    for (SubmoduleIterator it(parentmodule); !parent; it++)
     {
         const cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
 

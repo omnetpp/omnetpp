@@ -64,10 +64,8 @@ void cCompoundModule::arrived(cMessage *msg, int g, simtime_t)
 
 void cCompoundModule::scheduleStart(simtime_t t)
 {
-    for (cSubModIterator submod(*this); !submod.end(); submod++)
-    {
-        submod()->scheduleStart( t );
-    }
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
+        submod()->scheduleStart(t);
 }
 
 

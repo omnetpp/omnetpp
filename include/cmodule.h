@@ -67,7 +67,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *
      * Example:
      * \code
-     * for (cModule::SubmoduleIterator i(*modp); !i.end(); i++)
+     * for (cModule::SubmoduleIterator i(modp); !i.end(); i++)
      * {
      *     cModule *submodp = i();
      *     ...

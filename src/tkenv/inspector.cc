@@ -315,8 +315,8 @@ void TInspector::fillListboxWithSubmodules(const char *listbox, cModule *parent)
    sprintf(w, "%s%s.main.list", windowname,listbox);
 
    // feed into listbox
-   int n=0;
-   for (cSubModIterator submod(*parent); !submod.end(); submod++, n++)
+   int n = 0;
+   for (cModule::SubmoduleIterator submod(parent); !submod.end(); submod++, n++)
         insertIntoInspectorListbox(interp, w, submod(), false);
 
    // set "number of items" display

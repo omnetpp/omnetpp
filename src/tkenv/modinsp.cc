@@ -201,7 +201,7 @@ void TGraphicalModWindow::relayoutAndRedrawAll()
 {
    int submodcount = 0;
    int gatecountestimate = static_cast<cModule *>(object)->gates();
-   for (cSubModIterator submod(*static_cast<cModule *>(object)); !submod.end(); submod++)
+   for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
    {
        submodcount++;
        // note: gatecountestimate will count unconnected gates and "holes" in the gate array as well
@@ -394,11 +394,8 @@ void TGraphicalModWindow::refreshLayout()
     int sy = resolveLongDispStrArg(ds.getTagArg("bgb",1), parentmodule, 500);
     layouter->setScaleToArea(sx,sy,50); // FIXME position "bgp" is ignored here...
 
-    cSubModIterator it(*parentmodule);
-    bool parent;
-
     // loop through all submodules, get their sizes and positions and feed them into layouting engine
-    for (it.init(*parentmodule); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
     {
         cModule *submod = it();
 
@@ -431,8 +428,8 @@ void TGraphicalModWindow::refreshLayout()
     }
 
     // add connections into the layouter, too
-    parent=false;
-    for (it.init(*parentmodule); !parent; it++)
+    bool parent = false;
+    for (cModule::SubmoduleIterator it(parentmodule); !parent; it++)
     {
         cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
 
@@ -464,7 +461,7 @@ void TGraphicalModWindow::refreshLayout()
 
     // fill the map with the results
     submodPosMap.clear();
-    for (it.init(*parentmodule); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
     {
         cModule *submod = it();
 
@@ -487,9 +484,8 @@ void TGraphicalModWindow::redrawModules()
     // then display all submodules
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
     const cDisplayString blank;
-    cSubModIterator it(*parentmodule);
     const char *scaling = parentmodule->hasDisplayString() ? parentmodule->displayString().getTagArg("bgs",0) : "";
-    for (it.init(*parentmodule); !it.end(); it++)
+    for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
     {
         cModule *submod = it();
         const cDisplayString& ds = submod->hasDisplayString() ? submod->displayString() : blank;
@@ -520,8 +516,8 @@ void TGraphicalModWindow::redrawModules()
                        NULL ));
 
     // loop through all submodules and enclosing module & draw their connections
-    bool parent=false;
-    for (it.init(*parentmodule); !parent; it++)
+    bool parent = false;
+    for (cModule::SubmoduleIterator it(parentmodule); !parent; it++)
     {
         cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
 
@@ -634,7 +630,7 @@ void TGraphicalModWindow::redrawNextEventMarker()
 void TGraphicalModWindow::updateSubmodules()
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
-   for (cSubModIterator submod(*static_cast<cModule *>(object)); !submod.end(); submod++)
+   for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
    {
        CHK(Tcl_VarEval(interp, "graphmodwin_update_submod ",
                        canvas, " ",
@@ -755,7 +751,7 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
 int TGraphicalModWindow::getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv)
 {
    int count = 0;
-   for (cSubModIterator submod(*static_cast<cModule *>(object)); !submod.end(); submod++)
+   for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
        count++;
    char buf[20];
    sprintf(buf, "%d", count);
