@@ -49,7 +49,7 @@ SIM_API extern cRegistrationList configKeys;      ///< List of supported configu
 /**
  * DEPRECATED. Use cComponentType::find() instead.
  */
-SIM_API cModuleType *findModuleType(const char *s);
+SIM_API cModuleType *findModuleType(const char *s) _OPPDEPRECATED;
 
 //@}
 

@@ -433,7 +433,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * DEPRECATED! Use addPar(cMsgPar *p) instead.
      */
-    cMsgPar& addPar(cMsgPar& p)  {parList().add(&p); return p;}
+    cMsgPar& addPar(cMsgPar& p) _OPPDEPRECATED  {parList().add(&p); return p;}
 
     /**
      * Returns the nth object in the message's object list, converting it to a cMsgPar.

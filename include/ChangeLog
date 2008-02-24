@@ -1,10 +1,46 @@
 temp collecting place for changelog: src/sim/ChangeLog
 
+
+2008-02-24  Andras Varga
+
+	* merged last diffs from head of the 3.x branch
+
+2006-12-04  Andras Varga
+
+	* added hasher.h, for cHasher to calculate simulation fingerprints
+
+	* csimul.h: added method hasher() to provide access to fingerprint
+	calculation for simulation models.
+
+2006-11-15  Andras Varga
+
+	* compat.h: removed some very old compatibility #defines
+
+2006-11-12  Andras Varga
+
+	* several methods and classes already marked as DEPRECATED in their
+	documentations and doc/API-Changes.txt are now marked as such with GCC's
+	__attribute__((__deprecated__)) facility, which results in warnings
+	during compilation of code that uses them. Those pieces of code need
+	to be changed in order to be compatible with future OMNeT++ versions.
+	MSVC equivalent is __declspec(deprecated).
+
+	* defs.h: added _OPPDEPRECATED macros
+
+2006-11-07  Andras Varga
+
+	* cDensityEstBase: added cellInfo() method
+
+2006-11-06  Andras Varga
+
+	* internal class cStructDescriptor refactored and renamed
+
+
 2006-10-21  ------ omnetpp-3.3 released ------
 
 2006-09-13  Andras Varga
 
-	* cconfig.h: getAsFilenames() enhancement: if directory name contains 
+	* cconfig.h: getAsFilenames() enhancement: if directory name contains
 	spaces, adds quotation marks.
 
 	* cconfig.h: added getAsFilename()
@@ -22,7 +58,7 @@ temp collecting place for changelog: src/sim/ChangeLog
 
 	* cenvir.h: added getParsimProcId() and getParsimNumPartitions()
 
-	* crng.h: added parsimProcId and parsimNumPartitions to the args of 
+	* crng.h: added parsimProcId and parsimNumPartitions to the args of
 	cRNG::initialize(), as every partition should get different random
 	number streams
 
@@ -42,17 +78,17 @@ temp collecting place for changelog: src/sim/ChangeLog
 
 2005-10-09  Andras Varga
 
-	* cpar.h: added conversion to/from short and unsigned short [patch 
+	* cpar.h: added conversion to/from short and unsigned short [patch
 	from Omer Sinan Kaya]
 
 2005-09-15  Andras Varga
 
-	* csimplemodule.h: added method cancelAndDelete(cMessage *msg), 
+	* csimplemodule.h: added method cancelAndDelete(cMessage *msg),
 	for use in simple module destructors.
 
 2005-09-14  Andras Varga
 
-	* cpolymorphic.h, cobject.h, etc: dup() moved up to cPolymorphic, and 
+	* cpolymorphic.h, cobject.h, etc: dup() moved up to cPolymorphic, and
 	return type changed to cPolymorphic. Once we drop MSVC 6.0 support,
 	return types can be changed to class itself, i.e. in class Foo it can
 	be defined as Foo *dup(). Unfortunately MSVC 6.0 doesn't support this.

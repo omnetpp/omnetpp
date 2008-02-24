@@ -373,27 +373,27 @@ SIM_API int poisson(double lambda, int rng=0);
 /**
  * DEPRECATED: use uniform() instead.
  */
-SIM_API double genk_uniform(double gen_nr, double a, double b);
+SIM_API double genk_uniform(double gen_nr, double a, double b) _OPPDEPRECATED;
 
 /**
  * DEPRECATED: use intuniform() instead.
  */
-SIM_API double genk_intuniform(double gen_nr, double a, double b);
+SIM_API double genk_intuniform(double gen_nr, double a, double b) _OPPDEPRECATED;
 
 /**
  * DEPRECATED: use exponential() instead.
  */
-SIM_API double genk_exponential(double gen_nr, double p);
+SIM_API double genk_exponential(double gen_nr, double p) _OPPDEPRECATED;
 
 /**
  * DEPRECATED: use normal() instead.
  */
-SIM_API double genk_normal(double gen_nr, double mean, double variance);
+SIM_API double genk_normal(double gen_nr, double mean, double variance) _OPPDEPRECATED;
 
 /**
  * DEPRECATED: use truncnormal() instead.
  */
-SIM_API double genk_truncnormal(double gen_nr, double mean, double variance);
+SIM_API double genk_truncnormal(double gen_nr, double mean, double variance) _OPPDEPRECATED;
 //@}
 
 

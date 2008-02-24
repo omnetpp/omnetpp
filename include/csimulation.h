@@ -168,7 +168,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      *
      * Same as module(int), only this returns reference instead of pointer.
      */
-    cModule& operator[](int id) const {return id>=0 && id<size ? *vect[id] : *(cModule *)NULL;}
+    cModule& operator[](int id) const _OPPDEPRECATED {return id>=0 && id<size ? *vect[id] : *(cModule *)NULL;}
 
     /**
      * Designates the system module, the top-level module in the model.

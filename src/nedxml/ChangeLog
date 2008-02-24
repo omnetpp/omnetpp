@@ -15,19 +15,21 @@
 	- support for "like" submodule vectors where each module is of different
 	  NED type (syntax: foo[5]: <> like IFoo; inifile: **.foo[*].typename = "Foo")  FIXME not implemented yet
 	- added inout gates and bidirectional connections
+	- the in/out "halves" of inout gates may connected independently
 	- more flexible gate vectors (size can be set inside or outside the module type)
 	- added conditional connection groups
-	- default display string (default icon, color etc) for module and channel types
+	- added support for default display string (default icon, color etc) for module and channel types
 	- added "properties" (@foo(value[s]) syntax; useful for various annotations)
 	- display string turned into property (@display)
-	- handling of physical units and their conversion (@unit property)
-	- support for C++ namespaces (@namespace property)
-	- support for explicitly specifying C++ implementation class (@class property)
+	- added handling of physical units and their conversion (@unit property)
+	- added support for C++ namespaces (@namespace property)
+	- added support for explicitly specifying C++ implementation class (@class property)
 	- parameter prompt string became @prompt property
 	- further usage of properties envisioned (gate labelling, statistics declaration, etc)
 	- dropped feature: conditional parameters and gatesizes sections (?: can be used instead)
 	- dropped feature: ancestor parameters (violates encapsulation principle)
 	- dropped feature: ref keyword (parameters are now always taken by reference)
+	- no more implicit conversion between bool and long/double
 
 	The following changes were made to nedxml:
 

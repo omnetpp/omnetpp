@@ -286,19 +286,19 @@ std::string cDensityEstBase::detailedInfo() const
     if (num_samples>1)
     {
         const int picwidth=55;   // width of picture
-        double most=0;           // biggest cell value
+        double max=0;           // biggest cell value
         int nc = cells();        // number of cells
         int k;
         double d;
         for (k=0; k<nc; k++)
-            if ((d=cell(k))>most)
-               most = d;
-        double a=(double)picwidth/most;
+            if ((d=cell(k)) > max)
+               max = d;
+        double a=(double)picwidth/max;
 
-        os << "\n  Distribution density function:\n";
+        os << "Distribution density function:\n";
         for (k=0; k<nc; k++)
-            plotline(os,"< ", basepoint(k), cell(k), a);
-        plotline(os,">=",basepoint(nc),0,a);
+            plotline(os,"< ", basepoint(k), (k==0 ? cell_under : cell(k-1)), a);
+        plotline(os,">=",basepoint(nc), cell_over, a);
         os << "\n";
     }
     return os.str();

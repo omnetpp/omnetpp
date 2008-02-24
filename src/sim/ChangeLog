@@ -2,6 +2,11 @@
 
 	Summary of changes for omnetpp-4.0 (2006..2008):
 
+	Lots of breaking changes. We opted for doing all necessary
+	changes at once (3.3 -> 4.0), instead of scattering them
+	over multiple releases after 4.0. So only one porting is needed,
+	and API can be kept more stable over the coming releases.
+
 	Simulation time:
 	- simtime_t is now not double but class SimTime (64-bit fixed point number)
 	- simtime exponent is base 10, and set globally
@@ -44,8 +49,16 @@
 	- gate("out")->size() does not work, because gate("out") throws an error ("not found") if out is a vector gate;
 	  gate("out",0)->size() would work, but only if out[] is of nonzero size (otherwise "out[0] not found" error occurs).
 	  Best is to use gateSize("out"), a cModule member function.
+	- removed setTo(), setFrom() methods; use connectTo() instead!
+	- dynamic gate creating changed:
+	    - removed cGate::setOwnerModule() and setIndex()
+	    - XXX describe what's instead
 
 	Channels:
+	- removed delay(), setDelay(), error(), setError(), dataRate(),
+	  setDataRate() methods from cGate and cBasicChannel -- use generic
+	  component parameter access instead (par("delay"), par("error"),
+	  par("datarate"))
 	- added cNullChannel, which does nothing.
 	- breaking change in cBasicChannel behaviour: implicit queueing is no longer supported:
 	  sending on a busy gate (when simTime() < gate->transmissionFinishes()) results in an
@@ -79,7 +92,7 @@
 	- added methods for metadata annotation: setEnum(), setUnit(), setType(), setInterpolationMode(), setMin(), setMax()
 
 	cQueue:
-	- sorting removed
+	- sorting removed (class can no longer be used as priority queue)
 	- head()/tail() removed, back()/front() added (insert at back, pop from front!);
 	  because of head/tail change, iterator direction and meaning of insertBefore/insertAfter
 	  has changed
@@ -101,10 +114,12 @@
 	- removed backgroundDisplayString()/setBackgroundDisplayString() and its compat
 	  #defines displayStringAsParent() and setDisplayStringAsParent()
 
-	cMsgPar is the same as the old cPar, but features which are not needed for message parameter objects have been removed:
-	- removed support for interactively prompting the user for a value: input flag, prompt, read() method
-	- removed indirection (redirection) support
-	- removed support for storing expressions
+	Message parameters:
+	- deprecated; type changed: cMsgPar instead of cPar
+	- cMsgPar is the same as the old cPar, but features which are not needed for message parameter objects have been removed:
+	  - removed support for interactively prompting the user for a value: input flag, prompt, read() method
+	  - removed indirection (redirection) support
+	  - removed support for storing expressions
 
 	recordScalar() methods (cSimpleModule, cStatistic):
 	- added optional "const char *unit" argument
@@ -121,10 +136,20 @@
 
 	- cBag class removed
 
+	- global connect() function removed (use cGate::connectTo() instead!)
+
 	- global findXXX(const char *name) functions turned into static cXXX::find(const char *name);
-	  findModuleType() left for compatibility
+	   - findLink():
+	   - findFunction:
+	   - findEnum:
+	   - findChannelType:
+	   - findNetworkType():
+	   - findModuleType():
+	    findModuleType() left for compatibility
 
 	- cModuleType::buildInside(mod) became protected (was deprecated anyway)
+
+	- cModule: deprecated methods phase(), setPhase() removed
 
 	- removed writeContents() altogether
 
@@ -183,6 +208,35 @@
 	* VC++ libs compiled with /MT (mulTithreaded C lib) with VC7.1 as well
 
 	* out-of-directory build, and other Makefile changes
+
+2006-12-04  Andras Varga
+
+	* added hasher.h, for cHasher to calculate simulation fingerprints
+
+	* csimul.h: added method hasher() to provide access to fingerprint
+	calculation for simulation models.
+
+2006-11-15  Andras Varga
+
+	* compat.h: removed some very old compatibility #defines
+
+2006-11-12  Andras Varga
+
+	* several methods and classes already marked as DEPRECATED in their
+	documentations and doc/API-Changes.txt are now marked as such with GCC's
+	__attribute__((__deprecated__)) facility, which results in warnings
+	during compilation of code that uses them. Those pieces of code need
+	to be changed in order to be compatible with future OMNeT++ versions.
+
+	* defs.h: added _MAYBEUNUSED and _OPPDEPRECATED macros
+
+2006-11-07  Andras Varga
+
+	* cDensityEstBase: added cellInfo() method
+
+2006-11-06  Andras Varga
+
+	* internal class cStructDescriptor refactored and renamed to cClassDescriptor
 
 2006-10-21  ------ omnetpp-3.3 released ------
 

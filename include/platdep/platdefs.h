@@ -55,10 +55,10 @@
 #endif
 
 #if defined __GNUC__ && __GNUC__>=4
-#define _MAYBEUNUSED   __attribute((__unused__))
 #define _OPPDEPRECATED __attribute((__deprecated__))
+#elif defined _MSC_VER
+#define _OPPDEPRECATED __declspec(deprecated)
 #else
-#define _MAYBEUNUSED
 #define _OPPDEPRECATED
 #endif
 

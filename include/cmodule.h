@@ -663,7 +663,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * DEPRECATED. Use displayString() and cDisplayString methods instead.
      */
-    void setDisplayString(const char *dispstr, bool immediate=true);
+    void setDisplayString(const char *dispstr, bool immediate=true) _OPPDEPRECATED;
 
     /**
      * When the models is running under Tkenv, it displays the given text
@@ -677,7 +677,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 /**
  * DEPRECATED -- use cModule::SubmoduleIterator instead.
  */
-class SIM_API cSubModIterator : public cModule::SubmoduleIterator
+class SIM_API _OPPDEPRECATED cSubModIterator : public cModule::SubmoduleIterator
 {
   public:
     cSubModIterator(const cModule& m) : cModule::SubmoduleIterator(&m) {}

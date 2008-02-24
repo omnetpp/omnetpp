@@ -427,7 +427,7 @@ class ENVIR_API cEnvir : public std::ostream
      * DEPRECATED. Similar to ev.printf(), but just writes out its argument
      * string with no formatting. Use ev<< instead.
      */
-    void puts(const char *s);
+    void puts(const char *s) _OPPDEPRECATED;
 
     /**
      * Flushes the output buffer of ev.printf() and ev<< operations.
@@ -446,7 +446,7 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * DEPRECATED. Retained for compatibility only.
      */
-    bool gets(const char *prompt, char *buf, int len=255);
+    bool gets(const char *prompt, char *buf, int len=255) _OPPDEPRECATED;
 
     /**
      * Puts a yes/no question to the user. The question itself  is expected
