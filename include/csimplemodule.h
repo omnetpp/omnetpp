@@ -440,9 +440,9 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     void halt();
 
     /**
-     * DEPRECATED. Equivalent to <tt>throw cRuntimeError(<i>same argument list</i>)</tt>.
+     * Equivalent to <tt>throw cRuntimeError(<i>same argument list</i>)</tt>.
      */
-    _OPPDEPRECATED void error(const char *format,...) const;
+    void error(const char *format,...) const;
     //@}
 
     /** Coroutine stack info. Useful only if module uses activity(). */
