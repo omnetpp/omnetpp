@@ -1,6 +1,6 @@
 # Tkenv configuration
 option updatefreq_fast	{10}
-option updatefreq_express	{100}
+option updatefreq_express	{10000}
 option stepdelay	{300 ms}
 option use_mainwindow	{1}
 option print_banners	{1}
@@ -36,7 +36,7 @@ config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{C:/home/omnetpp40/omnetpp/samples/dyna/omnetpp.out}
 config logwindow-scrollbacklines	{100000}
-config mainwin-geom	{673x454+222+67}
+config mainwin-geom	{673x454+55+245}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Express (tracing off)}
@@ -46,8 +46,8 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "ClientServer" "ClientServer" "2" "467x340+96+124"
+inspector "ClientServer" "ClientServer" "2" "467x340+421+321"
 inspector "dyna" "ClientServer" "2" "405x417+70+60"
-inspector "dyna" "dyna" "2" "405x418+-10+32"
 inspector "dyna.client[1].out" "cGate" "2" "213x181+120+155"
+inspector "dyna" "dyna" "2" "405x418+-10+32"
 
