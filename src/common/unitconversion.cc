@@ -192,7 +192,7 @@ double UnitConversion::getConversionFactor(const char *unit, const char *targetU
         return 1.0;
 
     // if only one unit is given, that's an error
-    if (unit==NULL || targetUnit==NULL)
+    if (opp_isempty(unit) || opp_isempty(targetUnit))
         return 0; // cannot convert
 
     // we'll need to convert
