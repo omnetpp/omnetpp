@@ -33,7 +33,7 @@ network Test
         sub: Sub {
             parameters:
                 p1 = 1;
-                p2 = 2;
+                p2 = 2s;
                 p3 = 3;
                 p4 = 4;
         }
