@@ -56,7 +56,8 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 
     char *line;
     char **tokens;
-    int numTokens, lineNo, numOfUnrecognizedLines = 0;
+    int64 lineNo;
+    int numTokens, numOfUnrecognizedLines = 0;
     VectorData *currentVectorRef = NULL;
     VectorData *lastVectorDecl = NULL;
     Block currentBlock;
@@ -150,7 +151,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 	            {
 	                if (currentVectorRef != NULL)
 	                {
-	                    currentBlock.size = (long)(reader.getCurrentLineStartOffset() - currentBlock.startOffset);
+	                    currentBlock.size = (int64)(reader.getCurrentLineStartOffset() - currentBlock.startOffset);
 	                    if (currentBlock.size > currentVectorRef->blockSize)
 	                        currentVectorRef->blockSize = currentBlock.size;
 	                    currentVectorRef->addBlock(currentBlock);
@@ -195,7 +196,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 	    if (currentBlock.count() > 0)
 	    {
 	        assert(currentVectorRef != NULL);
-	        currentBlock.size = (long)(reader.getFileSize() - currentBlock.startOffset);
+	        currentBlock.size = (int64)(reader.getFileSize() - currentBlock.startOffset);
 	        if (currentBlock.size > currentVectorRef->blockSize)
 	            currentVectorRef->blockSize = currentBlock.size;
 	        currentVectorRef->addBlock(currentBlock);

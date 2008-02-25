@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 
+#include "platmisc.h"
 #include "exception.h"
 #include "linetokenizer.h"
 #include "channel.h"
@@ -22,9 +23,11 @@
 
 USING_NAMESPACE
 
+#define LL  INT64_PRINTF_FORMAT
+
 //=========================================================================
 
-IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vectorId)
+IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, int vectorId)
     : fname(filename), index(NULL), vector(NULL), currentBlock(NULL)
 {
     std::string ifname = IndexFile::getIndexFileName(filename);
@@ -33,7 +36,7 @@ IndexedVectorFileReader::IndexedVectorFileReader(const char *filename, long vect
     vector = index->getVectorById(vectorId);
 
     if (!vector)
-        throw opp_runtime_error("Vector with vectorId %ld not found in file '%s'",
+        throw opp_runtime_error("Vector with vectorId %d not found in file '%s'",
                 vectorId, filename);
 }
 
@@ -52,8 +55,8 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
 #define CHECK(cond, msg, block, line) \
             if (!(cond))\
             {\
-                throw opp_runtime_error("Invalid vector file syntax: %s, file %s, block offset %ld, line in block %d", \
-                                        msg, fname.c_str(), block.startOffset, line);\
+                throw opp_runtime_error("Invalid vector file syntax: %s, file %s, block offset %"LL", line in block %d", \
+                                        msg, fname.c_str(), (int64)block.startOffset, line);\
             }
 
 void IndexedVectorFileReader::loadBlock(const Block &block)
@@ -78,7 +81,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
     char *line, **tokens;
     int numTokens;
     LineTokenizer tokenizer;
-    long id;
+    int id;
 
     std::string columns = vector->columns;
     int columnsNo = columns.size();
@@ -93,7 +96,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
         numTokens = tokenizer.numTokens();
 
         CHECK(numTokens >= (int)columns.size() + 1, "Line is too short", block, i);
-        CHECK(parseLong(tokens[0],id) && id==vector->vectorId, "Missing or unexpected vector id", block, i);
+        CHECK(parseInt(tokens[0],id) && id==vector->vectorId, "Missing or unexpected vector id", block, i);
 
         OutputVectorEntry &entry = currentEntries[i];
         entry.serial = block.startSerial+i;
@@ -418,10 +421,10 @@ void IndexedVectorFileWriterNode::writeBufferToFile(VectorInputPort *port)
     assert(port->vector.blocks.size() > 0);
 
     Block &currentBlock = port->vector.blocks.back();
-    currentBlock.startOffset = ftell(f);
+    currentBlock.startOffset = opp_ftell(f);
 
     CHECK(fputs(port->buffer, f));
-    currentBlock.size = (long)(ftell(f) - currentBlock.startOffset);
+    currentBlock.size = (int64)(opp_ftell(f) - currentBlock.startOffset);
     port->vector.collect(currentBlock);
     port->clearBuffer();
     port->vector.blocks.push_back(Block());

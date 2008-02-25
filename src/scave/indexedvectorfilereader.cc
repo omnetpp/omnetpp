@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
+#include "platmisc.h"
 #include "opp_ctype.h"
 #include "channel.h"
 #include "scaveutils.h"
@@ -22,6 +23,8 @@
 USING_NAMESPACE
 
 using namespace std;
+
+#define LL  INT64_PRINTF_FORMAT
 
 IndexedVectorFileReaderNode::IndexedVectorFileReaderNode(const char *filename, size_t bufferSize) :
   ReaderNode(filename, bufferSize), index(NULL), currentBlockIndex(0)
@@ -107,11 +110,11 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
     assert(portDataPtr->vector);
 
     const char *file = filename.c_str();
-    long offset;
-#define CHECK(cond, msg) {if (!cond) throw opp_runtime_error(msg ", file %s, offset %ld", file, offset); }
+    file_offset_t offset;
+#define CHECK(cond, msg) {if (!cond) throw opp_runtime_error(msg ", file %s, offset %"LL, file, (int64)offset); }
 
     VectorData *vector = portDataPtr->vector;
-    long startOffset = blockPtr->startOffset;
+    file_offset_t startOffset = blockPtr->startOffset;
     long count = blockPtr->count();
 
     reader.seekTo(startOffset);

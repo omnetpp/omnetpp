@@ -47,5 +47,14 @@
 #   define INT64_PRINTF_FORMAT   "ll"
 #endif
 
+//
+// Parse int64 strings
+//
+#ifdef _MSC_VER
+#define strtoi64 _strtoi64
+#else
+#define strtoi64 strtoll
+#endif
+
 #endif
 

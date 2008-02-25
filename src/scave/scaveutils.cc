@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "platmisc.h"
 #include "scaveutils.h"
 
 
@@ -28,6 +29,13 @@ bool parseLong(const char *s, long &dest)
 {
     char *e;
     dest = strtol(s,&e,10);
+    return !*e;
+}
+
+bool parseInt64(const char *s, int64 &dest)
+{
+    char *e;
+    dest = strtoi64(s,&e,10);
     return !*e;
 }
 

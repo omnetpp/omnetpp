@@ -17,6 +17,7 @@
 
 #include <map>
 #include <string>
+#include "platmisc.h"
 #include "node.h"
 #include "nodetype.h"
 #include "commonnodes.h"
@@ -30,7 +31,7 @@ NAMESPACE_BEGIN
 #define VECFILEREADER_BUFSIZE  (64*1024)
 
 // shared with indexedvectorfilereadernode
-Datum parseColumns(char **tokens, int numtokens, const std::string &columns, const char* file, int lineno, long offset);
+Datum parseColumns(char **tokens, int numtokens, const std::string &columns, const char* file, int64 lineno, file_offset_t offset);
 
 /**
  * Producer node which reads an output vector file.

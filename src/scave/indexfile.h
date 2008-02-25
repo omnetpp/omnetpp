@@ -18,6 +18,7 @@
 #include <float.h>
 #include <map>
 #include <vector>
+#include "platmisc.h"
 #include "scavedefs.h"
 #include "commonutil.h"
 #include "statistics.h"
@@ -28,8 +29,8 @@ NAMESPACE_BEGIN
  * Data of one block stored in the index file.
  */
 struct Block {
-    long startOffset;
-    long size;
+    file_offset_t startOffset;
+    int64 size;
     long startSerial;
     long startEventNum;
     long endEventNum;
@@ -76,7 +77,7 @@ struct VectorData {
     std::string name;
     std::string columns;
     StringMap attributes;
-    long blockSize;
+    int64 blockSize;
     Statistics stat;
     Blocks blocks;
 
@@ -84,7 +85,7 @@ struct VectorData {
      * Creates an index entry for a vector.
      */
     VectorData() : vectorId(-1), blockSize(0) {}
-    VectorData(int vectorId, std::string moduleName, std::string name, std::string columns, long blockSize)
+    VectorData(int vectorId, std::string moduleName, std::string name, std::string columns, int64 blockSize)
         : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize) {}
 
     long count() const { return stat.count(); }
@@ -158,7 +159,7 @@ struct RunData {
 
     RunData() : runNumber(0) {}
 
-    bool parseLine(char **tokens, int numTokens, const char *filename, int lineNo);
+    bool parseLine(char **tokens, int numTokens, const char *filename, int64 lineNo);
     void writeToFile(FILE *file, const char *filename) const;
 };
 
@@ -167,8 +168,8 @@ struct RunData {
  * check if it is up-to-date.
  */
 struct FingerPrint {
-    long lastModified;
-    long fileSize;
+    int64 lastModified;
+    int64 fileSize;
 
     FingerPrint() : lastModified(0), fileSize(0) {}
     FingerPrint(const char *vectorFileName);
@@ -265,7 +266,7 @@ class SCAVE_API IndexFileReader
         /**
          * Parse one line of the index file.
          */
-        void parseLine(char **tokens, int numTokens, VectorFileIndex *index, int lineNum);
+        void parseLine(char **tokens, int numTokens, VectorFileIndex *index, int64 lineNum);
 };
 
 /**

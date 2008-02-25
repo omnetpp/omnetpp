@@ -57,7 +57,7 @@ class SCAVE_API IndexedVectorFileReader
     Entries currentEntries; // entries of the loaded block
 
     public:
-        explicit IndexedVectorFileReader(const char* filename, long vectorId);
+        explicit IndexedVectorFileReader(const char* filename, int vectorId);
         ~IndexedVectorFileReader();
     protected:
         /** reads a block from the vector file */

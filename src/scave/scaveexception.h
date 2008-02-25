@@ -18,6 +18,7 @@
 #include <string>
 #include <exception>
 #include <stdexcept>
+#include "platmisc.h"
 #include "commondefs.h"
 #include "scavedefs.h"
 #include "exception.h"
@@ -31,14 +32,14 @@ class SCAVE_API ResultFileFormatException : public opp_runtime_error
 {
   private:
       std::string file;
-      int line;
-      long offset;
+      int64 line;
+      file_offset_t offset;
 
   public:
     /**
      * Constructor with error message and location.
      */
-    ResultFileFormatException(const char *msg, const char *file, int line, long offset = -1);
+    ResultFileFormatException(const char *msg, const char *file, int64 line, file_offset_t offset = -1);
 
     /**
      * Destructor with throw clause required by gcc.
@@ -53,12 +54,12 @@ class SCAVE_API ResultFileFormatException : public opp_runtime_error
     /**
      * Returns the line number at which the error occured.
      */
-    int getLine() const { return line; }
+    int64 getLine() const { return line; }
     
     /**
      * Returns the file offset at which the error occured.
      */
-    long getFileOffset() const { return offset; }
+    file_offset_t getFileOffset() const { return offset; }
 };
 
 NAMESPACE_END

@@ -47,8 +47,10 @@
 #include <stdexcept>
 
 #ifdef _MSC_VER
-#define strcasecmp  _stricmp
+#define strcasecmp _stricmp
 #define strncasecmp _strnicmp
+#define unlink _unlink
+#define itoa _itoa
 #endif
 
 //

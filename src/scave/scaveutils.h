@@ -16,6 +16,7 @@
 #define _SCAVEUTILS_H_
 
 #include <string>
+#include "inttypes.h"
 #include "scavedefs.h"
 #include "timeutil.h"
 
@@ -31,6 +32,7 @@ inline bool isNegativeInfinity(double d) { return d==dblNegativeInfinity; }
 
 SCAVE_API bool parseInt(const char *str, int &dest);
 SCAVE_API bool parseLong(const char *str, long &dest);
+SCAVE_API bool parseInt64(const char *str, int64 &dest);
 SCAVE_API bool parseDouble(const char *str, double &dest);
 SCAVE_API bool parseSimtime(const char *str, simultime_t &dest);
 SCAVE_API std::string unquoteString(const char *str);

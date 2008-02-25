@@ -145,7 +145,7 @@ Blocks::size_type VectorData::getBlocksInEventnumInterval(long startEventNum, lo
 #endif
 #define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, filename, lineNo);
 
-bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int lineNo)
+bool RunData::parseLine(char **tokens, int numTokens, const char *filename, int64 lineNo)
 {
     if (tokens[0][0] == 'a' && strcmp(tokens[0], "attr") == 0)
     {
@@ -268,20 +268,20 @@ bool IndexFile::isIndexFileUpToDate(const char *filename)
 //=========================================================================
 FingerPrint::FingerPrint(const char *vectorFileName)
 {
-    struct stat s;
-    if (stat(vectorFileName, &s) != 0)
+    struct opp_stat_t s;
+    if (opp_stat(vectorFileName, &s) != 0)
         throw opp_runtime_error("vector file '%s' does not exist", vectorFileName);
 
-    this->lastModified = (long)s.st_mtime;
-    this->fileSize = (long)s.st_size;
+    this->lastModified = (int64)s.st_mtime;
+    this->fileSize = (int64)s.st_size;
 }
 
 bool FingerPrint::check(const char *vectorFileName)
 {
-    struct stat s;
-    if (stat(vectorFileName, &s) == 0)
+    struct opp_stat_t s;
+    if (opp_stat(vectorFileName, &s) == 0)
     {
-        return (this->lastModified == s.st_mtime) && (this->fileSize == s.st_size);
+        return (this->lastModified == (int64)s.st_mtime) && (this->fileSize == (int64)s.st_size);
     }
     return false;
 }
@@ -292,7 +292,6 @@ bool FingerPrint::check(const char *vectorFileName)
 #undef CHECK
 #endif
 #define CHECK(cond,msg,line) if (!(cond)) throw ResultFileFormatException(msg, filename.c_str(), line);
-//#define CHECK(cond,msg,line) if (!(cond)) throw opp_runtime_error("Invalid index file syntax: %s, file %s, line %d", msg, filename.c_str(), line);
 
 // see ifilemgr.h
 #define MIN_BUFFER_SIZE 512
@@ -313,7 +312,7 @@ VectorFileIndex *IndexFileReader::readAll()
     VectorFileIndex *index = new VectorFileIndex();
     while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
-        int lineNum = reader.getNumReadLines();
+        int64 lineNum = reader.getNumReadLines();
         int len=reader.getCurrentLineLength();
         numTokens=tokenizer.tokenize(line, len);
         tokens=tokenizer.tokens();
@@ -332,7 +331,7 @@ VectorFileIndex *IndexFileReader::readFingerprint()
     VectorFileIndex *index = NULL;
     while ((line=reader.getNextLineBufferPointer())!=NULL)
     {
-        int lineNum = reader.getNumReadLines();
+        int64 lineNum = reader.getNumReadLines();
         int len = reader.getCurrentLineLength();
         numTokens = tokenizer.tokenize(line,len);
         tokens = tokenizer.tokens();
@@ -355,7 +354,7 @@ VectorFileIndex *IndexFileReader::readFingerprint()
 }
 
 
-void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *index, int lineNum)
+void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *index, int64 lineNum)
 {
     if (numTokens == 0 || tokens[0][0] == '#')
         return;
@@ -386,10 +385,11 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
     }
     else if (tokens[0][0] == 'f' && strcmp(tokens[0], "file") == 0)
     {
-        long fileSize, lastModified;
+        int64 fileSize;
+        int64 lastModified;
         CHECK(numTokens >= 3, "missing file attributes", lineNum);
-        CHECK(parseLong(tokens[1], fileSize), "file size is not a number", lineNum);
-        CHECK(parseLong(tokens[2], lastModified), "modification date is not a number", lineNum);
+        CHECK(parseInt64(tokens[1], fileSize), "file size is not a number", lineNum);
+        CHECK(parseInt64(tokens[2], lastModified), "modification date is not a number", lineNum);
         index->fingerprint.fileSize = fileSize;
         index->fingerprint.lastModified = lastModified;
     }
@@ -409,8 +409,8 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         Block block;
         block.startSerial = vector->blocks.size() > 0 ? vector->blocks.back().endSerial() : 0;
         int i = 1; // column index
-        CHECK(parseLong(tokens[i++], block.startOffset), "invalid file offset", lineNum);
-        CHECK(parseLong(tokens[i++], block.size), "invalid block size", lineNum);
+        CHECK(parseInt64(tokens[i++], block.startOffset), "invalid file offset", lineNum);
+        CHECK(parseInt64(tokens[i++], block.size), "invalid block size", lineNum);
         if (vector->hasColumn('E'))
         {
             CHECK(parseLong(tokens[i++], block.startEventNum) && parseLong(tokens[i++], block.endEventNum),
@@ -474,10 +474,10 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
     if (file == NULL)
         openFile();
 
-    long saveOffset = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    CHECK(fprintf(file, "file %ld %ld", fingerprint.fileSize, fingerprint.lastModified));
-    fseek(file,saveOffset, SEEK_SET);
+    file_offset_t saveOffset = opp_ftell(file);
+    opp_fseek(file, 0, SEEK_SET);
+    CHECK(fprintf(file, "file %lld %lld", fingerprint.fileSize, fingerprint.lastModified));
+    opp_fseek(file, saveOffset, SEEK_SET);
 }
 
 void IndexFileWriter::writeRun(const RunData &run)
@@ -527,7 +527,7 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
 
     if (block.count() > 0)
     {
-        CHECK(fprintf(file, "%d\t%ld %ld", vector.vectorId, block.startOffset, block.size));
+        CHECK(fprintf(file, "%d\t%lld %lld", vector.vectorId, (int64)block.startOffset, (int64)block.size));
         if (vector.hasColumn('E')) { CHECK(fprintf(file, " %ld %ld", block.startEventNum, block.endEventNum)); }
         if (vector.hasColumn('T')) { CHECK(fprintf(file, " %s %s",
                                                         BigDecimal::ttoa(buff1, block.startTime, e),
