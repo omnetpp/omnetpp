@@ -7,10 +7,8 @@
 // `license' for details on this and other legal matters.
 //
 
-
-import org.omnetpp.samples.queueing.Queue;
-import org.omnetpp.samples.queueing.Source;
-
+import omnetpp.queueing.Queue;
+import omnetpp.queueing.Source;
 
 //
 // This is a closed ring network.

@@ -7,9 +7,9 @@
 // `license' for details on this and other legal matters.
 //
 
-import org.omnetpp.samples.queueing.Queue;
-import org.omnetpp.samples.queueing.Sink;
-import org.omnetpp.samples.queueing.Source;
+import omnetpp.queueing.Queue;
+import omnetpp.queueing.Sink;
+import omnetpp.queueing.Source;
 
 //
 // This is queueing network consists of several queues, connected in tandem.

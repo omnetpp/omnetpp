@@ -7,14 +7,13 @@
 // `license' for details on this and other legal matters.
 //
 
-import org.omnetpp.samples.queueing.Classifier;
-import org.omnetpp.samples.queueing.Delay;
-import org.omnetpp.samples.queueing.PQueue;
-import org.omnetpp.samples.queueing.Router;
-import org.omnetpp.samples.queueing.Server;
-import org.omnetpp.samples.queueing.Sink;
-import org.omnetpp.samples.queueing.Source;
-
+import omnetpp.queueing.Classifier;
+import omnetpp.queueing.Delay;
+import omnetpp.queueing.PQueue;
+import omnetpp.queueing.Router;
+import omnetpp.queueing.Server;
+import omnetpp.queueing.Sink;
+import omnetpp.queueing.Source;
 
 //
 // A call center simulation.
