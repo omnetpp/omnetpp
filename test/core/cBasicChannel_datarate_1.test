@@ -72,13 +72,13 @@ void Node1::activity()
     msg->setLength(300);
     send(msg, g);
 
-    msg = new cMessage("msg3");
-    msg->setLength(200);
-    send(msg, g);
-
     PRINTGATESTATE();
     wait(0.004);
     PRINTGATESTATE();
+
+    msg = new cMessage("msg3");
+    msg->setLength(200);
+    send(msg, g);
 
     wait(0.002);
     PRINTGATESTATE();
@@ -109,7 +109,6 @@ void Node2::activity()
 
 }; //namespace
 
-
 %inifile: test.ini
 [General]
 network = Test
@@ -122,9 +121,9 @@ t=1: busy:0, finishes:0
 t=1: busy:1, finishes:1.005
 t=1.105: msg1 arrived
 t=2: busy:0, finishes:1.005
-t=2: busy:1, finishes:2.005
-t=2.004: busy:1, finishes:2.005
-t=2.006: busy:0, finishes:2.005
+t=2: busy:1, finishes:2.003
+t=2.004: busy:0, finishes:2.003
+t=2.006: busy:0, finishes:2.006
 t=2.103: msg2 arrived
-t=2.105: msg3 arrived
-t=3.006: busy:0, finishes:2.005
+t=2.106: msg3 arrived
+t=3.006: busy:0, finishes:2.006
