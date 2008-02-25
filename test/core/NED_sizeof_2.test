@@ -107,7 +107,7 @@ void Simple::activity()
     for (int k=0; k<gates(); k++)
         if (gate(k) && gate(k)->index()==0)
             ev << gate(k)->name() << " size=" << gate(k)->size() << endl;
-    for (cSubModIterator j(*parentModule()); !j.end(); j++)
+    for (cModule::SubmoduleIterator j(parentModule()); !j.end(); j++)
         if (j()->index()==0)
             ev << j()->name() << " size=" << j()->size() << endl;
 }
