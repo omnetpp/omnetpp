@@ -14,7 +14,7 @@
 simple PacketFifo
 {
     parameters:
-        volatile double serviceTime;
+        volatile double serviceTime @unit(s);
         @display("i=block/queue;q=queue");
     gates:
         input in;
@@ -28,7 +28,7 @@ simple PacketFifo
 simple BitFifo
 {
     parameters:
-        volatile double bitsPerSec;
+        volatile double bitsPerSec @unit(bps);
         @display("i=block/queue;q=queue");
     gates:
         input in;

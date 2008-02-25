@@ -15,8 +15,8 @@
 simple Source
 {
     parameters:
-        volatile double sendIaTime;
-        volatile int msgLength;
+        volatile double sendIaTime @unit(s);
+        volatile int msgLength @unit(b);  // in bits
         @display("i=block/source");
     gates:
         output out;
