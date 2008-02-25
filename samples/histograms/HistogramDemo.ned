@@ -20,6 +20,7 @@
 simple HistogramDemo
 {
     parameters:
+        @isNetwork;
         int numObservations @prompt("Number of observations") = default(10000);
         int numCells @prompt("Number of histogram cells") = default(20);
         bool useFixedRange @prompt("Auto (false) or fixed (true) histogram range? ") = default(false);
