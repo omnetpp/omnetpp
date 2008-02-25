@@ -22,7 +22,7 @@ module HypercubeNode like IHypercubeNode
             parameters:
                 numStations = 2^dim;
                 address = address;
-                iaTime = default(exponential(1));
+                iaTime = default(exponential(1s));
                 @display("p=82,82");
         }
         sink: HCSink {

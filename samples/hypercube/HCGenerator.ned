@@ -16,7 +16,7 @@ simple HCGenerator
     parameters:
         int numStations;
         int address;
-        volatile double iaTime;
+        volatile double iaTime @unit(s);
         @display("i=block/source");
     gates:
         output out;
