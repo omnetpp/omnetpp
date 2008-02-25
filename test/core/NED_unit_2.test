@@ -1,0 +1,38 @@
+%description:
+Negative test for a value with multiple units in NED.
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        double p1 @unit(s) = 1h 22s 550ms; // values may have multiple units
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+   ev << "p1=" << par("p1").doubleValue() << "\n";
+}
+
+}; //namespace
+
+%exitcode: 1
+
+%contains: stdout
+p1=3622.55

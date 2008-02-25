@@ -8,7 +8,7 @@ simple Test
 {
     parameters:
         @isNetwork(true);
-        double p1 = 1s; // SI - not provided
+        double p02 = 1s;                      // not provided - SI
 }
 
 %file: test.cc
@@ -36,4 +36,4 @@ void Test::activity()
 %exitcode: 1
 
 %contains: stdout
-// TODO:
+<!> Error: Cannot convert unit 's' (second) to none, at test.ned:7.

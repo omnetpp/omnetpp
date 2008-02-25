@@ -1,5 +1,7 @@
 %description:
 Positive test cases for assignments with units in NED.
+The complete list of 4 * 4 = 16 test cases are covered by this
+and the negative test cases in NED_unit_n*.
 
 %file: test.ned
 
@@ -8,19 +10,15 @@ simple Test
 {
     parameters:
         @isNetwork(true);
-        // TODO: swap declaration type and value type
-        double p1 = 1;                       // not provided - not provided
-        double p2 = 2 @unit(s);              // not provided - SI
-        double p3 = 3 @unit(mW);             // not provided - non SI
-        double p4 = 4 @unit(unknown);        // not provided - unknown
+        double p01 = 1;                       // not provided - not provided
 
-        double p5 = 5s @unit(s);             // SI           - SI
-        double p6 = 6mi @unit(s);            // non SI       - SI
+        double p06 @unit(s) = 2s;             // SI           - SI
+        double p07 @unit(s) = 2min;           // SI           - non SI
 
-        double p7 = 7W @unit(mW);            // SI           - non SI
-        double p8 = 8uW @unit(mW);           // non SI       - non SI
+        double p10 @unit(min) = 3s;           // non SI       - SI
+        double p11 @unit(min) = 3min;         // non SI       - non SI
 
-        double p9 = 9unknown @unit(unknown); // unknown      - unknown
+        double p16 @unit(unknown) = 4unknown; // unknown      - unknown
 }
 
 %file: test.cc
@@ -47,12 +45,9 @@ void Test::activity()
 }; //namespace
 
 %contains: stdout
-p1=1
-p2=2
-p3=3
-p4=4
-p5=5
-p6=360
-p7=7000
-p8=8
-p9=9
+p01=1
+p06=2
+p07=120
+p10=0.05
+p11=3
+p16=4

@@ -8,7 +8,7 @@ simple Test
 {
     parameters:
         @isNetwork(true);
-        double p1 = 1mi; // non SI - not provided
+        double p03 = 1min;                    // not provided - non SI
 }
 
 %file: test.cc
@@ -36,4 +36,4 @@ void Test::activity()
 %exitcode: 1
 
 %contains: stdout
-wrong units
+<!> Error: Cannot convert unit 'min' (minute) to none, at test.ned:7.

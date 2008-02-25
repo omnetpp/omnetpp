@@ -8,7 +8,7 @@ simple Test
 {
     parameters:
         @isNetwork(true);
-        double p1 = 1s @unit(unknown); // SI - unknown
+        double p04 = 1unknown;                // not provided - unknown
 }
 
 %file: test.cc
@@ -36,4 +36,4 @@ void Test::activity()
 %exitcode: 1
 
 %contains: stdout
-wrong units: should be 'unknown' instead of 's' (second).
+<!> Error: Cannot convert unit 'unknown' to none, at test.ned:7.

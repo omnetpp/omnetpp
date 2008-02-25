@@ -3,12 +3,12 @@ Negative test case for assignment with units in NED.
 
 %file: test.ned
 
-// unit cases: not provided, SI, non-SI, unknown
+// unit cases: not provided, SI, non SI, unknown
 simple Test
 {
     parameters:
         @isNetwork(true);
-        double p1 = 1s @unit(w); // non convertible units
+        double p13 @unit(unknown) = 4;        // unknown      - not provided
 }
 
 %file: test.cc
@@ -36,4 +36,4 @@ void Test::activity()
 %exitcode: 1
 
 %contains: stdout
-wrong units: should be 'w' instead of 's' (second).
+<!> Error: Cannot convert unit none to 'unknown', at test.ned:7.

@@ -1,13 +1,14 @@
 %description:
-Negative test for expressions that they do not have units in NED.
+Negative test case for assignment with units in NED.
 
 %file: test.ned
 
+// unit cases: not provided, SI, non SI, unknown
 simple Test
 {
     parameters:
         @isNetwork(true);
-        double p1 = floor(10.2ms) + 0.5 @unit(s); // expression units are not supported
+        double p15 @unit(unknown) = 4min;     // unknown      - non SI
 }
 
 %file: test.cc
@@ -35,4 +36,4 @@ void Test::activity()
 %exitcode: 1
 
 %contains: stdout
-// TODO:
+<!> Error: Cannot convert unit 'min' (minute) to 'unknown', at test.ned:7.
