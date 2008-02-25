@@ -66,6 +66,12 @@ test("true ? 2m : 3km");
 test("true ? 2km : 3m");
 test("true ? 2 : 3m");
 test("true ? 2m : 3");
+test("true ? 2m : 3s");
+
+ev << "\n";
+
+test("3km == 3000m");
+test("3km != 3000m");
 
 ev << ".\n";
 
@@ -227,5 +233,9 @@ true ? 2m : 3km ==> 2m
 true ? 2km : 3m ==> 2km
 true ? 2 : 3m ==> 2
 true ? 2m : 3 ==> 2m
+true ? 2m : 3s ==> 2m
+
+3km == 3000m ==> true
+3km != 3000m ==> false
 .
 
