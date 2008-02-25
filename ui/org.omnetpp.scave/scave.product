@@ -28,16 +28,19 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
 
    <plugins>
       <plugin id="com.ibm.icu"/>
+      <plugin id="de.unikassel.imageexport"/>
       <plugin id="javax.servlet"/>
-      <plugin id="org.apache.batik"/>
+      <plugin id="org.apache.commons.logging"/>
       <plugin id="org.apache.lucene"/>
       <plugin id="org.apache.lucene.analysis"/>
       <plugin id="org.apache.xerces"/>
+      <plugin id="org.apache.xml.resolver"/>
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.contenttype"/>
@@ -107,6 +110,8 @@
       <plugin id="org.mortbay.jetty"/>
       <plugin id="org.omnetpp.common"/>
       <plugin id="org.omnetpp.ide.nativelibs"/>
+      <plugin id="org.omnetpp.ide.nativelibs.linux.x86" fragment="true"/>
+      <plugin id="org.omnetpp.ide.nativelibs.macosx" fragment="true"/>
       <plugin id="org.omnetpp.ide.nativelibs.win32.x86" fragment="true"/>
       <plugin id="org.omnetpp.main"/>
       <plugin id="org.omnetpp.ned.core"/>
@@ -114,6 +119,7 @@
       <plugin id="org.omnetpp.scave"/>
       <plugin id="org.omnetpp.scave.builder"/>
       <plugin id="org.omnetpp.scave.model"/>
+      <plugin id="org.slf4j.nop"/>
    </plugins>
 
 </product>

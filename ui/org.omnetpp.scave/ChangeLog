@@ -1,3 +1,26 @@
+2008-02-15
+----------
+
+Fixes:
+
+   + cIndexedFileOutputVectorManager supports >2GB files. The scave module still needs to be 
+     updated.
+
+   + Fix performance bug in vector file reading, thanks to Levy.
+
+   + When vector data was read the file was not closed until the DataflowManager
+     got garbage collected.
+
+   + Symbols.Size chart property was saved even it was not set
+
+   + "0", "1", ... legend labels are not used (module/name is the default)
+
+   + "Coordinate overflow ..." remained on the chart after zooming out.
+
+   + cIndexedVectorFileManager::finalizeVector() crashed at the end of the run when some
+     vector was deregistered.
+
+
 2008-02-01
 ----------
 

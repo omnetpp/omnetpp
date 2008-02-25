@@ -89,7 +89,7 @@
         point="org.eclipse.core.runtime.products">
      <product
            application="org.eclipse.ui.ide.workbench"
-           name="OMNeT++ Scave IDE">
+           name="%productName">
         <property
               name="preferenceCustomization"
               value="plugin_customization.ini"/>
@@ -111,6 +111,10 @@
         <property
               name="startupMessageRect"
               value="7,220,441,20"/>
+        <property
+              name="appName"
+              value="%productName">
+        </property>
      </product>
   </extension>
   <extension
