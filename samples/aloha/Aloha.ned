@@ -17,7 +17,7 @@ network Aloha
     parameters:
         int numHosts;  // number of hosts
         double txRate @unit(bps);  // transmission rate
-        double slotTime;  // zero means no slots (pure Aloha)
+        double slotTime @unit(ms);  // zero means no slots (pure Aloha)
         @display("bgb=,,white");
     submodules:
         server: Server {

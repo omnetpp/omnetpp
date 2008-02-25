@@ -14,11 +14,11 @@
 simple Host
 {
     parameters:
-        double txRate @unit(bps);  // transmission rate
-        double radioDelay;  // propagation delay of radio link
-        volatile int pkLenBits;  // packet length in bits
-        volatile double iaTime;  // packet interarrival time
-        double slotTime;  // zero means no slots (pure Aloha)
+        double txRate @unit(bps);         // transmission rate
+        double radioDelay @unit(s);       // propagation delay of radio link
+        volatile int pkLenBits @unit(b);  // packet length in bits
+        volatile double iaTime @unit(s);  // packet interarrival time
+        double slotTime @unit(s);         // zero means no slots (pure Aloha)
         @display("i=device/pc_s");
 }
 
