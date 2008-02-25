@@ -1,0 +1,15 @@
+%description:
+Test display string inheritance.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test {
+    @display("i**=foo"); // illegal tag name
+}
+
+%exitcode: 1
+
+%contains: stdout
+tag name "i**" contains invalid character in  "i**=foo".
