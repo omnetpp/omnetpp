@@ -48,12 +48,9 @@ Define_Module(Node1);
 
 void Node1::initialize()
 {
-    for (int i=0; i<5; i++)
-    {
-        cMessage *msg = new cMessage();
-        msg->setLength(100); // so transmission time = 0.1s
-        send(msg, "out");
-    }
+    cMessage *msg = new cMessage();
+    msg->setLength(100); // so transmission time = 0.1s
+    send(msg, "out");
 }
 
 void Node1::handleMessage(cMessage *msg)
@@ -84,8 +81,3 @@ cmdenv-event-banners = false
 
 %contains: stdout
 msg arrived at T=1.1
-msg arrived at T=1.2
-msg arrived at T=1.3
-msg arrived at T=1.4
-msg arrived at T=1.5
-
