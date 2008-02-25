@@ -6,8 +6,8 @@ Test channel data rate
 channel MyConn extends ned.BasicChannel
 {
     parameters:
-        datarate = 1e5;
-        delay = 0.1;
+        datarate = 1e5bps;
+        delay = 0.1s;
 }
 
 simple Node1

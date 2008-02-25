@@ -6,7 +6,7 @@ Test channel delay in NED.
 channel MyConn extends ned.BasicChannel
 {
     parameters:
-        delay = 0.004;
+        delay = 0.004s;
 }
 
 simple Node1

@@ -6,7 +6,7 @@ Test "disabled" parameter of channels
 channel MyConn extends ned.BasicChannel
 {
     parameters:
-        delay = 0.004;
+        delay = 0.004s;
         error = 0.1;
 }
 

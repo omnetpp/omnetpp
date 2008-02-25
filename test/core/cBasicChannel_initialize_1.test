@@ -7,8 +7,8 @@ initialized.
 channel MyConn extends ned.BasicChannel
 {
     parameters:
-        delay = 1;
-        datarate = 1000;
+        delay = 1s;
+        datarate = 1000bps;
 }
 
 simple Node1
