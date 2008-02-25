@@ -23,7 +23,7 @@
 // <a href="../../README.txt">See readme.txt</a>
 //
 
-package org.omnetpp.samples.queueing;
+package omnetpp.queueing;
 
 // C++ classes of simple modules are in the 'queueing' namespace
 @namespace(queueing);

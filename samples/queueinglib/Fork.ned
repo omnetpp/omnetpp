@@ -16,7 +16,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
-package org.omnetpp.samples.queueing;
+package omnetpp.queueing;
 
 //
 // Sends out incoming messages on ALL output gate. The original
