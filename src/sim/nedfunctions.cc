@@ -254,57 +254,79 @@ DEF(truncnormal, "QQ/L->Q", {
     return argv[0];
 })
 
-//FIXME convert the rest!
+DEF(gamma_d, "DQ/L->Q", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
+    argv[1].dbl = gamma_d(argv[0].dbl, argv[1].dbl, rng);
+    return argv[1];
+})
 
-static double _wrap_gamma_d(double alpha, double theta)
-{
-    return gamma_d(alpha, theta);
-}
+DEF(beta, "DD/L->D", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
+    argv[0].dbl = beta(argv[0].dbl, argv[1].dbl, rng);
+    return argv[0];
+})
 
-static double _wrap_beta(double alpha1, double alpha2)
-{
-    return beta(alpha1, alpha2);
-}
+DEF(erlang_k, "LQ/L->Q", {
+    if (argv[0].dbl < 0.0)
+       throw cRuntimeError("erlang_k(): k parameter (number of phases) must be positive "
+                           "(k=%g", argv[0].dbl);
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
+    argv[1].dbl = erlang_k((unsigned int)argv[0].dbl, argv[1].dbl, rng);
+    return argv[1];
+})
 
-static double _wrap_erlang_k(double k, double m)
-{
-    return erlang_k( (unsigned int) k, m);
-}
+DEF(chi_square, "L/L->D", {
+    if (argv[0].dbl < 0.0)
+       throw cRuntimeError("chi_square(): k parameter (degrees of freedom) must be positive "
+                           "(k=%g", argv[0].dbl);
+    int rng = argc==2 ? (int)argv[1].dbl : 0;
+    argv[0].dbl = chi_square((unsigned int)argv[0].dbl, rng);
+    return argv[0];
+})
 
-static double _wrap_chi_square(double k)
-{
-    return chi_square( (unsigned int) k);
-}
+DEF(student_t, "L/L->D", {
+    if (argv[0].dbl < 0.0)
+       throw cRuntimeError("student_t(): i parameter (degrees of freedom) must be positive "
+                           "(i=%g", argv[0].dbl);
+    int rng = argc==2 ? (int)argv[1].dbl : 0;
+    argv[0].dbl = student_t((unsigned int)argv[0].dbl, rng);
+    return argv[0];
+})
 
-static double _wrap_student_t(double i)
-{
-    return student_t( (unsigned int) i);
-}
+DEF(cauchy, "QQ/L->Q", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
+    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
+    argv[0].dbl = cauchy(argv[0].dbl, argv1converted, rng);
+    return argv[0];
+})
 
-static double _wrap_cauchy(double a, double b)
-{
-    return cauchy(a, b);
-}
+DEF(triang, "QQQ/L->Q", {
+    int rng = argc==4 ? (int)argv[3].dbl : 0;
+    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
+    double argv2converted = UnitConversion::convertUnit(argv[2].dbl, argv[2].dblunit, argv[0].dblunit);
+    argv[0].dbl = triang(argv[0].dbl, argv1converted, argv2converted, rng);
+    return argv[0];
+})
 
-static double _wrap_triang(double a, double b, double c)
-{
-    return triang(a, b, c);
-}
+DEF(lognormal, "DD/L->D", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
+    argv[0].dbl = lognormal(argv[0].dbl, argv[1].dbl, rng);
+    return argv[0];
+})
 
-static double _wrap_lognormal(double m, double d)
-{
-    return lognormal(m, d);
-}
+DEF(weibull, "QQ/L->Q", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
+    double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
+    argv[0].dbl = weibull(argv[0].dbl, argv1converted, rng);
+    return argv[0];
+})
 
-static double _wrap_weibull(double a, double b)
-{
-    return weibull(a, b);
-}
-
-static double _wrap_pareto_shifted(double a, double b, double c)
-{
-    return pareto_shifted(a, b, c);
-}
+DEF(pareto_shifted, "DQQ/L->Q", {
+    int rng = argc==4 ? (int)argv[3].dbl : 0;
+    double argv2converted = UnitConversion::convertUnit(argv[2].dbl, argv[2].dblunit, argv[1].dblunit);
+    argv[1].dbl = pareto_shifted(argv[0].dbl, argv[1].dbl, argv2converted, rng);
+    return argv[1];
+})
 
 // discrete
 
@@ -314,199 +336,35 @@ DEF(intuniform, "LL/L->L", {
     return argv[0];
 })
 
-static double _wrap_bernoulli(double p)
-{
-    return (double) bernoulli(p);
-}
+DEF(bernoulli, "D/L->L", {
+    int rng = argc==2 ? (int)argv[1].dbl : 0;
+    argv[0].dbl = bernoulli(argv[0].dbl, rng);
+    return argv[0];
+})
 
-static double _wrap_binomial(double n, double p)
-{
-    return (double) binomial( (int)n, p);
-}
+DEF(binomial, "LD/L->L", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
+    argv[0].dbl = binomial((int)argv[0].dbl, argv[1].dbl, rng);
+    return argv[0];
+})
 
-static double _wrap_geometric(double p)
-{
-    return (double) geometric(p);
-}
+DEF(geometric, "D/L->L", {
+    int rng = argc==2 ? (int)argv[1].dbl : 0;
+    argv[0].dbl = geometric(argv[0].dbl, rng);
+    return argv[0];
+})
 
-static double _wrap_negbinomial(double n, double p)
-{
-    return (double) negbinomial( (int)n, p);
-}
+DEF(negbinomial, "LD/L->L", {
+    int rng = argc==3 ? (int)argv[2].dbl : 0;
+    argv[0].dbl = negbinomial((int)argv[0].dbl, argv[1].dbl, rng);
+    return argv[0];
+})
 
-/* hypergeometric doesn't work yet
-static double _wrap_hypergeometric(double a, double b, double n)
-{
-    return (double) hypergeometric( (int)a, (int)b, (int)n);
-}
-*/
-
-static double _wrap_poisson(double lambda)
-{
-    return (double) poisson(lambda);
-}
-
-
-Define_Function2(gamma_d, _wrap_gamma_d, 2);
-Define_Function2(beta, _wrap_beta, 2);
-Define_Function2(erlang_k, _wrap_erlang_k, 2);
-Define_Function2(chi_square, _wrap_chi_square, 1);
-Define_Function2(student_t, _wrap_student_t, 1);
-Define_Function2(cauchy, _wrap_cauchy, 2);
-Define_Function2(triang, _wrap_triang, 3);
-Define_Function2(lognormal, _wrap_lognormal, 2);
-Define_Function2(weibull, _wrap_weibull, 2);
-Define_Function2(pareto_shifted, _wrap_pareto_shifted, 3);
-
-//done: Define_Function2(intuniform, _wrap_intuniform, 2);
-Define_Function2(bernoulli, _wrap_bernoulli, 1);
-Define_Function2(binomial, _wrap_binomial, 2);
-Define_Function2(geometric, _wrap_geometric, 1);
-Define_Function2(negbinomial, _wrap_negbinomial, 2);
-/* hypergeometric doesn't work yet
-Define_Function2(hypergeometric, _wrap_hypergeometric, 3);
-*/
-Define_Function2(poisson, _wrap_poisson, 1);
-
-
-// continuous, rng versions
-
-static double _wrap_uniform_with_rng(double a, double b, double rng)
-{
-    return uniform(a, b, (int)rng);
-}
-
-static double _wrap_exponential_with_rng(double p, double rng)
-{
-    return exponential(p, (int)rng);
-}
-
-static double _wrap_normal_with_rng(double m, double d, double rng)
-{
-    return normal(m, d, (int)rng);
-}
-
-static double _wrap_truncnormal_with_rng(double m, double d, double rng)
-{
-    return truncnormal(m, d, (int)rng);
-}
-
-static double _wrap_gamma_d_with_rng(double alpha, double theta, double rng)
-{
-    return gamma_d(alpha, theta, (int)rng);
-}
-
-static double _wrap_beta_with_rng(double alpha1, double alpha2, double rng)
-{
-    return beta(alpha1, alpha2, (int)rng);
-}
-
-static double _wrap_erlang_k_with_rng(double k, double m, double rng)
-{
-    return erlang_k( (unsigned int) k, m, (int)rng);
-}
-
-static double _wrap_chi_square_with_rng(double k, double rng)
-{
-    return chi_square( (unsigned int) k, (int)rng);
-}
-
-static double _wrap_student_t_with_rng(double i, double rng)
-{
-    return student_t( (unsigned int) i, (int)rng);
-}
-
-static double _wrap_cauchy_with_rng(double a, double b, double rng)
-{
-    return cauchy(a, b, (int)rng);
-}
-
-static double _wrap_triang_with_rng(double a, double b, double c, double rng)
-{
-    return triang(a, b, c, (int)rng);
-}
-
-static double _wrap_lognormal_with_rng(double m, double d, double rng)
-{
-    return lognormal(m, d, (int)rng);
-}
-
-static double _wrap_weibull_with_rng(double a, double b, double rng)
-{
-    return weibull(a, b, (int)rng);
-}
-
-static double _wrap_pareto_shifted_with_rng(double a, double b, double c, double rng)
-{
-    return pareto_shifted(a, b, c, (int)rng);
-}
-
-// discrete, rng versions
-
-//done:
-//static double _wrap_intuniform_with_rng(double a, double b, double rng)
-//{
-//    return (double) intuniform((int)a, (int)b, (int)rng);
-//}
-
-static double _wrap_bernoulli_with_rng(double p, double rng)
-{
-    return (double) bernoulli(p, (int)rng);
-}
-
-static double _wrap_binomial_with_rng(double n, double p, double rng)
-{
-    return (double) binomial( (int)n, p, (int)rng);
-}
-
-static double _wrap_geometric_with_rng(double p, double rng)
-{
-    return (double) geometric(p, (int)rng);
-}
-
-static double _wrap_negbinomial_with_rng(double n, double p, double rng)
-{
-    return (double) negbinomial( (int)n, p, (int)rng);
-}
-
-/* hypergeometric doesn't work yet
-static double _wrap_hypergeometric_with_rng(double a, double b, double n, double rng)
-{
-    return (double) hypergeometric( (int)a, (int)b, (int)n, (int)rng);
-}
-*/
-
-static double _wrap_poisson_with_rng(double lambda, double rng)
-{
-    return (double) poisson(lambda, (int)rng);
-}
-
-
-Define_Function2(uniform, _wrap_uniform_with_rng, 3);
-Define_Function2(exponential, _wrap_exponential_with_rng, 2);
-Define_Function2(normal, _wrap_normal_with_rng, 3);
-Define_Function2(truncnormal, _wrap_truncnormal_with_rng, 3);
-Define_Function2(gamma_d, _wrap_gamma_d_with_rng, 3);
-Define_Function2(beta, _wrap_beta_with_rng, 3);
-Define_Function2(erlang_k, _wrap_erlang_k_with_rng, 3);
-Define_Function2(chi_square, _wrap_chi_square_with_rng, 2);
-Define_Function2(student_t, _wrap_student_t_with_rng, 2);
-Define_Function2(cauchy, _wrap_cauchy_with_rng, 3);
-Define_Function2(triang, _wrap_triang_with_rng, 4);
-Define_Function2(lognormal, _wrap_lognormal_with_rng, 3);
-Define_Function2(weibull, _wrap_weibull_with_rng, 3);
-Define_Function2(pareto_shifted, _wrap_pareto_shifted_with_rng, 4);
-
-//done: Define_Function2(intuniform, _wrap_intuniform_with_rng, 3);
-Define_Function2(bernoulli, _wrap_bernoulli_with_rng, 2);
-Define_Function2(binomial, _wrap_binomial_with_rng, 3);
-Define_Function2(geometric, _wrap_geometric_with_rng, 2);
-Define_Function2(negbinomial, _wrap_negbinomial_with_rng, 3);
-/* hypergeometric doesn't work yet
-Define_Function2(hypergeometric, _wrap_hypergeometric_with_rng, 4);
-*/
-Define_Function2(poisson, _wrap_poisson_with_rng, 2);
-
+DEF(poisson, "D/L->L", {
+    int rng = argc==2 ? (int)argv[1].dbl : 0;
+    argv[0].dbl = poisson(argv[0].dbl, rng);
+    return argv[0];
+})
 
 //
 // Meaningful error for obsolete genk_ functions
