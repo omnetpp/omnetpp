@@ -22,7 +22,7 @@ simple Generator
                          // [0,numStatons-1] integer, omitting our own address.
         int address; // MAC address of this station.
         int numMessages; // number of messages to generate.
-        volatile int messageLength; // message length in bytes
+        volatile int messageLength @unit(B); // message length in bytes
         volatile double interArrivalTime @unit(s); // time between two messages
         @display("i=block/source");
     gates:

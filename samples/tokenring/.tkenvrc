@@ -1,7 +1,7 @@
 # Tkenv configuration
 option updatefreq_fast	{50}
 option updatefreq_express	{10000}
-option stepdelay	{300 ms}
+option stepdelay	{299 ms}
 option use_mainwindow	{0}
 option print_banners	{1}
 option animation_enabled	{1}
@@ -46,8 +46,8 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "TokenRing" "TokenRing" "2" "377x410+96+124"
+inspector "TokenRing" "TokenRing" "2" "377x410+101+148"
 inspector "token" "token" "2" "367x416+87+174"
-inspector "token.comp[4]" "Computer" "2" "367x303+503+147"
 inspector "TokenRing.comp[0]" "Computer" "2" "367x303+120+155"
+inspector "token.comp[4]" "Computer" "2" "367x303+503+147"
 
