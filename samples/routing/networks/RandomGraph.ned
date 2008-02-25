@@ -11,7 +11,7 @@ package networks;
 
 import node.Node;
 
-network FullGraph
+network RandomGraph
 {
     parameters:
         double n @prompt("Number of nodes") = default(15);
@@ -25,7 +25,7 @@ network FullGraph
         }
     connections allowunconnected:
         for i=0..n-2, for j=i+1..n-1 {
-            node[i].port[j] <--> {  delay = 0.1ms; datarate = 1Gbps; } <--> node[j].port[i];
+            node[i].port[j] <--> {  delay = 0.1ms; datarate = 1Gbps; } <--> node[j].port[i] if uniform(0,1)<0.15;
         }
 }
 
