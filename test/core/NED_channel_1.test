@@ -12,7 +12,7 @@ channel Conn0 extends ned.BasicChannel
 channel Conn1 extends ned.BasicChannel
 {
     parameters:
-        delay = 0.004;
+        delay = 0.004s;
 }
 
 channel Conn2 extends ned.BasicChannel
@@ -24,36 +24,36 @@ channel Conn2 extends ned.BasicChannel
 channel Conn3 extends ned.BasicChannel
 {
     parameters:
-        datarate = 64000;
+        datarate = 64000bps;
 }
 
 channel Conn4 extends ned.BasicChannel
 {
     parameters:
-        delay = 0.004;
+        delay = 0.004s;
         error = 0.001;
 }
 
 channel Conn5 extends ned.BasicChannel
 {
     parameters:
-        delay = 0.004;
-        datarate = 64000;
+        delay = 0.004s;
+        datarate = 64000bps;
 }
 
 channel Conn6 extends ned.BasicChannel
 {
     parameters:
         error = 0.001;
-        datarate = 64000;
+        datarate = 64000bps;
 }
 
 channel Conn7 extends ned.BasicChannel
 {
     parameters:
-        delay = 0.004;
+        delay = 0.004s;
         error = 0.001;
-        datarate = 64000;
+        datarate = 64000bps;
 }
 
 simple Gen

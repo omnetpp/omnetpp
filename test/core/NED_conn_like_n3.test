@@ -28,5 +28,5 @@ network Test
 %exitcode: 1
 
 %contains-regex: stdout
-no channel type named `foo'
+No channel type named `foo'
 

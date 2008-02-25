@@ -30,13 +30,13 @@ network Test
         }
     connections:
         gen.out[0] --> sink.in[0];
-        gen.out[1] --> {  delay = 0.004; } --> sink.in[1];
+        gen.out[1] --> {  delay = 0.004s; } --> sink.in[1];
         gen.out[2] --> {  error = 0.001; } --> sink.in[2];
-        gen.out[3] --> {  datarate = 64000; } --> sink.in[3];
-        gen.out[4] --> {  delay = 0.004; error = 0.001; } --> sink.in[4];
-        gen.out[5] --> {  delay = 0.004; datarate = 64000; } --> sink.in[5];
-        gen.out[6] --> {  error = 0.001; datarate = 64000; } --> sink.in[6];
-        gen.out[7] --> {  delay = 0.004; error = 0.001; datarate = 64000; } --> sink.in[7];
+        gen.out[3] --> {  datarate = 64000bps; } --> sink.in[3];
+        gen.out[4] --> {  delay = 0.004s; error = 0.001; } --> sink.in[4];
+        gen.out[5] --> {  delay = 0.004s; datarate = 64000bps; } --> sink.in[5];
+        gen.out[6] --> {  error = 0.001; datarate = 64000bps; } --> sink.in[6];
+        gen.out[7] --> {  delay = 0.004s; error = 0.001; datarate = 64000bps; } --> sink.in[7];
 }
 
 %file: test.cc

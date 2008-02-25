@@ -41,6 +41,7 @@ int Simple::getRngId(cRNG *rng)
         if (ev.rng(i)==rng)
             return i;
     error("getRngId(): RNG not found");
+    return -1; // avoid warning
 }
 
 }; //namespace

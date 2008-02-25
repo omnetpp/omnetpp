@@ -47,7 +47,7 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     }
 
     bool submodheadingprinted = false;
-    for (cSubModIterator submod(*mod); !submod.end(); submod++) {
+    for (cModule::SubmoduleIterator submod(mod); !submod.end(); submod++) {
         if (!submodheadingprinted) {printf("%s    submodules:\n", indent);submodheadingprinted=true;}
         dump(submod(), currentIndent+"        ");
     }

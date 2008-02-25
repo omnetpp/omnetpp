@@ -24,5 +24,5 @@ network Test
 %exitcode: 1
 
 %contains-regex: stdout
-cannot resolve channel interface `IMissingType'
+Cannot resolve channel interface `IMissingType'
 

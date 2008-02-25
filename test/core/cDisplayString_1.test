@@ -6,19 +6,19 @@ cDisplayString ds;
 const char *s;
 
 s="a=foo"; 
-ds.parse(s); ev << ds.getString() << endl;
+ds.parse(s); ev << ds.toString() << endl;
 
 s="a=foo;b=22"; 
-ds.parse(s); ev << ds.getString() << endl;
+ds.parse(s); ev << ds.toString() << endl;
 
 s="a=,foo,22;;b=,bar,,453"; 
-ds.parse(s); ev << ds.getString() << endl;
+ds.parse(s); ev << ds.toString() << endl;
 
 s="a=;b="; 
-ds.parse(s); ev << ds.getString() << endl;
+ds.parse(s); ev << ds.toString() << endl;
 
 s=""; 
-ds.parse(s); ev << ds.getString() << endl;
+ds.parse(s); ev << ds.toString() << endl;
 
 ev << ".\n";
 
