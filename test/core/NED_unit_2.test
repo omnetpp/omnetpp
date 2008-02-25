@@ -7,7 +7,7 @@ simple Test
 {
     parameters:
         @isNetwork(true);
-        double p1 @unit(s) = 1h 22s 550ms; // values may have multiple units
+        double p1 @unit(s) = 1h 22s 550ms; // literals may have multiple units
 }
 
 %file: test.cc
