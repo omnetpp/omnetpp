@@ -4,6 +4,7 @@
 // Author: Andras Varga
 //-------------------------------------------------------------
 
+#include <algorithm>
 #include <string>
 #include <ctype.h>
 #include <string.h>
@@ -12,7 +13,7 @@
 class Dist : public cSimpleModule
 {
     public:
-      Module_Class_Members(Dist,cSimpleModule,16384)
+      Dist() : cSimpleModule(16384) {}
       virtual void activity();
 };
 
@@ -27,8 +28,12 @@ void Dist::activity()
     long firstvals = par("firstvals");
     const char *excel = par("excel");
     const char *filename = par("file");
+    
+    std::string excel_str = excel;
+    std::replace(excel_str.begin(), excel_str.end(), ',', ';');
+    excel = excel_str.c_str();
 
-    std::string distname = variate.getAsText();
+    std::string distname = variate.toString();
     ev << "running: " << distname << endl;
 
     // generate histogram

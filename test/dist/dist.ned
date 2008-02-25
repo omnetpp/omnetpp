@@ -3,18 +3,18 @@
 //-------------------------------------------------------------
 
 simple Dist
+{
     parameters:
-        variate : numeric,
-        excel: string,
-        n : numeric,
-        discrete: bool,
-        numcells: numeric,
-        firstvals : numeric,
-        file: string;
-endsimple
+        @isNetwork;
+        volatile double variate;
+        string excel;
+        volatile double n;
+        bool discrete;
+        volatile double numcells;
+        volatile double firstvals;
+        string file;
+}
 
 
-network dist : Dist
-endnetwork
 
 
