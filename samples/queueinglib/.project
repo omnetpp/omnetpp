@@ -6,6 +6,16 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
+			<name>org.omnetpp.cdt.MakefileBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.omnetpp.scave.builder.vectorfileindexer</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
 			<triggers>clean,full,incremental,</triggers>
 			<arguments>
@@ -68,16 +78,6 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>org.omnetpp.cdt.MakefileBuilder</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
-			<name>org.omnetpp.scave.builder.vectorfileindexer</name>
-			<arguments>
-			</arguments>
-		</buildCommand>
-		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.ScannerConfigBuilder</name>
 			<arguments>
 			</arguments>
@@ -87,7 +87,7 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.core.cnature</nature>
-		<nature>org.omnetpp.main.omnetppnature</nature>
 		<nature>org.eclipse.cdt.core.ccnature</nature>
+		<nature>org.omnetpp.main.omnetppnature</nature>
 	</natures>
 </projectDescription>

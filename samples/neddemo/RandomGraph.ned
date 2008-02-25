@@ -18,7 +18,7 @@ network RandomGraph
 {
     parameters:
         int n;
-        volatile double connectedness = default(0.15); // 0.0<x<1.0
+        double connectedness = default(0.15); // 0.0<x<1.0
     submodules:
         node[n]: RandomGraphNode;
     connections:
