@@ -8,5 +8,4 @@ set OMNETPP_ROOT=%~dp0
 
 call %TOOLS_DIR%\vc80\vcvars32.bat
 call %TOOLS_DIR%\setenv.cmd
-PATH %~dp0\bin;%PATH%
-
+PATH %OMNETPP_ROOT%\bin;%PATH%

@@ -10,5 +10,4 @@ set OMNETPP_ROOT=%~dp0
 :XXX "%VS71COMNTOOLS%vsvars32.bat"
 call %TOOLS_DIR%\vc71\vcvars32.bat
 call %TOOLS_DIR%\setenv.cmd
-PATH %~dp0\bin;%PATH%
-
+PATH %OMNETPP_ROOT%\bin;%PATH%
