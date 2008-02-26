@@ -46,6 +46,7 @@
 #include "regmacros.h"
 #include "stringutil.h"
 #include "enumstr.h"
+#include "simtime.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"

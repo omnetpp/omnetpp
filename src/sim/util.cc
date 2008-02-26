@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include "unitconversion.h"
 #include "opp_ctype.h"
 #include "util.h"
 #include "cenvir.h"
