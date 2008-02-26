@@ -1,2 +1,2 @@
 @echo off
-tmp_nedtool -n -k result.xml
+nedtool -n -k result.xml
