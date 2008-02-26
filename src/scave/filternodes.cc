@@ -854,6 +854,7 @@ void IntegrateNode::process()
             case SAMPLE_HOLD: integral += prevy * (d.x-prevx); break;
             case BACKWARD_SAMPLE_HOLD: integral += d.y * (d.x-prevx); break;
             case LINEAR: integral += (prevy+d.y)/2 * (d.x-prevx); break;
+            default: Assert(false);
         }
         prevx = d.x;
         prevy = d.y;
@@ -927,6 +928,7 @@ void TimeAverageNode::process()
             case SAMPLE_HOLD: integral += prevy * (d.x-prevx); break;
             case BACKWARD_SAMPLE_HOLD: integral += d.y * (d.x-prevx); break;
             case LINEAR: integral += (prevy+d.y)/2 * (d.x-prevx); break;
+            default: Assert(false);
         }
         prevx = d.x;
         prevy = d.y;
