@@ -15,10 +15,11 @@ package node;
 simple BurstyApp
 {
     parameters:
+        int address;  // local node address
         volatile double sleepTime @unit(s); // sleep time between bursts
         volatile double burstTime @unit(s); // duration of a burst
         volatile double sendIaTime @unit(s); // time between generating packets during a burst
-        volatile double msgLength @unit(b); // length of a message, in bits
+        volatile double packetLength @unit(byte); // length of a message
         @display("i=block/source");
     gates:
         output out;

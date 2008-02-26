@@ -24,6 +24,7 @@ module Node
     submodules:
         app: App {
             parameters:
+                address = address;
                 @display("p=140,60");
         }
         routing: Routing {

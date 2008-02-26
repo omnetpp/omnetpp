@@ -24,11 +24,13 @@ class App : public cSimpleModule
   private:
     // configuration:
     int myAddress;
-    double iatime;
-    long pkCounter;
-
+    cPar *sendIATime;
+    int packetLengthBytes;
     std::vector<int> destAddresses;
+
+    // state:
     cMessage *generatePacket;
+    long pkCounter;
 
     // statistics:
     cLongHistogram hopCounts;
@@ -58,14 +60,14 @@ App::~App()
 
 void App::initialize()
 {
-    myAddress = parentModule()->par("address");
-    iatime = 0.0000001; //FIXME change into volatile parameter!!!
+    myAddress = par("address");
+    packetLengthBytes = par("packetLength");
+    sendIATime = &par("sendIaTime");  // volatile parameter
     pkCounter = 0;
     pkReceived = 0;
 
     WATCH(pkCounter);
     WATCH(myAddress);
-    WATCH(iatime);
     WATCH(pkReceived);
 
     const char *destAddressesPar = par("destAddresses");
@@ -79,7 +81,7 @@ void App::initialize()
     hopCounts.setNumCells(1000);
 
     generatePacket = new cMessage("nextPacket");
-    scheduleAt(exponential(iatime), generatePacket);
+    scheduleAt(sendIATime->doubleValue(), generatePacket);
 }
 
 void App::handleMessage(cMessage *msg)
@@ -94,12 +96,12 @@ void App::handleMessage(cMessage *msg)
         ev << "generating packet " << pkname << endl;
 
         Packet *pk = new Packet(pkname);
-        pk->setByteLength(1024);
+        pk->setByteLength(packetLengthBytes);
         pk->setSrcAddr(myAddress);
         pk->setDestAddr(destAddress);
         send(pk,"out");
 
-        scheduleAt(simTime()+exponential(iatime), generatePacket);
+        scheduleAt(simTime() + sendIATime->doubleValue(), generatePacket);
         if (ev.isGUI()) parentModule()->bubble("Generating packet...");
     }
     else

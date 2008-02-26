@@ -23,7 +23,7 @@ class BurstyApp : public cSimpleModule
     cPar *sleepTime;
     cPar *burstTime;
     cPar *sendIATime;
-    cPar *msgLength;
+    cPar *packetLengthBytes;
 
     // FSM and its states
     cFSM fsm;
@@ -85,7 +85,7 @@ void BurstyApp::initialize()
     sleepTime = &par("sleepTime");
     burstTime = &par("burstTime");
     sendIATime = &par("sendIaTime");
-    msgLength = &par("msgLength");
+    packetLengthBytes = &par("packetLength");
 
     i = 0;
     WATCH(i); // always put watches in initialize(), NEVER in handleMessage()
@@ -179,11 +179,11 @@ void BurstyApp::generatePacket()
 {
     // generate and send out a packet
     char msgname[32];
-    sprintf( msgname, "pkt-%d", ++i);
+    sprintf(msgname, "pkt-%d", ++i);
 
     ev << "Generating " << msgname << endl;
     cMessage *pk = new cMessage(msgname);
-    pk->setByteLength(msgLength->longValue());
+    pk->setByteLength(packetLengthBytes->longValue());
 
     send(pk, "out");
 }

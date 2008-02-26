@@ -15,7 +15,10 @@ package node;
 simple App
 {
     parameters:
-        string destAddresses;
+        int address;  // local node address
+        volatile double sendIaTime @unit(s); // time between generating packets
+        int packetLength @unit(byte);  // length of one message
+        string destAddresses;  // destination addresses
         @display("i=block/browser");
     gates:
         input in;
