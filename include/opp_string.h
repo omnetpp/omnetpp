@@ -114,7 +114,7 @@ class SIM_API opp_string
     /**
      * Concatenation
      */
-    opp_string& operator+=(const char *s) {return operator=(std::string(str)+s);}
+    opp_string& operator+=(const char *s) {return operator=(std::string(str).append(s));}
     
     /**
      * Concatenation

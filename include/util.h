@@ -18,6 +18,7 @@
 #ifndef __SIM_UTIL_H
 #define __SIM_UTIL_H
 
+#include <string.h>  // for strlen, etc.
 #include <stdarg.h>  // for va_list
 #include <stdio.h>   // for sprintf
 #include <typeinfo>  // for type_info

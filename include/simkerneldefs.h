@@ -104,9 +104,9 @@
 #ifdef USE_DOUBLE_SIMTIME
 
 // "Legacy" module: double simtime_t
-typedef double   simtime_t;
-typedef double   const_simtime_t;
-#define MAXTIME  DBL_MAX
+typedef double         simtime_t;
+typedef const double   const_simtime_t;
+#define MAXTIME        DBL_MAX
 #define SIMTIME_STR(t) simtimeToStr(t)
 #define SIMTIME_DBL(t) (t)
 #define SIMTIME_RAW(t) (t)
