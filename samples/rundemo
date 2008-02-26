@@ -288,7 +288,9 @@ proc runSample {sample} {
    if {$tcl_platform(platform) == "windows"} {
       set prog $db($sample,wprog)
       regsub -- {\\} $prog {\\\\} prog
-      set prog "cmd.exe /c $prog"
+      # run the program, possibly without getting a console window pop up
+      # with the funky line below, we only get a minimized one while the program runs...
+      set prog "cmd.exe /c start /min cmd.exe /c $prog"
    } else {
       set prog $db($sample,uprog)
    }
