@@ -34,7 +34,6 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
 
@@ -45,7 +44,7 @@
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.cdt"/>
       <plugin id="org.eclipse.cdt.core"/>
-      <plugin id="org.eclipse.cdt.core.win32" fragment="true"/>
+      <plugin id="org.eclipse.cdt.core.win32"/>
       <plugin id="org.eclipse.cdt.debug.core"/>
       <plugin id="org.eclipse.cdt.debug.mi.core"/>
       <plugin id="org.eclipse.cdt.debug.mi.ui"/>
