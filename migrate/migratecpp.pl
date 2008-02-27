@@ -48,7 +48,7 @@ while (<LISTFILE>)
     foreach $line (split ("\n", $txt)) {
        $lineno++;
        # simtime_t
-       if ($line =~ /\bdouble +.*(time|age|interval)/i) {
+       if ($line =~ /\bdouble +.*(time|age|interval|delay)/i) {
           print "*** warning at $fname:$lineno: This variable might represent simulation time. Simulation time is no longer a double. You should use the new int64 based simtime_t instead of double.\n";
           print "$line\n";
        }
@@ -66,31 +66,31 @@ while (<LISTFILE>)
           print "$line\n";
        }
        # dynamic module creation
-       if ($line =~ /\b(buildInside)/) {
+       if ($line =~ /\bbuildInside\b/) {
           print "*** warning at $fname:$lineno: finalizeParameters() must be called (for channels, this reads input params from omnetpp.ini; for modules, also creates gates [since gate vector sizes may depend on parameter values])\n";
           print "$line\n";
        }
        # exceptions must be thrown by value
-       if ($line =~ /\b(throw +new)/) {
+       if ($line =~ /\bthrow +new\b/) {
           print "*** warning at $fname:$lineno: Exceptions MUST be thrown by value (not by pointer)\n";
           print "$line\n";
        }
        # cModule
-       if ($line =~ /\bcSubmodIterator/) {
+       if ($line =~ /\bcSubmodIterator\b/) {
           print "*** warning at $fname:$lineno: Deprecated cSubmodIterator. Use cModule::SubmoduleIterator instead\n";
           print "$line\n";
        }
-       if ($line =~ /\b(moduleState)/) {
+       if ($line =~ /\bmoduleState\b/) {
           print "*** warning at $fname:$lineno: Deprecated moduleState. \n";
           print "$line\n";
        }
-       if ($line =~ /end\(\)/) {
+       if ($line =~ /\bend\(\)\b/) {
           print "*** warning at $fname:$lineno: cSimpleModule::end() -- removed, as there was little value in it. To terminate an activity() module, simply return from the activity() method, or call the new halt() method to end the module while preserving the local variables for inspection.\n";
           print "$line\n";
        }
 
        # display string tags
-       if ($line =~ /backgroundDisplayString/i) {
+       if ($line =~ /\bbackgroundDisplayString\b/i) {
           print "*** warning at $fname:$lineno: There are no separate backgroundDisplayString and displayString. Use displayString instead. P tag become BGP, B tag become BGB.\n";
           print "$line\n";
        }
