@@ -37,8 +37,11 @@ class ENVIR_API ArgList
     // looks up spec for the given option
     bool isValidOption(char c);
 
-    // looks up spec for the given option, and returns true if it has arg
+    // looks up spec for the given option, and returns true if it has an arg
     bool hasArg(char c);
+
+    // looks up spec for the given option, and returns true if it has an optional arg
+    bool hasOptionalArg(char c);
 
     // if char c == 0, returns kth argument not kth option
     bool getOpt(char c, int k, const char *&value, bool validate);
@@ -49,7 +52,11 @@ class ENVIR_API ArgList
      * of single-letter options. The spec argument is a string that
      * specifies the option characters that are valid for this program.
      * An option character in this string can be followed by a colon (`:')
-     * to indicate that it takes a required argument.
+     * to indicate that it takes a required argument. If the option
+     * character is followed by a question mark ('?'), it means that
+     * the argument is optional, that is, it not be an error to specify
+     * the option as the last argument (ie followed by nothing).
+     * '?' is probably ONLY useful with -h.
      */
     ArgList(int argc, char *argv[], const char *spec);
 

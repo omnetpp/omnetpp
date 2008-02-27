@@ -44,7 +44,13 @@ bool ArgList::isValidOption(char c)
 bool ArgList::hasArg(char c)
 {
     const char *p = strchr(spec.c_str(), c);
-    return p && *(p+1)==':';
+    return p && (*(p+1)==':' || *(p+1)=='?');
+}
+
+bool ArgList::hasOptionalArg(char c)
+{
+    const char *p = strchr(spec.c_str(), c);
+    return p && *(p+1)=='?';
 }
 
 bool ArgList::getOpt(char c, int k, const char *&value, bool validate)
@@ -74,7 +80,7 @@ bool ArgList::getOpt(char c, int k, const char *&value, bool validate)
         // skip value of this option in argv if it has one
         if (hasArg(argstr[1]) && !argstr[2])
             i++;
-        if (validate && i>=argc)
+        if (validate && i>=argc && !hasOptionalArg(argstr[1]))
             throw opp_runtime_error("command-line option -%c is missing required argument", argstr[1]);
 
     }

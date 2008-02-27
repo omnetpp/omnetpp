@@ -395,7 +395,7 @@ void TOmnetApp::printHelp()
     ev << "                      information (needed for Tkenv inspectors)\n";
     ev << "    -h nedfunctions   Lists registered NED functions\n";
     ev << "    -h enums          Lists registered enums\n";
-    ev << "    -h all            Union of all -q options\n";
+    ev << "    -h all            Union of all the above\n";
     ev << "\n";
     printUISpecificHelp();
 }
@@ -559,7 +559,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     }
 
     if (!processed)
-        throw cRuntimeError("Unrecognized category for '-q' option: %s", category);
+        throw cRuntimeError("Unrecognized category for '-h' option: %s", category);
 }
 
 int TOmnetApp::getParsimProcId()
