@@ -50,7 +50,7 @@ $O/%.o: %.cc
 #
 # Targets
 #
-all : $L/$(LIBNAME)$(LIB_SUFFIX)
+all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/scavetool$(EXE_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX): $(OBJS)
