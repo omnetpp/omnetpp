@@ -5,4 +5,4 @@ echo `pwd`
 echo                                                                                                              
 read WAIT                                                                                                         
 find . -name "*.msg" >msgfiles.lst
-perl `dirname $0`/migratemsg.pl msgfiles.lst
+nedtool -P @msgfiles.lst

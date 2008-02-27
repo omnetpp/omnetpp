@@ -11,35 +11,90 @@ while (<LISTFILE>)
     close INFILE;
 
     # INSERT CODE TO PROCESS $txt HERE
-#    contents.gsub!( /\bcException\b/,    'cRuntimeError')
-#    contents.gsub!( /\bgetTail\b/,       'pop')
-#    contents.gsub!( /\bgetString\b/,     'toString')
-#    contents.gsub!( /\brunningModule\b/, 'activityModule')
-#    contents.gsub!( /\btail\b/,          'front')
-#    contents.gsub!( /\bsetFromText\b/,   'parse')
-#    contents.gsub!( /\bgetAsText\b/,     'toString')
-#    contents.gsub!( /\bcSimpleChannel\b/,'cBasicChannel')
 
-#    contents.gsub!( /\bcPar( +[a-z])/,   'cMsgPar\1')
-#    contents.gsub!( /\bnew +cPar\b/,     'new cMsgPar')
+    $txt =~ s/cPolymorphic *\*dup\(\) *const *\{ *return +new +([_A-Za-z0-9]+)/\1 *dup() const {return new \1/mg;
+    $txt =~ s/cObject *\*dup\(\) *const *\{ *return +new +([_A-Za-z0-9]+)/\1 *dup() const {return new \1/mg;
+    $txt =~ s/\bcPar( +[A-Za-z])/cMsgPar\1/mg;   # message params are no longer cPar but cMsgPar
+    $txt =~ s/\bnew +cPar\b/new cMsgPar/mg;
+    # rename cPar methods
+    $txt =~ s/\bsetFromText\b/parse/mg;
+    $txt =~ s/\bgetAsText\b/toString/mg;
 
-#    contents.gsub!( /g->datarate\(\)->doubleValue\(\)/,  'g->channel()->par("datarate")')
-#    contents.gsub!( /\? par\("queueLength"\) : 0;/,      '? (int)par("queueLength") : 0;')
-#    contents.gsub!( /\bparse\(([a-zA-Z0-9_]+), *'\?'\)/, 'parse(\1)')
-#    contents.gsub!( /\bchan->addPar\(attrAttr\);/,       '; //FIXME remove this "if"')
-#    contents.gsub!( /\bchan->datarate\(\)/,              'chan->par("datarate").doubleValue()')
+    $txt =~ s/\bcException\b/cRuntimeError/mg;
+    $txt =~ s/\bcSimpleChannel\b/cBasicChannel/mg;
+    $txt =~ s/\bcObject\b/cOwnedObject/mg;
+    $txt =~ s/\bcPolymorphic\b/cObject/mg;
 
-#    contents.gsub!( /\bgate\(([^,)]+)\)->size\(\)/,      'gateSize(\1)')
+    # cModule
+    $txt =~ s/\bgate\(([^,)]+)\)->size\(\)/gateSize(\1)/mg; # ???
 
-#    contents.gsub!( /cPolymorphic *\*dup\(\) *const *\{ *return +new +([_A-Za-z0-9]+)/, '\1 *dup() const {return new \1')
-#    contents.gsub!( /cObject *\*dup\(\) *const *\{ *return +new +([_A-Za-z0-9]+)/, '\1 *dup() const {return new \1')
+    # rename cQueue methods 
+    $txt =~ s/\bgetTail\b/pop/mg;
+    $txt =~ s/\btail\b/front/mg;
 
-#    if filename =~ /ChannelControl\.cc/
-#        contents.gsub!( /\bbackgroundDisplayString\b/,  'displayString')
-#        contents.gsub!( /\bsetTagArg\("p"/,             'setTagArg("bgp"')
-#        contents.gsub!( /\bsetTagArg\("b"/,             'setTagArg("bgb"')
-#    end
+    # display string
+    $txt =~ s/\bgetString\b/toString/mg;
 
+     # cSimulation
+    $txt =~ s/\brunningModule\b/activityModule/mg;
+
+    # cGate
+    $txt =~ s/->datarate\(\)->doubleValue\(\)/->channel()->par("datarate").doubleValue()/mg; 
+    $txt =~ s/->delay\(\)->doubleValue\(\)/->channel()->par("delay").doubleValue()/mg; 
+    $txt =~ s/->error\(\)->doubleValue\(\)/->channel()->par("error").doubleValue()/mg; 
+
+    # throw warnig at the user
+    $lineno = 0;
+    foreach $line (split ("\n", $txt)) {
+       $lineno++;
+       # simtime_t
+       if ($line =~ /\bdouble +.*(time|age|interval)/i) {
+          print "*** warning at $fname:$lineno: This variable might represent simulation time. Simulation time is no longer a double. You should use the new int64 based simtime_t instead of double.\n";
+          print "$line\n";
+       }
+       if ($line =~ /\b(simtimeToStr|strToSimtime)/) {
+          print "*** warning at $fname:$lineno: The simtimeToStr() and strToSimtime() methods are no longer supported. (use SimTime methods or the SIMTIME_STR(t), SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf,t) macros instead).\n";
+          print "$line\n";
+       }
+
+       if ($line =~ /\bgetGateSize\(\)/) {
+          print "*** warning at $fname:$lineno: Revise this line, getGateSize returns no value instead of int.\n";
+          print "$line\n";
+       }
+       if ($line =~ /\b(setTo|setFrom)/) {
+          print "*** warning at $fname:$lineno: The setTo() and setFrom() methods are no longer supported. (use connectTo() instead!).\n";
+          print "$line\n";
+       }
+       # dynamic module creation
+       if ($line =~ /\b(buildInside)/) {
+          print "*** warning at $fname:$lineno: finalizeParameters() must be called (for channels, this reads input params from omnetpp.ini; for modules, also creates gates [since gate vector sizes may depend on parameter values])\n";
+          print "$line\n";
+       }
+       # exceptions must be thrown by value
+       if ($line =~ /\b(throw +new)/) {
+          print "*** warning at $fname:$lineno: Exceptions MUST be thrown by value (not by pointer)\n";
+          print "$line\n";
+       }
+       # cModule
+       if ($line =~ /\bcSubmodIterator/) {
+          print "*** warning at $fname:$lineno: Deprecated cSubmodIterator. Use cModule::SubmoduleIterator instead\n";
+          print "$line\n";
+       }
+       if ($line =~ /\b(moduleState)/) {
+          print "*** warning at $fname:$lineno: Deprecated moduleState. \n";
+          print "$line\n";
+       }
+       if ($line =~ /end\(\)/) {
+          print "*** warning at $fname:$lineno: cSimpleModule::end() -- removed, as there was little value in it. To terminate an activity() module, simply return from the activity() method, or call the new halt() method to end the module while preserving the local variables for inspection.\n";
+          print "$line\n";
+       }
+
+       # display string tags
+       if ($line =~ /backgroundDisplayString/i) {
+          print "*** warning at $fname:$lineno: There are no separate backgroundDisplayString and displayString. Use displayString instead. P tag become BGP, B tag become BGB.\n";
+          print "$line\n";
+       }
+    }
     open(OUTFILE, ">$fname") || die "cannot open $fname for write";
     print OUTFILE $txt || die "cannot write $fname";
     close OUTFILE;
