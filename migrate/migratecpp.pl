@@ -48,7 +48,7 @@ while (<LISTFILE>)
     foreach $line (split ("\n", $txt)) {
        $lineno++;
        # simtime_t
-       if ($line =~ /\bdouble +.*(time|age|interval|delay)/i) {
+       if ($line =~ /\bdouble +.*(time|age|interval|delay|t[0-9]*)/i) {
           print "*** warning at $fname:$lineno: This variable might represent simulation time. Simulation time is no longer a double. You should use the new int64 based simtime_t instead of double.\n";
           print "$line\n";
        }
