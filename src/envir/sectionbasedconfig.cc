@@ -195,6 +195,10 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     try
     {
         Scenario scenario(itervars, constraint);
+        int numRuns = scenario.getNumRuns();
+        if (runNumber<0 || runNumber>=numRuns)
+            throw cRuntimeError("Run number %d is out of range for configuration `%s': it contains %d run(s)", runNumber, configName, numRuns);
+
         scenario.gotoRun(runNumber);
         setupVariables(getActiveConfigName(), getActiveRunNumber(), &scenario, sectionChain);
     }
