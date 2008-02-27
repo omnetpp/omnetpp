@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <sstream>
 #include <ostream>
+#include <stdlib.h>
 #include "opp_ctype.h"
 #include "platmisc.h"
 #include "stringutil.h"
