@@ -149,84 +149,83 @@ void TOmnetTkApp::setup()
     if (!initialized)
         return;
 
-    // path for the Tcl user interface files
+    try
+    {
+        // path for the Tcl user interface files
 #ifdef OMNETPP_TKENV_DIR
-    tkenv_dir = getenv("OMNETPP_TKENV_DIR");
-    if (tkenv_dir.empty())
-        tkenv_dir = OMNETPP_TKENV_DIR;
+        tkenv_dir = getenv("OMNETPP_TKENV_DIR");
+        if (tkenv_dir.empty())
+            tkenv_dir = OMNETPP_TKENV_DIR;
 #endif
 
-    // path for icon directories
-    const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
-    if (image_path_env==NULL && getenv("OMNETPP_BITMAP_PATH")!=NULL)
-        fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
-                        "please change it to OMNETPP_IMAGE_PATH for OMNeT++ 4.0+\n");
-    std::string image_path = image_path_env ? image_path_env : OMNETPP_IMAGE_PATH;
-    if (!opt_image_path.empty())
-        image_path = std::string(opt_image_path.c_str()) + ";" + image_path;
+        // path for icon directories
+        const char *image_path_env = getenv("OMNETPP_IMAGE_PATH");
+        if (image_path_env==NULL && getenv("OMNETPP_BITMAP_PATH")!=NULL)
+            fprintf(stderr, "\n<!> WARNING: Obsolete environment variable OMNETPP_BITMAP_PATH found -- "
+                            "please change it to OMNETPP_IMAGE_PATH for OMNeT++ 4.0+\n");
+        std::string image_path = image_path_env ? image_path_env : OMNETPP_IMAGE_PATH;
+        if (!opt_image_path.empty())
+            image_path = std::string(opt_image_path.c_str()) + ";" + image_path;
 
-    // path for plugins
-    const char *plugin_path_env = getenv("OMNETPP_PLUGIN_PATH");
-    std::string plugin_path = plugin_path_env ? plugin_path_env : OMNETPP_PLUGIN_PATH;
-    if (!opt_plugin_path.empty())
-        plugin_path = std::string(opt_plugin_path.c_str()) + ";" + plugin_path;
+        // path for plugins
+        const char *plugin_path_env = getenv("OMNETPP_PLUGIN_PATH");
+        std::string plugin_path = plugin_path_env ? plugin_path_env : OMNETPP_PLUGIN_PATH;
+        if (!opt_plugin_path.empty())
+            plugin_path = std::string(opt_plugin_path.c_str()) + ";" + plugin_path;
 
-    // set up Tcl/Tk
-    interp = initTk(args->argCount(), args->argVector());
-    if (!interp)
-        throw opp_runtime_error("Tkenv: cannot create Tcl interpreter");
+        // set up Tcl/Tk
+        interp = initTk(args->argCount(), args->argVector());
+        if (!interp)
+            throw opp_runtime_error("Tkenv: cannot create Tcl interpreter");
 
-    // add OMNeT++'s commands to Tcl
-    createTkCommands(interp, tcl_commands);
+        // add OMNeT++'s commands to Tcl
+        createTkCommands(interp, tcl_commands);
 
-    Tcl_SetVar(interp, "OMNETPP_IMAGE_PATH", TCLCONST(image_path.c_str()), TCL_GLOBAL_ONLY);
-    Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_IMAGE_PATH", TCLCONST(image_path.c_str()), TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
 
-    Tcl_SetVar(interp, "OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
-    Tcl_SetVar(interp, "OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
 
-    // eval Tcl sources: either from .tcl files or from compiled-in string
-    // literal (tclcode.cc)...
+        // eval Tcl sources: either from .tcl files or from compiled-in string
+        // literal (tclcode.cc)...
 
 #ifdef OMNETPP_TKENV_DIR
-    //
-    // Case A: TCL code in separate .tcl files
-    //
-    Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
-    if (Tcl_EvalFile(interp,opp_concat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR)
-    {
-        interp = NULL;
-        throw opp_runtime_error("Tkenv: %s. (Is the OMNETPP_TKENV_DIR environment variable "
-                                "set correctly?) When not set, it defaults to "
-                                OMNETPP_TKENV_DIR, Tcl_GetStringResult(interp));
-    }
+        //
+        // Case A: TCL code in separate .tcl files
+        //
+        Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
+        if (Tcl_EvalFile(interp,opp_concat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR)
+            throw opp_runtime_error("Tkenv: %s. (Is the OMNETPP_TKENV_DIR environment variable "
+                                    "set correctly? When not set, it defaults to " OMNETPP_TKENV_DIR ")",
+                                    Tcl_GetStringResult(interp));
 #else
-    //
-    // Case B: compiled-in TCL code
-    //
-    // The tclcode.cc file is generated from the Tcl scripts
-    // with the tcl2c program (to be compiled from tcl2c.c).
-    //
-#   include "tclcode.cc"
-    if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
-    {
-        interp = NULL;
-        throw opp_runtime_error("Tkenv: %s", Tcl_GetStringResult(interp));
-    }
+        //
+        // Case B: compiled-in TCL code
+        //
+        // The tclcode.cc file is generated from the Tcl scripts
+        // with the tcl2c program (to be compiled from tcl2c.c).
+        //
+#include "tclcode.cc"
+        if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
+            throw opp_runtime_error("Tkenv: %s", Tcl_GetStringResult(interp));
 #endif
 
-    // evaluate main script and build user interface
-    if (Tcl_Eval(interp,"start_tkenv")==TCL_ERROR)
+        // evaluate main script and build user interface
+        if (Tcl_Eval(interp,"start_tkenv")==TCL_ERROR)
+            throw opp_runtime_error("Tkenv: %s\n", Tcl_GetStringResult(interp));
+
+        // create windowtitle prefix
+        if (getParsimNumPartitions()>0)
+        {
+            windowtitleprefix.reserve(24);
+            sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+        }
+    }
+    catch (std::exception& e)
     {
         interp = NULL;
-        throw opp_runtime_error("Tkenv: %s\n", Tcl_GetStringResult(interp));
-    }
-
-    // create windowtitle prefix
-    if (getParsimNumPartitions()>0)
-    {
-        windowtitleprefix.reserve(24);
-        sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+        throw;
     }
 }
 

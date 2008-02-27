@@ -261,7 +261,7 @@ void cEnvir::setup(int argc, char *argv[])
     }
     catch (std::exception& e)
     {
-        printfmsg("Error during startup: %s", e.what());
+        ::fprintf(stderr, "\n<!> Error during startup: %s.\n", e.what());
         if (app)
         {
            delete app;
@@ -286,7 +286,7 @@ int cEnvir::run()
     }
     catch (std::exception& e)
     {
-        printfmsg("%s", e.what());
+        ::fprintf(stderr, "\n<!> %s.\n", e.what());
         return 1;
     }
 }
