@@ -28,6 +28,8 @@ class SCAVE_API VectorFileIndexer
 {
     public:
         void generateIndex(const char *filename, IProgressMonitor *monitor = NULL);
+        
+        void rebuildVectorFile(const char *filename, IProgressMonitor *monitor = NULL);
 };
 
 NAMESPACE_END

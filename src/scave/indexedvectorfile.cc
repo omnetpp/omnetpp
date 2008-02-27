@@ -265,6 +265,15 @@ Port *IndexedVectorFileWriterNode::addVector(int vectorId, const char *module, c
     return inputport;
 }
 
+Port *IndexedVectorFileWriterNode::addVector(const VectorResult &vector)
+{
+    VectorInputPort *inputport = new VectorInputPort(vector.vectorId, vector.moduleNameRef->c_str(), vector.nameRef->c_str(),
+    										vector.columns.c_str(), blockSize, this);
+    inputport->vector.attributes = vector.attributes;
+    ports.push_back(inputport);
+    return inputport;
+}
+
 bool IndexedVectorFileWriterNode::isReady() const
 {
     for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
@@ -282,15 +291,20 @@ void IndexedVectorFileWriterNode::process()
     if (!f)
     {
         f = openFile(fileName);
-        // print file header and vector declarations
+        // print file header
         CHECK(fprintf(f,"%s\n", fileHeader.c_str()));
+
+        // print run attributes
+        run.writeToFile(f, fileName.c_str());
+        
+        // print vector declarations and attributes
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
         {
-            VectorInputPort *port = *it;
-            CHECK(fprintf(f, "vector %d  %s  %s  %s\n", port->vector.vectorId,
-                             QUOTE(port->vector.moduleName.c_str()),
-                             QUOTE(port->vector.name.c_str()),
-                             port->vector.columns.c_str()));
+            const VectorData &vector = (*it)->vector;
+            CHECK(fprintf(f, "vector %d  %s  %s  %s\n", 
+            		vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
+            for (StringMap::const_iterator attr=vector.attributes.begin(); attr!=vector.attributes.end(); attr++)
+                CHECK(fprintf(f,"attr %s  %s\n", QUOTE(attr->first.c_str()), QUOTE(attr->second.c_str())));
         }
     }
 

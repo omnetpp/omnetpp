@@ -49,7 +49,7 @@ void printUsage()
        "   f, filter:  filter data in input files\n"
        "   s, summary: prints summary info about input files\n"
        "   i, info:    prints list of available functions (to be used with `filter -a')\n"
-       "   x, index:   generates index files for input files (rearranges records in input files)\n"
+       "   x, index:   generates index files for input files\n"
        "Options:\n"
        "`filter' command:\n"
        "    -p <pattern>    the filter expression (see syntax below)\n"
@@ -73,6 +73,7 @@ void printUsage()
        "    -s   list filter names with parameter list (summary)\n"
        "    -v   include descriptions in the output (default)\n"
        "`index' command:\n"
+       "    -r   rebuild vector file (rearranges records into blocks)"
        "    -V   print info about progress (verbose)\n"
        "\n"
        "Function syntax: name(parameterlist). Examples: winavg(10), mean()\n"
@@ -418,12 +419,15 @@ int indexCommand(int argc, char **argv)
     // process args
     char *end;
     bool opt_verbose = false;
+    bool opt_rebuild = false;
     std::vector<std::string> opt_fileNames;
     for (int i=2; i<argc; i++)
     {
         const char *opt = argv[i];
-        if (!strcmp(opt, "-V"))
+        if (strcmp(opt, "-V") == 0)
             opt_verbose = true;
+        else if (strcmp(opt, "-r") == 0)
+        	opt_rebuild = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else
@@ -438,10 +442,13 @@ int indexCommand(int argc, char **argv)
         if (opt_verbose) printf("indexing %s...\n", fileName);
         try
         {
-            indexer.generateIndex(fileName);
+        	if (opt_rebuild)
+        		indexer.rebuildVectorFile(fileName);
+        	else
+        		indexer.generateIndex(fileName);
         }
         catch (std::exception& e) {
-            fprintf(stdout, "Exception: %s\n", e.what());
+            fprintf(stderr, "Exception: %s\n", e.what());
             rc=1;
         }
     }
