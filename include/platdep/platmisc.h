@@ -50,7 +50,6 @@
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
 #define unlink _unlink
-#define itoa _itoa
 #endif
 
 //
