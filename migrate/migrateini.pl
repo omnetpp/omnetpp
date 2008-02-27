@@ -38,13 +38,17 @@ while (<INFILE>) {
                 "message-trace", "module-messages", "output-file", "performance-display",
                 "runs-to-execute", "status-frequency");
 
-@tkenvNames = ("anim-methodcalls", "animation-enabled", "animation-msgclassnames",
+@tkenvNames =  ("default-run", "image-path", "plugin-path");
+
+@removeNames = ("anim-methodcalls", "animation-enabled", "animation-msgclassnames",
                "animation-msgcolors", "animation-msgnames", "animation-speed",
-               "default-run", "expressmode-autoupdate", "image-path", "methodcalls-delay",
-               "next-event-markers", "penguin-mode", "plugin-path", "print-banners",
-               "senddirect-arrows", "show-bubbles", "show-layouting", "slowexec-delay",
-               "update-freq-express", "update-freq-fast", "use-mainwindow",
-               "use-new-layouter");
+               "expressmode-autoupdate", "methodcalls-delay", "next-event-markers",
+               "penguin-mode", "print-banners", "senddirect-arrows", "show-bubbles",
+               "show-layouting", "slowexec-delay", "update-freq-express",
+               "update-freq-fast", "use-mainwindow", "use-new-layouter");
+
+#note: these should be the NEW option names!
+@commentOutNames = ("tkenv-default-run", "cmdenv-runs-to-execute");
 
 
 foreach $fname (@fnames)
@@ -54,11 +58,19 @@ foreach $fname (@fnames)
 
     # rename Cmdenv keys
     $e = join("|", @cmdenvNames);
-    $txt =~ s/^(\s*[;#]?\s*)($e)\b/\1cmdenv-$2/mg;
+    $txt =~ s/^(\s*[;#]?\s*)($e)\b/$1cmdenv-$2/mg;
 
     # rename Tkenv keys
     $e = join("|", @tkenvNames);
-    $txt =~ s/^(\s*[;#]?\s*)($e)\b/\1tkenv-$2/mg;
+    $txt =~ s/^(\s*[;#]?\s*)($e)\b/$1tkenv-$2/mg;
+
+    # remove obsolete keys
+    $e = join("|", @removeNames);
+    $txt =~ s/^\s*[;#]?\s*($e)\b.*$//mg;
+
+    # comment out some keys
+    $e = join("|", @commentOutNames);
+    $txt =~ s/^\s*(($e)\b)/# $1/mg;
 
     # rename per-object keys
     $txt =~ s/\.use-default\s*=/.apply-default =/mg;
