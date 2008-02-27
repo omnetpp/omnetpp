@@ -111,6 +111,32 @@ foreach $fname (@fnames)
     #writefile("$fname.new", $txt);
 }
 
+print "
+Ini files converted.
+
+Some OMNeT++ 3.x ini file features do not map 100% to 4.0 ones -- please revise
+the converted ini files:
+
+ 1. Runs like [Run 1], [Run 2] have been converted into named configurations
+    (that is, [Config config1], [Config config2], etc). Please revise the
+    generated configuration names, and give them meaningful names.
+
+ 2. If you had lots of runs which iterate over a parameter range, consider
+    replacing those runs with a single named configuration that contains
+    an iteration. For example: **.par = ${1..5,10,20,50,100}
+
+ 3. The meaning of the cmdenv-runs-to-execute= and tkenv-default-run= options
+    have changed. (In 3.x they referred to [Run] sections, in 4.x they mean
+    the run number WITHIN the selected named configuration, by default
+    [General].) These options have been commented out.
+
+ 4. cmdenv-express-mode= option default value changed from false to true --
+    the ini file was NOT modified in this respect.
+
+ 5. Some Tkenv options (animation-enabled=, animation-speed=, etc) have been
+    obsoleted, they got removed from the ini files.
+";
+
 sub readfile ()
 {
     my $fname = shift;
