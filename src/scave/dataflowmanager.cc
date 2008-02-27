@@ -246,7 +246,7 @@ bool DataflowManager::isReaderNode(Node *node)
 int64 DataflowManager::totalBytesToBeRead()
 {
     int64 totalFileSize = 0;
-    for (int i = 0; i < nodes.size(); ++i)
+    for (int i = 0; i < (int)nodes.size(); ++i)
     {
         if (isReaderNode(nodes[i]))
         {

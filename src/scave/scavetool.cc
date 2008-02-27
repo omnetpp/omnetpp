@@ -142,7 +142,7 @@ int filterCommand(int argc, char **argv)
     {
         // load files
         ResultFileManager resultFileManager;
-        for (int i=0; i<opt_fileNames.size(); i++)
+        for (int i=0; i<(int)opt_fileNames.size(); i++)
         {
             //TODO on Windows: manual globbing of wildcards
             const char *fileName = opt_fileNames[i].c_str();
@@ -198,7 +198,7 @@ int filterCommand(int argc, char **argv)
         
         // create reader nodes
         StringMap attrs;
-        for (int i=0; i<filteredVectorFileList.size(); i++)
+        for (int i=0; i<(int)filteredVectorFileList.size(); i++)
         {
             ResultFile *resultFile = filteredVectorFileList[i];
             attrs["filename"] = resultFile->fileSystemFilePath; 
@@ -222,7 +222,7 @@ int filterCommand(int argc, char **argv)
 			Port *outPort = readerNodeType->getPort(readerNode, portName);
 			
 			// add filters
-	        for (int k=0; k<opt_filterList.size(); k++)
+                for (int k=0; k<(int)opt_filterList.size(); k++)
 	        {
 	        	//TODO support filter to merge all into a single vector
 	            if (opt_verbose) printf("adding filter to vector: %s\n", opt_filterList[k].c_str());
@@ -370,7 +370,7 @@ int infoCommand(int argc, char **argv)
 
     NodeTypeRegistry *registry = NodeTypeRegistry::instance();
     NodeTypeVector nodeTypes = registry->getNodeTypes();
-    for (int i=0; i<nodeTypes.size(); i++)
+    for (int i=0; i<(int)nodeTypes.size(); i++)
     {
         NodeType *nodeType = nodeTypes[i];
         if (nodeType->isHidden())
@@ -418,7 +418,6 @@ int infoCommand(int argc, char **argv)
 int indexCommand(int argc, char **argv)
 {
     // process args
-    char *end;
     bool opt_verbose = false;
     bool opt_rebuild = false;
     std::vector<std::string> opt_fileNames;
@@ -437,7 +436,7 @@ int indexCommand(int argc, char **argv)
 
     VectorFileIndexer indexer;
     int rc=0;
-    for (int i=0; i<opt_fileNames.size(); i++)
+    for (int i=0; i<(int)opt_fileNames.size(); i++)
     {
         const char *fileName = opt_fileNames[i].c_str();
         if (opt_verbose) printf("indexing %s...\n", fileName);

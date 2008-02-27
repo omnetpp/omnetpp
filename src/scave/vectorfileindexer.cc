@@ -330,7 +330,7 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
 	        {
 	            char portName[30];
 				const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-				sprintf(portName, "%d", portName);
+				sprintf(portName, "%d", vector.vectorId);
 				Port *outPort = readerNodeType->getPort(readerNode, portName);
 	            Port *inPort = writerNode->addVector(vector);
 	            dataflowManager.connect(outPort, inPort);
