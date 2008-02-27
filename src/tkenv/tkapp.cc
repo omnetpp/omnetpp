@@ -172,15 +172,12 @@ void TOmnetTkApp::setup()
         plugin_path = std::string(opt_plugin_path.c_str()) + ";" + plugin_path;
 
     // set up Tcl/Tk
-    interp = initTk( args->argCount(), args->argVector() );
+    interp = initTk(args->argCount(), args->argVector());
     if (!interp)
-    {
-        initialized = false; // signal failed setup
-        return;
-    }
+        throw opp_runtime_error("Tkenv: cannot create Tcl interpreter");
 
     // add OMNeT++'s commands to Tcl
-    createTkCommands( interp, tcl_commands );
+    createTkCommands(interp, tcl_commands);
 
     Tcl_SetVar(interp, "OMNETPP_IMAGE_PATH", TCLCONST(image_path.c_str()), TCL_GLOBAL_ONLY);
     Tcl_SetVar(interp, "OMNETPP_PLUGIN_PATH", TCLCONST(plugin_path.c_str()), TCL_GLOBAL_ONLY);
@@ -198,13 +195,10 @@ void TOmnetTkApp::setup()
     Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
     if (Tcl_EvalFile(interp,opp_concat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR)
     {
-        fprintf(stderr, "\n<!> Error starting Tkenv: %s. "
-                        "Is the OMNETPP_TKENV_DIR environment variable set correctly? "
-                        "When not set, it defaults to " OMNETPP_TKENV_DIR ".\n",
-                        Tcl_GetStringResult(interp));
-        interp = 0;
-        initialized = false; // signal failed setup
-        return;
+        interp = NULL;
+        throw opp_runtime_error("Tkenv: %s. (Is the OMNETPP_TKENV_DIR environment variable "
+                                "set correctly?) When not set, it defaults to "
+                                OMNETPP_TKENV_DIR, Tcl_GetStringResult(interp));
     }
 #else
     //
@@ -216,28 +210,23 @@ void TOmnetTkApp::setup()
 #   include "tclcode.cc"
     if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
     {
-        fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", Tcl_GetStringResult(interp));
-        interp = 0;
-        initialized = false; // signal failed setup
-        return;
+        interp = NULL;
+        throw opp_runtime_error("Tkenv: %s", Tcl_GetStringResult(interp));
     }
 #endif
 
     // evaluate main script and build user interface
     if (Tcl_Eval(interp,"start_tkenv")==TCL_ERROR)
     {
-        fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", Tcl_GetStringResult(interp));
-        interp = 0;
-        initialized = false; // signal failed setup
-        return;
+        interp = NULL;
+        throw opp_runtime_error("Tkenv: %s\n", Tcl_GetStringResult(interp));
     }
 
     // create windowtitle prefix
     if (getParsimNumPartitions()>0)
     {
         windowtitleprefix.reserve(24);
-        sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ",
-                                            getParsimProcId(), getParsimNumPartitions());
+        sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
     }
 }
 
