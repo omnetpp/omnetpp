@@ -60,24 +60,15 @@ Tcl_Interp *initTk(int argc, char **argv)
     //}
 
     if (Tcl_Init(interp) != TCL_OK)
-    {
-        fprintf(stderr, "Tcl_Init failed: %s\n", Tcl_GetStringResult(interp));
-        return 0;
-    }
+        throw opp_runtime_error("Tkenv: Tcl_Init failed: %s\n", Tcl_GetStringResult(interp));
 
     if (Tk_Init(interp) != TCL_OK)
-    {
-        fprintf(stderr, "Tk_Init failed: %s\n", Tcl_GetStringResult(interp));
-        return 0;
-    }
+        throw opp_runtime_error("Tkenv: Tk_Init failed: %s\n", Tcl_GetStringResult(interp));
 
     Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
 
     if (Tkpng_Init(interp) != TCL_OK)
-    {
-        fprintf(stderr, "Tkpng_Init failed: %s\n", Tcl_GetStringResult(interp));
-        return 0;
-    }
+        throw opp_runtime_error("Tkenv: Tkpng_Init failed: %s\n", Tcl_GetStringResult(interp));
 
 
     Tk_Window mainWindow = Tk_MainWindow(interp);
