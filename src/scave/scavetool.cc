@@ -254,7 +254,8 @@ int filterCommand(int argc, char **argv)
 	            // every vector goes to its own file, with two columns (time+value) separated by spaces/tab
 	            if (opt_verbose) printf("adding separate writers for each vector\n");
                 char buf[16];
-                std::string fname = opt_outputFileName+itoa(i,buf,10)+".vec";
+                sprintf(buf, "%d", i);
+                std::string fname = opt_outputFileName+buf+".vec";
 
                 std::stringstream header;
                 header << "# vector " << vector.vectorId << " " <<
