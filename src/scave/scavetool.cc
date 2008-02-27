@@ -14,7 +14,6 @@
 
 
 #include <assert.h>
-#include <stdlib.h>
 #include <sstream>
 #include "../utils/ver.h"
 #include "resultfilemanager.h"
@@ -218,8 +217,9 @@ int filterCommand(int argc, char **argv)
             char portName[30];
 			const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
 			assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
+			sprintf(portName, "%d", vector.vectorId);
 			Node *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
-			Port *outPort = readerNodeType->getPort(readerNode, itoa(vector.vectorId, portName, 10));
+			Port *outPort = readerNodeType->getPort(readerNode, portName);
 			
 			// add filters
 	        for (int k=0; k<opt_filterList.size(); k++)
