@@ -240,15 +240,14 @@ TOmnetApp::~TOmnetApp()
 
 void TOmnetApp::setup()
 {
-     // handle -h and -q command-line options
+     // handle -h command-line option
      if (args->optionGiven('h'))
      {
-         printHelp();
-         return;  // don't set initialized==true
-     }
-     if (args->optionGiven('q'))
-     {
-         dumpComponentList(args->optionValue('q',0));
+         const char *category = args->optionValue('h',0);
+         if (!category)
+             printHelp();
+         else
+             dumpComponentList(category);
          return;  // don't set initialized==true
      }
 
@@ -372,12 +371,12 @@ void TOmnetApp::printHelp()
 {
     ev << "\n";
     ev << "Command line options:\n";
-    ev << "  -h            Print this help and exit.\n";
-    ev << "  -f <inifile>  Use the given ini file instead of omnetpp.ini. Multiple\n";
-    ev << "                -f options are accepted to load several ini files.\n";
+    ev << "  <inifile> or -f <inifile>\n";
+    ev << "                Use the given ini file instead of omnetpp.ini. More than one\n";
+    ev << "                ini files can be loaded this way.\n";
     ev << "  -u <ui>       Selects the user interface. Standard choices are Cmdenv\n";
     ev << "                and Tkenv. To make a user interface available, you need\n";
-    ev << "                to link the simulation executable with the cmdenv/tkenv\n";
+    ev << "                to link the simulation executable with the Cmdenv/Tkenv\n";
     ev << "                library, or load it as shared library via the -l option.\n";
     ev << "  -n <nedpath>  When present, overrides the NEDPATH environment variable.\n";
     ev << "  -l <library>  Load the specified shared library (.so or .dll) on startup.\n";
@@ -385,9 +384,18 @@ void TOmnetApp::printHelp()
     ev << "                (it will be appended automatically.) The loaded module may\n";
     ev << "                contain simple modules, plugins, etc. Multiple -l options\n";
     ev << "                can be present.\n";
-    ev << "  -q <category> List registered components. Category is one of the following:\n";
-    ev << "                all, config, configdetails, classes, classdesc, nedfunctions,\n";
-    ev << "                enums, userinterfaces\n";
+    ev << "  -h            Print this help and exit.\n";
+    ev << "  -h <category> Lists registered components:\n";
+    ev << "    -h config         Prints the list of available config options\n";
+    ev << "    -h configdetails  Prints the list of available config options, with\n";
+    ev << "                      their documentation\n";
+    ev << "    -h userinterfaces Lists available user interfaces (see -u option)\n";
+    ev << "    -h classes        Lists registered C++ classes (including module classes)\n";
+    ev << "    -h classdesc      Lists C++ classes that have associated reflection\n";
+    ev << "                      information (needed for Tkenv inspectors)\n";
+    ev << "    -h nedfunctions   Lists registered NED functions\n";
+    ev << "    -h enums          Lists registered enums\n";
+    ev << "    -h all            Union of all -q options\n";
     ev << "\n";
     printUISpecificHelp();
 }

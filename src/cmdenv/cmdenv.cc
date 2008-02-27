@@ -529,7 +529,7 @@ bool TCmdenvApp::gets(const char *promptstr, char *buf, int len)
 {
     if (!opt_interactive)
     {
-        throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s\")", promptstr);
+        throw cRuntimeError("The simulation wanted to ask a question, set cmdenv-interactive=true to allow it: \"%s\"", promptstr);
     }
     else
     {

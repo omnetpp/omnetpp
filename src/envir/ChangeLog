@@ -6,7 +6,7 @@
 
 	* "-f" option is now optional when specifying an inifile on the command
 	line (i.e. both "runsim omnetpp.ini" and "runsim -f omnetpp.ini" are
-	accepted)
+	accepted). Like previously, more than one ini files can be specified.
 
 	Inifile syntax change:
 
@@ -49,8 +49,8 @@
 	options, and unrecognized options (typo, etc) are reported as
 	errors instead of failing silently
 
-	* added -q command-line option, which prints out available config
-	file options, registered classes etc.
+	* added "-h config", "-h classes", etc command-line option, which prints
+	out available config file options, registered classes etc.
 
 	* opp_run program added -- this is an empty simulation executable,
 	which can be used to run simulation models that have been compiled
