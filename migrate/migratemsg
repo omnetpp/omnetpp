@@ -1,0 +1,8 @@
+#!/bin/sh                                                                                                         
+echo                                                                                                              
+echo Press ENTER to convert all MSG files starting from the current directory:
+echo `pwd`                                                                                                        
+echo                                                                                                              
+read WAIT                                                                                                         
+find . -name "*.msg" >msgfiles.lst
+perl `dirname $0`/migratemsg.pl msgfiles.lst

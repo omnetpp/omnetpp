@@ -1,0 +1,8 @@
+#!/bin/sh                                                                                                         
+echo                                                                                                              
+echo Press ENTER to convert all CC,CPP,H,HPP files starting from the current directory:
+echo `pwd`                                                                                                        
+echo                                                                                                              
+read WAIT                                                                                                         
+find . -name "*.h" -or -name "*.hpp" -or -name "*.cc" -or -name "*.cpp" >cppfiles.lst
+perl `dirname $0`/migratecpp.pl cppfiles.lst
