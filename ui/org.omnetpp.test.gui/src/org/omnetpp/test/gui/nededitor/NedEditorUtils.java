@@ -16,6 +16,7 @@ import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.StyledTextAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
+import com.simulcraft.test.gui.access.TreeItemAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
@@ -56,6 +57,7 @@ public class NedEditorUtils
                 return -((Control)object).getBounds().x;
             }
         }));
+        panelSelectorTree.findTreeItemByContent(".*OMNeT.*").ensureExpanded();
         panelSelectorTree.findTreeItemByContent("NED Source Folders").click();
         TreeAccess nedPathTree = new TreeAccess((Tree)shell.findDescendantControl(new IPredicate() {
             public boolean matches(Object object) {

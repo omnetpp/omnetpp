@@ -26,7 +26,7 @@ public class NedFileWizardTest
     }
     
     public void testNewNetworkFile() throws Throwable {
-        NedEditorUtils.createNewNedFileByWizard(projectName, fileName, ".*toplevel Network.*");
+        NedEditorUtils.createNewNedFileByWizard(projectName, fileName, ".*new Network.*");
         String moduleName = StringUtils.substringBefore(fileName, ".");
         WorkspaceUtils.assertFileExistsWithContentIgnoringWhiteSpace(filePath, "//\n// TODO Place comment here\n//\n\nnetwork "+moduleName+" {\n  parameters:\n  submodules:\n  connections:\n}\n");
     }
