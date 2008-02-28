@@ -64,46 +64,46 @@ testfiles/scalars.sca
 # name: <cell-element>
 # type: string
 # elements: 20
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
-# length: 0
-
+# length: 17
+scalars.sca:7-#35
+# length: 18
+scalars.sca:11-#34
+# length: 17
+scalars.sca:15-#1
+# length: 17
+scalars.sca:19-#2
+# length: 18
+scalars.sca:23-#43
+# length: 17
+scalars.sca:27-#6
+# length: 17
+scalars.sca:31-#7
+# length: 17
+scalars.sca:35-#8
+# length: 17
+scalars.sca:39-#9
+# length: 18
+scalars.sca:43-#10
+# length: 18
+scalars.sca:47-#11
+# length: 18
+scalars.sca:51-#21
+# length: 18
+scalars.sca:55-#22
+# length: 19
+scalars.sca:59-#203
+# length: 19
+scalars.sca:63-#204
+# length: 18
+scalars.sca:67-#25
+# length: 19
+scalars.sca:71-#106
+# length: 19
+scalars.sca:75-#107
+# length: 18
+scalars.sca:79-#28
+# length: 18
+scalars.sca:83-#29
 # name: Module
 # type: cell
 # rows: 1

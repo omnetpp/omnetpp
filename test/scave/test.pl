@@ -122,7 +122,8 @@ sub testIndexer
   $expectedResultFileName = $indexFileName;
   $expectedResultFileName =~ s/^(.*)\//expected\//;
 
-  if (system("test indexer $fileName") == 0  && matchFiles($resultFileName, $expectedResultFileName))
+  if (system("test indexer $fileName") == 0  &&
+      (!(-e $expectedResultFileName) || matchFiles($resultFileName, $expectedResultFileName)))
   {
      print("PASS: Indexer test on $fileName\n\n");
   }
@@ -167,7 +168,7 @@ testExport("testfiles/vectors.vec", "matlab");
 testExport("testfiles/vectors.vec", "octave");
 testExport("testfiles/vectors.vec", "csv");
 
-generateVectorFile("testfiles/big.vec", 1000, 10000000, 100000);
+generateVectorFile("testfiles/big.vec", 1000, 10000000, 10000);
 testIndexer("testfiles/big.vec");
 testReader2("indexedvectorfilereader", "testfiles/big.vec", "100,200,300,400,500,600,700,800,900,1000");
 testReader2("vectorfilereader", "testfiles/big.vec", "100,200,300,400,500,600,700,800,900,1000");
