@@ -527,9 +527,10 @@ public class ParametersPage extends FormPage {
 			//XXX if all keys are from a readonly base section, one cannot add new keys AT ALL !!!!
 			doc.addEntry(section, newKey, "", "", beforeKey);
 			reread();
-			treeViewer.setSelection(new StructuredSelection(new GenericTreeNode(new SectionKey(section, newKey))), true);
+			GenericTreeNode newNode = new GenericTreeNode(new SectionKey(section, newKey));
+            treeViewer.setSelection(new StructuredSelection(newNode), true);
 			treeViewer.getTree().setFocus();
-			treeViewer.editElement(newKey, 1); //XXX does not seem to work
+			treeViewer.editElement(newNode, 1);
 		}
 		catch (RuntimeException ex) {
 			showErrorDialog(ex);
