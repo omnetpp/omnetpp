@@ -39,8 +39,6 @@ class SCAVE_API Statistics
         Statistics(long count, double min, double max, double sum, double sumSqr)
             :_count(count), _min(min), _max(max), _sum(sum), _sumSqr(sumSqr) {}
 
-//        Statistics &operator=(const Statistics &other);
-
         long count() const { return _count; }
         double min() const { return _min; }
         double max() const { return _max; }
@@ -53,16 +51,6 @@ class SCAVE_API Statistics
         void collect(double value);
         void adjoin(const Statistics &other);
 };
-
-//inline Statistics& Statistics::operator=(const Statistics &other)
-//{
-//    _count = other._count;
-//    _min = other._min;
-//    _max = other._max;
-//    _sum = other._sum;
-//    _sumSqr = other._sumSqr;
-//    return *this;
-//}
 
 inline double Statistics::variance() const
 {
