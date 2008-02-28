@@ -338,6 +338,8 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
 	
 	        // run!
 	        dataflowManager.execute(monitor);
+	        
+	        // dataflowManager deleted here, and its destructor closes the files
         }
         
         // rename temp to orig
