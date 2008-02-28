@@ -41,7 +41,7 @@ class CrossHair {
 	public static final Font CROSSHAIR_BOLD_FONT = new Font(null, "Arial", 8, SWT.BOLD);
 	public static final Color TOOLTIP_COLOR = new Color(null, 255, 255, 225);
 
-	private static final int MAXCOUNT = 1000;
+	private static final int MAXCOUNT = 100;
 	private static final int HALO = 3;
 
 	private final VectorChart chart;
