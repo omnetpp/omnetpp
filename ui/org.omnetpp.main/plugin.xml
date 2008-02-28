@@ -63,6 +63,7 @@
       </runtime>
       <builder id="org.omnetpp.scave.builder.vectorfileindexer"/>
    </extension>
+   <!--
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
@@ -77,6 +78,7 @@
          </description>
       </wizard>
    </extension>
+   -->
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective

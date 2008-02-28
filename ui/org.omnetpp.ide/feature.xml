@@ -226,14 +226,6 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          unpack="false"/>
 
    <plugin
-         id="org.omnetpp.cdt"
-         os=""
-         download-size="0"
-         install-size="0"
-         version="4.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.omnetpp.neddoc"
          download-size="0"
          install-size="0"
@@ -256,5 +248,12 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          install-size="0"
          version="4.0.0"
          fragment="true"/>
+
+   <plugin
+         id="org.omnetpp.cdt"
+         download-size="0"
+         install-size="0"
+         version="4.0.0"
+         unpack="false"/>
 
 </feature>
