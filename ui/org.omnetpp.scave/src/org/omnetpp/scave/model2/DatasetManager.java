@@ -161,7 +161,10 @@ public class DatasetManager {
 				idlist.substract(selected);
 				for (int i = 0; i < selected.size(); ++i) {
 					long id = selected.get(i);
-					idlist.add(ensureComputedResultItem(apply, id, i, manager, warnings));
+					if (manager.getTypeOf(id) == ResultFileManager.VECTOR)
+						idlist.add(ensureComputedResultItem(apply, id, i, manager, warnings));
+					else
+						idlist.add(id);
 				}
 			}
 			return this;
@@ -170,10 +173,11 @@ public class DatasetManager {
 		public Object caseCompute(Compute compute) {
 			if (compute.getOperation() != null) {
 				IDList selected = select(idlist, compute.getFilters());
-				int size = (int)selected.size();
+				int size = selected.size();
 				for (int i = 0; i < size; ++i) {
 					long id = selected.get(i);
-					idlist.add(ensureComputedResultItem(compute, id, i, manager, warnings));
+					if (manager.getTypeOf(id) == ResultFileManager.VECTOR)
+						idlist.add(ensureComputedResultItem(compute, id, i, manager, warnings));
 				}
 			}
 			return this;
