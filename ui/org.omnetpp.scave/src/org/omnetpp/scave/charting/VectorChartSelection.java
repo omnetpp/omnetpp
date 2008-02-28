@@ -85,6 +85,7 @@ public class VectorChartSelection implements IChartSelection {
 			int yy = coordsMapping.toCanvasY(this.vectorChart.transformY(y));
 			gc.setForeground(ColorFactory.RED);
 			gc.setLineWidth(1);
+			gc.drawPoint(xx+5, yy);
 			gc.drawOval(xx-5, yy-5, 10, 10);
 		}
 	}
