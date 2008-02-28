@@ -13,7 +13,6 @@
 *--------------------------------------------------------------*/
 
 #include <exception>
-#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <set>
@@ -149,8 +148,9 @@ void testReader(const char* readerNodeType, const char *inputFile, int *vectorId
     
     for (size_t i = 0; i < count; ++i)
     {
+        sprintf(vectorIdStr, "%d", vectorIds[i]);
         Node *builder = builderType->create(&manager, attrs);
-        Port *src = readerType->getPort(reader, itoa(vectorIds[i], vectorIdStr, 10));
+        Port *src = readerType->getPort(reader, vectorIdStr);
         Port *dest = builderType->getPort(builder, "in");
         manager.connect(src, dest);
     }
