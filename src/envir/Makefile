@@ -219,17 +219,6 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
-$O/eventlogwriter.o: eventlogwriter.cc \
-  eventlogwriter.h \
-  envdefs.h \
-  ../../include/cexception.h \
-  ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h
 $O/filemgrs.o: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -431,7 +420,6 @@ $O/omnetapp.o: omnetapp.cc \
   omnetapp.h \
   appreg.h \
   fsutils.h \
-  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
@@ -449,6 +437,7 @@ $O/omnetapp.o: omnetapp.cc \
   ../../include/chasher.h \
   ../../include/cconfigkey.h \
   ../../include/regmacros.h \
+  ../../include/simtime.h \
   ../../include/cparsimcomm.h \
   objectprinter.h \
   envdefs.h \
@@ -463,8 +452,6 @@ $O/omnetapp.o: omnetapp.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -480,6 +467,7 @@ $O/omnetapp.o: omnetapp.cc \
   ../../include/cdefaultlist.h \
   ../../include/cmsgpar.h \
   ../../include/cfunction.h \
+  ../../include/platdep/inttypes.h \
   matchablefield.h \
   matchableobject.h
 $O/opp_run.o: opp_run.cc \

@@ -1802,34 +1802,6 @@ $O/errmsg.o: errmsg.cc \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h
-$O/expr.tab.o: expr.tab.cc \
-  expryydefs.h \
-  ../../include/cdynamicexpression.h \
-  ../../include/cpar.h \
-  ../../include/cxmlelement.h \
-  ../../include/cexception.h \
-  ../../include/globals.h \
-  ../../include/cfunction.h \
-  ../../include/cnedfunction.h \
-  ../../include/nedsupport.h \
-  ../../include/cexpression.h \
-  ../../include/cstringpool.h \
-  ../../include/cobject.h \
-  ../../include/simkerneldefs.h \
-  ../../include/util.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
-  ../../include/cownedobject.h \
-  ../../include/cenvir.h \
-  ../../include/cnamedobject.h \
-  ../../include/opp_string.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h
 $O/globals.o: globals.cc \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -1854,23 +1826,6 @@ $O/globals.o: globals.cc \
   ../../include/cpar.h \
   ../../include/cgate.h \
   ../../include/cexpression.h
-$O/lex.expryy.o: lex.expryy.cc \
-  expryydefs.h \
-  ../../include/cexception.h \
-  expr.tab.h \
-  ../../include/util.h \
-  ../../include/cdynamicexpression.h \
-  ../../include/cexpression.h \
-  ../../include/cstringpool.h \
-  ../../include/cobject.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h
 $O/minixpath.o: minixpath.cc \
   minixpath.h \
   ../../include/cexception.h \
@@ -1970,91 +1925,6 @@ $O/onstartup.o: onstartup.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
-$O/sim_std_m.o: sim_std_m.cc \
-  sim_std_m.h \
-  ../../include/omnetpp.h \
-  ../../include/carray.h \
-  ../../include/cbasicchannel.h \
-  ../../include/cboolparimpl.h \
-  ../../include/cchannel.h \
-  ../../include/cclassfactory.h \
-  ../../include/ccommbuffer.h \
-  ../../include/ccomponent.h \
-  ../../include/ccomponenttype.h \
-  ../../include/ccompoundmodule.h \
-  ../../include/cconfiguration.h \
-  ../../include/ccoroutine.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cdensity.h \
-  ../../include/cdetect.h \
-  ../../include/cconfigkey.h \
-  ../../include/cdisplaystring.h \
-  ../../include/cdoubleparimpl.h \
-  ../../include/cdynamicexpression.h \
-  ../../include/cenum.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  ../../include/cexpression.h \
-  ../../include/chasher.h \
-  ../../include/cfsm.h \
-  ../../include/cfunction.h \
-  ../../include/cgate.h \
-  ../../include/chist.h \
-  ../../include/cksplit.h \
-  ../../include/clcg32.h \
-  ../../include/cllist.h \
-  ../../include/clongparimpl.h \
-  ../../include/cmersennetwister.h \
-  ../../include/simtime.h \
-  ../../include/cmessage.h \
-  ../../include/cmsgpar.h \
-  ../../include/cmodule.h \
-  ../../include/cmsgheap.h \
-  ../../include/cnedfunction.h \
-  ../../include/cobject.h \
-  ../../include/cnamedobject.h \
-  ../../include/cownedobject.h \
-  ../../include/coutvector.h \
-  ../../include/cpar.h \
-  ../../include/cparimpl.h \
-  ../../include/cparsimcomm.h \
-  ../../include/cproperties.h \
-  ../../include/cproperty.h \
-  ../../include/cpsquare.h \
-  ../../include/cqueue.h \
-  ../../include/crng.h \
-  ../../include/cscheduler.h \
-  ../../include/csimplemodule.h \
-  ../../include/csimulation.h \
-  ../../include/cstat.h \
-  ../../include/cstlwatch.h \
-  ../../include/cstringparimpl.h \
-  ../../include/cstringpool.h \
-  ../../include/cstrtokenizer.h \
-  ../../include/cclassdescriptor.h \
-  ../../include/ctopo.h \
-  ../../include/cvarhist.h \
-  ../../include/cvisitor.h \
-  ../../include/cwatch.h \
-  ../../include/cxmlelement.h \
-  ../../include/cxmlparimpl.h \
-  ../../include/simkerneldefs.h \
-  ../../include/distrib.h \
-  ../../include/envirext.h \
-  ../../include/errmsg.h \
-  ../../include/globals.h \
-  ../../include/index.h \
-  ../../include/mersennetwister.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h \
-  ../../include/random.h \
-  ../../include/regmacros.h \
-  ../../include/util.h \
-  ../../include/nedsupport.h \
-  ../../include/compat.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/platdep/platdefs.h
 $O/simtime.o: simtime.cc \
   ../../include/simtime.h \
   ../../include/cexception.h \

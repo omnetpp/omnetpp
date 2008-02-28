@@ -546,16 +546,22 @@ $O/vectorfileindexer.o: vectorfileindexer.cc \
   scaveexception.h \
   ../common/filereader.h \
   ../common/linetokenizer.h \
+  dataflowmanager.h \
   indexfile.h \
+  indexedvectorfile.h \
+  nodetyperegistry.h \
   vectorfileindexer.h \
   ../common/commondefs.h \
   ../common/commonutil.h \
   ../common/exception.h \
   scavedefs.h \
   ../common/bigdecimal.h \
-  statistics.h \
-  resultfilemanager.h \
+  node.h \
   ../common/progressmonitor.h \
+  channel.h \
+  statistics.h \
+  nodetype.h \
+  resultfilemanager.h \
   idlist.h \
   enumtype.h
 $O/vectorfilereader.o: vectorfilereader.cc \
