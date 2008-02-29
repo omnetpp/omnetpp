@@ -21,7 +21,12 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
 {
     this->eventLog = eventLog;
 
-    // filter parameters
+    // collection limits
+    collectMessageReuses = false;
+    maximumNumberOfCauses = maximumNumberOfConsequences = 10;
+    maximumCauseDepth = maximumConsequenceDepth = 30;
+
+    // trace filter parameters
     tracedEventNumber = -1;
     firstEventNumber = -1;
     lastEventNumber = -1;
@@ -30,9 +35,7 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     traceMessageReuses = false;
     traceSelfMessages = true;
 
-    maximumNumberOfCauses = maximumNumberOfConsequences = 10;
-    maximumCauseDepth = maximumConsequenceDepth = 30;
-
+    // other filter parameters
     enableModuleFilter = false;
     enableMessageFilter = false;
     setModuleExpression("");

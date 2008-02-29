@@ -42,12 +42,14 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         long firstEventNumber; // the first event to be considered by the filter or -1
         long lastEventNumber; // the last event to be considered by the filter or -1
 
+        // module filter
         bool enableModuleFilter;
         MatchExpression moduleExpression;
         std::vector<PatternMatcher> moduleNames;
         std::vector<PatternMatcher> moduleClassNames;
         std::vector<int> moduleIds; // events outside these modules will be filtered out, NULL means include all
 
+        // message filter
         bool enableMessageFilter;
         MatchExpression messageExpression;
         std::vector<PatternMatcher> messageNames;
@@ -57,15 +59,19 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         std::vector<long> messageEncapsulationIds;
         std::vector<long> messageEncapsulationTreeIds;
 
+        // trace filter
         long tracedEventNumber; // the event number from which causes and consequences are followed or -1
         bool traceCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
         bool traceConsequences; // only when tracedEventNumber is given
         bool traceMessageReuses;
         bool traceSelfMessages;
+
+        // collection limits
+        bool collectMessageReuses; // if false message reuse dependencies will not be collected
         int maximumCauseDepth; // maximum depth of message dependencies considered when collecting causes
-        int maximumNumberOfCauses; // maximum number of message dependencies collected
+        int maximumNumberOfCauses; // maximum number of message dependencies collected for a single event
         int maximumConsequenceDepth; // maximum depth of message dependencies considered when collecting consequences
-        int maximumNumberOfConsequences; // maximum number of message dependencies collected
+        int maximumNumberOfConsequences; // maximum number of message dependencies collected for a single event
 
         // internal state
         typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
@@ -87,6 +93,9 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setFirstEventNumber(long firstEventNumber) { this->firstEventNumber = firstEventNumber; }
         long getLastEventNumber() { return lastEventNumber; }
         void setLastEventNumber(long lastEventNumber) { this->lastEventNumber = lastEventNumber; }
+
+        bool getCollectMessageReuses() { return collectMessageReuses; }
+        void setCollectMessageReuses(bool collectMessageReuses) { this->collectMessageReuses = collectMessageReuses; }
 
         void setEnableModuleFilter(bool enableModuleFilter) { this->enableModuleFilter = enableModuleFilter; }
         void setModuleExpression(const char *moduleExpression) { if (moduleExpression) this->moduleExpression.setPattern(moduleExpression, false, true, false); }
@@ -110,8 +119,16 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setTraceMessageReuses(bool traceMessageReuses) { this->traceMessageReuses = traceMessageReuses; }
 
         IEventLog *getEventLog() { return eventLog; }
+
         int getMaximumCauseDepth() { return maximumCauseDepth; }
+        void setMaximumCauseDepth(int maximumCauseDepth) { this->maximumCauseDepth = maximumCauseDepth; }
+        int getMaximumNumberOfCauses() { return maximumNumberOfCauses; }
+        void setMaximumNumberOfCauses(int maximumNumberOfCauses) { this->maximumNumberOfCauses = maximumNumberOfCauses; }
+
         int getMaximumConsequenceDepth() { return maximumConsequenceDepth; }
+        void setMaximumConsequenceDepth(int maximumConsequenceDepth) { this->maximumConsequenceDepth = maximumConsequenceDepth; }
+        int getMaximumNumberOfConsequences() { return maximumNumberOfConsequences; }
+        void setMaximumNumberOfConsequences(int maximumNumberOfConsequences) { this->maximumNumberOfConsequences = maximumNumberOfConsequences; }
 
         bool matchesFilter(IEvent *event);
         FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward, long stopEventNumber = -1);
