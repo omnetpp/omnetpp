@@ -66,5 +66,6 @@ Features:
  - timeout support for long running operation
  - find reused message (infinite lookahead)
  - message reuse lookahead setting
+ - display initialization entries
 
 Known bugs:
