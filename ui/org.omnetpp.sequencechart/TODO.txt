@@ -19,7 +19,7 @@ Features:
    + zoom in and out by + and - keys
    + mark zoom area with control and left drag
    - zoom to fit whole file in current window (small files only)
-   - zoom to normal detail level
+   + zoom to normal detail level
  + flags turned on and off:
    + display event numbers
    + display message names
@@ -79,4 +79,3 @@ Features:
 
 Known bugs:
  - tracing events sometimes slows down or kills eclipse
- - replacing the log file with a new one might make obsolete the filter parameters (e.g. no such module) and cause problems when opening the filter dialog
