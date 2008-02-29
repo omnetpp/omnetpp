@@ -106,6 +106,8 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	private ISelection selection;
 	private ListenerList selectionChangeListeners = new ListenerList();
 	
+	private Runnable scheduledUpdate; 
+	
 	private static final IDList EMPTY = new IDList();
 	
 	
@@ -251,11 +253,15 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			scaveEditor.getResultFileManager().addChangeListener(resultFilesChangeListener =
 				new IResultFilesChangeListener() {
 				public void resultFileManagerChanged(ResultFileManager manager) {
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							updateDataTable();
-						}
-					});
+					if (scheduledUpdate == null) {
+						scheduledUpdate = new Runnable() {
+							public void run() {
+								scheduledUpdate = null;
+								updateDataTable();
+							}
+						};
+						Display.getDefault().asyncExec(scheduledUpdate);
+					}
 				}
 			});
 			

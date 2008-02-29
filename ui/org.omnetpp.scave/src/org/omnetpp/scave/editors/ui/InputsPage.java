@@ -43,6 +43,8 @@ public class InputsPage extends ScaveEditorPage {
 	private Section inputFilesSection = null;
 	private Section dataSection = null;
 	private SashForm sashform = null;
+	
+	private Runnable scheduledUpdate;
 
 	public InputsPage(Composite parent, ScaveEditor scaveEditor) {
 		super(parent, SWT.V_SCROLL, scaveEditor);
@@ -95,15 +97,19 @@ public class InputsPage extends ScaveEditorPage {
 
         scaveEditor.getResultFileManager().addChangeListener(new IResultFilesChangeListener() {
 			public void resultFileManagerChanged(final ResultFileManager manager) {
-				getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						if (!isDisposed()) {
-							getFileRunTreeViewer().setInput(manager); // force refresh
-							getRunFileTreeViewer().setInput(manager);
-							getLogicalDataTreeViewer().setInput(manager);
+				if (scheduledUpdate == null) {
+					scheduledUpdate = new Runnable() {
+						public void run() {
+							scheduledUpdate = null;
+							if (!isDisposed()) {
+								getFileRunTreeViewer().setInput(manager); // force refresh
+								getRunFileTreeViewer().setInput(manager);
+								getLogicalDataTreeViewer().setInput(manager);
+							}
 						}
-					}
-				});
+					};
+					getDisplay().asyncExec(scheduledUpdate);
+				}
 			}
         });
         

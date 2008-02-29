@@ -37,6 +37,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * @author andras
  */
 public class FilteredDataPanel extends Composite {
+	
 	private FilteringPanel filterPanel;
 	private DataTable table;
 	private IDList idlist; // the unfiltered data list

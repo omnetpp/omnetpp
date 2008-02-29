@@ -44,6 +44,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	private FilteredDataPanel histogramsPanel;
 
 	private IResultFilesChangeListener fileChangeListener;
+	private Runnable scheduledUpdate;
 	
 	private SetFilterAction2 setFilterAction = new SetFilterAction2();
 
@@ -204,12 +205,16 @@ public class BrowseDataPage extends ScaveEditorPage {
 		if (fileChangeListener == null) {
 			fileChangeListener = new IResultFilesChangeListener() {
 				public void resultFileManagerChanged(final ResultFileManager manager) {
-					getDisplay().asyncExec(new Runnable() {
-						public void run() {
-							if (!isDisposed())
-								refreshPage(manager);
-						}
-					});
+					if (scheduledUpdate == null) {
+						scheduledUpdate = new Runnable() {
+							public void run() {
+								scheduledUpdate = null;
+								if (!isDisposed())
+									refreshPage(manager);
+							}
+						};
+						getDisplay().asyncExec(scheduledUpdate);
+					}
 				}
 			};
 			scaveEditor.getResultFileManager().addChangeListener(fileChangeListener);
