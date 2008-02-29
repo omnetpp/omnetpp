@@ -266,8 +266,17 @@ public class EventLogInput
 
 		// create new filter
 		FilteredEventLog filteredEventLog = new FilteredEventLog(eventLog);
+		
+		// collection limits
+		if (eventLogFilterParameters.enableCollectionLimits) {
+            filteredEventLog.setCollectMessageReuses(eventLogFilterParameters.collectMessageReuses);
+    		filteredEventLog.setMaximumCauseDepth(eventLogFilterParameters.maximumDepthOfMessageDependencies);
+            filteredEventLog.setMaximumConsequenceDepth(eventLogFilterParameters.maximumDepthOfMessageDependencies);
+            filteredEventLog.setMaximumNumberOfCauses(eventLogFilterParameters.maximumNumberOfMessageDependencies);
+            filteredEventLog.setMaximumNumberOfConsequences(eventLogFilterParameters.maximumNumberOfMessageDependencies);
+		}
 
-		// general filter
+		// enable is handled in filter parameters
 		filteredEventLog.setFirstEventNumber(eventLogFilterParameters.getFirstEventNumber());
 		filteredEventLog.setLastEventNumber(eventLogFilterParameters.getLastEventNumber());
 

@@ -45,6 +45,8 @@ public class FilterEventLogDialog
 	
 	private CheckboxTreeViewer panelCheckboxTree;
 
+    private FilterDialogTreeNode enableCollectionLimits;
+
     private FilterDialogTreeNode enableEventNumberFilter;
 
 	private FilterDialogTreeNode enableSimulationTimeFilter;
@@ -124,6 +126,12 @@ public class FilterEventLogDialog
 	private EditableList messageEncapsulationIds;
 
 	private EditableList messageEncapsulationTreeIds;
+
+    private Button collectMessageReuses;
+
+    private Text maximumNumberOfMessageDependencies;
+
+    private Text maximumDepthOfMessageDependencies;
 
 	public FilterEventLogDialog(Shell parentShell, EventLogInput eventLogInput, EventLogFilterParameters filterParameters) {
 		super(parentShell);
@@ -411,6 +419,7 @@ public class FilterEventLogDialog
 
         // create tree
         GenericTreeNode treeRoot = new GenericTreeNode("root");
+        treeRoot.addChild(createCollectionLimitsTreeNode(panelContainer));
         treeRoot.addChild(createGeneralFilterTreeNode(panelContainer));
         treeRoot.addChild(createModuleFilterTreeNode(panelContainer));
         treeRoot.addChild(createMessageFilterTreeNode(panelContainer));
@@ -478,6 +487,45 @@ public class FilterEventLogDialog
 	protected void okPressed() {
 		parseFilterParameters();
 		super.okPressed();
+	}
+
+	private GenericTreeNode createCollectionLimitsTreeNode(Composite parent) {
+        // depth and number limits
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(2, false));
+        enableCollectionLimits = new FilterDialogTreeNode("Collection limits", panel) {
+            @Override
+            public void checkStateChanged(boolean checked) {
+                collectMessageReuses.setEnabled(checked);
+                maximumNumberOfMessageDependencies.setEnabled(checked);
+                maximumDepthOfMessageDependencies.setEnabled(checked);
+            }
+        };
+
+        collectMessageReuses = new Button(panel, SWT.CHECK);
+        collectMessageReuses.setText("Collect message reuse dependencies");
+        collectMessageReuses.setToolTipText("Message reuses will be followed when collecting dependencies between events far away on the consequence chain");
+        collectMessageReuses.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
+
+        Label label = new Label(panel, SWT.NONE);
+        label.setText("Maximum number of message dependencies");
+        label.setToolTipText("Collecting message dependencies will stop at this limit for each event");
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        
+        maximumNumberOfMessageDependencies = new Text(panel, SWT.BORDER);
+        maximumNumberOfMessageDependencies.setToolTipText(label.getToolTipText());
+        maximumNumberOfMessageDependencies.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+        label = new Label(panel, SWT.NONE);
+        label.setText("Maximum depth of message dependencies");
+        label.setToolTipText("Collecting message dependencies will not look deeper into the cause/consequence chain than this limit");
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+
+        maximumDepthOfMessageDependencies = new Text(panel, SWT.BORDER);
+        maximumDepthOfMessageDependencies.setToolTipText(label.getToolTipText());
+        maximumDepthOfMessageDependencies.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+
+        return enableCollectionLimits;
 	}
 	
 	private GenericTreeNode createGeneralFilterTreeNode(Composite parent) {

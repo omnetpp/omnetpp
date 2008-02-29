@@ -13,6 +13,8 @@ public class EventLogFilterParameters implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private transient EventLogInput eventLogInput;
+    
+    public boolean enableCollectionLimits;
 	
 	public boolean enableEventNumberFilter;
 
@@ -93,6 +95,12 @@ public class EventLogFilterParameters implements Serializable {
 	public int[] messageEncapsulationIds;
 
 	public int[] messageEncapsulationTreeIds;
+
+	public boolean collectMessageReuses = false;
+    
+    public int maximumNumberOfMessageDependencies = 10;
+	
+	public int maximumDepthOfMessageDependencies = 30;
 
 	public EventLogFilterParameters(EventLogInput eventLogInput) {
 		this.eventLogInput = eventLogInput;
