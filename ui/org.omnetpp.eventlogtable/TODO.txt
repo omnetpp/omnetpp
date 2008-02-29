@@ -62,7 +62,8 @@ Features:
  - expand/collapse events (isExpandedInEventLogTable)
  + follow log file changes
  + store and restore last known settings and position per file
- - timeout support
+ + catch all exceptions in paint and switch to error mode if unable to draw and wait for explicit refresh
+ - timeout support for long running operation
  - find reused message (infinite lookahead)
  - message reuse lookahead setting
 

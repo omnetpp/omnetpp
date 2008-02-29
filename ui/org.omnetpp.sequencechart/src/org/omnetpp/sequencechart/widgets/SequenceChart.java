@@ -206,7 +206,8 @@ public class SequenceChart
 	private boolean invalidVirtualSize = true;
 	private boolean drawStuffUnderMouse = false;
 
-    private boolean normalPaintHasBeenRun = false;
+    private boolean paintHasBeenFinished = false;
+    private boolean internalErrorHappenedDuringPaint = false;
 
 	private boolean followEnd = false; // when the event log changes should we follow it or not?
 
@@ -1157,7 +1158,7 @@ public class SequenceChart
 	}
 
 	public void eventLogLongOperationEnded() {
-	    if (!normalPaintHasBeenRun)
+	    if (!paintHasBeenFinished)
 	        redraw();
 	}
 
@@ -1382,6 +1383,7 @@ public class SequenceChart
 	}
 
 	public void refresh() {
+	    internalErrorHappenedDuringPaint = false;
 		eventLogInput.resetCanceled();
 
 		if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
@@ -1397,18 +1399,16 @@ public class SequenceChart
 
 	@Override
 	protected void paint(final GC gc) {
-	    normalPaintHasBeenRun = false;
+	    paintHasBeenFinished = false;
 	    
-	    if (eventLogInput.isCanceled()) {
-			Graphics graphics = createGraphics(gc);
-			drawCancelMessage(graphics);
-			graphics.dispose();
-		}
-		else if (eventLogInput.isLongRunningOperationInProgress()) {
-			Graphics graphics = createGraphics(gc);
-			drawLongRunningOperationInProgressMessage(graphics);
-			graphics.dispose();
-		}
+        if (internalErrorHappenedDuringPaint)
+            drawNotificationMessage(gc, "Internal error happend during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
+        else if (eventLogInput.isCanceled())
+	        drawNotificationMessage(gc,
+                "Processing of a long running event log operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +
+                "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.");
+		else if (eventLogInput.isLongRunningOperationInProgress())
+			drawNotificationMessage(gc, "Processing a long running event log operation. Please wait.");
 		else
 			eventLogInput.runWithProgressMonitor(new Runnable() {
 				public void run() {
@@ -1417,7 +1417,7 @@ public class SequenceChart
     						calculateStuff();
     
     					SequenceChart.super.paint(gc);
-    					normalPaintHasBeenRun = true;
+    					paintHasBeenFinished = true;
     
     					if (eventLogInput != null && debug)
     						System.out.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
@@ -1425,8 +1425,10 @@ public class SequenceChart
 				    catch (RuntimeException e) {
 				        if (eventLogInput.isEventLogChangedException(e))
 				            eventLogInput.checkEventLogForChanges();
-				        else
+				        else {
+	                        internalErrorHappenedDuringPaint = true;
 				            throw e;
+				        }
 				    }
 				}
 			});
@@ -1529,15 +1531,23 @@ public class SequenceChart
 		graphics.fillString(text, x - p.x / 2, y);
 	}
 
-	protected void drawLongRunningOperationInProgressMessage(Graphics graphics) {
+	protected void drawNotificationMessage(GC gc, String text) {
+	    String[] lines = text.split("\n");
+        Graphics graphics = createGraphics(gc);
 		graphics.setForegroundColor(ColorFactory.RED4);
 		graphics.setBackgroundColor(ColorFactory.WHITE);
 		graphics.setFont(font);
-		int x = getViewportWidth() / 2;
-		int y = getViewportHeight() / 2;
-		String text = "Processing a long running event log operation. Please wait.";
-		Point p = getTextExtent(graphics, text);
-		graphics.fillString(text, x - p.x / 2, y - p.y / 2);
+
+        int x = getViewportWidth() / 2;
+        int y = getViewportHeight() / 2;
+
+        for (int i = 0; i < lines.length; i++) {
+		    String line = lines[i];
+    		Point p = getTextExtent(graphics, line);
+    		graphics.fillString(line, x - p.x / 2, y - (lines.length / 2 - i) * p.y);
+		}
+
+        graphics.dispose();
 	}
 
 	/**

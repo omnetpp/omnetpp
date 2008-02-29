@@ -70,10 +70,13 @@ Features:
  + event numbers on the bottom axis are not visible when axes are balanced
  + SVG export
  + store and restore last known settings and position per file
- + timeout support
+ + timeout support for long running operation
+ + catch all exceptions in paint and switch to error mode if unable to draw and wait for explicit refresh
  - message reuse lookahead setting
+ - minimize crossings for modules having events in visible area
+ - filter for modules present in visible area
+ - hide individual events and messages
 
 Known bugs:
- - hierarchical sorting sequence chart axes based on crossing arrows is broken
- - tracing events sometimes kills eclipse
- 
+ - tracing events sometimes slows down or kills eclipse
+ - replacing the log file with a new one might make obsolete the filter parameters (e.g. no such module) and cause problems when opening the filter dialog

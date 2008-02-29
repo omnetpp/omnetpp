@@ -22,7 +22,7 @@ import org.omnetpp.eventlog.engine.SequenceChartFacade;
 public class EventLogInput
 	implements IEventLogProgressMonitor
 {
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	public static final String STATE_PROPERTY = "EventLogInputState";
 
@@ -279,7 +279,7 @@ public class EventLogInput
 			if (eventLogFilterParameters.enableModuleIdFilter || eventLogFilterParameters.enableModuleNameFilter)
                 filteredEventLog.setModuleIds(eventLogFilterParameters.getModuleIds());
 
-			if (eventLogFilterParameters.enableMessageClassNameFilter)
+			if (eventLogFilterParameters.enableModuleClassNameFilter)
 			    filteredEventLog.setModuleClassNames(eventLogFilterParameters.getModuleClassNames());
 		}
 

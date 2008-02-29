@@ -39,7 +39,9 @@ public class EventLogTable
 
 	public static final String STATE_PROPERTY = "EventLogTableState";
 	
-	private boolean normalPaintHasBeenRun = false;
+	private boolean paintHasBeenFinished = false;
+	
+	private boolean internalErrorHappenedDuringPaint = false;
 
 	private boolean followEnd = false; // when the event log changes should we follow it or not?
 
@@ -94,28 +96,34 @@ public class EventLogTable
 	@Override
 	protected void paint(final GC gc)
 	{
-	    normalPaintHasBeenRun = false;
+	    paintHasBeenFinished = false;
 	    
-		if (eventLogInput == null) {
+        if (internalErrorHappenedDuringPaint)
+            drawNotificationMessage(gc, "Internal error happend during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
+        else if (eventLogInput == null) {
 			super.paint(gc);
-			normalPaintHasBeenRun = true;
+			paintHasBeenFinished = true;
 		}
 		else if (eventLogInput.isCanceled())
-			drawCancelMessage(gc);
+		    drawNotificationMessage(gc,
+		        "Processing of a long running event log operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +
+		        "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.");
 		else if (eventLogInput.isLongRunningOperationInProgress())
-			drawLongRunningOperationInProgressMessage(gc);
+		    drawNotificationMessage(gc, "Processing a long running event log operation. Please wait.");
 		else
 			eventLogInput.runWithProgressMonitor(new Runnable() {
 				public void run() {
 				    try {
     					EventLogTable.super.paint(gc);
-    					normalPaintHasBeenRun = true;
+    					paintHasBeenFinished = true;
 				    }
                     catch (RuntimeException e) {
                         if (eventLogInput.isEventLogChangedException(e))
                             eventLogInput.checkEventLogForChanges();
-                        else
+                        else {
+                            internalErrorHappenedDuringPaint = true;
                             throw e;
+                        }
                     }
 				}
 			});
@@ -127,32 +135,22 @@ public class EventLogTable
 		super.refresh();
 	}
 
-	protected void drawCancelMessage(GC gc) {
-		gc.setForeground(ColorFactory.RED4);
-		gc.setBackground(ColorFactory.WHITE);
-		gc.setFont(JFaceResources.getDefaultFont());
-		Point p = getSize();
-		int x = p.x/ 2;
-		int y = p.y / 2;
-		String text = "Processing of a long running event log operation was cancelled, therefore the chart is incomplete and cannot be drawn.";
-		p = gc.textExtent(text);
-		gc.drawString(text, x - p.x / 2, y - p.y);
-		text = "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.";
-		p = gc.textExtent(text);
-		gc.drawString(text, x - p.x / 2, y);
-	}
+	protected void drawNotificationMessage(GC gc, String text) {
+        String[] lines = text.split("\n");
+        gc.setForeground(ColorFactory.RED4);
+        gc.setBackground(ColorFactory.WHITE);
+        gc.setFont(JFaceResources.getDefaultFont());
 
-	protected void drawLongRunningOperationInProgressMessage(GC gc) {
-		gc.setForeground(ColorFactory.RED4);
-		gc.setBackground(ColorFactory.WHITE);
-		gc.setFont(JFaceResources.getDefaultFont());
-		Point p = getSize();
-		int x = p.x/ 2;
-		int y = p.y / 2;
-		String text = "Processing a long running event log operation. Please wait.";
-		p = gc.textExtent(text);
-		gc.drawString(text, x - p.x / 2, y - p.y / 2);
-	}
+        Point p = getSize();
+        int x = p.x / 2;
+        int y = p.y / 2;
+
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            p = gc.textExtent(line);
+            gc.drawString(line, x - p.x / 2, y - (lines.length / 2 - i) * p.y);
+        }
+    }
 
 	@Override
 	public ISelection getSelection() {
@@ -331,6 +329,8 @@ public class EventLogTable
 	
 				if (closestEvent != null)
 					relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
+				else
+				    relocateFixPoint(null, 0);
 			}
 		}
 
@@ -346,7 +346,7 @@ public class EventLogTable
 	}
 
 	public void eventLogLongOperationEnded() {
-	    if (!normalPaintHasBeenRun)
+	    if (!paintHasBeenFinished)
 	        canvas.redraw();
 	}
 
