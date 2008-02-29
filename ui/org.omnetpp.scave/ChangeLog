@@ -1,3 +1,32 @@
+2008-02-29
+----------
+
+Additions:
+
+   + Add -r (rebuild) option to the index command of scavetool. This option can be used
+     to index a vector file that was written with a non-indexing writer. It reorganizes
+     the records of the vector file.
+
+Fixes:
+
+   + Reading >2GB vector files.
+
+   + An error occured when a dataset contained scalars and some processing operation's
+     filter selected the scalars.
+
+   + Vector file indexer computed wrong maximum values.
+     (It was always greater than DBL_MIN.)
+
+   + Linux: red line was drawn from the selection to the upper right corner on vector chart.
+
+   + Too much rows in the tooltip (BrowserInformationControl) caused infinite loop on Linux.
+     The number of rows is limited to 100 now.
+
+   + Each result file manager change triggered a separate update on Inputs and Browse Data
+     page and Dataset view causing the ui freezing when working with large datasets
+     containing computations.
+
+
 2008-02-15
 ----------
 
