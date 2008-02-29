@@ -260,9 +260,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	
 	private EventLogTableAction createSearchTextAction() {
 		return new EventLogTableAction("Search raw text...") {
-			@Override
+		    private InputDialog dialog;
+
+		    @Override
 			public void run() {
-				InputDialog dialog = new InputDialog(null, "Search raw text", "Please enter the search text", null, null);
+		        if (dialog == null)
+		            dialog = new InputDialog(null, "Search raw text", "Please enter the search text", null, null);
 				
 				if (dialog.open() == Window.OK) {
 					
