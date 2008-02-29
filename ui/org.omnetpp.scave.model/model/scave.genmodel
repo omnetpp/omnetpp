@@ -36,7 +36,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/filters"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/computedFile"/>
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/computedFileUpToDate"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/computationHash"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Except">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Except/filterPattern"/>
