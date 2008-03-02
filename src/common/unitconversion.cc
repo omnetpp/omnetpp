@@ -28,6 +28,7 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {    //TODO mile,foot,yar
     { "ms",   1e-3, "s",    "millisecond" },
     { "us",   1e-6, "s",    "microsecond" },
     { "ns",   1e-9, "s",    "nanosecond" },
+    { "ps",  1e-12, "s",    "picosecond" },
     { "Tbps", 1e12, "bps",  "terabit/sec" },
     { "Gbps",  1e9, "bps",  "gigabit/sec" },
     { "Mbps",  1e6, "bps",  "megabit/sec" },
