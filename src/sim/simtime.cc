@@ -166,12 +166,20 @@ char *SimTime::ttoa(char *buf, int64 t, int scaleexp, char *&endp)
 
 const SimTime SimTime::parse(const char *s)
 {
-    // Note: UnitConversion calculates in double, so we may lose precision during conversion
-    return UnitConversion::parseQuantity(s, "s");
+    try {
+        // Note: UnitConversion calculates in double, so we may lose precision during conversion
+        std::string unit;
+        double d = UnitConversion::parseQuantity(s, unit);  // "unit" is OUT parameter
+        return unit.empty() ? d : UnitConversion::convertUnit(d, unit.c_str(), "s");
+    }
+    catch (std::exception& e) {
+        throw cRuntimeError("Error converting string \"%s\" to SimTime: %s", s, e.what());
+    }
 }
 
 const SimTime SimTime::parse(const char *s, const char *&endp)
 {
+    // find end of the simtime literal in the string
     endp = s;
     while (opp_isspace(*endp))
         endp++;
@@ -181,7 +189,7 @@ const SimTime SimTime::parse(const char *s, const char *&endp)
     while (opp_isalnum(*endp) || opp_isspace(*endp) || *endp=='+' || *endp=='-' || *endp=='.')
         endp++;
 
-    // Note: UnitConversion calculates in double, so we may lose precision during conversion
-    return UnitConversion::parseQuantity(std::string(s, endp-s).c_str(), "s");
+    // delegate to the other parse() method
+    return parse(std::string(s, endp-s).c_str());
 }
 
