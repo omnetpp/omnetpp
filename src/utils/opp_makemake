@@ -16,6 +16,7 @@ $progname = $ARG0;
 #$arch = $Config{'archname'};
 #$isCygwin = ($arch =~ /cygwin/i);
 $isWindows = ($ENV{OS} =~ /windows/i) ? 1 : 0;
+$isMINGW = ($ENV{MSYSTEM} =~ /mingw/i) ? 1 : 0;
 
 sub makemake();
 
@@ -890,7 +891,7 @@ sub readTextFile($)
 sub runprog
 {
     my $cmd = shift;
-    if ($isWindows) {
+    if ($isWindows && !$isMINGW) {
         system($ENV{COMSPEC}, "/c", split(' ', $cmd));
     } else {
         system($cmd);
