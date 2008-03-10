@@ -107,6 +107,7 @@
 typedef double         simtime_t;
 typedef const double   const_simtime_t;
 #define MAXTIME        DBL_MAX
+#define SIMTIME_ZERO   0.0
 #define SIMTIME_STR(t) simtimeToStr(t)
 #define SIMTIME_DBL(t) (t)
 #define SIMTIME_RAW(t) (t)
@@ -124,6 +125,7 @@ NAMESPACE_END
 typedef OPP::SimTime   simtime_t;
 typedef const double   const_simtime_t;
 #define MAXTIME        OPP::SimTime::maxTime()
+#define SIMTIME_ZERO   OPP::SimTime()
 #define SIMTIME_STR(t) ((t).str().c_str())
 #define SIMTIME_DBL(t) ((t).dbl())
 #define SIMTIME_RAW(t) ((t).raw())

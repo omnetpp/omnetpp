@@ -228,18 +228,18 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Sends a message through the gate given with its ID.
      */
-    int send(cMessage *msg, int gateid);   // send a message thru gate id
+    int send(cMessage *msg, int gateid)  {return sendDelayed(msg, SIMTIME_ZERO, gateid);}
 
     /**
      * Sends a message through the gate given with its name and index
      * (if multiple gate).
      */
-    int send(cMessage *msg, const char *gatename, int sn=-1);
+    int send(cMessage *msg, const char *gatename, int gateindex=-1)  {return sendDelayed(msg, SIMTIME_ZERO, gatename, gateindex);}
 
     /**
      * Sends a message through the gate given with its pointer.
      */
-    int send(cMessage *msg, cGate *outputgate);
+    int send(cMessage *msg, cGate *outputgate)  {return sendDelayed(msg, SIMTIME_ZERO, outputgate);}
 
     /**
      * Delayed sending. Sends a message through the gate given with
@@ -252,7 +252,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * its name and index (if multiple gate) as if it was sent delay
      * seconds later.
      */
-    int sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int sn=-1);
+    int sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int gateindex=-1);
 
     /**
      * Sends a message through the gate given with its pointer as if
@@ -289,7 +289,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
      */
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, cModule *mod, const char *inputgatename, int sn=-1);
+    int sendDirect(cMessage *msg, simtime_t propagationDelay, cModule *mod, const char *inputgatename, int gateindex=-1);
 
     /**
      * Sends a message directly to another module.
@@ -314,7 +314,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      */
     //XXX refine doc -- transmissionDelay is currently IGNORED (only used by animation), as we want to deliver the msg when the *first* bit arrives, not the last one
     //XXX make transmissionDelay first?
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t transmissionDelay, cModule *mod, const char *inputgatename, int sn=-1);
+    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t transmissionDelay, cModule *mod, const char *inputgatename, int gateindex=-1);
 
     /**
      * Sends a message directly to another module.

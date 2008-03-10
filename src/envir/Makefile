@@ -77,7 +77,7 @@ $O/omnetapp.o: eventlogwriter.h
 # opp_run is useless with static libs
 ifeq ("$(LIB_SUFFIX)","$(SHARED_LIB_SUFFIX)")
 $O/opp_run$(EXE_SUFFIX) : $O/opp_run.o $O/$(LIBNAME)$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o -lenvir$D $(IMPLIBS)
+	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o -lenvir$D $(IMPLIBS) $(SYS_LIBS)
 	cp $O/opp_run$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 
 $O/opp_run.o : opp_run.cc
