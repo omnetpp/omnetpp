@@ -50,8 +50,10 @@ public class VectorFileUtil {
 
 		// run the data-flow network
 		long startTime = System.currentTimeMillis();
+		XYArray result;
 		try {
 			dataflowManager.execute();
+	        result = arrayBuilderNode.getArray();
 		}
 		finally {
 			dataflowManager.delete(); // close vector file
@@ -59,7 +61,6 @@ public class VectorFileUtil {
 		System.out.println("data-flow network: "+(System.currentTimeMillis()-startTime)+" ms");
 
 		// and return the array
-		XYArray result = arrayBuilderNode.getArray();
 		return result;
 	}
 

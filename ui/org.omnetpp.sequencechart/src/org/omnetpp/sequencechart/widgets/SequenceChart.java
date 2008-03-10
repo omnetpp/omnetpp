@@ -1016,7 +1016,7 @@ public class SequenceChart
 								// TODO: compare it against log file's run
 								FileRunList fileRunList = new FileRunList();
 								fileRunList.add(resultFileManager.getFileRun(resultFile, run));
-								IDList idList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), null, axisState.vectorModuleFullPath, axisState.vectorName);
+								IDList idList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), fileRunList, axisState.vectorModuleFullPath, axisState.vectorName);
 
 								if (idList.size() == 1) {
 									long id = idList.get(0);

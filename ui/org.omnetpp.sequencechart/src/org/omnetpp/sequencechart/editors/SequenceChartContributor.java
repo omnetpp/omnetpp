@@ -1007,7 +1007,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 							resultFile = resultFileManager.loadFile(vectorFileName);
 						}
 						catch (Throwable te) {
-							MessageDialog.openError(null, "Error", "Could not open vector file " + vectorFileName);						
+							MessageDialog.openError(null, "Error", "Could not open vector file " + vectorFileName);
+							return;
 						}
 					}
 					else

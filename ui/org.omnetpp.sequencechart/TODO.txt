@@ -79,3 +79,4 @@ Features:
 
 Known bugs:
  - tracing events sometimes slows down or kills eclipse
+ 
