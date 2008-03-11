@@ -54,7 +54,7 @@ long cConfiguration::parseLong(const char *s, const char *defaultValue, long fal
     long d = strtol(s, &endp, 0);
     if (s==endp || *endp)
         throw opp_runtime_error("`%s' is not a valid integer value", s);
-    if (errno==ERANGE)
+    if ((d==LONG_MAX || d==LONG_MIN) && errno==ERANGE)
         throw opp_runtime_error("overflow during conversion of `%s'", s);
     return d;
 }

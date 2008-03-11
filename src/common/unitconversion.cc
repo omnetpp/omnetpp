@@ -20,6 +20,8 @@
 
 USING_NAMESPACE
 
+const double K = 1024.0;
+
 UnitConversion::UnitDesc UnitConversion::unitTable[] = {    //TODO mile,foot,yard,kmph, mps, mph
     { "d",   86400, "s",    "day" },
     { "h",    3600, "s",    "hour" },
@@ -34,10 +36,10 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {    //TODO mile,foot,yar
     { "Mbps",  1e6, "bps",  "megabit/sec" },
     { "Kbps",  1e3, "bps",  "kilobit/sec" },
     { "bps",     1, "bps",  "bit/sec" },
-    { "TB",   1e12, "B",    "terabyte" },
-    { "GB",    1e9, "B",    "gigabyte" },
-    { "MB",    1e6, "B",    "megabyte" },
-    { "KB",    1e3, "B",    "kilobyte" },
+    { "TB",K*K*K*K, "B",    "terabyte" },
+    { "GB",  K*K*K, "B",    "gigabyte" },
+    { "MB",    K*K, "B",    "megabyte" },
+    { "KB",      K, "B",    "kilobyte" },
     { "B",       1, "B",    "byte" },
     { "b",       1, "b",    "bit" },
     { "km",    1e3, "m",    "kilometer" },
