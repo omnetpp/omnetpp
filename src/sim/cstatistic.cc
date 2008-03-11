@@ -26,7 +26,7 @@
 #include <math.h>
 #include <string>
 
-#include "cstat.h"
+#include "cstatistic.h"
 #include "random.h"
 #include "distrib.h"
 #include "globals.h"

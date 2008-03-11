@@ -30,7 +30,7 @@
 #include "cscheduler.h"
 #include "cenvir.h"
 #include "ccomponenttype.h"
-#include "cstat.h"
+#include "cstatistic.h"
 #include "cexception.h"
 #include "cparimpl.h"
 #include "chasher.h"

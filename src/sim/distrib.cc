@@ -18,7 +18,7 @@
 #include <math.h>
 #include "distrib.h"
 #include "globals.h"
-#include "cfunction.h"
+#include "cmathfunction.h"
 #include "cexception.h"
 
 //

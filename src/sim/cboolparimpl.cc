@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include "cboolparimpl.h"
-#include "cstrtokenizer.h"
+#include "cstringtokenizer.h"
 #include "cdynamicexpression.h"
 #include "ccomponent.h"
 

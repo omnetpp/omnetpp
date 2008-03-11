@@ -29,16 +29,16 @@ IMPLIBS=-L$L -lenvir$D -lcommon$D
 OBJS_STD=\
     $O/carray.o $O/cbasicchannel.o $O/cboolparimpl.o $O/cchannel.o \
     $O/cclassfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigkey.o \
-    $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensity.o \
+    $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
     $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o \
-    $O/cenum.o $O/cexception.o $O/cfsm.o $O/cfunction.o $O/cgate.o $O/chist.o \
-    $O/cksplit.o $O/clcg32.o $O/cllist.o $O/clongparimpl.o $O/cmersennetwister.o \
-    $O/cmessage.o $O/cmsgpar.o $O/cmodule.o $O/cmsgheap.o $O/chasher.o \
+    $O/cenum.o $O/cexception.o $O/cfsm.o $O/cmathfunction.o $O/cgate.o $O/chistogram.o \
+    $O/cksplit.o $O/clcg32.o $O/clinkedlist.o $O/clongparimpl.o $O/cmersennetwister.o \
+    $O/cmessage.o $O/cmsgpar.o $O/cmodule.o $O/cmessageheap.o $O/chasher.o \
     $O/cnedfunction.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o \
     $O/cpar.o $O/cparimpl.o $O/cownedobject.o $O/cproperties.o $O/cproperty.o \
     $O/cpsquare.o $O/cqueue.o $O/cscheduler.o $O/csimplemodule.o \
-    $O/csimulation.o $O/cstat.o $O/cstlwatch.o $O/cstringparimpl.o \
-    $O/cstringpool.o $O/cstrtokenizer.o $O/cclassdescriptor.o $O/ctopo.o $O/cvarhist.o \
+    $O/csimulation.o $O/cstatistic.o $O/cstlwatch.o $O/cstringparimpl.o \
+    $O/cstringpool.o $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctopology.o $O/cvarhist.o \
     $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlparimpl.o $O/distrib.o $O/nedfunctions.o \
     $O/errmsg.o $O/globals.o $O/lex.expryy.o $O/minixpath.o $O/onstartup.o \
     $O/simtime.o $O/task.o $O/util.o $O/expr.tab.o $O/nedsupport.o $O/sim_std_m.o \
@@ -186,16 +186,16 @@ $O/cbasicchannel.o: cbasicchannel.cc \
   ../../include/cexpression.h \
   ../../include/carray.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/opp_string.h \
   ../../include/crng.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h
 $O/cboolparimpl.o: cboolparimpl.cc \
   ../../include/cboolparimpl.h \
-  ../../include/cstrtokenizer.h \
+  ../../include/cstringtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
   ../../include/cparimpl.h \
@@ -246,9 +246,9 @@ $O/cchannel.o: cchannel.cc \
   ../../include/cexpression.h \
   ../../include/carray.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/opp_string.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h
@@ -303,7 +303,7 @@ $O/cclassfactory.o: cclassfactory.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/ccommbuffer.o: ccommbuffer.cc \
   ../../include/ccommbuffer.h \
@@ -358,7 +358,7 @@ $O/ccomponent.o: ccomponent.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cexpression.h
 $O/ccomponenttype.o: ccomponenttype.cc \
@@ -388,7 +388,7 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/ccomponent.h \
   ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
@@ -424,10 +424,10 @@ $O/ccompoundmodule.o: ccompoundmodule.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h
+  ../../include/cmathfunction.h
 $O/cconfigkey.o: cconfigkey.cc \
   ../../include/cconfigkey.h \
   ../../include/cownedobject.h \
@@ -493,9 +493,9 @@ $O/cdefaultlist.o: cdefaultlist.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
-$O/cdensity.o: cdensity.cc \
+$O/cdensityestbase.o: cdensityestbase.cc \
   ../../include/globals.h \
-  ../../include/cdensity.h \
+  ../../include/cdensityestbase.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
@@ -515,14 +515,14 @@ $O/cdensity.o: cdensity.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cstat.h
+  ../../include/cstatistic.h
 $O/cdetect.o: cdetect.cc \
   ../../include/csimulation.h \
   ../../include/cdetect.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/globals.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
@@ -540,7 +540,7 @@ $O/cdetect.o: cdetect.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cstat.h
+  ../../include/cstatistic.h
 $O/cdisplaystring.o: cdisplaystring.cc \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -569,11 +569,11 @@ $O/cdisplaystring.o: cdisplaystring.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/cdoubleparimpl.o: cdoubleparimpl.cc \
   ../../include/cdoubleparimpl.h \
-  ../../include/cstrtokenizer.h \
+  ../../include/cstringtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
   ../../include/cparimpl.h \
@@ -598,7 +598,7 @@ $O/cdoubleparimpl.o: cdoubleparimpl.cc \
 $O/cdynamicexpression.o: cdynamicexpression.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cxmlelement.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cnedfunction.h \
   ../../include/cexception.h \
   expryydefs.h \
@@ -627,14 +627,14 @@ $O/cdynamicexpression.o: cdynamicexpression.cc \
   ../../include/cgate.h \
   ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/cenum.o: cenum.cc \
   ../../include/globals.h \
   ../../include/csimulation.h \
   ../../include/cenum.h \
   ../../include/cexception.h \
-  ../../include/cstrtokenizer.h \
+  ../../include/cstringtokenizer.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
@@ -652,7 +652,7 @@ $O/cenum.o: cenum.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/cexception.o: cexception.cc \
   ../../include/cexception.h \
@@ -669,7 +669,7 @@ $O/cexception.o: cexception.cc \
   ../../include/platdep/inttypes.h \
   ../../include/util.h \
   ../../include/globals.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -705,8 +705,8 @@ $O/cfsm.o: cfsm.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
-$O/cfunction.o: cfunction.cc \
-  ../../include/cfunction.h \
+$O/cmathfunction.o: cmathfunction.cc \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
@@ -732,7 +732,7 @@ $O/cfunction.o: cfunction.cc \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/crng.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -766,12 +766,12 @@ $O/cgate.o: cgate.cc \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/ccomponent.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h
@@ -788,12 +788,12 @@ $O/chasher.o: chasher.cc \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h
-$O/chist.o: chist.cc \
+$O/chistogram.o: chistogram.cc \
   ../../include/random.h \
   ../../include/distrib.h \
   ../../include/globals.h \
   ../../include/cdetect.h \
-  ../../include/chist.h \
+  ../../include/chistogram.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/simkerneldefs.h \
@@ -804,7 +804,7 @@ $O/chist.o: chist.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/util.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
@@ -823,8 +823,8 @@ $O/chist.o: chist.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h
+  ../../include/cstatistic.h \
+  ../../include/cdensityestbase.h
 $O/cksplit.o: cksplit.cc \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -849,12 +849,12 @@ $O/cksplit.o: cksplit.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
-  ../../include/cdensity.h \
-  ../../include/cstat.h \
+  ../../include/cdensityestbase.h \
+  ../../include/cstatistic.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/crng.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -885,9 +885,9 @@ $O/clcg32.o: clcg32.cc \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h
-$O/cllist.o: cllist.cc \
+$O/clinkedlist.o: clinkedlist.cc \
   ../../include/globals.h \
-  ../../include/cllist.h \
+  ../../include/clinkedlist.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
@@ -909,7 +909,7 @@ $O/cllist.o: cllist.cc \
   ../../include/regmacros.h
 $O/clongparimpl.o: clongparimpl.cc \
   ../../include/clongparimpl.h \
-  ../../include/cstrtokenizer.h \
+  ../../include/cstringtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
   ../../include/cparimpl.h \
@@ -959,8 +959,8 @@ $O/cmersennetwister.o: cmersennetwister.cc \
   ../../include/regmacros.h \
   ../../include/cmsgpar.h \
   ../../include/csimulation.h \
-  ../../include/cfunction.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmathfunction.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/cmessage.o: cmessage.cc \
   ../../include/globals.h \
@@ -992,10 +992,10 @@ $O/cmessage.o: cmessage.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h
+  ../../include/cmathfunction.h
 $O/cmodule.o: cmodule.cc \
   ../../include/cmodule.h \
   ../../include/csimplemodule.h \
@@ -1029,15 +1029,15 @@ $O/cmodule.o: cmodule.cc \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmathfunction.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h
-$O/cmsgheap.o: cmsgheap.cc \
+$O/cmessageheap.o: cmessageheap.cc \
   ../../include/globals.h \
   ../../include/cmessage.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
@@ -1058,13 +1058,13 @@ $O/cmsgheap.o: cmsgheap.cc \
   ../../include/regmacros.h \
   ../../include/cmsgpar.h \
   ../../include/csimulation.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/ccoroutine.h
 $O/cmsgpar.o: cmsgpar.cc \
   ../../include/cmsgpar.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
   ../../include/globals.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cxmlelement.h \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
@@ -1087,7 +1087,7 @@ $O/cmsgpar.o: cmsgpar.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/cnamedobject.o: cnamedobject.cc \
   ../../include/cnamedobject.h \
@@ -1179,7 +1179,7 @@ $O/coutvector.o: coutvector.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/opp_string.h
 $O/cownedobject.o: cownedobject.cc \
@@ -1201,7 +1201,7 @@ $O/cownedobject.o: cownedobject.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
@@ -1240,7 +1240,7 @@ $O/cpar.o: cpar.cc \
   ../../include/cclassfactory.h \
   ../../include/cdefaultlist.h \
   ../../include/cgate.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/cparimpl.o: cparimpl.cc \
   ../../include/cparimpl.h \
@@ -1275,7 +1275,7 @@ $O/cparimpl.o: cparimpl.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cdefaultlist.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/cparsimcomm.o: cparsimcomm.cc \
   ../../include/errmsg.h \
@@ -1360,12 +1360,12 @@ $O/cpsquare.o: cpsquare.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cdensity.h \
-  ../../include/cstat.h \
+  ../../include/cdensityestbase.h \
+  ../../include/cstatistic.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/crng.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -1398,7 +1398,7 @@ $O/cscheduler.o: cscheduler.cc \
   ../../include/cscheduler.h \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
@@ -1420,7 +1420,7 @@ $O/cscheduler.o: cscheduler.cc \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h
@@ -1454,9 +1454,9 @@ $O/csimplemodule.o: csimplemodule.cc \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/opp_string.h
 $O/csimulation.o: csimulation.cc \
   ../../include/cmodule.h \
@@ -1466,7 +1466,7 @@ $O/csimulation.o: csimulation.cc \
   ../../include/cscheduler.h \
   ../../include/cenvir.h \
   ../../include/ccomponenttype.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
   ../../include/cexception.h \
   ../../include/cparimpl.h \
   ../../include/chasher.h \
@@ -1495,16 +1495,16 @@ $O/csimulation.o: csimulation.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmathfunction.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/timeutil.h \
   ../../include/opp_string.h \
   netbuilder/cneddeclaration.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h
-$O/cstat.o: cstat.cc \
-  ../../include/cstat.h \
+$O/cstatistic.o: cstatistic.cc \
+  ../../include/cstatistic.h \
   ../../include/random.h \
   ../../include/distrib.h \
   ../../include/globals.h \
@@ -1528,7 +1528,7 @@ $O/cstat.o: cstat.cc \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/crng.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -1601,8 +1601,8 @@ $O/cstringpool.o: cstringpool.cc \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
-$O/cstrtokenizer.o: cstrtokenizer.cc \
-  ../../include/cstrtokenizer.h \
+$O/cstringtokenizer.o: cstringtokenizer.cc \
+  ../../include/cstringtokenizer.h \
   ../../include/cexception.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/platdefs.h \
@@ -1611,11 +1611,11 @@ $O/cstrtokenizer.o: cstrtokenizer.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/util.h
-$O/ctopo.o: ctopo.cc \
-  ../../include/ctopo.h \
+$O/ctopology.o: ctopology.cc \
+  ../../include/ctopology.h \
   ../../include/cpar.h \
   ../../include/globals.h \
-  ../../include/cllist.h \
+  ../../include/clinkedlist.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/cownedobject.h \
@@ -1635,7 +1635,7 @@ $O/ctopo.o: ctopo.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cdefaultlist.h \
@@ -1670,16 +1670,16 @@ $O/cvarhist.o: cvarhist.cc \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/crng.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/chist.h \
-  ../../include/cdensity.h \
-  ../../include/cstat.h
+  ../../include/chistogram.h \
+  ../../include/cdensityestbase.h \
+  ../../include/cstatistic.h
 $O/cvisitor.o: cvisitor.cc \
   ../../include/cvisitor.h \
   ../../include/cobject.h \
@@ -1736,12 +1736,12 @@ $O/cxmlelement.o: cxmlelement.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/cxmlparimpl.o: cxmlparimpl.cc \
   ../../include/cxmlparimpl.h \
   ../../include/cxmlelement.h \
-  ../../include/cstrtokenizer.h \
+  ../../include/cstringtokenizer.h \
   ../../include/cdynamicexpression.h \
   ../../include/ccomponent.h \
   ../../include/cparimpl.h \
@@ -1766,7 +1766,7 @@ $O/cxmlparimpl.o: cxmlparimpl.cc \
 $O/distrib.o: distrib.cc \
   ../../include/distrib.h \
   ../../include/globals.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cexception.h \
   ../../include/simkerneldefs.h \
   ../../include/random.h \
@@ -1777,7 +1777,7 @@ $O/distrib.o: distrib.cc \
   ../../include/cmodule.h \
   ../../include/crng.h \
   ../../include/util.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
@@ -1840,7 +1840,7 @@ $O/minixpath.o: minixpath.cc \
   ../../include/errmsg.h
 $O/nedfunctions.o: nedfunctions.cc \
   ../../include/distrib.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cnedfunction.h \
   ../../include/cexception.h \
   ../../include/simkerneldefs.h \
@@ -1853,7 +1853,7 @@ $O/nedfunctions.o: nedfunctions.cc \
   ../../include/crng.h \
   ../../include/util.h \
   ../../include/globals.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
@@ -1876,7 +1876,7 @@ $O/nedfunctions.o: nedfunctions.cc \
 $O/nedsupport.o: nedsupport.cc \
   ../../include/cdynamicexpression.h \
   ../../include/cxmlelement.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cnedfunction.h \
   ../../include/cexception.h \
   ../../include/cenvir.h \
@@ -1905,7 +1905,7 @@ $O/nedsupport.o: nedsupport.cc \
   ../../include/csimulation.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/onstartup.o: onstartup.cc \
   ../../include/onstartup.h \
@@ -1952,7 +1952,7 @@ $O/util.o: util.cc \
   ../../include/csimulation.h \
   ../../include/globals.h \
   ../../include/cexception.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cscheduler.h \
   ../../include/distrib.h \
   ../../include/cwatch.h \
@@ -1961,7 +1961,7 @@ $O/util.o: util.cc \
   ../../include/cmersennetwister.h \
   ../../include/cksplit.h \
   ../../include/cpsquare.h \
-  ../../include/cstrtokenizer.h \
+  ../../include/cstringtokenizer.h \
   ../../include/cxmlelement.h \
   ../../include/cbasicchannel.h \
   ../../include/simkerneldefs.h \
@@ -1970,7 +1970,7 @@ $O/util.o: util.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/opp_string.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -1992,8 +1992,8 @@ $O/util.o: util.cc \
   ../../include/cexpression.h \
   ../../include/cconfiguration.h \
   ../../include/mersennetwister.h \
-  ../../include/cdensity.h \
-  ../../include/cstat.h \
+  ../../include/cdensityestbase.h \
+  ../../include/cstatistic.h \
   ../../include/cchannel.h \
   ../../include/ccomponenttype.h
 $O/netbuilder/cdynamicchanneltype.o: netbuilder/cdynamicchanneltype.cc \
@@ -2063,14 +2063,14 @@ $O/netbuilder/cdynamicmoduletype.o: netbuilder/cdynamicmoduletype.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cparimpl.h \
   ../../include/cproperties.h \
   ../../include/cproperty.h
 $O/netbuilder/cexpressionbuilder.o: netbuilder/cexpressionbuilder.cc \
   netbuilder/cexpressionbuilder.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cnedfunction.h \
   ../../include/cparimpl.h \
   ../../include/nedsupport.h \
@@ -2130,7 +2130,7 @@ $O/netbuilder/cneddeclaration.o: netbuilder/cneddeclaration.cc \
   ../../include/ccomponent.h \
   ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   netbuilder/cnedloader.h \
@@ -2173,7 +2173,7 @@ $O/netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   ../../include/ccomponent.h \
   ../../include/csimulation.h \
   ../../include/cdefaultlist.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cchannel.h
 $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
@@ -2215,7 +2215,7 @@ $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cparimpl.h \
   ../../include/cproperties.h \
@@ -2249,11 +2249,11 @@ $O/parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
@@ -2348,11 +2348,11 @@ $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cpar.h \
@@ -2392,11 +2392,11 @@ $O/parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/cstringpool.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -2431,11 +2431,11 @@ $O/parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
@@ -2565,11 +2565,11 @@ $O/parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cpar.h \
@@ -2611,11 +2611,11 @@ $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cpar.h \
@@ -2656,11 +2656,11 @@ $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
@@ -2697,11 +2697,11 @@ $O/parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cpar.h \
@@ -2746,7 +2746,7 @@ $O/parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cparsimcomm.h \
   parsim/cparsimprotocolbase.h \
@@ -2755,7 +2755,7 @@ $O/parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   ../../include/platdep/timeutil.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   parsim/cnmplookahead.h
 $O/parsim/cproxygate.o: parsim/cproxygate.cc \
   parsim/cproxygate.h \
@@ -2787,10 +2787,10 @@ $O/parsim/cproxygate.o: parsim/cproxygate.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h
+  ../../include/cmathfunction.h
 $O/parsim/cptrpassingmpicomm.o: parsim/cptrpassingmpicomm.cc \
   parsim/cptrpassingmpicomm.h \
   parsim/cptrpassingmpicommbuffer.h \

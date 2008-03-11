@@ -22,7 +22,7 @@
 #include <string.h>
 #include <math.h>
 #include "globals.h"
-#include "cdensity.h"
+#include "cdensityestbase.h"
 #include "cexception.h"
 
 #ifdef WITH_PARSIM

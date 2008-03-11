@@ -16,7 +16,7 @@
 #include <math.h>
 #include <string.h>
 #include "distrib.h"
-#include "cfunction.h"
+#include "cmathfunction.h"
 #include "cnedfunction.h"
 #include "cexception.h"
 #include "unitconversion.h"

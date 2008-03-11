@@ -20,7 +20,7 @@
 #include "cscheduler.h"
 #include "cmessage.h"
 #include "csimulation.h"
-#include "cmsgheap.h"
+#include "cmessageheap.h"
 #include "globals.h"
 #include "cenvir.h"
 #include "cconfiguration.h"

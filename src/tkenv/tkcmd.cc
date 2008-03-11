@@ -26,7 +26,7 @@
 #include "cpar.h"
 #include "cmessage.h"
 #include "cchannel.h"
-#include "cstat.h"
+#include "cstatistic.h"
 #include "cwatch.h"
 #include "cclassdescriptor.h"
 #include "cdisplaystring.h"

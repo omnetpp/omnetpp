@@ -29,7 +29,7 @@
 #include "distrib.h"
 #include "globals.h"
 #include "cdetect.h"
-#include "chist.h"
+#include "chistogram.h"
 #include "cexception.h"
 
 #ifdef WITH_PARSIM

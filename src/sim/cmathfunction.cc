@@ -16,7 +16,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdarg.h>
-#include "cfunction.h"
+#include "cmathfunction.h"
 #include "globals.h"
 #include "cenvir.h"
 #include "cexception.h"

@@ -21,8 +21,8 @@
 #include "cpar.h"
 #include "carray.h"
 #include "coutvector.h"
-#include "cstat.h"
-#include "cdensity.h"
+#include "cstatistic.h"
+#include "cdensityestbase.h"
 
 #include "tkapp.h"
 #include "tklib.h"

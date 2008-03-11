@@ -21,7 +21,7 @@
 #include <stdio.h>           // sprintf
 #include <string.h>          // memcmp, memcpy, memset
 #include "globals.h"
-#include "cllist.h"
+#include "clinkedlist.h"
 #include "cexception.h"
 
 #ifdef WITH_PARSIM

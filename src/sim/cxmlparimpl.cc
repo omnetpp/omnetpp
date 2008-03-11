@@ -16,7 +16,7 @@
 
 #include "cxmlparimpl.h"
 #include "cxmlelement.h"
-#include "cstrtokenizer.h"
+#include "cstringtokenizer.h"
 #include "cdynamicexpression.h"
 #include "ccomponent.h"
 

@@ -28,7 +28,7 @@
 #include "csimulation.h"
 #include "globals.h"
 #include "cexception.h"
-#include "cfunction.h"
+#include "cmathfunction.h"
 #include "cscheduler.h" // dummy()
 #include "distrib.h" // dummy()
 
@@ -384,7 +384,7 @@ NAMESPACE_END
 #include "cmersennetwister.h"
 #include "cksplit.h"
 #include "cpsquare.h"
-#include "cstrtokenizer.h"
+#include "cstringtokenizer.h"
 #include "cxmlelement.h"
 #include "cbasicchannel.h"
 

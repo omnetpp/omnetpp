@@ -24,7 +24,7 @@
 #include <stdlib.h>          // qsort
 #include "globals.h"
 #include "cmessage.h"
-#include "cmsgheap.h"
+#include "cmessageheap.h"
 
 USING_NAMESPACE
 

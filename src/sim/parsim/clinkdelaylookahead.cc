@@ -19,7 +19,7 @@
 
 
 #include "clinkdelaylookahead.h"
-#include "csimul.h"
+#include "csimulation.h"
 #include "cmessage.h"
 #include "cenvir.h"
 #include "cnullmessageprot.h"

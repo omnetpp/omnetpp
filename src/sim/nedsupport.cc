@@ -16,7 +16,7 @@
 
 #include "cdynamicexpression.h"
 #include "cxmlelement.h"
-#include "cfunction.h"
+#include "cmathfunction.h"
 #include "cnedfunction.h"
 #include "cexception.h"
 #include "cenvir.h"

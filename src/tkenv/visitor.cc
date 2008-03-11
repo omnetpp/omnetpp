@@ -22,7 +22,7 @@
 #include "cmodule.h"
 #include "cmessage.h"
 #include "cqueue.h"
-#include "cstat.h"
+#include "cstatistic.h"
 #include "coutvector.h"
 #include "cwatch.h"
 #include "cfsm.h"

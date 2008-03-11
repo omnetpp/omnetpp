@@ -24,7 +24,7 @@
 #include "csimulation.h"
 #include "cenum.h"
 #include "cexception.h"
-#include "cstrtokenizer.h"
+#include "cstringtokenizer.h"
 
 USING_NAMESPACE
 

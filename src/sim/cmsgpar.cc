@@ -22,9 +22,9 @@
 #include <string>
 #include "opp_ctype.h"
 #include "cmsgpar.h"
-#include "cstat.h"
+#include "cstatistic.h"
 #include "globals.h"
-#include "cfunction.h"
+#include "cmathfunction.h"
 #include "cxmlelement.h"
 #include "cconfiguration.h"
 #include "cenvir.h"

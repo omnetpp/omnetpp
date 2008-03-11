@@ -121,8 +121,9 @@ $O/akaroarng.obj: akaroarng.cc \
 $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cenvir.h \
   omnetapp.h \
+  ../../include/csimulation.h \
   ../../include/cmodule.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
   akoutvectormgr.h \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
@@ -146,14 +147,13 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/csimulation.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
   filemgrs.h
 $O/args.obj: args.cc \
   args.h \
@@ -184,7 +184,7 @@ $O/cenvir.obj: cenvir.cc \
   ../../include/crng.h \
   ../../include/util.h \
   ../../include/globals.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
@@ -242,8 +242,8 @@ $O/filemgrs.obj: filemgrs.cc \
   omnetapp.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h \
+  ../../include/cstatistic.h \
+  ../../include/cdensityestbase.h \
   filemgrs.h \
   ../../include/ccomponenttype.h \
   ivfilemgr.h \
@@ -268,7 +268,7 @@ $O/filemgrs.obj: filemgrs.cc \
   ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -314,7 +314,7 @@ $O/ivfilemgr.obj: ivfilemgr.cc \
   ../../include/csimulation.h \
   ../../include/regmacros.h \
   ../../include/cmodule.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
   ivfilemgr.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
@@ -336,7 +336,7 @@ $O/ivfilemgr.obj: ivfilemgr.cc \
   ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -427,7 +427,7 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   matchablefield.h \
   matchableobject.h
@@ -454,6 +454,7 @@ $O/omnetapp.obj: omnetapp.cc \
   ../../include/chasher.h \
   ../../include/cconfigkey.h \
   ../../include/regmacros.h \
+  ../../include/simtime.h \
   ../../include/cparsimcomm.h \
   objectprinter.h \
   envdefs.h \
@@ -468,8 +469,6 @@ $O/omnetapp.obj: omnetapp.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -477,14 +476,15 @@ $O/omnetapp.obj: omnetapp.cc \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/platdep/timeutil.h \
   ../../include/cexpression.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
+  ../../include/platdep/inttypes.h \
   matchablefield.h \
   matchableobject.h
 $O/opp_run.obj: opp_run.cc \

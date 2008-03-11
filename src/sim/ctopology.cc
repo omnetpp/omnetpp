@@ -21,10 +21,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "ctopo.h"
+#include "ctopology.h"
 #include "cpar.h"
 #include "globals.h"
-#include "cllist.h"   //FIXME replace with stl or whatever...
+#include "clinkedlist.h"   //FIXME replace with stl or whatever...
 #include "cexception.h"
 
 #ifdef WITH_PARSIM

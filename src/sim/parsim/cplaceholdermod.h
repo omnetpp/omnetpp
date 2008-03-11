@@ -16,7 +16,7 @@
 #define __CPLACEHOLDERMOD_H
 
 #include "cmodule.h"
-#include "csimul.h"
+#include "csimulation.h"
 
 NAMESPACE_BEGIN
 
@@ -53,7 +53,7 @@ class SIM_API cPlaceHolderModule : public cModule // so, noncopyable
     //FIXME XXX override className() like in cDynamicModule(), to return NED type!
     //XXX also add isPlaceHolder() then? otherwise it's indistinguishable from "normal" modules!
 
-    
+
     /** @name Redefined cModule functions */
     //@{
 

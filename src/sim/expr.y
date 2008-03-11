@@ -76,7 +76,7 @@ LineColumn xpos, xprevpos;
 #include "cxmlelement.h"
 #include "cexception.h"
 #include "globals.h"
-#include "cfunction.h"
+#include "cmathfunction.h"
 #include "cnedfunction.h"
 #include "nedsupport.h"
 #include "stringutil.h"

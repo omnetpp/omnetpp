@@ -22,7 +22,7 @@
 #include "nedelements.h"
 #include "nederror.h"
 #include "cexpressionbuilder.h"
-#include "cfunction.h"
+#include "cmathfunction.h"
 #include "cnedfunction.h"
 #include "cparimpl.h"
 #include "xmlgenerator.h"

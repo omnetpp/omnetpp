@@ -18,7 +18,7 @@
 
 #include <stdlib.h>
 #include <errno.h>
-#include "cstrtokenizer.h"
+#include "cstringtokenizer.h"
 #include "cexception.h"
 
 USING_NAMESPACE

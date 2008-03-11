@@ -31,7 +31,7 @@
 #include "csimulation.h"
 #include "regmacros.h"
 #include "cmodule.h"
-#include "cstat.h"
+#include "cstatistic.h"
 #include "stringutil.h"
 #include "unitconversion.h"
 #include "ivfilemgr.h"
