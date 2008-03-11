@@ -39,31 +39,76 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
       <update label="OMNEST/OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetppide"/>
    </url>
 
+   <includes
+         id="de.unikassel.imageexport"
+         version="0.0.0"/>
+
+   <includes
+         id="com.lowagie.itext"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.gmf.runtime.thirdparty"
+         version="0.0.0"/>
+
+   <includes
+         id="org.eclipse.gmf"
+         version="0.0.0"/>
+
    <requires>
-      <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.filesystem"/>
-      <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.ui.views"/>
-      <import plugin="org.eclipse.jface"/>
-      <import plugin="org.eclipse.draw2d"/>
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.omnetpp.ide.nativelibs"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="de.unikassel.imageexport"/>
       <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.draw2d"/>
       <import plugin="org.omnetpp.common"/>
+      <import plugin="org.eclipse.jface"/>
       <import plugin="org.eclipse.gef"/>
       <import plugin="org.eclipse.ui.forms"/>
       <import plugin="org.omnetpp.ned.model"/>
       <import plugin="org.omnetpp.ned.core"/>
       <import plugin="org.eclipse.emf.edit.ui"/>
       <import plugin="org.omnetpp.figures"/>
+      <import plugin="org.eclipse.search"/>
       <import plugin="org.omnetpp.scave.model"/>
       <import plugin="org.omnetpp.scave.builder"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
-      <import plugin="org.eclipse.ui.ide.application"/>
-      <import plugin="org.eclipse.platform"/>
+      <import plugin="org.eclipse.gmf.runtime.draw2d.ui.render.awt"/>
+      <import plugin="org.apache.batik.svggen"/>
+      <import plugin="org.apache.batik.ext.awt"/>
+      <import plugin="org.apache.batik.util"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.core.variables"/>
+      <import plugin="org.omnetpp.inifile.editor"/>
+      <import plugin="org.omnetpp.main"/>
+      <import plugin="org.omnetpp.ned.editor"/>
+      <import plugin="org.omnetpp.msg.editor"/>
+      <import plugin="org.eclipse.cdt.core"/>
+      <import plugin="org.eclipse.cdt.managedbuilder.core"/>
+      <import plugin="org.eclipse.cdt"/>
+      <import plugin="org.eclipse.cdt.debug.core"/>
+      <import plugin="org.eclipse.cdt.debug.mi.core"/>
+      <import plugin="org.eclipse.cdt.debug.mi.ui"/>
+      <import plugin="org.eclipse.cdt.debug.ui"/>
+      <import plugin="org.eclipse.cdt.launch"/>
+      <import plugin="org.eclipse.cdt.make.core"/>
+      <import plugin="org.eclipse.cdt.make.ui"/>
+      <import plugin="org.eclipse.cdt.managedbuilder.gnu.ui"/>
+      <import plugin="org.eclipse.cdt.managedbuilder.ui"/>
+      <import plugin="org.eclipse.cdt.refactoring"/>
+      <import plugin="org.eclipse.cdt.ui"/>
+      <import plugin="de.unikassel.imageexport.eps"/>
+      <import plugin="de.unikassel.imageexport.pdf"/>
+      <import plugin="de.unikassel.imageexport.svg"/>
+      <import plugin="com.lowagie.itext"/>
    </requires>
 
    <plugin
@@ -184,27 +229,6 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          unpack="false"/>
 
    <plugin
-         id="de.unikassel.imageexport.pdf"
-         download-size="0"
-         install-size="0"
-         version="0.5.0"
-         unpack="false"/>
-
-   <plugin
-         id="de.unikassel.imageexport.svg"
-         download-size="0"
-         install-size="0"
-         version="0.5.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.slf4j.nop"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.rc3"
-         unpack="false"/>
-
-   <plugin
          id="org.omnetpp.launch"
          download-size="0"
          install-size="0"
@@ -254,6 +278,34 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
          download-size="0"
          install-size="0"
          version="4.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.slf4j.nop"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.unikassel.imageexport.eps"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.unikassel.imageexport.pdf"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="de.unikassel.imageexport.svg"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
