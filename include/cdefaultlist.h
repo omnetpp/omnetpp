@@ -36,9 +36,9 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
 {
   private:
     friend class cOwnedObject;
-    cOwnedObject **vect;   // vector of objects
-    int size;         // size of vector FIXME these varnames are likely to collide with user-defined members of cSimpleModule -- use better ones!
-    int count;        // number of elements stored
+    cOwnedObject **vect; // vector of objects
+    int capacity;        // allocated size of vect[]
+    int size;            // number of elements used in vect[] (0..size-1)
   public:
     static bool doGC; // whether garbage collection is necessary in destructor
 
@@ -119,12 +119,11 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     /**
      * Returns the number of elements stored.
      */
-    int defaultListItems() const {return count;}
+    int defaultListSize() const {return size;}
 
     /**
      * Get the element at the given position. k must be between 0 and
-     * items()-1 (inclusive). Note that elements may move as the result
-     * of add() and remove() operations. If the index is out of bounds,
+     * defaultListSize()-1 (inclusive). If the index is out of bounds,
      * NULL is returned.
      */
     cOwnedObject *defaultListGet(int k);

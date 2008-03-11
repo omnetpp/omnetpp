@@ -25,7 +25,7 @@ static bool defaultRecurseIntoCObject(void *object, cClassDescriptor *descriptor
 {
     cArray *carray = dynamic_cast<cArray *>(fieldValue);
 
-    return !((carray && !carray->items()) ||
+    return !((carray && !carray->size()) ||
              dynamic_cast<cModule *>(fieldValue) ||
              dynamic_cast<cGate *>(fieldValue));
 }

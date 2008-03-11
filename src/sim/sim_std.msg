@@ -87,7 +87,7 @@ class cNoncopyableOwnedObject extends cOwnedObject
 class cDefaultList extends cNoncopyableOwnedObject
 {
         @omitGetVerb(true);
-        cOwnedObject *contents[] @getter(defaultListGet) @sizeGetter(defaultListItems) @group(contents) @hint(list of objects directly held by this component);
+        cOwnedObject *contents[] @getter(defaultListGet) @sizeGetter(defaultListSize) @group(contents) @hint(list of objects directly held by this component);
 }
 
 class cPar;
@@ -215,7 +215,7 @@ class cArray extends cOwnedObject
 {
         @omitGetVerb(true);
         bool takeOwnership @group(general) @setter(takeOwnership) @editable @hint(whether the array should own the objects inserted into it);
-        cOwnedObject *contents[] @getter(get) @sizeGetter(items) @hint(objects contained in the array);
+        cOwnedObject *contents[] @getter(get) @sizeGetter(size) @hint(objects contained in the array);
 }
 
 class cMessage extends cOwnedObject

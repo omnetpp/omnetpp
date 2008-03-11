@@ -18,8 +18,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>           // sprintf
-#include <string.h>          // memcmp, memcpy, memset
+#include <string.h>  // memcmp, memcpy, memset
 #include "carray.h"
 #include "globals.h"
 #include "cexception.h"
@@ -48,14 +47,14 @@ void cArray::Iterator::init(const cArray& a, bool athead)
         // fast-forward to first non-empty slot
         // (Note: we exploit that get(k) just returns NULL when k is out of bounds)
         k = 0;
-        while (!array->get(k) && k<array->items())
+        while (!array->get(k) && k<array->size())
             k++;
 
     }
     else
     {
         // rewind to first non-empty slot
-        k = array->items()-1;
+        k = array->size()-1;
         while (!array->get(k) && k>=0)
             k--;
     }
@@ -63,19 +62,19 @@ void cArray::Iterator::init(const cArray& a, bool athead)
 
 cObject *cArray::Iterator::operator++(int)
 {
-    if (k<0 || k>=array->items())
+    if (k<0 || k>=array->size())
         return NULL;
     cObject *obj = array->get(k);
 
     k++;
-    while (!array->get(k) && k<array->items())
+    while (!array->get(k) && k<array->size())
         k++;
     return obj;
 }
 
 cObject *cArray::Iterator::operator--(int)
 {
-    if (k<0 || k>=array->items())
+    if (k<0 || k>=array->size())
         return NULL;
     cObject *obj = array->get(k);
     k--;
@@ -94,16 +93,16 @@ cArray::cArray(const cArray& list) : cOwnedObject()
     operator=(list);
 }
 
-cArray::cArray(const char *name, int siz, int dt) :
+cArray::cArray(const char *name, int cap, int dt) :
 cOwnedObject( name )
 {
     tkownership = true;
     delta = Max(1,dt);
-    size = Max(siz,0);
+    capacity = Max(cap,0);
     firstfree = 0;
     last = -1;
-    vect = new cObject *[size];
-    for (int i=0; i<size; i++) vect[i]=NULL;
+    vect = new cObject *[capacity];
+    for (int i=0; i<capacity; i++) vect[i]=NULL;
 }
 
 cArray::~cArray()
@@ -121,13 +120,13 @@ cArray& cArray::operator=(const cArray& list)
     cOwnedObject::operator=(list);
 
     tkownership = list.tkownership;
-    size = list.size;
+    capacity = list.capacity;
     delta = list.delta;
     firstfree = list.firstfree;
     last = list.last;
     delete [] vect;
-    vect = new cObject *[size];
-    if (vect) memcpy( vect, list.vect, size * sizeof(cObject *) );
+    vect = new cObject *[capacity];
+    if (vect) memcpy( vect, list.vect, capacity * sizeof(cObject *) );
 
     for (int i=0; i<=last; i++)
         if (vect[i] && vect[i]->isOwnedObject() && vect[i]->owner()==const_cast<cArray*>(&list))
@@ -158,7 +157,7 @@ void cArray::netPack(cCommBuffer *buffer)
 #else
     cOwnedObject::netPack(buffer);
 
-    buffer->pack(size);
+    buffer->pack(capacity);
     buffer->pack(delta);
     buffer->pack(firstfree);
     buffer->pack(last);
@@ -184,12 +183,12 @@ void cArray::netUnpack(cCommBuffer *buffer)
 
     delete [] vect;
 
-    buffer->unpack(size);
+    buffer->unpack(capacity);
     buffer->unpack(delta);
     buffer->unpack(firstfree);
     buffer->unpack(last);
 
-    vect = new cObject *[size];
+    vect = new cObject *[capacity];
     for (int i = 0; i <= last; i++)
     {
         if (!buffer->checkFlag())
@@ -220,7 +219,7 @@ int cArray::add(cObject *obj)
     int retval;
     if (obj->isOwnedObject() && takeOwnership())
         take((cOwnedObject *)obj);
-    if (firstfree < size)  // fits in current vector
+    if (firstfree < capacity)  // fits in current vector
     {
         vect[firstfree] = obj;
         retval = firstfree;
@@ -231,15 +230,15 @@ int cArray::add(cObject *obj)
     }
     else // must allocate bigger vector
     {
-        cObject **v = new cObject *[size+delta];
-        memcpy(v, vect, sizeof(cObject*)*size );
-        memset(v+size, 0, sizeof(cObject*)*delta);
+        cObject **v = new cObject *[capacity+delta];
+        memcpy(v, vect, sizeof(cObject*)*capacity );
+        memset(v+capacity, 0, sizeof(cObject*)*delta);
         delete [] vect;
         vect = v;
-        vect[size] = obj;
-        retval = last = size;
-        firstfree = size+1;
-        size += delta;
+        vect[capacity] = obj;
+        retval = last = capacity;
+        firstfree = capacity+1;
+        capacity += delta;
     }
     return retval;
 }
@@ -249,7 +248,7 @@ int cArray::addAt(int m, cObject *obj)
     if (!obj)
         throw cRuntimeError(this,"cannot insert NULL pointer");
 
-    if (m<size)  // fits in current vector
+    if (m<capacity)  // fits in current vector
     {
         if (m<0)
             throw cRuntimeError(this,"addAt(): negative position %d",m);
@@ -267,14 +266,14 @@ int cArray::addAt(int m, cObject *obj)
     else // must allocate bigger vector
     {
         cObject **v = new cObject *[m+delta];
-        memcpy(v, vect, sizeof(cObject*)*size);
-        memset(v+size, 0, sizeof(cObject*)*(m+delta-size));
+        memcpy(v, vect, sizeof(cObject*)*capacity);
+        memset(v+capacity, 0, sizeof(cObject*)*(m+delta-capacity));
         delete [] vect;
         vect = v;
         vect[m] = obj;
         if (obj->isOwnedObject() && takeOwnership())
             take((cOwnedObject *)obj);
-        size = m+delta;
+        capacity = m+delta;
         last = m;
         if (firstfree==m)
             firstfree++;

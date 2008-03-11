@@ -76,7 +76,7 @@ class SIM_API cArray : public cOwnedObject
         /**
          * Returns true if the iterator has reached either end of the array.
          */
-        bool end() const   {return k<0 || k>=array->items();}
+        bool end() const   {return k<0 || k>=array->size();}
 
         /**
          * Returns the current object, then moves the iterator to the next item.
@@ -102,7 +102,7 @@ class SIM_API cArray : public cOwnedObject
   private:
     bool tkownership; //FIXME utilize cOwnedObject::flags
     cObject **vect;   // vector of objects
-    int size;         // size of vector
+    int capacity;     // allocated size of vect[]
     int delta;        // if needed, grows by delta
     int firstfree;    // first free position in vect[]
     int last;         // last used position
@@ -120,10 +120,10 @@ class SIM_API cArray : public cOwnedObject
     cArray(const cArray& list);
 
     /**
-     * Constructor. The initial size of the container and the delta
-     * (by which the size will grow if it gets full) can be specified.
+     * Constructor. The initial capacity of the container and the delta
+     * (by which the capacity will grow if it gets full) can be specified.
      */
-    explicit cArray(const char *name=NULL, int siz=0, int dt=10);
+    explicit cArray(const char *name=NULL, int capacity=0, int delta=10);
 
     /**
      * Destructor. The contained objects that were owned by the container
@@ -182,11 +182,11 @@ class SIM_API cArray : public cOwnedObject
     //@{
 
     /**
-     * Returns the index of last used position+1. This is the same as the
-     * number of contained objects if there are no 'holes' in the array.
-     * (Removals may create holes.)
+     * Returns the index of last used position+1. This only equals the
+     * number of contained objects if there are no "holes" (NULL elements)
+     * in the array.
      */
-    int items() const {return last+1;}
+    int size() const {return last+1;}
 
     /**
      * As a result, the container will be empty. Contained objects that

@@ -18,8 +18,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>           // sprintf
-#include <string.h>          // memcpy
+#include <string.h>  // memcpy
 #include "globals.h"
 #include "carray.h"
 #include "cexception.h"
@@ -45,7 +44,7 @@ cDefaultList::cDefaultList(const char *name) : cNoncopyableOwnedObject(name)
     // careful: if we are a global variable (ctor called before main()),
     // then insert() may get called before constructor and it invoked
     // construct() already.
-    if (cStaticFlag::isSet() || size==0)
+    if (cStaticFlag::isSet() || capacity==0)
         construct();
 
     // if we're invoked before main, then we are a global variable (dynamic
@@ -58,11 +57,11 @@ cDefaultList::cDefaultList(const char *name) : cNoncopyableOwnedObject(name)
 
 void cDefaultList::construct()
 {
-    size = 2;
-    count = 0;
-    vect = new cOwnedObject *[size];
-    for (int i=0; i<size; i++)
-        vect[i]=NULL;
+    capacity = 2;
+    size = 0;
+    vect = new cOwnedObject *[capacity];
+    for (int i=0; i<capacity; i++)
+        vect[i] = NULL;
 }
 
 cDefaultList::~cDefaultList()
@@ -74,14 +73,14 @@ cDefaultList::~cDefaultList()
         // allocated objects held by the module. But: deletion has dangers,
         // i.e. if we try to delete objects embedded in other objects/structs or
         // arrays, it will crash mysteriously to the user -- so consider not deleting.
-        while (count>0)
+        while (size>0)
             delete vect[0];
         delete [] vect;
     }
     else
     {
         // experimental: do not delete objects (except cWatches), just print their names
-        for (int i=0; i<count; i++)
+        for (int i=0; i<size; i++)
         {
             if (dynamic_cast<cWatchBase *>(vect[i]))
                 delete vect[i--]; // "i--" used because delete will move last item to position i
@@ -98,9 +97,9 @@ void cDefaultList::doInsert(cOwnedObject *obj)
 {
     ASSERT(obj!=this || this==&defaultList);
 
-    if (count>=size)
+    if (size>=capacity)
     {
-        if (size==0)
+        if (capacity==0)
         {
             // this is if we're invoked before main, before our ctor run
             construct();
@@ -108,16 +107,16 @@ void cDefaultList::doInsert(cOwnedObject *obj)
         else
         {
             // must allocate bigger vector (grow 25% but at least 2)
-            size += (size<8) ? 2 : (size>>2);
-            cOwnedObject **v = new cOwnedObject *[size];
-            memcpy(v, vect, sizeof(cOwnedObject*)*count);
+            capacity += (capacity<8) ? 2 : (capacity>>2);
+            cOwnedObject **v = new cOwnedObject *[capacity];
+            memcpy(v, vect, sizeof(cOwnedObject*)*size);
             delete [] vect;
             vect = v;
         }
     }
 
     obj->ownerp = this;
-    vect[obj->pos = count++] = obj;
+    vect[obj->pos = size++] = obj;
 }
 
 void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
@@ -126,37 +125,37 @@ void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
 
     // move last object to obj's old position
     int pos = obj->pos;
-    (vect[pos] = vect[--count])->pos = pos;
+    (vect[pos] = vect[--size])->pos = pos;
 }
 
 void cDefaultList::yieldOwnership(cOwnedObject *obj, cOwnedObject *newowner)
 {
-    ASSERT(obj && obj->ownerp==this && count>0);
+    ASSERT(obj && obj->ownerp==this && size>0);
 
     // give object to its new owner
     obj->ownerp = newowner;
 
     // move last object to obj's old position
     int pos = obj->pos;
-    (vect[pos] = vect[--count])->pos = pos;
+    (vect[pos] = vect[--size])->pos = pos;
 }
 
 void cDefaultList::takeAllObjectsFrom(cDefaultList& other)
 {
-    while (other.defaultListItems()>0)
+    while (other.defaultListSize()>0)
         take(other.defaultListGet(0));
 }
 
 std::string cDefaultList::info() const
 {
     std::stringstream out;
-    out << "n=" << count;
+    out << "n=" << size;
     return out.str();
 }
 
 void cDefaultList::forEachChild(cVisitor *v)
 {
-    for (int i=0; i<count; i++)
+    for (int i=0; i<size; i++)
         v->visit(vect[i]);
 }
 
@@ -167,7 +166,7 @@ void cDefaultList::netPack(cCommBuffer *buffer)
 #else
     cOwnedObject::netPack(buffer);
 
-    if (count>0)
+    if (size>0)
         throw cRuntimeError(this, "netPack() not supported (makes no sense)");
 #endif
 }
@@ -178,7 +177,7 @@ void cDefaultList::netUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this,eNOPARSIM);
 #else
     cOwnedObject::netUnpack(buffer);
-    if (count>0)
+    if (size>0)
         throw cRuntimeError(this, "netUnpack(): can only unpack into empty object");
 #endif
 }
@@ -202,7 +201,7 @@ void cDefaultList::drop(cOwnedObject *obj)
 
 cOwnedObject *cDefaultList::defaultListGet(int k)
 {
-    if (k<0 || k>=count)
+    if (k<0 || k>=size)
         return NULL;
     return vect[k];
 }

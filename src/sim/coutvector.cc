@@ -92,10 +92,11 @@ void cOutVector::netUnpack(cCommBuffer *buffer)
 
 void cOutVector::setUnit(const char *unit)
 {
+    if (!handle)
+        throw cRuntimeError(this,"setUnit(): set the object name first, using setName()");
     ev.setVectorAttribute(handle, "unit", unit);
 }
 
-//FIXME crashes when called before setName()
 //FIXME enum name doesn't get written out to the file
 void cOutVector::setEnum(const char *registeredEnumName)
 {
@@ -105,8 +106,10 @@ void cOutVector::setEnum(const char *registeredEnumName)
     setEnum(enumDecl);
 }
 
-void cOutVector::setEnum(cEnum *enumDecl)  //XXX
+void cOutVector::setEnum(cEnum *enumDecl)
 {
+    if (!handle)
+        throw cRuntimeError(this,"setEnum(): set the object name first, using setName()");
     ev.setVectorAttribute(handle, "enum", enumDecl->toString().c_str());
 }
 
