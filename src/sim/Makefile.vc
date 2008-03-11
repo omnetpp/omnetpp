@@ -36,7 +36,7 @@ OBJS_STD=\
     $O/cnedfunction.obj $O/cobject.obj $O/coutvector.obj $O/cnamedobject.obj \
     $O/cpar.obj $O/cparimpl.obj $O/cownedobject.obj $O/cproperties.obj $O/cproperty.obj \
     $O/cpsquare.obj $O/cqueue.obj $O/cscheduler.obj $O/csimplemodule.obj \
-    $O/csimulation.obj $O/cstatistic.obj $O/cstlwatch.obj $O/cstringparimpl.obj \
+    $O/csimulation.obj $O/cstatistic.obj $O/cstddev.obj $O/cstlwatch.obj $O/cstringparimpl.obj \
     $O/cstringpool.obj $O/cstringtokenizer.obj $O/cclassdescriptor.obj $O/ctopology.obj $O/cvarhist.obj \
     $O/cvisitor.obj $O/cwatch.obj $O/cxmlelement.obj $O/cxmlparimpl.obj $O/distrib.obj $O/nedfunctions.obj \
     $O/errmsg.obj $O/globals.obj $O/lex.expryy.obj $O/minixpath.obj $O/onstartup.obj \
@@ -526,6 +526,7 @@ $O/cdensityestbase.obj: cdensityestbase.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/cstddev.h \
   ../../include/cstatistic.h
 $O/cdetect.obj: cdetect.cc \
   ../../include/csimulation.h \
@@ -801,7 +802,8 @@ $O/chistogram.obj: chistogram.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/cstatistic.h \
-  ../../include/cdensityestbase.h
+  ../../include/cdensityestbase.h \
+  ../../include/cstddev.h
 $O/cksplit.obj: cksplit.cc \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -827,6 +829,7 @@ $O/cksplit.obj: cksplit.cc \
   ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cdensityestbase.h \
+  ../../include/cstddev.h \
   ../../include/cstatistic.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
@@ -1372,6 +1375,7 @@ $O/cpsquare.obj: cpsquare.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/cdensityestbase.h \
+  ../../include/cstddev.h \
   ../../include/cstatistic.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
@@ -1550,6 +1554,43 @@ $O/cstatistic.obj: cstatistic.cc \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h
+$O/cstddev.obj: cstddev.cc \
+  ../../include/cstddev.h \
+  ../../include/random.h \
+  ../../include/distrib.h \
+  ../../include/globals.h \
+  ../../include/cdetect.h \
+  ../../include/csimplemodule.h \
+  ../../include/cexception.h \
+  ../../include/cenvir.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cstatistic.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cownedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/csimulation.h \
+  ../../include/cmodule.h \
+  ../../include/crng.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/opp_string.h
 $O/cstlwatch.obj: cstlwatch.cc \
   ../../include/cstlwatch.h \
   ../../include/cclassdescriptor.h \
@@ -1690,6 +1731,7 @@ $O/cvarhist.obj: cvarhist.cc \
   ../../include/cexpression.h \
   ../../include/chistogram.h \
   ../../include/cdensityestbase.h \
+  ../../include/cstddev.h \
   ../../include/cstatistic.h
 $O/cvisitor.obj: cvisitor.cc \
   ../../include/cvisitor.h \
@@ -2038,6 +2080,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/csimplemodule.h \
   ../../include/csimulation.h \
   ../../include/cstatistic.h \
+  ../../include/cstddev.h \
   ../../include/cstlwatch.h \
   ../../include/cstringparimpl.h \
   ../../include/cstringpool.h \
@@ -2134,6 +2177,7 @@ $O/util.obj: util.cc \
   ../../include/cconfiguration.h \
   ../../include/mersennetwister.h \
   ../../include/cdensityestbase.h \
+  ../../include/cstddev.h \
   ../../include/cstatistic.h \
   ../../include/cchannel.h \
   ../../include/ccomponenttype.h

@@ -71,6 +71,7 @@
 #include "csimplemodule.h"
 #include "csimulation.h"
 #include "cstatistic.h"
+#include "cstddev.h"
 #include "cstlwatch.h"
 #include "cstringparimpl.h"
 #include "cstringpool.h"

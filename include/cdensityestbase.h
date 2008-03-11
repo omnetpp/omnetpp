@@ -19,7 +19,7 @@
 #ifndef __CDENSITYESTBASE_H
 #define __CDENSITYESTBASE_H
 
-#include "cstatistic.h"
+#include "cstddev.h"
 
 NAMESPACE_BEGIN
 

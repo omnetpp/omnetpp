@@ -274,7 +274,8 @@ $O/filemgrs.obj: filemgrs.cc \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h
+  ../../include/cexpression.h \
+  ../../include/cstddev.h
 $O/fsutils.obj: fsutils.cc \
   fsutils.h \
   ../../include/onstartup.h \
