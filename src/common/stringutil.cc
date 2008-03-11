@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
+#include <math.h>   //HUGE_VAL
 #include "commonutil.h"
 #include "opp_ctype.h"
 #include "stringutil.h"
@@ -383,3 +384,61 @@ Expected results:
  dictcmp a aaa Aa AaAaa aaaa --> a Aa aaa aaaa AaAaa
  dictcmp a1b a2b a11b a13b a20b --> a1b a2b a11b a13b a20b
 */
+
+long opp_strtol(const char *s, char **endptr)
+{
+    long d = strtol(s, endptr, 0);
+    if ((d==LONG_MAX || d==LONG_MIN) && errno==ERANGE)
+        throw opp_runtime_error("overflow converting `%s' to long", s);
+    return d;
+}
+
+long opp_atol(const char *s)
+{
+    char *endptr;
+    long d = opp_strtol(s, &endptr);
+    while (opp_isspace(*endptr))
+        endptr++;
+    if (*endptr)
+        throw opp_runtime_error("trailing garbage found when converting `%s' to long", s);
+    return d;
+}
+
+unsigned long opp_strtoul(const char *s, char **endptr)
+{
+    unsigned long d = strtoul(s, endptr, 0);
+    if (d==ULONG_MAX && errno==ERANGE)
+        throw opp_runtime_error("overflow converting `%s' to unsigned long", s);
+    return d;
+}
+
+unsigned long opp_atoul(const char *s)
+{
+    char *endptr;
+    unsigned long d = opp_strtol(s, &endptr);
+    while (opp_isspace(*endptr))
+        endptr++;
+    if (*endptr)
+        throw opp_runtime_error("trailing garbage found when converting `%s' to unsigned long", s);
+    return d;
+}
+
+double opp_strtod(const char *s, char **endptr)
+{
+    double d = strtod(s, endptr);
+    if (d==-HUGE_VAL || d==HUGE_VAL)
+        throw opp_runtime_error("overflow converting `%s' to double", s);
+    return d;
+}
+
+double opp_atof(const char *s)
+{
+    char *endptr;
+    double d = opp_strtod(s, &endptr);
+    while (opp_isspace(*endptr))
+        endptr++;
+    if (*endptr)
+        throw opp_runtime_error("trailing garbage found when converting `%s' to double", s);
+    return d;
+}
+

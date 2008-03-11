@@ -190,6 +190,45 @@ COMMON_API std::string opp_join(const char *separator, const char *s1, const cha
  */
 COMMON_API int strdictcmp(const char *s1, const char *s2);
 
+/**
+ * Like the standard strtol() with base==0, but throws opp_runtime_error if an
+ * overflow occurs during conversion.
+ */
+COMMON_API long opp_strtol(const char *s, char **endptr);
+
+/**
+ * Like the standard atol(), but throws opp_runtime_error if an overflow
+ * occurs during conversion, or if there is (non-whitespace) trailing garbage
+ * after the number.
+ */
+COMMON_API long opp_atol(const char *s);
+
+/**
+ * Like the standard strtoul() with base==0, but throws opp_runtime_error if an
+ * overflow occurs during conversion.
+ */
+COMMON_API unsigned long opp_strtoul(const char *s, char **endptr);
+
+/**
+ * Like the standard atol(), but for unsigned long, and throws opp_runtime_error
+ * if an overflow occurs during conversion, or if there is (non-whitespace)
+ * trailing garbage after the number.
+ */
+COMMON_API unsigned long opp_atoul(const char *s);
+
+/**
+ * Like the standard strtod(), but throws opp_runtime_error if an overflow
+ * occurs during conversion.
+ */
+COMMON_API double opp_strtod(const char *s, char **endptr);
+
+/**
+ * Like the standard atof(), but throws opp_runtime_error if an overflow
+ * occurs during conversion, or if there is (non-whitespace) trailing garbage
+ * after the number.
+ */
+COMMON_API double opp_atof(const char *s);
+
 //NAMESPACE_END
 
 
