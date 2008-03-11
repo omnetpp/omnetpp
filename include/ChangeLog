@@ -139,12 +139,12 @@
 	- global connect() function removed (use cGate::connectTo() instead!)
 
 	- global findXXX(const char *name) functions turned into static cXXX::find(const char *name);
-	   - findLink():
-	   - findFunction:
-	   - findEnum:
-	   - findChannelType:
-	   - findNetworkType():
-	   - findModuleType():
+	   - findLink()
+	   - findFunction
+	   - findEnum
+	   - findChannelType
+	   - findNetworkType()
+	   - findModuleType()
 	    findModuleType() left for compatibility
 
 	- cModuleType::buildInside(mod) became protected (was deprecated anyway)
@@ -183,24 +183,47 @@
 
 	- cStringTokenizer: added asIntVector() and asDoubleVector() methods; TODO testing
 
-	configuration handling rewritten, inlcuding (cConfiguration)
+	Configuration handling rewritten, including cConfiguration.
 
 	Run number handling:
 	- run numbers made entrirely the matter of cEnvir. cSimulation::runNumber()
 	  got removed. Also removed runNumber from the arg list of cEnvir callback
 	  functions.
 
-	Removed obsolete utility functions:
-	- my...() functions removed (they were #defines to opp_...() functions)
-		#define myrandomize      opp_randomize
-		#define genk_myrandomize genk_opp_randomize
-		#define mystrdup         opp_strdup
-		#define mystrcpy         opp_strcpy
-		#define mystrcmp         opp_strcmp
-		#define mystrmatch       opp_strmatch
-		#define fastconcat       opp_concat
-		#define indexedname      opp_mkindexedname
-	  function correct(const char *) renamed to opp_nulltoempty(const char *) with no compat typedef
+	Removed several obsolete functions:
+	- calls to myxxx() functions should be replaced with opp_xxx() in the code:
+		myrandomize(...)
+		genk_myrandomize(...)
+		mystrdup(...)
+		mystrcpy(...)
+		mystrcmp(...)
+		mystrmatch(...)
+		fastconcat(...)
+		indexedname(...)
+	- calls to genk_xxx() functions should be replaced with their "genk_"-less
+	  counterparts  (and the first arg dropped or moved to the last place):
+		genk_uniform(double gen_nr, double a, double b);
+		genk_intuniform(double gen_nr, double a, double b);
+		genk_exponential(double gen_nr, double p);
+		genk_normal(double gen_nr, double mean, double variance);
+		genk_truncnormal(double gen_nr, double mean, double variance);
+	- other:
+	        correct(const char *) got renamed to opp_nulltoempty(const char *)
+
+	Files renamed (Note: simulation models should only refer to <omnetpp.h>!)
+	     --OLD--          --NEW--
+	     cconfig.h        cconfiguration.h
+	     chist.h          chistogram.h
+	     cllist.h         clinkedlist.h
+	     cmsgheap.h       cmessageheap.h
+	     coutvect.h       coutvector.h
+	     cstat.h          cstatistic.h
+	     cdensity.h       cdensityestbase.h
+	     cstrtokenizer.h  cstringtokenizer.h
+	     ctopo.h          ctopology.h
+	     cfunction.h      cmathfunction.h
+	     csimul.h         csimulation.h
+	     ...
 
 	* MSVC 6.0 support dropped (the compiler is over 10+ years old, and
 	does not support many modern C++ features like covariant return types)
