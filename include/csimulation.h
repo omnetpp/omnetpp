@@ -22,7 +22,7 @@
 #include "simkerneldefs.h"
 #include "util.h"
 #include "globals.h"
-#include "cmsgheap.h"
+#include "cmessageheap.h"
 #include "ccoroutine.h"
 
 NAMESPACE_BEGIN

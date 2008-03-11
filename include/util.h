@@ -30,7 +30,7 @@ NAMESPACE_BEGIN
 // forward declarations
 class cComponent;
 
-// logically belongs to csimul.h but must be here because of declaration order
+// logically belongs to csimulation.h but must be here because of declaration order
 enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 
 // windows.h defines min() and max() as macros

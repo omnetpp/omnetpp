@@ -1,5 +1,5 @@
 //==========================================================================
-//  CTOPO.H - part of
+//  CTOPOLOGY.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CTOPO_H
-#define __CTOPO_H
+#ifndef __CTOPOLOGY_H
+#define __CTOPOLOGY_H
 
 #include <string>
 #include <vector>

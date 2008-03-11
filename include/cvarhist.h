@@ -20,7 +20,7 @@
 #ifndef __CVARHIST_H
 #define __CVARHIST_H
 
-#include "chist.h"
+#include "chistogram.h"
 
 NAMESPACE_BEGIN
 

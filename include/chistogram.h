@@ -1,5 +1,5 @@
 //==========================================================================
-//  CHIST.H - part of
+//  CHISTOGRAM.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -20,10 +20,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CHIST_H
-#define __CHIST_H
+#ifndef __CHISTOGRAM_H
+#define __CHISTOGRAM_H
 
-#include "cdensity.h"
+#include "cdensityestbase.h"
 
 NAMESPACE_BEGIN
 

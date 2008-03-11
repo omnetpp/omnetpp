@@ -27,7 +27,7 @@
 #define __CDETECT_H
 
 #include "cownedobject.h"
-#include "cstat.h"
+#include "cstatistic.h"
 
 NAMESPACE_BEGIN
 

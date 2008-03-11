@@ -1,5 +1,5 @@
 //==========================================================================
-//  CMSGHEAP.H - part of
+//  CMESSAGEHEAP.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMSGHEAP_H
-#define __CMSGHEAP_H
+#ifndef __CMESSAGEHEAP_H
+#define __CMESSAGEHEAP_H
 
 #include "cownedobject.h"
 

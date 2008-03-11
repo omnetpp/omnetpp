@@ -21,7 +21,7 @@
 #ifndef __CKSPLIT_H
 #define __CKSPLIT_H
 
-#include "cdensity.h"
+#include "cdensityestbase.h"
 
 NAMESPACE_BEGIN
 

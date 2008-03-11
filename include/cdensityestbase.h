@@ -1,5 +1,5 @@
 //==========================================================================
-//  CDENSITY.H - part of
+//  CDENSITYESTBASE.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -16,10 +16,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CDENSITY_H
-#define __CDENSITY_H
+#ifndef __CDENSITYESTBASE_H
+#define __CDENSITYESTBASE_H
 
-#include "cstat.h"
+#include "cstatistic.h"
 
 NAMESPACE_BEGIN
 

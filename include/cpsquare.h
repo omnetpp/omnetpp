@@ -20,7 +20,7 @@
 #ifndef __CPSQUARE_H
 #define __CPSQUARE_H
 
-#include "cdensity.h"
+#include "cdensityestbase.h"
 
 NAMESPACE_BEGIN
 

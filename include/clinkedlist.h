@@ -1,5 +1,5 @@
 //==========================================================================
-//  CLLIST.H - part of
+//  CLINKEDLIST.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CLLIST_H
-#define __CLLIST_H
+#ifndef __CLINKEDLIST_H
+#define __CLINKEDLIST_H
 
 #include "cownedobject.h"
 

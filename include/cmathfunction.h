@@ -1,5 +1,5 @@
 //==========================================================================
-//  CFUNCTION.H - part of
+//  CMATHFUNCTION.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -12,8 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CFUNCTION_H
-#define __CFUNCTION_H
+#ifndef __CMATHFUNCTION_H
+#define __CMATHFUNCTION_H
 
 #include <stdarg.h>
 #include "simkerneldefs.h"
