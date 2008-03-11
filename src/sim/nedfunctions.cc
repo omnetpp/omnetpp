@@ -195,7 +195,7 @@ DEF(int, "*->L", {
         case Value::DBL:
             return (long)floor(argv[0].dbl);
         case Value::STR:
-            return atol(argv[0].str.c_str());
+            return opp_atol(argv[0].str.c_str());  //XXX catch & wrap exception?
         case Value::XML:
             throw cRuntimeError("int(): cannot convert xml to int");
         default:
@@ -210,7 +210,7 @@ DEF(double, "*->D", {
         case Value::DBL:
             return argv[0].dbl;
         case Value::STR:
-            return atof(argv[0].str.c_str());
+            return opp_atof(argv[0].str.c_str());  //XXX catch & wrap exception?
         case Value::XML:
             throw cRuntimeError("double(): cannot convert xml to double");
         default:

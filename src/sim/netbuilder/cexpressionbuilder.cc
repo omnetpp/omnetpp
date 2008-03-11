@@ -248,8 +248,8 @@ void cExpressionBuilder::doLiteral(LiteralElement *node)
     switch (node->getType())
     {
         case NED_CONST_BOOL:   elems[pos++] = !strcmp(val,"true"); break;
-        case NED_CONST_INT:    elems[pos++] = strtol(node->getValue(), NULL, 0); break; // this handles hex as well
-        case NED_CONST_DOUBLE: elems[pos++] = atof(node->getValue());
+        case NED_CONST_INT:    elems[pos++] = opp_atol(node->getValue()); break; // this handles hex as well
+        case NED_CONST_DOUBLE: elems[pos++] = opp_atof(node->getValue());
                                elems[pos-1].setUnit(node->getUnit());
                                break;
         case NED_CONST_STRING: elems[pos++] = node->getValue(); break;

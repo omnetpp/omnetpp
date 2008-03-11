@@ -400,7 +400,7 @@ long opp_atol(const char *s)
     while (opp_isspace(*endptr))
         endptr++;
     if (*endptr)
-        throw opp_runtime_error("trailing garbage found when converting `%s' to long", s);
+        throw opp_runtime_error("`%s' is not a valid integer", s);
     return d;
 }
 
@@ -419,7 +419,7 @@ unsigned long opp_atoul(const char *s)
     while (opp_isspace(*endptr))
         endptr++;
     if (*endptr)
-        throw opp_runtime_error("trailing garbage found when converting `%s' to unsigned long", s);
+        throw opp_runtime_error("`%s' is not a valid unsigned integer", s);
     return d;
 }
 
@@ -438,7 +438,7 @@ double opp_atof(const char *s)
     while (opp_isspace(*endptr))
         endptr++;
     if (*endptr)
-        throw opp_runtime_error("trailing garbage found when converting `%s' to double", s);
+        throw opp_runtime_error("`%s' is not a valid double value", s);
     return d;
 }
 

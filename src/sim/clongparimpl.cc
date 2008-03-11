@@ -167,22 +167,6 @@ std::string cLongParImpl::toString() const
 
 void cLongParImpl::parse(const char *text)
 {
-/*XXX not really needed
-    // maybe it's just a number
-    cStringTokenizer tok(text);
-    const char *word = tok.nextToken();
-    if (word!=NULL && !tok.hasMoreTokens())
-    {
-        char *endp;
-        long num = strtol(word, &endp, 10); // FIXME TBD try as "units" as well
-        if (*endp == '\0')
-        {
-            setLongValue(num);
-            return true;
-        }
-    }
-*/
-
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
     try

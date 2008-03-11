@@ -45,23 +45,15 @@ bool cConfiguration::parseBool(const char *s, const char *defaultValue, bool fal
 
 long cConfiguration::parseLong(const char *s, const char *defaultValue, long fallbackValue)
 {
-    //FIXME parse and evaluate!!! using common lib's Expression class.
     if (!s)
         s = defaultValue;
     if (!s)
         return fallbackValue;
-    char *endp;
-    long d = strtol(s, &endp, 0);
-    if (s==endp || *endp)
-        throw opp_runtime_error("`%s' is not a valid integer value", s);
-    if ((d==LONG_MAX || d==LONG_MIN) && errno==ERANGE)
-        throw opp_runtime_error("overflow during conversion of `%s'", s);
-    return d;
+    return opp_atol(s);
 }
 
 double cConfiguration::parseDouble(const char *s, const char *unit, const char *defaultValue, double fallbackValue)
 {
-    //FIXME parse and evaluate!!! using common lib's Expression class.
     if (!s)
         s = defaultValue;
     if (!s)

@@ -277,9 +277,9 @@ boolliteral
 
 numliteral
         : INTCONSTANT
-                { *e++ = strtol($1,NULL,10); delete [] $1; }
+                { *e++ = opp_atol($1); delete [] $1; }
         | REALCONSTANT
-                { *e++ = strtod($1,NULL); delete [] $1; }
+                { *e++ = opp_atof($1); delete [] $1; }
         | quantity
                 {
                   std::string unit;
