@@ -84,7 +84,7 @@ $O/opp_run.obj : opp_run.cc $O
 	$(CXX) $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DHAVE_DLOPEN=$(HAVE_DLOPEN) /c /Fo"$@" /Tp opp_run.cc
 !else
 $O/opp_run.exe :
-	echo "Skip building opp_run.exe when linked with static libs"
+	echo Note: We don't create opp_run.exe when building static libs
 !endif
 
 $(OBJS): $O

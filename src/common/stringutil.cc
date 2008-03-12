@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
+#include <errno.h>
 #include <math.h>   //HUGE_VAL
 #include "commonutil.h"
 #include "opp_ctype.h"

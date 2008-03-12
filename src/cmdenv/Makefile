@@ -83,7 +83,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/globals.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
@@ -111,4 +111,4 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h
+  ../../include/cmathfunction.h

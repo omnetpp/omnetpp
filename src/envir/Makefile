@@ -116,8 +116,9 @@ $O/akaroarng.o: akaroarng.cc \
 $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cenvir.h \
   omnetapp.h \
+  ../../include/csimulation.h \
   ../../include/cmodule.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
   akoutvectormgr.h \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
@@ -141,14 +142,13 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/csimulation.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
   filemgrs.h
 $O/args.o: args.cc \
   args.h \
@@ -179,7 +179,7 @@ $O/cenvir.o: cenvir.cc \
   ../../include/crng.h \
   ../../include/util.h \
   ../../include/globals.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
@@ -219,6 +219,17 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
+$O/eventlogwriter.o: eventlogwriter.cc \
+  eventlogwriter.h \
+  envdefs.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h
 $O/filemgrs.o: filemgrs.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -226,8 +237,8 @@ $O/filemgrs.o: filemgrs.cc \
   omnetapp.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h \
+  ../../include/cstatistic.h \
+  ../../include/cdensityestbase.h \
   filemgrs.h \
   ../../include/ccomponenttype.h \
   ivfilemgr.h \
@@ -252,13 +263,14 @@ $O/filemgrs.o: filemgrs.cc \
   ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h
+  ../../include/cexpression.h \
+  ../../include/cstddev.h
 $O/fsutils.o: fsutils.cc \
   fsutils.h \
   ../../include/onstartup.h \
@@ -298,7 +310,7 @@ $O/ivfilemgr.o: ivfilemgr.cc \
   ../../include/csimulation.h \
   ../../include/regmacros.h \
   ../../include/cmodule.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
   ivfilemgr.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
@@ -320,7 +332,7 @@ $O/ivfilemgr.o: ivfilemgr.cc \
   ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
@@ -411,7 +423,7 @@ $O/objectprinter.o: objectprinter.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   matchablefield.h \
   matchableobject.h
@@ -420,6 +432,7 @@ $O/omnetapp.o: omnetapp.cc \
   omnetapp.h \
   appreg.h \
   fsutils.h \
+  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
@@ -459,14 +472,14 @@ $O/omnetapp.o: omnetapp.cc \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/platdep/timeutil.h \
   ../../include/cexpression.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/platdep/inttypes.h \
   matchablefield.h \
   matchableobject.h

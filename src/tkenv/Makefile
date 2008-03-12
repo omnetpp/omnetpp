@@ -117,7 +117,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
-  ../../include/cdensity.h \
+  ../../include/cdensityestbase.h \
   ../../include/cdetect.h \
   ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
@@ -129,19 +129,19 @@ $O/inspector.o: inspector.cc \
   ../../include/cexpression.h \
   ../../include/chasher.h \
   ../../include/cfsm.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cgate.h \
-  ../../include/chist.h \
+  ../../include/chistogram.h \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
-  ../../include/cllist.h \
+  ../../include/clinkedlist.h \
   ../../include/clongparimpl.h \
   ../../include/cmersennetwister.h \
   ../../include/simtime.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -158,13 +158,14 @@ $O/inspector.o: inspector.cc \
   ../../include/cscheduler.h \
   ../../include/csimplemodule.h \
   ../../include/csimulation.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
+  ../../include/cstddev.h \
   ../../include/cstlwatch.h \
   ../../include/cstringparimpl.h \
   ../../include/cstringpool.h \
-  ../../include/cstrtokenizer.h \
+  ../../include/cstringtokenizer.h \
   ../../include/cclassdescriptor.h \
-  ../../include/ctopo.h \
+  ../../include/ctopology.h \
   ../../include/cvarhist.h \
   ../../include/cvisitor.h \
   ../../include/cwatch.h \
@@ -210,7 +211,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
-  ../../include/cdensity.h \
+  ../../include/cdensityestbase.h \
   ../../include/cdetect.h \
   ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
@@ -222,19 +223,19 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cexpression.h \
   ../../include/chasher.h \
   ../../include/cfsm.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cgate.h \
-  ../../include/chist.h \
+  ../../include/chistogram.h \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
-  ../../include/cllist.h \
+  ../../include/clinkedlist.h \
   ../../include/clongparimpl.h \
   ../../include/cmersennetwister.h \
   ../../include/simtime.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -251,13 +252,14 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cscheduler.h \
   ../../include/csimplemodule.h \
   ../../include/csimulation.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
+  ../../include/cstddev.h \
   ../../include/cstlwatch.h \
   ../../include/cstringparimpl.h \
   ../../include/cstringpool.h \
-  ../../include/cstrtokenizer.h \
+  ../../include/cstringtokenizer.h \
   ../../include/cclassdescriptor.h \
-  ../../include/ctopo.h \
+  ../../include/ctopology.h \
   ../../include/cvarhist.h \
   ../../include/cvisitor.h \
   ../../include/cwatch.h \
@@ -298,8 +300,8 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cpar.h \
   ../../include/carray.h \
   ../../include/coutvector.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h \
+  ../../include/cstatistic.h \
+  ../../include/cdensityestbase.h \
   ../../include/cqueue.h \
   ../../include/ccompoundmodule.h \
   ../../include/cbasicchannel.h \
@@ -325,13 +327,14 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/regmacros.h \
   ../../include/cmsgpar.h \
   ../../include/csimulation.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cexpression.h \
+  ../../include/cstddev.h \
   tkutil.h \
   tkdefs.h \
   ../envir/args.h \
@@ -352,8 +355,8 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cpar.h \
   ../../include/carray.h \
   ../../include/coutvector.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h \
+  ../../include/cstatistic.h \
+  ../../include/cdensityestbase.h \
   ../../include/cdisplaystring.h \
   ../../include/cqueue.h \
   ../../include/ccompoundmodule.h \
@@ -382,12 +385,13 @@ $O/modinsp.o: modinsp.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponenttype.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cexpression.h \
+  ../../include/cstddev.h \
   tkutil.h \
   tkdefs.h \
   ../envir/args.h \
@@ -412,7 +416,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cconfiguration.h \
   ../../include/ccoroutine.h \
   ../../include/cdefaultlist.h \
-  ../../include/cdensity.h \
+  ../../include/cdensityestbase.h \
   ../../include/cdetect.h \
   ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
@@ -424,19 +428,19 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cexpression.h \
   ../../include/chasher.h \
   ../../include/cfsm.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cgate.h \
-  ../../include/chist.h \
+  ../../include/chistogram.h \
   ../../include/cksplit.h \
   ../../include/clcg32.h \
-  ../../include/cllist.h \
+  ../../include/clinkedlist.h \
   ../../include/clongparimpl.h \
   ../../include/cmersennetwister.h \
   ../../include/simtime.h \
   ../../include/cmessage.h \
   ../../include/cmsgpar.h \
   ../../include/cmodule.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/cnedfunction.h \
   ../../include/cobject.h \
   ../../include/cnamedobject.h \
@@ -453,13 +457,14 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cscheduler.h \
   ../../include/csimplemodule.h \
   ../../include/csimulation.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
+  ../../include/cstddev.h \
   ../../include/cstlwatch.h \
   ../../include/cstringparimpl.h \
   ../../include/cstringpool.h \
-  ../../include/cstrtokenizer.h \
+  ../../include/cstringtokenizer.h \
   ../../include/cclassdescriptor.h \
-  ../../include/ctopo.h \
+  ../../include/ctopology.h \
   ../../include/cvarhist.h \
   ../../include/cvisitor.h \
   ../../include/cwatch.h \
@@ -494,8 +499,8 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cpar.h \
   ../../include/carray.h \
   ../../include/coutvector.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h \
+  ../../include/cstatistic.h \
+  ../../include/cdensityestbase.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
@@ -522,11 +527,12 @@ $O/statinsp.o: statinsp.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cexpression.h \
+  ../../include/cstddev.h \
   tkdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
@@ -535,6 +541,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cconfiguration.h \
   inspector.h \
   tkutil.h
+$O/tclcode.o: tclcode.cc
 $O/tkapp.o: tkapp.cc \
   ../envir/appreg.h \
   ../../include/cenvir.h \
@@ -553,6 +560,7 @@ $O/tkapp.o: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
+  tclcode.cc \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
@@ -577,10 +585,10 @@ $O/tkapp.o: tkapp.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../envir/envdefs.h \
   ../../include/platdep/timeutil.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
@@ -589,12 +597,13 @@ $O/tkapp.o: tkapp.cc \
   tkutil.h \
   ../../include/cchannel.h \
   ../../include/coutvector.h \
-  ../../include/cstat.h \
-  ../../include/cdensity.h \
+  ../../include/cstatistic.h \
+  ../../include/cdensityestbase.h \
   ../../include/cdisplaystring.h \
   ../../include/cqueue.h \
   ../../include/ccompoundmodule.h \
-  ../../include/cbasicchannel.h
+  ../../include/cbasicchannel.h \
+  ../../include/cstddev.h
 $O/tkcmd.o: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
@@ -605,7 +614,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cpar.h \
   ../../include/cmessage.h \
   ../../include/cchannel.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
   ../../include/cwatch.h \
   ../../include/cclassdescriptor.h \
   ../../include/cdisplaystring.h \
@@ -633,7 +642,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/globals.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
@@ -643,7 +652,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   tkdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
@@ -710,7 +719,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   tkdefs.h \
   ../envir/omnetapp.h \
@@ -725,7 +734,7 @@ $O/visitor.o: visitor.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/cqueue.h \
-  ../../include/cstat.h \
+  ../../include/cstatistic.h \
   ../../include/coutvector.h \
   ../../include/cwatch.h \
   ../../include/cfsm.h \
@@ -753,10 +762,10 @@ $O/visitor.o: visitor.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
-  ../../include/cmsgheap.h \
+  ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cmsgpar.h \
-  ../../include/cfunction.h \
+  ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/ccomponenttype.h \
   tkapp.h \
