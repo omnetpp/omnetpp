@@ -343,7 +343,7 @@ void cMessage::_detachEncapMsg()
 void cMessage::setLength(int64 l)
 {
     if (l<0)
-        throw cRuntimeError(this,"setLength(): negative length %"INT64_PRINTF_FORMAT"", l);
+        throw cRuntimeError(this,"setLength(): negative length %"INT64_PRINTF_FORMAT"d", l);
     len=l;
 }
 
@@ -351,7 +351,7 @@ void cMessage::addLength(int64 l)
 {
     len += l;
     if (len<0)
-        throw cRuntimeError(this,"addLength(): length became negative (%"INT64_PRINTF_FORMAT") after adding %"INT64_PRINTF_FORMAT"", len, l);
+        throw cRuntimeError(this,"addLength(): length became negative (%"INT64_PRINTF_FORMAT") after adding %"INT64_PRINTF_FORMAT"d", len, l);
 }
 
 void cMessage::encapsulate(cMessage *msg)
