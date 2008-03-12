@@ -124,7 +124,6 @@ foreach $fname (@fnames)
 }
 
 print "
-Ini files converted.
 
 Some OMNeT++ 3.x ini file features do not map 100% to 4.0 ones -- please revise
 the converted ini files:
@@ -147,6 +146,8 @@ the converted ini files:
 
  5. Some Tkenv options (animation-enabled=, animation-speed=, etc) have been
     obsoleted, they got removed from the ini files.
+
+Conversion done. You may safely re-run this script any time you want.
 ";
 
 sub readfile ()

@@ -5,7 +5,16 @@ echo Press ENTER to convert all INI files in the current directory:
 cd
 echo.
 pause
+
 dir /s /b *.ini >inifiles.lst
+
+echo The following files will be checked/modified:
+type inifiles.lst
+
+echo.                                                                                                              
+echo Press ENTER to start the conversion or CTRL-C to quit.
+pause                                                                                                        
+
 perl %~dp0\migrateini.pl inifiles.lst
 
 :endlabel

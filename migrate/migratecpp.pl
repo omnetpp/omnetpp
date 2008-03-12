@@ -107,11 +107,7 @@ while (<LISTFILE>)
     close OUTFILE;
 }
 
-
-
-
-
-
+print "\nConversion done. You may safely re-run this script any time you want.\n";
 
 
 

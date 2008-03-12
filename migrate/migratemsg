@@ -9,5 +9,17 @@ echo Press ENTER to convert all MSG files starting from the current directory:
 echo `pwd`                                                                                                        
 echo                                                                                                              
 read WAIT                                                                                                         
+
 find . -name "*.msg" >msgfiles.lst
+
+echo The following files will be checked/modified:
+cat msgfiles.lst
+
+echo                                                                                                              
+echo Press ENTER to start the conversion or CTRL-C to quit.
+read WAIT                                                                                                         
+
 nedtool -P @msgfiles.lst
+
+echo
+echo Conversion done. You may safely re-run this script any time you want.

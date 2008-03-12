@@ -5,7 +5,16 @@ echo Press ENTER to convert all MSG files in the current directory:
 cd
 echo.
 pause
+
 dir /s /b *.msg >msgfiles.lst
+
+echo The following files will be checked/modified:
+type msgfiles.lst
+
+echo.                                                                                                              
+echo Press ENTER to start the conversion or CTRL-C to quit.
+pause                                                                                                        
+
 nedtool -P @msgfiles.lst
 
 :endlabel

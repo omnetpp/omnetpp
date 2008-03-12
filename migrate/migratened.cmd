@@ -5,7 +5,16 @@ echo Press ENTER to convert all NED files in the current directory:
 cd
 echo.
 pause
+
 dir /s /b *.ned >nedfiles.lst
+
+echo The following files will be checked/modified:
+type nedfiles.lst
+
+echo.                                                                                                              
+echo Press ENTER to start the conversion or CTRL-C to quit.
+pause                                                                                                        
+
 nedtool -P @nedfiles.lst
 
 echo.
@@ -31,5 +40,6 @@ echo  5. Additionally, you can change the files to take advantage of new NED
 echo     features: module default icons, parameter physical units, inout gates
 echo     and bidirectional connections, inheritance, inner types, and so on.
 echo.
+echo You may safely re-run this script any time you want.
 
 :endlabel

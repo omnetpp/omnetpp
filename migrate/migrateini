@@ -9,6 +9,14 @@ echo Press ENTER to convert all ini files in the current directory:
 echo `pwd`
 echo
 read WAIT
-find . -name "*.ini" >inifiles.lst
-perl `dirname $0`/migrateini.pl inifiles.lst
 
+find . -name "*.ini" >inifiles.lst
+
+echo The following files will be checked/modified:
+cat inifiles.lst
+
+echo                                                                                                              
+echo Press ENTER to start the conversion or CTRL-C to quit.
+read WAIT                                                                                                         
+
+perl `dirname $0`/migrateini.pl inifiles.lst
