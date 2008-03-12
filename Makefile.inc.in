@@ -123,8 +123,8 @@ ECLIPSE_PLATFORM = @ECLIPSE_PLATFORM@
 # Definitions for makemake-generated makefiles
 #
 ALL_ENV_LIBS = @ALL_ENV_LIBS@
-CMDENV_LIBS = -u_cmdenv_lib -lenvir$D -lcmdenv$D
-TKENV_LIBS = -u_tkenv_lib -lenvir$D -ltkenv$D -llayout$D $(TK_LIBS) $(ZLIB_LIBS)
+CMDENV_LIBS = -u _cmdenv_lib -lenvir$D -lcmdenv$D
+TKENV_LIBS = -u _tkenv_lib -lenvir$D -ltkenv$D -llayout$D $(TK_LIBS) $(ZLIB_LIBS)
 KERNEL_LIBS = -lsim_std$D
 
 ifeq ($(WITH_NETBUILDER),yes)

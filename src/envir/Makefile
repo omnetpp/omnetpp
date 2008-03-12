@@ -84,6 +84,9 @@ $O/opp_run.o : opp_run.cc
 	@# Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT
 	@mkdir -p $O
 	$(CXX) $(CFLAGS) -c -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -o$O/opp_run.o opp_run.cc
+else
+$O/opp_run$(EXE_SUFFIX):
+	@echo "Note: We don't create opp_run.exe when building static libs"
 endif
 
 depend:
