@@ -22,8 +22,6 @@ while (<LISTFILE>)
 
     $txt =~ s/\bcException\b/cRuntimeError/mg;
     $txt =~ s/\bcSimpleChannel\b/cBasicChannel/mg;
-    $txt =~ s/\bcObject\b/cOwnedObject/mg;
-    $txt =~ s/\bcPolymorphic\b/cObject/mg;
 
     # cModule
     $txt =~ s/\bgate\(([^,)]+)\)->size\(\)/gateSize(\1)/mg; # ???
@@ -47,12 +45,21 @@ while (<LISTFILE>)
     $lineno = 0;
     foreach $line (split ("\n", $txt)) {
        $lineno++;
+       # cObject
+       if ($line =~ /\bcObject\b/) {
+          print "*** warning at $fname:$lineno: cObject got renamed to cOwnedObject.\n";
+          print "$line\n";
+       }
+       if ($line =~ /\bcPolymorphic\b/) {
+          print "*** warning at $fname:$lineno: cPolymorhic got renamed to cObject.\n";
+          print "$line\n";
+       }
        # simtime_t
-       if ($line =~ /\bdouble +.*(time|age|interval|delay|t[0-9]*)/i) {
+       if ($line =~ /\bdouble +[a-z0-9_]*(time|age|interval|delay|\bt[0-9]*\b)/i) {
           print "*** warning at $fname:$lineno: This variable might represent simulation time. Simulation time is no longer a double. You should use the new int64 based simtime_t instead of double.\n";
           print "$line\n";
        }
-       if ($line =~ /\b(simtimeToStr|strToSimtime)/) {
+       if ($line =~ /\b(simtimeToStr|strToSimtime)\b/) {
           print "*** warning at $fname:$lineno: The simtimeToStr() and strToSimtime() methods are no longer supported. (use SimTime methods or the SIMTIME_STR(t), SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf,t) macros instead).\n";
           print "$line\n";
        }
@@ -61,7 +68,7 @@ while (<LISTFILE>)
           print "*** warning at $fname:$lineno: Revise this line, getGateSize returns no value instead of int.\n";
           print "$line\n";
        }
-       if ($line =~ /\b(setTo|setFrom)/) {
+       if ($line =~ /\b(setTo|setFrom)\b/) {
           print "*** warning at $fname:$lineno: The setTo() and setFrom() methods are no longer supported. (use connectTo() instead!).\n";
           print "$line\n";
        }

@@ -1,4 +1,5 @@
 @echo off
+if not "x%1" == "x" echo Please change to the directory you want to convert and run the script there without any comnmand line argument! && goto endlabel
 echo.
 echo Press ENTER to convert all NED files in the current directory:
 cd
@@ -31,3 +32,4 @@ echo     features: module default icons, parameter physical units, inout gates
 echo     and bidirectional connections, inheritance, inner types, and so on.
 echo.
 
+:endlabel

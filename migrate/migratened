@@ -1,4 +1,9 @@
 #!/bin/sh
+if [ -n "$1" ] ; then
+  echo Please change to the directory you want to convert and run the script there without any comnmand line argument!
+  exit 1
+fi
+
 echo
 echo Press ENTER to convert all NED files in the current directory:
 echo `pwd`
