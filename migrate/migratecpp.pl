@@ -122,7 +122,7 @@ while (<LISTFILE>)
 
        # exceptions must be thrown by value
        if ($line =~ /\bthrow +new\b/) {
-          print "*** warning at $fname:$lineno: Exceptions MUST be thrown by value (not by pointer)\n";
+          print "*** warning at $fname:$lineno: Exceptions MUST be thrown by value, please remove the \"new\" keyword\n";
           print "$line\n";
        }
 
