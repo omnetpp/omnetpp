@@ -1,7 +1,7 @@
 # Tkenv configuration
 option updatefreq_fast	{1000}
 option updatefreq_express	{100000}
-option stepdelay	{300 ms}
+option stepdelay	{299 ms}
 option use_mainwindow	{1}
 option print_banners	{1}
 option animation_enabled	{1}
@@ -36,7 +36,7 @@ config filtobjlist-order	{Class}
 config last-nedfile	{}
 config log-save-filename	{omnetpp.out}
 config logwindow-scrollbacklines	{100000}
-config mainwin-geom	{292x198+48+62}
+config mainwin-geom	{627x399+48+62}
 config mainwin-state	{normal}
 config rununtil-event	{}
 config rununtil-mode	{Express (tracing off)}
@@ -46,6 +46,5 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "Aloha" "Aloha" "2" "627x598+120+155"
 inspector "classes" "cSymTable" "1" "460x312+96+124"
 

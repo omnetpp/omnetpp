@@ -52,7 +52,7 @@ network CallCenter
         marketing: PQueue {
             @display("p=225.0,104.0");
         }
-        techicalSupport: PQueue {
+        support: PQueue {
             @display("p=225.0,169.0");
         }
         internal: PQueue {
@@ -71,13 +71,13 @@ network CallCenter
         incomingCall.out --> classifier.in++;
         classifier.out++ --> billing.in++;
         classifier.out++ --> marketing.in++;
-        classifier.out++ --> techicalSupport.in++;
+        classifier.out++ --> support.in++;
         classifier.out++ --> internal.in++;
         billing.out++ --> operator1.in++;
         billing.out++ --> operator2.in++;
         marketing.out++ --> operator2.in++;
-        techicalSupport.out++ --> operator2.in++;
-        techicalSupport.out++ --> operator3.in++;
+        support.out++ --> operator2.in++;
+        support.out++ --> operator3.in++;
         internal.out++ --> operator4.in++;
         operator1.out --> router.in++;
         operator2.out --> router.in++;

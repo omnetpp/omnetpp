@@ -523,6 +523,9 @@ if test "$YACC" = "yacc"; then
    AC_MSG_ERROR([Bison not found, needed to build OMNeT++/OMNEST -- please install it!])
 fi
 AC_PROG_LEX
+if test "$LEX" != "flex"; then
+   AC_MSG_ERROR([Flex not found, needed to build OMNeT++/OMNEST -- please install it!])
+fi
 
 # make must be GNU make
 AC_CHECK_PROG(MAKE, make , make, not found)
@@ -571,8 +574,8 @@ AC_ARG_VAR(SWIG, The Swig interface generator)
 AC_CHECK_PROG(SWIG, swig, swig, not found)
 
 if test "$SWIG" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig"
-   AC_MSG_WARN(swig not found -- it is needed to create the OMNeT++/OMNEST IDE support library.)
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig (optional)"
+   AC_MSG_WARN(swig not found -- it is needed only to create the OMNeT++/OMNEST IDE support library.)
    AC_MSG_WARN(It is available from http://www.swig.org/)
 fi
 
@@ -775,7 +778,8 @@ fi
 
 OPP_CHECK_LIB_NOLINK(JNI, jni.h, JNI_GetCreatedJavaVMs(0,0,0), $JAVA_CFLAGS, jni_ok)
 if test "$jni_ok" = no; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java (optional)"
+   AC_MSG_WARN([Optional package JNI headers for Java (needed for IDE support library) not found.])
 fi
 
 if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
@@ -865,7 +869,7 @@ if test "$cygwin" = yes; then
   LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
 fi
 
-# on MinGW dll aout importing is used
+# on MinGW dll auto importing is used
 if test "$mingw" = yes; then
   LDFLAGS="$LDFLAGS -enable-auto-import"
 fi

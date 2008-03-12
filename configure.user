@@ -179,4 +179,4 @@ NEDC="$OMNETPP_BIN_DIR/nedtool"
 #
 # On MinGW we use the following
 #JDK=/c/Tools/jdk1.6.0 
-# SWIG=/c/Tools/swigwin-1.3.31
+#SWIG=/c/Tools/swigwin-1.3.31

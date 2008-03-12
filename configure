@@ -3949,6 +3949,11 @@ fi
 rm -f conftest.l $LEX_OUTPUT_ROOT.c
 
 fi
+if test "$LEX" != "flex"; then
+   { { echo "$as_me:$LINENO: error: Flex not found, needed to build OMNeT++/OMNEST -- please install it!" >&5
+echo "$as_me: error: Flex not found, needed to build OMNeT++/OMNEST -- please install it!" >&2;}
+   { (exit 1); exit 1; }; }
+fi
 
 # make must be GNU make
 # Extract the first word of "make ", so it can be a program name with args.
@@ -4191,9 +4196,9 @@ fi
 
 
 if test "$SWIG" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig"
-   { echo "$as_me:$LINENO: WARNING: swig not found -- it is needed to create the OMNeT++/OMNEST IDE support library." >&5
-echo "$as_me: WARNING: swig not found -- it is needed to create the OMNeT++/OMNEST IDE support library." >&2;}
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig (optional)"
+   { echo "$as_me:$LINENO: WARNING: swig not found -- it is needed only to create the OMNeT++/OMNEST IDE support library." >&5
+echo "$as_me: WARNING: swig not found -- it is needed only to create the OMNeT++/OMNEST IDE support library." >&2;}
    { echo "$as_me:$LINENO: WARNING: It is available from http://www.swig.org/" >&5
 echo "$as_me: WARNING: It is available from http://www.swig.org/" >&2;}
 fi
@@ -6190,7 +6195,9 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
    CXXFLAGS=$save_CXXFLAGS
 
 if test "$jni_ok" = no; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java"
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JNI headers for Java (optional)"
+   { echo "$as_me:$LINENO: WARNING: Optional package JNI headers for Java (needed for IDE support library) not found." >&5
+echo "$as_me: WARNING: Optional package JNI headers for Java (needed for IDE support library) not found." >&2;}
 fi
 
 if test "$jni_ok" = "no" -o "$SWIG" = "not found"; then
@@ -6864,7 +6871,7 @@ if test "$cygwin" = yes; then
   LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
 fi
 
-# on MinGW dll aout importing is used
+# on MinGW dll auto importing is used
 if test "$mingw" = yes; then
   LDFLAGS="$LDFLAGS -enable-auto-import"
 fi
