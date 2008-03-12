@@ -43,7 +43,10 @@
 	  But hasGate(), gateType(), isGateVector(), gateSize() do work.
 	- for gate direction, use the new cGate::Type enum instead of the
 	  'I' and 'O' characters (though characters continue to work)
-	- getGateSize() return type changed from int to void (if resizing an inout gate, the position of which dir should be returned?)
+	- setGateSize() return type changed from int to void (when resizing an
+	  inout gate, it would have to return the two ids)
+	- addGate() return type changed to void (when an inout gate is created,
+	  it would have to return two cGate* pointers)
 	- gate("xxx") now throws error if gate is not found, instead of returning NULL
 	- gate("xxx") now won't return gate "xxx[0]"
 	- gate("out")->size() does not work, because gate("out") throws an error ("not found") if out is a vector gate;
