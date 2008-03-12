@@ -68,11 +68,11 @@ while (<LISTFILE>)
 
        # simtime_t
        if ($line =~ /\bdouble +[a-z0-9_]*(time|age|interval|delay|\bt[0-9]*\b)/i) {
-          print "*** warning at $fname:$lineno: This variable might represent simulation time. Simulation time is no longer a double. You should use the new int64 based simtime_t instead of double.\n";
+          print "*** warning at $fname:$lineno: This variable might represent simulation time -- if so, change \"double\" to \"simtime_t\".\n";
           print "$line\n";
        }
        if ($line =~ /\b(simtimeToStr|strToSimtime)\b/) {
-          print "*** warning at $fname:$lineno: The simtimeToStr() and strToSimtime() methods are no longer supported. (use SimTime methods or the SIMTIME_STR(t), SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf,t) macros instead).\n";
+          print "*** warning at $fname:$lineno: The simtimeToStr() and strToSimtime() methods are no longer supported. (use SimTime methods, or the SIMTIME_STR(t), SIMTIME_DBL(t), STR_SIMTIME(s), SIMTIME_TTOA(buf,t) macros instead).\n";
           print "$line\n";
        }
 
