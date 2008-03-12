@@ -26,7 +26,6 @@
 
 NAMESPACE_BEGIN
 
-//=== classes mentioned:
 class cMsgPar;
 class cGate;
 class cChannel;
@@ -106,23 +105,24 @@ class SIM_API cMessage : public cOwnedObject
     friend class cMessageHeap;
 
   private:
-    int msgkind;               // message kind -- <0 reserved, 0>= user-defined meaning  FIXME make short!!!
-    int prior;                 // priority -- used for scheduling msgs with equal times  FIXME make short!!!
-    long len;                  // length of message -- used for bit errors and transm.delay -- FIXME change to long long?
-    bool error : 1;            // bit error occurred during transmission                 //FIXME into flags!!
-    unsigned char sharecount : 7; // num of msgs MINUS ONE that have this one encapsulated.
+    // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
+    int64 len;                 // length of message -- used for bit error and transmissing delay modeling
+    short msgkind;             // message kind -- 0>= user-defined meaning, <0 reserved
+    short prior;               // priority -- used for scheduling msgs with equal times
+    bool error;                // bit error occurred during transmission (Note: may go into cNamedObject::flags)
+    unsigned char sharecount;  // num of msgs MINUS ONE that have this message encapsulated.
                                // 0: not shared (not encapsulated or encapsulated in one message);
                                // 1: shared once (shared among two messages);
                                // 2: shared twice (shared among three messages); etc.
-                               // max sharecount is 127 (after that, a new msg is created).
+                               // max sharecount is 255 (after that, a new msg is created).
     short srcprocid;           // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
     cObject *ctrlp;            // ptr to "control info"
     void *contextptr;          // a stored pointer -- user-defined meaning, used with self-messages
 
-    int frommod,fromgate;      // source module and gate IDs -- set internally
-    int tomod,togate;          // dest. module and gate IDs -- set internally
+    int frommod, fromgate;     // source module and gate IDs -- set internally
+    int tomod, togate;         // dest. module and gate IDs -- set internally
     simtime_t created;         // creation time -- set be constructor
     simtime_t sent,delivd;     // time of sending & delivery -- set internally
     simtime_t tstamp;          // time stamp -- user-defined meaning
@@ -130,7 +130,7 @@ class SIM_API cMessage : public cOwnedObject
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
     unsigned long insertordr;  // used by cMessageHeap
 
-    long prev_event_num;   // event number of the sending, scheduling this message
+    long prev_event_num;       // event number of the sending, scheduling this message
 
     long msg_seq_id;           // a unique message identifier assigned upon message creation
     long msg_tree_id;          // a message identifier that is inherited by dup, if non dupped it is msg_seq_id
@@ -186,7 +186,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Constructor.
      */
-    explicit cMessage(const char *name=NULL, int k=0, long len=0, int pri=0, bool err=false);
+    explicit cMessage(const char *name=NULL, short kind=0, int64 length=0, short priority=0, bool errorflag=false);
 
     /**
      * Destructor.
@@ -246,51 +246,52 @@ class SIM_API cMessage : public cOwnedObject
     //@{
 
     /**
-     * Sets message kind.  The message kind member is not used by OMNeT++,
-     * it can be used freely by the user.
+     * Sets the message kind. Nonnegative values can be freely used by
+     * the user; negative values are reserved by OMNeT++ for internal
+     * purposes.
      */
-    void setKind(int k)     {msgkind=k;}
+    void setKind(short k)  {msgkind=k;}
 
     /**
-     * Sets message priority.  The priority member is used when the simulator
+     * Sets message priority. The priority member is used when the simulator
      * inserts messages in the message queue (FES) to order messages
      * with identical arrival time values.
      */
-    void setPriority(int p) {prior=p;}
+    void setPriority(short p)  {prior=p;}
 
     /**
-     * Sets message length (bits). When the message is sent through a
-     * channel, message length affects transmission delay
-     * and the probability of setting the bit error flag.
+     * Sets message length (in bits). When the message is sent through a
+     * channel, message length affects transmission delay and the probability
+     * of setting the bit error flag.
      */
-    void setLength(long l);
+    void setLength(int64 l);
 
     /**
      * Sets message length (bytes). This is just a convenience function which
      * invokes setLength() with 8*l as argument. The caller must take care
-     * that the result does not overflow (i.e. fits into a long).
+     * that the result does not overflow (i.e. fits into an int64).
      */
-    void setByteLength(long l)  {setLength(l<<3);}
+    void setByteLength(int64 l)  {setLength(l<<3);}
 
     /**
      * Changes message length by the given value (bits). This is useful for
      * modeling encapsulation/decapsulation. (See also encapsulate() and
      * decapsulate().) The caller must take care that the result does not
-     * overflow (i.e. fits into a long).
+     * overflow (i.e. fits into an int64).
      *
      * The value may be negative (message length may be decreased too).
      * If the resulting length would be negative, the method throws a
      * cRuntimeError.
      */
-    void addLength(long delta);
+    void addLength(int64 delta);
 
     /**
      * Changes message length by the given value (bytes). This is just a
      * convenience function which invokes addLength() with 8*l as argument.
      * The caller must take care that the result does not overflow (i.e.
-     * fits into a long).
+     * fits into an int64).
      */
-    void addByteLength(long delta)  {addLength(delta<<3);}
+    void addByteLength(int64 delta)  {addLength(delta<<3);}
 
     /**
      * Set bit error flag.
@@ -344,23 +345,23 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns message kind.
      */
-    int kind() const  {return msgkind;}
+    short kind() const  {return msgkind;}
 
     /**
      * Returns message priority.
      */
-    int priority() const {return prior;}
+    short priority() const  {return prior;}
 
     /**
-     * Returns message length (bits).
+     * Returns message length (in bits).
      */
-    long length() const   {return len;}
+    int64 length() const  {return len;}
 
     /**
      * Returns message length in bytes, that is, length()/8. If length()
      * is not a multiple of 8, the result is rounded up.
      */
-    long byteLength() const  {return (len+7)>>3;}
+    int64 byteLength() const  {return (len+7)>>3;}
 
     /**
      * Returns true if bit error flag is set, false otherwise.
@@ -404,8 +405,7 @@ class SIM_API cMessage : public cOwnedObject
      * suit your needs. For more information, see class description for discussion
      * about message subclassing vs dynamically attached objects.</i>
      */
-    cArray& parList()
-        {if (!parlistp) _createparlist(); return *parlistp;}
+    cArray& parList()  {if (!parlistp) _createparlist(); return *parlistp;}
 
     /**
      * Add a new, empty parameter (cMsgPar object) with the given name

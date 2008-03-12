@@ -49,18 +49,33 @@ while (<FILE>)
          $fieldPrintfType = "%s";
          $fieldPrintfValue = "QUOTE($fieldPrintfValue)";
       }
-      elsif ($fieldType eq "long")
+      elsif ($fieldType eq "bool")
       {
-         $fieldPrintfType = "%ld";
+         $fieldPrintfType = "%d";
       }
       elsif ($fieldType eq "int")
       {
          $fieldPrintfType = "%d";
       }
+      elsif ($fieldType eq "short")
+      {
+         $fieldPrintfType = "%d";
+      }
+      elsif ($fieldType eq "long")
+      {
+         $fieldPrintfType = "%ld";
+      }
+      elsif ($fieldType eq "int64")
+      {
+         $fieldPrintfType = '%"LL"d';
+      }
       elsif ($fieldType eq "simtime_t")
       {
          $fieldPrintfType = "%s";
          $fieldPrintfValue = "SIMTIME_STR($fieldPrintfValue)";
+      }
+      else {
+         die "unrecognized type '$fieldType'";
       }
 
       if ($fieldDefault ne "") {
@@ -157,6 +172,9 @@ print CC "
 #undef CHECK
 #endif
 #define CHECK(fprintf)    if (fprintf<0) throw cRuntimeError(\"Cannot write event log file, disk full?\");
+
+#define LL    INT64_PRINTF_FORMAT
+
 
 void EventLogWriter::recordLogLine(FILE *f, const char *s, int n)
 {

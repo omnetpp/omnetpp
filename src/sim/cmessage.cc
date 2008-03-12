@@ -18,9 +18,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <math.h>            // pow
-#include <stdio.h>           // sprintf
-#include <string.h>          // strcpy
+#include <stdio.h>  // sprintf
 #include "globals.h"
 #include "cmodule.h"
 #include "csimplemodule.h"
@@ -63,7 +61,7 @@ cMessage::cMessage(const cMessage& msg) : cOwnedObject(msg)
     live_msgs++;
 }
 
-cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cOwnedObject(name,false)
+cMessage::cMessage(const char *name, short k, int64 ln, short pri, bool err) : cOwnedObject(name,false)
 {
     // name pooling is off for messages by default, as unique names are quite common
     msgkind=k; len=ln; prior=pri; error=err;
@@ -342,18 +340,18 @@ void cMessage::_detachEncapMsg()
 }
 #endif
 
-void cMessage::setLength(long l)
+void cMessage::setLength(int64 l)
 {
     if (l<0)
-        throw cRuntimeError(this,"setLength(): negative length %ld",l);
+        throw cRuntimeError(this,"setLength(): negative length %"INT64_PRINTF_FORMAT"", l);
     len=l;
 }
 
-void cMessage::addLength(long l)
+void cMessage::addLength(int64 l)
 {
-    len+=l;
+    len += l;
     if (len<0)
-        throw cRuntimeError(this,"addLength(): length became negative (%ld) after adding %ld",len,l);
+        throw cRuntimeError(this,"addLength(): length became negative (%"INT64_PRINTF_FORMAT") after adding %"INT64_PRINTF_FORMAT"", len, l);
 }
 
 void cMessage::encapsulate(cMessage *msg)

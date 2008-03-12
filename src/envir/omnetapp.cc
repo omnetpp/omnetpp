@@ -822,10 +822,10 @@ void TOmnetApp::beginSend(cMessage *msg)
 {
     if (feventlog)
     {
-        EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_l_p_er_d(feventlog,
+        EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_p_l_er_d(feventlog,
             msg->id(), msg->treeId(), msg->encapsulationId(), msg->encapsulationTreeId(),
             msg->className(), msg->fullName(), msg->previousEventNumber(),
-            msg->kind(), msg->length(), msg->priority(), msg->hasBitError(),
+            msg->kind(), msg->priority(), msg->length(), msg->hasBitError(),
             eventLogObjectPrinter ? eventLogObjectPrinter->printObjectToString(msg).c_str() : NULL);
                //XXX message display string, etc?
                //XXX plus many other fields...

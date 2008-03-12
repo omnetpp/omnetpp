@@ -107,6 +107,14 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void pack(unsigned long d) = 0;
     /**
+     * Packs an int64.
+     */
+    virtual void pack(int64 d) = 0;
+    /**
+     * Packs an unsigned int64.
+     */
+    virtual void pack(uint64 d) = 0;
+    /**
      * Packs a float.
      */
     virtual void pack(float d) = 0;
@@ -234,6 +242,14 @@ class SIM_API cCommBuffer : public cObject
      * Unpacks an unsigned long.
      */
     virtual void unpack(unsigned long& d) = 0;
+    /**
+     * Unpacks an int64.
+     */
+    virtual void unpack(int64& d) = 0;
+    /**
+     * Unpacks an unsigned int64.
+     */
+    virtual void unpack(uint64& d) = 0;
     /**
      * Unpacks a float.
      */
