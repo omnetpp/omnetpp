@@ -5,7 +5,7 @@ if [ -n "$1" ] ; then
 fi
 
 echo
-echo Press ENTER to convert all NED files in the current directory:
+echo Press ENTER to convert all NED files under the current directory:
 echo `pwd`
 echo
 read WAIT
@@ -13,11 +13,11 @@ read WAIT
 find . -name "*.ned" >nedfiles.lst
 
 echo The following files will be checked/modified:
-cat nedfiles.lst
+cat nedfiles.lst | less
 
-echo                                                                                                              
-echo Press ENTER to start the conversion or CTRL-C to quit.
-read WAIT                                                                                                         
+echo
+echo Press ENTER to start the conversion, or CTRL-C to quit.
+read WAIT
 
 nedtool -P @nedfiles.lst || exit 1
 

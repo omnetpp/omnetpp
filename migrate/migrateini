@@ -5,7 +5,7 @@ if [ -n "$1" ] ; then
 fi
 
 echo
-echo Press ENTER to convert all ini files in the current directory:
+echo Press ENTER to convert all ini files under the current directory:
 echo `pwd`
 echo
 read WAIT
@@ -13,10 +13,10 @@ read WAIT
 find . -name "*.ini" >inifiles.lst
 
 echo The following files will be checked/modified:
-cat inifiles.lst
+cat inifiles.lst | less
 
-echo                                                                                                              
-echo Press ENTER to start the conversion or CTRL-C to quit.
-read WAIT                                                                                                         
+echo
+echo Press ENTER to start the conversion, or CTRL-C to quit.
+read WAIT
 
 perl `dirname $0`/migrateini.pl inifiles.lst

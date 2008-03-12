@@ -1,23 +1,23 @@
-#!/bin/sh                                                                                                         
+#!/bin/sh
 if [ -n "$1" ] ; then
   echo Please change to the directory you want to convert and run the script there without any comnmand line argument!
   exit 1
 fi
 
-echo                                                                                                              
+echo
 echo Press ENTER to convert all MSG files starting from the current directory:
-echo `pwd`                                                                                                        
-echo                                                                                                              
-read WAIT                                                                                                         
+echo `pwd`
+echo
+read WAIT
 
 find . -name "*.msg" >msgfiles.lst
 
 echo The following files will be checked/modified:
-cat msgfiles.lst
+cat msgfiles.lst | less
 
-echo                                                                                                              
-echo Press ENTER to start the conversion or CTRL-C to quit.
-read WAIT                                                                                                         
+echo
+echo Press ENTER to start the conversion, or CTRL-C to quit.
+read WAIT
 
 nedtool -P @msgfiles.lst
 
