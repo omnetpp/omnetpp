@@ -1,0 +1,12 @@
+Using OMNeT++ on Mac OS X 10.4 or 10.5
+================================================
+
+QUICKSTART
+
+1. Extract the OMNeT++ archive
+2. install Fink (www.finkproject.org)
+3. ensure that the required packages are installed (flex, bison, blt-dev, graphviz, doxygen)
+4. The default gcc 4.0.1 compiler will not work either upgrade to 4.2 or switch back to the 3.3 version
+   (sudo gcc_select 3.3)
+5. ./configure
+6. make
