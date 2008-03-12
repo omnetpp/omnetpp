@@ -213,6 +213,18 @@
 	- other:
 	        correct(const char *) got renamed to opp_nulltoempty(const char *)
 
+	cMessage changes:
+	- length changed from long to int64 (reason: message length was limited
+	  to 2 gigabits or 256 megabytes on 32-bit architectures).
+	  Affected functions:
+		setLength() / setByteLength() / addLength() / addByteLength()
+                length() / byteLength()
+	- message kind and priority changed from int to short. Affected functions:
+		kind() / setKind()
+		priority() / setPriority()
+	- added some extra fields required by sequence chart drawing: cause event
+	  number, message id, message tree id, etc.
+
 	Files renamed (Note: simulation models should only refer to <omnetpp.h>!)
 	     --OLD--          --NEW--
 	     cconfig.h        cconfiguration.h
