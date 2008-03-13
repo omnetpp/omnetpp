@@ -37,7 +37,6 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  * @author Andras
  */
 //XXX "Out" dir should be excluded implicitly
-//XXX create softlink/.cmd file in src dir to the target
 //XXX support ccExt = "cc,cpp" too! (because by default, CDT creates files with .cpp extension)
 public class Makemake {
     private static final String MAKEFILE_TEMPLATE_NAME = "Makefile.TEMPLATE";
@@ -317,7 +316,7 @@ public class Makemake {
         m.put("-l", isNMake ? "" : "-l");
         m.put(".lib", isNMake ? ".lib" : "");
         m.put("-u", isNMake ? "/include:" : "-u");
-        m.put("-out", isNMake ? "/out:" : "-o ");
+        m.put("-out", isNMake ? "/out:" : "-o ");  // note space after "-o" -- OS/X needs it
         m.put("cc", ccExt);
         m.put("obj", objExt);
         m.put("deps", deps.toString());
@@ -376,7 +375,7 @@ public class Makemake {
     }    
 
     protected void collectDirs(IContainer dir, String dirPath, List<String> exceptSubdirs, final List<String> result) throws CoreException {
-        if (!exceptSubdirs.contains(dirPath)) {
+        if (!exceptSubdirs.contains(dirPath)) {  //FIXME like in Perl! ie. -Xtmp should mean -X./tmp not -X**/tmp!!! also wildcards should be supported!!!
             result.add(dirPath);
             for (IResource member : dir.members())
                 if (MakefileTools.isGoodFolder(member))
