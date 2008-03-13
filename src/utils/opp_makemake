@@ -15,8 +15,8 @@ $progname = $ARG0;
 
 #$arch = $Config{'archname'};
 #$isCygwin = ($arch =~ /cygwin/i);
-$isWindows = ($ENV{OS} =~ /windows/i) ? 1 : 0;
-$isMINGW = ($ENV{MSYSTEM} =~ /mingw/i) ? 1 : 0;
+$isWindows = defined $ENV{OS} && $ENV{OS} =~ /windows/i;
+$isMINGW = defined $ENV{MSYSTEM} && $ENV{MSYSTEM} =~ /mingw/i;
 
 sub makemake();
 
@@ -24,11 +24,11 @@ makemake();
 exit 0;
 
 #TODO:
-# FIXME instead of *choosing* between .cc and .cpp, both files should be recognized and compiled!
-# implement isGoodDir correctly
+# instead of *choosing* between .cc and .cpp, both files should be recognized and compiled! (remove -e option????)
 # with --deep, -d<subdir> should imply -X<subdir> (in Java too)
+# output dir should be ignored (-X) too!
 # convert between .o and .obj in extraArgs!
-#
+
 
 sub makemake()
 {
@@ -320,7 +320,6 @@ sub makemake()
     else {
         @sourceDirs = collectDirs(".", \@exceptSubdirs);
         error("too many subdirs for --deep") if (@sourceDirs > 1000);
-        #print join('  ', @sourceDirs);
         foreach $f (@sourceDirs) {
             my $fslash = ($f eq ".") ? "" : "$f/";
             push(@ccfiles,  glob("$fslash*.cc"));
@@ -336,8 +335,9 @@ sub makemake()
         push(@backslashedSourceDirs, $i2);
     }
 
-    # include dirs and lib dirs
+    # include dirs and lib dirs (make them relative to the project dir)
     @tmp = @includeDirs;
+    @includeDirs = ();
     foreach $i (@tmp) {
         push(@includeDirs, abs2rel($i,$projectDir));
     }
@@ -347,6 +347,7 @@ sub makemake()
         }
     }
     @tmp = @libDirs;
+    @libDirs = ();
     foreach $i (@tmp) {
         push(@libDirs, abs2rel($i,$projectDir));
     }
@@ -484,7 +485,7 @@ sub makemake()
         "-L" =>  $isNMake ? "/libpath:" : "-L",
         "-l" =>  $isNMake ? "" : "-l",
         ".lib" =>  $isNMake ? ".lib" : "",
-        "-out" =>  $isNMake ? "/out:" : "-o",
+        "-out" =>  $isNMake ? "/out:" : "-o ", # note space after "-o" -- OS/X needs it
         "cc" =>  $ccExt,
         "obj" =>  $objExt,
         "deps" =>  $deps,
@@ -551,13 +552,27 @@ sub isGoodDir($;$)
         return 0;
     }
 
+    # skip dot directories, also CVS, SVN, etc aux dirs
     my @IGNORABLE_DIRS = ("CVS", "RCS", "SCCS", "_darcs", "blib", ".git", ".svn", ".git", ".bzr", ".hg", "backups");
 
-    #FIXME better ignore!!! like: if (dir eq exceptdir || dir.endswith("/"+exceptdir))
-    $dirpath = canonicalize($dirpath);
     my $dirname = $dirpath;
     $dirname =~ s|^.*/||;
-    return !grep(/^\Q$dirpath\E$/, @exceptSubdirs) && !grep(/^\Q$dirname\E$/, @IGNORABLE_DIRS);
+    if ($dirname =~ /^\./ || grep(/^\Q$dirname\E$/, @IGNORABLE_DIRS)) {
+        return 0;
+    }
+
+    # check exceptdirs. For that, we convert everything to canonical absolute path
+    my $absDir = existingDirtoCanonicalAbsolute($dirpath);
+    foreach $i (@exceptSubdirs) {
+        foreach $j (glob($i)) {
+            my $absExceptDir = existingDirtoCanonicalAbsolute($j);
+            if ($absDir eq $absExceptDir) {
+                return 0;
+            }
+        }
+
+    }
+    return 1;
 }
 
 #
@@ -857,6 +872,7 @@ sub canonicalize($)
     $path =~ s|//+|/|g;  # xx//xx -> xx/xx
     $path =~ s|(/\.)+/|/|g; # xx/././xx -> xx/xx
     $path =~ s|^(\./)+||s unless $path eq "./"; # ./xx -> xx
+    $path =~ s|/$||g;  # xx/ -> xx
 
     # # now we'll need to replace "/<subdir>/../" with "/" as many times as we can;
     # # unless <subdir> is "." or ".."
@@ -948,7 +964,10 @@ $progname [options] [object files or libraries]
                           makefrag(.vc) file. Subdirectories may be excluded
                           using -X. See also -d.
     -X directory, -Xdirectory, --except directory
-                          With -r and --deep option: ignore the given directory
+                          With -r and --deep option: ignore the given directory.
+                          If the argument is a relative path, it is interpreted
+                          as relative to the current directory. Wildcards
+                          (like -X *_backups or -X */tmp) are accepted.
     -dsubdir, -d subdir, --subdir subdir
                           Causes make to recursively descend into the given
                           directory. The directory does not need to be the
@@ -1151,7 +1170,7 @@ all: $O/$(TARGET)
 {exe:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@mkdir -p $O
-{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out} $O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
+{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
 {exe:}{nmake:}	echo @^%~dp0\$(O:/=\)\$(TARGET) ^%* > $(TARGET:.exe=.cmd)
 {exe:}{~nmake:}ifeq ("$(EXE_SUFFIX)",".exe")
 {exe:}{~nmake:}	echo "@%~dp0\\\\$(subst /,\\\\,$O)\\\\$(TARGET) %*" > $(subst .exe,.cmd,$(TARGET))
@@ -1161,7 +1180,7 @@ all: $O/$(TARGET)
 {sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@mkdir -p $O
-{sharedlib:}	$(SHLIB_LD) {-out} $O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)} {nmake_inlineend}
+{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)} {nmake_inlineend}
 {staticlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O
