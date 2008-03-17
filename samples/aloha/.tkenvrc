@@ -1,7 +1,7 @@
 # Tkenv configuration
 option updatefreq_fast	{1000}
 option updatefreq_express	{100000}
-option stepdelay	{299 ms}
+option stepdelay	{296 ms}
 option use_mainwindow	{1}
 option print_banners	{1}
 option animation_enabled	{1}
@@ -16,7 +16,7 @@ option penguin_mode	{0}
 option showlayouting	{0}
 option usenewlayouter	{0}
 option bubbles	{1}
-option animation_speed	{1.5}
+option animation_speed	{3}
 option expressmode_autoupdate	{1}
 config concurrent-anim	{1}
 config confirm-exit	{1}

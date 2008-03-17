@@ -1,7 +1,7 @@
 # Tkenv configuration
 option updatefreq_fast	{50}
 option updatefreq_express	{10000}
-option stepdelay	{300 ms}
+option stepdelay	{299 ms}
 option use_mainwindow	{1}
 option print_banners	{1}
 option animation_enabled	{1}
@@ -47,7 +47,6 @@ config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
 inspector "FifoNet.sink" "Sink" "1" "460x312+96+124"
-inspector "FifoNet" "FifoNet" "2" "535x299+24+31"
 inspector "component types.Sink" "cDynamicModuleType" "1" "460x312+120+155"
 inspector "Cn" "Cn" "2" "367x206+120+155"
 inspector "DD2.n1" "DD2::Node" "2" "367x287+48+62"
@@ -60,7 +59,7 @@ inspector "FF.b" "Node" "1" "460x312+24+31"
 inspector "component types" "cArray" "1" "460x312+120+155"
 inspector "DD2" "DD2" "2" "367x287+24+31"
 inspector "fifonet" "fifonet" "2" "443x277+96+124"
-inspector "FF.a" "Node" "1" "460x312+331+298"
 inspector "FF" "FF" "2" "367x207+357+123"
+inspector "FF.a" "Node" "1" "460x312+331+298"
 inspector "Cn.n2.out[0]" "cGate" "2" "191x181+120+155"
 

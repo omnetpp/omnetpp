@@ -19,7 +19,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.GLOBAL_VARIABLES" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;globalVariableList/&gt;&#10;"/>
 <stringAttribute key="org.eclipse.cdt.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;memoryBlockExpressionList/&gt;&#10;"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-n ${ned_path:/aloha} "/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="out/gcc-debug/aloha"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="out/mingw-debug/aloha.exe"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="aloha"/>
 <stringAttribute key="org.eclipse.cdt.launch.WORKING_DIRECTORY" value="${workspace_loc:/aloha}"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>

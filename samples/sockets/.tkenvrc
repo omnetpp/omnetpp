@@ -1,7 +1,7 @@
 # Tkenv configuration
 option updatefreq_fast	{50}
 option updatefreq_express	{10000}
-option stepdelay	{300 ms}
+option stepdelay	{299 ms}
 option use_mainwindow	{1}
 option print_banners	{1}
 option animation_enabled	{1}
@@ -46,6 +46,5 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "HTTPNet" "HTTPNet" "2" "570x513+44+58"
 inspector "telnetNet" "TelnetNet" "2" "548x435+44+58"
 
