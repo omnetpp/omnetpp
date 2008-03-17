@@ -27,23 +27,23 @@
             macroOutputFileExtValue="$(suffix $(notdir $@))"
             macroOutputFileNameValue="$(notdir $@)"
             macroOutputFileRelPathValue="$@"
-            name="OMNEST/OMNeT++ Make Builder (opp_makemake)"
+            name="OMNeT++ Make Builder (opp_makemake)"
             parallelBuildCmd="-j*"
             reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
             supportsManagedBuild="false"
             variableFormat="${=}">
-      </builder>   
+      </builder>
       <builder
             command="nmake"
             id="org.omnetpp.cdt.opp_nmakemake.builder"
             isAbstract="true"
-            name="OMNEST/OMNeT++ Make Builder (opp_nmakemake - for MS Visual C++)"
+            name="OMNeT++ Make Builder (opp_nmakemake - for MS Visual C++)"
             superClass="org.omnetpp.cdt.opp_makemake.builder">
       </builder>
       <toolChain
             id="org.omnetpp.cdt.msvc.toolchain.base"
             isAbstract="true"
-            name="Microsoft Visual C++ for OMNEST/OMNeT++"
+            name="Microsoft Visual C++ for OMNeT++"
             osList="win32"
             superClass="org.eclipse.cdt.msvc.toolchain.base"
             supportsManagedBuild="false">
@@ -56,7 +56,7 @@
       <toolChain
             id="org.omnetpp.cdt.mingw.toolchain.base"
             isAbstract="true"
-            name="MinGW GCC for OMNEST/OMNeT++"
+            name="MinGW GCC for OMNeT++"
             superClass="cdt.managedbuild.toolchain.gnu.mingw.base"
             supportsManagedBuild="false">
          <builder
@@ -68,7 +68,7 @@
       <toolChain
             id="org.omnetpp.cdt.gnu.toolchain.base"
             isAbstract="true"
-            name="Linux GCC for OMNEST/OMNeT++"
+            name="Linux GCC for OMNeT++"
             superClass="cdt.managedbuild.toolchain.gnu.base"
             supportsManagedBuild="false">
          <builder
@@ -79,7 +79,7 @@
       </toolChain>
       <projectType
             id="org.omnetpp.cdt.omnetppProjectType"
-            name="OMNEST/OMNeT++ Simulation"
+            name="OMNeT++ Simulation"
             projectEnvironmentSupplier="org.omnetpp.cdt.OmnetppProjectEnvironmentSupplier"
             projectMacroSupplier="org.omnetpp.cdt.OmnetppProjectMacroSupplier">
          <configuration
@@ -177,10 +177,10 @@
             class="org.omnetpp.cdt.wizard.OmnetppCCProjectWizard"
             icon="icons/full/obj16/newoproject.gif"
             id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard"
-            name="OMNEST/OMNeT++ Project for C++"
+            name="OMNeT++ Project for C++"
             project="true">
          <description>
-            Create a Project that can handle OMNEST/OMNeT++ specific files and supports C++ development using CDT.
+            Create a Project that can handle OMNeT++ specific files and supports C++ development using CDT.
          </description>
       </wizard>
    </extension>
@@ -190,7 +190,7 @@
             category="org.eclipse.cdt.managedbuilder.ui.properties.Page_head_build"
             class="org.omnetpp.cdt.ui.MakemakeFolderPropertyPage"
             id="org.omnetpp.cdt.BuildSpec"
-            name="Makemake (OMNEST/OMNeT++)">
+            name="Makemake (OMNeT++)">
          <enabledWhen>
             <and>
                <or>
@@ -223,10 +223,10 @@
          point="org.eclipse.debug.core.launchDelegates">
       <launchDelegate
             delegate="org.eclipse.cdt.launch.internal.LocalCDILaunchDelegate"
-            delegateDescription="Allows debugging an OMNEST/OMNeT++ simulation with CDT"
+            delegateDescription="Allows debugging an OMNeT++ simulation with CDT"
             id="org.omnetpp.launch.simulationDebugDelegate"
             modes="debug"
-            name="OMNEST/OMNeT++ Simulation Debugger"
+            name="OMNeT++ Simulation Debugger"
             sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
             sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
             type="org.omnetpp.launch.simulationLaunchConfigurationType">
@@ -255,7 +255,7 @@
    </extension>
    <extension
          id="MakefileBuilder"
-         name="OMNEST/OMNeT++ Makefile Builder"
+         name="OMNeT++ Makefile Builder"
          point="org.eclipse.core.resources.builders">
       <builder
             hasNature="false">

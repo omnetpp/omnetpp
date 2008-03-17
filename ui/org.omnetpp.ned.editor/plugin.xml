@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
 
      <extension
-         point="org.eclipse.ui.editors"> 
+         point="org.eclipse.ui.editors">
       <editor
             default="true"
             extensions="ned"
@@ -11,7 +11,7 @@
             id="org.omnetpp.ned.editor.launcher"
             launcher="org.omnetpp.ned.editor.NedEditorLauncher"
             name="NED Editor">
-      </editor> 
+      </editor>
       <editor
             class="org.omnetpp.ned.editor.NedEditor"
             contributorClass="org.omnetpp.ned.editor.NedEditorActionContributor"
@@ -68,7 +68,7 @@
 <!-- Text based NED editor                                                       -->
 <!-- =========================================================================== -->
 
-   
+
    <extension
          id="NedDocumentSetupParticipant"
          name="NED Document Setup Participant"
@@ -118,11 +118,11 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+I">
       </key>
-      <key 
-            commandId="org.omnetpp.ned.editor.text.performTextSearchWorkspace" 
+      <key
+            commandId="org.omnetpp.ned.editor.text.performTextSearchWorkspace"
             contextId="org.omnetpp.context.nedEditor"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"  
-            sequence="M1+M2+G"> 
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+M2+G">
       </key>
    </extension>
    <extension
@@ -159,7 +159,7 @@
       </command>
       <command
             categoryId="org.eclipse.ui.category.textEditor"
-            description="Convert the NED source to the OMNEST/OMNeT++ 4.0 format"
+            description="Convert the NED source to the OMNeT++ 4.0 format"
             id="org.omnetpp.ned.editor.text.ConvertToNewFormat"
             name="Convert to 4.0 Format">
       </command>
@@ -173,7 +173,7 @@
    <extension
          point="org.eclipse.ui.contexts">
       <context
-            description="OMNEST/OMNeT++ NED File Editor"
+            description="OMNeT++ NED File Editor"
             id="org.omnetpp.context.nedEditor"
             name="Editing NED Source"
             parentId="org.eclipse.ui.textEditorScope">

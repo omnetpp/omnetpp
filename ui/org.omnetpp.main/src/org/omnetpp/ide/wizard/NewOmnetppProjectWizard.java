@@ -28,21 +28,21 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
-	
+
 	protected NewOmnetppProjectCreationPage projectPage;
 
 	public static class NewOmnetppProjectCreationPage extends WizardNewProjectCreationPage {
 
 	    public NewOmnetppProjectCreationPage() {
-	        super("OMNEST/OMNeT++ Project");
-	        setTitle("OMNEST/OMNeT++ Project");
-	        setDescription("Creates a new OMNEST/OMNeT++ Project.");
+	        super("OMNeT++ Project");
+	        setTitle("OMNeT++ Project");
+	        setDescription("Creates a new OMNeT++ Project.");
 	        setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/newoprj_wiz.png"));
 	    }
 	}
 
 	public NewOmnetppProjectWizard() {
-		setWindowTitle("New OMNEST/OMNeT++ Project");
+		setWindowTitle("New OMNeT++ Project");
 	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
@@ -59,23 +59,23 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
         IProject project = createNewProject();
         return project != null;
 	}
-	
+
 	protected IProject createNewProject() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		String projectName = projectPage.getProjectName();
         final IProject projectHandle =  workspace.getRoot().getProject(projectName);
-        
+
         // get a project descriptor
         IPath defaultPath = Platform.getLocation();
         IPath newPath = projectPage.getLocationPath();
         if (defaultPath.equals(newPath))
 			newPath = null;
-        
+
         // create project description. Note: we'add the nature after project creation,
         // so that builders get properly configured (Project.create() doesn't do it).
         final IProjectDescription description = workspace.newProjectDescription(projectName);
         description.setLocation(newPath);
-		
+
         // define the operation to create a new project
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor) throws CoreException {
@@ -109,7 +109,7 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 
         return projectHandle;
 	}
-	
+
     private void createOmnetppProject(IProjectDescription description, IProject projectHandle, IProgressMonitor monitor) throws CoreException, OperationCanceledException {
         try {
             monitor.beginTask("", 2000);
@@ -120,10 +120,10 @@ public class NewOmnetppProjectWizard extends Wizard implements INewWizard {
 
             projectHandle.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
 
-            // add the project nature after now, after project creation, so that builders 
+            // add the project nature after now, after project creation, so that builders
             // get properly configured (Project.create() doesn't do it).
             ProjectUtils.addOmnetppNature(projectHandle);
-        } 
+        }
         finally {
             monitor.done();
         }

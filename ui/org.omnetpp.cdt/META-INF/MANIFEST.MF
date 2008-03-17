@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNEST/OMNeT++ CDT Integration Plug-in
+Bundle-Name: OMNeT++ CDT Integration Plug-in
 Bundle-SymbolicName: org.omnetpp.cdt;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.cdt.Activator

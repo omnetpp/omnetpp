@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-            name="OMNEST/OMNeT++"
+            name="OMNeT++"
             id="org.omnetpp.wizards">
       </category>
    </extension>
@@ -12,7 +12,7 @@
          point="org.eclipse.ui.exportWizards">
      <category
            id="org.omnetpp.exportWizards"
-           name="OMNEST/OMNeT++">
+           name="OMNeT++">
      </category>
    </extension>
 
@@ -20,7 +20,7 @@
          point="org.eclipse.ui.views">
       <category
             id="org.omnetpp.views"
-            name="OMNEST/OMNeT++"/>
+            name="OMNeT++"/>
    </extension>
 
    <extension

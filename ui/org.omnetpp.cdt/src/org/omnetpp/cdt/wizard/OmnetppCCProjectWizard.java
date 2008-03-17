@@ -33,9 +33,9 @@ import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
 
 
 /**
- * Like OmnetppNewProjectWizard, but continues in a customized 
+ * Like OmnetppNewProjectWizard, but continues in a customized
  * "New CDT Project" Wizard.
- * 
+ *
  * @author Andras
  */
 public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements INewWizard {
@@ -44,7 +44,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
     private CCProjectWizard nestedWizard;
 
     /**
-     * Customizations: 
+     * Customizations:
      *   (1) hide project name / location because we have a separate page for that
      *   (2) filter the project types and templates shown
      */
@@ -58,7 +58,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         @Override
         public void createControl(Composite parent) {
             super.createControl(parent);
-            
+
             // hide project name and location -- we have a separate project page
             hideControl(projectNameField.getParent());
             hideControl((Control)ReflectionUtils.getFieldValue(locationArea, "locationLabel"));
@@ -77,7 +77,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         @Override
         public void setVisible(boolean visible) {
             super.setVisible(visible);
-            
+
             // copy project name and location from the project page
             String projectName = projectPage.getProjectName();
             boolean useDefaultLocation = projectPage.useDefaults();
@@ -87,7 +87,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             if (!useDefaultLocation)
                 ((Text)ReflectionUtils.getFieldValue(locationArea, "locationPathField")).setText(location.append(projectName.trim()).toString());
         }
-        
+
         @Override
         protected ArrayList<EntryDescriptor> filterItems(ArrayList<EntryDescriptor> items) {
             ArrayList<EntryDescriptor> newItems = new ArrayList<EntryDescriptor>();
@@ -104,17 +104,17 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         public CCProjectWizard() {
             super(UIMessages.getString("NewModelProjectWizard.2"), UIMessages.getString("NewModelProjectWizard.3")); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        
+
         @Override
         public void addPages() {
             fMainPage = new CustomizedCDTMainPage();
             addPage(fMainPage);
         }
-        
+
         public String[] getNatures() {
             return new String[] { CProjectNature.C_NATURE_ID, CCProjectNature.CC_NATURE_ID };
         }
-        
+
         protected IProject continueCreation(IProject prj) {
             try {
                 CProjectNature.addCNature(prj, new NullProgressMonitor());
@@ -128,7 +128,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         private Button supportCppButton;
 
         public NewOmnetppCppProjectCreationPage() {
-            setDescription("Creates a Project that can handle OMNEST/OMNeT++ specific files and supports C++ development using CDT.");
+            setDescription("Creates a Project that can handle OMNeT++ specific files and supports C++ development using CDT.");
         }
 
         @Override
@@ -148,11 +148,11 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
                 }
             });
         }
-        
+
         public boolean supportsCpp() {
             return supportCppButton.getSelection();
         }
-        
+
         @Override
         public IWizardPage getNextPage() {
             return supportsCpp() ? nestedWizard.getStartingPage() : null;
@@ -165,17 +165,17 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         addPage(projectPage);
         nestedWizard.addPages();
     }
-    
+
     @Override
     public boolean performFinish() {
         // if we are on the first page the CDT wizard is not yet created and its perform finis will not be called
         // so we have to do it manually
         if (getContainer().getCurrentPage() == projectPage) {
             if (((NewOmnetppCppProjectCreationPage)projectPage).supportsCpp()) {
-                // show it manually (and create) and 
+                // show it manually (and create) and
                 getContainer().showPage(nestedWizard.getStartingPage());
                 nestedWizard.performFinish();
-            } 
+            }
             else {
                 // just call the plain OMNET++ wizard
                 super.performFinish();
@@ -184,9 +184,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         // the OMNET nature is always added
         IProject project = projectPage.getProjectHandle();
         ProjectUtils.addOmnetppNature(project);
-        
+
         return true;
-    }    
+    }
 
     public void init(IWorkbench workbench, IStructuredSelection selection) {
         nestedWizard = new CCProjectWizard();

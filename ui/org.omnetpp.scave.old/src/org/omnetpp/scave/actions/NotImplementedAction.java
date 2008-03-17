@@ -23,7 +23,7 @@ public class NotImplementedAction extends Action {
 
 			// do something here...
 			MessageDialog.openInformation(window.getShell(),
-					"OMNEST/OMNeT++ Scave Plug-in",
+					"OMNeT++ Scave Plug-in",
 					"This action is not implemented yet.");
 		}
 	}

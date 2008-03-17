@@ -36,12 +36,12 @@ import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
 
 /**
- * This property page is shown for OMNeT++ CDT Projects, and lets the user 
+ * This property page is shown for OMNeT++ CDT Projects, and lets the user
  * edit the contents of the ".oppbuildspec" file.
  *
  * @author Andras
  */
-//FIXME OMNEST/OMNeT++ category in Project Properties also appear if project is NOT an OMNeT++ project...
+//FIXME OMNeT++ category in Project Properties also appear if project is NOT an OMNeT++ project...
 //TODO: "Show Dependencies" (of a folder)
 //TODO: out-of-directory build
 public class BuildSpecPropertyPage extends PropertyPage {
@@ -51,7 +51,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
     private static Image IMAGE_FOLDER_DLL = Activator.getCachedImage("icons/full/obj16/folder_dll.gif");
     private static Image IMAGE_FOLDER_LIB = Activator.getCachedImage("icons/full/obj16/folder_lib.gif");
     private static Image IMAGE_FOLDER_NOLINK = Activator.getCachedImage("icons/full/obj16/folder_nolink.gif");
-    
+
     // widgets
 	private TreeViewer treeViewer;
     private Button generatedMakefileButton;
@@ -60,7 +60,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
     private Button defaultButton;
     private Button optionsButton;
     private Button removeOptionsButton;
-    
+
     // state
     private BuildSpecification buildSpec;
 
@@ -81,7 +81,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 
 		final IProject project = (IProject) getElement().getAdapter(IProject.class);
 
-        createWrapLabel(composite, 
+        createWrapLabel(composite,
                 "Makefiles will be automatically generated in folders marked so. " +
         		"Makefiles can be configured via options for opp_makemake, and " +
         		"via \"makefrag\" files whose contents will be inserted into the " +
@@ -93,7 +93,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
         Label label = new Label(composite, SWT.NONE);
         label.setText("&Build specification for project '" + project.getName() + "':");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        
+
 		treeViewer = new TreeViewer(composite, SWT.BORDER | SWT.MULTI);
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -135,7 +135,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
             public void widgetSelected(SelectionEvent e) {
                 removeFolderOptions();
             }});
-        
+
         // FIXME class cast exception if buildspec did not exist
         // configure treeviewer
         treeViewer.setContentProvider(new WorkbenchContentProvider() {
@@ -150,20 +150,20 @@ public class BuildSpecPropertyPage extends PropertyPage {
 	    });
 
 //		treeViewer.setLabelProvider(new LabelProvider() {
-//		    
+//
 //            @Override
 //            public Image getImage(Object element) {
 //                IContainer folder = (IContainer) element;
 //                switch (buildSpec.getFolderType(folder)) {
 //                    case CUSTOM_MAKEFILE: return IMAGE_FOLDER_CUSTOM;
 //                    case EXCLUDED_FROM_BUILD: return IMAGE_FOLDER_EXCLUDED;
-//                    case GENERATED_MAKEFILE: 
+//                    case GENERATED_MAKEFILE:
 //                        MakemakeOptions makemakeOptions = buildSpec.getFolderOptions(folder);
 //                        if (makemakeOptions == null) makemakeOptions = new MakemakeOptions(); //FIXME getFolderOptions should never return null??
 //                        switch (makemakeOptions.type) {
 //                            case EXE: return IMAGE_FOLDER_EXE;
 //                            case SHAREDLIB: return IMAGE_FOLDER_DLL;
-//                            case STATICLIB: return IMAGE_FOLDER_LIB; 
+//                            case STATICLIB: return IMAGE_FOLDER_LIB;
 //                            case NOLINK: return IMAGE_FOLDER_NOLINK;
 //                        }
 //                }
@@ -186,20 +186,20 @@ public class BuildSpecPropertyPage extends PropertyPage {
 //                    String args = makemakeOptions.toString();
 //                    additionalText += ": " + (buildSpec.isFolderOptionsInherited(folder) ? "("+args+")" : args);
 //                }
-//                
+//
 //                if (additionalText.length() > 0)
 //                    return folder.getName() + " -- " + additionalText;
 //                else
 //                    return folder.getName();
 //            }
-//		}); 
-	        
+//		});
+
 		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                 updateButtonStates();
             }
 		});
-		
+
 		loadBuildSpecFile();
 
 		treeViewer.setInput(project.getParent());
@@ -208,7 +208,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 		treeViewer.expandToLevel(2);
 		for (IContainer folder : buildSpec.getMakemakeFolders())
 	        treeViewer.expandToLevel(folder, 0);
-		
+
 		return composite;
 	}
 
@@ -233,12 +233,12 @@ public class BuildSpecPropertyPage extends PropertyPage {
 
 	protected void updateButtonStates() {
 //	    IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
-//	    
+//
 //	    int generatedMakefileCount = 0;
 //	    for (Object o : sel.toArray())
 //	        if (buildSpec.getFolderType((IContainer)o) == FolderType.GENERATED_MAKEFILE)
 //	            generatedMakefileCount++;
-//	    
+//
 //	    generatedMakefileButton.setEnabled(!sel.isEmpty());
 //	    customMakefileButton.setEnabled(!sel.isEmpty());
 //	    excludeButton.setEnabled(!sel.isEmpty());
@@ -254,7 +254,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 //            if (folderType == FolderType.EXCLUDED_FROM_BUILD)
 //                setFolderTypeInSubtree((IContainer)o, null); // if EXCLUDED, all folders below must be also EXCLUDED
 //            else
-//                ; //FIXME ensure it has no EXCLUDED parent! if so, don't let the user change the type 
+//                ; //FIXME ensure it has no EXCLUDED parent! if so, don't let the user change the type
 //        }
 //        treeViewer.refresh();
 //        updateButtonStates();
@@ -278,7 +278,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
     protected void editFolderOptions() {
 //        IStructuredSelection sel = (IStructuredSelection)treeViewer.getSelection();
 //
-//        // dialog default value: take it from first suitable folder 
+//        // dialog default value: take it from first suitable folder
 //        MakemakeOptions options = null;
 //        for (IContainer folder : (List<IContainer>)sel.toList())
 //            if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE && buildSpec.getFolderOptions(folder) != null && !buildSpec.isFolderOptionsInherited(folder))
@@ -288,8 +288,8 @@ public class BuildSpecPropertyPage extends PropertyPage {
 //        //XXX just testing
 //        MakemakeOptionsDialog dlg = new MakemakeOptionsDialog(getShell(), options);
 //        dlg.open();
-//        
-//        // open dialog  
+//
+//        // open dialog
 //        //TODO something more sophisticated...
 //        InputDialog dialog = new InputDialog(getShell(), "Folder Build Options", "Command-line options for opp_makemake:", value, new IInputValidator() {
 //            public String isValid(String newText) {
@@ -306,7 +306,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 //            for (IContainer folder : (List<IContainer>)sel.toList())
 //                if (buildSpec.getFolderType(folder) == FolderType.GENERATED_MAKEFILE)
 //                    buildSpec.setFolderOptions(folder, new MakemakeOptions(args));
-//            
+//
 //            treeViewer.refresh();
 //            updateButtonStates();
 //        }
@@ -324,7 +324,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
 	    buildSpec = new BuildSpecification();
 	    treeViewer.refresh();
 	}
-	
+
 	public boolean performOk() {
 		saveBuildSpecFile();
 		return true;
@@ -337,24 +337,24 @@ public class BuildSpecPropertyPage extends PropertyPage {
 		    if (buildSpec == null)
 		        buildSpec = new BuildSpecification();
 		    treeViewer.refresh();
-		} 
+		}
 		catch (IOException e) {
 			errorDialog("Cannot read build specification: ", e);
 		} catch (CoreException e) {
 			errorDialog("Cannot read build specification: ", e);
 		}
-		
+
 	}
 
 	private void saveBuildSpecFile() {
 		try {
 			IProject project = (IProject)getElement().getAdapter(IProject.class);
             BuildSpecUtils.saveBuildSpecFile(project, buildSpec);
-		} 
+		}
 		catch (CoreException e) {
 			errorDialog("Cannot store build specification: ", e);
 		}
-	} 
+	}
 
 	private void errorDialog(String message, Throwable e) {
 		IStatus status = new Status(IMarker.SEVERITY_ERROR, Activator.PLUGIN_ID, e.getMessage(), e);

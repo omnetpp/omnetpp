@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
    <description url="http://omnetpp.org/update/omnetppide">
-      OMNEST/OMNeT++ IDE Update Site
+      OMNeT++ IDE Update Site
    </description>
    <feature url="features/org.omnetpp.ide_4.0.0.jar" id="org.omnetpp.ide" version="4.0.0" os="linux,macosx,win32" ws="carbon,gtk,win32" arch="x86"/>
 </site>

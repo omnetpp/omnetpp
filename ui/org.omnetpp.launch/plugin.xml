@@ -5,7 +5,7 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             id="org.omnetpp.launch.simulationLaunchConfigurationType"
-            name="OMNEST/OMNeT++ Simulation"
+            name="OMNeT++ Simulation"
             public="true">
       </launchConfigurationType>
    </extension>
@@ -13,10 +13,10 @@
          point="org.eclipse.debug.core.launchDelegates">
       <launchDelegate
             delegate="org.omnetpp.launch.SimulationLaunchConfigurationDelegate"
-            delegateDescription="Allows running an OMNEST/OMNeT++ simulation in standalone or batched mode"
+            delegateDescription="Allows running an OMNeT++ simulation in standalone or batched mode"
             id="org.omnetpp.launch.simulationLaunchDelegate"
             modes="run"
-            name="OMNEST/OMNeT++ Batched Simulation Launcher"
+            name="OMNeT++ Batched Simulation Launcher"
             type="org.omnetpp.launch.simulationLaunchConfigurationType">
       </launchDelegate>
    </extension>
@@ -24,7 +24,7 @@
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
             class="org.omnetpp.launch.SimulationLaunchConfigurationTabGroup"
-            description="Allows running and debugging an OMNEST/OMNeT++ simulation"
+            description="Allows running and debugging an OMNeT++ simulation"
             id="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
             type="org.omnetpp.launch.simulationLaunchConfigurationType">
       </launchConfigurationTabGroup>

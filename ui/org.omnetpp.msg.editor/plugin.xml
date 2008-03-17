@@ -53,7 +53,7 @@
    <extension
          point="org.eclipse.ui.contexts">
       <context
-            description="OMNEST/OMNeT++ MSG File Editor"
+            description="OMNeT++ MSG File Editor"
             id="org.omnetpp.context.msgEditor"
             name="Editing MSG Source"
             parentId="org.eclipse.ui.textEditorScope">

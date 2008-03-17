@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNEST/OMNeT++ NED File Resource Management
+Bundle-Name: OMNeT++ NED File Resource Management
 Bundle-SymbolicName: org.omnetpp.ned.core;singleton:=true
 Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.ned.core.NEDResourcesPlugin

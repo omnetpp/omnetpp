@@ -16,10 +16,10 @@ public class InifileEditorUtils
 		// Select the project in the "Project Explorer" view, and choose "New|Other..." from its context menu
 		WorkbenchUtils.findInProjectExplorerView(projectName).chooseFromContextMenu("New|Other.*");
 
-		// Open the "OMNEST/OMNeT++" category in the "New" dialog, and double-click "Ini file" in it
+		// Open the "OMNeT++" category in the "New" dialog, and double-click "Ini file" in it
 		ShellAccess shell = Access.findShellWithTitle("New");
 		TreeAccess tree = shell.findTree();
-		TreeItemAccess treeItem = tree.findTreeItemByContent(".*OMNEST.*");
+		TreeItemAccess treeItem = tree.findTreeItemByContent(".*OMN.*");
 		treeItem.click();
 		shell.pressKey(SWT.ARROW_RIGHT); // open tree node
 		tree.findTreeItemByContent("Ini.*").doubleClick();

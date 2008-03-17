@@ -80,13 +80,13 @@
             class="org.omnetpp.scave.plugin.ScavePerspective"
             icon="icons/sample.gif"
             id="org.omnetpp.scave.ScavePerspective"
-            name="Result Analysis - OMNEST"/>
+            name="Result Analysis - OMNeT++"/>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
       <category
             id="org.omnetpp.scave.New"
-            name="Result analysis - OMNEST"/>
+            name="Result analysis - OMNeT++"/>
       <wizard
             category="org.omnetpp.scave.New"
             class="org.omnetpp.scave.wizards.SampleNewWizard"

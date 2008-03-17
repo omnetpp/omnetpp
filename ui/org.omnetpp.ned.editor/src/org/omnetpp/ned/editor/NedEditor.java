@@ -97,7 +97,7 @@ public class NedEditor
                     	!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
                         textEditor.pullChangesFromNEDResourcesWhenPending();
                 }
-    
+
                 if (getControl(getActivePage()).isVisible())
                     graphicalEditor.refresh();
             }
@@ -155,7 +155,7 @@ public class NedEditor
 
 		// TODO create a nicer dialog for error reporting
 		if (NEDResourcesPlugin.getNEDResources().getNedSourceFolderFor(((FileEditorInput)editorInput).getFile()) == null) {
-		    IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "NED File is not in a NED Source Folder of an OMNEST/OMNeT++ Project, and cannot be opened with this editor.", null);
+		    IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "NED File is not in a NED Source Folder of an OMNeT++ Project, and cannot be opened with this editor.", null);
 		    throw new PartInitException(status);
 		}
 

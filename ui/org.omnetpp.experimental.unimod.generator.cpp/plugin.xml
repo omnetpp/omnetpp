@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin
    id="org.omnetpp.experimental.unimod.generator.cpp"
-   name="OMNeT++/OMNEST C++ Source Generator"
+   name="OMNeT++ C++ Source Generator"
    version="1.3.1.24"
    provider-name="OpenSim Ltd">
 
@@ -20,7 +20,7 @@
          point="com.evelopers.unimod.generator">
       <generator
             class="org.omnetpp.experimental.unimod.generator.cpp.CppSourceGenerator"
-            name="OMNeT++/OMNEST C++ Source Generator"/>
+            name="OMNeT++ C++ Source Generator"/>
    </extension>
 
 </plugin>

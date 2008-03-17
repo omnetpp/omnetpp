@@ -108,7 +108,7 @@ public class Demo extends GUITestCase {
 
     private void welcome() {
         showMessage(
-                "<b>Welcome to the OMNeT++/OMNEST 4.0 Demo!</b>\n" +
+                "<b>Welcome to the OMNeT++ 4.0 Demo!</b>\n" +
                 "\n" +
                 "This demo shows you how to create, configure, run " +
                 "and analyze a simulation model in the OMNeT++ IDE.", 4);
@@ -129,7 +129,7 @@ public class Demo extends GUITestCase {
                 "<b>OMNeT++ Project wizard</b>. This project will hold the files " +
                 "we work with.", 3);
         // create project
-        Access.getWorkbenchWindow().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|OMNEST/OMNeT\\+\\+ Project");
+        Access.getWorkbenchWindow().chooseFromMainMenu("File|New\tAlt\\+Shift\\+N|OMNeT\\+\\+ Project");
         ShellAccess shell = Access.findShellWithTitle("New OMNeT\\+\\+ project");
         sleep(1);
         showMessage("Let's name the project \"Demo\".", 1);
@@ -192,7 +192,7 @@ public class Demo extends GUITestCase {
         GraphicalNedEditorAccess graphEd = editor.ensureActiveGraphicalEditor();
 
         CompoundModuleEditPartAccess compoundModule = graphEd.findCompoundModule("demo");
-        
+
         showMessage("Module types are available from the palette, at the right side of the graphical editor.", 2, 100);
         compoundModule.createSubModuleWithPalette("Queue.*", "queue1", 180, 150);
         sleep(1);
@@ -263,7 +263,7 @@ public class Demo extends GUITestCase {
         sleep(1);
         iniEditor.activateFormEditor();
         sleep(1);
-        
+
         showMessage("Our next task is to assign model parameters that do not have default values.", 2);
         CompositeAccess form = (CompositeAccess)iniEditor.getActivePageControl();
         ButtonAccess addKeysButton = form.findButtonWithLabel("Add.*");
@@ -290,7 +290,7 @@ public class Demo extends GUITestCase {
         showMessage(
                 "InterArrivalTime will be set to 0, meaning that all jobs will " +
         		"be immediately injected into the queuing network.", 2);
-        tree2.findTreeItemByContent("\\*\\*\\.source\\.interArrivalTime").clickAndTypeOver(1, "0\n");                        
+        tree2.findTreeItemByContent("\\*\\*\\.source\\.interArrivalTime").clickAndTypeOver(1, "0\n");
         sleep(1);
         showMessage(
                 "We want to run the model in two configurations, once with 30 and then " +
@@ -335,7 +335,7 @@ public class Demo extends GUITestCase {
         showMessage("We could also specify that we run each configuration several times " +
                 "with different seeds, but iterating over numJobs and serviceTimes " +
                 "already generated enough runs for this demo.", 4);
-        
+
         // set event logging file
         showMessage("Turning on the log file generation will allow us to analyze " +
         		"the interaction between the modules later.", 2);
@@ -426,14 +426,14 @@ public class Demo extends GUITestCase {
         shell.pressKey('2');
         showMessage("Now we are ready to execute our simulation batch, so we click <b>Run</b>.", 2);
         shell.findButtonWithLabel("Run").selectWithMouseClick();
-        
+
         showMessage("And watch the progress of the simulation batch in the <b>Progress View</b>.", 2);
-        WorkbenchUtils.ensureViewActivated("General", "Progress.*"); 
+        WorkbenchUtils.ensureViewActivated("General", "Progress.*");
 
         WorkbenchUtils.waitUntilProgressViewContains("Running simulations.*", 30);
         //try { Thread.sleep(10000); } catch (InterruptedException e) {}
         WorkbenchUtils.waitUntilProgressViewNotContains("Running simulations.*", 120);
-        
+
         showMessage(
                 "<b>Simulations completed!</b> Note the files that have been " +
         		"created in the project directory. Vec and sca files hold " +
@@ -466,7 +466,7 @@ public class Demo extends GUITestCase {
         ip.ensureFileRunViewVisible();
         showMessage("The editor lists the matching files below, one vector " +
         		"and one scalar for each run. The files have actually not been " +
-        		"loaded into memory, only their contents were scanned.", 3); 
+        		"loaded into memory, only their contents were scanned.", 3);
         Access.sleep(2);
 
         TreeAccess runFileTree = ip.ensureRunFileViewVisible();
@@ -495,7 +495,7 @@ public class Demo extends GUITestCase {
         Access.sleep(2);
         showMessage("Each instance of running a replication receives a unique Run ID.", 2);
         Access.sleep(1);
-        
+
         // browse data
         showMessage("We can now switch to the Data Browsing page.", 1);
         BrowseDataPageAccess bdp = scaveEditor.ensureBrowseDataPageActive();
@@ -541,7 +541,7 @@ public class Demo extends GUITestCase {
         chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.NONE, r.x+300, r.y+100, r.x+50, r.y+100);
         chart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.NONE, r.x+300, r.y+100, r.x+50, r.y+100);
         sleep(3);
-        
+
         showMessage("We can apply the \"mean\" function, to get a smoothed-out version of the chart.", 2);
         chart.chooseFromContextMenu("Apply|Mean");
         sleep(3);
@@ -567,7 +567,7 @@ public class Demo extends GUITestCase {
         sleep(2);
         showMessage("Let us save the analysis. The analysis file will only store " +
                 "the \"recipe\": which files to load, and what datasets and charts " +
-                "to draw from them.", 3, 100); 
+                "to draw from them.", 3, 100);
 
         workbenchWindow.getShell().findToolItemWithTooltip("Save.*").click();
         sleep(10);
@@ -597,7 +597,7 @@ public class Demo extends GUITestCase {
         SequenceChartAccess sequenceChart = (SequenceChartAccess)Access.createAccess(Access.findDescendantControl(editorPart.getComposite().getControl(), SequenceChart.class));
         Rectangle r = sequenceChart.getAbsoluteBounds();
         sequenceChart.activateContextMenuWithMouseClick(2).activateMenuItemWithMouse("Sending.*cMessage.*").activateMenuItemWithMouse("Goto Consequence.*");
-        
+
         showMessage("Zoom out to see more.", 1);
 
         ToolItemAccess toolItem = workbenchShell.findToolItemWithTooltip("Zoom Out");
@@ -608,7 +608,7 @@ public class Demo extends GUITestCase {
         		"the same simulation time. Now we switch to linear timeline mode and see the " +
         		"initial messages being sent at zero simulation time (note that gray areas " +
         		"will collapse to a single vertical line).", 5, 200);
-        
+
         toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
         toolItem.activateDropDownMenu().activateMenuItemWithMouse("Linear");
 
@@ -633,13 +633,13 @@ public class Demo extends GUITestCase {
             toolItem.click();
 
         sequenceChart.dragMouse(Access.LEFT_MOUSE_BUTTON, SWT.NONE, r.width - 1, r.height / 2, 1, r.height / 2);
-        
+
         showMessage("Show where message objects are reused by resending them.", 2);
 
         sequenceChart.activateContextMenuWithMouseClick().activateMenuItemWithMouse("Show Reuse.*");
 
         sleep(2);
-        
+
     }
 
     private void goodBye() {
@@ -662,7 +662,7 @@ public class Demo extends GUITestCase {
     }
 
     void showMessage(String msg, int lines, int verticalDisplacement) {
-        if (readingSpeed == 0) 
+        if (readingSpeed == 0)
             return;
 
         int width = 600;
@@ -672,9 +672,9 @@ public class Demo extends GUITestCase {
         int y = bounds.y + bounds.height/3;
         msg = msg.replace("\n", "<br/>");
         if (delay)
-            AnimationEffects.showMessage(msg, x, y + verticalDisplacement, width, height, msg.length()*Access.rescaleTime(readingSpeed));        
+            AnimationEffects.showMessage(msg, x, y + verticalDisplacement, width, height, msg.length()*Access.rescaleTime(readingSpeed));
     }
-    
+
     private void startRecording() {
         try {
             Runtime.getRuntime().exec(new String[] {RECORDER, "/r"}, null);

@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 
 <plugin
-    name = "OMNEST/OMNeT++ Scalar / Vector Chart Data Model"
+    name = "OMNeT++ Scalar / Vector Chart Data Model"
     id = "org.omnetpp.scave.model"
     version = "4.0.0"
     provider-name = "OpenSim Ltd."
@@ -23,22 +23,22 @@
   </runtime>
 
   <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
-    <factory 
-       uri = "null" 
+    <factory
+       uri = "null"
        class = "org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory"
-       supportedTypes = 
+       supportedTypes =
          "org.eclipse.emf.edit.provider.IEditingDomainItemProvider
           org.eclipse.emf.edit.provider.IStructuredItemContentProvider
           org.eclipse.emf.edit.provider.ITreeItemContentProvider
           org.eclipse.emf.edit.provider.IItemLabelProvider
           org.eclipse.emf.edit.provider.IItemPropertySource" />
   </extension>
-  
+
   <extension point="org.eclipse.emf.ecore.generated_package">
     <package
        uri = "null"
        class = "org.omnetpp.scave.model.ScaveModelPackage"
-       genModel = "model/scave.genmodel" /> 
+       genModel = "model/scave.genmodel" />
   </extension>
 
   <extension point = "org.eclipse.ui.editors">
@@ -47,9 +47,9 @@
         name = "%_UI_ScaveModelEditor_label"
         icon = "icons/full/obj16/ScaveModelModelFile.gif"
         extensions = "scavemodel"
-        class = "org.omnetpp.scave.model.presentation.ScaveModelEditor" 
+        class = "org.omnetpp.scave.model.presentation.ScaveModelEditor"
         contributorClass="org.omnetpp.scave.model.presentation.ScaveModelActionBarContributor" >
     </editor>
-  </extension>    
-  
+  </extension>
+
 </plugin>

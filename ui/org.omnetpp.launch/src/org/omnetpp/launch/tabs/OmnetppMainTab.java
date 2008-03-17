@@ -65,7 +65,7 @@ import org.omnetpp.launch.LaunchPlugin;
  *
  * @author rhornig
  */
-public class OmnetppMainTab extends AbstractLaunchConfigurationTab 
+public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     implements ModifyListener {
 
 	// UI widgets
@@ -92,7 +92,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     protected Text fOtherEnvText;
     protected Text fLibraryText;
     protected Text fAdditionalText;
-    
+
 	private ILaunchConfiguration config;
 	private boolean updateDialogStateInProgress = false;
     private boolean debugLaunchMode = false;
@@ -130,7 +130,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             String progName = config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, "");
 			fProgText.setText(projPath.append(progName).toString());
             fShowDebugViewButton.setSelection(config.getAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false));
-            
+
             // simulation parameters block init
             ArgType nextType = ArgType.UNKNOWN;
             String args[] = StringUtils.split(config.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""));
@@ -228,7 +228,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
 
     /**
-     * Fills the config combo with the config section values from the inifiles 
+     * Fills the config combo with the config section values from the inifiles
      */
     protected void updateDialogState() {
     	if (updateDialogStateInProgress)
@@ -282,7 +282,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     		LaunchPlugin.logError("Error getting working directory from the dilalog", e);
     	}
     	return null;
-    	
+
     }
 
     protected String getWorkingDirectoryText() {
@@ -296,7 +296,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     }
 
     /**
-     * true if project is specified (directly or indirectly in the exe file name) and it has omnetpp nature 
+     * true if project is specified (directly or indirectly in the exe file name) and it has omnetpp nature
      */
     protected boolean isOmnetppProject() {
         IProject project = getProject();
@@ -304,7 +304,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     }
 
     /**
-     * Returns the project in which the currently selected EXE file is located or null if 
+     * Returns the project in which the currently selected EXE file is located or null if
      * the project is not yet specified (or closed)
      */
     protected IProject getProject() {
@@ -314,7 +314,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     	IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
     	return project != null && project.exists() ? project : null;
     }
-    
+
     /**
      * Returns the selected library files. Returns null on error
      */
@@ -362,7 +362,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
      * Returns all the configuration names found in the supplied inifiles
      */
     private String [] getConfigNames(IFile[] inifiles) {
-        Map<String,OmnetppLaunchUtils.ConfigEnumeratorCallback.Section> sections 
+        Map<String,OmnetppLaunchUtils.ConfigEnumeratorCallback.Section> sections
             = new LinkedHashMap<String, OmnetppLaunchUtils.ConfigEnumeratorCallback.Section>();
         if (inifiles != null)
             for (IFile inifile : inifiles) {
@@ -411,7 +411,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
                 return;
             }
     }
-    
+
     public void performApply(ILaunchConfigurationWorkingCopy configuration) {
         Path progPath = new Path(fProgText.getText());
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, getWorkingDirectoryText());
@@ -427,14 +427,14 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             arg += "-l "+ StringUtils.join(StringUtils.split(fLibraryText.getText())," -l ")+" ";
         if (StringUtils.isNotBlank(getConfigName()))
             arg += "-c "+getConfigName()+" ";
-        
+
         // handle the ned path (if empty store and use the default ${ned_path:/ini_files_projectname}
         String nedPath = fNedPathText.getText();
 		if (StringUtils.isNotBlank(nedPath))
             arg += "-n "+StringUtils.trimToEmpty(nedPath)+" ";
 		else
 			arg += "-n "+getDefaultNedSourcePath() +" ";
-		
+
         // if we are in debug mode, we should store the run parameter into the command line too
         String strippedRun = StringUtils.deleteWhitespace(fRunText.getText());
         if (debugLaunchMode) {
@@ -442,7 +442,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
                 arg += "-r "+strippedRun+" ";
         	configuration.setAttribute(IOmnetppLaunchConstants.ATTR_RUN_FOR_DEBUG, strippedRun);
         }
-        else 
+        else
         	configuration.setAttribute(IOmnetppLaunchConstants.ATTR_RUN, strippedRun);
 
         if (fParallelismSpinner != null)
@@ -462,7 +462,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
     	// check the current selection and figure out the initial values if possible
-    	String defWorkDir = ""; 
+    	String defWorkDir = "";
     	String defProg = "";
     	String defProj = "";
     	String defArgs = "";
@@ -472,11 +472,11 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     			IFile selFile = (IFile)selectedResource;
     			defWorkDir = "${workspace_loc:" + selFile.getParent().getFullPath().toString() + "}";
     			// an ini file selected but (not omnetpp.ini) set the ini file name too
-    			if (StringUtils.equalsIgnoreCase("ini", selFile.getFileExtension()) && 
+    			if (StringUtils.equalsIgnoreCase("ini", selFile.getFileExtension()) &&
     				   !StringUtils.equalsIgnoreCase("omnetpp.ini", selFile.getName()))
     				defArgs = "-f " + selFile.getName();
     			// if executable set the project and program name
-    			if (OmnetppLaunchUtils.isExecutable(selFile)) { 
+    			if (OmnetppLaunchUtils.isExecutable(selFile)) {
     				defProj = selFile.getProject().getFullPath().toString();
     				defProg = selFile.getProjectRelativePath().toString();
     			}
@@ -486,7 +486,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     			defWorkDir = "${workspace_loc:" + selectedResource.getFullPath().toString() + "}";
     		}
     	}
-    	
+
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, defProj);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, defProg);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_SHOWDEBUGVIEW, false);
@@ -496,7 +496,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
     /**
      * The default value for the ned source path (all ned source folders in the same project where the first
-     * ini file is present plus all dependent projects ned source folders 
+     * ini file is present plus all dependent projects ned source folders
      */
     private String getDefaultNedSourcePath() {
 		IFile[] inifiles = getIniFiles();
@@ -508,7 +508,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 		}
 		return "${ned_path:" + inifiles[0].getProject().getFullPath().toString() +"}";
     }
-    
+
    	/*
      * (non-Javadoc)
      *
@@ -545,7 +545,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             setErrorMessage("Working directory must be set");
             return false;
         }
-	    
+
 	    // exe and project testing
 	    String name = fProgText.getText().trim();
 	    if (name.length() == 0) {
@@ -560,10 +560,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 	    }
 
 	    if (!isOmnetppProject()) {
-	        setErrorMessage("The selected project must be an OMNEST/OMNeT++ simulation");
+	        setErrorMessage("The selected project must be an OMNeT++ simulation");
 	        return false;
 	    }
-	    
+
 	    // simulation block parameters
 		IFile ifiles[] = getIniFiles();
         if (ifiles == null) {
@@ -607,7 +607,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
             setErrorMessage("Multiple runs are only supported for the Command line environment");
             return false;
         }
-	    
+
         return super.isValid(configuration);
 	}
 
@@ -620,10 +620,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
         return "Main";
     }
 
-    
+
 	// ********************************************************************
     // event handlers
-    
+
     /**
      * Show a dialog that lets the user select a project. This in turn provides context for the main
      * type, allowing the user to key a main type name, or constraining the search for main types to
@@ -670,7 +670,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 	        fLibraryText.setText(libfiles.trim());
 	    }
     }
-	
+
 	protected void handleBrowseInifileButtonSelected() {
         ElementTreeSelectionDialog dialog
             = new ElementTreeSelectionDialog(getShell(), new WorkbenchLabelProvider(),
@@ -755,11 +755,11 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
 
 	// ********************************************************************
 	// event listeners
-	
+
     public void modifyText(ModifyEvent e) {
     	updateDialogState();
     }
-    
+
     // ********************************************************************
     // dialog UI control creation and layout
     public void createWorkingDirGroup(Composite parent, int colSpan) {
@@ -878,7 +878,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab
     			updateDialogState();
     		}
     	};
-    	
+
         Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
 
         SWTFactory.createLabel(comp, "User interface:", 1);

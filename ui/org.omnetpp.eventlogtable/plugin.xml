@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            name="OMNeT++/OMNEST Event Log Table"
+            name="OMNeT++ Event Log Table"
             extensions="log"
             icon="icons/eventlog.png"
             contributorClass="org.omnetpp.eventlogtable.editors.EventLogTableContributor"
@@ -24,7 +24,7 @@
             id="org.omnetpp.eventlogtable.editors.EventLogTableView">
       </view>
    </extension>
-   
+
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension

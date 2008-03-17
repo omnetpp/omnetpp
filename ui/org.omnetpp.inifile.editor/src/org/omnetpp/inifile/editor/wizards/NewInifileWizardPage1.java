@@ -46,7 +46,7 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 	public NewInifileWizardPage1(IWorkbench aWorkbench, IStructuredSelection selection) {
 		super("page1", selection);
 		setTitle("Create an ini file");
-		setDescription("This wizard allows you to create a new OMNEST/OMNeT++ simulation configuration file.");
+		setDescription("This wizard allows you to create a new OMNeT++ simulation configuration file.");
 		setImageDescriptor(InifileEditorPlugin.getImageDescriptor("icons/full/wizban/newinifile.png"));
 		workbench = aWorkbench;
 

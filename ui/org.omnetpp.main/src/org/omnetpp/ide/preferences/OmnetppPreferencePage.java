@@ -14,10 +14,10 @@ import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * This class represents a preference page that
- * is contributed to the Preferences dialog. By 
+ * is contributed to the Preferences dialog. By
  * subclassing <samp>FieldEditorPreferencePage</samp>, we
  * can use the field support built into JFace that allows
- * us to create a page that is small and knows how to 
+ * us to create a page that is small and knows how to
  * save, restore and apply itself.
  * <p>
  * This page is used to modify preferences only. They
@@ -38,12 +38,12 @@ public class OmnetppPreferencePage
 		super(GRID);
 		setPreferenceStore(OmnetppMainPlugin.getDefault().getPreferenceStore());
 		setDescription("Specify the directory where the Makefile.inc or configuser.vc are located. " +
-				"This is usually the root folder of the OMNEST/OMNeT++ installation.");
+				"This is usually the root folder of the OMNeT++ installation.");
 	}
-	
+
 	public void createFieldEditors() {
-	    // FIXME naming is not correct - not install location) 
-		addField(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, "OMNEST/OMNeT++ install location:", getFieldEditorParent()));
+	    // FIXME naming is not correct - not install location)
+		addField(new DirectoryFieldEditor(OmnetppPreferencePage.OMNETPP_ROOT, "OMNeT++ install location:", getFieldEditorParent()));
 		addField(new LookupFileFieldEditor(DOXYGEN_EXECUTABLE, "Doxygen executable path:", getFieldEditorParent()));
         addField(new LookupFileFieldEditor(GRAPHVIZ_DOT_EXECUTABLE, "GraphViz Dot executable path:", getFieldEditorParent()));
 	}

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNEST/OMNeT++ Win32.x86 native library fragment
+Bundle-Name: OMNeT++ Win32.x86 native library fragment
 Bundle-SymbolicName: org.omnetpp.ide.nativelibs.win32.x86
 Bundle-Version: 4.0.0
 Bundle-Vendor: OpenSim Ltd.

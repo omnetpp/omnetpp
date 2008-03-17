@@ -33,17 +33,17 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 import org.omnetpp.ide.properties.DocumentationGeneratorPropertyPage;
 
 /**
- * This is the documentation generator configuration dialog displayed before 
- * generating documentation for an OMNeT++/OMNEST project. The dialog shows 
- * the list of open projects to allow generating documentation for multiple 
- * projects at once. In addition, it allows to control what is included 
- * in the documentation: doxygen, NED type figures, inheritance and usage 
+ * This is the documentation generator configuration dialog displayed before
+ * generating documentation for an OMNeT++ project. The dialog shows
+ * the list of open projects to allow generating documentation for multiple
+ * projects at once. In addition, it allows to control what is included
+ * in the documentation: doxygen, NED type figures, inheritance and usage
  * diagrams, etc.
- * 
- * The documentation generators are configured to put the result either 
- * under the project preconfigured by the user using the project properties 
+ *
+ * The documentation generators are configured to put the result either
+ * under the project preconfigured by the user using the project properties
  * page or to a separate directory given in this dialog.
- * 
+ *
  * @author levy
  */
 public class GeneratorConfigurationDialog
@@ -60,12 +60,12 @@ public class GeneratorConfigurationDialog
     private Button generateInheritanceDiagrams;
     private Button generateUsageDiagrams;
     private Button generateSourceContent;
-    
+
     private Button generateDoxy;
     private Button doxySourceBrowser;
 
     private Text outputDirectoryPath;
-    
+
     private Button browseButton;
     private Button insideProjectsButton;
     private Button separateDirectoryButton;
@@ -76,7 +76,7 @@ public class GeneratorConfigurationDialog
 
         this.configuration = configuration;
     }
-    
+
     @Override
     protected Control createDialogArea(Composite parent) {
         setHelpAvailable(false);
@@ -90,7 +90,7 @@ public class GeneratorConfigurationDialog
         createProjectList(container);
         createContentOptions(container);
         createOutputOptions(container);
-        
+
         return container;
     }
 
@@ -113,7 +113,7 @@ public class GeneratorConfigurationDialog
                 selectedProjects.add(project);
             }
         }
-        
+
         if (configuration.projects != null) {
             selectedProjects.setCheckedElements(configuration.projects);
             selectedProjects.setSelection(new StructuredSelection(configuration.projects));
@@ -134,11 +134,11 @@ public class GeneratorConfigurationDialog
             @Override
             public void widgetSelected(SelectionEvent e) {
                 ISelection selection = selectedProjects.getSelection();
-                
+
                 if (selection instanceof IStructuredSelection) {
                     IStructuredSelection structuredSelection = (IStructuredSelection)selection;
                     Set<IProject> referencedProjects = new HashSet<IProject>();
-                    
+
                     IProject selectedProject = (IProject)structuredSelection.getFirstElement();
                     addReferencedProjects(selectedProject, referencedProjects);
 
@@ -162,7 +162,7 @@ public class GeneratorConfigurationDialog
                 }
             }
         });
-        
+
         Button selectAllButton = new Button(buttons, SWT.PUSH);
         selectAllButton.setText("Select All");
         selectAllButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
@@ -172,7 +172,7 @@ public class GeneratorConfigurationDialog
                 selectedProjects.setCheckedElements(allProjects.toArray());
             }
         });
-        
+
         Button deselectAllButton = new Button(buttons, SWT.PUSH);
         deselectAllButton.setText("Deselect All");
         deselectAllButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
@@ -197,19 +197,19 @@ public class GeneratorConfigurationDialog
         generateNedTypeFigures.setEnabled(dotAvailable);
         generateInheritanceDiagrams.setEnabled(dotAvailable);
         generateUsageDiagrams.setEnabled(dotAvailable);
-        
+
         generateSourceContent = createCheckbox(group, "Source listings", configuration.generateSourceContent);
 
         boolean doxygenAvailable = OmnetppPreferencePage.isDoxygenAvailable();
         generateDoxy = createCheckbox(group, "C++ documentation (using Doxygen)", configuration.generateDoxy && doxygenAvailable);
         generateDoxy.setEnabled(doxygenAvailable);
-        
+
         Label label = new Label(group, SWT.NONE);
         label.setText("   Note: Doxygen configuration file locations can be configured in the Project Properties dialog");
 
         doxySourceBrowser = createCheckbox(group, "Doxygen source browser", configuration.doxySourceBrowser);
         doxySourceBrowser.setEnabled(doxygenAvailable);
-        
+
         label = new Label(group, SWT.NONE);
         label.setText("   Note: other Doxygen options can be configured in the Doxygen configuration file");
     }
@@ -234,7 +234,7 @@ public class GeneratorConfigurationDialog
         separateDirectoryButton = new Button(group, SWT.RADIO);
         separateDirectoryButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
         separateDirectoryButton.setText("A common directory:");
-        
+
         outputDirectoryPath = new Text(group, SWT.BORDER);
         if (configuration.outputDirectoryPath != null)
             outputDirectoryPath.setText(configuration.outputDirectoryPath);
@@ -283,7 +283,7 @@ public class GeneratorConfigurationDialog
         newShell.setText("Documentation Generation");
         super.configureShell(newShell);
     }
-    
+
     /**
      * Creates the list of preconfigured documentation generators.
      */
@@ -295,10 +295,10 @@ public class GeneratorConfigurationDialog
         configuration.generateUsageDiagrams = generateUsageDiagrams.getSelection();
         configuration.generateInheritanceDiagrams = generateInheritanceDiagrams.getSelection();
         configuration.generateSourceContent = generateSourceContent.getSelection();
-        
+
         configuration.generateDoxy = generateDoxy.getSelection();
         configuration.doxySourceBrowser = doxySourceBrowser.getSelection();
-        
+
         Object[] selectedElements = selectedProjects.getCheckedElements();
         configuration.projects = new IProject[selectedElements.length];
         System.arraycopy(selectedElements, 0, configuration.projects, 0, selectedElements.length);
@@ -328,7 +328,7 @@ public class GeneratorConfigurationDialog
         }
 
         NeddocPlugin.getDefault().storeGeneratorConfiguration(configuration);
-        
+
         super.okPressed();
     }
 

@@ -30,9 +30,9 @@ public class NedEditorLauncher implements IEditorLauncher {
             if (!ProjectUtils.isOpenOmnetppProject(file.getProject())) {
                 IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
                 MessageDialog.openInformation(workbenchWindow.getShell(),
-                        "Not an OMNEST/OMNeT++ Project",
+                        "Not an OMNeT++ Project",
                         "NED Files can be graphically edited only if the Project is" +
-                        " an OMNEST/OMNeT++ Project. Please use the Convert to OMNEST/OMNeT++ Project " +
+                        " an OMNeT++ Project. Please use the Convert to OMNeT++ Project " +
                         "Wizard to convert this project.");
                 return;
             }

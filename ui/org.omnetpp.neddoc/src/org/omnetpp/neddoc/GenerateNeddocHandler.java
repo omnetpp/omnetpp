@@ -6,8 +6,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.jface.window.Window;
 
 /**
- * This controls the documentation generation for one or multiple OMNeT++/OMNEST projects.
- * 
+ * This controls the documentation generation for one or multiple OMNeT++ projects.
+ *
  * @see org.eclipse.core.commands.IHandler
  * @see org.eclipse.core.commands.AbstractHandler
  */
@@ -23,11 +23,11 @@ public class GenerateNeddocHandler extends AbstractHandler {
 	    try {
             GeneratorConfigurationDialog dialog = new GeneratorConfigurationDialog(null, NeddocPlugin.getDefault().getGeneratorConfiguration());
             dialog.open();
-            
+
             if (dialog.getReturnCode() == Window.OK)
                 for (DocumentationGenerator generator : dialog.getConfiguredDocumentationGenerators())
                     generator.generate();
-    
+
     	    return null;
 	    }
 	    catch (Exception e) {

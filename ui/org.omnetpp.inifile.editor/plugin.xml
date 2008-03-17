@@ -11,10 +11,10 @@
             extensions="ini"
             icon="icons/inifile.png"
             id="org.omnetpp.inifile.editor.editors.InifileEditor"
-            name="OMNEST/OMNeT++ Ini File Editor">
+            name="OMNeT++ Ini File Editor">
       </editor>
    </extension>
-   
+
    <extension
          point="org.eclipse.ui.newWizards">
       <wizard
@@ -23,7 +23,7 @@
             category="org.omnetpp.wizards"
             class="org.omnetpp.inifile.editor.wizards.NewInifileWizard"
             id="org.omnetpp.inifile.editor.wizards.NewInifileWizard">
-         
+
          <description>
             Create a file that contains simulation initalization parameters.
          </description>
@@ -42,14 +42,14 @@
 
   <extension id="inifileproblem" point="org.eclipse.core.resources.markers" name="Inifile Problem">
     <!-- Note: the "problemmarker" super class makes it appear in the Navigator and in the Problems view -->
-	<super type="org.eclipse.core.resources.problemmarker"/> 
+	<super type="org.eclipse.core.resources.problemmarker"/>
 	<super type="org.eclipse.core.resources.textmarker"/>
 	<persistent value="false"/>
   </extension>
 
   <extension id="inifileanalyzerproblem" point="org.eclipse.core.resources.markers" name="Inifile Problem">
     <!-- Note: the "problemmarker" super class makes it appear in the Navigator and in the Problems view -->
-	<super type="org.eclipse.core.resources.problemmarker"/> 
+	<super type="org.eclipse.core.resources.problemmarker"/>
 	<super type="org.eclipse.core.resources.textmarker"/>
 	<persistent value="false"/>
   </extension>
@@ -109,7 +109,7 @@
    <extension
          point="org.eclipse.ui.contexts">
       <context
-            description="OMNEST/OMNeT++ INI File Editor"
+            description="OMNeT++ INI File Editor"
             id="org.omnetpp.context.inifileEditor"
             name="Editing INI File"
             parentId="org.eclipse.ui.textEditorScope">

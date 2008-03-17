@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNEST/OMNeT++ Figures
+Bundle-Name: OMNeT++ Figures
 Bundle-SymbolicName: org.omnetpp.figures
 Bundle-Version: 4.0.0
 Require-Bundle: org.eclipse.core.runtime,

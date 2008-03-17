@@ -70,7 +70,7 @@ import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
 
 /**
- * OMNeT++/OMNEST Analysis tool.
+ * OMNeT++ Analysis tool.
  *
  * @author andras, tomi
  */
@@ -83,7 +83,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	private BrowseDataPage browseDataPage;
 	private DatasetsAndChartsPage datasetsPage;
 	private Map<EObject,ScaveEditorPage> closablePages = new LinkedHashMap<EObject,ScaveEditorPage>();
-	
+
 	/**
 	 *  ResultFileManager containing all files of the analysis.
 	 */
@@ -93,7 +93,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	 * Loads/unloads result files in manager, according to changes in the model and in the workspace.
 	 */
 	private ResultFilesTracker tracker;
-	
+
 	/**
 	 * Updates pages when the model changed.
 	 */
@@ -142,9 +142,9 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	}
 
 	@Override
-	public void init(IEditorSite site, IEditorInput editorInput) 
+	public void init(IEditorSite site, IEditorInput editorInput)
 		throws PartInitException {
-		
+
 		if (!(editorInput instanceof IFileEditorInput))
 			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
 		IFile fileInput = ((IFileEditorInput)editorInput).getFile();
@@ -153,7 +153,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		File javaFile = fileInput.getLocation().toFile();
 		if (!javaFile.exists())
 			throw new PartInitException("Missing Input: Scave file '" + javaFile.toString() + "' does not exists");
-		
+
 		// add part listener to save the editor state *before* it is disposed
 		final IWorkbenchPage page = site.getPage();
 		page.addPartListener(new IPartListener() {
@@ -168,7 +168,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 				}
 			}
 		});
-		
+
 		// init super. Note that this does not load the model yet -- it's done in createModel() called from createPages().
 		super.init(site, editorInput);
 	}
@@ -181,7 +181,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 
 		if (tracker != null) adapterFactory.removeListener(tracker);
 		adapterFactory.removeListener(pageUpdater);
-		
+
 		if (manager != null) {
 			manager.dispose(); // it would get garbage-collected anyway, but the sooner the better because it may have allocated large amounts of data
 			if (tracker != null)      // deactivate the tracker explicitly, because it might receive a notification
@@ -249,7 +249,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         getContainer().setLayout(layout);
 
         getTabFolder().setMRUVisible(true);
-        
+
 		// we can load the result files now
         //XXX we should probably move this after creating the pages, but then we'll need something like browseDataPage.refresh()
         tracker.synchronize();
@@ -257,9 +257,9 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         createInputsPage();
         createBrowseDataPage();
         createDatasetsPage();
-        
+
         restoreState();
-        
+
         final CTabFolder tabfolder = getTabFolder();
 		tabfolder.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -268,11 +268,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			}
 		});
 	}
-	
+
 	protected CTabFolder getTabFolder() {
 		return (CTabFolder)getContainer();
 	}
-	
+
 	@Override
 	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
 		contentOutlineViewer.setInput(getAnalysis());
@@ -318,7 +318,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		else
 			return null;
 	}
-	
+
 	public ScaveEditorPage getEditorPage(int pageIndex) {
 		Control page = getControl(pageIndex);
 		if (page instanceof ScaveEditorPage)
@@ -326,12 +326,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		else
 			return null;
 	}
-	
+
 	public ChartCanvas getActiveChartCanvas() {
 		ScaveEditorPage activePage = getActiveEditorPage();
 		return activePage != null ? activePage.getActiveChartCanvas() : null;
 	}
-	
+
 	/**
 	 * Returns the edited resource.
 	 */
@@ -349,20 +349,20 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
     }
 
 	/**
-	 * Returns the temporary analysis object. 
+	 * Returns the temporary analysis object.
 	 */
 	public Analysis getTempAnalysis() {
 		return (Analysis)tempResource.getContents().get(0);
 	}
-	
+
 	/**
 	 * Returns true if the object is a temporary object, i.e. it is not saved in
-	 * the analysis file. 
+	 * the analysis file.
 	 */
 	public boolean isTemporaryObject(EObject object) {
 		return object.eResource() == tempResource;
 	}
-	
+
 	/**
 	 * Opens a new editor page for the {@code object} (Dataset, Chart or ChartSheet),
 	 * or switches to it if already opened.
@@ -377,7 +377,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		else
 			return null;
 	}
-	
+
 	/**
 	 * Opens the given chart on a new editor page, or switches to it
 	 * if already opened.
@@ -385,7 +385,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	public ScaveEditorPage openChart(Chart chart) {
 		return openClosablePage(chart);
 	}
-	
+
 	/**
 	 * Opens the given dataset on a new editor page, or switches to it
 	 * if already opened.
@@ -393,7 +393,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	public ScaveEditorPage openDataset(Dataset dataset) {
 		return openClosablePage(dataset);
 	}
-	
+
 	/**
 	 * Opens the given chart sheet on a new editor page, or switches to it
 	 * if already opened.
@@ -411,10 +411,10 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		setActivePage(pageIndex);
 		return getEditorPage(pageIndex);
 	}
-	
+
 	/**
 	 * Closes the page displaying the given <code>object</code>.
-	 * If no such page, nothing happens. 
+	 * If no such page, nothing happens.
 	 */
 	public void closePage(EObject object) {
 		Control page = closablePages.get(object);
@@ -422,7 +422,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			removePage(page);
 		}
 	}
-	
+
 	public void showInputsPage() {
 		showPage(getInputsPage());
 	}
@@ -434,7 +434,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	public void showDatasetsPage() {
 		showPage(getDatasetsPage());
 	}
-	
+
 	public void showPage(ScaveEditorPage page) {
 		int pageIndex = findPage(page);
 		if (pageIndex >= 0)
@@ -447,7 +447,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			if (getAnalysis() == null || eobject.eResource() != getAnalysis().eResource())
 				return;
 		}
-		
+
 		ScaveEditorPage activePage = getActiveEditorPage();
 		if (activePage != null) {
 			if (activePage.gotoObject(object))
@@ -465,7 +465,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			setActivePage(activePageIndex);
 		}
 	}
-	
+
 
 	public void setPageTitle(ScaveEditorPage page, String title) {
 		int pageIndex = findPage(page);
@@ -487,11 +487,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		datasetsPage = new DatasetsAndChartsPage(getContainer(), this);
         addScaveEditorPage(datasetsPage);
 	}
-	
+
 	/**
 	 * Creates a closable page. These pages are closed automatically when the
 	 * displayed object (chart/dataset/chart sheet) is removed from the model.
-	 * Their tabs contain a small (x), so the user can also close them. 
+	 * Their tabs contain a small (x), so the user can also close them.
 	 */
 	private int createClosablePage(EObject object) {
 		ScaveEditorPage page;
@@ -508,11 +508,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		closablePages.put(object, page);
 		return pageIndex;
 	}
-	
+
 	@Override
 	protected void pageClosed(Control control) {
 		Assert.isTrue(closablePages.containsValue(control));
-		
+
 		// remove it from the map
 		Iterator<Map.Entry<EObject,ScaveEditorPage>> entries = closablePages.entrySet().iterator();
 		while (entries.hasNext()) {
@@ -521,7 +521,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 				entries.remove();
 		}
 	}
-	
+
 	/**
 	 * Returns the page displaying {@code object}.
 	 * The {@code object} expected to be a Dataset, Chart or ChartSheet.
@@ -529,7 +529,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	protected ScaveEditorPage getClosableEditorPage(EObject object) {
 		return closablePages.get(object);
 	}
-	
+
 	/**
 	 * Returns the page displaying <code>object</code>. If the object already has a page
 	 * it is returned, otherwise a new page created.
@@ -540,18 +540,18 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		Assert.isTrue(pageIndex >= 0);
 		return pageIndex;
 	}
-	
+
 	@Override
 	public void handleSelectionChange(ISelection selection) {
 		super.handleSelectionChange(selection);
-		
+
 		inputsPage.selectionChanged(selection);
 		browseDataPage.selectionChanged(selection);
 		datasetsPage.selectionChanged(selection);
 		for (Control page : closablePages.values())
 			((ScaveEditorPage)page).selectionChanged(selection);
 	}
-	
+
 	class ScaveEditorContentOutlinePage extends MyContentOutlinePage
 	{
 		@Override
@@ -572,7 +572,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		}
 	}
 
-	
+
 	@Override
 	public IContentOutlinePage getContentOutlinePage() {
 		if (contentOutlinePage == null) {
@@ -596,7 +596,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 				gotoObject(object);
 		}
 	}
-	
+
 	/**
 	 * Adds the given workspace file to Inputs.
 	 */
@@ -635,7 +635,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		}
 		return iFile;
 	}
-	
+
 	/**
 	 * Utility function to access the active editor in the workbench.
 	 */
@@ -670,13 +670,13 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	private void updatePages(Notification notification) {
 		if (notification.isTouch())
 			return;
-		
+
 		// close pages whose content was deleted, except temporary datasets/charts
 		// (temporary objects are not deleted, but they can be moved into the persistent analysis)
 		if (notification.getNotifier() instanceof EObject && !isTemporaryObject((EObject)notification.getNotifier())) {
 			List<Object> deletedObjects = null;
 			switch (notification.getEventType()) {
-			case Notification.REMOVE: 
+			case Notification.REMOVE:
 				deletedObjects = new ArrayList<Object>();
 				deletedObjects.add(notification.getOldValue());
 				break;
@@ -684,7 +684,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 				deletedObjects = (List<Object>)notification.getOldValue();
 				break;
 			}
-		
+
 			if (deletedObjects != null) {
 				for (Object object : deletedObjects) {
 					if (object instanceof EObject) {
@@ -718,7 +718,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			}
 		}
 	}
-	
+
 	@Override
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
@@ -731,19 +731,19 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 
 	/**
 	 * Pretends that a selection change has taken place. This is e.g. useful for updating
-	 * the enabled/disabled/pushed etc state of actions (AbstractScaveAction) whose 
+	 * the enabled/disabled/pushed etc state of actions (AbstractScaveAction) whose
 	 * isApplicable() method is hooked on selection changes.
 	 */
 	public void fakeSelectionChange() {
 		setSelection(getSelection());
 	}
-	
+
 	/*
 	 * PageId
 	 */
 	private static final String TEMPORARY = "t:";
 	private static final String PERSISTENT = "p:";
-	
+
 	String getPageId(ScaveEditorPage page) {
 		if (page == null)
 			return null;
@@ -767,7 +767,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		}
 		return null;
 	}
-	
+
 	ScaveEditorPage restorePage(String pageId) {
 		if (pageId == null)
 			return null;
@@ -795,7 +795,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 				uri = pageId.substring(PERSISTENT.length());
 				resource = getResource();
 			}
-			
+
 			try {
 				if (resource != null && uri != null)
 					object = resource.getEObject(uri);
@@ -806,7 +806,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		}
 		return null;
 	}
-	
+
 	/*
 	 * Per input persistent state.
 	 */
@@ -817,12 +817,12 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		else
 			return null;
 	}
-	
+
 	private static final String
 		ACTIVE_PAGE = "ActivePage",
 		PAGE = "Page",
 		PAGE_ID = "PageId";
-	
+
 	private void saveState(IMemento memento) {
 		memento.putInteger(ACTIVE_PAGE, getActivePage());
 		for (EObject openedObject : closablePages.keySet()) {
@@ -832,7 +832,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			page.saveState(pageMemento);
 		}
 	}
-	
+
 	private void restoreState(IMemento memento) {
 		for (IMemento pageMemento : memento.getChildren(PAGE)) {
 			String pageId = pageMemento.getString(PAGE_ID);
@@ -846,7 +846,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		if (activePage >= 0 && activePage < getPageCount())
 			setActivePage(activePage);
 	}
-	
+
 	private void saveState() {
 		try {
 			IFile file = getInputFile();
@@ -862,7 +862,7 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			ScavePlugin.logError(e);
 		}
 	}
-	
+
 	private void restoreState() {
 		try {
 			IFile file = getInputFile();
@@ -892,11 +892,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	public INavigationLocation createNavigationLocation() {
 		return new ScaveNavigationLocation(this, false);
 	}
-	
+
 	public void markNavigationLocation() {
 		getSite().getPage().getNavigationHistory().markLocation(this);
 	}
-	
+
 	public void pageChangedByUser(int newPageIndex) {
 		Control page = getControl(newPageIndex);
 		if (page instanceof ScaveEditorPage) {

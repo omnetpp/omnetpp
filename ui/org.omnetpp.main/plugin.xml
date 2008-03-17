@@ -3,7 +3,7 @@
 <plugin>
 
      <extension id="product"
-         name="OMNEST/OMNeT++ Integrated Development Environment"
+         name="OMNeT++ Integrated Development Environment"
 	 point="org.eclipse.core.runtime.products">
       <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench" description="%productBlurb">
           <property name="appName" value="OMNeT++ IDE"/>
@@ -28,7 +28,7 @@
 				value="%introDescription-samples"/>
     <property
           name="aboutText"
-          value="OMNEST/OMNeT++ Integrated Development Environment, based on Eclipse platform."/>
+          value="OMNeT++ Integrated Development Environment, based on Eclipse platform."/>
     <property
           name="aboutImage"
           value="icons/omnest128.gif"/>
@@ -71,10 +71,10 @@
             class="org.omnetpp.ide.wizard.NewOmnetppProjectWizard"
             icon="icons/newoproject.gif"
             id="org.omnetpp.ide.wizard.newProjectWizard"
-            name="OMNEST/OMNeT++ Project"
+            name="OMNeT++ Project"
             project="true">
          <description>
-            Create a Project that can handle OMNEST/OMNeT++ specific files, like NED, VEC, SCA etc.
+            Create a Project that can handle OMNeT++ specific files, like NED, VEC, SCA etc.
          </description>
       </wizard>
    </extension>
@@ -87,7 +87,7 @@
             id="org.omnetpp.main.OmnetppPerspective"
             name="OMNeT++"/>
    </extension>
-   <extension   
+   <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="org.eclipse.ui.resourcePerspective">
@@ -150,7 +150,7 @@
       <page
             class="org.omnetpp.ide.properties.EmptyPropertyPage"
             id="org.omnetpp.main.OmnetppCategory"
-            name="OMNEST/OMNeT++">
+            name="OMNeT++">
          <enabledWhen>
             <adapt type="org.eclipse.core.resources.IProject">
                <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
@@ -179,7 +179,7 @@
       <page
             class="org.omnetpp.ide.preferences.OmnetppPreferencePage"
             id="org.omnetpp.cdt.OmnetppCdtPreferencePage"
-            name="OMNEST/OMNeT++">
+            name="OMNeT++">
       </page>
    </extension>
    <extension

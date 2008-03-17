@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.omnetpp.ide"
-      label="OMNEST/OMNeT++ Integrated Development Environment Feature"
+      label="OMNeT++ Integrated Development Environment Feature"
       version="4.0.0"
       provider-name="OpenSim Ltd."
       plugin="org.omnetpp.main"
@@ -10,11 +10,11 @@
       arch="x86,x86_64">
 
    <description url="http://www.omnetpp.org/">
-      This is an Integrated Development Environment for the OMNeT++/OMNEST
-Discrete Event Simulation Framework. OMNeT++/OMNEST is a C++-based
+      This is an Integrated Development Environment for the OMNeT++
+Discrete Event Simulation Framework. OMNeT++ is a C++-based
 object-oriented discrete event simulation framework, primarily
 targeted at the simulation of communication networks and other
-parallel/distributed systems. OMNeT++/OMNEST includes a graphical
+parallel/distributed systems. OMNeT++ includes a graphical
 network editor, a network topology description language, a simulation
 class library, multiple execution environments (both GUI and
 command line), a result plotting tool, documentation, many sample
@@ -24,7 +24,7 @@ the commercial version is licensed under the name OMNEST, but
 otherwise they are identical.
 You&apos;re invited to visit the OMNeT++ community site at www.omnetpp.org
 any time!
-We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
+We hope you&apos;ll enjoy working with OMNeT++.
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -36,16 +36,8 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
    </license>
 
    <url>
-      <update label="OMNEST/OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetppide"/>
+      <update label="OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetppide"/>
    </url>
-
-   <includes
-         id="de.unikassel.imageexport"
-         version="0.0.0"/>
-
-   <includes
-         id="com.lowagie.itext"
-         version="0.0.0"/>
 
    <includes
          id="org.eclipse.gmf.runtime.thirdparty"
@@ -53,6 +45,10 @@ We hope you&apos;ll enjoy working with OMNeT++/OMNEST.
 
    <includes
          id="org.eclipse.gmf"
+         version="0.0.0"/>
+
+   <includes
+         id="de.unikassel.imageexport"
          version="0.0.0"/>
 
    <requires>

@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            name="OMNeT++/OMNEST Sequence Chart"
+            name="OMNeT++ Sequence Chart"
             extensions="log"
             icon="icons/full/eobj16/sequencechart.png"
             contributorClass="org.omnetpp.sequencechart.editors.SequenceChartContributor"
@@ -25,7 +25,7 @@
             id="org.omnetpp.sequencechart.editors.SequenceChartView">
       </view>
    </extension>
-   
+
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension

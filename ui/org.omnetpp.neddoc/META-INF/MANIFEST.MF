@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNEST/OMNeT++ NED Documatation Generator
+Bundle-Name: OMNeT++ NED Documatation Generator
 Bundle-SymbolicName: org.omnetpp.neddoc; singleton:=true
 Bundle-Version: 4.0.0
 Bundle-Activator: org.omnetpp.neddoc.NeddocPlugin

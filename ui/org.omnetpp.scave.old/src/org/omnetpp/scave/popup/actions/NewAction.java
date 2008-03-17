@@ -29,7 +29,7 @@ public class NewAction implements IObjectActionDelegate {
 		Shell shell = new Shell();
 		MessageDialog.openInformation(
 			shell,
-			"OMNEST/OMNeT++ Scave Plug-in",
+			"OMNeT++ Scave Plug-in",
 			"New Action was executed.");
 	}
 

@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: OMNEST/OMNeT++ Common Resources
+Bundle-Name: OMNeT++ Common Resources
 Bundle-SymbolicName: org.omnetpp.common; singleton:=true
 Bundle-Version: 4.0.0
 Require-Bundle: org.eclipse.core.filesystem,
