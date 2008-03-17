@@ -85,7 +85,7 @@
             class="org.omnetpp.ide.PerspectiveFactory"
             icon="icons/omnest16.gif"
             id="org.omnetpp.main.OmnetppPerspective"
-            name="OMNeT++"/>
+            name="Simulation Design"/>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
