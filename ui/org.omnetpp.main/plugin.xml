@@ -28,7 +28,7 @@
 				value="%introDescription-samples"/>
     <property
           name="aboutText"
-          value="OMNeT++ Integrated Development Environment, based on Eclipse platform."/>
+          value="OMNEST/OMNeT++ Integrated Development Environment, based on Eclipse platform."/>
     <property
           name="aboutImage"
           value="icons/omnest128.gif"/>
