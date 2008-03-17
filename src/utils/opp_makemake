@@ -300,7 +300,8 @@ sub makemake()
     $makecommand = $isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 
     # find configuser.vc / Makefile.inc
-    $configFile = `opp_configfilepath`;
+    # (must use the sh -c trick, otherwise activeperl cannot resolve correctly the shebang in opp_configfilepath)
+    $configFile = `sh -c opp_configfilepath`;
     if ($? != 0) {
         error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH");
     }
