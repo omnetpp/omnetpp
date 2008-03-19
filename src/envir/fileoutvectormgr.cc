@@ -28,7 +28,6 @@
 #include "cmodule.h"
 #include "fileoutvectormgr.h"
 #include "ccomponenttype.h"
-#include "ivfilemgr.h"
 #include "stringtokenizer.h"
 #include "stringutil.h"
 
@@ -297,9 +296,9 @@ void cFileOutputVectorManager::flush()
         fflush(f);
 }
 
-// create some reference to cIndexedFileOutputVectorManager
-// otherwise the MS linker omits ivfilemgr.obj
-void dummyMethodReferencingCIndexedFileOutputVectorManager()
+// create some reference to cIndexedFileOutputVectorManager, otherwise linkers tend to omit it from executables
+#include "indexedfileoutvectormgr.h"
+static void dummyMethodReferencingCIndexedFileOutputVectorManager()
 {
     cIndexedFileOutputVectorManager m;
 }

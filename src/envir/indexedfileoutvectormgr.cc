@@ -34,7 +34,7 @@
 #include "cstatistic.h"
 #include "stringutil.h"
 #include "unitconversion.h"
-#include "ivfilemgr.h"
+#include "indexedfileoutvectormgr.h"
 
 USING_NAMESPACE
 
