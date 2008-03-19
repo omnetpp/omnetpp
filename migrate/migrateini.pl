@@ -28,6 +28,7 @@ open(INFILE, $listfile) || die "cannot open $listfile";
 @fnames = ();
 while (<INFILE>) {
     chomp;
+    s/\r$//; # cygwin/mingw perl does not do CR/LF translation
     push(@fnames,$_);
 }
 #print join(' ', @fnames);

@@ -17,6 +17,8 @@ open(FILE, "../eventlog/eventlogentries.txt");
 while (<FILE>)
 {
    chomp;
+   s/\r$//; # cygwin/mingw perl does not do CR/LF translation
+
    if ($_ =~ /^ *$/)
    {
       # blank line

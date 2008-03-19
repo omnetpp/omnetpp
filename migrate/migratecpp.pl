@@ -4,6 +4,8 @@ open(LISTFILE, $listfname) || die "cannot open $listfname";
 while (<LISTFILE>)
 {
     chomp;
+    s/\r$//; # cygwin/mingw perl does not do CR/LF translation
+
     $fname = $_;
 
     if ($fname =~ /_m\./) {
@@ -17,7 +19,7 @@ while (<LISTFILE>)
     read(INFILE, $txt, 1000000) || die "cannot read $fname";
     close INFILE;
 
-    # INSERT CODE TO PROCESS $txt HERE
+    # process $txt:
 
     $txt =~ s/cPolymorphic *\*dup\(\) *const *\{ *return +new +([_A-Za-z0-9]+)/\1 *dup() const {return new \1/mg;
     $txt =~ s/cObject *\*dup\(\) *const *\{ *return +new +([_A-Za-z0-9]+)/\1 *dup() const {return new \1/mg;

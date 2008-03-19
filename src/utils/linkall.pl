@@ -82,6 +82,7 @@ foreach $arg (@ARGV) {
         read(IN, $txt, 100000000) || error("cannot read $DUMPFILE");
         close(IN);
         unlink($DUMPFILE) || error("cannot remove temp file $DUMPFILE");
+        $txt =~ s/\r$//mg; # cygwin/mingw perl does not do CR/LF translation
 
         # parse out useful part
         if (!($txt =~ /^Microsoft.*\n *File Type: *LIBRARY\n.*\n *[0-9]+ public symbols\n(.*)\n +Summary\n.*/s)) {

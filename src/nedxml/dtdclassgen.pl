@@ -20,7 +20,8 @@ $filename =~ /./ || die "*** no file name given\n";
 $buf="";
 open(IN,$filename) || die "*** cannot open input file $filename";
 while (<IN>) {
-        $buf.=$_;
+    s/\r$//; # cygwin/mingw perl does not do CR/LF translation
+    $buf .= $_;
 }
 $buf =~ s/<!--.*?-->//sg;
 
