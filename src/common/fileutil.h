@@ -26,6 +26,7 @@ COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
 COMMON_API std::string toAbsolutePath(const char *pathname);
 COMMON_API std::string concatDirAndFile(const char *basedir, const char *pathname);
 COMMON_API bool isDirectory(const char *pathname);
+COMMON_API void removeFile(const char *fname, const char *descr);
 
 /**
  * Utility class for temporary change of directory. Changes back to

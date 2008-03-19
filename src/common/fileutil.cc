@@ -194,6 +194,12 @@ bool isDirectory(const char *pathname)
     return statbuf.st_mode & S_IFDIR;
 }
 
+void removeFile(const char *fname, const char *descr)
+{
+    if (unlink(fname)!=0 && errno!=ENOENT)
+        throw opp_runtime_error("cannot remove %s `%s': %s", descr, fname, strerror(errno));
+}
+
 //----
 
 PushDir::PushDir(const char *changetodir)
