@@ -19,13 +19,16 @@ OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 # Version. Should ideally come from the 'Version' file but nmake doesn't support that
 OMNETPP_VERSION=omnetpp-4.0a4
 
+
+MSYS_DIR=$(OMNETPP_ROOT:\=/)/msys
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
 # Tcl/Tk 8.4 (minimum 8.4.0) and BLT 2.4 required.
 # Leave BLT_VER empty if you don't have BLT. BLT is expected to reside
 # in the same directory tree as Tcl/Tk.
 #
-TK_DIR=$(TOOLS_DIR:\=/)/Tcl-8.4.11
+#TK_DIR=$(TOOLS_DIR:\=/)/Tcl-8.4.11
+TK_DIR=$(MSYS_DIR:\=/)
 TK_VER=8.4
 BLT_VER=2.4
 
@@ -55,9 +58,12 @@ EXPAT_DIR=$(TOOLS_DIR:\=/)/expat-1.95.8
 #
 # Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
 #
-ICONV_DIR=$(TOOLS_DIR:\=/)/iconv-1.9.1.win32
-LIBXML_DIR=$(TOOLS_DIR:\=/)/libxml2-2.6.20.win32
-ZLIB_DIR=$(TOOLS_DIR:\=/)/zlib-1.2.3.win32
+#ICONV_DIR=$(TOOLS_DIR:\=/)/iconv-1.9.1.win32
+#LIBXML_DIR=$(TOOLS_DIR:\=/)/libxml2-2.6.20.win32
+#ZLIB_DIR=$(TOOLS_DIR:\=/)/zlib-1.2.3.win32
+ICONV_DIR=$(MSYS_DIR:\=/)
+LIBXML_DIR=$(MSYS_DIR:\=/)
+ZLIB_DIR=$(MSYS_DIR:\=/)
 
 #
 # Directory of various tools
@@ -67,15 +73,10 @@ ZLIB_DIR=$(TOOLS_DIR:\=/)/zlib-1.2.3.win32
 PERL=perl.exe
 
 # flex/bison
-YACC=$(TOOLS_DIR:\=/)/bison-2.1/bin/bison.exe
-LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
-
-# Doxygen is needed for generating HTML documentation from C++
-DOXYGEN_DIR=$(TOOLS_DIR:\=/)/doxygen
-
-# dot is part of the GraphViz package, and is used for generating model
-# documentation.
-DOT=$(TOOLS_DIR:\=/)/Graphviz/bin/dot.exe
+#YACC=$(TOOLS_DIR:\=/)/bison-2.1/bin/bison.exe
+#LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
+YACC=$(MSYS_DIR:\=/)/bin/bison.exe
+LEX=$(MSYS_DIR:\=/)/bin/flex.exe
 
 #
 # If you don't want to build some of the components below, substitute
@@ -172,7 +173,7 @@ OMNETPP_EDITION=Academic Public License -- NOT FOR COMMERCIAL USE
 # Libraries
 #
 
-TK_INCL_DIR=$(TK_DIR)/include
+TK_INCL_DIR=$(TK_DIR)/include/tcl$(TK_VER)
 TK_LIB_DIR=$(TK_DIR)/lib
 TCL_LIB=tcl$(TK_VER:.=).lib
 TK_LIB=tk$(TK_VER:.=).lib

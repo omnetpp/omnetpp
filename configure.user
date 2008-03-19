@@ -74,6 +74,8 @@ WITH_PARSIM=no
 #
 #TK_CFLAGS="-I/c/Tools/Tcl-8.4.11/include"
 #TK_LIBS="-L/c/Tools/Tcl-8.4.11/bin -ltk84 -ltcl84"
+TK_LIBS="-L/usr/bin -ltk84 -ltcl84"
+
 #
 # With Cygwin, you can try:
 # examle:TK_CFLAGS=
@@ -101,6 +103,8 @@ WITH_PARSIM=no
 #
 #ZLIB_CFLAGS="-I/c/Tools/zlib-1.2.3/include"
 #ZLIB_LIBS="-L/c/Tools/zlib-1.2.3/bin -lzlib1"
+ZLIB_CFLAGS="-I/usr/include"
+ZLIB_LIBS="-L/usr/lib -lz"
 
 #
 # Compiler flags used to compile JNI code.
@@ -140,6 +144,8 @@ WITH_PARSIM=no
 #
 #LIBXML_CFLAGS=
 #LIBXML_LIBS=
+LIBXML_CFLAGS="-I/usr/include"
+LIBXML_LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv"
 
 #
 # Compiler and linker options for Akaroa (optional component)

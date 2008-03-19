@@ -538,16 +538,6 @@ else
    fi
 fi
 
-# doxygen is used for generation of api doc
-AC_ARG_VAR(DOXYGEN, The Doxygen documentation tool)
-AC_CHECK_PROG(DOXYGEN, doxygen, doxygen, not found)
-
-if test "$DOXYGEN" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  doxygen"
-   AC_MSG_WARN(doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference.)
-   AC_MSG_WARN(It is available from http://www.doxygen.org/)
-fi
-
 # perl is needed for opp_msgc
 AC_ARG_VAR(PERL, The Perl interpreter)
 AC_CHECK_PROG(PERL, perl, perl, not found)
@@ -558,15 +548,6 @@ fi
 if test ! -x /usr/bin/perl; then
    this_perl=`which perl`
    AC_MSG_ERROR(Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl)
-fi
-
-# "dot" from Graphviz
-AC_ARG_VAR(DOT, Graph drawing program from the Graphviz package)
-AC_CHECK_PROG(DOT, dot, dot,)
-
-if test "$DOT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Graphviz"
-   AC_MSG_WARN(dot program from Graphviz not found -- it is needed to generate documentation with diagrams.)
 fi
 
 # swig is used for building the ui support libs
@@ -940,9 +921,6 @@ AC_SUBST(SHLIB_LD)
 AC_SUBST(DLLTOOL)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
-AC_SUBST(DOT)
-
-AC_SUBST(DOXYGEN)
 
 AC_SUBST(BUILD_SHARED_LIBS)
 AC_SUBST(A_LIB_SUFFIX)
