@@ -115,7 +115,7 @@ foreach $arg (@ARGV) {
 foreach $tempfile (@tempfiles) {push(@cmdline, "\@$tempfile");}
 foreach $arg (@ARGV) {push(@cmdline, $arg);}
 print("invoking linker: ".join(' ', @cmdline)) if $verbose;
-system($ENV{COMSPEC}, "/c", @cmdline)==0 || error("error invoking linker");
+system($ENV{COMSPEC}, ("/c", join(' ', @cmdline)))==0 || error("error invoking linker");
 
 # remove temporary linker command files
 removeTempFiles();
