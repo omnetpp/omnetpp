@@ -26,8 +26,11 @@ IMPLIBS= $O/../sim/sim_std$D.lib $O/../nedxml/nedxml$D.lib $O/../common/common$D
 
 OBJS= $O/args.obj $O/cenvir.obj $O/main.obj $O/omnetapp.obj $O/fsutils.obj \
       $O/sectionbasedconfig.obj $O/inifilereader.obj $O/scenario.obj $O/valueiterator.obj \
-      $O/speedometer.obj $O/filemgrs.obj $O/akoutvectormgr.obj $O/matchableobject.obj $O/matchablefield.obj \
-      $O/akaroarng.obj $O/cxmldoccache.obj $O/ivfilemgr.obj $O/eventlogwriter.obj $O/objectprinter.obj
+      $O/fileoutvectormgr.obj $O/fileoutscalarmgr.obj $O/filesnapshotmgr.obj \
+      $O/ivfilemgr.obj $O/akoutvectormgr.obj \
+      $O/speedometer.obj $O/matchableobject.obj $O/matchablefield.obj \
+      $O/akaroarng.obj $O/cxmldoccache.obj $O/eventlogwriter.obj $O/objectprinter.obj
+
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DENVIR_EXPORT
@@ -58,7 +61,7 @@ $O/$(LIBNAME).lib : $(OBJS) $L
 envir-implib : $(OBJS) $L
 	@rem How can one create only the import lib, without trying to link the DLL?
         @rem With this command, we need the '>nul' to hide the 'undefined symbol' errors
-	- $(SHLIB_LD) /out:$(O:/=\)\$(LIBNAME).dll /subsystem:console $(OBJS) $(LDFLAGS) >nul 
+	- $(SHLIB_LD) /out:$(O:/=\)\$(LIBNAME).dll /subsystem:console $(OBJS) $(LDFLAGS) >nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
@@ -154,7 +157,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  filemgrs.h
+  fileoutvectormgr.h
 $O/args.obj: args.cc \
   args.h \
   envdefs.h
@@ -170,7 +173,9 @@ $O/cenvir.obj: cenvir.cc \
   ../../include/cmodule.h \
   fsutils.h \
   speedometer.h \
-  filemgrs.h \
+  fileoutvectormgr.h \
+  fileoutscalarmgr.h \
+  filesnapshotmgr.h \
   akaroarng.h \
   akoutvectormgr.h \
   matchableobject.h \
@@ -235,7 +240,7 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/util.h
-$O/filemgrs.obj: filemgrs.cc \
+$O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
   ../../include/cenvir.h \
@@ -244,9 +249,8 @@ $O/filemgrs.obj: filemgrs.cc \
   ../../include/cmodule.h \
   ../../include/cstatistic.h \
   ../../include/cdensityestbase.h \
-  filemgrs.h \
+  fileoutscalarmgr.h \
   ../../include/ccomponenttype.h \
-  ivfilemgr.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
@@ -276,6 +280,71 @@ $O/filemgrs.obj: filemgrs.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/cstddev.h
+$O/fileoutvectormgr.obj: fileoutvectormgr.cc \
+  ../../include/simkerneldefs.h \
+  ../../include/cconfigkey.h \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  ../../include/csimulation.h \
+  ../../include/cmodule.h \
+  fileoutvectormgr.h \
+  ../../include/ccomponenttype.h \
+  ivfilemgr.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/cownedobject.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/opp_string.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cconfiguration.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h
+$O/filesnapshotmgr.obj: filesnapshotmgr.cc \
+  ../../include/simkerneldefs.h \
+  ../../include/cconfigkey.h \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  filesnapshotmgr.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/cownedobject.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/opp_string.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cconfiguration.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h
 $O/fsutils.obj: fsutils.cc \
   fsutils.h \
   ../../include/onstartup.h \
@@ -344,7 +413,7 @@ $O/ivfilemgr.obj: ivfilemgr.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  filemgrs.h
+  fileoutvectormgr.h
 $O/main.obj: main.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \

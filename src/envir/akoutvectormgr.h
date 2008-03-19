@@ -22,7 +22,7 @@
 #define __AKOUTVECTORMGR_H
 
 #include <stdio.h>
-#include "filemgrs.h"
+#include "fileoutvectormgr.h"
 #include "util.h"
 
 NAMESPACE_BEGIN

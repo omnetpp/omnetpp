@@ -35,7 +35,9 @@
 #include "stringutil.h"
 
 #include "speedometer.h"     // env_dummy_function()
-#include "filemgrs.h"        // env_dummy_function()
+#include "fileoutvectormgr.h" // env_dummy_function()
+#include "fileoutscalarmgr.h" // env_dummy_function()
+#include "filesnapshotmgr.h" // env_dummy_function()
 #include "akaroarng.h"       // env_dummy_function()
 #include "akoutvectormgr.h"  // env_dummy_function()
 #include "matchableobject.h" // env_dummy_function()

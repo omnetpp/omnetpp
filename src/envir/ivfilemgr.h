@@ -25,7 +25,7 @@
 #include "platmisc.h"
 #include "envirext.h"
 #include "util.h"
-#include "filemgrs.h"
+#include "fileoutvectormgr.h"
 
 NAMESPACE_BEGIN
 
