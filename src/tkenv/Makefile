@@ -82,7 +82,7 @@ $O/tkapp-e.o : tkapp.cc tclcode.cc
 	@mkdir -p $O
 	$(CXX) -c $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc -o $O/tkapp-e.o
 
-tclcode.cc: *.tcl
+tclcode.cc: *.tcl tcl2c.pl
 	$(PERL) tcl2c.pl tclcode.cc *.tcl
 
 missing-dependency:

@@ -74,7 +74,7 @@ $O/tkapp.obj : tkapp.cc
 $O/tkapp-e.obj : tkapp.cc tclcode.cc
 	$(CXX) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkapp.cc
 
-tclcode.cc : *.tcl
+tclcode.cc : *.tcl tcl2c.pl
 	$(PERL) tcl2c.pl tclcode.cc *.tcl
 
 $(OBJS): $O

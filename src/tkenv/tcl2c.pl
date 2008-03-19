@@ -53,6 +53,7 @@ sub readTextFile($)
     my($file) = @_;
     open(INFILE, $file) || die "cannot open $file";
     read(INFILE, $content, 1000000) || die "cannot read $file";
+    $content =~ s/\r$//mg;
     return $content;
 }
 

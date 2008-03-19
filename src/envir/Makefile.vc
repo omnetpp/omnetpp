@@ -61,7 +61,7 @@ $O/$(LIBNAME).lib : $(OBJS) $L
 envir-implib : $(OBJS) $L
 	@rem How can one create only the import lib, without trying to link the DLL?
         @rem With this command, we need the '>nul' to hide the 'undefined symbol' errors
-	- $(SHLIB_LD) /out:$(O:/=\)\$(LIBNAME).dll /subsystem:console $(OBJS) $(LDFLAGS) >nul
+	- $(SHLIB_LD) /out:$(O:/=\)\$(LIBNAME).dll /subsystem:console $(OBJS) $(LDFLAGS) >nul 2>nul
 
 $O/$(LIBNAME).dll : $(OBJS) $L
 	$(SHLIB_LD) /out:"$@" /subsystem:console $(OBJS) $(IMPLIBS) $(LDFLAGS)
