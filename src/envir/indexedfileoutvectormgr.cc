@@ -1,5 +1,5 @@
 //==========================================================================
-//  IVFILEMGR.CC - part of
+//  INDEXEDFILEOUTVECTORMGR.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -33,6 +33,7 @@
 #include "cmodule.h"
 #include "cstatistic.h"
 #include "stringutil.h"
+#include "fileutil.h"
 #include "unitconversion.h"
 #include "indexedfileoutvectormgr.h"
 
@@ -56,16 +57,8 @@ Register_PerObjectConfigEntry(CFGID_OUTVECTOR_MAX_BUFFERED_SAMPLES, "max-buffere
 #define WARN(msg)       fprintf(stderr,msg)
 
 
-static void removeFile(const char *fname, const char *descr)
-{
-    if (unlink(fname)!=0 && errno!=ENOENT)
-        throw cRuntimeError("Cannot remove %s `%s': %s", descr, fname, strerror(errno));
-}
-
-
-//=================================================================
-
 Register_Class(cIndexedFileOutputVectorManager);
+
 
 cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
   : cFileOutputVectorManager()

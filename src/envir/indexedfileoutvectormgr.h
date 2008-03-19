@@ -1,5 +1,5 @@
 //==========================================================================
-//  IVFILEMGR.H - part of
+//  INDEXEDFILEOUTVECTORMGR.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __IVFILEMGR_H
-#define __IVFILEMGR_H
+#ifndef __INDEXEDFILEOUTVECTORMGR_H
+#define __INDEXEDFILEOUTVECTORMGR_H
 
 #include <stdio.h>
 #include <float.h>
