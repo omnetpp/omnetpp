@@ -74,8 +74,8 @@ foreach $arg (@ARGV) {
 
         # invoke dumpbin and redirect output into file
         unlink($DUMPFILE) || error("cannot remove existing $DUMPFILE") if -r $DUMPFILE;
-        @prog = ($DUMPBIN, "/linkermember:1", $lib, ">$DUMPFILE");
-        system($ENV{COMSPEC}, "/c", @prog)==0 || error("error invoking dumpbin (check contents of $DUMPFILE)");
+        $prog = "$DUMPBIN /linkermember:1 $lib >$DUMPFILE";
+        system($ENV{COMSPEC}, "/c", $prog)==0 || error("error invoking dumpbin (check contents of $DUMPFILE)");
 
         # read dumpbin output
         open(IN, $DUMPFILE) || error("cannot open $DUMPFILE");
@@ -115,7 +115,7 @@ foreach $arg (@ARGV) {
 foreach $tempfile (@tempfiles) {push(@cmdline, "\@$tempfile");}
 foreach $arg (@ARGV) {push(@cmdline, $arg);}
 print("invoking linker: ".join(' ', @cmdline)) if $verbose;
-system($ENV{COMSPEC}, ("/c", join(' ', @cmdline)))==0 || error("error invoking linker");
+system($ENV{COMSPEC}, ("/c", join(' ', @cmdline)))==0 || error("error invoking linker"); # join is needed for mingw/perl
 
 # remove temporary linker command files
 removeTempFiles();
