@@ -369,8 +369,8 @@ sub update_makefile {
     $makefiletext = "";
     open(INPUT, $Makefile) || die "opp_makedep: cannot open $Makefile: $!";
     while (<INPUT>) {
-        # some "\n", "\r" magic, because on Cygwin there's a chaos about this
-        s/[\r\n]*$//;
+        chomp;
+        s/\r$//;  # cygwin/mingw perl does not do CR/LF translation
         $makefiletext .= $_."\n";
     }
     close(INPUT);

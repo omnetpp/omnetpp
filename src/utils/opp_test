@@ -10,6 +10,7 @@ use File::Basename;
 sub cwd {
    my $d=`pwd` || die "error running `pwd' program: cannot determine name of current directory, exiting";
    chomp($d);
+   $d =~ s/\r$//; # cygwin/mingw perl does not do CR/LF translation
    $d;
 }
 
@@ -679,9 +680,9 @@ sub writefile()
             exit(1);
         }
         my $oldcontent = '';
-        while (<IN>)
-        {
-            s/[\r\n]*$//;
+        while (<IN>) {
+            chomp;
+            s/\r$//; # cygwin/mingw perl does not do CR/LF translation
             $oldcontent.= $_."\n";
         }
         close(IN);

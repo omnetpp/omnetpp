@@ -24,7 +24,7 @@ makemake();
 exit 0;
 
 #TODO:
-# instead of *choosing* between .cc and .cpp, both files should be recognized and compiled! (remove -e option????)
+# instead of *choosing* between .cc and .cpp, both files should be recognized and compiled! (remove -e option???? issue: what should be the ext for _m.* files?)
 # with --deep, -d<subdir> should imply -X<subdir> (in Java too)
 # output dir should be ignored (-X) too!
 # convert between .o and .obj in extraArgs!
