@@ -639,9 +639,7 @@ LEX
 LEX_OUTPUT_ROOT
 LEXLIB
 MAKE
-DOXYGEN
 PERL
-DOT
 SWIG
 XMKMF
 CXXCPP
@@ -723,9 +721,7 @@ CXXFLAGS
 CCC
 YACC
 YFLAGS
-DOXYGEN
 PERL
-DOT
 SWIG
 XMKMF
 CXXCPP'
@@ -1322,9 +1318,7 @@ Some influential environment variables:
   YFLAGS      The list of arguments that will be passed by default to $YACC.
               This script will default YFLAGS to the empty string to avoid a
               default value of `-d' given by some make applications.
-  DOXYGEN     The Doxygen documentation tool
   PERL        The Perl interpreter
-  DOT         Graph drawing program from the Graphviz package
   SWIG        The Swig interface generator
   XMKMF       Path to xmkmf, Makefile generator for X Window System
   CXXCPP      C++ preprocessor
@@ -4007,55 +4001,6 @@ echo "$as_me: error: GNU Make is required to build OMNeT++/OMNEST." >&2;}
    fi
 fi
 
-# doxygen is used for generation of api doc
-
-# Extract the first word of "doxygen", so it can be a program name with args.
-set dummy doxygen; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_DOXYGEN+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$DOXYGEN"; then
-  ac_cv_prog_DOXYGEN="$DOXYGEN" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_DOXYGEN="doxygen"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_DOXYGEN" && ac_cv_prog_DOXYGEN="not found"
-fi
-fi
-DOXYGEN=$ac_cv_prog_DOXYGEN
-if test -n "$DOXYGEN"; then
-  { echo "$as_me:$LINENO: result: $DOXYGEN" >&5
-echo "${ECHO_T}$DOXYGEN" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-
-if test "$DOXYGEN" = "not found"; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  doxygen"
-   { echo "$as_me:$LINENO: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference." >&5
-echo "$as_me: WARNING: doxygen not found -- it is needed to create the OMNeT++/OMNEST API reference." >&2;}
-   { echo "$as_me:$LINENO: WARNING: It is available from http://www.doxygen.org/" >&5
-echo "$as_me: WARNING: It is available from http://www.doxygen.org/" >&2;}
-fi
-
 # perl is needed for opp_msgc
 
 # Extract the first word of "perl", so it can be a program name with args.
@@ -4106,52 +4051,6 @@ if test ! -x /usr/bin/perl; then
    { { echo "$as_me:$LINENO: error: Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl" >&5
 echo "$as_me: error: Perl MUST be available as /usr/bin/perl. Creating a soft link should help: ln -s $this_perl /usr/bin/perl" >&2;}
    { (exit 1); exit 1; }; }
-fi
-
-# "dot" from Graphviz
-
-# Extract the first word of "dot", so it can be a program name with args.
-set dummy dot; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_DOT+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$DOT"; then
-  ac_cv_prog_DOT="$DOT" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_DOT="dot"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-DOT=$ac_cv_prog_DOT
-if test -n "$DOT"; then
-  { echo "$as_me:$LINENO: result: $DOT" >&5
-echo "${ECHO_T}$DOT" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-
-if test "$DOT" = ""; then
-   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Graphviz"
-   { echo "$as_me:$LINENO: WARNING: dot program from Graphviz not found -- it is needed to generate documentation with diagrams." >&5
-echo "$as_me: WARNING: dot program from Graphviz not found -- it is needed to generate documentation with diagrams." >&2;}
 fi
 
 # swig is used for building the ui support libs
@@ -4777,6 +4676,70 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+# on mingw/msys try a different path too
+if test $zlib_ok = no -a "$mingw" = yes; then
+    ZLIB_LIBS="-L/usr/lib -lz"
+    ZLIB_CFLAGS="-I/usr/include"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$ZLIB_CFLAGS"
+   LIBS="$ZLIB_LIBS"
+
+   { echo "$as_me:$LINENO: checking for zlib with CFLAGS=\"$ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"" >&5
+echo $ECHO_N "checking for zlib with CFLAGS=\"$ZLIB_CFLAGS\" LIBS=\"$ZLIB_LIBS\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <zlib.h>
+int
+main ()
+{
+gzopen("","");
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; zlib_ok=yes;
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; zlib_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
 if test $zlib_ok = no; then
    { { echo "$as_me:$LINENO: error: zlib or zlib header file not found, please install it" >&5
 echo "$as_me: error: zlib or zlib header file not found, please install it" >&2;}
@@ -5519,6 +5482,67 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    LIBS=$save_LIBS
 
 fi
+if test $tcltk_ok = no -a "$mingw" = yes; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85"
+
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk85 -ltcl85\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk85 -ltcl85\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; tcltk_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
 if test $tcltk_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
@@ -5687,6 +5711,67 @@ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
        $as_test_x conftest$ac_exeext; then
   { echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; tcltk_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $tcltk_ok = no -a "$mingw" = yes; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84"
+
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk84 -ltcl84\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -L/usr/bin -ltk84 -ltcl84\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84"
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -6586,6 +6671,67 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    LIBS=$save_LIBS
 
 fi
+if test $libxml_ok = no -a "$mingw" = yes; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="-I/usr/include/libxml2"
+   LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv"
+
+   { echo "$as_me:$LINENO: checking for LibXML XML parser with CFLAGS=\"-I/usr/include/libxml2\" LIBS=\"-L/usr/bin -lxml2 -L/usr/bin -liconv\"" >&5
+echo $ECHO_N "checking for LibXML XML parser with CFLAGS=\"-I/usr/include/libxml2\" LIBS=\"-L/usr/bin -lxml2 -L/usr/bin -liconv\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <libxml/parser.h>
+int
+main ()
+{
+xmlInitParser();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; libxml_ok=yes; LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; libxml_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -6899,9 +7045,6 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
-
-
-
 
 
 
@@ -7681,9 +7824,7 @@ LEX!$LEX$ac_delim
 LEX_OUTPUT_ROOT!$LEX_OUTPUT_ROOT$ac_delim
 LEXLIB!$LEXLIB$ac_delim
 MAKE!$MAKE$ac_delim
-DOXYGEN!$DOXYGEN$ac_delim
 PERL!$PERL$ac_delim
-DOT!$DOT$ac_delim
 SWIG!$SWIG$ac_delim
 XMKMF!$XMKMF$ac_delim
 CXXCPP!$CXXCPP$ac_delim
@@ -7716,6 +7857,8 @@ AR!$AR$ac_delim
 SHLIB_LD!$SHLIB_LD$ac_delim
 DLLTOOL!$DLLTOOL$ac_delim
 MAKEDEPEND!$MAKEDEPEND$ac_delim
+BUILD_SHARED_LIBS!$BUILD_SHARED_LIBS$ac_delim
+A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -7757,8 +7900,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-BUILD_SHARED_LIBS!$BUILD_SHARED_LIBS$ac_delim
-A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 SHARED_LIB_SUFFIX!$SHARED_LIB_SUFFIX$ac_delim
 SO_LIB_SUFFIX!$SO_LIB_SUFFIX$ac_delim
 DLL_LIB_SUFFIX!$DLL_LIB_SUFFIX$ac_delim
@@ -7794,7 +7935,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 35; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 33; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

@@ -74,7 +74,9 @@ WITH_PARSIM=no
 #
 #TK_CFLAGS="-I/c/Tools/Tcl-8.4.11/include"
 #TK_LIBS="-L/c/Tools/Tcl-8.4.11/bin -ltk84 -ltcl84"
-TK_LIBS="-L/usr/bin -ltk84 -ltcl84"
+# or:
+#TK_CFLAGS="-I$MSYS/include/tcl8.4"
+#TK_LIBS="-L$MSYS/bin -ltk84 -ltcl84"
 
 #
 # With Cygwin, you can try:
@@ -103,8 +105,9 @@ TK_LIBS="-L/usr/bin -ltk84 -ltcl84"
 #
 #ZLIB_CFLAGS="-I/c/Tools/zlib-1.2.3/include"
 #ZLIB_LIBS="-L/c/Tools/zlib-1.2.3/bin -lzlib1"
-ZLIB_CFLAGS="-I/usr/include"
-ZLIB_LIBS="-L/usr/lib -lz"
+# or:
+#ZLIB_CFLAGS="-I$MSYS/include"
+#ZLIB_LIBS="-L$MSYS/lib -lz"
 
 #
 # Compiler flags used to compile JNI code.
@@ -140,12 +143,11 @@ ZLIB_LIBS="-L/usr/lib -lz"
 # With MinGW I use the following:
 #  LIBXML_CFLAGS="-I/c/Tools/libxml2-2.6.20.win32/include -I/c/Tools/iconv-1.9.1.win32/include"
 #  LIBXML_LIBS="-L/c/Tools/libxml2-2.6.20.win32/bin -lxml2 -L/c/Tools/iconv-1.9.1.win32/lib -liconv"
+# or:
+#  LIBXML_CFLAGS="-I$MSYS/include"
+#  LIBXML_LIBS="-L$MSYS/bin -lxml2 -L$MSYS/bin -liconv"
 # If commented out, the configure script will try to autodetect it
 #
-#LIBXML_CFLAGS=
-#LIBXML_LIBS=
-LIBXML_CFLAGS="-I/usr/include"
-LIBXML_LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv"
 
 #
 # Compiler and linker options for Akaroa (optional component)
