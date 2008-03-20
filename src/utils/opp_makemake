@@ -304,8 +304,7 @@ sub makemake()
     if ($? != 0) {
         error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH");
     }
-    $configFile =~ s/\n//gs;
-    $configFile =~ s/\s*(.*)\s*/$1/gs;
+    $configFile =~ s/^\s*(.*?)\s*$/$1/gs;
     if ($configFile eq "" || ! -f $configFile) {
         error("opp_configfilepath didn't return the name of an existing directory, result was \"$configFile\"");
     }
