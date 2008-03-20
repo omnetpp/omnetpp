@@ -78,6 +78,9 @@ PERL=perl.exe
 YACC=$(MSYS_DIR:\=/)/bin/bison.exe
 LEX=$(MSYS_DIR:\=/)/bin/flex.exe
 
+# XXX document this option
+#BUILD_SHARED_LIBS=no
+
 #
 # If you don't want to build some of the components below, substitute
 # missing-dependency.
@@ -103,15 +106,14 @@ EMBED_TCL_CODE=yes
 USE_WINMAIN=yes
 
 #
-# Set to "yes" to enable simulation executables load NED files dynamically.
+# Set to "yes" to enable simulation executables to load NED files dynamically.
 #
 WITH_NETBUILDER=yes
 
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
-# WITH_PARSIM=yes
-WITH_PARSIM=no
+WITH_PARSIM=yes
 
 #==============================================================================
 #======!!!         Try not to change anything below this line       !!!======

@@ -35,15 +35,14 @@ CFLAGS_RELEASE='-O2 -DNDEBUG=1'
 EMBED_TCL_CODE=yes
 
 #
-# Set to "yes" to enable simulation executables load NED files dynamically.
+# Set to "yes" to enable simulation executables to load NED files dynamically.
 #
 WITH_NETBUILDER=yes
 
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
-#FIXME: WITH_PARSIM=yes
-WITH_PARSIM=no
+WITH_PARSIM=yes
 
 #
 # Compiler and linker options for Tcl/Tk
