@@ -799,8 +799,8 @@ if test $libxml_ok = no; then
                   libxml_ok, LIBXML_LIBS="-lxml2")
 fi
 if test $libxml_ok = no; then
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include/libxml2, -lxml2,
-                  libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include/libxml, -lxml2,
+                  libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml" LIBXML_LIBS="-lxml2")
 fi
 OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
 if test $expat_ok = no; then
