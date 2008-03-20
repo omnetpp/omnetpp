@@ -28,7 +28,8 @@
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
 #include "cchannel.h"
-#include "macros.h"
+#include "globals.h"
+#include "regmacros.h"
 
 USING_NAMESPACE
 
@@ -144,7 +145,7 @@ void cAdvancedLinkDelayLookahead::endRun()
 {
 }
 
-double cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int procId, void *data)
+simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int procId, void *data)
 {
     // find LinkOut structure in segInfo[destProcId].
     LinkOut *link = (LinkOut *)data;
@@ -160,7 +161,7 @@ double cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int procI
     return 0.0;
 }
 
-double cAdvancedLinkDelayLookahead::getCurrentLookahead(int procId)
+simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(int procId)
 {
     return segInfo[procId].lookahead;
 }

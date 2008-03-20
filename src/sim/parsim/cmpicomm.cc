@@ -21,7 +21,8 @@
 #include <mpi.h>
 #include "cmpicomm.h"
 #include "cmpicommbuffer.h"
-#include "macros.h"
+#include "globals.h"
+#include "regmacros.h"
 #include "cenvir.h"
 #include "cconfiguration.h"
 #include "platmisc.h"

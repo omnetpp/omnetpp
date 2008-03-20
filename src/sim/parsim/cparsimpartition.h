@@ -31,6 +31,8 @@ class cSimulation;
 class cParsimSynchronizer;
 class cParsimCommunications;
 class cCommBuffer;
+class cException;
+class cTerminationException;
 
 
 /**

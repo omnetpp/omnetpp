@@ -34,11 +34,11 @@ class SIM_API cLinkDelayLookahead : public cNMPLookahead
   protected:
     struct PartitionInfo
     {
-        double minDelay;    // minimum of all link delays to given partition
+        simtime_t minDelay;  // minimum of all link delays to given partition
     };
 
     // partition information
-    int numSeg;            // number of partitions
+    int numSeg;              // number of partitions
     PartitionInfo *segInfo;  // partition info array, size numSeg
 
   public:
@@ -66,12 +66,12 @@ class SIM_API cLinkDelayLookahead : public cNMPLookahead
      * Updates lookahead information, based on the delay of the link
      * where message is sent out. Returns EOT.
      */
-    virtual double getCurrentLookahead(cMessage *msg, int procId, void *data);
+    virtual simtime_t getCurrentLookahead(cMessage *msg, int procId, void *data);
 
     /**
      * Returns minimum of link delays toward the given partition.
      */
-    virtual double getCurrentLookahead(int procId);
+    virtual simtime_t getCurrentLookahead(int procId);
 };
 
 NAMESPACE_END

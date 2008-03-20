@@ -24,7 +24,8 @@
 #include "cparsimcomm.h"
 #include "cplaceholdermod.h"
 #include "cmodule.h"
-#include "macros.h"
+#include "globals.h"
+#include "regmacros.h"
 
 USING_NAMESPACE
 

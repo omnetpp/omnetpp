@@ -50,27 +50,20 @@ class cParsimPartition;
  */
 class SIM_API cProxyGate : public cGate // noncopyable
 {
+    friend cPlaceHolderModule;
   private:
     cParsimPartition *partition;
-    int remoteProcId;
+    short remoteProcId;
     int remoteModuleId;
     int remoteGateId;
     void *data;
 
+  protected:
+    // internal: constructor is protected because only cPlaceHolderModule
+    // is allowed to create instances
+    explicit cProxyGate(Desc *desc);
+
   public:
-    /** @name Constructor, destructor, copying */
-    //@{
-    /**
-     * Constructor.
-     */
-    cProxyGate(const char *name, char tp);
-
-    /**
-     * Destructor.
-     */
-    virtual ~cProxyGate()  {}
-    //@}
-
     /** @name Redefined cObject member functions */
     //@{
     /**
@@ -97,12 +90,12 @@ class SIM_API cProxyGate : public cGate // noncopyable
     /**
      * Sets remote gate address.
      */
-    void setRemoteGate(int procId, int moduleId, int gateId);
+    void setRemoteGate(short procId, int moduleId, int gateId);
 
     /**
      * Returns partition where remote gate resides.
      */
-    int getRemoteProcId()   {return remoteProcId;}
+    short getRemoteProcId()   {return remoteProcId;}
 
     /**
      * Returns module Id in remote partition where remote gate resides.

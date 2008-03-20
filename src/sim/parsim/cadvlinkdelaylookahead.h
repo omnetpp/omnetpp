@@ -34,18 +34,18 @@ class SIM_API cAdvancedLinkDelayLookahead : public cNMPLookahead
   protected:
     struct LinkOut
     {
-        double lookahead;    // lookahead on this link (currently the link delay)
-        double eot;          // current EOT on this link (last msg sent + lookahead)
+        simtime_t lookahead; // lookahead on this link (currently the link delay)
+        simtime_t eot;       // current EOT on this link (last msg sent + lookahead)
     };
     struct PartitionInfo
     {
         int numLinks;        // size of links[] array
         LinkOut **links;     // information on outgoing links (needed for EOT calculation)
-        double lookahead;    // lookahead to partition (minimum of all link lookaheads)
+        simtime_t lookahead; // lookahead to partition (minimum of all link lookaheads)
     };
 
     // partition information
-    int numSeg;            // number of partitions
+    int numSeg;              // number of partitions
     PartitionInfo *segInfo;  // partition info array, size numSeg
 
   public:
@@ -73,12 +73,12 @@ class SIM_API cAdvancedLinkDelayLookahead : public cNMPLookahead
      * Updates lookahead information, based on the delay of the link
      * where message is sent out. Returns EOT.
      */
-    virtual double getCurrentLookahead(cMessage *msg, int procId, void *data);
+    virtual simtime_t getCurrentLookahead(cMessage *msg, int procId, void *data);
 
     /**
      * Returns minimum of link delays toward the given partition.
      */
-    virtual double getCurrentLookahead(int procId);
+    virtual simtime_t getCurrentLookahead(int procId);
 };
 
 NAMESPACE_END

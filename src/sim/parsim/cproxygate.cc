@@ -28,7 +28,7 @@
 USING_NAMESPACE
 
 
-cProxyGate::cProxyGate(const char *name, char type) : cGate(name, type)
+cProxyGate::cProxyGate(Desc *desc) : cGate(desc)
 {
     partition = NULL;
     remoteProcId = -1;
@@ -57,7 +57,7 @@ bool cProxyGate::deliver(cMessage *msg, simtime_t t)
     return false;  // meaning message should be deleted
 }
 
-void cProxyGate::setRemoteGate(int procId, int moduleId, int gateId)
+void cProxyGate::setRemoteGate(short procId, int moduleId, int gateId)
 {
     remoteProcId = procId;
     remoteModuleId = moduleId;

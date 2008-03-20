@@ -31,30 +31,17 @@ void cPlaceHolderModule::arrived(cMessage *msg, int n, simtime_t t)
     throw cRuntimeError(this, "internal error: arrived() called");
 }
 
-/*XXX needed? probably not. Base class version is OK too
-bool cPlaceHolderModule::callInitialize(int stage)
-{
-    // do nothing
-    return false;
-}
-
-void cPlaceHolderModule::callFinish()
-{
-    // do nothing
-}
-*/
-
 void cPlaceHolderModule::scheduleStart(simtime_t t)
 {
     // do nothing
 }
 
-cGate *cPlaceHolderModule::createGateObject(const char *gname, char tp)
+cGate *cPlaceHolderModule::createGateObject(cGate::Desc *desc)
 {
-    if (tp=='I')
-        return new cProxyGate(gname,tp);
+    if (desc->isInput())
+        return new cProxyGate(desc);
     else
-        return cModule::createGateObject(gname,tp);
+        return cModule::createGateObject(desc);
 }
 
 //----------------------------------------

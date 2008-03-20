@@ -27,7 +27,8 @@
 #include "cparsimcomm.h"
 #include "ccommbuffer.h"
 #include "messagetags.h"
-#include "macros.h"
+#include "globals.h"
+#include "regmacros.h"
 
 USING_NAMESPACE
 

@@ -17,7 +17,9 @@
 
 #include "cptrpassingmpicomm.h"
 #include "cptrpassingmpicommbuffer.h"
-#include "macros.h"
+#include "globals.h"
+#include "cconfigkey.h"
+#include "regmacros.h"
 
 USING_NAMESPACE
 

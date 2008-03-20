@@ -75,12 +75,12 @@ class SIM_API cNMPLookahead : public cObject
     /**
      * Performs lookahead calculation when a message gets sent out from the partition.
      */
-    virtual double getCurrentLookahead(cMessage *msg, int procId, void *data) = 0;
+    virtual simtime_t getCurrentLookahead(cMessage *msg, int procId, void *data) = 0;
 
     /**
      * Returns current lookahead.
      */
-    virtual double getCurrentLookahead(int procId) = 0;
+    virtual simtime_t getCurrentLookahead(int procId) = 0;
 
 };
 

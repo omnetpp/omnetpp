@@ -32,7 +32,7 @@ class SIM_API cPlaceHolderModule : public cModule // so, noncopyable
 {
   protected:
     // internal: "virtual ctor" for cGate: creates cProxyGate
-    virtual cGate *createGateObject(const char *gname, char tp);
+    virtual cGate *createGateObject(cGate::Desc *desc);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -65,17 +65,6 @@ class SIM_API cPlaceHolderModule : public cModule // so, noncopyable
     /**
      * Does nothing.
      */
-//XXX out!    virtual bool callInitialize(int stage);
-
-    /**
-     * Does nothing.
-     */
-//XXX out!    virtual void callFinish();
-
-    /**
-     * Does nothing.
-     */
-//XXX needed?
     virtual void scheduleStart(simtime_t t);
     //@}
 };

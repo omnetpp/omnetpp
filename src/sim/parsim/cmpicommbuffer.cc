@@ -20,7 +20,8 @@
 #include <string.h>
 #include <mpi.h>
 #include "cmpicommbuffer.h"
-#include "macros.h"
+#include "globals.h"
+#include "regmacros.h"
 
 USING_NAMESPACE
 

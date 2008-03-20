@@ -27,8 +27,9 @@
 #include "cparsimpartition.h"
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
-#include "cchannel.h"
-#include "macros.h"
+#include "cbasicchannel.h"
+#include "globals.h"
+#include "regmacros.h"
 
 USING_NAMESPACE
 
@@ -81,7 +82,7 @@ void cLinkDelayLookahead::startRun()
                     cGate *fromg  = pg->fromGate();
                     cChannel *chan = fromg->channel();
                     cBasicChannel *basicChan = dynamic_cast<cBasicChannel *>(chan);
-                    double linkDelay = basicChan ? basicChan->delay() : 0.0;
+                    simtime_t linkDelay = basicChan ? basicChan->delay() : 0.0;
                     if (linkDelay<=0.0)
                         throw cRuntimeError("cLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->fullPath().c_str());
 
@@ -112,12 +113,12 @@ void cLinkDelayLookahead::endRun()
     segInfo = NULL;
 }
 
-double cLinkDelayLookahead::getCurrentLookahead(cMessage *, int procId, void *)
+simtime_t cLinkDelayLookahead::getCurrentLookahead(cMessage *, int procId, void *)
 {
     return segInfo[procId].minDelay;
 }
 
-double cLinkDelayLookahead::getCurrentLookahead(int procId)
+simtime_t cLinkDelayLookahead::getCurrentLookahead(int procId)
 {
     return segInfo[procId].minDelay;
 }

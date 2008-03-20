@@ -32,7 +32,8 @@
 #include <unistd.h>
 #include "cexception.h"
 #include "cmemcommbuffer.h"
-#include "macros.h"
+#include "globals.h"
+#include "regmacros.h"
 #include "cenvir.h"
 #include "cconfiguration.h"
 #include "parsimutil.h"

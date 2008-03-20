@@ -24,7 +24,8 @@
 #include "cfilecommbuffer.h"
 #include "util.h"  // opp_string
 #include "cownedobject.h"
-#include "macros.h"
+#include "globals.h"
+#include "regmacros.h"
 
 USING_NAMESPACE
 
