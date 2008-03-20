@@ -4,7 +4,7 @@
 #
 
 #
-# base directories
+# Base directories
 #
 # Edit these variables!
 #
@@ -19,8 +19,16 @@ OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 # Version. Should ideally come from the 'Version' file but nmake doesn't support that
 OMNETPP_VERSION=omnetpp-4.0a4
 
+#
+# If you have the external dependencies (Tcl/Tk, LibXML, MPI, etc) under a
+# common Unix-like directory tree (<dir>/include, <dir>/lib, etc.), you
+# can specify it here as OPT_DIR, thereby simplifying the rest of this
+# config file (i.e. other variables can simply refer to $(OPT_DIR)).
+# This is completely optional -- OPT_DIR is not referenced outside this file.
+#
+#OPT_DIR=$(OMNETPP_ROOT:\=/)/msys
+OPT_DIR=$(TOOLS_DIR:\=/)/msys
 
-MSYS_DIR=$(OMNETPP_ROOT:\=/)/msys
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
 # Tcl/Tk 8.4 (minimum 8.4.0) and BLT 2.4 required.
@@ -28,7 +36,7 @@ MSYS_DIR=$(OMNETPP_ROOT:\=/)/msys
 # in the same directory tree as Tcl/Tk.
 #
 #TK_DIR=$(TOOLS_DIR:\=/)/Tcl-8.4.11
-TK_DIR=$(MSYS_DIR:\=/)
+TK_DIR=$(OPT_DIR:\=/)
 TK_VER=8.4
 BLT_VER=2.4
 
@@ -36,8 +44,9 @@ BLT_VER=2.4
 # MPI directory. MPI is only needed for parallel distributed execution.
 # Leave empty if you don't have MPI.
 #
-MPI_DIR=
 #MPI_DIR=$(TOOLS_DIR:\=/)/mpi
+#MPI_DIR=$(OPT_DIR:\=/)
+MPI_DIR=
 
 #
 # Choice of XML parser. Possible choices: libxml, expat or none.
@@ -53,7 +62,8 @@ XMLPARSER=libxml
 #
 # Location of Expat (only used if XMLPARSER=expat, see above)
 #
-EXPAT_DIR=$(TOOLS_DIR:\=/)/expat-1.95.8
+#EXPAT_DIR=$(TOOLS_DIR:\=/)/expat-1.95.8
+EXPAT_DIR=$(OPT_DIR:\=/)
 
 #
 # Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
@@ -61,9 +71,9 @@ EXPAT_DIR=$(TOOLS_DIR:\=/)/expat-1.95.8
 #ICONV_DIR=$(TOOLS_DIR:\=/)/iconv-1.9.1.win32
 #LIBXML_DIR=$(TOOLS_DIR:\=/)/libxml2-2.6.20.win32
 #ZLIB_DIR=$(TOOLS_DIR:\=/)/zlib-1.2.3.win32
-ICONV_DIR=$(MSYS_DIR:\=/)
-LIBXML_DIR=$(MSYS_DIR:\=/)
-ZLIB_DIR=$(MSYS_DIR:\=/)
+ICONV_DIR=$(OPT_DIR:\=/)
+LIBXML_DIR=$(OPT_DIR:\=/)
+ZLIB_DIR=$(OPT_DIR:\=/)
 
 #
 # Directory of various tools
@@ -72,13 +82,18 @@ ZLIB_DIR=$(MSYS_DIR:\=/)
 # Perl: needed by opp_makedep, opp_msgc, opp_neddoc, opp_test etc.
 PERL=perl.exe
 
-# flex/bison
+#
+# GNU Bison and Flex. Bison 2.0+ is required, 1.x versions will not work!
+#
 #YACC=$(TOOLS_DIR:\=/)/bison-2.1/bin/bison.exe
 #LEX=$(TOOLS_DIR:\=/)/UnxUtils/usr/local/wbin/flex.exe
-YACC=$(MSYS_DIR:\=/)/bin/bison.exe
-LEX=$(MSYS_DIR:\=/)/bin/flex.exe
+YACC=$(OPT_DIR:\=/)/bin/bison.exe
+LEX=$(OPT_DIR:\=/)/bin/flex.exe
 
-# XXX document this option
+#
+# If you want to build .lib files instead of .dlls, specify "no" below.
+# The default is "yes".
+#
 #BUILD_SHARED_LIBS=no
 
 #

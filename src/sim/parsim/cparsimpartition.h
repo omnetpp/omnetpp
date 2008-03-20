@@ -131,20 +131,20 @@ class SIM_API cParsimPartition : public cObject
      * about to be finished normally), this methods notifies other partitions
      * about the exception.
      *
-     * This methods "eats" exceptions that occur during broadcast. (We're not
-     * interested in stacked exceptions.)
+     * This methods "eats" exceptions that occur during broadcast. (We're
+     * not interested in cascading exceptions.)
      */
-    virtual void broadcastTerminationException(cTerminationException *e);
+    virtual void broadcastTerminationException(cTerminationException& e);
 
     /**
-     * Called when a cException occurs (i.e. the simulation is about to be
+     * Called when an exception occurs (i.e. the simulation is about to be
      * stopped with an error), this methods notifies other partitions
      * about the exception.
      *
-     * This methods "eats" exceptions that occur during broadcast. (We're not
-     * interested in stacked exceptions.)
+     * This methods "eats" exceptions that occur during broadcast. (We're
+     * not interested in cascading exceptions.)
      */
-    virtual void broadcastException(cException *e);
+    virtual void broadcastException(std::exception& e);
 };
 
 NAMESPACE_END

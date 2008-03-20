@@ -736,8 +736,8 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
         sprintf(parname,"%s.%s", parentmod->fullPath().c_str(), modname);
     else
         sprintf(parname,"%s.%s[%d]", parentmod->fullPath().c_str(), modname, index); //FIXME this is incorrectly chosen for non-vector modules too!
-    const char *procIds = getConfig()->getAsString(parname, CFGID_PARTITION_ID, "");
-    if (!procIds || !procIds[0])
+    std::string procIds = getConfig()->getAsString(parname, CFGID_PARTITION_ID, "");
+    if (procIds.empty())
     {
         // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
         if (!parentmod->parentModule())
@@ -745,7 +745,7 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
         // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into
         return true;
     }
-    else if (strcmp(procIds, "*")==0)
+    else if (strcmp(procIds.c_str(), "*") == 0)
     {
         // present on all partitions (provided that ancestors have "*" set as well)
         return true;
@@ -755,10 +755,11 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
         // we expect a partition Id (or partition Ids, separated by commas) where this
         // module needs to be instantiated. So we return true if any of the numbers
         // is the Id of the local partition, otherwise false.
-        EnumStringIterator procIdIter(procIds);
+        EnumStringIterator procIdIter(procIds.c_str());
         if (procIdIter.error())
             throw cRuntimeError("wrong partitioning: syntax error in value '%s' for '%s' "
-                                "(allowed syntax: '', '*', '1', '0,3,5-7')", procIds, parname);
+                                "(allowed syntax: '', '*', '1', '0,3,5-7')",
+                                procIds.c_str(), parname);
         int numPartitions = parsimcomm->getNumPartitions();
         int myProcId = parsimcomm->getProcId();
         for (; procIdIter()!=-1; procIdIter++)

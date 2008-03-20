@@ -74,7 +74,7 @@ void cParsimPartition::shutdown()
     if (!comm) return; // if initialization failed
 
     cException e("Process has shut down");
-    broadcastException(&e);
+    broadcastException(e);
 
     comm->shutdown();
 }
@@ -226,11 +226,11 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
     ev.messageSent_OBSOLETE(msg); //FIXME change to the newer callback methods! messageSendHop() etc
 }
 
-void cParsimPartition::broadcastTerminationException(cTerminationException *e)
+void cParsimPartition::broadcastTerminationException(cTerminationException& e)
 {
     // send TAG_TERMINATIONEXCEPTION to all partitions
     cCommBuffer *buffer = comm->createCommBuffer();
-    buffer->pack(e->what());
+    buffer->pack(e.what());
     try
     {
         comm->broadcast(buffer, TAG_TERMINATIONEXCEPTION);
@@ -242,11 +242,11 @@ void cParsimPartition::broadcastTerminationException(cTerminationException *e)
     comm->recycleCommBuffer(buffer);
 }
 
-void cParsimPartition::broadcastException(cException *e)
+void cParsimPartition::broadcastException(std::exception& e)
 {
     // send TAG_EXCEPTION to all partitions
     cCommBuffer *buffer = comm->createCommBuffer();
-    buffer->pack(e->what());
+    buffer->pack(e.what());
     try
     {
         comm->broadcast(buffer, TAG_EXCEPTION);
