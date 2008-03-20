@@ -41,12 +41,12 @@ class SIM_API cPtrPassingMPICommBuffer : public cMPICommBuffer
     /**
      * Packs an object.
      */
-    virtual void packObject(cOwnedObject *obj);
+    virtual void packObject(cObject *obj);
 
     /**
      * Unpacks and returns an object.
      */
-    virtual cOwnedObject *unpackObject();
+    virtual cObject *unpackObject();
 };
 
 NAMESPACE_END

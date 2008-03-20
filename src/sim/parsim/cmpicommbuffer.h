@@ -54,11 +54,14 @@ class SIM_API cMPICommBuffer : public cCommBufferBase
     virtual void pack(unsigned int d);
     virtual void pack(long d);
     virtual void pack(unsigned long d);
+    virtual void pack(int64 d);
+    virtual void pack(uint64 d);
     virtual void pack(float d);
     virtual void pack(double d);
     virtual void pack(long double d);
     virtual void pack(const char *d);
     virtual void pack(opp_string& d);
+    virtual void pack(SimTime d);
     //@}
 
     /** @name Pack arrays of basic types */
@@ -72,11 +75,14 @@ class SIM_API cMPICommBuffer : public cCommBufferBase
     virtual void pack(unsigned int *d, int size);
     virtual void pack(long *d, int size);
     virtual void pack(unsigned long *d, int size);
+    virtual void pack(int64 *d, int size);
+    virtual void pack(uint64 *d, int size);
     virtual void pack(float *d, int size);
     virtual void pack(double *d, int size);
     virtual void pack(long double *d, int size);
     virtual void pack(const char **d, int size);
     virtual void pack(opp_string *d, int size);
+    virtual void pack(SimTime *d, int size);
     //@}
 
     /** @name Unpack basic types */
@@ -90,11 +96,14 @@ class SIM_API cMPICommBuffer : public cCommBufferBase
     virtual void unpack(unsigned int& d);
     virtual void unpack(long& d);
     virtual void unpack(unsigned long& d);
+    virtual void unpack(int64& d);
+    virtual void unpack(uint64& d);
     virtual void unpack(float& d);
     virtual void unpack(double& d);
     virtual void unpack(long double& d);
     virtual void unpack(const char *&d);
     virtual void unpack(opp_string& d);
+    virtual void unpack(SimTime& d);
     //@}
 
     /** @name Unpack arrays of basic types */
@@ -108,11 +117,14 @@ class SIM_API cMPICommBuffer : public cCommBufferBase
     virtual void unpack(unsigned int *d, int size);
     virtual void unpack(long *d, int size);
     virtual void unpack(unsigned long *d, int size);
+    virtual void unpack(int64 *d, int size);
+    virtual void unpack(uint64 *d, int size);
     virtual void unpack(float *d, int size);
     virtual void unpack(double *d, int size);
     virtual void unpack(long double *d, int size);
     virtual void unpack(const char **d, int size);
     virtual void unpack(opp_string *d, int size);
+    virtual void unpack(SimTime *d, int size);
     //@}
 };
 

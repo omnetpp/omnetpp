@@ -44,11 +44,11 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
     {
         cMessage *eitEvent;  // EIT received from partition
         cMessage *eotEvent;  // events which marks that a null message should be sent out
-        double lastEotSent;  // last EOT value that was sent
+        simtime_t lastEotSent; // last EOT value that was sent
     };
 
     // partition information
-    int numSeg;            // number of partitions
+    int numSeg;              // number of partitions
     PartitionInfo *segInfo;  // partition info array, size numSeg
 
     // controls null message resend frequency, 0<=laziness<=1
