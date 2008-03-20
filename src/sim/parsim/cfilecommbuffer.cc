@@ -38,6 +38,8 @@ Register_Class(cFileCommBuffer);
 #define STOREARRAY(type,d,size)   {memcpy(mBuffer+mMsgSize,d,size*sizeof(type)); mMsgSize+=size*sizeof(type);}
 #define EXTRACTARRAY(type,d,size) {memcpy(d,mBuffer+mPosition,size*sizeof(type)); mPosition+=size*sizeof(type);}
 
+#define LL  INT64_PRINTF_FORMAT
+
 
 // helper: match type (i.e. "i " from "i 134")
 static void matchtype(char *buffer, int& pos, const char *&fmt)
@@ -68,7 +70,6 @@ static void sread(char *buffer, int& pos, const char *fmt, void *d)
     pos = buf-buffer;
 }
 
-
 cFileCommBuffer::cFileCommBuffer()
 {
 }
@@ -87,13 +88,11 @@ void cFileCommBuffer::setMessageSize(int size)
     mBuffer[size] = '\0';
 }
 
-
 void cFileCommBuffer::pack(char d)
 {
     extendBufferFor(16);
     STORE("c %d",(int)d);
 }
-
 
 void cFileCommBuffer::pack(unsigned char d)
 {
@@ -101,13 +100,11 @@ void cFileCommBuffer::pack(unsigned char d)
     STORE("uc %u",(unsigned int)d);
 }
 
-
 void cFileCommBuffer::pack(bool d)
 {
     extendBufferFor(16);
     STORE("b %d",(int)d);
 }
-
 
 void cFileCommBuffer::pack(short d)
 {
@@ -115,13 +112,11 @@ void cFileCommBuffer::pack(short d)
     STORE("s %d",(int)d);
 }
 
-
 void cFileCommBuffer::pack(unsigned short d)
 {
     extendBufferFor(16);
     STORE("us %u",(unsigned int)d);
 }
-
 
 void cFileCommBuffer::pack(int d)
 {
@@ -129,13 +124,11 @@ void cFileCommBuffer::pack(int d)
     STORE("i %d",d);
 }
 
-
 void cFileCommBuffer::pack(unsigned int d)
 {
     extendBufferFor(16);
     STORE("ui %u",d);
 }
-
 
 void cFileCommBuffer::pack(long d)
 {
@@ -143,13 +136,23 @@ void cFileCommBuffer::pack(long d)
     STORE("l %ld",d);
 }
 
-
 void cFileCommBuffer::pack(unsigned long d)
 {
     extendBufferFor(16);
     STORE("ul %lu",d);
 }
 
+void cFileCommBuffer::pack(int64 d)
+{
+    extendBufferFor(30);
+    STORE("i64 %"LL"d",d);
+}
+
+void cFileCommBuffer::pack(uint64 d)
+{
+    extendBufferFor(30);
+    STORE("u64 %"LL"u",d);
+}
 
 void cFileCommBuffer::pack(float d)
 {
@@ -157,20 +160,17 @@ void cFileCommBuffer::pack(float d)
     STORE("f %g",d);
 }
 
-
 void cFileCommBuffer::pack(double d)
 {
     extendBufferFor(30);
     STORE("d %g",d);
 }
 
-
 void cFileCommBuffer::pack(long double d)
 {
     extendBufferFor(30);
     STORE("ld %Lg",d);
 }
-
 
 // pack a string
 void cFileCommBuffer::pack(const char *d)
@@ -186,6 +186,10 @@ void cFileCommBuffer::pack(opp_string& d)
     pack(d.buffer());
 }
 
+void cFileCommBuffer::pack(SimTime d)
+{
+    pack(d.raw());
+}
 
 void cFileCommBuffer::pack(const char *d, int size)
 {
@@ -199,13 +203,11 @@ void cFileCommBuffer::pack(unsigned char *d, int size)
     STOREARRAY(unsigned char,d,size);
 }
 
-
 void cFileCommBuffer::pack(bool *d, int size)
 {
     extendBufferFor(size*sizeof(bool));
     STOREARRAY(bool,d,size);
 }
-
 
 void cFileCommBuffer::pack(short *d, int size)
 {
@@ -213,13 +215,11 @@ void cFileCommBuffer::pack(short *d, int size)
     STOREARRAY(short,d,size);
 }
 
-
 void cFileCommBuffer::pack(unsigned short *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned short));
     STOREARRAY(unsigned short,d,size);
 }
-
 
 void cFileCommBuffer::pack(int *d, int size)
 {
@@ -227,13 +227,11 @@ void cFileCommBuffer::pack(int *d, int size)
     STOREARRAY(int,d,size);
 }
 
-
 void cFileCommBuffer::pack(unsigned int *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned int));
     STOREARRAY(unsigned int,d,size);
 }
-
 
 void cFileCommBuffer::pack(long *d, int size)
 {
@@ -241,13 +239,23 @@ void cFileCommBuffer::pack(long *d, int size)
     STOREARRAY(long,d,size);
 }
 
-
 void cFileCommBuffer::pack(unsigned long *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned long));
     STOREARRAY(unsigned long,d,size);
 }
 
+void cFileCommBuffer::pack(int64 *d, int size)
+{
+    extendBufferFor(size*sizeof(int64));
+    STOREARRAY(int64,d,size);
+}
+
+void cFileCommBuffer::pack(uint64 *d, int size)
+{
+    extendBufferFor(size*sizeof(uint64));
+    STOREARRAY(uint64,d,size);
+}
 
 void cFileCommBuffer::pack(float *d, int size)
 {
@@ -255,20 +263,17 @@ void cFileCommBuffer::pack(float *d, int size)
     STOREARRAY(float,d,size);
 }
 
-
 void cFileCommBuffer::pack(double *d, int size)
 {
     extendBufferFor(size*sizeof(double));
     STOREARRAY(double,d,size);
 }
 
-
 void cFileCommBuffer::pack(long double *d, int size)
 {
     extendBufferFor(size*sizeof(long double));
     STOREARRAY(long double,d,size);
 }
-
 
 // pack string array
 void cFileCommBuffer::pack(const char **d, int size)
@@ -283,6 +288,12 @@ void cFileCommBuffer::pack(opp_string *d, int size)
         pack(d[i]);
 }
 
+void cFileCommBuffer::pack(SimTime *d, int size)
+{
+    for (int i = 0; i < size; i++)
+        pack(d[i]);
+}
+
 //--------------------------------
 
 void cFileCommBuffer::unpack(char& d)
@@ -291,7 +302,6 @@ void cFileCommBuffer::unpack(char& d)
     EXTRACT("c %d",tmp);
     d = tmp;
 }
-
 
 void cFileCommBuffer::unpack(unsigned char& d)
 {
@@ -314,7 +324,6 @@ void cFileCommBuffer::unpack(short& d)
     d = tmp;
 }
 
-
 void cFileCommBuffer::unpack(unsigned short& d)
 {
     int tmp;
@@ -322,30 +331,35 @@ void cFileCommBuffer::unpack(unsigned short& d)
     d = tmp;
 }
 
-
 void cFileCommBuffer::unpack(int& d)
 {
     EXTRACT("i %d",d);
 }
-
 
 void cFileCommBuffer::unpack(unsigned int& d)
 {
     EXTRACT("ui %d",d);
 }
 
-
 void cFileCommBuffer::unpack(long& d)
 {
     EXTRACT("l %ld",d);
 }
-
 
 void cFileCommBuffer::unpack(unsigned long& d)
 {
     EXTRACT("ul %ld",d);
 }
 
+void cFileCommBuffer::unpack(int64& d)
+{
+    EXTRACT("i64 %"LL"d",d);
+}
+
+void cFileCommBuffer::unpack(uint64& d)
+{
+    EXTRACT("u64 %"LL"u",d);
+}
 
 void cFileCommBuffer::unpack(float& d)
 {
@@ -354,18 +368,15 @@ void cFileCommBuffer::unpack(float& d)
     d = tmp;
 }
 
-
 void cFileCommBuffer::unpack(double& d)
 {
     EXTRACT("d %lg",d);
 }
 
-
 void cFileCommBuffer::unpack(long double& d)
 {
     EXTRACT("ld %Lg",d);
 }
-
 
 // unpack a string
 void cFileCommBuffer::unpack(const char *&d)
@@ -397,17 +408,22 @@ void cFileCommBuffer::unpack(opp_string& d)
     delete [] s;
 }
 
+void cFileCommBuffer::unpack(SimTime& d)
+{
+    int64 raw;
+    unpack(raw);
+    d.setRaw(raw);
+}
+
 void cFileCommBuffer::unpack(char *d, int size)
 {
     EXTRACTARRAY(char,d,size);
 }
 
-
 void cFileCommBuffer::unpack(unsigned char *d, int size)
 {
     EXTRACTARRAY(unsigned char,d,size);
 }
-
 
 void cFileCommBuffer::unpack(bool *d, int size)
 {
@@ -419,48 +435,50 @@ void cFileCommBuffer::unpack(short *d, int size)
     EXTRACTARRAY(short,d,size);
 }
 
-
 void cFileCommBuffer::unpack(unsigned short *d, int size)
 {
     EXTRACTARRAY(unsigned short,d,size);
 }
-
 
 void cFileCommBuffer::unpack(int *d, int size)
 {
     EXTRACTARRAY(int,d,size);
 }
 
-
 void cFileCommBuffer::unpack(unsigned int *d, int size)
 {
     EXTRACTARRAY(unsigned,d,size);
 }
-
 
 void cFileCommBuffer::unpack(long *d, int size)
 {
     EXTRACTARRAY(long,d,size);
 }
 
-
 void cFileCommBuffer::unpack(unsigned long *d, int size)
 {
     EXTRACTARRAY(unsigned long,d,size);
 }
 
+void cFileCommBuffer::unpack(int64 *d, int size)
+{
+    EXTRACTARRAY(int64,d,size);
+}
+
+void cFileCommBuffer::unpack(uint64 *d, int size)
+{
+    EXTRACTARRAY(uint64,d,size);
+}
 
 void cFileCommBuffer::unpack(float *d, int size)
 {
     EXTRACTARRAY(float,d,size);
 }
 
-
 void cFileCommBuffer::unpack(double *d, int size)
 {
     EXTRACTARRAY(double,d,size);
 }
-
 
 void cFileCommBuffer::unpack(long double *d, int size)
 {
@@ -474,6 +492,12 @@ void cFileCommBuffer::unpack(const char **d, int size)
 }
 
 void cFileCommBuffer::unpack(opp_string *d, int size)
+{
+    for (int i = 0; i < size; i++)
+        unpack(d[i]);
+}
+
+void cFileCommBuffer::unpack(SimTime *d, int size)
 {
     for (int i = 0; i < size; i++)
         unpack(d[i]);
