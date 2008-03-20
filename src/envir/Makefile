@@ -70,7 +70,7 @@ envir-implib : $(OBJS)
 	@mkdir -p $L
 	-$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX) $(LDFLAGS) 2>/dev/null
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME)* .
+	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogentries.pl
@@ -155,7 +155,7 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  filemgrs.h
+  fileoutvectormgr.h
 $O/args.o: args.cc \
   args.h \
   envdefs.h
@@ -171,7 +171,9 @@ $O/cenvir.o: cenvir.cc \
   ../../include/cmodule.h \
   fsutils.h \
   speedometer.h \
-  filemgrs.h \
+  fileoutvectormgr.h \
+  fileoutscalarmgr.h \
+  filesnapshotmgr.h \
   akaroarng.h \
   akoutvectormgr.h \
   matchableobject.h \
@@ -225,18 +227,7 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
-$O/eventlogwriter.o: eventlogwriter.cc \
-  eventlogwriter.h \
-  envdefs.h \
-  ../../include/cexception.h \
-  ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h
-$O/filemgrs.o: filemgrs.cc \
+$O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
   ../../include/cenvir.h \
@@ -245,9 +236,8 @@ $O/filemgrs.o: filemgrs.cc \
   ../../include/cmodule.h \
   ../../include/cstatistic.h \
   ../../include/cdensityestbase.h \
-  filemgrs.h \
+  fileoutscalarmgr.h \
   ../../include/ccomponenttype.h \
-  ivfilemgr.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
@@ -277,6 +267,71 @@ $O/filemgrs.o: filemgrs.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/cstddev.h
+$O/fileoutvectormgr.o: fileoutvectormgr.cc \
+  ../../include/simkerneldefs.h \
+  ../../include/cconfigkey.h \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  ../../include/csimulation.h \
+  ../../include/cmodule.h \
+  fileoutvectormgr.h \
+  ../../include/ccomponenttype.h \
+  indexedfileoutvectormgr.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/cownedobject.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/opp_string.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cconfiguration.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h
+$O/filesnapshotmgr.o: filesnapshotmgr.cc \
+  ../../include/simkerneldefs.h \
+  ../../include/cconfigkey.h \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  filesnapshotmgr.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/cownedobject.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/opp_string.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cconfiguration.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h
 $O/fsutils.o: fsutils.cc \
   fsutils.h \
   ../../include/onstartup.h \
@@ -295,20 +350,7 @@ $O/fsutils.o: fsutils.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
-$O/inifilereader.o: inifilereader.cc \
-  inifilereader.h \
-  fsutils.h \
-  ../../include/cexception.h \
-  envdefs.h \
-  ../../include/cconfigreader.h \
-  ../../include/util.h \
-  ../../include/simkerneldefs.h \
-  ../../include/errmsg.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/opp_string.h
-$O/ivfilemgr.o: ivfilemgr.cc \
+$O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
   ../../include/cenvir.h \
@@ -317,7 +359,7 @@ $O/ivfilemgr.o: ivfilemgr.cc \
   ../../include/regmacros.h \
   ../../include/cmodule.h \
   ../../include/cstatistic.h \
-  ivfilemgr.h \
+  indexedfileoutvectormgr.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
@@ -345,7 +387,20 @@ $O/ivfilemgr.o: ivfilemgr.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  filemgrs.h
+  fileoutvectormgr.h
+$O/inifilereader.o: inifilereader.cc \
+  inifilereader.h \
+  fsutils.h \
+  ../../include/cexception.h \
+  envdefs.h \
+  ../../include/cconfigreader.h \
+  ../../include/util.h \
+  ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/opp_string.h
 $O/main.o: main.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -438,7 +493,6 @@ $O/omnetapp.o: omnetapp.cc \
   omnetapp.h \
   appreg.h \
   fsutils.h \
-  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \

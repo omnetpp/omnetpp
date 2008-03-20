@@ -607,6 +607,12 @@ if test "$ZLIB_LIBS" = ""; then
     ZLIB_LIBS=-lz
 fi
 OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+# on mingw/msys try a different path too
+if test $zlib_ok = no -a "$mingw" = yes; then
+    ZLIB_LIBS="-L/usr/lib -lz"
+    ZLIB_CFLAGS="-I/usr/include" 
+    OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
+fi
 if test $zlib_ok = no; then
    AC_MSG_ERROR([zlib or zlib header file not found, please install it])
 fi
@@ -653,6 +659,10 @@ if test $tcltk_ok = no -a "$cygwin" = yes; then
     OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk85 -lcygtcl85,
                   tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85")
 fi
+if test $tcltk_ok = no -a "$mingw" = yes; then
+    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk85 -ltcl85,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk85 -ltcl85")
+fi
 if test $tcltk_ok = no; then
     OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
@@ -664,6 +674,10 @@ fi
 if test $tcltk_ok = no -a "$cygwin" = yes; then
     OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
                   tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
+fi
+if test $tcltk_ok = no -a "$mingw" = yes; then
+    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -L/usr/bin -ltk84 -ltcl84,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -L/usr/bin -ltk84 -ltcl84")
 fi
 if test $tcltk_ok = no; then
     # try to give a hint in the error message about the problem
@@ -799,8 +813,12 @@ if test $libxml_ok = no; then
                   libxml_ok, LIBXML_LIBS="-lxml2")
 fi
 if test $libxml_ok = no; then
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include/libxml, -lxml2,
-                  libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml" LIBXML_LIBS="-lxml2")
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include/libxml2, -lxml2,
+                  libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
+fi
+if test $libxml_ok = no -a "$mingw" = yes; then
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include, -L/usr/bin -lxml2 -L/usr/bin -liconv,
+                  libxml_ok, LIBXML_CFLAGS="-I/usr/include" LIBXML_LIBS="-L/usr/bin -lxml2 -L/usr/bin -liconv")
 fi
 OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
 if test $expat_ok = no; then
