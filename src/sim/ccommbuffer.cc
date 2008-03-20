@@ -20,23 +20,23 @@
 
 #include "ccommbuffer.h"
 #include "util.h"  // opp_string
-#include "cownedobject.h"
+#include "cobject.h"
 #include "cclassfactory.h"    // createOne()
 
 USING_NAMESPACE
 
 
-void cCommBuffer::packObject(cOwnedObject *obj)
+void cCommBuffer::packObject(cObject *obj)
 {
     pack(obj->className());
     obj->netPack(this);
 }
 
-cOwnedObject *cCommBuffer::unpackObject()
+cObject *cCommBuffer::unpackObject()
 {
     char *classname;
     unpack(classname);
-    cOwnedObject *obj = (cOwnedObject *) createOne(classname);
+    cObject *obj = createOne(classname);
     delete [] classname;
 
     obj->netUnpack(this);

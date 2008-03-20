@@ -138,6 +138,10 @@ class SIM_API cCommBuffer : public cObject
      * Packs a string.
      */
     virtual void pack(opp_string& d) = 0;
+    /**
+     * Packs a SimTime.
+     */
+    virtual void pack(SimTime d) = 0;
     //@}
 
     /** @name Pack arrays of basic types */
@@ -179,6 +183,14 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void pack(unsigned long *d, int size) = 0;
     /**
+     * Packs an array of int64s.
+     */
+    virtual void pack(int64 *d, int size) = 0;
+    /**
+     * Packs an array of unsigned int64s.
+     */
+    virtual void pack(uint64 *d, int size) = 0;
+    /**
      * Packs an array of floats.
      */
     virtual void pack(float *d, int size) = 0;
@@ -202,6 +214,10 @@ class SIM_API cCommBuffer : public cObject
      * Packs an array of opp_strings.
      */
     virtual void pack(opp_string *d, int size) = 0;
+    /**
+     * Packs an array of SimTimes.
+     */
+    virtual void pack(SimTime *d, int size) = 0;
     //@}
 
     /** @name Unpack basic types */
@@ -274,6 +290,10 @@ class SIM_API cCommBuffer : public cObject
      * Unpacks an opp_string.
      */
     virtual void unpack(opp_string& d) = 0;
+    /**
+     * Unpacks a SimTime.
+     */
+    virtual void unpack(SimTime& d) = 0;
     //@}
 
     /** @name Unpack arrays of basic types */
@@ -315,6 +335,14 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void unpack(unsigned long *d, int size) = 0;
     /**
+     * Unpacks an array of int64s.
+     */
+    virtual void unpack(int64 *d, int size) = 0;
+    /**
+     * Unpacks an array of unsigned int64s.
+     */
+    virtual void unpack(uint64 *d, int size) = 0;
+    /**
      * Unpacks an array of floats.
      */
     virtual void unpack(float *d, int size) = 0;
@@ -338,6 +366,10 @@ class SIM_API cCommBuffer : public cObject
      * Unpacks an array of opp_strings.
      */
     virtual void unpack(opp_string *d, int size) = 0;
+    /**
+     * Unpacks an array of SimTime.
+     */
+    virtual void unpack(SimTime *d, int size) = 0;
     //@}
 
     /** @name Utility functions */
@@ -355,17 +387,16 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Packs an object.
      */
-    virtual void packObject(cOwnedObject *obj);
+    virtual void packObject(cObject *obj);
 
     /**
      * Unpacks and returns an object.
      */
-    virtual cOwnedObject *unpackObject();
+    virtual cObject *unpackObject();
     //@}
 };
 
 NAMESPACE_END
-
 
 #endif
 

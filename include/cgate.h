@@ -30,6 +30,7 @@ class  cMessage;
 class  cChannelType;
 class  cChannel;
 class  cDisplayString;
+class  cProperties;
 
 
 /**
@@ -43,6 +44,8 @@ class  cDisplayString;
 class SIM_API cGate : public cObject, noncopyable
 {
     friend class cModule;
+    friend class cPlaceHolderModule;
+
   public:
     // gate type
     enum Type {

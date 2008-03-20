@@ -101,7 +101,7 @@ void cQueue::netUnpack(cCommBuffer *buffer)
 
     for (int i=0; i<n; i++)
     {
-        cOwnedObject *obj = buffer->unpackObject();
+        cOwnedObject *obj = check_and_cast<cOwnedObject *>(buffer->unpackObject());
         insert(obj);
     }
 #endif

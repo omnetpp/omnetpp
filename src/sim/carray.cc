@@ -193,8 +193,11 @@ void cArray::netUnpack(cCommBuffer *buffer)
     {
         if (!buffer->checkFlag())
             vect[i] = NULL;
-        else
-            take(vect[i] = buffer->unpackObject());
+        else {
+            vect[i] = buffer->unpackObject();
+            if (vect[i]->isOwnedObject())
+                take((cOwnedObject *)vect[i]);
+        }
     }
 #endif
 }

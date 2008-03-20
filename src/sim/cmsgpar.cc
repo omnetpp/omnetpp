@@ -25,6 +25,7 @@
 #include "cstatistic.h"
 #include "globals.h"
 #include "cmathfunction.h"
+#include "cnedfunction.h"
 #include "cxmlelement.h"
 #include "cconfiguration.h"
 #include "cenvir.h"
@@ -299,7 +300,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
     case 'F':
         buffer->unpack(funcname);
         buffer->unpack(argc);
-        ff = findFunction(funcname,argc);
+        ff = cMathFunction::find(funcname,argc);
         if (ff == NULL)
         {
             delete [] funcname;
@@ -330,7 +331,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
         if (!buffer->checkFlag())
             obj.obj = NULL;
         else
-            take(obj.obj = buffer->unpackObject());
+            take(obj.obj = dynamic_cast<cOwnedObject *>(buffer->unpackObject()));
         break;
     }
 #endif
