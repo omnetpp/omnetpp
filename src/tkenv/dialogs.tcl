@@ -32,7 +32,7 @@ proc inputbox {title msg variable} {
     pack $w.f.e -anchor w -expand 1 -fill x -padx 2 -pady 2 -side top
     $w.f.e insert 0 $var
     $w.f.e selection range 0 end
-    initiatefocus $w.f.e
+    setinitialdialogfocus $w.f.e
 
     if [execOkCancelDialog $w] {
         set var [$w.f.e get]
@@ -57,7 +57,7 @@ proc comboSelectionDialog {title text label variable list} {
     label-combo $w.f.c $label $list $var
     pack $w.f.m -fill x -padx 2 -pady 2 -side top
     pack $w.f.c -fill x -padx 2 -pady 2 -side top
-    initiatefocus $w.f.c.e
+    setinitialdialogfocus $w.f.c.e
 
     $w.f.c.e config -width 30
 
@@ -111,7 +111,7 @@ proc runSelectionDialog {configname_var runnumber_var} {
         pack $w.f.m -fill x -padx 2 -pady 2 -side top
         pack $w.f.c -fill x -padx 2 -pady 2 -side top
         pack $w.f.c2 -fill x -padx 2 -pady 2 -side top
-        initiatefocus $w.f.c.e
+        setinitialdialogfocus $w.f.c.e
 
         $w.f.c.e config -width 30
         $w.f.c2.e config -width 10
@@ -399,7 +399,7 @@ proc options_dialog {{defaultpage "g"}} {
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
 
-    initiatefocus $nb.g.f2.usemainwin
+    setinitialdialogfocus $nb.g.f2.usemainwin
 
     if [execOkCancelDialog $w] {
         opp_setsimoption stepdelay           [$nb.g.f1.stepdelay.e get]
@@ -478,7 +478,7 @@ proc rununtil_dialog {time_var event_var mode_var} {
     $w.f.time.e select range 0 end
     $w.f.event.e select range 0 end
 
-    initiatefocus $w.f.time.e
+    setinitialdialogfocus $w.f.time.e
 
     if [execOkCancelDialog $w] {
         set time_var0  [$w.f.time.e get]
@@ -540,7 +540,7 @@ proc findDialog {w} {
     $dlg.f.find.e insert 0 $config(editor-findstring)
     $dlg.f.find.e select range 0 end
 
-    initiatefocus $dlg.f.find.e
+    setinitialdialogfocus $dlg.f.find.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog $dlg] == 1} {
@@ -830,7 +830,7 @@ proc filteredobjectlist_window {{ptr ""}} {
     bind $w <Escape> "$w.buttons.closebutton invoke"
     bind_runcommands $w
 
-    initiatefocus $fp.nameentry
+    setinitialdialogfocus $fp.nameentry
 
 }
 

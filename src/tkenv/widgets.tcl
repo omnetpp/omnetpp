@@ -171,24 +171,24 @@ proc wsize {w width height} {
 #
 # Focuses the given widget.
 #
-# Sounds simple, right? Well, on the Aqua version of Tk, the focus command 
+# Sounds simple, right? Well, on the Aqua version of Tk, the focus command
 # apparently gets ignored if the containing dialog is not already focused.
 # In that case, we'll keep trying in the background until we succeed.
 #
-proc initiatefocus w {
+proc setinitialdialogfocus w {
     focus $w
 
-	if {[string equal [tk windowingsystem] aqua]}  {  
+    if {[string equal [tk windowingsystem] aqua]}  {
         set f [focus]
         if {$f != $w} {
-            after 10 [list initiatefocusifstillexists $w]   ;# retry after 10ms
+            after 10 [list setinitialdialogfocusifstillexists $w]   ;# retry after 10ms
         }
-	}
+    }
 }
 
-proc initiatefocusifstillexists w {
+proc setinitialdialogfocusifstillexists w {
     if [winfo exist $w] {
-        initiatefocus $w
+        setinitialdialogfocus $w
     }
 }
 
@@ -198,7 +198,7 @@ proc initiatefocusifstillexists w {
 proc waitforfocus w {
     focus $w
 
-	if {[string equal [tk windowingsystem] aqua]}  {  
+    if {[string equal [tk windowingsystem] aqua]}  {
         while {[focus] != $w} {
             focus $w
             update
