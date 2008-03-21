@@ -130,8 +130,8 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
     if (msgTime < nextExternalEvent.t)
     {
         throw cRuntimeError("cIdealSimulationProtocol: event trace does not match actual events: "
-                            "expected event with timestamp %.18g from proc=%d, and got one with timestamp %.18g",
-                            nextExternalEvent.t, nextExternalEvent.srcProcId, msgTime);
+                            "expected event with timestamp %s from proc=%d, and got one with timestamp %s",
+                            SIMTIME_STR(nextExternalEvent.t), nextExternalEvent.srcProcId, SIMTIME_STR(msgTime));
     }
 
     // we have the next external event we wanted, return it

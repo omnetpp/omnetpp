@@ -156,8 +156,8 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
         simtime_t eotResendTime = sim->simTime() + lookahead*laziness;
         rescheduleEvent(segInfo[destProcId].eotEvent, eotResendTime);
 
-        {if (debug) ev.printf("piggybacking null msg on `%s' to %d, lookahead=%g, EOT=%g; next resend at %g\n",
-                              msg->name(),destProcId,lookahead,eot,eotResendTime);}
+        {if (debug) ev.printf("piggybacking null msg on `%s' to %d, lookahead=%s, EOT=%s; next resend at %s\n",
+                              msg->name(),destProcId,SIMTIME_STR(lookahead),SIMTIME_STR(eot),SIMTIME_STR(eotResendTime));}
 
         // send cMessage with piggybacked null message
         buffer->pack(eot);
@@ -220,7 +220,7 @@ void cNullMessageProtocol::processReceivedEIT(int sourceProcId, simtime_t eit)
 {
     cMessage *eitMsg = segInfo[sourceProcId].eitEvent;
 
-    {if (debug) ev.printf("null msg received from %d, EIT=%g, rescheduling EIT event\n", sourceProcId, eit);}
+    {if (debug) ev.printf("null msg received from %d, EIT=%s, rescheduling EIT event\n", sourceProcId, SIMTIME_STR(eit));}
 
     // sanity check
     ASSERT(eit > eitMsg->arrivalTime());
@@ -288,7 +288,7 @@ void cNullMessageProtocol::sendNullMessage(int procId, simtime_t now)
     simtime_t eotResendTime = now + lookahead*laziness;
     rescheduleEvent(segInfo[procId].eotEvent, eotResendTime);
 
-    {if (debug) ev.printf("sending null msg to %d, lookahead=%g, EOT=%g; next resend at %g\n",procId,lookahead,eot,eotResendTime);}
+    {if (debug) ev.printf("sending null msg to %d, lookahead=%s, EOT=%s; next resend at %s\n",procId,SIMTIME_STR(lookahead),SIMTIME_STR(eot),SIMTIME_STR(eotResendTime));}
 
     // send out null message
     cCommBuffer *buffer = comm->createCommBuffer();
