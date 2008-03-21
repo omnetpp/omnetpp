@@ -161,11 +161,49 @@ proc setupTkOptions {} {
 #    pack [wsize .b1 40 40] -side top -expand 1 -fill both
 #
 proc wsize {w width height} {
-  set f ${w}_f
-  frame $f -width $width -height $height
-  place $w -in $f -x 0 -y 0 -width $width -height $height
-  raise $w
-  return $f
+    set f ${w}_f
+    frame $f -width $width -height $height
+    place $w -in $f -x 0 -y 0 -width $width -height $height
+    raise $w
+    return $f
+}
+
+#
+# Focuses the given widget.
+#
+# Sounds simple, right? Well, on the Aqua version of Tk, the focus command 
+# apparently gets ignored if the containing dialog is not already focused.
+# In that case, we'll keep trying in the background until we succeed.
+#
+proc initiatefocus w {
+    focus $w
+
+	if {[string equal [tk windowingsystem] aqua]}  {  
+        set f [focus]
+        if {$f != $w} {
+            after 10 [list initiatefocusifstillexists $w]   ;# retry after 10ms
+        }
+	}
+}
+
+proc initiatefocusifstillexists w {
+    if [winfo exist $w] {
+        initiatefocus $w
+    }
+}
+
+#
+# Focuses the given widget. Only exists because of Aqua.
+#
+proc waitforfocus w {
+    focus $w
+
+	if {[string equal [tk windowingsystem] aqua]}  {  
+        while {[focus] != $w} {
+            focus $w
+            update
+        }
+    }
 }
 
 
@@ -434,7 +472,7 @@ proc helplabel_showhelp {text x y} {
                             -bg $help_tips(color) -border 1 -relief solid \
                             -font $help_tips(font) -justify left
     pack .helpwin.tip
-    focus .helpwin
+    waitforfocus .helpwin
     bind .helpwin <Return> "catch { destroy .helpwin }"
     bind .helpwin <Escape> "catch { destroy .helpwin }"
     bind .helpwin <FocusOut> "catch { destroy .helpwin }"
