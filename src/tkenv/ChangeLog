@@ -1,6 +1,7 @@
 2008-03-21  Andras Varga
 
 	Fixed a number of issues with the Aqua-based Tcl/Tk on Mac OS/X:
+	- tooltips got focus. solution: magic code from http://wiki.tcl.tk/3060
 	- focus problem in dialogs (no initial focus when dialog came up)
 	  solution: introduced proc setinitialdialogfocus
         - some "(help)" links in dialogs didn't work due to focus problems
