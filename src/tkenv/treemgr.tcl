@@ -20,6 +20,7 @@
 #
 proc initTreeManager {} {
     global widgets
+    global B2 B3
 
     Tree:init $widgets(manager).tree getNodeInfo
 
@@ -46,7 +47,7 @@ proc initTreeManager {} {
         }
     }
 
-    bind $widgets(manager).tree <Button-3> {
+    bind $widgets(manager).tree <Button-$B3> {
         focus %W
         #updateTreeManager
         set key [Tree:nodeat %W %x %y]

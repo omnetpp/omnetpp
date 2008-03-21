@@ -53,7 +53,7 @@ proc checkTclTkVersion {} {
 proc setupTkOptions {} {
    global fonts tcl_platform tk_version
    global tcl_wordchars tcl_nonwordchars
-   global HAVE_BLT
+   global HAVE_BLT B2 B3
 
    # test for BLT
    set HAVE_BLT 0
@@ -79,6 +79,17 @@ proc setupTkOptions {} {
    # we need the following lines:
    bind Entry <Control-v> {}
    bind Text <Control-v> {}
+
+   # on Mac OS/X, the Aqua version of Tcl/Tk (at least on older ones?) reports
+   # right mouse button as button 2, and middle one as button 3. This is
+   # quote the opposite of X11 and Windows.
+   # see http://support.svi.nl/wiki/MouseButtonsInMacAqua
+   set B2 2
+   set B3 3
+   if {[string equal [tk windowingsystem] aqua]}  {
+       set B2 3
+       set B3 2
+   }
 
    # set up wheel support for a few extra widget types
    bindMouseWheel Canvas
@@ -565,6 +576,8 @@ proc notebook_showpage {w name} {
 # Vertical 'resize bar' (divider)
 #
 proc vertResizeBar {w wToBeResized} {
+    global B2 B3
+
     # create widget
     frame $w -width 5 -relief raised -borderwidth 1
     if [catch {$w config -cursor size_we}] {
@@ -577,8 +590,8 @@ proc vertResizeBar {w wToBeResized} {
     bind $w <Button-1> "vertResizeBar:buttonDown $w %X"
     bind $w <B1-Motion> "vertResizeBar:buttonMove %X"
     bind $w <ButtonRelease-1> "vertResizeBar:buttonRelease %X $wToBeResized"
-    bind $w <Button-2> "catch {destroy .resizeBar}"
-    bind $w <Button-3> "catch {destroy .resizeBar}"
+    bind $w <Button-$B2> "catch {destroy .resizeBar}"
+    bind $w <Button-$B3> "catch {destroy .resizeBar}"
 }
 
 proc vertResizeBar:buttonDown {w x} {
@@ -740,7 +753,7 @@ proc _focusTableEntry {e c} {
 #
 #
 proc multicolumnlistbox {w columnlist args} {
-    global HAVE_BLT
+    global HAVE_BLT B2 B3
     if {$HAVE_BLT} {
         blt::treeview $w -allowduplicates yes -flat yes
         $w column configure treeView -hide no -width 15 -state disabled
@@ -760,7 +773,7 @@ proc multicolumnlistbox {w columnlist args} {
         }
         # eliminate "last column quirk" by adding a very wide dummy column:
         $w column insert end "dummy" -text "" -edit no -width 1000
-        bind $w <3> {%W selection clearall; %W select set [%W nearest %x %y]}
+        bind $w <$B3> {%W selection clearall; %W select set [%W nearest %x %y]}
         #bind $w <Motion> {puts "[%W nearest %x %y] of [%W index view.top]..[%W index view.bottom] -- [%W find view.top view.bottom]"}
     } else {
         # emulate it with listbox widget

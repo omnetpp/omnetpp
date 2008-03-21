@@ -802,6 +802,7 @@ proc animcontrol {w} {
 
 proc create_graphicalmodwindow {name geom} {
     global icons help_tips inspectordata
+    global B2 B3
 
     set w $name
     create_inspector_toplevel $w $geom
@@ -855,13 +856,13 @@ proc create_graphicalmodwindow {name geom} {
     $c bind msgname <Double-1> "graphmodwin_dblclick $c"
     $c bind qlen <Double-1> "graphmodwin_qlen_dblclick $c"
 
-    $c bind submod <3> "graphmodwin_rightclick $c %X %Y"
-    $c bind conn <3> "graphmodwin_rightclick $c %X %Y"
-    $c bind msg <3> "graphmodwin_rightclick $c %X %Y"
-    $c bind msgname <3> "graphmodwin_rightclick $c %X %Y"
-    $c bind mod <3> "graphmodwin_rightclick $c %X %Y"
-    $c bind modname <3> "graphmodwin_rightclick $c %X %Y"
-    $c bind qlen <3> "graphmodwin_qlen_rightclick $c %X %Y"
+    $c bind submod <$B3> "graphmodwin_rightclick $c %X %Y"
+    $c bind conn <$B3> "graphmodwin_rightclick $c %X %Y"
+    $c bind msg <$B3> "graphmodwin_rightclick $c %X %Y"
+    $c bind msgname <$B3> "graphmodwin_rightclick $c %X %Y"
+    $c bind mod <$B3> "graphmodwin_rightclick $c %X %Y"
+    $c bind modname <$B3> "graphmodwin_rightclick $c %X %Y"
+    $c bind qlen <$B3> "graphmodwin_qlen_rightclick $c %X %Y"
 
     # init some state vars
     set inspectordata($c:zoomfactor) 1

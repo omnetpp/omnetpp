@@ -675,7 +675,7 @@ proc _doFind {w findstring case words regexp backwards} {
 #
 proc filteredobjectlist_window {{ptr ""}} {
     global config tmp icons help_tips helptexts
-    global HAVE_BLT
+    global HAVE_BLT B2 B3
 
     set w .objdlg
 
@@ -826,7 +826,7 @@ proc filteredobjectlist_window {{ptr ""}} {
     bind $fp.nameentry <Return> "$fp.refresh invoke"
     bind $lb <Double-Button-1> "filteredobjectlist_inspect $lb; after 500 \{raise $w; focus $lb\}"
     bind $lb <Key-Return> "filteredobjectlist_inspect $lb; after 500 \{raise $w; focus $lb\}"
-    bind $lb <Button-3> "filteredobjectlist_popup %X %Y $w"
+    bind $lb <Button-$B3> "filteredobjectlist_popup %X %Y $w"
     bind $w <Escape> "$w.buttons.closebutton invoke"
     bind_runcommands $w
 

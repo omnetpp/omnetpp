@@ -1,3 +1,13 @@
+2008-03-21  Andras Varga
+
+	Fixed a number of issues with the Aqua-based Tcl/Tk on Mac OS/X:
+	- focus problem in dialogs (no initial focus when dialog came up)
+	  solution: introduced proc setinitialdialogfocus
+        - some "(help)" links in dialogs didn't work due to focus problems
+          solution: introduced proc waitforfocus
+	- button 2 and 3 are reversed (compared to X11 and Windows)
+	  solution: use variables $B2 and $B3
+
 2008-02-23  Andras Varga
 
 	Summary of changes for omnetpp-4.0 (2006..2008):

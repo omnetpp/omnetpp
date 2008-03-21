@@ -72,6 +72,7 @@ proc debug {str} {
 proc create_omnetpp_window {} {
 
     global icons fonts tcl_version help_tips widgets config priv
+    global B2 B3
 
     wm focusmodel . passive
     wm geometry . 640x350
@@ -305,9 +306,9 @@ proc create_omnetpp_window {} {
     bind .timeline <Configure> "redraw_timeline"
     .timeline bind msg <Double-1> "graphmodwin_dblclick .timeline"
     .timeline bind msgname <Double-1> "graphmodwin_dblclick .timeline"
-    .timeline bind msg <3> "graphmodwin_rightclick .timeline %X %Y"
-    .timeline bind msgname <3> "graphmodwin_rightclick .timeline %X %Y"
-    bind .timeline <Button-3> {timeline_popup %x %y %X %Y}
+    .timeline bind msg <$B3> "graphmodwin_rightclick .timeline %X %Y"
+    .timeline bind msgname <$B3> "graphmodwin_rightclick .timeline %X %Y"
+    bind .timeline <Button-$B3> {timeline_popup %x %y %X %Y}
 
     set widgets(timeline) .timeline
 

@@ -19,6 +19,7 @@
 #
 proc inspector_createfields2page {w} {
     global treeroots
+    global B2 B3
     set nb $w.nb
     notebook_addpage $nb fields2 {Fields}
 
@@ -63,7 +64,7 @@ proc inspector_createfields2page {w} {
         getFieldNodeInfo_inspect %W $key
     }
 
-    bind $tree <Button-3> {
+    bind $tree <Button-$B3> {
         focus %W
         set key [Tree:nodeat %W %x %y]
         if {$key!=""} {

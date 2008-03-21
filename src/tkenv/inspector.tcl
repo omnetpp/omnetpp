@@ -30,6 +30,7 @@ proc create_inspector_toplevel {w geom} {
     # create toplevel inspector window
 
     global fonts icons help_tips
+    global B2 B3
 
     toplevel $w -class Toplevel
     wm focusmodel $w passive
@@ -72,8 +73,8 @@ proc create_inspector_toplevel {w geom} {
     bind $w <Button-1>   "catch {.popup unpost}"
     bind $w <Key-Return> "opp_writebackinspector $w; opp_updateinspectors"
 
-    bind $w.infobar.name <Button-3> [list inspectorNamePopup $ptr %X %Y]
-    bind $w.infobar.color <Button-3> [list inspectorNamePopup $ptr %X %Y]
+    bind $w.infobar.name <Button-$B3> [list inspectorNamePopup $ptr %X %Y]
+    bind $w.infobar.color <Button-$B3> [list inspectorNamePopup $ptr %X %Y]
 
     bind_runcommands $w
     bind_othercommands $w
@@ -263,6 +264,8 @@ proc textwindow_add_icons {w} {
 }
 
 proc create_inspector_listbox {w} {
+    global B2 B3
+
     # create a listbox
 
     label $w.label -text "# objects:"
@@ -285,7 +288,7 @@ proc create_inspector_listbox {w} {
     grid columnconfig $w.main 0 -weight 1 -minsize 0
 
     bind $w.main.list <Double-Button-1> "inspect_item_in $w.main.list"
-    bind $w.main.list <Button-3> "popup_insp_menu \[lindex \[multicolumnlistbox_curselection $w.main.list\] 0\] %X %Y"
+    bind $w.main.list <Button-$B3> "popup_insp_menu \[lindex \[multicolumnlistbox_curselection $w.main.list\] 0\] %X %Y"
     bind $w.main.list <Key-Return> "inspect_item_in $w.main.list"
 
     focus $w.main.list
