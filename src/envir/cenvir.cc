@@ -34,14 +34,6 @@
 #include "fnamelisttokenizer.h"
 #include "stringutil.h"
 
-#include "speedometer.h"     // env_dummy_function()
-#include "fileoutvectormgr.h" // env_dummy_function()
-#include "fileoutscalarmgr.h" // env_dummy_function()
-#include "filesnapshotmgr.h" // env_dummy_function()
-#include "akaroarng.h"       // env_dummy_function()
-#include "akoutvectormgr.h"  // env_dummy_function()
-#include "matchableobject.h" // env_dummy_function()
-
 #include "inttypes.h"
 
 using std::ostream;
@@ -652,15 +644,27 @@ bool cEnvir::idle()
     return app->idle();
 }
 
-// A dummy function to force UNIX linkers collect Speedometer
-// and cFileOutputVectorManager as linker symbols. Otherwise we'd get
-// "undefined symbol" messages...
+//=========================================================
+
+#include "speedometer.h"
+#include "fileoutvectormgr.h"
+#include "fileoutscalarmgr.h"
+#include "filesnapshotmgr.h"
+#include "indexedfileoutvectormgr.h"
+#include "akaroarng.h"
+#include "akoutvectormgr.h"
+#include "matchableobject.h"
+
+// A dummy function to force UNIX linkers collect all symbols we need
 void env_dummy_function() {
     exponential(1.0);
     Speedometer a;
-    cFileOutputVectorManager o;
+    cFileOutputVectorManager ovm;
+    cFileOutputScalarManager osm;
+    cFileSnapshotManager sm;
+    cIndexedFileOutputVectorManager iovm;
     MatchableObjectAdapter moa;
-    (void)a; (void)o; (void)moa; // eliminate 'unused var' warning
+    (void)a; (void)ovm; (void)osm; (void)sm; (void)iovm; (void)moa; // eliminate 'unused var' warnings
 #ifdef WITH_AKAROA
     cAkOutputVectorManager ao;
     cAkaroaRNG ar;

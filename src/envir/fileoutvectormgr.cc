@@ -296,12 +296,5 @@ void cFileOutputVectorManager::flush()
         fflush(f);
 }
 
-// create some reference to cIndexedFileOutputVectorManager, otherwise linkers tend to omit it from executables
-#include "indexedfileoutvectormgr.h"
-static void dummyMethodReferencingCIndexedFileOutputVectorManager()
-{
-    cIndexedFileOutputVectorManager m;
-}
-
 
 
