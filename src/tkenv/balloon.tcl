@@ -78,6 +78,10 @@ proc create_balloon {text x y} {
     wm overrideredirect .balloon_help true
     wm positionfrom .balloon_help program
     wm geometry .balloon_help "+[expr $x-5]+[expr $y+16]"
+    if {[string equal [tk windowingsystem] aqua]}  {  
+        # from http://wiki.tcl.tk/3060
+        catch { ::tk::unsupported::MacWindowStyle style .balloon_help help none }
+    }
     label .balloon_help.tip -text $text -padx 4 -wraplength $help_tips(width) \
                             -bg $help_tips(color) -border 1 -relief solid \
                             -font $help_tips(font) -justify left
