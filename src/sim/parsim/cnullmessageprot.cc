@@ -54,7 +54,7 @@ cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
     std::string lookhClass = ev.config()->getAsString(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS);
     lookaheadcalc = dynamic_cast<cNMPLookahead *>(createOne(lookhClass.c_str()));
     if (!lookaheadcalc) \
-         throw cRuntimeError("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass);
+         throw cRuntimeError("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass.c_str());
     laziness = ev.config()->getAsDouble(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS);
 }
 

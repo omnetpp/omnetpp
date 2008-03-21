@@ -50,7 +50,7 @@ class cParsimPartition;
  */
 class SIM_API cProxyGate : public cGate // noncopyable
 {
-    friend cPlaceHolderModule;
+    friend class cPlaceHolderModule;
   private:
     cParsimPartition *partition;
     short remoteProcId;
