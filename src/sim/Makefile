@@ -59,7 +59,7 @@ OBJS_PARSIM=\
     $O/parsim/cnullmessageprot.o $O/parsim/clinkdelaylookahead.o \
     $O/parsim/cidealsimulationprot.o $O/parsim/cispeventlogger.o \
     $O/parsim/ccommbufferbase.o $O/parsim/cfilecomm.o \
-    $O/parsim/cfilecommbuffer.o $O/parsim/cnamedpipecomm-win.o $O/parsim/parsimutil.o \
+    $O/parsim/cfilecommbuffer.o $O/parsim/cnamedpipecomm.o $O/parsim/parsimutil.o \
     $O/parsim/creceivedexception.o
 
 OBJS_MPI=\
@@ -104,7 +104,7 @@ $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
-	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAGS)
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(LDFLAGS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
@@ -308,24 +308,24 @@ $O/cclassfactory.o: cclassfactory.cc \
 $O/ccommbuffer.o: ccommbuffer.cc \
   ../../include/ccommbuffer.h \
   ../../include/util.h \
-  ../../include/cownedobject.h \
-  ../../include/cclassfactory.h \
   ../../include/cobject.h \
+  ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
+  ../../include/errmsg.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/globals.h \
+  ../../include/cownedobject.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
-  ../../include/cstringpool.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h
+  ../../include/cstringpool.h
 $O/ccomponent.o: ccomponent.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
@@ -1068,6 +1068,7 @@ $O/cmsgpar.o: cmsgpar.cc \
   ../../include/cstatistic.h \
   ../../include/globals.h \
   ../../include/cmathfunction.h \
+  ../../include/cnedfunction.h \
   ../../include/cxmlelement.h \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
@@ -1089,6 +1090,8 @@ $O/cmsgpar.o: cmsgpar.cc \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/cclassfactory.h \
+  ../../include/cdynamicexpression.h \
+  ../../include/cexpression.h \
   ../../include/opp_string.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
@@ -2406,27 +2409,25 @@ $O/parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   parsim/cplaceholdermod.h \
   parsim/cproxygate.h \
   ../../include/cchannel.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   parsim/cnmplookahead.h \
   ../../include/cobject.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
-  ../../include/globals.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   parsim/cparsimprotocolbase.h \
@@ -2439,7 +2440,9 @@ $O/parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/ccomponenttype.h
+  ../../include/ccomponenttype.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h
 $O/parsim/ccommbufferbase.o: parsim/ccommbufferbase.cc \
   parsim/ccommbufferbase.h \
   ../../include/cexception.h \
@@ -2458,6 +2461,9 @@ $O/parsim/cfilecomm.o: parsim/cfilecomm.cc \
   ../../include/cexception.h \
   parsim/cfilecomm.h \
   parsim/cfilecommbuffer.h \
+  ../../include/globals.h \
+  ../../include/cconfigkey.h \
+  ../../include/regmacros.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
   parsim/parsimutil.h \
@@ -2471,19 +2477,25 @@ $O/parsim/cfilecomm.o: parsim/cfilecomm.cc \
   ../../include/cparsimcomm.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   parsim/ccommbufferbase.h \
-  ../../include/ccommbuffer.h
+  ../../include/ccommbuffer.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cstringpool.h
 $O/parsim/cfilecommbuffer.o: parsim/cfilecommbuffer.cc \
   parsim/cfilecommbuffer.h \
   ../../include/util.h \
   ../../include/cownedobject.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/cobject.h \
   ../../include/simkerneldefs.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
@@ -2492,7 +2504,10 @@ $O/parsim/cfilecommbuffer.o: parsim/cfilecommbuffer.cc \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
-  ../../include/cstringpool.h
+  ../../include/cstringpool.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -2505,6 +2520,9 @@ $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
   parsim/messagetags.h \
+  ../../include/globals.h \
+  ../../include/cconfigkey.h \
+  ../../include/regmacros.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmsgpar.h \
@@ -2520,12 +2538,8 @@ $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmathfunction.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -2535,13 +2549,17 @@ $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/timeutil.h
+  ../../include/platdep/timeutil.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h
 $O/parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   parsim/cispeventlogger.h \
   parsim/cidealsimulationprot.h \
   ../../include/cparsimcomm.h \
   parsim/cplaceholdermod.h \
   ../../include/cmodule.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   parsim/cnullmessageprot.h \
   parsim/cparsimprotocolbase.h \
   ../../include/cmessage.h \
@@ -2552,7 +2570,6 @@ $O/parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
@@ -2567,16 +2584,15 @@ $O/parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   ../../include/opp_string.h \
   ../../include/cstringpool.h \
   ../../include/cmathfunction.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h
+  ../../include/cexpression.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h
 $O/parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   parsim/clinkdelaylookahead.h \
   ../../include/csimulation.h \
@@ -2587,28 +2603,26 @@ $O/parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   parsim/cparsimpartition.h \
   parsim/cplaceholdermod.h \
   parsim/cproxygate.h \
-  ../../include/cchannel.h \
+  ../../include/cbasicchannel.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   parsim/cnmplookahead.h \
   ../../include/cobject.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
-  ../../include/globals.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
   ../../include/opp_string.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   parsim/cparsimprotocolbase.h \
@@ -2621,17 +2635,21 @@ $O/parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/ccomponenttype.h
+  ../../include/cchannel.h \
+  ../../include/ccomponenttype.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h
 $O/parsim/cmemcommbuffer.o: parsim/cmemcommbuffer.cc \
   parsim/cmemcommbuffer.h \
   ../../include/util.h \
   ../../include/cownedobject.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/cobject.h \
   ../../include/simkerneldefs.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
@@ -2640,10 +2658,15 @@ $O/parsim/cmemcommbuffer.o: parsim/cmemcommbuffer.cc \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
-  ../../include/cstringpool.h
+  ../../include/cstringpool.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h
 $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   parsim/cmpicomm.h \
   parsim/cmpicommbuffer.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
   ../../include/cparsimcomm.h \
@@ -2651,33 +2674,52 @@ $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/cstringpool.h \
   ../../include/opp_string.h
 $O/parsim/cmpicommbuffer.o: parsim/cmpicommbuffer.cc \
   parsim/cmpicommbuffer.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/cobject.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h
+  ../../include/errmsg.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/cstringpool.h
 $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   parsim/cnamedpipecomm.h \
   ../../include/cexception.h \
   parsim/cmemcommbuffer.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
+  ../../include/cconfigkey.h \
   parsim/parsimutil.h \
   ../../include/util.h \
   ../../include/opp_string.h \
@@ -2689,13 +2731,20 @@ $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   ../../include/platdep/inttypes.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   parsim/ccommbufferbase.h \
-  ../../include/ccommbuffer.h
+  ../../include/ccommbuffer.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cstringpool.h
 $O/parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   parsim/cnamedpipecomm.h \
   ../../include/cexception.h \
   parsim/cmemcommbuffer.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
   parsim/parsimutil.h \
@@ -2709,9 +2758,14 @@ $O/parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   ../../include/platdep/inttypes.h \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   parsim/ccommbufferbase.h \
-  ../../include/ccommbuffer.h
+  ../../include/ccommbuffer.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cstringpool.h
 $O/parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -2722,6 +2776,8 @@ $O/parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
   parsim/messagetags.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmsgpar.h \
@@ -2737,12 +2793,8 @@ $O/parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmathfunction.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -2752,7 +2804,9 @@ $O/parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/timeutil.h
+  ../../include/platdep/timeutil.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h
 $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -2765,6 +2819,9 @@ $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
   parsim/messagetags.h \
+  ../../include/globals.h \
+  ../../include/cconfigkey.h \
+  ../../include/regmacros.h \
   parsim/cplaceholdermod.h \
   parsim/cproxygate.h \
   ../../include/cchannel.h \
@@ -2783,12 +2840,8 @@ $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmathfunction.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -2800,6 +2853,8 @@ $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cscheduler.h \
   ../../include/platdep/timeutil.h \
   parsim/cnmplookahead.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h \
   ../../include/ccomponenttype.h
 $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cmessage.h \
@@ -2814,6 +2869,9 @@ $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   parsim/messagetags.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
+  ../../include/globals.h \
+  ../../include/cconfigkey.h \
+  ../../include/regmacros.h \
   ../../include/cownedobject.h \
   ../../include/carray.h \
   ../../include/cmsgpar.h \
@@ -2828,12 +2886,8 @@ $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/opp_string.h \
   ../../include/cmathfunction.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/cmodule.h \
@@ -2843,7 +2897,9 @@ $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/cscheduler.h \
-  ../../include/platdep/timeutil.h
+  ../../include/platdep/timeutil.h \
+  ../../include/onstartup.h \
+  ../../include/cclassfactory.h
 $O/parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -2968,32 +3024,53 @@ $O/parsim/cproxygate.o: parsim/cproxygate.cc \
 $O/parsim/cptrpassingmpicomm.o: parsim/cptrpassingmpicomm.cc \
   parsim/cptrpassingmpicomm.h \
   parsim/cptrpassingmpicommbuffer.h \
+  ../../include/globals.h \
+  ../../include/cconfigkey.h \
+  ../../include/regmacros.h \
   ../../include/cparsimcomm.h \
   ../../include/cobject.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   parsim/cmpicommbuffer.h \
   parsim/ccommbufferbase.h \
-  ../../include/ccommbuffer.h
+  ../../include/ccommbuffer.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/cstringpool.h
 $O/parsim/cptrpassingmpicommbuffer.o: parsim/cptrpassingmpicommbuffer.cc \
   parsim/cmpicommbuffer.h \
+  ../../include/globals.h \
+  ../../include/regmacros.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/cobject.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h
+  ../../include/errmsg.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/cclassfactory.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/cstringpool.h
 $O/parsim/creceivedexception.o: parsim/creceivedexception.cc \
   parsim/creceivedexception.h \
   ../../include/cexception.h \

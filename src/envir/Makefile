@@ -62,7 +62,7 @@ $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS) envir-implib
 	@mkdir -p $L
-	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAGS)
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(LDFLAGS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
@@ -174,6 +174,7 @@ $O/cenvir.o: cenvir.cc \
   fileoutvectormgr.h \
   fileoutscalarmgr.h \
   filesnapshotmgr.h \
+  indexedfileoutvectormgr.h \
   akaroarng.h \
   akoutvectormgr.h \
   matchableobject.h \
@@ -227,6 +228,17 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
+$O/eventlogwriter.o: eventlogwriter.cc \
+  eventlogwriter.h \
+  envdefs.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h
 $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -276,7 +288,6 @@ $O/fileoutvectormgr.o: fileoutvectormgr.cc \
   ../../include/cmodule.h \
   fileoutvectormgr.h \
   ../../include/ccomponenttype.h \
-  indexedfileoutvectormgr.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
@@ -493,6 +504,7 @@ $O/omnetapp.o: omnetapp.cc \
   omnetapp.h \
   appreg.h \
   fsutils.h \
+  eventlogwriter.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
