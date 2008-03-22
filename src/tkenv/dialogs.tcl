@@ -284,7 +284,7 @@ proc options_dialog {{defaultpage "g"}} {
 
     createOkCancelDialog $w {Simulation options}
 
-    notebook $w.f.nb bottom
+    notebook $w.f.nb
     set nb $w.f.nb
 
     notebook_addpage $nb g General

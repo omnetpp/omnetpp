@@ -496,7 +496,7 @@ proc helplabel_showhelp {text x y} {
 # Create 'tabbed notebook' widget
 #
 # Usage example:
-#  notebook .x bottom
+#  notebook .x
 #  notebook_addpage .x p1 Egy
 #  notebook_addpage .x p2 Ketto
 #  notebook_addpage .x p3 Harom

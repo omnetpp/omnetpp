@@ -42,7 +42,7 @@ enum ErrorCode
     eESTKOFLOW,
     eESTKUFLOW,
     eEBADARGS,
-    eDIMLESS, 
+    eDIMLESS,
     eECANTCAST,
     eENOPARENT,
     eFINISH,
@@ -64,6 +64,7 @@ enum ErrorCode
     eSTATECHG,
     eSTKLOW,
     eSTOPSIMRCVD,
+    ePARAMSNOTREADY,
     eUSER
 };
 

@@ -32,7 +32,7 @@ CFLAGS_RELEASE='-O2 -DNDEBUG=1'
 # self-contained standalone executables which do not rely on external
 # Tcl scripts. This option is available for Tkenv.
 #
-EMBED_TCL_CODE=yes
+EMBED_TCL_CODE=no
 
 #
 # Set to "yes" to enable simulation executables to load NED files dynamically.

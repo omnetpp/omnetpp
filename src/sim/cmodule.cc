@@ -762,6 +762,7 @@ void cModule::finalizeParameters()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
 
+//FIXME remove!!!
     // set display string (it may depend on parameter values via "$param" references)
     cProperties *props = properties();
     cProperty *prop = props->get("display");
@@ -919,6 +920,17 @@ cDisplayString& cModule::displayString()
     {
         dispstr = new cDisplayString();
         dispstr->setRoleToModule(this);
+
+/*FIXME TODO:
+        // set display string (it may depend on parameter values via "$param" references)
+        if (!areParamsFinalized())
+            throw cRuntimeError(this, "Cannot access display string yet: parameters not yet set up");
+        cProperties *props = properties();
+        cProperty *prop = props->get("display");
+        const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
+        if (propValue)
+            dispstr->parse(propValue);
+*/
     }
     return *dispstr;
 }

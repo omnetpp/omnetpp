@@ -33,10 +33,11 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
     componenttype = NULL;
     rngmapsize = 0;
     rngmap = 0;
-    ev_enabled = true;
 
     paramvsize = numparams = 0;
     paramv = NULL;
+
+    setEvEnabled(true);
 }
 
 cComponent::~cComponent()
@@ -151,6 +152,8 @@ void cComponent::finalizeParameters()
     int n = params();
     for (int i=0; i<n; i++)
         par(i).read();
+
+    flags |= FL_PARAMSFINALIZED;
 }
 
 void cComponent::recordParametersAsScalars()

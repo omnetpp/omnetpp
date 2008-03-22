@@ -658,7 +658,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns the display string which defines presentation when the module
      * is displayed as a submodule in a compound module graphics.
      */
-    cDisplayString& displayString();
+    cDisplayString& displayString();   //FIXME make it return a pointer!!!
 
     /**
      * DEPRECATED. Use displayString() and cDisplayString methods instead.

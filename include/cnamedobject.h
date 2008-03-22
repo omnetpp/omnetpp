@@ -110,12 +110,16 @@ NAMESPACE_BEGIN
 class SIM_API cNamedObject : public cObject
 {
   private:
-    const char *namep;  // object name (stringpooled if flags & FL_NAMEPOOLING)
+    const char *namep;  // object name (stringpooled if flags&FL_NAMEPOOLING!=0)
 
   protected:
     unsigned short flags;  // FL_NAMEPOOLING flag; other bits used by derived classes
     unsigned short unused; // space lost to due to word aligment; FIXME make use of it in subclasses (cModule, cSimpleModule, cGate)
-    enum {FL_NAMEPOOLING = 0x1};
+    enum {FL_NAMEPOOLING = 1};
+
+  protected:
+    // internal: set a bit in flags; flag is one of the FL_xxx constants
+    void setFlag(int flag, bool value) {if (value) flags|=flag; else flags&=~flag;}
 
   private:
     // pool for shared storage of object names

@@ -36,12 +36,17 @@ class cRNG;
 class SIM_API cComponent : public cDefaultList //implies noncopyable
 {
     friend class cPar; // needs to call handleParameterChange()
+  private:
+    enum {
+      FL_PARAMSFINALIZED = 4, // whether parameters have been set up
+      FL_EVLOGENABLED = 8,    // whether logging via ev<< is enabled
+    };
+
   protected:
     cComponentType *componenttype;  // component type object
 
     short rngmapsize;  // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
     int *rngmap;       // maps local RNG numbers (may be NULL if rngmapsize==0)
-    bool ev_enabled;   // if output from ev<< is enabled   FIXME utilize cOwnedObject::flags
 
     short paramvsize;
     short numparams;
@@ -49,8 +54,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
   public:
     // internal: currently used by Cmdenv
-    void setEvEnabled(bool e)  {ev_enabled = e;}
-    bool isEvEnabled() {return ev_enabled;}
+    void setEvEnabled(bool e)  {setFlag(FL_EVLOGENABLED,e);}
+    bool isEvEnabled()  {return flags&FL_EVLOGENABLED;}
 
     // internal: invoked from within cEnvir::getRNGMappingFor(component)
     void setRNGMap(short size, int *map) {rngmapsize=size; rngmap=map;}
@@ -68,6 +73,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     // internal: save parameters marked with "save-as-scalars=true"
     virtual void recordParametersAsScalars();
+
+    // internal: has finalizeParameters() been called?
+    bool areParamsFinalized() const {return flags&FL_PARAMSFINALIZED;}
 
   protected:
     /** @name Initialization, finish and parameter change hooks.
