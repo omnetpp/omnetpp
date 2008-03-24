@@ -7,6 +7,5 @@ set PATH=%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem
 set OMNETPP_ROOT=%~dp0
 
 call %TOOLS_DIR%\vc80\vcvars32.bat
-rem call %TOOLS_DIR%\setenv.cmd
-PATH %OMNETPP_ROOT%\bin;%OMNETPP_ROOT%\msys\bin;%PATH%
-rem PATH %OMNETPP_ROOT%\bin;%PATH%
+call %TOOLS_DIR%\setenv.cmd
+PATH %OMNETPP_ROOT%\bin;%PATH%
