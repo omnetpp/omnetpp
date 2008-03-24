@@ -16,11 +16,12 @@
 *--------------------------------------------------------------*/
 
 #include "cobject.h"
+#include "cownedobject.h"
+#include "cdefaultlist.h"
 #include "cexception.h"
 #include "cclassdescriptor.h"
 
 USING_NAMESPACE
-
 
 
 cObject::~cObject()
@@ -61,6 +62,54 @@ cObject *cObject::dup() const
 {
     throw cRuntimeError("The dup() method, declared in cObject, is not "
                         "redefined in class %s", className());
+}
+
+void cObject::ownedObjectDeleted(cOwnedObject *obj)
+{
+    // Note: too late to call obj->className(), at this point it'll aways return "cOwnedObject"
+    throw cRuntimeError("Object %s is currently in (%s)%s, it cannot be deleted. "
+                        "If this error occurs inside %s, it needs to be changed "
+                        "to call drop() before it can delete that object. "
+                        "If this error occurs inside %s's destructor and %s is a class member, "
+                        "%s needs to call drop() in the destructor",
+                        obj->fullName(), className(), fullPath().c_str(),
+                        className(),
+                        className(), obj->fullName(),
+                        className());
+}
+
+void cObject::yieldOwnership(cOwnedObject *obj, cObject *newowner)
+{
+    throw cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
+                        obj->className(), obj->fullName(),
+                        className(), fullPath().c_str(),
+                        newowner->className(), newowner->fullPath().c_str());
+}
+
+
+void cObject::take(cOwnedObject *obj)
+{
+    // ask current owner to release it -- if it's a cDefaultList, it will.
+    obj->ownerp->yieldOwnership(obj, this);
+}
+
+void cObject::drop(cOwnedObject *obj)
+{
+    if (obj->ownerp!=this)
+        throw cRuntimeError(this, "drop(): not owner of object (%s)%s",
+                                  obj->className(), obj->fullPath().c_str());
+    cOwnedObject::defaultowner->doInsert(obj);
+}
+
+void cObject::dropAndDelete(cOwnedObject *obj)
+{
+    if (!obj)
+        return;
+    if (obj->ownerp!=this)
+        throw cRuntimeError(this, "dropAndDelete(): not owner of object (%s)%s",
+                                  obj->className(), obj->fullPath().c_str());
+    obj->ownerp = NULL;
+    delete obj;
 }
 
 void cObject::netPack(cCommBuffer *buffer)

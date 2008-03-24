@@ -31,7 +31,7 @@ NAMESPACE_BEGIN
 
 class cCommBuffer;
 class cClassDescriptor;
-
+class cOwnedObject;
 
 //FIXME deprecate using cOwnedObject as base class for user classes!!! nobody can use ownership properly...
 
@@ -65,9 +65,19 @@ class cClassDescriptor;
  */
 class SIM_API cObject
 {
+    friend class cOwnedObject;
+    friend class cDefaultList;
+
   public:
     // internal: returns a descriptor object for this object
     virtual cClassDescriptor *getDescriptor();
+
+  protected:
+    // internal
+    virtual void ownedObjectDeleted(cOwnedObject *obj);
+
+    // internal
+    virtual void yieldOwnership(cOwnedObject *obj, cObject *to);
 
   public:
     /**
@@ -94,7 +104,7 @@ class SIM_API cObject
     //@{
     /**
      * Returns pointer to the object's name. It should never return NULL.
-     * This default implementation just returns and empty string ("").
+     * This default implementation just returns an empty string ("").
      */
     virtual const char *name() const  {return "";}
 
@@ -149,6 +159,51 @@ class SIM_API cObject
     virtual cObject *dup() const;
     //@}
 
+  protected:
+    /** @name Ownership control.
+     *
+     * The following functions are intended to be used by derived container
+     * classes to manage ownership of their contained objects.
+     * See object description for more info on ownership management.
+     */
+    //@{
+
+    /**
+     * Makes this object the owner of 'object'.
+     * The function called by the container object when it takes ownership
+     * of the obj object that is inserted into it.
+     *
+     * The obj pointer should not be NULL.
+     */
+    virtual void take(cOwnedObject *obj);
+
+    /**
+     * Releases ownership of `object', giving it back to its default owner.
+     * The function called by the container object when obj is removed
+     * from the container -- releases the ownership of the object and
+     * hands it over to its default owner.
+     *
+     * The obj pointer should not be NULL.
+     */
+    virtual void drop(cOwnedObject *obj);
+
+    /**
+     * This is a shortcut for the sequence
+     * <pre>
+     *   drop(obj);
+     *   delete obj;
+     * </pre>
+     *
+     * It is especially useful when writing destructors and assignment operators.
+     *
+     * Passing NULL is allowed.
+     *
+     * @see drop()
+     */
+    void dropAndDelete(cOwnedObject *obj);
+    //@}
+
+  public:
     /** @name Support for parallel execution.
      *
      * Packs/unpacks object from/to a buffer. These functions are used by parallel execution.

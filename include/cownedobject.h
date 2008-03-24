@@ -128,13 +128,14 @@ typedef int (*CompareFunc)(cOwnedObject *a, cOwnedObject *b);
  */
 class SIM_API cOwnedObject : public cNamedObject
 {
+    friend class cObject;
     friend class cDefaultList;
     friend class cSimulation;
     friend class cMessage;  // because of refcounting business
 
   private:
-    cOwnedObject *ownerp;  // owner pointer
-    unsigned int pos;      // used only if owner is a cDefaultList
+    cObject *ownerp;   // owner pointer
+    unsigned int pos;  // used only when owner is a cDefaultList
 
   private:
     // list in which objects are accumulated if there's no simple module in context
@@ -145,63 +146,12 @@ class SIM_API cOwnedObject : public cNamedObject
     static long total_objs;
     static long live_objs;
 
-  private:
-    // internal
-    virtual void ownedObjectDeleted(cOwnedObject *obj);
-
-    // internal
-    virtual void yieldOwnership(cOwnedObject *obj, cOwnedObject *to);
-
   public:
     // internal
     virtual void removeFromOwnershipTree();
 
     // internal
     static void setDefaultOwner(cDefaultList *list);
-
-  protected:
-    /** @name Ownership control.
-     *
-     * The following functions are intended to be used by derived container
-     * classes to manage ownership of their contained objects.
-     * See object description for more info on ownership management.
-     */
-    //@{
-
-    /**
-     * Makes this object the owner of 'object'.
-     * The function called by the container object when it takes ownership
-     * of the obj object that is inserted into it.
-     *
-     * The obj pointer should not be NULL.
-     */
-    virtual void take(cOwnedObject *obj);
-
-    /**
-     * Releases ownership of `object', giving it back to its default owner.
-     * The function called by the container object when obj is removed
-     * from the container -- releases the ownership of the object and
-     * hands it over to its default owner.
-     *
-     * The obj pointer should not be NULL.
-     */
-    virtual void drop(cOwnedObject *obj);
-
-    /**
-     * This is a shortcut for the sequence
-     * <pre>
-     *   drop(obj);
-     *   delete obj;
-     * </pre>
-     *
-     * It is especially useful when writing destructors and assignment operators.
-     *
-     * Passing NULL is allowed.
-     *
-     * @see drop()
-     */
-    void dropAndDelete(cOwnedObject *obj);
-    //@}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -260,7 +210,7 @@ class SIM_API cOwnedObject : public cNamedObject
     /**
      * Returns pointer to the owner of the object.
      */
-    virtual cOwnedObject *owner() const {return ownerp;}
+    virtual cObject *owner() const {return ownerp;}
 
     /**
      * Returns true.

@@ -114,60 +114,12 @@ cOwnedObject::~cOwnedObject()
     live_objs--;
 }
 
-void cOwnedObject::ownedObjectDeleted(cOwnedObject *obj)
-{
-    // Note: too late to call obj->className(), at this point it'll aways return "cOwnedObject"
-    throw cRuntimeError("Object %s is currently in (%s)%s, it cannot be deleted. "
-                        "If this error occurs inside %s, it needs to be changed "
-                        "to call drop() before it can delete that object. "
-                        "If this error occurs inside %s's destructor and %s is a class member, "
-                        "%s needs to call drop() in the destructor",
-                        obj->fullName(), className(), fullPath().c_str(),
-                        className(),
-                        className(), obj->fullName(),
-                        className());
-}
-
-void cOwnedObject::yieldOwnership(cOwnedObject *obj, cOwnedObject *newowner)
-{
-    throw cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
-                            obj->className(), obj->fullName(),
-                            className(), fullPath().c_str(),
-                            newowner->className(), newowner->fullPath().c_str());
-}
-
 void cOwnedObject::removeFromOwnershipTree()
 {
     // set ownership of this object to null
     if (ownerp)
         ownerp->yieldOwnership(this, NULL);
 }
-
-void cOwnedObject::take(cOwnedObject *obj)
-{
-    // ask current owner to release it -- if it's a cDefaultList, it will.
-    obj->ownerp->yieldOwnership(obj, this);
-}
-
-void cOwnedObject::drop(cOwnedObject *obj)
-{
-    if (obj->ownerp!=this)
-        throw cRuntimeError(this,"drop(): not owner of object (%s)%s",
-                                obj->className(), obj->fullPath().c_str());
-    defaultowner->doInsert(obj);
-}
-
-void cOwnedObject::dropAndDelete(cOwnedObject *obj)
-{
-    if (!obj)
-        return;
-    if (obj->ownerp!=this)
-        throw cRuntimeError(this,"dropAndDelete(): not owner of object (%s)%s",
-                                obj->className(), obj->fullPath().c_str());
-    obj->ownerp = NULL;
-    delete obj;
-}
-
 
 void cOwnedObject::setDefaultOwner(cDefaultList *list)
 {

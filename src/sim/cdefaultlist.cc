@@ -128,7 +128,7 @@ void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
     (vect[pos] = vect[--size])->pos = pos;
 }
 
-void cDefaultList::yieldOwnership(cOwnedObject *obj, cOwnedObject *newowner)
+void cDefaultList::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 {
     ASSERT(obj && obj->ownerp==this && size>0);
 

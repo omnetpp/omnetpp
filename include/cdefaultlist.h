@@ -35,6 +35,7 @@ NAMESPACE_BEGIN
 class SIM_API cDefaultList : public cNoncopyableOwnedObject
 {
   private:
+    friend class cObject;
     friend class cOwnedObject;
     cOwnedObject **vect; // vector of objects
     int capacity;        // allocated size of vect[]
@@ -46,7 +47,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     void construct();
     void doInsert(cOwnedObject *obj);
     virtual void ownedObjectDeleted(cOwnedObject *obj);
-    virtual void yieldOwnership(cOwnedObject *obj, cOwnedObject *newOwner);
+    virtual void yieldOwnership(cOwnedObject *obj, cObject *newOwner);
 
   public:
     // internal: called from module creation code in ctypes.cc
