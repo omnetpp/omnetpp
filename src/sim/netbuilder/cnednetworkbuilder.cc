@@ -843,7 +843,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecElement *channelspec, cMo
                     findAndCheckChannelType(channeltypename.c_str(), parentmodp) :
                     findAndCheckChannelTypeLike(channeltypename.c_str(), channelspec->getLikeType(), parentmodp);
 
-    channelp = channeltype->create("channel", parentmodp); //FIXME must give unique names, otherwise channel properties() won't work!!!
+    channelp = channeltype->create("channel", parentmodp);
 
     return channelp;
 }

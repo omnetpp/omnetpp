@@ -32,18 +32,6 @@ class  cModuleType;
 
 
 /**
- * Prototype for callback functions that are used to notify graphical user
- * interfaces about display string changes.
- *
- * Args: (sub)module which changed; immediate refresh wanted or not; inspector's data
- *
- * @ingroup EnumsTypes
- */
-typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
-
-
-
-/**
  * Common base for cSimpleModule and cCompoundModule.
  * cModule provides gates, parameters, RNG mapping, display strings,
  * and a set of virtual methods.
@@ -167,21 +155,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cModule *firstsubmodp;  // pointer to first submodule
     cModule *lastsubmodp;   // pointer to last submodule (needed for efficient append operation)
 
-  protected:
     int numgatedescs;       // size of the gatedescv array
     cGate::Desc *gatedescv; // array with one element per gate or gate vector
     std::vector<cGate*> gatev;  // stores the gates themselves
 
-  protected:
     int idx;      // index if module vector, 0 otherwise
     int vectsize; // vector size, -1 if not a vector
-
-    cDisplayString *dispstr; // display string (created on demand)
-
-  public:
-    // internal: used from Tkenv: find out if cGate has a display string.
-    // displayString() would create the object immediately which we want to avoid.
-    bool hasDisplayString() {return dispstr!=NULL;}
 
   protected:
     // internal: called from callInitialize(). Does one stage for this submodule
@@ -636,7 +615,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *
      *  -# you cannot insert the module under one of its own submodules.
      *     This is checked by this function.
-     *  -# gates of the module cannot be connected while you move it.
+     *  -# gates of the module cannot be connected when you move it.
      *     If you moved a module which is connected to its parent module
      *     or to other submodules, you'd create connections that do not obey
      *     the module hierarchy, and this is not permitted. This rule is
@@ -649,27 +628,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *     necessarily be present under the same parent module.
      */
     virtual void changeParentTo(cModule *mod);
-    //@}
-
-    /** @name Display strings, animation. */
-    //@{
-          //FIXME revise these methods!!!
-    /**
-     * Returns the display string which defines presentation when the module
-     * is displayed as a submodule in a compound module graphics.
-     */
-    cDisplayString& displayString();   //FIXME make it return a pointer!!!
-
-    /**
-     * DEPRECATED. Use displayString() and cDisplayString methods instead.
-     */
-    _OPPDEPRECATED void setDisplayString(const char *dispstr, bool immediate=true);
-
-    /**
-     * When the models is running under Tkenv, it displays the given text
-     * in the network graphics, as a bubble above the module's icon.
-     */
-    void bubble(const char *text);
     //@}
 };
 

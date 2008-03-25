@@ -49,13 +49,11 @@ cGate::cGate(Desc *d)
 
     fromgatep = togatep = NULL;
     channelp = NULL;
-    dispstr = NULL;
 }
 
 cGate::~cGate()
 {
     dropAndDelete(channelp);
-    delete dispstr;
     delete [] fullname;
 }
 
@@ -180,17 +178,6 @@ cProperties *cGate::properties() const
     else
         props = componentType->gateProperties(baseName());
     return props;
-}
-
-void cGate::take(cChannel *channelp)
-{
-//XXX    desc->ownerp->take(channelp);  //FIXME or maybe nothing? or maybe give it to the compound module in which the connection is?
-}
-
-void cGate::dropAndDelete(cChannel *channelp)
-{
-//XXX    desc->ownerp->dropAndDelete(channelp); //FIXME
-    delete channelp;    //just simply....
 }
 
 void cGate::connectTo(cGate *g, cChannel *chan)
@@ -327,22 +314,6 @@ bool cGate::isRouteOK() const
 {
     return sourceGate()->ownerModule()->isSimple() &&
            destinationGate()->ownerModule()->isSimple();
-}
-
-cDisplayString& cGate::displayString()
-{
-    if (!dispstr)
-    {
-        dispstr = new cDisplayString();
-        dispstr->setRoleToConnection(this);
-    }
-    return *dispstr;
-}
-
-// DEPRECATED
-void cGate::setDisplayString(const char *s, bool immediate)
-{
-    displayString().parse(s);
 }
 
 

@@ -1349,12 +1349,19 @@ void TOmnetTkApp::connectionRemoved(cGate *srcgate)
     modinsp->connectionRemoved(srcgate);
 }
 
-void TOmnetTkApp::displayStringChanged(cGate *gate)
+void TOmnetTkApp::displayStringChanged(cComponent *component)
 {
-    TOmnetApp::displayStringChanged(gate);
+    TOmnetApp::displayStringChanged(component);
 
-    // if gate is not connected, nothing is displayed, so nothing to do
-    if (!gate->toGate())  return;
+    if (dynamic_cast<cModule *>(component))
+        moduleDisplayStringChanged((cModule *)component);
+    else if (dynamic_cast<cChannel *>(component))
+        channelDisplayStringChanged((cChannel *)component);
+}
+
+void TOmnetTkApp::channelDisplayStringChanged(cChannel *channel)
+{
+    cGate *gate = channel->fromGate();
 
     // notify module inspector which displays connection
     cModule *notifymodule;
@@ -1382,10 +1389,8 @@ void TOmnetTkApp::displayStringChanged(cGate *gate)
     }
 }
 
-void TOmnetTkApp::displayStringChanged(cModule *module)
+void TOmnetTkApp::moduleDisplayStringChanged(cModule *module)
 {
-    TOmnetApp::displayStringChanged(module);
-
     // refresh inspector where this module is a submodule
     cModule *parentmodule = module->parentModule();
     TInspector *insp = findInspector(parentmodule,INSP_GRAPHICAL);

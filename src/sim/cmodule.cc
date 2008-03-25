@@ -26,7 +26,6 @@
 #include "ccomponenttype.h"
 #include "cenvir.h"
 #include "cexception.h"
-#include "cdisplaystring.h"
 #include "cchannel.h"
 #include "cproperties.h"
 #include "cproperty.h"
@@ -762,14 +761,6 @@ void cModule::finalizeParameters()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
 
-//FIXME remove!!!
-    // set display string (it may depend on parameter values via "$param" references)
-    cProperties *props = properties();
-    cProperty *prop = props->get("display");
-    const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
-    if (propValue)
-        displayString().parse(propValue);
-
     // set up gate vectors (their sizes may depend on the parameter settings)
     moduleType()->addGatesTo(this);
 }
@@ -912,38 +903,6 @@ void cModule::callFinish()
     cContextTypeSwitcher tmp2(CTX_FINISH);
     recordParametersAsScalars();
     finish();
-}
-
-cDisplayString& cModule::displayString()
-{
-    if (!dispstr)
-    {
-        dispstr = new cDisplayString();
-        dispstr->setRoleToModule(this);
-
-/*FIXME TODO:
-        // set display string (it may depend on parameter values via "$param" references)
-        if (!areParamsFinalized())
-            throw cRuntimeError(this, "Cannot access display string yet: parameters not yet set up");
-        cProperties *props = properties();
-        cProperty *prop = props->get("display");
-        const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
-        if (propValue)
-            dispstr->parse(propValue);
-*/
-    }
-    return *dispstr;
-}
-
-// DEPRECATED
-void cModule::setDisplayString(const char *s, bool)
-{
-    displayString().parse(s);
-}
-
-void cModule::bubble(const char *text)
-{
-    ev.bubble(this, text);
 }
 
 //----

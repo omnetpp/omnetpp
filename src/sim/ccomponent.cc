@@ -16,11 +16,14 @@
 #include "ccomponenttype.h"
 #include "cmodule.h"
 #include "cproperties.h"
+#include "cproperty.h"
 #include "cpar.h"
 #include "cparimpl.h"
 #include "crng.h"
 #include "cconfiguration.h"
 #include "cconfigkey.h"
+#include "cdisplaystring.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
@@ -37,6 +40,7 @@ cComponent::cComponent(const char *name) : cDefaultList(name)
     paramvsize = numparams = 0;
     paramv = NULL;
 
+    dispstr = NULL;
     setEvEnabled(true);
 }
 
@@ -44,6 +48,7 @@ cComponent::~cComponent()
 {
     delete [] rngmap;
     delete [] paramv;
+    delete dispstr;
 }
 
 const char *cComponent::className() const
@@ -154,6 +159,55 @@ void cComponent::finalizeParameters()
         par(i).read();
 
     flags |= FL_PARAMSFINALIZED;
+}
+
+bool cComponent::hasDisplayString()
+{
+    if (dispstr)
+        return true;
+    if (flags & FL_DISPSTR_CHECKED)
+        return flags & FL_DISPSTR_NOTEMPTY;
+
+    // not yet checked: do it now
+    cProperties *props = properties();
+    cProperty *prop = props->get("display");
+    const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
+    bool result = !opp_isempty(propValue);
+
+    flags |= FL_DISPSTR_CHECKED;
+    setFlag(FL_DISPSTR_NOTEMPTY, result);
+    return result;
+}
+
+cDisplayString& cComponent::displayString()
+{
+    if (!dispstr)
+    {
+        dispstr = new cDisplayString();
+        dispstr->setHostObject(this);
+
+        // set display string (it may depend on parameter values via "$param" references)
+        if (!areParamsFinalized())
+            throw cRuntimeError(this, "Cannot access display string yet: parameters not yet set up");
+        cProperties *props = properties();
+        cProperty *prop = props->get("display");
+        const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
+        if (propValue)
+            dispstr->parse(propValue);
+        printf("dispstr created: \"%s\"\n", propValue);
+    }
+    return *dispstr;
+}
+
+// DEPRECATED
+void cComponent::setDisplayString(const char *s, bool)
+{
+    displayString().parse(s);
+}
+
+void cComponent::bubble(const char *text)
+{
+    ev.bubble(this, text);
 }
 
 void cComponent::recordParametersAsScalars()

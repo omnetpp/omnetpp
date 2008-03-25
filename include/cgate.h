@@ -29,7 +29,6 @@ class  cModule;
 class  cMessage;
 class  cChannelType;
 class  cChannel;
-class  cDisplayString;
 class  cProperties;
 
 
@@ -81,16 +80,9 @@ class SIM_API cGate : public cObject, noncopyable
     int gateId;  // index within the module's gatev[]
     mutable char *fullname; // buffer to store full name of object   FIXME stringpool it!! needed?
 
-    cChannel *channelp; // channel object (if exists)  FIXME move display string here?
+    cChannel *channelp; // channel object (if exists)
     cGate *fromgatep;   // previous and next gate
     cGate *togatep;     //   in the route
-
-    cDisplayString *dispstr; // the display string (created on demand) FIXME how to handle that???
-
-  public:
-    // internal: used from Tkenv: find out if cGate has a display string.
-    // displayString() would create the object immediately which we want to avoid.
-    bool hasDisplayString() {return dispstr!=NULL;}
 
   protected:
     // internal: constructor is protected because only cModule is allowed to create instances
@@ -99,9 +91,6 @@ class SIM_API cGate : public cObject, noncopyable
     virtual ~cGate();
     // internal: tells the gate its id (position in the module's gatev[] array)
     void setGateId(int id);
-
-    void take(cChannel *channelp);
-    void dropAndDelete(cChannel *channelp);
 
   public:
     /** @name Redefined cObject member functions */
@@ -323,21 +312,7 @@ class SIM_API cGate : public cObject, noncopyable
      * Returns true if the route that this gate is in is complete, that is,
      * if it starts and arrives at a simple module.
      */
-    bool isRouteOK() const;
-    //@}
-
-    /** @name Display string. */
-    //@{
-    /**
-     * Returns the display string for the gate, which in practice affects the
-     * apprearance of the connection for which this gate is the source.
-     */
-    cDisplayString& displayString();
-
-    /**
-     * DEPRECATED. Use displayString() and cDisplayString methods instead.
-     */
-    _OPPDEPRECATED void setDisplayString(const char *dispstr, bool immediate=true);
+    bool isRouteOK() const;  //FIXME rename to isPathOK()?
     //@}
 };
 

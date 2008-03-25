@@ -18,6 +18,7 @@
 #include "opp_ctype.h"
 #include "cenvir.h"
 #include "cmodule.h"
+#include "cchannel.h"
 #include "cgate.h"
 #include "cdisplaystring.h"
 #include "stringutil.h"
@@ -35,7 +36,6 @@ cDisplayString::cDisplayString()
     needsassemble = false;
 
     object = NULL;
-    role = NONE;
 }
 
 
@@ -49,7 +49,6 @@ cDisplayString::cDisplayString(const char *displaystr)
     needsassemble = false;
 
     object = NULL;
-    role = NONE;
 
     // parse() should be the last one, as it may throw an error
     parse();
@@ -65,7 +64,6 @@ cDisplayString::cDisplayString(const cDisplayString& ds)
     needsassemble = false;
 
     object = NULL;
-    role = NONE;
 
     operator=(ds);
 }
@@ -79,15 +77,7 @@ cDisplayString::~cDisplayString()
 void cDisplayString::notify()
 {
     needsassemble = true;
-
-    // should be called AFTER update's done
-    switch (role)
-    {
-        case NONE: break;
-        case CONNECTION: EVCB.displayStringChanged((cGate *)object); break;
-        case MODULE: EVCB.displayStringChanged((cModule *)object); break;
-        default: ASSERT(0); // internal error: bad role
-    }
+    EVCB.displayStringChanged(object);
 }
 
 const char *cDisplayString::toString() const

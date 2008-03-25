@@ -20,6 +20,8 @@
 #define __CDISPLAYSTRING_H
 
 #include "cobject.h"
+#include "cgate.h"
+#include "cmodule.h"
 
 NAMESPACE_BEGIN
 
@@ -77,8 +79,7 @@ class SIM_API cDisplayString
     mutable bool needsassemble; // if dispstr is up-to-date
 
     // needed to notify Envir
-    cObject *object;     // a cModule or cGate pointer
-    enum {NONE, CONNECTION, MODULE} role; // what
+    cComponent *object;     // a cModule or cChannel pointer
 
   private:
     // helper functions
@@ -95,8 +96,7 @@ class SIM_API cDisplayString
 
   public:
     // internal:
-    void setRoleToConnection(cGate *gate) {object=gate; role=CONNECTION;}
-    void setRoleToModule(cModule *submodule) {object=submodule; role=MODULE;}
+    void setHostObject(cComponent *o) {object=o;}
     void dump() const;
 
   public:
@@ -160,7 +160,7 @@ class SIM_API cDisplayString
      * Sets the display string to the given value. Throws an error if there
      * was an error parsing the string.
      */
-    void parse(const char *displaystr);
+    void parse(const char *displaystr);  //FIXME rename to set() ???
 
     /**
      * Update with the contents of another display string. Corresponding

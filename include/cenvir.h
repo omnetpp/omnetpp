@@ -298,16 +298,10 @@ class ENVIR_API cEnvir : public std::ostream
     void connectionRemoved(cGate *srcgate);
 
     /**
-     * Notifies the environment that a connection display string (stored in
-     * the source gate) has been changed.
+     * Notifies the environment that a module or channel display string has
+     * changed.
      */
-    void displayStringChanged(cGate *gate);
-
-    /**
-     * Notifies the environment that a module display string has been changed.
-     */
-    // TBD: how does module name change propagate to gui?
-    void displayStringChanged(cModule *submodule);
+    void displayStringChanged(cComponent *component);
 
     /**
      * Called from module destructors, to notify the environment about objects
@@ -406,7 +400,7 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * In Tkenv it pops up a "bubble" over the module icon.
      */
-    void bubble(cModule *mod, const char *text);
+    void bubble(cComponent *component, const char *text);
 
     /**
      * Displays a message in dialog box. This function should not be

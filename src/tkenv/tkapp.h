@@ -23,6 +23,8 @@
 
 #include "tkdefs.h"
 #include "omnetapp.h"
+#include "cchannel.h"
+#include "cmodule.h"
 
 NAMESPACE_BEGIN
 
@@ -144,8 +146,7 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
       virtual void moduleReparented(cModule *module, cModule *oldparent);
       virtual void connectionCreated(cGate *srcgate);
       virtual void connectionRemoved(cGate *srcgate);
-      virtual void displayStringChanged(cGate *gate);
-      virtual void displayStringChanged(cModule *module);
+      virtual void displayStringChanged(cComponent *component);
 
       virtual bool isGUI() {return true;}
       virtual void bubble(cModule *mod, const char *text);
@@ -196,6 +197,9 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
       Tcl_Interp *getInterp() {return interp;}
 
       void updateGraphicalInspectorsBeforeAnimation();
+
+      void channelDisplayStringChanged(cChannel *channel);
+      void moduleDisplayStringChanged(cModule *module);
 
       // small functions:
       void updateNetworkRunDisplay();

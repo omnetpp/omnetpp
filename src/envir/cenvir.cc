@@ -425,14 +425,9 @@ void cEnvir::connectionRemoved(cGate *srcgate)
     app->connectionRemoved(srcgate);
 }
 
-void cEnvir::displayStringChanged(cGate *gate)
+void cEnvir::displayStringChanged(cComponent *component)
 {
-    app->displayStringChanged(gate);
-}
-
-void cEnvir::displayStringChanged(cModule *module)
-{
-    app->displayStringChanged(module);
+    app->displayStringChanged(component);
 }
 
 void cEnvir::undisposedObject(cObject *obj)
@@ -449,10 +444,12 @@ void cEnvir::undisposedObject(cObject *obj)
 
 //-----------------------------------------------------------------
 
-void cEnvir::bubble(cModule *mod, const char *text)
+void cEnvir::bubble(cComponent *component, const char *text)
 {
     if (!isgui || disable_tracing) return;
-    app->bubble(mod, text);
+    if (!dynamic_cast<cModule*>(component))
+        throw cRuntimeError("bubble() for channels is not supported yet");
+    app->bubble((cModule*)component, text);
 }
 
 void cEnvir::printfmsg(const char *fmt,...)

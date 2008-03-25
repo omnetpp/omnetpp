@@ -25,7 +25,9 @@ NAMESPACE_BEGIN
 
 class cComponentType;
 class cProperties;
+class cDisplayString;
 class cRNG;
+
 
 /**
  * Common base for module and channel classes: cModule and cChannel.
@@ -38,8 +40,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     friend class cPar; // needs to call handleParameterChange()
   private:
     enum {
-      FL_PARAMSFINALIZED = 4, // whether parameters have been set up
-      FL_EVLOGENABLED = 8,    // whether logging via ev<< is enabled
+      FL_PARAMSFINALIZED = 4,   // whether parameters have been set up
+      FL_EVLOGENABLED = 8,      // whether logging via ev<< is enabled
+      FL_DISPSTR_CHECKED = 16,  // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
+      FL_DISPSTR_NOTEMPTY = 32, // for hasDisplayString(): whether the display string is not empty
     };
 
   protected:
@@ -51,6 +55,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     short paramvsize;
     short numparams;
     cPar *paramv;  // array of cPar objects   FIXME preallocate with the right size!!!
+
+    cDisplayString *dispstr; // display string (created on demand)
 
   public:
     // internal: currently used by Cmdenv
@@ -76,6 +82,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     // internal: has finalizeParameters() been called?
     bool areParamsFinalized() const {return flags&FL_PARAMSFINALIZED;}
+
+    // internal: used from Tkenv: find out if this module has a display string.
+    // displayString() would create the object immediately which we want to avoid.
+    bool hasDisplayString();
 
   protected:
     /** @name Initialization, finish and parameter change hooks.
@@ -290,6 +300,26 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Check if a parameter exists.
      */
     bool hasPar(const char *s) const {return findPar(s)>=0;}
+    //@}
+
+    /** @name Display strings, animation. */
+    //@{
+    /**
+     * Returns the display string which defines presentation when the module
+     * is displayed as a submodule in a compound module graphics.
+     */
+    cDisplayString& displayString();
+
+    /**
+     * DEPRECATED. Use displayString() and cDisplayString methods instead.
+     */
+    _OPPDEPRECATED void setDisplayString(const char *dispstr, bool immediate=true);
+
+    /**
+     * When the models is running under Tkenv, it displays the given text
+     * in the network graphics, as a bubble above the module's icon.
+     */
+    void bubble(const char *text);
     //@}
 
     /** @name Statistics collection */

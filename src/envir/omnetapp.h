@@ -229,8 +229,7 @@ class ENVIR_API TOmnetApp
     virtual void moduleReparented(cModule *module, cModule *oldparent);
     virtual void connectionCreated(cGate *srcgate);
     virtual void connectionRemoved(cGate *srcgate);
-    virtual void displayStringChanged(cGate *gate);
-    virtual void displayStringChanged(cModule *module);
+    virtual void displayStringChanged(cComponent *component);
     virtual void undisposedObject(cObject *obj);
     //@}
 

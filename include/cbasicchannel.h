@@ -30,10 +30,10 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
 {
   private:
     enum {
-      FL_ISDISABLED = 16,
-      FL_DELAY_NONZERO = 32,
-      FL_ERROR_NONZERO = 64,
-      FL_DATARATE_NONZERO = 128,
+      FL_ISDISABLED = 64,
+      FL_DELAY_NONZERO = 128,
+      FL_ERROR_NONZERO = 256,
+      FL_DATARATE_NONZERO = 512,
     };
 
     // cached values of parameters (note: parameters are non-volatile)

@@ -35,6 +35,7 @@
 #include "random.h"
 #include "crng.h"
 #include "cmodule.h"
+#include "cchannel.h"
 #include "ccomponenttype.h"
 #include "cmessage.h"
 #include "cdisplaystring.h"
@@ -969,21 +970,23 @@ void TOmnetApp::connectionRemoved(cGate *srcgate)
     }
 }
 
-void TOmnetApp::displayStringChanged(cGate *gate)
+void TOmnetApp::displayStringChanged(cComponent *component)
 {
     if (feventlog)
     {
-        EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog,
-            gate->ownerModule()->id(), gate->id(), gate->displayString().toString());
-    }
-}
-
-void TOmnetApp::displayStringChanged(cModule *submodule)
-{
-    if (feventlog)
-    {
-        EventLogWriter::recordModuleDisplayStringChangedEntry_id_d(feventlog,
-            submodule->id(), submodule->displayString().toString());
+        if (dynamic_cast<cModule *>(component))
+        {
+            cModule *module = (cModule *)component;
+            EventLogWriter::recordModuleDisplayStringChangedEntry_id_d(feventlog,
+                module->id(), module->displayString().toString());
+        }
+        else if (dynamic_cast<cChannel *>(component))
+        {
+            cChannel *channel = (cChannel *)component;
+            cGate *gate = channel->fromGate();
+            EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog,
+                gate->ownerModule()->id(), gate->id(), channel->displayString().toString());
+        }
     }
 }
 

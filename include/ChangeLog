@@ -104,6 +104,14 @@
 	cArray:
 	- items() became size()
 
+	Display strings:
+	- connection display string is now stored in the channel, not the source gate
+	- cGate::displayString(), setDisplayString() methods have been removed; 
+	  use channel()->displayString() instead (but you'll need to check that channel
+	  is not NULL)
+	- module and channel display string access functions are now in the common 
+	  base class, cComponent
+	
 	Gross renaming: cObject became cOwnedObject, cPolymorphic became cObject;
 	  - cNamedObject introduced in between.
 	  - cArray, cQueue still handle cObject (old cPolymorphic), i.e. they can work
