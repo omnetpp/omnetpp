@@ -198,7 +198,7 @@ cMessage *cMessageHeap::peekFirst() const
     return n==0 ? NULL : h[1];
 }
 
-cMessage *cMessageHeap::getFirst()
+cMessage *cMessageHeap::removeFirst()
 {
     if (n>0)
     {
@@ -213,7 +213,7 @@ cMessage *cMessageHeap::getFirst()
     return NULL;
 }
 
-cMessage *cMessageHeap::get(cMessage *event)
+cMessage *cMessageHeap::remove(cMessage *event)
 {
     // make sure it is really on the heap
     if (event->heapindex==-1)

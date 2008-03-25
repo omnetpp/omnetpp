@@ -145,6 +145,8 @@
 	- moved to cComponent!
 	- see also: **.save-as-scalar = true
 
+	cMessageHeap:
+	- renamed getFirst() to removeFirst(), and get(cMessage*) to remove(cMessage*)
 	cPar implementation changed
 
 	cPar, etc:

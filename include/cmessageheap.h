@@ -151,24 +151,24 @@ class SIM_API cMessageHeap : public cOwnedObject
     cMessage *peekFirst() const;
 
     /**
-     * Removes and return the first message in the heap (the one
-     * with the smallest timestamp.) If the heap is empty, it returns NULL.
-     */
-    cMessage *getFirst();
-
-    /**
-     * Removes and returns the given message in the heap. If the message is
-     * not in the heap, returns NULL.
-     */
-    cMessage *get(cMessage *event);
-
-    /**
      * Returns the mth message in the heap if 0 <= m < length(), and NULL
      * otherwise. Note that iteration does not necessarily return messages
      * in increasing timestamp (arrivalTime()) order unless you called
      * sort() before.
      */
     cMessage *peek(int m);
+
+    /**
+     * Removes and return the first message in the heap (the one
+     * with the smallest timestamp.) If the heap is empty, it returns NULL.
+     */
+    cMessage *removeFirst();
+
+    /**
+     * Removes and returns the given message in the heap. If the message is
+     * not in the heap, returns NULL.
+     */
+    cMessage *remove(cMessage *event);
 
     /**
      * Sorts the contents of the heap. This is only necessary if one wants

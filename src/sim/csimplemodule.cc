@@ -562,7 +562,7 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     // now remove it from future events and return pointer
     if (msg->isScheduled())
     {
-        simulation.msgQueue.get(msg);
+        simulation.msgQueue.remove(msg);
         EVCB.messageCancelled(msg);
     }
 

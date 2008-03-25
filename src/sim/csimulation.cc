@@ -488,7 +488,7 @@ cSimpleModule *cSimulation::selectNextModule()
         // would have to be notified in advance that they're "shutting down",
         // and even then, deletion could progress only after waiting the maximum
         // propagation delay to elapse.
-        delete msgQueue.getFirst();
+        delete msgQueue.removeFirst();
         return selectNextModule();
     }
 
@@ -593,7 +593,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)  //FIXME why do we need the cSi
     }
 
     // get event to be handled
-    cMessage *msg = msgQueue.getFirst();
+    cMessage *msg = msgQueue.removeFirst();
 
     // notify the environment about the message
     EVCB.simulationEvent(msg);

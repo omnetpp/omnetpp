@@ -299,7 +299,7 @@ void cNullMessageProtocol::sendNullMessage(int procId, simtime_t now)
 
 void cNullMessageProtocol::rescheduleEvent(cMessage *msg, simtime_t t)
 {
-    sim->msgQueue.get(msg);  // also works if the event is not currently scheduled
+    sim->msgQueue.remove(msg);  // also works if the event is not currently scheduled
     msg->setArrivalTime(t);
     sim->msgQueue.insert(msg);
 }
