@@ -116,6 +116,7 @@
 	  is not NULL)
 	- module and channel display string access functions are now in the common 
 	  base class, cComponent
+	- display string objects are now only created (from @display) when first accessed
 	
 	Gross renaming: cObject became cOwnedObject, cPolymorphic became cObject;
 	  - cNamedObject introduced in between.
