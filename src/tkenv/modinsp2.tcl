@@ -835,6 +835,10 @@ proc create_graphicalmodwindow {name geom} {
     # create canvas
     set c $w.c
 
+    # init some state vars
+    set inspectordata($c:zoomfactor) 1
+    set inspectordata($c:showlabels) 1
+
     frame $w.grid
     scrollbar $w.hsb -orient horiz -command "$c xview"
     scrollbar $w.vsb -command "$c yview"
@@ -864,10 +868,9 @@ proc create_graphicalmodwindow {name geom} {
     $c bind modname <$B3> "graphmodwin_rightclick $c %X %Y"
     $c bind qlen <$B3> "graphmodwin_qlen_rightclick $c %X %Y"
 
-    # init some state vars
-    set inspectordata($c:zoomfactor) 1
-    set inspectordata($c:showlabels) 1
-    $w.toolbar.showlabels config -relief sunken
+    if {$inspectordata($c:showlabels)} {
+        $w.toolbar.showlabels config -relief sunken
+    }
 
     #update idletasks
     update

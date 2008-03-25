@@ -118,8 +118,8 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
 
     // initialize .tkenvrc config variables
     opt_stepdelay = 300;
-    opt_updatefreq_fast = 1000;
-    opt_updatefreq_express = 100000;
+    opt_updatefreq_fast = 100;
+    opt_updatefreq_express = 10000;
     opt_animation_enabled = true;
     opt_nexteventmarkers = true;
     opt_senddirect_arrows = true;
