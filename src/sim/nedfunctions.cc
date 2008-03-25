@@ -195,7 +195,7 @@ DEF(int, "*->L", {
         case Value::DBL:
             return (long)floor(argv[0].dbl);
         case Value::STR:
-            return opp_atol(argv[0].str.c_str());  //XXX catch & wrap exception?
+            return (long)floor(opp_atof(argv[0].str.c_str()));  //XXX catch & wrap exception?
         case Value::XML:
             throw cRuntimeError("int(): cannot convert xml to int");
         default:
