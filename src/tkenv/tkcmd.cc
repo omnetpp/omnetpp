@@ -656,7 +656,9 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
-   if (dynamic_cast<cSimpleModule *>(object))
+   if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
+       Tcl_SetResult(interp, "cPlaceholderModule", TCL_STATIC);
+   else if (dynamic_cast<cSimpleModule *>(object))
        Tcl_SetResult(interp, "cSimpleModule", TCL_STATIC);
    else if (dynamic_cast<cCompoundModule *>(object))
        Tcl_SetResult(interp, "cCompoundModule", TCL_STATIC);

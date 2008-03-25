@@ -30,7 +30,7 @@ class cParsimPartition;
 /**
  * A gate that belongs to a cross-partition link and represents
  * the remote gate on the local partition. cProxyGate's belong to
- * cPlaceHolderModule objects, which represent a "remote" module
+ * cPlaceholderModule objects, which represent a "remote" module
  * in the local partition.
  *
  * This class basically exists so that we can override the deliver()
@@ -50,7 +50,7 @@ class cParsimPartition;
  */
 class SIM_API cProxyGate : public cGate // noncopyable
 {
-    friend class cPlaceHolderModule;
+    friend class cPlaceholderModule;
   private:
     cParsimPartition *partition;
     short remoteProcId;
@@ -59,7 +59,7 @@ class SIM_API cProxyGate : public cGate // noncopyable
     void *data;
 
   protected:
-    // internal: constructor is protected because only cPlaceHolderModule
+    // internal: constructor is protected because only cPlaceholderModule
     // is allowed to create instances
     explicit cProxyGate(Desc *desc);
 

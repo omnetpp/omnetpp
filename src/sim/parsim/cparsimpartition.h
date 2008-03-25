@@ -40,7 +40,7 @@ class cTerminationException;
  * partitions and the links between this partition and its neighbours.
  *
  * Interconnections are stored not directly inside this object,
- * but in cProxyGate's of cPlaceHolderModule's. The remote address fields
+ * but in cProxyGate's of cPlaceholderModule's. The remote address fields
  * of cProxyGate's are filled out here in the connectRemoteGates() method.
  *
  * This layer also handles generic (synchronization-independent part of)

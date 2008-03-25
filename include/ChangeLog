@@ -126,13 +126,14 @@
 	Introduced cComponent, a common base class for cModule and cChannel
 
 	cSimpleModule, cSimulation:
-	- removed: pause(), backtomod, pause_in_sendmsg
+	- removed: pause(), backtomod, pause_in_sendmsg (they were obsolete)
 	- removed: breakpoint(), and its callback method in cEnvir, in Tkenv, etc..
 	- sendDirect(): added overloaded methods that accept transmissionDelay as well
 
 	cModule:
 	- removed backgroundDisplayString()/setBackgroundDisplayString() and its compat
 	  #defines displayStringAsParent() and setDisplayStringAsParent()
+	- added isPlaceholder() to cModule
 
 	Message parameters:
 	- deprecated; type changed: cMsgPar instead of cPar

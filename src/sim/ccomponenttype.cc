@@ -72,7 +72,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     if (ev.isModuleLocal(parentmod,modname,index))
         mod = createModuleObject();
     else
-        mod = new cPlaceHolderModule();
+        mod = new cPlaceholderModule();
 #else
     mod = createModuleObject();
 #endif

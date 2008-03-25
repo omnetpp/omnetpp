@@ -150,7 +150,7 @@ proc choosecolorcode {ptr} {
 # icons used in the tree view and listboxes
 set treeicons(cCompoundModule) {compound_vs}
 set treeicons(cSimpleModule)   {simple_vs}
-set treeicons(cPlaceHolderModule) {placeholder_vs}
+set treeicons(cPlaceholderModule) {placeholder_vs}
 set treeicons(cGate)           {gate_vs}
 set treeicons(cPar)            {param_vs}
 set treeicons(cMessage)        {message_vs}

@@ -90,7 +90,7 @@ void cParsimPartition::connectRemoteGates()
     ev << "connecting remote gates: step 1 - broadcasting input gates...\n";
     for (int modId=0; modId<=sim->lastModuleId(); modId++)
     {
-        cPlaceHolderModule *mod = dynamic_cast<cPlaceHolderModule *>(sim->module(modId));
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
         if (mod)
         {
             for (int gateId=0; gateId<mod->gates(); gateId++)
@@ -216,7 +216,7 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, i
                              "for message \"%s\" from partition %d does not exist",
                              destGateId, destModuleId, msg->name(), sourceProcId);
 
-    // do our best to set the source gate (the gate of a cPlaceHolderModule)
+    // do our best to set the source gate (the gate of a cPlaceholderModule)
     cGate *srcg = g->sourceGate();
     msg->setSentFrom(srcg->ownerModule(), srcg->id(), msg->sendingTime());
 

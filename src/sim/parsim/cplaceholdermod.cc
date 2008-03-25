@@ -18,25 +18,25 @@
 USING_NAMESPACE
 
 
-cPlaceHolderModule::cPlaceHolderModule()
+cPlaceholderModule::cPlaceholderModule()
 {
 }
 
-cPlaceHolderModule::~cPlaceHolderModule()
+cPlaceholderModule::~cPlaceholderModule()
 {
 }
 
-void cPlaceHolderModule::arrived(cMessage *msg, int n, simtime_t t)
+void cPlaceholderModule::arrived(cMessage *msg, int n, simtime_t t)
 {
     throw cRuntimeError(this, "internal error: arrived() called");
 }
 
-void cPlaceHolderModule::scheduleStart(simtime_t t)
+void cPlaceholderModule::scheduleStart(simtime_t t)
 {
     // do nothing
 }
 
-cGate *cPlaceHolderModule::createGateObject(cGate::Desc *desc)
+cGate *cPlaceholderModule::createGateObject(cGate::Desc *desc)
 {
     if (desc->isInput())
         return new cProxyGate(desc);

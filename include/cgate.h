@@ -43,7 +43,7 @@ class  cProperties;
 class SIM_API cGate : public cObject, noncopyable
 {
     friend class cModule;
-    friend class cPlaceHolderModule;
+    friend class cPlaceholderModule;
 
   public:
     // gate type

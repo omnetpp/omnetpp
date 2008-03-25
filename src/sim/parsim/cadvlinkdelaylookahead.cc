@@ -75,7 +75,7 @@ void cAdvancedLinkDelayLookahead::startRun()
     int modId;
     for (modId=0; modId<=sim->lastModuleId(); modId++)
     {
-        cPlaceHolderModule *mod = dynamic_cast<cPlaceHolderModule *>(sim->module(modId));
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
         if (mod)
         {
             for (int gateId=0; gateId<mod->gates(); gateId++)
@@ -102,13 +102,13 @@ void cAdvancedLinkDelayLookahead::startRun()
     // step 3: fill in
     for (modId=0; modId<=sim->lastModuleId(); modId++)
     {
-        cPlaceHolderModule *mod = dynamic_cast<cPlaceHolderModule *>(sim->module(modId));
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
         if (mod)
         {
             for (int gateId=0; gateId<mod->gates(); gateId++)
             {
                 // if this is a properly connected proxygate, process it
-                // FIXME leave out gates from other cPlaceHolderModules
+                // FIXME leave out gates from other cPlaceholderModules
                 cGate *g = mod->gate(gateId);
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
                 if (pg && pg->fromGate() && pg->getRemoteProcId()>=0)

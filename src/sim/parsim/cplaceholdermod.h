@@ -28,7 +28,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup Parsim
  */
-class SIM_API cPlaceHolderModule : public cModule // so, noncopyable
+class SIM_API cPlaceholderModule : public cModule // so, noncopyable
 {
   protected:
     // internal: "virtual ctor" for cGate: creates cProxyGate
@@ -41,21 +41,20 @@ class SIM_API cPlaceHolderModule : public cModule // so, noncopyable
      * Constructor. Note that module objects should not be created directly,
      * only via their cModuleType objects. See cModule constructor for more info.
      */
-    cPlaceHolderModule();
+    cPlaceholderModule();
 
     /**
      * Destructor.
      */
-    virtual ~cPlaceHolderModule();
+    virtual ~cPlaceholderModule();
     //@}
-
-
-    //FIXME XXX override className() like in cDynamicModule(), to return NED type!
-    //XXX also add isPlaceHolder() then? otherwise it's indistinguishable from "normal" modules!
-
 
     /** @name Redefined cModule functions */
     //@{
+    /**
+     * Redefined to return true.
+     */
+    virtual bool isPlaceholder() const  {return true;}
 
     /**
      * Not implemented: throws an exception when called.

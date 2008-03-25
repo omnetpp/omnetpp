@@ -46,7 +46,7 @@ class cParsimCommunications;
  *
  * - processOutgoingMessage() is invoked when messages are sent
  * out of the partition, from gates (see cProxyGate) of placeholder modules
- * (cPlaceHolderModule) via cParsimPartition.
+ * (cPlaceholderModule) via cParsimPartition.
  *
  * @ingroup Parsim
  */

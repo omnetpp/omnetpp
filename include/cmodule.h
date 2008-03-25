@@ -188,7 +188,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: removes a submodule
     void removeSubmodule(cModule *mod);
 
-    // internal: "virtual ctor" for cGate, because in cPlaceHolderModule
+    // internal: "virtual ctor" for cGate, because in cPlaceholderModule
     // we'll need different gate objects
     virtual cGate *createGateObject(cGate::Desc *desc);
 
@@ -380,6 +380,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Redefined from cComponent to return true.
      */
     virtual bool isModule() const  {return true;}
+
+    /**
+     * Returns true if this module is a placeholder module, i.e.
+     * represents a remote module in a parallel simulation run.
+     */
+    virtual bool isPlaceholder() const  {return false;}
 
     /**
      * Returns the module containing this module. For the system module,
