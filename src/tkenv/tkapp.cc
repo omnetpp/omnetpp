@@ -1653,17 +1653,28 @@ void TOmnetTkApp::performAnimations()
     CHK(Tcl_VarEval(interp, "perform_animations", NULL));
 }
 
-void TOmnetTkApp::bubble(cModule *mod, const char *text)
+void TOmnetTkApp::bubble(cComponent *component, const char *text)
 {
-    TOmnetApp::bubble(mod, text);
+    TOmnetApp::bubble(component, text);
 
-    if (!opt_bubbles) return;
-    cModule *parentmod = mod->parentModule();
-    TInspector *insp = findInspector(parentmod,INSP_GRAPHICAL);
-    if (!insp) return;
-    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
-    assert(modinsp);
-    modinsp->bubble(mod, text);
+    if (!opt_bubbles)
+        return;
+
+    if (dynamic_cast<cModule *>(component))
+    {
+        // module bubble
+        cModule *mod = (cModule *)component;
+        cModule *parentmod = mod->parentModule();
+        TInspector *insp = findInspector(parentmod,INSP_GRAPHICAL);
+        if (!insp) return;
+        TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+        assert(modinsp);
+        modinsp->bubble(mod, text);
+    }
+    else if (dynamic_cast<cChannel *>(component))
+    {
+        //TODO channel bubble
+    }
 }
 
 void TOmnetTkApp::putmsg(const char *str)

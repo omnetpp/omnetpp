@@ -22,6 +22,7 @@
 #include <assert.h>
 
 #include "modinsp.h"
+#include "cchannel.h"
 #include "tkapp.h"
 #include "tklib.h"
 #include "inspfactory.h"
@@ -537,7 +538,8 @@ void TGraphicalModWindow::redrawModules()
                 sprintf(indices,"%d %d %d %d",
                         gate->index(), gate->size(),
                         dest_gate->index(), dest_gate->size());
-                const char *dispstr = gate->hasDisplayString() ? gate->displayString().toString() : "";
+                cChannel *chan = gate->channel();
+                const char *dispstr = (chan && chan->hasDisplayString()) ? chan->displayString().toString() : "";
 
                 CHK(Tcl_VarEval(interp, "draw_connection ",
                         canvas, " ",
@@ -1101,7 +1103,8 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
         char srcgateptr[32], destgateptr[32];
         ptrToStr(g,srcgateptr);
         ptrToStr(g->toGate(),destgateptr);
-        const char *dispstr = g->hasDisplayString() ? g->displayString().toString() : "";
+        cChannel *chan = g->channel();
+        const char *dispstr = (chan && chan->hasDisplayString()) ? chan->displayString().toString() : "";
         CHK(Tcl_VarEval(interp, "draw_conn ",
                       canvas, " ",
                       srcgateptr, " ",

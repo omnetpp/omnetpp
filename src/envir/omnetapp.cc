@@ -801,11 +801,19 @@ cConfiguration *TOmnetApp::getConfig()
 
 //-------------------------------------------------------------
 
-void TOmnetApp::bubble(cModule *mod, const char *text)
+void TOmnetApp::bubble(cComponent *component, const char *text)
 {
     if (feventlog)
     {
-        EventLogWriter::recordBubbleEntry_id_txt(feventlog, mod->id(), text);
+        if (dynamic_cast<cModule *>(component))
+        {
+            cModule *mod = (cModule *)component;
+            EventLogWriter::recordBubbleEntry_id_txt(feventlog, mod->id(), text);
+        }
+        else if (dynamic_cast<cChannel *>(component))
+        {
+            //TODO
+        }
     }
 }
 

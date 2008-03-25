@@ -617,8 +617,9 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
        } else if (dynamic_cast<cMessage *>(object)) {
            Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
        } else if (dynamic_cast<cGate *>(object)) {
-           cGate *g = dynamic_cast<cGate *>(object);
-           const char *str = g->hasDisplayString() ? g->displayString().toString() : "";
+           cGate *gate = dynamic_cast<cGate *>(object);
+           cChannel *chan = gate->channel();
+           const char *str = (chan && chan->hasDisplayString()) ? chan->displayString().toString() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;

@@ -316,4 +316,3 @@ bool cGate::isRouteOK() const
            destinationGate()->ownerModule()->isSimple();
 }
 
-

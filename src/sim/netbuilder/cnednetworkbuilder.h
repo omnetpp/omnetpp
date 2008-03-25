@@ -75,7 +75,6 @@ class SIM_API cNEDNetworkBuilder
     std::vector<std::string> findTypeWithInterface(const char *nedtypename, const char *interfaceqname);
 
     void addSubmodule(cModule *modp, SubmoduleElement *submod);
-    void setConnDisplayString(cGate *srcgatep);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
     void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent);

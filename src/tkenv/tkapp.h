@@ -149,7 +149,7 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
       virtual void displayStringChanged(cComponent *component);
 
       virtual bool isGUI() {return true;}
-      virtual void bubble(cModule *mod, const char *text);
+      virtual void bubble(cComponent *component, const char *text);
 
       virtual void putmsg(const char *s);
       virtual void sputn(const char *s, int n);

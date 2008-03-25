@@ -239,7 +239,7 @@ class ENVIR_API TOmnetApp
      */
     //@{
     virtual bool isGUI() = 0;
-    virtual void bubble(cModule *mod, const char *text);
+    virtual void bubble(cComponent *component, const char *text);
 
     virtual void putmsg(const char *s) = 0;
     virtual void sputn(const char *s, int n);

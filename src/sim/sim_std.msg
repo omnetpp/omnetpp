@@ -119,6 +119,8 @@ class cComponent extends cDefaultList
 
 class cChannel extends cComponent
 {
+        @omitGetVerb(true);
+        cDisplayString displayString @group(general) @hint(controls appearance of this channel in the GUI);
 }
 
 class cBasicChannel extends cChannel
@@ -187,7 +189,6 @@ class cGate extends cNoncopyableOwnedObject
         int id @group(general) @hint(gate id, unique within this module);
         bool isVector @group(general) @hint(whether this gate is part of a gate vector);
         int index @group(general) @hint(if vector: index of this gate within its gate vector);
-        cDisplayString displayString @group(general) @hint(affects appearance of connection arrow on the "to" side);
 
         cChannel *channel @group(connection) @hint(channel object associated with the connection);
         bool isBusy @group(state) @hint(only if the connection has a channel with nonzero datarate);
