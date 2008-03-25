@@ -67,6 +67,11 @@
 	  sending on a busy gate (when simTime() < gate->transmissionFinishes()) results in an
 	  error. Thus, using a special transmitter module (with an internal queue) is now
 	  sort of mandatory when channels with data rate are in use.
+	- setting channel parameters from the ini file:
+	   (1) make the parameter input, e.g.: 
+	         a.out --> { delay=default(0); } --> b.in;
+	   (2) add <fromgate-fullpath>.channel.<paramname> = <value> into the ini file, e.g.:
+	         **.a.out.channel.delay = 10ms
 	- TODO: make it easier to find the first gate with datarate (as g->transmissionFinishes()
 	  is "non-transitive"). Add another method? or make transmissionFinishes() transitive?
 
