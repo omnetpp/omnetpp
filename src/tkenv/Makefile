@@ -65,7 +65,7 @@ $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
-	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAGS)
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(LDFLAGS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
@@ -343,13 +343,13 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cconfiguration.h
 $O/modinsp.o: modinsp.cc \
   modinsp.h \
+  ../../include/cchannel.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
   arrow.h \
   layouterenv.h \
   ../../include/csimplemodule.h \
-  ../../include/cchannel.h \
   ../../include/cgate.h \
   ../../include/cmessage.h \
   ../../include/cpar.h \
@@ -387,7 +387,6 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
-  ../../include/ccomponenttype.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
@@ -397,7 +396,8 @@ $O/modinsp.o: modinsp.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfiguration.h
+  ../../include/cconfiguration.h \
+  ../../include/ccomponenttype.h
 $O/objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -535,10 +535,12 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cstddev.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../../include/cchannel.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
+  ../../include/ccomponenttype.h \
   inspector.h \
   tkutil.h
 $O/tkapp.o: tkapp.cc \
@@ -589,11 +591,11 @@ $O/tkapp.o: tkapp.cc \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
+  ../../include/cchannel.h \
   ../envir/args.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   tkutil.h \
-  ../../include/cchannel.h \
   ../../include/coutvector.h \
   ../../include/cstatistic.h \
   ../../include/cdensityestbase.h \
@@ -664,6 +666,8 @@ $O/tklib.o: tklib.cc \
   tkapp.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../../include/cchannel.h \
+  ../../include/cmodule.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cenvir.h \
@@ -686,7 +690,16 @@ $O/tklib.o: tklib.cc \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cclassfactory.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/csimulation.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h
 $O/tkutil.o: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
@@ -721,10 +734,12 @@ $O/tkutil.o: tkutil.cc \
   ../../include/ccoroutine.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../../include/cchannel.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
+  ../../include/ccomponenttype.h \
   ../envir/matchableobject.h
 $O/visitor.o: visitor.cc \
   ../../include/cenvir.h \

@@ -57,12 +57,12 @@ $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
-	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAGS)
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(LDFLAGS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(SO_LIB_SUFFIX)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS) envir-implib
 	@mkdir -p $L
-	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(LDFLAGS)
+	$(SHLIB_LD) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAGS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
@@ -514,6 +514,7 @@ $O/omnetapp.o: omnetapp.cc \
   ../../include/random.h \
   ../../include/crng.h \
   ../../include/cmodule.h \
+  ../../include/cchannel.h \
   ../../include/ccomponenttype.h \
   ../../include/cmessage.h \
   ../../include/cdisplaystring.h \
