@@ -1,0 +1,86 @@
+%description:
+Test bidirectional connection to parent, with scalar gate, gate indexing and gate++
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Core
+{
+    gates:
+        inout g;
+        inout gv1[];
+        inout gv2[];
+
+    connections allowunconnected:
+}
+
+module Node
+{
+    gates:
+        inout g;
+        inout gv1[];
+        inout gv2[];
+    submodules:
+        c: Core {
+            gates:
+                gv1[sizeof(gv1)];
+        }
+    connections:
+        g <--> c.g;
+        for i=0..sizeof(gv1)-1 {
+            c.gv1[i] <--> gv1[i];
+        }
+        for i=0..sizeof(gv2)-1 {
+            c.gv2++ <--> gv2++;
+        }
+}
+
+network Test {
+    submodules:
+        dump: Dump;
+        node: Node {
+            gates:
+                gv1[2];
+                gv2[2];
+        }
+
+    connections allowunconnected:
+}
+
+
+%file: test.cc
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.node: Node {
+            gates:
+                 0 g$i: not connected
+                 1 g$o: not connected
+                 2 gv1$i[0]: not connected
+                 3 gv1$i[1]: not connected
+                 4 gv1$o[0]: not connected
+                 5 gv1$o[1]: not connected
+                 6 gv2$i[0]: not connected
+                 7 gv2$i[1]: not connected
+                 8 gv2$o[0]: not connected
+                 9 gv2$o[1]: not connected
+            submodules:
+                module Test.node.c: Core {
+                    gates:
+                         0 g$i: <-- <parent>.g$i
+                         1 g$o: --> <parent>.g$o
+                         2 gv1$i[0]: <-- <parent>.gv1$i[0]
+                         3 gv1$i[1]: <-- <parent>.gv1$i[1]
+                         4 gv1$o[0]: --> <parent>.gv1$o[0]
+                         5 gv1$o[1]: --> <parent>.gv1$o[1]
+                         6 gv2$o[0]: --> <parent>.gv2$o[0]
+                         7 gv2$o[1]: --> <parent>.gv2$o[1]
+                         8 gv2$i[0]: <-- <parent>.gv2$i[0]
+                         9 gv2$i[1]: <-- <parent>.gv2$i[1]
+                }
+        }
+}

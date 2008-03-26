@@ -1,0 +1,38 @@
+%description:
+Test bidirectional connection with scalar gates
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node {
+    gates:
+        inout g;
+    connections allowunconnected:
+}
+
+network Test {
+    submodules:
+        n1: Node;  
+        n2: Node;
+        dump: Dump;
+    connections:
+        n1.g <--> n2.g;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.n1: Node {
+            gates:
+                 0 g$i: <-- n2.g$o
+                 1 g$o: --> n2.g$i
+        }
+        module Test.n2: Node {
+            gates:
+                 0 g$i: <-- n1.g$o
+                 1 g$o: --> n1.g$i
+        }
+}

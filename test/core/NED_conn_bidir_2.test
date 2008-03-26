@@ -1,0 +1,48 @@
+%description:
+Test bidirectional connection with indexed gates
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node {
+    parameters:
+        int n = 2;
+    gates:
+        inout g[n];
+    connections allowunconnected:
+}
+
+network Test {
+    submodules:
+        n1: Node;  
+        n2: Node;
+        dump: Dump;
+    connections allowunconnected:
+        n1.g[0] <--> n2.g[0];
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.n1: Node {
+            parameters:
+                n = 2
+            gates:
+                 0 g$i[0]: <-- n2.g$o[0]
+                 1 g$i[1]: not connected
+                 2 g$o[0]: --> n2.g$i[0]
+                 3 g$o[1]: not connected
+        }
+        module Test.n2: Node {
+            parameters:
+                n = 2
+            gates:
+                 0 g$i[0]: <-- n1.g$o[0]
+                 1 g$i[1]: not connected
+                 2 g$o[0]: --> n1.g$i[0]
+                 3 g$o[1]: not connected
+        }
+}
