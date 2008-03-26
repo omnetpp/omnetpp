@@ -4678,7 +4678,7 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
 
 # on mingw/msys try a different path too
 if test $zlib_ok = no -a "$mingw" = yes; then
-    ZLIB_LIBS="-L/usr/lib -lz"
+    ZLIB_LIBS="-L/usr/bin -lzlib1"
     ZLIB_CFLAGS="-I/usr/include"
 
    save_CXXFLAGS=$CXXFLAGS
