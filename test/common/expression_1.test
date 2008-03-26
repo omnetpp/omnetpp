@@ -6,34 +6,34 @@ Tests the expression evaluation class
 
 %global:
 
-class {Variable} : public Expression::Functor
+class Variable : public Expression::Functor
 {
   private:
     std::string varname;
   public:
-    {Variable}(const char *name) {varname = name;}
-    virtual ~{Variable}() { }
-    virtual Expression::Functor *dup() const {return new {Variable}(varname.c_str());}
+    Variable(const char *name) {varname = name;}
+    virtual ~Variable() { }
+    virtual Expression::Functor *dup() const {return new Variable(varname.c_str());}
     virtual const char *name() const {return varname.c_str();}
     virtual const char *argTypes() const {return "";}
-    virtual char returnType() const {return Expression::StkValue::DBL;}
-    virtual Expression::StkValue evaluate(Expression::StkValue args[], int numargs) {return (double)(varname[1]-'0');}
+    virtual char returnType() const {return Expression::Value::DBL;}
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return (double)(varname[1]-'0');}
     virtual std::string toString(std::string args[], int numargs) {return name();}
 };
 
-class {Resolver} : public Expression::Resolver
+class Resolver : public Expression::Resolver
 {
   public:
     virtual Expression::Functor *resolveVariable(const char *varname);
     virtual Expression::Functor *resolveFunction(const char *funcname, int argcount);
 };
 
-Expression::Functor *{Resolver}::resolveVariable(const char *varname)
+Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
-    return new {Variable}(varname);
+    return new Variable(varname);
 }
 
-Expression::Functor *{Resolver}::resolveFunction(const char *funcname, int argcount)
+Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcount)
 {
     if (MathFunction::supports(funcname))
         return new MathFunction(funcname);
@@ -46,7 +46,7 @@ static void eval(const char *txt, char type)
     try {
         ev << txt << " -> ";
         Expression expr;
-        {Resolver} resolver;
+        Resolver resolver;
         expr.parse(txt, &resolver);
         switch (type) {
           case 'B': ev << (expr.boolValue()?"true":"false"); break;
