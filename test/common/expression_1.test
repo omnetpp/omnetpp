@@ -1,9 +1,10 @@
 %description:
 Tests the expression evaluation class
 
-%global:
+%includes:
 #include "expression.h"
 
+%global:
 
 class {Variable} : public Expression::Functor
 {

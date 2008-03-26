@@ -1,13 +1,15 @@
 %description:
 Tests pattern matcher class used e.g. for ini file wildcard resolution.
 
-%global:
+%includes:
 
 #ifdef _MSC_VER
 #pragma warning(disable:4786)
 #endif
 
 #include "patternmatcher.h"
+
+%global:
 
 // global vars
 static bool dottedpath;

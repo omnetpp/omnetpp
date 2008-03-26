@@ -1,8 +1,10 @@
 %description:
 Tests stringutil.h functions
 
-%global:
+%includes:
 #include "stringutil.h"
+
+%global:
 
 static void parseQuoted(const char *txt)
 {

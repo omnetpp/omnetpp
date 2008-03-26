@@ -1,8 +1,10 @@
 %description:
 Tests tidyFilename() h function
 
-%global:
+%includes:
 #include "fileutil.h"
+
+%global:
 
 static void tidy(const char *fname, bool slashes=true)
 {

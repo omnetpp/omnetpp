@@ -1,9 +1,10 @@
 %description:
 Tests the UnitConversion class
 
-%global:
-
+%includes:
 #include "unitconversion.h"
+
+%global:
 
 static void parseAndPrint(const char *text, const char *expectedUnit=NULL)
 {

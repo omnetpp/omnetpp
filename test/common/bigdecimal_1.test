@@ -1,9 +1,11 @@
 %description:
 Tests the BigDecimal::parse() method
 
-%global:
+%includes:
 
 #include "bigdecimal.h"
+
+%global:
 
 static void parseAndPrint(const char *text)
 {

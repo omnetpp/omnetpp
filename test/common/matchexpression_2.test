@@ -1,10 +1,11 @@
 %description:
 Tests MatchExpression class.
 
-%global:
-
+%includes:
 #include "matchexpression.h"
 #include "matchableobject.h"
+
+%global:
 
 // global vars
 static bool dottedpath;

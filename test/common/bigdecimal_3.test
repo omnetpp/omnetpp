@@ -1,10 +1,12 @@
 %description:
 Tests the BigDecimal comparison operators
 
-%global:
+%includes:
 
 #include <iostream>
 #include "bigdecimal.h"
+
+%global:
 
 static void compare(const char *x, const char *y)
 {

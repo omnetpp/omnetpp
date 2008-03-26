@@ -1,7 +1,7 @@
 %description:
 Test string quoting/parsing by converting random strings back and forth
 
-%global:
+%includes:
 #include "stringutil.h"
 #include "lcgrandom.h"
 

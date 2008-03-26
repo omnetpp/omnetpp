@@ -1,7 +1,7 @@
 %description:
 Test LCGRandom
 
-%global:
+%includes:
 #include "lcgrandom.h"
 
 %activity:
