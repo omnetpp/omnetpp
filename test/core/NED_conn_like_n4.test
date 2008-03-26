@@ -3,12 +3,18 @@ Test "like" connections: "ambiguous channel type"
 
 %file: package1/test.ned
 package package1;
+
+import IFooChannel;
+
 channel FooChannel extends ned.BasicChannel like IFooChannel
 {
 }
 
 %file: package2/test.ned
 package package2;
+
+import IFooChannel;
+
 channel FooChannel extends ned.BasicChannel like IFooChannel
 {
 }

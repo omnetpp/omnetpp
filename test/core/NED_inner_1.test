@@ -1,0 +1,33 @@
+%description:
+Test inner types, and that they see each other
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test {
+    types:
+        module Core {
+        }
+        module Node {
+            submodules:
+                c: Core;
+        }
+    submodules:
+        node: Node;
+        dump: Dump;
+}
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.node: Test.Node {
+            submodules:
+                module Test.node.c: Test.Core {
+                }
+        }
+}
