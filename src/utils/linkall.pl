@@ -20,6 +20,7 @@ $verbose = 0;
 $DUMPBIN = "dumpbin";
 $LINKER = "link";
 $DUMPFILE = "dumpbin.out";
+$tempfilename ="linkall.tmp";
 
 @knownlibs = (
     "sim_std.lib", "envir.lib", "cmdenv.lib", "tkenv.lib",
@@ -45,9 +46,9 @@ foreach $arg (@ARGV) {
 $SIG{'INT'} = 'removeTempFiles';
 
 # process libs
-@tempfiles = ();
-$i = 0;
+$content = "";
 foreach $arg (@ARGV) {
+    $content .= $arg."\n";
     if ($arg =~ /.*\.lib$/i) {
         $lib = $arg;
 
@@ -94,27 +95,22 @@ foreach $arg (@ARGV) {
         # (actually, we only select symbols that come from EXECUTE_ON_STARTUP
         # macros -- adding all symbols would send the Microsoft linker to the
         # floor)
-        $symbols = "";
         foreach $line (split("\n", $txt)) {
             if ($line =~ /^ +[0-9A-Fa-f]+ +(.*__onstartup_func_.*)$/) {
-                 $symbols .= "/include:$1\n"
+                 $content .= "/include:$1\n"
             }
         }
-        $filename = $arg . "-" . $i++;
-        $filename =~ s/[^A-Z0-9_]/-/gi;
-        $filename .= ".opt";
-        push(@tempfiles, $filename);
-        open(OUT, ">".$filename) || error("cannot open $filename for write");
-        print OUT $symbols."\n" || error("cannot write $filename"); # do NOT remove "\n" -- would cause error for empty files
-        close(OUT) || error("cannot close $filename");
     }
+    
 }
+open(OUT, ">".$tempfilename) || error("cannot open $tempfilename for write");
+print OUT $content."\n" || error("cannot write $tempfilename"); # do NOT remove "\n" -- would cause error for empty files
+close(OUT) || error("cannot close $tempfilename");
 
 # put together linker command line and invoke linker
 @cmdline = ($LINKER);
-foreach $tempfile (@tempfiles) {push(@cmdline, "\@$tempfile");}
-foreach $arg (@ARGV) {push(@cmdline, $arg);}
-print("invoking linker: ".join(' ', @cmdline)) if $verbose;
+push(@cmdline, "@".$tempfilename);
+print("invoking linker: ".join(' ', @cmdline) . "\n") if $verbose;
 system($ENV{COMSPEC}, ("/c", join(' ', @cmdline)))==0 || error("error invoking linker"); # join is needed for mingw/perl
 
 # remove temporary linker command files
@@ -129,9 +125,7 @@ sub error {
 }
 
 sub removeTempFiles {
-    foreach $tempfile (@tempfiles) {
-        unlink $tempfile || print STDERR "linkall: cannot remove temp file $tempfile";
-    }
+        unlink $tempfilename || print STDERR "linkall: cannot remove temp file $tempfilename";
 }
 
 

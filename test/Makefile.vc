@@ -1,0 +1,8 @@
+
+all: test_core
+
+test_core:
+	cd core && runtest.cmd
+
+clean:
+	-del /q core\work 2>nul

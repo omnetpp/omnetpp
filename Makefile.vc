@@ -126,7 +126,7 @@ docu:
 #
 tests: check-env base
 	@echo ===== Running tests ====
-        @cd /d $(OMNETPP_TEST_DIR:/=\) && call runtest.cmd
+        @cd /d $(OMNETPP_TEST_DIR:/=\) && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #=====================================================================
 #
@@ -159,7 +159,7 @@ clean:
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	-for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
-	-cd $(OMNETPP_TEST_DIR:/=\) && $(MAKE) clean
+	-cd $(OMNETPP_TEST_DIR:/=\) && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 
 cleanall: clean
 	-del /s /q $(OMNETPP_BIN_DIR:/=\)\*.* 2>nul
