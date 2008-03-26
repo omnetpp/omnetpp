@@ -30,6 +30,8 @@
 #include "cboolparimpl.h"
 #include "cstringparimpl.h"
 #include "cdisplaystring.h"
+#include "cconfiguration.h"
+#include "cconfigkey.h"
 
 #include "nedelements.h"
 #include "nederror.h"
@@ -50,6 +52,8 @@
 #include "patternmatcher.h"
 
 USING_NAMESPACE
+
+Register_PerObjectConfigEntry(CFGID_TYPE_NAME, "type-name", CFG_STRING, NULL, "Specifies type for submodules and channels declared with 'like <>'.");
 
 /*
   FIXME FIXME FIXME
@@ -450,10 +454,20 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
         else
         {
             ExpressionElement *likeParamExpr = findExpression(submod, "like-param");
-            ASSERT(likeParamExpr); // either attr or expr must be there
-            //FIXME if module vector: store it as expression, don't evaluate it now,
-            //      because it might be random etc!!!
-            submodtypename = evaluateAsString(likeParamExpr, modp, false);
+            if (likeParamExpr)
+            	//FIXME if module vector: store it as expression, don't evaluate it now,
+            	//      because it might be random etc!!!
+            	submodtypename = evaluateAsString(likeParamExpr, modp, false);
+            else {
+            	// TODO: add index
+            	std::string key = modp->fullPath() + "." + submodname;
+            	const char *value = ev.config()->getPerObjectConfigValue(key.c_str(), CFGID_TYPE_NAME->name());
+            	
+            	if (value)
+            		submodtypename = value;
+            	else
+                    throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s", submodname, key.c_str(), CFGID_TYPE_NAME->name());
+            }
         }
     }
 
