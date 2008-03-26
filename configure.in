@@ -609,7 +609,7 @@ fi
 OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
 # on mingw/msys try a different path too
 if test $zlib_ok = no -a "$mingw" = yes; then
-    ZLIB_LIBS="-L/usr/lib -lz"
+    ZLIB_LIBS="-L/usr/bin -lzlib1"
     ZLIB_CFLAGS="-I/usr/include" 
     OPP_CHECK_LIB(zlib, zlib.h, gzopen("",""), $ZLIB_CFLAGS, $ZLIB_LIBS, zlib_ok)
 fi
@@ -1067,7 +1067,7 @@ fi
 # with Cygwin because Windows locates DLLs another way.
 #----------------------
 
-if test "$BUILD_SHARED_LIBS" = yes -a "$cygwin" != yes; then
+if test "$BUILD_SHARED_LIBS" = yes -a "$cygwin" != yes -a "$mingw" != yes; then
   if echo $LD_LIBRARY_PATH | grep `eval echo $OMNETPP_LIB_DIR` >/dev/null; then
     echo "Your LD_LIBRARY_PATH is set. Good!"
   else
@@ -1084,9 +1084,10 @@ environment variable.
 Add the following line to your .profile or .bash_profile (provided you use bash):
   export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
 
-If you prefer static libraries, edit configure.user and change the
-BUILD_SHARED_LIBS=yes line to BUILD_SHARED_LIBS=no, then delete the shared
-libraries, re-run configure and make.
+If you prefer static libraries, edit Makefile.inc and change the
+BUILD_SHARED_LIBS=yes line to BUILD_SHARED_LIBS=no or define an environment 
+variable as BUILD_SHARED_LIBS=no, then delete the shared libraries, re-run make.
+
 EOT
   fi
 fi
