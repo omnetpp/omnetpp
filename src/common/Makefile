@@ -29,7 +29,7 @@ IMPLIBS=
 OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/stringpool.o $O/stringtokenizer.o $O/fnamelisttokenizer.o \
       $O/expression.o $O/lex.expressionyy.o $O/expression.tab.o \
-      $O/matchexpression.o $O/lex.matchexpressionyy.o $O/matchexpression.tab.o \
+      $O/matchexpression.o $O/matchexpressionlexer.o $O/matchexpression.tab.o \
       $O/patternmatcher.o $O/unitconversion.o $O/displaystring.o $O/fileglobber.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
       $O/enumstr.o
@@ -75,12 +75,10 @@ lex.expressionyy.cc: expression.lex expression.tab.h
 	mv lex.expressionyy.c lex.expressionyy.cc
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
-	$(YACC) -p matchexpressionyy -b matchexpression -d matchexpression.y
+	$(YACC) --no-lines -p matchexpressionyy -b matchexpression -d matchexpression.y
 	mv matchexpression.tab.c matchexpression.tab.cc
 
-lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
-	$(LEX) -Pmatchexpressionyy matchexpression.lex
-	mv lex.matchexpressionyy.c lex.matchexpressionyy.cc
+matchexpressionlexer.cc : matchexpression.tab.h
 
 depend:
 	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc

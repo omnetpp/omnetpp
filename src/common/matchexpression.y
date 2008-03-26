@@ -22,6 +22,8 @@
 %left AND_
 %left NOT_
 
+%pure_parser
+
 %start expression
 
 %{
@@ -37,40 +39,34 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-#define YYSTYPE  char *
-
-#define yyin matchexpressionyyin
-#define yyout matchexpressionyyout
-#define yyrestart matchexpressionyyrestart
-#define yy_scan_string matchexpressionyy_scan_string
-#define yy_delete_buffer matchexpressionyy_delete_buffer
-extern FILE *yyin;
-extern FILE *yyout;
-struct yy_buffer_state;
-struct yy_buffer_state *yy_scan_string(const char *str);
-void yy_delete_buffer(struct yy_buffer_state *);
-void yyrestart(FILE *);
-int yylex();
 void yyerror (const char *s);
-int yyparse();
 
-//#include "expryydefs.h"
 #include "matchexpression.h"
+#include "matchexpressionlexer.h"
 #include "patternmatcher.h"
 #include "exception.h"
 
-using OPP::MatchExpression;
-using OPP::PatternMatcher;
-using OPP::opp_runtime_error;
+#define YYSTYPE  char *
 
-
-static struct MatchExpressionParserVars {
+typedef struct _MatchExpressionParserState {
     std::vector<MatchExpression::Elem> *elemsp;
     bool dottedpath;
     bool fullstring;
     bool casesensitive;
-} state;
+    MatchExpressionLexer *lexer;
+} MatchExpressionParserState;
 
+#define YYPARSE_PARAM statePtr 
+#define YYLEX_PARAM statePtr
+inline int matchexpressionyylex (YYSTYPE *yylval, void *statePtr)
+{
+    return ((MatchExpressionParserState*)statePtr)->lexer->getNextToken(yylval);
+}
+
+
+using OPP::MatchExpression;
+using OPP::PatternMatcher;
+using OPP::opp_runtime_error;
 
 %}
 
@@ -84,16 +80,20 @@ expr
         : fieldpattern
         | '(' expr ')'
         | NOT_ expr
-                { state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::NOT)); }
+                { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
+                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::NOT)); }
         | expr AND_ expr
-                { state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::AND)); }
+                { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
+                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::AND)); }
         | expr OR_ expr
-                { state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
+                { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
+                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
         ;
 
 fieldpattern
         : STRINGLITERAL
                 {
+                    MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
                     PatternMatcher *p = new PatternMatcher();
                     p->setPattern($1, state.dottedpath, state.fullstring, state.casesensitive);
                     state.elemsp->push_back(MatchExpression::Elem(p));
@@ -101,6 +101,7 @@ fieldpattern
                 }
         | STRINGLITERAL '(' STRINGLITERAL ')'
                 {
+                    MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
                     PatternMatcher *p = new PatternMatcher();
                     p->setPattern($3, state.dottedpath, state.fullstring, state.casesensitive);
                     state.elemsp->push_back(MatchExpression::Elem(p, $1));
@@ -116,32 +117,18 @@ fieldpattern
 void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, const char *pattern,
                                    bool dottedpath, bool fullstring, bool casesensitive)
 {
-    yyin = NULL;
-    yyout = stderr; // not used anyway
-
-    // alloc buffer
-    struct yy_buffer_state *handle = yy_scan_string(pattern);
-    if (!handle)
-        throw opp_runtime_error("Error during match expression parsing: unable to allocate work memory");
-
+	MatchExpressionLexer *lexer = new MatchExpressionLexer(pattern);
+	
     // store options
+    MatchExpressionParserState state;
     state.elemsp = &elems;
     state.dottedpath = dottedpath;
     state.fullstring = fullstring;
     state.casesensitive = casesensitive;
+    state.lexer = lexer;
 
     // parse
-    int ret;
-    try
-    {
-        ret = yyparse();
-    }
-    catch (std::exception& e)
-    {
-        yy_delete_buffer(handle);
-        throw;
-    }
-    yy_delete_buffer(handle);
+    yyparse(&state);
 }
 
 void yyerror(const char *s)

@@ -21,7 +21,7 @@ static void match(const char *pattern, const char *line)
         bool result = me.matches(&lineObject);
         ev << (result?"true":"false") << "\n";
     } catch (std::exception& e) {
-        ev << "ERROR: " << e.what() << "\n";
+        ev << "ERROR\n";
     }
 }
 

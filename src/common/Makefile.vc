@@ -26,7 +26,7 @@ COPTS=$(CFLAGS) -I"$(OMNETPP_INCL_DIR)/platdep" -I. /Fd"$O/$(LIBNAME).pdb"
 OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/stringpool.obj $O/stringtokenizer.obj $O/fnamelisttokenizer.obj \
       $O/expression.obj $O/lex.expressionyy.obj $O/expression.tab.obj \
-      $O/matchexpression.obj $O/lex.matchexpressionyy.obj $O/matchexpression.tab.obj \
+      $O/matchexpression.obj $O/matchexpressionlexer.obj $O/matchexpression.tab.obj \
       $O/patternmatcher.obj $O/unitconversion.obj $O/displaystring.obj $O/fileglobber.obj \
       $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj \
       $O/enumstr.obj
@@ -73,15 +73,18 @@ lex.expressionyy.cc: expression.lex expression.tab.h
 	del lex.expressionyy.c
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
-	$(YACC:/=\) -p matchexpressionyy -b matchexpression -d matchexpression.y
+	$(YACC:/=\) --no-lines -p matchexpressionyy -b matchexpression -d matchexpression.y
 	copy matchexpression.tab.c matchexpression.tab.cc
 	del matchexpression.tab.c
 
-lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
-	$(LEX:/=\) -Pmatchexpressionyy matchexpression.lex
-	$(FIXFLEX) lex.matchexpressionyy.c
-	copy lex.matchexpressionyy.c lex.matchexpressionyy.cc
-	del lex.matchexpressionyy.c
+matchexpressionlexer.cc: matchexpression.tab.h
+
+
+#lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
+#	$(LEX:/=\) -Pmatchexpressionyy matchexpression.lex
+#	$(FIXFLEX) lex.matchexpressionyy.cc
+#	copy lex.matchexpressionyy.c lex.matchexpressionyy.cc
+#	del lex.matchexpressionyy.c
 
 $(OBJS): $O
 
@@ -168,12 +171,6 @@ $O/lex.expressionyy.obj: lex.expressionyy.cc \
   expression.h \
   commondefs.h \
   commonutil.h
-$O/lex.matchexpressionyy.obj: lex.matchexpressionyy.cc \
-  stringutil.h \
-  matchexpression.tab.h \
-  commondefs.h \
-  commonutil.h \
-  exception.h
 $O/linetokenizer.obj: linetokenizer.cc \
   exception.h \
   linetokenizer.h \
@@ -186,9 +183,17 @@ $O/matchexpression.obj: matchexpression.cc \
   exception.h
 $O/matchexpression.tab.obj: matchexpression.tab.cc \
   matchexpression.h \
+  matchexpressionlexer.h \
   patternmatcher.h \
   exception.h \
   commondefs.h
+$O/matchexpressionlexer.obj: matchexpressionlexer.cc \
+  stringutil.h \
+  matchexpression.tab.h \
+  matchexpressionlexer.h \
+  commondefs.h \
+  commonutil.h \
+  exception.h
 $O/patternmatcher.obj: patternmatcher.cc \
   opp_ctype.h \
   patternmatcher.h \
