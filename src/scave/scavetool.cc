@@ -67,6 +67,7 @@ void printUsage()
        "    -m   print list of unique module name\n"
        "    -r   print list of unique run Ids\n"
        "    -c   print list of unique configuration Ids (aka run numbers)\n"
+       //TODO other attributes
        " `info' command:\n"
        "    -b   list filter names only (brief)\n"
        "    -s   list filter names with parameter list (summary)\n"
@@ -414,10 +415,10 @@ int infoCommand(int argc, char **argv)
             else
             {
                 // print filter description and parameter descriptions
-                printf(":  %s\n", nodeType->description());
+                printf(":\n%s\n", opp_indentlines(opp_breaklines(nodeType->description(),76).c_str(),"  ").c_str());
                 for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it)
                 {
-                    printf("   - %s: %s\n", it->first.c_str(), it->second.c_str());
+                    printf("    - %s: %s\n", it->first.c_str(), it->second.c_str());
                 }
                 printf("\n");
             }

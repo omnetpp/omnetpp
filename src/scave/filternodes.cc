@@ -807,7 +807,7 @@ const char *CompareNodeType::description() const
 
 void CompareNodeType::getAttributes(StringMap& attrs) const
 {
-    attrs["threshold"] = "constaint to compare against";
+    attrs["threshold"] = "constant to compare against";
     attrs["ifLess"] = "number to output if y < threshold (empty=no change)";
     attrs["ifEqual"] = "number to output if y == threshold (empty=no change)";
     attrs["ifGreater"] = "number to output if y > threshold (empty=no change)";
