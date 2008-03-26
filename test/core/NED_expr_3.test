@@ -67,6 +67,11 @@ simple Test
 
         double p46 = (true ? 5 : 2);  // the C/C++ ``inline if''
         double p47 = (false ? 5 : 2); // the C/C++ ``inline if''
+
+        string p48 = "" + "";      // concatenation
+        string p49 = "Hello" + ""; // concatenation
+        string p50 = "" + "Hello"; // concatenation
+        string p51 = "He" + "llo"; // concatenation
 }
 
 %file: test.cc
@@ -86,8 +91,11 @@ Define_Module(Test);
 
 void Test::activity()
 {
-    for (int i=0; i<params(); i++)
-        ev << par(i).name() << "=" << par(i).doubleValue() << endl;
+    for (int i=0; i<params(); i++) {
+        ev << par(i).name() << "=";
+        par(i).isNumeric() ? ev << par(i).doubleValue() : ev << par(i).stringValue();
+        ev << endl;
+    }
     ev << ".\n";
 }
 
@@ -140,4 +148,8 @@ p44=1
 p45=0
 p46=5
 p47=2
+p48=
+p49=Hello
+p50=Hello
+p51=Hello
 .
