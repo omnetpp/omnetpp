@@ -108,12 +108,12 @@ double ExpressionFilterNode::getVariable(const char *varname)
 
 const char *ExpressionFilterNodeType::description() const
 {
-    return "Evaluates an arbitrary expression";
+    return "Evaluates an arbitrary expression. Use x for time, y for value, and xprev, yprev for the previous values."; //FIXME use "t" and "x" instead?
 }
 
 void ExpressionFilterNodeType::getAttributes(StringMap& attrs) const
 {
-    attrs["expression"] = "The expression to evaluate. Use x for time and y for value, and xprev, yprev for the previous values."; //FIXME use "t" and "x" instead?
+    attrs["expression"] = "The expression to evaluate.";
 }
 
 Node *ExpressionFilterNodeType::create(DataflowManager *mgr, StringMap& attrs) const
