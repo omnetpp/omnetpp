@@ -70,7 +70,7 @@ void cDynamicExpression::Value::operator=(const cPar& par)
       case cPar::BOOL: *this = par.boolValue(); break;
       case cPar::DOUBLE: *this = par.doubleValue(); dblunit = par.unit(); break;
       case cPar::LONG: *this = par.doubleValue(); break;
-      case cPar::STRING: *this = par.stringValue(); break;
+      case cPar::STRING: *this = par.stdstringValue(); break;
       case cPar::XML: *this = par.xmlValue(); break;
       default: throw cRuntimeError("internal error: bad cPar type: %s", par.fullPath().c_str());
     }

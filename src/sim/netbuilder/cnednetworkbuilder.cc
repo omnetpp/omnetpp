@@ -435,34 +435,28 @@ std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *n
     return candidates;
 }
 
-void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
+std::string cNEDNetworkBuilder::getSubmoduleType(cModule *modp, SubmoduleElement *submod, int index)
 {
-    // create submodule
     const char *submodname = submod->getName();
     std::string submodtypename;
-    if (opp_isempty(submod->getLikeType()))
-    {
+    if (opp_isempty(submod->getLikeType())) {
         submodtypename = submod->getType();
     }
     else
     {
         // type may be given either in ExpressionElement child or "like-param" attribute
-        if (!opp_isempty(submod->getLikeParam()))
-        {
+        if (!opp_isempty(submod->getLikeParam())) {
             submodtypename = modp->par(submod->getLikeParam()).stringValue();
         }
-        else
-        {
+        else {
             ExpressionElement *likeParamExpr = findExpression(submod, "like-param");
             if (likeParamExpr)
-            	//FIXME if module vector: store it as expression, don't evaluate it now,
-            	//      because it might be random etc!!!
             	submodtypename = evaluateAsString(likeParamExpr, modp, false);
             else {
-            	// TODO: add index
             	std::string key = modp->fullPath() + "." + submodname;
+            	if (index != -1) 
+            		key = opp_stringf("%s[%d]", key.c_str(), index);
             	const char *value = ev.config()->getPerObjectConfigValue(key.c_str(), CFGID_TYPE_NAME->name());
-            	
             	if (value)
             		submodtypename = value;
             	else
@@ -471,15 +465,24 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
         }
     }
 
+    return submodtypename;
+}
+
+void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
+{
+    // create submodule
+    const char *submodname = submod->getName();
+    bool usesLike = !opp_isempty(submod->getLikeType());
     ExpressionElement *vectorsizeexpr = findExpression(submod, "vector-size");
 
     if (!vectorsizeexpr)
     {
         cModuleType *submodtype;
         try {
-            submodtype = opp_isempty(submod->getLikeType()) ?
-                findAndCheckModuleType(submodtypename.c_str(), modp, submodname) :
-                findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
+        	std::string submodtypename = getSubmoduleType(modp, submod);
+            submodtype = usesLike ?
+                findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname) :
+                findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
         }
         catch (std::exception& e) {
             updateOrRethrowException(e, submod); throw;
@@ -501,11 +504,12 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
         ModulePtrVector& v = submodMap[submodname];
         cModuleType *submodtype = NULL;
         for (int i=0; i<vectorsize; i++) {
-            if (!submodtype) {
+            if (!submodtype || usesLike) {
                 try {
-                    submodtype = opp_isempty(submod->getLikeType()) ?
-                        findAndCheckModuleType(submodtypename.c_str(), modp, submodname) :
-                        findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname);
+                	std::string submodtypename = getSubmoduleType(modp, submod, i);
+                    submodtype = usesLike ?
+                        findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname) :
+                        findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
                 }
                 catch (std::exception& e) {
                     updateOrRethrowException(e, submod); throw;
