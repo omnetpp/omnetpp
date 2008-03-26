@@ -1,5 +1,5 @@
 
-// tests parameter settings
+// tests inner type parameter settings
 network FF
 {
     types:

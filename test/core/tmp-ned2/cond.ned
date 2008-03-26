@@ -1,3 +1,5 @@
+
+// test operator precedence, associativity (3 << 2 << 4), recursive expression (more complex)
 network Cond {
     parameters:
         int i;

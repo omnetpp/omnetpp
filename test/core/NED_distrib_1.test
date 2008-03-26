@@ -96,5 +96,4 @@ void Test::activity()
 }; //namespace
 
 %contains: stdout
-uniform_par
-
+incomplete
