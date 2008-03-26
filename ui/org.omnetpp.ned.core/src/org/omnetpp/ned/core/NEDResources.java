@@ -62,6 +62,7 @@ import org.omnetpp.ned.model.notification.NEDFileRemovedEvent;
 import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.notification.NEDStructuralChangeEvent;
+import org.omnetpp.ned.model.pojo.NEDElementTags;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -411,49 +412,57 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		rehashIfNeeded();
 		Assert.isTrue(lookupContext!=null, "lookupNedType() cannot be called with context==null");
 
-		// context is a compound module, so it may be an inner type
-		if (lookupContext instanceof CompoundModuleElementEx) {
-			INEDTypeInfo contextTypeInfo = ((CompoundModuleElementEx)lookupContext).getNEDTypeInfo();
-			if (name.contains(".")) {
-				// inner type with fully qualified name?
-				String prefix = StringUtils.substringBeforeLast(name, ".");
-				String simpleName = StringUtils.substringAfterLast(name, ".");
-				if (contextTypeInfo.getFullyQualifiedName().equals(prefix)) {
-					INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(simpleName);
-					if (innerType != null)
-						return innerType.getNEDTypeInfo();
-				}
-			}
-			else {
-				INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(name);
-				if (innerType != null)
-					return innerType.getNEDTypeInfo();
-			}
-		}
-
-		// not an inner type: look up as toplevel type
+	    // note: this method is to be kept consistent with NEDResourceCache::resolveNedType() in the C++ code
+	    // note2: partially qualified names are not supported: name must be either simple name or fully qualified
 		IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();
 		ProjectData projectData = projects.get(project);
 		if (name.contains(".")) {
-			// fully qualified name (as we don't accept partially qualified names)
+		    // contains dot, so it is a fully qualified name
+	        if (lookupContext instanceof CompoundModuleElementEx) {
+	            INEDTypeInfo contextTypeInfo = ((CompoundModuleElementEx)lookupContext).getNEDTypeInfo();
+
+	            // inner type with fully qualified name
+                String prefix = StringUtils.substringBeforeLast(name, ".");
+                String simpleName = StringUtils.substringAfterLast(name, ".");
+                if (contextTypeInfo.getFullyQualifiedName().equals(prefix)) {
+                    INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(simpleName);
+                    if (innerType != null)
+                        return innerType.getNEDTypeInfo();
+                }
+	        }
+
+		    // fully qualified name (as we don't accept partially qualified names)
 			if (projectData.components.get(name) != null)
 				return projectData.components.get(name);
 		}
 		else {
-			// name is an unqualified name (simple name), or from the default package
+	        // no dot: name is an unqualified name (simple name); so, it can be:
+	        // (a) inner type, (b) an exactly imported type, (c) from the same package, (d) a wildcard imported type
 
-			// from the same package?
-			String packagePrefix = lookupContext.getContainingNedFileElement().getQNameAsPrefix();
-			INEDTypeInfo samePackageType = projectData.components.get(packagePrefix + name);
-			if (samePackageType != null)
-				return samePackageType;
+		    // inner type?
+	        if (lookupContext instanceof CompoundModuleElementEx) {
+	            // always lookup in the topmost compound module's context because "types:" is not allowed elsewhere 
+	            CompoundModuleElementEx topLevelCompoundModule = (CompoundModuleElementEx)lookupContext.getParent().getParentWithTag(NEDElementTags.NED_COMPOUND_MODULE);
+                if (topLevelCompoundModule != null)
+                    lookupContext = topLevelCompoundModule;
+	            INEDTypeInfo contextTypeInfo = ((CompoundModuleElementEx)lookupContext).getNEDTypeInfo();
+                INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(name);
+                if (innerType != null)
+                    return innerType.getNEDTypeInfo();
+	        }
 
-			// imported type?
+			// exactly imported type?
 			// try a shortcut first: if the import doesn't contain wildcards
 			List<String> imports = lookupContext.getContainingNedFileElement().getImports();
 			for (String importSpec : imports)
 			    if (projectData.components.containsKey(importSpec) && (importSpec.endsWith("." + name) || importSpec.equals(name)))
 			        return projectData.components.get(importSpec);
+
+            // from the same package?
+            String packagePrefix = lookupContext.getContainingNedFileElement().getQNameAsPrefix();
+            INEDTypeInfo samePackageType = projectData.components.get(packagePrefix + name);
+            if (samePackageType != null)
+                return samePackageType;
 
 			// try harder, using wildcards
 			String nameWithDot = "." + name;
