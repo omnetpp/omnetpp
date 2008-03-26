@@ -55,25 +55,38 @@ ev << ".\n";
 %exitcode: 0
 
 %contains: stdout
-. ->
+. -> .
 .. -> ..
-../../. ->
-./../../. ->
+../../. -> ../..
+./../../. -> ../..
 dir -> dir
+dir// -> dir
 ./dir -> dir
-../dir -> ..\dir
-dir/.. ->
+../dir -> ../dir
+dir/.. -> .
 dir1/dir2/.. -> dir1
 dir1/../dir2 -> dir2
-
-
-c:/tmp/queuenet/node.ned -> c:\tmp\queuenet\node.ned
-c://tmp/queuenet//node.ned -> c:\tmp\queuenet\node.ned
-c:/./tmp/queuenet/./node.ned -> c:\tmp\queuenet\node.ned
-c:/./tmp/../queuenet/node.ned -> c:\queuenet\node.ned
-c:/./tmp/../queuenet/../node.ned -> c:\node.ned
-c:/./tmp/queuenet/../../node.ned -> c:\node.ned
-c:/./tmp/queuenet/../../../node.ned -> c:\..\node.ned
+dir1/../.. -> ..
+dir1/../../.. -> ../..
+c:dir -> c:dir
+c:./dir -> c:dir
+c:../dir -> c:../dir
+c:dir/.. -> c:.
+c:dir1/dir2/.. -> c:dir1
+c:dir1/../dir2 -> c:dir2
+c:dir1/../.. -> c:..
+c:dir1/../../.. -> c:../..
+/usr -> /usr
+/usr/bin -> /usr/bin
+/usr/bin/.. -> /usr
+/usr/bin/../.. -> /.
+/usr/bin/../../.. -> /..
+/usr/./// -> /usr
+c:/tmp/queuenet/node.ned -> c:/tmp/queuenet/node.ned
+c://tmp/queuenet//node.ned -> c:/tmp/queuenet/node.ned
+c:/./tmp/queuenet/./node.ned -> c:/tmp/queuenet/node.ned
+c:/./tmp/../queuenet/node.ned -> c:/queuenet/node.ned
+c:/./tmp/../queuenet/../node.ned -> c:/node.ned
+c:/./tmp/queuenet/../../node.ned -> c:/node.ned
+c:/./tmp/queuenet/../../../node.ned -> c:/../node.ned
 .
-.
-
