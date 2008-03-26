@@ -35,7 +35,7 @@ USING_NAMESPACE
 
 void printUsage()
 {
-    fprintf(stderr,
+    printf(
        "scavetool -- part of OMNeT++/OMNEST, (C) 2006 Andras Varga\n"
        "Release: " OMNETPP_RELEASE ", edition: " OMNETPP_EDITION "\n"
        "\n"
@@ -45,12 +45,12 @@ void printUsage()
        "scalar files (.sca).\n"
        "\n"
        "Commands:\n"
-       "   f, filter:  filter data in input files\n"
-       "   s, summary: prints summary info about input files\n"
-       "   i, info:    prints list of available functions (to be used with `filter -a')\n"
-       "   x, index:   generates index files for input files\n"
+       "    f, filter   filter data in input files\n"
+       "    s, summary  prints summary info about input files\n"
+       "    i, info     prints list of available functions (to be used with `filter -a')\n"
+       "    x, index    generates index files for input files\n"
        "Options:\n"
-       "`filter' command:\n"
+       " `filter' command:\n"
        "    -p <pattern>    the filter expression (see syntax below)\n"
        "    -a <function>   apply the given processing to the vector (see syntax below)\n"
        "                    This option may occur multiple times.\n"
@@ -59,7 +59,7 @@ void printUsage()
        "    -V              print info about progress (verbose)\n"
        //TODO option: print matching vectorIDs and exit
        //TODO: dump scalars too!!!
-       "`summary' command:\n"
+       " `summary' command:\n"
        //TODO allow filtering by patterns here too?
        //TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
        // occurring in the input files
@@ -67,30 +67,41 @@ void printUsage()
        "    -m   print list of unique module name\n"
        "    -r   print list of unique run Ids\n"
        "    -c   print list of unique configuration Ids (aka run numbers)\n"
-       "`info' command:\n"
+       " `info' command:\n"
        "    -b   list filter names only (brief)\n"
        "    -s   list filter names with parameter list (summary)\n"
        "    -v   include descriptions in the output (default)\n"
-       "`index' command:\n"
-       "    -r   rebuild vector file (rearranges records into blocks)"
+       " `index' command:\n"
+       "    -r   rebuild vector file (rearranges records into blocks)\n"
        "    -V   print info about progress (verbose)\n"
        "\n"
-       "Function syntax: name(parameterlist). Examples: winavg(10), mean()\n"
+       "Function syntax (for `filter -a'): <name>(<parameterlist>).\n"
+       "Examples: winavg(10), mean()\n"
        "\n"
-       "Pattern syntax: list of 'field_name=pattern' pairs combined with AND, OR, NOT operators.\n"
-       "  Pattern is a Glob-like pattern and field_name is one of:\n"
-       "    file:        match with full path of the result file\n"
-       "    run:         match with the name of the run\n"
-       "    experiment:  match with the experiment attribute of the run\n"
-       "    measurement: match with the measurement attribute of the run\n"
-       "    replication: match with the replication attribute of the run\n"
-       "    module:      match with module name\n"
-       "    name:        match with the statistics name\n"
-       "  Example:\n"
+       "Pattern syntax: one or more <fieldname>=<pattern> pairs, combined with AND,\n"
+       "OR, NOT operators.\n"
+       "  <fieldname> is one of:\n"
+       "    file:         full path of the result file\n"
+       "    run:          unique run Id\n"
+       "    experiment:   the experiment attribute of the run\n"
+       "    measurement:  the measurement attribute of the run\n"
+       "    replication:  the replication attribute of the run\n"
+       "    module:       module full path\n"
+       "    name:         name of the statistic\n"
+       "  <pattern> is a glob-like pattern:\n"
+       "    ?             matches any character except '.'\n"
+       "    *             matches zero or more characters, except '.'\n"
+       "    **            matches zero or more characters (any character)\n"
+       "    {a-z}         matches a character in range a-z\n"
+       "    {^a-z}        matches a character NOT in range a-z\n"
+       "    {32..255}     any number (ie. sequence of digits) in range 32..255  (e.g. \"99\")\n"
+       "    [32..255]     any number in square brackets in range 32..255 (e.g. \"[99]\")\n"
+       "    \\ (backslash) takes away the special meaning of the subsequent character\n"
+       "Pattern example:\n"
        "    module=\"**.sink\" AND (name=\"queueing time\" OR name=\"transmission time\")\n"
-       //TODO
+       "\n"
        "Examples:\n"
-       " scavetool -p \"queueing time\" -a winavg(10) -O out.vec\n\n" //TODO more
+       "    scavetool -p \"queueing time\" -a winavg(10) -O out.vec\n\n" //TODO more
     );
 }
 
@@ -195,64 +206,64 @@ int filterCommand(int argc, char **argv)
             fprintf(stdout, "There is no node type %s in the registry\n", opt_readerNodeType.c_str());
             return 1;
         }
-        
+
         // create reader nodes
         StringMap attrs;
         for (int i=0; i<(int)filteredVectorFileList.size(); i++)
         {
             ResultFile *resultFile = filteredVectorFileList[i];
-            attrs["filename"] = resultFile->fileSystemFilePath; 
+            attrs["filename"] = resultFile->fileSystemFilePath;
             Node *readerNode = readerNodeType->create(&dataflowManager, attrs);
             vectorFileReaders[resultFile] = readerNode;
         }
-        
+
         // create writer node, if each vector is written into the same file
         VectorFileWriterNode *vectorFileWriterNode = NULL;
-        
+
         std::vector<ArrayBuilderNode*> arrayBuilders; // for exporting
 
         for (int i=0; i<vectorIDList.size(); i++)
         {
             // create a port for each vector on its reader node
             char portName[30];
-			const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
-			assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
-			sprintf(portName, "%d", vector.vectorId);
-			Node *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
-			Port *outPort = readerNodeType->getPort(readerNode, portName);
-			
-			// add filters
+            const VectorResult& vector = resultFileManager.getVector(vectorIDList.get(i));
+            assert(vectorFileReaders.find(vector.fileRunRef->fileRef) != vectorFileReaders.end());
+            sprintf(portName, "%d", vector.vectorId);
+            Node *readerNode = vectorFileReaders[vector.fileRunRef->fileRef];
+            Port *outPort = readerNodeType->getPort(readerNode, portName);
+
+            // add filters
                 for (int k=0; k<(int)opt_filterList.size(); k++)
-	        {
-	        	//TODO support filter to merge all into a single vector
-	            if (opt_verbose) printf("adding filter to vector: %s\n", opt_filterList[k].c_str());
-				Node *node = registry->createNode(opt_filterList[k].c_str(), &dataflowManager);
-				FilterNode *filterNode = dynamic_cast<FilterNode *>(node);
-				if (!filterNode)
-				    throw opp_runtime_error("%s is not a filter node", opt_filterList[k].c_str());
-				dataflowManager.connect(outPort, &(filterNode->in));
-				outPort = &(filterNode->out);
-	        }
-	        
-	        // create writer node(s) and connect
-	        if (opt_writeVectorFile)
-	        {
-	            // everything goes to a common vector file
-	        	if (!vectorFileWriterNode)
-	        	{
-		            if (opt_verbose) printf("adding vector file writer\n");
-		            std::string fileName = opt_outputFileName + ".vec";
-		            vectorFileWriterNode = new VectorFileWriterNode(fileName.c_str(), "# generated by scavetool");
-		            dataflowManager.addNode(vectorFileWriterNode);
-	        	}
-	        	
+            {
+                //TODO support filter to merge all into a single vector
+                if (opt_verbose) printf("adding filter to vector: %s\n", opt_filterList[k].c_str());
+                Node *node = registry->createNode(opt_filterList[k].c_str(), &dataflowManager);
+                FilterNode *filterNode = dynamic_cast<FilterNode *>(node);
+                if (!filterNode)
+                    throw opp_runtime_error("%s is not a filter node", opt_filterList[k].c_str());
+                dataflowManager.connect(outPort, &(filterNode->in));
+                outPort = &(filterNode->out);
+            }
+
+            // create writer node(s) and connect
+            if (opt_writeVectorFile)
+            {
+                // everything goes to a common vector file
+                if (!vectorFileWriterNode)
+                {
+                    if (opt_verbose) printf("adding vector file writer\n");
+                    std::string fileName = opt_outputFileName + ".vec";
+                    vectorFileWriterNode = new VectorFileWriterNode(fileName.c_str(), "# generated by scavetool");
+                    dataflowManager.addNode(vectorFileWriterNode);
+                }
+
                 Port *writerNodePort = vectorFileWriterNode->addVector(vector); // FIXME: renumber vectors
                 dataflowManager.connect(outPort, writerNodePort);
-	        }
-	        else if (opt_writeSeparateFiles)
-	        {
-	            // every vector goes to its own file, with two columns (time+value) separated by spaces/tab
-	            if (opt_verbose) printf("adding separate writers for each vector\n");
+            }
+            else if (opt_writeSeparateFiles)
+            {
+                // every vector goes to its own file, with two columns (time+value) separated by spaces/tab
+                if (opt_verbose) printf("adding separate writers for each vector\n");
                 char buf[16];
                 sprintf(buf, "%d", i);
                 std::string fname = opt_outputFileName+buf+".vec";
@@ -266,21 +277,21 @@ int filterCommand(int argc, char **argv)
                 FileWriterNode *writerNode = new FileWriterNode(fname.c_str(), header.str().c_str());
                 dataflowManager.addNode(writerNode);
                 dataflowManager.connect(outPort, &(writerNode->in));
-	        }
-	        else if (opt_writeExportFile)
-	        {
-	            // for Octave, we must build arrays
-	            if (opt_verbose) printf("adding array builders for Octave output\n");
+            }
+            else if (opt_writeExportFile)
+            {
+                // for Octave, we must build arrays
+                if (opt_verbose) printf("adding array builders for Octave output\n");
                 ArrayBuilderNode *arrayBuilderNode = new ArrayBuilderNode();
                 dataflowManager.addNode(arrayBuilderNode);
                 dataflowManager.connect(outPort, &(arrayBuilderNode->in));
                 arrayBuilders.push_back(arrayBuilderNode);
-	        }
-	        else
-	        {
-	            fprintf(stdout, "No output method specified.\n");
-	            return 1;
-	        }
+            }
+            else
+            {
+                fprintf(stdout, "No output method specified.\n");
+                return 1;
+            }
         }
 
         // run!
@@ -427,7 +438,7 @@ int indexCommand(int argc, char **argv)
         if (strcmp(opt, "-V") == 0)
             opt_verbose = true;
         else if (strcmp(opt, "-r") == 0)
-        	opt_rebuild = true;
+            opt_rebuild = true;
         else if (opt[0] != '-')
             opt_fileNames.push_back(argv[i]);
         else
@@ -442,10 +453,10 @@ int indexCommand(int argc, char **argv)
         if (opt_verbose) printf("indexing %s...\n", fileName);
         try
         {
-        	if (opt_rebuild)
-        		indexer.rebuildVectorFile(fileName);
-        	else
-        		indexer.generateIndex(fileName);
+            if (opt_rebuild)
+                indexer.rebuildVectorFile(fileName);
+            else
+                indexer.generateIndex(fileName);
         }
         catch (std::exception& e) {
             fprintf(stderr, "Exception: %s\n", e.what());
