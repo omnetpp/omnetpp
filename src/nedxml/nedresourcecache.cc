@@ -379,50 +379,62 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
     if (!strchr(nedtypename, '.'))
     {
         // no dot: name is an unqualified name (simple name); so, it can be:
-        // (a) inner type, (b) from the same package, (c) an imported type, (d) from the default package
+        // (a) inner type, (b) an exactly imported type, (c) from the same package, (d) a wildcard imported type
 
-        // inner type?  FIXME only if context is NOT a nedfile
-        std::string qname = context.qname + "." + nedtypename;
-        if (qnames->contains(qname.c_str()))
-            return qname;
+        // inner type?
+        if (context.element->getTagCode() == NED_COMPOUND_MODULE) {
+            std::string qname = context.qname;
+	    	NEDElement *topLevelCompoundModule = context.element->getParent()->getParentWithTag(NED_COMPOUND_MODULE);
+	    	if (topLevelCompoundModule) {
+	    		int index = qname.rfind('.');
+	    		Assert(index != -1);
+	    		qname.replace(index, qname.length() - index, "");
+	    	}
+            qname = qname + "." + nedtypename;
+	        if (qnames->contains(qname.c_str()))
+	            return qname;
+        }
 
         NedFileElement *nedfileNode = dynamic_cast<NedFileElement *>(context.element->getParentWithTag(NED_NED_FILE));
-
-        // from the same package?
-        PackageElement *packageNode = nedfileNode->getFirstPackageChild();
-        const char *packageName = packageNode ? packageNode->getName() : "";
-        qname = opp_isempty(packageName) ? nedtypename : std::string(packageName) + "." + nedtypename;
-        if (qnames->contains(qname.c_str()))
-            return qname;
 
         // collect imports, for convenience
         std::vector<const char *> imports;
         for (ImportElement *import = nedfileNode->getFirstImportChild(); import; import = import->getNextImportSibling())
             imports.push_back(import->getImportSpec());
 
-        // imported type?
+        // exactly imported type?
         // try a shortcut first: if the import doesn't contain wildcards
         std::string dot_nedtypename = std::string(".")+nedtypename;
         for (int i=0; i<(int)imports.size(); i++)
             if (qnames->contains(imports[i]) && (opp_stringendswith(imports[i], dot_nedtypename.c_str()) || strcmp(imports[i], nedtypename)==0))
                 return imports[i];
 
+        // from the same package?
+        PackageElement *packageNode = nedfileNode->getFirstPackageChild();
+        const char *packageName = packageNode ? packageNode->getName() : "";
+        std::string qname = opp_isempty(packageName) ? nedtypename : std::string(packageName) + "." + nedtypename;
+        if (qnames->contains(qname.c_str()))
+            return qname;
+
         // try harder, using wildcards
         for (int i=0; i<(int)imports.size(); i++) {
-            PatternMatcher importpattern(imports[i], true, true, true);
-            for (int j=0; j<qnames->size(); j++) {
-                const char *qname = qnames->get(j);
-                if ((opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0))
-                    if (importpattern.matches(qname))
-                        return qname;
-            }
+        	if (PatternMatcher::containsWildcards(imports[i])) {
+	            PatternMatcher importpattern(imports[i], true, true, true);
+	            for (int j=0; j<qnames->size(); j++) {
+	                const char *qname = qnames->get(j);
+	                if ((opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0))
+	                    if (importpattern.matches(qname))
+	                        return qname;
+	            }
+        	}
         }
     }
-
-    // fully qualified name?
-    if (qnames->contains(nedtypename))
-        return nedtypename;
-
+    else {
+	    // fully qualified name?
+	    if (qnames->contains(nedtypename))
+	        return nedtypename;
+    }
+    
     return "";
 }
 
