@@ -1,5 +1,5 @@
 @echo off
-rem 
+rem
 rem usage: runtest [<testfile>...]
 rem without args, runs all *.test files in the current directory
 rem

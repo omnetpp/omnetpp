@@ -1,0 +1,59 @@
+%description:
+Check recording of vector metadata annotations:
+  enum
+  unit
+  type
+  interpolationmode
+  min
+  max
+
+%file: test.msg
+enum Colors { RED=1; GREEN=2; BLUE=3; };
+
+%activity:
+cOutVector intVec("intVec");
+intVec.setType(cOutVector::TYPE_INT);
+intVec.setMin(-5);
+intVec.setMax(5);
+intVec.setInterpolationMode(cOutVector::NONE);
+intVec.record(1);
+
+cOutVector doubleVec("doubleVec");
+doubleVec.setType(cOutVector::TYPE_DOUBLE);
+doubleVec.setMax(12.5);
+doubleVec.setUnit("m");
+doubleVec.setInterpolationMode(cOutVector::SAMPLE_HOLD);
+doubleVec.record(0.52);
+
+cOutVector enumVec1("enumVec1");
+cEnum numbersEnum("numbers");
+numbersEnum.insert(1,"one");
+numbersEnum.insert(2,"two");
+numbersEnum.insert(3,"three");
+enumVec1.setEnum(&numbersEnum);
+enumVec1.record(1);
+
+cOutVector enumVec2("enumVec2");
+enumVec2.setEnum("Colors");
+enumVec2.record(1);
+
+%contains: test.vec
+vector 0  Test  intVec  ETV
+attr interpolationmode  none
+attr max  5
+attr min  -5
+attr type  int
+vector 1  Test  doubleVec  ETV
+attr interpolationmode  sample-hold
+attr max  12.5
+attr type  double
+attr unit  m
+vector 2  Test  enumVec1  ETV
+attr enum  "one=1, three=3, two=2"
+vector 3  Test  enumVec2  ETV
+attr enum  "BLUE=3, GREEN=2, RED=1"
+3	0	0	1
+2	0	0	1
+1	0	0	0.52
+0	0	0	1
+
