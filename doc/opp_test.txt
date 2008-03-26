@@ -143,6 +143,9 @@ Generic entries:
    <test-description-lines>
 
 Test case components:
+   %includes
+   <#include directives>
+
    %activity:
    <body-of-activity()>
 
