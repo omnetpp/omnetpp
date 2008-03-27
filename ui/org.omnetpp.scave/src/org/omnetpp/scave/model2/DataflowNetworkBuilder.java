@@ -488,12 +488,18 @@ public class DataflowNetworkBuilder {
 	 * Builds a dataflow network for reading the data of the given vectors.
 	 */
 	public DataflowManager build(IDList idlist) {
-		warnings.clear();
-		for (int i = 0; i < (int)idlist.size(); ++i) {
-			addReaderNode(idlist.get(i));
+		long start = System.currentTimeMillis();
+		try {
+			warnings.clear();
+			for (int i = 0; i < (int)idlist.size(); ++i) {
+				addReaderNode(idlist.get(i));
+			}
+			addArrayBuilderNodes();
+			return buildNetwork();
 		}
-		addArrayBuilderNodes();
-		return buildNetwork();
+		finally {
+			System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
+		}
 	}
 	
 	/**
@@ -501,10 +507,16 @@ public class DataflowNetworkBuilder {
 	 * the given dataset item.
 	 */
 	public DataflowManager build(Dataset dataset, DatasetItem target, boolean createDataflowManager) {
-		warnings.clear();
-		buildInternal(dataset, target);
-		addArrayBuilderNodes();
-		return createDataflowManager ? buildNetwork() : null;
+		long start = System.currentTimeMillis();
+		try {
+			warnings.clear();
+			buildInternal(dataset, target);
+			addArrayBuilderNodes();
+			return createDataflowManager ? buildNetwork() : null;
+		}
+		finally {
+			System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
+		}
 	}
 	
 	/**
@@ -512,10 +524,16 @@ public class DataflowNetworkBuilder {
 	 * vector file.
 	 */
 	public DataflowManager build(Dataset dataset, DatasetItem target, String fileName) {
-		warnings.clear();
-		buildInternal(dataset, target);
-		addVectorFileWriterNode(fileName);
-		return buildNetwork();
+		long start = System.currentTimeMillis();
+		try {
+			warnings.clear();
+			buildInternal(dataset, target);
+			addVectorFileWriterNode(fileName);
+			return buildNetwork();
+		}
+		finally {
+			System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
+		}
 	}
 	
 	public IDList getDisplayedIDs() {

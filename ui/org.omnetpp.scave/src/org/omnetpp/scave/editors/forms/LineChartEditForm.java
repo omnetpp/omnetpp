@@ -40,12 +40,16 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 	public LineChartEditForm(LineChart chart, EObject parent,
 			Map<String, Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
-		updateLineNames(chart.getLineNameFormat());
+	}
+	
+	private LineChart getChart() {
+		return (LineChart)chart;
 	}
 	
 
 	@Override
 	protected void populateTabItem(final TabItem item) {
+		updateLineNames(getChart().getLineNameFormat());
 		super.populateTabItem(item);
 		String name = item.getText();
 		if (TAB_MAIN.equals(name)) {

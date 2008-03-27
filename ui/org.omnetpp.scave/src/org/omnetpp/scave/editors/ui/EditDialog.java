@@ -126,11 +126,12 @@ public class EditDialog extends TitleAreaDialog {
 	}
 	
 	private void applyChanges() {
-		if (features != null) {
-			values = new Object[features.length];
-			for (int i = 0; i < values.length; ++i) {
-				values[i] = form.getValue(features[i]);
-			}
+		if (features == null)
+			return;
+		
+		values = new Object[features.length];
+		for (int i = 0; i < values.length; ++i) {
+			values[i] = form.getValue(features[i]);
 		}
 		
 		CompoundCommand command = new CompoundCommand("Edit");
