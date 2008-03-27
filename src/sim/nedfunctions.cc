@@ -19,6 +19,7 @@
 #include "cmathfunction.h"
 #include "cnedfunction.h"
 #include "cexception.h"
+#include "cstringtokenizer.h"
 #include "unitconversion.h"
 #include "stringutil.h"
 #include "opp_ctype.h"
@@ -170,6 +171,18 @@ DEF(replace, "SSS->S", {
 
 DEF(indexof, "SS->L", {
     return (long)argv[0].str.find(argv[1].str);
+})
+
+DEF(choose, "LS->S", {
+    int index = (int)argv[0].dbl;
+    if (index < 0)
+        throw cRuntimeError("choose(): negative index");
+    cStringTokenizer tokenizer(argv[1].str.c_str());
+    for (int i=0; i<index && tokenizer.hasMoreTokens(); i++)
+        tokenizer.nextToken();
+    if (!tokenizer.hasMoreTokens())
+        throw cRuntimeError("choose(): index=%d is out of range", index);
+    return tokenizer.nextToken();
 })
 
 DEF(toupper, "S->S", {

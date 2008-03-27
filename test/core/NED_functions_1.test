@@ -117,6 +117,13 @@ P( toupper("Hello"));
 P( tolower("HeLLo"));
 ev << "\n";
 
+P( choose(0, "Zero One Two Three"));
+P( choose(2, "Zero One Two Three"));
+P( choose(3, "Zero One Two Three"));
+P( choose(-1, "Zero One Two Three"));
+P( choose(4, "Zero One Two Three"));
+ev << "\n";
+
 P( int(true));
 P( int(3.14));
 P( int(-3.14));
@@ -214,6 +221,12 @@ indexof("Hello", "bubu") ==> -1
 
 toupper("Hello") ==> "HELLO"
 tolower("HeLLo") ==> "hello"
+
+choose(0, "Zero One Two Three") ==> "Zero"
+choose(2, "Zero One Two Three") ==> "Two"
+choose(3, "Zero One Two Three") ==> "Three"
+choose(-1, "Zero One Two Three") ==> choose(): negative index
+choose(4, "Zero One Two Three") ==> choose(): index=4 is out of range
 
 int(true) ==> 1
 int(3.14) ==> 3
