@@ -12,15 +12,15 @@ package node;
 //
 // Bursty message source.
 //
-simple BurstyApp
+simple BurstyApp like IApp
 {
     parameters:
         int address;  // local node address
         string destAddresses;  // destination addresses
-        volatile double sleepTime @unit(s); // sleep time between bursts
-        volatile double burstTime @unit(s); // duration of a burst
-        volatile double sendIaTime @unit(s); // time between generating packets during a burst
-        volatile double packetLength @unit(byte); // length of a message
+        volatile double sleepTime @unit(s) = default(30s); // sleep time between bursts
+        volatile double burstTime @unit(s) = default(10s); // duration of a burst
+        volatile double sendIaTime @unit(s) = default(exponential(1s)); // time between generating packets during a burst
+        volatile int packetLength @unit(byte); // length of a message
         @display("i=block/source");
     gates:
         output out;

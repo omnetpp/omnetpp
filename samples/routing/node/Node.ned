@@ -18,11 +18,12 @@ module Node
 {
     parameters:
         int address;
+        string appType;
         @display("i=misc/node_vs,gold");
     gates:
         inout port[];
     submodules:
-        app: App {
+        app: <appType> like IApp {
             parameters:
                 address = address;
                 @display("p=140,60");
