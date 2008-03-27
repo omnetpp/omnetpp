@@ -108,14 +108,60 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
 
     /** @name Metadata annotations. */
     //@{
-
-    //FIXME document!!!!
+    /**
+     * Associate the vector with an enum defined in a msg file.
+     * This information gets recorded into the output vector file and
+     * may be used by result analysis tools.
+     * cOutVector does not verify that recorded values actually comply
+     * with this annotation.
+     */
     virtual void setEnum(const char *registeredEnumName);
+
+    /**
+     * Associate the vector with an enum. The enum name as well as the
+     * symbols and their integer values will get recorded into the output
+     * vector file, and may be used by result analysis tools.
+     * cOutVector does not verify that recorded values actually comply
+     * with this annotation.
+     */
     virtual void setEnum(cEnum *enumDecl);
-    virtual void setUnit(const char *unit);  // "s", "%", etc
+
+    /**
+     * Annotate the vector with a physical unit (like "s", "mW" or "bytes").
+     * This information gets recorded into the output vector file, and
+     * may be used by result analysis tools.
+     */
+    virtual void setUnit(const char *unit);
+
+    /**
+     * Annotate the vector with a data type. This information gets recorded
+     * into the output vector file, and may be used by result analysis tools.
+     * cOutVector does not verify that recorded values actually comply with
+     * this annotation.
+     */
     virtual void setType(Type type);
+
+    /**
+     * Annotate the vector with an interpolation mode. This information
+     * gets recorded into the output vector file, and may be used
+     * by result analysis tools as a hint for choosing a plotting style.
+     */
     virtual void setInterpolationMode(InterpolationMode mode);
+
+    /**
+     * Annotate the vector with a minimum value. This information gets
+     * recorded into the output vector file and may be used
+     * by result analysis tools. cOutVector does not verify that
+     * recorded values actually comply with this annotation.
+     */
     virtual void setMin(double minValue);
+
+    /**
+     * Annotate the vector with a maximum value. This information gets
+     * recorded into the output vector file and may be used
+     * by result analysis tools. cOutVector does not verify that
+     * recorded values actually comply with this annotation.
+     */
     virtual void setMax(double maxValue);
     //@}
 
