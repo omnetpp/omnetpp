@@ -22,17 +22,17 @@
 class App : public cSimpleModule
 {
   private:
-    // configuration:
+    // configuration
     int myAddress;
+    std::vector<int> destAddresses;
     cPar *sendIATime;
     int packetLengthBytes;
-    std::vector<int> destAddresses;
 
-    // state:
+    // state
     cMessage *generatePacket;
     long pkCounter;
 
-    // statistics:
+    // statistics
     cLongHistogram hopCounts;
     int pkReceived;
 

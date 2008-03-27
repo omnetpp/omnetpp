@@ -16,9 +16,9 @@ simple App
 {
     parameters:
         int address;  // local node address
+        string destAddresses;  // destination addresses
         volatile double sendIaTime @unit(s); // time between generating packets
         int packetLength @unit(byte);  // length of one message
-        string destAddresses;  // destination addresses
         @display("i=block/browser");
     gates:
         input in;

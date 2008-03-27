@@ -16,6 +16,7 @@ simple BurstyApp
 {
     parameters:
         int address;  // local node address
+        string destAddresses;  // destination addresses
         volatile double sleepTime @unit(s); // sleep time between bursts
         volatile double burstTime @unit(s); // duration of a burst
         volatile double sendIaTime @unit(s); // time between generating packets during a burst

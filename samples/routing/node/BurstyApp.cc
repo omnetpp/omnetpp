@@ -10,8 +10,8 @@
 
 #define FSM_DEBUG
 #include <omnetpp.h>
+#include "Packet_m.h"
 
-//FIXME finish: copy myAddress, destAddresses etc stuff from App, and try it with Routing!!!
 
 /**
  * A bursty packet generator; see NED file for more info.
@@ -19,13 +19,15 @@
 class BurstyApp : public cSimpleModule
 {
   private:
-    // parameters
+    // configuration
+    int myAddress;
+    std::vector<int> destAddresses;
     cPar *sleepTime;
     cPar *burstTime;
     cPar *sendIATime;
     cPar *packetLengthBytes;
 
-    // FSM and its states
+    // state
     cFSM fsm;
     enum {
        INIT = 0,
@@ -34,12 +36,11 @@ class BurstyApp : public cSimpleModule
        SEND = FSM_Transient(1),
     };
 
-    // variables used
-    int i;
+    int pkCounter;
     cMessage *startStopBurst;
     cMessage *sendMessage;
 
-    // statistics incoming messages
+    // statistics
     long numSent;
     long numReceived;
     cOutVector eedVector;
@@ -60,7 +61,7 @@ class BurstyApp : public cSimpleModule
     virtual void updateDisplayString();
 };
 
-Define_Module( BurstyApp );
+Define_Module(BurstyApp);
 
 BurstyApp::BurstyApp()
 {
@@ -87,8 +88,8 @@ void BurstyApp::initialize()
     sendIATime = &par("sendIaTime");
     packetLengthBytes = &par("packetLength");
 
-    i = 0;
-    WATCH(i); // always put watches in initialize(), NEVER in handleMessage()
+    pkCounter = 0;
+    WATCH(pkCounter); // always put watches in initialize(), NEVER in handleMessage()
     startStopBurst = new cMessage("startStopBurst");
     sendMessage = new cMessage("sendMessage");
 
@@ -178,14 +179,17 @@ void BurstyApp::processTimer(cMessage *msg)
 void BurstyApp::generatePacket()
 {
     // generate and send out a packet
-    char msgname[32];
-    sprintf(msgname, "pkt-%d", ++i);
+    int destAddress = destAddresses[intuniform(0, destAddresses.size()-1)];
 
-    ev << "Generating " << msgname << endl;
-    cMessage *pk = new cMessage(msgname);
+    char pkname[40];
+    sprintf(pkname,"pk-%d-to-%d-#%ld", myAddress, destAddress, pkCounter++);
+    ev << "generating packet " << pkname << endl;
+
+    Packet *pk = new Packet(pkname);
     pk->setByteLength(packetLengthBytes->longValue());
-
-    send(pk, "out");
+    pk->setSrcAddr(myAddress);
+    pk->setDestAddr(destAddress);
+    send(pk,"out");
 }
 
 void BurstyApp::processPacket(cMessage *msg)
