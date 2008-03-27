@@ -134,6 +134,7 @@
 	- removed backgroundDisplayString()/setBackgroundDisplayString() and its compat
 	  #defines displayStringAsParent() and setDisplayStringAsParent()
 	- added isPlaceholder() to cModule
+	- cPlaceHolderModule: renamed to cPlaceHolderModule (lowercase h)
 
 	Message parameters:
 	- deprecated; type changed: cMsgPar instead of cPar

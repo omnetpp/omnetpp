@@ -238,6 +238,7 @@ cFileOutputVectorManager::sVectorData *cFileOutputVectorManager::createVectorDat
 
 void cFileOutputVectorManager::deregisterVector(void *vectorhandle)
 {
+    ASSERT(vectorhandle!=NULL);
     sVectorData *vp = (sVectorData *)vectorhandle;
     delete [] vp->intervals;
     delete vp;
@@ -245,6 +246,7 @@ void cFileOutputVectorManager::deregisterVector(void *vectorhandle)
 
 void cFileOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
 {
+    ASSERT(vectorhandle!=NULL);
     sVectorData *vp = (sVectorData *)vectorhandle;
     vp->attributes[name] = value;
 }
@@ -253,6 +255,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
 {
     static char buff[64];
 
+    ASSERT(vectorhandle!=NULL);
     sVectorData *vp = (sVectorData *)vectorhandle;
 
     if (!vp->enabled)

@@ -106,7 +106,7 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
-    /** @name Configuring and writing to output vectors. */
+    /** @name Metadata annotations. */
     //@{
 
     //FIXME document!!!!
@@ -117,7 +117,10 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     virtual void setInterpolationMode(InterpolationMode mode);
     virtual void setMin(double minValue);
     virtual void setMax(double maxValue);
+    //@}
 
+    /** @name Writing to output vectors. */
+    //@{
     /**
      * Records the value with the current simulation time as timestamp.
      *

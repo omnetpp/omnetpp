@@ -64,6 +64,7 @@ void cOutVector::setName(const char *nam)
 {
     if (handle)
         throw cRuntimeError(this,"setName(): changing name of an output vector after record() calls is not allowed");
+
     cOwnedObject::setName(nam);
 
     // register early (only needed for Akaroa...)
@@ -97,7 +98,6 @@ void cOutVector::setUnit(const char *unit)
     ev.setVectorAttribute(handle, "unit", unit);
 }
 
-//FIXME enum name doesn't get written out to the file
 void cOutVector::setEnum(const char *registeredEnumName)
 {
     cEnum *enumDecl = cEnum::find(registeredEnumName);
@@ -110,11 +110,15 @@ void cOutVector::setEnum(cEnum *enumDecl)
 {
     if (!handle)
         throw cRuntimeError(this,"setEnum(): set the object name first, using setName()");
+    ev.setVectorAttribute(handle, "enumname", enumDecl->name());
     ev.setVectorAttribute(handle, "enum", enumDecl->toString().c_str());
 }
 
 void cOutVector::setType(Type type)
 {
+    if (!handle)
+        throw cRuntimeError(this,"setType(): set the object name first, using setName()");
+
     const char *typeString=NULL;
     switch (type)
     {
@@ -130,6 +134,9 @@ void cOutVector::setType(Type type)
 
 void cOutVector::setInterpolationMode(InterpolationMode mode)
 {
+    if (!handle)
+        throw cRuntimeError(this,"setInterpolationMode(): set the object name first, using setName()");
+
     const char *modeString=NULL;
     switch (mode)
     {
@@ -146,6 +153,9 @@ void cOutVector::setInterpolationMode(InterpolationMode mode)
 
 void cOutVector::setMin(double minValue)
 {
+    if (!handle)
+        throw cRuntimeError(this,"setMin(): set the object name first, using setName()");
+
     char buf[32];
     sprintf(buf, "%g", minValue);
     ev.setVectorAttribute(handle, "min", buf);
@@ -153,9 +163,12 @@ void cOutVector::setMin(double minValue)
 
 void cOutVector::setMax(double maxValue)
 {
+    if (!handle)
+        throw cRuntimeError(this,"setMax(): set the object name first, using setName()");
+
     char buf[32];
     sprintf(buf, "%g", maxValue);
-    ev.setVectorAttribute(handle, "min", buf);
+    ev.setVectorAttribute(handle, "max", buf);
 }
 
 
