@@ -1,0 +1,30 @@
+%description:
+Test that cOutVector doesn't crash if attrs are set before object name
+
+%file: test.msg
+enum Colors { RED=1; GREEN=2; BLUE=3; };
+
+%activity:
+
+#define TRY(code)  try { code; } catch(std::exception& e) {ev << "ERROR:" << e.what() << "\n";}
+
+cOutVector intVec;
+
+TRY(intVec.setType(cOutVector::TYPE_INT))
+TRY(intVec.setMin(-5))
+TRY(intVec.setMax(5))
+TRY(intVec.setInterpolationMode(cOutVector::NONE))
+TRY(intVec.setEnum("Foo"))
+TRY(intVec.setEnum("Colors"))
+
+intVec.setName("intVec");
+intVec.record(1);
+
+%contains: stdout
+ERROR:(cOutVector): setType(): set the object name first, using setName()
+ERROR:(cOutVector): setMin(): set the object name first, using setName()
+ERROR:(cOutVector): setMax(): set the object name first, using setName()
+ERROR:(cOutVector): setInterpolationMode(): set the object name first, using setName()
+ERROR:(cOutVector): setEnum(): enum `Foo' not found -- is it declared with Register_Enum()?
+ERROR:(cOutVector): setEnum(): set the object name first, using setName()
+
