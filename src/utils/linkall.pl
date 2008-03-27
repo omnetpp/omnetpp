@@ -45,9 +45,27 @@ foreach $arg (@ARGV) {
 # remove temp files when killed by Ctrl+C, by catching the INT signal
 $SIG{'INT'} = 'removeTempFiles';
 
+# read the list files because active perl does not handle them automatically
+@ARGV2 = ();
+foreach $arg (@ARGV) {
+    if (substr($arg,0,1) eq "@") {
+        $listfile = substr($arg,1);
+        open(INPUT, $listfile) || die "cannot open listfile $listfile: $!";
+        while (<INPUT>) {
+            chomp;
+            s/\r$//;  # cygwin/mingw perl does not do CR/LF translation
+            push(@ARGV2, $_);
+        }
+        close(INPUT);
+    }
+    else {
+        push(@ARGV2, $arg);
+    }
+}
+
 # process libs
 $content = "";
-foreach $arg (@ARGV) {
+foreach $arg (@ARGV2) {
     $content .= $arg."\n";
     if ($arg =~ /.*\.lib$/i) {
         $lib = $arg;
@@ -101,7 +119,7 @@ foreach $arg (@ARGV) {
             }
         }
     }
-    
+
 }
 open(OUT, ">".$tempfilename) || error("cannot open $tempfilename for write");
 print OUT $content."\n" || error("cannot write $tempfilename"); # do NOT remove "\n" -- would cause error for empty files
