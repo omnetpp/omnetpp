@@ -68,6 +68,18 @@ class COMMON_API DebugCall
 uint64 readCPUTimeStampCounter();
 
 
+/**
+ * Not all our bison/flex based parsers are reentrant. This macro is meant
+ * to catch and report concurrent invocations, e.g. from background threads
+ * in the GUI code.
+ */
+#define NONREENTRANT_PARSER() \
+  static bool active = false; \
+  struct Guard { \
+      Guard() {if (active) throw opp_runtime_error("non-reentrant parser invoked again while parsing"); active=true;} \
+      ~Guard() {active=false;} \
+  } __guard;
+
 
 #endif
 

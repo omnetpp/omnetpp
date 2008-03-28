@@ -89,6 +89,7 @@
 #include "nederror.h"
 #include "nedexception.h"
 #include "stringutil.h"
+#include "commonutil.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -1327,6 +1328,8 @@ NEDElement *doParseNED1(NEDParser *p, const char *nedtext)
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
 #endif
+
+    NONREENTRANT_PARSER();
 
     // reset the lexer
     pos.co = 0;

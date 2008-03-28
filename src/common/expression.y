@@ -44,6 +44,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "commonutil.h"
 #include "expressionyydefs.h"
 
 #define YYDEBUG 1           /* allow debugging */
@@ -235,6 +236,8 @@ numliteral
 
 void doParseExpression(const char *text, Expression::Resolver *res, Expression::Elem *&elems, int& nelems)
 {
+    NONREENTRANT_PARSER();
+
     elems = NULL;
     nelems = 0;
 
