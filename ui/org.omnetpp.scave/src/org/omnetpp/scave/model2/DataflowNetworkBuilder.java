@@ -583,8 +583,9 @@ public class DataflowNetworkBuilder {
 			 * Adds "vectorfilereader" nodes for ids selected by the add operation.
 			 */
 			public Object caseAdd(Add add) {
-				if (add.getType()==ResultType.VECTOR_LITERAL)
+				if (add.getType()==ResultType.VECTOR_LITERAL) {
 					addReaderNodes(select(null, add));
+				}
 				return this;
 			}
 

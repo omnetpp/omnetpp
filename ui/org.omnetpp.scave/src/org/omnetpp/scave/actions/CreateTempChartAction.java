@@ -36,8 +36,9 @@ public class CreateTempChartAction extends AbstractScaveAction {
 		Dataset dataset =
 			ScaveModelUtil.createTemporaryDataset(
 					datasetName,
-					activePanel.getTable().getSelectedItems(),
-					null);
+					activePanel.getTable().getSelectedIDs(),
+					null,
+					activePanel.getTable().getResultFileManager());
 		String chartName = "temp" + ++counter; //FIXME generate proper name
 		ResultType type = activePanel.getTable().getType();
 		Chart chart = ScaveModelUtil.createChart(chartName, type);

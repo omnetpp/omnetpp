@@ -49,6 +49,7 @@ import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model.SetOperation;
 
 /**
  * A collection of static methods to manipulate model objects
@@ -74,16 +75,14 @@ public class ScaveModelUtil {
 	}
 
 	public static Dataset createDataset(String name, Filter filter, ResultType type) {
-		Dataset dataset = factory.createDataset();
-		dataset.setName(name);
+		Dataset dataset = createDataset(name);
 		dataset.getItems().add(createAdd(filter, type));
 		return dataset;
 	}
 
-	public static Dataset createTemporaryDataset(String name, ResultItem[] items, String[] runidFields) {
-		Dataset dataset = factory.createDataset();
-		dataset.setName(name);
-		dataset.getItems().addAll(createAdds(items, runidFields));
+	public static Dataset createTemporaryDataset(String name, IDList ids, String[] runidFields, ResultFileManager manager) {
+		Dataset dataset = createDataset(name);
+		dataset.getItems().addAll(createAdds(ids, runidFields, manager, true));
 		return dataset;
 	}
 
@@ -126,21 +125,37 @@ public class ScaveModelUtil {
 	public static Add createAdd(Filter filter, ResultType type) {
 		return createAdd(filter.getFilterPattern(), type);
 	}
+	
+	/**
+	 * Generates an Add command with filter pattern to identify item.
+	 * @param filterFields may be null (meaning run/module/name)
+	 */
+	public static Add createAdd(ResultItem item, String[] filterFields) {
+		return createAdd(new FilterUtil(item,filterFields).getFilterPattern(), getTypeOf(item));
+	}
 
 	/**
 	 * Generates Add commands with filter patterns that identify elements in items[].
 	 * @param runidFields  may be null (meaning autoselect)
 	 */
 	public static Collection<Add> createAdds(ResultItem[] items, String[] runidFields) {
-		String[] filterFields = null;
-		if (runidFields != null) {
-			int runidFieldCount = runidFields.length;
-			filterFields = new String[runidFieldCount];
-			System.arraycopy(runidFields, 0, filterFields, 0, runidFieldCount);
-			filterFields[runidFieldCount] = MODULE;
-			filterFields[runidFieldCount + 1] = NAME;
+		return createAddsWithFields(items, getFilterFieldsFor(runidFields));
+	}
+	
+	public static Collection<Add> createAdds(IDList ids, String[] runidFields, ResultFileManager manager, boolean cacheIDs) {
+		String[] filterFields = getFilterFieldsFor(runidFields);
+		List<Add> adds = new ArrayList<Add>(ids.size());
+		for (int i = 0; i < ids.size(); ++i) {
+			long id = ids.get(i);
+			Add add = createAdd(manager.getItem(id), filterFields);
+			if (cacheIDs) {
+				IDList cachedIDs = new IDList();
+				cachedIDs.add(id);
+				add.setCachedIDs(cachedIDs);
+			}
+			adds.add(add);
 		}
-		return createAddsWithFields(items, filterFields);
+		return adds;
 	}
 	
 	public static Collection<Add> createAddsWithFields(ResultItem[] items, String[] filterFields) {
@@ -149,25 +164,19 @@ public class ScaveModelUtil {
 			adds.add(createAdd(item, filterFields));
 		return adds;
 	}
-
-	/**
-	 * Generates an Add command with filter pattern to identify item.
-	 * @param filterFields, includeModuleAndName  may be null (meaning autoselect)
-	 */
-	public static Add createAdd(ResultItem item, String[] filterFields) {
-		Add add = factory.createAdd();
-		add.setFilterPattern(new FilterUtil(item, filterFields).getFilterPattern());
-		if (item instanceof ScalarResult)
-			add.setType(ResultType.SCALAR_LITERAL);
-		else if (item instanceof VectorResult)
-			add.setType(ResultType.VECTOR_LITERAL);
-		else if (item instanceof HistogramResult)
-			add.setType(ResultType.HISTOGRAM_LITERAL);
-		else
-			throw new RuntimeException("unknown result type");
-		return add;
-	}
 	
+	private static String[] getFilterFieldsFor(String[] runidFields) {
+		String[] filterFields = null;
+		if (runidFields != null) {
+			int runidFieldCount = runidFields.length;
+			filterFields = new String[runidFieldCount];
+			System.arraycopy(runidFields, 0, filterFields, 0, runidFieldCount);
+			filterFields[runidFieldCount] = MODULE;
+			filterFields[runidFieldCount + 1] = NAME;
+		}
+		return filterFields;
+	}
+
 	/**
 	 * Returns the data types displayed on the chart.
 	 */
@@ -489,6 +498,44 @@ public class ScaveModelUtil {
 						r.getModuleName(),
 						r.getName()));
 			}
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	public static int asInternalResultType(ResultType type) {
+		switch (type.getValue()) {
+		case ResultType.SCALAR: return ResultFileManager.SCALAR;
+		case ResultType.VECTOR: return ResultFileManager.VECTOR;
+		case ResultType.HISTOGRAM: return ResultFileManager.HISTOGRAM;
+		default: Assert.isTrue(false, "Unknown ResultType:"+type); return 0;
+		}
+	}
+	
+	public static ResultType asResultType(int internalResultType) {
+		if (internalResultType == ResultFileManager.SCALAR)
+			return ResultType.SCALAR_LITERAL;
+		else if (internalResultType == ResultFileManager.VECTOR)
+			return ResultType.VECTOR_LITERAL;
+		else if (internalResultType == ResultFileManager.HISTOGRAM)
+			return ResultType.HISTOGRAM_LITERAL;
+		else {
+			Assert.isTrue(false, "Unknown internal ResultType:"+internalResultType);
+			return null;
+		}
+	}
+	
+	public static ResultType getTypeOf(ResultItem item) {
+		if (item instanceof ScalarResult)
+			return ResultType.SCALAR_LITERAL;
+		else if (item instanceof VectorResult)
+			return ResultType.VECTOR_LITERAL;
+		else if (item instanceof HistogramResult)
+			return ResultType.HISTOGRAM_LITERAL;
+		else {
+			Assert.isTrue(false, "Unknown result item: "+item);
+			return null;
 		}
 	}
 }

@@ -499,6 +499,15 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getSetOperation_CachedIDs() {
+		return (EAttribute)setOperationEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getGroup() {
 		return groupEClass;
 	}
@@ -1002,6 +1011,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		createEReference(setOperationEClass, SET_OPERATION__SOURCE_DATASET);
 		createEAttribute(setOperationEClass, SET_OPERATION__FILTER_PATTERN);
 		createEAttribute(setOperationEClass, SET_OPERATION__TYPE);
+		createEAttribute(setOperationEClass, SET_OPERATION__CACHED_IDS);
 
 		datasetItemEClass = createEClass(DATASET_ITEM);
 
@@ -1148,6 +1158,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEReference(getSetOperation_SourceDataset(), this.getDataset(), null, "sourceDataset", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSetOperation_FilterPattern(), ecorePackage.getEString(), "filterPattern", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getSetOperation_Type(), this.getResultType(), "type", null, 0, 1, SetOperation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getSetOperation_CachedIDs(), ecorePackage.getEJavaObject(), "cachedIDs", null, 0, 1, SetOperation.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(datasetItemEClass, DatasetItem.class, "DatasetItem", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

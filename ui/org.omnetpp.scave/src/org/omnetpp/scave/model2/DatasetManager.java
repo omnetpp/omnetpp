@@ -137,8 +137,9 @@ public class DatasetManager {
 		}
 
 		public Object caseAdd(Add add) {
-			if (type == null || add.getType() == type)
+			if (type == null || add.getType() == type) {
 				idlist.merge(select(null, add));
+			}
 			return this;
 		}
 
@@ -161,7 +162,7 @@ public class DatasetManager {
 				idlist.substract(selected);
 				for (int i = 0; i < selected.size(); ++i) {
 					long id = selected.get(i);
-					if (manager.getTypeOf(id) == ResultFileManager.VECTOR)
+					if (ResultFileManager.getTypeOf(id) == ResultFileManager.VECTOR)
 						idlist.add(ensureComputedResultItem(apply, id, i, manager, warnings));
 					else
 						idlist.add(id);
@@ -176,7 +177,7 @@ public class DatasetManager {
 				int size = selected.size();
 				for (int i = 0; i < size; ++i) {
 					long id = selected.get(i);
-					if (manager.getTypeOf(id) == ResultFileManager.VECTOR)
+					if (ResultFileManager.getTypeOf(id) == ResultFileManager.VECTOR)
 						idlist.add(ensureComputedResultItem(compute, id, i, manager, warnings));
 				}
 			}
@@ -500,10 +501,19 @@ public class DatasetManager {
 	}
 
 	public static IDList select(IDList source, SetOperation op, ResultFileManager manager) {
+		// check cached IDs
+		if (op.getCachedIDs() instanceof IDList) {
+			IDList cachedIDs = (IDList)op.getCachedIDs();
+			if (cachedIDs.size() > 0 && !manager.hasStaleID(cachedIDs))
+				return cachedIDs;
+		}
+		
+		// select IDs by the filter
 		Dataset sourceDataset = op.getSourceDataset();
 		ResultType type = op.getType();
 		IDList idlist = selectInternal(source, sourceDataset, type, op.getFilterPattern(), manager);
 
+		// remove IDs matching Excepts
 		List<Except> excepts = null;
 		if (op instanceof Select)
 			excepts = ((Select)op).getExcepts();
@@ -517,6 +527,10 @@ public class DatasetManager {
 		if (excepts != null)
 			for (Except except : excepts)
 				idlist.substract(selectInternal(idlist, sourceDataset, type, except.getFilterPattern(), manager));
+		
+		// update cached IDs
+		if (op.getCachedIDs() != null)
+			op.setCachedIDs(idlist);
 
 		return idlist;
 	}

@@ -5,13 +5,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.model.ResultType;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Represents a selection of result item IDs in the editor.
@@ -40,11 +40,12 @@ public class IDListSelection implements IStructuredSelection {
 	public IDListSelection(long id, ResultFileManager manager) {
 		this.elements = new Long[] { id };
 		this.manager = manager;
-		if (manager.getTypeOf(id) == ResultFileManager.SCALAR)
+		int internalType = ResultFileManager.getTypeOf(id);
+		if (internalType == ResultFileManager.SCALAR)
 			type = ResultType.SCALAR_LITERAL;
-		else if (manager.getTypeOf(id) == ResultFileManager.VECTOR)
+		else if (internalType == ResultFileManager.VECTOR)
 			type = ResultType.VECTOR_LITERAL;
-		else if (manager.getTypeOf(id) == ResultFileManager.HISTOGRAM)
+		else if (internalType == ResultFileManager.HISTOGRAM)
 			type = ResultType.HISTOGRAM_LITERAL;
 	}
 	
@@ -77,10 +78,10 @@ public class IDListSelection implements IStructuredSelection {
 		if (this.type == type)
 			return elements;
 		else {
-			int type2 = getInternalType(type);
+			int type2 = ScaveModelUtil.asInternalResultType(type);
 			List<Long> ids = new ArrayList<Long>();
 			for (Long id : elements)
-				if (manager.getTypeOf(id) == type2)
+				if (ResultFileManager.getTypeOf(id) == type2)
 					ids.add(id);
 			return ids.toArray(new Long[ids.size()]);
 		}
@@ -102,25 +103,14 @@ public class IDListSelection implements IStructuredSelection {
 		if (this.type == type)
 			return elements.length;
 		else {
-			int type2 = getInternalType(type);
+			int type2 = ScaveModelUtil.asInternalResultType(type);
 			int c = 0;
 			for (Long id : elements)
-				if (manager.getTypeOf(id) == type2)
+				if (ResultFileManager.getTypeOf(id) == type2)
 					c++;
 			return c;
 		}
 	}
-	
-	// XXX eliminate duplication
-	private int getInternalType(ResultType type) {
-		switch (type.getValue()) {
-		case ResultType.SCALAR: return ResultFileManager.SCALAR;
-		case ResultType.VECTOR: return ResultFileManager.VECTOR;
-		case ResultType.HISTOGRAM: return ResultFileManager.HISTOGRAM;
-		default: Assert.isTrue(false, "Unknown ResultType:"+type); return 0;
-		}
-	}
-	
 	
 	public Object getFirstElement() {
 		return elements.length > 0 ? elements[0] : null;

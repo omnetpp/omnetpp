@@ -294,12 +294,6 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public int getTypeOf(long id) {
-		checkDeleted();
-		return super.getTypeOf(id);
-	}
-
-	@Override
 	public StringSet getUniqueRunAttributeValues(RunList runList,
 			String attrName) {
 		checkDeleted();
@@ -439,5 +433,17 @@ public class ResultFileManagerEx extends ResultFileManager {
 	public long getComputedVector(long computationID, long inputID) {
 		checkDeleted();
 		return super.getComputedVector(computationID, inputID);
+	}
+
+	@Override
+	public boolean hasStaleID(IDList ids) {
+		checkDeleted();
+		return super.hasStaleID(ids);
+	}
+
+	@Override
+	public boolean isStaleID(long id) {
+		checkDeleted();
+		return super.isStaleID(id);
 	}
 }

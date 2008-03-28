@@ -270,7 +270,10 @@ class SCAVE_API ResultFileManager
     const ScalarResult& getScalar(ID id) const;
     const VectorResult& getVector(ID id) const;
     const HistogramResult& getHistogram(ID id) const;
-    int getTypeOf(ID id) const {return _type(id);} // SCALAR/VECTOR/HISTOGRAM
+    static int getTypeOf(ID id) {return _type(id);} // SCALAR/VECTOR/HISTOGRAM
+    
+    bool isStaleID(ID id) const;
+    bool hasStaleID(const IDList& ids) const;
 
     // the following are needed for filter combos
     // Note: their return value is allocated with new and callers should delete them
@@ -392,6 +395,10 @@ inline ResultFile *ResultFileManager::getFileForID(ID id) const
     return fileRef;
 }
 
+inline bool ResultFileManager::isStaleID(ID id) const
+{
+	return fileList.at(_fileid(id)) == NULL;
+}
 
 NAMESPACE_END
 

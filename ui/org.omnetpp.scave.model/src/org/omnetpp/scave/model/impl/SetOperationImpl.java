@@ -29,6 +29,7 @@ import org.omnetpp.scave.model.SetOperation;
  *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getSourceDataset <em>Source Dataset</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getFilterPattern <em>Filter Pattern</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getType <em>Type</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.impl.SetOperationImpl#getCachedIDs <em>Cached IDs</em>}</li>
  * </ul>
  * </p>
  *
@@ -84,6 +85,26 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * @ordered
 	 */
 	protected ResultType type = TYPE_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getCachedIDs() <em>Cached IDs</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getCachedIDs()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final Object CACHED_IDS_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getCachedIDs() <em>Cached IDs</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getCachedIDs()
+	 * @generated
+	 * @ordered
+	 */
+	protected Object cachedIDs = CACHED_IDS_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -189,6 +210,27 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public Object getCachedIDs() {
+		return cachedIDs;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setCachedIDs(Object newCachedIDs) {
+		Object oldCachedIDs = cachedIDs;
+		cachedIDs = newCachedIDs;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SET_OPERATION__CACHED_IDS, oldCachedIDs, cachedIDs));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
@@ -199,6 +241,8 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 				return getFilterPattern();
 			case ScaveModelPackage.SET_OPERATION__TYPE:
 				return getType();
+			case ScaveModelPackage.SET_OPERATION__CACHED_IDS:
+				return getCachedIDs();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -219,6 +263,9 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 				return;
 			case ScaveModelPackage.SET_OPERATION__TYPE:
 				setType((ResultType)newValue);
+				return;
+			case ScaveModelPackage.SET_OPERATION__CACHED_IDS:
+				setCachedIDs(newValue);
 				return;
 		}
 		super.eSet(featureID, newValue);
@@ -241,6 +288,9 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 			case ScaveModelPackage.SET_OPERATION__TYPE:
 				setType(TYPE_EDEFAULT);
 				return;
+			case ScaveModelPackage.SET_OPERATION__CACHED_IDS:
+				setCachedIDs(CACHED_IDS_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -259,6 +309,8 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 				return FILTER_PATTERN_EDEFAULT == null ? filterPattern != null : !FILTER_PATTERN_EDEFAULT.equals(filterPattern);
 			case ScaveModelPackage.SET_OPERATION__TYPE:
 				return type != TYPE_EDEFAULT;
+			case ScaveModelPackage.SET_OPERATION__CACHED_IDS:
+				return CACHED_IDS_EDEFAULT == null ? cachedIDs != null : !CACHED_IDS_EDEFAULT.equals(cachedIDs);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -277,6 +329,8 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
 		result.append(filterPattern);
 		result.append(", type: ");
 		result.append(type);
+		result.append(", cachedIDs: ");
+		result.append(cachedIDs);
 		result.append(')');
 		return result.toString();
 	}

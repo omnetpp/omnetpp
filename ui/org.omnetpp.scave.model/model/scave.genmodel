@@ -45,6 +45,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EReference scave.ecore#//SetOperation/sourceDataset"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/filterPattern"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/type"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//SetOperation/cachedIDs"/>
     </genClasses>
     <genClasses image="false" ecoreClass="scave.ecore#//DatasetItem"/>
     <genClasses ecoreClass="scave.ecore#//Group">

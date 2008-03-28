@@ -1397,5 +1397,15 @@ StringVector *ResultFileManager::getModuleParamFilterHints(const RunList &runLis
     return filterHints;
 }
 
+bool ResultFileManager::hasStaleID(const IDList& ids) const
+{
+	for (int i = 0; i < ids.size(); ++i)
+	{
+		ID id = ids.get(i);
+		if (isStaleID(id))
+			return true;
+	}
+	return false;
+}
 
 

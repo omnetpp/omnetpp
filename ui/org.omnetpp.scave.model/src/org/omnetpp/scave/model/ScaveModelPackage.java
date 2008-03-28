@@ -209,13 +209,22 @@ public interface ScaveModelPackage extends EPackage {
 	int SET_OPERATION__TYPE = 2;
 
 	/**
+	 * The feature id for the '<em><b>Cached IDs</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SET_OPERATION__CACHED_IDS = 3;
+
+	/**
 	 * The number of structural features of the '<em>Set Operation</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int SET_OPERATION_FEATURE_COUNT = 3;
+	int SET_OPERATION_FEATURE_COUNT = 4;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.AddDiscardOpImpl <em>Add Discard Op</em>}' class.
@@ -253,6 +262,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int ADD_DISCARD_OP__TYPE = SET_OPERATION__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Cached IDs</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ADD_DISCARD_OP__CACHED_IDS = SET_OPERATION__CACHED_IDS;
 
 	/**
 	 * The number of structural features of the '<em>Add Discard Op</em>' class.
@@ -299,6 +317,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int ADD__TYPE = ADD_DISCARD_OP__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Cached IDs</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int ADD__CACHED_IDS = ADD_DISCARD_OP__CACHED_IDS;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -404,6 +431,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int DISCARD__TYPE = ADD_DISCARD_OP__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Cached IDs</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DISCARD__CACHED_IDS = ADD_DISCARD_OP__CACHED_IDS;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -707,6 +743,15 @@ public interface ScaveModelPackage extends EPackage {
 	int SELECT_DESELECT_OP__TYPE = SET_OPERATION__TYPE;
 
 	/**
+	 * The feature id for the '<em><b>Cached IDs</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SELECT_DESELECT_OP__CACHED_IDS = SET_OPERATION__CACHED_IDS;
+
+	/**
 	 * The number of structural features of the '<em>Select Deselect Op</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -751,6 +796,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int SELECT__TYPE = SELECT_DESELECT_OP__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Cached IDs</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int SELECT__CACHED_IDS = SELECT_DESELECT_OP__CACHED_IDS;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -806,6 +860,15 @@ public interface ScaveModelPackage extends EPackage {
 	 * @ordered
 	 */
 	int DESELECT__TYPE = SELECT_DESELECT_OP__TYPE;
+
+	/**
+	 * The feature id for the '<em><b>Cached IDs</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DESELECT__CACHED_IDS = SELECT_DESELECT_OP__CACHED_IDS;
 
 	/**
 	 * The feature id for the '<em><b>Excepts</b></em>' containment reference list.
@@ -1537,6 +1600,17 @@ public interface ScaveModelPackage extends EPackage {
 	EAttribute getSetOperation_Type();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.SetOperation#getCachedIDs <em>Cached IDs</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Cached IDs</em>'.
+	 * @see org.omnetpp.scave.model.SetOperation#getCachedIDs()
+	 * @see #getSetOperation()
+	 * @generated
+	 */
+	EAttribute getSetOperation_CachedIDs();
+
+	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.Group <em>Group</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2260,6 +2334,14 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute SET_OPERATION__TYPE = eINSTANCE.getSetOperation_Type();
+
+		/**
+		 * The meta object literal for the '<em><b>Cached IDs</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute SET_OPERATION__CACHED_IDS = eINSTANCE.getSetOperation_CachedIDs();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.GroupImpl <em>Group</em>}' class.
