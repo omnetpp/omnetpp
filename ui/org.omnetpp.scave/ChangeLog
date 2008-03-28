@@ -1,3 +1,23 @@
+2008-03-28
+----------
+
+Fixes:
+
+   + Temporary charts was not refreshed when the input files changed.
+
+   + Datasets of temporary charts contain a separate Add operation for
+     each ID in the dataset causing performance problems when computing
+     the vectors in the dataset. Now the IDs are cached in the Add nodes.
+
+   + Opening a temporary chart does not make the editor dirty.
+
+   + Generating computed files crashed the IDE on linux/mac.
+     (Missing permission on .computed directory)
+
+   + Line names are sorted in the Edit dialog.
+
+   + Filtering result items by patterns did not work from multiple threads.
+
 2008-02-29
 ----------
 
