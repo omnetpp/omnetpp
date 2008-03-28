@@ -49,7 +49,6 @@ import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model.SetOperation;
 
 /**
  * A collection of static methods to manipulate model objects
