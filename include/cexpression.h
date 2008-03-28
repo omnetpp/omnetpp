@@ -134,6 +134,12 @@ class SIM_API cExpression : public cObject
      * does not support parsing.
      */
     virtual void parse(const char *text) = 0;
+
+    /**
+     * Compares two expressions. Makes it possible to use cExpression
+     * as (part of) a key in std::map or std::set.
+     */
+    virtual int compare(const cExpression *other) const = 0;
     //@}
 };
 

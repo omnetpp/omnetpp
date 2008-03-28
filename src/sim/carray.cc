@@ -102,7 +102,8 @@ cOwnedObject( name )
     firstfree = 0;
     last = -1;
     vect = new cObject *[capacity];
-    for (int i=0; i<capacity; i++) vect[i]=NULL;
+    for (int i=0; i<capacity; i++)
+        vect[i] = NULL;
 }
 
 cArray::~cArray()
@@ -113,7 +114,8 @@ cArray::~cArray()
 
 cArray& cArray::operator=(const cArray& list)
 {
-    if (this==&list) return *this;
+    if (this == &list)
+        return *this;
 
     clear();
 
@@ -126,7 +128,7 @@ cArray& cArray::operator=(const cArray& list)
     last = list.last;
     delete [] vect;
     vect = new cObject *[capacity];
-    if (vect) memcpy( vect, list.vect, capacity * sizeof(cObject *) );
+    memcpy(vect, list.vect, capacity * sizeof(cObject *));
 
     for (int i=0; i<=last; i++)
         if (vect[i] && vect[i]->isOwnedObject() && vect[i]->owner()==const_cast<cArray*>(&list))

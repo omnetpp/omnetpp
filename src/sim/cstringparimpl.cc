@@ -203,7 +203,7 @@ int cStringParImpl::compare(const cParImpl *other) const
 
     const cStringParImpl *other2 = dynamic_cast<const cStringParImpl *>(other);
     if (flags & FL_ISEXPR)
-        throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
+        return expr->compare(other2->expr);
     else
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }

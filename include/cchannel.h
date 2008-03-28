@@ -39,7 +39,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:
     cGate *fromgatep;  // gate the channel is attached to
-    // TBD: add on/off modelling? or to cGate?
+    long connId;       // XXX identifies
 
   public:
     // internal: called from cGate

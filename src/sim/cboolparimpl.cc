@@ -162,24 +162,12 @@ std::string cBoolParImpl::toString() const
 
 void cBoolParImpl::parse(const char *text)
 {
-/*XXX not really needed
-    // maybe it's a single word, "true" or "false"
-    cStringTokenizer tok(text);
-    const char *word = tok.nextToken();
-    if (word!=NULL && !tok.hasMoreTokens())
+    // shortcut: recognize "true" and "false"
+    if (strcmp(text, "true")==0 || strcmp(text, "false")==0)
     {
-        if (!strcmp(word, "true"))
-        {
-            setBoolValue(true);
-            return;
-        }
-        else if (!strcmp(word, "false"))
-        {
-            setBoolValue(false);
-            return;
-        }
+        setBoolValue(text[0]=='t');
+        return;
     }
-*/
 
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
@@ -207,7 +195,7 @@ int cBoolParImpl::compare(const cParImpl *other) const
 
     const cBoolParImpl *other2 = dynamic_cast<const cBoolParImpl *>(other);
     if (flags & FL_ISEXPR)
-        throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
+        return expr->compare(other2->expr);
     else
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }

@@ -1310,6 +1310,24 @@ supply your implementation.
 
 \subsection{Using STL in message classes}
 
+
+FIXME ADD THIS SOLUTION:
+cplusplus {{
+#include <vector>
+typedef std::vector<int> IntVector;
+}}
+
+class noncobject IntVector;
+
+message X {
+  fields:
+    IntVector v;
+};
+
+
+
+
+
 You may want to use STL \ttt{vector} or \ttt{stack} classes in your message classes.
 This is possible using abstract fields. After all, \ttt{vector} and \ttt{stack}
 are representations of a \textit{sequence} -- same abstraction as dynamic-size vectors.

@@ -79,9 +79,9 @@ class SIM_API cDynamicExpression : public cExpression
         union {
             bool b;
             struct {double d; const char *unit;} d;
-            const char *s;
+            const char *s; // points into stringPool
             cXMLElement *x;
-            cPar *p;
+            cPar *p;             //FIXME OUT!!!!!!!!!!!!!!!!!!!!!!!!!!
             cMathFunction *f;
             struct {cNEDFunction *f; int argc;} nf;
             Functor *fu;
@@ -186,6 +186,11 @@ class SIM_API cDynamicExpression : public cExpression
          * Constant subexpression.
          */
         void operator=(cExpression *_expr)  {type=CONSTSUBEXPR; constexpr=_expr;}
+
+        /**
+         * For cDynamicExpression::compare()
+         */
+        int compare(const Elem& other) const;
     };
 
     /**
@@ -244,7 +249,7 @@ class SIM_API cDynamicExpression : public cExpression
 
   protected:
     Elem *elems;
-    int nelems;
+    int size;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -295,7 +300,7 @@ class SIM_API cDynamicExpression : public cExpression
      * dynamically allocated one, and will be deleted by this object.
      * No verification is performed on the expression at this time.
      */
-    virtual void setExpression(Elem e[], int nelems);
+    virtual void setExpression(Elem e[], int size);
 
     /**
      * Evaluate the expression, and return the results as a Value.
@@ -346,6 +351,11 @@ class SIM_API cDynamicExpression : public cExpression
      * Interprets the string as an expression, and stores it.
      */
     virtual void parse(const char *text);
+
+    /**
+     * Compares two expressions.
+     */
+    virtual int compare(const cExpression *other) const;
 
     /**
      * Returns true if the expression is just a literal (or equivalent to one,

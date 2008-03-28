@@ -63,6 +63,29 @@ void cDynamicExpression::Elem::deleteOld()
         delete constexpr;
 }
 
+int cDynamicExpression::Elem::compare(const Elem& other) const
+{
+    if (type!=other.type)
+        return type - other.type;
+
+    switch (type)
+    {
+#define CMP(x) (x==other.x ? 0 : x<other.x ? -1 : 1)
+      case BOOL:     return (int)other.b - (int)b;
+      case DBL:      return d.d==other.d.d ? opp_strcmp(d.unit,other.d.unit) : d.d<other.d.d ? -1 : 1;
+      case STR:      return CMP(s);
+      case XML:      return CMP(x);
+      case CPAR:     return CMP(p);
+      case MATHFUNC: return CMP(f);
+      case NEDFUNC:  return nf.argc==other.nf.argc ? CMP(nf.f) : (other.nf.argc-nf.argc);
+      case FUNCTOR:  return CMP(fu);
+      case OP:       return other.op - op;
+      case CONSTSUBEXPR: return constexpr->compare(other.constexpr);
+      default:   throw cRuntimeError("internal error: bad Elem type");
+#undef PTRCMP
+    }
+}
+
 void cDynamicExpression::Value::operator=(const cPar& par)
 {
     switch (par.type())
@@ -93,7 +116,7 @@ std::string cDynamicExpression::Value::toString() const
 cDynamicExpression::cDynamicExpression()
 {
     elems = NULL;
-    nelems = 0;
+    size = 0;
 }
 
 cDynamicExpression::~cDynamicExpression()
@@ -107,9 +130,9 @@ cDynamicExpression& cDynamicExpression::operator=(const cDynamicExpression& othe
 
     delete [] elems;
 
-    nelems = other.nelems;
-    elems = new Elem[nelems];
-    for (int i=0; i<nelems; i++)
+    size = other.size;
+    elems = new Elem[size];
+    for (int i=0; i<size; i++)
         elems[i] = other.elems[i];
     return *this;
 }
@@ -123,14 +146,32 @@ void cDynamicExpression::setExpression(Elem e[], int n)
 {
     delete [] elems;
     elems = e;
-    nelems = n;
+    size = n;
 }
 
 
 void cDynamicExpression::parse(const char *text)
 {
     // throws exception if something goes wrong
-    ::doParseExpression(text, elems, nelems);
+    ::doParseExpression(text, elems, size);
+}
+
+int cDynamicExpression::compare(const cExpression *other) const
+{
+    const cDynamicExpression *o = dynamic_cast<const cDynamicExpression *>(other);
+    if (!o)
+        return 1; // for lack of a better option
+
+    if (size != o->size)
+        return o->size - size;
+
+    for (int i=0; i<size; i++)
+    {
+        int c = elems[i].compare(o->elems[i]);
+        if (c != 0)
+            return c;
+    }
+    return 0;
 }
 
 double cDynamicExpression::convertUnit(double d, const char *unit, const char *targetUnit)
@@ -141,7 +182,7 @@ double cDynamicExpression::convertUnit(double d, const char *unit, const char *t
 
 bool cDynamicExpression::isAConstant() const
 {
-    for (int i=0; i<nelems; i++)
+    for (int i=0; i<size; i++)
     {
         switch(elems[i].type)
         {
@@ -209,7 +250,7 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
 {
     //printf("    evaluating: %s\n", toString().c_str()); //XXX
     int tos = -1;
-    for (int i = 0; i < nelems; i++)
+    for (int i = 0; i < size; i++)
     {
        Elem& e = elems[i];
        switch (e.type)
@@ -547,7 +588,7 @@ std::string cDynamicExpression::toString() const
         int pristk[stksize];
 
         int tos = -1;
-        for (int i = 0; i < nelems; i++)
+        for (int i = 0; i < size; i++)
         {
            Elem& e = elems[i];
            switch (e.type)

@@ -198,7 +198,7 @@ int cXMLParImpl::compare(const cParImpl *other) const
 
     const cXMLParImpl *other2 = dynamic_cast<const cXMLParImpl *>(other);
     if (flags & FL_ISEXPR)
-        throw cRuntimeError(this, "cannot compare expressions yet"); //FIXME
+        return expr->compare(other2->expr);
     else
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }
