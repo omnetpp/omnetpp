@@ -46,8 +46,6 @@ cModule::cModule()
     idx=0; vectsize=-1;
     fullname = NULL;
 
-    dispstr = NULL;
-
     prevp = nextp = firstsubmodp = lastsubmodp = NULL;
 
     numgatedescs = 0;
@@ -114,7 +112,6 @@ cModule::~cModule()
         parentModule()->removeSubmodule(this);
 
     delete [] fullname;
-    delete dispstr;
 }
 
 void cModule::forEachChild(cVisitor *v)

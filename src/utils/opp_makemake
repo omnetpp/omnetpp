@@ -1117,7 +1117,7 @@ MSG_H_FILES = {msghfiles}
 {nmake:}!endif
 {nmake:}
 {nmake:}!if !exist($(CONFIGFILE))
-{nmake:}!error '$(CONFIGFILE)' does not exist -- specify "configuser.vc" in the OMNETPP_CONFIGFILE variable (as environment variable or command-line nmake argument), or edit or re-generate this makefile.
+{nmake:}!error '$(CONFIGFILE)' does not exist -- set the OMNETPP_CONFIGFILE variable to point to configuser.vc, or edit/regenerate this makefile.
 {nmake:}!endif
 {nmake:}
 {nmake:}!include $(CONFIGFILE)
@@ -1133,7 +1133,7 @@ MSG_H_FILES = {msghfiles}
 {~nmake:}endif
 {~nmake:}
 {~nmake:}ifeq ("$(wildcard $(CONFIGFILE))","")
-{~nmake:}$(error Config file '$(CONFIGFILE)' does not exist -- specify "Makefile.inc" in the OMNETPP_CONFIGFILE variable (as environment variable or command-line make argument), or add the OMNeT++ bin directory to the path so that opp_configfilepath can be found)
+{~nmake:}$(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin directory to the path so that opp_configfilepath can be found, or set the OMNETPP_CONFIGFILE variable to point to Makefile.inc)
 {~nmake:}endif
 {~nmake:}
 {~nmake:}include $(CONFIGFILE)
