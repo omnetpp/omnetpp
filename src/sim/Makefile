@@ -115,6 +115,8 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 
 expr.tab.h expr.tab.cc : expr.y
 	$(YACC) -p expryy -b expr -d expr.y
+	@# workaround for gcc 4.0.1 bug (anonymous enum) on OSX 
+	$(PERL) -i.bak -pe "s/enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };/const int YYERROR_VERBOSE_ARGS_MAXIMUM = 5;/g" expr.tab.c
 	mv expr.tab.c expr.tab.cc
 
 lex.expryy.cc: expr.lex expr.tab.h

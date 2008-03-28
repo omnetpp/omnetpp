@@ -34,6 +34,7 @@
 #include "cmemcommbuffer.h"
 #include "globals.h"
 #include "regmacros.h"
+#include "cconfigkey.h"
 #include "cenvir.h"
 #include "cconfiguration.h"
 #include "parsimutil.h"

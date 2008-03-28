@@ -4819,6 +4819,130 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+# try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
+if test $tcltk_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$TK_CFLAGS"
+   LIBS="-ltk8.5 -ltcl8.5"
+
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.5 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.5 -ltcl8.5\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.5 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.5 -ltcl8.5\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.5 -ltcl8.5"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; tcltk_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $tcltk_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$TK_CFLAGS"
+   LIBS="-ltk8.4 -ltcl8.4"
+
+   { echo "$as_me:$LINENO: checking for Tcl/Tk 8.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.4 -ltcl8.4\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"-ltk8.4 -ltcl8.4\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; tcltk_ok=yes; TK_LIBS="-ltk8.4 -ltcl8.4"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; tcltk_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+# look for X window libs and headers
 if test $tcltk_ok = no; then
     # try to find Tcl/Tk ourselves, but it usually needs to link with Xlib
     ac_ext=cpp
@@ -6181,7 +6305,7 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
 
 fi
 if test $blt_ok = no; then
-    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
     { echo "$as_me:$LINENO: WARNING: Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details." >&5
 echo "$as_me: WARNING: Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details." >&2;}
     HAVE_BLT=no
@@ -6189,7 +6313,7 @@ fi
 if test $blt_ok = yes; then
     HAVE_BLT=yes
     if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
-        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
+        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
         { echo "$as_me:$LINENO: WARNING: Tcl cannot load BLT (wish command \"package require BLT 2.4\" failed), probably BLT not installed correctly." >&5
 echo "$as_me: WARNING: Tcl cannot load BLT (wish command \"package require BLT 2.4\" failed), probably BLT not installed correctly." >&2;}
     fi
@@ -6209,7 +6333,7 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 
 if test "$JAVA_CFLAGS" = ""; then
    if test "$JDK" = ""; then
-     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk"
+     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk /System/Library/Frameworks/JavaVM.framework/Home"
      for dir in $javahome_candidates; do
          if test "$JAVA_HOME" = "" -a -d "$dir"; then
              JAVA_HOME=$dir
@@ -8342,7 +8466,7 @@ fi
 # with Cygwin because Windows locates DLLs another way.
 #----------------------
 
-if test "$BUILD_SHARED_LIBS" = yes -a "$cygwin" != yes; then
+if test "$BUILD_SHARED_LIBS" = yes -a "$cygwin" != yes -a "$mingw" != yes; then
   if echo $LD_LIBRARY_PATH | grep `eval echo $OMNETPP_LIB_DIR` >/dev/null; then
     echo "Your LD_LIBRARY_PATH is set. Good!"
   else
@@ -8359,9 +8483,10 @@ environment variable.
 Add the following line to your .profile or .bash_profile (provided you use bash):
   export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
 
-If you prefer static libraries, edit configure.user and change the
-BUILD_SHARED_LIBS=yes line to BUILD_SHARED_LIBS=no, then delete the shared
-libraries, re-run configure and make.
+If you prefer static libraries, edit Makefile.inc and change the
+BUILD_SHARED_LIBS=yes line to BUILD_SHARED_LIBS=no or define an environment
+variable as BUILD_SHARED_LIBS=no, then delete the shared libraries, re-run make.
+
 EOT
   fi
 fi

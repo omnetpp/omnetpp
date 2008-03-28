@@ -632,6 +632,16 @@ ALL_ENV_LIBS='$(CMDENV_LIBS)'
 else  #matching "fi" is after BLT testing
 
 OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
+# try to use tcl/tk without X (e.g. on Mac OS X native aqua Tcl/Tk impl)
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.5, tk.h, Tk_MainLoop(), $TK_CFLAGS, -ltk8.5 -ltcl8.5,
+                  tcltk_ok, TK_LIBS="-ltk8.5 -ltcl8.5")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $TK_CFLAGS, -ltk8.4 -ltcl8.4,
+                  tcltk_ok, TK_LIBS="-ltk8.4 -ltcl8.4")
+fi
+# look for X window libs and headers
 if test $tcltk_ok = no; then
     # try to find Tcl/Tk ourselves, but it usually needs to link with Xlib
     AC_PATH_X
@@ -729,14 +739,14 @@ if test $blt_ok = no; then
     OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
 fi
 if test $blt_ok = no; then
-    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
     AC_MSG_WARN([Cannot compile or link program with BLT: BLT or BLT-devel may not be installed -- check config.log for details.])
     HAVE_BLT=no
 fi
 if test $blt_ok = yes; then
     HAVE_BLT=yes
     if echo 'catch {package require BLT 2.4; puts OK}; exit' | $WISH | grep OK >/dev/null; then :; else
-        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
+        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT (optional)"
         AC_MSG_WARN([Tcl cannot load BLT (wish command "package require BLT 2.4" failed), probably BLT not installed correctly.])
     fi
 fi
@@ -755,7 +765,7 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 
 if test "$JAVA_CFLAGS" = ""; then
    if test "$JDK" = ""; then
-     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk"
+     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk /System/Library/Frameworks/JavaVM.framework/Home"
      for dir in $javahome_candidates; do
          if test "$JAVA_HOME" = "" -a -d "$dir"; then
              JAVA_HOME=$dir
