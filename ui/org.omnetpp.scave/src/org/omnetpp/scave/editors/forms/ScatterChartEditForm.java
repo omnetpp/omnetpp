@@ -1,6 +1,7 @@
 package org.omnetpp.scave.editors.forms;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 	}
 	
 	protected void updateLineNames(String formatString) {
-		lineNames = ArrayUtils.EMPTY_STRING_ARRAY;
+		lines = NO_LINES;
 		IXYDataset xydataset;
 		
 		try {
@@ -74,13 +75,14 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		}
 
 		if (xydataset != null) {
-			lineNames = new String[xydataset.getSeriesCount()];
+			lines = new Line[xydataset.getSeriesCount()];
 			for (int i = 0; i < xydataset.getSeriesCount(); ++i)
-				lineNames[i] = xydataset.getSeriesKey(i);
+				lines[i] = new Line(xydataset.getSeriesKey(i));
+			Arrays.sort(lines);
 		}
 
 		if (linesTableViewer != null)
-			linesTableViewer.setInput(lineNames);
+			linesTableViewer.setInput(lines);
 	}
 	
 	

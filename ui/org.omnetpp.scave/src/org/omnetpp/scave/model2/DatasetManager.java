@@ -541,6 +541,8 @@ public class DatasetManager {
 			VectorResult vector = manager.getVector(inputID);
 			String name = String.format("%s(%s)", operation.getOperation(), vector.getName());
 			String fileName = ComputedResultFileLocator.instance().getComputedFile(operation);
+			if (fileName == null)
+				throw new RuntimeException("Cannot locate folder for computed file.");
 			StringMap attributes = mapVectorAttributes(vector, operation, warnings);
 			id = manager.addComputedVector(vectorId, name, fileName, attributes, computationID, inputID, operation);
 		}

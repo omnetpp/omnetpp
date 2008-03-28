@@ -52,7 +52,16 @@ public class ChartUpdater {
 	public void updateChart(Notification notification) {
 		if (notification.isTouch() || !(notification.getNotifier() instanceof EObject))
 			return;
+
 		EObject notifier = (EObject)notification.getNotifier();
+		
+		// add/remove or change input file
+		if (notifier instanceof Inputs || notifier instanceof InputFile) {
+			// TODO should be checked that visible items are affected
+			scheduleDatasetUpdate();
+			return;
+		}
+		
 		if (notifier.eResource() != chart.eResource())
 			return;
 		
@@ -121,16 +130,6 @@ public class ChartUpdater {
 				setChartProperty(property.getName(), (String)notification.getNewValue());
 				break;
 			}
-		}
-		// add/remove input file
-		else if (notifier instanceof Inputs) {
-			// TODO should be checked that visible items are affected
-			scheduleDatasetUpdate();
-		}
-		// change input file
-		else if (notifier instanceof InputFile) {
-			// TODO should be checked that chart is affected
-			scheduleDatasetUpdate();
 		}
 		else if (notification.getFeature() != null &&
 				notification.getFeature() instanceof EStructuralFeature &&

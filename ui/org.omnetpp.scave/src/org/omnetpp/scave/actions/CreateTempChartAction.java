@@ -34,7 +34,7 @@ public class CreateTempChartAction extends AbstractScaveAction {
 
 		String datasetName = "dataset";
 		Dataset dataset =
-			ScaveModelUtil.createDataset(
+			ScaveModelUtil.createTemporaryDataset(
 					datasetName,
 					activePanel.getTable().getSelectedItems(),
 					null);

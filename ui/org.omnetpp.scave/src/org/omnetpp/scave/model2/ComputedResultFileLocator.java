@@ -49,7 +49,9 @@ public class ComputedResultFileLocator {
 					File indexFile = IndexFile.getIndexFileFor(file);
 					indexFile.deleteOnExit();
 					return file.getAbsolutePath();
-				} catch (IOException e) {}
+				} catch (IOException e) {
+					throw new RuntimeException("Could not create computed file: " + e.getMessage(), e);
+				}
 			}
 		}
 		return null;
@@ -98,9 +100,11 @@ public class ComputedResultFileLocator {
 				folder.create(IResource.DERIVED, true, null);
 				ResourceAttributes attributes = new ResourceAttributes();
 				attributes.setHidden(true);
+				attributes.setExecutable(true);
 				folder.setResourceAttributes(attributes);
 			}
 			catch (CoreException e) {
+				throw new RuntimeException("Could not create directory for computed files: "+e.getMessage(), e);
 			}
 		}
 		

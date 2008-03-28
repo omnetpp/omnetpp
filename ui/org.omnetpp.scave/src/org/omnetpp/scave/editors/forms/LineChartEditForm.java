@@ -1,8 +1,8 @@
 package org.omnetpp.scave.editors.forms;
 
+import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.events.ModifyEvent;
@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
-import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
 import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemFields;
@@ -76,20 +75,18 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 	protected void updateLineNames(String formatString) {
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 		IXYDataset xydataset = DatasetManager.createVectorDataset((LineChart)chart, dataset, formatString, false, manager, null);
-		lineNames = ArrayUtils.EMPTY_STRING_ARRAY;
-		lineInterpolationModes = null;
+		lines = NO_LINES;
 		if (xydataset != null) {
 			int count = xydataset.getSeriesCount();
-			lineNames = new String[count];
-			lineInterpolationModes = new InterpolationMode[count];
+			lines = new Line[count];
 			for (int i = 0; i < count; ++i) {
-				lineNames[i] = xydataset.getSeriesKey(i);
-				lineInterpolationModes[i] = xydataset.getSeriesInterpolationMode(i);
+				lines[i] = new Line(xydataset.getSeriesKey(i), xydataset.getSeriesInterpolationMode(i));
 			}
+			Arrays.sort(lines);
 		}
 
 		if (linesTableViewer != null)
-			linesTableViewer.setInput(lineNames);
+			linesTableViewer.setInput(lines);
 	}
 
 	@Override

@@ -80,7 +80,7 @@ public class ScaveModelUtil {
 		return dataset;
 	}
 
-	public static Dataset createDataset(String name, ResultItem[] items, String[] runidFields) {
+	public static Dataset createTemporaryDataset(String name, ResultItem[] items, String[] runidFields) {
 		Dataset dataset = factory.createDataset();
 		dataset.setName(name);
 		dataset.getItems().addAll(createAdds(items, runidFields));

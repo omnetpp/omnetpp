@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -72,8 +72,44 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	private static final String AUTO = "Auto";
 	private static final String[] SYMBOL_SIZES = StringUtils.split("1 2 3 4 5 6 7 8 10 12 16 20");
 
-	protected String[] lineNames = ArrayUtils.EMPTY_STRING_ARRAY;
-	protected InterpolationMode[] lineInterpolationModes;
+	static final Line[] NO_LINES = new Line[0];
+
+	class Line implements Comparable<Line> {
+		
+		String key;
+		InterpolationMode interpolationMode;
+		
+		public Line(String key) {
+			this(key, InterpolationMode.Unspecified);
+		}
+		
+		public Line(String key, InterpolationMode interpolationMode) {
+			Assert.isNotNull(key);
+			this.key = key;
+			this.interpolationMode = interpolationMode;
+		}
+
+		public int compareTo(Line other) {
+			return StringUtils.dictionaryCompare(key, other.key);
+		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if (this == other)
+				return true;
+			if (!(other instanceof Line))
+				return false;
+			return key.equals(((Line)other).key);
+		}
+
+		@Override
+		public int hashCode() {
+			return key.hashCode();
+		}
+	}
+	
+	
+	protected Line[] lines = NO_LINES;
 	
 	// "Axes" page controls
 	private Text xAxisMinText;
@@ -113,12 +149,18 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			label.setText("Select line(s) to apply changes to:");
 			linesTableViewer = new TableViewer(panel, SWT.BORDER | SWT.MULTI);
 			GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
-			int itemsVisible = Math.max(Math.min(lineNames.length, 15), 3);
+			int itemsVisible = Math.max(Math.min(lines.length, 15), 3);
 			gridData.heightHint =  itemsVisible * linesTableViewer.getTable().getItemHeight();
 			linesTableViewer.getTable().setLayoutData(gridData);
-			linesTableViewer.setLabelProvider(new LabelProvider());
+			linesTableViewer.setLabelProvider(new LabelProvider() {
+				@Override
+				public String getText(Object element) {
+					String key = element instanceof Line ? ((Line)element).key : "";
+					return StringUtils.defaultString(key);
+				}
+			});
 			linesTableViewer.setContentProvider(new ArrayContentProvider());
-			linesTableViewer.setInput(lineNames);
+			linesTableViewer.setInput(lines);
 			linesTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 				public void selectionChanged(SelectionChangedEvent event) {
 					updateLinePropertyEditFields((VectorChartProperties)properties);
@@ -201,11 +243,11 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	
 	protected void selectLine(String lineName) {
 		if (lineName != null) {
-			for (int i = 0; i < lineNames.length; ++i)
-				if (lineNames[i].equals(lineName)) {
-					linesTableViewer.getTable().select(i);
-					return;
-				}
+			int index = Arrays.binarySearch(lines, new Line(lineName));
+			if (index >= 0) {
+				linesTableViewer.getTable().select(index);
+				return;
+			}
 		}
 		
 		linesTableViewer.getTable().select(0);
@@ -236,7 +278,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		
 		// read dialog contents
 		List<?> selection = ((IStructuredSelection) linesTableViewer.getSelection()).toList();
-		boolean applyToAll = (selection.size() == ((String[])linesTableViewer.getInput()).length);
+		boolean applyToAll = (selection.size() == ((Object[])linesTableViewer.getInput()).length);
 
 		Boolean displayLine = displayLineCheckbox.getGrayed() ? null : displayLineCheckbox.getSelection();
 		String symbolType = symbolTypeCombo.getText();
@@ -266,15 +308,15 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		}
 		else {
 			for (Object sel : selection.toArray()) {
-				String lineId = (String) sel; 
-				setLineProperties(newProps, lineId, symbolType, symbolSize, lineType, lineColor);
+				Line line = (Line) sel; 
+				setLineProperties(newProps, line.key, symbolType, symbolSize, lineType, lineColor);
 			}
 		}
 		// DisplayLine property always stored per line
 		if (displayLine != null) {
 			for (Object sel : selection.toArray()) {
-				String lineId = (String)sel;
-				newProps.setProperty(PROP_DISPLAY_LINE+"/"+lineId, displayLine);
+				Line line = (Line)sel;
+				newProps.setProperty(PROP_DISPLAY_LINE+"/"+line.key, displayLine);
 			}
 		}
 	}
@@ -313,8 +355,8 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		previewCanvas.props = props;
 		IStructuredSelection selection = (IStructuredSelection) linesTableViewer.getSelection();
 		if (selection.size() == 1) {
-			String lineId = (String) selection.getFirstElement();
-			LineProperties lineProps = props.getLineProperties(lineId);
+			Line line = (Line) selection.getFirstElement();
+			LineProperties lineProps = props.getLineProperties(line.key);
 			displayLineCheckbox.setSelection(lineProps.getDisplayLine());
 			displayLineCheckbox.setGrayed(false);
 			symbolTypeCombo.setText(lineProps.getSymbolType()==null ? AUTO : lineProps.getSymbolType().toString());
@@ -344,7 +386,13 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		public PreviewCanvas(Composite parent) {
 			super(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED);
 			setBackground(ColorFactory.WHITE);
-			dataset = new RandomXYDataset(0, lineNames, lineInterpolationModes, 4);
+			String[] lineNames = new String[lines.length];
+			InterpolationMode[] interpolationModes = new InterpolationMode[lines.length];
+			for (int i = 0; i < lines.length; ++i) {
+				lineNames[i] = lines[i].key;
+				interpolationModes[i] = lines[i].interpolationMode;
+			}
+			dataset = new RandomXYDataset(0, lineNames, interpolationModes, 4);
 			coordsMapping = createCoordsMapping();
 			addPaintListener(this);
 		}
@@ -383,7 +431,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 								SymbolType.class);
 			
 			if (type == null) {
-				int series = Arrays.asList(lineNames).indexOf(lineId);
+				int series = Arrays.binarySearch(lines, new Line(lineId));
 				switch (series % 6) {
 				case 0: type = SymbolType.Square; break;
 				case 1: type = SymbolType.Dot; break;
