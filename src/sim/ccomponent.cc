@@ -194,7 +194,6 @@ cDisplayString& cComponent::displayString()
         const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
         if (propValue)
             dispstr->parse(propValue);
-        printf("dispstr created: \"%s\"\n", propValue);
     }
     return *dispstr;
 }

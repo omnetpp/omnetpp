@@ -45,6 +45,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "expryydefs.h"
+#include "commonutil.h"
 
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
@@ -307,6 +308,8 @@ quantity
 
 void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, int& nelems)
 {
+    NONREENTRANT_PARSER();
+
     elems = NULL;
     nelems = 0;
 

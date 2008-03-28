@@ -122,6 +122,7 @@ $(OBJS)
 
 expr.tab.h expr.tab.cc : expr.y
 	$(YACC:/=\) -p expryy -b expr -d expr.y
+	$(PERL:/=\) -i.bak -pe "s/enum {(.*?)};/const int $$1;/" expr.tab.c
 	copy expr.tab.c expr.tab.cc
 	del expr.tab.c
 
