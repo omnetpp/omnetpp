@@ -42,7 +42,7 @@ EVENTLOG_JAVADIR = src/$(subst .,/,$(EVENTLOG_JAVAPKG))
 OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogressmonitor.o
 LIBS=-L$L -lnedxml$D -lscave$D -llayout$D -leventlog$D -lcommon$D
 
-DLL = $(LIB_PREFIX)opplibs$(SHARED_LIB_SUFFIX)
+DLL = $(LIB_PREFIX)opplibs$(JNI_LIB_SUFFIX)
 DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(ECLIPSE_PLATFORM)
 
 #

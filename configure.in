@@ -91,48 +91,6 @@ OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
 #
-#  Figure out target platform
-#
-#FIXME too early: if configure.user sets $TARGET_PLATFORM, we'll be in trouble
-if test "$TARGET_PLATFORM" == "mingw"; then
-    mingw=yes
-    windows=yes
-    jni_platform=win32
-    ECLIPSE_PLATFORM=win32.x86
-else
-    jni_platform=$host_os
-    case $host in
-    *-*-cygwin*)
-        cygwin=yes
-        windows=yes
-        jni_platform=win32
-        ECLIPSE_PLATFORM=win32.x86
-        ;;
-    *-*-mingw32*)
-        mingw=yes
-        windows=yes
-        jni_platform=win32
-        ECLIPSE_PLATFORM=win32.x86
-        ;;
-    *linux*)
-        jni_platform=linux
-        ECLIPSE_PLATFORM=linux.x86
-        ;;
-    *-hp-hpux*)
-        SO_LIB_SUFFIX=".sl"
-        ;;
-    sparc-sun-*)
-        CFLAGS_ARCH="-DSUNSPARC"
-        ;;
-    *)
-        ;;
-    esac
-fi
-
-# We'll collect in this variable the components we've detected problems with
-OPP_PROBLEM_PACKAGES=
-
-#
 # Location of various components. They are defined here so that they can be overridden in configure.user.
 #
 
@@ -171,46 +129,6 @@ else
     MYPWD="pwd"
 fi
 
-#
-# set default library suffixes. May be already defined
-# with system/arch specific values
-#
-A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
-SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
-DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
-
-if test "$cygwin" = yes -o "$mingw" = yes; then
-    EXE_SUFFIX=".exe"
-    SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-    LIB_PREFIX=""
-else
-    EXE_SUFFIX=
-    SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
-    LIB_PREFIX="lib"
-fi
-
-
-# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
-CYGWIN_STACKSIZE=134217728
-
-# Build shared library by default
-BUILD_SHARED_LIBS=yes
-
-#----------------------
-# Default flags for values for other variables that come from configure.user.
-#----------------------
-
-TK_CFLAGS=
-TK_LIBS=
-
-if test -d /usr/include/tcl8.4; then
-    # this was reported to be the case on Debian 3.1 "sarge"
-    TK_CFLAGS="-I/usr/include/tcl8.4"
-fi
-if test -d /usr/include/tcl8.5; then
-    TK_CFLAGS="-I/usr/include/tcl8.5"
-fi
-
 #----------------------
 # Read user settings (and allow override the above settings)
 #----------------------
@@ -219,13 +137,96 @@ AC_MSG_NOTICE(reading configure.user for your custom settings)
 AC_MSG_NOTICE(-----------------------------------------------)
 . ./configure.user
 
-#FIXME if TARGET_PLATFORM gets set within configure.user, already set variables may become obsolete!
+
+#
+# set default library suffixes. May be already defined
+# with system/arch specific values
+#
+A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
+SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
+DLL_LIB_SUFFIX=${DLL_LIB_SUFFIX:-".dll"}
+EXE_SUFFIX=
+SHARED_LIB_SUFFIX='$(SO_LIB_SUFFIX)'
+LIB_PREFIX="lib"
+
+#
+#  Figure out target platform
+#
+if test "$TARGET_PLATFORM" == "mingw"; then
+    # cross compiling for mingw
+    mingw=yes
+    windows=yes
+    jni_platform=win32
+    ECLIPSE_PLATFORM=win32.x86
+    EXE_SUFFIX=".exe"
+    SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+    LIB_PREFIX=""
+else
+    jni_platform=$host_os
+    case $host in
+    *-*-cygwin*)
+        cygwin=yes
+        windows=yes
+        jni_platform=win32
+        ECLIPSE_PLATFORM=win32.x86
+        EXE_SUFFIX=".exe"
+        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+        LIB_PREFIX=""
+        ;;
+    *-*-mingw32*)
+        mingw=yes
+        windows=yes
+        jni_platform=win32
+        ECLIPSE_PLATFORM=win32.x86
+        EXE_SUFFIX=".exe"
+        SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
+        LIB_PREFIX=""
+        ;;
+    *linux*)
+        jni_platform=linux
+        ECLIPSE_PLATFORM=linux.x86
+        ;; 
+    *darwin*)
+        jni_platform=
+        ECLIPSE_PLATFORM=macosx
+        SO_LIB_SUFFIX=".dylib"
+        SHLIB_LD=${SHLIB_LD:-g++ -dynamiclib}
+        JNI_LIB_SUFFIX=.jnilib
+        if test "$BUILD_UNIVERSAL_BINARIES" == "yes"; then
+           CFLAGS_ARCH="-arch ppc -arch i386"
+           LDFLAGS_ARCH="-arch ppc -arch i386"
+        fi
+        ;;
+    *)
+        ;;
+    esac
+fi
+
+JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-.$SHARED_LIB_SUFFIX}
+
+# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
+CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
+
+# Build shared library by default
+BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS:-yes}
+
+#----------------------
+# Default flags for values for other variables that come from configure.user.
+#----------------------
+
+if test -d /usr/include/tcl8.4; then
+    # this was reported to be the case on Debian 3.1 "sarge"
+    TK_CFLAGS=${TK_CFLAGS:-"-I/usr/include/tcl8.4"}
+fi
+if test -d /usr/include/tcl8.5; then
+    TK_CFLAGS=${TK_CFLAGS:-"-I/usr/include/tcl8.5"}
+fi
 
 #----------------------
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g}
+CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
@@ -234,6 +235,9 @@ NEDC=${NEDC:-nedtool}
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
 MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
+
+# We'll collect in this variable the components we've detected problems with
+OPP_PROBLEM_PACKAGES=
 
 #----------------------
 # Check compiler
@@ -513,6 +517,7 @@ fi
 #----------------------
 CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
 CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
+LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 
 #----------------------
 # Checks for programs.
@@ -953,6 +958,7 @@ AC_SUBST(MAKEDEPEND)
 AC_SUBST(BUILD_SHARED_LIBS)
 AC_SUBST(A_LIB_SUFFIX)
 AC_SUBST(SHARED_LIB_SUFFIX)
+AC_SUBST(JNI_LIB_SUFFIX)
 AC_SUBST(SO_LIB_SUFFIX)
 AC_SUBST(DLL_LIB_SUFFIX)
 AC_SUBST(EXE_SUFFIX)

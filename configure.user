@@ -22,9 +22,8 @@
 # With gcc, do NOT use --omit-frame-pointer (it crashes when coroutines and
 # C++ exceptions (throw/catch) are used together)!
 #
-#CFLAGS_DEBUG='-gstabs+3 -Wall'
-CFLAGS_DEBUG='-g -Wall'
-CFLAGS_RELEASE='-O2 -DNDEBUG=1'
+#CFLAGS_DEBUG='-g -Wall'
+#CFLAGS_RELEASE='-O2 -DNDEBUG=1'
 
 #
 # It is possible to have the Tcl files embedded into the compiled OMNeT++
