@@ -41,6 +41,8 @@ Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_F
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision).");
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE_APPEND, "output-scalar-file-append", CFG_BOOL, "false", "What to do when the output scalar file already exists: append to it (OMNeT++ 3.x behavior), or delete it and begin a new file (default).");
 
+Register_PerObjectConfigEntry(CFGID_RECORD_SCALAR, "record-scalar", CFG_BOOL, "true", "Whether the matching output scalars should be recorded. Syntax: <module-full-path>.<scalar-name>.record-scalar=true/false. Example: **.queue.packetsDropped.record-scalar=true");
+
 extern cConfigKey *CFGID_EXPERIMENT_LABEL;
 extern cConfigKey *CFGID_MEASUREMENT_LABEL;
 extern cConfigKey *CFGID_REPLICATION_LABEL;
@@ -143,10 +145,15 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
 
     if (!name || !name[0])
         name = "(unnamed)";
-    CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->fullPath().c_str()), QUOTE(name), prec, value));
-    if (attributes)
-        for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
-            CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+
+    bool enabled = ev.config()->getAsBool((component->fullPath()+name).c_str(), CFGID_RECORD_SCALAR);
+    if (enabled)
+    {
+        CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->fullPath().c_str()), QUOTE(name), prec, value));
+        if (attributes)
+            for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
+                CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
+    }
 }
 
 void cFileOutputScalarManager::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
@@ -160,12 +167,13 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
         name = statistic->fullName();
     if (!name || !name[0])
         name = "(unnamed)";
+
     std::string n = name;
-    recordScalar(component, (n+".samples").c_str(), statistic->samples());
-    recordScalar(component, (n+".mean").c_str(), statistic->mean());
-    recordScalar(component, (n+".stddev").c_str(), statistic->stddev());
-    recordScalar(component, (n+".min").c_str(), statistic->min());
-    recordScalar(component, (n+".max").c_str(), statistic->max());
+    recordScalar(component, (n+":samples").c_str(), statistic->samples());
+    recordScalar(component, (n+":mean").c_str(), statistic->mean());
+    recordScalar(component, (n+":stddev").c_str(), statistic->stddev());
+    recordScalar(component, (n+":min").c_str(), statistic->min());
+    recordScalar(component, (n+":max").c_str(), statistic->max());
 
     if (attributes)
         for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
