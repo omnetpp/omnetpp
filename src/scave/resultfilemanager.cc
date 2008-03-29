@@ -945,7 +945,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         else
         {
             // new-style "run" line, format: run <runName>
-            // find out of we have that run already
+            // find out if we have that run already
             Run *runRef = getRunByName(vec[1]);
             if (!runRef)
             {
@@ -1399,13 +1399,13 @@ StringVector *ResultFileManager::getModuleParamFilterHints(const RunList &runLis
 
 bool ResultFileManager::hasStaleID(const IDList& ids) const
 {
-	for (int i = 0; i < ids.size(); ++i)
-	{
-		ID id = ids.get(i);
-		if (isStaleID(id))
-			return true;
-	}
-	return false;
+    for (int i = 0; i < ids.size(); ++i)
+    {
+        ID id = ids.get(i);
+        if (isStaleID(id))
+            return true;
+    }
+    return false;
 }
 
 

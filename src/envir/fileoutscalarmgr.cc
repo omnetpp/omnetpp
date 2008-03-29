@@ -169,36 +169,59 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
         name = "(unnamed)";
 
     // check that recording this statistic is not disabled as a whole
-    bool enabled = ev.config()->getAsBool((component->fullPath()+"."+name).c_str(), CFGID_RECORD_SCALAR);
+    std::string objectFullPath = component->fullPath() + "." + name;
+    bool enabled = ev.config()->getAsBool(objectFullPath.c_str(), CFGID_RECORD_SCALAR);
     if (!enabled)
         return;
 
     // record members; note that they may get disabled individually
     std::string n = name;
-    recordScalar(component, (n+":samples").c_str(), statistic->samples());  //FIXME rename to "count"? FIXME add "sumweights" for the weighted case!
+    recordScalar(component, (n+":count").c_str(), statistic->samples());
+    if (statistic->samples() != statistic->weights())  //FIXME use some isWeighted() instead?
+        recordScalar(component, (n+":weights").c_str(), statistic->weights());
     recordScalar(component, (n+":mean").c_str(), statistic->mean());
     recordScalar(component, (n+":stddev").c_str(), statistic->stddev());
+    recordScalar(component, (n+":sum").c_str(), statistic->sum());
+    recordScalar(component, (n+":sqrsum").c_str(), statistic->sqrSum());
     recordScalar(component, (n+":min").c_str(), statistic->min());
     recordScalar(component, (n+":max").c_str(), statistic->max());
 
     //FIXME issue: what if all members get disabled, but there are attributes???
+    // what about this file format:
+    //   statistic <modulepath> <statisticname>
+    //   field count 343
+    //   field weights 343
+    //   field mean    2.1233
+    //   field stddev  1.345
+    //   attr unit s
+    //   bin 0  3
+    //   bin 10 13
+    //   bin 20 19
+    //   ...
+    // In Scave, it would still be possible to read fields as specially,
+    // as "scalars", with their own Ids.
+    //
     if (attributes)
         for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
             CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
-    //FIXME can recording the histogram be disabled???
     if (dynamic_cast<cDensityEstBase *>(statistic))
     {
-        cDensityEstBase *hist = (cDensityEstBase *)statistic;
-        CHECK(fprintf(f, "histogram %s \t%s\n", QUOTE(component->fullPath().c_str()), QUOTE(name)));
-
-        int n = hist->cells();
-        if (n>0)
+        // check that recording the histogram is enabled
+        bool enabled = ev.config()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_RECORD_SCALAR);
+        if (enabled)
         {
-            CHECK(fprintf(f, "bin\t-INF\t%lu\n", hist->underflowCell()));
-            for (int i=0; i<n; i++)
-                CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, hist->basepoint(i), prec, hist->cell(i)));
-            CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, hist->basepoint(n), hist->overflowCell()));
+            cDensityEstBase *hist = (cDensityEstBase *)statistic;
+            CHECK(fprintf(f, "histogram %s \t%s\n", QUOTE(component->fullPath().c_str()), QUOTE(name)));
+
+            int n = hist->cells();
+            if (n>0)
+            {
+                CHECK(fprintf(f, "bin\t-INF\t%lu\n", hist->underflowCell()));
+                for (int i=0; i<n; i++)
+                    CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, hist->basepoint(i), prec, hist->cell(i)));
+                CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, hist->basepoint(n), hist->overflowCell()));
+            }
         }
     }
 }

@@ -33,7 +33,7 @@
 	* **.enable-recording=
 	* **.record-event-numbers=
 	* **.recording-interval=
-	* **.record-scalar=
+	* **.record-scalar=  -- enable/disable recording scalars and/or their individual members (for cStatistic)
 	* indexed outputvector file manager
 
 	* simtime-scale
@@ -61,7 +61,7 @@
 	Scalar file format change: when a cStatistic is recorded as a scalar, the
 	values will be recorded with the following names: (before, the names
 	contained dot instead of colon):
-	  "<objectname>:samples"
+	  "<objectname>:count"   (was "samples")
 	  "<objectname>:mean"
 	  "<objectname>:stddev"
 	  "<objectname>:min"
