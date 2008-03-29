@@ -182,7 +182,8 @@ cRegistrationList::cRegistrationList(const char *name)
 
 cRegistrationList::~cRegistrationList()
 {
-    delete inst;
+    // delete inst; -- this is a bad idea, easy to cause crash in cStringPool when simulation 
+    // exits via exit() or abort(), ie. not by normally returning from main().
 }
 
 cSymTable *cRegistrationList::instance()

@@ -22,8 +22,8 @@ USING_NAMESPACE
 
 
 cConfigKey::cConfigKey(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
-                           const char *defaultValue, const char *description) :
-cNoncopyableOwnedObject(name)
+                       const char *defaultValue, const char *description) :
+    cNoncopyableOwnedObject(name, false)
 {
     isPerObject_ = isPerObject;
     isGlobal_ = isGlobal;

@@ -37,7 +37,7 @@ cEnum::cEnum(const cEnum& list) : cOwnedObject()
      operator=(list);
 }
 
-cEnum::cEnum(const char *name) : cOwnedObject(name)
+cEnum::cEnum(const char *name) : cOwnedObject(name, false)
 {
 }
 

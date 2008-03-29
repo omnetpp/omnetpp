@@ -38,8 +38,9 @@ class cStringPool
             return strcmp(s1,s2) < 0;  // note: (s1+1,s2+1) not good because either strings may be empty
         }
     };
-    typedef std::map<char *,int,strless> StringIntMap;  // map<string,refcount>
-    StringIntMap pool;
+    typedef std::map<char *,int,strless> StringIntMap;  
+    StringIntMap pool; // map<string,refcount>
+    bool alive; // useful when stringpool is a global variable
 
   public:
     cStringPool();
@@ -56,7 +57,7 @@ class cStringPool
      * Returns pointer to the pooled copy of the given string, or NULL.
      * Reference count is not incremented. Passing NULL is OK.
      */
-    const char *peek(const char *s);
+    const char *peek(const char *s) const;
 
     /**
      * The parameter must a pointer returned by get(). It decrements the
@@ -64,6 +65,11 @@ class cStringPool
      * Passing NULL is OK.
      */
     void release(const char *s);
+
+    /**
+     * For debug purposes.
+     */
+    void dump() const;
 };
 
 NAMESPACE_END

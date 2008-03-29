@@ -31,7 +31,8 @@
 
 USING_NAMESPACE
 
-cMathFunction::cMathFunction(const char *name, MathFuncNoArg f, int ac) : cNoncopyableOwnedObject(name)
+cMathFunction::cMathFunction(const char *name, MathFuncNoArg f, int ac) :
+    cNoncopyableOwnedObject(name, false)
 {
     this->f = (MathFunc)f;
     argc = 0;
@@ -41,7 +42,8 @@ cMathFunction::cMathFunction(const char *name, MathFuncNoArg f, int ac) : cNonco
                             "number of arguments %d, should be 0", name, ac);
 }
 
-cMathFunction::cMathFunction(const char *name, MathFunc1Arg f, int ac) : cNoncopyableOwnedObject(name)
+cMathFunction::cMathFunction(const char *name, MathFunc1Arg f, int ac) : 
+    cNoncopyableOwnedObject(name, false)
 {
     this->f = (MathFunc)f;
     argc = 1;
@@ -51,7 +53,8 @@ cMathFunction::cMathFunction(const char *name, MathFunc1Arg f, int ac) : cNoncop
                             "number of arguments %d, should be 1", name, ac);
 }
 
-cMathFunction::cMathFunction(const char *name, MathFunc2Args f, int ac) : cNoncopyableOwnedObject(name)
+cMathFunction::cMathFunction(const char *name, MathFunc2Args f, int ac) : 
+    cNoncopyableOwnedObject(name, false)
 {
     this->f = (MathFunc)f;
     argc = 2;
@@ -61,7 +64,8 @@ cMathFunction::cMathFunction(const char *name, MathFunc2Args f, int ac) : cNonco
                             "number of arguments %d, should be 2", name, ac);
 }
 
-cMathFunction::cMathFunction(const char *name, MathFunc3Args f, int ac) : cNoncopyableOwnedObject(name)
+cMathFunction::cMathFunction(const char *name, MathFunc3Args f, int ac) : 
+    cNoncopyableOwnedObject(name, false)
 {
     this->f = (MathFunc)f;
     argc = 3;
@@ -71,7 +75,8 @@ cMathFunction::cMathFunction(const char *name, MathFunc3Args f, int ac) : cNonco
                             "number of arguments %d, should be 3", name, ac);
 }
 
-cMathFunction::cMathFunction(const char *name, MathFunc4Args f, int ac) : cNoncopyableOwnedObject(name)
+cMathFunction::cMathFunction(const char *name, MathFunc4Args f, int ac) : 
+    cNoncopyableOwnedObject(name, false)
 {
     this->f = (MathFunc)f;
     argc = 4;
