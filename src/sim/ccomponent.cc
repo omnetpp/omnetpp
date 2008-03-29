@@ -20,6 +20,7 @@
 #include "cpar.h"
 #include "cparimpl.h"
 #include "crng.h"
+#include "cstatistic.h"
 #include "cconfiguration.h"
 #include "cconfigkey.h"
 #include "cdisplaystring.h"
@@ -237,5 +238,14 @@ void cComponent::recordScalar(const char *name, double value, const char *unit)
     }
 }
 
+void cComponent::recordScalar(cStatistic *stats, const char *unit)
+{
+    stats->recordScalar(NULL, unit);
+}
+
+void cComponent::recordScalar(const char *name, cStatistic *stats, const char *unit)
+{
+    stats->recordScalar(name, unit);
+}
 
 

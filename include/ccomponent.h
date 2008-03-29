@@ -326,11 +326,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     //@{
 
     /**
-     * Records a double into the scalar result file. Statistics objects
-     * (ones subclassed from cStatistic, e.g. cStdDev) can be recorded
-     * by calling their recordScalar() methods).
-     *
-     * @see cStatistic::recordScalar()
+     * Records a double into the scalar result file.
      */
     void recordScalar(const char *name, double value, const char *unit=NULL);
 
@@ -340,6 +336,16 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      */
     void recordScalar(const char *name, simtime_t value, const char *unit=NULL) {recordScalar(name, value.dbl(), unit);}
 #endif
+
+    /**
+     * Delegates to cStatistic::recordScalar().
+     */
+    void recordScalar(cStatistic *stats, const char *unit=NULL);
+
+    /**
+     * Delegates to cStatistic::recordScalar().
+     */
+    void recordScalar(const char *name, cStatistic *stats, const char *unit=NULL);
     //@}
 };
 
