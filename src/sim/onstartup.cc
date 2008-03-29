@@ -62,52 +62,52 @@ void ExecuteOnStartup::executeAll()
 
 //----
 
-cSymTable::~cSymTable()
+cRegistrationList::~cRegistrationList()
 {
-    for (int i=0; i<(int)v.size(); i++)
-        dropAndDelete(v[i]);
+    for (int i=0; i<(int)vec.size(); i++)
+        dropAndDelete(vec[i]);
 }
 
-std::string cSymTable::info() const
+std::string cRegistrationList::info() const
 {
-    if (v.empty())
+    if (vec.empty())
         return std::string("empty");
     std::stringstream out;
-    out << "size=" << v.size();
+    out << "size=" << vec.size();
     return out.str();
 }
 
-void cSymTable::forEachChild(cVisitor *visitor)
+void cRegistrationList::forEachChild(cVisitor *visitor)
 {
-    for (int i=0; i<(int)v.size(); i++)
-        visitor->visit(v[i]);
+    for (int i=0; i<(int)vec.size(); i++)
+        visitor->visit(vec[i]);
 }
 
-void cSymTable::add(cOwnedObject *obj)
+void cRegistrationList::add(cOwnedObject *obj)
 {
-    v.push_back(obj);
     take(obj);
-    lookupCache.clear();
+    vec.push_back(obj);
+    nameMap[obj->name()] = obj;
+    fullnameMap[obj->fullName()] = obj;
 }
 
-int cSymTable::size()
+cOwnedObject *cRegistrationList::get(int i) const
 {
-    return v.size();
-}
-
-cOwnedObject *cSymTable::get(int i)
-{
-    if (i<0 || i>=(int)v.size())
+    if (i<0 || i>=(int)vec.size())
         return NULL;
-    return v[i];
+    return vec[i];
 }
 
-cOwnedObject *cSymTable::get(const char *name)
+cOwnedObject *cRegistrationList::get(const char *name) const
 {
-    for (int i=0; i<(int)v.size(); i++)
-        if (!strcmp(v[i]->name(), name))
-            return v[i];
-    return NULL;
+    StringObjectMap::const_iterator it = nameMap.find(name);
+    return it==nameMap.end() ? NULL : it->second;
+}
+
+cOwnedObject *cRegistrationList::lookup(const char *qname) const
+{
+    StringObjectMap::const_iterator it = fullnameMap.find(qname);
+    return it==fullnameMap.end() ? NULL : it->second;
 }
 
 inline bool less(cObject *a, cObject *b)
@@ -115,88 +115,39 @@ inline bool less(cObject *a, cObject *b)
     return strcmp(a->fullName(), b->fullName()) < 0;
 }
 
-void cSymTable::sort()
+void cRegistrationList::sort()
 {
-    std::sort(v.begin(), v.end(), less);
-}
-
-cOwnedObject *cSymTable::lookup(const char *qualifiedName)
-{
-    for (int i=0; i<(int)v.size(); i++)
-    {
-        const char *fullname = v[i]->fullName();
-        if (fullname[0]==qualifiedName[0] && strcmp(fullname, qualifiedName)==0)
-            return v[i];
-    }
-    return NULL;
-}
-
-//FIXME do we need this function? it is NOT used for NED lookups
-cOwnedObject *cSymTable::lookup(const char *name, const char *contextNamespace)
-{
-    // try the lookup cache
-    std::string namespacePrefix = contextNamespace;
-    if (!namespacePrefix.empty())
-        namespacePrefix += ".";
-    LookupCache::iterator it = lookupCache.find(namespacePrefix+name);
-    if (it!=lookupCache.end())
-        return it->second;
-
-    // new lookup: do it, then cache the result
-    while (true)
-    {
-        cOwnedObject *obj = lookup((namespacePrefix+name).c_str());
-        if (obj)
-        {
-            lookupCache[namespacePrefix+name] = obj;
-            return obj;
-        }
-
-        if (namespacePrefix.empty())
-            break;
-
-        // discard last namespace element
-        namespacePrefix.resize(namespacePrefix.length()-1); // chop "."
-        size_t k = namespacePrefix.rfind(".", namespacePrefix.length());
-        if (k==std::string::npos)
-            namespacePrefix.clear();
-        else
-            namespacePrefix.resize(k+1);
-    }
-    return NULL;
+    std::sort(vec.begin(), vec.end(), less);
 }
 
 //----
 
-cRegistrationList::cRegistrationList()
+cGlobalRegistrationList::cGlobalRegistrationList()
 {
     tmpname = NULL;
     inst = NULL;
 }
 
-cRegistrationList::cRegistrationList(const char *name)
+cGlobalRegistrationList::cGlobalRegistrationList(const char *name)
 {
     tmpname = name;
     inst = NULL;
 }
 
-cRegistrationList::~cRegistrationList()
+cGlobalRegistrationList::~cGlobalRegistrationList()
 {
-    // delete inst; -- this is a bad idea, easy to cause crash in cStringPool when simulation 
+    // delete inst; -- this is a bad idea, easy to cause crash in cStringPool when simulation
     // exits via exit() or abort(), ie. not by normally returning from main().
 }
 
-cSymTable *cRegistrationList::instance()
+cRegistrationList *cGlobalRegistrationList::instance()
 {
     if (!inst)
-    {
-        inst = new cSymTable(tmpname);
-        inst->removeFromOwnershipTree();
-    }
+        inst = new cRegistrationList(tmpname);
     return inst;
 }
 
-void cRegistrationList::clear()
+void cGlobalRegistrationList::clear()
 {
     if (inst)
     {

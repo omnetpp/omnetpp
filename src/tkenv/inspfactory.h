@@ -79,7 +79,7 @@ class TKENV_API cInspectorFactory : public cNoncopyableOwnedObject
 };
 
 ///< List of cInspectorFactory objects.
-extern cRegistrationList inspectorfactories;
+extern cGlobalRegistrationList inspectorfactories;
 
 /**
  * Find a cInspectorFactory.

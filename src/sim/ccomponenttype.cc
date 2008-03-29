@@ -41,11 +41,6 @@ cComponentType *cComponentType::find(const char *qname)
     return dynamic_cast<cComponentType *>(componentTypes.instance()->lookup(qname));
 }
 
-cComponentType *cComponentType::find(const char *name, const char *contextNamespace)
-{
-    return dynamic_cast<cComponentType *>(componentTypes.instance()->lookup(name, contextNamespace));
-}
-
 //----
 
 cModuleType::cModuleType(const char *name) : cComponentType(name)
@@ -139,11 +134,6 @@ cModuleType *cModuleType::find(const char *qname)
     return dynamic_cast<cModuleType *>(componentTypes.instance()->lookup(qname));
 }
 
-cModuleType *cModuleType::find(const char *name, const char *contextNamespace)
-{
-    return dynamic_cast<cModuleType *>(componentTypes.instance()->lookup(name, contextNamespace));
-}
-
 //----
 
 cChannelType::cChannelType(const char *name) : cComponentType(name)
@@ -200,8 +190,4 @@ cChannelType *cChannelType::find(const char *qname)
     return dynamic_cast<cChannelType *>(componentTypes.instance()->lookup(qname));
 }
 
-cChannelType *cChannelType::find(const char *name, const char *contextNamespace)
-{
-    return dynamic_cast<cChannelType *>(componentTypes.instance()->lookup(name, contextNamespace));
-}
 

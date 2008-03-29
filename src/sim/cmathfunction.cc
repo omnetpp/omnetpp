@@ -42,7 +42,7 @@ cMathFunction::cMathFunction(const char *name, MathFuncNoArg f, int ac) :
                             "number of arguments %d, should be 0", name, ac);
 }
 
-cMathFunction::cMathFunction(const char *name, MathFunc1Arg f, int ac) : 
+cMathFunction::cMathFunction(const char *name, MathFunc1Arg f, int ac) :
     cNoncopyableOwnedObject(name, false)
 {
     this->f = (MathFunc)f;
@@ -53,7 +53,7 @@ cMathFunction::cMathFunction(const char *name, MathFunc1Arg f, int ac) :
                             "number of arguments %d, should be 1", name, ac);
 }
 
-cMathFunction::cMathFunction(const char *name, MathFunc2Args f, int ac) : 
+cMathFunction::cMathFunction(const char *name, MathFunc2Args f, int ac) :
     cNoncopyableOwnedObject(name, false)
 {
     this->f = (MathFunc)f;
@@ -64,7 +64,7 @@ cMathFunction::cMathFunction(const char *name, MathFunc2Args f, int ac) :
                             "number of arguments %d, should be 2", name, ac);
 }
 
-cMathFunction::cMathFunction(const char *name, MathFunc3Args f, int ac) : 
+cMathFunction::cMathFunction(const char *name, MathFunc3Args f, int ac) :
     cNoncopyableOwnedObject(name, false)
 {
     this->f = (MathFunc)f;
@@ -75,7 +75,7 @@ cMathFunction::cMathFunction(const char *name, MathFunc3Args f, int ac) :
                             "number of arguments %d, should be 3", name, ac);
 }
 
-cMathFunction::cMathFunction(const char *name, MathFunc4Args f, int ac) : 
+cMathFunction::cMathFunction(const char *name, MathFunc4Args f, int ac) :
     cNoncopyableOwnedObject(name, false)
 {
     this->f = (MathFunc)f;
@@ -133,7 +133,7 @@ MathFunc4Args cMathFunction::mathFunc4Args()
 
 cMathFunction *cMathFunction::find(const char *name, int argcount)
 {
-    cSymTable *a = nedFunctions.instance();
+    cRegistrationList *a = nedFunctions.instance();
     for (int i=0; i<a->size(); i++)
     {
         cMathFunction *f = dynamic_cast<cMathFunction *>(a->get(i));
@@ -145,7 +145,7 @@ cMathFunction *cMathFunction::find(const char *name, int argcount)
 
 cMathFunction *cMathFunction::findByPointer(MathFunc f)
 {
-    cSymTable *a = nedFunctions.instance();
+    cRegistrationList *a = nedFunctions.instance();
     for (int i=0; i<a->size(); i++)
     {
         cMathFunction *ff = dynamic_cast<cMathFunction *>(a->get(i));

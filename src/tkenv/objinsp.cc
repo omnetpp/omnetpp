@@ -93,11 +93,11 @@ class TGenericObjectInspectorFactory : public cInspectorFactory
         bool showcontentspage =
             dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
             dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cDefaultList *>(object) ||
-            dynamic_cast<cSimulation *>(object) || dynamic_cast<cSymTable *>(object);
+            dynamic_cast<cSimulation *>(object) || dynamic_cast<cRegistrationList *>(object);
         bool focuscontentspage =
             dynamic_cast<cArray *>(object) || dynamic_cast<cQueue *>(object) ||
             dynamic_cast<cMessageHeap *>(object) || dynamic_cast<cDefaultList *>(object) ||
-            dynamic_cast<cSymTable *>(object);
+            dynamic_cast<cRegistrationList *>(object);
         insp->setContentsPage(showcontentspage, focuscontentspage);
         return insp;
     }

@@ -123,7 +123,7 @@ std::string cNEDFunction::info() const
 
 cNEDFunction *cNEDFunction::find(const char *name, int argcount)
 {
-    cSymTable *a = nedFunctions.instance();
+    cRegistrationList *a = nedFunctions.instance();
     for (int i=0; i<a->size(); i++) {
         cNEDFunction *f = dynamic_cast<cNEDFunction *>(a->get(i));
         if (f && f->isName(name) && f->minArgs()<=argcount && f->maxArgs()>=argcount)
@@ -134,7 +134,7 @@ cNEDFunction *cNEDFunction::find(const char *name, int argcount)
 
 cNEDFunction *cNEDFunction::findByPointer(NEDFunction f)
 {
-    cSymTable *a = nedFunctions.instance();
+    cRegistrationList *a = nedFunctions.instance();
     for (int i=0; i<a->size(); i++) {
         cNEDFunction *ff = dynamic_cast<cNEDFunction *>(a->get(i));
         if (ff && ff->functionPointer() == f)

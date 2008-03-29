@@ -97,13 +97,6 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
      * Find a component type by fully qualified name. Returns NULL if not found.
      */
     static cComponentType *find(const char *qname);
-
-    /**
-     * Performs lookup of a name that occurs in a context. First looks into the
-     * context namespace, then searches up by discarding the last elements of
-     * the context one by one. Returns NULL if not found.
-     */
-    static cComponentType *find(const char *name, const char *contextNamespace);
 };
 
 
@@ -210,13 +203,6 @@ class SIM_API cModuleType : public cComponentType
      * Find a component type by fully qualified name.
      */
     static cModuleType *find(const char *qname);
-
-    /**
-     * Performs lookup of a name that occurs in a context. First looks into the
-     * context namespace, then searches up by discarding the last elements of
-     * the context one by one.
-     */
-    static cModuleType *find(const char *name, const char *contextNamespace);
 };
 
 
@@ -270,13 +256,6 @@ class SIM_API cChannelType : public cComponentType
      * Find a component type by fully qualified name.
      */
     static cChannelType *find(const char *qname);
-
-    /**
-     * Performs lookup of a name that occurs in a context. First looks into the
-     * context namespace, then searches up by discarding the last elements of
-     * the context one by one.
-     */
-    static cChannelType *find(const char *name, const char *contextNamespace);
 };
 
 NAMESPACE_END

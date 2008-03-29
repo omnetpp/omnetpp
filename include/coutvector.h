@@ -6,7 +6,6 @@
 //
 //  Declaration of the following classes:
 //    cOutVector         : represents an output vector
-//    cOutputVectorManager  : actually records for cOutVector objects
 //
 //==========================================================================
 

@@ -222,7 +222,7 @@ cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
     //XXX we could even cache the result in a {classname->descriptor} hashtable.
     cClassDescriptor *bestDesc = NULL;
     int bestInheritanceChainLength = -1;
-    cSymTable *array = classDescriptors.instance();
+    cRegistrationList *array = classDescriptors.instance();
     for (int i=0; i<array->size(); i++)
     {
         cClassDescriptor *desc = dynamic_cast<cClassDescriptor *>(array->get(i));

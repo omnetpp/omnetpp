@@ -32,12 +32,12 @@ class cModuleType;
 //< @see cOwnedObject::setDefaultOwner() and cSimulation::setContextModule())
 SIM_API extern cDefaultList defaultList;
 
-SIM_API extern cRegistrationList componentTypes;  ///< List of all component types (cComponentType)
-SIM_API extern cRegistrationList nedFunctions;    ///< List if all NED functions (cMathFunction and cNEDFunction)
-SIM_API extern cRegistrationList classes;         ///< List of all classes that can be instantiated using createOne(); see cClassFactory and Register_Class() macro
-SIM_API extern cRegistrationList enums;           ///< List of all enum objects (cEnum)
-SIM_API extern cRegistrationList classDescriptors;///< List of all class descriptors (cClassDescriptor)
-SIM_API extern cRegistrationList configKeys;      ///< List of supported configuration keys (cConfigKey)
+SIM_API extern cGlobalRegistrationList componentTypes;  ///< List of all component types (cComponentType)
+SIM_API extern cGlobalRegistrationList nedFunctions;    ///< List if all NED functions (cMathFunction and cNEDFunction)
+SIM_API extern cGlobalRegistrationList classes;         ///< List of all classes that can be instantiated using createOne(); see cClassFactory and Register_Class() macro
+SIM_API extern cGlobalRegistrationList enums;           ///< List of all enum objects (cEnum)
+SIM_API extern cGlobalRegistrationList classDescriptors;///< List of all class descriptors (cClassDescriptor)
+SIM_API extern cGlobalRegistrationList configKeys;      ///< List of supported configuration keys (cConfigKey)
 
 
 /**

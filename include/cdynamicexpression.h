@@ -67,21 +67,19 @@ class SIM_API cDynamicExpression : public cExpression
         //  - double (there's no long -- we calculate everything in double)
         //  - string
         //  - pointer to an "external" cXMLElement
-        //  - pointer to an "external" cPar object
         //  - cMathFunction: function with 0/1/2/3/4 double arguments
         //  - cNEDFunction: function taking/returning Value (NEDFunction)
-        //  - math operator (+-*/%^...)
         //  - functor
+        //  - math operator (+-*/%^...)
         //  - constant subexpression
         //
-        enum Type {UNDEF, BOOL, DBL, STR, XML, CPAR, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
+        enum Type {UNDEF, BOOL, DBL, STR, XML, MATHFUNC, NEDFUNC, FUNCTOR, OP, CONSTSUBEXPR} type;
         static cStringPool stringPool;
         union {
             bool b;
             struct {double d; const char *unit;} d;
             const char *s; // points into stringPool
             cXMLElement *x;
-            cPar *p;             //FIXME OUT!!!!!!!!!!!!!!!!!!!!!!!!!!
             cMathFunction *f;
             struct {cNEDFunction *f; int argc;} nf;
             Functor *fu;
@@ -149,15 +147,6 @@ class SIM_API cDynamicExpression : public cExpression
          * cXMLElement pointer to the evaluation stack.
          */
         void operator=(cXMLElement *_x)  {type=XML; x=_x;}
-
-        /**
-         * Effect during evaluation of the expression: takes the value of
-         * the cPar object and pushes the value to the evaluation stack.
-         * The cPar is an "external" one: its ownership does not change.
-         * This is how NED-language parameter references in expressions
-         * are handled.
-         */
-        void operator=(cPar *_p)  {type=CPAR; ASSERT(_p); p=_p;}
 
         /**
          * Effect during evaluation of the expression: Call a function

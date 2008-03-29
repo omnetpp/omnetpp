@@ -24,13 +24,13 @@
 
 NAMESPACE_BEGIN
 
-cRegistrationList inspectorfactories;
+cGlobalRegistrationList inspectorfactories;
 
 cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
     cInspectorFactory *best=NULL;
     double bestweight=0;
-    cSymTable *a = inspectorfactories.instance();
+    cRegistrationList *a = inspectorfactories.instance();
     for (int i=0; i<a->size(); i++)
     {
         cInspectorFactory *ifc = static_cast<cInspectorFactory *>(a->get(i));

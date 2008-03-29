@@ -45,7 +45,7 @@ NAMESPACE_BEGIN
 cEnvir ev;
 
 // the global list for the registration objects
-cRegistrationList omnetapps("omnetapps");
+cGlobalRegistrationList omnetapps("omnetapps");
 
 // output buffer
 #define ENVIR_TEXTBUF_LEN 1024
@@ -75,7 +75,7 @@ static cOmnetAppRegistration *chooseBestOmnetApp()
     cOmnetAppRegistration *best_appreg = NULL;
 
     // choose the one with highest score.
-    cSymTable *a = omnetapps.instance();
+    cRegistrationList *a = omnetapps.instance();
     for (int i=0; i<a->size(); i++)
     {
         cOmnetAppRegistration *appreg = static_cast<cOmnetAppRegistration *>(a->get(i));
@@ -230,7 +230,7 @@ void cEnvir::setup(int argc, char *argv[])
                 ::printf("\n"
                          "User interface '%s' not found (not linked in or loaded dynamically).\n"
                          "Available ones are:\n", appname.c_str());
-                cSymTable *a = omnetapps.instance();
+                cRegistrationList *a = omnetapps.instance();
                 for (int i=0; i<a->size(); i++)
                     ::printf("  %s : %s\n", a->get(i)->name(), a->get(i)->info().c_str());
 

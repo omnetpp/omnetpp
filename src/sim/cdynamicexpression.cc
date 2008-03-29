@@ -75,7 +75,6 @@ int cDynamicExpression::Elem::compare(const Elem& other) const
       case DBL:      return d.d==other.d.d ? opp_strcmp(d.unit,other.d.unit) : d.d<other.d.d ? -1 : 1;
       case STR:      return CMP(s);
       case XML:      return CMP(x);
-      case CPAR:     return CMP(p);
       case MATHFUNC: return CMP(f);
       case NEDFUNC:  return nf.argc==other.nf.argc ? CMP(nf.f) : (other.nf.argc-nf.argc);
       case FUNCTOR:  return CMP(fu);
@@ -277,13 +276,6 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
              if (tos>=stksize-1)
                  throw cRuntimeError(eESTKOFLOW);
              stk[++tos] = e.x;
-             break;
-
-           case Elem::CPAR:
-             if (tos>=stksize-1)
-                 throw cRuntimeError(eESTKOFLOW);
-             stk[++tos] = *(e.p); break;
-             stk[tos].dblunit = e.p->unit(); //FIXME move this into op=(cPar&)
              break;
 
            case Elem::MATHFUNC:
@@ -619,12 +611,6 @@ std::string cDynamicExpression::toString() const
                  if (tos>=stksize-1)
                      throw cRuntimeError(eESTKOFLOW);
                  strstk[++tos] = std::string("<") + (e.x ? e.x->getTagName() : "null") +">"; //FIXME plus location info?
-                 pristk[tos] = 0;
-                 break;
-               case Elem::CPAR:
-                 if (!e.p || tos>=stksize-1)
-                     throw cRuntimeError(eESTKOFLOW);
-                 strstk[++tos] = e.p->fullPath();
                  pristk[tos] = 0;
                  break;
                case Elem::MATHFUNC:

@@ -25,12 +25,12 @@ NAMESPACE_BEGIN
 //
 // Global objects
 //
-cRegistrationList componentTypes("component types");
-cRegistrationList nedFunctions("NED functions");
-cRegistrationList classes("classes");
-cRegistrationList enums("enums");
-cRegistrationList classDescriptors("class descriptors");
-cRegistrationList configKeys("supported configuration keys");
+cGlobalRegistrationList componentTypes("component types");
+cGlobalRegistrationList nedFunctions("NED functions");
+cGlobalRegistrationList classes("classes");
+cGlobalRegistrationList enums("enums");
+cGlobalRegistrationList classDescriptors("class descriptors");
+cGlobalRegistrationList configKeys("supported configuration keys");
 
 
 cModuleType *findModuleType(const char *name)

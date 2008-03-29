@@ -47,7 +47,7 @@ class TOmnetApp;
 class ArgList;
 class cConfiguration;
 
-extern ENVIR_API cRegistrationList omnetapps;
+extern ENVIR_API cGlobalRegistrationList omnetapps;
 
 // registration class
 class ENVIR_API cOmnetAppRegistration : public cOwnedObject
@@ -59,7 +59,7 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
   public:
     cOmnetAppRegistration(const char *name, int score,
                           const char *description, AppCreatorFunc f) :
-      cOwnedObject(name),
+      cOwnedObject(name, false),
       creatorfunc(f), desc(description), scor(score) {}
     virtual ~cOmnetAppRegistration()  {}
 

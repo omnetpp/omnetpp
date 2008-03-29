@@ -76,23 +76,21 @@ class SIM_API ExecuteOnStartup
 
 
 /**
- * Stores objects with a qualified name: namespace + name. Namespaces may be
- * nested, the namespace element separator is ".". The name() method of objects
- * should return the unqualified name (without namespace, e.g. "Queue"), and
- * the fullName() method the qualified name (with namespace, e.g.
- * "inet.network.Queue").
+ * Stores objects with a qualified name. The name() method of objects
+ * should return the unqualified name (without namespace or package name),
+ * and the fullName() method the qualified name (with namespace or package).
  */
-//XXX better name
-//XXX why are those objects cOwnedObjects? cNamedObject not enough?
-class SIM_API cSymTable : public cNoncopyableOwnedObject
+class SIM_API cRegistrationList : public cNamedObject, noncopyable
 {
   private:
-    std::vector<cOwnedObject *> v;  // stores the objects
-    typedef std::map<std::string, cOwnedObject*> LookupCache;
-    LookupCache lookupCache;  // to remember lookups  FIXME needed?
+    typedef std::map<std::string, cOwnedObject*> StringObjectMap;
+    std::vector<cOwnedObject *> vec;  // for fast iteration
+    StringObjectMap nameMap;   // for lookup by name()
+    StringObjectMap fullnameMap;  // for lookup by fullName()
+
   public:
-    cSymTable(const char *name) : cNoncopyableOwnedObject(name) {}
-    virtual ~cSymTable();
+    cRegistrationList(const char *name) : cNamedObject(name, false) {}
+    virtual ~cRegistrationList();
 
     /** @name cObject methods */
     //@{
@@ -108,18 +106,24 @@ class SIM_API cSymTable : public cNoncopyableOwnedObject
     /**
      * Returns the number of elements.
      */
-    virtual int size();
+    virtual int size() const {return vec.size();}
 
     /**
-     * Returns the ith element.
+     * Returns the ith element, or NULL.
      */
-    virtual cOwnedObject *get(int i);
+    virtual cOwnedObject *get(int i) const;
 
     /**
-     * Searches for the given object name (not fullName!), and returns
-     * the first object one found.
+     * Returns (one of) the object(s) with the given name (not fullName!).
+     * Returns NULL if not found.
      */
-    virtual cOwnedObject *get(const char *name);
+    virtual cOwnedObject *get(const char *name) const;
+
+    /**
+     * Returns the object with exactly the given qualified name (fullName()).
+     * Returns NULL if not found.
+     */
+    virtual cOwnedObject *lookup(const char *qualifiedName) const;
 
     /**
      * Sorts the elements by qualified name (fullName()). This affects
@@ -127,17 +131,6 @@ class SIM_API cSymTable : public cNoncopyableOwnedObject
      */
     virtual void sort();
 
-    /**
-     * Returns the object with exactly the given qualified name (fullName()).
-     */
-    virtual cOwnedObject *lookup(const char *qualifiedName);
-
-    /**
-     * Performs lookup of the qualified name. Lookup starts with the context
-     * namespace, then it keeps discarding the last component of the context
-     * namespace and try to find the name in that namespace.
-     */
-    virtual cOwnedObject *lookup(const char *name, const char *contextNamespace);
 };
 
 /**
@@ -145,16 +138,16 @@ class SIM_API cSymTable : public cNoncopyableOwnedObject
  *
  * @ingroup Internals
  */
-class SIM_API cRegistrationList
+class SIM_API cGlobalRegistrationList
 {
   private:
-    cSymTable *inst;
+    cRegistrationList *inst;
     const char *tmpname;
   public:
-    cRegistrationList();
-    cRegistrationList(const char *name);
-    ~cRegistrationList();
-    cSymTable *instance();
+    cGlobalRegistrationList();
+    cGlobalRegistrationList(const char *name);
+    ~cGlobalRegistrationList();
+    cRegistrationList *instance();
     void clear();
 };
 

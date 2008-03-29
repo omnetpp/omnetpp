@@ -411,7 +411,7 @@ void TOmnetApp::dumpComponentList(const char *category)
         ev << "Supported configuration keys (omnetpp.ini):\n";
         bool printDescriptions = strcmp(category, "configdetails")==0;
 
-        cSymTable *table = configKeys.instance();
+        cRegistrationList *table = configKeys.instance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
@@ -444,7 +444,7 @@ void TOmnetApp::dumpComponentList(const char *category)
         // generate Java code for ConfigurationRegistry.java in the IDE
         processed = true;
         ev << "Supported configuration keys (as Java code):\n";
-        cSymTable *table = configKeys.instance();
+        cRegistrationList *table = configKeys.instance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
@@ -496,7 +496,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "Registered C++ classes, including modules, channels and messages:\n";
-        cSymTable *table = classes.instance();
+        cRegistrationList *table = classes.instance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
@@ -511,7 +511,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
-        cSymTable *table = classDescriptors.instance();
+        cRegistrationList *table = classDescriptors.instance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
@@ -524,7 +524,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
-        cSymTable *table = nedFunctions.instance();
+        cRegistrationList *table = nedFunctions.instance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
@@ -537,7 +537,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "Enums defined in .msg files\n";
-        cSymTable *table = enums.instance();
+        cRegistrationList *table = enums.instance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
@@ -550,7 +550,7 @@ void TOmnetApp::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "User interfaces loaded:\n";
-        cSymTable *table = omnetapps.instance();
+        cRegistrationList *table = omnetapps.instance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
