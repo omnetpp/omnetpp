@@ -1,0 +1,19 @@
+%description:
+Test that the simulation exits gracefully if there's an error in the startup code.
+- exit code must be 1 (not zero and different from crash exit code)
+- nothing should be printed after "End run..." message and the error message (Note "$")
+
+%global:
+EXECUTE_ON_STARTUP(  throw std::range_error("something bad happened");  );
+
+%activity:
+// nothing
+
+%exitcode: 1
+
+%contains-regex: stdout
+End run of OMNeT\+\+$
+
+%contains-regex: stderr
+<!> Error during startup: something bad happened\.$
+

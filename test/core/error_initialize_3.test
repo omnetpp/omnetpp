@@ -1,0 +1,21 @@
+%description:
+Test that the simulation exits gracefully if simulation is interrupted (SIGTERM).
+
+%includes:
+#include <signal.h>
+
+%module: Foo
+
+class Foo : public cSimpleModule
+{
+  public:
+    virtual void initialize() { raise(15); }  // ==SIGTERM
+    virtual void handleMessage(cMessage *msg) { }
+};
+
+Define_Module(Foo);
+
+%exitcode: 99
+
+%contains: stdout
+FIXME

@@ -1,0 +1,21 @@
+%description:
+Test that the simulation exits gracefully if there's an error in the ini file.
+- exit code must be 1 (not zero and different from crash exit code)
+- nothing should be printed after "End run..." message and the error message (Note "$")
+
+%activity:
+// nothing 
+
+%inifile: test.ini
+[General]
+some-unknown-key = 99
+network = Test
+
+%exitcode: 1
+
+%contains-regex: stdout
+End run of OMNeT\+\+$
+
+%contains-regex: stderr
+<!> Error during startup: Unknown configuration key: some-unknown-key\.$
+

@@ -1,0 +1,16 @@
+%description:
+Test that the simulation exits gracefully if exit() is called.
+ - exit code must be that passed to exit()
+
+%module: Foo
+
+class Foo : public cSimpleModule
+{
+  public:
+    virtual void initialize() { exit(3);}
+    virtual void handleMessage(cMessage *msg) { }
+};
+
+Define_Module(Foo);
+
+%exitcode: 3

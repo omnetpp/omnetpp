@@ -1,0 +1,26 @@
+%description:
+Test that the simulation exits gracefully if there's an error during initializing the network.
+ - exit code must be 1 (not zero and different from crash exit code)
+ - nothing should be printed after "End run..." message and the error message (Note "$")
+
+%module: Foo
+
+class Foo : public cSimpleModule
+{
+  public:
+    virtual void initialize() {throw std::range_error("oops");}
+    virtual void handleMessage(cMessage *msg) { }
+};
+
+Define_Module(Foo);
+
+%exitcode: 1
+
+%contains-regex: stdout
+<!> Error: oops\.
+
+
+End run of OMNeT\+\+$
+
+%contains-regex: stderr
+^$
