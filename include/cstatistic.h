@@ -247,8 +247,8 @@ class SIM_API cStatistic : public cOwnedObject
      * Records basic statistics (number of observations, mean, standard
      * deviation, min, max) into the scalar output file by performing
      * several calls to the current module's recordScalar() function.
-     * The values will be written under the name "name.samples",
-     * "name.mean", "name.stddev", "name.min", "name.max". If name is NULL
+     * The values will be written under the name "name:samples",
+     * "name:mean", "name:stddev", "name:min", "name:max". If name is NULL
      * or missing, the object name (name()) is used.
      * This method may be overridden in subclasses.
      */

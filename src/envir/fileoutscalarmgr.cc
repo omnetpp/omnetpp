@@ -146,7 +146,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     if (!name || !name[0])
         name = "(unnamed)";
 
-    bool enabled = ev.config()->getAsBool((component->fullPath()+name).c_str(), CFGID_RECORD_SCALAR);
+    bool enabled = ev.config()->getAsBool((component->fullPath()+"."+name).c_str(), CFGID_RECORD_SCALAR);
     if (enabled)
     {
         CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->fullPath().c_str()), QUOTE(name), prec, value));
@@ -168,6 +168,12 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     if (!name || !name[0])
         name = "(unnamed)";
 
+    // check that recording this statistic is not disabled as a whole
+    bool enabled = ev.config()->getAsBool((component->fullPath()+"."+name).c_str(), CFGID_RECORD_SCALAR);
+    if (!enabled)
+        return;
+
+    // record members; note that they may get disabled individually
     std::string n = name;
     recordScalar(component, (n+":samples").c_str(), statistic->samples());
     recordScalar(component, (n+":mean").c_str(), statistic->mean());
@@ -175,10 +181,12 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     recordScalar(component, (n+":min").c_str(), statistic->min());
     recordScalar(component, (n+":max").c_str(), statistic->max());
 
+    //FIXME issue: what if all members get disabled, but there are attributes???
     if (attributes)
         for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
             CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
 
+    //FIXME can recording the histogram be disabled???
     if (dynamic_cast<cDensityEstBase *>(statistic))
     {
         cDensityEstBase *hist = (cDensityEstBase *)statistic;

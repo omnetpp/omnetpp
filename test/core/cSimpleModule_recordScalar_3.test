@@ -1,0 +1,108 @@
+%description:
+Test that the <moddule>.<scalar>.record-scalar = true/false option works.
+
+%file: test.ned
+
+simple Node
+{
+}
+
+network Test
+{
+    submodules:
+        defaults: Node;
+        allEnabled: Node;
+        allDisabled: Node;
+        statsDisabled: Node;
+        statsMembersDisabled: Node;
+        fooAndFoobarOnly: Node;
+        statsOnlyWithoutMinMax: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class Node : public cSimpleModule
+{
+  public:
+    Node() : cSimpleModule() { }
+    virtual void handleMessage() { }
+    virtual void finish();
+};
+
+Define_Module(Node);
+
+void Node::finish()
+{
+    recordScalar("foo", 5);
+    recordScalar("bar", 2.41);
+    recordScalar("foobar", 12.98, "s");
+
+    cStdDev stats("stats");
+    for (int i=1; i<=10; i++)
+        stats.collect(i*i);
+    stats.recordScalar(); //FIXME TODO as recordScalar(stats)!!!  TODO with unit="m" as well!
+}
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+output-scalar-file = test.sca
+
+# Test.defaults: left at default
+
+Test.allEnabled.*.record-scalar = true
+
+Test.allDisabled.*.record-scalar = false
+
+Test.statsDisabled.stats.record-scalar = false
+
+Test.statsMembersDisabled.stats:*.record-scalar = false
+
+Test.fooAndFoobarOnly.foo*.record-scalar = true
+Test.fooAndFoobarOnly.*.record-scalar = false
+
+Test.statsOnlyWithoutMinMax.*:min.record-scalar = false
+Test.statsOnlyWithoutMinMax.*:max.record-scalar = false
+Test.statsOnlyWithoutMinMax.stats.record-scalar = true
+Test.statsOnlyWithoutMinMax.stats:*.record-scalar = true
+Test.statsOnlyWithoutMinMax.*.record-scalar = false
+
+%contains: test.sca
+scalar Test.defaults 	foo 	5
+scalar Test.defaults 	bar 	2.41
+attr unit  s
+scalar Test.defaults 	foobar 	12.98
+scalar Test.defaults 	stats:samples 	10
+scalar Test.defaults 	stats:mean 	38.5
+scalar Test.defaults 	stats:stddev 	34.173576537046
+scalar Test.defaults 	stats:min 	1
+scalar Test.defaults 	stats:max 	100
+scalar Test.allEnabled 	foo 	5
+scalar Test.allEnabled 	bar 	2.41
+attr unit  s
+scalar Test.allEnabled 	foobar 	12.98
+scalar Test.allEnabled 	stats:samples 	10
+scalar Test.allEnabled 	stats:mean 	38.5
+scalar Test.allEnabled 	stats:stddev 	34.173576537046
+scalar Test.allEnabled 	stats:min 	1
+scalar Test.allEnabled 	stats:max 	100
+scalar Test.statsDisabled 	foo 	5
+scalar Test.statsDisabled 	bar 	2.41
+attr unit  s
+scalar Test.statsDisabled 	foobar 	12.98
+scalar Test.statsMembersDisabled 	foo 	5
+scalar Test.statsMembersDisabled 	bar 	2.41
+attr unit  s
+scalar Test.statsMembersDisabled 	foobar 	12.98
+scalar Test.fooAndFoobarOnly 	foo 	5
+scalar Test.fooAndFoobarOnly 	foobar 	12.98
+scalar Test.statsOnlyWithoutMinMax 	stats:samples 	10
+scalar Test.statsOnlyWithoutMinMax 	stats:mean 	38.5
+scalar Test.statsOnlyWithoutMinMax 	stats:stddev 	34.173576537046
+
