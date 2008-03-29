@@ -92,13 +92,12 @@ inline bool opp_loadlibrary(const char *libname)
 #if HAVE_DLOPEN
      std::string libfname(libname);
      libfname += ".so";
-     if (!dlopen(libfname.c_str(),RTLD_NOW))
+     if (!dlopen(libfname.c_str(), RTLD_NOW|RTLD_GLOBAL))
          throw std::runtime_error(std::string("Cannot load library '")+libfname+"': "+dlerror());
      return true;
 #elif defined(_WIN32)
      std::string libfname(libname);
      libfname += ".dll";
-//XXX     if (!LoadLibrary(libfname.c_str()))
      if (!LoadLibrary((char *)libfname.c_str()))
          throw std::runtime_error(std::string("Cannot load library '")+libfname+"': "+opp_getWindowsError(GetLastError()));
      return true;
