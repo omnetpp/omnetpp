@@ -195,7 +195,7 @@ proc create_compoundmodulewindow {name geom} {
 }
 
 proc _create_modulewindow {name geom iscompound} {
-    global icons help_tips
+    global icons help_tips B2 B3
 
     set w $name
     create_inspector_toplevel $w $geom
@@ -240,7 +240,7 @@ proc _create_modulewindow {name geom iscompound} {
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     # bindings for find
-    bind_findcommands_to_textwidget $w.main.text
+    bind_commands_to_textwidget $w.main.text
 }
 
 proc mainlogwindow_trimlines {} {
@@ -261,3 +261,5 @@ proc text_trimlines {t numlines} {
         $t delete 1.0 $linestodelete.0
     }
 }
+
+

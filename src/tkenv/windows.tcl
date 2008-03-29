@@ -58,7 +58,7 @@ proc create_messagewindow {name} {
 
     # keyboard bindings
     bind_runcommands $w
-    bind_findcommands_to_textwidget $w.main.text
+    bind_commands_to_textwidget $w.main.text
 
     # let C++ code know about it
     opp_setmsgwindowexists 1
@@ -207,9 +207,41 @@ proc create_fileviewer {filename} {
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     $w.main.text tag configure SELECT -back #808080 -fore #ffffff
-    bind_findcommands_to_textwidget $w.main.text
+    bind_commands_to_textwidget $w.main.text
 
     # Read file
     loadfile $w $filename
 }
 
+
+#
+# Create a context menu for a text widget
+#
+proc textwidget_contextmenu {txt X Y} {
+    global tmp config
+
+    set tmp(wrap) [$txt cget -wrap]
+
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+
+    .popup add command -command edit_copy -label {Copy} -accel {Ctrl+C} -underline 0
+    .popup add separator
+    .popup add command -command "edit_find $txt" -label {Find...} -accel {Ctrl+F} -underline 0
+    .popup add command -command "edit_findnext $txt" -label {Find next} -accel {Ctrl+N,F3} -underline 5
+    .popup add separator
+    .popup add checkbutton -command "textwidget_togglewrap $txt" -variable tmp(wrap) -onvalue "word" -offvalue "none" -label {Word wrap} -underline 0
+    .popup add separator
+    .popup add command -command "$txt tag add sel 1.0 end" -label {Select all} -accel {Ctrl+A} -underline 0
+
+    .popup post $X $Y
+}
+
+proc textwidget_togglewrap {txt} {
+    global tmp config
+
+    $txt config -wrap $tmp(wrap)
+
+    # set default for further windows
+    set config(editor-wrap) $tmp(wrap)
+}

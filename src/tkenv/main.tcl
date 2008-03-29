@@ -27,6 +27,7 @@ set config(editor-case-sensitive) 0
 set config(editor-whole-words) 0
 set config(editor-regexp) 0
 set config(editor-backwards) 1
+set config(editor-wrap) 1
 set config(display-treeview) 1
 set config(filtobjlist-class)  ""
 set config(filtobjlist-name)   ""
@@ -423,7 +424,7 @@ proc create_omnetpp_window {} {
     ###############################
     # Hotkeys
     ###############################
-    bind_findcommands_to_textwidget .main.text
+    bind_commands_to_textwidget .main.text
     bind_runcommands .
     bind_othercommands .
 }
@@ -441,7 +442,9 @@ proc bind_othercommands {w} {
     bind $w <Control-S> [list inspect_filteredobjectlist $w]
 }
 
-proc bind_findcommands_to_textwidget {txt} {
+proc bind_commands_to_textwidget {txt} {
+    global config B2 B3
+
     # bindings for find
     #   'break' is needed below because
     #      ^F is originally bound to 1 char right
@@ -452,6 +455,13 @@ proc bind_findcommands_to_textwidget {txt} {
     bind $txt <Control-n> "findNext $txt;break"
     bind $txt <Control-N> "findNext $txt;break"
     bind $txt <F3> "findNext $txt"
+
+    # bind Ctrl+A "Select all" ('break' is needed below because ^A=Home)
+    bind $txt <Control-a> "$txt tag add sel 1.0 end; break"
+
+    # bind a context menu as well
+    catch {$txt config -wrap $config(editor-wrap)}
+    bind $txt <Button-$B3> "textwidget_contextmenu $txt %X %Y"
 }
 
 #===================================================================
