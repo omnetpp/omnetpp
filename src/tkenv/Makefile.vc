@@ -185,6 +185,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cregistrationlist.h \
   tkdefs.h \
   tkutil.h
 $O/inspfactory.obj: inspfactory.cc \
@@ -276,6 +277,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cregistrationlist.h \
   tkdefs.h \
   tkutil.h
 $O/layouterenv.obj: layouterenv.cc \
@@ -320,6 +322,7 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -329,13 +332,13 @@ $O/layouterenv.obj: layouterenv.cc \
   tkdefs.h
 $O/modinsp.obj: modinsp.cc \
   modinsp.h \
+  ../../include/cchannel.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
   arrow.h \
   layouterenv.h \
   ../../include/csimplemodule.h \
-  ../../include/cchannel.h \
   ../../include/cgate.h \
   ../../include/cmessage.h \
   ../../include/cpar.h \
@@ -369,16 +372,17 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
-  ../../include/ccomponenttype.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cstddev.h \
   tkutil.h \
-  tkdefs.h
+  tkdefs.h \
+  ../../include/ccomponenttype.h
 $O/objinsp.obj: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -468,6 +472,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cregistrationlist.h \
   tkdefs.h \
   inspector.h \
   tkutil.h
@@ -504,6 +509,7 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -512,6 +518,8 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cexpression.h \
   ../../include/cstddev.h \
   tkdefs.h \
+  ../../include/cchannel.h \
+  ../../include/ccomponenttype.h \
   inspector.h \
   tkutil.h
 $O/tkapp.obj: tkapp.cc \
@@ -551,15 +559,16 @@ $O/tkapp.obj: tkapp.cc \
   ../../include/cvisitor.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   ../../include/platdep/timeutil.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
-  tkutil.h \
   ../../include/cchannel.h \
+  tkutil.h \
   ../../include/coutvector.h \
   ../../include/cstatistic.h \
   ../../include/cdensityestbase.h \
@@ -608,6 +617,7 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
@@ -621,7 +631,37 @@ $O/tkcmd.obj: tkcmd.cc \
 $O/tklib.obj: tklib.cc \
   tklib.h \
   tkapp.h \
-  tkdefs.h
+  tkdefs.h \
+  ../../include/cchannel.h \
+  ../../include/cmodule.h \
+  ../../include/ccomponent.h \
+  ../../include/ccomponenttype.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cownedobject.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/cenvir.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/cexpression.h \
+  ../../include/cgate.h \
+  ../../include/globals.h \
+  ../../include/csimulation.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cclassfactory.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h
 $O/tkutil.obj: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
@@ -650,11 +690,13 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
-  tkdefs.h
+  tkdefs.h \
+  ../../include/cchannel.h \
+  ../../include/ccomponenttype.h
 $O/visitor.obj: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
@@ -687,10 +729,11 @@ $O/visitor.obj: visitor.cc \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \

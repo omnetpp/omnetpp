@@ -12,13 +12,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-
-#include "opp_ctype.h"
-#include "fsutils.h"
 #include "platmisc.h"
+#include "fsutils.h"
 #include "onstartup.h"
 #include "cexception.h"
 

@@ -16,8 +16,6 @@
 *--------------------------------------------------------------*/
 
 #include "globals.h"
-#include "carray.h"
-#include "onstartup.h"
 #include "ccomponenttype.h"
 
 NAMESPACE_BEGIN

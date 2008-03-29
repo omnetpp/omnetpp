@@ -16,13 +16,12 @@
 #define __GLOBALS_H
 
 #include "onstartup.h"
-#include "carray.h"
+#include "cregistrationlist.h"
 #include "cclassfactory.h"
 
 NAMESPACE_BEGIN
 
 class cModuleType;
-
 
 //
 // Global objects

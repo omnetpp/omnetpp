@@ -20,8 +20,6 @@
 #include "globals.h"
 #include "cenvir.h"
 #include "cexception.h"
-#include "onstartup.h"
-#include "carray.h"
 #include "random.h"
 
 #ifdef WITH_PARSIM

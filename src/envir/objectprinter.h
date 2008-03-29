@@ -3,10 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cClassDescriptor  : metainfo about structs and classes
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -61,3 +57,4 @@ NAMESPACE_END
 
 
 #endif
+

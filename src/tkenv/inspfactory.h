@@ -18,6 +18,7 @@
 
 #include <tk.h>
 #include "onstartup.h"
+#include "cregistrationlist.h"
 #include "inspector.h"
 #include "omnetapp.h"
 

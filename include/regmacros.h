@@ -19,7 +19,6 @@
 
 NAMESPACE_BEGIN
 
-
 /**
  * @name NED function registration macros
  * @ingroup Macros

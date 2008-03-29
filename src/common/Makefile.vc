@@ -133,13 +133,13 @@ $O/expression.obj: expression.cc \
   stringutil.h \
   exception.h
 $O/expression.tab.obj: expression.tab.cc \
+  commonutil.h \
   expressionyydefs.h \
   expression.h \
   exception.h \
   stringutil.h \
   unitconversion.h \
-  commondefs.h \
-  commonutil.h
+  commondefs.h
 $O/fileglobber.obj: fileglobber.cc \
   fileglobber.h \
   commondefs.h

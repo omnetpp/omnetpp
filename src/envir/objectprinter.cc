@@ -14,7 +14,9 @@
 
 #include "stringutil.h"
 #include "cconfiguration.h"
+#include "carray.h"
 #include "cmodule.h"
+#include "cgate.h"
 #include "cclassdescriptor.h"
 #include "commonutil.h"
 #include "objectprinter.h"
