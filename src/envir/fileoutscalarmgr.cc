@@ -175,7 +175,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
 
     // record members; note that they may get disabled individually
     std::string n = name;
-    recordScalar(component, (n+":samples").c_str(), statistic->samples());
+    recordScalar(component, (n+":samples").c_str(), statistic->samples());  //FIXME rename to "count"? FIXME add "sumweights" for the weighted case!
     recordScalar(component, (n+":mean").c_str(), statistic->mean());
     recordScalar(component, (n+":stddev").c_str(), statistic->stddev());
     recordScalar(component, (n+":min").c_str(), statistic->min());
