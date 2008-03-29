@@ -375,6 +375,8 @@ sub testcase_generatesources
         $module = $values{'module(1)'};
         $module_src = $bodies{'module(1)'};
         $networkname = $module;
+        $includescode = $bodies{'includes(1)'};
+        $globalcode = $bodies{'global(1)'};
 
         # generate NED
         $ned = $ModuleNEDTemplate;
@@ -400,6 +402,8 @@ sub testcase_generatesources
         $module_b = $values{'module_b(1)'};
         $module_a_src = $bodies{'module_a(1)'};
         $module_b_src = $bodies{'module_b(1)'};
+        $includescode = $bodies{'includes(1)'};
+        $globalcode = $bodies{'global(1)'};
 
         # generate NED
         $ned = $ModuleABNEDTemplate;

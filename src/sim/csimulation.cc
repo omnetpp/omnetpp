@@ -102,6 +102,7 @@ cSimulation::cSimulation(const char *name) : cNoncopyableOwnedObject(name, false
 cSimulation::~cSimulation()
 {
     // see shutdown()
+    msgQueue.ownerp = NULL; //XXX in case shutdown() wasn't called, like with exit()
 }
 
 void cSimulation::init()
@@ -119,6 +120,7 @@ void cSimulation::shutdown()
 {
     // deleteNetwork() is better called before the dtor (which runs after main())
     deleteNetwork();
+
     // let go of msgQueue (removeFromOwnershipTree() cannot be called here)
     msgQueue.ownerp = NULL;
 
