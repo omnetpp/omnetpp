@@ -50,32 +50,32 @@ bool StddevNode::finished() const
 
 void StddevNode::collect(double val)
 {
-    if (++num_samples <= 0)
+    if (++num_vals <= 0)
         throw opp_runtime_error("StddevNode: observation count overflow");
 
-    sum_samples += val;
-    sqrsum_samples += val*val;
+    sum_vals += val;
+    sqrsum_vals += val*val;
 
-    if (num_samples>1)
+    if (num_vals>1)
     {
-        if (val<min_samples)
-            min_samples = val;
-        else if (val>max_samples)
-            max_samples = val;
+        if (val<min_vals)
+            min_vals = val;
+        else if (val>max_vals)
+            max_vals = val;
     }
     else
     {
-        min_samples = max_samples = val;
+        min_vals = max_vals = val;
     }
 }
 
 double StddevNode::variance() const
 {
-    if (num_samples<=1)
+    if (num_vals<=1)
         return 0.0;
     else
     {
-        double devsqr = (sqrsum_samples - sum_samples*sum_samples/num_samples)/(num_samples-1);
+        double devsqr = (sqrsum_vals - sum_vals*sum_vals/num_vals)/(num_vals-1);
         if (devsqr<=0)
             return 0.0;
         else

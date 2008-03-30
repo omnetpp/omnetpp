@@ -157,7 +157,7 @@ std::string cKSplit::detailedInfo() const
    std::stringstream os;
    os << cDensityEstBase::detailedInfo();
 
-   int nn = num_samples<=num_cells+1 ? num_samples : num_cells+1; //???
+   int nn = num_vals<=num_cells+1 ? num_vals : num_cells+1; //???
 
    os << "\n  cells:\n";
    for (int i=0; i<nn; i++)
@@ -206,12 +206,12 @@ void cKSplit::transform()
     // just to create grid structure; second, reset all cells to zero and
     // insert observations again, with cell splits disabled now.
 
-    for (i=0; i<num_samples; i++)
+    for (i=0; i<num_vals; i++)
          collectTransformed( firstvals[i] );
 
     resetGrids( rootgrid );
 
-    for (i=0; i<num_samples; i++)
+    for (i=0; i<num_vals; i++)
          insertIntoGrids( firstvals[i], false );
 
     transfd = true;
@@ -517,9 +517,9 @@ void cKSplit::iteratorToCell(int cell_nr) const
    // create iterator or reinit if it is stale
    iter=0;
    if (!iter)
-      {iter=new Iterator(*this); iter_num_samples=num_samples;}
-   else if (num_samples!=iter_num_samples)
-      {iter->init(*this,cell_nr<num_cells/2); iter_num_samples=num_samples;}
+      {iter=new Iterator(*this); iter_num_vals=num_vals;}
+   else if (num_vals!=iter_num_vals)
+      {iter->init(*this,cell_nr<num_cells/2); iter_num_vals=num_vals;}
 
    // drive iterator up or down to reach cell_nr
    if (cell_nr>iter->cellNumber())
@@ -570,7 +570,7 @@ double cKSplit::random() const
    //int dp = treeDepth();
    int cd = 1;
 
-   double x = genk_intrand( genk, num_samples);
+   double x = genk_intrand( genk, num_vals);
 
    int location = rootgrid;
 

@@ -120,7 +120,7 @@ void cHistogramBase::transform()
     for (i=0; i<num_cells; i++)
         cellv[i] = 0;
 
-    for (i=0; i<num_samples; i++)
+    for (i=0; i<num_vals; i++)
         collectTransformed(firstvals[i]);
     transfd = true;
 }
@@ -232,7 +232,7 @@ double cEqdHistogramBase::pdf(double x) const
     if (k<0 || x<rangemin || k>=num_cells || x>=rangemax)
         return 0.0;
 
-    return cellv[k] / cellsize / num_samples;
+    return cellv[k] / cellsize / num_vals;
 }
 
 double cEqdHistogramBase::cdf(double) const
@@ -339,21 +339,21 @@ void cLongHistogram::setupRange()
 
 double cLongHistogram::random() const
 {
-    if (num_samples==0)
+    if (num_vals==0)
     {
         return 0L;
     }
-    else if (num_samples<num_firstvals)
+    else if (num_vals<num_firstvals)
     {
         // randomly select a sample from the stored ones
-        return firstvals[genk_intrand(genk,num_samples)];
+        return firstvals[genk_intrand(genk,num_vals)];
     }
     else
     {
-        // min_samples, max_samples: integer-valued doubles (e.g.: -3.0, 5.0)
+        // min_vals, max_vals: integer-valued doubles (e.g.: -3.0, 5.0)
         // rangemin, rangemax: doubles like -1.5, 4.5 (integer+0.5)
         // cellsize: integer-valued double, >0
-        double m = genk_intrand(genk,num_samples-cell_under-cell_over);
+        double m = genk_intrand(genk,num_vals-cell_under-cell_over);
 
         // select a random interval (k-1) and return a random number from
         // that interval generated according to uniform distribution.
@@ -388,18 +388,18 @@ void cDoubleHistogram::setupRange()
 
 double cDoubleHistogram::random() const
 {
-    if (num_samples==0)
+    if (num_vals==0)
     {
         return 0L;
     }
-    else if (num_samples<num_firstvals)
+    else if (num_vals<num_firstvals)
     {
         // randomly select a sample from the stored ones
-        return firstvals[genk_intrand(genk,num_samples)];
+        return firstvals[genk_intrand(genk,num_vals)];
     }
     else
     {
-        double m = genk_intrand(genk,num_samples-cell_under-cell_over);
+        double m = genk_intrand(genk,num_vals-cell_under-cell_over);
 
         // select a random interval (k-1) and return a random number from
         // that interval generated according to uniform distribution.

@@ -150,7 +150,7 @@ class SIM_API cKSplit : public cDensityEstBase
     double *divdata;          // data array to pass to div. function
 
     mutable Iterator *iter;   // iterator used by basepoint(), cell() etc.
-    mutable long iter_num_samples; // num_samples when iterator was created
+    mutable long iter_num_vals; // num_vals when iterator was created
 
   protected:
     // internal:

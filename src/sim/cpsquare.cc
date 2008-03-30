@@ -349,8 +349,8 @@ std::string cPSquare::detailedInfo() const
 
    int nn = numobs<=numcells+1 ? numobs : numcells+1;
 
-   os << "\n  The quantiles (#(sample: sample<=marker)):\n";
-   os << "      #samples\t<=marker\n";
+   os << "\n  The quantiles (#(observations: observation<=marker)):\n";
+   os << "      #observations\t<=marker\n";
    for (int i=1; i<=nn; i++)
       os << "       " << n[i] << "\t " << q[i] << endl;
    return os.str();

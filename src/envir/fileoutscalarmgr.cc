@@ -176,8 +176,8 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
 
     // record members; note that they may get disabled individually
     std::string n = name;
-    recordScalar(component, (n+":count").c_str(), statistic->samples());
-    if (statistic->samples() != statistic->weights())  //FIXME use some isWeighted() instead?
+    recordScalar(component, (n+":count").c_str(), statistic->count());
+    if (statistic->count() != statistic->weights())  //FIXME use some isWeighted() instead?
         recordScalar(component, (n+":weights").c_str(), statistic->weights());
     recordScalar(component, (n+":mean").c_str(), statistic->mean());
     recordScalar(component, (n+":stddev").c_str(), statistic->stddev());

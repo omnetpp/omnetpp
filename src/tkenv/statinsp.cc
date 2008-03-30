@@ -76,7 +76,7 @@ void _dummy_for_statinsp() {}
 //
 //    cStatistic *stat = static_cast<cStatistic *>(object);
 //
-//    setLabel(".nb.info.count.e", (double) stat->samples() );
+//    setLabel(".nb.info.count.e", (double) stat->count() );
 //    setLabel(".nb.info.mean.e", stat->mean() );
 //    setLabel(".nb.info.stddev.e", stat->stddev() );
 //    setLabel(".nb.info.min.e", stat->min() );
@@ -132,7 +132,7 @@ void THistogramWindow::update()
    // can we draw anything at all?
    if (!distr->transformed() || distr->cells()==0) return;
 
-   long num_samples = distr->samples();
+   long num_vals = distr->count();
    int basepts = distr->cells()+1;
    int cell;
    double cell_lower, cell_upper;
@@ -149,7 +149,7 @@ void THistogramWindow::update()
        cell_lower = cell_upper;
        cell_upper = distr->basepoint(cell+1);
        // calculate height
-       double y = distr->cell(cell) / (double)(num_samples) / (cell_upper-cell_lower);
+       double y = distr->cell(cell) / (double)(num_vals) / (cell_upper-cell_lower);
        if (y>ymax) ymax=y;
    }
 
@@ -177,7 +177,7 @@ void THistogramWindow::update()
        cell_lower = cell_upper;
        cell_upper = distr->basepoint(cell+1);
        // calculate height
-       double y = distr->cell(cell) / (double)(num_samples) / (cell_upper-cell_lower);
+       double y = distr->cell(cell) / (double)(num_vals) / (cell_upper-cell_lower);
        // prepare rectangle coordinates
        char coords[64];
        sprintf(coords,"%d %d %d %d", X(cell_lower), Y(0), X(cell_upper), Y(y));
@@ -194,11 +194,11 @@ void THistogramWindow::generalInfo( char *buf )
 {
    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
    if (!d->transformed())
-       sprintf( buf, "(collecting initial values, N=%ld)", d->samples());
+       sprintf( buf, "(collecting initial values, N=%ld)", d->count());
    else
        sprintf( buf, "Histogram: (%g...%g)  N=%ld  #cells=%d",
                  d->basepoint(0), d->basepoint(d->cells()),
-                 d->samples(),
+                 d->count(),
                  d->cells()
               );
 }
@@ -213,7 +213,7 @@ void THistogramWindow::cellInfo( char *buf, int cell )
                  cell,
                  cell_lower, cell_upper,
                  count,
-                 count / (double)(d->samples()) / (cell_upper-cell_lower)
+                 count / (double)(d->count()) / (cell_upper-cell_lower)
           );
 }
 

@@ -4,7 +4,7 @@ copying cStdDev
 %global:
 void print(cStdDev& s)
 {
-    ev << s.name() << ":n=" << s.samples() << ":w=" << s.weights()
+    ev << s.name() << ":n=" << s.count() << ":w=" << s.weights()
        << ":S=" << s.sum() << ":SS=" << s.sqrSum()
        << ":min=" << s.min() << ":max=" << s.max()
        << ":mean=" << s.mean() << ":stddev=" << s.stddev()

@@ -103,7 +103,6 @@ class SIM_API cStatistic : public cOwnedObject
 
     /**
      * Collects one value.
-     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual void collect(double value) = 0;
 
@@ -122,7 +121,6 @@ class SIM_API cStatistic : public cOwnedObject
     /**
      * This function should be redefined in derived classes to clear
      * the results collected so far.
-     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual void clearResult() = 0;
     //@}
@@ -131,56 +129,47 @@ class SIM_API cStatistic : public cOwnedObject
     //@{
 
     /**
-     * Returns the number of samples collected.
-     * This method is pure virtual, implementation is provided in subclasses.
+     * Returns the number of the observations.
      */
-    virtual long samples() const = 0;
+    virtual long count() const = 0;
 
     /**
-     * Returns the sum of weights of the samples collected.
-     * This method is pure virtual, implementation is provided in subclasses.
+     * Returns the sum of weights.
      */
     virtual double weights() const = 0;
 
     /**
-     * Returns the sum of samples collected.
-     * This method is pure virtual, implementation is provided in subclasses.
+     * Returns the sum of the values.
      */
     virtual double sum() const = 0;
 
     /**
-     * Returns the squared sum of the collected data.
-     * This method is pure virtual, implementation is provided in subclasses.
+     * Returns the squared sum of the values.
      */
     virtual double sqrSum() const = 0;
 
     /**
-     * Returns the minimum of the samples collected.
-     * This method is pure virtual, implementation is provided in subclasses.
+     * Returns the minimum of the values.
      */
     virtual double min() const = 0;
 
     /**
-     * Returns the maximum of the samples collected.
-     * This method is pure virtual, implementation is provided in subclasses.
+     * Returns the maximum of the values.
      */
     virtual double max() const = 0;
 
     /**
-     * Returns the mean of the samples collected.
-     * This method is pure virtual, implementation is provided in subclasses.
+     * Returns the mean of the observations.
      */
     virtual double mean() const = 0;
 
     /**
-     * Returns the standard deviation of the samples collected.
-     * This method is pure virtual, implementation is provided in subclasses.
+     * Returns the standard deviation of the observations.
      */
     virtual double stddev() const = 0;
 
     /**
-     * Returns the variance of the samples collected.
-     * This method is pure virtual, implementation is provided in subclasses.
+     * Returns the variance of the observations.
      */
     virtual double variance() const = 0;
     //@}
@@ -245,12 +234,8 @@ class SIM_API cStatistic : public cOwnedObject
 
     /**
      * Records basic statistics (number of observations, mean, standard
-     * deviation, min, max) into the scalar output file by performing
-     * several calls to the current module's recordScalar() function.
-     * The values will be written under the name "name:samples",
-     * "name:mean", "name:stddev", "name:min", "name:max". If name is NULL
+     * deviation, min, max, etc) into the scalar output file. If name is NULL
      * or missing, the object name (name()) is used.
-     * This method may be overridden in subclasses.
      */
     virtual void recordScalar(const char *name=NULL, const char *unit=NULL);
     //@}

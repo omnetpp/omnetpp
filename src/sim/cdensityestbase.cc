@@ -136,7 +136,7 @@ void cDensityEstBase::clearResult ()
 
 void cDensityEstBase::setRange(double lower, double upper)
 {
-    if (num_samples>0 || transformed())
+    if (num_vals>0 || transformed())
         throw cRuntimeError(this,"setRange() can only be called before collecting any values");
 
     range_mode = RANGE_FIXED;
@@ -146,7 +146,7 @@ void cDensityEstBase::setRange(double lower, double upper)
 
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 {
-    if (num_samples>0 || transformed())
+    if (num_vals>0 || transformed())
         throw cRuntimeError(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTO;
@@ -157,7 +157,7 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 
 void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
 {
-    if (num_samples>0 || transformed())
+    if (num_vals>0 || transformed())
         throw cRuntimeError(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOLOWER;
@@ -169,7 +169,7 @@ void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double ra
 
 void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
 {
-    if (num_samples>0 || transformed())
+    if (num_vals>0 || transformed())
         throw cRuntimeError(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOUPPER;
@@ -181,7 +181,7 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double ra
 
 void cDensityEstBase::setNumFirstVals(int num_fstvals)
 {
-    if (num_samples>0 || transformed())
+    if (num_vals>0 || transformed())
         throw cRuntimeError(this,"setNumFirstVals() can only be called before collecting any values");
 
     num_firstvals = num_fstvals;
@@ -199,19 +199,19 @@ void cDensityEstBase::setupRange()
     switch (range_mode)
     {
       case RANGE_AUTO:
-         c = (min_samples+max_samples)/2;
-         r = (max_samples-min_samples)*range_ext_factor;
+         c = (min_vals+max_vals)/2;
+         r = (max_vals-min_vals)*range_ext_factor;
          if (r==0) r=1.0; // warning?
          rangemin = c-r/2;
          rangemax = c+r/2;
          break;
       case RANGE_AUTOLOWER:
-         if (rangemax<=min_samples) rangemin=rangemax-1.0; // warning?
-         else rangemin = rangemax-(rangemax-min_samples)*range_ext_factor;
+         if (rangemax<=min_vals) rangemin=rangemax-1.0; // warning?
+         else rangemin = rangemax-(rangemax-min_vals)*range_ext_factor;
          break;
       case RANGE_AUTOUPPER:
-         if (rangemin>=max_samples) rangemax=rangemin+1.0; // warning?
-         else rangemax = rangemin+(max_samples-rangemin)*range_ext_factor;
+         if (rangemin>=max_vals) rangemax=rangemin+1.0; // warning?
+         else rangemax = rangemin+(max_vals-rangemin)*range_ext_factor;
          break;
     }
 }
@@ -224,13 +224,13 @@ void cDensityEstBase::collect(double val)
     if (firstvals==0 && !transformed())
         transform();
 
-    cStdDev::collect(val); // this also increments num_samples
+    cStdDev::collect(val); // this also increments num_vals
 
     if (!transformed())
     {
-        firstvals[num_samples-1] = val;
+        firstvals[num_vals-1] = val;
 
-        if (num_samples==num_firstvals)
+        if (num_vals==num_firstvals)
         {
             transform();  // must set transfd and call setupRange()
             delete [] firstvals;
@@ -245,14 +245,13 @@ void cDensityEstBase::collect(double val)
 
 double cDensityEstBase::cellPDF(int k) const
 {
-    if (num_samples==0) return 0.0;
+    if (num_vals==0) return 0.0;
     double cellsize = basepoint(k+1) - basepoint(k);
-    return cellsize==0 ? 0.0 : cell(k)/cellsize/samples();
+    return cellsize==0 ? 0.0 : cell(k)/cellsize/count();
 }
 
 // plot one line
-void cDensityEstBase::plotline(ostream& os, char *pref, double xval,
-                               double count, double a )
+void cDensityEstBase::plotline(ostream& os, char *pref, double xval, double count, double a)
 {
     const int picwidth=54;           // width of picture
     char buf[101], *s;
@@ -283,7 +282,7 @@ std::string cDensityEstBase::detailedInfo() const
     std::stringstream os;
     os << cStdDev::detailedInfo();
 
-    if (num_samples>1)
+    if (num_vals>1)
     {
         const int picwidth=55;   // width of picture
         double max=0;           // biggest cell value

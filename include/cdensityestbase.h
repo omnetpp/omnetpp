@@ -35,7 +35,7 @@ NAMESPACE_BEGIN
  * Automatic range estimation works in the following way:
  * <OL>
  *   <LI>The first <I>num_firstvals</I> observations are stored.
- *   <LI>After having collected a given number of samples, the actual
+ *   <LI>After having collected a given number of observations, the actual
  *   histogram is set up. The range (<I>min</I>, <I>max</I>) of the
  *   initial values is expanded <I>range_ext_factor</I> times, and
  *   the result will become the histogram's range (<I>rangemin</I>,
@@ -97,21 +97,20 @@ class SIM_API cDensityEstBase : public cStdDev
 
   protected:
     double rangemin,rangemax;   // range for distribution density collection
-    long num_firstvals;         // number of "pre-collected" samples
+    long num_firstvals;         // number of "pre-collected" observations
                                 // before transform() is performed.
     unsigned long cell_under;
     unsigned long cell_over;    // for counting observations that fall out of range
 
-    double range_ext_factor;    // the range of histogram is: [min_samples,max_samples] made
+    double range_ext_factor;    // the range of histogram is: [min_vals,max_vals] made
                                 // range_ext_factor times larger
     int range_mode;             // one of RANGE_xxx constants
 
     bool transfd;
-    double *firstvals;         // pointer to array of "pre-collected" samples
+    double *firstvals;         // pointer to array of "pre-collected" observations
 
   protected:
-    static void plotline (std::ostream& os, char* pref, double xval,
-                          double count, double a);
+    static void plotline (std::ostream& os, char* pref, double xval, double count, double a);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -170,7 +169,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Collects one value. Before the histogram was transformed, this method
      * simply adds the value to the table of pre-collected values.
-     * When the number of pre-collected samples reaches a limit, the transform()
+     * When the number of pre-collected observations reaches a limit, the transform()
      * method is called. After transformation, it calls collectTransformed()
      * to update the stored statistics with this value.
      */

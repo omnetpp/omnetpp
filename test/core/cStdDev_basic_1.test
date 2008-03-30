@@ -4,7 +4,7 @@ basic use of cStdDev
 %global:
 void print(cStdDev& s)
 {
-    ev << "n=" << s.samples() << ":w=" << s.weights()
+    ev << "n=" << s.count() << ":w=" << s.weights()
        << ":S=" << s.sum() << ":SS=" << s.sqrSum()
        << ":min=" << s.min() << ":max=" << s.max()
        << ":mean=" << s.mean() << ":stddev=" << s.stddev()

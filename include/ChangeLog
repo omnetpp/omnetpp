@@ -246,6 +246,14 @@
 	- added some extra fields required by sequence chart drawing: cause event
 	  number, message id, message tree id, etc.
 
+	Statistics classes:
+	- cStatistic: renamed samples() to count(). This affects cStdDev, 
+	  cWeightedStdDev and basically all statistics classes (they all 
+	  inherit from cStatistic)
+	- cWeightedStdDev: implemented stddev(); also fixed min() and max()
+	  (they bogusly returned min/max of the weight*value products).
+	  For stddev(), code is based on the patch from Peter Woitek.
+
 	Files renamed (Note: simulation models should only refer to <omnetpp.h>!)
 	     --OLD--          --NEW--
 	     cconfig.h        cconfiguration.h

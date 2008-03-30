@@ -145,8 +145,7 @@
  * The classes are:
  *    - cOutVector is used to record vector simulation results (an output
  *      vector, containing <i>(time, value)</i> pairs) to file
- *    - cStdDev keeps number of samples, mean, standard deviation, minimum
- *      and maximum value etc.
+ *    - cStdDev keeps mean, standard deviation, minimum and maximum value etc.
  *    - cWeightedStdDev is similar to cStdDev, but accepts weighted observations.
  *      cWeightedStdDev can be used for example to calculate time average.
  *      It is the only weighted statistics class.

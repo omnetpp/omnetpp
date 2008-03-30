@@ -168,9 +168,9 @@ void cVarHistogram::createEquiProbableCells()
     {
         throw cRuntimeError(this,"setRange..() only supported with HIST_TR_NO_TRANSFORM mode");
 
-        // // put away samples that are out of range
-        // int num_inrange = num_samples;
-        // for (i=0; i<num_samples; i++)
+        // // put away observations that are out of range
+        // int num_inrange = num_vals;
+        // for (i=0; i<num_vals; i++)
         // {
         //    if (firstvals[i]<rangemin || firstvals[i]>=rangemax)
         //    {
@@ -181,7 +181,7 @@ void cVarHistogram::createEquiProbableCells()
         //    }
         // }
         //
-        // // following code should only deal with first num_inrange samples,
+        // // following code should only deal with first num_inrange observations,
         // // and make 2 additional bin bounds (rangemin and rangemax).
     }
 
@@ -192,10 +192,10 @@ void cVarHistogram::createEquiProbableCells()
     cellv = new unsigned [max_num_cells];
     bin_bounds = new double [max_num_cells+1];
 
-    qsort(firstvals, num_samples, sizeof(double), double_compare_function);
+    qsort(firstvals, num_vals, sizeof(double), double_compare_function);
 
     // expected sample number per cell/bin
-    double esnpc = num_samples/(double)max_num_cells;
+    double esnpc = num_vals/(double)max_num_cells;
 
     int cell;       // index of cell being constructed
     int prev_index; // index of first observation in firstvals[] that will go into cellv[cell]
@@ -208,7 +208,7 @@ void cVarHistogram::createEquiProbableCells()
     for ( cell=0, prev_index=0, prev_boundary=firstvals[prev_index],
          rangemin=bin_bounds[0]=firstvals[0], index=prev_index+(int)esnpc;
 
-         cell<max_num_cells-1 && index<num_samples;
+         cell<max_num_cells-1 && index<num_vals;
 
          cell++, prev_index=index, prev_boundary=boundary,
          index=(int)MAX(prev_index+esnpc,(cell+1)*esnpc) )
@@ -218,11 +218,11 @@ void cVarHistogram::createEquiProbableCells()
         {
             // try to find a greater one
             int j;
-            for ( j=index; j<num_samples && firstvals[j] == prev_boundary; j++ )
+            for ( j=index; j<num_vals && firstvals[j] == prev_boundary; j++ )
                  ;
-            // remark: either j == num_samples or
+            // remark: either j == num_vals or
             //  prev_boundary == firstvals[j-1] < firstvals[j] holds
-            if ( j == num_samples )
+            if ( j == num_vals )
                  break; // the cell-th cell/bin will be the last cell/bin
             else
             {
@@ -249,14 +249,14 @@ void cVarHistogram::createEquiProbableCells()
     }
 
     // the last cell/bin:
-    cellv[cell] = num_samples-prev_index;
+    cellv[cell] = num_vals-prev_index;
     // the last boundary:
-    rangemax = bin_bounds[cell+1]=firstvals[num_samples-1];
+    rangemax = bin_bounds[cell+1]=firstvals[num_vals-1];
 
     // correction of the last boundary (depends on DBL/INT)
     if (transform_type == HIST_TR_AUTO_EPC_DBL)
     {
-        double range = firstvals[num_samples-1]-firstvals[0];
+        double range = firstvals[num_vals-1]-firstvals[0];
         double epsilon = range*1e-6;   // hack: value < boundary; not '<='
         rangemax=bin_bounds[cell+1] += epsilon;
     }
@@ -298,7 +298,7 @@ void cVarHistogram::transform() //--LG
         cellv = new unsigned [num_cells];
         for (i=0; i<num_cells; i++) cellv[i]=0;
 
-        for (i=0; i<num_samples; i++)
+        for (i=0; i<num_vals; i++)
             collectTransformed( firstvals[i] );
     }
     transfd = true;
@@ -367,19 +367,19 @@ double cVarHistogram::cell(int k) const
 
 double cVarHistogram::random() const //--LG
 {
-    if (num_samples==0) return 0L;
+    if (num_vals==0) return 0L;
 
-    if (num_samples<num_firstvals)
+    if (num_vals<num_firstvals)
     {
         // randomly select a sample from the stored ones
-        return firstvals[genk_intrand(genk,num_samples)];
+        return firstvals[genk_intrand(genk,num_vals)];
     }
     else
     {
         double lower, upper;
         // generate in [lower, upper)
 
-        double m = genk_intrand(genk, num_samples-cell_under-cell_over);
+        double m = genk_intrand(genk, num_vals-cell_under-cell_over);
 
         // select a random interval (k-1) and return a random number from
         // that interval generated according to uniform distribution.
@@ -396,7 +396,7 @@ double cVarHistogram::random() const //--LG
 
 double cVarHistogram::pdf(double x) const // --LG
 {
-    if (!num_samples)
+    if (!num_vals)
         return 0.0;
 
     if (!transformed())
@@ -423,7 +423,7 @@ double cVarHistogram::pdf(double x) const // --LG
     }
 
     // here, bin_bound[lower_index]<=x<bin_bounds[lower_index+1]
-    return cellv[lower_index]/(bin_bounds[lower_index+1]-bin_bounds[lower_index])/num_samples;
+    return cellv[lower_index]/(bin_bounds[lower_index+1]-bin_bounds[lower_index])/num_vals;
 }
 
 double cVarHistogram::cdf(double) const

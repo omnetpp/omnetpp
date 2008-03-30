@@ -17,7 +17,7 @@ h.collect(12);
 h.collect(12);
 h.collect(20);
 
-ev << "n=" << h.samples() << ":mean=" << h.mean() << ":stddev=" << h.stddev() << endl;
+ev << "n=" << h.count() << ":mean=" << h.mean() << ":stddev=" << h.stddev() << endl;
 ev << "under=" << h.underflowCell() << ":over=" << h.overflowCell() << endl;
 for (int k=0; k<h.cells(); k++)
     ev << h.basepoint(k) << ":" << h.basepoint(k+1) << ":" << h.cell(k) << endl;

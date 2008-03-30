@@ -174,7 +174,7 @@ class cChannelType extends cComponentType
 {
 }
 
-class cSymTable extends cNamedObject
+class cRegistrationList extends cNamedObject
 {
         @omitGetVerb(true);
         cObject *contents[] @getter(get) @sizeGetter(size) @hint(contained objects);
@@ -259,7 +259,7 @@ class cMessage extends cOwnedObject
 class cStatistic extends cOwnedObject
 {
         @omitGetVerb(true);
-        long samples @hint(number of observations collected so far);
+        long count @hint(number of observations collected so far);
         double weights @hint(sum of weights, which equals the number of observations in the unweighted case);
         double sum @hint(sum of observations);
         double sqrSum @hint(sum of squares of the observations);

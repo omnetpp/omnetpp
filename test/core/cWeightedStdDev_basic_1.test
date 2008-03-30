@@ -6,7 +6,7 @@ those many times.
 %global:
 void print(cStdDev& s)
 {
-    ev << "n=" << s.samples() << " w=" << s.weights()
+    ev << "n=" << s.count() << " w=" << s.weights()
        << " sum=" << s.sum() << " sqrsum=" << s.sqrSum()
        << " min=" << s.min() << " max=" << s.max()
        << " mean=" << s.mean() << " stddev=" << s.stddev()
@@ -31,5 +31,6 @@ print(ws);
 ev << "." << endl;
 
 %contains-regex: stdout
-erewrwerew
+n=235 w=235 sum=84.2969 sqrsum=48.135 min=-0.190643 max=0.788374 mean=0.35871 stddev=0.276554 var=0.0764823
+n=80 w=235 sum=29.126 sqrsum=16.7866 min=-0.190643 max=0.788374 mean=0.35871 stddev=0.278055 var=0.0773147
 .

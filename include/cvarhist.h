@@ -24,25 +24,19 @@
 
 NAMESPACE_BEGIN
 
-//==========================================================================
-//  transform types for cVarHistogram
-//
-// HIST_TR_NO_TRANSFORM: no transformation; uses bin boundaries
-//                       previously defined by addBinBound()/appendBinBound()
-// HIST_TR_AUTO_EPC_DBL: automatically creates equiprobable cells
-// HIST_TR_AUTO_EPC_INT: like the above, but uses a different hack :-)
 
+/**
+ * Transform types for cVarHistogram
+ */
 enum {
-   HIST_TR_NO_TRANSFORM=1,
-   HIST_TR_AUTO_EPC_DBL=0,
-   HIST_TR_AUTO_EPC_INT=2
+   HIST_TR_NO_TRANSFORM=1, ///< no transformation; uses bin boundaries previously defined by addBinBound()/appendBinBound()
+   HIST_TR_AUTO_EPC_DBL=0, ///< automatically creates equi-probable cells
+   HIST_TR_AUTO_EPC_INT=2  ///< a variation of HIST_TR_AUTO_EPC_DBL
 };
-
-//==========================================================================
 
 /**
  * Variable bin size histogram. You may add cell (bin) boundaries
- * manually, or .let the object create cells with equal number of
+ * manually, or let the object create cells with equal number of
  * observations in them (or as close to that as possible).
  *
  * Transform types for cVarHistogram:
@@ -50,7 +44,7 @@ enum {
  *   <LI> HIST_TR_NO_TRANSFORM: no transformation; uses bin boundaries
  *        previously defined by addBinBound()/appendBinBound()
  *   <LI> HIST_TR_AUTO_EPC_DBL: automatically creates equiprobable cells
- *   <LI> HIST_TR_AUTO_EPC_INT: like the above, but uses a different hack :-)
+ *   <LI> HIST_TR_AUTO_EPC_INT: a variation of HIST_TR_AUTO_EPC_DBL
  * </Ul>
  *
  * Layout of the variable bin width histogram:
@@ -71,8 +65,8 @@ enum {
  *
  * Now we do support the following 2 uses of cVarHistogram:
  * <OL>
- *   <LI> add all the boundaries (manually) before collecting samples
- *   <LI> collect samples and transform() makes the boundaries
+ *   <LI> add all the boundaries (manually) before collecting observations
+ *   <LI> collect observations and transform() makes the boundaries
  * </OL>
  *
  * @ingroup Statistics

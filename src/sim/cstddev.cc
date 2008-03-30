@@ -50,15 +50,15 @@ Register_Class(cWeightedStdDev);
 
 cStdDev::cStdDev(const char *s) : cStatistic(s)
 {
-    num_samples = 0L;
-    sum_samples = sqrsum_samples = 0;
-    min_samples = max_samples= 0;
+    num_vals = 0L;
+    sum_vals = sqrsum_vals = 0;
+    min_vals = max_vals= 0;
 }
 
 std::string cStdDev::info() const
 {
     std::stringstream out;
-    out << "n=" << samples()
+    out << "n=" << count()
         << " mean=" << mean()
         << " stddev=" << stddev()
         << " min=" << min()
@@ -72,11 +72,11 @@ void cStdDev::netPack(cCommBuffer *buffer)
     throw cRuntimeError(this,eNOPARSIM);
 #else
     cStatistic::netPack(buffer);
-    buffer->pack(num_samples);
-    buffer->pack(min_samples);
-    buffer->pack(max_samples);
-    buffer->pack(sum_samples);
-    buffer->pack(sqrsum_samples);
+    buffer->pack(num_vals);
+    buffer->pack(min_vals);
+    buffer->pack(max_vals);
+    buffer->pack(sum_vals);
+    buffer->pack(sqrsum_vals);
 #endif
 }
 
@@ -86,11 +86,11 @@ void cStdDev::netUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this,eNOPARSIM);
 #else
     cStatistic::netUnpack(buffer);
-    buffer->unpack(num_samples);
-    buffer->unpack(min_samples);
-    buffer->unpack(max_samples);
-    buffer->unpack(sum_samples);
-    buffer->unpack(sqrsum_samples);
+    buffer->unpack(num_vals);
+    buffer->unpack(min_vals);
+    buffer->unpack(max_vals);
+    buffer->unpack(sum_vals);
+    buffer->unpack(sqrsum_vals);
 #endif
 }
 
@@ -99,38 +99,38 @@ cStdDev& cStdDev::operator=(const cStdDev& res)
     if (this==&res) return *this;
 
     cStatistic::operator=(res);
-    num_samples = res.num_samples;
-    min_samples = res.min_samples;
-    max_samples = res.max_samples;
-    sum_samples = res.sum_samples;
-    sqrsum_samples = res.sqrsum_samples;
+    num_vals = res.num_vals;
+    min_vals = res.min_vals;
+    max_vals = res.max_vals;
+    sum_vals = res.sum_vals;
+    sqrsum_vals = res.sqrsum_vals;
 
     return *this;
 }
 
 void cStdDev::collect(double value)
 {
-    if (++num_samples <= 0)
+    if (++num_vals <= 0)
     {
-        // num_samples overflow: issue warning and stop collecting
+        // num_vals overflow: issue warning and stop collecting
         ev.printf("\a\nWARNING: (%s)%s: collect(): observation count overflow!\n\n",className(),fullPath().c_str());
-        num_samples--;  // restore
+        num_vals--;  // restore
         return;
     }
 
-    sum_samples += value;
-    sqrsum_samples += value*value;
+    sum_vals += value;
+    sqrsum_vals += value*value;
 
-    if (num_samples > 1)
+    if (num_vals > 1)
     {
-        if (value < min_samples)
-            min_samples = value;
-        else if (value > max_samples)
-            max_samples = value;
+        if (value < min_vals)
+            min_vals = value;
+        else if (value > max_vals)
+            max_vals = value;
     }
     else
     {
-        min_samples = max_samples = value;
+        min_vals = max_vals = value;
     }
 
     if (transientDetectionObject()) td->collect(value);  //NL
@@ -139,12 +139,12 @@ void cStdDev::collect(double value)
 
 double cStdDev::variance() const
 {
-    if (num_samples<=1)
+    if (num_vals<=1)
         return 0.0;
     else
     {
         // note: no check for division by zero, we prefer to return Inf or NaN
-        double devsqr = (sqrsum_samples - sum_samples*sum_samples/num_samples)/(num_samples-1);
+        double devsqr = (sqrsum_vals - sum_vals*sum_vals/num_vals)/(num_vals-1);
         if (devsqr<=0)
             return 0.0;
         else
@@ -160,31 +160,31 @@ double cStdDev::stddev() const
 std::string cStdDev::detailedInfo() const
 {
     std::stringstream os;
-    os <<   "  Number of values = " << num_samples << "\n";
-    if (num_samples==1)
-        os << "  Value          = " << min_samples << "\n";
-    else if (num_samples>0)
+    os <<   "  Number of values = " << num_vals << "\n";
+    if (num_vals==1)
+        os << "  Value          = " << min_vals << "\n";
+    else if (num_vals>0)
     {
         os << "  Mean value     = " << mean() << "\n";
         os << "  Standard dev.  = " << stddev() << "\n";
-        os << "  Minimal value  = " << min_samples << "\n";
-        os << "  Maximal value  = " << max_samples << "\n";
+        os << "  Minimal value  = " << min_vals << "\n";
+        os << "  Maximal value  = " << max_vals << "\n";
     }
     return os.str();
 }
 
 void cStdDev::clearResult()
 {
-    num_samples=0;
-    sum_samples=sqrsum_samples=min_samples=max_samples=0;
+    num_vals=0;
+    sum_vals=sqrsum_vals=min_vals=max_vals=0;
 }
 
 double cStdDev::random() const
 {
-    switch (num_samples)
+    switch (num_vals)
     {
         case 0:  return 0.0;
-        case 1:  return min_samples;
+        case 1:  return min_vals;
         default: return normal(mean(), stddev(), genk);
     }
 }
@@ -192,19 +192,19 @@ double cStdDev::random() const
 void cStdDev::saveToFile(FILE *f) const
 {
     fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath().c_str());
-    fprintf(f,"%ld\t #= num_samples\n",num_samples);
-    fprintf(f,"%g %g\t #= min, max\n", min_samples, max_samples);
-    fprintf(f,"%g\t #= sum\n", sum_samples);
-    fprintf(f,"%g\t #= square sum\n", sqrsum_samples );
+    fprintf(f,"%ld\t #= num_vals\n",num_vals);
+    fprintf(f,"%g %g\t #= min, max\n", min_vals, max_vals);
+    fprintf(f,"%g\t #= sum\n", sum_vals);
+    fprintf(f,"%g\t #= square sum\n", sqrsum_vals );
 }
 
 void cStdDev::loadFromFile(FILE *f)
 {
     freadvarsf(f,"");  freadvarsf(f,""); freadvarsf(f,""); freadvarsf(f,"");
-    freadvarsf(f,"%ld\t #= num_samples",&num_samples);
-    freadvarsf(f,"%g %g\t #= min, max", &min_samples, &max_samples);
-    freadvarsf(f,"%g\t #= sum", &sum_samples);
-    freadvarsf(f,"%g\t #= square sum", &sqrsum_samples);
+    freadvarsf(f,"%ld\t #= num_vals",&num_vals);
+    freadvarsf(f,"%g %g\t #= min, max", &min_vals, &max_vals);
+    freadvarsf(f,"%g\t #= sum", &sum_vals);
+    freadvarsf(f,"%g\t #= square sum", &sqrsum_vals);
 }
 
 //----
@@ -212,7 +212,7 @@ void cStdDev::loadFromFile(FILE *f)
 std::string cWeightedStdDev::info() const
 {
     std::stringstream out;
-    out << "n=" << samples()
+    out << "n=" << count()
         << " mean=" << mean()
         << " stddev=" << stddev()
         << " min=" << min()
@@ -227,7 +227,9 @@ void cWeightedStdDev::netPack(cCommBuffer *buffer)
 #else
     cStdDev::netPack(buffer);
     buffer->pack(sum_weights);
-    //FIXME add the rest!!!!
+    buffer->pack(sum_weighted_vals);
+    buffer->pack(sum_squared_weights);
+    buffer->pack(sum_weights_squared_vals);
 #endif
 }
 
@@ -238,7 +240,9 @@ void cWeightedStdDev::netUnpack(cCommBuffer *buffer)
 #else
     cStdDev::netUnpack(buffer);
     buffer->unpack(sum_weights);
-    //FIXME add the rest!!!
+    buffer->unpack(sum_weighted_vals);
+    buffer->unpack(sum_squared_weights);
+    buffer->unpack(sum_weights_squared_vals);
 #endif
 }
 
@@ -258,27 +262,27 @@ void cWeightedStdDev::collect2(double value, double weight)
 {
     if (weight > 0)
     {
-        if (++num_samples <= 0)
+        if (++num_vals <= 0)
         {
-            // num_samples overflow: issue warning and stop collecting
+            // num_vals overflow: issue warning and stop collecting
             ev.printf("\a\nWARNING: (%s)%s: collect2(): observation count overflow!\n\n",className(),fullPath().c_str());
-            num_samples--;  // restore
+            num_vals--;  // restore
             return;
         }
 
-        sum_samples += value;
-        sqrsum_samples += value*value;
+        sum_vals += value;
+        sqrsum_vals += value*value;
 
-        if (num_samples > 1)
+        if (num_vals > 1)
         {
-            if (value < min_samples)
-                min_samples = value;
-            else if (value > max_samples)
-                max_samples = value;
+            if (value < min_vals)
+                min_vals = value;
+            else if (value > max_vals)
+                max_vals = value;
         }
         else
         {
-            min_samples = max_samples = value;
+            min_vals = max_vals = value;
         }
 
         sum_weights += weight;
@@ -315,14 +319,18 @@ void cWeightedStdDev::saveToFile(FILE *f) const
 {
     cStdDev::saveToFile(f);
     fprintf(f,"%g\t #= sum_weights\n", sum_weights);
-    //FIXME add the rest!
+    fprintf(f,"%g\t #= sum_weighted_vals\n", sum_weighted_vals);
+    fprintf(f,"%g\t #= sum_squared_weights\n", sum_squared_weights);
+    fprintf(f,"%g\t #= sum_weights_squared_vals\n", sum_weights_squared_vals);
 }
 
 void cWeightedStdDev::loadFromFile(FILE *f)
 {
     cStdDev::loadFromFile(f);
     freadvarsf(f,"%g\t #= sum_weights", &sum_weights);
-    //FIXME add the rest!
+    freadvarsf(f,"%g\t #= sum_weighted_vals", &sum_weighted_vals);
+    freadvarsf(f,"%g\t #= sum_squared_weights", &sum_squared_weights);
+    freadvarsf(f,"%g\t #= sum_weights_squared_vals", &sum_weights_squared_vals);
 }
 
 

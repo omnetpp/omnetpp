@@ -33,9 +33,9 @@ NAMESPACE_BEGIN
 class SIM_API cStdDev : public cStatistic
 {
   protected:
-    long num_samples;
-    double min_samples,max_samples;
-    double sum_samples,sqrsum_samples;
+    long num_vals;
+    double min_vals, max_vals;
+    double sum_vals, sqrsum_vals;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -114,49 +114,48 @@ class SIM_API cStdDev : public cStatistic
 #endif
 
     /**
-     * Returns the number of samples collected.
+     * Returns the number of observations collected.
      */
-    virtual long samples() const   {return num_samples;}
+    virtual long count() const  {return num_vals;}
 
     /**
-     * Returns the sum of weights of the samples collected.
+     * Returns the sum of weights of the observations collected.
      */
-    virtual double weights() const {return num_samples;}
+    virtual double weights() const  {return num_vals;}
 
     /**
-     * Returns the sum of samples collected.
+     * Returns the sum of the values.
      */
-    virtual double sum() const     {return sum_samples;}
+    virtual double sum() const  {return sum_vals;}
 
     /**
-     * Returns the squared sum of the collected data.
+     * Returns the squared sum of the collected values.
      */
-    virtual double sqrSum() const  {return sqrsum_samples;}
+    virtual double sqrSum() const  {return sqrsum_vals;}
 
     /**
-     * Returns the minimum of the samples collected.
+     * Returns the minimum of the collected values.
      */
-    virtual double min() const     {return min_samples;}
+    virtual double min() const  {return min_vals;}
 
     /**
-     * Returns the maximum of the samples collected.
+     * Returns the maximum of the collected values.
      */
-    virtual double max() const     {return max_samples;}
+    virtual double max() const  {return max_vals;}
 
     /**
-     * Returns the mean of the samples collected.
-     * Returns NaN if nothing was collected yet.
+     * Returns the mean of the observations.
+     * Returns 0.0 if nothing was collected yet.
      */
-    virtual double mean() const    {return sum_samples/num_samples;}
+    virtual double mean() const  {return num_vals==0 ? 0 : sum_vals/num_vals;}
 
     /**
-     * Returns the standard deviation of the samples collected.
-     * Returns NaN if nothing was collected yet.
+     * Returns the standard deviation of the observations.
      */
     virtual double stddev() const;
 
     /**
-     * Returns the variance of the samples collected.
+     * Returns the variance of the observations collected.
      */
     virtual double variance() const;
 
@@ -298,19 +297,18 @@ class SIM_API cWeightedStdDev : public cStdDev
     virtual void clearResult();
 
     /**
-     * Returns the sum of weights of the samples collected.
+     * Returns the sum of weights of the observations collected.
      */
     virtual double weights() const {return sum_weights;}
 
     /**
-     * Returns the mean of the samples collected.
-     * Returns NaN if nothing was collected yet.
+     * Returns the mean of the observations collected.
+     * Returns 0.0 if nothing was collected yet.
      */
-    virtual double mean() const  {return sum_weighted_vals / sum_weights;}
+    virtual double mean() const  {return sum_weights==0 ? 0 : sum_weighted_vals / sum_weights;}
 
     /**
-     * Returns the variance of the samples collected.
-     * Returns NaN if nothing was collected yet.
+     * Returns the variance of the observations collected.
      */
     virtual double variance() const;
 
