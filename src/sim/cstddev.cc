@@ -7,7 +7,8 @@
 //        Based on the MISS simulator's result collection
 //
 //   Member functions of
-//     cStdDev:    mean, std deviation, min_samples, max_samples
+//    cStdDev: basic statistics (mean, stddev, min, max, etc)
+//    cWeightedStdDev: weighted version
 //
 //  Author: Andras Varga
 //
@@ -107,31 +108,33 @@ cStdDev& cStdDev::operator=(const cStdDev& res)
     return *this;
 }
 
-// collect one value
-void cStdDev::collect(double val)
+void cStdDev::collect(double value)
 {
     if (++num_samples <= 0)
     {
-        // FIXME: num_samples overflow: issue warning and must stop collecting!
-        ev.printf("\a\nWARNING: (%s)%s: observation count overflow!\n\n",className(),fullPath().c_str());
+        // num_samples overflow: issue warning and stop collecting
+        ev.printf("\a\nWARNING: (%s)%s: collect(): observation count overflow!\n\n",className(),fullPath().c_str());
+        num_samples--;  // restore
+        return;
     }
-    sum_samples+=val;
-    sqrsum_samples+=val*val;
 
-    if (num_samples>1)
+    sum_samples += value;
+    sqrsum_samples += value*value;
+
+    if (num_samples > 1)
     {
-        if (val<min_samples)
-            min_samples=val;
-        else if (val>max_samples)
-            max_samples=val;
+        if (value < min_samples)
+            min_samples = value;
+        else if (value > max_samples)
+            max_samples = value;
     }
     else
     {
-        min_samples=max_samples=val;
+        min_samples = max_samples = value;
     }
 
-    if (transientDetectionObject()) td->collect(val);  //NL
-    if (accuracyDetectionObject()) ra->collect(val);   //NL
+    if (transientDetectionObject()) td->collect(value);  //NL
+    if (accuracyDetectionObject()) ra->collect(value);   //NL
 }
 
 double cStdDev::variance() const
@@ -140,6 +143,7 @@ double cStdDev::variance() const
         return 0.0;
     else
     {
+        // note: no check for division by zero, we prefer to return Inf or NaN
         double devsqr = (sqrsum_samples - sum_samples*sum_samples/num_samples)/(num_samples-1);
         if (devsqr<=0)
             return 0.0;
@@ -210,7 +214,7 @@ std::string cWeightedStdDev::info() const
     std::stringstream out;
     out << "n=" << samples()
         << " mean=" << mean()
-        << " stddev=" << "N/A"
+        << " stddev=" << stddev()
         << " min=" << min()
         << " max=" << max();
     return out.str();
@@ -223,6 +227,7 @@ void cWeightedStdDev::netPack(cCommBuffer *buffer)
 #else
     cStdDev::netPack(buffer);
     buffer->pack(sum_weights);
+    //FIXME add the rest!!!!
 #endif
 }
 
@@ -233,6 +238,7 @@ void cWeightedStdDev::netUnpack(cCommBuffer *buffer)
 #else
     cStdDev::netUnpack(buffer);
     buffer->unpack(sum_weights);
+    //FIXME add the rest!!!
 #endif
 }
 
@@ -242,45 +248,81 @@ cWeightedStdDev& cWeightedStdDev::operator=(const cWeightedStdDev& res)
 
     cStdDev::operator=(res);
     sum_weights = res.sum_weights;
+    sum_weighted_vals = res.sum_weighted_vals;
+    sum_squared_weights = res.sum_squared_weights;
+    sum_weights_squared_vals = res.sum_weights_squared_vals;
     return *this;
 }
 
-void cWeightedStdDev::collect2(double val, double weight)
+void cWeightedStdDev::collect2(double value, double weight)
 {
-    cStdDev::collect(weight*val);
-    sum_weights += weight;
+    if (weight > 0)
+    {
+        if (++num_samples <= 0)
+        {
+            // num_samples overflow: issue warning and stop collecting
+            ev.printf("\a\nWARNING: (%s)%s: collect2(): observation count overflow!\n\n",className(),fullPath().c_str());
+            num_samples--;  // restore
+            return;
+        }
+
+        sum_samples += value;
+        sqrsum_samples += value*value;
+
+        if (num_samples > 1)
+        {
+            if (value < min_samples)
+                min_samples = value;
+            else if (value > max_samples)
+                max_samples = value;
+        }
+        else
+        {
+            min_samples = max_samples = value;
+        }
+
+        sum_weights += weight;
+        sum_weighted_vals += weight * value;
+        sum_squared_weights += weight * weight;
+        sum_weights_squared_vals += weight * value * value;
+
+        if (transientDetectionObject()) td->collect(value);
+        if (accuracyDetectionObject()) ra->collect(value);
+    }
+    else if (weight < 0)
+    {
+        throw new cRuntimeError(this, "collect2(): negative weight %g", weight);
+    }
 }
 
 void cWeightedStdDev::clearResult()
 {
     cStdDev::clearResult();
-    sum_weights=0.0;
+    sum_weights = 0.0;
+    sum_weighted_vals = 0.0;
+    sum_squared_weights = 0.0;
+    sum_weights_squared_vals = 0.0;
 }
 
 double cWeightedStdDev::variance() const
 {
-    throw cRuntimeError(this, "variance()/stddev() not implemented");
-
-    // if (sum_weights==0)
-    //   return 0.0;
-    // else
-    // {
-    //   double devsqr = (sqrsum_samples - sum_samples*sum_samples/sum_weights)/(sum_weights-1);
-    //   if (devsqr<=0)
-    //       return 0.0;
-    //   else
-    //       return devsqr;
-    //}
+    // note: no check for division by zero, we prefer to return Inf or NaN
+    double denominator = sum_weights * sum_weights - sum_squared_weights;
+    return (sum_weights * sum_weights_squared_vals - sum_weighted_vals * sum_weighted_vals) / denominator;
 }
 
 void cWeightedStdDev::saveToFile(FILE *f) const
 {
     cStdDev::saveToFile(f);
-    fprintf(f,"%g\t #= sum_weights\n",sum_weights);
+    fprintf(f,"%g\t #= sum_weights\n", sum_weights);
+    //FIXME add the rest!
 }
 
 void cWeightedStdDev::loadFromFile(FILE *f)
 {
     cStdDev::loadFromFile(f);
-    freadvarsf(f,"%g\t #= sum_weights",&sum_weights);
+    freadvarsf(f,"%g\t #= sum_weights", &sum_weights);
+    //FIXME add the rest!
 }
+
+

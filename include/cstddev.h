@@ -5,7 +5,8 @@
 //
 //
 //  Declaration of the following classes:
-//    cStdDev    : collects min, max, mean, standard deviation
+//    cStdDev: basic statistics (mean, stddev, min, max, etc)
+//    cWeightedStdDev: weighted version
 //
 //==========================================================================
 
@@ -144,11 +145,13 @@ class SIM_API cStdDev : public cStatistic
 
     /**
      * Returns the mean of the samples collected.
+     * Returns NaN if nothing was collected yet.
      */
-    virtual double mean() const    {return num_samples ? sum_samples/num_samples : 0.0;}
+    virtual double mean() const    {return sum_samples/num_samples;}
 
     /**
      * Returns the standard deviation of the samples collected.
+     * Returns NaN if nothing was collected yet.
      */
     virtual double stddev() const;
 
@@ -193,6 +196,9 @@ class SIM_API cWeightedStdDev : public cStdDev
 {
   protected:
     double sum_weights;
+    double sum_weighted_vals;
+    double sum_squared_weights;
+    double sum_weights_squared_vals;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -206,7 +212,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Constructors, destructor, duplication and assignment.
      */
-    explicit cWeightedStdDev(const char *name=NULL) : cStdDev(name)  {sum_weights=0;}
+    explicit cWeightedStdDev(const char *name=NULL) : cStdDev(name)  {sum_weights=sum_weighted_vals=sum_squared_weights=sum_weights_squared_vals=0.0;}
 
     /**
      * Constructors, destructor, duplication and assignment.
@@ -298,11 +304,13 @@ class SIM_API cWeightedStdDev : public cStdDev
 
     /**
      * Returns the mean of the samples collected.
+     * Returns NaN if nothing was collected yet.
      */
-    virtual double mean() const  {return sum_weights!=0 ? sum_samples/sum_weights : 0.0;}
+    virtual double mean() const  {return sum_weighted_vals / sum_weights;}
 
     /**
      * Returns the variance of the samples collected.
+     * Returns NaN if nothing was collected yet.
      */
     virtual double variance() const;
 

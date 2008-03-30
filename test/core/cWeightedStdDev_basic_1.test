@@ -1,0 +1,35 @@
+%description:
+Basic cWeightedStdDev test: for integer weights it should
+yield the same results as cStdDev with collect() called
+those many times.
+
+%global:
+void print(cStdDev& s)
+{
+    ev << "n=" << s.samples() << " w=" << s.weights()
+       << " sum=" << s.sum() << " sqrsum=" << s.sqrSum()
+       << " min=" << s.min() << " max=" << s.max()
+       << " mean=" << s.mean() << " stddev=" << s.stddev()
+       << " var=" << s.variance() << endl;
+}
+
+%activity:
+
+cStdDev s;
+cWeightedStdDev ws;
+
+for (int i=0; i<100; i++)
+{
+    double d = dblrand() - 0.2;
+    int weight = intuniform(0,5);
+    for (int j=0; j<weight; j++) s.collect(d);
+    ws.collect2(d, weight);
+}
+
+print(s);
+print(ws);
+ev << "." << endl;
+
+%contains-regex: stdout
+erewrwerew
+.
