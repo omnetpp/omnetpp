@@ -435,7 +435,7 @@ std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *n
     return candidates;
 }
 
-std::string cNEDNetworkBuilder::getSubmoduleType(cModule *modp, SubmoduleElement *submod, int index)
+std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleElement *submod, int index)
 {
     const char *submodname = submod->getName();
     std::string submodtypename;
@@ -451,15 +451,13 @@ std::string cNEDNetworkBuilder::getSubmoduleType(cModule *modp, SubmoduleElement
         else {
             ExpressionElement *likeParamExpr = findExpression(submod, "like-param");
             if (likeParamExpr)
-            	submodtypename = evaluateAsString(likeParamExpr, modp, false);
+                submodtypename = evaluateAsString(likeParamExpr, modp, false);
             else {
-            	std::string key = modp->fullPath() + "." + submodname;
-            	if (index != -1) 
-            		key = opp_stringf("%s[%d]", key.c_str(), index);
-            	const char *value = ev.config()->getPerObjectConfigValue(key.c_str(), CFGID_TYPE_NAME->name());
-            	if (value)
-            		submodtypename = value;
-            	else
+                std::string key = modp->fullPath() + "." + submodname;
+                if (index != -1)
+                    key = opp_stringf("%s[%d]", key.c_str(), index);
+                submodtypename = ev.config()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+                if (submodtypename.empty())
                     throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s", submodname, key.c_str(), CFGID_TYPE_NAME->name());
             }
         }
@@ -479,7 +477,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
     {
         cModuleType *submodtype;
         try {
-        	std::string submodtypename = getSubmoduleType(modp, submod);
+            std::string submodtypename = getSubmoduleTypeName(modp, submod);
             submodtype = usesLike ?
                 findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname) :
                 findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
@@ -506,7 +504,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
         for (int i=0; i<vectorsize; i++) {
             if (!submodtype || usesLike) {
                 try {
-                	std::string submodtypename = getSubmoduleType(modp, submod, i);
+                    std::string submodtypename = getSubmoduleTypeName(modp, submod, i);
                     submodtype = usesLike ?
                         findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname) :
                         findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
@@ -820,36 +818,53 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
     }
 }
 
-cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecElement *channelspec, cModule *parentmodp)
+std::string cNEDNetworkBuilder::getChannelTypeName(cModule *modp, ChannelSpecElement *channelspec, const char *channelname)
 {
-    // create channel object
-    cChannel *channelp = NULL;
     std::string channeltypename;
-    if (opp_isempty(channelspec->getLikeType()))
-    {
+    if (opp_isempty(channelspec->getLikeType())) {
+        //TODO create cIdealChannel if there are no parameters?
         channeltypename = opp_isempty(channelspec->getType()) ? "ned.BasicChannel" : channelspec->getType();
     }
     else
     {
         // type may be given either in ExpressionElement child or "like-param" attribute
-        if (!opp_isempty(channelspec->getLikeParam()))
-        {
-            channeltypename = parentmodp->par(channelspec->getLikeParam()).stringValue();
+        if (!opp_isempty(channelspec->getLikeParam())) {
+            channeltypename = modp->par(channelspec->getLikeParam()).stringValue();
         }
-        else
-        {
+        else {
             ExpressionElement *likeParamExpr = findExpression(channelspec, "like-param");
-            ASSERT(likeParamExpr); // either attr or expr must be there
-            channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
+            if (likeParamExpr)
+                channeltypename = evaluateAsString(likeParamExpr, modp, false);
+            else {
+                std::string key = modp->fullPath() + "." + channelname;
+                channeltypename = ev.config()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+                if (channeltypename.empty())
+                    throw cRuntimeError(modp, "Unable to determine type name for channel: missing config entry %s.%s", key.c_str(), CFGID_TYPE_NAME->name());
+            }
         }
     }
 
-    cChannelType *channeltype = opp_isempty(channelspec->getLikeType()) ?
-                    findAndCheckChannelType(channeltypename.c_str(), parentmodp) :
-                    findAndCheckChannelTypeLike(channeltypename.c_str(), channelspec->getLikeType(), parentmodp);
+    return channeltypename;
+}
 
-    channelp = channeltype->create("channel", parentmodp);
+cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecElement *channelspec, cModule *parentmodp)
+{
+    // resolve channel type
+    const char *channelname = "channel";
+    cChannelType *channeltype;
+    try {
+        std::string channeltypename = getChannelTypeName(parentmodp, channelspec, channelname);
+        bool usesLike = !opp_isempty(channelspec->getLikeType());
+        channeltype = usesLike ?
+            findAndCheckChannelTypeLike(channeltypename.c_str(), channelspec->getLikeType(), parentmodp) :
+            findAndCheckChannelType(channeltypename.c_str(), parentmodp);
+    }
+    catch (std::exception& e) {
+        updateOrRethrowException(e, channelspec); throw;
+    }
 
+    // create channel object
+    cChannel *channelp = channeltype->create(channelname, parentmodp);
     return channelp;
 }
 

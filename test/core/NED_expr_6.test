@@ -1,0 +1,42 @@
+%description:
+Test nested expression evaluation (evaluating a volatile expr inside another expr)
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        volatile int rnd = 2 * intuniform(0, 5);
+        string str = "foo" + string(rnd);
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+    for (int i=0; i<params(); i++) {
+        ev << par(i).name() << "=";
+        par(i).isNumeric() ? ev << par(i).doubleValue() : ev << par(i).stringValue();
+        ev << endl;
+    }
+    ev << ".\n";
+}
+
+}; //namespace
+
+%contains: stdout
+TBD

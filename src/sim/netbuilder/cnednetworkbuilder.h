@@ -74,7 +74,7 @@ class SIM_API cNEDNetworkBuilder
     cModuleType *findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodname);
     std::vector<std::string> findTypeWithInterface(const char *nedtypename, const char *interfaceqname);
 
-    std::string getSubmoduleType(cModule *modp, SubmoduleElement *submod, int index = -1);
+    std::string getSubmoduleTypeName(cModule *modp, SubmoduleElement *submod, int index = -1);
     void addSubmodule(cModule *modp, SubmoduleElement *submod);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
@@ -97,6 +97,7 @@ class SIM_API cNEDNetworkBuilder
                        const char *gatename, ExpressionElement *gateindexp, bool isplusplus,
                        cGate *&gate1, cGate *&gate2);
     cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionElement *modindexp);
+    std::string getChannelTypeName(cModule *modp, ChannelSpecElement *channelspec, const char *channelname);
     cChannel *createChannel(ChannelSpecElement *channelspec, cModule *parentmodp);
 
     cChannelType *findAndCheckChannelType(const char *channeltypename, cModule *modp);

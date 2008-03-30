@@ -1,74 +1,35 @@
 %description:
-Test "like" modules with typename ini file parameter
+Test "like" modules with typename given as:
+ - volatile parameter (random)
+ - various expressions (containing random, index, etc)
 
 %file: test.ned
 
 import testlib.Dump;
 
-moduleinterface IFooModule
-{
-}
-
-module Compound1 like IFooModule
-{
-}
-
-module Compound2 like IFooModule
-{
-}
+moduleinterface IFooModule { }
+module Compound1 like IFooModule { }
+module Compound2 like IFooModule { }
 
 network Test
 {
     parameters:
-        volatile string typeName = intuniform(0, 1) == 0 ? "Compound1" : "Compound2";
+        volatile string randomTypeName = choose(intuniform(0,1), "Compound1 Compound2");
+        volatile int oneOrTwo = intuniform(0,1);
     submodules:
-        a: <> like IFooModule;
-        b[2]: <> like IFooModule;
-        c[10]: <typeName> like IFooModule;
+        a: <"Compound1"> like IFooModule;
+        b: <"Compo" + "und1"> like IFooModule;
+        c[10]: <randomTypeName> like IFooModule;
+        d[10]: <"Compound"+string(oneOrTwo)> like IFooModule;
+        e[10]: <"Compound"+string(1+intuniform(0,1))> like IFooModule;
+        //FIXME f[2]: <"Compound"+string(index)> like IFooModule; ==> "index not allowed here"
+        //FIXME g[5]: <index%2==0 ? "Compound1" : "Compound2"> like IFooModule;  ==> "parse error", but with parens it's OK!
+        //FIXME h[5]: <(index%2==0 ? "Compound1" : "Compound2")> like IFooModule; ==> "index not allowed here"
         dump: Dump;
 }
 
 %exitcode: 0
 
-%inifile: test.ini
-[General]
-debug-on-errors = true
-network = Test
-cmdenv-express-mode = false
-Test.a.type-name = Compound1
-Test.b[0].type-name = Compound2
-Test.b[*].type-name = Compound1
-
 %contains: stdout
-module Test: Test {
-    parameters:
-        @isNetwork
-        typeName = intuniform(0, 1) == 0 ? "Compound1" : "Compound2"
-    submodules:
-        module Test.a: Compound1 {
-        }
-        module Test.b[0]: Compound2 {
-        }
-        module Test.b[1]: Compound1 {
-        }
-        module Test.c[0]: Compound1 {
-        }
-        module Test.c[1]: Compound2 {
-        }
-        module Test.c[2]: Compound2 {
-        }
-        module Test.c[3]: Compound1 {
-        }
-        module Test.c[4]: Compound2 {
-        }
-        module Test.c[5]: Compound2 {
-        }
-        module Test.c[6]: Compound2 {
-        }
-        module Test.c[7]: Compound2 {
-        }
-        module Test.c[8]: Compound2 {
-        }
-        module Test.c[9]: Compound2 {
-        }
-}
+TBD
+

@@ -243,7 +243,7 @@ cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
 #define ulong(x) ((unsigned long)(x))
 
 static const int stksize = 20;
-static cDynamicExpression::Value stk[stksize];  // made static to avoid call to Value ctor stksize times
+static cDynamicExpression::Value stk[stksize];  // made static to avoid call to Value ctor stksize times FIXME THIS IS NOT REENTRANT!!!
 
 cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) const
 {
