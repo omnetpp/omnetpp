@@ -224,6 +224,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const;
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const;
     virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const;
+    virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const;
     virtual const char *getVariable(const char *varname) const;
     virtual std::vector<const char *> getIterationVariableNames() const;
     virtual std::vector<const char *> getPredefinedVariableNames() const;

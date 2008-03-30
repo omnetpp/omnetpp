@@ -883,7 +883,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
             }
             else
             {
-                // check for per-object configuration subkeys (".enabled", ".interval", ".use-default")
+                // check for per-object configuration subkeys (".ev-enabled", ".record-interval", ".apply-default")
                 std::string ownerName;
                 std::string groupName;
                 bool isApplyDefault;
@@ -1055,7 +1055,7 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             // find all matching entries from this group.
             // We'll have a little problem where key ends in wildcard (i.e. entry.groupPattern!=NULL);
             // there we'd have to determine whether two *patterns* match. We resolve this
-            // by checking whether one pattern matcher the other as string, and vica versa.
+            // by checking whether one pattern matches the other one as string, and vica versa.
             const Group& group = it->second;
             for (int i=0; i<(int)group.entries.size(); i++)
             {
@@ -1065,6 +1065,14 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             }
         }
     }
+    return result;
+}
+
+std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const
+{
+    std::vector<const char *> result = getMatchingPerObjectConfigKeys(objectFullPath, keySuffixPattern);
+    for (int i=0; i<(int)result.size(); i++)
+        result[i] = partAfterLastDot(result[i]);
     return result;
 }
 

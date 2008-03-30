@@ -142,7 +142,7 @@ Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mess
         "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage recording the fields declared on the MyMessage class\n"
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not declaredOn(cObject))\": records user-defined fields from all messages");
 Register_PerObjectConfigEntry(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated.");
-//FIXME register "rng-*" ?
+Register_PerObjectConfigEntry(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
 
 
 //-------------------------------------------------------------
@@ -1225,26 +1225,25 @@ void TOmnetApp::getRNGMappingFor(cComponent *component)
 {
     cConfiguration *cfg = getConfig();
     std::string componentFullPath = component->fullPath();
-    //FIXME "rng-*" should be a cConfigKey ?
-    std::vector<const char *> keys = cfg->getMatchingPerObjectConfigKeys(componentFullPath.c_str(), "rng-*");
-    if (keys.size()==0)
+    std::vector<const char *> suffixes = cfg->getMatchingPerObjectConfigKeySuffixes(componentFullPath.c_str(), "rng-*"); // CFGID_RNG_K
+    if (suffixes.size()==0)
         return;
 
     // extract into tmpmap[]
     int mapsize=0;
     int tmpmap[100];
-    for (int i=0; i<(int)keys.size(); i+=2)
+    for (int i=0; i<(int)suffixes.size(); i++)
     {
-        //FIXME to be tested
-        const char *key = keys[i];
-        const char *value = cfg->getPerObjectConfigValue(componentFullPath.c_str(), key);
+        const char *suffix = suffixes[i];  // contains "rng-1", "rng-4" or whichever has been found in the config for this module/channel
+        const char *value = cfg->getPerObjectConfigValue(componentFullPath.c_str(), suffix);
+        ASSERT(value!=NULL);
         char *s1, *s2;
-        int modRng = strtol(key+strlen("rng-"), &s1, 10);
+        int modRng = strtol(suffix+strlen("rng-"), &s1, 10);
         int physRng = strtol(value, &s2, 10);
         if (*s1!='\0' || *s2!='\0')
-            throw cRuntimeError("Configuration error: rng-%s=%s of module/channel %s: "
+            throw cRuntimeError("Configuration error: %s=%s for module/channel %s: "
                                 "numeric RNG indices expected",
-                                key, value, component->fullPath().c_str());
+                                suffix, value, component->fullPath().c_str());
 
         if (physRng>numRNGs())
             throw cRuntimeError("Configuration error: rng-%d=%d of module/channel %s: "

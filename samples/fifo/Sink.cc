@@ -45,7 +45,7 @@ void Sink::handleMessage(cMessage *msg)
 
 void Sink::finish()
 {
-    ev << "Total jobs processed: " << qstats.samples() << endl;
+    ev << "Total jobs processed: " << qstats.count() << endl;
     ev << "Avg queueing time:    " << qstats.mean() << endl;
     ev << "Max queueing time:    " << qstats.max() << endl;
     ev << "Standard deviation:   " << qstats.stddev() << endl;

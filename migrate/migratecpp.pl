@@ -43,6 +43,9 @@ while (<LISTFILE>)
     $txt =~ s/\bgetTail\b/pop/mg;
     $txt =~ s/\btail\b/front/mg;
 
+    # cStatistic methods
+    $txt =~ s/\bsamples *\( *\)/count()/mg;
+
     # display string
     $txt =~ s/\bgetString\b/toString/mg;
 

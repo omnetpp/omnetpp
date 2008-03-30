@@ -355,6 +355,7 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/cpar.h \
   ../../include/cparimpl.h \
   ../../include/crng.h \
+  ../../include/cstatistic.h \
   ../../include/cconfiguration.h \
   ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
@@ -1435,6 +1436,7 @@ $O/cqueue.obj: cqueue.cc \
 $O/cregistrationlist.obj: cregistrationlist.cc \
   ../../include/cregistrationlist.h \
   ../../include/cexception.h \
+  ../../include/cownedobject.h \
   ../../include/simkerneldefs.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
@@ -1446,7 +1448,8 @@ $O/cregistrationlist.obj: cregistrationlist.cc \
   ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../../include/cenvir.h
 $O/cscheduler.obj: cscheduler.cc \
   ../../include/cscheduler.h \
   ../../include/cmessage.h \

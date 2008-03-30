@@ -7,7 +7,7 @@ simple Simple
 {
 }
 
-module Test
+network Test
 {
     submodules:
         a[5]: Simple;
@@ -60,24 +60,28 @@ num-rngs = 3
 *.a[*].rng-1 = 0
 *.a[1].rng-1 = 2   # should not affect anything
 
-%contains-regex: stdout
-a\[0\]\.rng-0 --> ev\.rng-1
-a\[0\]\.rng-1 --> ev\.rng-0
-a\[0\]\.rng-2 --> ev\.rng-2
-.*
-a\[1\]\.rng-0 --> ev\.rng-2
-a\[1\]\.rng-1 --> ev\.rng-0
-a\[1\]\.rng-2 --> ev\.rng-2
-.*
-a\[2\]\.rng-0 --> ev\.rng-2
-a\[2\]\.rng-1 --> ev\.rng-1
-a\[2\]\.rng-2 --> ev\.rng-2
-.*
-a\[3\]\.rng-0 --> ev\.rng-2
-a\[3\]\.rng-1 --> ev\.rng-0
-a\[3\]\.rng-2 --> ev\.rng-2
-.*
-a\[4\]\.rng-0 --> ev\.rng-2
-a\[4\]\.rng-1 --> ev\.rng-0
-a\[4\]\.rng-2 --> ev\.rng-2
+%contains: stdout
+a[0].rng-0 --> ev.rng-1
+a[0].rng-1 --> ev.rng-0
+a[0].rng-2 --> ev.rng-2
+
+%contains: stdout
+a[1].rng-0 --> ev.rng-2
+a[1].rng-1 --> ev.rng-0
+a[1].rng-2 --> ev.rng-2
+
+%contains: stdout
+a[2].rng-0 --> ev.rng-2
+a[2].rng-1 --> ev.rng-1
+a[2].rng-2 --> ev.rng-2
+
+%contains: stdout
+a[3].rng-0 --> ev.rng-2
+a[3].rng-1 --> ev.rng-0
+a[3].rng-2 --> ev.rng-2
+
+%contains: stdout
+a[4].rng-0 --> ev.rng-2
+a[4].rng-1 --> ev.rng-0
+a[4].rng-2 --> ev.rng-2
 

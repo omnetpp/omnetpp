@@ -302,6 +302,12 @@ class SIM_API cConfiguration : public cObject
      * objectFullPath may not contain wildcards.
      */
     virtual std::vector<const char *> getMatchingPerObjectConfigKeys(const char *objectFullPath, const char *keySuffixPattern) const = 0;
+
+    /**
+     * Like getMatchingPerObjectConfigKeys(), but returns the suffixes instead
+     * of the keys. Note: the result may contain duplicates.
+     */
+    virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const = 0;
     //@}
 
     /** @name Utility functions for parsing config entries */
