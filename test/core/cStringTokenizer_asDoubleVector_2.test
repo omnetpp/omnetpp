@@ -8,5 +8,5 @@ std::vector<double> v = cStringTokenizer(str).asDoubleVector();
 
 %exitcode: 1
 %contains: stdout
-Converting string to double vector: error at token '-0.11bubu'
+Converting string to a vector of doubles: error at token '-0.11bubu'
 

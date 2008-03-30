@@ -8,4 +8,4 @@ std::vector<int> v = cStringTokenizer(str).asIntVector();
 
 %exitcode: 1
 %contains: stdout
-Converting string to integer vector: error at token '46bubu'
+Converting string to a vector of ints: error at token '46bubu'

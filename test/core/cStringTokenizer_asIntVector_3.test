@@ -8,4 +8,4 @@ std::vector<int> v = cStringTokenizer(str).asIntVector();
 
 %exitcode: 1
 %contains: stdout
-Converting string to integer vector: '10987654321' does not fit into an int
+Converting string to a vector of ints: '10987654321' does not fit into an int
