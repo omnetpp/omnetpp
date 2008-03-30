@@ -207,6 +207,8 @@
 
 	- cStringTokenizer: added asIntVector() and asDoubleVector() methods; TODO testing
 
+	- cXMLElement, xmldoc(): mini-XPath expressions made more tolerant to whitespace
+
 	Configuration handling rewritten, including cConfiguration.
 
 	Run number handling:

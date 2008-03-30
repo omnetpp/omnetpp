@@ -41,8 +41,6 @@ static void getElement(const char *pathexpr)
 
 %activity:
 
-//__asm int 3;
-
 getElement(".");
 getElement("././.");
 
@@ -54,11 +52,11 @@ getElement("bar");
 getElement("nothing");
 
 getElement("bar[0]");
-getElement("bar[2]");
-getElement("bar[3]");
+getElement("bar[ 2]");
+getElement("bar[ 3 ]");  // with spaces
 
 getElement("bar[@color='green']");
-getElement("bar[@id='11']");
+getElement("bar[ @id = '11' ] ");  // with spaces
 getElement("bar[1]/bar[2]");
 
 getElement("*/bar[0]");
@@ -89,10 +87,10 @@ foo: 2
 bar: 3
 nothing: null
 bar[0]: 3
-bar[2]: 16
-bar[3]: null
+bar[ 2]: 16
+bar[ 3 ]: null
 bar[@color='green']: 11
-bar[@id='11']: 11
+bar[ @id = '11' ] : 11
 bar[1]/bar[2]: 15
 */bar[0]: 5
 foo/*: 7

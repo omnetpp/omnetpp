@@ -30,6 +30,14 @@ MiniXPath::MiniXPath(cXMLElement::ParamResolver *resolver)
     this->resolver = resolver;
 }
 
+inline void trim(const char *&s, const char *&end)
+{
+    while ((*s==' ' || *s=='\t') && s<=end)
+        s++;
+    while (end>s && (*(end-1)==' ' || *(end-1)=='\t'))
+        end--;
+}
+
 bool MiniXPath::parseTagNameFromStepExpr(std::string& tagname, const char *stepexpr, int len)
 {
     const char *lbracket = strchr(stepexpr, '[');
@@ -42,12 +50,16 @@ bool MiniXPath::parseTagNameFromStepExpr(std::string& tagname, const char *stepe
 
 bool MiniXPath::parseBracketedNum(int& n, const char *s, int len)
 {
-    if (*s!='[' || *(s+len-1)!=']')
+    const char *end = s+len;
+    trim(s, end);
+    if (*s!='[' || *(end-1)!=']')
         return false;
-    for (const char *s1=s+1; s1<s+len-1; s1++)
+    s++; end--; // cut brackets
+    trim(s, end);
+    for (const char *s1=s; s1<end; s1++)
         if (!opp_isdigit(*s1))
             return false;
-    n = atoi(s+1);
+    n = atoi(s);
     return true;
 }
 
@@ -55,19 +67,21 @@ bool MiniXPath::parseConstant(std::string& value, const char *s, int len)
 {
     // we get the part after the equal sign in "[@attrname=...]", try to
     // match 'value', "value" or $PARAM
-    if (*s=='\'' && *(s+len-1)=='\'')
+    const char *end = s+len;
+    trim(s, end);
+    if (*s=='\'' && *(end-1)=='\'')
     {
-        value.assign(s+1, len-2);
+        value.assign(s+1, end-s-2);
         return true;
     }
-    else if (*s=='"' && *(s+len-1)=='"')
+    else if (*s=='"' && *(end-1)=='"')
     {
-        value.assign(s+1, len-2);
+        value.assign(s+1, end-s-2);
         return true;
     }
     else if (*s=='$' && resolver!=NULL)
     {
-       return resolver->resolve(std::string(s+1,len-1).c_str(), value);
+        return resolver->resolve(std::string(s+1,end-s-1).c_str(), value);
     }
     return false;
 }
@@ -77,15 +91,21 @@ bool MiniXPath::parseBracketedAttrEquals(std::string& attr, std::string& value, 
     // try to match "[@attrname='value']"
     if (len<7)
         return false;
-    if (*s!='[' || *(s+len-1)!=']')
+    const char *end = s+len;
+    trim(s, end);
+    if (*s!='[' || *(end-1)!=']')
         return false;
-    if (*(s+1)!='@')
+    s++; end--; // cut brackets
+    trim(s, end);
+    if (*s!='@')
         return false;
-    const char *equalsign = strchr(s+2, '=');
-    if (!equalsign || equalsign-s>=len)
+    const char *equalsign = strchr(s+1, '=');
+    if (!equalsign || equalsign>=end)
         return false;
-    attr.assign(s+2, equalsign-s-2);
-    return parseConstant(value, equalsign+1, s+len-1-equalsign-1);
+    const char *endattr = equalsign;
+    trim(s, endattr);
+    attr.assign(s+1, endattr-s-1);
+    return parseConstant(value, equalsign+1, end-equalsign-1);
 }
 
 cXMLElement *MiniXPath::getFirstSiblingWithAttribute(cXMLElement *firstsibling, const char *tagname, const char *attr, const char *attrvalue)
