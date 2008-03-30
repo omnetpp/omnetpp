@@ -3,8 +3,12 @@ Test that the simulation exits gracefully if there's an error in the startup cod
 - exit code must be 1 (not zero and different from crash exit code)
 - nothing should be printed after "End run..." message and the error message (Note "$")
 
+IMPORTANT: This test must be run in isolation, because the startup error would appear
+in ALL test cases! See below:
+
 %global:
-EXECUTE_ON_STARTUP(  throw std::range_error("something bad happened");  );
+// UNCOMMENT THE NEXT LINE TO RUN THIS TEST:
+//EXECUTE_ON_STARTUP(  throw std::range_error("something bad happened");  );
 
 %activity:
 // nothing
