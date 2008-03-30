@@ -4,22 +4,17 @@ Test resolution of unqualified type names with "like" modules. It should:
  - and choose the one with the matching simple name
 
 %file: test.ned
-module DefaultPackageModule like test.IFooModule
-{
-}
+module DefaultPackageModule like test.IFooModule { }
 
 %file: chan/test.ned
 package chan;
-module ChanPackageModule like test.IFooModule
-{
-}
+
+module ChanPackageModule like test.IFooModule { }
 
 %file: test/test.ned
 package test;
 
-moduleinterface IFooModule
-{
-}
+moduleinterface IFooModule { }
 
 network Test
 {

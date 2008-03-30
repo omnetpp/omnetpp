@@ -1,0 +1,24 @@
+%description:
+Test "like" channels: "no such channel type"
+
+%file: test.ned
+
+channelinterface IFooChannel { }
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
+
+network Test
+{
+    parameters:
+        string channelType = "foo";
+    submodules:
+        a: Node;
+        b: Node;
+    connections allowunconnected:
+        a.out++ --> <channelType> like IFooChannel --> b.in++;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+[nN]o channel type named `foo'

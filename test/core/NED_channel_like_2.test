@@ -1,0 +1,37 @@
+%description:
+Test "like" channels with typename given as:
+ - volatile parameter (random)
+ - various expressions (containing random, index, etc)
+
+%file: test.ned
+
+import testlib.Dump;
+
+channelinterface IFooChannel { }
+channel Channel1 extends ned.BasicChannel like IFooChannel { }
+channel Channel2 extends ned.BasicChannel like IFooChannel { }
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
+
+network Test
+{
+    parameters:
+        volatile string randomTypeName = choose(intuniform(0,1), "Channel1 Channel2");
+        volatile int oneOrTwo = intuniform(0,1);
+    submodules:
+        a: Node;
+        b: Node;
+        dump: Dump;
+    connections allowunconnected:
+        a.out++ --> <"Channel1"> like IFooChannel --> b.in++;
+        a.out++ --> <"Chan" + "nel1"> like IFooChannel --> b.in++;
+        a.out++ --> <randomTypeName> like IFooChannel --> b.in++ for i=0..9;
+        a.out++ --> <"Channel"+string(oneOrTwo)> like IFooChannel --> b.in++ for i=0..9;
+        a.out++ --> <"Channel"+string(1+intuniform(0,1))> like IFooChannel --> b.in++ for i=0..9;
+}
+
+%exitcode: 0
+
+%contains: stdout
+TBD
+

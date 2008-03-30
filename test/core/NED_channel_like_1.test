@@ -1,0 +1,36 @@
+%description:
+Test resolution of unqualified type names with "like" channels. It should:
+ - search channel types that implement the specified interface
+ - and choose the one with the matching simple name
+
+%file: test.ned
+channel DefaultPackageChannel extends ned.BasicChannel like test.IFooChannel { }
+
+%file: chan/test.ned
+package chan;
+channel ChanPackageChannel extends ned.BasicChannel like test.IFooChannel { }
+
+%file: test/test.ned
+package test;
+
+channelinterface IFooChannel { }
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
+
+network Test
+{
+    parameters:
+        string channelType1 = "DefaultPackageChannel";
+        string channelType2 = "ChanPackageChannel";
+    submodules:
+        a: Node;
+        b: Node;
+    connections allowunconnected:
+        a.out++ --> <channelType1> like IFooChannel --> b.in++;
+        a.out++ --> <channelType2> like IFooChannel --> b.in++;
+}
+
+%exitcode: 0
+
+%network: test.Test
+

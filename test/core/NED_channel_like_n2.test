@@ -1,0 +1,24 @@
+%description:
+Test "like" channels: "given interface is not a channel interface"
+
+%file: test.ned
+
+moduleinterface IFoo { }
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
+
+network Test
+{
+    parameters:
+        string channelType = "foo";
+    submodules:
+        a: Node;
+        b: Node;
+    connections allowunconnected:
+        a.out++ --> <channelType> like IFoo --> b.in++;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+`IFoo' is not a channel interface

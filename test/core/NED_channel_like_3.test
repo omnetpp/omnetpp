@@ -1,0 +1,38 @@
+%description:
+Test "like" channels with typename given in the ini file,
+using the "type-name" config key.
+
+%file: test.ned
+
+import testlib.Dump;
+
+channelinterface IFooChannel { }
+channel Channel1 like IFooChannel { }
+channel Channel2 like IFooChannel { }
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
+
+network Test
+{
+    submodules:
+        a: Node;
+        b: Node;
+        dump: Dump;
+    connections allowunconnected:
+        a.out++ --> <> like IFooChannel --> b.in++;
+        a.out++ --> <> like IFooChannel --> b.in++;
+        a.out++ --> <> like IFooChannel --> b.in++;
+}
+
+%exitcode: 0
+
+%inifile: test.ini
+[General]
+#debug-on-errors = true
+network = Test
+cmdenv-express-mode = false
+Test.a.out[0].channel.type-name = Channel1
+Test.a.out[*].channel.type-name = Channel2
+
+%contains: stdout
+TBD

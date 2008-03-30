@@ -3,9 +3,7 @@ Test "like" submodules: "no such module type"
 
 %file: test.ned
 
-moduleinterface IFooModule
-{
-}
+moduleinterface IFooModule { }
 
 network Test
 {

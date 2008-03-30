@@ -6,24 +6,18 @@ package package1;
 
 import IFooModule;
 
-module FooModule like IFooModule
-{
-}
+module FooModule like IFooModule { }
 
 %file: package2/test.ned
 package package2;
 
 import IFooModule;
 
-module FooModule like IFooModule
-{
-}
+module FooModule like IFooModule { }
 
 %file: test.ned
 
-moduleinterface IFooModule
-{
-}
+moduleinterface IFooModule { }
 
 network Test
 {

@@ -1,0 +1,38 @@
+%description:
+Test "like" submodules: "ambiguous channel type"
+
+%file: package1/test.ned
+package package1;
+
+import IFooChannel;
+
+channel FooChannel like IFooChannel { }
+
+%file: package2/test.ned
+package package2;
+
+import IFooChannel;
+
+channel FooChannel like IFooChannel { }
+
+%file: test.ned
+
+channelinterface IFooChannel { }
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
+
+network Test
+{
+    parameters:
+        string channelType = "FooChannel";
+    submodules:
+        a: Node;
+        b: Node;
+    connections allowunconnected:
+        a.out++ --> <channelType> like IFooChannel --> b.in++;
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+[Mm]ore than one channel types named `FooChannel'
