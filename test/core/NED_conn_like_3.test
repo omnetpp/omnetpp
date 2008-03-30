@@ -1,0 +1,54 @@
+%description:
+Test "like" channels with typename given in the ini file,
+using the "type-name" config key.
+
+%file: test.ned
+
+import testlib.Dump;
+
+channelinterface IFooChannel { }
+channel Channel1 extends ned.IdealChannel like IFooChannel { }
+channel Channel2 extends ned.IdealChannel like IFooChannel { }
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
+
+network Test
+{
+    submodules:
+        a: Node;
+        b: Node;
+        dump: Dump;
+    connections allowunconnected:
+        a.out++ --> <> like IFooChannel --> b.in++;
+        a.out++ --> <> like IFooChannel --> b.in++;
+        a.out++ --> <> like IFooChannel --> b.in++;
+}
+
+%exitcode: 0
+
+%inifile: test.ini
+[General]
+#debug-on-errors = true
+network = Test
+cmdenv-express-mode = false
+Test.a.out[0].channel.type-name = Channel1
+Test.a.out[*].channel.type-name = Channel2
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.a: Node {
+            gates:
+                 0 out[0]: --> b.in[0], Channel1
+                 1 out[1]: --> b.in[1], Channel2
+                 2 out[2]: --> b.in[2], Channel2
+        }
+        module Test.b: Node {
+            gates:
+                 0 in[0]: <-- a.out[0], Channel1
+                 1 in[1]: <-- a.out[1], Channel2
+                 2 in[2]: <-- a.out[2], Channel2
+        }
+}
