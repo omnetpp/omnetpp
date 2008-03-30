@@ -6,7 +6,7 @@ package package1;
 
 import IFooChannel;
 
-channel FooChannel like IFooChannel { }
+channel FooChannel extends ned.IdealChannel like IFooChannel { }
 
 %file: package2/test.ned
 package package2;

@@ -15,7 +15,7 @@ network Test
 {
     parameters:
         volatile string randomTypeName = choose(intuniform(0,1), "Compound1 Compound2");
-        volatile int oneOrTwo = intuniform(0,1);
+        volatile int oneOrTwo = intuniform(1,2);
     submodules:
         a: <"Compound1"> like IFooModule;
         b: <"Compo" + "und1"> like IFooModule;
@@ -31,5 +31,75 @@ network Test
 %exitcode: 0
 
 %contains: stdout
-TBD
+module Test: Test {
+    parameters:
+        @isNetwork
+        randomTypeName = choose(intuniform(0, 1), "Compound1 Compound2")
+        oneOrTwo = intuniform(1, 2)
+    submodules:
+        module Test.a: Compound1 {
+        }
+        module Test.b: Compound1 {
+        }
+        module Test.c[0]: Compound1 {
+        }
+        module Test.c[1]: Compound2 {
+        }
+        module Test.c[2]: Compound2 {
+        }
+        module Test.c[3]: Compound1 {
+        }
+        module Test.c[4]: Compound2 {
+        }
+        module Test.c[5]: Compound2 {
+        }
+        module Test.c[6]: Compound2 {
+        }
+        module Test.c[7]: Compound2 {
+        }
+        module Test.c[8]: Compound2 {
+        }
+        module Test.c[9]: Compound2 {
+        }
+        module Test.d[0]: Compound2 {
+        }
+        module Test.d[1]: Compound1 {
+        }
+        module Test.d[2]: Compound1 {
+        }
+        module Test.d[3]: Compound2 {
+        }
+        module Test.d[4]: Compound1 {
+        }
+        module Test.d[5]: Compound1 {
+        }
+        module Test.d[6]: Compound1 {
+        }
+        module Test.d[7]: Compound1 {
+        }
+        module Test.d[8]: Compound1 {
+        }
+        module Test.d[9]: Compound2 {
+        }
+        module Test.e[0]: Compound1 {
+        }
+        module Test.e[1]: Compound2 {
+        }
+        module Test.e[2]: Compound2 {
+        }
+        module Test.e[3]: Compound1 {
+        }
+        module Test.e[4]: Compound1 {
+        }
+        module Test.e[5]: Compound2 {
+        }
+        module Test.e[6]: Compound2 {
+        }
+        module Test.e[7]: Compound2 {
+        }
+        module Test.e[8]: Compound2 {
+        }
+        module Test.e[9]: Compound1 {
+        }
+}
 

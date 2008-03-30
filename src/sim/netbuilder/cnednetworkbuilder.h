@@ -97,8 +97,8 @@ class SIM_API cNEDNetworkBuilder
                        const char *gatename, ExpressionElement *gateindexp, bool isplusplus,
                        cGate *&gate1, cGate *&gate2);
     cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionElement *modindexp);
-    std::string getChannelTypeName(cModule *modp, ChannelSpecElement *channelspec, const char *channelname);
-    cChannel *createChannel(ChannelSpecElement *channelspec, cModule *parentmodp);
+    std::string getChannelTypeName(cModule *modp, cGate *srcgate, ChannelSpecElement *channelspec, const char *channelname);
+    cChannel *createChannel(ChannelSpecElement *channelspec, cModule *parentmodp, cGate *srcgate);
 
     cChannelType *findAndCheckChannelType(const char *channeltypename, cModule *modp);
     cChannelType *findAndCheckChannelTypeLike(const char *channeltypename, const char *likeType, cModule *modp);

@@ -691,7 +691,7 @@ void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg
     }
     else
     {
-        cChannel *channel = createChannel(channelspec, modp);
+        cChannel *channel = createChannel(channelspec, modp, srcg);
         srcg->connectTo(destg, channel);
         assignSubcomponentParams(channel, channelspec);
         channel->finalizeParameters();
@@ -818,7 +818,7 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
     }
 }
 
-std::string cNEDNetworkBuilder::getChannelTypeName(cModule *modp, ChannelSpecElement *channelspec, const char *channelname)
+std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcgate, ChannelSpecElement *channelspec, const char *channelname)
 {
     std::string channeltypename;
     if (opp_isempty(channelspec->getLikeType())) {
@@ -829,17 +829,17 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *modp, ChannelSpecEle
     {
         // type may be given either in ExpressionElement child or "like-param" attribute
         if (!opp_isempty(channelspec->getLikeParam())) {
-            channeltypename = modp->par(channelspec->getLikeParam()).stringValue();
+            channeltypename = parentmodp->par(channelspec->getLikeParam()).stringValue();
         }
         else {
             ExpressionElement *likeParamExpr = findExpression(channelspec, "like-param");
             if (likeParamExpr)
-                channeltypename = evaluateAsString(likeParamExpr, modp, false);
+                channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
             else {
-                std::string key = modp->fullPath() + "." + channelname;
+                std::string key = srcgate->fullPath() + "." + channelname;
                 channeltypename = ev.config()->getAsString(key.c_str(), CFGID_TYPE_NAME);
                 if (channeltypename.empty())
-                    throw cRuntimeError(modp, "Unable to determine type name for channel: missing config entry %s.%s", key.c_str(), CFGID_TYPE_NAME->name());
+                    throw cRuntimeError(parentmodp, "Unable to determine type name for channel: missing config entry %s.%s", key.c_str(), CFGID_TYPE_NAME->name());
             }
         }
     }
@@ -847,13 +847,13 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *modp, ChannelSpecEle
     return channeltypename;
 }
 
-cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecElement *channelspec, cModule *parentmodp)
+cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecElement *channelspec, cModule *parentmodp, cGate *srcgate)
 {
     // resolve channel type
     const char *channelname = "channel";
     cChannelType *channeltype;
     try {
-        std::string channeltypename = getChannelTypeName(parentmodp, channelspec, channelname);
+        std::string channeltypename = getChannelTypeName(parentmodp, srcgate, channelspec, channelname);
         bool usesLike = !opp_isempty(channelspec->getLikeType());
         channeltype = usesLike ?
             findAndCheckChannelTypeLike(channeltypename.c_str(), channelspec->getLikeType(), parentmodp) :

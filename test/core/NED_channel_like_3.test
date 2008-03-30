@@ -7,8 +7,8 @@ using the "type-name" config key.
 import testlib.Dump;
 
 channelinterface IFooChannel { }
-channel Channel1 like IFooChannel { }
-channel Channel2 like IFooChannel { }
+channel Channel1 extends ned.IdealChannel like IFooChannel { }
+channel Channel2 extends ned.IdealChannel like IFooChannel { }
 
 module Node { gates: input in[]; output out[]; connections allowunconnected: }
 
@@ -35,4 +35,20 @@ Test.a.out[0].channel.type-name = Channel1
 Test.a.out[*].channel.type-name = Channel2
 
 %contains: stdout
-TBD
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.a: Node {
+            gates:
+                 0 out[0]: --> b.in[0], Channel1
+                 1 out[1]: --> b.in[1], Channel2
+                 2 out[2]: --> b.in[2], Channel2
+        }
+        module Test.b: Node {
+            gates:
+                 0 in[0]: <-- a.out[0], Channel1
+                 1 in[1]: <-- a.out[1], Channel2
+                 2 in[2]: <-- a.out[2], Channel2
+        }
+}

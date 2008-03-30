@@ -39,4 +39,6 @@ void Test::activity()
 }; //namespace
 
 %contains: stdout
-TBD
+rnd=10
+str=foo8
+.

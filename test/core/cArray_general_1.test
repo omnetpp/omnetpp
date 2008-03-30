@@ -1,6 +1,6 @@
 %description:
 basic positive check for cArray's add(cObject *), get(...), operator[](...),
-exist(...), ownership mgmt, items(), remove(...)
+exist(...), ownership mgmt, size(), remove(...)
 
 not tested here: 'holes' in array, clear(), addAt(..), set(..), remove-add-remove cycles
 
@@ -25,7 +25,7 @@ for (i=0; i<100; i++)
 }
 
 // test if they were added correctly
-CHECK(a.items()==100);
+CHECK(a.size()==100);
 for (i=0; i<100; i++)
 {
     cMessage *msg = msgs[i];

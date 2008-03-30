@@ -1,9 +1,9 @@
 %description:
-cArray: if you remove items at the end of the container, items() decreases accordingly.
+cArray: if you remove items at the end of the container, size() decreases accordingly.
 
 %activity:
 
-#define REMOVE(i)  a.remove(i); ev << "removed " << i << ", size=" << a.items() << "\n";
+#define REMOVE(i)  a.remove(i); ev << "removed " << i << ", size=" << a.size() << "\n";
 cArray a;
 
 int i;

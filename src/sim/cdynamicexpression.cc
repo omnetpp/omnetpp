@@ -242,11 +242,30 @@ cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
 
 #define ulong(x) ((unsigned long)(x))
 
+
 static const int stksize = 20;
-static cDynamicExpression::Value stk[stksize];  // made static to avoid call to Value ctor stksize times FIXME THIS IS NOT REENTRANT!!!
+
+// we have a static stack to avoid new[] and call to Value ctor stksize times
+static cDynamicExpression::Value _stk[stksize];
+static bool _stkinuse = false;
 
 cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) const
 {
+    // use static _stk[] if possible, or allocate another one if that's in use.
+    // Note: this will be reentrant but NOT thread safe
+    Value *stk;
+    if (_stkinuse)
+        stk = new Value[stksize];
+    else {
+        _stkinuse = true;
+        stk = _stk;
+    }
+    struct Finally {
+        Value *stk;
+        Finally(Value *stk) { this->stk = stk; }
+        ~Finally() { if (stk==_stk) _stkinuse = false; else delete[] stk; }
+    } f(stk);
+
     //printf("    evaluating: %s\n", toString().c_str()); //XXX
     int tos = -1;
     for (int i = 0; i < size; i++)

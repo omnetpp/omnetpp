@@ -4,11 +4,11 @@ Test resolution of unqualified type names with "like" channels. It should:
  - and choose the one with the matching simple name
 
 %file: test.ned
-channel DefaultPackageChannel extends ned.BasicChannel like test.IFooChannel { }
+channel DefaultPackageChannel extends ned.IdealChannel like test.IFooChannel { }
 
 %file: chan/test.ned
 package chan;
-channel ChanPackageChannel extends ned.BasicChannel like test.IFooChannel { }
+channel ChanPackageChannel extends ned.IdealChannel like test.IFooChannel { }
 
 %file: test/test.ned
 package test;
