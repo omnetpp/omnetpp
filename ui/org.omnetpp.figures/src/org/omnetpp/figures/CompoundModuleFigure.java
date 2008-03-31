@@ -59,27 +59,17 @@ public class CompoundModuleFigure extends NedFigure
     class BackgroundLayer extends FreeformLayer {
 		@Override
 		protected void paintFigure(Graphics graphics) {
-        	graphics.pushState();
+			graphics.pushState();
 
-        	// get the size of the viewport (which is actually the module size)
-	        Rectangle viewportRect = new Rectangle(new Point(0,0), mainContainer.getSize());
-
-	        // draw outer non playground area
-	        Pattern nonplayPattern = new Pattern(null, 0,0,5,5, moduleBackgroundColor, moduleBorderColor);
-	        graphics.setBackgroundColor(moduleBackgroundColor);
-	        // WARNING only the default SWT graphics implements this method
-	        // if we are using ScaledGrahics we should not use it.
-	        // TODO look for other effect to show non-play area which is more scale friendly
-	        if (graphics instanceof SWTGraphics)
-	        	graphics.setBackgroundPattern(nonplayPattern);
-
+            // draw outer non playground area
+	        graphics.setBackgroundColor(ColorFactory.DARK_GREY);
 	        graphics.fillRectangle(getClientArea());
 
+	        // get the size of the viewport (which is actually the module size)
+	        Rectangle viewportRect = new Rectangle(new Point(0,0), mainContainer.getSize());
 	        // draw a solid background
-	        if (moduleBackgroundColor != null) {
-	        	graphics.setBackgroundColor(moduleBackgroundColor);
-	        	graphics.fillRectangle(viewportRect);
-	        }
+	        graphics.setBackgroundColor(moduleBackgroundColor);
+	        graphics.fillRectangle(viewportRect);
 
 	        // draw and clip background image
 	        graphics.clipRect(viewportRect);
@@ -127,9 +117,10 @@ public class CompoundModuleFigure extends NedFigure
 	        	}
 	        }
 	        // restore the graphics state
-        	graphics.popState();
+      	graphics.popState();
 		}
 
+		
     }
 
     // main layer used to display submodules
