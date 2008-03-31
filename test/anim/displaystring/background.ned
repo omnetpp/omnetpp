@@ -1,5 +1,3 @@
-import "dummy";
-
 module Background
 {
     parameters:

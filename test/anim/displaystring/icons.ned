@@ -1,5 +1,3 @@
-import "dummy";
-
 module Icons
 {
     @display("bgb=623,383");

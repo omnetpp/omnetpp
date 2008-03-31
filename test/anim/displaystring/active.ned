@@ -1,5 +1,3 @@
-import "dummy";
-
 simple Gen
 {
     parameters:

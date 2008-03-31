@@ -1,11 +1,3 @@
-import "colors";
-import "icons";
-import "active";
-import "textandtooltip";
-import "conntextandtooltip";
-import "nedparams";
-import "background";
-
 network DisplayStringTest
 {
     @display("bgb=377,329");

@@ -1,5 +1,3 @@
-import "dummy";
-
 module ConnTextAndTooltip
 {
     @display("bgb=654,387");

@@ -1,5 +1,3 @@
-import "dummy";
-
 module Colors
 {
     submodules:

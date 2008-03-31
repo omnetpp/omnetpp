@@ -1,7 +1,3 @@
-//
-// TODO Place comment here
-//
-
 module scaling
 {
     parameters:

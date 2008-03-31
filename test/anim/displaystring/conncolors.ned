@@ -1,5 +1,3 @@
-import "dummy";
-
 module ConnColors
 {
     @display("bgb=779,384");

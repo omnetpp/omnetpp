@@ -1,6 +1,3 @@
-import "dummy";
-import "icons";
-
 module TextAndTooltip
 {
     @display("bgb=517,387");
