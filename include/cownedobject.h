@@ -302,9 +302,12 @@ class SIM_API cStaticFlag
 {
   private:
     static bool staticflag;  // set to true while in main()
+    static bool exitingflag; // set on getting a TERM or INT signal (Windows)
   public:
     cStaticFlag()  {staticflag = true;}
     ~cStaticFlag() {staticflag = false;}
+    static void setExiting() {exitingflag = true;}
+    static bool exiting() {return exitingflag;}
     static bool isSet() {return staticflag;}
 };
 

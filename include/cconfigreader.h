@@ -15,6 +15,7 @@
 #ifndef CCONFIGREADER_H_
 #define CCONFIGREADER_H_
 
+#include "simkerneldefs.h"
 
 /**
  * Abstract base class for configuration readers for SectionBasedConfiguration.

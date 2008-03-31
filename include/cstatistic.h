@@ -134,17 +134,14 @@ class SIM_API cStatistic : public cOwnedObject
     virtual long count() const = 0;
 
     /**
-     * Returns the sum of weights.
-     */
-    virtual double weights() const = 0;
-
-    /**
      * Returns the sum of the values.
+     * @see weightedSum()
      */
     virtual double sum() const = 0;
 
     /**
-     * Returns the squared sum of the values.
+     * Returns the sum of the squared values.
+     * @see weightedSqrSum()
      */
     virtual double sqrSum() const = 0;
 
@@ -159,19 +156,42 @@ class SIM_API cStatistic : public cOwnedObject
     virtual double max() const = 0;
 
     /**
-     * Returns the mean of the observations.
+     * Returns the mean of the (weighted) observations.
      */
     virtual double mean() const = 0;
 
     /**
-     * Returns the standard deviation of the observations.
+     * Returns the standard deviation of the (weighted) observations.
      */
     virtual double stddev() const = 0;
 
     /**
-     * Returns the variance of the observations.
+     * Returns the variance of the (weighted) observations.
      */
     virtual double variance() const = 0;
+    //@}
+
+    /** @name Weighted statistics. */
+    //@{
+    /**
+     * Returns the sum of weights.
+     */
+    virtual double weights() const = 0;
+
+    /**
+     * Returns the sum of weight*value products.
+     */
+    virtual double weightedSum() const = 0;
+
+    /**
+     * Returns the sum of squared weights.
+     */
+    virtual double sqrSumWeights() const = 0;
+
+    /**
+     * Returns the sum of weight*value*value products.
+     */
+    virtual double weightedSqrSum() const = 0;
     //@}
 
     /** @name Transient and result accuracy detection. */
@@ -197,7 +217,7 @@ class SIM_API cStatistic : public cOwnedObject
     /**
      * Returns the assigned transient and accuracy detection objects.
      */
-    cAccuracyDetection  *accuracyDetectionObject() const   {return ra;}
+    cAccuracyDetection  *accuracyDetectionObject() const  {return ra;}
     //@}
 
     /** @name Generating random numbers based on the collected data */

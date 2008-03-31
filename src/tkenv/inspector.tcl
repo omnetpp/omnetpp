@@ -536,7 +536,7 @@ proc get_help_tip {w x y item} {
           if {[lsearch $tags "modname"] == -1} {
              set dispstr ""
              catch { set dispstr [opp_getobjectfield $ptr displayString] }
-             set tt_tag [opp_displaystring $dispstr getTagArg "bgtt" 0]
+             set tt_tag [opp_displaystring $dispstr getTagArg "tt" 0]
           } else {
              # if it has tag "modname", it is the enclosing module
              set dispstr ""

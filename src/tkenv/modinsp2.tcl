@@ -274,7 +274,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
        }
 
        # text (t=<text>,<position>,<color>); multiple t tags supported (t1,t2,etc)
-       foreach {ttag} [array names tags -regexp {t\d*} ] {
+       foreach {ttag} [array names tags -regexp {^t\d*$} ] {
            set txt [lindex $tags($ttag) 0]
            set pos [lindex $tags($ttag) 1]
            if {$pos == ""} {set pos "t"}
@@ -305,7 +305,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
-       foreach {rtag} [array names tags -regexp {r\d*} ] {
+       foreach {rtag} [array names tags -regexp {^r\d*$} ] {
            set radius [lindex $tags($rtag) 0]
            if {$radius == ""} {set radius 0}
            set rfill [lindex $tags($rtag) 1]
@@ -500,7 +500,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
        }
 
        # text: bgt=<x>,<y>,<text>,<color>; multiple bgt tags supported (bgt1,bgt2,etc)
-       foreach {bgttag} [array names tags -regexp {bgt\d*} ] {
+       foreach {bgttag} [array names tags -regexp {^bgt\d*$} ] {
            set x [lindex $tags($bgttag) 0]
            set y [lindex $tags($bgttag) 1]
            if {$x==""} {set x 0}

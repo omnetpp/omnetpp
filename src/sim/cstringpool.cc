@@ -27,17 +27,20 @@ cStringPool::~cStringPool()
     // do not release strings -- clients are supposed to call releaseString()
     // for their strings, so cStringPool gets empty by itself.
 #ifndef NDEBUG
-    dump();
+    // dump unreleased strings, except after Ctrl+C on Windows
+    if (!cStaticFlag::exiting())
+        dump();
 #endif
     alive = false;
 }
 
 void cStringPool::dump() const
 {
-    if (!pool.empty()) {
-        printf("stringpool contents%s:\n", cStaticFlag::isSet() ? "" : " (after returning from main())");
+    if (!pool.empty())
+    {
+        printf("stringpool contents:\n");
         for (StringIntMap::const_iterator it = pool.begin(); it!=pool.end(); ++it)
-            printf("  \"%s\" %p (%d ref(s))\n", it->first, it->first, it->second);
+            printf("  \"%s\" %p, %d ref(s)\n", it->first, it->first, it->second);
     }
 }
 
@@ -88,9 +91,9 @@ void cStringPool::release(const char *s)
     StringIntMap::iterator it = pool.find(const_cast<char *>(s));
 
     // sanity checks
-    if (it==pool.end()) 
+    if (it==pool.end())
         {fprintf(stderr, "ERROR: cStringPool::release(): string %p \"%s\" not in stringpool\n", s, s); return;}
-    if (it->first!=s) 
+    if (it->first!=s)
         {fprintf(stderr, "ERROR: cStringPool::release(): wrong string pointer %p \"%s\", stringpool has a different copy of the same string\n", s, s); return;}
 
     // decrement refcount or release string

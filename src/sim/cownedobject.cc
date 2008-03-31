@@ -35,6 +35,7 @@ NAMESPACE_BEGIN
 using std::ostream;
 
 bool cStaticFlag::staticflag;
+bool cStaticFlag::exitingflag;
 
 Register_Class(cOwnedObject);
 
@@ -57,7 +58,6 @@ void printAllObjects()
 cDefaultList *cOwnedObject::defaultowner = &defaultList;
 long cOwnedObject::total_objs = 0;
 long cOwnedObject::live_objs = 0;
-
 
 cDefaultList defaultList;
 

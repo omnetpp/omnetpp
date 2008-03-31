@@ -119,11 +119,6 @@ class SIM_API cStdDev : public cStatistic
     virtual long count() const  {return num_vals;}
 
     /**
-     * Returns the sum of weights of the observations collected.
-     */
-    virtual double weights() const  {return num_vals;}
-
-    /**
      * Returns the sum of the values.
      */
     virtual double sum() const  {return sum_vals;}
@@ -158,6 +153,29 @@ class SIM_API cStdDev : public cStatistic
      * Returns the variance of the observations collected.
      */
     virtual double variance() const;
+
+    /**
+     * Since this is unweighted statistics, the sum of weights is count().
+     */
+    virtual double weights() const  {return count();}
+
+    /**
+     * Since this is unweighted statistics, the sum of weight*value products
+     * is sum().
+     */
+    virtual double weightedSum() const  {return sum();}
+
+    /**
+     * Since this is unweighted statistics, the sum of squared weights
+     * is count().
+     */
+    virtual double sqrSumWeights() const  {return count();}
+
+    /**
+     * Since this is unweighted statistics, the sum of weight*value*value
+     * products is sqrSum().
+     */
+    virtual double weightedSqrSum() const  {return sqrSum();}
 
     /**
      * Returns numbers from a normal distribution with the current mean and
@@ -297,11 +315,6 @@ class SIM_API cWeightedStdDev : public cStdDev
     virtual void clearResult();
 
     /**
-     * Returns the sum of weights of the observations collected.
-     */
-    virtual double weights() const {return sum_weights;}
-
-    /**
      * Returns the mean of the observations collected.
      * Returns 0.0 if nothing was collected yet.
      */
@@ -311,6 +324,26 @@ class SIM_API cWeightedStdDev : public cStdDev
      * Returns the variance of the observations collected.
      */
     virtual double variance() const;
+
+    /**
+     * Returns the sum of weights.
+     */
+    virtual double weights() const  {return sum_weights;}
+
+    /**
+     * Returns the sum of weight*value products.
+     */
+    virtual double weightedSum() const  {return sum_weighted_vals;}
+
+    /**
+     * Returns the sum of squared weights.
+     */
+    virtual double sqrSumWeights() const  {return sum_squared_weights;}
+
+    /**
+     * Returns the sum of weight*value*value products.
+     */
+    virtual double weightedSqrSum() const  {return sum_weights_squared_vals;}
 
     /**
      * Writes the contents of the object into a text file.

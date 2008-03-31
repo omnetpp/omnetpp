@@ -19,6 +19,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <stdio.h>
 #include <string>
 
@@ -142,6 +143,12 @@ TOmnetTkApp::~TOmnetTkApp()
 {
 }
 
+static void signalHandler(int signum)
+{
+   cStaticFlag::setExiting();
+   exit(2);
+}
+
 void TOmnetTkApp::setup()
 {
     // initialize base class
@@ -151,6 +158,10 @@ void TOmnetTkApp::setup()
 
     try
     {
+        // set signal handler
+        signal(SIGINT, signalHandler);
+        signal(SIGTERM, signalHandler);
+
         // path for the Tcl user interface files
 #ifdef OMNETPP_TKENV_DIR
         tkenv_dir = getenv("OMNETPP_TKENV_DIR");

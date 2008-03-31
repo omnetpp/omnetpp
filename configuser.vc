@@ -20,6 +20,12 @@ OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 OMNETPP_VERSION=omnetpp-4.0a4
 
 #
+# Choose build mode. The default is "debug" for models.
+#
+#MODE=debug
+#MODE=release
+
+#
 # If you have the external dependencies (Tcl/Tk, LibXML, MPI, etc) under a
 # common Unix-like directory tree (<dir>/include, <dir>/lib, etc.), you
 # can specify it here as OPT_DIR, thereby simplifying the rest of this
