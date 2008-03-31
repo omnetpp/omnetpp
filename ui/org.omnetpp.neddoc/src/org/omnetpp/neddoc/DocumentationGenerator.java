@@ -1479,7 +1479,7 @@ public class DocumentationGenerator {
             DotGraph dot = new DotGraph();
 
             dot.append("digraph opp {\r\n" +
-                       "   node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled];\r\n");
+                       "   node [fontsize=10,fontname=Helvetica,shape=box,height=.25,style=filled];\r\n");
 
             for (ITypeElement typeElement : typeElements) {
                 dot.appendNode(typeElement, typeElements.size() == 1);
@@ -1531,7 +1531,7 @@ public class DocumentationGenerator {
 
             dot.append("digraph opp {\r\n" +
                        "   rankdir = BT;" +
-            		   "   node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled];\r\n" +
+            		   "   node [fontsize=10,fontname=Helvetica,shape=box,height=.25,style=filled];\r\n" +
             		   "   edge [arrowhead=empty,arrowtail=none];\r\n");
 
             for (ITypeElement typeElement : typeElements) {
