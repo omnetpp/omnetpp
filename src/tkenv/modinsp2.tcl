@@ -360,7 +360,10 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
        # lower all range indicators below the icons
        $c lower "range"
 
-       get_parsed_display_string $dispstr tags [winfo toplevel $c] $ptr 0
+       # parse display string. note: we need "1" as last parameter (search
+       # for $params in parent module too), because all tags get resolved
+       # not only bg* ones.
+       get_parsed_display_string $dispstr tags [winfo toplevel $c] $ptr 1
 
        # determine top-left origin
        if {![info exists tags(bgp)]} {set tags(bgp) {}}
