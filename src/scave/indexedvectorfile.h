@@ -159,7 +159,10 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
         void writeBufferToFile(VectorInputPort *port);
         void writeIndex(VectorInputPort *port);
     private:
+#ifndef SWIG
+        // FIXME swig 1.3.33 cannot parse this (even tough this class is ignored in scave.i)
         void bufferPrintf(VectorInputPort *port, const char *format...);
+#endif	
 };
 
 class SCAVE_API IndexedVectorFileWriterNodeType : public NodeType
