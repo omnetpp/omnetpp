@@ -182,7 +182,11 @@ else
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         LIB_PREFIX=""
         ;;
-    *linux*)
+    x86_64-*-linux*)
+        jni_platform=linux
+        ECLIPSE_PLATFORM=linux.x86_64
+        ;; 
+    *-linux*)
         jni_platform=linux
         ECLIPSE_PLATFORM=linux.x86
         ;; 
@@ -191,7 +195,7 @@ else
         ECLIPSE_PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
         SHLIB_LD=${SHLIB_LD:-g++ -dynamiclib}
-        JNI_LIB_SUFFIX=.jnilib
+        JNI_LIB_SUFFIX=".jnilib"
         if test "$BUILD_UNIVERSAL_BINARIES" == "yes"; then
            CFLAGS_ARCH="-arch ppc -arch i386"
            LDFLAGS_ARCH="-arch ppc -arch i386"
@@ -202,7 +206,7 @@ else
     esac
 fi
 
-JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-.$SHARED_LIB_SUFFIX}
+JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
 
 # total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
 CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
@@ -770,7 +774,7 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 
 if test "$JAVA_CFLAGS" = ""; then
    if test "$JDK" = ""; then
-     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-5-sun /usr/java/jdk /System/Library/Frameworks/JavaVM.framework/Home"
+     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-1.6.0-sun /usr/lib/jvm/java-5-sun /usr/lib/jvm/java-1.5.0-sun /usr/java/jdk /System/Library/Frameworks/JavaVM.framework/Home"
      for dir in $javahome_candidates; do
          if test "$JAVA_HOME" = "" -a -d "$dir"; then
              JAVA_HOME=$dir
