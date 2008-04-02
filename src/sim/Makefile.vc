@@ -23,13 +23,13 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
 #COPTS=/C /P $(COPTS)
-IMPLIBS=$O/../envir/envir$D.lib $O/../common/common$D.lib
+IMPLIBS=$O/../common/common$D.lib
 
 OBJS_STD=\
     $O/carray.obj $O/cbasicchannel.obj $O/cboolparimpl.obj $O/cchannel.obj \
     $O/cclassfactory.obj $O/ccomponent.obj $O/ccomponenttype.obj $O/cconfiguration.obj $O/cconfigkey.obj \
     $O/ccompoundmodule.obj $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
-    $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj \
+    $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
     $O/cenum.obj $O/cexception.obj $O/cfsm.obj $O/cmathfunction.obj $O/cgate.obj $O/chistogram.obj \
     $O/cksplit.obj $O/clcg32.obj $O/clinkedlist.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
     $O/cmessage.obj $O/cmsgpar.obj $O/cmodule.obj $O/cmessageheap.obj $O/chasher.obj \
@@ -682,6 +682,15 @@ $O/cenum.obj: cenum.cc \
   ../../include/regmacros.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
+$O/cenvir.obj: cenvir.cc \
+  ../../include/cenvir.h \
+  ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/errmsg.h
 $O/cexception.obj: cexception.cc \
   ../../include/cexception.h \
   ../../include/csimulation.h \

@@ -23,6 +23,7 @@
 
 #include "tkdefs.h"
 #include "omnetapp.h"
+#include "cenvirimpl.h"
 #include "cchannel.h"
 #include "cmodule.h"
 
@@ -232,7 +233,7 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
  */
 inline TOmnetTkApp *getTkApplication()
 {
-    return (TOmnetTkApp *)(ev.app);
+    return (TOmnetTkApp *)(((cEnvirImpl&)ev).app);
 }
 
 NAMESPACE_END

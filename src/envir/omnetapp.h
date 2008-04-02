@@ -24,7 +24,7 @@
 #include "cenvir.h"
 #include "cexception.h"
 #include "args.h"
-#include "envdefs.h"
+#include "envirdefs.h"
 #include "envirext.h"
 #include "cconfiguration.h"
 #include "timeutil.h"

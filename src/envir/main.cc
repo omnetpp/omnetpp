@@ -16,7 +16,7 @@
 
 #include <stdio.h>
 #include "cownedobject.h"
-#include "cenvir.h"
+#include "cenvirimpl.h"
 #include "../utils/ver.h"
 
 USING_NAMESPACE
@@ -33,9 +33,13 @@ ENVIR_API int main(int argc, char *argv[])
     printf("Release: " OMNETPP_RELEASE ", edition: " OMNETPP_EDITION "\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
+    cEnvirImpl *env = new cEnvirImpl();
+    evPtr = env;
     ev.setup(argc,argv);
     int ret = ev.run();
     ev.shutdown();
+    //XXX delete env;
+    //XXX evPtr = NULL;
 
     printf("\nEnd run of OMNeT++\n");
     return ret;

@@ -64,7 +64,7 @@ void cLinkDelayLookahead::startRun()
         segInfo[i].minDelay = -1;
 
     // fill in minDelays
-    ev << "  calculating minimum link delays..." << endl;
+    ev << "  calculating minimum link delays...\n";
     for (int modId=0; modId<=sim->lastModuleId(); modId++)
     {
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
@@ -102,7 +102,7 @@ void cLinkDelayLookahead::startRun()
 
     for (i=0; i<numSeg; i++)
         if (i!=myProcId)
-            ev << "    lookahead to procId=" << i << " is " << segInfo[i].minDelay << endl;
+            ev << "    lookahead to procId=" << i << " is " << segInfo[i].minDelay << "\n";
 
     ev << "  setup done.\n";
 }

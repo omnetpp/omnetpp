@@ -49,7 +49,7 @@ class cStatistic;
  *
  * @ingroup EnvirExtensions
  */
-class ENVIR_API cOutputVectorManager : public cObject
+class SIM_API cOutputVectorManager : public cObject
 {
   public:
     /**
@@ -157,7 +157,7 @@ class ENVIR_API cOutputVectorManager : public cObject
  *
  * @ingroup EnvirExtensions
  */
-class ENVIR_API cOutputScalarManager : public cObject
+class SIM_API cOutputScalarManager : public cObject
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
@@ -239,7 +239,7 @@ class ENVIR_API cOutputScalarManager : public cObject
  *
  * @ingroup EnvirExtensions
  */
-class ENVIR_API cSnapshotManager : public cObject
+class SIM_API cSnapshotManager : public cObject
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented

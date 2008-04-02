@@ -26,7 +26,7 @@ COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/pla
 
 IMPLIBS= -L$L -lsim_std$D -lnedxml$D -lcommon$D $(XML_LIBS)
 
-OBJS= $O/args.o $O/cenvir.o $O/main.o $O/omnetapp.o $O/fsutils.o \
+OBJS= $O/args.o $O/cenvirimpl.o $O/main.o $O/omnetapp.o $O/fsutils.o \
       $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \
       $O/fileoutvectormgr.o $O/fileoutscalarmgr.o $O/filesnapshotmgr.o \
       $O/indexedfileoutvectormgr.o $O/akoutvectormgr.o \

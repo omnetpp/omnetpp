@@ -17,7 +17,7 @@
 
 #include <string>
 #include <vector>
-#include "envdefs.h"
+#include "envirdefs.h"
 
 NAMESPACE_BEGIN
 

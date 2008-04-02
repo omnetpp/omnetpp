@@ -19,6 +19,7 @@
 #ifndef __APPREG_H
 #define __APPREG_H
 
+#include "envirdefs.h"
 #include "globals.h"
 #include "onstartup.h"
 

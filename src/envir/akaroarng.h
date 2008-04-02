@@ -20,6 +20,7 @@
 #ifndef __AKAROARNG_H
 #define __AKAROARNG_H
 
+#include "envirdefs.h"
 #include "simkerneldefs.h"
 #include "macros.h"
 #include "crng.h"
@@ -52,7 +53,7 @@ NAMESPACE_BEGIN
  * methods in this class just invoke <tt>AkRandomReal()</tt>, so contrary to their
  * specifications they won't return either 0 or 1.
  */
-class SIM_API cAkaroaRNG : public cRNG
+class ENVIR_API cAkaroaRNG : public cRNG
 {
   public:
     cAkaroaRNG() {}
@@ -83,8 +84,8 @@ class SIM_API cAkaroaRNG : public cRNG
     virtual double doubleRandIncl1();
 };
 
-#endif
 NAMESPACE_END
 
+#endif
 
 #endif

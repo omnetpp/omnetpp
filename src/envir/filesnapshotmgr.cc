@@ -19,7 +19,7 @@
 #include <fstream>
 #include "cconfigkey.h"
 #include "fileutil.h"
-#include "cenvir.h"
+#include "cenvirimpl.h"
 #include "omnetapp.h"
 #include "filesnapshotmgr.h"
 
@@ -48,7 +48,7 @@ void cFileSnapshotManager::startRun()
 {
     // clean up file from previous runs
     fname = ev.config()->getAsFilename(CFGID_SNAPSHOT_FILE).c_str();
-    ev.app->processFileName(fname);
+    ((cEnvirImpl&)ev).app->processFileName(fname);
     removeFile(fname.c_str(), "old snapshot file");
 }
 

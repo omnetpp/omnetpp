@@ -47,33 +47,6 @@ using std::endl;
 // internal macro, usage: EVCB.messageSent_OBSOLETE(...)
 #define EVCB  ev.suppress_notifications ? (void)0 : ev
 
-
-//
-// std::streambuf used by cEnvir's ostream base. It redirects writes to
-// cEnvir::sputn(s,n). Flush is done at the end of each line, meanwhile
-// writes are buffered in a stringbuf.
-//
-template <class E, class T = std::char_traits<E> >
-class basic_evbuf : public std::basic_stringbuf<E,T> {
-  public:
-    basic_evbuf(cEnvir *ev) : _ev(ev) {}
-    // gcc>=3.4 needs either this-> or std::basic_stringbuf<E,T>:: in front of pptr()/pbase()
-    bool isempty() {return this->pptr()==this->pbase();}
-  protected:
-    virtual int sync();
-    virtual std::streamsize xsputn(const E *s, std::streamsize n) {
-        std::streamsize r = std::basic_stringbuf<E,T>::xsputn(s,n);
-        for(;n>0;n--,s++)
-            if (*s=='\n')
-               {sync();break;}
-        return r;
-    }
-    cEnvir *_ev;
-};
-
-typedef basic_evbuf<char> evbuf;
-
-
 /**
  * Represents the "environment" or user interface of the simulation.
  *
@@ -92,7 +65,9 @@ typedef basic_evbuf<char> evbuf;
  *
  * @ingroup Envir
  */
-ENVIR_API extern cEnvir ev;
+#define ev  (*evPtr)
+
+extern SIM_API cEnvir *evPtr;
 
 
 /**
@@ -125,12 +100,9 @@ ENVIR_API extern cEnvir ev;
  * @ingroup Envir
  * @ingroup EnvirExtensions
  */
-class ENVIR_API cEnvir : public std::ostream
+class SIM_API cEnvir
 {
   public:
-    // internal variables
-    TOmnetApp *app;  // the application instance
-
     // Internal flag for express mode. XXX define exactly
     bool disable_tracing;
 
@@ -145,20 +117,19 @@ class ENVIR_API cEnvir : public std::ostream
     // Internal flag. When set, cRuntimeError constructor to raises an exception.
     bool debug_on_errors;
 
-  private:
+  protected:
     // further internal vars
-    evbuf ev_buf;
+    std::ostream out;
     bool isgui;
 
   public:
     // internal: writes the first n characters of string s.
     // evbuf (the streambuf underlying cEnvir's ostream base class)
     // writes via this function.
-    void sputn(const char *s, int n);
+    virtual void sputn(const char *s, int n) = 0;
 
     // internal: flushes the internal stream buffer by terminating last line if needed
-    // note: exploits the fact that evbuf does sync() on "\n"'s
-    void flushlastline() {if (!ev_buf.isempty()) ev_buf.sputn("\n",1);}
+    void flushlastline();
 
   public:
     /** @name Constructor, destructor.
@@ -175,7 +146,7 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * Destructor.
      */
-    ~cEnvir();
+    virtual ~cEnvir();
     //@}
 
     /** @name Methods called from main(). */
@@ -185,19 +156,19 @@ class ENVIR_API cEnvir : public std::ostream
      * This function is called by main() at the beginning of the program.
      * It receives the command-line arguments as parameters.
      */
-    void setup(int ac, char *av[]);
+    virtual void setup(int ac, char *av[]) = 0;
 
     /**
      * Called from main(). This function should encapsulate the whole functionality
      * of running the application. The return value may be used as exit code
      * for the simulation program.
      */
-    int run();
+    virtual int run() = 0;
 
     /**
      * Called from main() before exiting.
      */
-    void shutdown();
+    virtual void shutdown() = 0;
     //@}
 
     /** @name Methods to be called by the simulation kernel to notify the environment about events. */
@@ -209,7 +180,7 @@ class ENVIR_API cEnvir : public std::ostream
      * and remove it from object lists currently displayed. cObject's
      * destructor automatically calls this function.
      */
-    void objectDeleted(cObject *object);
+    virtual void objectDeleted(cObject *object) = 0;
 
     /**
      * Notifies the environment that a message was delivered to its destination
@@ -218,7 +189,7 @@ class ENVIR_API cEnvir : public std::ostream
      * implementation may use the notification to animate the message on a
      * network diagram, to write a log entry, etc.
      */
-    void simulationEvent(cMessage *msg);
+    virtual void simulationEvent(cMessage *msg) = 0;
 
     /**
      * Notifies the environment that a message was sent. Details can be
@@ -234,43 +205,43 @@ class ENVIR_API cEnvir : public std::ostream
      * before it arrives in a simple module.)
      */
     //FIXME obsolete -- see beginSend(), etc.
-    void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL);
+    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL) = 0;
 
-    void messageScheduled(cMessage *msg);
-    void messageCancelled(cMessage *msg);
+    virtual void messageScheduled(cMessage *msg) = 0;
+    virtual void messageCancelled(cMessage *msg) = 0;
 
     // beginSend() will be followed by a messageSendDirect (optional), and several messageSendHop() calls
-    void beginSend(cMessage *msg);
-    void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0);
-    void messageSendHop(cMessage *msg, cGate *srcGate);
-    void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-    void endSend(cMessage *msg);
-    void messageDeleted(cMessage *msg);  //XXX document this and all above funcs
+    virtual void beginSend(cMessage *msg) = 0;
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate) = 0;
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+    virtual void endSend(cMessage *msg) = 0;
+    virtual void messageDeleted(cMessage *msg) = 0;  //XXX document this and all above funcs
 
     /**
      * Notifies the environment that a module changed parent.
      */
-    void moduleReparented(cModule *module, cModule *oldparent);
+    virtual void moduleReparented(cModule *module, cModule *oldparent) = 0;
 
     /**
      * Notifies the environment that one component (module) called a member
      * function of another component. This hook enables a graphical user
      * interface to animate the method call in the network diagram.
      */
-    void componentMethodBegin(cComponent *from, cComponent *to, const char *method);
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *method) = 0;
 
     /**
      * Notifies the environment that the method entered in the last
      * componentMethodBegin() call has exited.
      */
-    void componentMethodEnd();
+    virtual void componentMethodEnd() = 0;
 
     /**
      * Notifies the environment that a module was created. This method is called
      * from cModuleType::create(), when the module has already been created
      * but buildInside() has not been invoked yet.
      */
-    void moduleCreated(cModule *newmodule);
+    virtual void moduleCreated(cModule *newmodule) = 0;
 
     /**
      * Notifies the environment that a module was (more precisely: is being)
@@ -283,31 +254,31 @@ class ENVIR_API cEnvir : public std::ostream
      * is deleted, one should not assume anything about the relative order
      * moduleDeleted() is called for the module and its submodules.
      */
-    void moduleDeleted(cModule *module);
+    virtual void moduleDeleted(cModule *module) = 0;
 
     /**
      * Notifies the environment that a connection has been created using
      * srcgate->connectTo().
      */
-    void connectionCreated(cGate *srcgate);
+    virtual void connectionCreated(cGate *srcgate) = 0;
 
     /**
      * Notifies the environment that a connection has been removed using
      * srcgate->disconnect().
      */
-    void connectionRemoved(cGate *srcgate);
+    virtual void connectionRemoved(cGate *srcgate) = 0;
 
     /**
      * Notifies the environment that a module or channel display string has
      * changed.
      */
-    void displayStringChanged(cComponent *component);
+    virtual void displayStringChanged(cComponent *component) = 0;
 
     /**
      * Called from module destructors, to notify the environment about objects
      * that the user didn't delete in the module destructor.
      */
-    void undisposedObject(cObject *obj);
+    virtual void undisposedObject(cObject *obj) = 0;
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */
@@ -317,7 +288,7 @@ class ENVIR_API cEnvir : public std::ostream
      * Assigns the module or channel parameter from the configuration, or
      * by asking the user.
      */
-    void readParameter(cPar *parameter);
+    virtual void readParameter(cPar *parameter) = 0;
 
     /**
      * Used for parallel distributed simulation. Returns true if a
@@ -328,7 +299,7 @@ class ENVIR_API cEnvir : public std::ostream
      * several partitions, this function will return true on all those
      * partitions.
      */
-    bool isModuleLocal(cModule *parentmod, const char *modname, int index);
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index) = 0;
 
     /**
      * Resolves reference to an XML model configuration file. First argument
@@ -351,13 +322,13 @@ class ENVIR_API cEnvir : public std::ostream
      * The returned object tree should not be modified because cEnvir may
      * cache the file and return the same pointer to several callers.
      */
-    cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL) = 0;
 
     /**
      * Called from cSimpleModule, it returns how much extra stack space
      * the user interface recommends for activity() simple modules.
      */
-    unsigned extraStackForEnvir();
+    virtual unsigned extraStackForEnvir() = 0;
 
     /**
      * Access to the configuration data (by default, omnetpp.ini).
@@ -366,12 +337,11 @@ class ENVIR_API cEnvir : public std::ostream
      * Models (simple modules) should NOT directly access the configuration --
      * they should rely on module parameters to get input.
      */
-    cConfiguration *config();
+    virtual cConfiguration *config() = 0;
     //@}
 
     /** @name Input/output methods called from simple modules or the simulation kernel. */
     //@{
-
     /**
      * Tells if the current environment is graphical or not. (For Tkenv it returns true,
      * and with Cmdenv it returns false.) Simple modules can examine this flag
@@ -397,16 +367,30 @@ class ENVIR_API cEnvir : public std::ostream
      */
     bool disabled() {return disable_tracing;}
 
+//XXX comment
+    cEnvir& operator<<(const std::string& t) {out << t; return *this;}
+
+    /**
+     * Overloaded << operator to make cEnvir behave like an ostream.
+     * Writes are simply redirected to the internal ostream.
+     */
+    template<typename T> cEnvir& operator<<(const T& t) {out << t; return *this;}
+
+    cEnvir& operator<<(std::ostream& (t)(std::ostream&)) {out << t; return *this;}
+
+//XXX comment
+    std::ostream& ostream() {return out;}
+
     /**
      * In Tkenv it pops up a "bubble" over the module icon.
      */
-    void bubble(cComponent *component, const char *text);
+    virtual void bubble(cComponent *component, const char *text) = 0;
 
     /**
      * Displays a message in dialog box. This function should not be
      * used too much by simple modules, if ever.
      */
-    void printfmsg(const char *fmt,...);
+    virtual void printfmsg(const char *fmt,...) = 0;
 
     /**
      * Simple modules can output text into their own window through this
@@ -415,13 +399,7 @@ class ENVIR_API cEnvir : public std::ostream
      *
      * It is recommended to use C++-style I/O instead of this function.
      */
-    void printf(const char *fmt="\n",...);
-
-    /**
-     * DEPRECATED. Similar to ev.printf(), but just writes out its argument
-     * string with no formatting. Use ev<< instead.
-     */
-    _OPPDEPRECATED void puts(const char *s);
+    virtual void printf(const char *fmt="\n",...) = 0;
 
     /**
      * Flushes the output buffer of ev.printf() and ev<< operations.
@@ -429,25 +407,20 @@ class ENVIR_API cEnvir : public std::ostream
      * writes to the standard output, but no need for it with Tkenv which
      * displays all output immediately anyway.
      */
-    cEnvir& flush();
+    virtual cEnvir& flush() = 0;
 
     /**
      * Interactively prompts the user to enter a string. std::stringstream
      * can be used to further process the input.
      */
-    std::string gets(const char *prompt, const char *defaultreply=NULL);
-
-    /**
-     * DEPRECATED. Retained for compatibility only.
-     */
-    _OPPDEPRECATED bool gets(const char *prompt, char *buf, int len=255);
+    virtual std::string gets(const char *prompt, const char *defaultreply=NULL) = 0;
 
     /**
      * Puts a yes/no question to the user. The question itself  is expected
      * in the printf() format (format string + arguments). The
      * true return value means yes, false means no.
      */
-    bool askYesNo(const char *msgfmt,...);
+    virtual bool askYesNo(const char *msgfmt,...) = 0;
     //@}
 
     /** @name Access to RNGs. */
@@ -457,18 +430,18 @@ class ENVIR_API cEnvir : public std::ostream
      * Returns the number of RNGs available for the simulation
      * ("num-rngs=" omnetpp.ini setting).
      */
-    int numRNGs();
+    virtual int numRNGs() = 0;
 
     /**
      * Returns pointer to "physical" RNG k (0 <= k < numRNGs()).
      */
-    cRNG *rng(int k);
+    virtual cRNG *rng(int k) = 0;
 
     /**
      * Sets up RNG mapping (which maps module-local RNG numbers to "physical"
      * RNGs) for the given module.
      */
-    void getRNGMappingFor(cComponent *component);
+    virtual void getRNGMappingFor(cComponent *component) = 0;
     //@}
 
     /** @name Methods for recording data from output vectors.
@@ -487,24 +460,24 @@ class ENVIR_API cEnvir : public std::ostream
      * this handle has to be passed to record() to identify the vector
      * each time a value is written.
      */
-    void *registerOutputVector(const char *modulename, const char *vectorname);
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname) = 0;
 
     /**
      * cOutVector objects must deregister themselves when they are no longer needed.
      */
-    void deregisterOutputVector(void *vechandle);
+    virtual void deregisterOutputVector(void *vechandle) = 0;
 
     /**
      * This method is called when an attribute of the output vector is set.
      */
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value);
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) = 0;
 
     /**
      * This method is intended to be called by cOutVector objects to write
      * a value into the output vector. The return value is true if the data was
      * actually recorded, and false if it was not recorded (because of filtering, etc.)
      */
-    bool recordInOutputVector(void *vechandle, simtime_t t, double value);
+    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value) = 0;
     //@}
 
     /** @name Scalar statistics.
@@ -520,12 +493,12 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * Records a double scalar result, in a default configuration into the scalar result file.
      */
-    void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL) = 0;
 
     /**
      * Records histogram and statistics objects into the scalar result file.
      */
-    void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+    virtual void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
     //@}
 
     /** @name Management of streams where snapshots can be written.
@@ -539,12 +512,12 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * Returns a stream where a snapshot can be written. Called from cSimulation::snapshot().
      */
-    std::ostream *getStreamForSnapshot();
+    virtual std::ostream *getStreamForSnapshot() = 0;
 
     /**
      * Releases a stream after a snapshot was written.
      */
-    void releaseStreamForSnapshot(std::ostream *os);
+    virtual void releaseStreamForSnapshot(std::ostream *os) = 0;
     //@}
 
     /** @name Miscellaneous functions. */
@@ -552,28 +525,28 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * Access to original command-line arguments.
      */
-    int argCount();
+    virtual int argCount() = 0;
 
     /**
      * Access to original command-line arguments.
      */
-    char **argVector();
+    virtual char **argVector() = 0;
 
     /**
      * Returns the partitionID when parallel simulation is active.
      */
-    int getParsimProcId();
+    virtual int getParsimProcId() = 0;
 
     /**
      * Returns the number of partitions when parallel simulation is active;
      * otherwise it returns 0.
      */
-    int getParsimNumPartitions();
+    virtual int getParsimNumPartitions() = 0;
 
     /**
      * The function underlying cSimulation::getUniqueNumber().
      */
-    unsigned long getUniqueNumber();
+    virtual unsigned long getUniqueNumber() = 0;
 
     /**
      * May be called from the simulation while actively waiting
@@ -588,18 +561,12 @@ class ENVIR_API cEnvir : public std::ostream
      * Normally returns false. A true value means the user wants to
      * abort waiting (e.g. pushed the Stop button).
      */
-    bool idle();
+    virtual bool idle() = 0;
     //@}
 };
 
-template <class E, class T>
-int basic_evbuf<E,T>::sync() {
-    _ev->sputn(this->pbase(), this->pptr()-this->pbase());
-    setp(this->pbase(),this->epptr());
-    return 0;
-}
-
 NAMESPACE_END
 
-
 #endif
+
+

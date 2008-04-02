@@ -20,7 +20,7 @@
 #define __SPEEDOMETER_H
 
 #include "simkerneldefs.h"
-#include "envdefs.h"
+#include "envirdefs.h"
 #include "timeutil.h"
 
 NAMESPACE_BEGIN

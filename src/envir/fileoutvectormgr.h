@@ -16,6 +16,7 @@
 #define __FILEOUTPUTVECTORMGR_H
 
 #include <stdio.h>
+#include "envirdefs.h"
 #include "envirext.h"
 #include "util.h"
 

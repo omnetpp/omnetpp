@@ -21,7 +21,7 @@
 #include <map>
 #include <string>
 #include "simkerneldefs.h"
-#include "envdefs.h"
+#include "envirdefs.h"
 #include "cxmlelement.h"
 
 NAMESPACE_BEGIN

@@ -1,5 +1,5 @@
 //==========================================================================
-//  ENVDEFS.H - part of
+//  ENVIRDEFS.H - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ENVDEFS_H
-#define __ENVDEFS_H
+#ifndef __ENVIRDEFS_H
+#define __ENVIRDEFS_H
 
 #include "platdefs.h"
 

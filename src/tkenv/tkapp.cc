@@ -24,7 +24,7 @@
 #include <string>
 
 #include "appreg.h"
-#include "cenvir.h"
+#include "cenvirimpl.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
 #include "speedometer.h"

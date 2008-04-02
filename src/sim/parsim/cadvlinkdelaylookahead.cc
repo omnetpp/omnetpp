@@ -69,7 +69,7 @@ void cAdvancedLinkDelayLookahead::startRun()
     }
 
     // fill numLinks and links[]
-    ev << "  collecting links..." << endl;
+    ev << "  collecting links...\n";
 
     // step 1: count gates
     int modId;
@@ -132,7 +132,7 @@ void cAdvancedLinkDelayLookahead::startRun()
                     link->lookahead = linkDelay;
                     link->eot = 0.0;
 
-                    ev << "    link " << k << " to procId=" << procId << " on gate `" << fromg->fullPath() <<"': delay=" << linkDelay << endl;
+                    ev << "    link " << k << " to procId=" << procId << " on gate `" << fromg->fullPath() <<"': delay=" << linkDelay << "\n";
                 }
             }
         }

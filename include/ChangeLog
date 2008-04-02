@@ -158,6 +158,16 @@
 	- also cDisplayString: getString() -> toString() (old getString() deprecated)
 	NOTE: inconsistency with INET Framework: IPAddress, IPv6Address, MACAddress: str()
 
+	cEnvir refactoring:
+	- motivation: break sim_std.dll dependence on envir.dll (mainly the 
+	  "ev" global variable)
+	- "ev" is no longer a variable, but a macro which expands to (*evPtr)
+	- cEnvir no longer subclasses from std::ostream, but instead redirects 
+	  all ev<< calls to an internal std::ostream instance
+	- cEnvir is no longer a concrete class, but an abstract base class with
+	  lots of pure virtual methods
+	- removed puts(const char *) and gets(const char *)
+
 	- cBag class removed
 
 	- global connect() function removed (use cGate::connectTo() instead!)

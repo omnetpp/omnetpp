@@ -24,13 +24,13 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -DBUILDING_SIM $(MPI_CFLAGS)
 
-IMPLIBS=-L$L -lenvir$D -lcommon$D
+IMPLIBS=-L$L -lcommon$D
 
 OBJS_STD=\
     $O/carray.o $O/cbasicchannel.o $O/cboolparimpl.o $O/cchannel.o \
     $O/cclassfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigkey.o \
     $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
-    $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o \
+    $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cenvir.o \
     $O/cenum.o $O/cexception.o $O/cfsm.o $O/cmathfunction.o $O/cgate.o $O/chistogram.o \
     $O/cksplit.o $O/clcg32.o $O/clinkedlist.o $O/clongparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cmsgpar.o $O/cmodule.o $O/cmessageheap.o $O/chasher.o \

@@ -22,7 +22,7 @@
 #include "fileutil.h"
 #include "timeutil.h"
 #include "platmisc.h"
-#include "cenvir.h"
+#include "cenvirimpl.h"
 #include "omnetapp.h"
 #include "csimulation.h"
 #include "cmodule.h"
@@ -92,7 +92,7 @@ void cFileOutputVectorManager::initRun()
         // Collect the attributes and module parameters of the current run
         // from the configuration.
         //
-        run.runId = ev.app->getRunId();
+        run.runId = ((cEnvirImpl&)ev).app->getRunId();
         cConfiguration *cfg = ev.config();
         run.attributes["config"] = cfg->getActiveConfigName();
         run.attributes["run-number"] = opp_stringf("%d", cfg->getActiveRunNumber());
@@ -161,7 +161,7 @@ void cFileOutputVectorManager::startRun()
     // clean up file from previous runs
     closeFile();
     fname = ev.config()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
-    ev.app->processFileName(fname);
+    ((cEnvirImpl&)ev).app->processFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
 
     // clear run data

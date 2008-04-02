@@ -156,6 +156,6 @@ void cIdealSimulationProtocol::readNextRecordedEvent()
     nextExternalEvent = table[nextPos++];
 
     if (debug) ev << "next expected external event: srcProcId=" << nextExternalEvent.srcProcId
-                  << " t=" << nextExternalEvent.t << endl;
+                  << " t=" << nextExternalEvent.t << "\n";
 }
 

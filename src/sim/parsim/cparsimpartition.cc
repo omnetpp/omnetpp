@@ -157,9 +157,9 @@ void cParsimPartition::connectRemoteGates()
 
             ev << "    gate: " << moduleFullPath << "." << gateName << "["  << gateIndex << "] - ";
             if (!pg)
-                ev << "not here" << endl;
+                ev << "not here\n";
             else
-                ev << "points to (procId=" << remoteProcId << " moduleId=" << remoteModId << " gateId=" << remoteGateId << ")" << endl;
+                ev << "points to (procId=" << remoteProcId << " moduleId=" << remoteModId << " gateId=" << remoteGateId << ")\n";
 
             if (pg)
             {
@@ -179,7 +179,7 @@ void cParsimPartition::connectRemoteGates()
 void cParsimPartition::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
 {
     if (debug) ev << "sending message '" << msg->fullName() << "' (for T=" <<
-                 msg->arrivalTime() << " to procId=" << procId << endl;
+                 msg->arrivalTime() << " to procId=" << procId << "\n";
 
     synch->processOutgoingMessage(msg, procId, moduleId, gateId, data);
 }

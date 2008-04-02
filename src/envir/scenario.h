@@ -19,6 +19,7 @@
 #include <vector>
 #include <set>
 #include <string>
+#include "envirdefs.h"
 #include "expression.h"
 #include "sectionbasedconfig.h"
 #include "valueiterator.h"

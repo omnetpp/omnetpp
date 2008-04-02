@@ -13,13 +13,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cenvir.h"
+#include "cenvirimpl.h"
 
 USING_NAMESPACE
 
 static void nothing()
 {
-    cEnvir dummy;
+    // main() is part of the envir library, so here there's nothing to
+    // do except creating a reference to the envir library
+    cEnvirImpl dummy;
     (void)dummy;
 }
 

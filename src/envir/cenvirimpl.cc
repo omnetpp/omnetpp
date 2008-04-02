@@ -1,11 +1,11 @@
 //==========================================================================
-//  CENVIR.CC - part of
+//  CENVIRIMPL.CC - part of
 //
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
 //  Implementation of
-//    cEnvir     : user interface class
+//    cEnvirImpl     : user interface class
 //
 //==========================================================================
 
@@ -26,7 +26,7 @@
 #include "cconfigkey.h"
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
-#include "cenvir.h"
+#include "cenvirimpl.h"
 #include "omnetapp.h"
 #include "appreg.h"
 #include "cmodule.h"
@@ -36,13 +36,7 @@
 
 #include "inttypes.h"
 
-using std::ostream;
-
-
 NAMESPACE_BEGIN
-
-// Global objects:
-cEnvir ev;
 
 // the global list for the registration objects
 cGlobalRegistrationList omnetapps("omnetapps");
@@ -91,15 +85,12 @@ static cOmnetAppRegistration *chooseBestOmnetApp()
 #pragma warning(disable:4355)
 #endif
 
-cEnvir::cEnvir() : ostream(&ev_buf), ev_buf(this)
+cEnvirImpl::cEnvirImpl()
 {
-    disable_tracing = false;
-    debug_on_errors = false;
-    suppress_notifications = false; //FIXME set to true when not needed!
     app = NULL;
 }
 
-cEnvir::~cEnvir()
+cEnvirImpl::~cEnvirImpl()
 {
 }
 
@@ -125,7 +116,7 @@ static void verifyIntTypes()
 #undef LL
 }
 
-void cEnvir::setup(int argc, char *argv[])
+void cEnvirImpl::setup(int argc, char *argv[])
 {
     ArgList *args = NULL;
     SectionBasedConfiguration *bootconfig = NULL;
@@ -270,7 +261,7 @@ void cEnvir::setup(int argc, char *argv[])
     }
 }
 
-int cEnvir::run()
+int cEnvirImpl::run()
 {
     try
     {
@@ -285,7 +276,7 @@ int cEnvir::run()
     }
 }
 
-void cEnvir::shutdown()
+void cEnvirImpl::shutdown()
 {
     if (app)
     {
@@ -307,134 +298,134 @@ void cEnvir::shutdown()
 
 //-----------------------------------------------------------------
 
-void cEnvir::readParameter(cPar *parameter)
+void cEnvirImpl::readParameter(cPar *parameter)
 {
     app->readParameter(parameter);
 }
 
-bool cEnvir::isModuleLocal(cModule *parentmod, const char *modname, int index)
+bool cEnvirImpl::isModuleLocal(cModule *parentmod, const char *modname, int index)
 {
     return app->isModuleLocal(parentmod, modname, index);
 }
 
-cXMLElement *cEnvir::getXMLDocument(const char *filename, const char *path)
+cXMLElement *cEnvirImpl::getXMLDocument(const char *filename, const char *path)
 {
     return app->getXMLDocument(filename, path);
 }
 
-unsigned cEnvir::extraStackForEnvir()
+unsigned cEnvirImpl::extraStackForEnvir()
 {
     return app->extraStackForEnvir();
 }
 
-cConfiguration *cEnvir::config()
+cConfiguration *cEnvirImpl::config()
 {
     return app->getConfig();
 }
 
 //-----------------------------------------------------------------
 
-void cEnvir::objectDeleted(cObject *obj)
+void cEnvirImpl::objectDeleted(cObject *obj)
 {
     if (app) app->objectDeleted(obj);
 }
 
-void cEnvir::simulationEvent(cMessage *msg)
+void cEnvirImpl::simulationEvent(cMessage *msg)
 {
     app->simulationEvent(msg);
 }
 
-void cEnvir::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)
+void cEnvirImpl::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)
 {
     app->messageSent_OBSOLETE(msg, directToGate);
 }
 
-void cEnvir::messageScheduled(cMessage *msg)
+void cEnvirImpl::messageScheduled(cMessage *msg)
 {
     app->messageScheduled(msg);
 }
 
-void cEnvir::messageCancelled(cMessage *msg)
+void cEnvirImpl::messageCancelled(cMessage *msg)
 {
     app->messageCancelled(msg);
 }
 
-void cEnvir::beginSend(cMessage *msg)
+void cEnvirImpl::beginSend(cMessage *msg)
 {
     app->beginSend(msg);
 }
 
-void cEnvir::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void cEnvirImpl::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     app->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
-void cEnvir::messageSendHop(cMessage *msg, cGate *srcGate)
+void cEnvirImpl::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     app->messageSendHop(msg, srcGate);
 }
 
-void cEnvir::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void cEnvirImpl::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     app->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
-void cEnvir::endSend(cMessage *msg)
+void cEnvirImpl::endSend(cMessage *msg)
 {
     app->endSend(msg);
 }
 
-void cEnvir::messageDeleted(cMessage *msg)
+void cEnvirImpl::messageDeleted(cMessage *msg)
 {
     app->messageDeleted(msg);
 }
 
-void cEnvir::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
+void cEnvirImpl::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
 {
     app->componentMethodBegin(from, to, method);
 }
 
-void cEnvir::componentMethodEnd()
+void cEnvirImpl::componentMethodEnd()
 {
     app->componentMethodEnd();
 }
 
 //FIXME we should probably NOT use EVCB for these! (or we should redraw the network diagram every time!!!)
-void cEnvir::moduleCreated(cModule *newmodule)
+void cEnvirImpl::moduleCreated(cModule *newmodule)
 {
     app->moduleCreated(newmodule);
 }
 
-void cEnvir::moduleDeleted(cModule *module)
+void cEnvirImpl::moduleDeleted(cModule *module)
 {
     app->moduleDeleted(module);
 }
 
-void cEnvir::moduleReparented(cModule *module, cModule *oldparent)
+void cEnvirImpl::moduleReparented(cModule *module, cModule *oldparent)
 {
     app->moduleReparented(module, oldparent);
 }
 
-void cEnvir::connectionCreated(cGate *srcgate)
+void cEnvirImpl::connectionCreated(cGate *srcgate)
 {
     app->connectionCreated(srcgate);
 }
 
-void cEnvir::connectionRemoved(cGate *srcgate)
+void cEnvirImpl::connectionRemoved(cGate *srcgate)
 {
     app->connectionRemoved(srcgate);
 }
 
-void cEnvir::displayStringChanged(cComponent *component)
+void cEnvirImpl::displayStringChanged(cComponent *component)
 {
     app->displayStringChanged(component);
 }
 
-void cEnvir::undisposedObject(cObject *obj)
+void cEnvirImpl::undisposedObject(cObject *obj)
 {
     if (!app)
     {
-        // we must have been called after cEnvir has already shut down
+        // we must have been called after cEnvirImpl has already shut down
         ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: (%s)`%s' at %p\n",
                  obj->className(), obj->fullPath().c_str(), obj);
         return;
@@ -444,7 +435,7 @@ void cEnvir::undisposedObject(cObject *obj)
 
 //-----------------------------------------------------------------
 
-void cEnvir::bubble(cComponent *component, const char *text)
+void cEnvirImpl::bubble(cComponent *component, const char *text)
 {
     if (!isgui || disable_tracing) return;
     if (!dynamic_cast<cModule*>(component))
@@ -452,7 +443,7 @@ void cEnvir::bubble(cComponent *component, const char *text)
     app->bubble((cModule*)component, text);
 }
 
-void cEnvir::printfmsg(const char *fmt,...)
+void cEnvirImpl::printfmsg(const char *fmt,...)
 {
     va_list va;
     va_start(va, fmt);
@@ -465,7 +456,7 @@ void cEnvir::printfmsg(const char *fmt,...)
        ::printf("\n<!> %s\n\n", buffer);
 }
 
-void cEnvir::printf(const char *fmt,...)
+void cEnvirImpl::printf(const char *fmt,...)
 {
     if (disable_tracing) return;
 
@@ -476,19 +467,19 @@ void cEnvir::printf(const char *fmt,...)
 
     // has to go through evbuf to preserve ordering
     if (len>0)
-        ev_buf.sputn(buffer,len);
+        out.rdbuf()->sputn(buffer, len);
 }
 
-void cEnvir::puts(const char *s)
+void cEnvirImpl::puts(const char *s)
 {
     if (disable_tracing) return;
 
     // has to go through evbuf to preserve ordering
     int len = strlen(s);
-    ev_buf.sputn(s,len);
+    out.rdbuf()->sputn(s,len);
 }
 
-void cEnvir::sputn(const char *s, int n)
+void cEnvirImpl::sputn(const char *s, int n)
 {
     // invoked from evbuf::sync() to flush stream buffer
     if (disable_tracing) return;
@@ -499,11 +490,11 @@ void cEnvir::sputn(const char *s, int n)
         ::fwrite(s,1,n,stdout);
 }
 
-cEnvir& cEnvir::flush()
+cEnvirImpl& cEnvirImpl::flush()
 {
     if (disable_tracing) return *this;
 
-    ev_buf.pubsync();
+    out.rdbuf()->pubsync();
 
     if (app)
         app->flush();
@@ -513,7 +504,7 @@ cEnvir& cEnvir::flush()
     return *this;
 }
 
-bool cEnvir::gets(const char *prompt, char *buf, int len)
+bool cEnvirImpl::gets(const char *prompt, char *buf, int len)
 {
     bool esc = app->gets(prompt, buf, len);
     if (esc)
@@ -521,7 +512,7 @@ bool cEnvir::gets(const char *prompt, char *buf, int len)
     return true;
 }
 
-std::string cEnvir::gets(const char *prompt, const char *defaultreply)
+std::string cEnvirImpl::gets(const char *prompt, const char *defaultreply)
 {
     buffer[0] = '\0';
     if (defaultreply) strncpy(buffer,defaultreply,ENVIR_TEXTBUF_LEN-1);
@@ -532,7 +523,7 @@ std::string cEnvir::gets(const char *prompt, const char *defaultreply)
     return std::string(buffer);
 }
 
-bool cEnvir::askYesNo(const char *msgfmt,...)
+bool cEnvirImpl::askYesNo(const char *msgfmt,...)
 {
     va_list va;
     va_start(va, msgfmt);
@@ -548,95 +539,95 @@ bool cEnvir::askYesNo(const char *msgfmt,...)
 
 //---------------------------------------------------------
 
-int cEnvir::numRNGs()
+int cEnvirImpl::numRNGs()
 {
     return app->numRNGs();
 }
 
-cRNG *cEnvir::rng(int k)
+cRNG *cEnvirImpl::rng(int k)
 {
     return app->rng(k);
 }
 
-void cEnvir::getRNGMappingFor(cComponent *component)
+void cEnvirImpl::getRNGMappingFor(cComponent *component)
 {
     app->getRNGMappingFor(component);
 }
 
 //---------------------------------------------------------
 
-void *cEnvir::registerOutputVector(const char *modulename, const char *vectorname)
+void *cEnvirImpl::registerOutputVector(const char *modulename, const char *vectorname)
 {
     return app->registerOutputVector(modulename, vectorname);
 }
 
-void cEnvir::deregisterOutputVector(void *vechandle)
+void cEnvirImpl::deregisterOutputVector(void *vechandle)
 {
     app->deregisterOutputVector(vechandle);
 }
 
-void cEnvir::setVectorAttribute(void *vechandle, const char *name, const char *value)
+void cEnvirImpl::setVectorAttribute(void *vechandle, const char *name, const char *value)
 {
     app->setVectorAttribute(vechandle, name, value);
 }
 
-bool cEnvir::recordInOutputVector(void *vechandle, simtime_t t, double value)
+bool cEnvirImpl::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     return app->recordInOutputVector(vechandle, t, value);
 }
 
 //---------------------------------------------------------
 
-void cEnvir::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
+void cEnvirImpl::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     app->recordScalar(component, name, value, attributes);
 }
 
-void cEnvir::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
+void cEnvirImpl::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     app->recordScalar(component, name, statistic, attributes);
 }
 
 //---------------------------------------------------------
 
-ostream *cEnvir::getStreamForSnapshot()
+std::ostream *cEnvirImpl::getStreamForSnapshot()
 {
     return app->getStreamForSnapshot();
 }
 
-void cEnvir::releaseStreamForSnapshot(ostream *os)
+void cEnvirImpl::releaseStreamForSnapshot(std::ostream *os)
 {
     app->releaseStreamForSnapshot(os);
 }
 
 //---------------------------------------------------------
 
-int cEnvir::argCount()
+int cEnvirImpl::argCount()
 {
     return app->argList()->argCount();
 }
 
-char **cEnvir::argVector()
+char **cEnvirImpl::argVector()
 {
     return app->argList()->argVector();
 }
 
-int cEnvir::getParsimProcId()
+int cEnvirImpl::getParsimProcId()
 {
     return app->getParsimProcId();
 }
 
-int cEnvir::getParsimNumPartitions()
+int cEnvirImpl::getParsimNumPartitions()
 {
     return app->getParsimNumPartitions();
 }
 
-unsigned long cEnvir::getUniqueNumber()
+unsigned long cEnvirImpl::getUniqueNumber()
 {
     return app->getUniqueNumber();
 }
 
-bool cEnvir::idle()
+bool cEnvirImpl::idle()
 {
     return app->idle();
 }

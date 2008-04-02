@@ -19,6 +19,7 @@
 #include <vector>
 #include <set>
 #include <string>
+#include "envirdefs.h"
 #include "cconfiguration.h"
 #include "cconfigreader.h"
 #include "stringpool.h"

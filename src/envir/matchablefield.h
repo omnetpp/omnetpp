@@ -3,10 +3,6 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cClassDescriptor  : metainfo about structs and classes
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -19,6 +15,7 @@
 #ifndef __MATCHABLEFIELD_H
 #define __MATCHABLEFIELD_H
 
+#include "envirdefs.h"
 #include "cobject.h"
 #include "matchexpression.h"
 

@@ -18,11 +18,9 @@
 #include <string.h>
 #include <fstream>
 #include "opp_ctype.h"
-#include "cconfigkey.h"           //FIXME include-okat megritkitani!!
+#include "cconfigkey.h"
 #include "fileutil.h"
-#include "timeutil.h"
-#include "platmisc.h"
-#include "cenvir.h"
+#include "cenvirimpl.h"
 #include "omnetapp.h"
 #include "csimulation.h"
 #include "cmodule.h"
@@ -31,7 +29,6 @@
 #include "fileoutscalarmgr.h"
 #include "ccomponenttype.h"
 #include "stringutil.h"
-#include "stringtokenizer.h"
 
 USING_NAMESPACE
 
@@ -88,7 +85,7 @@ void cFileOutputScalarManager::startRun()
     // clean up file from previous runs
     closeFile();
     fname = ev.config()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
-    ev.app->processFileName(fname);
+    ((cEnvirImpl&)ev).app->processFileName(fname);
     if (ev.config()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
         removeFile(fname.c_str(), "old output scalar file");
     initialized = false;
@@ -118,7 +115,7 @@ void cFileOutputScalarManager::init()
     {
         initialized = true;
         const char *networkname = simulation.networkType()->name();
-        const char *runId = ev.app->getRunId();
+        const char *runId = ((cEnvirImpl&)ev).app->getRunId();
         fprintf(f, "run %s\n", QUOTE(runId));
         //FIXME write out run data here as well (not only in outvectormanager)
 

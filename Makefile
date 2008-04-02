@@ -56,13 +56,12 @@ samples: $(SAMPLES)
 # dependencies (because of ver.h, tcl2c, opp_msgc, etc)
 clean depend: makefiles
 common layout eventlog scave nedxml sim envir cmdenv tkenv makefiles: utils
-layout eventlog scave nedxml sim envir cmdenv : common
+layout eventlog scave nedxml sim envir cmdenv tkenv : common
 sim : nedxml
 $(SAMPLES) : makefiles base
 
 # create some additional dependecies required to build windows DLLs
 ifeq ($(LIB_SUFFIX),$(DLL_LIB_SUFFIX))
-sim : nedxml envir-implib
 envir : sim
 tkenv cmdenv : envir
 tkenv : layout
@@ -74,10 +73,6 @@ endif
 $(BASE):
 	@echo ===== Compiling $@ ====
 	cd $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
-
-envir-implib:
-	@echo ===== Compiling $@ ====
-	cd $(OMNETPP_SRC_DIR)/envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir-implib
 
 #
 # Native libs for the UI
