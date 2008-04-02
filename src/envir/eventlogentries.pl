@@ -133,7 +133,7 @@ print H
 #define __EVENTLOGWRITER_H_
 
 #include <stdio.h>
-#include \"envdefs.h\"
+#include \"envirdefs.h\"
 #include \"cexception.h\"
 
 USING_NAMESPACE

@@ -119,13 +119,13 @@ $O/expression.o: expression.cc \
   stringutil.h \
   exception.h
 $O/expression.tab.o: expression.tab.cc \
+  commonutil.h \
   expressionyydefs.h \
   expression.h \
   exception.h \
   stringutil.h \
   unitconversion.h \
-  commondefs.h \
-  commonutil.h
+  commondefs.h
 $O/fileglobber.o: fileglobber.cc \
   fileglobber.h \
   commondefs.h
@@ -175,9 +175,17 @@ $O/matchexpression.o: matchexpression.cc \
   exception.h
 $O/matchexpression.tab.o: matchexpression.tab.cc \
   matchexpression.h \
+  matchexpressionlexer.h \
   patternmatcher.h \
   exception.h \
   commondefs.h
+$O/matchexpressionlexer.o: matchexpressionlexer.cc \
+  stringutil.h \
+  matchexpression.tab.h \
+  matchexpressionlexer.h \
+  commondefs.h \
+  commonutil.h \
+  exception.h
 $O/patternmatcher.o: patternmatcher.cc \
   opp_ctype.h \
   patternmatcher.h \

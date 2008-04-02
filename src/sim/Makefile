@@ -155,6 +155,7 @@ $O/carray.o: carray.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/cbasicchannel.o: cbasicchannel.cc \
   ../../include/cbasicchannel.h \
@@ -194,6 +195,7 @@ $O/cbasicchannel.o: cbasicchannel.cc \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/cboolparimpl.o: cboolparimpl.cc \
   ../../include/cboolparimpl.h \
@@ -253,6 +255,7 @@ $O/cchannel.o: cchannel.cc \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/cclassdescriptor.o: cclassdescriptor.cc \
   ../../include/cclassdescriptor.h \
@@ -275,7 +278,8 @@ $O/cclassdescriptor.o: cclassdescriptor.cc \
   ../../include/regmacros.h \
   ../../include/errmsg.h \
   ../../include/globals.h \
-  ../../include/onstartup.h
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h
 $O/cclassfactory.o: cclassfactory.cc \
   ../../include/cclassfactory.h \
   ../../include/cexception.h \
@@ -288,16 +292,16 @@ $O/cclassfactory.o: cclassfactory.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/cenvir.h \
-  ../../include/util.h \
+  ../../include/cregistrationlist.h \
   ../../include/cnamedobject.h \
-  ../../include/opp_string.h \
-  ../../include/errmsg.h \
+  ../../include/util.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/cenvir.h \
+  ../../include/opp_string.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
   ../../include/ccomponent.h \
@@ -322,12 +326,12 @@ $O/ccommbuffer.o: ccommbuffer.cc \
   ../../include/globals.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
-  ../../include/cenvir.h \
+  ../../include/cregistrationlist.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/cstringpool.h \
   ../../include/opp_string.h \
-  ../../include/cstringpool.h
+  ../../include/cenvir.h
 $O/ccomponent.o: ccomponent.cc \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
@@ -337,6 +341,7 @@ $O/ccomponent.o: ccomponent.cc \
   ../../include/cpar.h \
   ../../include/cparimpl.h \
   ../../include/crng.h \
+  ../../include/cstatistic.h \
   ../../include/cconfiguration.h \
   ../../include/cconfigkey.h \
   ../../include/cdisplaystring.h \
@@ -360,7 +365,7 @@ $O/ccomponent.o: ccomponent.cc \
   ../../include/globals.h \
   ../../include/csimulation.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -396,7 +401,7 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/ccoroutine.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/ccompoundmodule.o: ccompoundmodule.cc \
   ../../include/ccompoundmodule.h \
@@ -426,10 +431,11 @@ $O/ccompoundmodule.o: ccompoundmodule.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h
 $O/cconfigkey.o: cconfigkey.cc \
@@ -482,6 +488,7 @@ $O/cdefaultlist.o: cdefaultlist.cc \
   ../../include/cwatch.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -503,7 +510,7 @@ $O/cdensityestbase.o: cdensityestbase.cc \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -534,7 +541,7 @@ $O/cdetect.o: cdetect.cc \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -573,7 +580,7 @@ $O/cdisplaystring.o: cdisplaystring.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -626,7 +633,7 @@ $O/cdynamicexpression.o: cdynamicexpression.cc \
   ../../include/globals.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cnamedobject.h \
   ../../include/opp_string.h \
@@ -643,7 +650,7 @@ $O/cenum.o: cenum.cc \
   ../../include/cexception.h \
   ../../include/cstringtokenizer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -661,6 +668,15 @@ $O/cenum.o: cenum.cc \
   ../../include/regmacros.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
+$O/cenvir.o: cenvir.cc \
+  ../../include/cenvir.h \
+  ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/errmsg.h
 $O/cexception.o: cexception.cc \
   ../../include/cexception.h \
   ../../include/csimulation.h \
@@ -679,7 +695,7 @@ $O/cexception.o: cexception.cc \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -695,7 +711,7 @@ $O/cfsm.o: cfsm.cc \
   ../../include/globals.h \
   ../../include/cfsm.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -747,6 +763,7 @@ $O/cgate.o: cgate.cc \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/chasher.o: chasher.cc \
   ../../include/chasher.h \
@@ -794,7 +811,7 @@ $O/chistogram.o: chistogram.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cstatistic.h \
   ../../include/cdensityestbase.h \
@@ -808,7 +825,7 @@ $O/cksplit.o: cksplit.cc \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -850,7 +867,7 @@ $O/clcg32.o: clcg32.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -866,7 +883,7 @@ $O/clinkedlist.o: clinkedlist.cc \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -911,8 +928,6 @@ $O/cmathfunction.o: cmathfunction.cc \
   ../../include/globals.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
-  ../../include/onstartup.h \
-  ../../include/carray.h \
   ../../include/random.h \
   ../../include/ccommbuffer.h \
   parsim/cplaceholdermod.h \
@@ -928,6 +943,8 @@ $O/cmathfunction.o: cmathfunction.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
   ../../include/csimulation.h \
@@ -958,7 +975,7 @@ $O/cmersennetwister.o: cmersennetwister.cc \
   ../../include/cconfiguration.h \
   ../../include/mersennetwister.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -966,6 +983,7 @@ $O/cmersennetwister.o: cmersennetwister.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/cmathfunction.h \
@@ -979,7 +997,7 @@ $O/cmessage.o: cmessage.cc \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -1003,6 +1021,7 @@ $O/cmessage.o: cmessage.cc \
   ../../include/cexpression.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h
 $O/cmessageheap.o: cmessageheap.cc \
@@ -1010,7 +1029,7 @@ $O/cmessageheap.o: cmessageheap.cc \
   ../../include/cmessage.h \
   ../../include/cmessageheap.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -1027,6 +1046,7 @@ $O/cmessageheap.o: cmessageheap.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/csimulation.h \
   ../../include/cmathfunction.h \
@@ -1061,6 +1081,7 @@ $O/cmodule.o: cmodule.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
@@ -1093,7 +1114,7 @@ $O/cmsgpar.o: cmsgpar.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cdynamicexpression.h \
   ../../include/cexpression.h \
@@ -1119,7 +1140,7 @@ $O/cnamedobject.o: cnamedobject.cc \
   ../../include/opp_string.h \
   ../../include/cenvir.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/cnedfunction.o: cnedfunction.cc \
   ../../include/cnedfunction.h \
@@ -1142,7 +1163,7 @@ $O/cnedfunction.o: cnedfunction.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/cobject.o: cobject.cc \
   ../../include/cobject.h \
@@ -1172,7 +1193,7 @@ $O/coutvector.o: coutvector.cc \
   ../../include/cenum.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -1217,7 +1238,7 @@ $O/cownedobject.o: cownedobject.cc \
   ../../include/ccoroutine.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/errmsg.h
 $O/cpar.o: cpar.cc \
@@ -1248,7 +1269,7 @@ $O/cpar.o: cpar.cc \
   ../../include/regmacros.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cdefaultlist.h \
   ../../include/cgate.h \
@@ -1284,7 +1305,7 @@ $O/cparimpl.o: cparimpl.cc \
   ../../include/regmacros.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cdefaultlist.h \
   ../../include/cmessageheap.h \
@@ -1314,7 +1335,7 @@ $O/cproperties.o: cproperties.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -1337,7 +1358,7 @@ $O/cproperty.o: cproperty.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -1356,7 +1377,7 @@ $O/cpsquare.o: cpsquare.cc \
   ../../include/distrib.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -1391,7 +1412,7 @@ $O/cqueue.o: cqueue.cc \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -1407,6 +1428,23 @@ $O/cqueue.o: cqueue.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h
+$O/cregistrationlist.o: cregistrationlist.cc \
+  ../../include/cregistrationlist.h \
+  ../../include/cexception.h \
+  ../../include/cownedobject.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/opp_string.h \
+  ../../include/cenvir.h
 $O/cscheduler.o: cscheduler.cc \
   ../../include/cscheduler.h \
   ../../include/cmessage.h \
@@ -1436,6 +1474,7 @@ $O/cscheduler.o: cscheduler.cc \
   ../../include/cmathfunction.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/csimplemodule.o: csimplemodule.cc \
   ../../include/csimplemodule.h \
@@ -1466,6 +1505,7 @@ $O/csimplemodule.o: csimplemodule.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -1505,8 +1545,9 @@ $O/csimulation.o: csimulation.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   ../../include/cmessageheap.h \
@@ -1549,7 +1590,7 @@ $O/cstatistic.o: cstatistic.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h
 $O/cstddev.o: cstddev.cc \
@@ -1586,7 +1627,7 @@ $O/cstddev.o: cstddev.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h
 $O/cstlwatch.o: cstlwatch.cc \
@@ -1610,7 +1651,7 @@ $O/cstlwatch.o: cstlwatch.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/cstringparimpl.o: cstringparimpl.cc \
   ../../include/cstringparimpl.h \
@@ -1691,7 +1732,7 @@ $O/ctopology.o: ctopology.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/cvarhist.o: cvarhist.cc \
   ../../include/globals.h \
@@ -1701,7 +1742,7 @@ $O/cvarhist.o: cvarhist.cc \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -1785,7 +1826,7 @@ $O/cxmlelement.o: cxmlelement.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
@@ -1845,7 +1886,7 @@ $O/distrib.o: distrib.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/errmsg.o: errmsg.cc \
   ../../include/errmsg.h \
@@ -1879,13 +1920,13 @@ $O/expr.tab.o: expr.tab.cc \
   ../../include/cnamedobject.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/globals.o: globals.cc \
   ../../include/globals.h \
-  ../../include/carray.h \
-  ../../include/onstartup.h \
   ../../include/ccomponenttype.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
@@ -1939,6 +1980,7 @@ $O/nedfunctions.o: nedfunctions.cc \
   ../../include/cmathfunction.h \
   ../../include/cnedfunction.h \
   ../../include/cexception.h \
+  ../../include/cstringtokenizer.h \
   ../../include/simkerneldefs.h \
   ../../include/random.h \
   ../../include/platdep/platdefs.h \
@@ -1953,7 +1995,7 @@ $O/nedfunctions.o: nedfunctions.cc \
   ../../include/ccoroutine.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -1992,7 +2034,7 @@ $O/nedsupport.o: nedsupport.cc \
   ../../include/globals.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cnamedobject.h \
   ../../include/opp_string.h \
@@ -2005,8 +2047,6 @@ $O/nedsupport.o: nedsupport.cc \
   ../../include/ccoroutine.h
 $O/onstartup.o: onstartup.cc \
   ../../include/onstartup.h \
-  ../../include/cexception.h \
-  ../../include/carray.h \
   ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/platdep/platdefs.h \
@@ -2015,6 +2055,7 @@ $O/onstartup.o: onstartup.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
+  ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
@@ -2106,7 +2147,8 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/compat.h \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
-  ../../include/platdep/platdefs.h
+  ../../include/platdep/platdefs.h \
+  ../../include/cregistrationlist.h
 $O/simtime.o: simtime.cc \
   ../../include/simtime.h \
   ../../include/cexception.h \
@@ -2161,7 +2203,7 @@ $O/util.o: util.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/platdep/timeutil.h \
   ../../include/random.h \
@@ -2211,7 +2253,7 @@ $O/netbuilder/cdynamicchanneltype.o: netbuilder/cdynamicchanneltype.cc \
   ../../include/cproperties.h \
   ../../include/cproperty.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/netbuilder/cdynamicmoduletype.o: netbuilder/cdynamicmoduletype.cc \
   netbuilder/cdynamicmoduletype.h \
@@ -2244,7 +2286,7 @@ $O/netbuilder/cdynamicmoduletype.o: netbuilder/cdynamicmoduletype.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -2274,10 +2316,10 @@ $O/netbuilder/cexpressionbuilder.o: netbuilder/cexpressionbuilder.cc \
   ../../include/globals.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
-  ../../include/cenvir.h \
   ../../include/cnamedobject.h \
+  ../../include/cenvir.h \
   ../../include/cpar.h
 $O/netbuilder/cneddeclaration.o: netbuilder/cneddeclaration.cc \
   netbuilder/cneddeclaration.h \
@@ -2297,17 +2339,17 @@ $O/netbuilder/cneddeclaration.o: netbuilder/cneddeclaration.cc \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
-  ../../include/cenvir.h \
-  ../../include/util.h \
   ../../include/cnamedobject.h \
-  ../../include/opp_string.h \
-  ../../include/errmsg.h \
+  ../../include/util.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/cenvir.h \
+  ../../include/opp_string.h \
   ../../include/cpar.h \
   ../../include/cexpression.h \
   ../../include/ccomponent.h \
@@ -2349,7 +2391,7 @@ $O/netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   ../../include/opp_string.h \
   ../../include/cdynamicexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmodule.h \
   netbuilder/cnednetworkbuilder.h \
@@ -2369,6 +2411,8 @@ $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/cboolparimpl.h \
   ../../include/cstringparimpl.h \
   ../../include/cdisplaystring.h \
+  ../../include/cconfiguration.h \
+  ../../include/cconfigkey.h \
   netbuilder/cneddeclaration.h \
   netbuilder/cnednetworkbuilder.h \
   netbuilder/cnedloader.h \
@@ -2396,7 +2440,7 @@ $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -2448,6 +2492,7 @@ $O/parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cexpression.h \
   ../../include/ccomponenttype.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/parsim/ccommbufferbase.o: parsim/ccommbufferbase.cc \
   parsim/ccommbufferbase.h \
@@ -2486,7 +2531,7 @@ $O/parsim/cfilecomm.o: parsim/cfilecomm.cc \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -2512,7 +2557,7 @@ $O/parsim/cfilecommbuffer.o: parsim/cfilecommbuffer.cc \
   ../../include/opp_string.h \
   ../../include/cstringpool.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cmessage.h \
@@ -2557,6 +2602,7 @@ $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cscheduler.h \
   ../../include/platdep/timeutil.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   parsim/cispeventlogger.h \
@@ -2598,6 +2644,7 @@ $O/parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   parsim/clinkdelaylookahead.h \
@@ -2644,6 +2691,7 @@ $O/parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   ../../include/cchannel.h \
   ../../include/ccomponenttype.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/parsim/cmemcommbuffer.o: parsim/cmemcommbuffer.cc \
   parsim/cmemcommbuffer.h \
@@ -2666,7 +2714,7 @@ $O/parsim/cmemcommbuffer.o: parsim/cmemcommbuffer.cc \
   ../../include/opp_string.h \
   ../../include/cstringpool.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   parsim/cmpicomm.h \
@@ -2687,7 +2735,7 @@ $O/parsim/cmpicomm.o: parsim/cmpicomm.cc \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -2709,7 +2757,7 @@ $O/parsim/cmpicommbuffer.o: parsim/cmpicommbuffer.cc \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -2740,7 +2788,7 @@ $O/parsim/cnamedpipecomm-win.o: parsim/cnamedpipecomm-win.cc \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -2751,6 +2799,7 @@ $O/parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   parsim/cmemcommbuffer.h \
   ../../include/globals.h \
   ../../include/regmacros.h \
+  ../../include/cconfigkey.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
   parsim/parsimutil.h \
@@ -2767,7 +2816,7 @@ $O/parsim/cnamedpipecomm.o: parsim/cnamedpipecomm.cc \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -2812,6 +2861,7 @@ $O/parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   ../../include/cscheduler.h \
   ../../include/platdep/timeutil.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/cmessage.h \
@@ -2860,6 +2910,7 @@ $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/platdep/timeutil.h \
   parsim/cnmplookahead.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/ccomponenttype.h
 $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
@@ -2905,6 +2956,7 @@ $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/cscheduler.h \
   ../../include/platdep/timeutil.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h
 $O/parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/cmessage.h \
@@ -2936,6 +2988,7 @@ $O/parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -2980,7 +3033,7 @@ $O/parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   ../../include/regmacros.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -2990,6 +3043,7 @@ $O/parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   ../../include/cscheduler.h \
   ../../include/platdep/timeutil.h \
   ../../include/cmessage.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   parsim/cnmplookahead.h
@@ -3021,10 +3075,11 @@ $O/parsim/cproxygate.o: parsim/cproxygate.cc \
   ../../include/opp_string.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h
 $O/parsim/cptrpassingmpicomm.o: parsim/cptrpassingmpicomm.cc \
@@ -3046,7 +3101,7 @@ $O/parsim/cptrpassingmpicomm.o: parsim/cptrpassingmpicomm.cc \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -3069,7 +3124,7 @@ $O/parsim/cptrpassingmpicommbuffer.o: parsim/cptrpassingmpicommbuffer.cc \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \

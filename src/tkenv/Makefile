@@ -188,10 +188,12 @@ $O/inspector.o: inspector.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cregistrationlist.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../envir/cenvirimpl.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   tkutil.h
 $O/inspfactory.o: inspfactory.cc \
   ../../include/omnetpp.h \
@@ -282,10 +284,12 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cregistrationlist.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../envir/cenvirimpl.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   tkutil.h
 $O/layouterenv.o: layouterenv.cc \
   layouterenv.h \
@@ -330,6 +334,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cmathfunction.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -338,7 +343,7 @@ $O/layouterenv.o: layouterenv.cc \
   tkutil.h \
   tkdefs.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h
 $O/modinsp.o: modinsp.cc \
@@ -384,6 +389,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -394,10 +400,11 @@ $O/modinsp.o: modinsp.cc \
   tkutil.h \
   tkdefs.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
-  ../../include/ccomponenttype.h
+  ../../include/ccomponenttype.h \
+  ../envir/cenvirimpl.h
 $O/objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -487,10 +494,12 @@ $O/objinsp.o: objinsp.cc \
   ../../include/platdep/inttypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cregistrationlist.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../envir/cenvirimpl.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   inspector.h \
   tkutil.h
 $O/statinsp.o: statinsp.cc \
@@ -526,6 +535,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -535,17 +545,19 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cstddev.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../envir/cenvirimpl.h \
   ../../include/cchannel.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   ../../include/ccomponenttype.h \
   inspector.h \
   tkutil.h
+$O/tclcode.o: tclcode.cc
 $O/tkapp.o: tkapp.cc \
   ../envir/appreg.h \
-  ../../include/cenvir.h \
+  ../envir/cenvirimpl.h \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
   ../envir/speedometer.h \
@@ -561,32 +573,35 @@ $O/tkapp.o: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
+  tclcode.cc \
+  ../envir/envirdefs.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
-  ../../include/cownedobject.h \
   ../../include/simkerneldefs.h \
-  ../../include/util.h \
   ../../include/cnamedobject.h \
-  ../../include/cexception.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/errmsg.h \
+  ../../include/util.h \
   ../../include/cobject.h \
+  ../../include/cexception.h \
   ../../include/cstringpool.h \
+  ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/opp_string.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
-  ../envir/envdefs.h \
   ../../include/platdep/timeutil.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
@@ -645,6 +660,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
@@ -655,8 +671,9 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cmathfunction.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../envir/cenvirimpl.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   tkutil.h \
@@ -666,6 +683,7 @@ $O/tklib.o: tklib.cc \
   tkapp.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../envir/cenvirimpl.h \
   ../../include/cchannel.h \
   ../../include/cmodule.h \
   ../../include/carray.h \
@@ -673,7 +691,7 @@ $O/tklib.o: tklib.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
@@ -689,6 +707,7 @@ $O/tklib.o: tklib.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
   ../../include/ccomponent.h \
@@ -728,15 +747,17 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../envir/cenvirimpl.h \
   ../../include/cchannel.h \
+  ../../include/carray.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   ../../include/ccomponenttype.h \
@@ -773,10 +794,11 @@ $O/visitor.o: visitor.cc \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
+  ../../include/carray.h \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
@@ -785,8 +807,9 @@ $O/visitor.o: visitor.cc \
   ../envir/matchableobject.h \
   tkdefs.h \
   ../envir/omnetapp.h \
+  ../envir/cenvirimpl.h \
   ../envir/args.h \
-  ../envir/envdefs.h \
+  ../envir/envirdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h
 $O/tkImgPNG.o: tkImgPNG.c

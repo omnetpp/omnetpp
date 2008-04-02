@@ -90,7 +90,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/platdep/inttypes.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
-  ../../include/carray.h \
+  ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -101,7 +101,8 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
-  ../envir/envdefs.h \
+  ../../include/carray.h \
+  ../envir/envirdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   ../../include/cmodule.h \
