@@ -161,14 +161,13 @@ $O/akoutvectormgr.o: akoutvectormgr.cc \
 $O/args.o: args.cc \
   args.h \
   envirdefs.h
-$O/cenvirimpl.o: cenvirimpl.cc \
+$O/bootenv.o: bootenv.cc \
   args.h \
   ../../include/distrib.h \
   ../../include/cconfigkey.h \
   inifilereader.h \
   sectionbasedconfig.h \
-  cenvirimpl.h \
-  envirbase.h \
+  bootenv.h \
   appreg.h \
   ../../include/cmodule.h \
   fsutils.h \
@@ -207,13 +206,12 @@ $O/cenvirimpl.o: cenvirimpl.cc \
   ../../include/regmacros.h \
   ../../include/cconfigreader.h \
   ../../include/cconfiguration.h \
-  ../../include/carray.h \
-  ../../include/envirext.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h
+  ../../include/cexpression.h \
+  ../../include/envirext.h
 $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cobject.h \
   cxmldoccache.h \
@@ -232,8 +230,67 @@ $O/cxmldoccache.o: cxmldoccache.cc \
   ../../include/cenvir.h \
   ../../include/opp_string.h \
   ../nedxml/nedxmldefs.h
+$O/envirbase.o: envirbase.cc \
+  args.h \
+  envirbase.h \
+  appreg.h \
+  fsutils.h \
+  eventlogwriter.h \
+  ../../include/ccoroutine.h \
+  ../../include/csimulation.h \
+  ../../include/cscheduler.h \
+  ../../include/cpar.h \
+  ../../include/cproperties.h \
+  ../../include/cproperty.h \
+  ../../include/random.h \
+  ../../include/crng.h \
+  ../../include/cmodule.h \
+  ../../include/cchannel.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cmessage.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cxmlelement.h \
+  cxmldoccache.h \
+  ../../include/chasher.h \
+  ../../include/cconfigkey.h \
+  ../../include/regmacros.h \
+  ../../include/simtime.h \
+  ../../include/cparsimcomm.h \
+  objectprinter.h \
+  envirdefs.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/envirext.h \
+  ../../include/cconfiguration.h \
+  ../../include/cownedobject.h \
+  ../../include/simkerneldefs.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cclassfactory.h \
+  ../../include/opp_string.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/timeutil.h \
+  ../../include/cexpression.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmsgpar.h \
+  ../../include/cmathfunction.h \
+  ../../include/platdep/inttypes.h \
+  matchablefield.h \
+  matchableobject.h
 $O/eventlogwriter.o: eventlogwriter.cc \
   eventlogwriter.h \
+  envirdefs.h \
   ../../include/cexception.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
@@ -245,7 +302,7 @@ $O/eventlogwriter.o: eventlogwriter.cc \
 $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
-  cenvirimpl.h \
+  bootenv.h \
   envirbase.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
@@ -287,7 +344,7 @@ $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
 $O/fileoutvectormgr.o: fileoutvectormgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
-  cenvirimpl.h \
+  bootenv.h \
   envirbase.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
@@ -326,7 +383,7 @@ $O/fileoutvectormgr.o: fileoutvectormgr.cc \
 $O/filesnapshotmgr.o: filesnapshotmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
-  cenvirimpl.h \
+  bootenv.h \
   envirbase.h \
   filesnapshotmgr.h \
   ../../include/platdep/platdefs.h \
@@ -425,7 +482,7 @@ $O/inifilereader.o: inifilereader.cc \
   ../../include/opp_string.h
 $O/main.o: main.cc \
   ../../include/cownedobject.h \
-  cenvirimpl.h \
+  bootenv.h \
   ../utils/ver.h \
   ../../include/cenvir.h \
   ../../include/simkerneldefs.h \
@@ -516,66 +573,8 @@ $O/objectprinter.o: objectprinter.cc \
   matchablefield.h \
   matchableobject.h \
   envirdefs.h
-$O/envirbase.o: envirbase.cc \
-  args.h \
-  envirbase.h \
-  appreg.h \
-  fsutils.h \
-  eventlogwriter.h \
-  ../../include/ccoroutine.h \
-  ../../include/csimulation.h \
-  ../../include/cscheduler.h \
-  ../../include/cpar.h \
-  ../../include/cproperties.h \
-  ../../include/cproperty.h \
-  ../../include/random.h \
-  ../../include/crng.h \
-  ../../include/cmodule.h \
-  ../../include/cchannel.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cmessage.h \
-  ../../include/cdisplaystring.h \
-  ../../include/cxmlelement.h \
-  cxmldoccache.h \
-  ../../include/chasher.h \
-  ../../include/cconfigkey.h \
-  ../../include/regmacros.h \
-  ../../include/simtime.h \
-  ../../include/cparsimcomm.h \
-  objectprinter.h \
-  envirdefs.h \
-  ../../include/carray.h \
-  ../../include/globals.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  ../../include/envirext.h \
-  ../../include/cconfiguration.h \
-  ../../include/cownedobject.h \
-  ../../include/simkerneldefs.h \
-  ../../include/util.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/onstartup.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cclassfactory.h \
-  ../../include/opp_string.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/cexpression.h \
-  ../../include/ccomponent.h \
-  ../../include/cgate.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cmsgpar.h \
-  ../../include/cmathfunction.h \
-  ../../include/platdep/inttypes.h \
-  matchablefield.h \
-  matchableobject.h
 $O/opp_run.o: opp_run.cc \
-  cenvirimpl.h \
+  bootenv.h \
   envirdefs.h \
   ../../include/cenvir.h \
   ../../include/simkerneldefs.h \

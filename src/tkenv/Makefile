@@ -191,7 +191,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cregistrationlist.h \
   tkdefs.h \
   ../envir/envirbase.h \
-  ../envir/cenvirimpl.h \
+  ../envir/bootenv.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
   tkutil.h
@@ -287,7 +287,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cregistrationlist.h \
   tkdefs.h \
   ../envir/envirbase.h \
-  ../envir/cenvirimpl.h \
+  ../envir/bootenv.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
   tkutil.h
@@ -404,7 +404,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   ../../include/ccomponenttype.h \
-  ../envir/cenvirimpl.h
+  ../envir/bootenv.h
 $O/objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
   tkenv.h \
@@ -497,7 +497,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cregistrationlist.h \
   tkdefs.h \
   ../envir/envirbase.h \
-  ../envir/cenvirimpl.h \
+  ../envir/bootenv.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
   inspector.h \
@@ -545,7 +545,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cstddev.h \
   tkdefs.h \
   ../envir/envirbase.h \
-  ../envir/cenvirimpl.h \
+  ../envir/bootenv.h \
   ../../include/cchannel.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
@@ -554,6 +554,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/ccomponenttype.h \
   inspector.h \
   tkutil.h
+$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
@@ -606,19 +607,83 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cmathfunction.h \
   tkdefs.h \
   ../envir/envirbase.h \
-  ../envir/cenvirimpl.h \
+  ../envir/bootenv.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
   ../../include/cconfiguration.h \
   tkutil.h \
   ../envir/matchableobject.h
+$O/tkenv.o: tkenv.cc \
+  ../envir/appreg.h \
+  ../envir/bootenv.h \
+  ../../include/csimplemodule.h \
+  ../../include/cmessage.h \
+  ../envir/speedometer.h \
+  ../../include/cscheduler.h \
+  ../../include/ccomponenttype.h \
+  ../../include/csimulation.h \
+  ../../include/cconfigkey.h \
+  ../../include/regmacros.h \
+  tkdefs.h \
+  tkenv.h \
+  tklib.h \
+  inspector.h \
+  inspfactory.h \
+  modinsp.h \
+  ../utils/ver.h \
+  tclcode.cc \
+  ../envir/envirdefs.h \
+  ../../include/globals.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cclassfactory.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/cobject.h \
+  ../../include/cexception.h \
+  ../../include/cstringpool.h \
+  ../../include/errmsg.h \
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cmodule.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  ../../include/carray.h \
+  ../../include/cmsgpar.h \
+  ../../include/cmathfunction.h \
+  ../../include/platdep/timeutil.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
+  ../envir/envirbase.h \
+  ../../include/cchannel.h \
+  ../envir/args.h \
+  ../../include/envirext.h \
+  ../../include/cconfiguration.h \
+  tkutil.h \
+  ../../include/coutvector.h \
+  ../../include/cstatistic.h \
+  ../../include/cdensityestbase.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cqueue.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/cbasicchannel.h \
+  ../../include/cstddev.h
 $O/tklib.o: tklib.cc \
   tklib.h \
   tkenv.h \
   tkdefs.h \
   ../envir/envirbase.h \
-  ../envir/cenvirimpl.h \
+  ../envir/bootenv.h \
   ../../include/cchannel.h \
   ../../include/cmodule.h \
   ../../include/carray.h \
@@ -688,7 +753,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/ccoroutine.h \
   tkdefs.h \
   ../envir/envirbase.h \
-  ../envir/cenvirimpl.h \
+  ../envir/bootenv.h \
   ../../include/cchannel.h \
   ../../include/carray.h \
   ../envir/args.h \
@@ -742,7 +807,7 @@ $O/visitor.o: visitor.cc \
   ../envir/matchableobject.h \
   tkdefs.h \
   ../envir/envirbase.h \
-  ../envir/cenvirimpl.h \
+  ../envir/bootenv.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
