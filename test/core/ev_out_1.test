@@ -1,0 +1,47 @@
+%description:
+Test ev<<. Since cEnvir is now not an std::ostream itself, we have to test
+we don't get "ambiguous method invocation" etc errors.
+
+%activity:
+
+ev << 0 << 1 << -1 << endl;
+ev << true << false << endl;
+ev << "foo" << endl;
+ev << (std::string("a")+"b") << endl;
+
+ev << (char)65 << endl;
+ev << (unsigned char)65 << endl;
+ev << (signed char)65 << endl;
+ev << (short)42 << endl;
+ev << (unsigned short)42 << endl;
+ev << (int)1111 << endl;
+ev << (unsigned int)1111 << endl;
+ev << (long)3333333333L << endl;
+ev << (unsigned long)3333333333L << endl;
+ev << (int64)43214321 << endl;
+ev << (uint64)43214321 << endl;
+
+ev << (float)1.23 << endl;
+ev << 1.23 << endl;
+ev << ".\n";
+
+
+%contains: stdout
+01-1
+10
+foo
+ab
+A
+A
+A
+42
+42
+1111
+1111
+-961633963
+3333333333
+43214321
+43214321
+1.23
+1.23
+.
