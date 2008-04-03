@@ -22,9 +22,9 @@ Register_Class(cSocketRTScheduler);
 
 Register_GlobalConfigEntry(CFGID_SOCKETRTSCHEDULER_PORT, "socketrtscheduler-port", CFG_INT, "4242", "When cSocketRTScheduler is selected as scheduler class: the port number cSocketRTScheduler listens on.");
 
-inline std::ostream& operator<<(std::ostream& ev, const timeval& tv)
+inline std::ostream& operator<<(std::ostream& out, const timeval& tv)
 {
-    return ev << (unsigned long)tv.tv_sec << "s" << tv.tv_usec << "us";
+    return out << (unsigned long)tv.tv_sec << "s" << tv.tv_usec << "us";
 }
 
 //---
