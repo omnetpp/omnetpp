@@ -1564,6 +1564,19 @@ expr
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7); }
         | NAME '(' expr ',' expr ',' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9); }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11); }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13); }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13, $15); }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13, $15, $17); }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13, $15, $17, $19); }
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+                { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13, $15, $17, $19, $21); }
+
         ;
 
 simple_expr

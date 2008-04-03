@@ -30,6 +30,7 @@
 	- dropped feature: ancestor parameters (violates encapsulation principle)
 	- dropped feature: ref keyword (parameters are now always taken by reference)
 	- no more implicit conversion between bool and long/double
+	- max NED function arg count is now 10
 
 	The following changes were made to nedxml:
 

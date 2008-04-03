@@ -365,7 +365,7 @@ OperatorElement *createOperator(const char *op, NEDElement *operand1, NEDElement
     return opnode;
 }
 
-FunctionElement *createFunction(const char *funcname, NEDElement *arg1, NEDElement *arg2, NEDElement *arg3, NEDElement *arg4)
+FunctionElement *createFunction(const char *funcname, NEDElement *arg1, NEDElement *arg2, NEDElement *arg3, NEDElement *arg4, NEDElement *arg5, NEDElement *arg6, NEDElement *arg7, NEDElement *arg8, NEDElement *arg9, NEDElement *arg10)
 {
     FunctionElement *funcnode = (FunctionElement *)createElementWithTag(NED_FUNCTION);
     funcnode->setName(funcname);
@@ -373,6 +373,12 @@ FunctionElement *createFunction(const char *funcname, NEDElement *arg1, NEDEleme
     if (arg2) funcnode->appendChild(arg2);
     if (arg3) funcnode->appendChild(arg3);
     if (arg4) funcnode->appendChild(arg4);
+    if (arg5) funcnode->appendChild(arg5);
+    if (arg6) funcnode->appendChild(arg6);
+    if (arg7) funcnode->appendChild(arg7);
+    if (arg8) funcnode->appendChild(arg8);
+    if (arg9) funcnode->appendChild(arg9);
+    if (arg10) funcnode->appendChild(arg10);
     return funcnode;
 }
 
