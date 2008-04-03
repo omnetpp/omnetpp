@@ -79,7 +79,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../envir/speedometer.h \
   ../../include/cconfigkey.h \
   ../../include/csimulation.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../../include/simkerneldefs.h \
   ../../include/util.h \
   ../../include/globals.h \

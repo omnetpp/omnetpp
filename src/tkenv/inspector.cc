@@ -21,7 +21,7 @@
 #include <assert.h>
 
 #include "omnetpp.h"
-#include "tkapp.h"
+#include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
 

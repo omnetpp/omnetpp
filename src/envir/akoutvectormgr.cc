@@ -24,7 +24,7 @@
 #include <akaroa.H>
 #include <akaroa/ak_message.H>
 #include "cenvir.h"
-#include "omnetapp.h"
+#include "envirbase.h"
 #include "csimulation.h"
 #include "cmodule.h"
 #include "cstatistic.h"

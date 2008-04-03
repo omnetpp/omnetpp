@@ -13,7 +13,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cenvirimpl.h"
+#include "bootenv.h"
 
 USING_NAMESPACE
 

@@ -20,7 +20,7 @@
 #define __CMDENV_H
 
 #include "csimulation.h"
-#include "omnetapp.h"
+#include "envirbase.h"
 #include <signal.h>
 
 NAMESPACE_BEGIN

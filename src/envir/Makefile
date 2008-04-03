@@ -26,7 +26,7 @@ COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/pla
 
 IMPLIBS= -L$L -lsim_std$D -lnedxml$D -lcommon$D $(XML_LIBS)
 
-OBJS= $O/args.o $O/cenvirimpl.o $O/main.o $O/omnetapp.o $O/fsutils.o \
+OBJS= $O/args.o $O/bootenv.o $O/main.o $O/envirbase.o $O/fsutils.o \
       $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \
       $O/fileoutvectormgr.o $O/fileoutscalarmgr.o $O/filesnapshotmgr.o \
       $O/indexedfileoutvectormgr.o $O/akoutvectormgr.o \
@@ -75,7 +75,7 @@ envir-implib : $(OBJS)
 eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogentries.pl
 
-$O/omnetapp.o: eventlogwriter.h
+$O/envirbase.o: eventlogwriter.h
 
 # opp_run is useless with static libs
 ifeq ("$(LIB_SUFFIX)","$(SHARED_LIB_SUFFIX)")
@@ -122,7 +122,7 @@ $O/akaroarng.o: akaroarng.cc \
   ../../include/regmacros.h
 $O/akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cenvir.h \
-  omnetapp.h \
+  envirbase.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/cstatistic.h \
@@ -168,7 +168,7 @@ $O/cenvirimpl.o: cenvirimpl.cc \
   inifilereader.h \
   sectionbasedconfig.h \
   cenvirimpl.h \
-  omnetapp.h \
+  envirbase.h \
   appreg.h \
   ../../include/cmodule.h \
   fsutils.h \
@@ -246,7 +246,7 @@ $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
   cenvirimpl.h \
-  omnetapp.h \
+  envirbase.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   ../../include/cstatistic.h \
@@ -288,7 +288,7 @@ $O/fileoutvectormgr.o: fileoutvectormgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
   cenvirimpl.h \
-  omnetapp.h \
+  envirbase.h \
   ../../include/csimulation.h \
   ../../include/cmodule.h \
   fileoutvectormgr.h \
@@ -327,7 +327,7 @@ $O/filesnapshotmgr.o: filesnapshotmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
   cenvirimpl.h \
-  omnetapp.h \
+  envirbase.h \
   filesnapshotmgr.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
@@ -375,7 +375,7 @@ $O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
   ../../include/cenvir.h \
-  omnetapp.h \
+  envirbase.h \
   ../../include/csimulation.h \
   ../../include/regmacros.h \
   ../../include/cmodule.h \
@@ -516,9 +516,9 @@ $O/objectprinter.o: objectprinter.cc \
   matchablefield.h \
   matchableobject.h \
   envirdefs.h
-$O/omnetapp.o: omnetapp.cc \
+$O/envirbase.o: envirbase.cc \
   args.h \
-  omnetapp.h \
+  envirbase.h \
   appreg.h \
   fsutils.h \
   eventlogwriter.h \

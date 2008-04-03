@@ -35,7 +35,7 @@
 
 #include "inttypes.h"
 #include "inspector.h"
-#include "omnetapp.h"
+#include "envirbase.h"
 #include "graphlayouter.h"
 
 NAMESPACE_BEGIN

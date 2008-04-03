@@ -26,7 +26,7 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../envir -
 
 IMPLIBS= -L$L -lsim_std$D -lenvir$D -llayout$D -lcommon$D $(TK_LIBS) $(ZLIB_LIBS)
 
-OBJS = $O/tkapp$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o \
+OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).o $O/tkcmd.o $O/tklib.o $O/inspector.o \
        $O/inspfactory.o $O/objinsp.o $O/modinsp.o $O/statinsp.o $O/layouterenv.o \
        $O/arrow.o $O/visitor.o $O/tkutil.o $O/tkImgPNG.o $O/tkImgPNGInit.o
 
@@ -74,13 +74,13 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
-$O/tkapp.o : tkapp.cc
+$O/tkenv.o : tkenv.cc
 	@mkdir -p $O
-	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc -o $O/tkapp.o
+	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv.o
 
-$O/tkapp-e.o : tkapp.cc tclcode.cc
+$O/tkenv-e.o : tkenv.cc tclcode.cc
 	@mkdir -p $O
-	$(CXX) -c $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkapp.cc -o $O/tkapp-e.o
+	$(CXX) -c $(COPTS) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH)\"" tkenv.cc -o $O/tkenv-e.o
 
 tclcode.cc: *.tcl tcl2c.pl
 	$(PERL) tcl2c.pl tclcode.cc *.tcl
@@ -102,7 +102,7 @@ $O/arrow.o: arrow.cc \
   arrow.h
 $O/inspector.o: inspector.cc \
   ../../include/omnetpp.h \
-  tkapp.h \
+  tkenv.h \
   tklib.h \
   inspector.h \
   ../../include/carray.h \
@@ -190,14 +190,14 @@ $O/inspector.o: inspector.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
   tkdefs.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../envir/cenvirimpl.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
   tkutil.h
 $O/inspfactory.o: inspfactory.cc \
   ../../include/omnetpp.h \
-  tkapp.h \
+  tkenv.h \
   tklib.h \
   inspector.h \
   inspfactory.h \
@@ -286,7 +286,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
   tkdefs.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../envir/cenvirimpl.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
@@ -310,7 +310,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/ccompoundmodule.h \
   ../../include/cbasicchannel.h \
   inspector.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/simkerneldefs.h \
@@ -349,7 +349,7 @@ $O/layouterenv.o: layouterenv.cc \
 $O/modinsp.o: modinsp.cc \
   modinsp.h \
   ../../include/cchannel.h \
-  tkapp.h \
+  tkenv.h \
   tklib.h \
   inspfactory.h \
   arrow.h \
@@ -367,7 +367,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/ccompoundmodule.h \
   ../../include/cbasicchannel.h \
   inspector.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
@@ -407,7 +407,7 @@ $O/modinsp.o: modinsp.cc \
   ../envir/cenvirimpl.h
 $O/objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
-  tkapp.h \
+  tkenv.h \
   tklib.h \
   inspfactory.h \
   objinsp.h \
@@ -496,7 +496,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
   tkdefs.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../envir/cenvirimpl.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
@@ -510,7 +510,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/coutvector.h \
   ../../include/cstatistic.h \
   ../../include/cdensityestbase.h \
-  tkapp.h \
+  tkenv.h \
   tklib.h \
   inspfactory.h \
   statinsp.h \
@@ -544,7 +544,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cexpression.h \
   ../../include/cstddev.h \
   tkdefs.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../envir/cenvirimpl.h \
   ../../include/cchannel.h \
   ../envir/args.h \
@@ -554,71 +554,6 @@ $O/statinsp.o: statinsp.cc \
   ../../include/ccomponenttype.h \
   inspector.h \
   tkutil.h
-$O/tclcode.o: tclcode.cc
-$O/tkapp.o: tkapp.cc \
-  ../envir/appreg.h \
-  ../envir/cenvirimpl.h \
-  ../../include/csimplemodule.h \
-  ../../include/cmessage.h \
-  ../envir/speedometer.h \
-  ../../include/cscheduler.h \
-  ../../include/ccomponenttype.h \
-  ../../include/csimulation.h \
-  ../../include/cconfigkey.h \
-  ../../include/regmacros.h \
-  tkdefs.h \
-  tkapp.h \
-  tklib.h \
-  inspector.h \
-  inspfactory.h \
-  modinsp.h \
-  ../utils/ver.h \
-  tclcode.cc \
-  ../envir/envirdefs.h \
-  ../../include/globals.h \
-  ../../include/onstartup.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cclassfactory.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h \
-  ../../include/cobject.h \
-  ../../include/cexception.h \
-  ../../include/cstringpool.h \
-  ../../include/errmsg.h \
-  ../../include/cvisitor.h \
-  ../../include/opp_string.h \
-  ../../include/cownedobject.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  ../../include/ccomponent.h \
-  ../../include/cgate.h \
-  ../../include/cpar.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cexpression.h \
-  ../../include/carray.h \
-  ../../include/cmsgpar.h \
-  ../../include/cmathfunction.h \
-  ../../include/platdep/timeutil.h \
-  ../../include/cmessageheap.h \
-  ../../include/ccoroutine.h \
-  ../envir/omnetapp.h \
-  ../../include/cchannel.h \
-  ../envir/args.h \
-  ../../include/envirext.h \
-  ../../include/cconfiguration.h \
-  tkutil.h \
-  ../../include/coutvector.h \
-  ../../include/cstatistic.h \
-  ../../include/cdensityestbase.h \
-  ../../include/cdisplaystring.h \
-  ../../include/cqueue.h \
-  ../../include/ccompoundmodule.h \
-  ../../include/cbasicchannel.h \
-  ../../include/cstddev.h
 $O/tkcmd.o: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
@@ -636,7 +571,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cqueue.h \
   ../../include/coutvector.h \
   ../../include/cenum.h \
-  tkapp.h \
+  tkenv.h \
   tklib.h \
   inspector.h \
   inspfactory.h \
@@ -670,7 +605,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   tkdefs.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../envir/cenvirimpl.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
@@ -680,9 +615,9 @@ $O/tkcmd.o: tkcmd.cc \
   ../envir/matchableobject.h
 $O/tklib.o: tklib.cc \
   tklib.h \
-  tkapp.h \
+  tkenv.h \
   tkdefs.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../envir/cenvirimpl.h \
   ../../include/cchannel.h \
   ../../include/cmodule.h \
@@ -723,7 +658,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
-  tkapp.h \
+  tkenv.h \
   visitor.h \
   tkutil.h \
   ../../include/cenvir.h \
@@ -752,7 +687,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   tkdefs.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../envir/cenvirimpl.h \
   ../../include/cchannel.h \
   ../../include/carray.h \
@@ -803,10 +738,10 @@ $O/visitor.o: visitor.cc \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/ccomponenttype.h \
-  tkapp.h \
+  tkenv.h \
   ../envir/matchableobject.h \
   tkdefs.h \
-  ../envir/omnetapp.h \
+  ../envir/envirbase.h \
   ../envir/cenvirimpl.h \
   ../envir/args.h \
   ../envir/envirdefs.h \

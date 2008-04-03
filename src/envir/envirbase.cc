@@ -20,7 +20,7 @@
 #include <fstream>
 
 #include "args.h"
-#include "omnetapp.h"
+#include "envirbase.h"
 #include "appreg.h"
 #include "patternmatcher.h"
 #include "fsutils.h"

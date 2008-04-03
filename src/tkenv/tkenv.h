@@ -22,8 +22,8 @@
 #include <list>
 
 #include "tkdefs.h"
-#include "omnetapp.h"
-#include "cenvirimpl.h"
+#include "envirbase.h"
+#include "bootenv.h"
 #include "cchannel.h"
 #include "cmodule.h"
 

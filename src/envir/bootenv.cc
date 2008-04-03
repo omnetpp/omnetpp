@@ -26,7 +26,7 @@
 #include "cconfigkey.h"
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
-#include "cenvirimpl.h"
+#include "bootenv.h"
 #include "appreg.h"
 #include "cmodule.h"
 #include "fsutils.h"

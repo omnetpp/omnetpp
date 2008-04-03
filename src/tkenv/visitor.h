@@ -19,7 +19,7 @@
 #include "cenvir.h"
 #include "cobject.h"
 #include "cvisitor.h"
-#include "tkapp.h"
+#include "tkenv.h"
 #include "patternmatcher.h"
 #include "matchexpression.h"
 #include "matchableobject.h"

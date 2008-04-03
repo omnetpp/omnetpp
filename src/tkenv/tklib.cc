@@ -25,7 +25,7 @@
 #include <tk.h>
 
 #include "tklib.h"
-#include "tkapp.h"
+#include "tkenv.h"
 #include "exception.h"
 
 NAMESPACE_BEGIN

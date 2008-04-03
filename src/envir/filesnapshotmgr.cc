@@ -19,8 +19,8 @@
 #include <fstream>
 #include "cconfigkey.h"
 #include "fileutil.h"
-#include "cenvirimpl.h"
-#include "omnetapp.h"
+#include "bootenv.h"
+#include "envirbase.h"
 #include "filesnapshotmgr.h"
 
 USING_NAMESPACE

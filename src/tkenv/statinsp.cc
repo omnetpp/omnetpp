@@ -24,7 +24,7 @@
 #include "cstatistic.h"
 #include "cdensityestbase.h"
 
-#include "tkapp.h"
+#include "tkenv.h"
 #include "tklib.h"
 #include "inspfactory.h"
 #include "statinsp.h"

@@ -23,7 +23,7 @@
 
 #include "modinsp.h"
 #include "cchannel.h"
-#include "tkapp.h"
+#include "tkenv.h"
 #include "tklib.h"
 #include "inspfactory.h"
 #include "arrow.h"

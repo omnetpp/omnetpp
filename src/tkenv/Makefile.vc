@@ -24,7 +24,7 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../envir -I../common -I../layout $(TK_CFLAGS) $(ZLIB_CFLAGS) /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../sim/sim_std$D.lib $O/../envir/envir$D.lib $O/../layout/layout$D.lib $O/../common/common$D.lib $(TK_LIBS) $(ZLIB_LIBS)
 
-OBJS = $O/tkapp$(TKENV_EMBED_SUFFIX).obj $O/tkcmd.obj $O/tklib.obj $O/inspector.obj \
+OBJS = $O/tkenv$(TKENV_EMBED_SUFFIX).obj $O/tkcmd.obj $O/tklib.obj $O/inspector.obj \
        $O/inspfactory.obj $O/objinsp.obj $O/modinsp.obj $O/statinsp.obj $O/layouterenv.obj \
        $O/arrow.obj $O/visitor.obj $O/tkutil.obj $O/tkImgPNG.obj $O/tkImgPNGInit.obj
 
@@ -68,11 +68,11 @@ $O/$(LIBNAME).dll : $(OBJS) $L
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
 	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-$O/tkapp.obj : tkapp.cc
-	$(CXX) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR:\=/)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkapp.cc
+$O/tkenv.obj : tkenv.cc
+	$(CXX) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR:\=/)\"" -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
 
-$O/tkapp-e.obj : tkapp.cc tclcode.cc
-	$(CXX) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkapp.cc
+$O/tkenv-e.obj : tkenv.cc tclcode.cc
+	$(CXX) -DOMNETPP_IMAGE_PATH="\"$(OMNETPP_IMAGE_PATH:\=/)\"" $(COPTS) /c /Fo"$@" /Tp tkenv.cc
 
 tclcode.cc : *.tcl tcl2c.pl
 	$(PERL) tcl2c.pl tclcode.cc *.tcl
@@ -99,7 +99,6 @@ $O/arrow.obj: arrow.cc \
   arrow.h
 $O/inspector.obj: inspector.cc \
   ../../include/omnetpp.h \
-  tkapp.h \
   tklib.h \
   inspector.h \
   ../../include/carray.h \
@@ -186,11 +185,10 @@ $O/inspector.obj: inspector.cc \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
-  tkdefs.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 $O/inspfactory.obj: inspfactory.cc \
   ../../include/omnetpp.h \
-  tkapp.h \
   tklib.h \
   inspector.h \
   inspfactory.h \
@@ -278,8 +276,8 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
-  tkdefs.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 $O/layouterenv.obj: layouterenv.cc \
   layouterenv.h \
   tklib.h \
@@ -333,7 +331,6 @@ $O/layouterenv.obj: layouterenv.cc \
 $O/modinsp.obj: modinsp.cc \
   modinsp.h \
   ../../include/cchannel.h \
-  tkapp.h \
   tklib.h \
   inspfactory.h \
   arrow.h \
@@ -385,7 +382,6 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/ccomponenttype.h
 $O/objinsp.obj: objinsp.cc \
   ../../include/omnetpp.h \
-  tkapp.h \
   tklib.h \
   inspfactory.h \
   objinsp.h \
@@ -473,9 +469,9 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
-  tkdefs.h \
   inspector.h \
-  tkutil.h
+  tkutil.h \
+  tkdefs.h
 $O/statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -484,7 +480,6 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/coutvector.h \
   ../../include/cstatistic.h \
   ../../include/cdensityestbase.h \
-  tkapp.h \
   tklib.h \
   inspfactory.h \
   statinsp.h \
@@ -517,13 +512,60 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cstddev.h \
-  tkdefs.h \
-  ../../include/cchannel.h \
-  ../../include/ccomponenttype.h \
   inspector.h \
-  tkutil.h
-$O/tkapp.obj: tkapp.cc \
+  tkutil.h \
+  tkdefs.h
+$O/tkcmd.obj: tkcmd.cc \
   ../../include/cenvir.h \
+  ../../include/carray.h \
+  ../../include/csimulation.h \
+  ../../include/csimplemodule.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cpar.h \
+  ../../include/cmessage.h \
+  ../../include/cchannel.h \
+  ../../include/cstatistic.h \
+  ../../include/cwatch.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cqueue.h \
+  ../../include/coutvector.h \
+  ../../include/cenum.h \
+  tklib.h \
+  inspector.h \
+  inspfactory.h \
+  visitor.h \
+  ../../include/simkerneldefs.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cownedobject.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/globals.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cclassfactory.h \
+  ../../include/cmodule.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  ../../include/cmsgpar.h \
+  ../../include/cmathfunction.h \
+  tkutil.h \
+  tkdefs.h
+$O/tkenv.obj: tkenv.cc \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
   ../../include/cscheduler.h \
@@ -532,28 +574,29 @@ $O/tkapp.obj: tkapp.cc \
   ../../include/cconfigkey.h \
   ../../include/regmacros.h \
   tkdefs.h \
-  tkapp.h \
+  tkenv.h \
   tklib.h \
   inspector.h \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
-  ../../include/simkerneldefs.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h \
-  ../../include/errmsg.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/globals.h \
   ../../include/cgate.h \
+  ../../include/simkerneldefs.h \
   ../../include/cownedobject.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/cenvir.h \
+  ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
@@ -577,96 +620,12 @@ $O/tkapp.obj: tkapp.cc \
   ../../include/ccompoundmodule.h \
   ../../include/cbasicchannel.h \
   ../../include/cstddev.h
-$O/tkcmd.obj: tkcmd.cc \
-  ../../include/cenvir.h \
-  ../../include/carray.h \
-  ../../include/csimulation.h \
-  ../../include/csimplemodule.h \
-  ../../include/ccompoundmodule.h \
-  ../../include/ccomponenttype.h \
-  ../../include/cpar.h \
-  ../../include/cmessage.h \
-  ../../include/cchannel.h \
-  ../../include/cstatistic.h \
-  ../../include/cwatch.h \
-  ../../include/cclassdescriptor.h \
-  ../../include/cdisplaystring.h \
-  ../../include/cqueue.h \
-  ../../include/coutvector.h \
-  ../../include/cenum.h \
-  tkapp.h \
-  tklib.h \
-  inspector.h \
-  inspfactory.h \
-  visitor.h \
-  ../../include/simkerneldefs.h \
-  ../../include/opp_string.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/util.h \
-  ../../include/errmsg.h \
-  ../../include/cownedobject.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexception.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/globals.h \
-  ../../include/cmessageheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/onstartup.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cclassfactory.h \
-  ../../include/cmodule.h \
-  ../../include/ccomponent.h \
-  ../../include/cgate.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cexpression.h \
-  ../../include/cmsgpar.h \
-  ../../include/cmathfunction.h \
-  tkdefs.h \
-  tkutil.h
 $O/tklib.obj: tklib.cc \
-  tklib.h \
-  tkapp.h \
-  tkdefs.h \
-  ../../include/cchannel.h \
-  ../../include/cmodule.h \
-  ../../include/ccomponent.h \
-  ../../include/ccomponenttype.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cownedobject.h \
-  ../../include/cpar.h \
-  ../../include/cdefaultlist.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/cenvir.h \
-  ../../include/util.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexception.h \
-  ../../include/opp_string.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
-  ../../include/cexpression.h \
-  ../../include/cgate.h \
-  ../../include/globals.h \
-  ../../include/csimulation.h \
-  ../../include/onstartup.h \
-  ../../include/cregistrationlist.h \
-  ../../include/cclassfactory.h \
-  ../../include/cmessageheap.h \
-  ../../include/ccoroutine.h
+  tklib.h
 $O/tkutil.obj: tkutil.cc \
   ../../include/cownedobject.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
-  tkapp.h \
   visitor.h \
   tkutil.h \
   ../../include/cenvir.h \
@@ -694,9 +653,7 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/cclassfactory.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
-  tkdefs.h \
-  ../../include/cchannel.h \
-  ../../include/ccomponenttype.h
+  tkdefs.h
 $O/visitor.obj: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
@@ -737,8 +694,6 @@ $O/visitor.obj: visitor.cc \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   ../../include/cexpression.h \
-  ../../include/ccomponenttype.h \
-  tkapp.h \
-  tkdefs.h
+  ../../include/ccomponenttype.h
 $O/tkImgPNG.obj: tkImgPNG.c
 $O/tkImgPNGInit.obj: tkImgPNGInit.c

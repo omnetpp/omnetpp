@@ -27,7 +27,7 @@
 #include "timeutil.h"
 #include "platmisc.h"
 #include "cenvir.h"
-#include "omnetapp.h"
+#include "envirbase.h"
 #include "csimulation.h"
 #include "regmacros.h"
 #include "cmodule.h"

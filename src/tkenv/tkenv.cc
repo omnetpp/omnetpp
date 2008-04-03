@@ -24,7 +24,7 @@
 #include <string>
 
 #include "appreg.h"
-#include "cenvirimpl.h"
+#include "bootenv.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
 #include "speedometer.h"
@@ -35,7 +35,7 @@
 #include "regmacros.h"
 
 #include "tkdefs.h"
-#include "tkapp.h"
+#include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
 #include "inspfactory.h"

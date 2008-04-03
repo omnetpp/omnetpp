@@ -16,7 +16,7 @@
 
 #include <stdio.h>
 #include "cownedobject.h"
-#include "cenvirimpl.h"
+#include "bootenv.h"
 #include "../utils/ver.h"
 
 USING_NAMESPACE

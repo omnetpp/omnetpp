@@ -26,7 +26,7 @@
 #include "cmodule.h"
 #include "csimulation.h"
 
-#include "tkapp.h"
+#include "tkenv.h"
 #include "patternmatcher.h"
 #include "visitor.h"
 #include "tkutil.h"

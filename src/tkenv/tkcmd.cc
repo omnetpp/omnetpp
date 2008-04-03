@@ -34,7 +34,7 @@
 #include "coutvector.h"
 #include "cenum.h"
 
-#include "tkapp.h"
+#include "tkenv.h"
 #include "tklib.h"
 #include "inspector.h"
 #include "inspfactory.h"

@@ -18,7 +18,7 @@
 
 #include <tk.h>
 #include "tkutil.h"
-#include "omnetapp.h"
+#include "envirbase.h"
 
 NAMESPACE_BEGIN
 

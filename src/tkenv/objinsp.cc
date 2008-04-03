@@ -21,7 +21,7 @@
 
 #include "omnetpp.h"
 
-#include "tkapp.h"
+#include "tkenv.h"
 #include "tklib.h"
 #include "inspfactory.h"
 #include "objinsp.h"

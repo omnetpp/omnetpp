@@ -18,7 +18,7 @@
 
 #include <tk.h>
 #include "inspector.h"
-#include "omnetapp.h"
+#include "envirbase.h"
 
 NAMESPACE_BEGIN
 
