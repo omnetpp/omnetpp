@@ -36,7 +36,7 @@ class TInspector;
 /**
  * A Tcl/Tk-based user interface.
  */
-class TKENV_API TOmnetTkApp : public TOmnetApp
+class TKENV_API Tkenv : public EnvirBase
 {
    public:
       //
@@ -120,14 +120,8 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
       TInspectorList inspectors;   // list of inspector objects
 
    public:
-      TOmnetTkApp(ArgList *args, cConfiguration *config);
-      ~TOmnetTkApp();
-
-      // redefined virtual functions from TOmnetApp
-      virtual void setup();
-      virtual int run();
-      virtual void shutdown();
-      virtual void printUISpecificHelp();
+      Tkenv();
+      virtual ~Tkenv();
 
       virtual void objectDeleted(cObject *object); // notify environment
       virtual void simulationEvent(cMessage *msg);
@@ -152,20 +146,28 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
       virtual bool isGUI() {return true;}
       virtual void bubble(cComponent *component, const char *text);
 
-      virtual void putmsg(const char *s);
+      virtual void putsmsg(const char *s);
       virtual void sputn(const char *s, int n);
-      virtual void flush();
-      virtual bool gets(const char *promptstr, char *buf, int len=255);
-      virtual int  askYesNo(const char *question);
-
-      virtual void readOptions();
-      virtual void readPerRunOptions();
+      virtual cEnvir& flush();
+      virtual std::string gets(const char *promptstr, const char *defaultreply);
+      virtual bool askyesno(const char *question);
 
       virtual bool idle();
 
       // with Tkenv, activity() modules need extra stack
       virtual unsigned extraStackForEnvir();
 
+  protected:
+      // redefined virtual functions from EnvirBase
+      virtual void setup();
+      virtual int run();
+      virtual void shutdown();
+      virtual void printUISpecificHelp();
+
+      virtual void readOptions();
+      virtual void readPerRunOptions();
+
+  public:
       // New functions:
       void newNetwork(const char *networkname);
       void newRun(const char *configname, int runnumber);
@@ -219,7 +221,7 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
 
       void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
-      const char *getIniFileName()       {return getConfig()->getFileName();}
+      const char *getIniFileName()       {return config()->getFileName();}
       const char *getOutVectorFileName() {return outvectormgr->fileName();}
       const char *getOutScalarFileName() {return outscalarmgr->fileName();}
       const char *getSnapshotFileName()  {return snapshotmgr->fileName();}
@@ -231,12 +233,11 @@ class TKENV_API TOmnetTkApp : public TOmnetApp
 /**
  * Utility function
  */
-inline TOmnetTkApp *getTkApplication()
+inline Tkenv *getTkApplication()
 {
-    return (TOmnetTkApp *)(((cEnvirImpl&)ev).app);
+    return (Tkenv *)(&ev);
 }
 
 NAMESPACE_END
-
 
 #endif

@@ -1,11 +1,11 @@
 //==========================================================================
-//  OMNETAPP.H - part of
+//  ENVIRBASE.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
 //  Declaration of the following classes:
-//    TOmnetApp:  abstract base class for simulation applications
+//    EnvirBase:  abstract base class for simulation applications
 //
 //==========================================================================
 
@@ -16,8 +16,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETAPP_H
-#define __OMNETAPP_H
+#ifndef __ENVIRBASE_H
+#define __ENVIRBASE_H
 
 #include "carray.h"
 #include "globals.h"
@@ -42,16 +42,14 @@ class cParsimSynchronizer;
 
 
 /**
- * Abstract base class for the user interface.
- *
- * Concrete user interface implementations (Cmdenv, Tvenv,
- * Tkenv's app classes) should be derived from this class.
+ * Abstract base class for the user interface. Concrete user interface
+ * implementations (Cmdenv, Tkenv) should be derived from this class.
  */
-class ENVIR_API TOmnetApp
+class ENVIR_API EnvirBase : public cEnvir
 {
   protected:
     bool initialized;
-    cConfiguration *config;
+    cConfiguration *cfg;
     ArgList *args;
     cXMLDocCache *xmlcache;
 
@@ -119,22 +117,90 @@ class ENVIR_API TOmnetApp
     simtime_t simulatedtime;  // sim. time after finishing simulation
 
   protected:
-    // utility function; never returns NULL
-    cModuleType *resolveNetwork(const char *networkname);
+    // leave to subclasses: virtual void putsmsg(const char *msg);
+    // leave to subclasses: virtual bool askyesno(const char *msg);
+    virtual void sputn(const char *s, int n);
 
   public:
     /**
-     * Constructor takes command-line args and ini file instance.
+     * Constructor.
      */
-    TOmnetApp(ArgList *args, cConfiguration *config);
+    EnvirBase();
 
     /**
      * Destructor.
      */
-    virtual ~TOmnetApp();
+    virtual ~EnvirBase();
 
     /** @name Functions called from cEnvir's similar functions */
     //@{
+    // life cycle
+    virtual int run(int argc, char *argv[], cConfiguration *config);
+
+    // eventlog callback interface
+    virtual void objectDeleted(cObject *object);
+    virtual void simulationEvent(cMessage *msg);
+    // leave to subclasses: virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL);
+    virtual void messageScheduled(cMessage *msg);
+    virtual void messageCancelled(cMessage *msg);
+    virtual void beginSend(cMessage *msg);
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0);
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate);
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+    virtual void endSend(cMessage *msg);
+    virtual void messageDeleted(cMessage *msg);
+    virtual void moduleReparented(cModule *module, cModule *oldparent);
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *method);
+    virtual void componentMethodEnd();
+    virtual void moduleCreated(cModule *newmodule);
+    virtual void moduleDeleted(cModule *module);
+    virtual void connectionCreated(cGate *srcgate);
+    virtual void connectionRemoved(cGate *srcgate);
+    virtual void displayStringChanged(cComponent *component);
+    virtual void undisposedObject(cObject *obj);
+
+    // configuration, model parameters
+    virtual void readParameter(cPar *parameter);
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
+    // leave to subclasses: virtual unsigned extraStackForEnvir();
+    virtual cConfiguration *config();
+
+    // UI functions
+    virtual void bubble(cComponent *component, const char *text);
+    // leave to subclasses: virtual std::string gets(const char *prompt, const char *defaultreply=NULL);
+    // leave to subclasses: virtual cEnvir& flush();
+
+    // RNGs
+    virtual int numRNGs();
+    virtual cRNG *rng(int k);
+    virtual void getRNGMappingFor(cComponent *component);
+
+    // output vectors
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname);
+    virtual void deregisterOutputVector(void *vechandle);
+    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value);
+    virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value);
+
+    // output scalars
+    virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
+    virtual void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+
+    // snapshot file
+    virtual std::ostream *getStreamForSnapshot();
+    virtual void releaseStreamForSnapshot(std::ostream *os);
+
+    // misc
+    virtual int argCount();
+    virtual char **argVector();
+    virtual int getParsimProcId();
+    virtual int getParsimNumPartitions();
+    virtual const char *getRunId()  {return runid.c_str();}
+    virtual unsigned long getUniqueNumber();
+    virtual bool idle();
+
+  protected:
+    // functions added locally
     virtual void setup();
     virtual int run() = 0;
     virtual void shutdown();
@@ -142,16 +208,9 @@ class ENVIR_API TOmnetApp
     virtual void startRun();
     virtual void endRun();
 
-    virtual void readParameter(cPar *parameter);
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
-    //@}
+    // utility function; never returns NULL
+    cModuleType *resolveNetwork(const char *networkname);
 
-    /** @name Internal methods */
-    //@{
-    /**
-     * Prints help text.
-     */
     void printHelp();
 
     /**
@@ -166,126 +225,19 @@ class ENVIR_API TOmnetApp
     virtual void printUISpecificHelp() = 0;
 
     /**
-     * Provides access to the configuration
-     */
-    virtual cConfiguration *getConfig();
-
-    /**
      * Used internally to read opt_xxxxx setting from ini file.
      * Can be overloaded in subclasses, to support new options.
      */
     virtual void readOptions();
     virtual void readPerRunOptions();
 
+  public:
     // Utility function: optionally appends host name to fname
     virtual void processFileName(opp_string& fname);
 
-    // Utility functions: NED file loading and list file handling
-    //virtual void globAndLoadNedFile(const char *fnamepattern);
-    //virtual void globAndLoadListFile(const char *fnamepattern, bool istemplistfile);
-    //virtual void processListFile(const char *listfilename, bool istemplistfile);
-
+  protected:
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();
-
-    /**
-     * Partition Id when parallel simulation is active.
-     */
-    virtual int getParsimProcId();
-    /**
-     * Number of partitions when parallel simulation is active, otherwise 0.
-     */
-    virtual int getParsimNumPartitions();
-
-    /**
-     * Returns a textual run Id, which is composed of meaningful strings such as
-     * network name and date, and can be reasonably expected to be globally unique.
-     */
-    virtual const char *getRunId()  {return runid.c_str();}
-
-    //@}
-
-    /** @name Functions called from the objects of the simulation kernel
-     * to notify the application about certain events.
-     * For documentation see corresponding methods in cEnvir.
-     */
-    //@{
-    //XXX make sure base class gets properly called from Tkenv versions of these funcs!!!
-    virtual void objectDeleted(cObject *object) {}
-    virtual void simulationEvent(cMessage *msg);
-    virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) {}
-    virtual void messageScheduled(cMessage *msg);
-    virtual void messageCancelled(cMessage *msg);
-    virtual void beginSend(cMessage *msg);
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate);
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
-    virtual void endSend(cMessage *msg);
-    virtual void messageDeleted(cMessage *msg);
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *method);
-    virtual void componentMethodEnd();
-    virtual void moduleCreated(cModule *newmodule);
-    virtual void moduleDeleted(cModule *module);
-    virtual void moduleReparented(cModule *module, cModule *oldparent);
-    virtual void connectionCreated(cGate *srcgate);
-    virtual void connectionRemoved(cGate *srcgate);
-    virtual void displayStringChanged(cComponent *component);
-    virtual void undisposedObject(cObject *obj);
-    //@}
-
-    /** @name Functions called by cEnvir's similar functions.
-     * They provide I/O for simple module activity functions and the sim. kernel.
-     * Default versions use standard I/O.
-     */
-    //@{
-    virtual bool isGUI() = 0;
-    virtual void bubble(cComponent *component, const char *text);
-
-    virtual void putmsg(const char *s) = 0;
-    virtual void sputn(const char *s, int n);
-    virtual void flush() = 0;
-    virtual bool gets(const char *promptstr, char *buf, int len=255) = 0;  // 0==OK 1==CANCEL
-    virtual int  askYesNo(const char *question) = 0; //0==NO 1==YES -1==CANCEL
-    //@}
-
-    /** @name Methods for accessing RNGs; called by cEnvir's similar functions */
-    //@{
-    int numRNGs();
-    cRNG *rng(int k);
-    void getRNGMappingFor(cComponent *component);
-    //@}
-
-    /** @name Methods for recording data from output vectors; called by cEnvir's similar functions */
-    //@{
-    void *registerOutputVector(const char *modulename, const char *vectorname);
-    void deregisterOutputVector(void *vechandle);
-    void setVectorAttribute(void *vechandle, const char *name, const char *value);
-    bool recordInOutputVector(void *vechandle, simtime_t t, double value);
-    //@}
-
-    /** @name Methods for output scalars; called by cEnvir's similar functions */
-    //@{
-    void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
-    void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
-    //@}
-
-    /* @name Methods for snapshot management; called by cEnvir's similar functions. */
-    //@{
-    std::ostream *getStreamForSnapshot();
-    void releaseStreamForSnapshot(std::ostream *os);
-    //@}
-
-    /**
-     * Returns how much extra stack space the user interface recommends
-     * for the simple modules; called by cEnvir's similar function.
-     */
-    virtual unsigned extraStackForEnvir() {return 0;}
-
-    /** Called from cEnvir's similar function */
-    virtual unsigned long getUniqueNumber();
-
-    /** @name Utility functions. */
-    //@{
 
     /**
      * Original command-line args.
@@ -301,12 +253,6 @@ class ENVIR_API TOmnetApp
      * Like displayError(), but for normal termination messages, not errors.
      */
     virtual void displayMessage(std::exception& e);
-
-    /**
-     * Called from cEnvir::idle().
-     */
-    virtual bool idle();
-    //@}
 
     /** @name Measuring elapsed time. */
     //@{

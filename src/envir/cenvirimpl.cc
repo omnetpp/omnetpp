@@ -1,11 +1,11 @@
 //==========================================================================
-//  CENVIRIMPL.CC - part of
+//  BOOTENV.CC - part of
 //
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
 //  Implementation of
-//    cEnvirImpl     : user interface class
+//    BootEnv     : user interface class
 //
 //==========================================================================
 
@@ -27,7 +27,6 @@
 #include "inifilereader.h"
 #include "sectionbasedconfig.h"
 #include "cenvirimpl.h"
-#include "omnetapp.h"
 #include "appreg.h"
 #include "cmodule.h"
 #include "fsutils.h"
@@ -40,10 +39,6 @@ NAMESPACE_BEGIN
 
 // the global list for the registration objects
 cGlobalRegistrationList omnetapps("omnetapps");
-
-// output buffer
-#define ENVIR_TEXTBUF_LEN 1024
-static char buffer[ENVIR_TEXTBUF_LEN];
 
 NAMESPACE_END
 
@@ -61,7 +56,6 @@ Register_GlobalConfigEntry(CFGID_USER_INTERFACE, "user-interface", CFG_STRING, "
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 
-//========================================================================
 
 // User interface factory functions.
 static cOmnetAppRegistration *chooseBestOmnetApp()
@@ -79,18 +73,13 @@ static cOmnetAppRegistration *chooseBestOmnetApp()
     return best_appreg;
 }
 
-//========================================================================
 
-#ifdef _MSC_VER
-#pragma warning(disable:4355)
-#endif
 
-cEnvirImpl::cEnvirImpl()
+BootEnv::BootEnv()
 {
-    app = NULL;
 }
 
-cEnvirImpl::~cEnvirImpl()
+BootEnv::~BootEnv()
 {
 }
 
@@ -116,10 +105,16 @@ static void verifyIntTypes()
 #undef LL
 }
 
-void cEnvirImpl::setup(int argc, char *argv[])
+int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
 {
+    //
+    // SETUP
+    //
+    cEnvir *app = NULL;
     ArgList *args = NULL;
     SectionBasedConfiguration *bootconfig = NULL;
+    cConfiguration *configobject = NULL;
+    int exitcode = 0;
     try
     {
         simulation.init();
@@ -172,7 +167,6 @@ void cEnvirImpl::setup(int argc, char *argv[])
         // Create custom configuration object, if needed.
         //
         std::string configclass = bootconfig->getAsString(CFGID_CONFIGURATION_CLASS);
-        cConfiguration *configobject = NULL;
         if (configclass.empty())
         {
             configobject = bootconfig;
@@ -202,7 +196,7 @@ void cEnvirImpl::setup(int argc, char *argv[])
         configobject->validate(ignorablekeys.c_str());
 
         //
-        // Choose and set up user interface (TOmnetApp subclass). Everything else
+        // Choose and set up user interface (EnvirBase subclass). Everything else
         // will be done by the user interface class.
         //
 
@@ -240,17 +234,15 @@ void cEnvirImpl::setup(int argc, char *argv[])
         // Finally, set up user interface object. All the rest will be done there.
         //
         ::printf("Setting up %s...\n", appreg->name());
-        app = appreg->createOne(args, configobject);
-        app->setup();
-        isgui = app->isGUI();
+        app = appreg->createOne();
     }
     catch (std::exception& e)
     {
         ::fprintf(stderr, "\n<!> Error during startup: %s.\n", e.what());
         if (app)
         {
-           delete app;
-           app = NULL;
+            delete app;
+            app = NULL;
         }
         else
         {
@@ -259,34 +251,35 @@ void cEnvirImpl::setup(int argc, char *argv[])
             delete bootconfig;
         }
     }
-}
 
-int cEnvirImpl::run()
-{
+    //
+    // RUN
+    //
     try
     {
         if (app)
-            return app->run();
-        return 1;
+        {
+            evPtr = app;
+            exitcode = app->run(argc, argv, configobject);
+        }
+        else
+        {
+            exitcode = 1;
+        }
     }
     catch (std::exception& e)
     {
         ::fprintf(stderr, "\n<!> %s.\n", e.what());
-        return 1;
+        exitcode = 1;
     }
-}
 
-void cEnvirImpl::shutdown()
-{
-    if (app)
-    {
-        app->shutdown();
-        delete app;
-        app = NULL;
-    }
+    //
+    // SHUTDOWN
+    //
+    evPtr = this;
+    delete app;
 
     simulation.shutdown();
-
     componentTypes.clear();
     nedFunctions.clear();
     classes.clear();
@@ -294,345 +287,35 @@ void cEnvirImpl::shutdown()
     classDescriptors.clear();
     configKeys.clear();
     omnetapps.clear();
+
+    return exitcode;
 }
 
-//-----------------------------------------------------------------
-
-void cEnvirImpl::readParameter(cPar *parameter)
+void BootEnv::sputn(const char *s, int n)
 {
-    app->readParameter(parameter);
+    ::fwrite(s, 1, n, stdout);
 }
 
-bool cEnvirImpl::isModuleLocal(cModule *parentmod, const char *modname, int index)
+void BootEnv::putsmsg(const char *msg)
 {
-    return app->isModuleLocal(parentmod, modname, index);
+    ::printf("<!> %s\n\n", msg);
 }
 
-cXMLElement *cEnvirImpl::getXMLDocument(const char *filename, const char *path)
+cEnvir& BootEnv::flush()
 {
-    return app->getXMLDocument(filename, path);
-}
-
-unsigned cEnvirImpl::extraStackForEnvir()
-{
-    return app->extraStackForEnvir();
-}
-
-cConfiguration *cEnvirImpl::config()
-{
-    return app->getConfig();
-}
-
-//-----------------------------------------------------------------
-
-void cEnvirImpl::objectDeleted(cObject *obj)
-{
-    if (app) app->objectDeleted(obj);
-}
-
-void cEnvirImpl::simulationEvent(cMessage *msg)
-{
-    app->simulationEvent(msg);
-}
-
-void cEnvirImpl::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate)
-{
-    app->messageSent_OBSOLETE(msg, directToGate);
-}
-
-void cEnvirImpl::messageScheduled(cMessage *msg)
-{
-    app->messageScheduled(msg);
-}
-
-void cEnvirImpl::messageCancelled(cMessage *msg)
-{
-    app->messageCancelled(msg);
-}
-
-void cEnvirImpl::beginSend(cMessage *msg)
-{
-    app->beginSend(msg);
-}
-
-void cEnvirImpl::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
-{
-    app->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
-}
-
-void cEnvirImpl::messageSendHop(cMessage *msg, cGate *srcGate)
-{
-    app->messageSendHop(msg, srcGate);
-}
-
-void cEnvirImpl::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
-{
-    app->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
-}
-
-void cEnvirImpl::endSend(cMessage *msg)
-{
-    app->endSend(msg);
-}
-
-void cEnvirImpl::messageDeleted(cMessage *msg)
-{
-    app->messageDeleted(msg);
-}
-
-void cEnvirImpl::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
-{
-    app->componentMethodBegin(from, to, method);
-}
-
-void cEnvirImpl::componentMethodEnd()
-{
-    app->componentMethodEnd();
-}
-
-//FIXME we should probably NOT use EVCB for these! (or we should redraw the network diagram every time!!!)
-void cEnvirImpl::moduleCreated(cModule *newmodule)
-{
-    app->moduleCreated(newmodule);
-}
-
-void cEnvirImpl::moduleDeleted(cModule *module)
-{
-    app->moduleDeleted(module);
-}
-
-void cEnvirImpl::moduleReparented(cModule *module, cModule *oldparent)
-{
-    app->moduleReparented(module, oldparent);
-}
-
-void cEnvirImpl::connectionCreated(cGate *srcgate)
-{
-    app->connectionCreated(srcgate);
-}
-
-void cEnvirImpl::connectionRemoved(cGate *srcgate)
-{
-    app->connectionRemoved(srcgate);
-}
-
-void cEnvirImpl::displayStringChanged(cComponent *component)
-{
-    app->displayStringChanged(component);
-}
-
-void cEnvirImpl::undisposedObject(cObject *obj)
-{
-    if (!app)
-    {
-        // we must have been called after cEnvirImpl has already shut down
-        ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: (%s)`%s' at %p\n",
-                 obj->className(), obj->fullPath().c_str(), obj);
-        return;
-    }
-    app->undisposedObject(obj);
-}
-
-//-----------------------------------------------------------------
-
-void cEnvirImpl::bubble(cComponent *component, const char *text)
-{
-    if (!isgui || disable_tracing) return;
-    if (!dynamic_cast<cModule*>(component))
-        throw cRuntimeError("bubble() for channels is not supported yet");
-    app->bubble((cModule*)component, text);
-}
-
-void cEnvirImpl::printfmsg(const char *fmt,...)
-{
-    va_list va;
-    va_start(va, fmt);
-    vsprintf(buffer, fmt, va);
-    va_end(va);
-
-    if (app)
-       app->putmsg(buffer);
-    else
-       ::printf("\n<!> %s\n\n", buffer);
-}
-
-void cEnvirImpl::printf(const char *fmt,...)
-{
-    if (disable_tracing) return;
-
-    va_list va;
-    va_start(va, fmt);
-    int len = vsprintf(buffer, fmt, va); // len<0 means error
-    va_end(va);
-
-    // has to go through evbuf to preserve ordering
-    if (len>0)
-        out.rdbuf()->sputn(buffer, len);
-}
-
-void cEnvirImpl::puts(const char *s)
-{
-    if (disable_tracing) return;
-
-    // has to go through evbuf to preserve ordering
-    int len = strlen(s);
-    out.rdbuf()->sputn(s,len);
-}
-
-void cEnvirImpl::sputn(const char *s, int n)
-{
-    // invoked from evbuf::sync() to flush stream buffer
-    if (disable_tracing) return;
-
-    if (app)
-        app->sputn(s,n);
-    else
-        ::fwrite(s,1,n,stdout);
-}
-
-cEnvirImpl& cEnvirImpl::flush()
-{
-    if (disable_tracing) return *this;
-
-    out.rdbuf()->pubsync();
-
-    if (app)
-        app->flush();
-    else
-        ::fflush(stdout);
-
+    ::fflush(stdout);
     return *this;
 }
 
-bool cEnvirImpl::gets(const char *prompt, char *buf, int len)
+void BootEnv::undisposedObject(cObject *obj)
 {
-    bool esc = app->gets(prompt, buf, len);
-    if (esc)
-        throw cRuntimeError(eCANCEL);
-    return true;
-}
-
-std::string cEnvirImpl::gets(const char *prompt, const char *defaultreply)
-{
-    buffer[0] = '\0';
-    if (defaultreply) strncpy(buffer,defaultreply,ENVIR_TEXTBUF_LEN-1);
-    buffer[ENVIR_TEXTBUF_LEN-1]='\0';
-    bool esc = app->gets(prompt, buffer, ENVIR_TEXTBUF_LEN-1);
-    if (esc)
-        throw cRuntimeError(eCANCEL);
-    return std::string(buffer);
-}
-
-bool cEnvirImpl::askYesNo(const char *msgfmt,...)
-{
-    va_list va;
-    va_start(va, msgfmt);
-    vsprintf(buffer, msgfmt, va);
-    va_end(va);
-
-    int ret = app->askYesNo(buffer);
-    if (ret<0)
-        throw cRuntimeError(eCANCEL);
-    return ret!=0;
-}
-
-
-//---------------------------------------------------------
-
-int cEnvirImpl::numRNGs()
-{
-    return app->numRNGs();
-}
-
-cRNG *cEnvirImpl::rng(int k)
-{
-    return app->rng(k);
-}
-
-void cEnvirImpl::getRNGMappingFor(cComponent *component)
-{
-    app->getRNGMappingFor(component);
+    // we must have been called after BootEnv has already shut down
+    ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: (%s)`%s' at %p\n",
+             obj->className(), obj->fullPath().c_str(), obj);
 }
 
 //---------------------------------------------------------
 
-void *cEnvirImpl::registerOutputVector(const char *modulename, const char *vectorname)
-{
-    return app->registerOutputVector(modulename, vectorname);
-}
-
-void cEnvirImpl::deregisterOutputVector(void *vechandle)
-{
-    app->deregisterOutputVector(vechandle);
-}
-
-void cEnvirImpl::setVectorAttribute(void *vechandle, const char *name, const char *value)
-{
-    app->setVectorAttribute(vechandle, name, value);
-}
-
-bool cEnvirImpl::recordInOutputVector(void *vechandle, simtime_t t, double value)
-{
-    return app->recordInOutputVector(vechandle, t, value);
-}
-
-//---------------------------------------------------------
-
-void cEnvirImpl::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
-{
-    app->recordScalar(component, name, value, attributes);
-}
-
-void cEnvirImpl::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
-{
-    app->recordScalar(component, name, statistic, attributes);
-}
-
-//---------------------------------------------------------
-
-std::ostream *cEnvirImpl::getStreamForSnapshot()
-{
-    return app->getStreamForSnapshot();
-}
-
-void cEnvirImpl::releaseStreamForSnapshot(std::ostream *os)
-{
-    app->releaseStreamForSnapshot(os);
-}
-
-//---------------------------------------------------------
-
-int cEnvirImpl::argCount()
-{
-    return app->argList()->argCount();
-}
-
-char **cEnvirImpl::argVector()
-{
-    return app->argList()->argVector();
-}
-
-int cEnvirImpl::getParsimProcId()
-{
-    return app->getParsimProcId();
-}
-
-int cEnvirImpl::getParsimNumPartitions()
-{
-    return app->getParsimNumPartitions();
-}
-
-unsigned long cEnvirImpl::getUniqueNumber()
-{
-    return app->getUniqueNumber();
-}
-
-bool cEnvirImpl::idle()
-{
-    return app->idle();
-}
-
-//=========================================================
 
 #include "speedometer.h"
 #include "fileoutvectormgr.h"

@@ -85,7 +85,7 @@ void cFileOutputScalarManager::startRun()
     // clean up file from previous runs
     closeFile();
     fname = ev.config()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
-    ((cEnvirImpl&)ev).app->processFileName(fname);
+    dynamic_cast<EnvirBase *>(&ev)->processFileName(fname);
     if (ev.config()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
         removeFile(fname.c_str(), "old output scalar file");
     initialized = false;
@@ -115,7 +115,7 @@ void cFileOutputScalarManager::init()
     {
         initialized = true;
         const char *networkname = simulation.networkType()->name();
-        const char *runId = ((cEnvirImpl&)ev).app->getRunId();
+        const char *runId = ev.getRunId();
         fprintf(f, "run %s\n", QUOTE(runId));
         //FIXME write out run data here as well (not only in outvectormanager)
 

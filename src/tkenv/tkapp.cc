@@ -56,7 +56,7 @@ USING_NAMESPACE
 //
 // Register the Tkenv user interface
 //
-Register_OmnetApp("Tkenv", TOmnetTkApp, 20, "graphical user interface");
+Register_OmnetApp("Tkenv", Tkenv, 20, "graphical user interface");
 
 //
 // The following function can be used to force linking with Tkenv; specify
@@ -103,9 +103,7 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
 }
 
 
-
-TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
-  TOmnetApp(args, config)
+Tkenv::Tkenv()
 {
     interp = NULL;  // Tcl/Tk not set up yet
     simstate = SIM_NONET;
@@ -139,7 +137,7 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
     opt_expressmode_autoupdate = true;
 }
 
-TOmnetTkApp::~TOmnetTkApp()
+Tkenv::~Tkenv()
 {
 }
 
@@ -149,10 +147,10 @@ static void signalHandler(int signum)
    exit(2);
 }
 
-void TOmnetTkApp::setup()
+void Tkenv::setup()
 {
     // initialize base class
-    TOmnetApp::setup();  // includes readOptions()
+    EnvirBase::setup();  // includes readOptions()
     if (!initialized)
         return;
 
@@ -240,7 +238,7 @@ void TOmnetTkApp::setup()
     }
 }
 
-int TOmnetTkApp::run()
+int Tkenv::run()
 {
     if (!initialized)
         return 1;
@@ -251,7 +249,7 @@ int TOmnetTkApp::run()
     return 0;
 }
 
-void TOmnetTkApp::shutdown()
+void Tkenv::shutdown()
 {
     // close all inspectors before exiting
     for(;;)
@@ -271,10 +269,10 @@ void TOmnetTkApp::shutdown()
     inspectorfactories.clear();
 
     // shut down base class
-    TOmnetApp::shutdown();
+    EnvirBase::shutdown();
 }
 
-void TOmnetTkApp::printUISpecificHelp()
+void Tkenv::printUISpecificHelp()
 {
     ev << "Tkenv-specific options:\n";
     ev << "  -c <configname>\n";
@@ -287,10 +285,10 @@ void TOmnetTkApp::printUISpecificHelp()
     ev << "\n";
 }
 
-void TOmnetTkApp::rebuildSim()
+void Tkenv::rebuildSim()
 {
     if (isconfigrun)
-         newRun(getConfig()->getActiveConfigName(), getConfig()->getActiveRunNumber());
+         newRun(config()->getActiveConfigName(), config()->getActiveRunNumber());
     else if (simulation.networkType()!=NULL)
          newNetwork(simulation.networkType()->name());
     else
@@ -301,7 +299,7 @@ void TOmnetTkApp::rebuildSim()
          inspect(simulation.systemModule(),INSP_DEFAULT,"",NULL);
 }
 
-void TOmnetTkApp::doOneStep()
+void Tkenv::doOneStep()
 {
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
@@ -361,7 +359,7 @@ void TOmnetTkApp::doOneStep()
     }
 }
 
-void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event, cModule *until_module)
+void Tkenv::runSimulation(int mode, simtime_t until_time, long until_event, cModule *until_module)
 {
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
@@ -433,7 +431,7 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
     updateInspectors();
 }
 
-void TOmnetTkApp::setSimulationRunMode(int mode)
+void Tkenv::setSimulationRunMode(int mode)
 {
     // This function (and the next one too) is called while runSimulation() is
     // underway, from Tcl code that gets a chance to run via the
@@ -441,18 +439,18 @@ void TOmnetTkApp::setSimulationRunMode(int mode)
     runmode = mode;
 }
 
-void TOmnetTkApp::setSimulationRunUntil(simtime_t until_time, long until_event)
+void Tkenv::setSimulationRunUntil(simtime_t until_time, long until_event)
 {
     rununtil_time = until_time;
     rununtil_event = until_event;
 }
 
-void TOmnetTkApp::setSimulationRunUntilModule(cModule *until_module)
+void Tkenv::setSimulationRunUntilModule(cModule *until_module)
 {
     rununtil_module = until_module;
 }
 
-bool TOmnetTkApp::doRunSimulation()
+bool Tkenv::doRunSimulation()
 {
     //
     // IMPORTANT:
@@ -495,7 +493,7 @@ bool TOmnetTkApp::doRunSimulation()
         performAnimations();
 
         // flush so that output from different modules don't get mixed
-        ev.flushlastline();
+        ev.flushLastLine();
 
         // display update
         if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
@@ -530,7 +528,7 @@ bool TOmnetTkApp::doRunSimulation()
     return false;
 }
 
-bool TOmnetTkApp::doRunSimulationExpress()
+bool Tkenv::doRunSimulationExpress()
 {
     //
     // IMPORTANT:
@@ -592,12 +590,12 @@ bool TOmnetTkApp::doRunSimulationExpress()
     return false;
 }
 
-void TOmnetTkApp::startAll()
+void Tkenv::startAll()
 {
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Not implemented} info ok",NULL));
 }
 
-void TOmnetTkApp::finishSimulation()
+void Tkenv::finishSimulation()
 {
     // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_TERMINATED || simstate==SIM_ERROR);
@@ -625,7 +623,7 @@ void TOmnetTkApp::finishSimulation()
     try
     {
         simulation.callFinish();
-        ev.flushlastline();
+        ev.flushLastLine();
 
         checkFingerprint();
     }
@@ -650,7 +648,7 @@ void TOmnetTkApp::finishSimulation()
     updateInspectors();
 }
 
-void TOmnetTkApp::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
+void Tkenv::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
 {
     try
     {
@@ -662,7 +660,7 @@ void TOmnetTkApp::loadNedFile(const char *fname, const char *expectedPackage, bo
     }
 }
 
-void TOmnetTkApp::newNetwork(const char *networkname)
+void Tkenv::newNetwork(const char *networkname)
 {
     try
     {
@@ -681,7 +679,7 @@ void TOmnetTkApp::newNetwork(const char *networkname)
 
         // set up new network with config General.
         isconfigrun = false;
-        getConfig()->activateConfig("General", 0);
+        config()->activateConfig("General", 0);
         readPerRunOptions();
         opt_network_name = network->name();  // override config setting
         simulation.setupNetwork(network);
@@ -705,7 +703,7 @@ void TOmnetTkApp::newNetwork(const char *networkname)
     updateInspectors();
 }
 
-void TOmnetTkApp::newRun(const char *configname, int runnumber)
+void Tkenv::newRun(const char *configname, int runnumber)
 {
     try
     {
@@ -719,7 +717,7 @@ void TOmnetTkApp::newRun(const char *configname, int runnumber)
 
         // set up new network
         isconfigrun = true;
-        getConfig()->activateConfig(configname, runnumber);
+        config()->activateConfig(configname, runnumber);
         readPerRunOptions();
 
         if (opt_network_name.empty())
@@ -754,7 +752,7 @@ void TOmnetTkApp::newRun(const char *configname, int runnumber)
     updateInspectors();
 }
 
-TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, void *dat)
+TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *dat)
 {
     // create inspector object & window or display existing one
     TInspector *existing_insp = findInspector(obj, type);
@@ -800,7 +798,7 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, const char *geometry, v
     return insp;
 }
 
-TInspector *TOmnetTkApp::findInspector(cObject *obj, int type)
+TInspector *Tkenv::findInspector(cObject *obj, int type)
 {
     for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
@@ -811,13 +809,13 @@ TInspector *TOmnetTkApp::findInspector(cObject *obj, int type)
     return NULL;
 }
 
-void TOmnetTkApp::deleteInspector(TInspector *insp)
+void Tkenv::deleteInspector(TInspector *insp)
 {
     inspectors.remove(insp);
     delete insp;
 }
 
-void TOmnetTkApp::updateInspectors()
+void Tkenv::updateInspectors()
 {
     // update inspectors
     for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end();)
@@ -841,12 +839,12 @@ void TOmnetTkApp::updateInspectors()
     CHK(Tcl_VarEval(interp, "inspectorupdate_callback",NULL));
 }
 
-void TOmnetTkApp::createSnapshot( const char *label )
+void Tkenv::createSnapshot( const char *label )
 {
     simulation.snapshot(&simulation, label );
 }
 
-void TOmnetTkApp::updateGraphicalInspectorsBeforeAnimation()
+void Tkenv::updateGraphicalInspectorsBeforeAnimation()
 {
     for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
     {
@@ -858,15 +856,15 @@ void TOmnetTkApp::updateGraphicalInspectorsBeforeAnimation()
     }
 }
 
-void TOmnetTkApp::updateNetworkRunDisplay()
+void Tkenv::updateNetworkRunDisplay()
 {
     char runnr[10];
     const char *networkname;
 
-    if (getConfig()->getActiveRunNumber())
+    if (config()->getActiveRunNumber())
         sprintf(runnr, "?");
     else
-        sprintf(runnr, "%d", getConfig()->getActiveRunNumber());
+        sprintf(runnr, "%d", config()->getActiveRunNumber());
 
     if (simulation.networkType()==NULL)
         networkname = "(no network)";
@@ -879,7 +877,7 @@ void TOmnetTkApp::updateNetworkRunDisplay()
     CHK(Tcl_VarEval(interp, "wm title . {OMNeT++/Tkenv - ", getWindowTitlePrefix(), networkname,"}",NULL));
 }
 
-void TOmnetTkApp::updateSimtimeDisplay()
+void Tkenv::updateSimtimeDisplay()
 {
     // event and time display
     char buf[16];
@@ -909,7 +907,7 @@ void TOmnetTkApp::updateSimtimeDisplay()
     CHK(Tcl_Eval(interp, "redraw_timeline"));
 }
 
-void TOmnetTkApp::updateNextModuleDisplay()
+void Tkenv::updateNextModuleDisplay()
 {
     cSimpleModule *mod = NULL;
 
@@ -931,14 +929,14 @@ void TOmnetTkApp::updateNextModuleDisplay()
     CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {Next: ",modname.c_str(),id,"}",NULL));
 }
 
-void TOmnetTkApp::clearNextModuleDisplay()
+void Tkenv::clearNextModuleDisplay()
 {
     CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {"
                         "Running..."
                         "}", NULL ));
 }
 
-void TOmnetTkApp::updatePerformanceDisplay(Speedometer& speedometer)
+void Tkenv::updatePerformanceDisplay(Speedometer& speedometer)
 {
     char buf[16];
     sprintf(buf, "%g", speedometer.simSecPerSec());
@@ -955,7 +953,7 @@ void TOmnetTkApp::updatePerformanceDisplay(Speedometer& speedometer)
                         "}", NULL ));
 }
 
-void TOmnetTkApp::clearPerformanceDisplay()
+void Tkenv::clearPerformanceDisplay()
 {
     CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {"
                         "Simsec/sec: n/a"
@@ -968,7 +966,7 @@ void TOmnetTkApp::clearPerformanceDisplay()
                         "}", NULL ));
 }
 
-void TOmnetTkApp::printEventBanner(cSimpleModule *module)
+void Tkenv::printEventBanner(cSimpleModule *module)
 {
     char banner[MAX_OBJECTFULLPATH+60];
     sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
@@ -1009,11 +1007,11 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *module)
 }
 
 //=========================================================================
-void TOmnetTkApp::readOptions()
+void Tkenv::readOptions()
 {
-    TOmnetApp::readOptions();
+    EnvirBase::readOptions();
 
-    cConfiguration *cfg = getConfig();
+    cConfiguration *cfg = config();
 
     opt_extrastack_kb = cfg->getAsInt(CFGID_TKENV_EXTRA_STACK_KB);
 
@@ -1027,12 +1025,12 @@ void TOmnetTkApp::readOptions()
     opt_plugin_path = cfg->getAsFilename(CFGID_PLUGIN_PATH).c_str();
 }
 
-void TOmnetTkApp::readPerRunOptions()
+void Tkenv::readPerRunOptions()
 {
-    TOmnetApp::readPerRunOptions();
+    EnvirBase::readPerRunOptions();
 }
 
-bool TOmnetTkApp::idle()
+bool Tkenv::idle()
 {
     eState origsimstate = simstate;
     simstate = SIM_BUSY;
@@ -1044,7 +1042,7 @@ bool TOmnetTkApp::idle()
     return stop;
 }
 
-void TOmnetTkApp::objectDeleted(cObject *object)
+void Tkenv::objectDeleted(cObject *object)
 {
     for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); )
     {
@@ -1066,9 +1064,9 @@ void TOmnetTkApp::objectDeleted(cObject *object)
     }
 }
 
-void TOmnetTkApp::simulationEvent(cMessage *msg)
+void Tkenv::simulationEvent(cMessage *msg)
 {
-    TOmnetApp::simulationEvent(msg);
+    EnvirBase::simulationEvent(msg);
 
     // display in message window
     if (hasmessagewindow)
@@ -1100,7 +1098,7 @@ void TOmnetTkApp::simulationEvent(cMessage *msg)
     }
 }
 
-void TOmnetTkApp::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME needed?
+void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME needed?
 {
     // display in message window
     if (hasmessagewindow)
@@ -1132,49 +1130,49 @@ void TOmnetTkApp::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIX
     }
 }
 
-void TOmnetTkApp::messageScheduled(cMessage *msg)
+void Tkenv::messageScheduled(cMessage *msg)
 {
-    TOmnetApp::messageScheduled(msg);
+    EnvirBase::messageScheduled(msg);
 }
 
-void TOmnetTkApp::messageCancelled(cMessage *msg)
+void Tkenv::messageCancelled(cMessage *msg)
 {
-    TOmnetApp::messageCancelled(msg);
+    EnvirBase::messageCancelled(msg);
 }
 
-void TOmnetTkApp::beginSend(cMessage *msg)
+void Tkenv::beginSend(cMessage *msg)
 {
-    TOmnetApp::beginSend(msg);
+    EnvirBase::beginSend(msg);
 }
 
-void TOmnetTkApp::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    TOmnetApp::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+    EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
-void TOmnetTkApp::messageSendHop(cMessage *msg, cGate *srcGate)
+void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    TOmnetApp::messageSendHop(msg, srcGate);
+    EnvirBase::messageSendHop(msg, srcGate);
 }
 
-void TOmnetTkApp::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    TOmnetApp::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
-void TOmnetTkApp::endSend(cMessage *msg)
+void Tkenv::endSend(cMessage *msg)
 {
-    TOmnetApp::endSend(msg);
+    EnvirBase::endSend(msg);
 }
 
-void TOmnetTkApp::messageDeleted(cMessage *msg)
+void Tkenv::messageDeleted(cMessage *msg)
 {
-    TOmnetApp::messageDeleted(msg);
+    EnvirBase::messageDeleted(msg);
 }
 
-void TOmnetTkApp::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *method)
+void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *method)
 {
-    TOmnetApp::componentMethodBegin(fromComp, toComp, method);
+    EnvirBase::componentMethodBegin(fromComp, toComp, method);
 
     if (!animating || !opt_anim_methodcalls)
         return;
@@ -1281,14 +1279,14 @@ void TOmnetTkApp::componentMethodBegin(cComponent *fromComp, cComponent *toComp,
     }
 }
 
-void TOmnetTkApp::componentMethodEnd()
+void Tkenv::componentMethodEnd()
 {
-    TOmnetApp::componentMethodEnd();
+    EnvirBase::componentMethodEnd();
 }
 
-void TOmnetTkApp::moduleCreated(cModule *newmodule)
+void Tkenv::moduleCreated(cModule *newmodule)
 {
-    TOmnetApp::moduleCreated(newmodule);
+    EnvirBase::moduleCreated(newmodule);
 
     cModule *mod = newmodule->parentModule();
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
@@ -1298,9 +1296,9 @@ void TOmnetTkApp::moduleCreated(cModule *newmodule)
     modinsp->submoduleCreated(newmodule);
 }
 
-void TOmnetTkApp::moduleDeleted(cModule *module)
+void Tkenv::moduleDeleted(cModule *module)
 {
-    TOmnetApp::moduleDeleted(module);
+    EnvirBase::moduleDeleted(module);
 
     cModule *mod = module->parentModule();
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
@@ -1310,9 +1308,9 @@ void TOmnetTkApp::moduleDeleted(cModule *module)
     modinsp->submoduleDeleted(module);
 }
 
-void TOmnetTkApp::moduleReparented(cModule *module, cModule *oldparent)
+void Tkenv::moduleReparented(cModule *module, cModule *oldparent)
 {
-    TOmnetApp::moduleReparented(module, oldparent);
+    EnvirBase::moduleReparented(module, oldparent);
 
     // pretend it got deleted from under the 1st module, and got created under the 2nd
     TInspector *insp = findInspector(oldparent,INSP_GRAPHICAL);
@@ -1325,9 +1323,9 @@ void TOmnetTkApp::moduleReparented(cModule *module, cModule *oldparent)
     if (modinsp2) modinsp2->submoduleCreated(module);
 }
 
-void TOmnetTkApp::connectionCreated(cGate *srcgate)
+void Tkenv::connectionCreated(cGate *srcgate)
 {
-    TOmnetApp::connectionCreated(srcgate);
+    EnvirBase::connectionCreated(srcgate);
 
     // notify compound module where the connection (whose source is this gate) is displayed
     cModule *notifymodule = NULL;
@@ -1342,9 +1340,9 @@ void TOmnetTkApp::connectionCreated(cGate *srcgate)
     modinsp->connectionCreated(srcgate);
 }
 
-void TOmnetTkApp::connectionRemoved(cGate *srcgate)
+void Tkenv::connectionRemoved(cGate *srcgate)
 {
-    TOmnetApp::connectionRemoved(srcgate);
+    EnvirBase::connectionRemoved(srcgate);
 
     // notify compound module where the connection (whose source is this gate) is displayed
     // note: almost the same code as above
@@ -1360,9 +1358,9 @@ void TOmnetTkApp::connectionRemoved(cGate *srcgate)
     modinsp->connectionRemoved(srcgate);
 }
 
-void TOmnetTkApp::displayStringChanged(cComponent *component)
+void Tkenv::displayStringChanged(cComponent *component)
 {
-    TOmnetApp::displayStringChanged(component);
+    EnvirBase::displayStringChanged(component);
 
     if (dynamic_cast<cModule *>(component))
         moduleDisplayStringChanged((cModule *)component);
@@ -1370,7 +1368,7 @@ void TOmnetTkApp::displayStringChanged(cComponent *component)
         channelDisplayStringChanged((cChannel *)component);
 }
 
-void TOmnetTkApp::channelDisplayStringChanged(cChannel *channel)
+void Tkenv::channelDisplayStringChanged(cChannel *channel)
 {
     cGate *gate = channel->fromGate();
 
@@ -1400,7 +1398,7 @@ void TOmnetTkApp::channelDisplayStringChanged(cChannel *channel)
     }
 }
 
-void TOmnetTkApp::moduleDisplayStringChanged(cModule *module)
+void Tkenv::moduleDisplayStringChanged(cModule *module)
 {
     // refresh inspector where this module is a submodule
     cModule *parentmodule = module->parentModule();
@@ -1423,7 +1421,7 @@ void TOmnetTkApp::moduleDisplayStringChanged(cModule *module)
     }
 }
 
-void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
+void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
 {
     char msgptr[32];
     ptrToStr(msg,msgptr);
@@ -1465,7 +1463,7 @@ static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandch
 }
 
 
-void TOmnetTkApp::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
+void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
 {
     // for animation purposes, we assume that the message travels up
     // in the module hierarchy until it finds the first compound module
@@ -1522,7 +1520,7 @@ void TOmnetTkApp::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pat
     }
 }
 
-void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
+void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
 {
     char msgptr[32];
     ptrToStr(msg,msgptr);
@@ -1611,7 +1609,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
 }
 
 
-void TOmnetTkApp::animateDelivery(cMessage *msg)
+void Tkenv::animateDelivery(cMessage *msg)
 {
     char msgptr[32];
     ptrToStr(msg,msgptr);
@@ -1637,7 +1635,7 @@ void TOmnetTkApp::animateDelivery(cMessage *msg)
     }
 }
 
-void TOmnetTkApp::animateDeliveryDirect(cMessage *msg)
+void Tkenv::animateDeliveryDirect(cMessage *msg)
 {
     char msgptr[32];
     ptrToStr(msg,msgptr);
@@ -1659,14 +1657,17 @@ void TOmnetTkApp::animateDeliveryDirect(cMessage *msg)
     }
 }
 
-void TOmnetTkApp::performAnimations()
+void Tkenv::performAnimations()
 {
     CHK(Tcl_VarEval(interp, "perform_animations", NULL));
 }
 
-void TOmnetTkApp::bubble(cComponent *component, const char *text)
+void Tkenv::bubble(cComponent *component, const char *text)
 {
-    TOmnetApp::bubble(component, text);
+    EnvirBase::bubble(component, text);
+
+    if (disable_tracing)
+        return;
 
     if (!opt_bubbles)
         return;
@@ -1688,7 +1689,7 @@ void TOmnetTkApp::bubble(cComponent *component, const char *text)
     }
 }
 
-void TOmnetTkApp::putmsg(const char *str)
+void Tkenv::putsmsg(const char *str)
 {
     if (!interp)
     {
@@ -1698,9 +1699,12 @@ void TOmnetTkApp::putmsg(const char *str)
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",str,"} info ok",NULL));
 }
 
-void TOmnetTkApp::sputn(const char *s, int n)
+void Tkenv::sputn(const char *s, int n)
 {
-    TOmnetApp::sputn(s, n);
+    EnvirBase::sputn(s, n);
+
+    if (disable_tracing)
+        return;
 
     if (!interp)
     {
@@ -1754,12 +1758,13 @@ void TOmnetTkApp::sputn(const char *s, int n)
     }
 }
 
-void TOmnetTkApp::flush()
+cEnvir& Tkenv::flush()
 {
     // Tk doesn't need flush(), it displays everything ASAP anyway
+    return *this;
 }
 
-bool TOmnetTkApp::gets(const char *promptstr, char *buf, int len)
+std::string Tkenv::gets(const char *msg, const char *defaultreply)
 {
     char title[70];
     cModule *mod = simulation.contextModule();
@@ -1769,29 +1774,26 @@ bool TOmnetTkApp::gets(const char *promptstr, char *buf, int len)
        strncpy(title, simulation.networkType()->name(),69);
     title[69]=0;
 
-    CHK(Tcl_Eval(interp,"global opp"));
-    Tcl_SetVar2(interp,"opp", "result", buf, TCL_GLOBAL_ONLY);
-    CHK(Tcl_VarEval(interp,"inputbox {",title,"} {",promptstr,"} opp(result)",NULL));
+    CHK(Tcl_Eval(interp, "global opp"));
+    Tcl_SetVar2(interp, "opp", "result", (char *)defaultreply, TCL_GLOBAL_ONLY);
+    CHK(Tcl_VarEval(interp, "inputbox ",TclQuotedString(title).get()," ",TclQuotedString(msg).get()," opp(result)",NULL));
 
-    if (Tcl_GetStringResult(interp)[0]=='0')   // cancel
-        return true;
+    if (Tcl_GetStringResult(interp)[0]=='0')
+        throw cRuntimeError(eCANCEL);
 
     // ok
-    const char *result = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
-    strncpy(buf, result, len-1);
-    buf[len-1]='\0';
-    return false;
+    std::string result = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
+    return result;
 }
 
-int TOmnetTkApp::askYesNo(const char *question)
+bool Tkenv::askyesno(const char *question)
 {
     // should return -1 when CANCEL is pressed
-    CHK(Tcl_VarEval(interp,"messagebox {Warning} {",question,"}"
-                           " question yesno", NULL));
+    CHK(Tcl_VarEval(interp, "messagebox {Warning} ",TclQuotedString(question).get()," question yesno", NULL));
     return Tcl_GetStringResult(interp)[0]=='y';
 }
 
-unsigned TOmnetTkApp::extraStackForEnvir()
+unsigned Tkenv::extraStackForEnvir()
 {
      return 1024*opt_extrastack_kb;
 }

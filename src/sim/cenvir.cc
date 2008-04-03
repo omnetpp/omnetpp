@@ -20,13 +20,14 @@
 cEnvir *evPtr;
 
 
-//
-// std::streambuf used by cEnvir's ostream base. It redirects writes to
-// cEnvir::sputn(s,n). Flush is done at the end of each line, meanwhile
-// writes are buffered in a stringbuf.
-//
+/*
+ * The std::streambuf class used by cEnvir's ostream. It redirects writes to
+ * cEnvir::sputn(s,n). Flush is done at the end of each line, meanwhile
+ * writes are buffered in a stringbuf.
+ */
 template <class E, class T = std::char_traits<E> >
-class basic_evbuf : public std::basic_stringbuf<E,T> {
+class basic_evbuf : public std::basic_stringbuf<E,T>
+{
   public:
     basic_evbuf() {}
     // gcc>=3.4 needs either this-> or std::basic_stringbuf<E,T>:: in front of pptr()/pbase()
@@ -63,13 +64,54 @@ cEnvir::~cEnvir()
 }
 
 // note: exploits the fact that evbuf does sync() on "\n"'s
-//XXX make it go inline? capitalization?
-void cEnvir::flushlastline()
+void cEnvir::flushLastLine()
 {
     evbuf *buf = (evbuf *)out.rdbuf();
     if (!buf->isempty())
         buf->sputn("\n",1);
 }
 
+//
+// Temp buffer for vararg functions below.
+// Note: using a static buffer reduces stack usage of activity() modules;
+// it also makes the following functions non-reentrant, but we don't need
+// them to be reentrant anyway.
+//
+#define ENVIR_TEXTBUF_LEN 1024
+static char buffer[ENVIR_TEXTBUF_LEN];
+
+void cEnvir::printfmsg(const char *fmt,...)
+{
+    va_list va;
+    va_start(va, fmt);
+    vsprintf(buffer, fmt, va);  //FIXME use vsnprintf
+    va_end(va);
+
+    putsmsg(buffer);
+}
+
+int cEnvir::printf(const char *fmt,...)
+{
+    if (disable_tracing)
+        return 0;
+
+    va_list va;
+    va_start(va, fmt);
+    int len = vsprintf(buffer, fmt, va);  //FIXME use vsnprintf
+    va_end(va);
+
+    sputn(buffer, len);
+    return len;
+}
+
+bool cEnvir::askYesNo(const char *fmt,...)
+{
+    va_list va;
+    va_start(va, fmt);
+    vsprintf(buffer, fmt, va);  //FIXME use vsnprintf
+    va_end(va);
+
+    return askyesno(buffer);
+}
 
 

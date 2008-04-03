@@ -48,7 +48,8 @@ getElement("./foo");
 getElement("./././foo/././.");
 
 getElement("foo");
-getElement("bar");
+getElement(" bar");
+getElement(" bar ");  // with spaces
 getElement("nothing");
 
 getElement("bar[0]");
@@ -84,7 +85,8 @@ getElement("./*/foo");
 ./foo: 2
 ./././foo/././.: 2
 foo: 2
-bar: 3
+ bar: 3
+ bar : 3
 nothing: null
 bar[0]: 3
 bar[ 2]: 16

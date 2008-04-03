@@ -1,10 +1,10 @@
 //==========================================================================
-//  OMNETAPP.CC - part of
+//  ENVIRBASE.CC - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
 //  Implementation of
-//    TOmnetApp
+//    EnvirBase
 //
 //==========================================================================
 
@@ -192,10 +192,10 @@ static void setupEventLogObjectPrinter()
 
 //-------------------------------------------------------------
 
-TOmnetApp::TOmnetApp(ArgList *arglist, cConfiguration *conf)
+EnvirBase::EnvirBase()
 {
-    args = arglist;
-    config = conf;
+    args = NULL;
+    cfg = NULL;
     xmlcache = NULL;
 
     outvectormgr = NULL;
@@ -216,10 +216,10 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cConfiguration *conf)
     initialized = false;
 }
 
-TOmnetApp::~TOmnetApp()
+EnvirBase::~EnvirBase()
 {
     delete args;
-    delete config;
+    delete cfg;
     delete xmlcache;
 
     delete outvectormgr;
@@ -239,136 +239,147 @@ TOmnetApp::~TOmnetApp()
     delete eventLogObjectPrinter;
 }
 
-void TOmnetApp::setup()
+int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
-     // handle -h command-line option
-     if (args->optionGiven('h'))
-     {
-         const char *category = args->optionValue('h',0);
-         if (!category)
-             printHelp();
-         else
-             dumpComponentList(category);
-         return;  // don't set initialized==true
-     }
+    args = new ArgList(argc, argv, "h?f:u:l:c:r:p:n:x:gG");  //FIXME share spec with BootEnv!
+    cfg = configobject;
 
-     try
-     {
-         // ensure correct numeric format in output files
-         setPosixLocale();
-
-         // set opt_* variables from ini file(s)
-         readOptions();
-
-         // initialize coroutine library
-         if (TOTAL_STACK_KB!=0 && opt_total_stack_kb<=MAIN_STACK_KB+4)
-         {
-            ev.printf("Total stack size %dK increased to %dK\n", opt_total_stack_kb, MAIN_STACK_KB+4);
-            opt_total_stack_kb = MAIN_STACK_KB+4;
-         }
-         cCoroutine::init(1024*opt_total_stack_kb, 1024*MAIN_STACK_KB);
-
-         // install XML document cache
-         xmlcache = new cXMLDocCache();
-
-         // install output vector manager
-         CREATE_BY_CLASSNAME(outvectormgr, opt_outputvectormanager_class.c_str(), cOutputVectorManager, "output vector manager");
-
-         // install output scalar manager
-         CREATE_BY_CLASSNAME(outscalarmgr, opt_outputscalarmanager_class.c_str(), cOutputScalarManager, "output scalar manager");
-
-         // install snapshot manager
-         CREATE_BY_CLASSNAME(snapshotmgr, opt_snapshotmanager_class.c_str(), cSnapshotManager, "snapshot manager");
-
-         // set up for sequential or distributed execution
-         if (!opt_parsim)
-         {
-             // sequential
-             CREATE_BY_CLASSNAME(scheduler, opt_scheduler_class.c_str(), cScheduler, "event scheduler");
-             scheduler->setSimulation(&simulation);
-             simulation.setScheduler(scheduler);
-         }
-         else
-         {
-#ifdef WITH_PARSIM
-             // parsim: create components
-             CREATE_BY_CLASSNAME(parsimcomm, opt_parsimcomm_class.c_str(), cParsimCommunications, "parallel simulation communications layer");
-             parsimpartition = new cParsimPartition();
-             cParsimSynchronizer *parsimsynchronizer;
-             CREATE_BY_CLASSNAME(parsimsynchronizer, opt_parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
-
-             // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
-             parsimpartition->setContext(&simulation, parsimcomm, parsimsynchronizer);
-             parsimsynchronizer->setContext(&simulation, parsimpartition, parsimcomm);
-             simulation.setScheduler(parsimsynchronizer);
-             scheduler = parsimsynchronizer;
-
-             // initialize them
-             parsimcomm->init();
-#else
-             throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
-#endif
-         }
-
-         // load NED files from folders on the NED path. Note: NED path is taken
-         // from the "-n" command-line option or the NEDPATH variable ("-n" takes
-         // precedence), and the "ned-path=" config entry gets appended to it.
-         // If the result is still empty, we fall back to "." -- this is needed
-         // for single-directory models to work
-         const char *nedpath1 = args->optionValue('n',0);
-         if (!nedpath1)
-             nedpath1 = getenv("NEDPATH");
-         std::string nedpath2 = getConfig()->getAsString(CFGID_NED_PATH, "");
-         std::string nedpath = opp_join(";", nedpath1, nedpath2.c_str());
-         if (nedpath.empty())
-             nedpath = ".";
-
-         StringTokenizer tokenizer(nedpath.c_str(), PATH_SEPARATOR);
-         std::set<std::string> foldersloaded;
-         while (tokenizer.hasMoreTokens())
-         {
-             const char *folder = tokenizer.nextToken();
-             if (foldersloaded.find(folder)==foldersloaded.end())
-             {
-                 ev.printf("Loading NED files from %s:", folder); ev.flush();
-                 int count = simulation.loadNedSourceFolder(folder);
-                 ev.printf(" %d\n", count);
-                 foldersloaded.insert(folder);
-             }
-         }
-         simulation.doneLoadingNedFiles();
-
-         // load NED files from the "preload-ned-files=" config entry.
-         // XXX This code is now obsolete, as we load NED files from NEDPATH trees
-         //std::vector<std::string> nedfiles = getConfig()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
-         //if (!nedfiles.empty())
-         //{
-         //    // iterate through file names
-         //    ev.printf("\n");
-         //    for (int i=0; i<(int)nedfiles.size(); i++)
-         //    {
-         //        const char *fname = nedfiles[i].c_str();
-         //        if (fname[0]=='@' && fname[1]=='@')
-         //            globAndLoadListFile(fname+2, true);
-         //        else if (fname[0]=='@')
-         //            globAndLoadListFile(fname+1, false);
-         //        else if (fname[0])
-         //            globAndLoadNedFile(fname);
-         //    }
-         //    simulation.doneLoadingNedFiles();
-         //}
-
-         setupEventLogObjectPrinter();
-     }
-     catch (std::exception& e)
-     {
-         displayError(e);
-         return;  // don't set initialized to true
-     }
-     initialized = true;
+    setup();
+    int exitcode = run();
+    shutdown();
+    return exitcode;
 }
 
-void TOmnetApp::printHelp()
+void EnvirBase::setup()
+{
+    // handle -h command-line option
+    if (args->optionGiven('h'))
+    {
+        const char *category = args->optionValue('h',0);
+        if (!category)
+            printHelp();
+        else
+            dumpComponentList(category);
+        return;  // don't set initialized==true
+    }
+
+    try
+    {
+        // ensure correct numeric format in output files
+        setPosixLocale();
+
+        // set opt_* variables from ini file(s)
+        readOptions();
+
+        // initialize coroutine library
+        if (TOTAL_STACK_KB!=0 && opt_total_stack_kb<=MAIN_STACK_KB+4)
+        {
+           ev.printf("Total stack size %dK increased to %dK\n", opt_total_stack_kb, MAIN_STACK_KB+4);
+           opt_total_stack_kb = MAIN_STACK_KB+4;
+        }
+        cCoroutine::init(1024*opt_total_stack_kb, 1024*MAIN_STACK_KB);
+
+        // install XML document cache
+        xmlcache = new cXMLDocCache();
+
+        // install output vector manager
+        CREATE_BY_CLASSNAME(outvectormgr, opt_outputvectormanager_class.c_str(), cOutputVectorManager, "output vector manager");
+
+        // install output scalar manager
+        CREATE_BY_CLASSNAME(outscalarmgr, opt_outputscalarmanager_class.c_str(), cOutputScalarManager, "output scalar manager");
+
+        // install snapshot manager
+        CREATE_BY_CLASSNAME(snapshotmgr, opt_snapshotmanager_class.c_str(), cSnapshotManager, "snapshot manager");
+
+        // set up for sequential or distributed execution
+        if (!opt_parsim)
+        {
+            // sequential
+            CREATE_BY_CLASSNAME(scheduler, opt_scheduler_class.c_str(), cScheduler, "event scheduler");
+            scheduler->setSimulation(&simulation);
+            simulation.setScheduler(scheduler);
+        }
+        else
+        {
+#ifdef WITH_PARSIM
+            // parsim: create components
+            CREATE_BY_CLASSNAME(parsimcomm, opt_parsimcomm_class.c_str(), cParsimCommunications, "parallel simulation communications layer");
+            parsimpartition = new cParsimPartition();
+            cParsimSynchronizer *parsimsynchronizer;
+            CREATE_BY_CLASSNAME(parsimsynchronizer, opt_parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
+
+            // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
+            parsimpartition->setContext(&simulation, parsimcomm, parsimsynchronizer);
+            parsimsynchronizer->setContext(&simulation, parsimpartition, parsimcomm);
+            simulation.setScheduler(parsimsynchronizer);
+            scheduler = parsimsynchronizer;
+
+            // initialize them
+            parsimcomm->init();
+#else
+            throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
+#endif
+        }
+
+        // load NED files from folders on the NED path. Note: NED path is taken
+        // from the "-n" command-line option or the NEDPATH variable ("-n" takes
+        // precedence), and the "ned-path=" config entry gets appended to it.
+        // If the result is still empty, we fall back to "." -- this is needed
+        // for single-directory models to work
+        const char *nedpath1 = args->optionValue('n',0);
+        if (!nedpath1)
+            nedpath1 = getenv("NEDPATH");
+        std::string nedpath2 = config()->getAsString(CFGID_NED_PATH, "");
+        std::string nedpath = opp_join(";", nedpath1, nedpath2.c_str());
+        if (nedpath.empty())
+            nedpath = ".";
+
+        StringTokenizer tokenizer(nedpath.c_str(), PATH_SEPARATOR);
+        std::set<std::string> foldersloaded;
+        while (tokenizer.hasMoreTokens())
+        {
+            const char *folder = tokenizer.nextToken();
+            if (foldersloaded.find(folder)==foldersloaded.end())
+            {
+                ev.printf("Loading NED files from %s:", folder); ev.flush();
+                int count = simulation.loadNedSourceFolder(folder);
+                ev.printf(" %d\n", count);
+                foldersloaded.insert(folder);
+            }
+        }
+        simulation.doneLoadingNedFiles();
+
+        // load NED files from the "preload-ned-files=" config entry.
+        // XXX This code is now obsolete, as we load NED files from NEDPATH trees
+        //std::vector<std::string> nedfiles = config()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
+        //if (!nedfiles.empty())
+        //{
+        //    // iterate through file names
+        //    ev.printf("\n");
+        //    for (int i=0; i<(int)nedfiles.size(); i++)
+        //    {
+        //        const char *fname = nedfiles[i].c_str();
+        //        if (fname[0]=='@' && fname[1]=='@')
+        //            globAndLoadListFile(fname+2, true);
+        //        else if (fname[0]=='@')
+        //            globAndLoadListFile(fname+1, false);
+        //        else if (fname[0])
+        //            globAndLoadNedFile(fname);
+        //    }
+        //    simulation.doneLoadingNedFiles();
+        //}
+
+        setupEventLogObjectPrinter();
+    }
+    catch (std::exception& e)
+    {
+        displayError(e);
+        return;  // don't set initialized to true
+    }
+    initialized = true;
+}
+
+void EnvirBase::printHelp()
 {
     ev << "\n";
     ev << "Command line options:\n";
@@ -401,7 +412,7 @@ void TOmnetApp::printHelp()
     printUISpecificHelp();
 }
 
-void TOmnetApp::dumpComponentList(const char *category)
+void EnvirBase::dumpComponentList(const char *category)
 {
     bool wantAll = !strcmp(category, "all");
     bool processed = false;
@@ -434,7 +445,7 @@ void TOmnetApp::dumpComponentList(const char *category)
         ev << "\n";
 
         ev << "Predefined variables that can be used in config values:\n";
-        std::vector<const char *> v = getConfig()->getPredefinedVariableNames();
+        std::vector<const char *> v = config()->getPredefinedVariableNames();
         for (int i=0; i<(int)v.size(); i++)
             ev << "    ${" << v[i] << "}\n";
         ev << "\n";
@@ -563,7 +574,7 @@ void TOmnetApp::dumpComponentList(const char *category)
         throw cRuntimeError("Unrecognized category for '-h' option: %s", category);
 }
 
-int TOmnetApp::getParsimProcId()
+int EnvirBase::getParsimProcId()
 {
 #ifdef WITH_PARSIM
     return parsimcomm ? parsimcomm->getProcId() : 0;
@@ -572,7 +583,7 @@ int TOmnetApp::getParsimProcId()
 #endif
 }
 
-int TOmnetApp::getParsimNumPartitions()
+int EnvirBase::getParsimNumPartitions()
 {
 #ifdef WITH_PARSIM
     return parsimcomm ? parsimcomm->getNumPartitions() : 0;
@@ -582,7 +593,7 @@ int TOmnetApp::getParsimNumPartitions()
 }
 
 
-void TOmnetApp::shutdown()
+void EnvirBase::shutdown()
 {
     if (!initialized)
         return;
@@ -601,9 +612,9 @@ void TOmnetApp::shutdown()
     }
 }
 
-void TOmnetApp::startRun()
+void EnvirBase::startRun()
 {
-    runid = getConfig()->getVariable(CFGVAR_RUNID);
+    runid = config()->getVariable(CFGVAR_RUNID);
 
     resetClock();
     outvectormgr->startRun();
@@ -621,10 +632,10 @@ void TOmnetApp::startRun()
     }
     simulation.scheduler()->startRun();
     simulation.startRun();
-    ev.flushlastline();
+    ev.flushLastLine();
 }
 
-void TOmnetApp::endRun()
+void EnvirBase::endRun()
 {
     // reverse order as startRun()
     simulation.endRun();
@@ -651,11 +662,11 @@ void TOmnetApp::endRun()
 
 //-------------------------------------------------------------
 
-void TOmnetApp::readParameter(cPar *par)
+void EnvirBase::readParameter(cPar *par)
 {
     // get it from the ini file
     std::string moduleFullPath = par->owner()->fullPath();
-    const char *str = getConfig()->getParameterValue(moduleFullPath.c_str(), par->name(), par->hasValue());
+    const char *str = config()->getParameterValue(moduleFullPath.c_str(), par->name(), par->hasValue());
 
 /* XXX hack to use base directory for resolving xml files location has been commented out
  * FIXME a solution needs to be worked out!
@@ -673,7 +684,7 @@ void TOmnetApp::readParameter(cPar *par)
         if (!endQuote)
             return std::string(str);
         std::string fname(begQuote+1, endQuote-begQuote-1);
-        const char *baseDir = getConfig()->getBaseDirectoryFor(NULL, "Parameters", parname);
+        const char *baseDir = config()->getBaseDirectoryFor(NULL, "Parameters", parname);
         fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str(),true);
         std::string ret = std::string(str, begQuote-str+1) + fname + endQuote;
         //XXX use "ret" further!!!
@@ -721,7 +732,7 @@ void TOmnetApp::readParameter(cPar *par)
     }
 }
 
-bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index)
+bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index)
 {
 #ifdef WITH_PARSIM
     if (!opt_parsim)
@@ -737,7 +748,7 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
         sprintf(parname,"%s.%s", parentmod->fullPath().c_str(), modname);
     else
         sprintf(parname,"%s.%s[%d]", parentmod->fullPath().c_str(), modname, index); //FIXME this is incorrectly chosen for non-vector modules too!
-    std::string procIds = getConfig()->getAsString(parname, CFGID_PARTITION_ID, "");
+    std::string procIds = config()->getAsString(parname, CFGID_PARTITION_ID, "");
     if (procIds.empty())
     {
         // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
@@ -778,7 +789,7 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
 #endif
 }
 
-cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
+cXMLElement *EnvirBase::getXMLDocument(const char *filename, const char *path)
 {
     cXMLElement *documentnode = xmlcache->getDocument(filename);
     assert(documentnode);
@@ -794,14 +805,14 @@ cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
     }
 }
 
-cConfiguration *TOmnetApp::getConfig()
+cConfiguration *EnvirBase::config()
 {
-    return config;
+    return cfg;
 }
 
 //-------------------------------------------------------------
 
-void TOmnetApp::bubble(cComponent *component, const char *text)
+void EnvirBase::bubble(cComponent *component, const char *text)
 {
     if (feventlog)
     {
@@ -817,7 +828,11 @@ void TOmnetApp::bubble(cComponent *component, const char *text)
     }
 }
 
-void TOmnetApp::simulationEvent(cMessage *msg)
+void EnvirBase::objectDeleted(cObject *object)
+{
+}
+
+void EnvirBase::simulationEvent(cMessage *msg)
 {
     if (feventlog)
     {
@@ -828,7 +843,7 @@ void TOmnetApp::simulationEvent(cMessage *msg)
     }
 }
 
-void TOmnetApp::beginSend(cMessage *msg)
+void EnvirBase::beginSend(cMessage *msg)
 {
     if (feventlog)
     {
@@ -842,16 +857,16 @@ void TOmnetApp::beginSend(cMessage *msg)
     }
 }
 
-void TOmnetApp::messageScheduled(cMessage *msg)
+void EnvirBase::messageScheduled(cMessage *msg)
 {
     if (feventlog)
     {
-        TOmnetApp::beginSend(msg);
-        TOmnetApp::endSend(msg);
+        EnvirBase::beginSend(msg);
+        EnvirBase::endSend(msg);
     }
 }
 
-void TOmnetApp::messageCancelled(cMessage *msg)
+void EnvirBase::messageCancelled(cMessage *msg)
 {
     if (feventlog)
     {
@@ -859,7 +874,7 @@ void TOmnetApp::messageCancelled(cMessage *msg)
     }
 }
 
-void TOmnetApp::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     if (feventlog)
     {
@@ -869,7 +884,7 @@ void TOmnetApp::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propag
     }
 }
 
-void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate)
+void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     if (feventlog)
     {
@@ -878,7 +893,7 @@ void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate)
     }
 }
 
-void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     if (feventlog)
     {
@@ -887,7 +902,7 @@ void TOmnetApp::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagat
     }
 }
 
-void TOmnetApp::endSend(cMessage *msg)
+void EnvirBase::endSend(cMessage *msg)
 {
     if (feventlog)
     {
@@ -895,7 +910,7 @@ void TOmnetApp::endSend(cMessage *msg)
     }
 }
 
-void TOmnetApp::messageDeleted(cMessage *msg)
+void EnvirBase::messageDeleted(cMessage *msg)
 {
     if (feventlog)
     {
@@ -903,7 +918,7 @@ void TOmnetApp::messageDeleted(cMessage *msg)
     }
 }
 
-void TOmnetApp::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
+void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
 {
     if (feventlog)
     {
@@ -915,7 +930,7 @@ void TOmnetApp::componentMethodBegin(cComponent *from, cComponent *to, const cha
     }
 }
 
-void TOmnetApp::componentMethodEnd()
+void EnvirBase::componentMethodEnd()
 {
     if (feventlog)
     {
@@ -924,7 +939,7 @@ void TOmnetApp::componentMethodEnd()
     }
 }
 
-void TOmnetApp::moduleCreated(cModule *newmodule)
+void EnvirBase::moduleCreated(cModule *newmodule)
 {
     if (feventlog)
     {
@@ -942,7 +957,7 @@ void TOmnetApp::moduleCreated(cModule *newmodule)
     }
 }
 
-void TOmnetApp::moduleDeleted(cModule *module)
+void EnvirBase::moduleDeleted(cModule *module)
 {
     if (feventlog)
     {
@@ -950,7 +965,7 @@ void TOmnetApp::moduleDeleted(cModule *module)
     }
 }
 
-void TOmnetApp::moduleReparented(cModule *module, cModule *oldparent)
+void EnvirBase::moduleReparented(cModule *module, cModule *oldparent)
 {
     if (feventlog)
     {
@@ -958,7 +973,7 @@ void TOmnetApp::moduleReparented(cModule *module, cModule *oldparent)
     }
 }
 
-void TOmnetApp::connectionCreated(cGate *srcgate)
+void EnvirBase::connectionCreated(cGate *srcgate)
 {
     if (feventlog)
     {
@@ -969,7 +984,7 @@ void TOmnetApp::connectionCreated(cGate *srcgate)
     }
 }
 
-void TOmnetApp::connectionRemoved(cGate *srcgate)
+void EnvirBase::connectionRemoved(cGate *srcgate)
 {
     if (feventlog)
     {
@@ -978,7 +993,7 @@ void TOmnetApp::connectionRemoved(cGate *srcgate)
     }
 }
 
-void TOmnetApp::displayStringChanged(cComponent *component)
+void EnvirBase::displayStringChanged(cComponent *component)
 {
     if (feventlog)
     {
@@ -998,13 +1013,13 @@ void TOmnetApp::displayStringChanged(cComponent *component)
     }
 }
 
-void TOmnetApp::undisposedObject(cObject *obj)
+void EnvirBase::undisposedObject(cObject *obj)
 {
     if (opt_print_undisposed)
         ::printf("undisposed object: (%s) %s -- check module destructor\n", obj->className(), obj->fullPath().c_str());
 }
 
-void TOmnetApp::sputn(const char *s, int n)
+void EnvirBase::sputn(const char *s, int n)
 {
     if (feventlog)
     {
@@ -1015,7 +1030,7 @@ void TOmnetApp::sputn(const char *s, int n)
 
 //-------------------------------------------------------------
 
-void TOmnetApp::processFileName(opp_string& fname)
+void EnvirBase::processFileName(opp_string& fname)
 {
     std::string text = fname.c_str();
 
@@ -1040,9 +1055,9 @@ void TOmnetApp::processFileName(opp_string& fname)
     fname = text.c_str();
 }
 
-void TOmnetApp::readOptions()
+void EnvirBase::readOptions()
 {
-    cConfiguration *cfg = getConfig();
+    cConfiguration *cfg = config();
 
     opt_ini_warnings = cfg->getAsBool(CFGID_INI_WARNINGS); //XXX ignored
 
@@ -1078,9 +1093,9 @@ void TOmnetApp::readOptions()
     // other options are read on per-run basis
 }
 
-void TOmnetApp::readPerRunOptions()
+void EnvirBase::readPerRunOptions()
 {
-    cConfiguration *cfg = getConfig();
+    cConfiguration *cfg = config();
 
     // get options from ini file
     opt_network_name = cfg->getAsString(CFGID_NETWORK);
@@ -1119,7 +1134,7 @@ void TOmnetApp::readPerRunOptions()
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(opt_seedset, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
+        rngs[i]->initialize(opt_seedset, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), config());
     }
 
     // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then
@@ -1142,7 +1157,7 @@ void TOmnetApp::readPerRunOptions()
 
 }
 
-//void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
+//void EnvirBase::globAndLoadNedFile(const char *fnamepattern)
 //{
 //    try {
 //        FileGlobber glob(fnamepattern);
@@ -1158,7 +1173,7 @@ void TOmnetApp::readPerRunOptions()
 //    }
 //}
 //
-//void TOmnetApp::globAndLoadListFile(const char *fnamepattern, bool istemplistfile)
+//void EnvirBase::globAndLoadListFile(const char *fnamepattern, bool istemplistfile)
 //{
 //    try {
 //        FileGlobber glob(fnamepattern);
@@ -1173,7 +1188,7 @@ void TOmnetApp::readPerRunOptions()
 //    }
 //}
 //
-//void TOmnetApp::processListFile(const char *listfilename, bool istemplistfile)
+//void EnvirBase::processListFile(const char *listfilename, bool istemplistfile)
 //{
 //    std::ifstream in(listfilename, std::ios::in);
 //    if (in.fail())
@@ -1209,21 +1224,21 @@ void TOmnetApp::readPerRunOptions()
 
 //-------------------------------------------------------------
 
-int TOmnetApp::numRNGs()
+int EnvirBase::numRNGs()
 {
     return num_rngs;
 }
 
-cRNG *TOmnetApp::rng(int k)
+cRNG *EnvirBase::rng(int k)
 {
     if (k<0 || k>=num_rngs)
         throw cRuntimeError("RNG index %d is out of range (num-rngs=%d, check the configuration)", k, num_rngs);
     return rngs[k];
 }
 
-void TOmnetApp::getRNGMappingFor(cComponent *component)
+void EnvirBase::getRNGMappingFor(cComponent *component)
 {
-    cConfiguration *cfg = getConfig();
+    cConfiguration *cfg = config();
     std::string componentFullPath = component->fullPath();
     std::vector<const char *> suffixes = cfg->getMatchingPerObjectConfigKeySuffixes(componentFullPath.c_str(), "rng-*"); // CFGID_RNG_K
     if (suffixes.size()==0)
@@ -1275,25 +1290,25 @@ void TOmnetApp::getRNGMappingFor(cComponent *component)
 
 //-------------------------------------------------------------
 
-void *TOmnetApp::registerOutputVector(const char *modulename, const char *vectorname)
+void *EnvirBase::registerOutputVector(const char *modulename, const char *vectorname)
 {
     assert(outvectormgr);
     return outvectormgr->registerVector(modulename, vectorname);
 }
 
-void TOmnetApp::deregisterOutputVector(void *vechandle)
+void EnvirBase::deregisterOutputVector(void *vechandle)
 {
     assert(outvectormgr);
     outvectormgr->deregisterVector(vechandle);
 }
 
-void TOmnetApp::setVectorAttribute(void *vechandle, const char *name, const char *value)
+void EnvirBase::setVectorAttribute(void *vechandle, const char *name, const char *value)
 {
     assert(outvectormgr);
     outvectormgr->setVectorAttribute(vechandle, name, value);
 }
 
-bool TOmnetApp::recordInOutputVector(void *vechandle, simtime_t t, double value)
+bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     assert(outvectormgr);
     return outvectormgr->record(vechandle, t, value);
@@ -1301,13 +1316,13 @@ bool TOmnetApp::recordInOutputVector(void *vechandle, simtime_t t, double value)
 
 //-------------------------------------------------------------
 
-void TOmnetApp::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
+void EnvirBase::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     assert(outscalarmgr);
     outscalarmgr->recordScalar(component, name, value, attributes);
 }
 
-void TOmnetApp::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
+void EnvirBase::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     assert(outscalarmgr);
     outscalarmgr->recordScalar(component, name, statistic, attributes);
@@ -1315,25 +1330,25 @@ void TOmnetApp::recordScalar(cComponent *component, const char *name, cStatistic
 
 //-------------------------------------------------------------
 
-ostream *TOmnetApp::getStreamForSnapshot()
+std::ostream *EnvirBase::getStreamForSnapshot()
 {
     return snapshotmgr->getStreamForSnapshot();
 }
 
-void TOmnetApp::releaseStreamForSnapshot(ostream *os)
+void EnvirBase::releaseStreamForSnapshot(std::ostream *os)
 {
     snapshotmgr->releaseStreamForSnapshot(os);
 }
 
 //-------------------------------------------------------------
 
-unsigned long TOmnetApp::getUniqueNumber()
+unsigned long EnvirBase::getUniqueNumber()
 {
     // TBD check for overflow
     return nextuniquenumber++;
 }
 
-void TOmnetApp::displayError(std::exception& e)
+void EnvirBase::displayError(std::exception& e)
 {
     cException *ee = dynamic_cast<cException *>(&e);
     if (!ee || ee->moduleID()==-1)  //FIXME revise condition
@@ -1342,7 +1357,7 @@ void TOmnetApp::displayError(std::exception& e)
         ev.printfmsg("Error in module (%s) %s: %s.", ee->contextClassName(), ee->contextFullPath(), ee->what());
 }
 
-void TOmnetApp::displayMessage(std::exception& e)
+void EnvirBase::displayMessage(std::exception& e)
 {
     cException *ee = dynamic_cast<cException *>(&e);
     if (!ee || ee->moduleID()==-1)  //FIXME revise condition
@@ -1351,14 +1366,24 @@ void TOmnetApp::displayMessage(std::exception& e)
         ev.printfmsg("Module (%s) %s: %s.", ee->contextClassName(), ee->contextFullPath(), ee->what());
 }
 
-bool TOmnetApp::idle()
+bool EnvirBase::idle()
 {
     return false;
 }
 
+int EnvirBase::argCount()
+{
+    return args->argCount();
+}
+
+char **EnvirBase::argVector()
+{
+    return args->argVector();
+}
+
 //-------------------------------------------------------------
 
-void TOmnetApp::resetClock()
+void EnvirBase::resetClock()
 {
     timeval now;
     gettimeofday(&now, NULL);
@@ -1366,26 +1391,26 @@ void TOmnetApp::resetClock()
     elapsedtime.tv_sec = elapsedtime.tv_usec = 0;
 }
 
-void TOmnetApp::startClock()
+void EnvirBase::startClock()
 {
     gettimeofday(&laststarted, NULL);
 }
 
-void TOmnetApp::stopClock()
+void EnvirBase::stopClock()
 {
     gettimeofday(&simendtime, NULL);
     elapsedtime = elapsedtime + simendtime - laststarted;
     simulatedtime = simulation.simTime();
 }
 
-timeval TOmnetApp::totalElapsed()
+timeval EnvirBase::totalElapsed()
 {
     timeval now;
     gettimeofday(&now, NULL);
     return now - laststarted + elapsedtime;
 }
 
-void TOmnetApp::checkTimeLimits()
+void EnvirBase::checkTimeLimits()
 {
     if (opt_simtimelimit!=0 && simulation.simTime()>=opt_simtimelimit)
          throw cTerminationException(eSIMTIME);
@@ -1400,7 +1425,7 @@ void TOmnetApp::checkTimeLimits()
          throw cTerminationException(eREALTIME);
 }
 
-void TOmnetApp::stoppedWithTerminationException(cTerminationException& e)
+void EnvirBase::stoppedWithTerminationException(cTerminationException& e)
 {
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
@@ -1410,7 +1435,7 @@ void TOmnetApp::stoppedWithTerminationException(cTerminationException& e)
 #endif
 }
 
-void TOmnetApp::stoppedWithException(std::exception& e)
+void EnvirBase::stoppedWithException(std::exception& e)
 {
     // if we're running in parallel and this exception is NOT one we received
     // from other partitions, then notify other partitions
@@ -1420,19 +1445,19 @@ void TOmnetApp::stoppedWithException(std::exception& e)
 #endif
 }
 
-void TOmnetApp::checkFingerprint()
+void EnvirBase::checkFingerprint()
 {
     if (opt_fingerprint.empty() || !simulation.hasher())
         return;
 
     if (simulation.hasher()->equals(opt_fingerprint.c_str()))
-        putmsg("Fingerprint successfully verified.");
+        putsmsg("Fingerprint successfully verified.");
     else
-        putmsg((std::string("Fingerprint mismatch! expected: ")+opt_fingerprint.c_str()+
+        putsmsg((std::string("Fingerprint mismatch! expected: ")+opt_fingerprint.c_str()+
                ", actual: "+simulation.hasher()->toString()).c_str());
 }
 
-cModuleType *TOmnetApp::resolveNetwork(const char *networkname)
+cModuleType *EnvirBase::resolveNetwork(const char *networkname)
 {
     cModuleType *network = NULL;
     bool hasInifilePackage = !opt_network_inifilepackage.empty() && strcmp(opt_network_inifilepackage.c_str(),"-")!=0;

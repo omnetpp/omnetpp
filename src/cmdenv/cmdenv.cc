@@ -5,7 +5,7 @@
 //
 //
 //  Implementation of the following classes:
-//    TCmdenvApp
+//    Cmdenv
 //
 //==========================================================================
 
@@ -58,7 +58,7 @@ Register_PerObjectConfigEntry(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", CFG_BO
 //
 // Register the Cmdenv user interface
 //
-Register_OmnetApp("Cmdenv", TCmdenvApp, 10, "command-line user interface");
+Register_OmnetApp("Cmdenv", Cmdenv, 10, "command-line user interface");
 
 //
 // The following function can be used to force linking with Cmdenv; specify
@@ -68,7 +68,7 @@ extern "C" CMDENV_API void cmdenv_lib() {}
 
 static char buffer[1024];
 
-bool TCmdenvApp::sigint_received;
+bool Cmdenv::sigint_received;
 
 
 // utility function for printing elapsed time
@@ -87,25 +87,23 @@ char *timeToStr(timeval t, char *buf=NULL)
    return b;
 }
 
-//==========================================================================
-// TCmdenvApp: command line user interface.
 
-TCmdenvApp::TCmdenvApp(ArgList *args, cConfiguration *config) : TOmnetApp(args, config)
+Cmdenv::Cmdenv()
 {
     // initialize fout to stdout, then we'll replace it if redirection is
     // requested in the ini file
     fout = stdout;
 }
 
-TCmdenvApp::~TCmdenvApp()
+Cmdenv::~Cmdenv()
 {
 }
 
-void TCmdenvApp::readOptions()
+void Cmdenv::readOptions()
 {
-    TOmnetApp::readOptions();
+    EnvirBase::readOptions();
 
-    cConfiguration *cfg = getConfig();
+    cConfiguration *cfg = config();
 
     // note: configname and runstoexec will possibly be overwritten
     // with the -c, -r command-line options in our setup() method
@@ -126,11 +124,11 @@ void TCmdenvApp::readOptions()
     }
 }
 
-void TCmdenvApp::readPerRunOptions()
+void Cmdenv::readPerRunOptions()
 {
-    TOmnetApp::readPerRunOptions();
+    EnvirBase::readPerRunOptions();
 
-    cConfiguration *cfg = getConfig();
+    cConfiguration *cfg = config();
     opt_expressmode = cfg->getAsBool(CFGID_EXPRESS_MODE);
     opt_interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
     opt_autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
@@ -142,17 +140,17 @@ void TCmdenvApp::readPerRunOptions()
     opt_perfdisplay = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
 }
 
-void TCmdenvApp::setup()
+void Cmdenv::setup()
 {
     // initialize base class
-    TOmnetApp::setup();    // implies readOptions()
+    EnvirBase::setup();    // implies readOptions()
     if (!initialized)
         return;
 
     // '-c' and '-r' option: configuration or scenario to activate,
     // and run numbers to run. Both command-line options take precedence
     // over inifile settings. (NOTE: inifile settings *already* got read
-    // at this point! as TOmnetApp::setup() invokes readOptions()).
+    // at this point! as EnvirBase::setup() invokes readOptions()).
 
     const char *configname = args->optionValue('c');
     if (configname)
@@ -175,28 +173,28 @@ void TCmdenvApp::setup()
         opt_configname = xoption;
 }
 
-void TCmdenvApp::signalHandler(int signum)
+void Cmdenv::signalHandler(int signum)
 {
     if (signum == SIGINT || signum == SIGTERM)
         sigint_received = true;
 }
 
-void TCmdenvApp::setupSignals()
+void Cmdenv::setupSignals()
 {
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
 }
 
-void TCmdenvApp::shutdown()
+void Cmdenv::shutdown()
 {
     if (!initialized)
         return;
 
-    TOmnetApp::shutdown();
+    EnvirBase::shutdown();
     ::fflush(fout);
 }
 
-int TCmdenvApp::run()
+int Cmdenv::run()
 {
     //FIXME: check if wrong configname! check if runnumber out of range!
     if (!initialized)
@@ -204,7 +202,7 @@ int TCmdenvApp::run()
 
     setupSignals();
 
-    cConfiguration *cfg = getConfig();
+    cConfiguration *cfg = config();
 
     if (opt_printnumruns)
     {
@@ -292,7 +290,7 @@ int TCmdenvApp::run()
             ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runnumber);
             ::fflush(fout);
             simulation.callFinish();
-            ev.flushlastline();
+            ev.flushLastLine();
 
             checkFingerprint();
         }
@@ -344,7 +342,7 @@ int TCmdenvApp::run()
         return 0;
 }
 
-const char *TCmdenvApp::progressPercentage()
+const char *Cmdenv::progressPercentage()
 {
     double simtimeRatio = -1;
     if (opt_simtimelimit!=0)
@@ -370,7 +368,7 @@ const char *TCmdenvApp::progressPercentage()
     }
 }
 
-void TCmdenvApp::simulate()
+void Cmdenv::simulate()
 {
     startClock();
     sigint_received = false;
@@ -415,7 +413,7 @@ void TCmdenvApp::simulate()
                simulation.doOneEvent( mod );
 
                // flush so that output from different modules don't get mixed
-               ev.flushlastline();
+               ev.flushLastLine();
 
                checkTimeLimits();
                if (sigint_received)
@@ -501,15 +499,18 @@ void TCmdenvApp::simulate()
 
 //-----------------------------------------------------
 
-void TCmdenvApp::putmsg(const char *s)
+void Cmdenv::putsmsg(const char *s)
 {
     ::fprintf(fout, "\n<!> %s\n\n", s);
     ::fflush(fout);
 }
 
-void TCmdenvApp::sputn(const char *s, int n)
+void Cmdenv::sputn(const char *s, int n)
 {
-    TOmnetApp::sputn(s, n);
+    if (disable_tracing)
+        return;
+
+    EnvirBase::sputn(s, n);
 
     cModule *ctxmod = simulation.contextModule();  //FIXME shouldn't this be "component" ?
     if (!ctxmod || (opt_modulemsgs && ctxmod->isEvEnabled()) || simulation.contextType()==CTX_FINISH)
@@ -520,12 +521,13 @@ void TCmdenvApp::sputn(const char *s, int n)
     }
 }
 
-void TCmdenvApp::flush()
+cEnvir& Cmdenv::flush()
 {
     ::fflush(fout);
+    return *this;
 }
 
-bool TCmdenvApp::gets(const char *promptstr, char *buf, int len)
+std::string Cmdenv::gets(const char *promptstr, const char *defaultreply)
 {
     if (!opt_interactive)
     {
@@ -534,25 +536,21 @@ bool TCmdenvApp::gets(const char *promptstr, char *buf, int len)
     else
     {
         ::fprintf(fout, "%s", promptstr);
-        if (!opp_isempty(buf))
-            ::fprintf(fout, "(default: %s) ", buf);
+        if (!opp_isempty(defaultreply))
+            ::fprintf(fout, "(default: %s) ", defaultreply);
         ::fflush(fout);
 
         ::fgets(buffer, 512, stdin);
         buffer[strlen(buffer)-1] = '\0'; // chop LF
 
-        if (buffer[0]=='\x1b') { // ESC?
-           return true;
-        }
-        else {
-           if (buffer[0])
-              strncpy(buf, buffer, len);
-           return false;
-        }
+        if (buffer[0]=='\x1b') // ESC?
+           throw cRuntimeError(eCANCEL);
+
+        return std::string(buffer);
     }
 }
 
-int TCmdenvApp::askYesNo(const char *question)
+bool Cmdenv::askyesno(const char *question)
 {
     if (!opt_interactive)
     {
@@ -568,29 +566,29 @@ int TCmdenvApp::askYesNo(const char *question)
             ::fgets(buffer, 512, stdin);
             buffer[strlen(buffer)-1] = '\0'; // chop LF
             if (opp_toupper(buffer[0])=='Y' && !buffer[1])
-               return 1;
+                return true;
             else if (opp_toupper(buffer[0])=='N' && !buffer[1])
-               return 0;
+                return false;
             else
-               putmsg("Please type 'y' or 'n'!\n");
+                putsmsg("Please type 'y' or 'n'!\n");
         }
     }
 }
 
-bool TCmdenvApp::idle()
+bool Cmdenv::idle()
 {
     return sigint_received;
 }
 
-void TCmdenvApp::moduleCreated(cModule *mod)
+void Cmdenv::moduleCreated(cModule *mod)
 {
-    TOmnetApp::moduleCreated(mod);
+    EnvirBase::moduleCreated(mod);
 
     bool ev_enabled = ev.config()->getAsBool(mod->fullPath().c_str(), CFGID_CMDENV_EV_OUTPUT);
     mod->setEvEnabled(ev_enabled);
 }
 
-void TCmdenvApp::messageSent_OBSOLETE(cMessage *msg, cGate *)
+void Cmdenv::messageSent_OBSOLETE(cMessage *msg, cGate *)
 {
     if (!opt_expressmode && opt_messagetrace)
     {
@@ -600,9 +598,9 @@ void TCmdenvApp::messageSent_OBSOLETE(cMessage *msg, cGate *)
     }
 }
 
-void TCmdenvApp::simulationEvent(cMessage *msg)
+void Cmdenv::simulationEvent(cMessage *msg)
 {
-    TOmnetApp::simulationEvent(msg);
+    EnvirBase::simulationEvent(msg);
 
     if (!opt_expressmode && opt_messagetrace)
     {
@@ -612,7 +610,7 @@ void TCmdenvApp::simulationEvent(cMessage *msg)
     }
 }
 
-void TCmdenvApp::printUISpecificHelp()
+void Cmdenv::printUISpecificHelp()
 {
     ev << "Cmdenv-specific options:\n";
     ev << "  -x <configname>\n";
@@ -631,7 +629,7 @@ void TCmdenvApp::printUISpecificHelp()
     ev << "\n";
 }
 
-unsigned TCmdenvApp::extraStackForEnvir()
+unsigned Cmdenv::extraStackForEnvir()
 {
     return 1024*opt_extrastack_kb;
 }

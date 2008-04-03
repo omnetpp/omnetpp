@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    TCmdenvApp:         command line simulation application
+//    Cmdenv:         command line simulation application
 //
 //==========================================================================
 
@@ -29,7 +29,7 @@ NAMESPACE_BEGIN
 /**
  * Command line user interface.
  */
-class CMDENV_API TCmdenvApp : public TOmnetApp
+class CMDENV_API Cmdenv : public EnvirBase
 {
    protected:
      // new simulation options:
@@ -57,19 +57,30 @@ class CMDENV_API TCmdenvApp : public TOmnetApp
      // stream to write output to
      FILE *fout;
 
+   protected:
+     virtual void sputn(const char *s, int n);
+     virtual void putsmsg(const char *s);
+     virtual bool askyesno(const char *question);
+
    public:
-     TCmdenvApp(ArgList *args, cConfiguration *config);
-     ~TCmdenvApp();
+     Cmdenv();
+     virtual ~Cmdenv();
 
      // redefined virtual funcs:
+     virtual void moduleCreated(cModule *newmodule);
+     virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
+     virtual void simulationEvent(cMessage *msg);
+     virtual bool isGUI() {return false;}
+     virtual cEnvir& flush();
+     virtual std::string gets(const char *promptstr, const char *defaultreply);
+     virtual bool idle();
+     virtual unsigned extraStackForEnvir();
+
+   protected:
      virtual void setup();
      virtual int run();
      virtual void shutdown();
      virtual void printUISpecificHelp();
-
-     virtual void moduleCreated(cModule *newmodule);
-     virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
-     virtual void simulationEvent(cMessage *msg);
 
      virtual void readOptions();
      virtual void readPerRunOptions();
@@ -79,19 +90,6 @@ class CMDENV_API TCmdenvApp : public TOmnetApp
      void simulate();
      const char *progressPercentage();
 
-     // redefined I/O functions:
-     virtual bool isGUI() {return false;}
-     virtual void putmsg(const char *s);
-     virtual void sputn(const char *s, int n);
-     virtual void flush();
-     virtual bool gets(const char *promptstr, char *buf, int len=255);
-     virtual int  askYesNo(const char *question);
-
-     virtual bool idle();
-
-     virtual unsigned extraStackForEnvir();
-
-     // SIG_USR1 handling
      void setupSignals();
      static void signalHandler(int signum);
 };

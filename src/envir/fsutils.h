@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    TOmnetApp:  abstract base class for simulation applications
+//    EnvirBase:  abstract base class for simulation applications
 //
 //==========================================================================
 

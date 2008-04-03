@@ -28,9 +28,9 @@ NAMESPACE_BEGIN
 //
 // Register_OmnetApp() macro, omnetapps list, cOmnetAppRegistration class.
 //
-// For registering user interfaces as subclasses of TOmnetApp.
+// For registering user interfaces as subclasses of cEnvir.
 // Creating the user interface object allows us to link an envir.dll on
-// Windows without having to know in which dll (cmdenv, tkenv) TOmnetApp's
+// Windows without having to know in which dll (cmdenv, tkenv) cEnvir's
 // appropriate subclass will come from. (On Unix, this was no problem anyway...)
 //
 //  score:   by default, OMNeT++ will choose the user interface with the
@@ -41,34 +41,30 @@ NAMESPACE_BEGIN
 
 // the macro
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
-    static TOmnetApp *__FILEUNIQUENAME__(ArgList *args, cConfiguration *config) {return new CLASSNAME(args, config);} \
+    static cEnvir *__FILEUNIQUENAME__() {return new CLASSNAME();} \
     EXECUTE_ON_STARTUP(omnetapps.instance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
 
-class TOmnetApp;
-class ArgList;
-class cConfiguration;
+class cEnvir;
 
 extern ENVIR_API cGlobalRegistrationList omnetapps;
 
 // registration class
 class ENVIR_API cOmnetAppRegistration : public cOwnedObject
 {
-    typedef TOmnetApp *(*AppCreatorFunc)(ArgList *,cConfiguration *);
+    typedef cEnvir *(*AppCreatorFunc)();
     AppCreatorFunc creatorfunc;
     std::string desc;
     int scor;
   public:
-    cOmnetAppRegistration(const char *name, int score,
-                          const char *description, AppCreatorFunc f) :
-      cOwnedObject(name, false),
-      creatorfunc(f), desc(description), scor(score) {}
+    cOmnetAppRegistration(const char *name, int score, const char *description, AppCreatorFunc f) :
+      cOwnedObject(name, false), creatorfunc(f), desc(description), scor(score) {}
     virtual ~cOmnetAppRegistration()  {}
 
     // redefined functions
     virtual const char *className() const {return "cOmnetAppRegistration";}
 
     // new functions
-    TOmnetApp *createOne(ArgList *args, cConfiguration *config)  {return creatorfunc(args,config);}
+    cEnvir *createOne()  {return creatorfunc();}
     std::string info() const {return desc;}
     int score()  {return scor;}
 };

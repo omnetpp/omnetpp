@@ -39,7 +39,6 @@ class cStatistic;
 class cRNG;
 class cConfiguration;
 class cXMLElement;
-class TOmnetApp;
 class cEnvir;
 
 using std::endl;
@@ -120,22 +119,21 @@ class SIM_API cEnvir
   protected:
     // further internal vars
     std::ostream out;
-    bool isgui;
 
-  public:
+  public:  //TODO protected!
     // internal: writes the first n characters of string s.
-    // evbuf (the streambuf underlying cEnvir's ostream base class)
-    // writes via this function.
+    // out's streambuf eventually delegates here.
     virtual void sputn(const char *s, int n) = 0;
 
+    virtual void putsmsg(const char *msg) = 0;
+
+    virtual bool askyesno(const char *msg) = 0;
+
     // internal: flushes the internal stream buffer by terminating last line if needed
-    void flushlastline();
+    virtual void flushLastLine();  //FIXME remove virtual!!!
 
   public:
-    /** @name Constructor, destructor.
-     *
-     * Note that only one instance of cEnvir exists, the ev object.
-     */
+    /** @name Constructor, destructor. */
     //@{
 
     /**
@@ -151,24 +149,12 @@ class SIM_API cEnvir
 
     /** @name Methods called from main(). */
     //@{
-
-    /**
-     * This function is called by main() at the beginning of the program.
-     * It receives the command-line arguments as parameters.
-     */
-    virtual void setup(int ac, char *av[]) = 0;
-
     /**
      * Called from main(). This function should encapsulate the whole functionality
-     * of running the application. The return value may be used as exit code
-     * for the simulation program.
+     * of running the application. The return value will become the exit code
+     * of the simulation program.
      */
-    virtual int run() = 0;
-
-    /**
-     * Called from main() before exiting.
-     */
-    virtual void shutdown() = 0;
+    virtual int run(int argc, char *argv[], cConfiguration *cfg) = 0;
     //@}
 
     /** @name Methods to be called by the simulation kernel to notify the environment about events. */
@@ -180,7 +166,8 @@ class SIM_API cEnvir
      * and remove it from object lists currently displayed. cObject's
      * destructor automatically calls this function.
      */
-    virtual void objectDeleted(cObject *object) = 0;
+    // note: this cannot be pure virtual, because it has to work even after ev was disposed of
+    virtual void objectDeleted(cObject *object) {};
 
     /**
      * Notifies the environment that a message was delivered to its destination
@@ -347,7 +334,7 @@ class SIM_API cEnvir
      * and with Cmdenv it returns false.) Simple modules can examine this flag
      * to decide whether or not they need to bother updating display strings.
      */
-    bool isGUI()  {return isgui;}
+    virtual bool isGUI() = 0;
 
     /**
      * Returns true if the simulation is running in an Express or Express-like mode
@@ -368,12 +355,13 @@ class SIM_API cEnvir
     bool disabled() {return disable_tracing;}
 
 //XXX comment
+    // note: eventually delegates to sputn(), via internal ostream
     cEnvir& operator<<(const std::string& t) {out << t; return *this;}
 
     /**
      * Overloaded << operator to make cEnvir behave like an ostream.
-     * Writes are simply redirected to the internal ostream.
      */
+    // note: eventually delegates to sputn(), via internal ostream
     template<typename T> cEnvir& operator<<(const T& t) {out << t; return *this;}
 
     cEnvir& operator<<(std::ostream& (t)(std::ostream&)) {out << t; return *this;}
@@ -388,9 +376,11 @@ class SIM_API cEnvir
 
     /**
      * Displays a message in dialog box. This function should not be
-     * used too much by simple modules, if ever.
+     * used too much by simple modules, if ever. Delegates to
+     * showmsg();
      */
-    virtual void printfmsg(const char *fmt,...) = 0;
+    // note: non-virtual, delegates to putsmsg()
+    void printfmsg(const char *fmt,...);
 
     /**
      * Simple modules can output text into their own window through this
@@ -399,7 +389,8 @@ class SIM_API cEnvir
      *
      * It is recommended to use C++-style I/O instead of this function.
      */
-    virtual void printf(const char *fmt="\n",...) = 0;
+    // note: non-virtual, delegates to sputn()
+    int printf(const char *fmt,...);
 
     /**
      * Flushes the output buffer of ev.printf() and ev<< operations.
@@ -410,17 +401,17 @@ class SIM_API cEnvir
     virtual cEnvir& flush() = 0;
 
     /**
-     * Interactively prompts the user to enter a string. std::stringstream
-     * can be used to further process the input.
+     * Interactively prompts the user to enter a string.
      */
     virtual std::string gets(const char *prompt, const char *defaultreply=NULL) = 0;
 
     /**
-     * Puts a yes/no question to the user. The question itself  is expected
-     * in the printf() format (format string + arguments). The
-     * true return value means yes, false means no.
+     * Asks the user a yes/no question. The question text is expected
+     * in printf() format (format string + arguments). The return value
+     * is true for "yes", and false for "no".
      */
-    virtual bool askYesNo(const char *msgfmt,...) = 0;
+    // note: non-virtual, delegates to askyesno()
+    bool askYesNo(const char *fmt,...);
     //@}
 
     /** @name Access to RNGs. */
@@ -542,6 +533,12 @@ class SIM_API cEnvir
      * otherwise it returns 0.
      */
     virtual int getParsimNumPartitions() = 0;
+
+    /**
+     * Returns the Run Id of the current simulation run, or NULL if
+     * no simulation run is active.
+     */
+    virtual const char *getRunId() = 0;
 
     /**
      * The function underlying cSimulation::getUniqueNumber().
