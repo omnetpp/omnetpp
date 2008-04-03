@@ -10,8 +10,8 @@ TESTFILES=$*
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
 if [ ! -d work ];  then mkdir work; fi
 rm -rf work/lib
-cp -a lib work/
-export NEDPATH=.;../lib
+cp -pPR lib work/       # OSX dos not support cp -a
+export NEDPATH=.:../lib
 
 opp_test -g $OPT -v $TESTFILES || exit 1
 echo
