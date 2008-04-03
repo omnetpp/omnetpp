@@ -1063,26 +1063,17 @@ void NED1Generator::doOperator(OperatorElement *node, const char *indent, bool i
 
 void NED1Generator::doFunction(FunctionElement *node, const char *indent, bool islast, const char *)
 {
-    NEDElement *op1 = node->getFirstChild();
-    NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-    NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
-
     if (!strcmp(node->getName(), "index")) {
         OUT << node->getName();  // 'index' doesn't need parentheses
         return;
     }
 
     OUT << node->getName() << "(";
-    if (op1) {
-        generateNedItem(op1,indent,false,NULL);
-    }
-    if (op2) {
-        OUT << ", ";
-        generateNedItem(op2,indent,false,NULL);
-    }
-    if (op3) {
-        OUT << ", ";
-        generateNedItem(op3,indent,false,NULL);
+    for (NEDElement *child=node->getFirstChild(); child; child = child->getNextSibling())
+    {
+        if (child != node->getFirstChild())
+            OUT << ", ";
+        generateNedItem(child, indent, false, NULL);
     }
     OUT << ")";
 }
