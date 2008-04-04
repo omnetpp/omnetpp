@@ -1135,8 +1135,15 @@ proc createCloseDialog {w title} {
     frame $w.buttons
     button $w.buttons.closebutton  -text {Close} -width 10
 
-    pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
-    pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
+    set padx 5
+    set pady 5
+    if {[string equal [tk windowingsystem] aqua]}  {
+        set padx 15
+        set pady 10
+    }
+
+    pack $w.buttons -expand 0 -fill x -padx $padx -pady $pady -side bottom
+    pack $w.f -expand 1 -fill both -padx $padx -pady $pady -side top
     pack $w.buttons.closebutton  -anchor n -side right -padx 2
 }
 
