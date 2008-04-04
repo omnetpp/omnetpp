@@ -1,0 +1,14 @@
+%description:
+check that a cStdDev refuses to merge a cWeightedStdDev
+
+%activity:
+cStdDev a("a");
+cWeightedStdDev b("b");
+
+a.merge(&b);
+
+%exitcode: 1
+
+%contains: stdout
+(cStdDev)a: Cannot merge weighted statistics (cWeightedStdDev)Test.b into unweighted
+

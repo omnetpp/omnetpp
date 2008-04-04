@@ -1,6 +1,5 @@
 %description:
 merging two cStdDev objects
-FIXME todo: one is empty; other is empty; other is weighted (==>error)
 
 %global:
 void print(cStdDev& s)
@@ -12,39 +11,72 @@ void print(cStdDev& s)
        << " var=" << s.variance() << endl;
 }
 
+void collect(int na, int nb)
+{
+    cStdDev a("a");
+    cStdDev b("b");
+    cStdDev s("ref");
+
+    for (int i=0; i<na; i++)
+    {
+        double d = 5*dblrand()+8;
+        s.collect(d);
+        a.collect(d);
+    }
+    for (int i=0; i<nb; i++)
+    {
+        double d = dblrand()*10;
+        s.collect(d);
+        b.collect(d);
+    }
+
+    print(a);
+    print(b);
+    a.merge(&b); a.setName("a+b");
+    print(a);
+    print(s);
+    ev << "---\n";
+}
+
 %activity:
+collect(10,20);
 
-#define PRINT(X) ev << #X << ":" << X << endl
-
-cStdDev s("s");
-cStdDev a("a");
-cStdDev b("b");
-
-for (int i=0; i<10; i++)
-{
-    double d = 5*dblrand()+8;
-    s.collect(d);
-    a.collect(d);
-}
-for (int i=0; i<10; i++)
-{
-    double d = dblrand()*10;
-    s.collect(d);
-    b.collect(d);
-}
-
-print(a);
-print(b);
-print(s);
-ev << "after merging b into a:\n";
-a.merge(&b);
-print(a);
-ev << "." << endl;
+// corner cases
+collect(0,0);
+collect(0,1);
+collect(0,5);
+collect(1,0);
+collect(5,0);
 
 %contains: stdout
 a n=10 w=10 S=113.006 SS=1282.08 min=10.1183 max=12.2897 mean=11.3006 stddev=0.748762 var=0.560645
-b n=10 w=10 S=48.1131 SS=302.159 min=0.56713 max=9.63663 mean=4.81131 stddev=2.80223 var=7.85247
-s n=20 w=20 S=161.119 SS=1584.24 min=0.56713 max=12.2897 mean=8.05595 stddev=3.88161 var=15.0669
-after merging b into a:
-a n=20 w=20 S=161.119 SS=1584.24 min=0.56713 max=12.2897 mean=8.05595 stddev=3.88161 var=15.0669
-.
+b n=20 w=20 S=105.55 SS=696.974 min=0.56713 max=9.63663 mean=5.27751 stddev=2.71383 var=7.36487
+a+b n=30 w=30 S=218.556 SS=1979.05 min=0.56713 max=12.2897 mean=7.2852 stddev=3.65225 var=13.3389
+ref n=30 w=30 S=218.556 SS=1979.05 min=0.56713 max=12.2897 mean=7.2852 stddev=3.65225 var=13.3389
+---
+a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=0 var=0
+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=0 var=0
+a+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=0 var=0
+ref n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=0 var=0
+---
+a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=0 var=0
+b n=1 w=1 S=0.871293 SS=0.759151 min=0.871293 max=0.871293 mean=0.871293 stddev=0 var=0
+a+b n=1 w=1 S=0.871293 SS=0.759151 min=0.871293 max=0.871293 mean=0.871293 stddev=0 var=0
+ref n=1 w=1 S=0.871293 SS=0.759151 min=0.871293 max=0.871293 mean=0.871293 stddev=0 var=0
+---
+a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=0 var=0
+b n=5 w=5 S=28.2641 SS=216.554 min=0.202184 max=9.57155 mean=5.65281 stddev=3.76771 var=14.1956
+a+b n=5 w=5 S=28.2641 SS=216.554 min=0.202184 max=9.57155 mean=5.65281 stddev=3.76771 var=14.1956
+ref n=5 w=5 S=28.2641 SS=216.554 min=0.202184 max=9.57155 mean=5.65281 stddev=3.76771 var=14.1956
+---
+a n=1 w=1 S=11.8908 SS=141.391 min=11.8908 max=11.8908 mean=11.8908 stddev=0 var=0
+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=0 var=0
+a+b n=1 w=1 S=11.8908 SS=141.391 min=11.8908 max=11.8908 mean=11.8908 stddev=0 var=0
+ref n=1 w=1 S=11.8908 SS=141.391 min=11.8908 max=11.8908 mean=11.8908 stddev=0 var=0
+---
+a n=5 w=5 S=56.6634 SS=654.506 min=8.70175 max=12.8931 mean=11.3327 stddev=1.7577 var=3.08952
+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=0 var=0
+a+b n=5 w=5 S=56.6634 SS=654.506 min=8.70175 max=12.8931 mean=11.3327 stddev=1.7577 var=3.08952
+ref n=5 w=5 S=56.6634 SS=654.506 min=8.70175 max=12.8931 mean=11.3327 stddev=1.7577 var=3.08952
+---
+
