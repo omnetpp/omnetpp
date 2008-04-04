@@ -51,6 +51,11 @@
 #define OMNETPP_PLUGIN_PATH "./plugins"
 #endif
 
+#ifdef __APPLE__
+void OSXTransformProcess();
+#endif
+
+
 USING_NAMESPACE
 
 //
@@ -160,6 +165,9 @@ void Tkenv::setup()
         signal(SIGINT, signalHandler);
         signal(SIGTERM, signalHandler);
 
+#ifdef __APPLE__
+        OSXTransformProcess();
+#endif
         // path for the Tcl user interface files
 #ifdef OMNETPP_TKENV_DIR
         tkenv_dir = getenv("OMNETPP_TKENV_DIR");

@@ -1174,12 +1174,6 @@ all: $O/$(TARGET)
 {exe:}{~nmake:}ifeq ("$(EXE_SUFFIX)",".exe")
 {exe:}{~nmake:}	echo "@%~dp0\\\\$(subst /,\\\\,$O)\\\\$(TARGET) %*" > $(subst .exe,.cmd,$(TARGET))
 {exe:}{~nmake:}else
-{exe:}{~nmake:}# this hack creates a Contents dir at the same level where the executable otherwise menu bar
-{exe:}{~nmake:}# on AquaTclTk is not visible on Os X 10.5.
-{exe:}{~nmake:}ifneq (,$(findstring dylib,$(SO_LIB_SUFFIX)))
-{exe:}{~nmake:}	@mkdir -p $O/Contents
-{exe:}{~nmake:}	@mkdir -p Contents
-{exe:}{~nmake:}endif
 {exe:}{~nmake:}	ln -s -f $O/$(TARGET) .
 {exe:}{~nmake:}endif
 {sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
