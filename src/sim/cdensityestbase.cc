@@ -121,8 +121,50 @@ cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
     return *this;
 }
 
-// clear results
-void cDensityEstBase::clearResult ()
+void cDensityEstBase::merge(const cStatistic *other)
+{
+    if (dynamic_cast<const cDensityEstBase *>(other)==NULL)
+        throw cRuntimeError(this, "Cannot merge non-histogram (non-cDensityEstBase) statistics (%s)%s into a histogram type",
+                                  other->className(), other->fullPath().c_str());
+
+    const cDensityEstBase *otherd = (const cDensityEstBase *)other;
+
+    if (!otherd->transformed())
+    {
+        // easiest and exact solution: simply recollect the observation
+        // the other object has collected
+        for (int i=0; i<otherd->num_firstvals; i++)
+            collect(firstvals[i]);
+    }
+    else
+    {
+        // merge the base class
+        cStdDev::merge(otherd);
+
+        // force this object to be transformed as well
+        if (!transformed())
+            transform();
+
+        // make sure that cells are aligned
+        if (cells() != otherd->cells())
+            throw cRuntimeError(this, "Cannot merge (%s)%s: different number of histogram cells (%d vs %d)",
+                                      otherd->className(), otherd->fullPath().c_str(), cells(), otherd->cells());
+        int n = cells();
+        for (int i=0; i<=n; i++)
+            if (basepoint(i) != otherd->basepoint(i))
+                throw cRuntimeError(this, "Cannot merge (%s)%s: histogram cells are not aligned",
+                                          otherd->className(), otherd->fullPath().c_str());
+
+        // merge underflow/overflow cells
+        cell_under += otherd->underflowCell(); //FIXME check overflow!! but this is unsigned long....
+        cell_over += otherd->overflowCell();
+
+        // then merge cell counters
+        doMergeCellValues(otherd);
+    }
+}
+
+void cDensityEstBase::clearResult()
 {
     cStdDev::clearResult();
 
@@ -239,7 +281,7 @@ void cDensityEstBase::collect(double val)
     }
     else
     {
-        collectTransformed( val );  // must maintain underflow/overflow cells
+        collectTransformed(val);  // must maintain underflow/overflow cells
     }
 }
 
@@ -250,10 +292,9 @@ double cDensityEstBase::cellPDF(int k) const
     return cellsize==0 ? 0.0 : cell(k)/cellsize/count();
 }
 
-// plot one line
 void cDensityEstBase::plotline(ostream& os, char *pref, double xval, double count, double a)
 {
-    const int picwidth=54;           // width of picture
+    const int picwidth=54;  // width of picture
     char buf[101], *s;
     int x,m,k;
     sprintf(buf, "   %s%12f %5g :", pref, xval, count);

@@ -94,7 +94,8 @@ cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
     cDensityEstBase::operator=(res);
 
     num_cells = res.num_cells;
-    delete [] cellv;  cellv = NULL;
+    delete [] cellv;
+    cellv = NULL;
     if (res.cellv)
     {
         cellv = new unsigned[num_cells];
@@ -103,12 +104,18 @@ cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
     return *this;
 }
 
-void cHistogramBase::clearResult ()
+void cHistogramBase::doMergeCellValues(const cDensityEstBase *other)
+{
+    for (int i=0; i<num_cells; i++)
+        cellv[i] += other->cell(i);  //FIXME overflow check
+}
+
+void cHistogramBase::clearResult()
 {
     cDensityEstBase::clearResult();
 
     delete [] cellv;
-    cellv=NULL;
+    cellv = NULL;
 }
 
 void cHistogramBase::transform()

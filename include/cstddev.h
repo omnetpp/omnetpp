@@ -37,6 +37,9 @@ class SIM_API cStdDev : public cStatistic
     double min_vals, max_vals;
     double sum_vals, sqrsum_vals;
 
+  protected:
+    void doMerge(const cStatistic *other);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -112,6 +115,19 @@ class SIM_API cStdDev : public cStatistic
      */
     virtual void collect(simtime_t value) {collect(value.dbl());}
 #endif
+
+    /**
+     * Updates this object with data coming from another statistics
+     * object -- as if this object had collected observations fed
+     * into the other object as well. Throws an error if the other
+     * object is weighted statistics (see isWeighted()).
+     */
+    virtual void merge(const cStatistic *other);
+
+    /**
+     * Returns false, because this class does not collect weighted statistics.
+     */
+    virtual bool isWeighted() const  {return false;}
 
     /**
      * Returns the number of observations collected.
@@ -288,6 +304,11 @@ class SIM_API cWeightedStdDev : public cStdDev
 #endif
 
     /**
+     * Returns true, because this class collects weighted statistics.
+     */
+    virtual bool isWeighted() const  {return true;}
+
+    /**
      * Collects one value with a given weight.
      */
     virtual void collect2(double value, double weight);
@@ -308,6 +329,13 @@ class SIM_API cWeightedStdDev : public cStdDev
      */
     virtual void collect2(simtime_t value, simtime_t weight) {collect2(value.dbl(), weight.dbl());}
 #endif
+
+    /**
+     * Updates this object with data coming from another statistics
+     * object -- as if this object had collected observations fed
+     * into the other object as well.
+     */
+    virtual void merge(const cStatistic *other);
 
     /**
      * Clears the results collected so far.

@@ -28,6 +28,7 @@ config editor-case-sensitive	{0}
 config editor-findstring	{}
 config editor-regexp	{0}
 config editor-whole-words	{0}
+config editor-wrap	{1}
 config filtobjlist-category	{mqsgvo}
 config filtobjlist-class	{}
 config filtobjlist-maxcount	{100000}

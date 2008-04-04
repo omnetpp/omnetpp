@@ -137,6 +137,30 @@ void cStdDev::collect(double value)
     if (accuracyDetectionObject()) ra->collect(value);   //NL
 }
 
+void cStdDev::doMerge(const cStatistic *other)
+{
+    long orig_num_vals = num_vals;
+    num_vals += other->count();
+    if (num_vals < 0)
+        throw cRuntimeError(this, "merge(): observation count overflow");
+
+    if (other->count()>0 && (orig_num_vals==0 || min_vals>other->min()))
+        min_vals = other->min();
+    if (other->count()>0 && (orig_num_vals==0 || max_vals<other->max()))
+        max_vals = other->max();
+
+    sum_vals += other->sum();
+    sqrsum_vals += other->sqrSum();
+}
+
+void cStdDev::merge(const cStatistic *other)
+{
+    if (other->isWeighted())
+        throw cRuntimeError(this, "Cannot merge weighted statistics (%s)%s into unweighted statistics",
+                                  other->className(), other->fullPath().c_str());
+    doMerge(other);
+}
+
 double cStdDev::variance() const
 {
     if (num_vals<=1)
@@ -297,6 +321,15 @@ void cWeightedStdDev::collect2(double value, double weight)
     {
         throw new cRuntimeError(this, "collect2(): negative weight %g", weight);
     }
+}
+
+void cWeightedStdDev::merge(const cStatistic *other)
+{
+    cStdDev::doMerge(other);
+    sum_weights += other->weights();
+    sum_weighted_vals += other->weightedSum();
+    sum_squared_weights += other->sqrSumWeights();
+    sum_weights_squared_vals += other->weightedSqrSum();
 }
 
 void cWeightedStdDev::clearResult()

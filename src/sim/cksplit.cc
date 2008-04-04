@@ -195,6 +195,16 @@ void cKSplit::resetGrids( int grid )
     }
 }
 
+void cKSplit::merge(const cStatistic *other)
+{
+    throw cRuntimeError(this, "The cKSplit class does not support merge()");
+}
+
+void cKSplit::doMergeCellValues(const cDensityEstBase *other)
+{
+    ASSERT(false); // never comes here, as merge() already throws an error
+}
+
 void cKSplit::transform()
 {
     int i;
@@ -624,7 +634,7 @@ double cKSplit::random() const
 
    xa = xi + (rangemax - rangemin) / pow ((double)K, cd);
 
-   x = rand () / (double)RAND_MAX * (xa - xi) + xi;
+   x = rand() / (double)RAND_MAX * (xa - xi) + xi;
    return x;
 }
 

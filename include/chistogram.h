@@ -27,7 +27,6 @@
 
 NAMESPACE_BEGIN
 
-//==========================================================================
 
 /**
  * Base class for histogram classes. It adds a vector of counters to
@@ -40,6 +39,10 @@ class SIM_API cHistogramBase : public cDensityEstBase
   protected:
     int num_cells;        // nr. of categories
     unsigned *cellv;      // array of counters
+
+  protected:
+    // abstract method in cDensityEstBase
+    virtual void doMergeCellValues(const cDensityEstBase *other);
 
   public:
     /** @name Constructors, destructor, assignment. */

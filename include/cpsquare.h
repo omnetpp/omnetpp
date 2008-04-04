@@ -24,7 +24,6 @@
 
 NAMESPACE_BEGIN
 
-//==========================================================================
 
 /**
  * Implements the P<SUP>2</SUP> algorithm, which calculates quantile values
@@ -39,6 +38,10 @@ class SIM_API cPSquare : public cDensityEstBase
     long numobs;       // number of cells,
     int *n;            // array of positions
     double *q;         // array of heights
+
+  protected:
+    // abstract method in cDensityEstBase
+    virtual void doMergeCellValues(const cDensityEstBase *other);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -176,6 +179,11 @@ class SIM_API cPSquare : public cDensityEstBase
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
     virtual double random() const;
+
+    /**
+     * Merging is not supported by this class. This method throws an error.
+     */
+    virtual void merge(const cStatistic *other);
 
     /**
      * Writes the contents of the object into a text file.

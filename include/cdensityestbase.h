@@ -112,6 +112,9 @@ class SIM_API cDensityEstBase : public cStdDev
   protected:
     static void plotline (std::ostream& os, char* pref, double xval, double count, double a);
 
+    // part of merge(); to be implemented in subclasses
+    virtual void doMergeCellValues(const cDensityEstBase *other) = 0;
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -181,6 +184,14 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual void collect(simtime_t value) {collect(value.dbl());}
 #endif
+
+    /**
+     * Updates this object with data coming from another statistics
+     * object -- as if this object had collected observations fed
+     * into the other object as well. Throws an error if the other
+     * object is not a cDensityEstBase.
+     */
+    virtual void merge(const cStatistic *other);
 
     /**
      * Clears the results collected so far.

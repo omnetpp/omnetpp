@@ -114,9 +114,21 @@ class SIM_API cStatistic : public cOwnedObject
 #endif
 
     /**
+     * Returns true if this object collects weighted statistics.
+     */
+    virtual bool isWeighted() const = 0;
+
+    /**
      * Collects one value with a given weight.
      */
     virtual void collect2(double value, double weight);
+
+    /**
+     * Updates this object with data coming from another statistics
+     * object. The result is as if this object had collected all the
+     * observations fed into the other object as well.
+     */
+    virtual void merge(const cStatistic *other) = 0;
 
     /**
      * This function should be redefined in derived classes to clear

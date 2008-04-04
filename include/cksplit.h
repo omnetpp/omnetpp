@@ -177,6 +177,9 @@ class SIM_API cKSplit : public cDensityEstBase
     // internal: helper for basepoint(), cell()
     void iteratorToCell(int cell_nr) const;
 
+    // abstract method in cDensityEstBase
+    virtual void doMergeCellValues(const cDensityEstBase *other);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -272,6 +275,11 @@ class SIM_API cKSplit : public cDensityEstBase
      * Returns the value of the Cumulated Density Function at a given x.
      */
     virtual double cdf(double x) const;
+
+    /**
+     * Merging is not supported by this class. This method throws an error.
+     */
+    virtual void merge(const cStatistic *other);
 
     /**
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().

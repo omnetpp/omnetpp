@@ -267,6 +267,9 @@
 	  For stddev(), code is based on the patch from Peter Woitek.
         - cStatistic: added 3 new functions, to access values underlying weighted
           statistics: weightedSum(), sqrSumWeights(), weightedSqrSum()
+        - cStatistic: added isWeighted()
+        - cStatistic: added merge(cStatistic *) for aggregating statistics, 
+          and implemented it in subclasses
 
 	Files renamed (Note: simulation models should only refer to <omnetpp.h>!)
 	     --OLD--          --NEW--

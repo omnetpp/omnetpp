@@ -289,6 +289,16 @@ void cPSquare::collectTransformed(double val)
 }
 #endif
 
+void cPSquare::merge(const cStatistic *other)
+{
+    throw cRuntimeError(this, "The cPSquare class does not support merge()");
+}
+
+void cPSquare::doMergeCellValues(const cDensityEstBase *other)
+{
+    ASSERT(false); // never comes here, as merge() already throws an error
+}
+
 double cPSquare::random() const
 {
     double s;
@@ -302,7 +312,7 @@ double cPSquare::random() const
 
     for (int i=1; i<=numcells+1; i++)
     {
-       if (s< n[i])
+       if (s < n[i])
        {
           k=i;
           l=k-1;
@@ -344,16 +354,16 @@ double cPSquare::cell(int k) const
 
 std::string cPSquare::detailedInfo() const
 {
-   std::stringstream os;
-   os << cDensityEstBase::detailedInfo();
+    std::stringstream os;
+    os << cDensityEstBase::detailedInfo();
 
-   int nn = numobs<=numcells+1 ? numobs : numcells+1;
+    int nn = numobs<=numcells+1 ? numobs : numcells+1;
 
-   os << "\n  The quantiles (#(observations: observation<=marker)):\n";
-   os << "      #observations\t<=marker\n";
-   for (int i=1; i<=nn; i++)
-      os << "       " << n[i] << "\t " << q[i] << endl;
-   return os.str();
+    os << "\n  The quantiles (#(observations: observation<=marker)):\n";
+    os << "      #observations\t<=marker\n";
+    for (int i=1; i<=nn; i++)
+       os << "       " << n[i] << "\t " << q[i] << endl;
+    return os.str();
 }
 
 double cPSquare::cdf(double x) const
