@@ -1,0 +1,53 @@
+%description:
+merging two cWeightedStdDev objects
+FIXME todo: one is empty; other is empty
+FIXME other tests: for histograms
+
+%global:
+void print(cStdDev& s)
+{
+    ev << s.name() << " n=" << s.count() << " w=" << s.weights()
+       << " S=" << s.sum() << " SS=" << s.sqrSum()
+       << " min=" << s.min() << " max=" << s.max()
+       << " mean=" << s.mean() << " stddev=" << s.stddev()
+       << " var=" << s.variance() << endl;
+}
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+cWeightedStdDev s("s");
+cWeightedStdDev a("a");
+cWeightedStdDev b("b");
+
+for (int i=0; i<10; i++)
+{
+    double d = 5*dblrand()+8;
+    double weight = dblrand();
+    s.collect2(d, weight);
+    a.collect2(d, weight);
+}
+for (int i=0; i<20; i++)
+{
+    double d = dblrand()*10;
+    double weight = 1+5*dblrand();
+    s.collect2(d, weight);
+    b.collect2(d, weight);
+}
+
+print(a);
+print(b);
+print(s);
+ev << "after merging b into a:\n";
+a.merge(&b);
+print(a);
+ev << "." << endl;
+
+%contains: stdout
+a n=10 w=5.25482 S=110.788 SS=1235.91 min=9.91721 max=12.8183 mean=10.8993 stddev=0.753895 var=0.568357
+b n=20 w=77.4722 S=112.759 SS=835.396 min=0.202184 max=9.78618 mean=5.98712 stddev=3.25594 var=10.6012
+s n=30 w=82.727 S=223.548 SS=2071.31 min=0.202184 max=12.8183 mean=6.29914 stddev=3.37705 var=11.4045
+after merging b into a:
+a n=30 w=82.727 S=223.548 SS=2071.31 min=0.202184 max=12.8183 mean=6.29914 stddev=3.37705 var=11.4045
+.
