@@ -517,25 +517,28 @@ proc findDialog {w} {
     set title "Find"
     createOkCancelDialog $dlg $title
 
-    # add entry fields
     label-entry $dlg.f.find "Find string:"
-    checkbutton $dlg.f.regexp -text {regular expression} -underline 0 -variable tmp(regexp)
-    checkbutton $dlg.f.case -text {case sensitive} -underline 0 -variable tmp(case-sensitive)
-    checkbutton $dlg.f.words -text {whole words only} -underline 0 -variable tmp(whole-words)
-    checkbutton $dlg.f.backwards -text {search backwards} -underline 7 -variable tmp(backwards)
+    frame $dlg.f.opt
+    pack $dlg.f.find -expand 0 -fill x
+    pack $dlg.f.opt -expand 0 -fill none -anchor e
 
-    grid $dlg.f.find   -                -sticky nw
-    grid $dlg.f.regexp $dlg.f.case      -sticky nw
-    grid $dlg.f.words  $dlg.f.backwards -sticky nw
+    # add entry fields
+    checkbutton $dlg.f.opt.regexp -text {regular expression} -underline 0 -variable tmp(regexp)
+    checkbutton $dlg.f.opt.case -text {case sensitive} -underline 0 -variable tmp(case-sensitive)
+    checkbutton $dlg.f.opt.words -text {whole words only} -underline 0 -variable tmp(whole-words)
+    checkbutton $dlg.f.opt.backwards -text {search backwards} -underline 7 -variable tmp(backwards)
 
-    bind $dlg <Alt-r> [list $dlg.f.regexp invoke]
-    bind $dlg <Alt-R> [list $dlg.f.regexp invoke]
-    bind $dlg <Alt-c> [list $dlg.f.case invoke]
-    bind $dlg <Alt-C> [list $dlg.f.case invoke]
-    bind $dlg <Alt-w> [list $dlg.f.words invoke]
-    bind $dlg <Alt-W> [list $dlg.f.words invoke]
-    bind $dlg <Alt-b> [list $dlg.f.backwards invoke]
-    bind $dlg <Alt-B> [list $dlg.f.backwards invoke]
+    grid $dlg.f.opt.regexp $dlg.f.opt.case      -sticky nw
+    grid $dlg.f.opt.words  $dlg.f.opt.backwards -sticky nw
+
+    bind $dlg <Alt-r> [list $dlg.f.opt.regexp invoke]
+    bind $dlg <Alt-R> [list $dlg.f.opt.regexp invoke]
+    bind $dlg <Alt-c> [list $dlg.f.opt.case invoke]
+    bind $dlg <Alt-C> [list $dlg.f.opt.case invoke]
+    bind $dlg <Alt-w> [list $dlg.f.opt.words invoke]
+    bind $dlg <Alt-W> [list $dlg.f.opt.words invoke]
+    bind $dlg <Alt-b> [list $dlg.f.opt.backwards invoke]
+    bind $dlg <Alt-B> [list $dlg.f.opt.backwards invoke]
 
     $dlg.f.find.e insert 0 $config(editor-findstring)
     $dlg.f.find.e select range 0 end
