@@ -130,7 +130,7 @@ void THistogramWindow::update()
    CHK(Tcl_VarEval(interp, windowname,".bot.info config -text {",buf,"}",NULL));
 
    // can we draw anything at all?
-   if (!distr->transformed() || distr->cells()==0) return;
+   if (!distr->isTransformed() || distr->cells()==0) return;
 
    long num_vals = distr->count();
    int basepts = distr->cells()+1;
@@ -193,7 +193,7 @@ void THistogramWindow::update()
 void THistogramWindow::generalInfo( char *buf )
 {
    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
-   if (!d->transformed())
+   if (!d->isTransformed())
        sprintf( buf, "(collecting initial values, N=%ld)", d->count());
    else
        sprintf( buf, "Histogram: (%g...%g)  N=%ld  #cells=%d",

@@ -134,7 +134,7 @@ void cHistogramBase::transform()
 
 int cHistogramBase::cells() const
 {
-    if (!transformed()) return 0;
+    if (!isTransformed()) return 0;
 
     return num_cells;
 }
@@ -232,7 +232,7 @@ void cEqdHistogramBase::collectTransformed (double val)
 
 double cEqdHistogramBase::pdf(double x) const
 {
-    if (!transformed())
+    if (!isTransformed())
         throw cRuntimeError(this,"pdf(x) cannot be called before histogram is transformed");
 
     int k = (int)floor((x-rangemin)/cellsize);

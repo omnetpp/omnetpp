@@ -281,7 +281,7 @@ class cWeightedStdDev extends cStdDev
 class cDensityEstBase extends cStdDev
 {
         @omitGetVerb(true);
-        bool transformed @group(histogram) @hint(if false, the object is still collecting initial observations to be used for laying out histogram cells);
+        bool isTransformed @group(histogram) @hint(if false, the object is still collecting initial observations to be used for laying out histogram cells);
         unsigned long underflowCell @group(histogram) @hint(number of observations below the first histogram cell);
         unsigned long overflowCell @group(histogram) @hint(number of observations above the last histogram cell);
         int cells @group(histogram) @hint(number of cells in the histogram);

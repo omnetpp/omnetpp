@@ -270,6 +270,7 @@
         - cStatistic: added isWeighted()
         - cStatistic: added merge(cStatistic *) for aggregating statistics, 
           and implemented it in subclasses
+        - cDensityEstBase etc: transformed() renamed to isTransformed()
 
 	Files renamed (Note: simulation models should only refer to <omnetpp.h>!)
 	     --OLD--          --NEW--

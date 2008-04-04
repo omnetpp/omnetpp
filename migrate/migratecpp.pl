@@ -45,6 +45,7 @@ while (<LISTFILE>)
 
     # cStatistic methods
     $txt =~ s/\bsamples *\( *\)/count()/mg;
+    $txt =~ s/\btransformed *\( *\)/isTransformed()/mg;
 
     # display string
     $txt =~ s/\bgetString\b/toString/mg;

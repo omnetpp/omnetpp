@@ -500,7 +500,7 @@ int cKSplit::treeDepth(Grid& grid) const
 
 void cKSplit::printGrids() const
 {
-   if (!transformed())
+   if (!isTransformed())
    {
       ev << "collecting initial observations; no grids yet.\n";
       return;
@@ -542,7 +542,7 @@ void cKSplit::iteratorToCell(int cell_nr) const
 
 int cKSplit::cells() const
 {
-   if (!transformed()) return 0;
+   if (!isTransformed()) return 0;
    return num_cells;
 }
 
@@ -651,7 +651,7 @@ double cKSplit::random() const
 
 double cKSplit::pdf (double x) const
 {
-   if (!transformed())
+   if (!isTransformed())
      return 0;
 
    int i;

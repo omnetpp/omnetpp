@@ -129,7 +129,7 @@ void cDensityEstBase::merge(const cStatistic *other)
 
     const cDensityEstBase *otherd = (const cDensityEstBase *)other;
 
-    if (!otherd->transformed())
+    if (!otherd->isTransformed())
     {
         // easiest and exact solution: simply recollect the observation
         // the other object has collected
@@ -142,7 +142,7 @@ void cDensityEstBase::merge(const cStatistic *other)
         cStdDev::merge(otherd);
 
         // force this object to be transformed as well
-        if (!transformed())
+        if (!isTransformed())
             transform();
 
         // make sure that cells are aligned
@@ -178,7 +178,7 @@ void cDensityEstBase::clearResult()
 
 void cDensityEstBase::setRange(double lower, double upper)
 {
-    if (num_vals>0 || transformed())
+    if (num_vals>0 || isTransformed())
         throw cRuntimeError(this,"setRange() can only be called before collecting any values");
 
     range_mode = RANGE_FIXED;
@@ -188,7 +188,7 @@ void cDensityEstBase::setRange(double lower, double upper)
 
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 {
-    if (num_vals>0 || transformed())
+    if (num_vals>0 || isTransformed())
         throw cRuntimeError(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTO;
@@ -199,7 +199,7 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 
 void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
 {
-    if (num_vals>0 || transformed())
+    if (num_vals>0 || isTransformed())
         throw cRuntimeError(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOLOWER;
@@ -211,7 +211,7 @@ void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double ra
 
 void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
 {
-    if (num_vals>0 || transformed())
+    if (num_vals>0 || isTransformed())
         throw cRuntimeError(this,"setRange...() can only be called before collecting any values");
 
     range_mode = RANGE_AUTOUPPER;
@@ -223,7 +223,7 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double ra
 
 void cDensityEstBase::setNumFirstVals(int num_fstvals)
 {
-    if (num_vals>0 || transformed())
+    if (num_vals>0 || isTransformed())
         throw cRuntimeError(this,"setNumFirstVals() can only be called before collecting any values");
 
     num_firstvals = num_fstvals;
@@ -260,15 +260,15 @@ void cDensityEstBase::setupRange()
 
 void cDensityEstBase::collect(double val)
 {
-    if (range_mode == RANGE_INVALID && !transformed())
+    if (range_mode == RANGE_INVALID && !isTransformed())
         setRangeAuto();
 
-    if (firstvals==0 && !transformed())
+    if (firstvals==0 && !isTransformed())
         transform();
 
     cStdDev::collect(val); // this also increments num_vals
 
-    if (!transformed())
+    if (!isTransformed())
     {
         firstvals[num_vals-1] = val;
 
@@ -308,7 +308,7 @@ void cDensityEstBase::plotline(ostream& os, char *pref, double xval, double coun
 
 std::string cDensityEstBase::detailedInfo() const
 {
-    if (!transformed())
+    if (!isTransformed())
     {
         // if the histogram is not transformed, we create a temporary copy,
         // transform it and call its detailedInfo() to do the job.

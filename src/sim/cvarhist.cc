@@ -93,7 +93,7 @@ void cVarHistogram::netUnpack(cCommBuffer *buffer)
 
 void cVarHistogram::addBinBound(double x) //--LG
 {
-    if (transformed())
+    if (isTransformed())
         throw cRuntimeError(this,"cannot add bin bound after transform()");
 
     // create bin_bounds if not exists
@@ -399,7 +399,7 @@ double cVarHistogram::pdf(double x) const // --LG
     if (!num_vals)
         return 0.0;
 
-    if (!transformed())
+    if (!isTransformed())
         throw cRuntimeError(this,"pdf(x) cannot be called before histogram is transformed");
 
     if (x<rangemin || x>=rangemax)

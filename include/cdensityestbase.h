@@ -281,7 +281,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Returns whether the object is transformed. See transform().
      */
-    virtual bool transformed() const   {return transfd;}
+    virtual bool isTransformed() const   {return transfd;}
 
     /**
      * Transforms the table of pre-collected values into an internal
