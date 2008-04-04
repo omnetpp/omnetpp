@@ -1033,8 +1033,15 @@ proc createOkCancelDialog {w title} {
     button $w.buttons.okbutton  -text {OK} -width 10
     button $w.buttons.cancelbutton  -text {Cancel} -width 10
 
-    pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
-    pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
+    set padx 5
+    set pady 5
+    if {$tcl_platform(platform)=="aqua"} {
+        set padx 15
+        set pady 10
+    }
+
+    pack $w.buttons -expand 0 -fill x -padx $padx -pady $pady -side bottom
+    pack $w.f -expand 1 -fill both -padx $padx -pady $pady -side top
     pack $w.buttons.cancelbutton  -anchor n -side right -padx 2
     pack $w.buttons.okbutton  -anchor n -side right -padx 2
 }
