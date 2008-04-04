@@ -1030,7 +1030,7 @@ proc createOkCancelDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    button $w.buttons.okbutton  -text {OK} -width 10
+    button $w.buttons.okbutton  -text {OK} -width 10 -default active
     button $w.buttons.cancelbutton  -text {Cancel} -width 10
 
     set padx 5
@@ -1133,7 +1133,7 @@ proc createCloseDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    button $w.buttons.closebutton  -text {Close} -width 10
+    button $w.buttons.closebutton  -text {Close} -width 10 -default active
 
     set padx 5
     set pady 5
