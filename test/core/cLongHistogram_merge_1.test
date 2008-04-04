@@ -1,0 +1,59 @@
+%description:
+merging two cLongHistogram objects
+
+%global:
+void print(cLongHistogram& s)
+{
+    ev << s.name() << " n=" << s.count()
+       << " min=" << s.min() << " max=" << s.max()
+       << " mean=" << s.mean() << " stddev=" << s.stddev() << endl;
+    ev << s.underflowCell();
+    for (int i=0; i<s.cells(); i++)
+        ev << " | " << s.basepoint(i) << ":" << s.cell(i);
+    ev << " | " << s.overflowCell();
+    ev << "\n";
+}
+
+void collect(int na, int nb)
+{
+    cLongHistogram a("a");
+    cLongHistogram b("b");
+    cLongHistogram s("ref");
+
+    a.setNumCells(8); a.setRange(2,10);
+    b.setNumCells(8); b.setRange(2,10);
+    s.setNumCells(8); s.setRange(2,10);
+
+    for (int i=0; i<na; i++)
+    {
+        double d = 5*dblrand()+8;
+        s.collect(d);
+        a.collect(d);
+    }
+    for (int i=0; i<nb; i++)
+    {
+        double d = dblrand()*10;
+        s.collect(d);
+        b.collect(d);
+    }
+
+    print(a);
+    print(b);
+    a.merge(&b); a.setName("a+b");
+    print(a);
+    print(s);
+    ev << "---\n";
+}
+
+%activity:
+collect(50,80);
+
+%contains: stdout
+a n=50 min=8 max=12 mean=10.4 stddev=1.35526
+0 | 1.5:0 | 3.5:0 | 5.5:0 | 7.5:13 | 9.5:12 | 11.5:0 | 13.5:0 | 15.5:0 | 25
+b n=80 min=0 max=9 mean=4.3 stddev=2.65959
+17 | 1.5:16 | 3.5:15 | 5.5:23 | 7.5:9 | 9.5:0 | 11.5:0 | 13.5:0 | 15.5:0 | 0
+a+b n=130 min=0 max=12 mean=6.64615 stddev=3.72892
+17 | 1.5:16 | 3.5:15 | 5.5:23 | 7.5:22 | 9.5:12 | 11.5:0 | 13.5:0 | 15.5:0 | 25
+ref n=130 min=0 max=12 mean=6.64615 stddev=3.72892
+17 | 1.5:16 | 3.5:15 | 5.5:23 | 7.5:22 | 9.5:12 | 11.5:0 | 13.5:0 | 15.5:0 | 25
