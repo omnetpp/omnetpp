@@ -1035,7 +1035,7 @@ proc createOkCancelDialog {w title} {
 
     set padx 5
     set pady 5
-    if {$tcl_platform(platform)=="aqua"} {
+    if {[string equal [tk windowingsystem] aqua]}  {
         set padx 15
         set pady 10
     }
