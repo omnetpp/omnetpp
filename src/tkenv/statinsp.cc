@@ -66,7 +66,7 @@ void _dummy_for_statinsp() {}
 //
 //    // create inspector window by calling the specified proc with
 //    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-//    Tcl_Interp *interp = getTkApplication()->getInterp();
+//    Tcl_Interp *interp = getTkenv()->getInterp();
 //    CHK(Tcl_VarEval(interp, "create_statisticinspector ", windowname, " \"", geometry, "\"", NULL ));
 // }
 //
@@ -114,7 +114,7 @@ void THistogramWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "create_histogramwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -122,7 +122,7 @@ void THistogramWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    cDensityEstBase *distr = static_cast<cDensityEstBase *>(object);
 
    char buf[80];
@@ -311,7 +311,7 @@ void TOutVectorWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "create_outvectorwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -319,7 +319,7 @@ void TOutVectorWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
 
    char buf[80];
    generalInfo( buf );

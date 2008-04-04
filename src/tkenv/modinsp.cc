@@ -119,7 +119,7 @@ void TModuleWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    cModule *mod = static_cast<cModule *>(object);
    const char *createcommand = mod->isSimple() ?
             "create_simplemodulewindow " : "create_compoundmodulewindow ";
@@ -130,7 +130,7 @@ void TModuleWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "modulewindow_trimlines ", windowname, NULL));
 }
 
@@ -174,7 +174,7 @@ void TGraphicalModWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "create_graphicalmodwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -212,7 +212,7 @@ void TGraphicalModWindow::relayoutAndRedrawAll()
    not_drawn = false;
    if (submodcount>1000 || gatecountestimate>4000)
    {
-       Tcl_Interp *interp = getTkApplication()->getInterp();
+       Tcl_Interp *interp = getTkenv()->getInterp();
        char problem[200];
        if (submodcount>1000)
            sprintf(problem,"contains more than 1000 submodules (exactly %d)", submodcount);
@@ -273,7 +273,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
         }
         else
         {
-            Tcl_Interp *interp = getTkApplication()->getInterp();
+            Tcl_Interp *interp = getTkenv()->getInterp();
             Tcl_VarEval(interp, "lookup_image ", imgname, " ", imgsize, NULL);
             Tk_Image img = Tk_GetImage(interp, Tk_MainWindow(interp), Tcl_GetStringResult(interp), NULL, NULL);
             if (!img)
@@ -346,7 +346,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     }
     else
     {
-        Tcl_Interp *interp = getTkApplication()->getInterp();
+        Tcl_Interp *interp = getTkenv()->getInterp();
         CHK(Tcl_VarEval(interp,"messagebox {Error} "
                         "{Error: invalid layout `", layout, "' in `p' tag "
                         "of display string \"", ds.toString(), "\"} error ok", NULL));
@@ -373,7 +373,7 @@ void TGraphicalModWindow::refreshLayout()
     const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->displayString() : blank;
 
     // create and configure layouter object
-    GraphLayouter *layouter = getTkApplication()->opt_usenewlayouter ?
+    GraphLayouter *layouter = getTkenv()->opt_usenewlayouter ?
                                     (GraphLayouter *) new ForceDirectedGraphLayouter() :
                                     (GraphLayouter *) new BasicSpringEmbedderLayout();
 
@@ -383,9 +383,9 @@ void TGraphicalModWindow::refreshLayout()
     TGraphLayouterEnvironment environment(parentmodule, ds);
 
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
-    if (submodPosMap.empty() && getTkApplication()->opt_showlayouting)
+    if (submodPosMap.empty() && getTkenv()->opt_showlayouting)
     {
-        environment.setInterpreter(getTkApplication()->getInterp());
+        environment.setInterpreter(getTkenv()->getInterp());
         environment.setCanvas(canvas);
     }
     layouter->setEnvironment(&environment);
@@ -480,7 +480,7 @@ void TGraphicalModWindow::refreshLayout()
 void TGraphicalModWindow::redrawModules()
 {
     cModule *parentmodule = static_cast<cModule *>(object);
-    Tcl_Interp *interp = getTkApplication()->getInterp();
+    Tcl_Interp *interp = getTkenv()->getInterp();
 
     // then display all submodules
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
@@ -557,13 +557,13 @@ void TGraphicalModWindow::redrawModules()
 
 void TGraphicalModWindow::redrawMessages()
 {
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
 
    // refresh & cleanup from prev. events
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
 
    // this thingy is only needed if animation is going on
-   if (!getTkApplication()->animating)
+   if (!getTkenv()->animating)
        return;
 
    // loop through all messages in the event queue and display them
@@ -604,14 +604,14 @@ void TGraphicalModWindow::redrawMessages()
 
 void TGraphicalModWindow::redrawNextEventMarker()
 {
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    cModule *mod = static_cast<cModule *>(object);
 
    // removing marker from previous event
    CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", NULL));
 
    // this thingy is only needed if animation is going on
-   if (!getTkApplication()->animating || !getTkApplication()->opt_nexteventmarkers)
+   if (!getTkenv()->animating || !getTkenv()->opt_nexteventmarkers)
        return;
 
    // if any parent of the module containing the next event is on this canvas, draw marker
@@ -631,7 +631,7 @@ void TGraphicalModWindow::redrawNextEventMarker()
 
 void TGraphicalModWindow::updateSubmodules()
 {
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
    {
        CHK(Tcl_VarEval(interp, "graphmodwin_update_submod ",
@@ -679,7 +679,7 @@ void TGraphicalModWindow::displayStringChanged(cGate *)
 
 void TGraphicalModWindow::bubble(cModule *mod, const char *text)
 {
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "graphmodwin_bubble ",canvas," ",ptrToStr(mod)," {",text,"}",NULL));
 }
 
@@ -824,7 +824,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //
 //    // create inspector window by calling the specified proc with
 //    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-//    Tcl_Interp *interp = getTkApplication()->getInterp();
+//    Tcl_Interp *interp = getTkenv()->getInterp();
 //    CHK(Tcl_VarEval(interp, "create_compoundmodinspector ", windowname, " \"", geometry, "\"", NULL ));
 // }
 //
@@ -888,7 +888,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //
 //    // create inspector window by calling the specified proc with
 //    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-//    Tcl_Interp *interp = getTkApplication()->getInterp();
+//    Tcl_Interp *interp = getTkenv()->getInterp();
 //    CHK(Tcl_VarEval(interp, "create_simplemodinspector ", windowname, " \"", geometry, "\"", NULL ));
 // }
 //
@@ -966,7 +966,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //
 //    // create inspector window by calling the specified proc with
 //    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-//    Tcl_Interp *interp = getTkApplication()->getInterp();
+//    Tcl_Interp *interp = getTkenv()->getInterp();
 //    CHK(Tcl_VarEval(interp, "create_gateinspector ", windowname, " \"", geometry, "\"", NULL ));
 // }
 //
@@ -1055,7 +1055,7 @@ void TGraphicalGateWindow::createWindow()
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    CHK(Tcl_VarEval(interp, "create_graphicalgatewindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
@@ -1124,7 +1124,7 @@ void TGraphicalGateWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = getTkApplication()->getInterp();
+   Tcl_Interp *interp = getTkenv()->getInterp();
    cGate *gate = static_cast<cGate *>(object);
 
    // redraw modules only on explicit request

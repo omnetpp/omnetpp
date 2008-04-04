@@ -1,5 +1,5 @@
 //==========================================================================
-//  TKAPP.H - part of
+//  TKENV.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __TKAPP_H
-#define __TKAPP_H
+#ifndef __TKENV_H
+#define __TKENV_H
 
 #define WIN32_LEAN_AND_MEAN
 #include <tk.h>
@@ -187,8 +187,6 @@ class TKENV_API Tkenv : public EnvirBase
 
       void loadNedFile(const char *fname, const char *expectedPackage=NULL, bool isXML=false);
 
-      void doPuts(const char *quotedstr);
-
       void updateInspectors();
       TInspector *inspect(cObject *obj, int type, const char *geometry, void *dat);
       TInspector *findInspector(cObject *obj, int type);
@@ -212,6 +210,8 @@ class TKENV_API Tkenv : public EnvirBase
       void updatePerformanceDisplay(Speedometer& speedometer);
       void clearPerformanceDisplay();
 
+      void confirm(const char *msg); // messagebox with OK button
+
       void printEventBanner(cSimpleModule *mod);
       void animateSend(cMessage *msg, cGate *fromgate, cGate *togate);
       void animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate);
@@ -233,7 +233,7 @@ class TKENV_API Tkenv : public EnvirBase
 /**
  * Utility function
  */
-inline Tkenv *getTkApplication()
+inline Tkenv *getTkenv()
 {
     return (Tkenv *)(&ev);
 }

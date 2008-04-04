@@ -1,5 +1,5 @@
 //==========================================================================
-//  TKAPP.CC - part of
+//  TKENV.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -288,13 +288,11 @@ void Tkenv::printUISpecificHelp()
 void Tkenv::rebuildSim()
 {
     if (isconfigrun)
-         newRun(config()->getActiveConfigName(), config()->getActiveRunNumber());
+         newRun(std::string(config()->getActiveConfigName()).c_str(), config()->getActiveRunNumber());
     else if (simulation.networkType()!=NULL)
          newNetwork(simulation.networkType()->name());
     else
-         CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",
-                                "Choose File|New Network or File|New Run.",
-                                "} info ok",NULL));
+         confirm("Choose File|New Network or File|New Run.");
     if (simulation.systemModule())
          inspect(simulation.systemModule(),INSP_DEFAULT,"",NULL);
 }
@@ -592,7 +590,7 @@ bool Tkenv::doRunSimulationExpress()
 
 void Tkenv::startAll()
 {
-    CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Not implemented} info ok",NULL));
+    confirm("Not implemented.");
 }
 
 void Tkenv::finishSimulation()
@@ -722,7 +720,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
 
         if (opt_network_name.empty())
         {
-            CHK(Tcl_VarEval(interp,"messagebox {Confirm} {No network specified in the configuration.} info ok",NULL));
+            confirm("No network specified in the configuration.");
             return;
         }
 
@@ -766,8 +764,7 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *d
     cInspectorFactory *p = findInspectorFactoryFor(obj,type);
     if (!p)
     {
-        CHK(Tcl_VarEval(interp,"messagebox {Confirm}"
-                        " {Class `",obj->className(),"' has no associated inspectors.} info ok",NULL));
+        confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->className()).c_str());
         return NULL;
     }
 
@@ -783,10 +780,7 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *d
     if (!insp)
     {
         // message: object has no such inspector
-        CHK(Tcl_VarEval(interp,"messagebox {Confirm}"
-                               " {Class `",obj->className(),"' has no `",
-                               insptypeNameFromCode(type),
-                               "' inspector.} info ok",NULL));
+        confirm(opp_stringf("Class `%s' has no `%s' inspector.",obj->className(),insptypeNameFromCode(type)).c_str());
         return NULL;
     }
 
@@ -1689,14 +1683,17 @@ void Tkenv::bubble(cComponent *component, const char *text)
     }
 }
 
-void Tkenv::putsmsg(const char *str)
+void Tkenv::confirm(const char *msg)
 {
     if (!interp)
-    {
-        ::printf("\n<!> %s\n\n", str); // fallback in case Tkenv didn't fire up correctly
-        return;
-    }
-    CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",str,"} info ok",NULL));
+        ::printf("\n<!> %s\n\n", msg); // fallback in case Tkenv didn't fire up correctly
+    else
+        CHK(Tcl_VarEval(interp, "messagebox {Confirm} ",TclQuotedString(msg).get()," info ok", NULL));
+}
+
+void Tkenv::putsmsg(const char *msg)
+{
+    confirm(msg);
 }
 
 void Tkenv::sputn(const char *s, int n)
@@ -1789,7 +1786,7 @@ std::string Tkenv::gets(const char *msg, const char *defaultreply)
 bool Tkenv::askyesno(const char *question)
 {
     // should return -1 when CANCEL is pressed
-    CHK(Tcl_VarEval(interp, "messagebox {Warning} ",TclQuotedString(question).get()," question yesno", NULL));
+    CHK(Tcl_VarEval(interp, "messagebox {Tkenv} ",TclQuotedString(question).get()," question yesno", NULL));
     return Tcl_GetStringResult(interp)[0]=='y';
 }
 

@@ -257,7 +257,7 @@ int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    app->newNetwork( argv[1] );
    return TCL_OK;
    E_CATCH
@@ -267,7 +267,7 @@ int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    const char *configname = argv[1];
    int runnumber = atoi(argv[2]);
@@ -280,7 +280,7 @@ int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    cConfiguration *cfg = app->config();
    std::vector<std::string> confignames = cfg->getConfigNames();
@@ -296,7 +296,7 @@ int getConfigDescription_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 {
    E_TRY
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
    cConfiguration *cfg = app->config();
@@ -310,7 +310,7 @@ int getBaseConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 {
    E_TRY
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
    cConfiguration *cfg = app->config();
@@ -324,7 +324,7 @@ int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 {
    E_TRY
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
    cConfiguration *cfg = app->config();
@@ -337,7 +337,7 @@ int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    TRY( app->createSnapshot(argv[1]) );
    return TCL_OK;
@@ -346,7 +346,7 @@ int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    app->doOneStep();
    return TCL_OK;
 }
@@ -369,7 +369,7 @@ static int resolveRunMode(const char *mode)
 int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    int mode = resolveRunMode(argv[1]);
    if (mode==-1) {Tcl_SetResult(interp, "wrong mode argument, should be slow, normal, fast or express", TCL_STATIC);return TCL_ERROR;}
@@ -390,7 +390,7 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    int mode = resolveRunMode(argv[1]);
    if (mode==-1) {Tcl_SetResult(interp, "wrong mode argument, should be slow, normal, fast or express", TCL_STATIC);return TCL_ERROR;}
@@ -402,7 +402,7 @@ int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=1 && argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    if (argc==1)
    {
@@ -423,7 +423,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc>2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    if (argc==1)
    {
@@ -445,7 +445,7 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2 && argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName(argv[1], object, type);
@@ -469,7 +469,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    app->rebuildSim();
    return TCL_OK;
 }
@@ -477,7 +477,7 @@ int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    app->startAll();
    return TCL_OK;
 }
@@ -485,7 +485,7 @@ int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int finishSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    app->finishSimulation();
    return TCL_OK;
 }
@@ -502,7 +502,7 @@ int loadLib_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int getActiveConfigName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    Tcl_SetResult(interp, TCLCONST(app->config()->getActiveConfigName()), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -511,7 +511,7 @@ int getActiveRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    char buf[16];
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    sprintf(buf, "%d", app->config()->getActiveRunNumber());
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
@@ -528,7 +528,7 @@ int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    const char *s = NULL;
    if (0==strcmp(argv[1],"ini"))
@@ -841,7 +841,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    char *statename;
    switch (app->getSimulationState())
@@ -863,7 +863,7 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    app->setStopSimulationFlag();
    return TCL_OK;
 }
@@ -871,7 +871,7 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int simulationIsStopping_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    bool stopping = app->getStopSimulationFlag();
    Tcl_SetResult(interp, TCLCONST(stopping ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
@@ -880,7 +880,7 @@ int simulationIsStopping_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    char buffer[32];
    char *buf = buffer;
@@ -935,7 +935,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    if (0==strcmp(argv[1], "stepdelay"))
       app->opt_stepdelay = (long)(1000*UnitConversion::parseQuantity(argv[2], "s"));
@@ -1327,7 +1327,7 @@ int patmatch_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int setMsgWindowExists_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    app->hasmessagewindow = argv[1][0]!='0';
    return TCL_OK;
 }
@@ -1337,7 +1337,7 @@ int setMsgWindowExists_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=3 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
@@ -1417,7 +1417,7 @@ int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1434,7 +1434,7 @@ int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1452,7 +1452,7 @@ int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1468,7 +1468,7 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1484,7 +1484,7 @@ int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const
 int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1500,7 +1500,7 @@ int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 int updateInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    app->updateInspectors();
    return TCL_OK;
 }
@@ -1544,7 +1544,7 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
@@ -1657,7 +1657,7 @@ int loadNEDFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "1 arg expected", TCL_STATIC); return TCL_ERROR;}
    const char *fname = argv[1];
-   Tkenv *app = getTkApplication();
+   Tkenv *app = getTkenv();
    app->loadNedFile(fname);
    return TCL_OK;
 }

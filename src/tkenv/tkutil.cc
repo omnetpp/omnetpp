@@ -216,7 +216,7 @@ class cInspectByNameVisitor : public cVisitor
         if (!strcmp(fullpath,objpath.c_str()) && !strcmp(classname,obj->className()))
         {
             // found: inspect if inspector is not open
-            Tkenv *app = getTkApplication();
+            Tkenv *app = getTkenv();
             if (!app->findInspector(obj, insptype))
                 app->inspect(obj, insptype, geometry, NULL);
 
