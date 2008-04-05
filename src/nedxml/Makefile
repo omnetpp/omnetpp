@@ -51,8 +51,8 @@ $O/%.o: %.cc
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/nedtool$(EXE_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
-	chmod +x nedc opp_msgc
-	cp nedc opp_msgc $(OMNETPP_BIN_DIR)
+	chmod +x opp_msgc
+	cp opp_msgc $(OMNETPP_BIN_DIR)
 
 $O/nedtool$(EXE_SUFFIX): $O/nedtool.o $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(CXX) $(LDFLAGS) -o $O/nedtool$(EXE_SUFFIX) $O/nedtool.o -L$L -lnedxml$D -lcommon$D $(XML_LIBS)
@@ -117,7 +117,7 @@ clean:
 	rm -f nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h
 	rm -rf $O
 	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
-	cd $(OMNETPP_BIN_DIR) && rm -f nedtool$(EXE_SUFFIX) nedc opp_msgc
+	cd $(OMNETPP_BIN_DIR) && rm -f nedtool$(EXE_SUFFIX) opp_msgc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/cppexprgenerator.o: cppexprgenerator.cc \

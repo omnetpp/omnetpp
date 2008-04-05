@@ -52,7 +52,6 @@ COPTS= $(COPTS) -DNEDXML_EXPORT
 # Targets
 #
 all : $O/nedtool.exe $O/$(LIBNAME)$(LIB_SUFFIX)
-	copy nedc.bat $(OMNETPP_BIN_DIR:/=\)
 	copy opp_msgc $(OMNETPP_BIN_DIR:/=\)
 	copy opp_msgc.cmd $(OMNETPP_BIN_DIR:/=\)
 
@@ -128,7 +127,7 @@ clean:
 	-del *.tab.* lex.*yy.* 2>nul
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
-	-cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe* nedc.bat opp_msgc opp_msgc.cmd 2>nul
+	-cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe* opp_msgc opp_msgc.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/cppexprgenerator.obj: cppexprgenerator.cc \

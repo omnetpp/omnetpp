@@ -54,7 +54,8 @@ class NEDXML_API NEDTypeInfo
 
     Type type;
 
-    // inheritance
+    // inheritance. Vectors contain fully qualifies names, and include
+    // indirect base types/interfaces as well (transitive closure).
     StringVector extendsnames;
     StringVector interfacenames;
 
@@ -108,7 +109,8 @@ class NEDXML_API NEDTypeInfo
     virtual std::string nedSource() const;
 
     /**
-     * Returns the number of "extends" names.
+     * Returns the number of "extends" names. This includes indirect
+     * base types as well (i.e. base types of base types, etc).
      */
     virtual int numExtendsNames() const  {return extendsnames.size();}
 
@@ -119,7 +121,10 @@ class NEDXML_API NEDTypeInfo
     virtual const char *extendsName(int k) const;
 
     /**
-     * Returns the number of interfaces.
+     * Returns the number of interfaces. This includes indirectly implemented
+     * interfaces as well. (That is, the list contains interfaces implemented
+     * by this type and all its base types, plus base types of all those
+     * interfaces).
      */
     virtual int numInterfaceNames() const  {return interfacenames.size();}
 
@@ -159,6 +164,18 @@ class NEDXML_API NEDTypeInfo
     GatesElement *getGatesElement() const;
     SubmodulesElement *getSubmodulesElement() const;
     ConnectionsElement *getConnectionsElement() const;
+
+    /** Searches local type; NULL if not found */
+    ParamElement *findLocalParamDecl(const char *name) const;
+
+    /** Searches local type and "extends" types; NULL if not found */
+    ParamElement *findParamDecl(const char *name) const;
+
+    /** Searches local type; NULL if not found */
+    GateElement *findLocalGateDecl(const char *name) const;
+
+    /** Searches local type and "extends" types; NULL if not found */
+    GateElement *findGateDecl(const char *name) const;
     //@}
 
 };

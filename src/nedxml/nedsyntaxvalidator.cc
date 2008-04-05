@@ -223,14 +223,30 @@ void NEDSyntaxValidator::validateElement(ParametersElement *node)
 
 void NEDSyntaxValidator::validateElement(ParamElement *node)
 {
+    NEDElement *parent = node->getParent();
+    if (parent)
+        parent = parent->getParent();
+
     // param declarations cannot occur in submodules
-    if (node->getType() != NED_PARTYPE_NONE)
+    if (parent->getTagCode() == NED_SUBMODULE)
     {
-        NEDElement *parent = node->getParent();
-        if (parent)
-            parent = parent->getParent();
-        if (parent->getTagCode() == NED_SUBMODULE)
+        if (node->getType() != NED_PARTYPE_NONE)
             errors->addError(node, "cannot define new parameters within a submodule");
+    }
+
+    // in module or channel interfaces, one cannot specify parameter values
+    if (parent->getTagCode() == NED_MODULE_INTERFACE || parent->getTagCode() == NED_CHANNEL_INTERFACE)
+    {
+        if (parsedExpressions)
+        {
+            if (node->getFirstChildWithTag(NED_EXPRESSION)) // && expr->getTarget()=="value"
+                errors->addError(node, "cannot specify parameter values within a module interface or or channel interface");
+        }
+        else
+        {
+            if (!opp_isempty(node->getValue()))
+                errors->addError(node, "cannot specify parameter values within a module interface or or channel interface");
+        }
     }
 }
 

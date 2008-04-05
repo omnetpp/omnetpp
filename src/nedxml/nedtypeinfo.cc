@@ -277,12 +277,65 @@ NEDElement *NEDTypeInfo::getSubcomponentElement(const char *subcomponentName) co
     return NULL;
 }
 
+ParamElement *NEDTypeInfo::findLocalParamDecl(const char *name) const
+{
+    ParametersElement *params = getParametersElement();
+    if (params)
+        for (ParamElement *param=params->getFirstParamChild(); param; param=param->getNextParamSibling())
+            if (param->getType()!=NED_PARTYPE_NONE && opp_strcmp(param->getName(), name)==0)
+                return param;
+    return NULL;
+}
+
+ParamElement *NEDTypeInfo::findParamDecl(const char *name) const
+{
+    ParamElement *param = findLocalParamDecl(name);
+    if (param)
+        return param;
+    for (int i=0; i<numExtendsNames(); i++)
+        if ((param = getResolver()->lookup(extendsName(i))->findLocalParamDecl(name))!=NULL)
+            return param;
+    return NULL;
+}
+
+GateElement *NEDTypeInfo::findLocalGateDecl(const char *name) const
+{
+    GatesElement *gates = getGatesElement();
+    if (gates)
+        for (GateElement *gate=gates->getFirstGateChild(); gate; gate=gate->getNextGateSibling())
+            if (gate->getType()!=NED_PARTYPE_NONE && opp_strcmp(gate->getName(), name)==0)
+                return gate;
+    return NULL;
+}
+
+GateElement *NEDTypeInfo::findGateDecl(const char *name) const
+{
+    GateElement *gate = findLocalGateDecl(name);
+    if (gate)
+        return gate;
+    for (int i=0; i<numExtendsNames(); i++)
+        if ((gate = getResolver()->lookup(extendsName(i))->findLocalGateDecl(name))!=NULL)
+            return gate;
+    return NULL;
+}
+
 void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *ifDecl)
 {
-/*FIXME TODO
+    printf("check compliance %s to %s\n", name(), ifDecl->name()); //XXX
+
     // check properties
     //XXX
 
+    ParametersElement *ifPars = ifDecl->getParametersElement();
+    if (ifPars)
+    {
+        // iterate..
+        //   findParamDecl
+        //   checkParamCompliance..
+    }
+
+
+/*FIXME TODO
     // check parameters
     for (int i=0; i<ifDecl->numPars(); i++)
     {
