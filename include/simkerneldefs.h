@@ -35,16 +35,6 @@
 #  define SIM_API
 #endif
 
-//FIXME OUT!!!
-//// we need this because cenvir.h is in our directory
-//#if defined(ENVIR_EXPORT)
-//#  define ENVIR_API OPP_DLLEXPORT
-//#elif defined(ENVIR_IMPORT) || defined(OMNETPPLIBS_IMPORT)
-//#  define ENVIR_API OPP_DLLIMPORT
-//#else
-//#  define ENVIR_API
-//#endif
-
 // NULL
 #ifndef NULL
 #define NULL ((void*)0)

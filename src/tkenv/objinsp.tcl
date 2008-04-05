@@ -74,7 +74,7 @@ proc create_genericobjectinspector {name geom wantcontentspage focuscontentspage
 #
 #    notebook_addpage $nb info {General}
 #
-#    # XXX experimental page
+#    # note: experimental page
 #    inspector_createfields2page $w
 #
 #    # page 1: info

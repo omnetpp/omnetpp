@@ -933,39 +933,25 @@ void Tkenv::updateNextModuleDisplay()
 
 void Tkenv::clearNextModuleDisplay()
 {
-    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {"
-                        "Running..."
-                        "}", NULL ));
+    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {Running...}", NULL ));
 }
 
 void Tkenv::updatePerformanceDisplay(Speedometer& speedometer)
 {
     char buf[16];
     sprintf(buf, "%g", speedometer.simSecPerSec());
-    CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {"
-                        "Simsec/sec: ", buf,
-                        "}", NULL ));
+    CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {Simsec/sec: ", buf, "}", NULL));
     sprintf(buf, "%g", speedometer.eventsPerSec());
-    CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {"
-                        "Ev/sec: ", buf,
-                        "}", NULL ));
+    CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {Ev/sec: ", buf, "}", NULL));
     sprintf(buf, "%g", speedometer.eventsPerSimSec());
-    CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {"
-                        "Ev/simsec: ", buf,
-                        "}", NULL ));
+    CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {Ev/simsec: ", buf, "}", NULL));
 }
 
 void Tkenv::clearPerformanceDisplay()
 {
-    CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {"
-                        "Simsec/sec: n/a"
-                        "}", NULL ));
-    CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {"
-                        "Ev/sec: n/a"
-                        "}", NULL ));
-    CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {"
-                        "Ev/simsec: n/a"
-                        "}", NULL ));
+    CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {Simsec/sec: n/a}", NULL));
+    CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {Ev/sec: n/a}", NULL));
+    CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {Ev/simsec: n/a}", NULL));
 }
 
 void Tkenv::printEventBanner(cSimpleModule *module)
@@ -1009,6 +995,7 @@ void Tkenv::printEventBanner(cSimpleModule *module)
 }
 
 //=========================================================================
+
 void Tkenv::readOptions()
 {
     EnvirBase::readOptions();

@@ -586,7 +586,7 @@ proc getFieldNodeInfo_copy {w key} {
 #        error "window name $w doesn't look like an inspector window"
 #    }
 #
-#    fillTreeview $tree $object   ;#FIXME should be called from C++ on updates
+#    fillTreeview $tree $object   ;# should be called from C++ on updates
 #}
 #
 #proc fillTreeview {tree obj} {

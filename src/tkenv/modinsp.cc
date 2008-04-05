@@ -669,7 +669,7 @@ void TGraphicalModWindow::displayStringChanged(cModule *)
 
 void TGraphicalModWindow::displayStringChanged()
 {
-   needs_redraw = true; //FIXME TODO check, probably only non-background tags have changed...
+   needs_redraw = true; //TODO check, probably only non-background tags have changed...
 }
 
 void TGraphicalModWindow::displayStringChanged(cGate *)

@@ -115,7 +115,7 @@ proc moduleinspector_setrunmode {w} {
 #    # other pages:
 #    create_inspector_listbox $nb.contents
 #
-#    # XXX experimental page
+#    # note: experimental page
 #    inspector_createfields2page $w
 #}
 #
@@ -168,7 +168,7 @@ proc moduleinspector_setrunmode {w} {
 #    # other pages:
 #    create_inspector_listbox $nb.contents
 #
-#    # XXX experimental page
+#    # note: experimental page
 #    inspector_createfields2page $w
 #}
 
