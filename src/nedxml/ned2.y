@@ -39,9 +39,13 @@
 
 /* Operator precedences (low to high) and associativity */
 %right '?' ':'
-%left AND OR XOR
+%left OR
+%left XOR
+%left AND
 %left EQ NE '>' GE '<' LE
-%left BIN_AND BIN_OR BIN_XOR
+%left BIN_OR
+%left BIN_XOR
+%left BIN_AND
 %left SHIFT_LEFT SHIFT_RIGHT
 %left '+' '-'
 %left '*' '/' '%'

@@ -936,7 +936,7 @@ void NED1Generator::doExpression(ExpressionElement *node, const char *indent, bo
     generateChildren(node,indent);
 }
 
-int NED1Generator::getOperatorPriority(const char *op, int args)
+int NED1Generator::getOperatorPrecedence(const char *op, int args)
 {
     //
     // this method should always contain the same precendence rules as ebnf.y
@@ -950,49 +950,53 @@ int NED1Generator::getOperatorPriority(const char *op, int args)
 
     if (args==2)
     {
-        // %left AND OR XOR
-        if (!strcmp(op,"&&")) return 2;
+        // %left OR
         if (!strcmp(op,"||")) return 2;
-        if (!strcmp(op,"##")) return 2;
+        // %left XOR
+        if (!strcmp(op,"##")) return 3;
+        // %left AND
+        if (!strcmp(op,"&&")) return 4;
 
         // %left EQ NE GT GE LS LE
-        if (!strcmp(op,"==")) return 3;
-        if (!strcmp(op,"!=")) return 3;
-        if (!strcmp(op,"<"))  return 3;
-        if (!strcmp(op,">"))  return 3;
-        if (!strcmp(op,"<=")) return 3;
-        if (!strcmp(op,">=")) return 3;
+        if (!strcmp(op,"==")) return 5;
+        if (!strcmp(op,"!=")) return 5;
+        if (!strcmp(op,"<"))  return 5;
+        if (!strcmp(op,">"))  return 5;
+        if (!strcmp(op,"<=")) return 5;
+        if (!strcmp(op,">=")) return 5;
 
-        // %left BIN_AND BIN_OR BIN_XOR
-        if (!strcmp(op,"&"))  return 4;
-        if (!strcmp(op,"|"))  return 4;
-        if (!strcmp(op,"#"))  return 4;
+        // %left BIN_OR
+        if (!strcmp(op,"|"))  return 6;
+        // %left BIN_XOR
+        if (!strcmp(op,"#"))  return 7;
+        // %left BIN_AND
+        if (!strcmp(op,"&"))  return 8;
 
         // %left SHIFT_LEFT SHIFT_RIGHT
-        if (!strcmp(op,"<<")) return 5;
-        if (!strcmp(op,">>")) return 5;
+        if (!strcmp(op,"<<")) return 9;
+        if (!strcmp(op,">>")) return 9;
 
         // %left PLUS MIN
-        if (!strcmp(op,"+"))  return 6;
-        if (!strcmp(op,"-"))  return 6;
+        if (!strcmp(op,"+"))  return 10;
+        if (!strcmp(op,"-"))  return 10;
 
         // %left MUL DIV MOD
-        if (!strcmp(op,"*"))  return 7;
-        if (!strcmp(op,"/"))  return 7;
-        if (!strcmp(op,"%"))  return 7;
+        if (!strcmp(op,"*"))  return 11;
+        if (!strcmp(op,"/"))  return 11;
+        if (!strcmp(op,"%"))  return 11;
 
         // %right EXP
-        if (!strcmp(op,"^"))  return 8;
+        if (!strcmp(op,"^"))  return 12;
     }
 
     if (args==1)
     {
         // %left UMIN NOT BIN_COMPL
-        if (!strcmp(op,"-"))  return 9;
-        if (!strcmp(op,"!"))  return 9;
-        if (!strcmp(op,"~"))  return 9;
+        if (!strcmp(op,"-"))  return 13;
+        if (!strcmp(op,"!"))  return 13;
+        if (!strcmp(op,"~"))  return 13;
     }
-    INTERNAL_ERROR1(NULL, "getOperatorPriority(): unknown operator '%s'", op);
+    INTERNAL_ERROR1(NULL, "getOperatorPrecedence(): unknown operator '%s'", op);
     return -1;
 }
 
@@ -1018,19 +1022,19 @@ void NED1Generator::doOperator(OperatorElement *node, const char *indent, bool i
     else if (!op3)
     {
         // binary
-        int prio = getOperatorPriority(node->getName(), 2);
+        int prec = getOperatorPrecedence(node->getName(), 2);
         //bool leftassoc = isOperatorLeftAssoc(node->getName());
 
         bool needsParen = false;
-        bool spacious = (prio<=2);  // we want spaces around &&, ||, ##
+        bool spacious = (prec<=2);  // we want spaces around &&, ||, ##
 
         NEDElement *parent = node->getParent();
         if (parent && parent->getTagCode()==NED_OPERATOR) {
             OperatorElement *parentop = (OperatorElement *)parent;
-            int parentprio = getOperatorPriority(parentop->getName(),2 ); //FIXME 2 ???
-            if (parentprio>prio) {
+            int parentprec = getOperatorPrecedence(parentop->getName(),2 ); //FIXME 2 ???
+            if (parentprec>prec) {
                 needsParen = true;
-            } else if (parentprio==prio) {
+            } else if (parentprec==prec) {
                 // TBD can be refined (make use of associativity & precedence rules)
                 needsParen = true;
             }

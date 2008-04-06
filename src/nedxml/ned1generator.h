@@ -154,7 +154,7 @@ class NEDXML_API NED1Generator
 
     // expressions
     void doExpression(ExpressionElement *node, const char *indent, bool islast, const char *);
-    int getOperatorPriority(const char *op, int args);
+    int getOperatorPrecedence(const char *op, int args);
     bool isOperatorLeftAssoc(const char *op);
     void doOperator(OperatorElement *node, const char *indent, bool islast, const char *);
     void doFunction(FunctionElement *node, const char *indent, bool islast, const char *);
