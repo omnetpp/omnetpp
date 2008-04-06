@@ -10,31 +10,15 @@ moduleinterface IModule
         int p1;
 }
 
-simple Test like IModule
-{
-    @isNetwork(true);
-}
-
-%file: test.cc
-
-#include <omnetpp.h>
-
-namespace {} {
-
-class Test : public cSimpleModule
-{
-  public:
-    Test() : cSimpleModule(16384) { }
-    virtual void activity();
-};
-
-Define_Module(Test);
-
-void Test::activity()
+module Foo like IModule 
 {
 }
 
-}; //namespace
+network Test 
+{
+}
+
+%exitcode: 1
 
 %contains: stdout
-// TODO:
+module type has no parameter `p1', required by interface `IModule'

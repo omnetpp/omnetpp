@@ -1,0 +1,16 @@
+%description:
+Test that one cannot specify value for parameters in channel interfaces
+
+%file: test.ned
+
+channelinterface IFooChannel
+{
+    parameters:
+        string a = "first letter of the alphabet";
+}
+
+%exitcode: 1
+
+%contains-regex: stderr
+cannot specify parameter values within a module interface or or channel interface
+
