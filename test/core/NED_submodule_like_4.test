@@ -1,0 +1,35 @@
+%description:
+Test "like" modules used with subclassed interfaces.
+
+%file: test.ned
+
+import testlib.Dump;
+
+moduleinterface IBase { }
+moduleinterface ISub extends IBase { }
+moduleinterface IBase2 { }
+moduleinterface ISubSub extends IBase2, ISub { }
+
+module Foo like ISubSub { }  // Foo indirectly implements IBase and IBase2
+
+network Test
+{
+    submodules:
+        a: <"Foo"> like IBase;
+        b: <"Foo"> like IBase2;
+        dump: Dump;
+}
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.a: Foo {
+        }
+        module Test.b: Foo {
+        }
+}
+

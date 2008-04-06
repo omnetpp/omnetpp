@@ -1,0 +1,36 @@
+%description:
+Test channel type's compliance to its channel interfaces: positive test case
+
+%file: test.ned
+
+channelinterface IChannel
+{
+    parameters:
+        int p1;
+        string p2;
+}
+
+channel Foo like IChannel
+{
+    parameters:
+        int p1 = 5;
+        string p2 = "x";
+        double additional = 0;
+}
+
+network Test
+{
+    types:
+        module Node { gates: inout g; connections allowunconnected: }
+    submodules:
+        a : Node;
+        b : Node;
+     connections:
+        a.g <--> Foo <--> b.g;
+}
+
+%exitcode: 0
+
+%contains: stdout
+No more events -- simulation ended
+

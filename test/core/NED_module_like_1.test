@@ -1,5 +1,5 @@
 %description:
-Test module type's compliance to its module interfaces: psitive test case
+Test module type's compliance to its module interfaces: positive test case
 
 %file: test.ned
 

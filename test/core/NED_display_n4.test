@@ -7,6 +7,8 @@ import testlib.Dump;
 
 network Test {
     @display("i**=foo"); // illegal tag name
+    submodules: 
+        dump: Dump;
 }
 
 %exitcode: 1

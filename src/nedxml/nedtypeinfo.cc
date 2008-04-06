@@ -321,8 +321,6 @@ GateElement *NEDTypeInfo::findGateDecl(const char *name) const
 
 void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
 {
-    printf("check compliance %s to %s\n", name(), idecl->name()); //XXX
-
     // TODO check properties
 
     // check parameters

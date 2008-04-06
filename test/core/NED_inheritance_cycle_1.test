@@ -17,5 +17,6 @@ network Test
         a: Simple1;
 }
 
+%exitcode: 1
 %contains: stdout
-// TODO: report an error
+The following NED types could not be fully resolved, due to a missing base type or interface: Simple1, Simple2

@@ -1,0 +1,25 @@
+%description:
+Test channel type's compliance to its channel interfaces: wrong parameter type
+
+%file: test.ned
+
+channelinterface IChannel
+{
+    parameters:
+        int p1;
+}
+
+channel Foo like IChannel
+{
+    parameters:
+        string p1;
+}
+
+network Test
+{
+}
+
+%exitcode: 1
+
+%contains: stdout
+type of parameter `p1' should be int, as required by interface `IChannel'

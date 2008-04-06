@@ -7,6 +7,8 @@ import testlib.Dump;
 
 network Test {
     @display("x=1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1"); // too many args
+    submodules: 
+        dump: Dump;
 }
 
 %exitcode: 1

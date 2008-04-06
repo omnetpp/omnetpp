@@ -24,13 +24,13 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     const char *indent = currentIndent.c_str();
 
     printf("%smodule %s: %s {\n", indent, mod->fullPath().c_str(), mod->componentType()->fullName());
-    //TODO assert that display string is the same as @display
-    // mod->displayString().toString()...
+
+    mod->displayString().toString(); //important side effect: parse @display into display string; some test cases rely on this taking place here!
 
     cProperties *props = mod->properties();
     bool paramheadingprinted = false;
     for (int i=0; i<props->numProperties(); i++) {
-            if (!paramheadingprinted) {printf("%s    parameters:\n", indent);paramheadingprinted=true;}
+        if (!paramheadingprinted) {printf("%s    parameters:\n", indent);paramheadingprinted=true;}
         printf("%s        %s\n", indent, props->get(i)->info().c_str());
     }
     for (int i=0; i<mod->params(); i++) {

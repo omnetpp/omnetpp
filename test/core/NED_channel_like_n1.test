@@ -1,6 +1,5 @@
 %description:
-
-Test incorrect parameter inheritance for channel interfaces.
+Test channel type's compliance to its channel interfaces: missing parameter
 
 %file: test.ned
 
@@ -10,28 +9,15 @@ channelinterface IChannel
         int p1;
 }
 
-channel TestChannel extends ned.IdealChannel like IChannel
+channel Foo like IChannel
 {
-}
-
-module Node
-{
-    gates:
-        inout g;
-    connections allowunconnected:
 }
 
 network Test
 {
-    parameters:
-        string aType = "TestChannel";
-    submodules:
-        a: Node;
-    connections:
-        a.g$o --> <aType> like IChannel --> a.g$i;
 }
 
-%file: test.cc
+%exitcode: 1
 
 %contains: stdout
-// TODO:
+channel type has no parameter `p1', required by interface `IChannel'
