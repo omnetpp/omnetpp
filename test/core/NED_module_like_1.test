@@ -1,0 +1,42 @@
+%description:
+Test module type's compliance to its module interfaces: psitive test case
+
+%file: test.ned
+
+moduleinterface IModule
+{
+    parameters:
+        int p1;
+        string p2;
+    gates:
+        input in;
+        output out[];
+        inout fixed[6];
+}
+
+module Foo like IModule
+{
+    parameters:
+        int p1 = 5;
+        string p2 = "x";
+        double additional = 0;
+    gates:
+        input in;
+        output out[];
+        inout fixed[6];
+        inout additional[];
+    connections allowunconnected:
+}
+
+network Test
+{
+    submodules:
+        foo : Foo;
+    connections allowunconnected:
+}
+
+%exitcode: 0
+
+%contains: stdout
+No more events -- simulation ended
+

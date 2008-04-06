@@ -59,6 +59,14 @@ class NEDElementUtil
     static bool propertyAsBool(PropertyElement *property);
     static const char *propertyAsString(PropertyElement *property);
     //@}
+
+    /** @name Comparison */
+    //@{
+    /** Compares tagname and declared attrs (ignores id, srcloc, srcregion, etc) */
+    static int compare(NEDElement *node1, NEDElement *node2);
+    /** Recursive version of compare() */
+    static int compareTree(NEDElement *node1, NEDElement *node2);
+    //@}
 };
 
 NAMESPACE_END

@@ -193,3 +193,34 @@ const char *NEDElementUtil::propertyAsString(PropertyElement *property)
     return literal->getValue(); // return anything as string
 }
 
+int NEDElementUtil::compare(NEDElement *node1, NEDElement *node2)
+{
+    int diff;
+    if ((diff=node1->getTagCode()-node2->getTagCode()) != 0)
+        return diff;
+    for (int i=0; i<node1->getNumAttributes(); i++)
+        if ((diff = opp_strcmp(node1->getAttribute(i), node2->getAttribute(i)))!=0)
+            return diff;
+    return 0;
+}
+
+int NEDElementUtil::compareTree(NEDElement *node1, NEDElement *node2)
+{
+    int diff;
+    if ((diff = compare(node1, node2)) != 0)
+        return diff;
+
+    // recurse
+    for (NEDElement *child1 = node1->getFirstChild(), *child2 = node2->getFirstChild();
+         child1 || child2;
+         child1 = child1->getNextSibling(), child2 = child2->getNextSibling())
+    {
+        if (!child1 || !child2)
+            return child1 ? -1 : 1;
+        if ((diff = compareTree(child1, child2)) != 0)
+            return diff;
+    }
+    return 0;
+}
+
+

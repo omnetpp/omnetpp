@@ -387,9 +387,23 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
                     throw NEDException(gate, "size of gate vector `%s' should be specified as in interface `%s'",
                                        gate->getName(), idecl->fullName());
 
+                // if both gatesizes are given, check that they are actually the same
                 if (hasGatesize && ihasGatesize)
                 {
-                    //TODO further check that gate sizes are actually the same
+                    // unparsed expressions
+                    if (opp_strcmp(gate->getVectorSize(), igate->getVectorSize())!=0)
+                    {
+                        throw NEDException(gate, "size of gate vector `%s' should be specified as in interface `%s'",
+                                           gate->getName(), idecl->fullName());
+                    }
+
+                    // parsed expressions
+                    if (gatesizeExpr && igatesizeExpr)
+                    {
+                        if (NEDElementUtil::compareTree(gatesizeExpr, igatesizeExpr) != 0)
+                            throw NEDException(gate, "size of gate vector `%s' should be specified as in interface `%s'",
+                                               gate->getName(), idecl->fullName());
+                    }
                 }
 
             }
