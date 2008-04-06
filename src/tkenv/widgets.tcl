@@ -45,7 +45,7 @@ proc checkTclTkVersion {} {
 }
 
 # turn on anti-aliasing on OS/X
-set tk::mac::CGAntialiasLimit 1
+catch {set tk::mac::CGAntialiasLimit 1}
 
 # setupTkOptions --
 #

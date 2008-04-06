@@ -22,4 +22,4 @@ network Test
 %exitcode: 1
 
 %contains: stdout
-type of parameter `p1' should be int, as required by interface `IChannel'
+type of parameter `p1' must be int, as required by interface `IChannel'

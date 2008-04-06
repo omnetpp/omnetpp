@@ -157,10 +157,15 @@ class SIM_API cDisplayString
     _OPPDEPRECATED const char *getString() const  {return toString();}
 
     /**
+     * Same as parse().
+     */
+    void set(const char *displaystr)  {parse(displaystr);}
+
+    /**
      * Sets the display string to the given value. Throws an error if there
      * was an error parsing the string.
      */
-    void parse(const char *displaystr);  //FIXME rename to set() ???
+    void parse(const char *displaystr);
 
     /**
      * Update with the contents of another display string. Corresponding

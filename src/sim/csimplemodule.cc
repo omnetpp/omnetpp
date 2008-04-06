@@ -562,6 +562,8 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     // now remove it from future events and return pointer
     if (msg->isScheduled())
     {
+        if (!msg->isSelfMessage())
+            throw cRuntimeError("cancelEvent(): message (%s)%s is not a self-message", msg->className(), msg->fullName());
         simulation.msgQueue.remove(msg);
         EVCB.messageCancelled(msg);
     }

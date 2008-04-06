@@ -9,17 +9,17 @@ moduleinterface IModule
         int p1;
 }
 
-module Foo like IModule
+module Foo like IModule 
 {
     parameters:
-        string p1;
+        volatile int p1;
 }
 
-network Test
+network Test 
 {
 }
 
 %exitcode: 1
 
 %contains: stdout
-type of parameter `p1' must be int, as required by interface `IModule'
+parameter `p1' must not be volatile, as required by interface `IModule'

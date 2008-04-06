@@ -129,6 +129,7 @@
 	- removed: pause(), backtomod, pause_in_sendmsg (they were obsolete)
 	- removed: breakpoint(), and its callback method in cEnvir, in Tkenv, etc..
 	- sendDirect(): added overloaded methods that accept transmissionDelay as well
+	- cancelEvent() now only allows cancelling self-messages
 
 	cModule:
 	- removed backgroundDisplayString()/setBackgroundDisplayString() and its compat

@@ -9,18 +9,18 @@ moduleinterface IModule
         output out;
 }
 
-module Foo like IModule 
+module Foo like IModule
 {
     gates:
         output out[];
 }
 
-network Test 
+network Test
 {
 }
 
 %exitcode: 1
 
 %contains: stdout
-gate `out' should not be a vector gate, as required by interface `IModule'
+gate `out' must not be a vector gate, as required by interface `IModule'
 

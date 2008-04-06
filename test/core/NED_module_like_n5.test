@@ -9,17 +9,17 @@ moduleinterface IModule
         output out;
 }
 
-module Foo like IModule 
+module Foo like IModule
 {
     gates:
         inout out;
 }
 
-network Test 
+network Test
 {
 }
 
 %exitcode: 1
 
 %contains: stdout
-type of gate `out' should be output, as required by interface `IModule'
+type of gate `out' must be output, as required by interface `IModule'

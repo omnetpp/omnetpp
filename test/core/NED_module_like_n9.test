@@ -9,17 +9,17 @@ moduleinterface IModule
         output out[5];
 }
 
-module Foo like IModule 
+module Foo like IModule
 {
     gates:
         output out[];
 }
 
-network Test 
+network Test
 {
 }
 
 %exitcode: 1
 
 %contains: stdout
-size of gate vector `out' should be specified as in interface `IModule'
+size of gate vector `out' must be specified as in interface `IModule'
