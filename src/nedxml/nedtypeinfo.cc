@@ -374,8 +374,24 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
             // if both are vectors, check vector size specs are compatible
             if (igate->getIsVector() && gate->getIsVector())
             {
-                //if (opp_isempty(igate->getVectorSize()) /* && no ExpressionElement */)
-                //FIXME
+                ExpressionElement *gatesizeExpr = (ExpressionElement *)gate->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size");
+                ExpressionElement *igatesizeExpr = (ExpressionElement *)igate->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size");
+
+                bool hasGatesize = !opp_isempty(gate->getVectorSize()) || gatesizeExpr!=NULL;
+                bool ihasGatesize = !opp_isempty(igate->getVectorSize()) || igatesizeExpr!=NULL;
+
+                if (hasGatesize && !ihasGatesize)
+                    throw NEDException(gate, "size of gate vector `%s' should be left unspecified, as required by interface `%s'",
+                                       gate->getName(), idecl->fullName());
+                if (!hasGatesize && ihasGatesize)
+                    throw NEDException(gate, "size of gate vector `%s' should be specified as in interface `%s'",
+                                       gate->getName(), idecl->fullName());
+
+                if (hasGatesize && ihasGatesize)
+                {
+                    //TODO further check that gate sizes are actually the same
+                }
+
             }
 
             // TODO check properties

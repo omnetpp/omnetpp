@@ -1,12 +1,12 @@
 %description:
-Test module type's compliance to its module interfaces: gate scalar/vector mismatch
+Test module type's compliance to its module interfaces: gate size given/not given mismatch
 
 %file: test.ned
 
 moduleinterface IModule
 {
     gates:
-        output out;
+        output out[5];
 }
 
 module Foo like IModule 
@@ -22,5 +22,4 @@ network Test
 %exitcode: 1
 
 %contains: stdout
-gate `out' should not be a vector gate, as required by interface `IModule'
-
+size of gate vector `out' should be specified as in interface `IModule'
