@@ -168,7 +168,9 @@ class NEDXML_API FilesElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual FilesElement *dup() const;
     //@}
@@ -215,7 +217,9 @@ class NEDXML_API NedFileElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual NedFileElement *dup() const;
     //@}
@@ -273,7 +277,9 @@ class NEDXML_API CommentElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual CommentElement *dup() const;
     //@}
@@ -319,7 +325,9 @@ class NEDXML_API PackageElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual PackageElement *dup() const;
     //@}
@@ -364,7 +372,9 @@ class NEDXML_API ImportElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ImportElement *dup() const;
     //@}
@@ -411,7 +421,9 @@ class NEDXML_API PropertyDeclElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual PropertyDeclElement *dup() const;
     //@}
@@ -460,7 +472,9 @@ class NEDXML_API ExtendsElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ExtendsElement *dup() const;
     //@}
@@ -505,7 +519,9 @@ class NEDXML_API InterfaceNameElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual InterfaceNameElement *dup() const;
     //@}
@@ -550,7 +566,9 @@ class NEDXML_API SimpleModuleElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual SimpleModuleElement *dup() const;
     //@}
@@ -599,7 +617,9 @@ class NEDXML_API ModuleInterfaceElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ModuleInterfaceElement *dup() const;
     //@}
@@ -648,7 +668,9 @@ class NEDXML_API CompoundModuleElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual CompoundModuleElement *dup() const;
     //@}
@@ -700,7 +722,9 @@ class NEDXML_API ChannelInterfaceElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ChannelInterfaceElement *dup() const;
     //@}
@@ -747,7 +771,9 @@ class NEDXML_API ChannelElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ChannelElement *dup() const;
     //@}
@@ -795,7 +821,9 @@ class NEDXML_API ParametersElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ParametersElement *dup() const;
     //@}
@@ -851,7 +879,9 @@ class NEDXML_API ParamElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ParamElement *dup() const;
     //@}
@@ -910,7 +940,9 @@ class NEDXML_API PatternElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual PatternElement *dup() const;
     //@}
@@ -965,7 +997,9 @@ class NEDXML_API PropertyElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual PropertyElement *dup() const;
     //@}
@@ -1015,7 +1049,9 @@ class NEDXML_API PropertyKeyElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual PropertyKeyElement *dup() const;
     //@}
@@ -1059,7 +1095,9 @@ class NEDXML_API GatesElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual GatesElement *dup() const;
     //@}
@@ -1109,7 +1147,9 @@ class NEDXML_API GateElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual GateElement *dup() const;
     //@}
@@ -1161,7 +1201,9 @@ class NEDXML_API TypesElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual TypesElement *dup() const;
     //@}
@@ -1207,7 +1249,9 @@ class NEDXML_API SubmodulesElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual SubmodulesElement *dup() const;
     //@}
@@ -1259,7 +1303,9 @@ class NEDXML_API SubmoduleElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual SubmoduleElement *dup() const;
     //@}
@@ -1315,7 +1361,9 @@ class NEDXML_API ConnectionsElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ConnectionsElement *dup() const;
     //@}
@@ -1386,7 +1434,9 @@ class NEDXML_API ConnectionElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ConnectionElement *dup() const;
     //@}
@@ -1463,7 +1513,9 @@ class NEDXML_API ChannelSpecElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ChannelSpecElement *dup() const;
     //@}
@@ -1512,7 +1564,9 @@ class NEDXML_API ConnectionGroupElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ConnectionGroupElement *dup() const;
     //@}
@@ -1562,7 +1616,9 @@ class NEDXML_API LoopElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual LoopElement *dup() const;
     //@}
@@ -1612,7 +1668,9 @@ class NEDXML_API ConditionElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ConditionElement *dup() const;
     //@}
@@ -1658,7 +1716,9 @@ class NEDXML_API ExpressionElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ExpressionElement *dup() const;
     //@}
@@ -1707,7 +1767,9 @@ class NEDXML_API OperatorElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual OperatorElement *dup() const;
     //@}
@@ -1756,7 +1818,9 @@ class NEDXML_API FunctionElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual FunctionElement *dup() const;
     //@}
@@ -1807,7 +1871,9 @@ class NEDXML_API IdentElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual IdentElement *dup() const;
     //@}
@@ -1864,7 +1930,9 @@ class NEDXML_API LiteralElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual LiteralElement *dup() const;
     //@}
@@ -1918,7 +1986,9 @@ class NEDXML_API MsgFileElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual MsgFileElement *dup() const;
     //@}
@@ -1977,7 +2047,9 @@ class NEDXML_API NamespaceElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual NamespaceElement *dup() const;
     //@}
@@ -2022,7 +2094,9 @@ class NEDXML_API CplusplusElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual CplusplusElement *dup() const;
     //@}
@@ -2067,7 +2141,9 @@ class NEDXML_API StructDeclElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual StructDeclElement *dup() const;
     //@}
@@ -2114,7 +2190,9 @@ class NEDXML_API ClassDeclElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ClassDeclElement *dup() const;
     //@}
@@ -2161,7 +2239,9 @@ class NEDXML_API MessageDeclElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual MessageDeclElement *dup() const;
     //@}
@@ -2206,7 +2286,9 @@ class NEDXML_API EnumDeclElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual EnumDeclElement *dup() const;
     //@}
@@ -2255,7 +2337,9 @@ class NEDXML_API EnumElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual EnumElement *dup() const;
     //@}
@@ -2303,7 +2387,9 @@ class NEDXML_API EnumFieldsElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual EnumFieldsElement *dup() const;
     //@}
@@ -2349,7 +2435,9 @@ class NEDXML_API EnumFieldElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual EnumFieldElement *dup() const;
     //@}
@@ -2400,7 +2488,9 @@ class NEDXML_API MessageElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual MessageElement *dup() const;
     //@}
@@ -2455,7 +2545,9 @@ class NEDXML_API ClassElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual ClassElement *dup() const;
     //@}
@@ -2510,7 +2602,9 @@ class NEDXML_API StructElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual StructElement *dup() const;
     //@}
@@ -2575,7 +2669,9 @@ class NEDXML_API FieldElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual FieldElement *dup() const;
     //@}
@@ -2634,7 +2730,9 @@ class NEDXML_API UnknownElement : public NEDElement
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
+    virtual const char *getAttribute(const char *name) const {return NEDElement::getAttribute(name);} // needed because of a C++ language quirk
     virtual void setAttribute(int k, const char *val);
+    virtual void setAttribute(const char *name, const char *val) {NEDElement::setAttribute(name, val);} // ditto
     virtual const char *getAttributeDefault(int k) const;
     virtual UnknownElement *dup() const;
     //@}

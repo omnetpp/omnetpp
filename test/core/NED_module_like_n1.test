@@ -1,6 +1,5 @@
 %description:
-
-Test incorrect parameter inheritance for module interfaces.
+Test module type's compliance to its module interfaces: missing parameter
 
 %file: test.ned
 

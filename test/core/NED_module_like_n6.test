@@ -1,0 +1,26 @@
+%description:
+Test module type's compliance to its module interfaces: wrong gate type
+
+%file: test.ned
+
+moduleinterface IModule
+{
+    gates:
+        output out;
+}
+
+module Foo like IModule 
+{
+    gates:
+        output out[];
+}
+
+network Test 
+{
+}
+
+%exitcode: 1
+
+%contains: stdout
+gate `out' should not be a vector gate, as required by interface `IModule'
+

@@ -1,0 +1,23 @@
+%description:
+Test module type's compliance to its module interfaces: missing gate
+
+%file: test.ned
+
+moduleinterface IModule
+{
+    gates:
+        output out;
+}
+
+module Foo like IModule 
+{
+}
+
+network Test 
+{
+}
+
+%exitcode: 1
+
+%contains: stdout
+module type has no gate `out', required by interface `IModule'

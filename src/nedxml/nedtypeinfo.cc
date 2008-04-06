@@ -319,83 +319,67 @@ GateElement *NEDTypeInfo::findGateDecl(const char *name) const
     return NULL;
 }
 
-void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *ifDecl)
+void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
 {
-    printf("check compliance %s to %s\n", name(), ifDecl->name()); //XXX
+    printf("check compliance %s to %s\n", name(), idecl->name()); //XXX
 
-    // check properties
-    //XXX
+    // TODO check properties
 
-    ParametersElement *ifPars = ifDecl->getParametersElement();
-    if (ifPars)
-    {
-        // iterate..
-        //   findParamDecl
-        //   checkParamCompliance..
-    }
-
-
-/*FIXME TODO
     // check parameters
-    for (int i=0; i<ifDecl->numPars(); i++)
+    ParametersElement *iparams = idecl->getParametersElement();
+    if (iparams)
     {
-        int k = findPar(ifDecl->parName(i));
-        if (k<0)
-            throw cRuntimeError(this, "has no parameter `%s' required by interface `%s'", ifdecl->parName(i), interfacename);
-        verifyParameterMatch(params[k].value, ifdecl->par(i), ifdecl->parName(i), interfacename);
+        for (ParamElement *iparam=iparams->getFirstParamChild(); iparam; iparam=iparam->getNextParamSibling())
+        {
+            // find param decl
+            ParamElement *param = findParamDecl(iparam->getName());
+            if (!param)
+                throw NEDException(getTree(), "%s type has no parameter `%s', required by interface `%s'",
+                                   (getType()==CHANNEL ? "channel" : "module"), iparam->getName(), idecl->fullName());
+
+            // check parameter type
+            if (param->getType()!=iparam->getType())
+                throw NEDException(param, "type of parameter `%s' should be %s, as required by interface `%s'",
+                                   param->getName(), iparam->getAttribute("type"), idecl->fullName());
+
+            // TODO check properties
+        }
     }
 
     // check gates
-    for (int i=0; i<ifdecl->numGates(); i++)
+    GatesElement *igates = idecl->getGatesElement();
+    if (igates)
     {
-        int k = findGate(ifdecl->gateName(i));
-        if (k<0)
-            throw cRuntimeError(this, "has no gate `%s' required by interface `%s'", ifdecl->gateName(i), interfacename);
-        GateDescription& g = gates[k];
-        if (g.type != ifdecl->gateType(i))
-            throw cRuntimeError(this, "type of gate `%s' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
-        if (g.isvector != ifdecl->gateIsVector(i))
-            throw cRuntimeError(this, "vectorness of gate `%s' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
-        if (ifdecl->gateSize(i)!=-1 && g.gatesize!=ifdecl->gateSize(i))
-            throw cRuntimeError(this, "size of gate vector `%s[]' differs from that in interface `%s'", ifdecl->gateName(i), interfacename);
-    }
-*/
-}
-
-/*
-void NEDTypeInfo::assertParMatchesBase(cPar *par, const cPar *basepar,
-                                                const char *parname, const char *basename)
-{
-    if (basepar->isSet() && par->isSet())
-        throw cRuntimeError(this, "parameter `%s' already set in base `%s', it cannot be overridden", parname, basename);
-
-    if (par->type()!=basepar->type() || par->isVolatile()!=ifpar->isVolatile())
-        throw cRuntimeError(this, "type of parameter `%s' differs from that in base `%s'", parname, basename);
-}
-
-bool NEDTypeInfo::parMatchesInterface(cPar *par, const cPar *ifpar)
-{
-    if (par->type()!=basepar->type() || par->isVolatile()!=ifpar->isVolatile())
-        throw cRuntimeError(this, "type of parameter `%s' differs from that in interface `%s'", parname, interfacename);
-
-    if (ifpar->isSet()) // values must match as well
-    {
-        if (!par->isSet())
-            throw cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
-
-        if (ifpar->isConstant())
+        for (GateElement *igate=igates->getFirstGateChild(); igate; igate=igate->getNextGateSibling())
         {
-            if (!par->isConstant())
-                throw cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
-            if (!const_cast<cPar&>(ifpar).equals(*par))   //FIXME const_cast -- eliminate
-                throw cRuntimeError(this, "parameter `%s' must have the same value as in interface `%s'", parname, interfacename);
-        }
-        else
-        {
-            // we accept expressions without any check -- comparison cannot be performed 100% accurately
+            // find gate decl
+            GateElement *gate = findGateDecl(igate->getName());
+            if (!gate)
+                throw NEDException(getTree(), "%s type has no gate `%s', required by interface `%s'",
+                                   (getType()==CHANNEL ? "channel" : "module"), igate->getName(), idecl->fullName());
+
+            // check gate type
+            if (gate->getType()!=igate->getType())
+                throw NEDException(gate, "type of gate `%s' should be %s, as required by interface `%s'",
+                                   gate->getName(), igate->getAttribute("type"), idecl->fullName());
+
+            // check vector/nonvector
+            if (!igate->getIsVector() && gate->getIsVector())
+                throw NEDException(gate, "gate `%s' should not be a vector gate, as required by interface `%s'",
+                                   gate->getName(), idecl->fullName());
+            if (igate->getIsVector() && !gate->getIsVector())
+                throw NEDException(gate, "gate `%s' should be a vector gate, as required by interface `%s'",
+                                   gate->getName(), idecl->fullName());
+
+            // if both are vectors, check vector size specs are compatible
+            if (igate->getIsVector() && gate->getIsVector())
+            {
+                //if (opp_isempty(igate->getVectorSize()) /* && no ExpressionElement */)
+                //FIXME
+            }
+
+            // TODO check properties
         }
     }
 }
-*/
-
 

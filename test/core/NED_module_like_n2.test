@@ -1,0 +1,25 @@
+%description:
+Test module type's compliance to its module interfaces: wrong parameter type
+
+%file: test.ned
+
+moduleinterface IModule
+{
+    parameters:
+        int p1;
+}
+
+module Foo like IModule 
+{
+    parameters:
+        string p1;
+}
+
+network Test 
+{
+}
+
+%exitcode: 1
+
+%contains: stdout
+type of parameter `p1' should be int, as required by interface `IModule'
