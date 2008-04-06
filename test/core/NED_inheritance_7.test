@@ -45,17 +45,10 @@ network Test
         a: Node;
         b: Node;
     connections:
-        a.g$o --> <aType> like IChannel1 { parameters: p0 = "hello"; p1 = 1; p2 = 2; }--> b.g$i;
-        b.g$o --> <aType> like IChannel2 { parameters: p0 = "hello"; p1 = 1; p2 = 2; }--> a.g$i;
+        a.g$o --> <aType> like IChannel1 { parameters: p0 = "hello"; p1 = 1; p2 = 2; }--> b.g$i;  //FIXME wrong test case! p2 should NOT be avialable here
+        b.g$o --> <aType> like IChannel2 { parameters: p0 = "hello"; p1 = 1; p2 = 2; }--> a.g$i;  // and p1 should NOT be avialable here
 }
 
-%file: test.cc
+%exitcode: 0
 
-%contains: stdout
-Initializing channel Test.channel, stage 0
-Initializing channel Test.channel, stage 0
-Initializing module Test, stage 0
-Initializing module Test.a, stage 0
-Initializing module Test.b, stage 0
 
-Running simulation...
