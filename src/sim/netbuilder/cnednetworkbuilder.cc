@@ -53,6 +53,7 @@
 
 USING_NAMESPACE
 
+Register_PerRunConfigEntry(CFGID_MAX_MODULE_NESTING, "max-module-nesting", CFG_INT, "50", "The maximum allowed depth of submodule nesting. This is used to catch accidental infinite recursions in NED.");
 Register_PerObjectConfigEntry(CFGID_TYPE_NAME, "type-name", CFG_STRING, NULL, "Specifies type for submodules and channels declared with 'like <>'.");
 
 /*
@@ -278,6 +279,21 @@ void cNEDNetworkBuilder::addGatesTo(cModule *module, cNEDDeclaration *decl)
 void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
     //TRACE("buildinside(%s), decl=%s", modp->fullPath().c_str(), decl->name());  //XXX
+
+    if (modp->id() % 50 == 0)
+    {
+        // half-hearted attempt to catch "recursive compound module" bug (where
+        // a compound module contains itself, directly or via other compound modules)
+        int limit = ev.config()->getAsInt(CFGID_MAX_MODULE_NESTING, 50);
+        if (limit>0)
+        {
+            int depth = 0;
+            for (cModule *p=modp; p; p=p->parentModule())
+                depth++;
+            if (depth > limit)
+                throw cRuntimeError(modp, "Submodule nesting too deep (%d) (potential infinite recursion?)", depth);
+        }
+    }
 
     // add submodules and connections. Submodules and connections are inherited:
     // we need to start start with the the base classes, and do this compound

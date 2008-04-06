@@ -1,5 +1,5 @@
 %description:
-Test module usage cycle.
+Test that infinite submodule recursion is caught properly
 
 %file: test.ned
 
@@ -21,8 +21,7 @@ network Test
         m: Module1;
 }
 
-// the following prevents hanging
-THIS HANGS NOW!
+%exitcode: 1
 
 %contains: stdout
-// TODO: report an error
+Submodule nesting too deep

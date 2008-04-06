@@ -116,6 +116,6 @@ cProperties *cDynamicModuleType::subcomponentParamProperties(const char *subcomp
 cProperties *cDynamicModuleType::subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->subcomponentParamProperties(subcomponentName, subcomponentType, gateName);
+    return decl->subcomponentGateProperties(subcomponentName, subcomponentType, gateName);
 }
 

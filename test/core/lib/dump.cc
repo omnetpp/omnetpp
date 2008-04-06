@@ -5,6 +5,7 @@ class Dump : public cSimpleModule
   protected:
     virtual void initialize();
     virtual void dump(cModule *mod, std::string currentIndent);
+    virtual std::string props2str(cProperties *props);
 };
 
 Define_Module(Dump);
@@ -14,6 +15,16 @@ void Dump::initialize()
     printf("==============================\n");
     dump(simulation.systemModule(), std::string());
     printf("==============================\n");
+}
+
+std::string Dump::props2str(cProperties *props)
+{
+    if (!props)
+        return " [props==NULL]"; // should not happen
+    std::string result;
+    for (int i=0; i<props->numProperties(); i++)
+        result += " " + props->get(i)->info();
+    return result;
 }
 
 void Dump::dump(cModule *mod, std::string currentIndent)
@@ -28,6 +39,7 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     mod->displayString().toString(); //important side effect: parse @display into display string; some test cases rely on this taking place here!
 
     cProperties *props = mod->properties();
+    ASSERT(props != NULL);
     bool paramheadingprinted = false;
     for (int i=0; i<props->numProperties(); i++) {
         if (!paramheadingprinted) {printf("%s    parameters:\n", indent);paramheadingprinted=true;}
@@ -35,14 +47,14 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     }
     for (int i=0; i<mod->params(); i++) {
         if (!paramheadingprinted) {printf("%s    parameters:\n", indent);paramheadingprinted=true;}
-        printf("%s        %s = %s\n", indent, mod->par(i).fullName(), mod->par(i).info().c_str());
+        printf("%s        %s%s = %s\n", indent, mod->par(i).fullName(), props2str(mod->par(i).properties()).c_str(), mod->par(i).info().c_str());
     }
 
     bool gateheadingprinted = false;
     for (int i=0; i<mod->gates(); i++) {
         if (mod->gate(i)) {
             if (!gateheadingprinted) {printf("%s    gates:\n", indent);gateheadingprinted=true;}
-            printf("%s        %2d %s: %s\n", indent, i, mod->gate(i)->fullName(), mod->gate(i)->info().c_str());
+            printf("%s        %2d %s%s: %s\n", indent, i, mod->gate(i)->fullName(), props2str(mod->gate(i)->properties()).c_str(), mod->gate(i)->info().c_str());
         }
     }
 

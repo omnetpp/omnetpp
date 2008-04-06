@@ -4,7 +4,9 @@ Test parameter and gate inheritance for simple modules.
 
 %file: test.ned
 
-simple Super
+import testlib.Dump;
+
+module Super
 {
     parameters:
         @documentation("http://omnetpp.org");
@@ -14,11 +16,13 @@ simple Super
         input in1 @kind(L);
         output out1;
         inout g1 @kind(K);
+    connections allowunconnected:
 }
 
-simple Sub extends Super
+module Sub extends Super
 {
     parameters:
+        p2 @foo(3);
         int p3;
         double p4;
     gates:
@@ -37,65 +41,33 @@ network Test
                 p3 = 3;
                 p4 = 4;
         }
+        dump: Dump;
     connections:
         sub.out1 --> sub.in2;
         sub.g1 <--> sub.g2;
         sub.out2 --> sub.in1;
 }
 
-%file: test.cc
-
-#include <omnetpp.h>
-
-namespace {} {
-
-class Super: public cSimpleModule
-{
-  public:
-    Super() : cSimpleModule(16384) { }
-    virtual void activity();
-};
-
-Define_Module(Super);
-
-static void printProperties(cProperties *properties)
-{
-    if (properties) {
-        for (int i = 0; i < (int)properties->numProperties(); i++)
-            ev << properties->get(i)->info() << "\n";
-    }
-}
-
-void Super::activity()
-{
-    printProperties(properties());
-    for (int i=0; i<params(); i++) {
-        ev << par(i).name() << "=" << par(i).doubleValue() << "\n";
-        printProperties(par(i).properties());
-    }
-    for (int i=0; i<gates(); i++) {
-        ev << gate(i)->name() << "\n";
-        printProperties(gate(i)->properties());
-    }
-}
-
-}; // namespace
-
 %contains: stdout
-@documentation(http://omnetpp.org)
-p1=1
-p2=2
-@unit(s)
-p3=3
-p4=4
-in1
-@kind(L)
-out1
-g1$i
-@kind(K)
-g1$o
-@kind(K)
-in2
-out2
-g2$i
-g2$o
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.sub: Sub {
+            parameters:
+                @documentation(http://omnetpp.org)
+                p1 = 1
+                p2 @unit(s) = 2
+                p3 = 3
+                p4 = 4
+            gates:
+                 0 in1 @kind(L): <-- sub.out2
+                 1 out1: --> sub.in2
+                 2 g1$i @kind(K): <-- sub.g2$o
+                 3 g1$o @kind(K): --> sub.g2$i
+                 4 in2: <-- sub.out1
+                 5 out2: --> sub.in1
+                 6 g2$i: <-- sub.g1$o
+                 7 g2$o: --> sub.g1$i
+        }
+}
