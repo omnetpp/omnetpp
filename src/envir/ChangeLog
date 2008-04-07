@@ -27,8 +27,8 @@
 	* measurement-label  "${iterationvars}"
 	* replication-label  "#${repetition}, seedset=@"
 
-	* output-vector-file now defaults to: "${configname}-${runnumber}.vec"
-	* output-scalar-file now defaults to: "${configname}-${runnumber}.sca"
+	* output-vector-file now defaults to: "${resultdir}/${configname}-${runnumber}.vec"
+	* output-scalar-file now defaults to: "${resultdir}/${configname}-${runnumber}.sca"
 
 	* **.enable-recording=
 	* **.record-event-numbers=
@@ -40,8 +40,10 @@
 	* ned-path, NEDPATH
 	* fingerprint
 	* seed-set
+	* record-eventlog
 	* eventlog-file
 	* eventlog-message-detail-pattern
+	* result-dir
 
 	* args.cc/h rewritten ("--" can be used to mark end of options, etc...)
 

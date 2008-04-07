@@ -39,15 +39,16 @@ class cConfigKey;
  * syntax in the configuration.
  */
 //@{
-#define CFGVAR_CONFIGNAME     "configname"
-#define CFGVAR_RUNNUMBER      "runnumber"
-#define CFGVAR_NETWORK        "network"
-#define CFGVAR_PROCESSID      "processid"
-#define CFGVAR_DATETIME       "datetime"
-#define CFGVAR_RUNID          "runid"
-#define CFGVAR_REPETITION     "repetition"
-#define CFGVAR_ITERATIONVARS  "iterationvars"   // without $repetition
-#define CFGVAR_ITERATIONVARS2 "iterationvars2"  // with $repetition
+#define CFGVAR_CONFIGNAME       "configname"
+#define CFGVAR_RUNNUMBER        "runnumber"
+#define CFGVAR_NETWORK          "network"
+#define CFGVAR_PROCESSID        "processid"
+#define CFGVAR_DATETIME         "datetime"
+#define CFGVAR_RESULTDIR        "resultdir"
+#define CFGVAR_RUNID            "runid"
+#define CFGVAR_REPETITION       "repetition"
+#define CFGVAR_ITERATIONVARS    "iterationvars"   // without $repetition
+#define CFGVAR_ITERATIONVARS2   "iterationvars2"  // with $repetition
 //@}
 
 /**

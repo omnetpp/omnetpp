@@ -27,8 +27,18 @@
 #include "fileutil.h"
 #include "stringtokenizer.h"
 #include "exception.h"
+#include "platmisc.h"  //mkdir
 
 NAMESPACE_BEGIN
+
+std::string fileNameToSlash(const char *fileName)
+{
+    std::string res;
+    res.reserve(strlen(fileName));
+    for (; *fileName; fileName++)
+        res.append(1, *fileName=='\\' ? '/' : *fileName);
+    return res;
+}
 
 void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
@@ -43,6 +53,7 @@ void splitFileName(const char *pathname, std::string& dir, std::string& fnameonl
 
     // find last "/" or "\"
     const char *s = pathname + strlen(pathname) - 1;
+    s--; // ignore potential trailing "/"
     while (s>=pathname && *s!='\\' && *s!='/') s--;
 
     // split along that
@@ -186,6 +197,20 @@ std::string concatDirAndFile(const char *basedir, const char *pathname)
 #endif
 }
 
+static std::string removeTrailingSlash(const char *pathname)
+{
+    char lastChar = *(pathname+strlen(pathname)-1);
+    return (lastChar=='/' || lastChar=='\\') ? std::string(pathname, strlen(pathname)-1) : pathname;
+
+}
+
+bool fileExists(const char *pathname)
+{
+    // Note: stat("foo/") ==> error, even when "foo" exists and is a directory!
+    struct stat statbuf;
+    return stat(pathname, &statbuf) == 0;
+}
+
 bool isDirectory(const char *pathname)
 {
     struct stat statbuf;
@@ -199,6 +224,21 @@ void removeFile(const char *fname, const char *descr)
     if (unlink(fname)!=0 && errno!=ENOENT)
         throw opp_runtime_error("cannot remove %s `%s': %s", descr, fname, strerror(errno));
 }
+
+void mkPath(const char *pathname)
+{
+    if (!fileExists(pathname))
+    {
+        std::string pathprefix, dummy;
+        splitFileName(pathname, pathprefix, dummy);
+        mkPath(pathprefix.c_str());
+        // note: anomaly with slash-terminated dirnames: stat("foo/") says
+        // it does not exist, and mkdir("foo/") says cannot create (EEXIST):
+        if (mkdir(pathname, 0755)!=0 && errno!=EEXIST)
+            throw opp_runtime_error("cannot create directory `%s': %s", pathname, strerror(errno));
+    }
+}
+
 
 //----
 

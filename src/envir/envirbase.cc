@@ -121,7 +121,9 @@ Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "
 Register_PerRunConfigEntry(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigEntry(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
 Register_PerRunConfigEntry(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
-Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, NULL, "Name of the event log file to generate. If empty, no file is generated.");
+Register_PerRunConfigEntry(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results", "Value for the ${resultdir} variable, which is used as the default directory for result files (output vector file, output scalar file, eventlog file, etc.)");
+Register_PerRunConfigEntry(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
+Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.log", "Name of the event log file to generate.");
 //FIXME why is this global and not per-run???
 Register_GlobalConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL,
         "A list of patterns separated by '|' character which will be used to write "
@@ -1104,7 +1106,7 @@ void EnvirBase::readPerRunOptions()
     opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
     opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
     opt_fingerprint = cfg->getAsString(CFGID_FINGERPRINT);
-    opt_eventlogfilename = cfg->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
+    opt_eventlogfilename = cfg->getAsBool(CFGID_RECORD_EVENTLOG) ? cfg->getAsFilename(CFGID_EVENTLOG_FILE).c_str() : "";
     opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
     opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
@@ -1149,6 +1151,7 @@ void EnvirBase::readPerRunOptions()
     {
         processFileName(opt_eventlogfilename);
         ::printf("Recording event log to file `%s'...\n", opt_eventlogfilename.c_str());
+        mkPath(directoryOf(opt_eventlogfilename.c_str()).c_str());
         FILE *out = fopen(opt_eventlogfilename.c_str(), "w");
         if (!out)
             throw cRuntimeError("Cannot open event log file `%s' for write", opt_eventlogfilename.c_str());

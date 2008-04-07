@@ -34,7 +34,7 @@ USING_NAMESPACE
 
 #define DEFAULT_PRECISION  "14"
 
-Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "${configname}-${runnumber}.sca", "Name for the output scalar file.");
+Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.sca", "Name for the output scalar file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision).");
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE_APPEND, "output-scalar-file-append", CFG_BOOL, "false", "What to do when the output scalar file already exists: append to it (OMNeT++ 3.x behavior), or delete it and begin a new file (default).");
 
@@ -66,6 +66,7 @@ cFileOutputScalarManager::~cFileOutputScalarManager()
 
 void cFileOutputScalarManager::openFile()
 {
+    mkPath(directoryOf(fname.c_str()).c_str());
     f = fopen(fname.c_str(),"a");
     if (f==NULL)
         throw cRuntimeError("Cannot open output scalar file `%s'", fname.c_str());

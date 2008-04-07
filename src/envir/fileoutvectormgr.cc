@@ -41,7 +41,7 @@ Register_PerRunConfigEntry(CFGID_EXPERIMENT_LABEL, "experiment-label", CFG_STRIN
 Register_PerRunConfigEntry(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STRING, "${iterationvars}", "Identifies the measurement within the experiment. This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigEntry(CFGID_REPLICATION_LABEL, "replication-label", CFG_STRING, "#${repetition}, seedset=@", "Identifies one replication of a measurement (see repeat= and measurement-label= as well). This string gets recorded into result files, and may be referred to during result analysis.");
 
-Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${configname}-${runnumber}.vec", "Name for the output vector file.");
+Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.vec", "Name for the output vector file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output vector file. The maximum value is ~15 (IEEE double precision). This setting has no effect on the \"time\" column of output vectors, which are represented as fixed-point numbers and always get recorded precisely.");
 
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
@@ -71,6 +71,7 @@ cFileOutputVectorManager::~cFileOutputVectorManager()
 
 void cFileOutputVectorManager::openFile()
 {
+    mkPath(directoryOf(fname.c_str()).c_str());
     f = fopen(fname.c_str(),"a");
     if (f==NULL)
         throw cRuntimeError("Cannot open output vector file `%s'",fname.c_str());

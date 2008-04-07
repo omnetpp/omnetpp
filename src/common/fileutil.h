@@ -20,13 +20,16 @@
 
 NAMESPACE_BEGIN
 
+COMMON_API std::string fileNameToSlash(const char *fileName);
 COMMON_API void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly);
 COMMON_API std::string directoryOf(const char *pathname);
 COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
 COMMON_API std::string toAbsolutePath(const char *pathname);
 COMMON_API std::string concatDirAndFile(const char *basedir, const char *pathname);
+COMMON_API bool fileExists(const char *pathname); // true if file/directory exists
 COMMON_API bool isDirectory(const char *pathname);
 COMMON_API void removeFile(const char *fname, const char *descr);
+COMMON_API void mkPath(const char *pathname);
 
 /**
  * Utility class for temporary change of directory. Changes back to

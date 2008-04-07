@@ -72,6 +72,7 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
 
 void cIndexedFileOutputVectorManager::openIndexFile()
 {
+    mkPath(directoryOf(ifname.c_str()).c_str());
     fi = fopen(ifname.c_str(),"w");
     if (fi==NULL)
         throw cRuntimeError("Cannot open index file `%s'",ifname.c_str());

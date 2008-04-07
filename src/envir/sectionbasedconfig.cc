@@ -43,11 +43,14 @@ Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "Fo
 Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables). This is typically used to perform multiple runs with different random number seeds. The loop variable is available as ${repetition}. See also: seed-set= key.");
 Register_PerObjectConfigEntry(CFGID_APPLY_DEFAULT, "apply-default", CFG_BOOL, "false", "Applies to module parameters: whether NED default values should be assigned if present.");
 
+extern cConfigKey *CFGID_NETWORK;
+extern cConfigKey *CFGID_RESULT_DIR;
+
 
 static const char *PREDEFINED_CONFIGVARS[] = {
   CFGVAR_CONFIGNAME, CFGVAR_RUNNUMBER, CFGVAR_NETWORK, CFGVAR_PROCESSID,
-  CFGVAR_DATETIME, CFGVAR_RUNID, CFGVAR_REPETITION, CFGVAR_ITERATIONVARS,
-  CFGVAR_ITERATIONVARS2, NULL
+  CFGVAR_DATETIME, CFGVAR_RESULTDIR, CFGVAR_RUNID, CFGVAR_REPETITION,
+  CFGVAR_ITERATIONVARS, CFGVAR_ITERATIONVARS2, NULL
 };
 
 #define VARPOS_PREFIX  std::string("&")
@@ -226,9 +229,10 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     // create variables
     variables[CFGVAR_CONFIGNAME] = configName;
     variables[CFGVAR_RUNNUMBER] = opp_stringf("%d", runNumber);
-    variables[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, "network"));
+    variables[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_NETWORK->name()));
     variables[CFGVAR_PROCESSID] = opp_stringf("%d", (int) getpid());
     variables[CFGVAR_DATETIME] = opp_makedatetimestring();
+    variables[CFGVAR_RESULTDIR] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_RESULT_DIR->name(), CFGID_RESULT_DIR->defaultValue()));
     variables[CFGVAR_RUNID] = runId = variables[CFGVAR_CONFIGNAME]+"-"+variables[CFGVAR_RUNNUMBER]+"-"+variables[CFGVAR_DATETIME]+"-"+variables[CFGVAR_PROCESSID];
 
     // store iteration variables, and also their "positions" (iteration count) as "&varid"
@@ -757,7 +761,7 @@ bool SectionBasedConfiguration::internalFindEntry(const std::vector<int>& sectio
     return false;
 }
 
-const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& sectionChain, const char *key) const
+const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& sectionChain, const char *key, const char *fallbackValue) const
 {
     for (int i=0; i<(int)sectionChain.size(); i++)
     {
@@ -766,7 +770,7 @@ const char *SectionBasedConfiguration::internalGetValue(const std::vector<int>& 
         if (entryId != -1)
             return ini->getEntry(sectionId, entryId).getValue();
     }
-    return NULL;
+    return fallbackValue;
 }
 
 static int findInArray(const char *s, const char **array)
