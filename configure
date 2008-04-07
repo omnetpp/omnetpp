@@ -3749,6 +3749,13 @@ if test "$YACC" = "yacc"; then
 echo "$as_me: error: Bison not found, needed to build OMNeT++/OMNEST -- please install it!" >&2;}
    { (exit 1); exit 1; }; }
 fi
+BISON_VER_LINE=`$YACC --version | grep "bison.* [234]\\."`
+if test -z "$BISON_VER_LINE"; then
+   { { echo "$as_me:$LINENO: error: At least bison version 2.0 required -- type '$YACC --version' to see the version number" >&5
+echo "$as_me: error: At least bison version 2.0 required -- type '$YACC --version' to see the version number" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
 for ac_prog in flex lex
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -3956,6 +3963,12 @@ fi
 if test "$LEX" != "flex"; then
    { { echo "$as_me:$LINENO: error: Flex not found, needed to build OMNeT++/OMNEST -- please install it!" >&5
 echo "$as_me: error: Flex not found, needed to build OMNeT++/OMNEST -- please install it!" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+FLEX_VER_LINE=`$LEX --version | grep "flex.* 2\\.[5-9]"`
+if test -z "$FLEX_VER_LINE"; then
+   { { echo "$as_me:$LINENO: error: At least flex version 2.5 required -- type '$LEX --version' to see the version number" >&5
+echo "$as_me: error: At least flex version 2.5 required -- type '$LEX --version' to see the version number" >&2;}
    { (exit 1); exit 1; }; }
 fi
 

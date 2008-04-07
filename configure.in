@@ -531,9 +531,18 @@ AC_PROG_YACC
 if test "$YACC" = "yacc"; then
    AC_MSG_ERROR([Bison not found, needed to build OMNeT++/OMNEST -- please install it!])
 fi
+BISON_VER_LINE=`$YACC --version | grep "bison.* [[234]]\\."`
+if test -z "$BISON_VER_LINE"; then
+   AC_MSG_ERROR([At least bison version 2.0 required -- type '$YACC --version' to see the version number])
+fi
+
 AC_PROG_LEX
 if test "$LEX" != "flex"; then
    AC_MSG_ERROR([Flex not found, needed to build OMNeT++/OMNEST -- please install it!])
+fi
+FLEX_VER_LINE=`$LEX --version | grep "flex.* 2\\.[[5-9]]"`
+if test -z "$FLEX_VER_LINE"; then
+   AC_MSG_ERROR([At least flex version 2.5 required -- type '$LEX --version' to see the version number])
 fi
 
 # make must be GNU make
