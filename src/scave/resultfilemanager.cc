@@ -30,6 +30,7 @@
 #include "indexfile.h"
 #include "scaveutils.h"
 #include "resultfilemanager.h"
+#include "fileutil.h"
 #include "commonutil.h"
 
 USING_NAMESPACE
@@ -715,44 +716,6 @@ void ResultFileManager::checkPattern(const char *pattern)
     // parse it
     //XXX after successful parsing, we could also check that attribute names in it are valid
     MatchExpression matchExpr(pattern, false /*dottedpath*/, true /*fullstring*/, true /*casesensitive*/);
-}
-
-static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
-{
-    if (!pathname || !*pathname)
-    {
-         dir = "";
-         fnameonly = "";
-         return;
-    }
-
-    dir = pathname;
-
-    // find last "/" or "\"
-    const char *s = pathname + strlen(pathname) - 1;
-    while (s>=pathname && *s!='\\' && *s!='/') s--;
-
-    // split along that
-    if (s<pathname)
-    {
-        fnameonly = pathname;
-        dir = ".";
-    }
-    else
-    {
-        fnameonly = s+1;
-        dir = "";
-        dir.append(pathname, s-pathname+1);
-    }
-}
-
-static std::string fileNameToSlash(const char *fileName)
-{
-    std::string res;
-    res.reserve(strlen(fileName));
-    for (; *fileName; fileName++)
-        res.append(1, *fileName=='\\' ? '/' : *fileName);
-    return res;
 }
 
 ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSystemFileName, bool computed)
