@@ -31,7 +31,7 @@ USING_NAMESPACE
 // FIXME TODO: assert types begin with capital letters, and submods/gates/params with lowercase! warning if not!
 
 
-static struct { char *fname; int args; } known_funcs[] =
+static struct { const char *fname; int args; } known_funcs[] =
 {
    /* <math.h> */
    {"fabs", 1},    {"fmod", 2},

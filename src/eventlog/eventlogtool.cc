@@ -339,7 +339,7 @@ void filter(Options options)
     options.deleteEventLog(eventLog);
 }
 
-void usage(char *message)
+void usage(const char *message)
 {
     if (message)
         fprintf(stderr, "Error: %s\n\n", message);
