@@ -284,7 +284,7 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
     {
         // half-hearted attempt to catch "recursive compound module" bug (where
         // a compound module contains itself, directly or via other compound modules)
-        int limit = ev.config()->getAsInt(CFGID_MAX_MODULE_NESTING, 50);
+        int limit = ev.config()->getAsInt(CFGID_MAX_MODULE_NESTING);
         if (limit>0)
         {
             int depth = 0;

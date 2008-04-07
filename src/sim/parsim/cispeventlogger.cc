@@ -83,11 +83,11 @@ cMessage *cISPEventLogger::getNextEvent()
         msg->setPriority(0);
 
         // log event to file
-        cIdealSimulationProtocol::ExternalEvent ev;
-        ev.t = msg->arrivalTime();
-        ev.srcProcId = msg->srcProcId();
+        cIdealSimulationProtocol::ExternalEvent e;
+        e.t = msg->arrivalTime();
+        e.srcProcId = msg->srcProcId();
 
-        if (fwrite(&ev, sizeof(cIdealSimulationProtocol::ExternalEvent), 1, fout)<1)
+        if (fwrite(&e, sizeof(cIdealSimulationProtocol::ExternalEvent), 1, fout)<1)
             throw cRuntimeError("cISPEventLogger error: file write failed (disk full?)");
     }
 
