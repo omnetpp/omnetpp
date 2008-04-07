@@ -33,10 +33,10 @@ NAMESPACE_BEGIN
 class SCAVE_API ResultItemField
 {
 	public:
-		static char *const FILE;
-		static char *const RUN;
-		static char *const MODULE;
-		static char *const NAME;
+		static const char * const FILE;
+		static const char * const RUN;
+		static const char * const MODULE;
+		static const char * const NAME;
 		
 		static const int FILE_ID 		= 1;
 		static const int RUN_ID			= 2;
@@ -60,8 +60,8 @@ class SCAVE_API ResultItemField
 class SCAVE_API ResultItemAttribute
 {
 	public:
-		static char *const TYPE;
-		static char *const ENUM;
+		static const char * const TYPE;
+		static const char * const ENUM;
 		
 		static StringVector getAttributeNames();
 		static bool isAttributeName(const std::string name);
@@ -71,13 +71,13 @@ class SCAVE_API ResultItemAttribute
 class SCAVE_API RunAttribute
 {
 	public:
-		static char *const EXPERIMENT;
-		static char *const MEASUREMENT;
-		static char *const REPLICATION;
-		static char *const CONFIG;
-		static char *const RUNNUMBER;
-		static char *const NETWORKNAME;
-		static char *const DATETIME;
+		static const char * const EXPERIMENT;
+		static const char * const MEASUREMENT;
+		static const char * const REPLICATION;
+		static const char * const CONFIG;
+		static const char * const RUNNUMBER;
+		static const char * const NETWORKNAME;
+		static const char * const DATETIME;
 		
 		static StringVector getAttributeNames();
 		static bool isAttributeName(const std::string name);

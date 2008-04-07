@@ -29,8 +29,8 @@ using namespace std;
 /*----------------------------------------
  *            ResultItemAttribute
  *----------------------------------------*/
-char *const ResultItemAttribute::TYPE  = "type";
-char *const ResultItemAttribute::ENUM = "enum";
+const char * const ResultItemAttribute::TYPE  = "type";
+const char * const ResultItemAttribute::ENUM = "enum";
 
 StringVector ResultItemAttribute::getAttributeNames()
 {
@@ -48,13 +48,13 @@ bool ResultItemAttribute::isAttributeName(const string name)
 /*----------------------------------------
  *              RunAttribute
  *----------------------------------------*/
-char *const RunAttribute::EXPERIMENT  = "experiment";
-char *const RunAttribute::MEASUREMENT = "measurement";
-char *const RunAttribute::REPLICATION = "replication";
-char *const RunAttribute::CONFIG      = "config";
-char *const RunAttribute::RUNNUMBER   = "run-number";
-char *const RunAttribute::NETWORKNAME = "network";
-char *const RunAttribute::DATETIME    = "dateTime";
+const char * const RunAttribute::EXPERIMENT  = "experiment";
+const char * const RunAttribute::MEASUREMENT = "measurement";
+const char * const RunAttribute::REPLICATION = "replication";
+const char * const RunAttribute::CONFIG      = "config";
+const char * const RunAttribute::RUNNUMBER   = "run-number";
+const char * const RunAttribute::NETWORKNAME = "network";
+const char * const RunAttribute::DATETIME    = "dateTime";
 
 StringVector RunAttribute::getAttributeNames()
 {
@@ -79,10 +79,10 @@ bool RunAttribute::isAttributeName(const string name)
 /*----------------------------------------
  *              ResultItemField
  *----------------------------------------*/
-char *const ResultItemField::FILE   = "file";
-char *const ResultItemField::RUN    = "run";
-char *const ResultItemField::MODULE = "module";
-char *const ResultItemField::NAME   = "name";
+const char * const ResultItemField::FILE   = "file";
+const char * const ResultItemField::RUN    = "run";
+const char * const ResultItemField::MODULE = "module";
+const char * const ResultItemField::NAME   = "name";
 
 ResultItemField::ResultItemField(const string fieldName)
 {
