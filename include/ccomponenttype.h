@@ -16,6 +16,8 @@
 #define __CCOMPONENTTYPE_H
 
 #include <string>
+#include <map>
+#include <set>
 #include "cownedobject.h"
 #include "cpar.h"
 #include "cgate.h"
@@ -42,13 +44,13 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
   protected:
     std::string qualifiedName;
-    cParImplCache parimplcache;
-    cParImplCache2 parimplcache2;
-  public:
-    // internal use
-    cParImplCache *parImplCache() {return &parimplcache;}
-    // internal use
-    cParImplCache2 *parImplCache2() {return &parimplcache2;}
+
+    typedef std::map<std::string, cParImpl *> StringToParMap;
+    StringToParMap sharedParMap;
+
+    struct Less {bool operator()(cParImpl *a, cParImpl *b) const;};
+    typedef std::set<cParImpl *, Less> ParImplSet;
+    ParImplSet sharedParSet;
 
   protected:
     friend class cComponent;
@@ -76,6 +78,12 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // we need the runtime type not the NED type of the submodule.)
     virtual cProperties *connectionProperties(const char *connectionId, const char *channelType) const = 0;
 
+    cParImpl *getSharedParImpl(const char *key) const;
+    void putSharedParImpl(const char *key, cParImpl *value);
+
+    cParImpl *getSharedParImpl(cParImpl *p) const;
+    void putSharedParImpl(cParImpl *p);
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{
@@ -83,6 +91,11 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
      * Constructor. Takes the fully qualified component type name.
      */
     cComponentType(const char *qname=NULL);
+
+    /**
+     * Destructor.
+     */
+    virtual ~cComponentType();
     //@}
 
     /** @name Redefined cObject member functions. */

@@ -153,7 +153,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             component->addPar(impl);
         else {
             cPar& par = component->par(paramName); // must exist already
-            par.reassign(impl);
+            par.setImpl(impl);
         }
         return;
     }
@@ -185,7 +185,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
             if (impl->isShared()) {
                 impl = impl->dup();
-                component->par(paramName).reassign(impl);
+                component->par(paramName).setImpl(impl);
             }
             impl->setIsInput(paramNode->getIsDefault());
             cExpressionBuilder::setExpression(impl, dynamicExpr);

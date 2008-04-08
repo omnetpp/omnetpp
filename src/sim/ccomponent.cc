@@ -109,7 +109,7 @@ void cComponent::addPar(cParImpl *value)
         throw cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), value->name());
     if (numparams==paramvsize)
         reallocParamv(paramvsize+1);
-    paramv[numparams++].assign(this, value);
+    paramv[numparams++].init(this, value);
 }
 
 cPar& cComponent::par(int k)

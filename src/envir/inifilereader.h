@@ -16,6 +16,7 @@
 #define INIFILEREADER_H_
 
 #include <string>
+#include <set>
 #include <vector>
 #include "envirdefs.h"
 #include "cconfigreader.h"

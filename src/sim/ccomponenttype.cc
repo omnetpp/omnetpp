@@ -18,6 +18,7 @@
 #include "cmodule.h"
 #include "cchannel.h"
 #include "cenvir.h"
+#include "cparimpl.h"
 #include "cexception.h"
 #include "globals.h"
 
@@ -36,9 +37,49 @@ cComponentType::cComponentType(const char *qname) : cNoncopyableOwnedObject(qnam
     setName(!lastDot ? qname : lastDot + 1);
 }
 
+cComponentType::~cComponentType()
+{
+    for (StringToParMap::iterator it = sharedParMap.begin(); it!=sharedParMap.end(); ++it)
+        delete it->second;
+    for (ParImplSet::iterator it = sharedParSet.begin(); it!=sharedParSet.end(); ++it)
+        delete *it;
+}
+
 cComponentType *cComponentType::find(const char *qname)
 {
     return dynamic_cast<cComponentType *>(componentTypes.instance()->lookup(qname));
+}
+
+cParImpl *cComponentType::getSharedParImpl(const char *key) const
+{
+    StringToParMap::const_iterator it = sharedParMap.find(key);
+    return it==sharedParMap.end() ? NULL : it->second;
+}
+
+void cComponentType::putSharedParImpl(const char *key, cParImpl *value)
+{
+    ASSERT(sharedParMap.find(key)==sharedParMap.end()); // not yet in there
+    value->setIsShared(true);
+    sharedParMap[key] = value;
+}
+
+// cannot go inline due to declaration order
+bool cComponentType::Less::operator()(cParImpl *a, cParImpl *b) const
+{
+    return a->compare(b) < 0;
+}
+
+cParImpl *cComponentType::getSharedParImpl(cParImpl *value) const
+{
+    ParImplSet::const_iterator it = sharedParSet.find(value);
+    return it==sharedParSet.end() ? NULL : *it;
+}
+
+void cComponentType::putSharedParImpl(cParImpl *value)
+{
+    ASSERT(sharedParSet.find(value)==sharedParSet.end()); // not yet in there
+    value->setIsShared(true);
+    sharedParSet.insert(value);
 }
 
 //----

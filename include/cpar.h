@@ -17,8 +17,6 @@
 #ifndef __CPAR_H
 #define __CPAR_H
 
-#include <map>
-#include <set>
 #include "cownedobject.h"
 #include "cexpression.h"
 #include "cexception.h"
@@ -59,7 +57,7 @@ class SIM_API cPar : public cObject
   private:
     cPar() {ownercomponent = NULL; p = NULL;}
     // internal, called from cComponent
-    void assign(cComponent *ownercomponent, cParImpl *p);   //FIXME rename to setup()?
+    void init(cComponent *ownercomponent, cParImpl *p);
     // internal
     void moveto(cPar& other);
     // internal utility function
@@ -68,10 +66,10 @@ class SIM_API cPar : public cObject
     void afterChange();
 
   public:
-    // internal, called from network building code
-    void reassign(cParImpl *p);   //FIXME rename to setImpl() ?
-    // internal: clears the isInput flag; called from network building code
+    // internal: clears the isInput flag
     void acceptDefault();
+    // internal, called from network building code
+    void setImpl(cParImpl *p);
     // internal, called from network building code
     cParImpl *impl() const {return p;}
 
@@ -448,39 +446,6 @@ class SIM_API cPar : public cObject
      */
     bool equals(cPar& other);  //XXX remove? doesn't seem too useful nor actually used...
     //@}
-};
-
-//
-// internal class for sharing parameter values coming from ini files
-//
-class cParImplCache
-{
-  private:
-    typedef std::map<std::string, cParImpl *> StringToParMap;
-    StringToParMap parMap;
-  public:
-    cParImplCache() {}
-    ~cParImplCache();
-    cParImpl *get(const char *key) const;
-    void put(const char *key, cParImpl *value);
-};
-
-//
-// internal class for sharing parameters converted to constants
-//
-class cParImplCache2
-{
-  private:
-    struct Less {
-      bool operator()(cParImpl *a, cParImpl *b) const;
-    };
-    typedef std::set<cParImpl *, Less> ParImplSet;
-    ParImplSet parSet;
-  public:
-    cParImplCache2() {}
-    ~cParImplCache2();
-    cParImpl *get(cParImpl *p) const;
-    void put(cParImpl *p);
 };
 
 NAMESPACE_END

@@ -38,14 +38,14 @@ cPar::~cPar()
         delete p;
 }
 
-void cPar::assign(cComponent *component, cParImpl *newp)
+void cPar::init(cComponent *component, cParImpl *newp)
 {
     ASSERT(!p && newp);
     ownercomponent = component;
     p = newp;
 }
 
-void cPar::reassign(cParImpl *newp)
+void cPar::setImpl(cParImpl *newp)
 {
     ASSERT(p && newp);
     if (!p->isShared())
@@ -304,16 +304,16 @@ void cPar::acceptDefault()
         // try to look up the value in the value cache (temporarily setting isInput=false)
         p->setIsInput(false);
         cComponentType *componentType = ownercomponent->componentType();
-        cParImpl *cachedValue = componentType->parImplCache2()->get(p);
+        cParImpl *cachedValue = componentType->getSharedParImpl(p);
         p->setIsInput(true);
 
         // use the cached value, or create a value and put it into the cache
         if (cachedValue)
-            reassign(cachedValue);
+            setImpl(cachedValue);
         else {
             copyIfShared();
             p->setIsInput(false);
-            componentType->parImplCache2()->put(p);
+            componentType->putSharedParImpl(p);
         }
     }
 }
@@ -329,11 +329,11 @@ void cPar::convertToConst()
 
     // maybe replace it with a shared copy
     cComponentType *componentType = ownercomponent->componentType();
-    cParImpl *cachedValue = componentType->parImplCache2()->get(p);
+    cParImpl *cachedValue = componentType->getSharedParImpl(p);
     if (cachedValue)
-        reassign(cachedValue);
+        setImpl(cachedValue);
     else
-        componentType->parImplCache2()->put(p);
+        componentType->putSharedParImpl(p);
 }
 
 void cPar::parse(const char *text)
@@ -350,11 +350,11 @@ void cPar::parse(const char *text)
     //
     cComponentType *componentType = ownercomponent->componentType();
     std::string key = std::string(componentType->name()) + ":" + name() + ":" + text;
-    cParImpl *cachedValue = componentType->parImplCache()->get(key.c_str());
+    cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
     if (cachedValue)
     {
         // an identical value found in the map -- use it
-        reassign(cachedValue);
+        setImpl(cachedValue);
     }
     else
     {
@@ -372,59 +372,8 @@ void cPar::parse(const char *text)
         }
 
         // successfully parsed: install it
-        componentType->parImplCache()->put(key.c_str(), tmp);
-        reassign(tmp);
+        componentType->putSharedParImpl(key.c_str(), tmp);
+        setImpl(tmp);
     }
 }
-
-//---
-
-cParImplCache::~cParImplCache()
-{
-    for (StringToParMap::iterator it = parMap.begin(); it!=parMap.end(); ++it)
-        delete it->second;
-    parMap.clear();
-}
-
-cParImpl *cParImplCache::get(const char *key) const
-{
-    StringToParMap::const_iterator it = parMap.find(key);
-    return it==parMap.end() ? NULL : it->second;
-}
-
-void cParImplCache::put(const char *key, cParImpl *value)
-{
-    ASSERT(parMap.find(key)==parMap.end()); // not yet in there
-    value->setIsShared(true);
-    parMap[key] = value;
-}
-
-//---
-
-// cannot go inline due to declaration order
-bool cParImplCache2::Less::operator()(cParImpl *a, cParImpl *b) const
-{
-    return a->compare(b) < 0;
-}
-
-cParImplCache2::~cParImplCache2()
-{
-    for (ParImplSet::iterator it = parSet.begin(); it!=parSet.end(); ++it)
-        delete *it;
-    parSet.clear();
-}
-
-cParImpl *cParImplCache2::get(cParImpl *value) const
-{
-    ParImplSet::const_iterator it = parSet.find(value);
-    return it==parSet.end() ? NULL : *it;
-}
-
-void cParImplCache2::put(cParImpl *value)
-{
-    ASSERT(parSet.find(value)==parSet.end()); // not yet in there
-    value->setIsShared(true);
-    parSet.insert(value);
-}
-
 
