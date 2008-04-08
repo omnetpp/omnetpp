@@ -37,12 +37,18 @@
 		<mkdir dir="${buildDirectory}/features" />
 		<copy todir="${buildDirectory}/plugins">
 			<fileset dir="../">
-				<include name="com.rcpquickstart.helloworld/**" />
-							</fileset>
+				<include name="org.omnetpp.*/**" />
+				<include name="org.eclipse.cdt.*/**" />
+				<exclude name="*/bin/**" />
+				<exclude name="org.omnetpp.ide/**" />
+				<exclude name="org.omnetpp.scave.old/**" />
+				<exclude name="org.omnetpp.test.*/**" />
+				<exclude name="org.omnetpp.experimental.*/**" />
+			</fileset>
 		</copy>
 		<copy todir="${buildDirectory}/features">
 			<fileset dir="../">
-				<include name="com.rcpquickstart.helloworld.feature/**" />
+				<include name="org.omnetpp.ide/**" />
 			</fileset>
 		</copy>
 	</target>

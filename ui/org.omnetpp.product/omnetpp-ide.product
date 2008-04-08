@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.1"?>
+
+<product name="OMNeT++ IDE" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" useFeatures="true">
+
+   <aboutInfo>
+      <image path="/org.omnetpp.main/icons/omnest128.gif"/>
+      <text>
+         OMNEST/OMNeT++ Integrated Development Environment, based on Eclipse platform.
+      </text>
+   </aboutInfo>
+
+   <configIni use="custom" path="/org.omnetpp.main/config.ini"/>
+
+   <launcherArgs>
+      <vmArgs>-Xms40m 
+-Xmx256m</vmArgs>
+   </launcherArgs>
+
+   <windowImages i16="/org.omnetpp.main/icons/omnest16.gif" i32="/org.omnetpp.main/icons/omnest32.gif" i48="/org.omnetpp.main/icons/omnest48.gif" i64="/org.omnetpp.main/icons/omnest64.gif" i128="/org.omnetpp.main/icons/omnest128.gif"/>
+
+   <splash
+      location="org.omnetpp.main"
+      startupProgressRect="10,10,298,10"
+      startupMessageRect="10,20,500,25"
+      startupForegroundColor="000000" />
+   <launcher>
+      <linux icon="/org.omnetpp.main/icons/omnest.xpm"/>
+      <macosx icon="/org.omnetpp.main/icons/omnest.icns"/>
+      <solaris/>
+      <win useIco="true">
+         <ico path="/org.omnetpp.main/icons/omnest.ico"/>
+         <bmp/>
+      </win>
+   </launcher>
+
+   <vm>
+   </vm>
+
+   <plugins>
+      <plugin id="com.ibm.icu"/>
+      <plugin id="org.apache.lucene"/>
+      <plugin id="org.apache.xerces"/>
+      <plugin id="org.eclipse.ant.core"/>
+      <plugin id="org.eclipse.cdt"/>
+      <plugin id="org.eclipse.cdt.core"/>
+      <plugin id="org.eclipse.cdt.core.win32" fragment="true"/>
+      <plugin id="org.eclipse.cdt.debug.core"/>
+      <plugin id="org.eclipse.cdt.debug.mi.core"/>
+      <plugin id="org.eclipse.cdt.debug.mi.ui"/>
+      <plugin id="org.eclipse.cdt.debug.ui"/>
+      <plugin id="org.eclipse.cdt.doc.user"/>
+      <plugin id="org.eclipse.cdt.launch"/>
+      <plugin id="org.eclipse.cdt.make.core"/>
+      <plugin id="org.eclipse.cdt.make.ui"/>
+      <plugin id="org.eclipse.cdt.managedbuilder.core"/>
+      <plugin id="org.eclipse.cdt.managedbuilder.gnu.ui"/>
+      <plugin id="org.eclipse.cdt.managedbuilder.ui"/>
+      <plugin id="org.eclipse.cdt.refactoring"/>
+      <plugin id="org.eclipse.cdt.ui"/>
+      <plugin id="org.eclipse.compare"/>
+      <plugin id="org.eclipse.core.commands"/>
+      <plugin id="org.eclipse.core.contenttype"/>
+      <plugin id="org.eclipse.core.expressions"/>
+      <plugin id="org.eclipse.core.filebuffers"/>
+      <plugin id="org.eclipse.core.filesystem"/>
+      <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.jobs"/>
+      <plugin id="org.eclipse.core.resources"/>
+      <plugin id="org.eclipse.core.resources.compatibility" fragment="true"/>
+      <plugin id="org.eclipse.core.resources.win32" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime"/>
+      <plugin id="org.eclipse.core.runtime.compatibility"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.auth"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
+      <plugin id="org.eclipse.core.variables"/>
+      <plugin id="org.eclipse.debug.core"/>
+      <plugin id="org.eclipse.debug.ui"/>
+      <plugin id="org.eclipse.draw2d"/>
+      <plugin id="org.eclipse.emf.common"/>
+      <plugin id="org.eclipse.emf.common.ui"/>
+      <plugin id="org.eclipse.emf.ecore"/>
+      <plugin id="org.eclipse.emf.ecore.change"/>
+      <plugin id="org.eclipse.emf.ecore.xmi"/>
+      <plugin id="org.eclipse.emf.edit"/>
+      <plugin id="org.eclipse.emf.edit.ui"/>
+      <plugin id="org.eclipse.equinox.common"/>
+      <plugin id="org.eclipse.equinox.preferences"/>
+      <plugin id="org.eclipse.equinox.registry"/>
+      <plugin id="org.eclipse.gef"/>
+      <plugin id="org.eclipse.help"/>
+      <plugin id="org.eclipse.help.appserver"/>
+      <plugin id="org.eclipse.help.base"/>
+      <plugin id="org.eclipse.help.ui"/>
+      <plugin id="org.eclipse.jface"/>
+      <plugin id="org.eclipse.jface.text"/>
+      <plugin id="org.eclipse.ltk.core.refactoring"/>
+      <plugin id="org.eclipse.ltk.ui.refactoring"/>
+      <plugin id="org.eclipse.osgi"/>
+      <plugin id="org.eclipse.platform"/>
+      <plugin id="org.eclipse.search"/>
+      <plugin id="org.eclipse.swt"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.team.core"/>
+      <plugin id="org.eclipse.team.ui"/>
+      <plugin id="org.eclipse.text"/>
+      <plugin id="org.eclipse.ui"/>
+      <plugin id="org.eclipse.ui.cheatsheets"/>
+      <plugin id="org.eclipse.ui.console"/>
+      <plugin id="org.eclipse.ui.editors"/>
+      <plugin id="org.eclipse.ui.forms"/>
+      <plugin id="org.eclipse.ui.ide"/>
+      <plugin id="org.eclipse.ui.intro"/>
+      <plugin id="org.eclipse.ui.intro.universal"/>
+      <plugin id="org.eclipse.ui.navigator"/>
+      <plugin id="org.eclipse.ui.navigator.resources"/>
+      <plugin id="org.eclipse.ui.views"/>
+      <plugin id="org.eclipse.ui.views.properties.tabbed"/>
+      <plugin id="org.eclipse.ui.win32" fragment="true"/>
+      <plugin id="org.eclipse.ui.workbench"/>
+      <plugin id="org.eclipse.ui.workbench.texteditor"/>
+      <plugin id="org.eclipse.update.configurator"/>
+      <plugin id="org.eclipse.update.core"/>
+      <plugin id="org.eclipse.update.core.win32" fragment="true"/>
+      <plugin id="org.eclipse.update.ui"/>
+      <plugin id="org.omnetpp.common"/>
+      <plugin id="org.omnetpp.common.engine"/>
+      <plugin id="org.omnetpp.eventlog.engine"/>
+      <plugin id="org.omnetpp.eventlogtable"/>
+      <plugin id="org.omnetpp.figures"/>
+      <plugin id="org.omnetpp.inifile.editor"/>
+      <plugin id="org.omnetpp.main"/>
+      <plugin id="org.omnetpp.ned.core"/>
+      <plugin id="org.omnetpp.ned.editor"/>
+      <plugin id="org.omnetpp.ned.model"/>
+      <plugin id="org.omnetpp.scave"/>
+      <plugin id="org.omnetpp.scave.builder"/>
+      <plugin id="org.omnetpp.scave.engine"/>
+      <plugin id="org.omnetpp.scave.model"/>
+      <plugin id="org.omnetpp.sequencechart"/>
+   </plugins>
+
+   <features>
+      <feature id="org.eclipse.platform" version="3.3.3.r33x_r20080129-_19UEl7Ezk_gXF1kouft"/>
+      <feature id="org.eclipse.cdt" version="4.0.3.200802251018"/>
+      <feature id="org.eclipse.gef" version="3.3.2.v20080129"/>
+      <feature id="org.eclipse.emf.common" version="2.3.1.v200802051830"/>
+      <feature id="org.eclipse.emf.common.ui" version="2.3.1.v200802051830"/>
+      <feature id="org.eclipse.emf.ecore" version="2.3.2.v200802051830"/>
+      <feature id="org.eclipse.emf.edit" version="2.3.2.v200802051830"/>
+      <feature id="org.eclipse.emf.edit.ui" version="2.3.1.v200802051830"/>
+      <feature id="org.omnetpp.ide" version="4.0.0"/>
+   </features>
+
+</product>
