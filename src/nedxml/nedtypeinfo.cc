@@ -461,7 +461,15 @@ inline bool isNEDType(NEDElement *node)
 
 void NEDTypeInfo::mergeNEDType(NEDElement *basetree, const NEDElement *tree) const
 {
-    // TODO merge extendsnames and interfacenames (as fully qualified names!!!)
+    // TODO remove all "extends" causes (not needed)
+    for (ExtendsElement *i=(ExtendsElement *)basetree->getFirstChildWithTag(NED_EXTENDS); i; i=(ExtendsElement *)i->getNextSiblingWithTag(NED_EXTENDS))
+        delete basetree->removeChild(i);
+
+    // merge interfaces ("like" clauses)
+    for (InterfaceNameElement *i=(InterfaceNameElement *)tree->getFirstChildWithTag(NED_INTERFACE_NAME); i; i=(InterfaceNameElement *)i->getNextSiblingWithTag(NED_INTERFACE_NAME))
+    {
+        basetree->appendChild(i->dupTree());  //TODO convert to fully qualified name
+    }
 
     // merge parameters
     ParametersElement *params = (ParametersElement *)tree->getFirstChildWithTag(NED_PARAMETERS);
