@@ -64,7 +64,6 @@
 <!ATTLIST channel-interface
      name                NMTOKEN   #REQUIRED>
 
-<!-- if there is no "extends", it defaults to "BasicChannel" -->
 <!ELEMENT channel (comment*, extends?, interface-name*, parameters?)>
 <!ATTLIST channel
      name                NMTOKEN   #REQUIRED>
@@ -111,7 +110,7 @@
 
 <!ELEMENT submodules (comment*, submodule*)>
 
-<!ELEMENT submodule (comment*, expression*, parameters?, gates?)>  <!-- FIXME needs condition? -->
+<!ELEMENT submodule (comment*, expression*, parameters?, gates?)>
 <!ATTLIST submodule
      name               NMTOKEN   #REQUIRED
      type               CDATA     #IMPLIED

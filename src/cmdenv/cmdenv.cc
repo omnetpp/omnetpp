@@ -431,7 +431,7 @@ void Cmdenv::simulate()
                if (!mod)
                    throw cTerminationException("scheduler interrupted while waiting");
 
-               speedometer.addEvent(simulation.simTime());
+               speedometer.addEvent(simulation.simTime()); //XXX potential performance hog
 
                // print event banner from time to time
                // ... if (simulation.eventNumber() >= last_update_ev + opt_status_frequency_ev && ...
@@ -473,7 +473,7 @@ void Cmdenv::simulate()
                // execute event
                simulation.doOneEvent( mod );
 
-               checkTimeLimits();
+               checkTimeLimits();  //XXX potential performance hog
                if (sigint_received)
                    throw cTerminationException("SIGINT or SIGTERM received, exiting");
            }

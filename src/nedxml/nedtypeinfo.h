@@ -47,7 +47,12 @@ class NEDXML_API NEDTypeInfo
     NEDResourceCache *resolver;
 
     std::string qualifiedName;
-    NEDElement *tree;
+    NEDElement *tree; // points into resolver
+
+    // tree with inheritance flattened out.
+    // may be NULL (-->not initialized), or ==tree (when there's no super types);
+    // otherwise it's a constructed tree that gets disposed of in the destructor
+    mutable NEDElement *flattenedTree;
 
     typedef std::vector<std::string> StringVector;
     typedef std::map<std::string,int> StringToIntMap;
@@ -63,6 +68,12 @@ class NEDXML_API NEDTypeInfo
     std::string implClassName;
 
   protected:
+    NEDElement *buildFlattenedTree() const;
+    void mergeNEDType(NEDElement *basetree, const NEDElement *tree) const;
+    void mergeProperties(NEDElement *basetree, const NEDElement *tree) const;
+    void mergeProperty(PropertyElement *baseprop, const PropertyElement *prop) const;
+    void mergePropertyKey(PropertyKeyElement *basekey, const PropertyKeyElement *key) const;
+
     // utility function: XXX needed here? or move to subclass?
     NEDElement *getSubcomponentElement(const char *subcomponentName) const;
     void checkComplianceToInterface(NEDTypeInfo *interfaceDecl);
@@ -82,6 +93,9 @@ class NEDXML_API NEDTypeInfo
 
     /** Returns the raw NEDElement tree representing the component */
     virtual NEDElement *getTree() const;
+
+    /** Returns the NEDElement tree where super types have been flattened */
+    virtual NEDElement *getFlattenedTree() const;
 
     /** The NED type resolver this type is registered in */
     NEDResourceCache *getResolver() const  {return resolver;}

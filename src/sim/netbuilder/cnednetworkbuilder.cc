@@ -310,8 +310,8 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
     currentDecl = decl;
     for (cModule::SubmoduleIterator submod(modp); !submod.end(); submod++)
     {
-       cModule *m = submod();
-       m->buildInside();
+        cModule *m = submod();
+        m->buildInside();
     }
 }
 

@@ -32,6 +32,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
     this->resolver = resolver;
     this->qualifiedName = qname;
     this->tree = tree;
+    this->flattenedTree = NULL;
 
     switch (tree->getTagCode()) {
         case NED_SIMPLE_MODULE: type = SIMPLE_MODULE; break;
@@ -114,7 +115,9 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
 
 NEDTypeInfo::~NEDTypeInfo()
 {
-    // nothing -- we don't manage the tree, only cache a pointer to it
+    // note: we don't delete "tree", as it belongs to resolver
+    if (flattenedTree && flattenedTree!=tree)
+        delete flattenedTree;
 }
 
 const char *NEDTypeInfo::name() const
@@ -133,6 +136,13 @@ const char *NEDTypeInfo::fullName() const
 NEDElement *NEDTypeInfo::getTree() const
 {
     return tree;
+}
+
+NEDElement *NEDTypeInfo::getFlattenedTree() const
+{
+    if (!flattenedTree)
+        flattenedTree = buildFlattenedTree();
+    return flattenedTree;
 }
 
 std::string NEDTypeInfo::getPackage() const
@@ -340,7 +350,7 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
                 throw NEDException(param, "type of parameter `%s' must be %s, as required by interface `%s'",
                                    param->getName(), iparam->getAttribute("type"), idecl->fullName());
 
-            // check parameter type
+            // check parameter volatile flag
             if (param->getIsVolatile() && !iparam->getIsVolatile())
                 throw NEDException(param, "parameter `%s' must not be volatile, as required by interface `%s'",
                                    param->getName(), idecl->fullName());
@@ -408,6 +418,302 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
 
             // TODO check properties
         }
+    }
+}
+
+NEDElement *NEDTypeInfo::buildFlattenedTree() const
+{
+    NEDElement *result = NULL;
+    NEDLookupContext context = NEDResourceCache::getParentContextOf(qualifiedName.c_str(), tree);
+    for (NEDElement *child=tree->getFirstChildWithTag(NED_EXTENDS); child; child=child->getNextSiblingWithTag(NED_EXTENDS))
+    {
+        // resolve and store base type name
+        const char *extendsname = ((ExtendsElement *)child)->getName();
+        std::string extendsqname = getResolver()->resolveNedType(context, extendsname);
+        Assert(!extendsqname.empty());
+        //XXX extendsnames probably not needed, ever:
+        //extendsnames.push_back(extendsqname);
+
+        // check the type
+        NEDTypeInfo *decl = getResolver()->lookup(extendsqname.c_str());
+        Assert(decl);
+        if (getType() != decl->getType())  //XXX currently duplicate check
+            throw NEDException(getTree(), "a %s cannot extend a %s (%s)", getTree()->getTagName(), decl->getTree()->getTagName(), extendsqname.c_str());
+
+        NEDElement *basetree = decl->getFlattenedTree();
+        if (!result)
+            result = basetree->dupTree();  //FIXME: does not copy srcloc, srcregion!
+        else
+            mergeNEDType(result, basetree);
+    }
+    if (!result)
+        result = tree;
+    else
+        mergeNEDType(result, tree);
+    return result;
+}
+
+inline bool isNEDType(NEDElement *node)
+{
+    int tag = node->getTagCode();
+    return tag==NED_SIMPLE_MODULE || tag==NED_MODULE_INTERFACE || tag==NED_COMPOUND_MODULE || tag==NED_CHANNEL_INTERFACE || tag==NED_CHANNEL;
+}
+
+void NEDTypeInfo::mergeNEDType(NEDElement *basetree, const NEDElement *tree) const
+{
+    // TODO merge extendsnames and interfacenames (as fully qualified names!!!)
+
+    // merge parameters
+    ParametersElement *params = (ParametersElement *)tree->getFirstChildWithTag(NED_PARAMETERS);
+    ParametersElement *baseparams = (ParametersElement *)basetree->getFirstChildWithTag(NED_PARAMETERS);
+    if (params && !baseparams)
+    {
+        // just copy it
+        basetree->appendChild(params->dupTree());
+    }
+    else if (params && baseparams)
+    {
+        // merge parameters
+        for (ParamElement *param=params->getFirstParamChild(); param; param=param->getNextParamSibling())
+        {
+            // find existing param in base
+            ParamElement *baseparam = (ParamElement *)baseparams->getFirstChildWithAttribute(NED_PARAM, "name", param->getName());
+            if (!baseparam)
+            {
+                // just copy it
+                baseparams->appendChild(param->dupTree());
+            }
+            else
+            {
+                // already exists -- must merge
+                if (param->getType()!=NED_PARTYPE_NONE)
+                    throw NEDException(param, "redeclaration of parameter `%s'", param->getName()); //XXX "declared at XXX"
+
+                // take over value if exists
+                if (!opp_isempty(param->getValue()))
+                {
+                    baseparam->setValue(param->getValue());
+                    baseparam->setIsDefault(param->getIsDefault());
+                }
+                ExpressionElement *valueexpr = param->getFirstExpressionChild();
+                if (valueexpr)
+                {
+                    delete baseparam->getFirstExpressionChild();
+                    baseparam->appendChild(valueexpr->dupTree());
+                    baseparam->setIsDefault(param->getIsDefault());
+                }
+
+                // merge properties
+                mergeProperties(baseparam, param);
+            }
+        }
+
+        //TODO merge PatternElements
+
+        // merge properties
+        mergeProperties(baseparams, params);
+    }
+
+    // merge gates
+    GatesElement *gates = (GatesElement *)tree->getFirstChildWithTag(NED_GATES);
+    GatesElement *basegates = (GatesElement *)basetree->getFirstChildWithTag(NED_GATES);
+    if (gates && !basegates)
+    {
+        // just copy it
+        basetree->appendChild(gates->dupTree());
+    }
+    else if (gates && basegates)
+    {
+        // merge
+        for (GateElement *gate=gates->getFirstGateChild(); gate; gate=gate->getNextGateSibling())
+        {
+            // find existing gate in base
+            GateElement *basegate = (GateElement *)basegates->getFirstChildWithAttribute(NED_GATE, "name", gate->getName());
+            if (!basegate)
+            {
+                // just copy it
+                basegates->appendChild(gate->dupTree());
+            }
+            else
+            {
+                // already exists -- must merge
+                if (gate->getType()!=NED_GATETYPE_NONE)
+                    throw NEDException(gate, "redeclaration of gate `%s'", gate->getName()); //XXX "declared at XXX"
+
+                // take over gatesize if exists
+                if (!opp_isempty(gate->getVectorSize()))
+                {
+                    basegate->setVectorSize(gate->getVectorSize());
+                }
+                ExpressionElement *gatesizeexpr = gate->getFirstExpressionChild();
+                if (gatesizeexpr)
+                {
+                    delete basegate->getFirstExpressionChild();
+                    basegate->appendChild(gatesizeexpr->dupTree());
+                }
+
+                //  merge properties
+                mergeProperties(basegate, gate);
+            }
+        }
+    }
+
+    // merge inner types
+    TypesElement *types = (TypesElement *)tree->getFirstChildWithTag(NED_TYPES);
+    TypesElement *basetypes = (TypesElement *)basetree->getFirstChildWithTag(NED_TYPES);
+    if (types && !basetypes)
+    {
+        // just copy it
+        basetree->appendChild(types->dupTree());
+    }
+    else if (types && basetypes)
+    {
+        // merge
+        for (NEDElement *type=types->getFirstChild(); type; type=type->getNextSibling())
+        {
+            if (isNEDType(type))
+            {
+                // find same type in base
+                const char *name = type->getAttribute("name");
+                NEDElement *basetype;
+                for (basetype=basetypes->getFirstChild(); basetype; basetype=basetype->getNextSibling())
+                    if (isNEDType(basetype) && opp_strcmp(name, basetype->getAttribute("name"))==0)
+                        break;
+
+                if (!basetype)
+                {
+                    // no such name yet, just copy it
+                    basetypes->appendChild(type->dupTree());
+                }
+                else
+                {
+                    // already exists ==> error (types don't get merged)
+                    throw NEDException(type, "redeclaration of inner type `%s'", name); //XXX "declared at XXX"
+                }
+            }
+        }
+    }
+
+    // merge submodules
+    SubmodulesElement *submodules = (SubmodulesElement *)tree->getFirstChildWithTag(NED_SUBMODULES);
+    SubmodulesElement *basesubmodules = (SubmodulesElement *)basetree->getFirstChildWithTag(NED_SUBMODULES);
+    if (submodules)
+    {
+        if (!basesubmodules)
+            basetree->appendChild(basesubmodules=submodules->dup());
+
+        for (SubmoduleElement *submodule=submodules->getFirstSubmoduleChild(); submodule; submodule=submodule->getNextSubmoduleSibling())
+        {
+            // find existing submodule in base
+            SubmoduleElement *basesubmodule = (SubmoduleElement *)basesubmodules->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodule->getName());
+            if (!basesubmodule)
+            {
+                // just copy it
+                // TODO change typename to fully qualified name!!!
+                basesubmodules->appendChild(submodule->dupTree());
+            }
+            else
+            {
+                // already exists ==> error (submodules don't get merged)
+                throw NEDException(submodule, "redeclaration of submodule `%s'", submodule->getName()); //XXX "declared at XXX"
+            }
+        }
+    }
+
+    // merge connections
+    ConnectionsElement *connections = (ConnectionsElement *)tree->getFirstChildWithTag(NED_CONNECTIONS);
+    ConnectionsElement *baseconnections = (ConnectionsElement *)basetree->getFirstChildWithTag(NED_CONNECTIONS);
+    if (connections && !baseconnections)
+    {
+        // just copy it
+        basetree->appendChild(connections->dupTree());
+    }
+    else if (connections && baseconnections)
+    {
+        // merge "allowunconnected" bit
+        if (connections->getAllowUnconnected())
+            connections->setAllowUnconnected(true);
+
+        // just copy existing connections
+        for (NEDElement *connection=connections->getFirstChild(); connection; connection=connection->getNextSibling())
+        {
+            baseconnections->appendChild(connection->dupTree());
+        }
+    }
+
+    // TODO put "parameters:", "gates:", "types:" etc elements in the correct order in the tree
+}
+
+void NEDTypeInfo::mergeProperties(NEDElement *basetree, const NEDElement *tree) const
+{
+    for (NEDElement *child=tree->getFirstChildWithTag(NED_PROPERTY); child; child=child->getNextSiblingWithTag(NED_PROPERTY))
+    {
+        PropertyElement *prop = (PropertyElement *)child;
+
+        // find corresponding property in basetree, by name+index
+        PropertyElement *baseprop = NULL;
+        for (NEDElement *basechild=basetree->getFirstChildWithTag(NED_PROPERTY); basechild; basechild=basechild->getNextSiblingWithTag(NED_PROPERTY))
+            if (opp_strcmp(prop->getName(), ((PropertyElement *)basechild)->getName())==0 &&
+                opp_strcmp(prop->getIndex(), ((PropertyElement *)basechild)->getIndex())==0)
+                {baseprop = (PropertyElement *)basechild; break;}
+
+        // if not there, add it, else merge.
+        if (!baseprop)
+            basetree->appendChild(prop->dupTree());
+        else
+            mergeProperty(baseprop, prop);   //FIXME add special case for @display
+    }
+}
+
+void NEDTypeInfo::mergeProperty(PropertyElement *baseprop, const PropertyElement *prop) const
+{
+    for (PropertyKeyElement *key=prop->getFirstPropertyKeyChild(); key; key=key->getNextPropertyKeySibling())
+    {
+        PropertyKeyElement *basekey = (PropertyKeyElement *)baseprop->getFirstChildWithAttribute(NED_PROPERTY_KEY, "name", key->getName());
+        if (!basekey)
+        {
+            // just copy it
+            baseprop->appendChild(key->dupTree());
+        }
+        else
+        {
+            // merge property
+            mergePropertyKey(basekey, key);
+        }
+    }
+}
+
+void NEDTypeInfo::mergePropertyKey(PropertyKeyElement *basekey, const PropertyKeyElement *key) const
+{
+    // merge positional ones
+    LiteralElement *baseliteral = basekey->getFirstLiteralChild();
+    LiteralElement *literal = key->getFirstLiteralChild();
+    while (baseliteral && literal)
+    {
+        LiteralElement *nextbaseliteral = baseliteral->getNextLiteralSibling();
+        if (literal->getType()==NED_CONST_SPEC && opp_strcmp(literal->getValue(),"-")==0)
+        {
+            // antivalue
+            LiteralElement *blank = new LiteralElement();
+            blank->setType(NED_CONST_SPEC);
+            basekey->insertChildBefore(baseliteral, blank);
+            delete basekey->removeChild(baseliteral);
+        }
+        else
+        {
+            // replace
+            basekey->insertChildBefore(baseliteral, literal->dupTree());
+            delete basekey->removeChild(baseliteral);
+        }
+        baseliteral = nextbaseliteral;
+        literal = literal->getNextLiteralSibling();
+    }
+
+    // copy the rest
+    while (literal)
+    {
+        basekey->appendChild(literal->dupTree());
+        literal = literal->getNextLiteralSibling();
     }
 }
 
