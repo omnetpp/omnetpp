@@ -1,0 +1,50 @@
+%description:
+Tests that message priority affects scheduling order.
+
+%global:
+cMessage *createMsg(const char *name, int priority)
+{
+    cMessage *msg = new cMessage(name);
+    msg->setPriority(priority);
+    return msg;
+}
+
+%activity:
+scheduleAt(1.1, createMsg("A", 1));
+scheduleAt(1.1, createMsg("B", 1));
+scheduleAt(1.1, createMsg("C", 1));
+
+scheduleAt(2.1, createMsg("A'", 1));
+scheduleAt(2.1, createMsg("B'", 2));
+scheduleAt(2.1, createMsg("C'", 3));
+
+scheduleAt(3.1, createMsg("A''", 3));
+scheduleAt(3.1, createMsg("B''", 2));
+scheduleAt(3.1, createMsg("C''", 1));
+
+while (true)
+{
+    cMessage *msg = receive();
+    ev << "at " << simTime() << ": " << msg->name() << " pri=" << msg->priority() << "\n";
+    delete msg;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+%exitcode: 0
+
+%contains: stdout
+at 1.1: A pri=1
+at 1.1: B pri=1
+at 1.1: C pri=1
+at 2.1: A' pri=1
+at 2.1: B' pri=2
+at 2.1: C' pri=3
+at 3.1: C'' pri=1
+at 3.1: B'' pri=2
+at 3.1: A'' pri=3
+
