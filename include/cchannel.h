@@ -33,8 +33,6 @@ class cMessage;
  *
  * @ingroup SimCore
  */
-//FIXME if channel fullpath is <modulepath>.<channelname>, params cannot be referred to from the ini file!!!
-// should be <srcgatepath>.<channelname> ??
 class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:
@@ -121,6 +119,12 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * Convenience method: casts the return value of componentType() to cChannelType.
      */
     cChannelType *channelType() const  {return (cChannelType *)componentType();}
+
+    /**
+     * Return the properties for this channel. Properties cannot be changed
+     * at runtime. Redefined from cComponent.
+     */
+    virtual cProperties *properties() const;
 
     /**
      * Returns the gate this channel is attached to.

@@ -204,7 +204,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Return the properties for this component. Properties cannot be changed
      * at runtime.
      */
-    cProperties *properties() const;
+    virtual cProperties *properties() const = 0;
 
     /**
      * Returns the associated component type.
@@ -246,16 +246,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * calling finish() of contained components (submodules, channels) as well.
      */
     virtual void callFinish() = 0;
-    //@}
-
-    /** @name Properties. */
-    //@{
-    /**
-     * Return the properties for this component. The returned object is
-     * read-only (locked against modification); this is needed because
-     * it is shared between several components.
-     */
-    virtual cProperties *properties();
     //@}
 
     /** @name Parameters. */

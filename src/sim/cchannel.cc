@@ -123,6 +123,18 @@ cModule *cChannel::parentModule() const
     return fromgatep->type()==cGate::INPUT ? ownerMod : ownerMod->parentModule();
 }
 
+cProperties *cChannel::properties() const
+{
+    cModule *parent = parentModule();
+    cComponentType *type = componentType();
+    cProperties *props;
+    if (parent)
+        props = parent->componentType()->connectionProperties("**FIXME**", type->fullName());
+    else
+        props = type->properties();
+    return props;
+}
+
 //----
 
 bool cIdealChannel::deliver(cMessage *msg, simtime_t t)

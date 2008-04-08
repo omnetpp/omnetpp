@@ -32,7 +32,7 @@ cDynamicChannelType::cDynamicChannelType(const char *name) : cChannelType(name)
 
 cNEDDeclaration *cDynamicChannelType::getDecl() const
 {
-    // do not store the pointer, because the declaration object may have been 
+    // do not store the pointer, because the declaration object may have been
     // thrown out of cNEDLoader to conserve memory
     cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(fullName());
     ASSERT(decl->getType()==cNEDDeclaration::CHANNEL);
@@ -78,20 +78,13 @@ cProperties *cDynamicChannelType::gateProperties(const char *gateName) const
     throw cRuntimeError("cDynamicChannelType::gateProperties(): channels have no gates");
 }
 
-cProperties *cDynamicChannelType::subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const
+cProperties *cDynamicChannelType::submoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
-    cNEDDeclaration *decl = getDecl();
-    return decl->subcomponentProperties(subcomponentName, subcomponentType);
+    throw cRuntimeError("cDynamicChannelType::submoduleProperties(): channels do not contain submodules");
 }
 
-cProperties *cDynamicChannelType::subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const
+cProperties *cDynamicChannelType::connectionProperties(const char *connectionId, const char *channelType) const
 {
-    cNEDDeclaration *decl = getDecl();
-    return decl->subcomponentParamProperties(subcomponentName, subcomponentType, paramName);
-}
-
-cProperties *cDynamicChannelType::subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const
-{
-    throw cRuntimeError("cDynamicChannelType::subcomponentGateProperties(): channels have no gates");
+    throw cRuntimeError("cDynamicChannelType::connectionProperties(): channels do not contain further connections");
 }
 

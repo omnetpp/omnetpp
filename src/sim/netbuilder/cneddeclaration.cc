@@ -39,8 +39,7 @@ cNEDDeclaration::~cNEDDeclaration()
     clearPropsMap(paramPropsMap);
     clearPropsMap(gatePropsMap);
     clearPropsMap(subcomponentPropsMap);
-    clearPropsMap(subcomponentParamPropsMap);
-    clearPropsMap(subcomponentGatePropsMap);
+
     //XXX printf("%s: %d cached expressions\n", name(), parimplMap.size());
     clearSharedParImplMap(parimplMap);
 }
@@ -137,9 +136,9 @@ cProperties *cNEDDeclaration::gateProperties(const char *gateName) const
     return props;
 }
 
-cProperties *cNEDDeclaration::subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const
+cProperties *cNEDDeclaration::submoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
-    std::string key = std::string(subcomponentName) + ":" + subcomponentType;
+    std::string key = std::string(submoduleName) + ":" + submoduleType;
     cProperties *props = getFromPropsMap(subcomponentPropsMap, key.c_str());
     if (props)
         return props; // already computed
@@ -147,12 +146,12 @@ cProperties *cNEDDeclaration::subcomponentProperties(const char *subcomponentNam
     // get inherited properties: either from base type (if this is an inherited submodule),
     // or from its type decl.
     if (numExtendsNames()!=0)
-        props = getSuperDecl()->subcomponentProperties(subcomponentName, subcomponentType);
+        props = getSuperDecl()->submoduleProperties(submoduleName, submoduleType);
     if (!props)
-        props = cNEDLoader::instance()->getDecl(subcomponentType)->properties();
+        props = cNEDLoader::instance()->getDecl(submoduleType)->properties();
 
     // update with local properties
-    NEDElement *subcomponentNode = getSubcomponentElement(subcomponentName);
+    NEDElement *subcomponentNode = getSubcomponentElement(submoduleName);
     if (!subcomponentNode && !props)
         return NULL; // error: no such submodule or channel
     NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
@@ -161,58 +160,9 @@ cProperties *cNEDDeclaration::subcomponentProperties(const char *subcomponentNam
     return props;
 }
 
-cProperties *cNEDDeclaration::subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const
+cProperties *cNEDDeclaration::connectionProperties(const char *connectionId, const char *channelType) const
 {
-    std::string key = std::string(subcomponentName)+":"+subcomponentType+"."+paramName;
-    cProperties *props = getFromPropsMap(subcomponentParamPropsMap, key.c_str());
-    if (props)
-        return props; // already computed
-
-    // get inherited properties: either from base type (if this is an inherited submodule),
-    // or from its type decl.
-    if (numExtendsNames()!=0)
-        props = getSuperDecl()->subcomponentParamProperties(subcomponentName, subcomponentType, paramName);
-    if (!props)
-        props = cNEDLoader::instance()->getDecl(subcomponentType)->paramProperties(paramName);
-
-    // update with local properties
-    NEDElement *subcomponentNode = getSubcomponentElement(subcomponentName);
-    if (!subcomponentNode && !props)
-        return NULL; // error: no such submodule or channel
-    NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
-    NEDElement *paramNode = paramsNode ? paramsNode->getFirstChildWithAttribute(NED_PARAM, "name", paramName) : NULL;
-    if (!paramNode && !props)
-        return NULL;  // error: parameter not found anywhere
-    props = mergeProperties(props, paramNode);
-    putIntoPropsMap(subcomponentParamPropsMap, key.c_str(), props);
-    return props;
-}
-
-cProperties *cNEDDeclaration::subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const
-{
-    std::string key = std::string(subcomponentName)+":"+subcomponentType+"."+gateName;
-    cProperties *props = getFromPropsMap(subcomponentGatePropsMap, key.c_str());
-    if (props)
-        return props; // already computed
-
-    // get inherited properties: either from base type (if this is an inherited submodule),
-    // or from its type decl.
-    if (numExtendsNames()!=0)
-        props = getSuperDecl()->subcomponentGateProperties(subcomponentName, subcomponentType, gateName);
-    if (!props)
-        props = cNEDLoader::instance()->getDecl(subcomponentType)->gateProperties(gateName);
-
-    // update with local properties
-    NEDElement *subcomponentNode = getSubcomponentElement(subcomponentName);
-    if (!subcomponentNode && !props)
-        return NULL; // error: no such submodule or channel
-    NEDElement *gatesNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_GATES) : NULL;
-    NEDElement *gateNode = gatesNode ? gatesNode->getFirstChildWithAttribute(NED_GATE, "name", gateName) : NULL;
-    if (!gateNode && !props)
-        return NULL;  // error: parameter not found anywhere
-    props = mergeProperties(props, gateNode);
-    putIntoPropsMap(subcomponentGatePropsMap, key.c_str(), props);
-    return props;
+    return NULL; //TODO
 }
 
 cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDElement *parent)

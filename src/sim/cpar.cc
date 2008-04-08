@@ -115,12 +115,7 @@ cProperties *cPar::properties() const
 {
     cComponent *component = check_and_cast<cComponent *>(owner());
     cComponentType *componentType = component->componentType();
-    cModule *parent = component->parentModule();
-    cProperties *props;
-    if (parent)
-        props = parent->componentType()->subcomponentParamProperties(component->name(), componentType->fullName(), name());
-    else
-        props = componentType->paramProperties(name());
+    cProperties *props = componentType->paramProperties(name());
     return props;
 }
 

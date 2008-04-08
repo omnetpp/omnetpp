@@ -52,6 +52,8 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 
   protected:
     friend class cComponent;
+    friend class cModule;
+    friend class cChannel;
     friend class cPar;
     friend class cGate;
 
@@ -64,16 +66,15 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // internal: returns the properties of gate
     virtual cProperties *gateProperties(const char *gateName) const = 0;
 
-    // internal: returns the properties of a submodule or a contained channel.
+    // internal: returns the properties of a submodule.
     // (Subcomponent type is needed because with the NED "like" syntax,
     // we need the runtime type not the NED type of the submodule.)
-    virtual cProperties *subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const = 0;
+    virtual cProperties *submoduleProperties(const char *submoduleName, const char *submoduleType) const = 0;
 
-    // internal: returns the properties of a parameter of a submodule or a contained channel.
-    virtual cProperties *subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const = 0;
-
-    // internal: returns the properties of a submodule gate.
-    virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const = 0;
+    // internal: returns the properties of a contained connection.
+    // (Subcomponent type is needed because with the NED "like" syntax,
+    // we need the runtime type not the NED type of the submodule.)
+    virtual cProperties *connectionProperties(const char *connectionId, const char *channelType) const = 0;
 
   public:
     /** @name Constructors, destructor, assignment */

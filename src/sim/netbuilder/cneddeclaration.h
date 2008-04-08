@@ -60,8 +60,6 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     mutable PropertiesMap paramPropsMap;
     mutable PropertiesMap gatePropsMap;
     mutable PropertiesMap subcomponentPropsMap;
-    mutable PropertiesMap subcomponentParamPropsMap;
-    mutable PropertiesMap subcomponentGatePropsMap;
 
     // cached expressions: NED expressions (ExpressionElement) compiled into
     // cParImpl get cached here, indexed by exprNode->id().
@@ -112,19 +110,14 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     virtual cProperties *gateProperties(const char *gateName) const;
 
     /**
-     * Returns the properties of a submodule or a contained channel
+     * Returns the properties of a submodule
      */
-    virtual cProperties *subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const;
+    virtual cProperties *submoduleProperties(const char *submoduleName, const char *submoduleType) const;
 
     /**
-     * Returns the properties of a parameter of a submodule or a contained channel
+     * Returns the properties of a contained connection
      */
-    virtual cProperties *subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const;
-
-    /**
-     * Returns the properties of a submodule gate
-     */
-    virtual cProperties *subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const;
+    virtual cProperties *connectionProperties(const char *connectionId, const char *channelType) const;
     //@}
 
     /** @name Caching of pre-built cParImpls, so that we we don't have to build them from NEDElements every time */

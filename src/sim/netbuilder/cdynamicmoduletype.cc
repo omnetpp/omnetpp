@@ -101,21 +101,16 @@ cProperties *cDynamicModuleType::gateProperties(const char *gateName) const
     return decl->paramProperties(gateName);
 }
 
-cProperties *cDynamicModuleType::subcomponentProperties(const char *subcomponentName, const char *subcomponentType) const
+cProperties *cDynamicModuleType::submoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->subcomponentProperties(subcomponentName, subcomponentType);
+    return decl->submoduleProperties(submoduleName, submoduleType);
 }
 
-cProperties *cDynamicModuleType::subcomponentParamProperties(const char *subcomponentName, const char *subcomponentType, const char *paramName) const
+cProperties *cDynamicModuleType::connectionProperties(const char *connectionId, const char *channelType) const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->subcomponentParamProperties(subcomponentName, subcomponentType, paramName);
+    return decl->connectionProperties(connectionId, channelType);
 }
 
-cProperties *cDynamicModuleType::subcomponentGateProperties(const char *subcomponentName, const char *subcomponentType, const char *gateName) const
-{
-    cNEDDeclaration *decl = getDecl();
-    return decl->subcomponentGateProperties(subcomponentName, subcomponentType, gateName);
-}
 

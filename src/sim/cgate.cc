@@ -171,12 +171,7 @@ cProperties *cGate::properties() const
 {
     cComponent *component = check_and_cast<cComponent *>(owner());
     cComponentType *componentType = component->componentType();
-    cModule *parent = component->parentModule();
-    cProperties *props;
-    if (parent)
-        props = parent->componentType()->subcomponentGateProperties(component->name(), componentType->fullName(), baseName());
-    else
-        props = componentType->gateProperties(baseName());
+    cProperties *props = componentType->gateProperties(baseName());
     return props;
 }
 

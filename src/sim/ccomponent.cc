@@ -90,18 +90,6 @@ void cComponent::handleParameterChange(const char *)
     // Can be redefined by the user.
 }
 
-cProperties *cComponent::properties()
-{
-    cModule *parent = parentModule();
-    cComponentType *type = componentType();
-    cProperties *props;
-    if (parent)
-        props = parent->componentType()->subcomponentProperties(name(), type->fullName());
-    else
-        props = type->properties();
-    return props;
-}
-
 void cComponent::reallocParamv(int size)
 {
     ASSERT(size>=numparams);

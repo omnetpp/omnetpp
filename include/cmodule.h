@@ -399,6 +399,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cModuleType *moduleType() const  {return (cModuleType *)componentType();}
 
     /**
+     * Return the properties for this module. Properties cannot be changed
+     * at runtime. Redefined from cComponent.
+     */
+    virtual cProperties *properties() const;
+
+    /**
      * Returns the module ID. It is actually the index of the module
      * in the module vector within the cSimulation simulation object.
      * Module IDs are guaranteed to be unique during a simulation run

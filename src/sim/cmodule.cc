@@ -233,6 +233,18 @@ bool cModule::isSimple() const
     return dynamic_cast<const cSimpleModule *>(this) != NULL;
 }
 
+cProperties *cModule::properties() const
+{
+    cModule *parent = parentModule();
+    cComponentType *type = componentType();
+    cProperties *props;
+    if (parent)
+        props = parent->componentType()->submoduleProperties(name(), type->fullName());
+    else
+        props = type->properties();
+    return props;
+}
+
 cGate *cModule::createGateObject(cGate::Desc *desc)
 {
     return new cGate(desc);
