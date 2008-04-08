@@ -257,7 +257,15 @@ void NEDSyntaxValidator::validateElement(PatternElement *node)
 
 void NEDSyntaxValidator::validateElement(PropertyElement *node)
 {
-    //FIXME revise
+    // properties cannot occur on submodule or channelspec parameters and gates.
+    // structure: submodule>parameters>parameter>property
+    NEDElement *parent = node->getParent();
+    if (parent && (parent->getTagCode()==NED_PARAM || parent->getTagCode()==NED_GATE))
+    {
+        NEDElement *container = parent->getParent()->getParent();
+        if (container && (container->getTagCode()==NED_SUBMODULE || container->getTagCode()==NED_CHANNEL_SPEC))
+            errors->addError(node, "cannot modify parameter or gate properties with a submodule or connection");
+    }
 }
 
 void NEDSyntaxValidator::validateElement(PropertyKeyElement *node)

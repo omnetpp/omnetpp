@@ -76,7 +76,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // internal: returns the properties of a contained connection.
     // (Subcomponent type is needed because with the NED "like" syntax,
     // we need the runtime type not the NED type of the submodule.)
-    virtual cProperties *connectionProperties(const char *connectionId, const char *channelType) const = 0;
+    virtual cProperties *connectionProperties(int connectionId, const char *channelType) const = 0;
 
     cParImpl *getSharedParImpl(const char *key) const;
     void putSharedParImpl(const char *key, cParImpl *value);

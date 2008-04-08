@@ -267,9 +267,8 @@ ConnectionsElement *NEDTypeInfo::getConnectionsElement() const
     return (ConnectionsElement *)getTree()->getFirstChildWithTag(NED_CONNECTIONS);
 }
 
-NEDElement *NEDTypeInfo::getSubcomponentElement(const char *subcomponentName) const
+NEDElement *NEDTypeInfo::getSubmoduleElement(const char *subcomponentName) const
 {
-    // try as submodule
     SubmodulesElement *submodulesNode = getSubmodulesElement();
     if (submodulesNode)
     {
@@ -277,12 +276,27 @@ NEDElement *NEDTypeInfo::getSubcomponentElement(const char *subcomponentName) co
         if (submoduleNode)
             return submoduleNode;
     }
+    return NULL;
+}
 
-    // try as connection
+NEDElement *NEDTypeInfo::getConnectionElement(long id) const
+{
     ConnectionsElement *connectionsNode = getConnectionsElement();
     if (connectionsNode)
     {
-        //FIXME try to find a channel named subcomponentName here...
+        for (NEDElement *child=connectionsNode->getFirstChild(); child; child=child->getNextSibling())
+        {
+            if (child->getTagCode() == NED_CONNECTION) {
+                if (child->getId() == id)
+                    return child;
+            }
+            else if (child->getTagCode() == NED_CONNECTION_GROUP) {
+                NEDElement *conngroup = child;
+                for (NEDElement *child=conngroup->getFirstChild(); child; child=child->getNextSibling())
+                    if (child->getId() == id && child->getTagCode() == NED_CONNECTION)
+                        return child;
+            }
+        }
     }
     return NULL;
 }

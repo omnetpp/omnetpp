@@ -83,7 +83,7 @@ cProperties *cDynamicChannelType::submoduleProperties(const char *submoduleName,
     throw cRuntimeError("cDynamicChannelType::submoduleProperties(): channels do not contain submodules");
 }
 
-cProperties *cDynamicChannelType::connectionProperties(const char *connectionId, const char *channelType) const
+cProperties *cDynamicChannelType::connectionProperties(int connectionId, const char *channelType) const
 {
     throw cRuntimeError("cDynamicChannelType::connectionProperties(): channels do not contain further connections");
 }

@@ -38,16 +38,17 @@ cNEDDeclaration::~cNEDDeclaration()
         delete props;
     clearPropsMap(paramPropsMap);
     clearPropsMap(gatePropsMap);
-    clearPropsMap(subcomponentPropsMap);
+    clearPropsMap(submodulePropsMap);
+    clearPropsMap(connectionPropsMap);
 
     //XXX printf("%s: %d cached expressions\n", name(), parimplMap.size());
     clearSharedParImplMap(parimplMap);
 }
 
-void cNEDDeclaration::clearPropsMap(PropertiesMap& propsMap)
+void cNEDDeclaration::clearPropsMap(StringPropsMap& propsMap)
 {
     // decrement refs in the props maps, and delete object if refcount reaches zero
-    for (PropertiesMap::iterator it = propsMap.begin(); it!=propsMap.end(); ++it)
+    for (StringPropsMap::iterator it = propsMap.begin(); it!=propsMap.end(); ++it)
         if (it->second->removeRef()==0)
             delete it->second;
     propsMap.clear();
@@ -67,28 +68,36 @@ cNEDDeclaration *cNEDDeclaration::getSuperDecl() const
     return decl;
 }
 
-void cNEDDeclaration::putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props) const
+void cNEDDeclaration::putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const
 {
-    PropertiesMap::const_iterator it = propsMap.find(name);
+    StringPropsMap::const_iterator it = propsMap.find(name);
     ASSERT(it==propsMap.end()); //XXX or?
     propsMap[name] = props;
     props->addRef();
 }
 
-cProperties *cNEDDeclaration::getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const
+cProperties *cNEDDeclaration::getFromPropsMap(const StringPropsMap& propsMap, const std::string& name) const
 {
-    PropertiesMap::const_iterator it = propsMap.find(name);
+    StringPropsMap::const_iterator it = propsMap.find(name);
     return it==propsMap.end() ? NULL : it->second;
 }
 
 cProperties *cNEDDeclaration::properties() const
+{
+    cProperties *props = doProperties();
+    if (!props)
+        throw cRuntimeError("Internal error in NED type `%s': no properties", fullName());
+    return props;
+}
+
+cProperties *cNEDDeclaration::doProperties() const
 {
     if (props)
         return props; // already computed
 
     // get inherited properties
     if (numExtendsNames()!=0)
-        props = getSuperDecl()->properties();
+        props = getSuperDecl()->doProperties();
 
     // update with local properties
     props = mergeProperties(props, getParametersElement());
@@ -98,13 +107,21 @@ cProperties *cNEDDeclaration::properties() const
 
 cProperties *cNEDDeclaration::paramProperties(const char *paramName) const
 {
+    cProperties *props = doParamProperties(paramName);
+    if (!props)
+        throw cRuntimeError("Internal error in NED type `%s': no properties for parameter %s", fullName(), paramName);
+    return props;
+}
+
+cProperties *cNEDDeclaration::doParamProperties(const char *paramName) const
+{
     cProperties *props = getFromPropsMap(paramPropsMap, paramName);
     if (props)
         return props; // already computed
 
     // get inherited properties
     if (numExtendsNames()!=0)
-        props = getSuperDecl()->paramProperties(paramName);
+        props = getSuperDecl()->doParamProperties(paramName);
 
     // update with local properties
     ParametersElement *paramsNode = getParametersElement();
@@ -118,13 +135,21 @@ cProperties *cNEDDeclaration::paramProperties(const char *paramName) const
 
 cProperties *cNEDDeclaration::gateProperties(const char *gateName) const
 {
+    cProperties *props = doGateProperties(gateName);
+    if (!props)
+        throw cRuntimeError("Internal error in NED type `%s': no properties for gate %s", fullName(), gateName);
+    return props;
+}
+
+cProperties *cNEDDeclaration::doGateProperties(const char *gateName) const
+{
     cProperties *props = getFromPropsMap(gatePropsMap, gateName);
     if (props)
         return props; // already computed
 
     // get inherited properties
     if (numExtendsNames()!=0)
-        props = getSuperDecl()->gateProperties(gateName);
+        props = getSuperDecl()->doGateProperties(gateName);
 
     // update with local properties
     GatesElement *gatesNode = getGatesElement();
@@ -138,31 +163,68 @@ cProperties *cNEDDeclaration::gateProperties(const char *gateName) const
 
 cProperties *cNEDDeclaration::submoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
+    cProperties *props = doSubmoduleProperties(submoduleName, submoduleType);
+    if (!props)
+        throw cRuntimeError("Internal error in NED type `%s': no properties for submodule %s, type %s", fullName(), submoduleName, submoduleType);
+    return props;
+
+}
+cProperties *cNEDDeclaration::doSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
+{
     std::string key = std::string(submoduleName) + ":" + submoduleType;
-    cProperties *props = getFromPropsMap(subcomponentPropsMap, key.c_str());
+    cProperties *props = getFromPropsMap(submodulePropsMap, key.c_str());
     if (props)
         return props; // already computed
 
     // get inherited properties: either from base type (if this is an inherited submodule),
     // or from its type decl.
     if (numExtendsNames()!=0)
-        props = getSuperDecl()->submoduleProperties(submoduleName, submoduleType);
+        props = getSuperDecl()->doSubmoduleProperties(submoduleName, submoduleType);
     if (!props)
         props = cNEDLoader::instance()->getDecl(submoduleType)->properties();
 
     // update with local properties
-    NEDElement *subcomponentNode = getSubcomponentElement(submoduleName);
+    NEDElement *subcomponentNode = getSubmoduleElement(submoduleName);
     if (!subcomponentNode && !props)
-        return NULL; // error: no such submodule or channel
+        return NULL; // error: no such submodule FIXME must not return NULL!
     NEDElement *paramsNode = subcomponentNode ? subcomponentNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
     props = mergeProperties(props, paramsNode);
-    putIntoPropsMap(subcomponentPropsMap, key.c_str(), props);
+    putIntoPropsMap(submodulePropsMap, key.c_str(), props);
     return props;
 }
 
-cProperties *cNEDDeclaration::connectionProperties(const char *connectionId, const char *channelType) const
+cProperties *cNEDDeclaration::connectionProperties(int connectionId, const char *channelType) const
 {
-    return NULL; //TODO
+    cProperties *props = doConnectionProperties(connectionId, channelType);
+    if (!props)
+        throw cRuntimeError("Internal error in NED type `%s': no properties for connection with id=%d type=%s", fullName(), connectionId, channelType);
+    return props;
+}
+
+cProperties *cNEDDeclaration::doConnectionProperties(int connectionId, const char *channelType) const
+{
+    std::string key = opp_stringf("%d:%s", connectionId, channelType);
+    cProperties *props = getFromPropsMap(connectionPropsMap, key.c_str());
+    if (props)
+        return props; // already computed
+
+    // get inherited properties: either from base type (if this is an inherited connection),
+    // or from the channel type's type decl.
+    if (numExtendsNames()!=0)
+        props = getSuperDecl()->doConnectionProperties(connectionId, channelType);
+    if (!props)
+        props = cNEDLoader::instance()->getDecl(channelType)->properties();
+
+    // update with local properties
+    NEDElement *connectionNode = getConnectionElement(connectionId);
+    if (!connectionNode && !props)
+        return NULL; // error: no such connection
+
+    NEDElement *connspecNode = connectionNode ? connectionNode->getFirstChildWithTag(NED_CHANNEL_SPEC) : NULL;
+    NEDElement *paramsNode = connspecNode ? connspecNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
+    props = mergeProperties(props, paramsNode);
+    putIntoPropsMap(connectionPropsMap, key.c_str(), props);
+    return props;
 }
 
 cProperties *cNEDDeclaration::mergeProperties(const cProperties *baseprops, NEDElement *parent)

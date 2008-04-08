@@ -55,11 +55,12 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
 {
   protected:
     // properties
-    typedef std::map<std::string, cProperties *> PropertiesMap;
+    typedef std::map<std::string, cProperties *> StringPropsMap;
     mutable cProperties *props;
-    mutable PropertiesMap paramPropsMap;
-    mutable PropertiesMap gatePropsMap;
-    mutable PropertiesMap subcomponentPropsMap;
+    mutable StringPropsMap paramPropsMap;
+    mutable StringPropsMap gatePropsMap;
+    mutable StringPropsMap submodulePropsMap;
+    mutable StringPropsMap connectionPropsMap;
 
     // cached expressions: NED expressions (ExpressionElement) compiled into
     // cParImpl get cached here, indexed by exprNode->id().
@@ -67,18 +68,23 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     SharedParImplMap parimplMap;
 
   protected:
-    void putIntoPropsMap(PropertiesMap& propsMap, const std::string& name, cProperties *props) const;
-    cProperties *getFromPropsMap(const PropertiesMap& propsMap, const std::string& name) const;
-    void appendPropsMap(PropertiesMap& toPropsMap, const PropertiesMap& fromPropsMap);
+    void putIntoPropsMap(StringPropsMap& propsMap, const std::string& name, cProperties *props) const;
+    cProperties *getFromPropsMap(const StringPropsMap& propsMap, const std::string& name) const;
+    void appendPropsMap(StringPropsMap& toPropsMap, const StringPropsMap& fromPropsMap);
     virtual cNEDDeclaration *getSuperDecl() const; // covariant return value
 
-    static void clearPropsMap(PropertiesMap& propsMap);
+    static void clearPropsMap(StringPropsMap& propsMap);
     static void clearSharedParImplMap(SharedParImplMap& parimplMap);
 
     static cProperties *mergeProperties(const cProperties *baseprops, NEDElement *parent);
     static void updateProperty(PropertyElement *propNode, cProperty *prop);
     static void updateDisplayProperty(PropertyElement *propNode, cProperty *prop);
 
+    cProperties *doProperties() const;
+    cProperties *doParamProperties(const char *paramName) const;
+    cProperties *doGateProperties(const char *gateName) const;
+    cProperties *doSubmoduleProperties(const char *submoduleName, const char *submoduleType) const;
+    cProperties *doConnectionProperties(int connectionId, const char *channelType) const;
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -94,30 +100,13 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     virtual ~cNEDDeclaration();
     //@}
 
-    /**
-     * Returns the properties for this component.
-     */
+    /** @name Properties of this type, its parameters, gates etc. */
+    //@{
     virtual cProperties *properties() const;
-
-    /**
-     * Returns the properties of parameter
-     */
     virtual cProperties *paramProperties(const char *paramName) const;
-
-    /**
-     * Returns the properties of gate
-     */
     virtual cProperties *gateProperties(const char *gateName) const;
-
-    /**
-     * Returns the properties of a submodule
-     */
     virtual cProperties *submoduleProperties(const char *submoduleName, const char *submoduleType) const;
-
-    /**
-     * Returns the properties of a contained connection
-     */
-    virtual cProperties *connectionProperties(const char *connectionId, const char *channelType) const;
+    virtual cProperties *connectionProperties(int connectionId, const char *channelType) const;
     //@}
 
     /** @name Caching of pre-built cParImpls, so that we we don't have to build them from NEDElements every time */

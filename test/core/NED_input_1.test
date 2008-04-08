@@ -32,7 +32,7 @@ module Compound
         sub[3]: Simple {
             parameters:
                 p1 = default(1);
-                p2 = default(1) @prompt("Enter param");
+                p2 = default(1+1);
                 p3 = default(a);
                 p4 = default(index);
                 p5 = default(a+index);
@@ -89,7 +89,7 @@ cmdenv-express-mode = false
 
 %contains: stdout
 sub[0].p1=1
-sub[0].p2=1
+sub[0].p2=2
 sub[0].p3=100
 sub[0].p4=0
 sub[0].p5=100
@@ -100,7 +100,7 @@ sub[0].p9=105
 
 %contains: stdout
 sub[1].p1=1
-sub[1].p2=1
+sub[1].p2=2
 sub[1].p3=100
 sub[1].p4=1
 sub[1].p5=101
@@ -111,7 +111,7 @@ sub[1].p9=105
 
 %contains: stdout
 sub[2].p1=1
-sub[2].p2=1
+sub[2].p2=2
 sub[2].p3=100
 sub[2].p4=2
 sub[2].p5=102

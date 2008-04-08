@@ -36,12 +36,15 @@ class cMessage;
 class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:
-    cGate *fromgatep;  // gate the channel is attached to
-    long connId;       // XXX identifies
+    cGate *fromgatep; // gate the channel is attached to
+    int connId;       // for cChannelType::connectionProperties()
 
   public:
     // internal: called from cGate
     void setFromGate(cGate *g) {fromgatep=g;}
+
+    // internal: sets connId
+    void setConnectionId(int id) {connId = id;}
 
     // internal: called from callInitialize(). Does one stage for this
     // channel, and returns true if there's more stages to do

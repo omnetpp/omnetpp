@@ -74,8 +74,8 @@ class NEDXML_API NEDTypeInfo
     void mergeProperty(PropertyElement *baseprop, const PropertyElement *prop) const;
     void mergePropertyKey(PropertyKeyElement *basekey, const PropertyKeyElement *key) const;
 
-    // utility function: XXX needed here? or move to subclass?
-    NEDElement *getSubcomponentElement(const char *subcomponentName) const;
+    NEDElement *getSubmoduleElement(const char *submoduleName) const;
+    NEDElement *getConnectionElement(long id) const;
     void checkComplianceToInterface(NEDTypeInfo *interfaceDecl);
 
   public:

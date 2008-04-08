@@ -44,7 +44,7 @@ class SIM_API cDynamicChannelType : public cChannelType
     virtual cProperties *paramProperties(const char *paramName) const;
     virtual cProperties *gateProperties(const char *gateName) const;
     virtual cProperties *submoduleProperties(const char *submoduleName, const char *submoduleType) const;
-    virtual cProperties *connectionProperties(const char *connectionId, const char *channelType) const;
+    virtual cProperties *connectionProperties(int connectionId, const char *channelType) const;
 
   public:
     /**

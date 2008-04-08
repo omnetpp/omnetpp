@@ -56,19 +56,15 @@ USING_NAMESPACE
 Register_PerRunConfigEntry(CFGID_MAX_MODULE_NESTING, "max-module-nesting", CFG_INT, "50", "The maximum allowed depth of submodule nesting. This is used to catch accidental infinite recursions in NED.");
 Register_PerObjectConfigEntry(CFGID_TYPE_NAME, "type-name", CFG_STRING, NULL, "Specifies type for submodules and channels declared with 'like <>'.");
 
-/*
-  FIXME FIXME FIXME
-  TODO connection display string
-*/
 
-
-
+#if 0
 // for debugging
-//static void dump(NEDElement *node)
-//{
-//    generateXML(std::cout, node, false);
-//    std::cout.flush();
-//}
+static void dump(NEDElement *node)
+{
+    generateXML(std::cout, node, false);
+    std::cout.flush();
+}
+#endif
 
 // utility function for exception handling: adds NED file+line to the exception text
 static void updateOrRethrowException(std::exception& e, NEDElement *context)
@@ -708,11 +704,10 @@ void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg
     else
     {
         cChannel *channel = createChannel(channelspec, modp, srcg);
+        channel->setConnectionId(conn->getId()); // so that properties will be found
         srcg->connectTo(destg, channel);
         assignSubcomponentParams(channel, channelspec);
         channel->finalizeParameters();
-
-        //XXX display string
     }
 }
 

@@ -129,7 +129,7 @@ cProperties *cChannel::properties() const
     cComponentType *type = componentType();
     cProperties *props;
     if (parent)
-        props = parent->componentType()->connectionProperties("**FIXME**", type->fullName());
+        props = parent->componentType()->connectionProperties(connId, type->fullName());
     else
         props = type->properties();
     return props;

@@ -141,12 +141,12 @@ class NEDXML_API NEDElement
     virtual int getTagCode() const = 0;
 
     /**
-     * Returns a unique id, originally set by the contructor.
+     * Returns a unique id, originally set by the constructor.
      */
     virtual long getId() const;
 
     /**
-     * Unique id assigned by the constructor can be overwritten here.
+     * The unique id assigned by the constructor can be overwritten here.
      */
     virtual void setId(long id);
 

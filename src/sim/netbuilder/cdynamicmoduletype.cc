@@ -98,7 +98,7 @@ cProperties *cDynamicModuleType::paramProperties(const char *paramName) const
 cProperties *cDynamicModuleType::gateProperties(const char *gateName) const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->paramProperties(gateName);
+    return decl->gateProperties(gateName);
 }
 
 cProperties *cDynamicModuleType::submoduleProperties(const char *submoduleName, const char *submoduleType) const
@@ -107,7 +107,7 @@ cProperties *cDynamicModuleType::submoduleProperties(const char *submoduleName, 
     return decl->submoduleProperties(submoduleName, submoduleType);
 }
 
-cProperties *cDynamicModuleType::connectionProperties(const char *connectionId, const char *channelType) const
+cProperties *cDynamicModuleType::connectionProperties(int connectionId, const char *channelType) const
 {
     cNEDDeclaration *decl = getDecl();
     return decl->connectionProperties(connectionId, channelType);
