@@ -37,19 +37,12 @@ Register_Class(cFileOutputVectorManager);
 
 #define DEFAULT_PRECISION  "14"
 
-Register_PerRunConfigEntry(CFGID_EXPERIMENT_LABEL, "experiment-label", CFG_STRING, "${configname}", "Identifies the simulation experiment (which consists of several, potentially repeated measurements). This string gets recorded into result files, and may be referred to during result analysis.");
-Register_PerRunConfigEntry(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STRING, "${iterationvars}", "Identifies the measurement within the experiment. This string gets recorded into result files, and may be referred to during result analysis.");
-Register_PerRunConfigEntry(CFGID_REPLICATION_LABEL, "replication-label", CFG_STRING, "#${repetition}, seedset=@", "Identifies one replication of a measurement (see repeat= and measurement-label= as well). This string gets recorded into result files, and may be referred to during result analysis.");
-
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.vec", "Name for the output vector file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output vector file. The maximum value is ~15 (IEEE double precision). This setting has no effect on the \"time\" column of output vectors, which are represented as fixed-point numbers and always get recorded precisely.");
 
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_EVENT_NUMBERS, "record-event-numbers", CFG_BOOL, "true", "Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.");
 Register_PerObjectConfigEntry(CFGID_OUTVECTOR_INTERVAL, "recording-interval", CFG_CUSTOM, NULL, "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
-
-extern cConfigKey *CFGID_SEED_SET;
-
 
 #ifdef CHECK
 #undef CHECK
@@ -86,52 +79,10 @@ void cFileOutputVectorManager::closeFile()
     }
 }
 
-void cFileOutputVectorManager::initRun()
-{
-    if (!run.initialized)
-    {
-        // Collect the attributes and module parameters of the current run
-        // from the configuration.
-        //
-        run.runId = ev.getRunId();
-        cConfiguration *cfg = ev.config();
-        run.attributes["config"] = cfg->getActiveConfigName();
-        run.attributes["run-number"] = opp_stringf("%d", cfg->getActiveRunNumber());
-        const char *inifile = cfg->getFileName();
-        if (inifile)
-            run.attributes["inifile"] = inifile;
-
-        // fill in run.attributes[]
-        std::vector<const char *> keys = cfg->getMatchingConfigKeys("*");
-        for (int i=0; i<(int)keys.size(); i++)
-        {
-            const char *key = keys[i];
-            run.attributes[key] = cfg->getConfigValue(key);
-        }
-
-        std::string seedset = opp_stringf("%ld", cfg->getAsInt(CFGID_SEED_SET));
-        run.attributes["experiment"] = cfg->getAsString(CFGID_EXPERIMENT_LABEL); //TODO if not already in there
-        run.attributes["measurement"] = cfg->getAsString(CFGID_MEASUREMENT_LABEL);
-        run.attributes["replication"] = opp_replacesubstring(cfg->getAsString(CFGID_REPLICATION_LABEL).c_str(), "@", seedset.c_str(), true);
-        run.attributes["seed-set"] = seedset;
-
-        //FIXME todo: fill in run.moduleParams[]
-        run.initialized = true;
-    }
-}
-
 void cFileOutputVectorManager::writeRunData()
 {
-    CHECK(fprintf(f, "run %s\n", QUOTE(run.runId.c_str())));
-    for (opp_string_map::const_iterator it = run.attributes.begin(); it != run.attributes.end(); ++it)
-    {
-        CHECK(fprintf(f, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
-    }
-    for (opp_string_map::const_iterator it = run.moduleParams.begin(); it != run.moduleParams.end(); ++it)
-    {
-        CHECK(fprintf(f, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())));
-    }
-    CHECK(fprintf(f, "\n"));
+	run.initRun();
+	run.writeRunData(f, fname);
 }
 
 void cFileOutputVectorManager::initVector(sVectorData *vp)
@@ -145,7 +96,6 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
     if (!run.initialized)
     {
         // this is the first vector written in this run, write out run attributes
-        initRun();
         writeRunData();
     }
 
@@ -166,9 +116,7 @@ void cFileOutputVectorManager::startRun()
     removeFile(fname.c_str(), "old output vector file");
 
     // clear run data
-    run.initialized = false;
-    run.attributes.clear();
-    run.moduleParams.clear();
+    run.reset();
 }
 
 void cFileOutputVectorManager::endRun()

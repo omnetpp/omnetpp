@@ -122,18 +122,16 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 				return true;
 
 			IFile file = (IFile)resource;
+			IFile resultFile = IndexFile.isIndexFile(file) ? IndexFile.getVectorFileFor(file) :
+								isResultFile(file) ? file : null;
+			
+			if (resultFile == null || isDerived(resultFile) || !inputsMatches(resultFile))
+				return false;
+			
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
 					if (debug) System.out.format("File added: %s%n", file);
-					if (isResultFile(file) && !isDerived(file)) {
-						if (inputsMatches(file))
-							loadFile(file);
-					}
-					else if (IndexFile.isIndexFile(file)) {
-						IFile vectorFile = IndexFile.getVectorFileFor(file); 
-						if (vectorFile != null)
-							reloadFile(vectorFile);
-					}
+					loadFile(resultFile);
 					break;
 			case IResourceDelta.REMOVED:
 					if (debug) System.out.format("File removed: %s%n", file);
@@ -142,15 +140,8 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 					break;
 			case IResourceDelta.CHANGED:
 					if (debug) System.out.format("File changed: %s%n", file);
-					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0) {
-						if (isResultFile(file) && !isDerived(file))
-							reloadFile(file);
-						else if (IndexFile.isIndexFile(file)) {
-							IFile vectorFile = IndexFile.getVectorFileFor(file);
-							if (vectorFile != null)
-								reloadFile(vectorFile);
-						}
-					}
+					if ((delta.getFlags() & ~IResourceDelta.MARKERS) != 0)
+						loadFile(resultFile);
 					break;
 			}
 			return false;
@@ -260,6 +251,10 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		if (debug) System.out.format("  loadFile: %s ", file);
 		synchronized (lock) {
 			if (file.getLocation().toFile().exists()) {
+				String resourcePath = file.getFullPath().toString();
+				ResultFile resultFile = manager.getFile(resourcePath);
+				if (resultFile != null)
+					manager.unloadFile(resultFile);
 				loadFileInternal(file);
 			}
 		}
@@ -286,30 +281,6 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 	}
 
-	/**
-	 * Reloads the specified <code>file</code> into the ResultFileManager.
-	 * Has no effect when the file was not loaded.
-	 */
-	private void reloadFile(IFile file) {
-		if (debug) System.out.format("  reloadFile: %s ", file);
-		if (isResultFile(file)) {
-			String resourcePath = file.getFullPath().toString();
-			ResultFile resultFile = manager.getFile(resourcePath);
-			if (resultFile != null) {
-				try {
-					manager.unloadFile(resultFile);
-					loadFileInternal(file);
-				} catch (Exception e) {
-					ScavePlugin.logError("Could not reload file: " + file.getLocation().toOSString(), e);
-					if (debug) System.out.format("exception %s%n", e);
-				}
-			}
-			else {
-				if (debug) System.out.println("skip");
-			}
-		}
-	}
-	
 	/**
 	 * Loads the specified <code>file</code> into the ResultFileManager.
 	 * If a vector file is loaded, it checks that the index file is up-to-date.
@@ -367,11 +338,18 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 		}
 		
 		if (fileFormatException != null) {
-			IFile indexFile = IndexFile.getIndexFileFor(file);
-			String message = fileFormatException.getMessage();
-			int lineNo = fileFormatException.getLineNo();
-			setMarker(indexFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+message, lineNo);
-			setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+message, -1);
+			if (isVectorFile(file)) {
+				IFile indexFile = IndexFile.getIndexFileFor(file);
+				String message = fileFormatException.getMessage();
+				int lineNo = fileFormatException.getLineNo();
+				setMarker(indexFile, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+message, lineNo);
+				setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+message, -1);
+			}
+			else {
+				String message = fileFormatException.getMessage();
+				int lineNo = fileFormatException.getLineNo();
+				setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_ERROR, "Wrong file: "+message, lineNo);
+			}
 		}
 		else if (exception != null) {
 			setMarker(file, MARKERTYPE_SCAVEPROBLEM, IMarker.SEVERITY_WARNING, "Could not load file. Reason: "+exception.getMessage(), -1);

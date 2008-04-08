@@ -40,11 +40,6 @@ Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE_APPEND, "output-scalar-file-
 
 Register_PerObjectConfigEntry(CFGID_RECORD_SCALAR, "record-scalar", CFG_BOOL, "true", "Whether the matching output scalars should be recorded. Syntax: <module-full-path>.<scalar-name>.record-scalar=true/false. Example: **.queue.packetsDropped.record-scalar=true");
 
-extern cConfigKey *CFGID_EXPERIMENT_LABEL;
-extern cConfigKey *CFGID_MEASUREMENT_LABEL;
-extern cConfigKey *CFGID_REPLICATION_LABEL;
-extern cConfigKey *CFGID_SEED_SET;
-
 Register_Class(cFileOutputScalarManager);
 
 #ifdef CHECK
@@ -90,6 +85,7 @@ void cFileOutputScalarManager::startRun()
     if (ev.config()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
         removeFile(fname.c_str(), "old output scalar file");
     initialized = false;
+    run.reset();
 }
 
 void cFileOutputScalarManager::endRun()
@@ -115,11 +111,20 @@ void cFileOutputScalarManager::init()
     if (!initialized)
     {
         initialized = true;
+        
+        if (!run.initialized)
+        {
+            // this is the first vector written in this run, write out run attributes
+            run.initRun();
+            run.writeRunData(f, fname);
+        }
+
+/*        
         const char *networkname = simulation.networkType()->name();
         const char *runId = ev.getRunId();
         fprintf(f, "run %s\n", QUOTE(runId));
         //FIXME write out run data here as well (not only in outvectormanager)
-
+*/
         // save iteration variables
 
         std::vector<const char *> v = ev.config()->getIterationVariableNames();

@@ -233,15 +233,7 @@ void cIndexedFileOutputVectorManager::writeRunData()
         openIndexFile();
     }
 
-    CHECK(fprintf(fi, "run %s\n", QUOTE(run.runId.c_str())), ifname);
-    for (opp_string_map::const_iterator it = run.attributes.begin(); it != run.attributes.end(); ++it)
-    {
-        CHECK(fprintf(fi, "attr %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())), ifname);
-    }
-    for (opp_string_map::const_iterator it = run.moduleParams.begin(); it != run.moduleParams.end(); ++it)
-    {
-        CHECK(fprintf(fi, "param %s %s\n", it->first.c_str(), QUOTE(it->second.c_str())), ifname);
-    }
+    run.writeRunData(fi, ifname);
 }
 
 // empties all buffer

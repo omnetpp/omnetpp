@@ -19,6 +19,7 @@
 #include "envirdefs.h"
 #include "envirext.h"
 #include "util.h"
+#include "runattributes.h"
 
 NAMESPACE_BEGIN
 
@@ -33,14 +34,6 @@ NAMESPACE_BEGIN
 class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
 {
   protected:
-    struct sRunData {
-       bool initialized;        // true if the other fields are valid
-       opp_string runId;        // id of the run
-       opp_string_map attributes;    // attributes of the run
-       opp_string_map moduleParams;  // module parameters in the current run
-
-       sRunData() : initialized(false) {}
-    };
 
     struct sVectorData { //XXX use stringPool for vectorname etc?
        int id;              // vector ID
@@ -64,7 +57,6 @@ class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
   protected:
     void openFile();
     void closeFile();
-    void initRun();
     virtual void initVector(sVectorData *vp);
     virtual sVectorData *createVectorData();
     virtual void writeRunData();

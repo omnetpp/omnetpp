@@ -29,6 +29,7 @@
 #include "filereader.h"
 #include "indexfile.h"
 #include "scaveutils.h"
+#include "scaveexception.h"
 #include "resultfilemanager.h"
 #include "fileutil.h"
 #include "commonutil.h"
@@ -844,33 +845,15 @@ void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
 }
 */
 
-/* XXX unused function
-static void parseString(char *&s, std::string& dest, int lineNum)
-{
-    while (*s==' ' || *s=='\t') s++;
-    if (*s=='"')
-    {
-        // parse quoted string    //FIXME use opp_parsequotedstr() instead!
-        char *start = s+1;
-        s++;
-        while (*s && (*s!='"' || *(s-1)=='\\') && *s!='\r' && *s!='\n') s++;
-        if (*s!='"')
-            throw opp_runtime_error("invalid syntax: missing close quote, line %d", lineNum);
-        dest.assign(start, s-start);
-        s++;
-    }
-    else
-    {
-        // parse unquoted string
-        char *start = s;
-        while (*s && *s!=' ' && *s!='\t' && *s!='\r' && *s!='\n') s++;
-        dest.assign(start, s-start); // can be empty as well
-    }
-}
-*/
+
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, file, line);
+
 
 void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultItem *&resultItemRef,
-                                    ResultFile *fileRef, int lineNum)
+                                    ResultFile *fileRef, const char *file, int64 line)
 {
     // ignore empty lines
     if (numTokens==0 || vec[0][0]=='#')
@@ -879,8 +862,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     // process "run" lines
     if (vec[0][0]=='r' && !strcmp(vec[0],"run"))
     {
-        if (numTokens<2)
-            throw opp_runtime_error("invalid result file: run Id missing from `run' line, line %d", lineNum);
+        CHECK(numTokens >= 2, "invalid result file: run Id missing from `run' line");
 
         if (atoi(vec[1])>0 && strlen(vec[1])<=10)
         {
@@ -898,7 +880,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
 
             // assemble a probably-unique runName
             std::stringstream os;
-            os << fileRef->fileName << ":" << lineNum << "-#" << vec[1];
+            os << fileRef->fileName << ":" << line << "-#" << vec[1];
             if (numTokens>=3)
                 os << "-" << vec[2];
             if (numTokens>=4)
@@ -917,10 +899,10 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
                 runRef->runName = vec[1];
             }
             // associate Run with this file
-            if (getFileRun(fileRef, runRef)!=NULL)
-                throw opp_runtime_error("invalid result file: run Id repeats in the file, line %d", lineNum);
+            CHECK(getFileRun(fileRef, runRef)==NULL, "invalid result file: run Id repeats in the file");
             fileRunRef = addFileRun(fileRef, runRef);
         }
+        resultItemRef = NULL;
         return;
     }
 
@@ -943,13 +925,19 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
 
     if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
     {
-        if (numTokens<3)
-            throw opp_runtime_error("invalid result file: 'attr <name> <value>' expected, line %d", lineNum);
+        CHECK(numTokens>=3, "invalid result file: 'attr <name> <value>' expected");
 
-        if (resultItemRef == NULL)
+    	std::string attrName = vec[1];
+    	std::string attrValue = vec[2];
+
+    	if (resultItemRef == NULL)
         {
             // store attribute
-            fileRunRef->runRef->attributes[vec[1]] = vec[2];
+    		StringMap &attributes = fileRunRef->runRef->attributes;
+    		StringMap::iterator oldPairRef = attributes.find(attrName);
+    		CHECK(oldPairRef == attributes.end() || oldPairRef->second == attrValue,
+    			  "Value of run attribute conflicts with previously loaded value");
+            attributes[attrName] = attrValue;
 
             // the "runNumber" attribute is also stored separately
             if (!strcmp(vec[1], "runNumber"))
@@ -957,26 +945,29 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         }
         else
         {
-            resultItemRef->attributes[vec[1]] = vec[2];
+            resultItemRef->attributes[attrName] = attrValue;
         }
     }
     else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
     {
-        if (numTokens<3)
-            throw opp_runtime_error("invalid result file: 'param <namePattern> <value>' expected, line %d", lineNum);
+        CHECK(numTokens>=3, "invalid result file: 'param <namePattern> <value>' expected");
 
-        // store attribute
-        fileRunRef->runRef->moduleParams[vec[1]] = vec[2];
+        // store module param
+        std::string paramName = vec[1];
+        std::string paramValue = vec[2];
+        StringMap &params = fileRunRef->runRef->moduleParams;
+        StringMap::iterator oldPairRef = params.find(paramName);
+        CHECK(oldPairRef == params.end() || oldPairRef->second == paramValue,
+			  "Value of module parameter conflicts with previously loaded value");
+        params[paramName] = paramValue;
     }
     else if (vec[0][0]=='s' && !strcmp(vec[0],"scalar"))
     {
         // syntax: "scalar <module> <scalarname> <value>"
-        if (numTokens<4)
-            throw opp_runtime_error("invalid scalar file: too few items on `scalar' line, line %d", lineNum);
+        CHECK(numTokens>=4, "invalid scalar file: too few items on `scalar' line");
 
         double value;
-        if (!parseDouble(vec[3],value))
-            throw opp_runtime_error("invalid scalar file syntax: invalid value column, line %d", lineNum);
+        CHECK(parseDouble(vec[3],value), "invalid scalar file syntax: invalid value column");
 
         addScalar(fileRunRef, vec[1], vec[2], value);
         resultItemRef = &fileRef->scalarResults.back();
@@ -985,17 +976,13 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
     {
         // vector line
-        if (numTokens<4)
-            throw opp_runtime_error("invalid vector file syntax: too few items on 'vector' line, line %d", lineNum);
+        CHECK(numTokens>=4, "invalid vector file syntax: too few items on 'vector' line");
 
         VectorResult vecdata;
         vecdata.fileRunRef = fileRunRef;
 
         // vectorId
-        char *e;
-        vecdata.vectorId = (int) strtol(vec[1],&e,10);
-        if (*e)
-            throw opp_runtime_error("invalid vector file syntax: invalid vector id in vector definition, line %d", lineNum);
+        CHECK(parseInt(vec[1], vecdata.vectorId), "invalid vector file syntax: invalid vector id in vector definition");
         // module name, vector name
         const char *moduleName = vec[2];
         const char *vectorName = vec[3];
@@ -1066,15 +1053,17 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
             LineTokenizer tokenizer;
             FileRun *fileRunRef = NULL;
             ResultItem *resultItemRef = NULL;
+            int64 lineNo = 0;
             while ((line=freader.getNextLineBufferPointer())!=NULL)
             {
+            	++lineNo;
                 int len = freader.getCurrentLineLength();
                 int numTokens = tokenizer.tokenize(line, len);
                 char **tokens = tokenizer.tokens();
-                processLine(tokens, numTokens, fileRunRef, resultItemRef, fileRef, freader.getNumReadLines());
+                processLine(tokens, numTokens, fileRunRef, resultItemRef, fileRef, fileName, lineNo);
             }
 
-            fileRef->numLines = freader.getNumReadLines();
+            fileRef->numLines = lineNo; // freader.getNumReadLines();
         }
     }
     catch (std::exception&)

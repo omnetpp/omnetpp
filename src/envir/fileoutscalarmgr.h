@@ -19,6 +19,7 @@
 #include "envirdefs.h"
 #include "envirext.h"
 #include "util.h"
+#include "runattributes.h"
 
 NAMESPACE_BEGIN
 
@@ -30,6 +31,7 @@ NAMESPACE_BEGIN
 class ENVIR_API cFileOutputScalarManager : public cOutputScalarManager
 {
   protected:
+    sRunData run;      // holds data of the current run
     opp_string fname;  // output file name
     FILE *f;           // file ptr of output file
     int prec;          // number of significant digits when writing doubles

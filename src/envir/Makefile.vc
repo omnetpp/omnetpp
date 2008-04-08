@@ -29,7 +29,8 @@ OBJS= $O/args.obj $O/bootenv.obj $O/main.obj $O/envirbase.obj $O/fsutils.obj \
       $O/fileoutvectormgr.obj $O/fileoutscalarmgr.obj $O/filesnapshotmgr.obj \
       $O/indexedfileoutvectormgr.obj $O/akoutvectormgr.obj \
       $O/speedometer.obj $O/matchableobject.obj $O/matchablefield.obj \
-      $O/akaroarng.obj $O/cxmldoccache.obj $O/eventlogwriter.obj $O/objectprinter.obj
+      $O/akaroarng.obj $O/cxmldoccache.obj $O/eventlogwriter.obj $O/objectprinter.obj \
+      $O/runattributes.obj
 
 
 !if "$(LIB_SUFFIX)"==".dll"

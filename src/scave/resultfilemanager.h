@@ -250,7 +250,7 @@ class SCAVE_API ResultFileManager
     Run *addRun();
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
-    void processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultItem *&resultItemRef, ResultFile *fileRef, int lineNum);
+    void processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultItem *&resultItemRef, ResultFile *fileRef, const char *fileName, int64 lineNum);
     void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
 
     ResultFile *getFileForID(ID id) const; // checks for NULL
