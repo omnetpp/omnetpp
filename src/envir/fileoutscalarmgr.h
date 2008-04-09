@@ -19,6 +19,7 @@
 #include "envirdefs.h"
 #include "envirext.h"
 #include "util.h"
+#include "stringutil.h"
 #include "runattributes.h"
 
 NAMESPACE_BEGIN
@@ -37,11 +38,11 @@ class ENVIR_API cFileOutputScalarManager : public cOutputScalarManager
     int prec;          // number of significant digits when writing doubles
 
   protected:
-    bool initialized;
-
     void openFile();
     void closeFile();
     void init();
+    void writeStatisticField(const char *name, long value);
+    void writeStatisticField(const char *name, double value);
 
   public:
     /** @name Constructors, destructor */
@@ -95,6 +96,18 @@ class ENVIR_API cFileOutputScalarManager : public cOutputScalarManager
     virtual void flush();
     //@}
 };
+
+inline void cFileOutputScalarManager::writeStatisticField(const char *name, long value)
+{
+	if (fprintf(f, "field %s %ld\n", QUOTE(name), value) < 0)
+		throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
+}
+
+inline void cFileOutputScalarManager::writeStatisticField(const char *name, double value)
+{
+	if (fprintf(f, "field %s %.*g\n", QUOTE(name), prec, value) < 0)
+		throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
+}
 
 NAMESPACE_END
 

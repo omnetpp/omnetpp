@@ -53,6 +53,12 @@ bool parseDouble(const char *s, double& dest)
         if (*s=='-') dest = -dest;
         return true;
     }
+    if (strstr(s, "IND") || strcmp(s,"nan")==0)
+    {
+    	dest = dblNaN;
+    	return true;
+    }
+    
     return false;
 }
 

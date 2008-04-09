@@ -84,7 +84,6 @@ void cFileOutputScalarManager::startRun()
     dynamic_cast<EnvirBase *>(&ev)->processFileName(fname);
     if (ev.config()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
         removeFile(fname.c_str(), "old output scalar file");
-    initialized = false;
     run.reset();
 }
 
@@ -108,25 +107,14 @@ void cFileOutputScalarManager::init()
         if (!f) return;
     }
 
-    if (!initialized)
+    if (!run.initialized)
     {
-        initialized = true;
-        
-        if (!run.initialized)
-        {
-            // this is the first vector written in this run, write out run attributes
-            run.initRun();
-            run.writeRunData(f, fname);
-        }
+        run.initRun();
 
-/*        
-        const char *networkname = simulation.networkType()->name();
-        const char *runId = ev.getRunId();
-        fprintf(f, "run %s\n", QUOTE(runId));
-        //FIXME write out run data here as well (not only in outvectormanager)
-*/
+        // this is the first scalar written in this run, write out run attributes
+        run.writeRunData(f, fname);
+
         // save iteration variables
-
         std::vector<const char *> v = ev.config()->getIterationVariableNames();
         for (int i=0; i<(int)v.size(); i++)
         {
@@ -141,7 +129,7 @@ void cFileOutputScalarManager::init()
 
 void cFileOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
-    if (!initialized)
+    if (!run.initialized)
         init();
     if (!f)
         return;
@@ -161,7 +149,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
 
 void cFileOutputScalarManager::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    if (!initialized)
+    if (!run.initialized)
         init();
     if (!f)
         return;
@@ -177,20 +165,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     if (!enabled)
         return;
 
-    // record members; note that they may get disabled individually
-    std::string n = name;
-    recordScalar(component, (n+":count").c_str(), statistic->count());
-    if (statistic->count() != statistic->weights())  //FIXME use some isWeighted() instead?
-        recordScalar(component, (n+":weights").c_str(), statistic->weights());
-    recordScalar(component, (n+":mean").c_str(), statistic->mean());
-    recordScalar(component, (n+":stddev").c_str(), statistic->stddev());
-    recordScalar(component, (n+":sum").c_str(), statistic->sum());
-    recordScalar(component, (n+":sqrsum").c_str(), statistic->sqrSum());
-    recordScalar(component, (n+":min").c_str(), statistic->min());
-    recordScalar(component, (n+":max").c_str(), statistic->max());
-
-    //FIXME issue: what if all members get disabled, but there are attributes???
-    // what about this file format:
+    // file format:
     //   statistic <modulepath> <statisticname>
     //   field count 343
     //   field weights 343
@@ -201,9 +176,23 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     //   bin 10 13
     //   bin 20 19
     //   ...
-    // In Scave, it would still be possible to read fields as specially,
-    // as "scalars", with their own Ids.
-    //
+    // In Scave, fields are read as separate scalars.
+    CHECK(fprintf(f, "statistic %s \t%s\n", QUOTE(component->fullPath().c_str()), QUOTE(name)));
+    writeStatisticField("count", statistic->count());
+    writeStatisticField("mean", statistic->mean());
+    writeStatisticField("stddev", statistic->stddev());
+    writeStatisticField("sum", statistic->sum());
+    writeStatisticField("sqrsum", statistic->sqrSum());
+    writeStatisticField("min", statistic->min());
+    writeStatisticField("max", statistic->max());
+    if (statistic->isWeighted())
+    {
+    	writeStatisticField("weights", statistic->weights());
+    	writeStatisticField("weightedSum", statistic->weightedSum());
+    	writeStatisticField("sqrSumWeights", statistic->sqrSumWeights());
+    	writeStatisticField("weightedSqrSum", statistic->weightedSqrSum());
+    }
+    
     if (attributes)
         for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
             CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));

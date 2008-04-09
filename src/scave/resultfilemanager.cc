@@ -780,6 +780,17 @@ void ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
     fileRunRef->fileRef->scalarResults.push_back(d);
 }
 
+void ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns)
+{
+    VectorResult vector;
+    vector.fileRunRef = fileRunRef;
+    vector.vectorId = vectorId;
+    vector.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
+    vector.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
+    vector.columns = columns;
+    vector.stat = Statistics(-1, NaN, NaN, NaN, NaN);
+    fileRunRef->fileRef->vectorResults.push_back(vector);
+}
 
 // create a file for each dataset?
 ID ResultFileManager::addComputedVector(int vectorId, const char *name, const char *file,
@@ -845,16 +856,16 @@ void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
 }
 */
 
-
 #ifdef CHECK
 #undef CHECK
 #endif
-#define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, file, line);
+#define CHECK(cond,msg) if (!(cond)) throw ResultFileFormatException(msg, ctx.fileName, ctx.lineNo);
 
 
-void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultItem *&resultItemRef,
-                                    ResultFile *fileRef, const char *file, int64 line)
+void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ctx)
 {
+	++ctx.lineNo;
+	
     // ignore empty lines
     if (numTokens==0 || vec[0][0]=='#')
         return;
@@ -869,7 +880,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
             // old-style "run" line, format: run <runNumber> [<networkName>] [<dateTime>]
             // and runs in different files cannot be related, so we must create a new Run entry.
             Run *runRef = addRun();
-            fileRunRef = addFileRun(fileRef, runRef);
+            ctx.fileRunRef = addFileRun(ctx.fileRef, runRef);
 
             runRef->runNumber = atoi(vec[1]);
             runRef->attributes["run-number"] = vec[1];
@@ -880,7 +891,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
 
             // assemble a probably-unique runName
             std::stringstream os;
-            os << fileRef->fileName << ":" << line << "-#" << vec[1];
+            os << ctx.fileRef->fileName << ":" << ctx.lineNo << "-#" << vec[1];
             if (numTokens>=3)
                 os << "-" << vec[2];
             if (numTokens>=4)
@@ -899,19 +910,22 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
                 runRef->runName = vec[1];
             }
             // associate Run with this file
-            CHECK(getFileRun(fileRef, runRef)==NULL, "invalid result file: run Id repeats in the file");
-            fileRunRef = addFileRun(fileRef, runRef);
+            CHECK(getFileRun(ctx.fileRef, runRef)==NULL, "invalid result file: run Id repeats in the file");
+            ctx.fileRunRef = addFileRun(ctx.fileRef, runRef);
         }
-        resultItemRef = NULL;
+        ctx.lastResultItemType = 0;
+        ctx.lastResultItemIndex = -1;
+        ctx.moduleName.clear();
+        ctx.statisticName.clear();
         return;
     }
 
     // if we haven't seen a "run" line yet (as with old vector files), add a default run
-    if (fileRunRef==NULL)
+    if (ctx.fileRunRef==NULL)
     {
         // fake a new Run
         Run *runRef = addRun();
-        fileRunRef = addFileRun(fileRef, runRef);
+        ctx.fileRunRef = addFileRun(ctx.fileRef, runRef);
         runRef->runNumber = 0;
 
         /*
@@ -923,6 +937,60 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         */
     }
 
+    if (vec[0][0]=='s' && !strcmp(vec[0],"scalar"))
+    {
+        // syntax: "scalar <module> <scalarname> <value>"
+        CHECK(numTokens>=4, "invalid scalar file: too few items on `scalar' line");
+
+        double value;
+        CHECK(parseDouble(vec[3],value), "invalid scalar file syntax: invalid value column");
+
+        addScalar(ctx.fileRunRef, vec[1], vec[2], value);
+        ctx.lastResultItemType = SCALAR;
+        ctx.lastResultItemIndex = ctx.fileRef->scalarResults.size()-1;
+        ctx.moduleName.clear();
+        ctx.statisticName.clear();
+    }
+    else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
+    {
+    	// syntax: "vector <id> <module> <vectorname> [<columns>]"
+        CHECK(numTokens>=4, "invalid vector file syntax: too few items on 'vector' line");
+        int vectorId;
+        CHECK(parseInt(vec[1], vectorId), "invalid vector file syntax: invalid vector id in vector definition");
+        const char *columns = (numTokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
+        addVector(ctx.fileRunRef, vectorId, vec[2], vec[3], columns);
+        ctx.lastResultItemType = VECTOR;
+        ctx.lastResultItemIndex = ctx.fileRef->vectorResults.size()-1;
+        ctx.moduleName.clear();
+        ctx.statisticName.clear();
+    }
+    else if (vec[0][0]=='s' && !strcmp(vec[0],"statistic"))
+    {
+    	// syntax: "statistic <module> <statisticname>"
+    	CHECK(numTokens>=3, "invalid scalar file: too few items on `statistic' line");
+
+    	ctx.moduleName = vec[1];
+    	ctx.statisticName = vec[2];
+    	ctx.lastResultItemType = SCALAR;
+    	ctx.lastResultItemIndex = ctx.fileRef->scalarResults.size();
+    	
+    	CHECK(!ctx.moduleName.empty(), "invalid scalar file: missing module name");
+    	CHECK(!ctx.statisticName.empty(), "invalid scalar file: missing statistics name");
+    }
+    else if (vec[0][0]=='f' && !strcmp(vec[0],"field"))
+    {
+    	// syntax: "field <name> <value>"
+    	CHECK(numTokens>=3, "invalid scalar file: too few items on `field' line");
+    	
+    	double value;
+    	CHECK(parseDouble(vec[2], value), "invalid scalar file: invalid field value");
+    	
+    	CHECK(!ctx.moduleName.empty() && !ctx.statisticName.empty(),
+    			"invalid scalar file: missing statistics declaration");
+    	
+    	std::string name = ctx.statisticName + ":" + vec[1];
+    	addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), name.c_str(), value);
+    }
     if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
     {
         CHECK(numTokens>=3, "invalid result file: 'attr <name> <value>' expected");
@@ -930,22 +998,36 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     	std::string attrName = vec[1];
     	std::string attrValue = vec[2];
 
-    	if (resultItemRef == NULL)
+    	if (ctx.lastResultItemType == 0) // run attribute
         {
             // store attribute
-    		StringMap &attributes = fileRunRef->runRef->attributes;
+    		StringMap &attributes = ctx.fileRunRef->runRef->attributes;
     		StringMap::iterator oldPairRef = attributes.find(attrName);
     		CHECK(oldPairRef == attributes.end() || oldPairRef->second == attrValue,
     			  "Value of run attribute conflicts with previously loaded value");
             attributes[attrName] = attrValue;
 
             // the "runNumber" attribute is also stored separately
-            if (!strcmp(vec[1], "runNumber"))
-                fileRunRef->runRef->runNumber = atoi(vec[2]);
+            if (attrName == "runNumber")
+                CHECK(parseInt(vec[2], ctx.fileRunRef->runRef->runNumber), "invalid result file: int value expected as runNumber");
         }
-        else
+        else if (ctx.lastResultItemIndex >= 0) // resultItem attribute
         {
-            resultItemRef->attributes[attrName] = attrValue;
+        	if (ctx.lastResultItemType == SCALAR)
+        		for (int i=ctx.lastResultItemIndex; i < ctx.fileRef->scalarResults.size() ;++i)
+        		{
+        			ctx.fileRef->scalarResults[i].attributes[attrName] = attrValue;
+        		}
+        	else if (ctx.lastResultItemType == VECTOR)
+        		for (int i=ctx.lastResultItemIndex; i < ctx.fileRef->vectorResults.size() ;++i)
+        		{
+        			ctx.fileRef->vectorResults[i].attributes[attrName] = attrValue;
+        		}
+        	else if (ctx.lastResultItemType == HISTOGRAM)
+        		for (int i=ctx.lastResultItemIndex; i < ctx.fileRef->histogramResults.size() ;++i)
+        		{
+        			ctx.fileRef->histogramResults[i].attributes[attrName] = attrValue;
+        		}
         }
     }
     else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
@@ -955,45 +1037,11 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
         // store module param
         std::string paramName = vec[1];
         std::string paramValue = vec[2];
-        StringMap &params = fileRunRef->runRef->moduleParams;
+        StringMap &params = ctx.fileRunRef->runRef->moduleParams;
         StringMap::iterator oldPairRef = params.find(paramName);
         CHECK(oldPairRef == params.end() || oldPairRef->second == paramValue,
 			  "Value of module parameter conflicts with previously loaded value");
         params[paramName] = paramValue;
-    }
-    else if (vec[0][0]=='s' && !strcmp(vec[0],"scalar"))
-    {
-        // syntax: "scalar <module> <scalarname> <value>"
-        CHECK(numTokens>=4, "invalid scalar file: too few items on `scalar' line");
-
-        double value;
-        CHECK(parseDouble(vec[3],value), "invalid scalar file syntax: invalid value column");
-
-        addScalar(fileRunRef, vec[1], vec[2], value);
-        resultItemRef = &fileRef->scalarResults.back();
-        return;
-    }
-    else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
-    {
-        // vector line
-        CHECK(numTokens>=4, "invalid vector file syntax: too few items on 'vector' line");
-
-        VectorResult vecdata;
-        vecdata.fileRunRef = fileRunRef;
-
-        // vectorId
-        CHECK(parseInt(vec[1], vecdata.vectorId), "invalid vector file syntax: invalid vector id in vector definition");
-        // module name, vector name
-        const char *moduleName = vec[2];
-        const char *vectorName = vec[3];
-        const char *columns = (numTokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
-        //printf("columns: %s\n", vecdata.columns.c_str());
-        vecdata.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
-        vecdata.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
-        vecdata.columns = columns;
-        vecdata.stat = Statistics(-1, NaN, NaN, NaN, NaN);
-        fileRef->vectorResults.push_back(vecdata);
-        resultItemRef = &fileRef->vectorResults.back();
     }
     else if (opp_isdigit(vec[0][0]) && numTokens>=3)
     {
@@ -1002,7 +1050,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, FileRun *&fileRun
     else
     {
         // ignore unknown lines and vector data lines
-        fileRef->numUnrecognizedLines++;
+        ctx.fileRef->numUnrecognizedLines++;
     }
 }
 
@@ -1051,19 +1099,16 @@ ResultFile *ResultFileManager::loadFile(const char *fileName, const char *fileSy
             FileReader freader(fileSystemFileName);
             char *line;
             LineTokenizer tokenizer;
-            FileRun *fileRunRef = NULL;
-            ResultItem *resultItemRef = NULL;
-            int64 lineNo = 0;
+            sParseContext ctx(fileRef);
             while ((line=freader.getNextLineBufferPointer())!=NULL)
             {
-            	++lineNo;
                 int len = freader.getCurrentLineLength();
                 int numTokens = tokenizer.tokenize(line, len);
                 char **tokens = tokenizer.tokens();
-                processLine(tokens, numTokens, fileRunRef, resultItemRef, fileRef, fileName, lineNo);
+                processLine(tokens, numTokens, ctx);
             }
 
-            fileRef->numLines = lineNo; // freader.getNumReadLines();
+            fileRef->numLines = ctx.lineNo; // freader.getNumReadLines();
         }
     }
     catch (std::exception&)

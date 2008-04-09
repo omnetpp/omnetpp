@@ -14,9 +14,7 @@ network Test
         allEnabled: Node;
         allDisabled: Node;
         statsDisabled: Node;
-        statsMembersDisabled: Node;
         fooAndFoobarOnly: Node;
-        statsOnlyWithoutMinMax: Node;
 }
 
 %file: test.cc
@@ -53,6 +51,7 @@ void Node::finish()
 [General]
 network = Test
 output-scalar-file = test.sca
+output-scalar-precision = 10
 
 # Test.defaults: left at default
 
@@ -62,50 +61,39 @@ Test.allDisabled.*.record-scalar = false
 
 Test.statsDisabled.stats.record-scalar = false
 
-Test.statsMembersDisabled.stats:*.record-scalar = false   # FIXME currently bogus! outputs "m" for stats!
-
 Test.fooAndFoobarOnly.foo*.record-scalar = true
 Test.fooAndFoobarOnly.*.record-scalar = false
-
-Test.statsOnlyWithoutMinMax.*:min.record-scalar = false
-Test.statsOnlyWithoutMinMax.*:max.record-scalar = false
-Test.statsOnlyWithoutMinMax.stats.record-scalar = true
-Test.statsOnlyWithoutMinMax.stats:*.record-scalar = true
-Test.statsOnlyWithoutMinMax.*.record-scalar = false
 
 %contains: test.sca
 scalar Test.defaults 	foo 	5
 scalar Test.defaults 	bar 	2.41
 attr unit  s
 scalar Test.defaults 	foobar 	12.98
-scalar Test.defaults 	stats:samples 	10
-scalar Test.defaults 	stats:mean 	38.5
-scalar Test.defaults 	stats:stddev 	34.173576537046
-scalar Test.defaults 	stats:min 	1
-scalar Test.defaults 	stats:max 	100
+statistic Test.defaults 	stats
+field count 10
+field mean 38.5
+field stddev 34.17357654
+field sum 385
+field sqrsum 25333
+field min 1
+field max 100
 attr unit  m
 scalar Test.allEnabled 	foo 	5
 scalar Test.allEnabled 	bar 	2.41
 attr unit  s
 scalar Test.allEnabled 	foobar 	12.98
-scalar Test.allEnabled 	stats:samples 	10
-scalar Test.allEnabled 	stats:mean 	38.5
-scalar Test.allEnabled 	stats:stddev 	34.173576537046
-scalar Test.allEnabled 	stats:min 	1
-scalar Test.allEnabled 	stats:max 	100
+statistic Test.allEnabled 	stats
+field count 10
+field mean 38.5
+field stddev 34.17357654
+field sum 385
+field sqrsum 25333
+field min 1
+field max 100
 attr unit  m
 scalar Test.statsDisabled 	foo 	5
 scalar Test.statsDisabled 	bar 	2.41
 attr unit  s
 scalar Test.statsDisabled 	foobar 	12.98
-scalar Test.statsMembersDisabled 	foo 	5
-scalar Test.statsMembersDisabled 	bar 	2.41
-attr unit  s
-scalar Test.statsMembersDisabled 	foobar 	12.98
 scalar Test.fooAndFoobarOnly 	foo 	5
 scalar Test.fooAndFoobarOnly 	foobar 	12.98
-scalar Test.statsOnlyWithoutMinMax 	stats:samples 	10
-scalar Test.statsOnlyWithoutMinMax 	stats:mean 	38.5
-scalar Test.statsOnlyWithoutMinMax 	stats:stddev 	34.173576537046
-attr unit  m
-

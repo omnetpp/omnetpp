@@ -228,6 +228,22 @@ class SCAVE_API ResultFileManager
     StringSet classNames; // currently not used
 
     ComputedIDCache computedIDCache;
+    
+    struct sParseContext
+    {
+    	ResultFile *fileRef; /*in*/
+    	const char *fileName; /*in*/
+    	int64 lineNo; /*inout*/
+    	FileRun *fileRunRef; /*inout*/
+    	std::string moduleName; /*inout*/
+    	std::string statisticName; /*inout*/
+    	int lastResultItemType; /*inout*/
+    	int lastResultItemIndex; /*inout*/
+    	
+    	sParseContext(ResultFile *fileRef)
+    		: fileRef(fileRef), fileName(fileRef->filePath.c_str()), lineNo(0),
+    		  fileRunRef(NULL), lastResultItemType(0), lastResultItemIndex(-1) {}
+    };
 
   public:
     enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::itemTypes()
@@ -250,8 +266,9 @@ class SCAVE_API ResultFileManager
     Run *addRun();
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
-    void processLine(char **vec, int numTokens, FileRun *&fileRunRef, ResultItem *&resultItemRef, ResultFile *fileRef, const char *fileName, int64 lineNum);
+    void processLine(char **vec, int numTokens, sParseContext &ctx);
     void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
+    void addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
 
     ResultFile *getFileForID(ID id) const; // checks for NULL
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
