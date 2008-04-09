@@ -1,5 +1,5 @@
 %description:
-Tests that NED predefined channels really affect connection properties.
+Tests connection parameters when using channel types. (slightly obsolete)
 
 %file: test.ned
 

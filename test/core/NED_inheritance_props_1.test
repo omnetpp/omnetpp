@@ -5,26 +5,55 @@ Test inheritance of properties.
 
 import testlib.Dump;
 
-module Super
+module Base
 {
-    @foo;
-    @foo[one](,korte,,semmi,vege);
-    @foo[two];
+    @baseonly(1);
+    @overwrite(base);
+    @erase(base);
+
+    @longone(foo,bar,foobar);
+    @keys(numbers=one,two,three;colors=red,green,blue);
+
+    @indexed[one](apple,banana,kiwi);
+    @indexed[two](melon);
 }
 
-module Sub extends Super
+module Derived extends Base
 {
-    @foo;
-    @foo[one](alma,,banan,-);
-    @foo[two];
+    @derivedonly(2);
+    @overwrite(DERIVED);
+    @erase(-);
+
+    @longone(FOO,-);
+    @keys(numbers=,,,FOUR;colors=,-,,CYAN);
+
+    @indexed[one](APPLE,-,kiwi);
+    @indexed[two](,ORANGE);
+    @indexed[three](NEW);
 }
 
 network Test
 {
     submodules:
-        sub: Sub;
+        derived: Derived;
         dump: Dump;
 }
 
 %contains: stdout
-dfdsf
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.derived: Derived {
+            parameters:
+                @baseonly(1)
+                @overwrite(DERIVED)
+                @erase()
+                @longone(FOO,,foobar)
+                @keys(numbers=one,two,three,FOUR;colors=red,,blue,CYAN)
+                @indexed[one](APPLE,,kiwi)
+                @indexed[two](melon,ORANGE)
+                @derivedonly(2)
+                @indexed[three](NEW)
+        }
+}

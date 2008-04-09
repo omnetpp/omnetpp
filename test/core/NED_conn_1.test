@@ -1,5 +1,5 @@
 %description:
-Tests that NED connection properties get properly set.
+Tests that NED connection parameters get properly set.
 
 %file: test.ned
 
