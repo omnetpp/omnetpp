@@ -1,0 +1,30 @@
+%description:
+Test inheritance of properties.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Super
+{
+    @foo;
+    @foo[one](,korte,,semmi,vege);
+    @foo[two];
+}
+
+module Sub extends Super
+{
+    @foo;
+    @foo[one](alma,,banan,-);
+    @foo[two];
+}
+
+network Test
+{
+    submodules:
+        sub: Sub;
+        dump: Dump;
+}
+
+%contains: stdout
+dfdsf
