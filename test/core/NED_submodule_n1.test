@@ -1,0 +1,19 @@
+%description:
+Check that submodule names must be unique.
+
+%file: test.ned
+
+module Node { }
+
+network Test
+{
+    submodules:
+        a: Node;
+        a: Node;
+}
+
+%exitcode: 1
+
+%contains: stdout
+redeclaration of submodule `a'
+

@@ -9,8 +9,8 @@ void print(cLongHistogram& s)
        << " mean=" << s.mean() << " stddev=" << s.stddev() << endl;
     ev << s.underflowCell();
     for (int i=0; i<s.cells(); i++)
-        ev << " | " << s.basepoint(i) << ":" << s.cell(i);
-    ev << " | " << s.overflowCell();
+        ev << " | " << s.basepoint(i) << "<:" << s.cell(i);
+    ev << " | " << s.basepoint(s.cells()) << "<:" << s.overflowCell();
     ev << "\n";
 }
 

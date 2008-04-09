@@ -26,4 +26,4 @@ network Test
 %exitcode: 1
 
 %contains: stdout
-cannot redeclare submodule `node'
+redeclaration of submodule `node'

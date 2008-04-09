@@ -24,4 +24,4 @@ network Test
 %exitcode: 1
 
 %contains: stdout
-cannot redeclare parameter `p1'
+redeclaration of parameter `p1'

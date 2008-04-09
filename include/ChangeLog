@@ -271,7 +271,11 @@
         - cStatistic: added isWeighted()
         - cStatistic: added merge(cStatistic *) for aggregating statistics, 
           and implemented it in subclasses
-        - cDensityEstBase etc: transformed() renamed to isTransformed()
+        - cDensityEstBase etc: transformed() renamed to isTransformed(); 
+          added setCellSize()
+        - cLongHistogram: revised the way histogram cells are set up. Now it
+          throws an error if all given constraints cannot be satisfied (so that
+          numCells*cellSize==rangeMax-rangeMin, all integers)
 
 	Files renamed (Note: simulation models should only refer to <omnetpp.h>!)
 	     --OLD--          --NEW--

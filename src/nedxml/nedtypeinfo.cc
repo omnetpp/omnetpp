@@ -111,6 +111,9 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, NEDEleme
         else
             implClassName = opp_join("::", getCxxNamespace().c_str(), name());
     }
+
+    // this is a temporary way to get some validation...
+    getFlattenedTree();
 }
 
 NEDTypeInfo::~NEDTypeInfo()
@@ -655,7 +658,7 @@ void NEDTypeInfo::mergeNEDType(NEDElement *basetree, const NEDElement *tree) con
     {
         // merge "allowunconnected" bit
         if (connections->getAllowUnconnected())
-            connections->setAllowUnconnected(true);
+            baseconnections->setAllowUnconnected(true);
 
         // just copy existing connections
         for (NEDElement *connection=connections->getFirstChild(); connection; connection=connection->getNextSibling())
