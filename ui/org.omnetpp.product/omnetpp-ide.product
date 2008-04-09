@@ -6,7 +6,7 @@
    <aboutInfo>
       <image path="/org.omnetpp.main/icons/omnest128.gif"/>
       <text>
-         OMNEST/OMNeT++ Integrated Development Environment, based on Eclipse platform.
+         OMNeT++ Integrated Development Environment.
       </text>
    </aboutInfo>
 
@@ -24,7 +24,7 @@
       startupProgressRect="10,10,298,10"
       startupMessageRect="10,20,500,25"
       startupForegroundColor="000000" />
-   <launcher>
+   <launcher name="eclipse">
       <linux icon="/org.omnetpp.main/icons/omnest.xpm"/>
       <macosx icon="/org.omnetpp.main/icons/omnest.icns"/>
       <solaris/>
@@ -33,6 +33,7 @@
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>

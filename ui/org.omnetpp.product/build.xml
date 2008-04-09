@@ -65,6 +65,17 @@
 				<pathelement location="${eclipseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar" />
 			</classpath>
 		</java>
+		<copy todir="${buildDirectory}/plugins">
+			<fileset dir="../">
+				<include name="org.omnetpp.*/**" />
+				<include name="org.eclipse.cdt.*/**" />
+				<exclude name="*/bin/**" />
+				<exclude name="org.omnetpp.ide/**" />
+				<exclude name="org.omnetpp.scave.old/**" />
+				<exclude name="org.omnetpp.test.*/**" />
+				<exclude name="org.omnetpp.experimental.*/**" />
+			</fileset>
+		</copy>
 	</target>
 
 	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->	
@@ -76,11 +87,15 @@
 		<include name="**/*.xml"/>
 		<include name="**/MANIFEST.MF"/>
 		<include name="**/*.properties"/>
+		<include name="**/*.product"/>
 	    </replace>	
+	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
+	    <move file="${buildDirectory}/plugins/org.omnetpp.main/spalsh-omnest.bmp" tofile="${buildDirectory}/plugins/org.omnetpp.main/splash.bmp"/>
     	</target>
 	
 	<!-- prepare for academic build / throw out commercial features etc. -->	
 	<target name="prepare-omnetpp">
+	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
     	</target>
 	
 	<target name="clean">
