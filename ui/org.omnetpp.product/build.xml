@@ -10,15 +10,11 @@
 	
 	Also, the script can be run inside the Eclipse IDE by choosing 
 	Run As -> Ant Build from the context menu. It could obviously be
-	run outside of the IDE if you have ANT installed on your path.
-	
-	If you have any questions about this build, feel free to contact me
-	at patrick@rcpquickstart.com.
+	run outside of the IDE if you have ANT installed on your path.	
 -->
-<project name="com.rcpquickstart.helloworld.build" default="build">
+<project name="org.omnetpp.product" default="build-omnetpp">
 	<property file="build.properties" />
 	
-
 	<!--
 		PDE Build expects that the build directory contains a "plugins" 
 		directory and a "features" directory. These directories should contain
@@ -28,9 +24,10 @@
 		PDE Build. This is done with map files and is beyond the scope of 
 		this tutorial. 
 		
-		This tutorial simply copies the projects directly from your workspace
+		This script simply copies the projects directly from your workspace
 		into the appropriate build directory folders.
 	-->
+	
 	<target name="init">
 		<mkdir dir="${buildDirectory}" />
 		<mkdir dir="${buildDirectory}/plugins" />
@@ -56,9 +53,6 @@
 	<!--
 		This target actually executes the PDE Build process by launching the 
 		Eclipse antRunner application.
-		
-		NOTE: If you are using Eclipse 3.2, switch out the pathelement below
-		with the one that is commented out.
 	-->
 	<target name="pde-build">
 		<java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
@@ -69,14 +63,31 @@
 			<arg value="-Dtimestamp=${timestamp}" />
 			<classpath>
 				<pathelement location="${eclipseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar" />
-				<!--<pathelement location="${eclipseLocation}/startup.jar" />-->
 			</classpath>
 		</java>
 	</target>
-		
+
+	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->	
+	<target name="prepare-omnest">
+	    <replace dir="${buildDirectory}" token="OMNeT++" value="OMNEST">
+		<include name="**/*.java"/>
+		<include name="**/*.htm" />
+		<include name="**/*.html"/>
+		<include name="**/*.xml"/>
+		<include name="**/MANIFEST.MF"/>
+		<include name="**/*.properties"/>
+	    </replace>	
+    	</target>
+	
+	<!-- prepare for academic build / throw out commercial features etc. -->	
+	<target name="prepare-omnetpp">
+    	</target>
+	
 	<target name="clean">
 		<delete dir="${buildDirectory}" />
 	</target>
 
-	<target name="build" depends="clean, init, pde-build" />
+	<target name="build-omnetpp" depends="clean, init, prepare-omnetpp, pde-build" />
+
+	<target name="build-omnest" depends="clean, init, prepare-omnest, pde-build" />
 </project>
