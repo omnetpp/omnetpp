@@ -1,0 +1,51 @@
+%description:
+Test inheritance of parameter and gate properties.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Base
+{
+    parameters:
+        double param @unit(s) = 1s;
+    gates:
+        output out @color(blue);
+        inout vec[2] @color(red);
+    connections allowunconnected:
+}
+
+module Derived extends Base
+{
+    parameters:
+        param @prompt("Enter param");
+    gates:
+        out @color(LIGHTBLUE) @derived;
+        vec[] @color(,GREEN) @derived;
+}
+
+network Test
+{
+    submodules:
+        derived: Derived;
+        dump: Dump;
+    connections allowunconnected:
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.derived: Derived {
+            parameters:
+                param @unit(s) @prompt(Enter param) = 1
+            gates:
+                 0 out @color(LIGHTBLUE) @derived: not connected
+                 1 vec$i[0] @color(red,GREEN) @derived: not connected
+                 2 vec$i[1] @color(red,GREEN) @derived: not connected
+                 3 vec$o[0] @color(red,GREEN) @derived: not connected
+                 4 vec$o[1] @color(red,GREEN) @derived: not connected
+        }
+}
+
