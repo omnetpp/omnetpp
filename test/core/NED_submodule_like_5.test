@@ -1,0 +1,79 @@
+%description:
+
+Test parameter and gate inheritance for module interfaces.
+
+%file: test.ned
+
+import testlib.Dump;
+
+moduleinterface IModule
+{
+    parameters:
+        int p1;
+        double p2;
+    gates:
+        input in;
+        output out;
+        inout g;
+}
+
+module Module like IModule
+{
+    parameters:
+        int p1;
+        double p2;
+    gates:
+        input in;
+        output out;
+        inout g;
+    connections allowunconnected:
+}
+
+network Test
+{
+    parameters:
+        string aType = "Module";
+    submodules:
+        a: <aType> like IModule {
+            parameters:
+                p1 = 1;
+                p2 = 2;
+        }
+        dump: Dump;
+    connections:
+        a.out --> a.in;
+        a.g$o --> a.g$i;
+}
+
+%file: test.cc
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        aType = "Simple"
+    submodules:
+        module Test.a: Simple {
+            parameters:
+                p0 = "Hello"
+                p1 = 1
+                p2 = 2
+            gates:
+                 0 in: <-- b.out
+                 1 out: --> b.in
+                 2 g$i: <-- b.g$o
+                 3 g$o: --> b.g$i
+        }
+        module Test.b: Simple {
+            parameters:
+                p0 = "Hello"
+                p1 = 1
+                p2 = 2
+            gates:
+                 0 in: <-- a.out
+                 1 out: --> a.in
+                 2 g$i: <-- a.g$o
+                 3 g$o: --> a.g$i
+        }
+}
+

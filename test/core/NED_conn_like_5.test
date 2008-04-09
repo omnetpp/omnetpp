@@ -4,6 +4,8 @@ Test parameter multiple inheritance for channel interfaces.
 
 %file: test.ned
 
+import testlib.Dump;
+
 channelinterface IChannel
 {
     parameters:
@@ -44,6 +46,7 @@ network Test
     submodules:
         a: Node;
         b: Node;
+        dump: Dump;
     connections:
         a.g$o --> <aType> like IChannel1 { parameters: p0 = "hello"; p1 = 1; p2 = 2; }--> b.g$i;  //FIXME wrong test case! p2 should NOT be avialable here
         b.g$o --> <aType> like IChannel2 { parameters: p0 = "hello"; p1 = 1; p2 = 2; }--> a.g$i;  // and p1 should NOT be avialable here
@@ -51,4 +54,21 @@ network Test
 
 %exitcode: 0
 
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        aType = "TestChannel"
+    submodules:
+        module Test.a: Node {
+            gates:
+                 0 g$i: <-- b.g$o, TestChannel p0="hello" p1=1 p2=2
+                 1 g$o: --> b.g$i, TestChannel p0="hello" p1=1 p2=2
+        }
+        module Test.b: Node {
+            gates:
+                 0 g$i: <-- a.g$o, TestChannel p0="hello" p1=1 p2=2
+                 1 g$o: --> a.g$i, TestChannel p0="hello" p1=1 p2=2
+        }
+}
 
