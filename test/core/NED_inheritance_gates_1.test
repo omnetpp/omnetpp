@@ -1,36 +1,60 @@
 %description:
-Test gate inheritance for simple modules.
+Test gate inheritance for modules.
 
 %file: test.ned
 
 import testlib.Dump;
 
-module Super
+module Base
 {
     gates:
-        input in1 @kind(L);
-        output out1;
-        inout g1 @kind(K);
+        input in1;
+        input in2a[];
+        input in2b[];
+        input in3a[2];
+        input in3b[2];
+        input in3c[2];
     connections allowunconnected:
 }
 
-module Sub extends Super
+module Derived extends Base
 {
     gates:
-        input in2;
-        output out2;
-        inout g2;
+        in1;     // nop
+        in2a[];  // keep zero
+        in2b[1]; // set
+        in3a[];  // keep
+        in3b[1]; // shrink
+        in3c[3]; // grow
+        input in4a[];
+        input in4b[2];
 }
 
 network Test
 {
     submodules:
-        sub: Sub;
+        base: Base;
+        derived: Derived;
+        base2: Base {
+            gates:
+                in1;
+                in2a[];
+                in2b[1];
+                in3a[];
+                in3b[1];
+                in3c[3];
+        }
+        derived2: Derived {
+            gates:
+                in1;
+                in2a[1];
+                in2b[];
+                in3a[];
+                in3b[3];
+                in3c[1];
+        }
         dump: Dump;
-    connections:
-        sub.out1 --> sub.in2;
-        sub.g1 <--> sub.g2;
-        sub.out2 --> sub.in1;
+    connections allowunconnected:
 }
 
 %contains: stdout
@@ -38,16 +62,53 @@ module Test: Test {
     parameters:
         @isNetwork
     submodules:
-        module Test.sub: Sub {
+        module Test.base: Base {
             gates:
-                 0 in1 @kind(L): <-- sub.out2
-                 1 out1: --> sub.in2
-                 2 g1$i @kind(K): <-- sub.g2$o
-                 3 g1$o @kind(K): --> sub.g2$i
-                 4 in2: <-- sub.out1
-                 5 out2: --> sub.in1
-                 6 g2$i: <-- sub.g1$o
-                 7 g2$o: --> sub.g1$i
+                 0 in1: not connected
+                 1 in3a[0]: not connected
+                 2 in3a[1]: not connected
+                 3 in3b[0]: not connected
+                 4 in3b[1]: not connected
+                 5 in3c[0]: not connected
+                 6 in3c[1]: not connected
+        }
+        module Test.derived: Derived {
+            gates:
+                 0 in1: not connected
+                 1 in3a[0]: not connected
+                 2 in3a[1]: not connected
+                 3 in3b[0]: not connected
+                 4 in3c[0]: not connected
+                 5 in3c[1]: not connected
+                 6 in3c[2]: not connected
+                 7 in2b[0]: not connected
+                 8 in4b[0]: not connected
+                 9 in4b[1]: not connected
+        }
+        module Test.base2: Base {
+            gates:
+                 0 in1: not connected
+                 1 in3a[0]: not connected
+                 2 in3a[1]: not connected
+                 3 in3b[0]: not connected
+                 4 in3c[0]: not connected
+                 5 in3c[1]: not connected
+                 6 in3c[2]: not connected
+                 7 in2b[0]: not connected
+        }
+        module Test.derived2: Derived {
+            gates:
+                 0 in1: not connected
+                 1 in3a[0]: not connected
+                 2 in3a[1]: not connected
+                 4 in3c[0]: not connected
+                 7 in2b[0]: not connected
+                 8 in4b[0]: not connected
+                 9 in4b[1]: not connected
+                10 in2a[0]: not connected
+                11 in3b[0]: not connected
+                12 in3b[1]: not connected
+                13 in3b[2]: not connected
         }
 }
 

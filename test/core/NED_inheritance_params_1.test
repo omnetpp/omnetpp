@@ -73,7 +73,8 @@ network = Test
 cmdenv-express-mode = false
 cmdenv-event-banners = false
 **.apply-default = true
-**.p* = 999
+**.p* = 999   # ===> bug: this line somehow doesn't take effect (???)
 
 %contains: stdout
 currently error ==> "enter parameter Test.base.p1a"
+
