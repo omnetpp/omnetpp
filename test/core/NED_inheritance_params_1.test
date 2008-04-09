@@ -76,4 +76,4 @@ cmdenv-event-banners = false
 **.p* = 999
 
 %contains: stdout
-xxx
+currently error ==> "enter parameter Test.base.p1a"
