@@ -122,7 +122,6 @@ class SIM_API cHistogramBase : public cDensityEstBase
 
     /** @name New member functions. */
     //@{
-
     /**
      * Sets the number of cells. Cannot be called when the cells have been
      * set up already.
@@ -141,7 +140,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
 class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
 {
   protected:
-    double cellsize;            // cell/category  sizes
+    double cellsize;  // cell/category sizes; <=0 if unset
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -231,6 +230,22 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
      */
     virtual void loadFromFile(FILE *);  //--LG
     //@}
+
+    /** @name Cell size. */
+    //@{
+    /**
+     * Sets the cell size. Cannot be called when the cells have been
+     * set up already.
+     */
+    virtual void setCellSize(double d);
+
+    /**
+     * Returns the cell size, or 0 when unknow (i.e. the cells have not
+     * been set up yet, and setCellSize() has not been called).
+     */
+    virtual double cellSize() {return cellsize;}
+    //@}
+
 };
 
 //==========================================================================

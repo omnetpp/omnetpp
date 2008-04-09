@@ -176,7 +176,7 @@ void cHistogramBase::setNumCells(int numcells)
 cEqdHistogramBase::cEqdHistogramBase(const char *name, int numcells) :
 cHistogramBase(name,numcells)
 {
-    cellsize=0;
+    cellsize = 0;
 }
 
 void cEqdHistogramBase::netPack(cCommBuffer *buffer)
@@ -206,6 +206,13 @@ cEqdHistogramBase& cEqdHistogramBase::operator=(const cEqdHistogramBase& res)
     cHistogramBase::operator=(res);
     cellsize = res.cellsize;
     return *this;
+}
+
+void cEqdHistogramBase::setCellSize(double d)
+{
+    if (isTransformed())
+        throw cRuntimeError(this,"setCellSize() cannot be called when cells have been set up already");
+    cellsize = d;
 }
 
 void cEqdHistogramBase::setupRange()
