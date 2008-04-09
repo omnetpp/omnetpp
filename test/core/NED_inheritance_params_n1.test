@@ -1,0 +1,27 @@
+%description:
+Test that one cannot redeclare a parameter in a subtype.
+
+%file: test.ned
+
+module Super
+{
+    parameters:
+        int p1;
+}
+
+module Sub extends Super
+{
+    parameters:
+        int p1;  // ==> should be error
+}
+
+network Test
+{
+    submodules:
+        sub: Sub;
+}
+
+%exitcode: 1
+
+%contains: stdout
+cannot redeclared parameter `p1'
