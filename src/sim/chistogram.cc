@@ -303,55 +303,98 @@ cLongHistogram::~cLongHistogram()
 
 void cLongHistogram::collect(double val)
 {
-     cEqdHistogramBase::collect( floor(val) );
+    cEqdHistogramBase::collect(floor(val));
 }
 
 void cLongHistogram::setupRange()
 {
     cHistogramBase::setupRange();
 
-    //TODO: set up the missing ones of: rangemin, rangemax, num_cells, cellsize
+    // set up the missing ones of: rangemin, rangemax, num_cells, cellsize;
     // throw error if not everything can be set up consistently
 
-    // adjust range so that cellsize be an integer
-    rangemin = floor(rangemin)-0.5;
-    rangemax = ceil(rangemax)+0.5;
+    // cellsize is double but we want to calculate with integers here
+    long cellsize_int = cellsize;
 
-    if (num_cells==-1)
+    // convert range limits to one halfs
+    rangemin = ceil(rangemin)-0.5;
+    rangemax = ceil(rangemax)-0.5;
+
+    if (range_mode==RANGE_FIXED)
     {
-        double range = rangemax - rangemin;
-        if (range <= 10000)
-        {
-            num_cells = (int)range;
-            cellsize = 1;
+#define COMPLAINT "Cannot set up cells to satisfy constraints"
+        long range = (long)(rangemax-rangemin);
+
+        if (num_cells>0 && cellsize_int>0) {
+            if (num_cells*cellsize_int != rangemax-rangemin)
+                throw cRuntimeError(this, COMPLAINT": numCells*cellSize != rangeMax-rangeMin");
         }
-        else
-        {
-            cellsize = ceil(range / 10000.0);
-            num_cells = (int)ceil(range/cellsize);
+        else if (cellsize_int>0) {
+            if (range % cellsize_int != 0)
+                throw cRuntimeError(this, COMPLAINT": specified range is not a multiple of cellSize");
+            num_cells = range / cellsize_int;
         }
+        else if (num_cells>0) {
+            if (range % num_cells != 0)
+                throw cRuntimeError(this, COMPLAINT": specified range is not a multiple of numCells");
+            cellsize_int = range / num_cells;
+        }
+        else {
+            num_cells = range;
+            while (num_cells > 10000) {
+                if (num_cells % 2 == 0)
+                    num_cells = num_cells / 2;
+                else if (num_cells % 5 == 0)
+                    num_cells = num_cells / 5;
+                else
+                    throw cRuntimeError(this, COMPLAINT": range is too large, and cannot find reasonable cellSize that divides it");
+            }
+            cellsize_int = range / num_cells;
+        }
+#undef COMPLAINT
     }
     else
     {
-        cellsize = (rangemax-rangemin)/num_cells;
-        cellsize = ceil(cellsize);
-    }
-    double newrange = cellsize*num_cells;
-    double rangediff = newrange - (rangemax-rangemin);
+        // non-fixed range
+        if (num_cells>0 && cellsize_int>0) {
+            // both given; num_cells*cellsize will determine the range
+        }
+        else if (num_cells>0) {
+            // num_cells given ==> choose cellsize
+            cellsize_int = (long) ceil((rangemax-rangemin)/num_cells);
+        }
+        else if (cellsize_int>0) {
+            // cellsize given ==> choose num_cells
+            num_cells = (int) ceil((rangemax-rangemin)/cellsize);
+        }
+        else {
+            // neither given, choose both
+            double range = rangemax - rangemin;
+            cellsize_int = ceil(range / 10000.0);  // for range<1000, cellsize==1
+            num_cells = (int) ceil(range/cellsize);
+        }
 
-    switch (range_mode)
-    {
-       case RANGE_AUTO:
-         rangemin -= floor(rangediff/2);
-         rangemax += rangediff - floor(rangediff/2);
-         break;
-       case RANGE_AUTOLOWER:
-         rangemin = rangemax - newrange;
-         break;
-       case RANGE_AUTOUPPER:
-         rangemax = rangemin + newrange;
-         break;
+        // adjust range to be cellsize*num_cells
+        double newrange = cellsize_int*num_cells;
+        double rangediff = newrange - (rangemax-rangemin);
+
+        switch (range_mode)
+        {
+           case RANGE_AUTO:
+             rangemin -= floor(rangediff/2);
+             rangemax = rangemin + newrange;
+             break;
+           case RANGE_AUTOLOWER:
+             rangemin = rangemax - newrange;
+             break;
+           case RANGE_AUTOUPPER:
+             rangemax = rangemin + newrange;
+             break;
+        }
     }
+
+    // write back the integer cellsize into double
+    cellsize = cellsize_int;
 }
 
 void cLongHistogram::getAttributesToRecord(opp_string_map& attributes)
