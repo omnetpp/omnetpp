@@ -1,0 +1,54 @@
+%description:
+Test properties, and merging of properties.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+        @baseonly1;
+        @baseonly2();
+        @baseonly3(-);
+        @baseonly4(true);
+        @baseonly5("foo",1.234e43);
+        @baseonly6(key1=a,,c;key2=d,e);
+
+        @sep("-------------------------");
+
+        @merged;
+        @merged(foo,bar);
+        @merged(,BAR,BAZ);
+        @merged(key1=a,,c;key2=d,e);
+        @merged(key1=,B,C;key2=,E,F;key3=G);
+
+        @antivalue(foo,bar,baz;key=fizz,buzz,fizzbuzz);
+        @antivalue(,-;key=-,,-);  // remove "bar", "fizz" and "fizzbuzz"
+
+        @indexed[one](val=1);
+        @indexed[two](val=2);
+        @indexed[two](val=5,added); // overwrite
+
+    submodules:
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        @baseonly1
+        @baseonly2()
+        @baseonly3()
+        @baseonly4(true)
+        @baseonly5(foo,1.234e43)
+        @baseonly6(key1=a,,c;key2=d,e)
+        @sep(-------------------------)
+        @merged(foo,BAR,BAZ;key1=a,B,C;key2=d,E,F;key3=G)
+        @antivalue(foo,,baz;key=,buzz,)
+        @indexed[one](val=1)
+        @indexed[two](val=5,added)
+    submodules:
+}
+
