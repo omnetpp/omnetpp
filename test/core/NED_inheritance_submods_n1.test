@@ -1,0 +1,29 @@
+%description:
+Test that one cannot redeclare a submodule in a subclassed compound module
+
+%file: test.ned
+
+module Node { }
+
+module Super
+{
+    submodules:
+        node: Node;
+}
+
+module Sub extends Super
+{
+    submodules:
+        node: Node; // ==> should be error
+}
+
+network Test
+{
+    submodules:
+        sub: Sub;
+}
+
+%exitcode: 1
+
+%contains: stdout
+cannot redeclare submodule `node'

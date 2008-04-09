@@ -1,0 +1,28 @@
+%description:
+Test that one cannot redeclare a gate in a subtype.
+
+%file: test.ned
+
+module Super
+{
+    gates:
+        output out;
+    connections allowunconnected:
+}
+
+module Sub extends Super
+{
+    gates:
+        output out; // ==> should be error
+}
+
+network Test
+{
+    submodules:
+        sub: Sub;
+}
+
+%exitcode: 1
+
+%contains: stdout
+cannot redeclare gate `out'
