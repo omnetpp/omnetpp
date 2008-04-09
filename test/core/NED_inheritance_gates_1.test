@@ -1,6 +1,5 @@
 %description:
-
-Test parameter and gate inheritance for simple modules.
+Test gate inheritance for simple modules.
 
 %file: test.ned
 
@@ -8,10 +7,6 @@ import testlib.Dump;
 
 module Super
 {
-    parameters:
-        @documentation("http://omnetpp.org");
-        int p1;
-        double p2 @unit(s);
     gates:
         input in1 @kind(L);
         output out1;
@@ -21,10 +16,6 @@ module Super
 
 module Sub extends Super
 {
-    parameters:
-        p2 @foo(3);
-        int p3;
-        double p4;
     gates:
         input in2;
         output out2;
@@ -34,13 +25,7 @@ module Sub extends Super
 network Test
 {
     submodules:
-        sub: Sub {
-            parameters:
-                p1 = 1;
-                p2 = 2s;
-                p3 = 3;
-                p4 = 4;
-        }
+        sub: Sub;
         dump: Dump;
     connections:
         sub.out1 --> sub.in2;
@@ -54,12 +39,6 @@ module Test: Test {
         @isNetwork
     submodules:
         module Test.sub: Sub {
-            parameters:
-                @documentation(http://omnetpp.org)
-                p1 = 1
-                p2 @unit(s) @foo(3) = 2
-                p3 = 3
-                p4 = 4
             gates:
                  0 in1 @kind(L): <-- sub.out2
                  1 out1: --> sub.in2

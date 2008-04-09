@@ -1,0 +1,49 @@
+%description:
+Test parameter inheritance for modules.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Super
+{
+    parameters:
+        int p1;
+        double p2 @unit(s);
+}
+
+module Sub extends Super
+{
+    parameters:
+        p2 @foo(3);
+        int p3;
+        double p4;
+}
+
+network Test
+{
+    submodules:
+        sub: Sub {
+            parameters:
+                p1 = 1;
+                p2 = 2s;
+                p3 = 3;
+                p4 = 4;
+        }
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.sub: Sub {
+            parameters:
+                p1 = 1
+                p2 @unit(s) @foo(3) = 2
+                p3 = 3
+                p4 = 4
+        }
+}
+
