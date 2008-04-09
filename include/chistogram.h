@@ -317,6 +317,9 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
  */
 class SIM_API cLongHistogram : public cEqdHistogramBase
 {
+  protected:
+    virtual void getAttributesToRecord(opp_string_map& attributes);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{

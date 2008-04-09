@@ -144,13 +144,12 @@ void cStatistic::recordScalar(const char *scalarname, const char *unit)
         throw cRuntimeError(this,"recordScalar() may only be invoked from within a simple module");
     if (!scalarname)
         scalarname = fullName();
-    if (!unit)
-        ev.recordScalar(mod, scalarname, this);
-    else {
-        opp_string_map attributes;
+
+    opp_string_map attributes;
+    if (unit)
         attributes["unit"] = unit;
-        ev.recordScalar(mod, scalarname, this, &attributes);
-    }
+    getAttributesToRecord(attributes);
+    ev.recordScalar(mod, scalarname, this, &attributes);
 }
 
 void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)

@@ -354,6 +354,11 @@ void cLongHistogram::setupRange()
     }
 }
 
+void cLongHistogram::getAttributesToRecord(opp_string_map& attributes)
+{
+    attributes["isDiscrete"] = "1";
+}
+
 double cLongHistogram::random() const
 {
     if (num_vals==0)

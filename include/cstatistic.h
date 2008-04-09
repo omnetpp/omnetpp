@@ -48,9 +48,10 @@ class SIM_API cStatistic : public cOwnedObject
     int genk;                   // index of random number generator to use
 
   protected:
-
     // internal: utility function for implementing loadFromFile() functions
     void freadvarsf (FILE *f,  const char *fmt, ...);
+    // internal: for collecting the attributes to record into the scalar file
+    virtual void getAttributesToRecord(opp_string_map& attributes) {}
 
   public:
     /** @name Constructors, destructor, assignment. */
