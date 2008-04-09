@@ -75,13 +75,13 @@ std::string cPar::detailedInfo() const
     return p->detailedInfo() + " " + properties()->info();
 }
 
-void cPar::copyIfShared()
+cParImpl *cPar::copyIfShared()
 {
-    if (p->isShared())
-    {
+    if (p->isShared()) {
         p = p->dup();
         p->setIsShared(false);
     }
+    return p;
 }
 
 cObject *cPar::owner() const

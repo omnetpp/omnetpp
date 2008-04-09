@@ -171,18 +171,15 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             impl->setUnit(declUnit);
         }
         else {
-            impl = component->par(paramName).impl();
+            impl = component->par(paramName).copyIfShared();
         }
 
         ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
         if (exprNode)
         {
             //printf("   +++ assigning param %s\n", paramName);
+            ASSERT(impl==component->par(paramName).impl() && !impl->isShared());
             cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-            if (impl->isShared()) {
-                impl = impl->dup();
-                component->par(paramName).setImpl(impl);
-            }
             impl->setIsInput(paramNode->getIsDefault());
             cExpressionBuilder::setExpression(impl, dynamicExpr);
         }

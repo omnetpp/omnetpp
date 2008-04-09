@@ -57,7 +57,7 @@ module Test: Test {
             parameters:
                 @documentation(http://omnetpp.org)
                 p1 = 1
-                p2 @unit(s) = 2
+                p2 @unit(s) @foo(3) = 2
                 p3 = 3
                 p4 = 4
             gates:
@@ -71,3 +71,4 @@ module Test: Test {
                  7 g2$o: --> sub.g1$i
         }
 }
+

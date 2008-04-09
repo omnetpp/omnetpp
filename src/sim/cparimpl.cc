@@ -46,7 +46,9 @@ cParImpl::~cParImpl()
 
 cParImpl& cParImpl::operator=(const cParImpl& other)
 {
+    bool shared = isShared();
     cNamedObject::operator=(other);
+    setIsShared(shared); // preserve FL_ISSHARED flag
     setUnit(other.unit());
     return *this;
 }

@@ -435,6 +435,7 @@ void NEDTypeInfo::checkComplianceToInterface(NEDTypeInfo *idecl)
     }
 }
 
+//XXX note: we currently don't use this for anything
 NEDElement *NEDTypeInfo::buildFlattenedTree() const
 {
     NEDElement *result = NULL;

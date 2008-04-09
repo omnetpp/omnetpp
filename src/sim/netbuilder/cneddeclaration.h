@@ -73,8 +73,8 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     void appendPropsMap(StringPropsMap& toPropsMap, const StringPropsMap& fromPropsMap);
     virtual cNEDDeclaration *getSuperDecl() const; // covariant return value
 
-    static void clearPropsMap(StringPropsMap& propsMap);
-    static void clearSharedParImplMap(SharedParImplMap& parimplMap);
+    void clearPropsMap(StringPropsMap& propsMap);
+    void clearSharedParImplMap(SharedParImplMap& parimplMap);
 
     static cProperties *mergeProperties(const cProperties *baseprops, NEDElement *parent);
     static void updateProperty(PropertyElement *propNode, cProperty *prop);

@@ -60,8 +60,6 @@ class SIM_API cPar : public cObject
     void init(cComponent *ownercomponent, cParImpl *p);
     // internal
     void moveto(cPar& other);
-    // internal utility function
-    void copyIfShared();
     // internal: called each time after the value of this object changes.
     void afterChange();
 
@@ -72,6 +70,8 @@ class SIM_API cPar : public cObject
     void setImpl(cParImpl *p);
     // internal, called from network building code
     cParImpl *impl() const {return p;}
+    // internal utility function
+    cParImpl *copyIfShared();
 
   public:
     /**
