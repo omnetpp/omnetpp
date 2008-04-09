@@ -5,45 +5,75 @@ Test parameter inheritance for modules.
 
 import testlib.Dump;
 
-module Super
+module Base
 {
     parameters:
-        int p1;
-        double p2 @unit(s);
+        int p1a;
+        int p1b;
+        int p1c;
+        int p2a = default(2);
+        int p2b = default(2);
+        int p2c = default(2);
+        int p3a = 3;
+        int p3b = 3;
+        int p3c = 3;
 }
 
-module Sub extends Super
+module Derived extends Base
 {
     parameters:
-        p2 @foo(3);
-        int p3;
-        double p4;
+        p1a;
+        p1b = default(1);
+        p1c = 1;
+        p2a;
+        p2b = default(2);
+        p2c = 2;
+        p3a;
+        p3b = default(3);
+        p3c = 3;
+        double p4a;
+        double p4b = default(4);
+        double p4c = 4;
 }
 
 network Test
 {
     submodules:
-        sub: Sub {
-            parameters:
-                p1 = 1;
-                p2 = 2s;
-                p3 = 3;
-                p4 = 4;
+        base: Base;
+        derived: Derived;
+
+        base2: Base {
+            p1a;
+            p1b = default(10);
+            p1c = 10;
+            p2a;
+            p2b = default(20);
+            p2c = 20;
+            p3a;
+            p3b = default(30);
+            p3c = 30;
+        }
+        derived2: Derived {
+            p1a;
+            p1b = default(10);
+            p1c = 10;
+            p2a;
+            p2b = default(20);
+            p2c = 20;
+            p3a;
+            p3b = default(30);
+            p3c = 30;
         }
         dump: Dump;
 }
 
-%contains: stdout
-module Test: Test {
-    parameters:
-        @isNetwork
-    submodules:
-        module Test.sub: Sub {
-            parameters:
-                p1 = 1
-                p2 @unit(s) @foo(3) = 2
-                p3 = 3
-                p4 = 4
-        }
-}
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+**.apply-default = true
+**.p* = 999
 
+%contains: stdout
+xxx
