@@ -310,6 +310,9 @@ void cLongHistogram::setupRange()
 {
     cHistogramBase::setupRange();
 
+    //TODO: set up the missing ones of: rangemin, rangemax, num_cells, cellsize
+    // throw error if not everything can be set up consistently
+
     // adjust range so that cellsize be an integer
     rangemin = floor(rangemin)-0.5;
     rangemax = ceil(rangemax)+0.5;
