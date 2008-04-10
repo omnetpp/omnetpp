@@ -5,7 +5,7 @@
      <extension id="product"
          name="OMNeT++ Integrated Development Environment"
 	 point="org.eclipse.core.runtime.products">
-      <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench" description="%productBlurb">
+      <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench">
           <property name="appName" value="OMNeT++ IDE"/>
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
@@ -27,8 +27,8 @@
 				name="introDescription-samples"
 				value="%introDescription-samples"/>
     <property
-          name="aboutText"
-          value="OMNEST/OMNeT++ Integrated Development Environment, based on Eclipse platform."/>
+          name="aboutText" 
+          value="OMNeT++ Integrated Development Environment"/>
     <property
           name="aboutImage"
           value="icons/omnest128.gif"/>
@@ -85,7 +85,7 @@
             class="org.omnetpp.ide.PerspectiveFactory"
             icon="icons/omnest16.gif"
             id="org.omnetpp.main.OmnetppPerspective"
-            name="Simulation Design"/>
+            name="Simulation"/>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

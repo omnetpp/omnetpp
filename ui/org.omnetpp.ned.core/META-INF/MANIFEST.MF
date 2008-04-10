@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ NED File Resource Management
 Bundle-SymbolicName: org.omnetpp.ned.core;singleton:=true
-Bundle-Version: 4.0.0
+Bundle-Version: 4.0.0.qualifier
 Bundle-Activator: org.omnetpp.ned.core.NEDResourcesPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

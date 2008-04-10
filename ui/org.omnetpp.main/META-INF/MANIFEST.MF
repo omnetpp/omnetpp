@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Integrated Development Environment
 Bundle-SymbolicName: org.omnetpp.main;singleton:=true
-Bundle-Version: 4.0.0
+Bundle-Version: 4.0.0.qualifier
 Bundle-Activator: org.omnetpp.ide.OmnetppMainPlugin
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,

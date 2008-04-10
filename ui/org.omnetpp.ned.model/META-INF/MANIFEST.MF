@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ NED File Data Model
 Bundle-SymbolicName: org.omnetpp.ned.model;singleton:=true
-Bundle-Version: 4.0.0
+Bundle-Version: 4.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.ned.model,

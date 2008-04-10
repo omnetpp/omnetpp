@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Figures
 Bundle-SymbolicName: org.omnetpp.figures
-Bundle-Version: 4.0.0
+Bundle-Version: 4.0.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jface,
  org.eclipse.draw2d,

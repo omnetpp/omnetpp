@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Sequence Chart
 Bundle-SymbolicName: org.omnetpp.sequencechart;singleton:=true
-Bundle-Version: 4.0.0
+Bundle-Version: 4.0.0.qualifier
 Bundle-Activator: org.omnetpp.sequencechart.SequenceChartPlugin
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,

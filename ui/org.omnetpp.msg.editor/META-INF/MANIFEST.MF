@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Message File Editor
 Bundle-SymbolicName: org.omnetpp.msg.editor; singleton:=true
-Bundle-Version: 4.0.0
+Bundle-Version: 4.0.0.qualifier
 Bundle-Activator: org.omnetpp.msg.editor.MsgEditorPlugin
 Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,

@@ -4,7 +4,7 @@
 <plugin
     name = "OMNeT++ Scalar / Vector Chart Data Model"
     id = "org.omnetpp.scave.model"
-    version = "4.0.0"
+    version = "4.0.0.qualifier"
     provider-name = "OpenSim Ltd."
     class = "org.omnetpp.scave.model.provider.ScaveEditPlugin$Implementation">
 

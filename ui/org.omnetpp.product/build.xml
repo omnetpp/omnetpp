@@ -46,6 +46,7 @@
 		<copy todir="${buildDirectory}/features">
 			<fileset dir="../">
 				<include name="org.omnetpp.ide/**" />
+				<include name="org.omnetpp.ide.commercial/**" />
 			</fileset>
 		</copy>
 	</target>
