@@ -204,8 +204,6 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
         if (enabled)
         {
             cDensityEstBase *hist = (cDensityEstBase *)statistic;
-            CHECK(fprintf(f, "histogram %s \t%s\n", QUOTE(component->fullPath().c_str()), QUOTE(name)));
-
             int n = hist->cells();
             if (n>0)
             {
