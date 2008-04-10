@@ -752,35 +752,37 @@ FileRun *ResultFileManager::addFileRun(ResultFile *file, Run *run)
     return fileRun;
 }
 
-void ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
+int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
                                   const char *scalarName, double value)
 {
-    static std::string *lastInsertedModuleRef = NULL;
+//    static std::string *lastInsertedModuleRef = NULL;
 
-    ScalarResult d;
-    d.fileRunRef = fileRunRef;
+    ScalarResult scalar;
+    scalar.fileRunRef = fileRunRef;
 
     // lines in omnetpp.sca are usually grouped by module, we can exploit this for efficiency
 // broken concept: load scalars, load vectors with new module names, load scalars -> dangling pointer
 // TODO: create string pool for module names, and add this improvement to it
 //    if (lastInsertedModuleRef && *lastInsertedModuleRef==moduleName)
 //    {
-//        d.moduleNameRef = lastInsertedModuleRef;
+//        scalar.moduleNameRef = lastInsertedModuleRef;
 //    }
 //    else
 //    {
-        std::string *m = stringSetFindOrInsert(moduleNames, std::string(moduleName));
-        d.moduleNameRef = lastInsertedModuleRef = m;
+//        std::string *m = stringSetFindOrInsert(moduleNames, std::string(moduleName));
+//        scalar.moduleNameRef = lastInsertedModuleRef = m;
 //    }
 
-    d.nameRef = stringSetFindOrInsert(names, std::string(scalarName));
-
-    d.value = value;
-
-    fileRunRef->fileRef->scalarResults.push_back(d);
+    scalar.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
+    scalar.nameRef = stringSetFindOrInsert(names, std::string(scalarName));
+    scalar.value = value;
+    
+    ScalarResults &scalars = fileRunRef->fileRef->scalarResults;
+    scalars.push_back(scalar);
+    return scalars.size() - 1;
 }
 
-void ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns)
+int ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns)
 {
     VectorResult vector;
     vector.fileRunRef = fileRunRef;
@@ -789,8 +791,23 @@ void ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char 
     vector.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
     vector.columns = columns;
     vector.stat = Statistics(-1, NaN, NaN, NaN, NaN);
-    fileRunRef->fileRef->vectorResults.push_back(vector);
+    VectorResults &vectors = fileRunRef->fileRef->vectorResults;
+    vectors.push_back(vector);
+    return vectors.size() - 1;
 }
+
+int ResultFileManager::addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat)
+{
+    HistogramResult histogram;
+    histogram.fileRunRef = fileRunRef;
+    histogram.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
+    histogram.nameRef = stringSetFindOrInsert(names, std::string(histogramName));
+    histogram.stat = stat;
+    HistogramResults &histograms = fileRunRef->fileRef->histogramResults;
+    histograms.push_back(histogram);
+    return histograms.size() - 1;
+}
+
 
 // create a file for each dataset?
 ID ResultFileManager::addComputedVector(int vectorId, const char *name, const char *file,
@@ -915,8 +932,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         }
         ctx.lastResultItemType = 0;
         ctx.lastResultItemIndex = -1;
-        ctx.moduleName.clear();
-        ctx.statisticName.clear();
+        ctx.clearHistogram();
         return;
     }
 
@@ -945,11 +961,9 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         double value;
         CHECK(parseDouble(vec[3],value), "invalid scalar file syntax: invalid value column");
 
-        addScalar(ctx.fileRunRef, vec[1], vec[2], value);
         ctx.lastResultItemType = SCALAR;
-        ctx.lastResultItemIndex = ctx.fileRef->scalarResults.size()-1;
-        ctx.moduleName.clear();
-        ctx.statisticName.clear();
+        ctx.lastResultItemIndex = addScalar(ctx.fileRunRef, vec[1], vec[2], value);
+        ctx.clearHistogram();
     }
     else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
     {
@@ -958,20 +972,20 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         int vectorId;
         CHECK(parseInt(vec[1], vectorId), "invalid vector file syntax: invalid vector id in vector definition");
         const char *columns = (numTokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
-        addVector(ctx.fileRunRef, vectorId, vec[2], vec[3], columns);
+        
         ctx.lastResultItemType = VECTOR;
-        ctx.lastResultItemIndex = ctx.fileRef->vectorResults.size()-1;
-        ctx.moduleName.clear();
-        ctx.statisticName.clear();
+        ctx.lastResultItemIndex = addVector(ctx.fileRunRef, vectorId, vec[2], vec[3], columns);
+        ctx.clearHistogram();
     }
     else if (vec[0][0]=='s' && !strcmp(vec[0],"statistic"))
     {
     	// syntax: "statistic <module> <statisticname>"
     	CHECK(numTokens>=3, "invalid scalar file: too few items on `statistic' line");
 
+    	ctx.clearHistogram();
     	ctx.moduleName = vec[1];
     	ctx.statisticName = vec[2];
-    	ctx.lastResultItemType = SCALAR;
+    	ctx.lastResultItemType = SCALAR; // add scalars first
     	ctx.lastResultItemIndex = ctx.fileRef->scalarResults.size();
     	
     	CHECK(!ctx.moduleName.empty(), "invalid scalar file: missing module name");
@@ -982,14 +996,45 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     	// syntax: "field <name> <value>"
     	CHECK(numTokens>=3, "invalid scalar file: too few items on `field' line");
     	
+    	std::string fieldName = vec[1];
     	double value;
     	CHECK(parseDouble(vec[2], value), "invalid scalar file: invalid field value");
     	
     	CHECK(!ctx.moduleName.empty() && !ctx.statisticName.empty(),
     			"invalid scalar file: missing statistics declaration");
+    	std::string scalarName = ctx.statisticName + ":" + fieldName;
+    	addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), scalarName.c_str(), value);
     	
-    	std::string name = ctx.statisticName + ":" + vec[1];
-    	addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), name.c_str(), value);
+    	// set statistics field in the current histogram
+		if (fieldName == "count")
+			ctx.count = (long)value;
+		else if (fieldName == "min")
+			ctx.min = value;
+		else if (fieldName == "max")
+			ctx.max = value;
+		else if (fieldName == "sum")
+			ctx.sum = value;
+		else if (fieldName == "sqrsum")
+			ctx.sumSqr = value;
+    }
+    else if (vec[0][0]=='b' && !strcmp(vec[0],"bin"))
+    {
+    	// syntax: "bin <lower_bound> <value>"
+    	CHECK(numTokens>=3, "");
+    	double lower_bound, value;
+    	CHECK(parseDouble(vec[1], lower_bound), "");
+    	CHECK(parseDouble(vec[2], value), "");
+    	
+    	if (ctx.lastResultItemType != HISTOGRAM)
+    	{
+        	CHECK(ctx.lastResultItemType == SCALAR && !ctx.moduleName.empty() && !ctx.statisticName.empty(),
+        			"invalid scalar file: missing statistics declaration");
+        	Statistics stat(ctx.count, ctx.min, ctx.max, ctx.sum, ctx.sumSqr);
+    		ctx.lastResultItemType = HISTOGRAM;
+    		ctx.lastResultItemIndex = addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.statisticName.c_str(), stat);
+    	}
+    	HistogramResult &histogram = ctx.fileRef->histogramResults[ctx.lastResultItemIndex];
+    	histogram.addBin(lower_bound, value);
     }
     if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
     {

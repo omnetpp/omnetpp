@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
@@ -450,7 +451,27 @@ public class DataTable extends Table {
 				}
 			}
 			else if (type == ResultType.HISTOGRAM_LITERAL) {
-				// TODO histogram table columns
+				HistogramResult histogram = (HistogramResult)result;
+				if (COL_COUNT.equals(column)) {
+					int count = histogram.count();
+					item.setText(i, count >= 0 ? String.valueOf(count) : "n.a.");
+				}
+				else if (COL_MEAN.equals(column)) {
+					double mean = histogram.mean();
+					item.setText(i, Double.isNaN(mean) ? "n.a." : String.valueOf(mean));
+				}
+				else if (COL_STDDEV.equals(column)) {
+					double stddev = histogram.stddev();
+					item.setText(i, Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev));
+				}
+				else if (COL_MIN.equals(column)) {
+					double min = histogram.min();
+					item.setText(i, Double.isNaN(min) ? "n.a." : String.valueOf(min));
+				}
+				else if (COL_MAX.equals(column)) {
+					double max = histogram.max();
+					item.setText(i, Double.isNaN(max) ? "n.a." : String.valueOf(max));
+				}
 			}
 		}
 	}

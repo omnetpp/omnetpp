@@ -281,7 +281,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	protected void refreshPage(final ResultFileManager manager) {
 		IDList vectors = manager.getAllVectors();
 		IDList scalars = manager.getAllScalars();
-		IDList histograms = new IDList(); // TODO histograms
+		IDList histograms = manager.getAllHistograms();
 
 		vectorsTab.setText("Vectors ("+vectors.size()+")");
 		scalarsTab.setText("Scalars ("+scalars.size()+")");

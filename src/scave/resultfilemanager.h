@@ -28,6 +28,7 @@
 #include "exception.h"
 #include "commonutil.h"
 #include "statistics.h"
+#include "scaveutils.h"
 
 NAMESPACE_BEGIN
 
@@ -113,7 +114,23 @@ struct SCAVE_API VectorResult : public ResultItem
  */
 struct SCAVE_API HistogramResult : public ResultItem
 {
-    //TODO add data members; also TODO implement loading histograms
+	Statistics stat;
+	std::vector<double> bins;
+	std::vector<double> values;
+	
+    long count()      const { return stat.count(); }
+    double min()      const { return stat.min(); }
+    double max()      const { return stat.max(); }
+    double mean()     const { return stat.mean(); }
+    double variance() const { return stat.variance(); }
+    double stddev()   const { return stat.stddev(); }
+	
+	void addBin(double lower_bound, double value)
+	{
+		assert(bins.empty() || bins.back() < lower_bound);
+		bins.push_back(lower_bound);
+		values.push_back(value);
+	}
 };
 
 typedef std::vector<ScalarResult> ScalarResults;
@@ -235,14 +252,31 @@ class SCAVE_API ResultFileManager
     	const char *fileName; /*in*/
     	int64 lineNo; /*inout*/
     	FileRun *fileRunRef; /*inout*/
-    	std::string moduleName; /*inout*/
-    	std::string statisticName; /*inout*/
+    	// references to the result items which attributes should be added to
     	int lastResultItemType; /*inout*/
     	int lastResultItemIndex; /*inout*/
+    	// collected fields of the histogram to be created when the
+    	// first 'bin' is parsed
+    	std::string moduleName;
+    	std::string statisticName;
+    	long count;
+    	double min, max, sum, sumSqr;
     	
     	sParseContext(ResultFile *fileRef)
     		: fileRef(fileRef), fileName(fileRef->filePath.c_str()), lineNo(0),
-    		  fileRunRef(NULL), lastResultItemType(0), lastResultItemIndex(-1) {}
+    		  fileRunRef(NULL), lastResultItemType(0), lastResultItemIndex(-1),
+    		  count(0), min(dblPositiveInfinity), max(dblNegativeInfinity), sum(0.0), sumSqr(0.0) {}
+    	
+    	void clearHistogram()
+    	{
+    		moduleName.clear();
+    		statisticName.clear();
+    		count = 0;
+    		min = dblPositiveInfinity;
+    		max = dblNegativeInfinity;
+    		sum = 0.0;
+    		sumSqr = 0.0;
+    	}
     };
 
   public:
@@ -267,9 +301,10 @@ class SCAVE_API ResultFileManager
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
     void processLine(char **vec, int numTokens, sParseContext &ctx);
-    void addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
-    void addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
-
+    int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
+    int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
+    int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat);
+    
     ResultFile *getFileForID(ID id) const; // checks for NULL
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
 
