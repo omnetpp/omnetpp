@@ -314,7 +314,7 @@ void cLongHistogram::setupRange()
     // throw error if not everything can be set up consistently
 
     // cellsize is double but we want to calculate with integers here
-    long cellsize_int = cellsize;
+    long cellsize = this->cellsize;
 
     // convert range limits to one halfs
     rangemin = ceil(rangemin)-0.5;
@@ -325,55 +325,55 @@ void cLongHistogram::setupRange()
 #define COMPLAINT "Cannot set up cells to satisfy constraints"
         long range = (long)(rangemax-rangemin);
 
-        if (num_cells>0 && cellsize_int>0) {
-            if (num_cells*cellsize_int != rangemax-rangemin)
+        if (num_cells>0 && cellsize>0) {
+            if (num_cells*cellsize != range)
                 throw cRuntimeError(this, COMPLAINT": numCells*cellSize != rangeMax-rangeMin");
         }
-        else if (cellsize_int>0) {
-            if (range % cellsize_int != 0)
+        else if (cellsize>0) {
+            if (range % cellsize != 0)
                 throw cRuntimeError(this, COMPLAINT": specified range is not a multiple of cellSize");
-            num_cells = range / cellsize_int;
+            num_cells = range / cellsize;
         }
         else if (num_cells>0) {
             if (range % num_cells != 0)
                 throw cRuntimeError(this, COMPLAINT": specified range is not a multiple of numCells");
-            cellsize_int = range / num_cells;
+            cellsize = range / num_cells;
         }
         else {
-            int mincellsize = ceil(range/1000);
-            int maxcellsize = ceil(range/10);
-            for (cellsize_int=mincellsize; cellsize_int<=maxcellsize; cellsize_int++)
+            int mincellsize = ceil(range/1000.0);
+            int maxcellsize = ceil(range/10.0);
+            for (cellsize=mincellsize; cellsize<=maxcellsize; cellsize++)
                 if (range % cellsize == 0)
                     break;
-            if (cellsize_int > maxcellsize)
+            if (cellsize > maxcellsize)
                 throw cRuntimeError(this, COMPLAINT": specified range is too large, and cannot divide it to 10..1000 equal-sized cells");
-            num_cells = range / cellsize_int;
+            num_cells = range / cellsize;
         }
 #undef COMPLAINT
     }
     else
     {
         // non-fixed range
-        if (num_cells>0 && cellsize_int>0) {
+        if (num_cells>0 && cellsize>0) {
             // both given; num_cells*cellsize will determine the range
         }
         else if (num_cells>0) {
             // num_cells given ==> choose cellsize
-            cellsize_int = (long) ceil((rangemax-rangemin)/num_cells);
+            cellsize = (long) ceil((rangemax-rangemin)/num_cells);
         }
-        else if (cellsize_int>0) {
+        else if (cellsize>0) {
             // cellsize given ==> choose num_cells
             num_cells = (int) ceil((rangemax-rangemin)/cellsize);
         }
         else {
             // neither given, choose both
             double range = rangemax - rangemin;
-            cellsize_int = ceil(range / 1000.0);  // for range<1000, cellsize==1
+            cellsize = ceil(range / 1000.0);  // for range<=1000, cellsize==1
             num_cells = (int) ceil(range/cellsize);
         }
 
         // adjust range to be cellsize*num_cells
-        double newrange = cellsize_int*num_cells;
+        double newrange = cellsize*num_cells;
         double rangediff = newrange - (rangemax-rangemin);
 
         switch (range_mode)
@@ -392,7 +392,7 @@ void cLongHistogram::setupRange()
     }
 
     // write back the integer cellsize into double
-    cellsize = cellsize_int;
+    this->cellsize = cellsize;
 }
 
 void cLongHistogram::getAttributesToRecord(opp_string_map& attributes)
