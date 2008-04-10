@@ -340,16 +340,14 @@ void cLongHistogram::setupRange()
             cellsize_int = range / num_cells;
         }
         else {
-            num_cells = range;
-            while (num_cells > 10000) {
-                if (num_cells % 2 == 0)
-                    num_cells = num_cells / 2;
-                else if (num_cells % 5 == 0)
-                    num_cells = num_cells / 5;
-                else
-                    throw cRuntimeError(this, COMPLAINT": range is too large, and cannot find reasonable cellSize that divides it");
-            }
-            cellsize_int = range / num_cells;
+            int mincellsize = ceil(range/1000);
+            int maxcellsize = ceil(range/10);
+            for (cellsize_int=mincellsize; cellsize_int<=maxcellsize; cellsize_int++)
+                if (range % cellsize == 0)
+                    break;
+            if (cellsize_int > maxcellsize)
+                throw cRuntimeError(this, COMPLAINT": specified range is too large, and cannot divide it to 10..1000 equal-sized cells");
+            num_cells = range / cellsize_int;
         }
 #undef COMPLAINT
     }
@@ -370,7 +368,7 @@ void cLongHistogram::setupRange()
         else {
             // neither given, choose both
             double range = rangemax - rangemin;
-            cellsize_int = ceil(range / 10000.0);  // for range<1000, cellsize==1
+            cellsize_int = ceil(range / 1000.0);  // for range<1000, cellsize==1
             num_cells = (int) ceil(range/cellsize);
         }
 
