@@ -90,7 +90,7 @@
 		<include name="**/*.product"/>
 	    </replace>	
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
-	    <move file="${buildDirectory}/plugins/org.omnetpp.main/spalsh-omnest.bmp" tofile="${buildDirectory}/plugins/org.omnetpp.main/splash.bmp"/>
+	    <move file="${buildDirectory}/plugins/org.omnetpp.main/splash-omnest.bmp" tofile="${buildDirectory}/plugins/org.omnetpp.main/splash.bmp"/>
     	</target>
 	
 	<!-- prepare for academic build / throw out commercial features etc. -->	
