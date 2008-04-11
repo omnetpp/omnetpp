@@ -17,15 +17,13 @@ network ClientServer
     submodules:
         server: Server {
             parameters:
-                processingTime @unit(s) @prompt("Time to process a query") = default(0.2s);
+                processingTime;
                 @display("p=210,70");
         }
         switch: Switch {
             parameters:
-                // pkRate should be >= numClients, otherwise switch will become the bottleneck
-                pkRate = 1.5*numClients;
-                // buffer max 20 packets
-                queueMaxLen = 20;
+                pkRate = 1.5*numClients; // pkRate should be >= numClients, otherwise switch will become the bottleneck
+                queueMaxLen = 20; // buffer max 20 packets
                 @display("p=210,170");
             gates:
                 port[numClients+1];
@@ -33,9 +31,6 @@ network ClientServer
         client[numClients]: Client {
             parameters:
                 timeout = 5s;
-                connIaTime @prompt("Connection interarrival time") = default(10s);
-                queryIaTime @prompt("Query interarrival time") = default(2s);
-                numQuery @prompt("Number of queries per connection") = default(5);
                 @display("p=70,270,m,10,80");
         }
     connections:

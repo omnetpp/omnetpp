@@ -8,6 +8,7 @@
 //
 
 
+#include <crtdbg.h>
 #include "DynaPacket_m.h"
 
 /**
@@ -37,7 +38,10 @@ void Server::handleMessage(cMessage *msg)
 
     if (pk->kind()==DYNA_CONN_REQ)
     {
+_CrtMemState memstate;
+_CrtMemCheckpoint(&memstate);
         cModule *mod = srvProcType->createScheduleInit("serverproc",this);
+_CrtMemDumpAllObjectsSince(&memstate);
         ev << "DYNA_CONN_REQ: Created process ID=" << mod->id() << endl;
         sendDirect(pk, 0.0, mod, "in");
     }
