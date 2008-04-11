@@ -21,6 +21,7 @@
 #define __CCOMMBUFFER_H__
 
 #include "cobject.h"
+#include "simtime.h"
 
 NAMESPACE_BEGIN
 

@@ -1,5 +1,5 @@
 //=========================================================================
-//  CHIST.CC - part of
+//  CHISTOGRAM.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -107,7 +107,7 @@ cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
 void cHistogramBase::doMergeCellValues(const cDensityEstBase *other)
 {
     for (int i=0; i<num_cells; i++)
-        cellv[i] += other->cell(i);  //FIXME overflow check
+        cellv[i] += (unsigned int) other->cell(i);  //FIXME overflow check
 }
 
 void cHistogramBase::clearResult()
@@ -314,7 +314,7 @@ void cLongHistogram::setupRange()
     // throw error if not everything can be set up consistently
 
     // cellsize is double but we want to calculate with integers here
-    long cellsize = this->cellsize;
+    long cellsize = (long) this->cellsize;
 
     // convert range limits to one halfs
     rangemin = ceil(rangemin)-0.5;
@@ -340,8 +340,8 @@ void cLongHistogram::setupRange()
             cellsize = range / num_cells;
         }
         else {
-            int mincellsize = ceil(range/1000.0);
-            int maxcellsize = ceil(range/10.0);
+            int mincellsize = (int) ceil(range/1000.0);
+            int maxcellsize = (int) ceil(range/10.0);
             for (cellsize=mincellsize; cellsize<=maxcellsize; cellsize++)
                 if (range % cellsize == 0)
                     break;
@@ -368,7 +368,7 @@ void cLongHistogram::setupRange()
         else {
             // neither given, choose both
             double range = rangemax - rangemin;
-            cellsize = ceil(range / 1000.0);  // for range<=1000, cellsize==1
+            cellsize = (long) ceil(range / 1000.0);  // for range<=1000, cellsize==1
             num_cells = (int) ceil(range/cellsize);
         }
 
