@@ -46,8 +46,8 @@ void cSimpleModule::activate(void *p)
     if (stack_cleanup_requested)
     {
         // module has just been created, but already deleted
-        mod->isterminated = true;
-        mod->stackalreadyunwound = true;
+        mod->setFlag(FL_ISTERMINATED, true);
+        mod->setFlag(FL_STACKALREADYUNWOUND, true);
         if (after_cleanup_transfer_to)
             simulation.transferTo(after_cleanup_transfer_to);
         else
@@ -62,8 +62,8 @@ void cSimpleModule::activate(void *p)
     if (starter!=mod->timeoutmsg)
     {
         // hand exception to cSimulation::transferTo() and switch back
-        mod->isterminated = true;
-        mod->stackalreadyunwound = true;
+        mod->setFlag(FL_ISTERMINATED, true);
+        mod->setFlag(FL_STACKALREADYUNWOUND, true);
         simulation.exception = new cRuntimeError("scheduleStart() should have been called for dynamically created module `%s'", mod->fullPath().c_str());
         simulation.transferToMain();
         fprintf(stderr, "INTERNAL ERROR: switch to the fiber of a module already terminated");
@@ -125,8 +125,8 @@ void cSimpleModule::activate(void *p)
     // When we get here, the module is already terminated. No further cStackCleanupException
     // will need to be thrown, as the stack has has already been unwound by an exception
     // or by having returned from activity() normally.
-    mod->isterminated = true;
-    mod->stackalreadyunwound = true;
+    mod->setFlag(FL_ISTERMINATED, true);
+    mod->setFlag(FL_STACKALREADYUNWOUND, true);
 
     if (!exception)
     {
@@ -167,14 +167,15 @@ void cSimpleModule::activate(void *p)
 cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
 {
     coroutine = NULL;
-    usesactivity = (stksize!=0);
-    isterminated = stackalreadyunwound = false;
+    setFlag(FL_USESACTIVITY, stksize!=0);
+    setFlag(FL_ISTERMINATED, false);
+    setFlag(FL_STACKALREADYUNWOUND, false);
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
     timeoutmsg = NULL;
 
-    if (usesactivity)
+    if (usesActivity())
     {
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
@@ -189,14 +190,15 @@ cSimpleModule::cSimpleModule(const char *, cModule *, unsigned stksize)
 cSimpleModule::cSimpleModule(unsigned stksize)
 {
     coroutine = NULL;
-    usesactivity = (stksize!=0);
-    isterminated = stackalreadyunwound = false;
+    setFlag(FL_USESACTIVITY, stksize!=0);
+    setFlag(FL_ISTERMINATED, false);
+    setFlag(FL_STACKALREADYUNWOUND, false);
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
     timeoutmsg = NULL;
 
-    if (usesactivity)
+    if (usesActivity())
     {
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
@@ -216,7 +218,7 @@ cSimpleModule::~cSimpleModule()
     if (usesActivity())
     {
         // clean up user's objects on coroutine stack by forcing an exception inside the coroutine
-        if (!stackalreadyunwound)
+        if ((flags&FL_STACKALREADYUNWOUND)==0)
         {
             //FIXME: check this is OK for brand new modules too (no transferTo() yet)
             stack_cleanup_requested = true;
@@ -268,10 +270,10 @@ void cSimpleModule::setId(int n)
 
 void cSimpleModule::halt()
 {
-    if (!usesactivity)
+    if (!usesActivity())
         throw cRuntimeError("halt() can only be invoked from activity()-based simple modules");
 
-    isterminated = true;
+    setFlag(FL_ISTERMINATED, true);
     simulation.transferToMain();
     assert(stack_cleanup_requested);
     throw cStackCleanupException();
@@ -300,7 +302,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
     // contains a call to scheduleStart()) can be used for both.
 
     // ignore for simple modules using handleMessage()
-    if (!usesactivity)
+    if (!usesActivity())
         return;
 
     if (timeoutmsg!=NULL)
@@ -581,7 +583,7 @@ void cSimpleModule::cancelAndDelete(cMessage *msg)
 
 void cSimpleModule::arrived(cMessage *msg, int ongate, simtime_t t)
 {
-    if (isterminated)
+    if (isTerminated())
         throw cRuntimeError(eMODFIN,fullPath().c_str());
     if (t < simTime())
         throw cRuntimeError("causality violation: message `%s' arrival time %s at module `%s' "
@@ -593,7 +595,7 @@ void cSimpleModule::arrived(cMessage *msg, int ongate, simtime_t t)
 
 void cSimpleModule::wait(simtime_t t)
 {
-    if (!usesactivity)
+    if (!usesActivity())
         throw cRuntimeError(eNORECV);
     if (t<0)
         throw cRuntimeError(eNEGTIME);
@@ -615,7 +617,7 @@ void cSimpleModule::wait(simtime_t t)
 
 void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
 {
-    if (!usesactivity)
+    if (!usesActivity())
         throw cRuntimeError(eNORECV);
     if (t<0)
         throw cRuntimeError(eNEGTIME);
@@ -644,7 +646,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
 
 cMessage *cSimpleModule::receive()
 {
-    if (!usesactivity)
+    if (!usesActivity())
         throw cRuntimeError(eNORECV);
 
     simulation.transferToMain();
@@ -657,7 +659,7 @@ cMessage *cSimpleModule::receive()
 
 cMessage *cSimpleModule::receive(simtime_t t)
 {
-    if (!usesactivity)
+    if (!usesActivity())
         throw cRuntimeError(eNORECV);
     if (t<0)
         throw cRuntimeError(eNEGTOUT);

@@ -65,9 +65,11 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     friend class TSimpleModInspector;
 
   private:
-    bool usesactivity;      // uses activity() or handleMessage() FIXME merge into flags
-    bool isterminated;      // for both activity and handleMessage modules. FIXME merge into flags
-    bool stackalreadyunwound; // only for activity modules. FIXME merge into flags
+    enum {
+        FL_USESACTIVITY = 64,   // uses activity() or handleMessage()
+        FL_ISTERMINATED = 128,  // for both activity and handleMessage modules
+        FL_STACKALREADYUNWOUND = 256, // only for activity modules
+    };
     cMessage *timeoutmsg;   // msg used in wait() and receive() with timeout
     cCoroutine *coroutine;
 
@@ -182,13 +184,13 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Returns the event handling scheme: activity() or handleMessage().
      */
-    bool usesActivity() const  {return usesactivity;}
+    bool usesActivity() const  {return flags&FL_USESACTIVITY;}
 
     /**
      * Returns true if the module has already terminated, by having called end()
      * or returning from the activity() method.
      */
-    bool isTerminated() const {return isterminated;}
+    bool isTerminated() const {return flags&FL_ISTERMINATED;}
     //@}
 
     /** @name Simulation time. */
