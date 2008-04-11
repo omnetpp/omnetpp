@@ -108,7 +108,7 @@ double ExpressionFilterNode::getVariable(const char *varname)
 
 const char *ExpressionFilterNodeType::description() const
 {
-    return "Evaluates an arbitrary expression. Use x for time, y for value, and xprev, yprev for the previous values."; //FIXME use "t" and "x" instead?
+    return "Evaluates an arbitrary expression. Use x for time, y for value, and xprev, yprev for the previous values."; //FIXME use "t" and "y" instead?
 }
 
 void ExpressionFilterNodeType::getAttributes(StringMap& attrs) const

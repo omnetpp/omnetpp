@@ -132,8 +132,7 @@ XYArray *ArrayBuilderNode::getArray()
 
 const char *ArrayBuilderNodeType::description() const
 {
-    return "Collects data into an array. The arrays can be accessed as BLT vectors or\n"
-           "as two double* arrays in the C++ API.";
+    return "Collects data into an array. The arrays can be accessed as two double* arrays in the C++ API.";
 }
 
 void ArrayBuilderNodeType::getAttrDefaults(StringMap& attrs) const
