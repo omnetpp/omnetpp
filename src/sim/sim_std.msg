@@ -17,7 +17,7 @@
 
 //
 // Property descriptors for the simkernel classes.
-// Usage: opp_msgc -Xnc -Xns sim_std.ins
+// Usage: opp_msgc -Xnc -Xns sim_std.msg
 //
 
 cplusplus
@@ -77,7 +77,7 @@ class cNamedObject extends cObject
 class cOwnedObject extends cNamedObject
 {
         @omitGetVerb(true);
-        cObject *owner @group(owner or parent) @hint(module or container this object belongs to);
+        cObject *owner @group(base) @hint(module or container this object belongs to);
 }
 
 class cNoncopyableOwnedObject extends cOwnedObject
@@ -127,8 +127,8 @@ class cBasicChannel extends cChannel
 {
         @omitGetVerb(true);
         // Note: no need to spell out delay etc, they come from cComponent parameters
-        bool isBusy @group(state) @hint(if channel is currently transmitting);
-        simtime_t transmissionFinishes @group(state) @hint(if busy: when currently active transmissions will finish);
+        bool isBusy @group(general) @hint(if channel is currently transmitting);
+        simtime_t transmissionFinishes @group(general) @hint(if busy: when currently active transmissions will finish);
 }
 
 class cGate;
@@ -148,7 +148,7 @@ class cModule extends cComponent
 class cSimpleModule extends cModule
 {
         @omitGetVerb(true);
-        bool isTerminated @group(state) @hint(whether this module has terminated);
+        bool isTerminated @group(general) @hint(whether this module has terminated);
         bool usesActivity @group(activity) @hint(whether this simple module was programmed using the "activity" or the "handleMessage" C++ method);
         unsigned int stackSize @group(activity) @hint(if module uses "activity": stack size allocated for this module -- zero means info not available);
         unsigned int stackUsage @group(activity) @hint(if module uses "activity": stack actually used by this module -- zero means info not available);
@@ -190,10 +190,10 @@ class cGate extends cNoncopyableOwnedObject
         bool isVector @group(general) @hint(whether this gate is part of a gate vector);
         int index @group(general) @hint(if vector: index of this gate within its gate vector);
 
-        cChannel *channel @group(connection) @hint(channel object associated with the connection);
-        bool isBusy @group(state) @hint(only if the connection has a channel with nonzero datarate);
-        simtime_t transmissionFinishes @group(state) @hint(only if the connection has a channel with nonzero datarate);
+        bool isBusy @group(general) @hint(only if the connection has a channel with nonzero datarate);
+        simtime_t transmissionFinishes @group(general) @hint(only if the connection has a channel with nonzero datarate);
 
+        cChannel *channel @group(connection) @hint(channel object associated with the connection);
         cGate *toGate @group(connection) @hint(the gate this one is connected to -- for output gates this points out of this module, and for input gates it points inside);
         cGate *fromGate @group(connection) @hint(the gate whose "toGate" is this gate -- note that "from" and "to" correspond to the direction of messages);
         cGate *sourceGate @group(connection) @hint(the last gate in the "fromGate->fromGate->fromGate..." chain);
