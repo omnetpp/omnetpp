@@ -13,6 +13,7 @@
 	run outside of the IDE if you have ANT installed on your path.	
 -->
 <project name="org.omnetpp.product" default="build-omnetpp">
+        <property environment="env" /> 
 	<property file="build.properties" />
 	
 	<!--
