@@ -1044,8 +1044,8 @@ proc createOkCancelDialog {w title} {
 
     pack $w.buttons -expand 0 -fill x -padx $padx -pady $pady -side bottom
     pack $w.f -expand 1 -fill both -padx $padx -pady $pady -side top
-    pack $w.buttons.cancelbutton  -anchor n -side right -padx 2
-    pack $w.buttons.okbutton  -anchor n -side right -padx 2
+    pack $w.buttons.cancelbutton -side right -padx 2
+    pack $w.buttons.okbutton -side right -padx 2
 }
 
 
