@@ -1,9 +1,11 @@
 package org.omnetpp.scave.charting.dataset;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
+import org.omnetpp.scave.model2.DatasetManager;
 
 public class HistogramDataset implements IHistogramDataset {
 	
@@ -24,11 +26,12 @@ public class HistogramDataset implements IHistogramDataset {
 	private HistogramData[] histograms;
 	
 	public HistogramDataset(IDList idlist, ResultFileManager manager) {
+		String[] keys = DatasetManager.getResultItemNames(idlist, null, manager);
+		Assert.isTrue(keys.length == idlist.size());
 		histograms = new HistogramData[idlist.size()];
 		for (int i = 0; i < idlist.size(); ++i) {
 			long id = idlist.get(i);
 			HistogramResult histogram = manager.getHistogram(id);
-			String key = histogram.getModuleName() + " / " + histogram.getName();
 			boolean isDiscrete = "1".equals(histogram.getAttribute("isDiscrete"));
 			DoubleVector bins = histogram.getBins();
 			int size = (int)bins.size();
@@ -36,7 +39,7 @@ public class HistogramDataset implements IHistogramDataset {
 			System.arraycopy(bins.toArray(), 0, cellBreaks, 0, size);
 			cellBreaks[size] = Double.POSITIVE_INFINITY;
 			double[] cellValues = histogram.getValues().toArray();
-			histograms[i] = new HistogramData(key, isDiscrete, cellBreaks, cellValues);
+			histograms[i] = new HistogramData(keys[i], isDiscrete, cellBreaks, cellValues);
 		}
 	}
 

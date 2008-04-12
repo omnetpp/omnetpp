@@ -21,9 +21,6 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABEL
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -60,9 +57,7 @@ public class ScalarChart extends ChartCanvas {
 	private DomainAxis domainAxis = new DomainAxis(this);
 	private BarPlot plot;
 
-	private Map<String,BarProperties> barProperties = new HashMap<String,BarProperties>();
-	private static final String KEY_ALL = null;
-	
+	private PropertyMap<BarProperties> properties = new PropertyMap<BarProperties>(BarProperties.class);
 	static class BarProperties {
 		RGB color;
 	}
@@ -152,7 +147,7 @@ public class ScalarChart extends ChartCanvas {
 		else if (PROP_BAR_PLACEMENT.equals(name))
 			setBarPlacement(Converter.stringToEnum(value, BarPlacement.class));
 		else if (name.startsWith(PROP_BAR_COLOR))
-			setBarColor(getKeyFrom(name), ColorFactory.asRGB(value));
+			setBarColor(getElementId(name), ColorFactory.asRGB(value));
 		// Axes
 		else if (PROP_XY_GRID.equals(name))
 			setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
@@ -271,22 +266,17 @@ public class ScalarChart extends ChartCanvas {
 	}
 	
 	public RGB getBarColor(String key) {
-		BarProperties barProps = getBarProperties(key);
+		BarProperties barProps = properties.getProperties(key);
 		if (barProps == null || barProps.color == null)
-			barProps = getDefaultBarProperties();
+			barProps = properties.getDefaultProperties();
 		return barProps != null ? barProps.color : null;
 	}
 	
 	public void setBarColor(String key, RGB color) {
-		BarProperties barProps = getOrCreateBarProperties(key);
+		BarProperties barProps = properties.getOrCreateProperties(key);
 		barProps.color = color;
 		updateLegends();
 		chartChanged();
-	}
-	
-	private String getKeyFrom(String propertyKey) {
-		int index = propertyKey.indexOf('/');
-		return index >= 0 ? propertyKey.substring(index + 1) : KEY_ALL;
 	}
 	
 	public String getKeyFor(int columnIndex) {
@@ -296,23 +286,6 @@ public class ScalarChart extends ChartCanvas {
 			return null;
 	}
 	
-	public BarProperties getBarProperties(String key) {
-		return (key != null ? barProperties.get(key) : null);
-	}
-	
-	public BarProperties getDefaultBarProperties() {
-		return barProperties.get(KEY_ALL);
-	}
-	
-	private BarProperties getOrCreateBarProperties(String key) {
-		BarProperties barProps = getBarProperties(key);
-		if (barProps == null) {
-			barProps = new BarProperties();
-			barProperties.put(key, barProps);
-		}
-		return barProps;
-	}
-
 	/*=============================================
 	 *               Drawing
 	 *=============================================*/

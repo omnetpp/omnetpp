@@ -310,6 +310,10 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		chartChanged();
 	}
 	
+	/*----------------------------------------------------------------------
+	 *                            Properties
+	 *----------------------------------------------------------------------*/
+	
 	public void setProperty(String name, String value) {
 		// Titles
 		if (PROP_GRAPH_TITLE.equals(name))
@@ -341,6 +345,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 			setYMax(Converter.stringToDouble(value));
 		else
 			ScavePlugin.logError(new RuntimeException("unrecognized chart property: "+name));
+	}
+	
+	protected String getElementId(String propertyName) {
+		int index = propertyName.indexOf('/');
+		return index >= 0 ? propertyName.substring(index + 1) : null;
 	}
 	
 	public boolean getAntialias() {

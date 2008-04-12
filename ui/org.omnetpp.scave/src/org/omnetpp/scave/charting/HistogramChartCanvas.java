@@ -1,15 +1,19 @@
 package org.omnetpp.scave.charting;
 
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.properties.ChartProperties.*;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_HIST_COLOR;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.charting.dataset.IDataset;
@@ -21,10 +25,16 @@ public class HistogramChartCanvas extends ChartCanvas {
 	
 	private static final boolean debug = false;
 	
+	
 	private IHistogramDataset dataset = IHistogramDataset.EMPTY;
 	private LinearAxis xAxis = new LinearAxis(false, false, false);
 	private LinearAxis yAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, false);
 	private HistogramPlot plot;
+	
+	private PropertyMap<HistogramProperties> properties = new PropertyMap<HistogramProperties>(HistogramProperties.class);
+	static class HistogramProperties {
+		RGB color;
+	}
 
 	public HistogramChartCanvas(Composite parent, int style) {
 		super(parent, style);
@@ -39,7 +49,7 @@ public class HistogramChartCanvas extends ChartCanvas {
 		if (PROP_HIST_BAR.equals(name))
 			setBarType(Converter.stringToEnum(value, HistogramBar.class));
 		else if (name.startsWith(PROP_HIST_COLOR))
-			; // TODO
+			setHistogramColor(getElementId(name), ColorFactory.asRGB(value));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
 			; // TODO
 		else 
@@ -50,6 +60,20 @@ public class HistogramChartCanvas extends ChartCanvas {
 		if (barType == null)
 			barType = ChartDefaults.DEFAULT_HIST_BAR;
 		plot.setBarType(barType);
+		chartChanged();
+	}
+	
+	public RGB getHistogramColor(String key) {
+		HistogramProperties histProps = properties.getProperties(key);
+		if (histProps == null || histProps.color == null)
+			histProps = properties.getDefaultProperties();
+		return histProps != null ? histProps.color : null;
+	}
+	
+	public void setHistogramColor(String key, RGB color) {
+		HistogramProperties histProps = properties.getOrCreateProperties(key);
+		histProps.color = color;
+		updateLegends();
 		chartChanged();
 	}
 

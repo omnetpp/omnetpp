@@ -371,24 +371,19 @@ public class VectorChart extends ChartCanvas {
 			setShowGrid(Converter.stringToEnum(value, ShowGrid.class));
 		// Lines
 		else if (name.startsWith(PROP_DISPLAY_LINE))
-			setDisplayLine(getLineId(name), Converter.stringToBoolean(value));
+			setDisplayLine(getElementId(name), Converter.stringToBoolean(value));
 		else if (name.startsWith(PROP_SYMBOL_TYPE))
-			setSymbolType(getLineId(name), Converter.stringToEnum(value, SymbolType.class));
+			setSymbolType(getElementId(name), Converter.stringToEnum(value, SymbolType.class));
 		else if (name.startsWith(PROP_SYMBOL_SIZE))
-			setSymbolSize(getLineId(name), Converter.stringToInteger(value));
+			setSymbolSize(getElementId(name), Converter.stringToInteger(value));
 		else if (name.startsWith(PROP_LINE_TYPE))
-			setLineStyle(getLineId(name), Converter.stringToEnum(value, LineType.class));
+			setLineStyle(getElementId(name), Converter.stringToEnum(value, LineType.class));
 		else if (name.startsWith(PROP_LINE_COLOR))
-			setLineColor(getLineId(name), ColorFactory.asRGB(value));
+			setLineColor(getElementId(name), ColorFactory.asRGB(value));
 		else
 			super.setProperty(name, value);
 	}
 	
-	private String getLineId(String propertyName) {
-		int index = propertyName.indexOf('/');
-		return index >= 0 ? propertyName.substring(index + 1) : null;
-	}
-
 	public void setXAxisTitle(String value) {
 		xAxis.setTitle(value != null ? value : DEFAULT_X_AXIS_TITLE);
 		chartChanged();

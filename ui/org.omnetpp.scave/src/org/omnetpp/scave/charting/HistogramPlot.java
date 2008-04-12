@@ -10,6 +10,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.RGB;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
@@ -26,14 +27,6 @@ class HistogramPlot {
 	Rectangle area = Rectangle.SINGLETON;
 	
 	HistogramBar barType = ChartDefaults.DEFAULT_HIST_BAR;
-	
-	private class HistogramProperties {
-		Color color;
-		
-		public HistogramProperties(Color color) {
-			this.color = color;
-		}
-	}
 	
 	HistogramPlot(HistogramChartCanvas canvas) {
 		this.canvas = canvas;
@@ -231,8 +224,12 @@ class HistogramPlot {
 			return -1;
 	}
 	
-	
-	private Color getHistogramColor(int series) {
-		return ColorFactory.getGoodDarkColor(series);
+	protected Color getHistogramColor(int series) {
+		String key = canvas.getDataset().getSeriesKey(series);
+		RGB color = canvas.getHistogramColor(key);
+		if (color != null)
+			return new Color(null, color);
+		else
+			return ColorFactory.getGoodDarkColor(series);
 	}
 }

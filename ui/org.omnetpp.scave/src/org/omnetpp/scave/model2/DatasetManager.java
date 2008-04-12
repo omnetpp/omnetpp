@@ -435,7 +435,7 @@ public class DatasetManager {
 	
 	public static String[] getResultItemNames(IDList idlist, String nameFormat, ResultFileManager manager) {
 		ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
-		String format = StringUtils.isEmpty(nameFormat) ? getLineNameFormat(items) : nameFormat;
+		String format = StringUtils.isEmpty(nameFormat) ? getNameFormat(items) : nameFormat;
 		return ResultItemFormatter.formatResultItems(format, items);
 	}
 	
@@ -448,13 +448,13 @@ public class DatasetManager {
 
 	
 	/**
-	 * Returns the default format string for names of the lines in {@code items}.
+	 * Returns the default format string for names of the {@code items}.
 	 * It is "{file} {run} {run-number} {module} {name} {experiment} {measurement} {replication}",
 	 * but fields that are the same for each item are omitted.
 	 * If all the fields has the same value in {@code items}, then the "{index}" is used as 
 	 * the format string. 
 	 */
-	private static String getLineNameFormat(ResultItem[] items) {
+	private static String getNameFormat(ResultItem[] items) {
 
 		if (items.length <= 1)
 			return "{module} {name}";
