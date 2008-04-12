@@ -1,10 +1,10 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_WRAP_LABELS;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LABELS_FONT;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_WRAP_LABELS;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY;
 
 import java.util.ArrayList;
 import java.util.Collections;

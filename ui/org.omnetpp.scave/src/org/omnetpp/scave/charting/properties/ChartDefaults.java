@@ -1,24 +1,6 @@
-package org.omnetpp.scave.charting;
+package org.omnetpp.scave.charting.properties;
 
-import static org.omnetpp.scave.charting.ChartProperties.PROP_ANTIALIAS;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_CACHING;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LEGEND;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_GRAPH_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_ANCHORING;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_BORDER;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_LEGEND_POSITION;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_WRAP_LABELS;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave.charting.ChartProperties.*;
+import static org.omnetpp.scave.charting.properties.ChartProperties.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,11 +10,12 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
-import org.omnetpp.scave.charting.ChartProperties.LegendAnchor;
-import org.omnetpp.scave.charting.ChartProperties.LegendPosition;
-import org.omnetpp.scave.charting.ChartProperties.LineType;
-import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
+import org.omnetpp.scave.charting.properties.ChartProperties.BarPlacement;
+import org.omnetpp.scave.charting.properties.ChartProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
+import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
+import org.omnetpp.scave.charting.properties.ChartProperties.LineType;
+import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 
 /**
  * Defines defaults for the chart. Used by both the chart widgets 

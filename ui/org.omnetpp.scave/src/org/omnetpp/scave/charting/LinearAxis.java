@@ -1,12 +1,12 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_COLOR;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_GRID_COLOR;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_AXIS_COLOR;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_GRID_COLOR;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LABELS_FONT;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_SHOW_GRID;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 
 import java.math.BigDecimal;
 
@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Transform;
 import org.omnetpp.common.canvas.ICoordsMapping;
-import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
+import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 
 /**
  * Draws a (horizontal or vertical) chart axis, with the corresponding axis 

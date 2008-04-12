@@ -5,6 +5,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.omnetpp.scave.charting.properties.ChartDefaults;
 
 
 /**

@@ -1,25 +1,25 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_BASELINE;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_LABELS_FONT;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_SHOW_GRID;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_WRAP_LABELS;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_COLOR;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_BAR_PLACEMENT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_WRAP_LABELS;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_X_AXIS_TITLE;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_X_LABELS_ROTATE_BY;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_PLACEMENT;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LABELS_FONT;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_SHOW_GRID;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_WRAP_LABELS;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BAR_COLOR;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BAR_PLACEMENT;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_WRAP_LABELS;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_XY_GRID;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABELS_ROTATE_BY;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,14 +39,14 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
-import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.dataset.IAveragedScalarDataset;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
+import org.omnetpp.scave.charting.properties.ChartProperties.BarPlacement;
+import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 
 /**
  * Bar chart.

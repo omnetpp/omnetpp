@@ -1,7 +1,7 @@
 package org.omnetpp.scave.charting;
 
-import static org.omnetpp.scave.charting.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
-import static org.omnetpp.scave.charting.ChartProperties.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.ChartProperties.*;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
@@ -12,9 +12,10 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.scave.charting.ChartProperties.HistogramBar;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
+import org.omnetpp.scave.charting.properties.ChartDefaults;
+import org.omnetpp.scave.charting.properties.ChartProperties.HistogramBar;
 
 public class HistogramChartCanvas extends ChartCanvas {
 	
@@ -37,7 +38,11 @@ public class HistogramChartCanvas extends ChartCanvas {
 
 		if (PROP_HIST_BAR.equals(name))
 			setBarType(Converter.stringToEnum(value, HistogramBar.class));
-		else
+		else if (name.startsWith(PROP_HIST_COLOR))
+			; // TODO
+		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
+			; // TODO
+		else 
 			super.setProperty(name, value);
 	}
 	

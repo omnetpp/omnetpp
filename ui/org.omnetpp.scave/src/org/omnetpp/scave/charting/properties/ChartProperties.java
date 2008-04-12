@@ -1,4 +1,4 @@
-package org.omnetpp.scave.charting;
+package org.omnetpp.scave.charting.properties;
 
 import java.util.List;
 
@@ -14,14 +14,11 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.properties.BasePropertySource;
 import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.charting.dataset.IXYDataset;
-import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
@@ -31,7 +28,6 @@ import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.model2.DatasetManager;
 
 /**
  * Property source for charts.  
@@ -80,7 +76,9 @@ public class ChartProperties extends PropertySource {
 		// Plot
 		PROP_ANTIALIAS			= "Plot.Antialias",
 		PROP_CACHING			= "Plot.Caching",
-		PROP_BACKGROUND_COLOR	= "Plot.BackgroundColor";
+		PROP_BACKGROUND_COLOR	= "Plot.BackgroundColor",
+		// Histograms
+		PROP_HIST_COLOR			= "Hist.Color";
 
 	public enum SymbolType {
 		None("None", "none"), //XXX allowed?
@@ -319,226 +317,10 @@ public class ChartProperties extends PropertySource {
 	public void setLegendAnchoring(LegendAnchor anchoring) { setProperty(PROP_LEGEND_ANCHORING, anchoring); }
 	public LegendAnchor defaultLegendAnchor() { return ChartDefaults.DEFAULT_LEGEND_ANCHOR; }
 
-	/*======================================================================
-	 *                             Line
-	 *======================================================================*/
-	private static final String DEFAULT_LINE_PROPERTIES_ID = "default";
+	/*---------------------------------------------------------------
+	 *                   Helpers
+	 *---------------------------------------------------------------*/
 	
-	public class LineProperties extends PropertySource {
-		private String lineId;
-
-		public LineProperties(String lineId) {
-			this.lineId = lineId;
-		}
-
-		private String propertyName(String baseName) {
-			return lineId == null ? baseName : baseName + "/" + lineId;
-		}
-
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_DISPLAY_LINE,optional=true)
-		public boolean getDisplayLine() { return getBooleanProperty(propertyName(PROP_DISPLAY_LINE)); }
-		public void setDisplayLine(boolean display) { setProperty(propertyName(PROP_DISPLAY_LINE), display); }
-		public boolean defaultDisplayLine() { return ChartDefaults.DEFAULT_DISPLAY_LINE; }
-
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_TYPE,optional=true)
-		public SymbolType getSymbolType() { return getEnumProperty(propertyName(PROP_SYMBOL_TYPE), SymbolType.class); }
-		public void setSymbolType(SymbolType type) { setProperty(propertyName(PROP_SYMBOL_TYPE), type); }
-		public SymbolType defaultSymbolType() { return null; }
-
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_SYMBOL_SIZE)
-		public Integer getSymbolSize() { return getIntegerProperty(propertyName(PROP_SYMBOL_SIZE)); }
-		public void setSymbolSize(Integer size) { setProperty(propertyName(PROP_SYMBOL_SIZE), size); }
-		public Integer defaultSymbolSize() { return ChartDefaults.DEFAULT_SYMBOL_SIZE; }
-
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_TYPE,optional=true)
-		public LineType getLineType() { return getEnumProperty(propertyName(PROP_LINE_TYPE), LineType.class); }
-		public void setLineType(LineType style) { setProperty(propertyName(PROP_LINE_TYPE), style); }
-		public LineType defaultLineType() { return null; }
-
-		@org.omnetpp.common.properties.Property(category="Lines",id=PROP_LINE_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
-		public String getLineColor() { return getStringProperty(propertyName(PROP_LINE_COLOR)); } // FIXME use RGB
-		public void setLineColor(String color) { setProperty(propertyName(PROP_LINE_COLOR), color); }
-		public String defaultLineColor() { return null; }
-	}
-	
-	public class LinesPropertySource extends BasePropertySource {
-		IPropertyDescriptor[] descriptors;
-
-		public LinesPropertySource() {
-			this.descriptors = createLineDescriptors();
-		}
-
-		public IPropertyDescriptor[] getPropertyDescriptors() {
-			return descriptors;
-		}
-
-		public Object getPropertyValue(Object id) {
-			return new LineProperties(id == DEFAULT_LINE_PROPERTIES_ID ? null : (String)id);
-		}
-		
-		protected IPropertyDescriptor[] createLineDescriptors() {
-			IPropertyDescriptor[] descriptors;
-			IXYDataset dataset = DatasetManager.createXYDataset(chart, null, false, manager, null);
-			
-			if (dataset != null) {
-				descriptors = new IPropertyDescriptor[dataset.getSeriesCount() + 1];
-				descriptors[0] = new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
-				for (int i= 0; i < dataset.getSeriesCount(); ++i) {
-					String key = dataset.getSeriesKey(i);
-					descriptors[i+1] = new PropertyDescriptor(key, key);
-				}
-			}
-			else
-				descriptors = new IPropertyDescriptor[0];
-			
-			return descriptors;
-		}
-	}
-
-	public static class VectorChartProperties extends ChartProperties
-	{
-		public VectorChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
-			super(chart, properties, manager);
-		}
-		/*======================================================================
-		 *                             Axes
-		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MIN)
-		public Double getXAxisMin() { return getDoubleProperty(PROP_X_AXIS_MIN); }
-		public void setXAxisMin(Double min) { setProperty(PROP_X_AXIS_MIN, min); }
-
-		@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MAX)
-		public Double getXAxisMax() { return getDoubleProperty(PROP_X_AXIS_MAX); }
-		public void setXAxisMax(Double max) { setProperty(PROP_X_AXIS_MAX, max); }
-
-		/*======================================================================
-		 *                             Lines
-		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Plot",id="Lines",displayName="Lines")
-		public LinesPropertySource getLineProperties() { return new LinesPropertySource(); }
-
-		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
-	}
-	
-	/*======================================================================
-	 *                             Bars
-	 *======================================================================*/
-	public class BarProperties extends PropertySource {
-		private String barId;
-
-		public BarProperties(String barId) {
-			this.barId = barId;
-		}
-
-		private String propertyName(String baseName) {
-			return barId == null ? baseName : baseName + "/" + barId;
-		}
-
-		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
-		public String getColor() { return getStringProperty(propertyName(PROP_BAR_COLOR)); } // FIXME use RGB
-		public void setColor(String color) { setProperty(propertyName(PROP_BAR_COLOR), color); }
-		public String defaultColor() { return null; }
-	}
-	
-	private static final String DEFAULT_BAR_PROPERTIES_ID = "default";
-	
-	public class BarsPropertySource extends BasePropertySource {
-		IPropertyDescriptor[] descriptors;
-
-		public BarsPropertySource() {
-			this.descriptors = createBarDescriptors();
-		}
-
-		public IPropertyDescriptor[] getPropertyDescriptors() {
-			return descriptors;
-		}
-
-		@Override
-		public Object getPropertyValue(Object id) {
-			return new BarProperties(id == DEFAULT_BAR_PROPERTIES_ID ? null : (String)id);
-		}
-
-		protected IPropertyDescriptor[] createBarDescriptors() {
-			IPropertyDescriptor[] descriptors;
-			
-			ScalarDataset dataset = DatasetManager.createScalarDataset((BarChart)chart, manager, null);
-			String[] names = new String[dataset.getColumnCount()];
-			for (int i = 0; i < names.length; ++i)
-				names[i] = dataset.getColumnKey(i);
-			if (names != null) {
-				descriptors = new IPropertyDescriptor[names.length+1];
-				descriptors[0] = new PropertyDescriptor(DEFAULT_BAR_PROPERTIES_ID, "default");
-				for (int i= 0; i < names.length; ++i)
-					descriptors[i+1] = new PropertyDescriptor(names[i], names[i]);
-			}
-			else
-				descriptors = new IPropertyDescriptor[0];
-			
-			return descriptors;
-		}
-	}
-	
-	public static class ScalarChartProperties extends ChartProperties
-	{
-		public ScalarChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
-			super(chart, properties, manager);
-		}
-
-		/*======================================================================
-		 *                             Titles
-		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Titles",id=PROP_WRAP_LABELS)
-		public boolean getWrapLabels() { return getBooleanProperty(PROP_WRAP_LABELS); }
-		public void setWrapLabels(boolean wrap) { setProperty(PROP_WRAP_LABELS, wrap); }
-		public boolean defaultWrapLabels() { return ChartDefaults.DEFAULT_WRAP_LABELS; }
-
-		/*======================================================================
-		 *                             Bars
-		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_BASELINE)
-		public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
-		public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
-		public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
-
-		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_PLACEMENT)
-		public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
-		public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
-		public BarPlacement defaultBarPlacement() { return ChartDefaults.DEFAULT_BAR_PLACEMENT; }
-		
-		@org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars")
-		public BarsPropertySource getBarProperties() { return new BarsPropertySource(); }
-	}
-
-	/*======================================================================
-	 *                             Histograms
-	 *======================================================================*/
-	public static class HistogramChartProperties extends ChartProperties
-	{
-		public HistogramChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
-			super(chart, properties, manager);
-		}
-
-		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_HIST_BAR)
-		public HistogramBar getBarType() { return getEnumProperty(PROP_HIST_BAR, HistogramBar.class); }
-		public void setBarType(HistogramBar placement) { setProperty(PROP_HIST_BAR, placement); }
-		public HistogramBar defaultBarType() { return ChartDefaults.DEFAULT_HIST_BAR; }
-	}
-
-	/*======================================================================
-	 *                             Histograms
-	 *======================================================================*/
-	public static class ScatterChartProperties extends VectorChartProperties
-	{
-		public ScatterChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
-			super(chart, properties, manager);
-			Assert.isLegal(chart == null || chart instanceof ScatterChart);
-		}
-	}
-
-	/*======================================================================
-	 *                             Generic interface
-	 *======================================================================*/
-
 	public Property getProperty(String propertyName) {
 		for (Property property : properties)
 			if (property.getName().equals(propertyName))
@@ -730,5 +512,22 @@ public class ChartProperties extends PropertySource {
 			return (Double)defaultValue;
 		else
 			return null;
+	}
+	
+	protected IPropertyDescriptor[] createDescriptors(Object defaultId, String[] ids, String[] names) {
+		if (ids == null || names == null)
+			return new IPropertyDescriptor[0];
+		Assert.isTrue(ids.length == names.length);
+		
+		IPropertyDescriptor[] descriptors = new IPropertyDescriptor[ids.length+1];
+		descriptors[0] = new PropertyDescriptor(defaultId, "default");
+		for (int i= 0; i < ids.length; ++i)
+			descriptors[i+1] = new PropertyDescriptor(ids[i], names[i]);
+		
+		return descriptors;
+	}
+	
+	String propertyName(String baseName, String elementId) {
+		return elementId == null ? baseName : baseName + "/" + elementId;
 	}
 }

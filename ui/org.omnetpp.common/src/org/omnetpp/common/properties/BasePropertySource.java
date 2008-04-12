@@ -10,6 +10,16 @@ import org.eclipse.ui.views.properties.IPropertySource2;
  * @author tomi
  */
 public class BasePropertySource implements IPropertySource2 {
+	
+	IPropertyDescriptor[] descriptors;
+	
+	public BasePropertySource() {
+		this.descriptors = new IPropertyDescriptor[0];
+	}
+	
+	public BasePropertySource(IPropertyDescriptor[] descriptors) {
+		this.descriptors = descriptors;
+	}
 
 	public boolean isPropertyResettable(Object id) {
 		return false;
@@ -24,7 +34,7 @@ public class BasePropertySource implements IPropertySource2 {
 	}
 
 	public IPropertyDescriptor[] getPropertyDescriptors() {
-		return new IPropertyDescriptor[0];
+		return descriptors;
 	}
 
 	public Object getPropertyValue(Object id) {
