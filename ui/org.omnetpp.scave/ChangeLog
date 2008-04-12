@@ -1,3 +1,19 @@
+2008-04-12
+----------
+
+Additions:
+
+   + Histograms are loaded and displayed in the table of BrowseDataPage.
+
+   + Histogram charts are displayed (needs some more work).
+
+   + Statistic fields are loaded as scalars.
+
+Fixes:
+
+   + Run attributes are saved into the scalar files too. 
+
+
 2008-03-28
 ----------
 
