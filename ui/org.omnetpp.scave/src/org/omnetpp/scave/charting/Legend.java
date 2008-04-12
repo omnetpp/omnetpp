@@ -22,7 +22,7 @@ import org.omnetpp.scave.charting.plotter.IChartSymbol;
  *
  * @author tomi
  */
-public class Legend {
+public class Legend implements ILegend {
 	
 	class Item {
 		String text;
@@ -101,11 +101,11 @@ public class Legend {
 		this.anchor = anchor;
 	}
 	
-	public void clearLegendItems() {
+	public void clearItems() {
 		items.clear();
 	}
 	
-	public void addLegendItem(Color color, String text, IChartSymbol symbol, boolean drawLine) {
+	public void addItem(Color color, String text, IChartSymbol symbol, boolean drawLine) {
 		items.add(new Item(color, text, symbol, drawLine));
 	}
 	

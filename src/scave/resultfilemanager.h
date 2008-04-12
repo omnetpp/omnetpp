@@ -303,7 +303,7 @@ class SCAVE_API ResultFileManager
     void processLine(char **vec, int numTokens, sParseContext &ctx);
     int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
-    int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat);
+    int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat, const StringMap &attrs);
     
     ResultFile *getFileForID(ID id) const; // checks for NULL
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);

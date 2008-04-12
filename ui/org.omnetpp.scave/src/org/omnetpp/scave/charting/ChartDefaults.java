@@ -88,6 +88,8 @@ public class ChartDefaults {
 	public static final LineType DEFAULT_LINE_STYLE = null; // = use interpolationmode attr of vectors
 	public static final Integer DEFAULT_SYMBOL_SIZE = 4;
 	
+	// histogram chart
+	public static final HistogramBar DEFAULT_HIST_BAR = HistogramBar.Solid;
 	
 	// Maps property names to default values
 	static Map<String,Object> defaults;
@@ -127,6 +129,8 @@ public class ChartDefaults {
 		defaults.put(PROP_DISPLAY_LINE, DEFAULT_DISPLAY_LINE);
 		defaults.put(PROP_SYMBOL_SIZE, DEFAULT_SYMBOL_SIZE);
 		defaults.put(PROP_LINE_TYPE, DEFAULT_LINE_STYLE);
+		
+		defaults.put(PROP_HIST_BAR, DEFAULT_HIST_BAR);
 	}
 	
 	public static Object getDefaultPropertyValue(String propertyName) {

@@ -48,12 +48,14 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageConverter;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ZoomChartAction;
@@ -70,7 +72,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
  */
 public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
-	private static final boolean debug = false;
+	private static final boolean debug = true;
 	
 	// when displaying confidence intervals, XXX chart parameter?
 	protected static final double CONFIDENCE_LEVEL = 0.95;
@@ -152,6 +154,8 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	abstract void doSetDataset(IDataset dataset);
 	
+	abstract String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint);
+	
 	protected void layoutChart() {
 		// prevent nasty infinite layout recursions
 		if (layoutDepth>0)
@@ -163,11 +167,16 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		
 		layoutDepth++;
 		if (debug) System.out.println("layoutChart(), level "+layoutDepth);
+		GC gc = new GC(Display.getCurrent());
 		try {
-			doLayoutChart();
+			doLayoutChart(gc);
+		}
+		catch (Throwable e) {
+			ScavePlugin.logError(e);
 		}
 		finally {
 			layoutDepth--;
+			gc.dispose();
 		}
 		// may trigger another layoutChart()
 		updateZoomedArea();
@@ -201,7 +210,55 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	/**
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
 	 */
-	abstract protected void doLayoutChart();
+	abstract protected void doLayoutChart(GC gc);
+	
+	/*-------------------------------------------------------------------------------------------
+	 *                                      Drawing
+	 *-------------------------------------------------------------------------------------------*/
+	
+	@Override
+	protected void paintCachableLayer(GC gc) {
+		if (debug) {
+			System.out.println("paintCachableLayer()");
+			System.out.println(String.format("area=%f, %f, %f, %f, zoom: %f, %f", getMinX(), getMaxX(), getMinY(), getMaxY(), getZoomX(), getZoomY()));
+			System.out.println(String.format("view port=%s, vxy=%d, %d", getViewportRectangle(), getViewportLeft(), getViewportTop()));
+		}
+		if (getClientArea().isEmpty())
+			return;
+		
+		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
+		resetDrawingStylesAndColors(gc);
+		
+		doPaintCachableLayer(gc, coordsMapping);
+		
+		if (coordsMapping.getNumCoordinateOverflows()>0)
+			displayCoordinatesOverflowMessage(gc);
+	}
+	
+	@Override
+	protected void paintNoncachableLayer(GC gc) {
+		if (debug) System.out.println("paintNoncachableLayer()");
+		if (getClientArea().isEmpty())
+			return;
+		
+		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
+		resetDrawingStylesAndColors(gc);
+
+		doPaintNoncachableLayer(gc, coordsMapping);
+		
+		if (coordsMapping.getNumCoordinateOverflows() > 0)
+			displayCoordinatesOverflowMessage(gc);
+	}
+	
+	abstract protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping);
+	abstract protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping);
+
+	private void displayCoordinatesOverflowMessage(GC gc) {
+		resetDrawingStylesAndColors(gc);
+		gc.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
+				    "may not be accurate. Please decrease zoom level.", 
+				    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
+	}
 	
 	/**
 	 * 
@@ -443,7 +500,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	 * Resets all GC settings except clipping and transform.
 	 */
 	public void resetDrawingStylesAndColors(GC gc) {
-		gc.setAntialias(SWT.DEFAULT);
+		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
 		gc.setAlpha(255);
 		gc.setBackground(backgroundColor);
 		gc.setBackgroundPattern(null);

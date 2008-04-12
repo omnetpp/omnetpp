@@ -69,6 +69,8 @@ public class ChartProperties extends PropertySource {
 		PROP_SYMBOL_SIZE		= "Symbols.Size",
 		PROP_LINE_TYPE			= "Line.Type",
 		PROP_LINE_COLOR			= "Line.Color",
+		// Histograms
+		PROP_HIST_BAR			= "Hist.Bar",
 		// Legend
 		PROP_DISPLAY_LEGEND		= "Legend.Display",
 		PROP_LEGEND_BORDER		= "Legend.Border",
@@ -163,6 +165,11 @@ public class ChartProperties extends PropertySource {
 		None,
 		Major,
 		All,
+	}
+	
+	public enum HistogramBar {
+		Solid,
+		Outline,
 	}
 
 	
@@ -413,10 +420,32 @@ public class ChartProperties extends PropertySource {
 		public LineProperties getLineProperties(String lineId) { return new LineProperties(lineId); }
 	}
 	
-	public class BarColorsPropertySource extends BasePropertySource {
+	/*======================================================================
+	 *                             Bars
+	 *======================================================================*/
+	public class BarProperties extends PropertySource {
+		private String barId;
+
+		public BarProperties(String barId) {
+			this.barId = barId;
+		}
+
+		private String propertyName(String baseName) {
+			return barId == null ? baseName : baseName + "/" + barId;
+		}
+
+		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
+		public String getColor() { return getStringProperty(propertyName(PROP_BAR_COLOR)); } // FIXME use RGB
+		public void setColor(String color) { setProperty(propertyName(PROP_BAR_COLOR), color); }
+		public String defaultColor() { return null; }
+	}
+	
+	private static final String DEFAULT_BAR_PROPERTIES_ID = "default";
+	
+	public class BarsPropertySource extends BasePropertySource {
 		IPropertyDescriptor[] descriptors;
 
-		public BarColorsPropertySource() {
+		public BarsPropertySource() {
 			this.descriptors = createBarDescriptors();
 		}
 
@@ -426,27 +455,7 @@ public class ChartProperties extends PropertySource {
 
 		@Override
 		public Object getPropertyValue(Object id) {
-			return getStringProperty((String)id);
-		}
-
-		@Override
-		public void setPropertyValue(Object id, Object value) {
-			setProperty((String)id, (String)value);				
-		}
-		
-		@Override
-		public boolean isPropertyResettable(Object id) {
-			return true;
-		}
-
-		@Override
-		public boolean isPropertySet(Object id) {
-			return getPropertyValue(id) != null;
-		}
-
-		@Override
-		public void resetPropertyValue(Object id) {
-			setPropertyValue(id, null);
+			return new BarProperties(id == DEFAULT_BAR_PROPERTIES_ID ? null : (String)id);
 		}
 
 		protected IPropertyDescriptor[] createBarDescriptors() {
@@ -457,10 +466,10 @@ public class ChartProperties extends PropertySource {
 			for (int i = 0; i < names.length; ++i)
 				names[i] = dataset.getColumnKey(i);
 			if (names != null) {
-				descriptors = new IPropertyDescriptor[names.length + 1];
-				descriptors[0] = new ColorPropertyDescriptor(PROP_BAR_COLOR, "default"); //new PropertyDescriptor(DEFAULT_LINE_PROPERTIES_ID, "default");
+				descriptors = new IPropertyDescriptor[names.length+1];
+				descriptors[0] = new PropertyDescriptor(DEFAULT_BAR_PROPERTIES_ID, "default");
 				for (int i= 0; i < names.length; ++i)
-					descriptors[i+1] = new ColorPropertyDescriptor(PROP_BAR_COLOR + "/" + names[i], names[i]); // new PropertyDescriptor(names[i], names[i]);
+					descriptors[i+1] = new PropertyDescriptor(names[i], names[i]);
 			}
 			else
 				descriptors = new IPropertyDescriptor[0];
@@ -469,7 +478,6 @@ public class ChartProperties extends PropertySource {
 		}
 	}
 	
-
 	public static class ScalarChartProperties extends ChartProperties
 	{
 		public ScalarChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
@@ -487,29 +495,38 @@ public class ChartProperties extends PropertySource {
 		/*======================================================================
 		 *                             Bars
 		 *======================================================================*/
-		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_BASELINE)
+		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_BASELINE)
 		public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
 		public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
 		public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
 
-		@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_PLACEMENT)
+		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_PLACEMENT)
 		public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
 		public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
 		public BarPlacement defaultBarPlacement() { return ChartDefaults.DEFAULT_BAR_PLACEMENT; }
 		
-		@org.omnetpp.common.properties.Property(category="Bars",id="Colors",displayName="Colors")
-		public BarColorsPropertySource getBarProperties() { return new BarColorsPropertySource(); }
+		@org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars")
+		public BarsPropertySource getBarProperties() { return new BarsPropertySource(); }
 	}
 
+	/*======================================================================
+	 *                             Histograms
+	 *======================================================================*/
 	public static class HistogramChartProperties extends ChartProperties
 	{
 		public HistogramChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
 			super(chart, properties, manager);
 		}
 
-		// TODO histogram chart properties
+		@org.omnetpp.common.properties.Property(category="Plot",id=PROP_HIST_BAR)
+		public HistogramBar getBarType() { return getEnumProperty(PROP_HIST_BAR, HistogramBar.class); }
+		public void setBarType(HistogramBar placement) { setProperty(PROP_HIST_BAR, placement); }
+		public HistogramBar defaultBarType() { return ChartDefaults.DEFAULT_HIST_BAR; }
 	}
 
+	/*======================================================================
+	 *                             Histograms
+	 *======================================================================*/
 	public static class ScatterChartProperties extends VectorChartProperties
 	{
 		public ScatterChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {

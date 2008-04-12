@@ -796,9 +796,11 @@ int ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *
     return vectors.size() - 1;
 }
 
-int ResultFileManager::addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat)
+int ResultFileManager::addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName,
+		Statistics stat, const StringMap &attrs)
 {
     HistogramResult histogram;
+    histogram.attributes = attrs;
     histogram.fileRunRef = fileRunRef;
     histogram.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
     histogram.nameRef = stringSetFindOrInsert(names, std::string(histogramName));
@@ -1030,8 +1032,11 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         	CHECK(ctx.lastResultItemType == SCALAR && !ctx.moduleName.empty() && !ctx.statisticName.empty(),
         			"invalid scalar file: missing statistics declaration");
         	Statistics stat(ctx.count, ctx.min, ctx.max, ctx.sum, ctx.sumSqr);
+        	const ScalarResults &scalars = ctx.fileRef->scalarResults;
+        	const StringMap &attrs = ctx.lastResultItemIndex < scalars.size() ?
+        								scalars[ctx.lastResultItemIndex].attributes : StringMap();
     		ctx.lastResultItemType = HISTOGRAM;
-    		ctx.lastResultItemIndex = addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.statisticName.c_str(), stat);
+    		ctx.lastResultItemIndex = addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.statisticName.c_str(), stat, attrs);
     	}
     	HistogramResult &histogram = ctx.fileRef->histogramResults[ctx.lastResultItemIndex];
     	histogram.addBin(lower_bound, value);

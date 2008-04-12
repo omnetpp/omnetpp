@@ -22,6 +22,8 @@ import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.CompoundXYDataset;
+import org.omnetpp.scave.charting.dataset.HistogramDataset;
+import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.dataset.ScalarScatterPlotDataset;
@@ -54,6 +56,7 @@ import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
@@ -422,6 +425,12 @@ public class DatasetManager {
 			return createScatterPlotDataset((ScatterChart)chart, dataset, manager, monitor);
 		else
 			return null;
+	}
+	
+	public static IHistogramDataset createHistogramDataset(HistogramChart chart, ResultFileManager manager, IProgressMonitor monitor) {
+		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
+		IDList idlist = dataset != null ? getIDListFromDataset(manager, dataset, chart, ResultType.HISTOGRAM_LITERAL): new IDList(); 
+		return new HistogramDataset(idlist, manager);
 	}
 	
 	public static String[] getResultItemNames(IDList idlist, String nameFormat, ResultFileManager manager) {

@@ -23,7 +23,7 @@ import org.omnetpp.scave.charting.plotter.IChartSymbol;
 /**
  * Legend tooltip.
  */
-class LegendTooltip
+class LegendTooltip implements ILegend
 {
 	Button button;
 	List<Item> items = new ArrayList<Item>();
@@ -85,6 +85,7 @@ class LegendTooltip
 	}
 	
 	public void draw(GC gc) {
+		// button is drawn as a child of the canvas
 	}
 	
 	public String getTooltipText(int x, int y, SizeConstraint preferredSize) {

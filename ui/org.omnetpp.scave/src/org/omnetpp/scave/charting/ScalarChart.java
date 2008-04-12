@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Font;
@@ -35,16 +34,11 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.dataset.IAveragedScalarDataset;
@@ -80,7 +74,7 @@ public class ScalarChart extends ChartCanvas {
 	public ScalarChart(Composite parent, int style) {
 		super(parent, style);
 		plot = new BarPlot(this);
-		new Tooltip();
+		new Tooltip(this);
 		
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseDown(MouseEvent e) {
@@ -101,7 +95,7 @@ public class ScalarChart extends ChartCanvas {
 			throw new IllegalArgumentException("must be an IScalarDataset");
 		
 		this.dataset = (IScalarDataset)dataset;
-		updateLegend();
+		updateLegends();
 		chartArea = calculatePlotArea();
 		updateArea();
 		chartChanged();
@@ -119,15 +113,18 @@ public class ScalarChart extends ChartCanvas {
 	protected RectangularArea calculatePlotArea() {
 		return plot.calculatePlotArea();
 	}
+	
+	private void updateLegends() {
+		updateLegend(legend);
+		updateLegend(legendTooltip);
+	}
 
-	private void updateLegend() {
-		legend.clearLegendItems();
-		legendTooltip.clearItems();
+	private void updateLegend(ILegend legend) {
+		legend.clearItems();
 		IChartSymbol symbol = new SquareSymbol();
 		if (dataset != null) {
 			for (int i = 0; i < dataset.getColumnCount(); ++i) {
-				legend.addLegendItem(plot.getBarColor(i), dataset.getColumnKey(i), symbol, false);
-				legendTooltip.addItem(plot.getBarColor(i), dataset.getColumnKey(i), symbol, false);
+				legend.addItem(plot.getBarColor(i), dataset.getColumnKey(i), symbol, false);
 			}
 		}
 	}
@@ -283,7 +280,7 @@ public class ScalarChart extends ChartCanvas {
 	public void setBarColor(String key, RGB color) {
 		BarProperties barProps = getOrCreateBarProperties(key);
 		barProps.color = color;
-		updateLegend();
+		updateLegends();
 		chartChanged();
 	}
 	
@@ -321,84 +318,66 @@ public class ScalarChart extends ChartCanvas {
 	 *=============================================*/
 
 	@Override
-	protected void doLayoutChart() {
-		GC gc = new GC(Display.getCurrent());
+	protected void doLayoutChart(GC gc) {
+		ICoordsMapping mapping = getOptimizedCoordinateMapper();
 
-		try {
-			ICoordsMapping mapping = getOptimizedCoordinateMapper();
+		// preserve zoomed-out state while resizing
+		boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
+		boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
 
-			// preserve zoomed-out state while resizing
-			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
-			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
+		// Calculate space occupied by title and legend and set insets accordingly
+		Rectangle area = new Rectangle(getClientArea());
+		Rectangle remaining = legendTooltip.layout(gc, area);
+		remaining = title.layout(gc, area);
+		remaining = legend.layout(gc, remaining);
 
-			// Calculate space occupied by title and legend and set insets accordingly
-			Rectangle area = new Rectangle(getClientArea());
-			Rectangle remaining = legendTooltip.layout(gc, area);
-			remaining = title.layout(gc, area);
-			remaining = legend.layout(gc, remaining);
+		Rectangle mainArea = remaining.getCopy();
+		Insets insetsToMainArea = new Insets();
+		domainAxis.layoutHint(gc, mainArea, insetsToMainArea, mapping);
+		// postpone valueAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
+		insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
 
-			Rectangle mainArea = remaining.getCopy();
-			Insets insetsToMainArea = new Insets();
-			domainAxis.layoutHint(gc, mainArea, insetsToMainArea, mapping);
-			// postpone valueAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
-			insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
+		// tentative plotArea calculation (y axis ticks width missing from the picture yet)
+		Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
+		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 
-			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
-			Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
-			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+		if (shouldZoomOutX)
+			zoomToFitX();
+		if (shouldZoomOutY)
+			zoomToFitY();
+		validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
 
-			if (shouldZoomOutX)
-				zoomToFitX();
-			if (shouldZoomOutY)
-				zoomToFitY();
-			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+		mapping = getOptimizedCoordinateMapper();
 
-			mapping = getOptimizedCoordinateMapper();
-			
-			// now the coordinate mapping is set up, so the y axis knows what tick labels
-			// will appear, and can calculate the occupied space from the longest tick label.
-			valueAxis.layoutHint(gc, mainArea, insetsToMainArea, mapping);
+		// now the coordinate mapping is set up, so the y axis knows what tick labels
+		// will appear, and can calculate the occupied space from the longest tick label.
+		valueAxis.layoutHint(gc, mainArea, insetsToMainArea, mapping);
 
-			// now we have the final insets, set it everywhere again 
-			domainAxis.setLayout(mainArea, insetsToMainArea);
-			valueAxis.setLayout(mainArea, insetsToMainArea);
-			plotArea = mainArea.getCopy().crop(insetsToMainArea);
-			legend.layoutSecondPass(plotArea);
-			//FIXME how to handle it when plotArea.height/width comes out negative??
-			plot.layout(gc, plotArea);
-			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+		// now we have the final insets, set it everywhere again 
+		domainAxis.setLayout(mainArea, insetsToMainArea);
+		valueAxis.setLayout(mainArea, insetsToMainArea);
+		plotArea = mainArea.getCopy().crop(insetsToMainArea);
+		legend.layoutSecondPass(plotArea);
+		//FIXME how to handle it when plotArea.height/width comes out negative??
+		plot.layout(gc, plotArea);
+		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 
-			if (shouldZoomOutX)
-				zoomToFitX();
-			if (shouldZoomOutY)
-				zoomToFitY();
-			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
-		} 
-		catch (Exception e) {
-			ScavePlugin.logError(e);
-		}
-		finally {
-			gc.dispose();
-		}
+		if (shouldZoomOutX)
+			zoomToFitX();
+		if (shouldZoomOutY)
+			zoomToFitY();
+		validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
 	}
 	
 	@Override
-	protected void paintCachableLayer(GC gc) {
-		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
-		resetDrawingStylesAndColors(gc);
-		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
+	protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping) {
 		gc.fillRectangle(gc.getClipping());
-		
 		valueAxis.drawGrid(gc, coordsMapping);
 		plot.draw(gc, coordsMapping);
 	}
 	
 	@Override
-	protected void paintNoncachableLayer(GC gc) {
-		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
-		resetDrawingStylesAndColors(gc);
-		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
-		
+	protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping) {
 		paintInsets(gc);
 		plot.drawBaseline(gc, coordsMapping);
 		title.draw(gc);
@@ -422,56 +401,39 @@ public class ScalarChart extends ChartCanvas {
 		chartChanged();
 	}
 
-
-
-	/**
-	 * Bar chart tooltip
-	 * @author Andras
-	 */
-	class Tooltip {
-		public Tooltip() {
-			HoverSupport hoverSupport = new HoverSupport();
-			hoverSupport.setHoverSizeConstaints(600, 400);
-			hoverSupport.adapt(ScalarChart.this, new IHoverTextProvider() {
-				public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-					return getHoverText(x, y, outSizeConstraint);
-				}
-			});
-		}
-		
-		private String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
-			int rowColumn = plot.findRowColumn(fromCanvasX(x), fromCanvasY(y));
-			if (rowColumn != -1) {
-				int numColumns = dataset.getColumnCount();
-				int row = rowColumn / numColumns;
-				int column = rowColumn % numColumns;
-				String key = (String) dataset.getColumnKey(column);
-				String valueStr = null;
-				if (dataset instanceof IStringValueScalarDataset) {
-					valueStr = ((IStringValueScalarDataset)dataset).getValueAsString(row, column);
-				}
-				if (valueStr == null) {
-					double value = dataset.getValue(row, column);
-					double halfInterval = Double.NaN;
-					if (dataset instanceof IAveragedScalarDataset)
-						halfInterval = ((IAveragedScalarDataset)dataset).getConfidenceInterval(row, column, CONFIDENCE_LEVEL);
-					valueStr = formatValue(value, halfInterval);
-				}
-				String line1 = StringEscapeUtils.escapeHtml(key);
-				String line2 = "value: " + valueStr;
-				//int maxLength = Math.max(line1.length(), line2.length());
-				TextLayout textLayout = new TextLayout(ScalarChart.this.getDisplay());
-				textLayout.setText(line1 + "\n" + line2);
-				textLayout.setWidth(320);
-				org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
-				outSizeConstraint.preferredWidth = 20 + bounds.width;
-				outSizeConstraint.preferredHeight = 20 + bounds.height;
-				
-//				outSizeConstraint.preferredWidth = 20 + maxLength * 7;
-//				outSizeConstraint.preferredHeight = 25 + 2 * 12;
-				return HoverSupport.addHTMLStyleSheet(line1 + "<br>" + line2);
+	@Override
+	String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint) {
+		int rowColumn = plot.findRowColumn(fromCanvasX(x), fromCanvasY(y));
+		if (rowColumn != -1) {
+			int numColumns = dataset.getColumnCount();
+			int row = rowColumn / numColumns;
+			int column = rowColumn % numColumns;
+			String key = (String) dataset.getColumnKey(column);
+			String valueStr = null;
+			if (dataset instanceof IStringValueScalarDataset) {
+				valueStr = ((IStringValueScalarDataset)dataset).getValueAsString(row, column);
 			}
-			return null;
+			if (valueStr == null) {
+				double value = dataset.getValue(row, column);
+				double halfInterval = Double.NaN;
+				if (dataset instanceof IAveragedScalarDataset)
+					halfInterval = ((IAveragedScalarDataset)dataset).getConfidenceInterval(row, column, ScalarChart.CONFIDENCE_LEVEL);
+				valueStr = formatValue(value, halfInterval);
+			}
+			String line1 = StringEscapeUtils.escapeHtml(key);
+			String line2 = "value: " + valueStr;
+			//int maxLength = Math.max(line1.length(), line2.length());
+			TextLayout textLayout = new TextLayout(getDisplay());
+			textLayout.setText(line1 + "\n" + line2);
+			textLayout.setWidth(320);
+			org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
+			outSizeConstraint.preferredWidth = 20 + bounds.width;
+			outSizeConstraint.preferredHeight = 20 + bounds.height;
+
+//			outSizeConstraint.preferredWidth = 20 + maxLength * 7;
+//			outSizeConstraint.preferredHeight = 25 + 2 * 12;
+			return line1 + "<br>" + line2;
 		}
+		return null;
 	}
 }

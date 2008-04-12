@@ -73,6 +73,17 @@ namespace std {
 
    %}
 
+   %typemap(javacode) vector<double> %{
+       public double[] toArray() {
+           int sz = (int) size();
+           double[] array = new double[sz];
+           for (int i=0; i<sz; i++)
+               array[i] = get(i);
+           return array;
+       }
+
+   %}
+
    %typemap(javacode) vector<Run*> %{
         public Run[] toArray() {
             int sz = (int)size();
@@ -152,6 +163,7 @@ namespace std {
    %template(IntIntMap) map<int,int>;
 
    %template(IntVector) vector<int>;
+   %template(DoubleVector) vector<double>;
    %template(XYDatasetVector) vector<XYDataset>;
 };
 

@@ -76,7 +76,11 @@ public class ChartFactory {
 	}
 
 	public static ChartCanvas createHistogramChart(Composite parent, HistogramChart chart, Dataset dataset, ResultFileManager manager) {
-		return null; //TODO histogram chart
+		final HistogramChartCanvas histogramChart = new HistogramChartCanvas(parent, SWT.DOUBLE_BUFFERED);
+		histogramChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		setChartProperties(chart, histogramChart);
+		populateHistogramChart(chart, manager, histogramChart);
+		return histogramChart;
 	}
 	
 	public static VectorChart createScatterChart(Composite parent, ScatterChart chart, Dataset dataset, ResultFileManager manager) {
@@ -107,6 +111,18 @@ public class ChartFactory {
 		startDatasetEvaluationJob(vectorChart, new IDatasetCalculation() {
 			public IDataset run(IProgressMonitor progressMonitor) {
 				return DatasetManager.createVectorDataset(chart, manager, progressMonitor);
+			}
+		});
+	}
+
+	public static void populateHistogramChart(final HistogramChart chart, final ResultFileManager manager, final HistogramChartCanvas histogramChart) {
+		// perform:
+		// vectorChart.setDataset(DatasetManager.createVectorDataset(chart, dataset, manager));
+		// but as a background job:
+		//
+		startDatasetEvaluationJob(histogramChart, new IDatasetCalculation() {
+			public IDataset run(IProgressMonitor progressMonitor) {
+				return DatasetManager.createHistogramDataset(chart, manager, progressMonitor);
 			}
 		});
 	}

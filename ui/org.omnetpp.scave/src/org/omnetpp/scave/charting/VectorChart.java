@@ -31,7 +31,6 @@ import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
@@ -39,12 +38,11 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
-import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartProperties.LineType;
 import org.omnetpp.scave.charting.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.ChartProperties.SymbolType;
@@ -319,15 +317,19 @@ public class VectorChart extends ChartCanvas {
 		this.dataset = (IXYDataset)dataset;
 		this.selection = null;
 		updateLineProperties();
-		updateLegend();
+		updateLegends();
 		chartArea = calculatePlotArea();
 		updateArea();
 		chartChanged();
 	}
 	
-	private void updateLegend() {
-		legend.clearLegendItems();
-		legendTooltip.clearItems();
+	private void updateLegends() {
+		updateLegend(legend);
+		updateLegend(legendTooltip);
+	}
+	
+	private void updateLegend(ILegend legend) {
+		legend.clearItems();
 		if (dataset != null) {
 			for (int i = 0; i < dataset.getSeriesCount(); ++i) {
 				LineProperties props = getLineProperties(i);
@@ -335,8 +337,7 @@ public class VectorChart extends ChartCanvas {
 					Color color = props.getColor();
 					String key = props.getLineId();
 					IChartSymbol symbol = props.getSymbol();
-					legend.addLegendItem(color, key, symbol, true);
-					legendTooltip.addItem(color, key, symbol, true);
+					legend.addItem(color, key, symbol, true);
 				}
 			}
 		}
@@ -409,7 +410,7 @@ public class VectorChart extends ChartCanvas {
 	public void setDisplayLine(String key, Boolean value) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.setDisplayLine(value);
-		updateLegend();
+		updateLegends();
 		chartChanged();
 	}
 	
@@ -422,14 +423,14 @@ public class VectorChart extends ChartCanvas {
 	public void setLineColor(String key, RGB color) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.setLineColor(color);
-		updateLegend();
+		updateLegends();
 		chartChanged();
 	}
 
 	public void setSymbolType(String key, SymbolType symbolType) {
 		LineProperties props = getOrCreateLineProperties(key);
 		props.setSymbolType(symbolType);
-		updateLegend();
+		updateLegends();
 		chartChanged();
 	}
 	
@@ -470,100 +471,66 @@ public class VectorChart extends ChartCanvas {
 	}
 	
 	@Override
-	protected void doLayoutChart() {
-		GC gc = new GC(Display.getCurrent());
-		try {
-			Rectangle area = new Rectangle(getClientArea());
-			if (area.isEmpty())
-				return;
-			
-			// preserve zoomed-out state while resizing
-			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
-			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
+	protected void doLayoutChart(GC gc) {
+		Rectangle area = new Rectangle(getClientArea());
 
-			// Calculate space occupied by title and legend and set insets accordingly
-			ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
-			Rectangle remaining = legendTooltip.layout(gc, area);
-			remaining = title.layout(gc, area);
-			remaining = legend.layout(gc, remaining);
+		// preserve zoomed-out state while resizing
+		boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
+		boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
 
-			Rectangle mainArea = remaining.getCopy();
-			Insets insetsToMainArea = new Insets();
-			xAxis.layoutHint(gc, mainArea, insetsToMainArea, coordsMapping);
-			// postpone yAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
-			insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
+		// Calculate space occupied by title and legend and set insets accordingly
+		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
+		Rectangle remaining = legendTooltip.layout(gc, area);
+		remaining = title.layout(gc, area);
+		remaining = legend.layout(gc, remaining);
 
-			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
-			Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
-			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+		Rectangle mainArea = remaining.getCopy();
+		Insets insetsToMainArea = new Insets();
+		xAxis.layoutHint(gc, mainArea, insetsToMainArea, coordsMapping);
+		// postpone yAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
+		insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
 
-			if (shouldZoomOutX)
-				zoomToFitX();
-			if (shouldZoomOutY)
-				zoomToFitY();
-			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+		// tentative plotArea calculation (y axis ticks width missing from the picture yet)
+		Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
+		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
 
-			// now the coordinate mapping is set up, so the y axis knows what tick labels
-			// will appear, and can calculate the occupied space from the longest tick label.
-			coordsMapping = getOptimizedCoordinateMapper();
-			yAxis.layoutHint(gc, mainArea, insetsToMainArea, coordsMapping);
+		if (shouldZoomOutX)
+			zoomToFitX();
+		if (shouldZoomOutY)
+			zoomToFitY();
+		validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
 
-			// now we have the final insets, set it everywhere again 
-			xAxis.setLayout(mainArea, insetsToMainArea);
-			yAxis.setLayout(mainArea, insetsToMainArea);
-			plotArea = plot.layout(gc, mainArea.getCopy().crop(insetsToMainArea));
-			crosshair.layout(gc, plotArea);
-			legend.layoutSecondPass(plotArea);
-			//FIXME how to handle it when plotArea.height/width comes out negative??
-			setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+		// now the coordinate mapping is set up, so the y axis knows what tick labels
+		// will appear, and can calculate the occupied space from the longest tick label.
+		coordsMapping = getOptimizedCoordinateMapper();
+		yAxis.layoutHint(gc, mainArea, insetsToMainArea, coordsMapping);
 
-			if (shouldZoomOutX)
-				zoomToFitX();
-			if (shouldZoomOutY)
-				zoomToFitY();
-			validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
-		} 
-		catch (Throwable e) {
-			ScavePlugin.logError(e);
-		}
-		finally {
-			gc.dispose();
-		}
+		// now we have the final insets, set it everywhere again 
+		xAxis.setLayout(mainArea, insetsToMainArea);
+		yAxis.setLayout(mainArea, insetsToMainArea);
+		plotArea = plot.layout(gc, mainArea.getCopy().crop(insetsToMainArea));
+		crosshair.layout(gc, plotArea);
+		legend.layoutSecondPass(plotArea);
+		//FIXME how to handle it when plotArea.height/width comes out negative??
+		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+
+		if (shouldZoomOutX)
+			zoomToFitX();
+		if (shouldZoomOutY)
+			zoomToFitY();
+		validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
 	}
 	
 	@Override
-	protected void paintCachableLayer(GC gc) {
-		if (debug) System.out.println("paintCachableLayer()");
-//		System.out.println(String.format("area=%f, %f, %f, %f, zoom: %f, %f",
-//				getMinX(), getMaxX(), getMinY(), getMaxY(), getZoomX(), getZoomY()));
-//		System.out.println(String.format("view port=%s, vxy=%d, %d",
-//				getViewportRectangle(), getViewportLeft(), getViewportTop()));
-		
-		if (getClientArea().isEmpty())
-			return;
-		
-		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
-		resetDrawingStylesAndColors(gc);
+	protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping) {
 		gc.fillRectangle(gc.getClipping());
 		xAxis.drawGrid(gc, coordsMapping);
 		yAxis.drawGrid(gc, coordsMapping);
 		plot.draw(gc, coordsMapping);
-
-		if (coordsMapping.getNumCoordinateOverflows()>0)
-			displayCoordinatesOverflowMessage(gc);
 	}
 	
 	@Override
-	protected void paintNoncachableLayer(GC gc) {
-		if (debug) System.out.println("paintNoncachableLayer()");
-		if (getClientArea().isEmpty())
-			return;
-		
-		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
-
-		resetDrawingStylesAndColors(gc);
-		gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
-
+	protected void doPaintNoncachableLayer(GC gc, ICoordsMapping coordsMapping) {
 		paintInsets(gc);
 		title.draw(gc);
 		legend.draw(gc);
@@ -575,15 +542,10 @@ public class VectorChart extends ChartCanvas {
 			getSelection().draw(gc, coordsMapping);
 		drawRubberband(gc);
 		crosshair.draw(gc, coordsMapping);
-		
-		if (coordsMapping.getNumCoordinateOverflows() > 0)
-			displayCoordinatesOverflowMessage(gc);
 	}
-	
-	private void displayCoordinatesOverflowMessage(GC gc) {
-		resetDrawingStylesAndColors(gc);
-		gc.drawText("There were coordinate overflows during plotting, and the resulting chart\n"+
-				    "may not be accurate. Please decrease zoom level.", 
-				    getViewportRectangle().x+10, getViewportRectangle().y+10, true);
+
+	@Override
+	String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint) {
+		return null;
 	}
 }
