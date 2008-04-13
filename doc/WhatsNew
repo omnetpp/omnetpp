@@ -1,6 +1,103 @@
 What's New
 ==========
 
+OMNeT++ 3.4b1/b2 (Nov 2006)
+---------------------------
+This release significantly improves Tkenv:
+  - until now, Tkenv has been using various form-style inspectors to display
+    the most important data members of objects. These inspectors have now been
+    replaced with more comprehensive and consistent treeview-based
+    inspectors.
+
+  - broadcast animation has been implemented. When the feature is turned on,
+    multiple send() or sendDirect() calls occurring within a handleMessage()
+    call will be animated together, concurrently. This significantly improves
+    the animation of wireless simulations. Note: the new animation mode
+    implies that send/sendDirect calls are no longer animated at the
+    place of the call as previously, but together at the end of processing
+    the event (that is, after handleMessage() has already returned) -- that is,
+    out-of-sequence with writing the log, for example. The broadcast animation
+    feature can be turned off in the Simulation Options dialog.
+
+  - implemented message filtering for the timeline, and improved on object
+    filtering (Find/Inspect Objects dialog) by extending patterns with
+    AND, OR, NOT operations and object field matchers.
+
+  - implemented scrollback buffer limiting for event log windows (default is
+    100,000 lines)
+
+Simulation library:
+  - several methods and classes already marked as DEPRECATED in their
+    documentations and doc/API-Changes.txt are now marked as such, using
+    GCC's __attribute__((__deprecated__)) facility, which results in warnings
+    during compilation of code that uses them. Those pieces of code need to be
+    changed in order to be compatible with future OMNeT++ versions.
+
+  - opp_msgc was improved: as an experimental feature, class fields can now be
+    annotated with properties of the form @propertyname(value). The following
+    properties are accepted: field-level: @enum(enumname), @editable or
+    @editable(true), @getter(methodname), @setter(methodname),
+    @sizeGetter(methodname), @sizeSetter(methodname), @label(some-text),
+    @hint(some-text); class-level: @customize, @omitGetVerb (or:
+    @customize(true), @omitGetVerb(true)).
+
+Other:
+  - makefile improvements, from Laura Marie Feeney and Michael Tuexen.
+  - the FDDI sample simulation has retired (it used lots of deprecated APIs)
+
+
+OMNeT++ 3.3 (Oct 2006)
+----------------------
+This release contains several GUI enhancements in Tkenv, and several bugfixes.
+Tkenv:
+  - display string enhancement: connections with zero thickness set ("o=,0")
+    now do not appear in the network graphics.
+
+  - added object icons to inspector listboxes
+
+  - added Run/Fast/Express buttons to every module inspector window, as well as
+    a "Find/inspect messages, queues, etc within this module" button. These
+    functions are all available via hotkeys too (F5,F6,F7,Ctrl+S).
+
+  - added "Copy to clipboard" and "Save window contents" toolbar icons to all
+    text windows. (Copy has already been available with Ctrl+C.)
+
+  - main window position gets saved and restored
+
+Bugfixes:
+  - fix: gamma_d() was bogus for the alpha<1 case [reported by Patrick McDonnell]
+
+  - fix: worked around a fiber-related Visual C++ problem that caused certain 
+    activity()-based modules crash when the simulation was restarted.
+
+  - fixed a bug which sometimes caused Tkenv to crash when inspecting an
+    internally refcounted message.
+
+  - fixed a bug in Tkenv's setObjectListResult() [crash reported by Rodolfo
+    Ribeiro Gomes and others]
+
+  - fix: on some Linux systems, Tkenv used unreadably small font size in some
+    dialogs
+
+  - opp_msgc improvements: don't accept reserved words as identifiers; added
+    OMNeT++ version check into generated code
+
+  - fix: the simulation can now be in a directory whose path name contains spaces
+    (e.g. "Program Files"); opp_nmakemake also fixed to accept include paths
+    with spaces.
+
+  - many other minor fixes and improvements; see the ChangeLogs of the
+    corresponding source directories for more details.
+
+
+OMNeT++ 3.2p1 (Jan 2006)
+------------------------
+This is a maintenance release. Changes include:
+  - support for VC8.0 (Microsoft Visual C++ 2005 [Express]).
+  - opp_nmakemake -b <dir> failed for directory names containing "++"
+  - fixed bug in Plove/Scalars "Save picture" function
+
+
 OMNeT++ 3.2 (Oct 2005)
 ----------------------
 The following brief list wraps up the most important new features and

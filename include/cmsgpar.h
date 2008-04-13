@@ -27,16 +27,24 @@ class  cXMLElement;
 
 
 /**
- * FIXME revise doc!!!
+ * cMsgPar objects store a (string, bool, double, etc) value, and
+ * can be attached to cMessage objects.
  *
- * cMsgPar instances can be attached to cMessage objects.
+ * <b>Note:</b> Before version 3.0, the cPar class was used for both
+ * message parameters and module parameters. As of 4.0, cPar only
+ * serves as module/channel parameter, and other uses of cPar in
+ * existing 3.x code should be either eliminated (see next note),
+ * or changed to cMsgPar.
+ *
+ * <b>Note2:</b> This is an obsolete class, retained to support legacy code.
+ * The preferred way of adding data to cMessages since the 2.3 version is
+ * via subclassing, using <tt>.msg</tt> files and the <i>opp_msgc</i> tool.
  *
  * cMsgPar supports several data types. Data types are identified by type
  * characters. The current data type is returned by type().
- *
  *     - basic types: <b>S</b> string, <b>B</b> bool, <b>L</b> long, <b>D</b> double
  *     - <b>F</b> math function (MathFuncNoArgs,MathFunc1Args,etc),
- *     - <b>T</b> distribution from a cStatistic,
+ *     - <b>T</b> a statistic object (subclassed from cStatistic)
  *     - <b>P</b> pointer to cOwnedObject,
  *     - <b>M</b> XML element (pointer to a cXMLElement)
  *
@@ -46,6 +54,7 @@ class SIM_API cMsgPar : public cOwnedObject
 {
   protected:
     static char *possibletypes;
+
   private:
     char typechar;     // S/B/L/D/F/T/P/O
     bool changedflag;
