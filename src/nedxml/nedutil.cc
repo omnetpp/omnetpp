@@ -223,4 +223,10 @@ int NEDElementUtil::compareTree(NEDElement *node1, NEDElement *node2)
     return 0;
 }
 
+bool NEDElementUtil::isNEDType(NEDElement *node)
+{
+    int tag = node->getTagCode();
+    return tag==NED_SIMPLE_MODULE || tag==NED_MODULE_INTERFACE || tag==NED_COMPOUND_MODULE ||
+           tag==NED_CHANNEL_INTERFACE || tag==NED_CHANNEL;
+}
 

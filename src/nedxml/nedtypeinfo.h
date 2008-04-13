@@ -67,25 +67,6 @@ class NEDXML_API NEDTypeInfo
     // simple module/channel C++ class to instantiate
     std::string implClassName;
 
-    //XXX currently unused; TBD use the next ones for network building and validation
-    class NEDElementMap {
-        std::map<std::string,NEDElement*> map;
-        std::vector<std::string> keys;
-        std::vector<NEDElement *> values;
-      public:
-        bool contains(const std::string& key) const {return map.count(key)!=0;}
-        NEDElement *get(const std::string& key) const
-            {std::map<std::string,NEDElement*>::const_iterator it = map.find(key); return it==map.end() ? NULL : it->second;}
-        void put(const std::string& key, NEDElement *node)
-            {Assert(!contains(key)); map[key]=node; keys.push_back(key); values.push_back(node);}
-        int size() const {return keys.size();}
-        const std::string& key(int i) {return keys[i];}
-        NEDElement *value(int i) {return values[i];}
-    };
-    NEDElementMap paramsMap;
-    NEDElementMap gatesMap;
-    NEDElementMap submodulesMap;
-
   protected:
     NEDElement *buildFlattenedTree() const; //XXX mostly unused
     void mergeNEDType(NEDElement *basetree, const NEDElement *tree) const;
@@ -211,26 +192,6 @@ class NEDXML_API NEDTypeInfo
     /** Searches local type and "extends" types; NULL if not found */
     GateElement *findGateDecl(const char *name) const;
     //@}
-
-/* TODO
-	public Set<INedTypeElement> getLocalInterfaces() {
-    public Map<String, ParamElementEx> getLocalParamDeclarations() {
-    public Map<String, ParamElementEx> getLocalParamAssignments() {
-    public Map<String, PropertyElementEx> getLocalProperties() {
-    public Map<String, GateElementEx> getLocalGateDeclarations() {
-    public Map<String, GateElementEx> getLocalGateSizes() {
-    public Map<String,INedTypeElement> getLocalInnerTypes() {
-    public Map<String, SubmoduleElementEx> getLocalSubmodules() {
-    public Set<INedTypeElement> getInterfaces() {
-    public Map<String, ParamElementEx> getParamDeclarations() {
-    public Map<String, ParamElementEx> getParamAssignments() {
-    public Map<String, PropertyElementEx> getProperties() {
-    public Map<String, GateElementEx> getGateDeclarations() {
-    public Map<String, GateElementEx> getGateSizes() {
-    public Map<String, INedTypeElement> getInnerTypes() {
-    public Map<String, SubmoduleElementEx> getSubmodules() {
-*/
-
 };
 
 NAMESPACE_END

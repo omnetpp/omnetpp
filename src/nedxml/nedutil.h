@@ -67,6 +67,11 @@ class NEDElementUtil
     /** Recursive version of compare() */
     static int compareTree(NEDElement *node1, NEDElement *node2);
     //@}
+
+    /** @name Misc */
+    //@{
+    static bool isNEDType(NEDElement *node);
+    //@}
 };
 
 NAMESPACE_END

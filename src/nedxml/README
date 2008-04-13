@@ -1,4 +1,4 @@
-NEDXML sources
+NEDXML sources   --FIXME slightly obsolete, must be updated!
 ==============
 
 NEDXML is an XML-based NED handling library. Handles parsing (NED,XML), 

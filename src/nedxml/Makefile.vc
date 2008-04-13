@@ -35,6 +35,7 @@ OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj $O/nedexception.obj \
       $O/ned1.tab.obj $O/lex.ned1yy.obj \
       $O/msg2.tab.obj $O/lex.msg2yy.obj \
       $O/nedresourcecache.obj $O/nedtypeinfo.obj
+#       $O/nedtypeinfo2.obj
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DNEDXML_EXPORT
@@ -354,6 +355,17 @@ $O/nedtypeinfo.obj: nedtypeinfo.cc \
   nedxmldefs.h \
   nedelement.h \
   nedelements.h
+$O/nedtypeinfo2.obj: nedtypeinfo2.cc \
+  nederror.h \
+  nedutil.h \
+  nedexception.h \
+  nedtypeinfo2.h \
+  nedresourcecache.h \
+  ned2generator.h \
+  nedxmldefs.h \
+  nedelement.h \
+  nedelements.h \
+  nedtypeinfo.h
 $O/nedutil.obj: nedutil.cc \
   nedexception.h \
   nedutil.h \
