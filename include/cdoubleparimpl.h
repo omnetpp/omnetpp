@@ -22,7 +22,8 @@
 NAMESPACE_BEGIN
 
 /**
- * FIXME revise docu in the whole class!!!!!!
+ * A cParImpl subclass that stores a module/channel parameter
+ * of the type double.
  *
  * @ingroup Internals
  */

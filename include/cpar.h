@@ -30,21 +30,44 @@ class cProperties;
 class cComponent;
 
 /**
- * FIXME
+ * Represents a module or channel parameter.
  *
- * Delegates everything to cParImpl.
+ * When a module or channel is created, parameter objects are added
+ * automatically, based on the NED declaration of the module/channel.
+ * It is not possible to create further parameters (or to remove parameters)
+ * at runtime. This is enforced by the cPar constructor being private.
  *
- * Not meant for subclassing. This is also the reason why none of the
- * methods are virtual.
+ * Parameters get their initial values automatically, from the NED
+ * declarations and the configuration. It is possible to change the
+ * parameter value during runtime (see various setter methods and
+ * operator='s), but not the type of the parameter (see type()).
+ * The type correspond to NED types (bool, double, long, string, xml),
+ * and cannot be changed at runtime.
+ *
+ * The module or channel object can get notified when a parameter is
+ * changed; one has to override cComponent::handleParameterChange()
+ * for that.
+ *
+ * <b>Note:</b> In earlier versions of \opp, cPar could be used as a
+ * general value storage object, and attached to cMessages as well.
+ * From the 4.0 version, simulation models should use cMsgPar for that.
+ *
+ * <b>Implementation note:</b> from the 4.0 version, almost all methods
+ * of cPar delegates to an internal cParImpl object, which actually stores
+ * the value, and generally does the real job. This was done to allow
+ * sharing parameter objects which have the same name, same value, etc.
+ * among module/channel instances. This significantly reduces memory
+ * consumption of most simulation models. Because cPar is just a thin
+ * wrapper around cParImpl, cPar is not meant for subclassing, and
+ * none if its methods are virtual. cParImpl and subclasses should also
+ * be regarded as internal data structures, and they should not be
+ * directly accessed or manipulated from model code.
  *
  * @ingroup SimCore
  */
 class SIM_API cPar : public cObject
 {
     friend class cComponent;
-  private:
-    cComponent *ownercomponent;
-    cParImpl *p;
   public:
     enum Type {
         BOOL = 'B',
@@ -55,6 +78,11 @@ class SIM_API cPar : public cObject
     };
 
   private:
+    cComponent *ownercomponent;
+    cParImpl *p;
+
+  private:
+    // private constructor -- only cComponent is allowed to create parameters
     cPar() {ownercomponent = NULL; p = NULL;}
     // internal, called from cComponent
     void init(cComponent *ownercomponent, cParImpl *p);

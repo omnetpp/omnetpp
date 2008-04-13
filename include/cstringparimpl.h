@@ -22,7 +22,8 @@
 NAMESPACE_BEGIN
 
 /**
- * FIXME revise docu in the whole class!!!!!!
+ * A cParImpl subclass that stores a module/channel parameter
+ * of the type string.
  *
  * @ingroup Internals
  */
@@ -33,7 +34,7 @@ class SIM_API cStringParImpl : public cParImpl
     // union here because std::string has constructor/destructor.
     // selector: flags & FL_ISEXPR
     cExpression *expr;
-    std::string val;   // FIXME should be char*, and POOLED!!!
+    std::string val;  //XXX should be a stringpooled const char *?
 
   protected:
     std::string evaluate(cComponent *context) const;

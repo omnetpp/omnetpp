@@ -1,5 +1,5 @@
 //==========================================================================
-//   CABSTRACTEXPR.H  - part of
+//   CEXPRESSION.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -25,8 +25,6 @@ class cXMLElement;
 
 /**
  * Abstract base class for expression evaluators.
- *
- * FIXME create cCompiledExpressionBase etc!!
  *
  * @see cPar
  * @ingroup SimCore
@@ -74,12 +72,12 @@ class SIM_API cExpression : public cObject
     /**
      * Redefined to "de-inherit" it.
      */
-    virtual void netPack(cCommBuffer *buffer) {} //FIXME exception?
+    virtual void netPack(cCommBuffer *buffer)  {throw cRuntimeError(this, eCANTPACK);}
 
     /**
      * Redefined to "de-inherit" it.
      */
-    virtual void netUnpack(cCommBuffer *buffer) {} //FIXME exception?
+    virtual void netUnpack(cCommBuffer *buffer)  {throw cRuntimeError(this, eCANTPACK);}
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */
@@ -89,7 +87,6 @@ class SIM_API cExpression : public cObject
      * Evaluate the expression and convert the result to bool if possible;
      * throw an error if conversion from that type is not supported.
      */
-//FIXME perhaps rename these methods to evaluateToXXX()
     virtual bool boolValue(cComponent *context=NULL) = 0;
 
     /**
