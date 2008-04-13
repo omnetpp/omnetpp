@@ -72,15 +72,18 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
     /** @name Static factory methods */
     //@{
     /**
-     * FIXME comment
+     * Finds the factory object for the class given in the classname parameter,
+     * or NULL if not found. The class name string should be given with any
+     * potential namespace, enclosing class etc. The class must have been
+     * registered previously with the Register_Class() macro.
      */
     static cClassFactory *find(const char *classname);
 
     /**
      * Creates an instance of a particular class; the result has to be cast
      * to the appropriate type by hand. The class must have been registered
-     * previously with the Register_Class() macro. This function internally
-     * relies on the cClassFactory class.
+     * previously with the Register_Class() macro. The class name string
+     * should be given with any potential namespace, enclosing class etc.
      *
      * If the class is not registered, this function throws an exception.
      * If you'd prefer having a NULL pointer returned instead, use the
@@ -88,10 +91,10 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
      *
      * Example:
      *
-     * <tt>cObject *param = createOne("cMessage");</tt>
+     * <tt>cMessage *msg = cClassFactory::createOne("INET::EthernetFrame");</tt>
      *
-     * createOne() is used e.g. in parallel simulation when an object is received
-     * from another partition and it has to be demarshalled.
+     * createOne() is used e.g. in parallel simulation, when an object is received
+     * from another partition in serialized form and has to be demarshalled.
      *
      * @see createOneIfClassIsKnown()
      * @see Register_Class() macro
