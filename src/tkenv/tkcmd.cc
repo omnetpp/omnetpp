@@ -612,14 +612,14 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"displayString")) {
        if (dynamic_cast<cModule *>(object)) {
            cModule *mod = dynamic_cast<cModule *>(object);
-           const char *str = mod->hasDisplayString() ? mod->displayString().toString() : "";
+           const char *str = mod->hasDisplayString() ? mod->displayString().str() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else if (dynamic_cast<cMessage *>(object)) {
            Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
        } else if (dynamic_cast<cGate *>(object)) {
            cGate *gate = dynamic_cast<cGate *>(object);
            cChannel *chan = gate->channel();
-           const char *str = (chan && chan->hasDisplayString()) ? chan->displayString().toString() : "";
+           const char *str = (chan && chan->hasDisplayString()) ? chan->displayString().str() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
@@ -1198,7 +1198,7 @@ int getModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    const char *parname = argv[2];
    string result;
 
-   TRY( result = mod->par(parname).toString() );
+   TRY( result = mod->par(parname).str() );
 
    Tcl_SetResult(interp, TCLCONST(result.c_str()), TCL_VOLATILE);
    return TCL_OK;

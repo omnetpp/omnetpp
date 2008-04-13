@@ -84,7 +84,7 @@ class SCAVE_API EnumType
     /**
      * String representation of the definition of this enum.
      */
-    std::string toString() const;
+    std::string str() const;
 
     /**
      * Parses the name/value pairs from a string.

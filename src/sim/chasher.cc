@@ -61,7 +61,7 @@ bool cHasher::equals(const char *fingerprint) const
     return getHash()==hash;
 }
 
-std::string cHasher::toString() const
+std::string cHasher::str() const
 {
     char buf[32];
     sprintf(buf, "%08x", getHash());

@@ -46,13 +46,13 @@ NAMESPACE_BEGIN
  *   dispstr.setTagArg("x",0,"joe");
  *   dispstr.setTagArg("x",2,"jim");
  *   dispstr.setTagArg("p",0,"beta");
- *   ev << dispstr.toString();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
+ *   ev << dispstr.str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
  * </pre>
  *
  * Limitation: a tag may have at most 16 arguments.
  *
  * NOTE: this is a modified copy of the cDisplayString class of the simulation
- * kernel, created because some components not dependent on the simkernel also 
+ * kernel, created because some components not dependent on the simkernel also
  * need to manipulate display strings.
  */
 class COMMON_API DisplayString
@@ -110,7 +110,7 @@ class COMMON_API DisplayString
     /**
      * Assignment operator.
      */
-    DisplayString& operator=(const DisplayString& ds) {parse(ds.toString()); return *this;}
+    DisplayString& operator=(const DisplayString& ds) {parse(ds.str()); return *this;}
 
     /**
      * Conversion from string.
@@ -120,7 +120,7 @@ class COMMON_API DisplayString
     /**
      * Conversion to string.
      */
-    operator const char *() const  {return toString();}
+    operator const char *() const  {return str();}
     //@}
 
     /** Getting and setting the stored display string. */
@@ -129,7 +129,7 @@ class COMMON_API DisplayString
     /**
      * Returns the display string.
      */
-    const char *toString() const;
+    const char *str() const;
 
     /**
      * Sets the display string to the given value. The return value is false

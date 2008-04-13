@@ -135,9 +135,9 @@ const char *cPar::typeName(Type t)
 // note: the following one-liners should really be inline functions, but
 // they can't be put into cpar.h because of declaration order.
 
-std::string cPar::toString() const
+std::string cPar::str() const
 {
-    return p->toString();
+    return p->str();
 }
 
 cPar::Type cPar::type() const

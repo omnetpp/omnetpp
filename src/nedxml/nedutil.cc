@@ -49,7 +49,7 @@ std::string DisplayStringUtil::upgradeBackgroundDisplayString(const char *s)
         ds.setTagArg("bgb", 4, ds.getTagArg("o",2));
         ds.removeTag("o");
     }
-    return ds.toString();
+    return ds.str();
 }
 
 std::string DisplayStringUtil::upgradeSubmoduleDisplayString(const char *s)
@@ -63,7 +63,7 @@ std::string DisplayStringUtil::upgradeSubmoduleDisplayString(const char *s)
         ds.setTagArg("b", 5, ds.getTagArg("o",2));
         ds.removeTag("o");
     }
-    return ds.toString();
+    return ds.str();
 }
 
 std::string DisplayStringUtil::upgradeConnectionDisplayString(const char *s)
@@ -73,7 +73,7 @@ std::string DisplayStringUtil::upgradeConnectionDisplayString(const char *s)
     renameTag(ds, "o", "ls");
     // FIXME TT tag: the color parameter (old format 2nd) should go to the 3rd position in the new format
     // the 2nd par is position (was not supported previously)
-    return ds.toString();
+    return ds.str();
 }
 
 void DisplayStringUtil::parseDisplayString(const char *s, DisplayString& ds)
@@ -104,7 +104,7 @@ std::string DisplayStringUtil::toOldBackgroundDisplayString(const char *s)
         ds.setTagArg("b", 4, "");
         ds.setTagArg("b", 5, "");
     }
-    return ds.toString();
+    return ds.str();
 }
 
 std::string DisplayStringUtil::toOldSubmoduleDisplayString(const char *s)
@@ -120,7 +120,7 @@ std::string DisplayStringUtil::toOldSubmoduleDisplayString(const char *s)
         ds.setTagArg("b", 4, "");
         ds.setTagArg("b", 5, "");
     }
-    return ds.toString();
+    return ds.str();
 }
 
 std::string DisplayStringUtil::toOldConnectionDisplayString(const char *s)
@@ -128,7 +128,7 @@ std::string DisplayStringUtil::toOldConnectionDisplayString(const char *s)
     DisplayString ds;
     parseDisplayString(s, ds);
     renameTag(ds, "ls", "o");
-    return ds.toString();
+    return ds.str();
 }
 
 //----

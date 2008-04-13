@@ -36,7 +36,7 @@ void Dump::dump(cModule *mod, std::string currentIndent)
 
     printf("%smodule %s: %s {\n", indent, mod->fullPath().c_str(), mod->componentType()->fullName());
 
-    mod->displayString().toString(); //important side effect: parse @display into display string; some test cases rely on this taking place here!
+    mod->displayString().str(); //important side effect: parse @display into display string; some test cases rely on this taking place here!
 
     cProperties *props = mod->properties();
     ASSERT(props != NULL);

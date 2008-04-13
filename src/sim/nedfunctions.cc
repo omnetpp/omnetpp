@@ -98,12 +98,12 @@ DEF(dropunit, "Q->D", {
 })
 
 DEF(replaceunit, "QS->Q", {
-    argv[0].dblunit = stringPool.get(argv[1].str.c_str());
+    argv[0].dblunit = stringPool.get(argv[1].s.c_str());
     return argv[0];
 })
 
 DEF(convertunit, "QS->Q", {
-    const char *newUnit = stringPool.get(argv[1].str.c_str());
+    const char *newUnit = stringPool.get(argv[1].s.c_str());
     argv[0].dbl = UnitConversion::convertUnit(argv[0].dbl, argv[0].dblunit, newUnit);
     argv[0].dblunit = newUnit;
     return argv[0];
@@ -119,15 +119,15 @@ DEF(unitof, "Q->S", {
 //
 
 DEF(length, "S->L", {
-    return (long)argv[0].str.size();
+    return (long)argv[0].s.size();
 })
 
 DEF(contains, "SS->B", {
-    return argv[0].str.find(argv[1].str) != std::string::npos;
+    return argv[0].s.find(argv[1].s) != std::string::npos;
 })
 
 DEF(substring, "SL/L->S", {  // Note: substring(str,index[,length]), i.e. length is optional
-    int size = argv[0].str.size();
+    int size = argv[0].s.size();
     int index = (int)argv[1].dbl;
     int length = argc==3 ? (int)argv[2].dbl : size-index;
 
@@ -135,29 +135,29 @@ DEF(substring, "SL/L->S", {  // Note: substring(str,index[,length]), i.e. length
         throw cRuntimeError("substring(): index out of range");
     if (length < 0)
         throw cRuntimeError("substring(): length is negative");
-    return argv[0].str.substr(index, length);
+    return argv[0].s.substr(index, length);
 })
 
 DEF(startswith, "SS->B", {
-    return argv[0].str.find(argv[1].str) == 0;
+    return argv[0].s.find(argv[1].s) == 0;
 })
 
 DEF(endswith, "SS->B", {
-    return argv[0].str.rfind(argv[1].str) == argv[0].str.size() - argv[1].str.size();
+    return argv[0].s.rfind(argv[1].s) == argv[0].s.size() - argv[1].s.size();
 })
 
 DEF(tail, "SL->S", {
     int length = (int)argv[1].dbl;
     if (length < 0)
         throw cRuntimeError("tail(): length is negative");
-    int size = (int) argv[0].str.size();
-    return argv[0].str.substr(std::max(0, size - length), size);
+    int size = (int) argv[0].s.size();
+    return argv[0].s.substr(std::max(0, size - length), size);
 })
 
 DEF(replace, "SSS->S", {
-    std::string str = argv[0].str;
-    std::string& search = argv[1].str;
-    std::string& replacement = argv[2].str;
+    std::string str = argv[0].s;
+    std::string& search = argv[1].s;
+    std::string& replacement = argv[2].s;
 
     unsigned int searchSize = search.size();
     unsigned int replacementSize = replacement.size();
@@ -170,14 +170,14 @@ DEF(replace, "SSS->S", {
 })
 
 DEF(indexof, "SS->L", {
-    return (long)argv[0].str.find(argv[1].str);
+    return (long)argv[0].s.find(argv[1].s);
 })
 
 DEF(choose, "LS->S", {
     int index = (int)argv[0].dbl;
     if (index < 0)
         throw cRuntimeError("choose(): negative index");
-    cStringTokenizer tokenizer(argv[1].str.c_str());
+    cStringTokenizer tokenizer(argv[1].s.c_str());
     for (int i=0; i<index && tokenizer.hasMoreTokens(); i++)
         tokenizer.nextToken();
     if (!tokenizer.hasMoreTokens())
@@ -186,7 +186,7 @@ DEF(choose, "LS->S", {
 })
 
 DEF(toupper, "S->S", {
-    std::string tmp = argv[0].str;
+    std::string tmp = argv[0].s;
     int length = tmp.length();
     for (int i=0; i<length; i++)
         tmp[i] = opp_toupper(tmp[i]);
@@ -194,7 +194,7 @@ DEF(toupper, "S->S", {
 })
 
 DEF(tolower, "S->S", {
-    std::string tmp = argv[0].str;
+    std::string tmp = argv[0].s;
     int length = tmp.length();
     for (int i=0; i<length; i++)
         tmp[i] = opp_tolower(tmp[i]);
@@ -208,7 +208,7 @@ DEF(int, "*->L", {
         case Value::DBL:
             return (long)floor(argv[0].dbl);
         case Value::STR:
-            return (long)floor(opp_atof(argv[0].str.c_str()));  //XXX catch & wrap exception?
+            return (long)floor(opp_atof(argv[0].s.c_str()));  //XXX catch & wrap exception?
         case Value::XML:
             throw cRuntimeError("int(): cannot convert xml to int");
         default:
@@ -223,7 +223,7 @@ DEF(double, "*->D", {
         case Value::DBL:
             return argv[0].dbl;
         case Value::STR:
-            return opp_atof(argv[0].str.c_str());  //XXX catch & wrap exception?
+            return opp_atof(argv[0].s.c_str());  //XXX catch & wrap exception?
         case Value::XML:
             throw cRuntimeError("double(): cannot convert xml to double");
         default:
@@ -232,7 +232,7 @@ DEF(double, "*->D", {
 })
 
 DEF(string, "*->S", {
-    return argv[0].toString();
+    return argv[0].str();
 })
 
 //

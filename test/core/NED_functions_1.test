@@ -10,7 +10,7 @@ void test(const char *expr)
     std::string result;
     try {
         cDynamicExpression::Value v = e.evaluate(NULL);
-        result = v.toString();
+        result = v.str();
     } catch (std::exception& e) {
         result = e.what();
     }

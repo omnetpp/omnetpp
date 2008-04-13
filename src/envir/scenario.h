@@ -69,7 +69,7 @@ class ENVIR_API Scenario
         virtual char returnType() const {return Expression::Value::DBL;}
         virtual Expression::Value evaluate(Expression::Value args[], int numargs)
             {return hostnode->getIterationVariable(varname.c_str());}
-        virtual std::string toString(std::string args[], int numargs) {return name();}
+        virtual std::string str(std::string args[], int numargs) {return name();}
     };
 
   public:

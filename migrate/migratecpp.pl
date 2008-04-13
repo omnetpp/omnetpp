@@ -28,7 +28,7 @@ while (<LISTFILE>)
 
     # rename cPar methods
     $txt =~ s/\bsetFromText\b/parse/mg;
-    $txt =~ s/\bgetAsText\b/toString/mg;
+    $txt =~ s/\bgetAsText\b/str/mg;
 
     $txt =~ s/\bcException\b/cRuntimeError/mg;
     $txt =~ s/\bcSimpleChannel\b/cBasicChannel/mg;
@@ -48,7 +48,7 @@ while (<LISTFILE>)
     $txt =~ s/\btransformed *\( *\)/isTransformed()/mg;
 
     # display string
-    $txt =~ s/\bgetString *\( *\)/toString()/mg;
+    $txt =~ s/\bgetString *\( *\)/str()/mg;
 
      # cSimulation
     $txt =~ s/\brunningModule *\( *\)/activityModule()/mg;
@@ -158,7 +158,7 @@ while (<LISTFILE>)
     close OUTFILE;
 }
 
-print "\nConversion done. You may safely re-run this script any time you want.\n";
+print "\nConversion done. You may safely re-run this script as many times as you want.\n";
 
 
 

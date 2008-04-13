@@ -62,7 +62,7 @@ DisplayString::~DisplayString()
     cleartags();
 }
 
-const char *DisplayString::toString() const
+const char *DisplayString::str() const
 {
     if (needsassemble)
         assemble();
@@ -104,7 +104,7 @@ void DisplayString::updateWith(const DisplayString& ds)
     }
 
     // optimize storage
-    parse(toString());
+    parse(str());
 }
 
 void DisplayString::updateWith(const char *s)

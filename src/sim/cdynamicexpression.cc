@@ -98,14 +98,14 @@ void cDynamicExpression::Value::operator=(const cPar& par)
     }
 }
 
-std::string cDynamicExpression::Value::toString() const
+std::string cDynamicExpression::Value::str() const
 {
     char buf[32];
     switch (type)
     {
       case BOOL: return bl ? "true" : "false";
       case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
-      case STR:  return opp_quotestr(str.c_str());
+      case STR:  return opp_quotestr(s.c_str());
       case XML:  return xml->detailedInfo();
                  //or: return std::string("<")+xml->getTagName()+" ... >, " + opp_nulltoempty(xml->getSourceLocation());
       default:   throw cRuntimeError("internal error: bad Value type");
@@ -138,7 +138,7 @@ cDynamicExpression& cDynamicExpression::operator=(const cDynamicExpression& othe
 
 std::string cDynamicExpression::info() const
 {
-    return toString();
+    return str();
 }
 
 void cDynamicExpression::setExpression(Elem e[], int n)
@@ -229,7 +229,7 @@ std::string cDynamicExpression::stringValue(cComponent *context)
     Value v = evaluate(context);
     if (v.type!=Value::STR)
         throw cRuntimeError(eECANTCAST, "string");
-    return v.str;
+    return v.s;
 }
 
 cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
@@ -266,7 +266,7 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
         ~Finally() { if (stk==_stk) _stkinuse = false; else delete[] stk; }
     } f(stk);
 
-    //printf("    evaluating: %s\n", toString().c_str()); //XXX
+    //printf("    evaluating: %s\n", str().c_str()); //XXX
     int tos = -1;
     for (int i = 0; i < size; i++)
     {
@@ -432,7 +432,7 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
                            stk[tos-1].dbl = stk[tos-1].dbl + stk[tos].dbl;
                        }
                        else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR)
-                           stk[tos-1].str = stk[tos-1].str + stk[tos].str;
+                           stk[tos-1].s = stk[tos-1].s + stk[tos].s;
                        else
                            throw cRuntimeError(eEBADARGS,"+");
                        tos--;
@@ -543,7 +543,7 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
                                      stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit); \
                                      stk[tos-1] = (stk[tos-1].dbl RELATION stk[tos].dbl); \
                                  } else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR) \
-                                     stk[tos-1] = (stk[tos-1].str RELATION stk[tos].str); \
+                                     stk[tos-1] = (stk[tos-1].s RELATION stk[tos].s); \
                                  else if (stk[tos-1].type==Value::BOOL && stk[tos].type==Value::BOOL) \
                                      stk[tos-1] = (stk[tos-1].bl RELATION stk[tos].bl); \
                                  else \
@@ -580,13 +580,13 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
     if (tos!=0)
         throw cRuntimeError(eBADEXP);
 
-    //printf("        ==> returning %s\n", stk[tos].toString().c_str()); //XXX
+    //printf("        ==> returning %s\n", stk[tos].str().c_str()); //XXX
 
     return stk[tos];
 }
 
 
-std::string cDynamicExpression::toString() const
+std::string cDynamicExpression::str() const
 {
     // We perform the same algorithm as during evaluation (i.e. stack machine),
     // only instead of actual calculations we store the result as string.
@@ -655,12 +655,12 @@ std::string cDynamicExpression::toString() const
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
                      throw cRuntimeError(eESTKUFLOW);
-                 strstk[argpos] = e.fu->toString(strstk+argpos, numargs);
+                 strstk[argpos] = e.fu->str(strstk+argpos, numargs);
                  tos = argpos;
                  break;
                  }
                case Elem::CONSTSUBEXPR:
-                 strstk[++tos] = std::string("const(")+e.constexpr->toString()+")";
+                 strstk[++tos] = std::string("const(")+e.constexpr->str()+")";
                  break;
                case Elem::OP:
                  if (e.op==NEG || e.op==NOT || e.op==BIN_NOT)

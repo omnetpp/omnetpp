@@ -131,7 +131,7 @@ static bool selectByParameter(cModule *mod, void *data)
     struct ParamData {const char *name; const char *value;};
     ParamData *d = (ParamData *)data;
     //FIXME if parameter is string type, check against stringValue() as well!!! (quote marks!!)
-    return mod->hasPar(d->name) && (d->value==NULL || mod->par(d->name).toString()==std::string(d->value));
+    return mod->hasPar(d->name) && (d->value==NULL || mod->par(d->name).str()==std::string(d->value));
 }
 
 //---

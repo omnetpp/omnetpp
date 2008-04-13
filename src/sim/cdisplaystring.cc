@@ -80,7 +80,7 @@ void cDisplayString::notify()
     EVCB.displayStringChanged(object);
 }
 
-const char *cDisplayString::toString() const
+const char *cDisplayString::str() const
 {
     if (needsassemble)
         assemble();
@@ -123,7 +123,7 @@ void cDisplayString::updateWith(const cDisplayString& ds)
     }
 
     // optimize storage; parse() also calls notify()
-    parse(toString());
+    parse(str());
 }
 
 
@@ -470,6 +470,6 @@ void cDisplayString::dump() const
             printf("\"%s\"", tags[t].args[i]);
         }
     }
-    printf(" ==> \"%s\"\n", toString());
+    printf(" ==> \"%s\"\n", str());
 }
 

@@ -41,7 +41,7 @@ Value ModuleIndex::evaluate(cComponent *context, Value args[], int numargs)
     return (double) module->index();
 }
 
-std::string ModuleIndex::toString(std::string args[], int numargs)
+std::string ModuleIndex::str(std::string args[], int numargs)
 {
     return "index";
 }
@@ -64,7 +64,7 @@ Value ParameterRef::evaluate(cComponent *context, Value args[], int numargs)
     return module->par(paramName.c_str());
 }
 
-std::string ParameterRef::toString(std::string args[], int numargs)
+std::string ParameterRef::str(std::string args[], int numargs)
 {
     if (printThis)
         return std::string("this.")+paramName;
@@ -97,7 +97,7 @@ Value SiblingModuleParameterRef::evaluate(cComponent *context, Value args[], int
     return siblingModule->par(paramName.c_str());
 }
 
-std::string SiblingModuleParameterRef::toString(std::string args[], int numargs)
+std::string SiblingModuleParameterRef::str(std::string args[], int numargs)
 {
     if (withModuleIndex)
         return moduleName+"["+args[0]+"]."+paramName;
@@ -139,7 +139,7 @@ Value LoopVar::evaluate(cComponent *context, Value args[], int numargs)
     throw cRuntimeError(context, "loop variable %s not found", varName.c_str());
 }
 
-std::string LoopVar::toString(std::string args[], int numargs)
+std::string LoopVar::str(std::string args[], int numargs)
 {
     // return varName;
     return std::string("(loopvar)")+varName;  //XXX debugging only
@@ -180,7 +180,7 @@ Value Sizeof::evaluate(cComponent *context, Value args[], int numargs)
 
 }
 
-std::string Sizeof::toString(std::string args[], int numargs)
+std::string Sizeof::str(std::string args[], int numargs)
 {
     return std::string(printThis ? "sizeof(this." : "sizeof(") + ident + ")";
 }
@@ -193,20 +193,20 @@ Value XMLDoc::evaluate(cComponent *context, Value args[], int numargs)
     cXMLElement *node;
     if (numargs==1)
     {
-        node = ev.getXMLDocument(args[0].str.c_str(), NULL);
+        node = ev.getXMLDocument(args[0].s.c_str(), NULL);
         if (!node)
-            throw cRuntimeError("xmldoc(\"%s\"): element not found", args[0].str.c_str());
+            throw cRuntimeError("xmldoc(\"%s\"): element not found", args[0].s.c_str());
     }
     else
     {
-        node = ev.getXMLDocument(args[0].str.c_str(), args[1].str.c_str());
+        node = ev.getXMLDocument(args[0].s.c_str(), args[1].s.c_str());
         if (!node)
-            throw cRuntimeError("xmldoc(\"%s\", \"%s\"): element not found", args[0].str.c_str(), args[1].str.c_str());
+            throw cRuntimeError("xmldoc(\"%s\", \"%s\"): element not found", args[0].s.c_str(), args[1].s.c_str());
     }
     return node;
 }
 
-std::string XMLDoc::toString(std::string args[], int numargs)
+std::string XMLDoc::str(std::string args[], int numargs)
 {
     ASSERT(numargs==1 || numargs==2);
     if (numargs==1)
@@ -230,7 +230,7 @@ typedef cDynamicExpression::Value Value; // abbreviation for local use
 Value cDynamicExpression::sizeofIdent(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==1 && args[0].type==Value::STR);
-    const char *ident = args[0].str.c_str();
+    const char *ident = args[0].s.c_str();
 
     // ident might be a gate vector of the *parent* module, or a sibling submodule vector
     // Note: it might NOT mean gate vector of this module
@@ -259,7 +259,7 @@ Value cDynamicExpression::sizeofIdent(cComponent *context, Value args[], int num
 Value cDynamicExpression::sizeofGate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==1 && args[0].type==Value::STR);
-    const char *gateName = args[0].str.c_str();
+    const char *gateName = args[0].s.c_str();
     cModule *module = dynamic_cast<cModule *>(context);
     if (!module || !module->hasGate(gateName))
         throw cRuntimeError(context, "error evaluating sizeof(): no such gate: `%s'", gateName);
@@ -272,7 +272,7 @@ Value cDynamicExpression::sizeofGate(cComponent *context, Value args[], int numa
 Value cDynamicExpression::sizeofParentModuleGate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==1 && args[0].type==Value::STR);
-    const char *gateName = args[0].str.c_str();
+    const char *gateName = args[0].s.c_str();
     cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     if (!parentModule)
         throw cRuntimeError(context, "sizeof() occurs in wrong context", gateName);
@@ -287,8 +287,8 @@ Value cDynamicExpression::sizeofParentModuleGate(cComponent *context, Value args
 Value cDynamicExpression::sizeofSiblingModuleGate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==2 && args[0].type==Value::STR && args[1].type==Value::STR);
-    const char *siblingModuleName = args[0].str.c_str();
-    const char *gateName = args[1].str.c_str();
+    const char *siblingModuleName = args[0].s.c_str();
+    const char *gateName = args[1].s.c_str();
 
     cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     if (!parentModule)
@@ -305,8 +305,8 @@ Value cDynamicExpression::sizeofSiblingModuleGate(cComponent *context, Value arg
 Value cDynamicExpression::sizeofIndexedSiblingModuleGate(cComponent *context, Value args[], int numargs)
 {
     ASSERT(numargs==3 && args[0].type==Value::STR && args[1].type==Value::STR && args[2].type==Value::DBL);
-    const char *gateName = args[1].str.c_str();
-    const char *siblingModuleName = args[1].str.c_str();
+    const char *gateName = args[1].s.c_str();
+    const char *siblingModuleName = args[1].s.c_str();
     int siblingModuleIndex = (int)args[2].dbl;
     cModule *parentModule = dynamic_cast<cModule *>(context->parentModule()); // this works for channels too
     cModule *siblingModule = parentModule ? parentModule->submodule(siblingModuleName, siblingModuleIndex) : NULL;

@@ -159,10 +159,10 @@ void cXMLParImpl::convertToConst(cComponent *context)
     setXMLValue(xmlValue(context));
 }
 
-std::string cXMLParImpl::toString() const
+std::string cXMLParImpl::str() const
 {
     if (flags & FL_ISEXPR)
-        return expr->toString();
+        return expr->str();
 
     if (val)
         return std::string("<")+val->getTagName()+"> from "+val->getSourceLocation();

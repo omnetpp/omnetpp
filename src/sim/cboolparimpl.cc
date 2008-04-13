@@ -153,10 +153,10 @@ void cBoolParImpl::convertToConst(cComponent *context)
     setBoolValue(boolValue(context));
 }
 
-std::string cBoolParImpl::toString() const
+std::string cBoolParImpl::str() const
 {
     if (flags & FL_ISEXPR)
-        return expr->toString();
+        return expr->str();
     return val ? "true" : "false";
 }
 

@@ -57,7 +57,7 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
             virtual char returnType() const {return Expression::Value::DBL;}
             virtual Expression::Value evaluate(Expression::Value args[], int numargs)
                 {return hostnode->getVariable(varname.c_str());}
-            virtual std::string toString(std::string args[], int numargs) {return name();}
+            virtual std::string str(std::string args[], int numargs) {return name();}
         };
     private:
         Expression *expr;

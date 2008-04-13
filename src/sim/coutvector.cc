@@ -111,7 +111,7 @@ void cOutVector::setEnum(cEnum *enumDecl)
     if (!handle)
         throw cRuntimeError(this,"setEnum(): set the object name first, using setName()");
     ev.setVectorAttribute(handle, "enumname", enumDecl->name());
-    ev.setVectorAttribute(handle, "enum", enumDecl->toString().c_str());
+    ev.setVectorAttribute(handle, "enum", enumDecl->str().c_str());
 }
 
 void cOutVector::setType(Type type)

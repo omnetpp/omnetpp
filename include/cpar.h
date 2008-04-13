@@ -309,7 +309,7 @@ class SIM_API cPar : public cObject
     /**
      * Returns the value in text form.
      */
-    std::string toString() const;
+    std::string str() const;
 
     /**
      * Converts the value from string, and stores the result.

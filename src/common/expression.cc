@@ -53,14 +53,14 @@ void Expression::Elem::deleteOld()
         delete fu;
 }
 
-std::string Expression::Value::toString()
+std::string Expression::Value::str()
 {
     char buf[32];
     switch (type)
     {
       case BOOL: return bl ? "true" : "false";
       case DBL:  sprintf(buf, "%g", dbl); return buf;
-      case STR:  return opp_quotestr(str.c_str());
+      case STR:  return opp_quotestr(s.c_str());
       default:   throw opp_runtime_error("internal error: bad Value type");
     }
 }
@@ -101,7 +101,7 @@ void Expression::setExpression(Elem e[], int n)
 
 Expression::Value Expression::evaluate() const
 {
-    //XXX printf("    evaluating: %s\n", toString().c_str());
+    //XXX printf("    evaluating: %s\n", str().c_str());
     const int stksize = 20;
     Value stk[stksize];
 
@@ -193,7 +193,7 @@ Expression::Value Expression::evaluate() const
                        if (stk[tos-1].type==Value::DBL && stk[tos].type==Value::DBL)
                            stk[tos-1] = stk[tos-1].dbl + stk[tos].dbl;
                        else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR)
-                           stk[tos-1] = stk[tos-1].str + stk[tos].str;
+                           stk[tos-1] = stk[tos-1].s + stk[tos].s;
                        else
                            throw opp_runtime_error(eEBADARGS,"+");
                        tos--;
@@ -280,7 +280,7 @@ Expression::Value Expression::evaluate() const
                                  if (stk[tos-1].type==Value::DBL && stk[tos].type==Value::DBL) \
                                      stk[tos-1] = (stk[tos-1].dbl RELATION stk[tos].dbl); \
                                  else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR) \
-                                     stk[tos-1] = (stk[tos-1].str RELATION stk[tos].str); \
+                                     stk[tos-1] = (stk[tos-1].s RELATION stk[tos].s); \
                                  else if (stk[tos-1].type==Value::BOOL && stk[tos].type==Value::BOOL) \
                                      stk[tos-1] = (stk[tos-1].bl RELATION stk[tos].bl); \
                                  else \
@@ -317,7 +317,7 @@ Expression::Value Expression::evaluate() const
     if (tos!=0)
         throw opp_runtime_error(eBADEXP);
 
-    //XXX printf("        ==> returning %s\n", stk[tos].toString().c_str());
+    //XXX printf("        ==> returning %s\n", stk[tos].str().c_str());
 
     return stk[tos];
 }
@@ -351,10 +351,10 @@ std::string Expression::stringValue()
     Value v = evaluate();
     if (v.type!=Value::STR)
         throw opp_runtime_error(eECANTCAST,"string");
-    return v.str;
+    return v.s;
 }
 
-std::string Expression::toString() const
+std::string Expression::str() const
 {
     // We perform the same algorithm as during evaluation (i.e. stack machine),
     // only instead of actual calculations we store the result as string.
@@ -400,7 +400,7 @@ std::string Expression::toString() const
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
                      throw opp_runtime_error(eESTKUFLOW);
-                 strstk[argpos] = e.fu->toString(strstk+argpos, numargs);
+                 strstk[argpos] = e.fu->str(strstk+argpos, numargs);
                  tos = argpos;
                  break;
                  }
@@ -620,7 +620,7 @@ Expression::Value MathFunction::evaluate(Expression::Value args[], int numargs)
     }
 }
 
-std::string MathFunction::toString(std::string args[], int numargs)
+std::string MathFunction::str(std::string args[], int numargs)
 {
     std::string s = funcname+"(";
     for (int i=0; i<numargs; i++)

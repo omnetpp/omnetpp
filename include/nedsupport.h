@@ -34,7 +34,7 @@ class ModuleIndex : public cDynamicExpression::Functor
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return 'L';}
     virtual Value evaluate(cComponent *context, Value args[], int numargs);
-    virtual std::string toString(std::string args[], int numargs);
+    virtual std::string str(std::string args[], int numargs);
 };
 
 /**
@@ -44,7 +44,7 @@ class ParameterRef : public cDynamicExpression::Functor
 {
   protected:
     bool ofParent;  // if true, return parentModule->par(paramname)
-    bool printThis; // whether toString() should prefix paramName with "this."
+    bool printThis; // whether str() should prefix paramName with "this."
     std::string paramName;
   public:
     ParameterRef(const char *paramName, bool ofParent, bool printThis);
@@ -53,7 +53,7 @@ class ParameterRef : public cDynamicExpression::Functor
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return '*';}
     virtual Value evaluate(cComponent *context, Value args[], int numargs);
-    virtual std::string toString(std::string args[], int numargs);
+    virtual std::string str(std::string args[], int numargs);
 };
 
 /**
@@ -73,7 +73,7 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
     virtual const char *argTypes() const {return withModuleIndex ? "L" : "";}
     virtual char returnType() const {return '*';}
     virtual Value evaluate(cComponent *context, Value args[], int numargs);
-    virtual std::string toString(std::string args[], int numargs);
+    virtual std::string str(std::string args[], int numargs);
 };
 
 /**
@@ -102,7 +102,7 @@ class LoopVar : public cDynamicExpression::Functor
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return 'L';}
     virtual Value evaluate(cComponent *context, Value args[], int numargs);
-    virtual std::string toString(std::string args[], int numargs);
+    virtual std::string str(std::string args[], int numargs);
 };
 
 
@@ -113,7 +113,7 @@ class Sizeof : public cDynamicExpression::Functor
 {
   protected:
     bool ofParent;  // if true, return parentModule->gateSize(ident)
-    bool printThis; // whether toString() should prefix paramName with "this."
+    bool printThis; // whether str() should prefix paramName with "this."
     std::string ident;
   public:
     Sizeof(const char *ident, bool ofParent, bool printThis);
@@ -122,7 +122,7 @@ class Sizeof : public cDynamicExpression::Functor
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return 'L';}
     virtual Value evaluate(cComponent *context, Value args[], int numargs);
-    virtual std::string toString(std::string args[], int numargs);
+    virtual std::string str(std::string args[], int numargs);
 };
 
 /**
@@ -139,7 +139,7 @@ class XMLDoc : public cDynamicExpression::Functor
     virtual const char *argTypes() const {return withXPath ? "SS" : "S";}
     virtual char returnType() const {return 'X';}
     virtual Value evaluate(cComponent *context, Value args[], int numargs);
-    virtual std::string toString(std::string args[], int numargs);
+    virtual std::string str(std::string args[], int numargs);
 };
 
 /*XXX TODO
@@ -159,7 +159,7 @@ class Sizeof : public Functor
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return 'L';}
     virtual Value evaluate(cComponent *context, Value args[], int numargs);
-    virtual std::string toString(std::string args[], int numargs) {return "index";}
+    virtual std::string str(std::string args[], int numargs) {return "index";}
 };
 */
 

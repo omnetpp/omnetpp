@@ -157,8 +157,8 @@
 
 	cPar, etc:
 	- setFromText() -> parse()
-	- getAsText() -> toString()
-	- also cDisplayString: getString() -> toString() (old getString() deprecated)
+	- getAsText() -> str()
+	- also cDisplayString: getString() -> str() (old getString() deprecated)
 	NOTE: inconsistency with INET Framework: IPAddress, IPv6Address, MACAddress: str()
 
 	cEnvir refactoring:

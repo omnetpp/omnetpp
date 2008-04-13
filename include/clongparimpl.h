@@ -184,7 +184,7 @@ class SIM_API cLongParImpl : public cParImpl
     /**
      * Returns the value in text form.
      */
-    virtual std::string toString() const;
+    virtual std::string str() const;
 
     /**
      * Converts from text.

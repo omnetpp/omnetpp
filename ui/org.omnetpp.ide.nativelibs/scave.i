@@ -167,6 +167,7 @@ namespace std {
    %template(XYDatasetVector) vector<XYDataset>;
 };
 
+%rename(toString) EnumType::str;
 %ignore EnumType::insert;
 %ignore EnumType::parseFromString;
 %ignore EnumType::operator=;

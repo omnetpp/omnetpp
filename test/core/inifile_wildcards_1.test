@@ -62,9 +62,9 @@ void Simple::activity()
 
 void Simple::printParametersOf(cModule *mod)
 {
-    ev << mod->par("p").fullPath() << "=" << mod->par("p").toString() << endl;
-    ev << mod->par("par").fullPath() << "=" << mod->par("par").toString() << endl;
-    ev << mod->par("param").fullPath() << "=" << mod->par("param").toString() << endl;
+    ev << mod->par("p").fullPath() << "=" << mod->par("p").str() << endl;
+    ev << mod->par("par").fullPath() << "=" << mod->par("par").str() << endl;
+    ev << mod->par("param").fullPath() << "=" << mod->par("param").str() << endl;
 
     for (cModule::SubmoduleIterator i(mod); !i.end(); i++)
     {

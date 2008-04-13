@@ -301,7 +301,7 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Returns the value in text form.
      */
-    virtual std::string toString() const = 0;
+    virtual std::string str() const = 0;
 
     /**
      * Convert the value from string, and store the result.

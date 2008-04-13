@@ -430,7 +430,7 @@ class SIM_API cTopology : public cOwnedObject
     /**
      * Extracts model topology by a module parameter. Includes into the graph
      * all modules that have a parameter with the given name, and
-     * the parameter's toString() method returns the paramValue string.
+     * the parameter's str() method returns the paramValue string.
      * If paramValue is NULL, only the parameter's existence is checked
      * but not its value.
      */

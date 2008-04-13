@@ -349,7 +349,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
         Tcl_Interp *interp = getTkenv()->getInterp();
         CHK(Tcl_VarEval(interp,"messagebox {Error} "
                         "{Error: invalid layout `", layout, "' in `p' tag "
-                        "of display string \"", ds.toString(), "\"} error ok", NULL));
+                        "of display string \"", ds.str(), "\"} error ok", NULL));
     }
 }
 
@@ -501,13 +501,13 @@ void TGraphicalModWindow::redrawModules()
                         ptrToStr(submod), " ",
                         coords,
                         "{", submod->fullName(), "} ",
-                        "{", ds.toString(), "} ",
+                        "{", ds.str(), "} ",
                         "{", scaling, "} ",
                         NULL ));
     }
 
     // draw enclosing module
-    const char *dispstr = parentmodule->hasDisplayString() ? parentmodule->displayString().toString() : "";
+    const char *dispstr = parentmodule->hasDisplayString() ? parentmodule->displayString().str() : "";
     CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
                        canvas, " ",
                        ptrToStr(parentmodule), " ",
@@ -539,7 +539,7 @@ void TGraphicalModWindow::redrawModules()
                         gate->index(), gate->size(),
                         dest_gate->index(), dest_gate->size());
                 cChannel *chan = gate->channel();
-                const char *dispstr = (chan && chan->hasDisplayString()) ? chan->displayString().toString() : "";
+                const char *dispstr = (chan && chan->hasDisplayString()) ? chan->displayString().str() : "";
 
                 CHK(Tcl_VarEval(interp, "draw_connection ",
                         canvas, " ",
@@ -980,7 +980,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //    char buf[64];
 //    sprintf(buf,"#%d", g->id());
 //    setLabel(".nb.info.id.e", buf);
-//    setEntry(".nb.info.dispstr.e", g->displayString().getString());
+//    setEntry(".nb.info.dispstr.e", g->displayString().str());
 //    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
 //    if (ch)
 //    {
@@ -1104,7 +1104,7 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
         ptrToStr(g,srcgateptr);
         ptrToStr(g->toGate(),destgateptr);
         cChannel *chan = g->channel();
-        const char *dispstr = (chan && chan->hasDisplayString()) ? chan->displayString().toString() : "";
+        const char *dispstr = (chan && chan->hasDisplayString()) ? chan->displayString().str() : "";
         CHK(Tcl_VarEval(interp, "draw_conn ",
                       canvas, " ",
                       srcgateptr, " ",

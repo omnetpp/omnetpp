@@ -49,7 +49,7 @@ void Test::activity()
           case cPar::DOUBLE: ev << par(i).doubleValue(); break;
           case cPar::BOOL:   ev << (par(i).boolValue() ? "true" : "false"); break;
         }
-        ev << "/" << par(i).toString() << endl;
+        ev << "/" << par(i).str() << endl;
     }
 }
 

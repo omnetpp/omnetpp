@@ -715,11 +715,11 @@ void EnvirBase::readParameter(cPar *par)
         std::string prompt = prop ? prop->value(cProperty::DEFAULTKEY) : "";
         std::string reply;
         if (!prompt.empty())
-            reply = ev.gets(prompt.c_str(), par->toString().c_str());
+            reply = ev.gets(prompt.c_str(), par->str().c_str());
         else
             // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
             // against this string for detecting user input
-            reply = ev.gets((std::string("Enter parameter `")+par->fullPath()+"':").c_str(), par->toString().c_str());
+            reply = ev.gets((std::string("Enter parameter `")+par->fullPath()+"':").c_str(), par->str().c_str());
         //FIXME any chance to cancel?
 
         try
@@ -1003,14 +1003,14 @@ void EnvirBase::displayStringChanged(cComponent *component)
         {
             cModule *module = (cModule *)component;
             EventLogWriter::recordModuleDisplayStringChangedEntry_id_d(feventlog,
-                module->id(), module->displayString().toString());
+                module->id(), module->displayString().str());
         }
         else if (dynamic_cast<cChannel *>(component))
         {
             cChannel *channel = (cChannel *)component;
             cGate *gate = channel->fromGate();
             EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog,
-                gate->ownerModule()->id(), gate->id(), channel->displayString().toString());
+                gate->ownerModule()->id(), gate->id(), channel->displayString().str());
         }
     }
 }
@@ -1457,7 +1457,7 @@ void EnvirBase::checkFingerprint()
         putsmsg("Fingerprint successfully verified.");
     else
         putsmsg((std::string("Fingerprint mismatch! expected: ")+opt_fingerprint.c_str()+
-               ", actual: "+simulation.hasher()->toString()).c_str());
+               ", actual: "+simulation.hasher()->str()).c_str());
 }
 
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)

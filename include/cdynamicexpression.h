@@ -200,7 +200,7 @@ class SIM_API cDynamicExpression : public cExpression
         bool bl;
         double dbl;
         const char *dblunit; // stringpooled, may be NULL
-        std::string str;
+        std::string s;
         cXMLElement *xml;
 
         Value()  {type=UNDEF;}
@@ -216,11 +216,11 @@ class SIM_API cDynamicExpression : public cExpression
         void operator=(long l)  {type=DBL; dbl=l; dblunit=NULL;}
         void operator=(double d)  {type=DBL; dbl=d; dblunit=NULL;}
         void set(double d, const char *unit) {type=DBL; dbl=d; dblunit=unit;}
-        void operator=(const char *s)  {type=STR; str=s?s:"";}
-        void operator=(const std::string& s)  {type=STR; str=s;}
+        void operator=(const char *s)  {type=STR; this->s=s?s:"";}
+        void operator=(const std::string& s)  {type=STR; this->s=s;}
         void operator=(cXMLElement *x)  {type=XML; xml=x;}
         void operator=(const cPar& par);
-        std::string toString() const;
+        std::string str() const;
         Value& convertTo(const char *unit) {dbl=convertUnit(dbl, dblunit, unit); dblunit=unit; return *this;}
     };
 
@@ -236,7 +236,7 @@ class SIM_API cDynamicExpression : public cExpression
         virtual int numArgs() const {return strlen(argTypes());}
         virtual char returnType() const = 0;
         virtual Value evaluate(cComponent *context, Value args[], int numargs) = 0;
-        virtual std::string toString(std::string args[], int numargs) = 0;
+        virtual std::string str(std::string args[], int numargs) = 0;
     };
 
   protected:
@@ -337,7 +337,7 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * Converts the expression to string.
      */
-    virtual std::string toString() const;
+    virtual std::string str() const;
 
     /**
      * Interprets the string as an expression, and stores it.

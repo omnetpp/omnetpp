@@ -97,7 +97,7 @@ class SIM_API cHasher : noncopyable
     /**
      * Returns the textual representation (hex string) of the stored hash.
      */
-    std::string toString() const;
+    std::string str() const;
     //@}
 };
 

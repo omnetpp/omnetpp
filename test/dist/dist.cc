@@ -33,7 +33,7 @@ void Dist::activity()
     std::replace(excel_str.begin(), excel_str.end(), ',', ';');
     excel = excel_str.c_str();
 
-    std::string distname = variate.toString();
+    std::string distname = variate.str();
     ev << "running: " << distname << endl;
 
     // generate histogram

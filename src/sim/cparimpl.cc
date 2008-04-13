@@ -65,7 +65,7 @@ void cParImpl::netUnpack(cCommBuffer *buffer)
 
 std::string cParImpl::info() const
 {
-    return toString();
+    return str();
 }
 
 std::string cParImpl::detailedInfo() const
@@ -75,9 +75,9 @@ std::string cParImpl::detailedInfo() const
     if (hasValue())
     {
         if (isInput())
-            out << " = default(" << toString() << ")";
+            out << " = default(" << str() << ")";
         else
-            out << " = " << toString();
+            out << " = " << str();
         out << " isExpression=" << (isExpression()?"true":"false");
     }
     else

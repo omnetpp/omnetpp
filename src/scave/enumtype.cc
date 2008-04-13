@@ -84,7 +84,7 @@ std::vector<std::string> EnumType::names() const
     return names;
 }
 
-std::string EnumType::toString() const
+std::string EnumType::str() const
 {
     std::stringstream out;
     for (std::map<std::string,int>::const_iterator it=nameToValueMap.begin(); it!=nameToValueMap.end(); ++it)

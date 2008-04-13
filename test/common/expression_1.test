@@ -18,7 +18,7 @@ class Variable : public Expression::Functor
     virtual const char *argTypes() const {return "";}
     virtual char returnType() const {return Expression::Value::DBL;}
     virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return (double)(varname[1]-'0');}
-    virtual std::string toString(std::string args[], int numargs) {return name();}
+    virtual std::string str(std::string args[], int numargs) {return name();}
 };
 
 class Resolver : public Expression::Resolver

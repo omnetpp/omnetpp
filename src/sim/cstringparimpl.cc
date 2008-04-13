@@ -156,10 +156,10 @@ void cStringParImpl::convertToConst(cComponent *context)
     setStringValue(stdstringValue(context).c_str());
 }
 
-std::string cStringParImpl::toString() const
+std::string cStringParImpl::str() const
 {
     if (flags & FL_ISEXPR)
-        return expr->toString();
+        return expr->str();
 
     return opp_quotestr(val.c_str());
 }

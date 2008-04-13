@@ -112,7 +112,7 @@ class SIM_API cEnum : public cOwnedObject
     /**
      *XXX
      */
-    std::string toString() const;
+    std::string str() const;
 
     /**
      * Finds a registered enum by name.

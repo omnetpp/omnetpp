@@ -37,7 +37,7 @@ Register_Enum(cGate_Type, (cGate::INPUT, cGate::OUTPUT, cGate::INOUT));
 // Define operator<< for some classes
 //
 std::ostream& operator<<(std::ostream& os, const cDisplayString& d) {
-    return os << "\"" << d.toString() << "\"";
+    return os << "\"" << d.str() << "\"";
 }
 
 typedef cDensityEstBase::Cell cDensityEstBase_Cell;
@@ -209,7 +209,7 @@ class cGate extends cNoncopyableOwnedObject
 class cDisplayString
 {
         @omitGetVerb(true);
-        string value @getter(toString) @setter(parse) @editable @hint(the editable display string itself);
+        string value @getter(str) @setter(parse) @editable @hint(the editable display string itself);
 }
 
 class cArray extends cOwnedObject
@@ -337,7 +337,7 @@ class cADByStddev extends cAccuracyDetection
 class cExpression extends cObject
 {
         @omitGetVerb(true);
-        string toString;
+        string str;
 }
 
 class cFSM extends cOwnedObject
@@ -372,7 +372,7 @@ class cOutVector extends cNoncopyableOwnedObject
 class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
 {
         @omitGetVerb(true);
-        string value @getter(toString) @setter(parse) @editable;
+        string value @getter(str) @setter(parse) @editable;
         char type @enum(cPar_Type) @hint(parameter type);
         string unit @getter(unit) @hint(for long and double types only);
         bool isNumeric @group(flags) @hint(whether parameter type is numeric, i.e. double or long);
@@ -384,7 +384,7 @@ class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
 class cMsgPar extends cOwnedObject
 {
         @omitGetVerb(true);
-        string value @getter(toString) @setter(parse) @editable @hint(parameter value);
+        string value @getter(str) @setter(parse) @editable @hint(parameter value);
         char type @enum(cPar_Type) @hint(parameter type);
         bool isNumeric @group(flags) @hint(whether parameter is of numeric type);
         bool isConstant @group(flags) @hint(whether the parameter has a constant value);
@@ -415,7 +415,7 @@ class noncobject cHasher; //FIXME should be nonpoymorphic or what???
 
 class cHasher
 {
-       string hash @getter(toString) @hint(the current hash value);
+       string hash @getter(str) @hint(the current hash value);
 }
 
 class cSimulation extends cNoncopyableOwnedObject

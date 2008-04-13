@@ -155,7 +155,7 @@ class COMMON_API Expression
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
         bool bl;
         double dbl;
-        std::string str;
+        std::string s;
 
         Value()  {type=UNDEF;}
         Value(bool b)  {*this=b;}
@@ -166,9 +166,9 @@ class COMMON_API Expression
         void operator=(bool b)  {type=BOOL; bl=b;}
         void operator=(long l)  {type=DBL; dbl=l;}
         void operator=(double d)  {type=DBL; dbl=d;}
-        void operator=(const char *s)  {type=STR; str=s?s:"";}
-        void operator=(const std::string& s)  {type=STR; str=s;}
-        std::string toString();
+        void operator=(const char *s)  {type=STR; this->s=s?s:"";}
+        void operator=(const std::string& s)  {type=STR; this->s=s;}
+        std::string str();
     };
 
     /**
@@ -184,7 +184,7 @@ class COMMON_API Expression
         virtual int numArgs() const {return strlen(argTypes());}
         virtual char returnType() const = 0;
         virtual Value evaluate(Value args[], int numargs) = 0;
-        virtual std::string toString(std::string args[], int numargs) = 0;
+        virtual std::string str(std::string args[], int numargs) = 0;
     };
 
     /**
@@ -278,7 +278,7 @@ class COMMON_API Expression
     /**
      * Converts the expression to string.
      */
-    virtual std::string toString() const;
+    virtual std::string str() const;
 
     /**
      * Interprets the string as an expression, and stores it. Resolver
@@ -319,7 +319,7 @@ class COMMON_API MathFunction : public Expression::Functor
     virtual const char *argTypes() const;
     virtual char returnType() const;
     virtual Expression::Value evaluate(Expression::Value args[], int numargs);
-    virtual std::string toString(std::string args[], int numargs);
+    virtual std::string str(std::string args[], int numargs);
 };
 
 NAMESPACE_END

@@ -155,10 +155,10 @@ void cDoubleParImpl::convertToConst(cComponent *context)
     setDoubleValue(doubleValue(context));
 }
 
-std::string cDoubleParImpl::toString() const
+std::string cDoubleParImpl::str() const
 {
     if (flags & FL_ISEXPR)
-        return expr->toString();
+        return expr->str();
 
     char buf[32];
     sprintf(buf, "%g", val);

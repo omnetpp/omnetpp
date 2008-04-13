@@ -122,7 +122,7 @@ class SIM_API cExpression : public cObject
     /**
      * Converts the expression to string.
      */
-    virtual std::string toString() const = 0;
+    virtual std::string str() const = 0;
 
     /**
      * Interprets the string as an expression, and store it.

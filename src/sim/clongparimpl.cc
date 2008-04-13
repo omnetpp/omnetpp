@@ -155,10 +155,10 @@ void cLongParImpl::convertToConst(cComponent *context)
     setLongValue(longValue(context));
 }
 
-std::string cLongParImpl::toString() const
+std::string cLongParImpl::str() const
 {
     if (flags & FL_ISEXPR)
-        return expr->toString();
+        return expr->str();
 
     char buf[32];
     sprintf(buf, "%ld", val);

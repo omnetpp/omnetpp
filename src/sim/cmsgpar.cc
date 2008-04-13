@@ -174,7 +174,7 @@ std::string cMsgPar::detailedInfo() const
 {
     std::stringstream os;
     os << "  Type:  " << typechar << '\n';
-    os << "  Value: " << toString().c_str() << '\n';
+    os << "  Value: " << str().c_str() << '\n';
     return os.str();
 }
 
@@ -668,7 +668,7 @@ void cMsgPar::afterChange()
     changedflag=true;
 }
 
-string cMsgPar::toString() const
+string cMsgPar::str() const
 {
     char bb[128];
     bb[0] = 0;

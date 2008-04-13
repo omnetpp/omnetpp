@@ -312,7 +312,7 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     cDisplayString d(olddisplaystring);
     cDisplayString dnew(newdisplaystring);
     d.updateWith(dnew);
-    prop->setValue(cProperty::DEFAULTKEY, 0, d.toString());
+    prop->setValue(cProperty::DEFAULTKEY, 0, d.str());
 }
 
 cParImpl *cNEDDeclaration::getSharedParImplFor(NEDElement *node)

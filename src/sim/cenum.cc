@@ -57,7 +57,7 @@ std::string cEnum::info() const
 {
     if (valueToNameMap.size()==0)
         return std::string("empty");
-    return toString();
+    return str();
 }
 
 void cEnum::insert(int value, const char *name)
@@ -114,7 +114,7 @@ cEnum *cEnum::registerValues(int firstValue, ...)
     return this;
 }
 
-std::string cEnum::toString() const
+std::string cEnum::str() const
 {
     std::stringstream out;
     for (std::map<std::string,int>::const_iterator it=nameToValueMap.begin(); it!=nameToValueMap.end(); ++it)

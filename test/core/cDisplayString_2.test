@@ -4,14 +4,14 @@ check basic cDisplayString functionality: get/set tags
 %activity:
 cDisplayString ds("a=,a2,a3;b=,b2,,b4");
 
-ds.insertTag("x",1); ev << ds.toString() << endl;
-ds.setTagArg("x",0,"joe"); ev << ds.toString() << endl;
-ds.setTagArg("x",1,"jim"); ev << ds.toString() << endl;
-ds.setTagArg("b",0,"b0"); ev << ds.toString() << endl;
-ds.setTagArg("b",7,"b7"); ev << ds.toString() << endl;
-ds.setTagArg("b",8,"b8"); ev << ds.toString() << endl;
-ds.setTagArg("c",3,"c3"); ev << ds.toString() << endl;
-ds.removeTag("a"); ev << ds.toString() << endl;
+ds.insertTag("x",1); ev << ds.str() << endl;
+ds.setTagArg("x",0,"joe"); ev << ds.str() << endl;
+ds.setTagArg("x",1,"jim"); ev << ds.str() << endl;
+ds.setTagArg("b",0,"b0"); ev << ds.str() << endl;
+ds.setTagArg("b",7,"b7"); ev << ds.str() << endl;
+ds.setTagArg("b",8,"b8"); ev << ds.str() << endl;
+ds.setTagArg("c",3,"c3"); ev << ds.str() << endl;
+ds.removeTag("a"); ev << ds.str() << endl;
 ev << ".\n";
 
 %contains: stdout

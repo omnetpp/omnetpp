@@ -54,7 +54,7 @@ NAMESPACE_BEGIN
  *   dispstr.setTagArg("x",0,"joe");
  *   dispstr.setTagArg("x",2,"jim");
  *   dispstr.setTagArg("p",0,"beta");
- *   ev << dispstr.toString();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
+ *   ev << dispstr.str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
  * </pre>
  *
  * Limitation: a tag may have at most 16 arguments.
@@ -129,7 +129,7 @@ class SIM_API cDisplayString
     /**
      * Assignment operator.
      */
-    cDisplayString& operator=(const cDisplayString& ds) {parse(ds.toString()); return *this;}
+    cDisplayString& operator=(const cDisplayString& ds) {parse(ds.str()); return *this;}
 
     /**
      * Conversion from string.
@@ -139,7 +139,7 @@ class SIM_API cDisplayString
     /**
      * Conversion to string.
      */
-    operator const char *() const  {return toString();}
+    operator const char *() const  {return str();}
     //@}
 
     /** Getting and setting the stored display string. */
@@ -148,13 +148,7 @@ class SIM_API cDisplayString
     /**
      * Returns the display string.
      */
-    const char *toString() const;
-
-    /**
-     * DEPRECATED. This method was renamed for consistence across the class library.
-     * Please use its new name toString().
-     */
-    _OPPDEPRECATED const char *getString() const  {return toString();}
+    const char *str() const;
 
     /**
      * Same as parse().
