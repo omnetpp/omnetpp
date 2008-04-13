@@ -348,8 +348,6 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      */
     simtime_t guessNextSimtime();
 
-//FIXME change these functions to work with events instead of modules?
-
     /**
      * Executes one event. The argument should be the module
      * returned by selectNextModule(); that is, the module
@@ -369,6 +367,13 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Switches to main coroutine.
      */
     void transferToMain();
+
+    /**
+     * Inserts the given message into the future events queue while assigning
+     * the current event to its scheduling event. Used internally by
+     * cSimpleModule::scheduleAt() and various other cSimpleModule methods.
+     */
+    void insertMsg(cMessage *msg);
 
     /**
      * Sets the component (module or channel) in context. Used internally.
@@ -446,12 +451,6 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      */
     void setHasher(cHasher *hasher);
     //@}
-
-    /**
-     * Inserts the given message into the future events queue while assigning
-     * the current event to its scheduling event.   FIXME move it into the proper function group
-     */
-    void insertMsg(cMessage *msg);
 };
 
 NAMESPACE_END

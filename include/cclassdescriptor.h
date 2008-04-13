@@ -72,7 +72,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     static bool string2bool(const char *s);
     static void double2string(double d, char *buf, int bufsize);
 #ifndef USE_DOUBLE_SIMTIME
-    static void double2string(SimTime t, char *buf, int bufsize) {double2string(t.dbl(),buf,bufsize);} //FIXME this is a hack, remove!!!!!
+    static void double2string(SimTime t, char *buf, int bufsize) {strcpy(buf, t.str().c_str());}
 #endif
     static double string2double(const char *s);
     static void enum2string(long e, const char *enumname, char *buf, int bufsize);
@@ -212,7 +212,6 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * false otherwise. For compound fields, the message compiler generates
      * code which calls operator<<.
      */
-    //FIXME remove the limit!!!! return std::string or something...
     virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) = 0;
 
     /**
