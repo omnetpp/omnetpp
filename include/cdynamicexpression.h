@@ -28,7 +28,8 @@ class cMathFunction;
 class cNEDFunction;
 
 /**
- * FIXME revise docu in the whole class!!!!!!
+ * A stack-based expression evaluator class, for dynamically created
+ * expressions.
  *
  * NOTE: Experimental class -- API is subject to change.
  *
@@ -152,7 +153,7 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: Call a function
          * taking 0..4 doubles and returning a double.
          */
-        void operator=(cMathFunction *_f)  {type=MATHFUNC; ASSERT(_f); f=_f;} //FIXME out -- replace with cNEDFunction
+        void operator=(cMathFunction *_f)  {type=MATHFUNC; ASSERT(_f); f=_f;}
 
         /**
          * Effect during evaluation of the expression: call a function
@@ -184,9 +185,11 @@ class SIM_API cDynamicExpression : public cExpression
 
     /**
      * The dynamic expression evaluator calculates in Values.
-     * There's no "long" field in it: all numeric calculations are performed
-     * in double. XXX This is fine for 32-bit longs, but not for 64-bit ones,
-     * as double's mantissa is only 53 bits.
+     *
+     * Note: There's no <tt>long</tt> field in it: all numeric calculations are
+     * performed in floating point (<tt>double</tt>). While this is fine on 32-bit
+     * architectures, on 64-bit architectures some precision will be lost
+     * because IEEE <tt>double</tt>'s mantissa is only 53 bits.
      *
      * NOTE: Experimental class -- API is subject to change.
      */
@@ -195,7 +198,7 @@ class SIM_API cDynamicExpression : public cExpression
         // Note: char codes need to be present and be consistent with cNEDFunction::argTypes()
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
         bool bl;
-        double dbl;  //FIXME better names! this is part of the public interface!!!!
+        double dbl;
         const char *dblunit; // stringpooled, may be NULL
         std::string str;
         cXMLElement *xml;
