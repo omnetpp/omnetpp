@@ -29,7 +29,7 @@ class cMessage;
 
 
 /**
- * Base class for channels. FIXME docu!!!!
+ * Base class for channels.
  *
  * @ingroup SimCore
  */

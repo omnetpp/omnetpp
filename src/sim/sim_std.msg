@@ -201,7 +201,7 @@ class cGate extends cNoncopyableOwnedObject
         bool isConnectedOutside @group(connection) @hint(for an output gate this checks toGate, and fromGate for an input gate);
         bool isConnectedInside @group(connection) @hint(for an input gate this checks toGate, and fromGate for an output gate);
         bool isConnected @group(connection) @hint(whether the gate is fully connected -- both inside and outside for a compound module gate, and outside for a simple module gate);
-        bool isRouteOK @group(connection) @hint(the chain of connections is OK if it starts and ends at simple modules);
+        bool isPathOK @group(connection) @hint(the chain of connections is OK if it starts and ends at a simple module);
 }
 
 //----

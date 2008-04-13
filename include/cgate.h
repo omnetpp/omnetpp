@@ -78,7 +78,7 @@ class SIM_API cGate : public cObject, noncopyable
 
     Desc *desc;  // descriptor of gate/gate vector, stored in cModule
     int gateId;  // index within the module's gatev[]
-    mutable char *fullname; // buffer to store full name of object   FIXME stringpool it!! needed?
+    const char *fullname; // name[index] string, stringpooled; may be NULL
 
     cChannel *channelp; // channel object (if exists)
     cGate *fromgatep;   // previous and next gate
@@ -309,10 +309,10 @@ class SIM_API cGate : public cObject, noncopyable
     bool isConnected() const;
 
     /**
-     * Returns true if the route that this gate is in is complete, that is,
-     * if it starts and arrives at a simple module.
+     * Returns true if the path (chain of connections) containing this gate
+     * starts and ends at a simple module.
      */
-    bool isRouteOK() const;  //FIXME rename to isPathOK()?
+    bool isPathOK() const;
     //@}
 };
 

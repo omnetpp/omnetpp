@@ -38,7 +38,6 @@ enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 #undef max
 
 #ifdef USE_DOUBLE_SIMTIME
-//FIXME deprecate
 /**
  * @name Converting simulation time to and from string form.
  * @ingroup Functions

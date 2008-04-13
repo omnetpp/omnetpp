@@ -54,7 +54,7 @@ cGate::cGate(Desc *d)
 cGate::~cGate()
 {
     dropAndDelete(channelp);
-    delete [] fullname;
+    stringPool.release(fullname);
 }
 
 void cGate::forEachChild(cVisitor *v)
@@ -80,12 +80,15 @@ const char *cGate::fullName() const
     if (!isVector())
         return name();
 
-    // otherwise, produce fullname if not already there
+    // otherwise, produce fullname if not yet done
     if (!fullname)
     {
-        fullname = new char[opp_strlen(name())+10];
-        strcpy(fullname, name());
-        opp_appendindex(fullname, index());
+        if (opp_strlen(name()) > 100)
+            throw cRuntimeError(this, "gate name too long, should be under 100 characters");
+        static char tmp[128];
+        strcpy(tmp, name());
+        opp_appendindex(tmp, index()); // much faster than printf
+        const_cast<cGate *>(this)->fullname = stringPool.get(tmp);
     }
     return fullname;
 }
@@ -305,7 +308,7 @@ bool cGate::isConnected() const
         return isConnectedOutside();
 }
 
-bool cGate::isRouteOK() const
+bool cGate::isPathOK() const
 {
     return sourceGate()->ownerModule()->isSimple() &&
            destinationGate()->ownerModule()->isSimple();

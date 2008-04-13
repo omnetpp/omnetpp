@@ -90,6 +90,11 @@ void cComponent::handleParameterChange(const char *)
     // Can be redefined by the user.
 }
 
+const char *cComponent::nedTypeName() const
+{
+    return componentType()->fullName();
+}
+
 void cComponent::reallocParamv(int size)
 {
     ASSERT(size>=numparams);

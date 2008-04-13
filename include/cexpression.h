@@ -18,6 +18,7 @@
 #define __CEXPRESSION_H
 
 #include "cobject.h"
+#include "cexception.h"
 
 NAMESPACE_BEGIN
 

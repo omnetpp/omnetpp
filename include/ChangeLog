@@ -53,6 +53,7 @@
 	  gate("out",0)->size() would work, but only if out[] is of nonzero size (otherwise "out[0] not found" error occurs).
 	  Best is to use gateSize("out"), a cModule member function.
 	- removed setTo(), setFrom() methods; use connectTo() instead!
+	- isRouteOK() renamed to isPathOK()
 	- dynamic gate creating changed:
 	    - removed cGate::setOwnerModule() and setIndex()
 	    - XXX describe what's instead

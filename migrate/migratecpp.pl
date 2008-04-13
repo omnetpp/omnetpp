@@ -40,20 +40,21 @@ while (<LISTFILE>)
     $txt =~ s/\bgate\(([^,)]+)\)->size\(\)/gateSize(\1)/mg; # ???
 
     # rename cQueue methods
-    $txt =~ s/\bgetTail\b/pop/mg;
-    $txt =~ s/\btail\b/front/mg;
+    $txt =~ s/\bgetTail *\( *\)/pop()/mg;
+    $txt =~ s/\btail *\( *\)/front()/mg;
 
     # cStatistic methods
     $txt =~ s/\bsamples *\( *\)/count()/mg;
     $txt =~ s/\btransformed *\( *\)/isTransformed()/mg;
 
     # display string
-    $txt =~ s/\bgetString\b/toString/mg;
+    $txt =~ s/\bgetString *\( *\)/toString()/mg;
 
      # cSimulation
-    $txt =~ s/\brunningModule\b/activityModule/mg;
+    $txt =~ s/\brunningModule *\( *\)/activityModule()/mg;
 
     # cGate
+    $txt =~ s/\bisRouteOK *\( *\)/isPathOK()/mg;
     $txt =~ s/->datarate\(\)->doubleValue\(\)/->channel()->par("datarate").doubleValue()/mg;
     $txt =~ s/->delay\(\)->doubleValue\(\)/->channel()->par("delay").doubleValue()/mg;
     $txt =~ s/->error\(\)->doubleValue\(\)/->channel()->par("error").doubleValue()/mg;

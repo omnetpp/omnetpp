@@ -214,7 +214,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Returns the fully qualified NED type name of the component.
      * This is a shortcut to <tt>componentType()->fullName()</tt>.
      */
-    virtual const char *nedTypeName() const {return componentType()->fullName();}
+    virtual const char *nedTypeName() const;
 
     /**
      * Redefined to return true in cModule and subclasses, otherwise returns false.
