@@ -460,12 +460,14 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /** @name Gates. */
     //@{
     /**
-     * Returns the total size of the gate array. Since the array may contain
-     * unused elements, the number of actual gates used might be less.
-     * Gate IDs are an index into this array. Inout gates are represented
-     * by two cGate objects.
+     * Returns the maximum gate ID plus one, which is the same as the size
+     * of the array that holds all module gates. Note that some positions
+     * (gate IDs) may be unused (the array contains NULL).
+     *
+     * Inout gates are represented by two cGate objects, named "<i>name</i>$i"
+     * and "<i>name</i>$o".
      */
-    virtual int gates() const {return gatev.size();}   //XXX rename to numGates
+    virtual int gates() const {return gatev.size();}
 
     /**
      * Returns a gate by its ID. Note that the gate array may contain "holes",

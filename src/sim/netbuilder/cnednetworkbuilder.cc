@@ -85,6 +85,8 @@ void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration 
 {
     //TRACE("addParametersTo(%s), decl=%s", component->fullPath().c_str(), decl->name()); //XXX
 
+    //TODO for performance: component->reallocParamv(decl->getParameterDeclarations().size());
+
     // recursively add and assign super types' parameters
     if (decl->numExtendsNames() > 0)
     {

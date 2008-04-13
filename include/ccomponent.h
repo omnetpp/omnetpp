@@ -54,7 +54,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     short paramvsize;
     short numparams;
-    cPar *paramv;  // array of cPar objects   FIXME preallocate with the right size!!!
+    cPar *paramv;  // array of cPar objects
 
     cDisplayString *dispstr; // display string (created on demand)
 
@@ -160,12 +160,11 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /** @name Constructors, destructor, assignment. */
     //@{
     /**
-     * FIXME revise comment!!!
-     * Constructor. Note that module objects should not be created directly,
-     * only via their cComponentType objects. cComponentType::create() will do
-     * all housekeeping tasks associated with module creation (assigning
-     * an ID to the module, inserting it into the global <tt>simulation</tt>
-     * object (see cSimulation), etc.).
+     * Constructor. Note that module and channel objects should not be created
+     * directly, via their cComponentType objects. cComponentType::create()
+     * will do all housekeeping associated with creating the module (assigning
+     * an ID to the module, inserting it into the <tt>simulation</tt> object,
+     * etc.).
      */
     cComponent(const char *name = NULL);
 
@@ -212,6 +211,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     cComponentType *componentType() const  {return componenttype;}
 
     /**
+     * Returns the fully qualified NED type name of the component.
+     * This is a shortcut to <tt>componentType()->fullName()</tt>.
+     */
+    virtual const char *nedTypeName() const {return componentType()->fullName();}
+
+    /**
      * Redefined to return true in cModule and subclasses, otherwise returns false.
      */
     virtual bool isModule() const  {return false;}
@@ -254,7 +259,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Returns total number of the component's parameters.
      */
-    virtual int params() const  {return numparams;} //XXX rename to numParams
+    virtual int params() const  {return numparams;}
 
     /**
      * Returns reference to the parameter identified with its

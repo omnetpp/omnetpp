@@ -119,11 +119,12 @@
 	- display string objects are now only created (from @display) when first accessed
 	
 	Gross renaming: cObject became cOwnedObject, cPolymorphic became cObject;
-	  - cNamedObject introduced in between.
-	  - cArray, cQueue still handle cObject (old cPolymorphic), i.e. they can work
-	    with non-owned objects as well
+	- cNamedObject introduced in between.
+	- cArray, cQueue still handle cObject (old cPolymorphic), i.e. they can work
+	  with non-owned objects as well
 
 	Introduced cComponent, a common base class for cModule and cChannel
+	- new methods to mention: isModule(), nedTypeName(), etc
 
 	cSimpleModule, cSimulation:
 	- removed: pause(), backtomod, pause_in_sendmsg (they were obsolete)
