@@ -309,6 +309,17 @@ class SIM_API cTopology : public cOwnedObject
         cGate *localGate() const       {return src_node->module()->gate(src_gate);}
     };
 
+    /**
+     * Base class for selector objects used in extract...() methods of cTopology.
+     * Redefine the matches() method to return whether the given module
+     * should be included in the extracted topology or not.
+     */
+    class SIM_API Predicate
+    {
+      public:
+        virtual ~Predicate() {}
+        virtual bool matches(cModule *module) = 0;
+    };
 
   protected:
     int num_nodes;
@@ -385,45 +396,45 @@ class SIM_API cTopology : public cOwnedObject
      * parameter may take any value you like, and it is passed back to selfunc()
      * in its second argument.
      */
-    void extractFromNetwork(int (*selfunc)(cModule *,void *), void *userdata=NULL);
-
-    //XXX add extractByName()
-    //XXX why selfunc retval is "int"?? should be bool!!!
+    void extractFromNetwork(bool (*selfunc)(cModule *,void *), void *userdata=NULL);
 
     /**
-     * Extracts model topology by module type (classnames). Includes into
-     * the graph all modules whose className() is one of the strings
-     * listed as arguments. The argument list must be terminated by a NULL
-     * pointer. Example:
+     * The type safe, object-oriented equivalent of extractFromNetwork(selfunc, userdata).
+     */
+    void extractFromNetwork(Predicate *predicate);
+
+    /**
+     * Extracts model topology by module name (more precisely, full path).
+     * Includes into the graph all modules whose fullPath() matches
+     * one of the patterns in given string vector. The patterns can
+     * contain wilcards in the same syntax as in ini files.
      *
-     * <pre>
-     * cTopology topo;
-     * topo.extractByModuleType("Host", "Router", NULL);
-     * </pre>
+     * An example:
+     * <tt>topo.extractByModuleName(cStringTokenizer("**.host[*] **.router*").asVector());</tt>
      */
-    void extractByModuleType(const char *type1,...);
+    void extractByModuleName(const std::vector<std::string>& fullPathPatterns);
 
     /**
-     * Extracts model topology by module type (classnames). Includes into
-     * the graph all modules whose className() is one of the class names in
-     * in the 'types' argument. 'types' is a vector of char* pointers,
-     * terminated by a NULL pointer.
+     * Extracts model topology by the fully qualified NED type name of the
+     * modules. Includes into the graph all modules whose nedTypeName()
+     * occurs in the given string vector.
+     *
+     * Note: If you have all class names as a single, space-separated
+     * string, you can use cStringTokenizer to turn it into a string vector
+     * for this function:
+     *
+     * <tt>topo.extractByNedTypeName(cStringTokenizer("Host Router").asVector());</tt>
      */
-    void extractByModuleType(const char **types);
+    void extractByNedTypeName(const std::vector<std::string>& nedTypeNames);
 
     /**
-     * Extracts model topology by module type (classnames). Includes into
-     * the graph all modules whose className() is one of the class names in
-     * in the 'types' argument.
+     * Extracts model topology by a module parameter. Includes into the graph
+     * all modules that have a parameter with the given name, and
+     * the parameter's toString() method returns the paramValue string.
+     * If paramValue is NULL, only the parameter's existence is checked
+     * but not its value.
      */
-    void extractByModuleType(const std::vector<std::string>& types);
-
-    /**
-     * Extracts model topology by parameter value. Includes into the graph
-     * modules which have a parameter with the given name and (optionally)
-     * the given value.
-     */
-    void extractByParameter(const char *parname, cPar *value=NULL); //FIXME is it possible create a cPar?? is it OK to use it here? why not number, bool or string? more explanation!!!
+    void extractByParameter(const char *paramName, const char *paramValue=NULL);
 
     /**
      * Deletes the topology stored in the object.

@@ -21,11 +21,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <deque>
+#include <algorithm>
 #include "ctopology.h"
 #include "cpar.h"
 #include "globals.h"
-#include "clinkedlist.h"   //FIXME replace with stl or whatever...
 #include "cexception.h"
+#include "patternmatcher.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -105,70 +107,65 @@ void cTopology::clear()
     nodev = NULL;
 }
 
-static int selectByParameter(cModule *mod, void *data)
-{
-    struct sTmp {const char *parname; cPar *value;};
-    sTmp *d = (sTmp *)data;
+//---
 
-    if (!mod || mod->findPar(d->parname)<0) return 0;
-//FIXME put back, after resolving comparison issue:    if (d->value && !mod->par(d->parname).equalsTo(d->value)) return 0;
-    return 1;
+static bool selectByModuleName(cModule *mod, void *data)
+{
+    // actually, this is selectByModuleFullPathPattern()
+    const std::vector<std::string>& v = *(const std::vector<std::string> *)data;
+    std::string path = mod->fullPath();
+    for (int i=0; i<v.size(); i++)
+        if (PatternMatcher(v[i].c_str(), true, true, true).matches(path.c_str()))
+            return true;
+    return false;
 }
 
-void cTopology::extractByParameter(const char *parname, cPar *value)
+static bool selectByNedTypeName(cModule *mod, void *data)
 {
-    struct {const char *p; cPar *v;} data = {parname, value};
-    extractFromNetwork( selectByParameter, (void *)&data );
+    const std::vector<std::string>& v = *(const std::vector<std::string> *)data;
+    return std::find(v.begin(), v.end(), mod->nedTypeName()) != v.end();
 }
 
-static int selectByModuleType(cModule *mod, void *data)
+static bool selectByParameter(cModule *mod, void *data)
 {
-    for (const char **d = (const char **)data; *d; d++)
-        if (strcmp(mod->className(),*d)==0)
-            return 1;
-    return 0;
+    struct ParamData {const char *name; const char *value;};
+    ParamData *d = (ParamData *)data;
+    //FIXME if parameter is string type, check against stringValue() as well!!! (quote marks!!)
+    return mod->hasPar(d->name) && (d->value==NULL || mod->par(d->name).toString()==std::string(d->value));
 }
 
-void cTopology::extractByModuleType(const char *type1,...)
+//---
+
+void cTopology::extractByModuleName(const std::vector<std::string>& fullPathPatterns)
 {
-    // parse arg list into null-terminated char *[] array
-    int n = 0;
-    va_list va;
-    va_start(va,type1);
-    while (va_arg(va, char *)!=NULL) n++;
-    va_end(va);
-
-    char **types = new char *[n+2];
-
-    int k=0;
-    types[k++] = const_cast<char *>(type1);
-
-    va_start(va,type1);
-    while ((types[k++]=va_arg(va, char *))!=NULL);
-    va_end(va);
-
-    extractFromNetwork(selectByModuleType, (void *)types);
-
-    delete [] types;
+    extractFromNetwork(selectByModuleName, (void *)&fullPathPatterns);
 }
 
-void cTopology::extractByModuleType(const char **types)
+void cTopology::extractByNedTypeName(const std::vector<std::string>& nedTypeNames)
 {
-    extractFromNetwork(selectByModuleType, (void *)types);
+    extractFromNetwork(selectByNedTypeName, (void *)&nedTypeNames);
 }
 
-void cTopology::extractByModuleType(const std::vector<std::string>& v)
+void cTopology::extractByParameter(const char *paramName, const char *paramValue)
 {
-    const char **types = new const char *[v.size()+1];
-    for (unsigned int i=0; i<v.size(); i++)
-        types[i] = v[i].c_str();
-    types[v.size()] = NULL;
-    extractFromNetwork(selectByModuleType, (void *)types);
-    delete [] types;
+    struct {const char *name; const char *value;} data = {paramName, paramValue};
+    extractFromNetwork(selectByParameter, (void *)&data);
 }
 
+//---
 
-void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
+static bool selectByPredicate(cModule *mod, void *data)
+{
+    cTopology::Predicate *predicate = (cTopology::Predicate *)data;
+    return predicate->matches(mod);
+}
+
+void cTopology::extractFromNetwork(Predicate *predicate)
+{
+    extractFromNetwork(selectByPredicate, (void *)predicate);
+}
+
+void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data)
 {
     clear();
 
@@ -277,7 +274,7 @@ cTopology::Node *cTopology::nodeFor(cModule *mod)
         // cycle invariant: nodev[lo].mod_id <= mod->id() < nodev[up].mod_id
         if (mod->id() < nodev[index].module_id)
              up = index;
-          else
+        else
              lo = index;
     }
     return (mod->id() == nodev[index].module_id) ? nodev+index : NULL;
@@ -299,13 +296,14 @@ void cTopology::unweightedSingleShortestPathsTo(Node *_target)
     }
     target->dist = 0;
 
-    cLinkedList q;
+    std::deque<Node*> q;
 
-    q.insert( target );
+    q.push_back(target);
 
     while (!q.empty())
     {
-       Node *v = (Node *) q.pop();
+       Node *v = q.front();
+       q.pop_front();
 
        // for each w adjacent to v...
        for (int i=0; i<v->num_in_links; i++)
@@ -313,13 +311,13 @@ void cTopology::unweightedSingleShortestPathsTo(Node *_target)
            if (!(v->in_links[i]->enabl)) continue;
 
            Node *w = v->in_links[i]->src_node;
-           if (!(w->enabl)) continue;
+           if (!w->enabl) continue;
 
            if (w->dist == INFINITY)
            {
                w->dist = v->dist + 1;
                w->out_path = v->in_links[i];
-               q.insert( w );
+               q.push_back(w);
            }
        }
     }

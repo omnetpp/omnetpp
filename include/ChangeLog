@@ -279,6 +279,16 @@
           throws an error if all given constraints cannot be satisfied (so that
           numCells*cellSize==rangeMax-rangeMin, all integers)
 
+        cTopology changes:
+        - added extractFromNetwork(Predicate*), to support specifying conditions
+          in a type-safe way (without void* casts)
+        - extractByModuleType() not longer exists, use the new extractByNedTypeName()
+          method instead. Code like
+            topo.extractByModuleType("Host", "Router", NULL); 
+          should be replaced by something like 
+            topo.extractByModuleType(cStringTokenizer("Host Router").asVector());
+        - extractByParameter() arg list changed
+
 	Files renamed (Note: simulation models should only refer to <omnetpp.h>!)
 	     --OLD--          --NEW--
 	     cconfig.h        cconfiguration.h

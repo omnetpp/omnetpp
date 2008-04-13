@@ -47,7 +47,9 @@ void Routing::initialize()
     //
     cTopology *topo = new cTopology("topo");
 
-    topo->extractByModuleType(parentModule()->className(), NULL);
+    std::vector<std::string> nedTypes;
+    nedTypes.push_back(parentModule()->nedTypeName());
+    topo->extractByNedTypeName(nedTypes);
     ev << "cTopology found " << topo->nodes() << " nodes\n";
 
     cTopology::Node *thisNode = topo->nodeFor(parentModule());
