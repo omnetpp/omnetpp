@@ -29,7 +29,6 @@ class cModule;
 class cChannel;
 class cProperties;
 
-//FIXME is it necessary at all to have separate cModuleType and cChannelType classes???
 
 /**
  * Common base class for cModuleType and cChannelType.
@@ -38,7 +37,7 @@ class cProperties;
  * "Queue"), and fullName() returns the qualified name (with namespace,
  * e.g. "inet.network.Queue").
  *
- * @ingroup FIXME
+ * @ingroup Internals
  */
 class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
@@ -118,9 +117,8 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
  * Abstract class for creating a module of a specific type.
  *
  * A cModuleType object exist for each module type (simple or compound).
- * FIXME document
  *
- * @ingroup FIXME
+ * @ingroup Internals
  */
 class SIM_API cModuleType : public cComponentType
 {
@@ -223,7 +221,7 @@ class SIM_API cModuleType : public cComponentType
 /**
  * Abstract base class for creating a channel of a given type.
  *
- * @ingroup FIXME
+ * @ingroup Internals
  */
 class SIM_API cChannelType : public cComponentType
 {

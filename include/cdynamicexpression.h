@@ -356,10 +356,22 @@ class SIM_API cDynamicExpression : public cExpression
     virtual bool isAConstant() const;
 
     /**
+     * Returns true if this expression contains const subexpressions.
+     */
+    virtual bool containsConstSubexpressions() const;
+
+    /**
+     * Evaluates const subexpressions, and replaces them with their values.
+     * See cDynamicExpression::Elem::CONSTSUBEXPR.
+     */
+    virtual void evaluateConstSubexpressions(cComponent *context);
+
+    /**
      * Convert the given number into the target unit (e.g. milliwatt to watt).
      * Throws an exception if conversion is not possible (unknown/unrelated units).
      */
     static double convertUnit(double d, const char *unit, const char *targetUnit);
+
     //@}
 };
 

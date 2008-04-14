@@ -103,6 +103,19 @@ void cParImpl::setUnit(const char *s)
     unitp = unitStringPool.get(s);
 }
 
+bool cParImpl::containsConstSubexpressions() const
+{
+    cExpression *expr = expression();
+    return expr==NULL ? false : expr->containsConstSubexpressions();
+}
+
+void cParImpl::evaluateConstSubexpressions(cComponent *context)
+{
+    cExpression *expr = expression();
+    if (expr)
+        expr->evaluateConstSubexpressions(context);
+}
+
 int cParImpl::compare(const cParImpl *other) const
 {
     int res = strcmp(name(), other->name());

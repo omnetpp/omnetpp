@@ -138,6 +138,17 @@ class SIM_API cExpression : public cObject
      * as (part of) a key in std::map or std::set.
      */
     virtual int compare(const cExpression *other) const = 0;
+
+    /**
+     * Returns true if this expression contains const subexpressions.
+     */
+    virtual bool containsConstSubexpressions() const = 0;
+
+    /**
+     * Evaluates const subexpressions, and replaces them with their values.
+     * See cDynamicExpression::Elem::CONSTSUBEXPR.
+     */
+    virtual void evaluateConstSubexpressions(cComponent *context) = 0;
     //@}
 };
 

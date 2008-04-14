@@ -290,13 +290,13 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Returns true if this expression contains const subexpressions.
      */
-    virtual bool containsConstSubexpressions() const {return false;} //FIXME TBD
+    virtual bool containsConstSubexpressions() const;
 
     /**
      * Evaluates const subexpressions, and replaces them with their values.
      * See cDynamicExpression::Elem::CONSTSUBEXPR.
      */
-    virtual void evaluateConstSubexpressions(cComponent *context) {} //FIXME TBD
+    virtual void evaluateConstSubexpressions(cComponent *context);
 
     /**
      * Returns the value in text form.
