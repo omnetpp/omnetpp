@@ -402,7 +402,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      */
     cComponent *context() const {return contextmodp;}
 
-    /**      XXX refine comment: maybe valid as well if it's a channel in context?
+    /**
      * Returns value only valid if contextModule()!=NULL. Returns one of:
      * CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH depending on
      * what the module in context is doing.
