@@ -48,27 +48,17 @@ typedef int (*CompareFunc)(cOwnedObject *a, cOwnedObject *b);
 
 
 /**
- * FIXME revise this
+ * Base class for several classes in the \opp library. Instances of
+ * cOwnedObjects are kept track of by the simulation kernel, and
+ * may be inserted into cQueue and cArray.
  *
- * Base class for almost all classes in the \opp library.
+ * It is not always a good idea to subclass your own classes from
+ * cOwnedObject, especially if they are small data objects.
+ * The more lightweight cObject is often a better choice.
  *
- * It is usually NOT a good idea to subclass your own classes
- * (esp. data storage classes) from cOwnedObject,
- * because it is a relatively heavyweight class (about 24 bytes on a 32-bit
- * architecture) with many virtual functions that need to be redefined.
- * You may consider choosing cObject instead as a base class.
- *
- * The main areas covered by cOwnedObject are:
- *    -# storage of a name string via name() and setName()
- *    -# providing a mechanism to recursively traverse all simulation objects
- *       (forEachChild() method and cVisitor class). This mechanism constitutes
- *       the foundation Tkenv, the simulation GUI.
- *    -# ownership management, to safeguard against common programming errors.
- *       Owner pointer also enables navigating the object tree upwards.
- *
- * When subclassing cOwnedObject, some virtual member functions are expected to be
- * redefined: dup() are mandatory to be redefined, and often
- * you'll want to redefine info() and detailedInfo() as well.
+ * When subclassing cOwnedObject, some virtual member functions are
+ * expected to be redefined: dup() are mandatory to be redefined, and
+ * often you'll want to redefine info() and detailedInfo() as well.
  *
  * <b>Ownership management</b> helps \opp catch common programming
  * errors. As a definition, <i>ownership means the exclusive right and duty
@@ -269,14 +259,18 @@ class SIM_API cOwnedObject : public cNamedObject
  */
 class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 {
+  private:
+    /**
+     * Private copy constructor, to prevent copying.
+     */
+    cNoncopyableOwnedObject(const cOwnedObject&) {}
+
   public:
     /**
      * Constructor
      */
     explicit cNoncopyableOwnedObject(const char *name=NULL, bool namepooling=true) :
         cOwnedObject(name, namepooling) {}
-
-//FIXME disable copy ctor as well
 
     /**
      * Duplication not supported, this method is redefined to throw an error.

@@ -29,9 +29,8 @@ NAMESPACE_BEGIN
 
 
 /**
- * Extends cObject with a name string. Also includes a "flags" member
- * which subclasses can utilize as economic storage of boolean variables.
- * (This class only uses one bit from "flags").
+ * Extends cObject with a name string. Also includes a "flags" member,
+ * with bits open for use by subclasses.
  *
  * @ingroup SimCore
  */
