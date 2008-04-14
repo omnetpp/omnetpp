@@ -1,0 +1,125 @@
+%description:
+Test initialize() and finish() of a channel;
+e.g. simulation.context() and simulation.contextType() should be correctly set.
+
+%file: test.ned
+
+simple Node
+{
+    gates:
+        inout g;
+}
+
+channel TestChannel
+{
+}
+
+network Test
+{
+    submodules:
+        a: Node;
+        b: Node;
+    connections:
+        a.g <--> TestChannel <--> b.g;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class TestChannel: public cIdealChannel
+{
+  public:
+    TestChannel() { }
+
+    virtual void initialize() {
+        ASSERT(simulation.context() == this);
+        ASSERT(simulation.contextType() == CTX_INITIALIZE);
+        ev << "- " << fullPath() << " initialize\n";
+    }
+
+    virtual bool deliver(cMessage *msg, simtime_t t) {
+        //FIXME this fails: ASSERT(simulation.context() == this);
+        ASSERT(simulation.contextType() == CTX_EVENT);
+        ev << "- " << fullPath() << " deliver: \"" << msg->name() << "\"\n";
+        return cIdealChannel::deliver(msg, t);
+    }
+
+    virtual void finish() {
+        ASSERT(simulation.context() == this);
+        ASSERT(simulation.contextType() == CTX_FINISH);
+        ev << "- " << fullPath() << " finish\n";
+    }
+};
+
+Define_Channel(TestChannel);
+
+
+class Node : public cSimpleModule
+{
+  public:
+    Node() { }
+
+    virtual void initialize() {
+        ASSERT(simulation.context() == this);
+        ASSERT(simulation.contextType() == CTX_INITIALIZE);
+        ev << "- " << fullPath() << " initialize\n";
+        scheduleAt(1, new cMessage("timer"));
+    }
+
+    virtual void handleMessage(cMessage *msg) {
+        ASSERT(simulation.context() == this);
+        ASSERT(simulation.contextType() == CTX_EVENT);
+        ev << "- " << fullPath() << " handleMessage: \"" << msg->name() << "\"\n";
+        if (msg->isSelfMessage())
+            send(new cMessage("packet"), "g$o");
+        delete msg;
+    }
+
+    virtual void finish() {
+        ASSERT(simulation.context() == this);
+        ASSERT(simulation.contextType() == CTX_FINISH);
+        ev << "- " << fullPath() << " finish\n";
+    }
+};
+
+Define_Module(Node);
+
+}; // namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+%contains: stdout
+Initializing channel Test.a.g$o.channel, stage 0
+- Test.a.g$o.channel initialize
+Initializing channel Test.b.g$o.channel, stage 0
+- Test.b.g$o.channel initialize
+Initializing module Test, stage 0
+Initializing module Test.a, stage 0
+- Test.a initialize
+Initializing module Test.b, stage 0
+- Test.b initialize
+
+Running simulation...
+- Test.a handleMessage: "timer"
+- Test.a.g$o.channel deliver: "packet"
+- Test.b handleMessage: "timer"
+- Test.b.g$o.channel deliver: "packet"
+- Test.b handleMessage: "packet"
+- Test.a handleMessage: "packet"
+
+<!> No more events -- simulation ended.
+
+
+Calling finish() at end of Run #0...
+- Test.a.g$o.channel finish
+- Test.b.g$o.channel finish
+- Test.a finish
+- Test.b finish
+
