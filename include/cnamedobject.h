@@ -29,81 +29,9 @@ NAMESPACE_BEGIN
 
 
 /**
- * FIXME revise this
- *
- * Base class for almost all classes in the \opp library.
- *
- * It is usually NOT a good idea to subclass your own classes
- * (esp. data storage classes) from cNamedObject,
- * because it is a relatively heavyweight class (about 24 bytes on a 32-bit
- * architecture) with many virtual functions that need to be redefined.
- * You may consider choosing cObject instead as a base class.
- *
- * The main areas covered by cNamedObject are:
- *    -# storage of a name string via name() and setName()
- *    -# providing a mechanism to recursively traverse all simulation objects
- *       (forEachChild() method and cVisitor class). This mechanism constitutes
- *       the foundation Tkenv, the simulation GUI.
- *    -# ownership management, to safeguard against common programming errors.
- *       Owner pointer also enables navigating the object tree upwards.
- *
- * When subclassing cNamedObject, some virtual member functions are expected to be
- * redefined: dup() are mandatory to be redefined, and often
- * you'll want to redefine info() and detailedInfo() as well.
- *
- * <b>Ownership management</b> helps \opp catch common programming
- * errors. As a definition, <i>ownership means the exclusive right and duty
- * to delete owned objects.</i>
- *
- * cNamedObjects hold a pointer to their owner objects; the owner() method returns
- * this pointer. An example will help to understand how it is used:
- *
- *    - when you insert a cMessage into a cQueue, the cQueue will become
- *      the owner of the message, and will set the message's owner to itself.
- *
- *    - a message object can be at one place only at any given time.
- *      When you try to insert the same cMessage again into another (or the same)
- *      cQueue, you'll get an error message that it's already in a cQueue --
- *      sparing you a sure crash later.
- *
- *    - similarly, if you try to send the same message, you'll get an error
- *      message that it cannot be sent because it's still enqueued --
- *      another crash scenario eliminated. Like the previous one, this
- *      test is done by checking the owner pointer in cMessage.
- *
- *    - even if you try to delete the message while it's in the queue,
- *      you'll get an error message instead of just a crash. This is because
- *      cNamedObject destructor asks for the owner's blessing -- but cQueue will
- *      protest by throwing an exception.
- *
- *    - when you remove the message from the cQueue, the cQueue will "release"
- *      the object; the current module will become the message's "soft" owner,
- *      changing the owner pointer in the message object.
- *
- *    - "soft" owner means that now you can send the message object or insert
- *      it into another cQueue -- the module as a soft owner will let it go.
- *
- *    - the same mechanism can ensure that when a self-message is currently
- *      scheduled (owner is the scheduled-events list) or sent to another module
- *      (owner is the other module) you cannot send or schedule it, or
- *      insert it into a queue. <i>In short: the ownership mechanism is good to your
- *      health.</i>
- *
- *    - when the queue is deleted, it also deletes all objects it contains.
- *      (The cQueue always owns all objects inserted into it -- no exception).
- *
- * The above ownership mechanisms are at work when any cNamedObject-subclass object
- * gets inserted into any cNamedObject-subclass container (cQueue, cArray).
- *
- * Some more details, in case you're writing a class that acts as a container:
- *
- *    - you should use the functions take(), drop() on inserting/removing objects
- *    - you should delete the owned objects in the destructor
- *    - the copy constructor of a container should dup() the owned objects
- *      and take() the copies
- *    - if you want to have a class which contains cNamedObject-subclasses as
- *      data members: your class (the enclosing object) should own them --
- *      call take() from the constructor and drop() from the destructor.
+ * Extends cObject with a name string. Also includes a "flags" member
+ * which subclasses can utilize as economic storage of boolean variables.
+ * (This class only uses one bit from "flags").
  *
  * @ingroup SimCore
  */
@@ -114,7 +42,7 @@ class SIM_API cNamedObject : public cObject
 
   protected:
     unsigned short flags;  // FL_NAMEPOOLING flag; other bits used by derived classes
-    unsigned short unused; // space lost to due to word aligment; FIXME make use of it in subclasses (cModule, cSimpleModule, cGate)
+    unsigned short unused; // space lost to due to word aligment; TODO make use of it in subclasses (cModule, cSimpleModule, cGate)
     enum {FL_NAMEPOOLING = 1};
 
   protected:

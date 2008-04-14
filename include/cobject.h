@@ -33,23 +33,20 @@ class cCommBuffer;
 class cClassDescriptor;
 class cOwnedObject;
 
-//FIXME deprecate using cOwnedObject as base class for user classes!!! nobody can use ownership properly...
-
 
 /**
- * Ultimate base class for cOwnedObject, and thus for nearly all
- * \opp classes. cObject is a <b>lightweight common base class</b>:
- * it only contains virtual member functions but NO DATA MEMBERS at all.
+ * Root of the \opp class hierarcy. cObject is a lightweight class, it
+ * doesn't contain any data members.
  *
- * Note: In OMNeT++ 2.x and 3.x, cObject was called cPolymorphic, and the
- * then-cObject class, a heavier base class has been renamed to cOwnedObject.
+ * Note: In OMNeT++ 2.x and 3.x, cObject was called cPolymorphic.
+ * Class cObject in 2.x and 3.x has been renamed to cOwnedObject.
  *
  * It is recommended to use cObject as a base class for any class
  * that has at least one virtual member function. This makes the class more
  * interoperable with \opp, and causes no extra overhead at all.
  * sizeof(cObject) should yield 4 on a 32-bit architecture (4-byte vptr),
- * and using cObject as a base class doesn't add anything to the size because
- * a class with a virtual function already has a vptr.
+ * and using cObject as a base class doesn't add anything to the size
+ * of an object, because a class with a virtual function already has a vptr.
  *
  * cObject allows the object to be displayed in graphical user
  * interface (Tkenv) via the className(), info() and detailedInfo() methods
@@ -60,6 +57,12 @@ class cOwnedObject;
  * pointers to "any data structure". Using cObject will allow safe
  * downcasts using <tt>dynamic_cast</tt> and also \opp's
  * <tt>check_and_cast</tt>.
+ *
+ * Any cObject may become owner of other objects, but owned objects must be
+ * subclassed from cOwnedObject.
+ *
+ * Subclasses are expected to redefine member functions such as dup(),
+ * info(), etc.
  *
  * @ingroup SimCore
  */
