@@ -28,7 +28,7 @@
 				value="%introDescription-samples"/>
     <property
           name="aboutText" 
-          value="OMNeT++ Integrated Development Environment"/>
+          value="OMNeT++ Integrated Development Environment."/>
     <property
           name="aboutImage"
           value="icons/omnest128.gif"/>
