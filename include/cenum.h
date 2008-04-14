@@ -110,7 +110,7 @@ class SIM_API cEnum : public cOwnedObject
     //@}
 
     /**
-     *XXX
+     * Returns a textual representation of this enum.
      */
     std::string str() const;
 

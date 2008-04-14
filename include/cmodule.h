@@ -206,20 +206,13 @@ class SIM_API cModule : public cComponent //implies noncopyable
     int moveGates(int oldpos, int oldsize, int newsize, cGate::Desc *desc);
 
   protected:
-    /** @name Initialization and finish hooks, redefined from cComponent. */  //XXX comment??
-    //@{
     /**
+     * Internal function for buildInside(), it should not be invoked directly.
      * Should be refined in subclasses representing compound modules
-     * to build submodule and internal connections of this module.
-     * This default implementation does nothing.
-     *
-     * This method should not be called directly, only via buildInside();
-     * this method is declared protected to enforce this.
-     *
-     * @see buildInside()
+     * to build submodule and internal connections of this module. This
+     * default implementation does nothing.
      */
     virtual void doBuildInside() {}
-    //@}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -342,23 +335,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void finalizeParameters();
 
     /**
-     * In compound modules, this method should be called to build submodules
-     * and internal connections after module creation. This method is a
-     * wrapper around doBuildInside().
+     * In compound modules, this method should be called to create submodules
+     * and internal connections after module creation.
      *
-     * It does the following:
-     *
-     *    - 1. checks if module parameters and gates conform to the module interface
-         FIXME revise comment
-     *
-     *    - 2. calls doBuildInside(), switching to the context of this module
-     *    for the duration of the call (using simulation.setContextModule()).
-     *
-     * Note: semantic has changed -- in OMNeT++ 2.2 and earlier versions,
-     * doBuildInside() did not exist, its role was fulfilled by this method.
-     * After 2.2, the return value of this method was changed from void
-     * to int deliberately to cause compile error in older code, in order to
-     * call attention to the semantics change. (Returned value can be ignored.)
+     * This method delegates to doBuildInside(), switching the context to this
+     * module for the duration of the call (see simulation.setContextModule()).
      *
      * @see doBuildInside()
      */

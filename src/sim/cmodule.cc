@@ -780,13 +780,6 @@ int cModule::buildInside()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
 
-/*FIXME replace this with new code!!!!
-    // check parameters and gates  FIXME only if module interface exists?
-    cNEDDeclaration *iface = moduleType()->moduleNEDDeclaration();
-    if (iface)
-        iface->checkParametersOf(this);
-*/
-
     // call doBuildInside() in this context
     doBuildInside();
 
