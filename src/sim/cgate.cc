@@ -269,17 +269,17 @@ simtime_t cGate::transmissionFinishes() const
     return channelp ? channelp->transmissionFinishes() : simulation.simTime();
 }
 
-int cGate::routeContains(cModule *mod, int gate)
+bool cGate::pathContains(cModule *mod, int gate)
 {
     cGate *g;
 
     for (g=this; g!=NULL; g=g->fromgatep)
-        if( g->ownerModule()==mod && (gate==-1 || g->id()==gate) )
-            return 1;
+        if (g->ownerModule()==mod && (gate==-1 || g->id()==gate))
+            return true;
     for (g=togatep; g!=NULL; g=g->togatep)
-        if( g->ownerModule()==mod && (gate==-1 || g->id()==gate) )
-            return 1;
-    return 0;
+        if (g->ownerModule()==mod && (gate==-1 || g->id()==gate))
+            return true;
+    return false;
 }
 
 bool cGate::isConnectedOutside() const

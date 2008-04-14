@@ -42,7 +42,7 @@ class SIM_API cNamedObject : public cObject
 
   protected:
     unsigned short flags;  // FL_NAMEPOOLING flag; other bits used by derived classes
-    unsigned short unused; // space lost to due to word aligment; TODO make use of it in subclasses (cModule, cSimpleModule, cGate)
+    unsigned short unused; // space lost to due to word aligment; one may make use of it in subclasses (cModule, cSimpleModule, cGate)
     enum {FL_NAMEPOOLING = 1};
 
   protected:

@@ -45,11 +45,12 @@ class cEnum;
 class SIM_API cOutVector : public cNoncopyableOwnedObject
 {
   protected:
-    bool enabled;        // if false, record() method will do nothing
+    enum {FL_ENABLED = 4}; // flag: when false, record() method will do nothing
+
     void *handle;        // identifies output vector for the output vector manager
+    simtime_t last_t;    // last timestamp written, needed to ensure increasing timestamp order
     long num_received;   // total number of values passed to the output vector object
     long num_stored;     // number of values actually stored
-    simtime_t last_t;    // last timestamp written, needed to ensure increasing timestamp order
 
     // the following members will be used directly by inspectors
     RecordFunc record_in_inspector; // to notify inspector about file writes
@@ -202,24 +203,24 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     /**
      * Enables recording data via this object. (It is enabled by default.)
      */
-    virtual void enable()  {enabled=true;}
+    virtual void enable()  {setFlag(FL_ENABLED,true);}
 
     /**
      * Disables recording data via this object. record() methods will return
      * false without doing anything.
      */
-    virtual void disable()  {enabled=false;}
+    virtual void disable()  {setFlag(FL_ENABLED,false);}
 
     /**
      * Enables/disables recording data via this object.
      * @see enable(), disable()
      */
-    virtual void setEnabled(bool b)  {enabled=b;}
+    virtual void setEnabled(bool b)  {setFlag(FL_ENABLED,b);}
 
     /**
      * Returns true if recording the data is enabled, false otherwise.
      */
-    virtual bool isEnabled() const  {return enabled;}
+    virtual bool isEnabled() const  {return flags&FL_ENABLED;}
 
     /**
      * Returns the total number of values passed to the record() method of

@@ -82,7 +82,7 @@ class SIM_API cGate : public cObject, noncopyable
 
     cChannel *channelp; // channel object (if exists)
     cGate *fromgatep;   // previous and next gate
-    cGate *togatep;     //   in the route
+    cGate *togatep;     //   in the path
 
   protected:
     // internal: constructor is protected because only cModule is allowed to create instances
@@ -253,35 +253,35 @@ class SIM_API cGate : public cObject, noncopyable
     //@{
 
     /**
-     * Returns the previous gate in the series of connections (the route) that
-     * contains this gate, or a NULL pointer if this gate is the first one in the route.
+     * Returns the previous gate in the series of connections (the path) that
+     * contains this gate, or a NULL pointer if this gate is the first one in the path.
      * (E.g. for a simple module output gate, this function will return NULL.)
      */
     cGate *fromGate() const {return fromgatep;}
 
     /**
-     * Returns the next gate in the series of connections (the route) that
-     * contains this gate, or a NULL pointer if this gate is the last one in the route.
+     * Returns the next gate in the series of connections (the path) that
+     * contains this gate, or a NULL pointer if this gate is the last one in the path.
      * (E.g. for a simple module input gate, this function will return NULL.)
      */
     cGate *toGate() const   {return togatep;}
 
     /**
      * Return the ultimate source of the series of connections
-     * (the route) that contains this gate.
+     * (the path) that contains this gate.
      */
     cGate *sourceGate() const;
 
     /**
      * Return the ultimate destination of the series of connections
-     * (the route) that contains this gate.
+     * (the path) that contains this gate.
      */
     cGate *destinationGate() const;
 
     /**
-     * Determines if a given module is in the route containing this gate.
+     * Determines if a given module is in the path containing this gate.
      */
-    int routeContains(cModule *m, int g=-1);
+    bool pathContains(cModule *module, int gateId=-1);
 
     /**
      * Returns true if the gate is connected outside (i.e. to one of its

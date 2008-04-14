@@ -54,6 +54,7 @@ while (<LISTFILE>)
     $txt =~ s/\brunningModule *\( *\)/activityModule()/mg;
 
     # cGate
+    $txt =~ s/\brouteContains\b/pathContains/mg;
     $txt =~ s/\bisRouteOK *\( *\)/isPathOK()/mg;
     $txt =~ s/->datarate\(\)->doubleValue\(\)/->channel()->par("datarate").doubleValue()/mg;
     $txt =~ s/->delay\(\)->doubleValue\(\)/->channel()->par("delay").doubleValue()/mg;

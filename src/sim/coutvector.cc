@@ -42,7 +42,7 @@ Register_Enum(cOutVector::InterpolationMode, (cOutVector::NONE, cOutVector::SAMP
 
 cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 {
-    enabled = true;
+    setFlag(FL_ENABLED, true);
     handle = NULL;
     num_received = 0;
     num_stored = 0;
@@ -191,7 +191,7 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
     if (record_in_inspector)
         record_in_inspector(data_for_inspector,t,value,0.0);
 
-    if (!enabled)
+    if (!isEnabled())
         return false;
 
     // initialize if not yet done
