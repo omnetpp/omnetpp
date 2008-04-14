@@ -738,24 +738,11 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Override to define a display string for the message. Display string
-     * affects message appearance in Tkenv.
-     *
-     * This default implementation returns "".
+     * affects message appearance in Tkenv. This default implementation
+     * returns "".
      */
     virtual const char *displayString() const;
-
-    /**
-     * Static function that compares two messages by their delivery times,
-     * then by their priorities. Usable as cQueue CompareFunc.
-     */
-    static int cmpbydelivtime(cOwnedObject *one, cOwnedObject *other);
-
-    /**
-     * Static function that compares two messages by their priorities.
-     * It can be used to sort messages in a priority queue.
-     * Usable as cQueue CompareFunc.
-     */
-    static int cmpbypriority(cOwnedObject *one, cOwnedObject *other);
+    //@}
 
     /** @name Statistics. */
     //@{

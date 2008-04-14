@@ -166,17 +166,6 @@ std::string cStringParImpl::str() const
 
 void cStringParImpl::parse(const char *text)
 {
-/*XXX not really needed
-    // try fast track: maybe it's just a string literal in quotes
-    try {
-        setStringValue(opp_parsequotedstr(text));
-        return;
-    }
-    catch (std::exception& e) {
-        // no problem, we'll try it differently
-    }
-*/
-
     // try parsing it as an expression
     cDynamicExpression *dynexpr = new cDynamicExpression();
     try

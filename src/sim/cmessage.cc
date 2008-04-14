@@ -547,19 +547,4 @@ void cMessage::setArrivalTime(simtime_t t)
     delivd = t;
 }
 
-int cMessage::cmpbydelivtime(cOwnedObject *one, cOwnedObject *other) //XXX needed anywhere?
-{
-    // compare by delivery time and priority
-    cMessage *msg1 = (cMessage*)one,
-             *msg2 = (cMessage*)other;
-    simtime_t x = msg1->delivd - msg2->delivd;
-    return (x!=0) ? (x>0 ? 1 : -1) : (msg1->prior - msg2->prior);
-}
-
-int cMessage::cmpbypriority(cOwnedObject *one, cOwnedObject *other) //XXX needed anywhere?
-{
-    int x = ((cMessage*)one)->prior - ((cMessage*)other)->prior;
-    return sgn(x);
-}
-
 

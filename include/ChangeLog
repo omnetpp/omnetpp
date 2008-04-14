@@ -260,7 +260,9 @@
 		priority() / setPriority()
 	- added some extra fields required by sequence chart drawing: cause event
 	  number, message id, message tree id, etc.
-
+	- removed two static methods of limited usefulness: cmpbydelivtime(), 
+	  cmpbypriority().
+	
 	Statistics classes:
 	- cStatistic: renamed samples() to count(). This affects cStdDev, 
 	  cWeightedStdDev and basically all statistics classes (they all 
