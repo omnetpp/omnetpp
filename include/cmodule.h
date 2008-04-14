@@ -278,8 +278,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * "gatename$o". The specified gatename must not contain a "$i" or "$o"
      * suffix itself.
      */
-//FIXME MUST BE ENFORCED THAT NAME IS UNIQUE!!!!! NOT THE SAME AS ANY SUBMODULE,PARAMETER OR GATE!!! OTHERWISE properties() WILL MESS UP!!!!!!!
-//FIXME THE SAME MUST BE ENFORCED WITH SUBMODULE CREATION!!!!
     virtual void addGate(const char *gatename, cGate::Type type, bool isvector=false);
 
     /**
@@ -434,17 +432,16 @@ class SIM_API cModule : public cComponent //implies noncopyable
     //@{
 
     /**
-     * Finds an immediate submodule with the given name and (optional)
-     * index, and returns its module ID. If the submodule was not found,
-     * returns -1.
+     * Finds a direct submodule with the given name and index, and returns
+     * its module ID. If the submodule was not found, returns -1. Index
+     * must be specified exactly if the module is member of a module vector.
      */
     int findSubmodule(const char *submodname, int idx=-1);
 
     /**
-     * Finds an immediate submodule with the given name and (optional)
-     * index, and returns its pointer. If the submodule was not found,
-     * returns NULL.
-     * FIXME clarify - what if it's a vector and I provide no index, or vica versa?
+     * Finds a direct submodule with the given name and index, and returns
+     * its pointer. If the submodule was not found, returns NULL.
+     * Index must be specified exactly if the module is member of a module vector.
      */
     cModule *submodule(const char *submodname, int idx=-1);
 
@@ -452,7 +449,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Finds a submodule potentially several levels deeper, given with
      * its relative path from this module. (The path is a string of module
      * full names separated by dots). If the submodule was not found,
-     * returns <tt>NULL</tt>.
+     * returns NULL.
      */
     cModule *moduleByRelativePath(const char *path);
     //@}
