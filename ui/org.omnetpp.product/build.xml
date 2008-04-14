@@ -16,19 +16,6 @@
         <property environment="env" /> 
 	<property file="build.properties" />
 	
-	<!--
-		PDE Build expects that the build directory contains a "plugins" 
-		directory and a "features" directory. These directories should contain
-		the various plug-ins and features to be built.
-		
-		It's possible to use the CVS checkout process that is built into 
-		PDE Build. This is done with map files and is beyond the scope of 
-		this tutorial. 
-		
-		This script simply copies the projects directly from your workspace
-		into the appropriate build directory folders.
-	-->
-	
 	<target name="init">
 		<mkdir dir="${buildDirectory}" />
 		<mkdir dir="${buildDirectory}/plugins" />

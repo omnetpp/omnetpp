@@ -25,13 +25,6 @@
       startupMessageRect="10,20,500,25"
       startupForegroundColor="000000" />
    <launcher name="eclipse">
-      <linux icon="/org.omnetpp.main/icons/omnest.xpm"/>
-      <macosx icon="/org.omnetpp.main/icons/omnest.icns"/>
-      <solaris/>
-      <win useIco="true">
-         <ico path="/org.omnetpp.main/icons/omnest.ico"/>
-         <bmp/>
-      </win>
    </launcher>
 
 
