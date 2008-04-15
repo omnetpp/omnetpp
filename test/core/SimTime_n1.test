@@ -49,24 +49,24 @@ TRY( t=1; t = t / -1e-100; )
 
 ev << ".\n";
 
-%contains: stdout
+%contains-regex: stdout
 t=dmax; -> OK
 t=-dmax; -> OK
-t=dmax+1.0; -> Cannot convert 9.22337e+006 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=-dmax-1.0; -> Cannot convert -9.22337e+006 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=1e100; -> Cannot convert 1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=-1e100; -> Cannot convert -1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=dmax; t2=1; t=t+t2; -> simtime_t overflow adding 1 to 9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=-dmax; t2=-1; t=t+t2; -> simtime_t overflow adding -1 to -9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=dmax; t2=dmax; t=t+t2; -> simtime_t overflow adding 9223372 to 9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=-dmax; t2=-dmax; t=t+t2; -> simtime_t overflow adding -9223372 to -9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=dmax; t2=-1; t=t-t2; -> simtime_t overflow substracting -1 from 9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=-dmax; t2=1; t=t-t2; -> simtime_t overflow substracting 1 from -9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=dmax; t2=-dmax; t=t-t2; -> simtime_t overflow substracting -9223372 from 9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=-dmax; t2=dmax; t=t-t2; -> simtime_t overflow substracting 9223372 from -9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=1; t = t * 1e100; -> Cannot convert 1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=1; t = t * -1e100; -> Cannot convert -1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=1; t = t / 1e-100; -> Cannot convert 1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-t=1; t = t / -1e-100; -> Cannot convert -1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
-.
+t=dmax\+1\.0; -> Cannot convert.*
+t=-dmax-1\.0; -> Cannot convert.*
+t=1e100; -> Cannot convert.*
+t=-1e100; -> Cannot convert.*
+t=dmax; t2=1; t=t\+t2; -> simtime_t overflow.*
+t=-dmax; t2=-1; t=t\+t2; -> simtime_t overflow.*
+t=dmax; t2=dmax; t=t\+t2; -> simtime_t overflow.*
+t=-dmax; t2=-dmax; t=t\+t2; -> simtime_t overflow.*
+t=dmax; t2=-1; t=t-t2; -> simtime_t overflow.*
+t=-dmax; t2=1; t=t-t2; -> simtime_t overflow.*
+t=dmax; t2=-dmax; t=t-t2; -> simtime_t overflow.*
+t=-dmax; t2=dmax; t=t-t2; -> simtime_t overflow.*
+t=1; t = t \* 1e100; -> Cannot convert.*
+t=1; t = t \* -1e100; -> Cannot convert.*
+t=1; t = t / 1e-100; -> Cannot convert.*
+t=1; t = t / -1e-100; -> Cannot convert.*
+\.
 

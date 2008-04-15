@@ -24,6 +24,7 @@ NAMESPACE_BEGIN
 
 class cPar;
 
+// the most positive int64 value, represented as double
 #define INT64_MAX_DBL  9.22337203685e18
 
 
@@ -113,8 +114,8 @@ class SIM_API SimTime
     const SimTime& operator+=(const SimTime& x) {checkedAdd(x); return *this;}
     const SimTime& operator-=(const SimTime& x) {checkedSub(x); return *this;}
 
-    const SimTime& operator*=(double d) {t=toInt64(t*d); return *this;} //XXX to be checked on Linux, see below
-    const SimTime& operator/=(double d) {t=toInt64(t/d); return *this;} //XXX to be checked on Linux, see below
+    const SimTime& operator*=(double d) {t=toInt64(t*d); return *this;}
+    const SimTime& operator/=(double d) {t=toInt64(t/d); return *this;}
     const SimTime& operator*=(const cPar& p);
     const SimTime& operator/=(const cPar& p);
     template<typename T> const SimTime& operator*=(T d) {t*=d; return *this;}
@@ -234,8 +235,8 @@ class SIM_API SimTime
     static char *ttoa(char *buf, int64 t, int scaleexp, char *&endp);
 };
 
-/*XXX
- for *= and /=, SystemC uses the following code:
+/*
+ for *= and /=, we might need the following code:
     // linux bug workaround; don't change next two lines
     volatile double tmp = uint64_to_double( m_value ) * d;
     m_value = static_cast<int64>( tmp );
