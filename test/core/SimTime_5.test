@@ -1,0 +1,43 @@
+%description:
+SimTime: test *= and /= operators specifically
+
+%activity:
+SimTime t, t2;
+
+#define P(x) {ev << #x << " -> " << (x) << "\n";}
+
+double dmax = floor(SimTime::maxTime().dbl());
+
+ASSERT(SimTime::scaleExp()==-12);
+
+P((t=0.99, t*=2.5, t));
+P((t=0.99, t*=-2.5, t));
+P((t=0.99, t*=1e-6, t));
+P((t=0.99, t*=-1e-6, t));
+P((t=0.99, t*=dmax, t));
+P((t=0.99, t*=-dmax, t));
+
+P((t=0.99, t/=2.5, t));
+P((t=0.99, t/=-2.5, t));
+P((t=0.99, t/=1e6, t));
+P((t=0.99, t/=-1e6, t));
+P((t=0.99, t/=(1/dmax), t));
+P((t=0.99, t/=-(1/dmax), t));
+
+ev << ".\n";
+
+%contains: stdout
+(t=0.99, t*=2.5, t) -> 2.475
+(t=0.99, t*=-2.5, t) -> -2.475
+(t=0.99, t*=1e-6, t) -> 0.00000099
+(t=0.99, t*=-1e-6, t) -> -0.00000099
+(t=0.99, t*=dmax, t) -> 9131138.28
+(t=0.99, t*=-dmax, t) -> -9131138.28
+(t=0.99, t/=2.5, t) -> 0.396
+(t=0.99, t/=-2.5, t) -> -0.396
+(t=0.99, t/=1e6, t) -> 0.00000099
+(t=0.99, t/=-1e6, t) -> -0.00000099
+(t=0.99, t/=(1/dmax), t) -> 9131138.28
+(t=0.99, t/=-(1/dmax), t) -> -9131138.28
+.
+
