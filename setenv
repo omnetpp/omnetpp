@@ -1,6 +1,15 @@
 #! /bin/sh
-omnetpp_root=`dirname $0`
-omnetpp_root=`cd $root; pwd`
-export PATH=$PATH:$omnetpp_root/bin
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$omnetpp_root/lib
+if [ -z "$PS1" ]; then 
+    echo "Error: not a login shell -- run this script as 'source setenv' or '. setenv'"
+    exit 1
+fi
+if [ ! -f configure.user -o ! -f include/omnetpp.h ]; then
+    echo "Error: current working directory does not look like an OMNeT++ root directory"
+    # no exit -- it would close the shell
+else
+    omnetpp_root=`pwd`
+    echo $omnetpp_root
+    export PATH=$PATH:$omnetpp_root/bin
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$omnetpp_root/lib
+fi
 
