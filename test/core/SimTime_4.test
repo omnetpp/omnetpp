@@ -6,26 +6,85 @@ SimTime t, t2;
 
 #define P(x) {ev << #x << " -> " << (x) << "\n";}
 
-P((t=1.23, floor(t)));
-P((t=-1.23, floor(t)));  //FIXME wrong result!
-//TODO: floor(x, unit, offset)
+// floor(t)
+P((t=1.862, floor(t)));
+P((t=-1.862, floor(t)));
 
-P((t=1.23, ceil(t)));
-P((t=-1.23, ceil(t)));  //FIXME wrong result!
-//TODO: ceil(x, unit, offset)
+// floor(t,unit,offset)
+P((t=1.862, floor(t,0.1)));
+P((t=-1.862, floor(t,0.1)));
+P((t=186.2, floor(t,10)));
+P((t=-186.2, floor(t,10)));
 
-P((t=1.23, fabs(t)));
-P((t=-1.23, fabs(t)));
+P((t=1.862, floor(t,0.1,0.0001)));
+P((t=-1.862, floor(t,0.1,0.0001)));
+P((t=186.2, floor(t,10,0.0001)));
+P((t=-186.2, floor(t,10,0.0001)));
 
-//TODO fmod()
+// ceil(t)
+P((t=1.862, ceil(t)));
+P((t=-1.862, ceil(t)));
 
+// ceil(t,unit,offset)
+P((t=1.345, ceil(t,0.1)));
+P((t=-1.345, ceil(t,0.1)));
+P((t=134.5, ceil(t,10)));
+P((t=-134.5, ceil(t,10)));
+
+P((t=1.345, ceil(t,0.1,0.0001)));
+P((t=-1.345, ceil(t,0.1,0.0001)));
+P((t=134.5, ceil(t,10,0.0001)));
+P((t=-134.5, ceil(t,10,0.0001)));
+
+// fabs(t)
+P((t=1.862, fabs(t)));
+P((t=-1.862, fabs(t)));
+
+// fmod()
+P((t=2.6, t2=0.5, fmod(t,t2)));
+P((t=-2.6, t2=0.5, fmod(t,t2)));
+P((t=2.6, t2=-0.5, fmod(t,t2)));
+P((t=-2.6, t2=-0.5, fmod(t,t2)));
+
+// min(t2,t2)
 P((t=1, t2=2, min(t,t2)));
 P((t=1, t2=-2, min(t,t2)));
 
+// max(t2,t2)
 P((t=1, t2=2, max(t,t2)));
 P((t=1, t2=-2, max(t,t2)));
 
 ev << ".\n";
 
 %contains: stdout
-sdffdss
+(t=1.862, floor(t)) -> 1
+(t=-1.862, floor(t)) -> -2
+(t=1.862, floor(t,0.1)) -> 1.8
+(t=-1.862, floor(t,0.1)) -> -1.9
+(t=186.2, floor(t,10)) -> 180
+(t=-186.2, floor(t,10)) -> -190
+(t=1.862, floor(t,0.1,0.0001)) -> 1.8001
+(t=-1.862, floor(t,0.1,0.0001)) -> -1.8999
+(t=186.2, floor(t,10,0.0001)) -> 180.0001
+(t=-186.2, floor(t,10,0.0001)) -> -189.9999
+(t=1.862, ceil(t)) -> 2
+(t=-1.862, ceil(t)) -> -1
+(t=1.345, ceil(t,0.1)) -> 1.4
+(t=-1.345, ceil(t,0.1)) -> -1.3
+(t=134.5, ceil(t,10)) -> 140
+(t=-134.5, ceil(t,10)) -> -130
+(t=1.345, ceil(t,0.1,0.0001)) -> 1.4001
+(t=-1.345, ceil(t,0.1,0.0001)) -> -1.2999
+(t=134.5, ceil(t,10,0.0001)) -> 140.0001
+(t=-134.5, ceil(t,10,0.0001)) -> -129.9999
+(t=1.862, fabs(t)) -> 1.862
+(t=-1.862, fabs(t)) -> 1.862
+(t=2.6, t2=0.5, fmod(t,t2)) -> 0.1
+(t=-2.6, t2=0.5, fmod(t,t2)) -> -0.1
+(t=2.6, t2=-0.5, fmod(t,t2)) -> 0.1
+(t=-2.6, t2=-0.5, fmod(t,t2)) -> -0.1
+(t=1, t2=2, min(t,t2)) -> 1
+(t=1, t2=-2, min(t,t2)) -> -2
+(t=1, t2=2, max(t,t2)) -> 2
+(t=1, t2=-2, max(t,t2)) -> 1
+.

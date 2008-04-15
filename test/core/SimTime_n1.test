@@ -6,24 +6,67 @@ SimTime: check overflow detection
 #define TRY(code) \
     ev << #code << " -> "; \
     try { \
-        code; ev << "done\n"; \
+        code; ev << "OK\n"; \
     } catch (std::exception& e) { \
         ev << e.what() << endl; \
     }
 
-SimTime t;
+SimTime t,t2;
+
+double dmax = floor(SimTime::maxTime().dbl());
+
+ASSERT(SimTime::scaleExp()==-12);
+
+// these should be OK
+TRY( t=dmax; )
+TRY( t=-dmax; )
 
 // assignment from double
+TRY( t=dmax+1.0; )
+TRY( t=-dmax-1.0; )
 TRY( t=1e100; )
 TRY( t=-1e100; )
 
 // simtime + simtime
-TRY( t=1;  for (int i=0; i<60; i++) t=t+t; )
-TRY( t=-1; for (int i=0; i<60; i++) t=t+t; )
+TRY( t=dmax; t2=1; t=t+t2; )
+TRY( t=-dmax; t2=-1; t=t+t2; )
+TRY( t=dmax; t2=dmax; t=t+t2; )
+TRY( t=-dmax; t2=-dmax; t=t+t2; )
 
-//TODO others...
+// simtime - simtime
+TRY( t=dmax; t2=-1; t=t-t2; )
+TRY( t=-dmax; t2=1; t=t-t2; )
+TRY( t=dmax; t2=-dmax; t=t-t2; )
+TRY( t=-dmax; t2=dmax; t=t-t2; )
+
+// simtime * double, simtime / double
+TRY( t=1; t = t * 1e100; )
+TRY( t=1; t = t * -1e100; )
+TRY( t=1; t = t / 1e-100; )
+TRY( t=1; t = t / -1e-100; )
+
+// note: other operations all work via the ones above
 
 ev << ".\n";
 
 %contains: stdout
-sada
+t=dmax; -> OK
+t=-dmax; -> OK
+t=dmax+1.0; -> Cannot convert 9.22337e+006 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=-dmax-1.0; -> Cannot convert -9.22337e+006 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=1e100; -> Cannot convert 1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=-1e100; -> Cannot convert -1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=dmax; t2=1; t=t+t2; -> simtime_t overflow adding 1 to 9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=-dmax; t2=-1; t=t+t2; -> simtime_t overflow adding -1 to -9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=dmax; t2=dmax; t=t+t2; -> simtime_t overflow adding 9223372 to 9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=-dmax; t2=-dmax; t=t+t2; -> simtime_t overflow adding -9223372 to -9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=dmax; t2=-1; t=t-t2; -> simtime_t overflow substracting -1 from 9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=-dmax; t2=1; t=t-t2; -> simtime_t overflow substracting 1 from -9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=dmax; t2=-dmax; t=t-t2; -> simtime_t overflow substracting -9223372 from 9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=-dmax; t2=dmax; t=t-t2; -> simtime_t overflow substracting 9223372 from -9223372: result is out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=1; t = t * 1e100; -> Cannot convert 1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=1; t = t * -1e100; -> Cannot convert -1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=1; t = t / 1e-100; -> Cannot convert 1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+t=1; t = t / -1e-100; -> Cannot convert -1e+100 to simtime_t: out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+.
+
