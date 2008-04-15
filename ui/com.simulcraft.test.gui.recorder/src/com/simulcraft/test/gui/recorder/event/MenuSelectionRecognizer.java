@@ -25,7 +25,7 @@ public class MenuSelectionRecognizer extends EventRecognizer implements ICodeRew
 
     public JavaSequence recognizeEvent(Event e) {
         if (e.type == SWT.MenuDetect) {
-            System.out.println("menudetect");
+            // System.out.println("menudetect");
             // note: this is only delivered for context menus, looks like
         }
         if (e.type == SWT.Selection && e.widget instanceof MenuItem) {

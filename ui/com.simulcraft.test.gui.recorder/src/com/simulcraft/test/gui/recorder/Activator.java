@@ -10,6 +10,8 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator extends AbstractUIPlugin {
 
+	public static boolean DEBUG = false;
+	
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.simulcraft.test.gui.recorder";
 

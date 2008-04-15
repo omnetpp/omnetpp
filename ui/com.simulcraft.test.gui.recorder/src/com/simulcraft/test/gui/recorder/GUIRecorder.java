@@ -295,7 +295,8 @@ public class GUIRecorder implements Listener {
             }
         }
         JavaSequence bestProposal = getBestProposal(proposals);
-        System.out.println("identifyObject: " + uiObject + " --> " + bestProposal);
+        if (Activator.DEBUG)
+        	System.out.println("identifyObject: " + uiObject + " --> " + bestProposal);
         return bestProposal;
     }
 
@@ -310,14 +311,16 @@ public class GUIRecorder implements Listener {
 
     public void add(JavaSequence seq) {
         if (seq != null) {
-            System.out.println(seq.toString());
+            if (Activator.DEBUG)
+            	System.out.println(seq.toString());
             result.merge(seq);
         }
     }
 
     public void add(JavaExpr expr) {
         if (expr != null) {
-            System.out.println(expr.getJavaCode());
+            if (Activator.DEBUG)
+            	System.out.println(expr.getJavaCode());
             if (expr.getQuality() > 0) {
                 result.add(expr);
             }
