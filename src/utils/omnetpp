@@ -1,7 +1,27 @@
 #!/bin/sh
 #
-# Detects the platform and architecture, and starts the IDE
+# Detects the platform and architecture, and starts the IDE with the right launcher
 #
 IDEDIR=`dirname $0`/../ide                                                                                        
 cd $IDEDIR                                                                                                        
-./eclipse >out.log & 
+PLATFORM=`uname -sm`
+LAUNCHER=omnetpp
+
+case $PLATFORM in 
+*MINGW*)
+	./${LAUNCHER}.exe >out.log 2>&1 & 
+        ;; 
+*Linux*x86_64*) 
+	./${LAUNCHER}64 >out.log 2>&1 & 
+        ;; 
+*Linux*) 
+	./$LAUNCHER >out.log 2>&1 & 
+        ;; 
+*Darwin*)
+	open ${LAUNCHER}.app
+        ;; 
+*) 
+	echo OMNeT++ IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel/PPC
+	exit 1
+        ;; 
+esac
