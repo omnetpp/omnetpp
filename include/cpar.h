@@ -226,7 +226,7 @@ class SIM_API cPar : public cObject
      *
      * Note: if the parameter is marked as non-volatile (isVolatile()==false),
      * one should not set an expression as value. This is not enforced
-     * by cPar though.  XXX
+     * by cPar though.
      */
     cPar& setExpression(cExpression *e);
     //@}
@@ -461,18 +461,6 @@ class SIM_API cPar : public cObject
      * Equivalent to xmlValue().
      */
     operator cXMLElement *() const  {return xmlValue();}
-
-    //@}
-
-    /** @name Compare functions */
-    //@{
-
-    /**
-     * Evaluates both expressions and compares the resulting values.
-     * If either of the objects is not set (isSet()==false) or they are
-     * of different type(), false is returned.
-     */
-    bool equals(cPar& other);  //XXX remove? doesn't seem too useful nor actually used...
     //@}
 };
 
