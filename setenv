@@ -1,8 +1,11 @@
 #! /bin/sh
-if [ -z "$PS1" ]; then 
-    echo "Error: not a login shell -- run this script as 'source setenv' or '. setenv'"
+
+case "$-" in
+*i*) ;;
+*)  echo "Error: not a login shell -- run this script as 'source setenv' or '. setenv'"
     exit 1
-fi
+esac
+
 if [ ! -f configure.user -o ! -f include/omnetpp.h ]; then
     echo "Error: current working directory does not look like an OMNeT++ root directory"
     # no exit -- it would close the shell
