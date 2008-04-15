@@ -12,7 +12,7 @@ if [ ! -f configure.user -o ! -f include/omnetpp.h ]; then
 else
     omnetpp_root=`pwd`
     echo $omnetpp_root
-    export PATH=$PATH:$omnetpp_root/bin
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$omnetpp_root/lib
+    export PATH=$omnetpp_root/bin:$PATH
+    export LD_LIBRARY_PATH=$omnetpp_root/lib:$LD_LIBRARY_PATH
 fi
 
