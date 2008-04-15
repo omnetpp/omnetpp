@@ -25,11 +25,10 @@ cEnvir *evPtr;
  * cEnvir::sputn(s,n). Flush is done at the end of each line, meanwhile
  * writes are buffered in a stringbuf.
  */
-template <class E, class T = std::char_traits<E> >
-class basic_evbuf : public std::basic_stringbuf<E,T>
+class evbuf : public std::basic_stringbuf<char>
 {
   public:
-    basic_evbuf() {}
+    evbuf() {}
     // gcc>=3.4 needs either this-> or std::basic_stringbuf<E,T>:: in front of pptr()/pbase()
     // note: this method is needed because pptr() and pbase() are protected
     bool isempty() {return this->pptr()==this->pbase();}
@@ -39,16 +38,14 @@ class basic_evbuf : public std::basic_stringbuf<E,T>
         setp(this->pbase(),this->epptr());
         return 0;
     }
-    virtual std::streamsize xsputn(const E *s, std::streamsize n) {
-        std::streamsize r = std::basic_stringbuf<E,T>::xsputn(s,n);
+    virtual std::streamsize xsputn(const char *s, std::streamsize n) {
+        std::streamsize r = std::basic_stringbuf<char>::xsputn(s,n);
         for(;n>0;n--,s++)
             if (*s=='\n')
                {sync();break;}
         return r;
     }
 };
-
-typedef basic_evbuf<char> evbuf;
 
 //----
 

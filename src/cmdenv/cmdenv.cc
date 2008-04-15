@@ -290,7 +290,7 @@ int Cmdenv::run()
             ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runnumber);
             ::fflush(fout);
             simulation.callFinish();
-            ev.flushLastLine();
+            flushLastLine();
 
             checkFingerprint();
         }
@@ -376,7 +376,7 @@ void Cmdenv::simulate()
     {
         if (!opt_expressmode)
         {
-           ev.disable_tracing = false;
+           disable_tracing = false;
            while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
@@ -413,7 +413,7 @@ void Cmdenv::simulate()
                simulation.doOneEvent( mod );
 
                // flush so that output from different modules don't get mixed
-               ev.flushLastLine();
+               flushLastLine();
 
                checkTimeLimits();
                if (sigint_received)
@@ -422,7 +422,7 @@ void Cmdenv::simulate()
         }
         else
         {
-           ev.disable_tracing = true;
+           disable_tracing = true;
            Speedometer speedometer;
            speedometer.start(simulation.simTime());
            while (true)
@@ -481,7 +481,7 @@ void Cmdenv::simulate()
     }
     catch (cTerminationException& e)
     {
-        ev.disable_tracing = false;
+        disable_tracing = false;
         stopClock();
         stoppedWithTerminationException(e);
         displayMessage(e);
@@ -489,11 +489,11 @@ void Cmdenv::simulate()
     }
     catch (std::exception& e)
     {
-        ev.disable_tracing = false;
+        disable_tracing = false;
         stopClock();
         throw;
     }
-    ev.disable_tracing = false;
+    disable_tracing = false;
     stopClock();
 }
 

@@ -634,7 +634,7 @@ void EnvirBase::startRun()
     }
     simulation.scheduler()->startRun();
     simulation.startRun();
-    ev.flushLastLine();
+    flushLastLine();
 }
 
 void EnvirBase::endRun()
@@ -1419,7 +1419,7 @@ void EnvirBase::checkTimeLimits()
          throw cTerminationException(eSIMTIME);
     if (opt_cputimelimit==0) // no limit
          return;
-    if (ev.disable_tracing && simulation.eventNumber()&0xFF!=0) // optimize: in Express mode, don't call gettimeofday() on every event
+    if (disable_tracing && simulation.eventNumber()&0xFF!=0) // optimize: in Express mode, don't call gettimeofday() on every event
          return;
     timeval now;
     gettimeofday(&now, NULL);

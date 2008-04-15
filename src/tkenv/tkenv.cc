@@ -417,7 +417,7 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, long until_event, cMod
     stopsimulation_flag = false;
 
     animating = true;
-    ev.disable_tracing = false;
+    disable_tracing = false;
 
     if (simstate==SIM_TERMINATED)
     {
@@ -467,7 +467,7 @@ bool Tkenv::doRunSimulation()
     //
     Speedometer speedometer;
     speedometer.start(simulation.simTime());
-    ev.disable_tracing = false;
+    disable_tracing = false;
     bool firstevent = true;
     while(1)
     {
@@ -499,7 +499,7 @@ bool Tkenv::doRunSimulation()
         performAnimations();
 
         // flush so that output from different modules don't get mixed
-        ev.flushLastLine();
+        flushLastLine();
 
         // display update
         if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
@@ -561,7 +561,7 @@ bool Tkenv::doRunSimulationExpress()
     // OK, let's begin
     Speedometer speedometer;
     speedometer.start(simulation.simTime());
-    ev.disable_tracing = true;
+    disable_tracing = true;
     animating = false;
 
     do
@@ -629,7 +629,7 @@ void Tkenv::finishSimulation()
     try
     {
         simulation.callFinish();
-        ev.flushLastLine();
+        flushLastLine();
 
         checkFingerprint();
     }

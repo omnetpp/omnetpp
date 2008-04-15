@@ -101,6 +101,7 @@ extern SIM_API cEnvir *evPtr;
  */
 class SIM_API cEnvir
 {
+    friend class evbuf;
   public:
     // Internal flag for express mode. XXX define exactly
     bool disable_tracing;
@@ -111,7 +112,7 @@ class SIM_API cEnvir
     // messageSendHop(), messageDeleted(), moduleReparented(), simulationEvent(),
     // componentMethodBegin(), moduleCreated(), moduleDeleted(), connectionCreated(),
     // connectionRemoved(), displayStringChanged().
-    bool suppress_notifications; //XXX make use of this flag in Envir impl.
+    bool suppress_notifications;
 
     // Internal flag. When set, cRuntimeError constructor to raises an exception.
     bool debug_on_errors;
@@ -120,17 +121,18 @@ class SIM_API cEnvir
     // further internal vars
     std::ostream out;
 
-  public:  //TODO protected!
-    // internal: writes the first n characters of string s.
-    // out's streambuf eventually delegates here.
+  protected:
+    // internal: ev.printf() and ev<< eventually ends up here; write the first n characters of string s
     virtual void sputn(const char *s, int n) = 0;
 
+    // internal: pop up a dialog with the given message; called from printfmsg()
     virtual void putsmsg(const char *msg) = 0;
 
+    // internal: ask a yes/no question, throws exception if cancelled; askYesNo() delegates here
     virtual bool askyesno(const char *msg) = 0;
 
     // internal: flushes the internal stream buffer by terminating last line if needed
-    virtual void flushLastLine();  //FIXME remove virtual!!!
+    void flushLastLine();
 
   public:
     /** @name Constructor, destructor. */
@@ -191,19 +193,47 @@ class SIM_API cEnvir
      * the message will additionally travel through a series of connections
      * before it arrives in a simple module.)
      */
-    //FIXME obsolete -- see beginSend(), etc.
     virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate=NULL) = 0;
 
+    /**
+     * Notifies the environment that a message was scheduled.
+     * @see cSimpleModule::scheduleAt()
+     */
     virtual void messageScheduled(cMessage *msg) = 0;
+
+    /**
+     * Notifies the environment that a scheduled message was cancelled.
+     * @see cSimpleModule::cancelEvent()
+     */
     virtual void messageCancelled(cMessage *msg) = 0;
 
-    // beginSend() will be followed by a messageSendDirect (optional), and several messageSendHop() calls
+    /**
+     * Notifies the environment that a message is being sent from a
+     * simple module. beginSend() will be followed by a messageSendDirect()
+     * (optional, only present when cSimpleModule::sendDirect() was called),
+     * several messageSendHop() calls (one for each connection in the path),
+     * and finally an endSend().
+     */
     virtual void beginSend(cMessage *msg) = 0;
+
+    /** Part of the beginSend() sequence. @see beginSend() */
     virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0) = 0;
+
+    /** Part of the beginSend() sequence. @see beginSend() */
     virtual void messageSendHop(cMessage *msg, cGate *srcGate) = 0;
+
+    /** Part of the beginSend() sequence. @see beginSend() */
     virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay) = 0;
+
+    /** Closes a beginSend() sequence. @see beginSend() */
     virtual void endSend(cMessage *msg) = 0;
-    virtual void messageDeleted(cMessage *msg) = 0;  //XXX document this and all above funcs
+
+    /**
+     * Notifies the environment that a message object is being deleted.
+     * This is called from the cMessage destructor, so any information added
+     * to cMessage via subclassing is already lost at the time of the call.
+     */
+    virtual void messageDeleted(cMessage *msg) = 0;
 
     /**
      * Notifies the environment that a module changed parent.
