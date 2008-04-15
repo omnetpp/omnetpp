@@ -1351,22 +1351,26 @@ unsigned long EnvirBase::getUniqueNumber()
     return nextuniquenumber++;
 }
 
-void EnvirBase::displayError(std::exception& e)
+void EnvirBase::displayError(std::exception& exception)
 {
-    cException *ee = dynamic_cast<cException *>(&e);
-    if (!ee || ee->moduleID()==-1)  //FIXME revise condition
-        ev.printfmsg("Error: %s.", e.what());
+    cException *e = dynamic_cast<cException *>(&exception);
+    if (!e || !e->hasContext())
+        ev.printfmsg("Error: %s.", e->what());
+    else if (e->moduleID()==-1)
+        ev.printfmsg("Error in component (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->what());
     else
-        ev.printfmsg("Error in module (%s) %s: %s.", ee->contextClassName(), ee->contextFullPath(), ee->what());
+        ev.printfmsg("Error in module (%s) %s (id=%d): %s.", e->contextClassName(), e->contextFullPath(), e->moduleID(), e->what());
 }
 
-void EnvirBase::displayMessage(std::exception& e)
+void EnvirBase::displayMessage(std::exception& exception)
 {
-    cException *ee = dynamic_cast<cException *>(&e);
-    if (!ee || ee->moduleID()==-1)  //FIXME revise condition
-        ev.printfmsg("%s.", e.what());
+    cException *e = dynamic_cast<cException *>(&exception);
+    if (!e || !e->hasContext())
+        ev.printfmsg("%s.", e->what());
+    else if (e->moduleID()==-1)
+        ev.printfmsg("Component (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->what());
     else
-        ev.printfmsg("Module (%s) %s: %s.", ee->contextClassName(), ee->contextFullPath(), ee->what());
+        ev.printfmsg("Module (%s) %s (id=%d): %s.", e->contextClassName(), e->contextFullPath(), e->moduleID(), e->what());
 }
 
 bool EnvirBase::idle()

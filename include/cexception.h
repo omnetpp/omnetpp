@@ -136,11 +136,11 @@ class SIM_API cException : public std::exception
      * Modifies the error text.
      */
     virtual void setMessage(const char *txt) {msg = txt;}
-    
+
     /**
      * Returns true if the exception has "context info", that is, it occurred
-     * within a known module or channel. contextClassName() and contextFullPath()
-     * and moduleID() can only be called if this method returned true.
+     * within a known module or channel. contextClassName(), contextFullPath()
+     * and moduleID() may only be called if this method returns true.
      */
     virtual bool hasContext() const {return hascontext;}
 
@@ -162,7 +162,7 @@ class SIM_API cException : public std::exception
      * any more when the exception is caught (ie. if the exception occurs
      * during network setup, the network is cleaned up immediately).
      */
-    virtual int moduleID() const {return moduleid;}   // FIXME check all code that calls this!!! maybe they need hasContext() instead
+    virtual int moduleID() const {return moduleid;}
     //@}
 };
 

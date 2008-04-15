@@ -21,7 +21,10 @@
 
 NAMESPACE_BEGIN
 
-//XXX we *may* need to use these classes in public API functions exposed in a dll interface
+//
+// Note: We *may* need to use these classes in public API functions exposed
+// in a dll interface
+//
 
 /**
  * Wrap std::string templated class into an equivalent non-templated class.
