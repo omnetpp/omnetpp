@@ -34,7 +34,7 @@ class SIM_API cStringParImpl : public cParImpl
     // union here because std::string has constructor/destructor.
     // selector: flags & FL_ISEXPR
     cExpression *expr;
-    std::string val;  //XXX should be a stringpooled const char *?
+    std::string val;
 
   protected:
     std::string evaluate(cComponent *context) const;

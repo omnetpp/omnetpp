@@ -27,7 +27,6 @@
     typedef unsigned __int64    uint64;
 #else
     // the following should work on 32-bit and 64-bit architectures too
-    // XXX this may need to be refined for different platforms
     // note: cenvir.cc contains asserts to ensure that these typedefs are correct
     typedef char                int8;
     typedef short               int16;

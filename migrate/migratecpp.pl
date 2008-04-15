@@ -60,6 +60,17 @@ while (<LISTFILE>)
     $txt =~ s/->delay\(\)->doubleValue\(\)/->channel()->par("delay").doubleValue()/mg;
     $txt =~ s/->error\(\)->doubleValue\(\)/->channel()->par("error").doubleValue()/mg;
 
+    # ancient stuff, from compat.h
+    $txt =~ s/\bcKSplitIterator\b/cKSplit::Iterator/mg;
+    $txt =~ s/\bsGrid\b/cKSplit::Grid/mg;
+    $txt =~ s/\bcLinkedListIterator\b/cLinkedList::Iterator/mg;
+    $txt =~ s/\bcMessageHeapIterator\b/cMessageHeap::Iterator/mg;
+    $txt =~ s/\bsTopoLink\b/cTopology::Link/mg;
+    $txt =~ s/\bsTopoLinkIn\b/cTopology::LinkIn/mg;
+    $txt =~ s/\bsTopoLinkOut\b/cTopology::LinkOut/mg;
+    $txt =~ s/\bsTopoNode\b/cTopology::Node/mg;
+    $txt =~ s/\bcDisplayStringParser\b/cDisplayString/mg;
+
     # print warnings
     $lineno = 0;
     foreach $line (split ("\n", $txt)) {

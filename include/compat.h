@@ -18,31 +18,24 @@
 #ifndef __COMPAT_H
 #define __COMPAT_H
 
-
 //
 // This header needs to be included *last* in omnetpp.h.
 //
 
-// cQueue
-#define peekTail()     tail()
-#define peekHead()     head()
-
-//XXX can typedefs be deprecated?
-
 // following ones became inner classes:
-typedef OPP::cKSplit::Iterator      cKSplitIterator;
-typedef OPP::cKSplit::Grid          sGrid;
-typedef OPP::cLinkedList::Iterator  cLinkedListIterator;
-typedef OPP::cMessageHeap::Iterator cMessageHeapIterator;
-typedef OPP::cTopology::Link        sTopoLink;
-typedef OPP::cTopology::LinkIn      sTopoLinkIn;
-typedef OPP::cTopology::LinkOut     sTopoLinkOut;
-typedef OPP::cTopology::Node        sTopoNode;
+typedef _OPPDEPRECATED  OPP::cKSplit::Iterator      cKSplitIterator;
+typedef _OPPDEPRECATED  OPP::cKSplit::Grid          sGrid;
+typedef _OPPDEPRECATED  OPP::cLinkedList::Iterator  cLinkedListIterator;
+typedef _OPPDEPRECATED  OPP::cMessageHeap::Iterator cMessageHeapIterator;
+typedef _OPPDEPRECATED  OPP::cTopology::Link        sTopoLink;
+typedef _OPPDEPRECATED  OPP::cTopology::LinkIn      sTopoLinkIn;
+typedef _OPPDEPRECATED  OPP::cTopology::LinkOut     sTopoLinkOut;
+typedef _OPPDEPRECATED  OPP::cTopology::Node        sTopoNode;
 
 // renamed classes:
-typedef OPP::cDisplayString cDisplayStringParser;
-typedef OPP::cBasicChannel  cSimpleChannel;
-typedef OPP::cObject        cPolymorphic;
+typedef _OPPDEPRECATED  OPP::cDisplayString   cDisplayStringParser;
+typedef _OPPDEPRECATED  OPP::cBasicChannel    cSimpleChannel;
+typedef _OPPDEPRECATED  OPP::cObject          cPolymorphic;
 
 #endif
 
