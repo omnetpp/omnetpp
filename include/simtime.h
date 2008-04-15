@@ -138,12 +138,6 @@ class SIM_API SimTime
     friend const SimTime operator*(const SimTime& x, const cPar& p);
     friend const SimTime operator*(const cPar& p, const SimTime& x);
     friend const SimTime operator/(const SimTime& x, const cPar& p);
-
-    /*XXX todo
-    template<typename T> friend const SimTime operator*(const SimTime& x, T d);
-    template<typename T> friend const SimTime operator*(T d, const SimTime& x);
-    template<typename T> friend const SimTime operator/(const SimTime& x, T d);
-    */
     //@}
 
     /**
@@ -212,8 +206,8 @@ class SIM_API SimTime
 
     /**
      * Converts the given string to simulation time. Throws an error if
-     * there is an error during conversion. Accepted format is:
-     * &lt;number&gt; or (&lt;number&gt;&lt;unit&gt;)+.
+     * there is an error during conversion. Accepted format is: <number>
+     * or (<number><unit>)+.
      */
     static const SimTime parse(const char *s);
 
@@ -286,6 +280,13 @@ inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
 
 NAMESPACE_END
 
+// used locally; needed because sign of a%b is implementation dependent if a<0
+inline int64 i64mod(const int64& any_t, const int64& positive_u)
+{
+    int64 m = any_t % positive_u;
+    return m>=0 ? m : m+positive_u;
+}
+
 /**
  * simtime_t version of floor(double) from math.h.
  */
@@ -293,7 +294,7 @@ inline const OPP::SimTime floor(const OPP::SimTime& x)
 {
     int64 u = OPP::SimTime::scale();
     int64 t = x.raw();
-    return OPP::SimTime().setRaw(t - t % u); //XXX test: also OK for negative t?
+    return OPP::SimTime().setRaw(t - i64mod(t,u));
 }
 
 /**
@@ -308,7 +309,7 @@ inline const OPP::SimTime floor(const OPP::SimTime& x, const OPP::SimTime& unit,
     int64 off = offset.raw();
     int64 u = unit.raw();
     int64 t = x.raw() - off;
-    return OPP::SimTime().setRaw(t - t % u + off); //XXX test: also OK for negative t?
+    return OPP::SimTime().setRaw(t - i64mod(t,u) + off);
 }
 
 /**
@@ -318,7 +319,7 @@ inline const OPP::SimTime ceil(const OPP::SimTime& x)
 {
     int64 u = OPP::SimTime::scale();
     int64 t = x.raw() + u-1;
-    return OPP::SimTime().setRaw(t - t % u); //XXX test: also OK for negative t?
+    return OPP::SimTime().setRaw(t - i64mod(t,u));
 }
 
 /**
@@ -330,7 +331,7 @@ inline const OPP::SimTime ceil(const OPP::SimTime& x, const OPP::SimTime& unit, 
     int64 off = offset.raw();
     int64 u = unit.raw();
     int64 t = x.raw() - off + u-1;
-    return OPP::SimTime().setRaw(t - t % u + off); //XXX test: also OK for negative t?
+    return OPP::SimTime().setRaw(t - i64mod(t,u) + off);
 }
 
 /**
