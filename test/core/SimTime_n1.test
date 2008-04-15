@@ -1,0 +1,29 @@
+%description:
+SimTime: check overflow detection
+
+%activity:
+
+#define TRY(code) \
+    ev << #code << " -> "; \
+    try { \
+        code; ev << "done\n"; \
+    } catch (std::exception& e) { \
+        ev << e.what() << endl; \
+    }
+
+SimTime t;
+
+// assignment from double
+TRY( t=1e100; )
+TRY( t=-1e100; )
+
+// simtime + simtime
+TRY( t=1;  for (int i=0; i<60; i++) t=t+t; )
+TRY( t=-1; for (int i=0; i<60; i++) t=t+t; )
+
+//TODO others...
+
+ev << ".\n";
+
+%contains: stdout
+sada

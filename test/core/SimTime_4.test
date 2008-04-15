@@ -1,0 +1,31 @@
+%description:
+SimTime: test math functions: ceil(), floor(), fabs(), fmod(), max(), min()
+
+%activity:
+SimTime t, t2;
+
+#define P(x) {ev << #x << " -> " << (x) << "\n";}
+
+P((t=1.23, floor(t)));
+P((t=-1.23, floor(t)));  //FIXME wrong result!
+//TODO: floor(x, unit, offset)
+
+P((t=1.23, ceil(t)));
+P((t=-1.23, ceil(t)));  //FIXME wrong result!
+//TODO: ceil(x, unit, offset)
+
+P((t=1.23, fabs(t)));
+P((t=-1.23, fabs(t)));
+
+//TODO fmod()
+
+P((t=1, t2=2, min(t,t2)));
+P((t=1, t2=-2, min(t,t2)));
+
+P((t=1, t2=2, max(t,t2)));
+P((t=1, t2=-2, max(t,t2)));
+
+ev << ".\n";
+
+%contains: stdout
+sdffdss

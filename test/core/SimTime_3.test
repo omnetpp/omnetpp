@@ -1,0 +1,128 @@
+%description:
+SimTime: basic arithmetic
+
+%global:
+// make protected SimTime::resetScale() accessible via subclassing
+class SimTimeExt : SimTime {
+  public: static void reset() {resetScale();}
+};
+
+%activity:
+SimTimeExt::reset();
+SimTime::setScaleExp(SimTime::SCALEEXP_NS);
+ev.printf("using nanosecond precision: scale=%I64d\n", SimTime::scale());
+
+SimTime t, t2, tmp;
+
+// basic arithmetic
+#define P(x) {ev << #x << " -> " << (x) << "\n";}
+t=1;
+t2=1.0/3.0;
+P(t);
+P(t2);
+
+P(t+0.1);
+P(t-0.1);
+P(0.1+t);
+P(0.1-t);
+
+P(t+t2);
+P(t-t2);
+
+P(t*3);
+P(t/3);
+P(3*t);
+#undef P
+
+// assignments
+#define P(x) {t=1; t2=1.0/3.0; tmp=(x); ev << #x << " -> " << tmp << ", t=" << t << "\n";}
+P(t=5);
+P(t=t2);
+
+P(t+=0.1);
+P(t+=-1);
+P(t+=-1.3);
+
+P(t-=0.1);
+P(t-=1);
+P(t-=1.3);
+
+P(t+=t2);
+P(t-=t2);
+
+P(t*=3);
+P(t/=3);
+#undef P
+
+// comparison
+#define P(x) {ev << #x << " -> " << (x) << "\n";}
+t=1;
+t2=1.0/3.0;
+P(t==1);
+P(t!=1);
+P(t==2);
+P(t!=2);
+P(t==t2);
+P(t!=t2);
+
+P(t<1);
+P(t<=1);
+P(t>1);
+P(t>=1);
+
+P(t<t);
+P(t<=t);
+P(t>t);
+P(t>=t);
+
+P(t<t2);
+P(t<=t2);
+P(t>t2);
+P(t>=t2);
+
+ev << ".\n";
+
+%contains: stdout
+t -> 1
+t2 -> 0.333333333
+t+0.1 -> 1.1
+t-0.1 -> 0.9
+0.1+t -> 1.1
+0.1-t -> -0.9
+t+t2 -> 1.333333333
+t-t2 -> 0.666666667
+t*3 -> 3
+t/3 -> 0.333333333
+3*t -> 3
+t=5 -> 5, t=5
+t=t2 -> 0.333333333, t=0.333333333
+t+=0.1 -> 1.1, t=1.1
+t+=-1 -> 0, t=0
+t+=-1.3 -> -0.3, t=-0.3
+t-=0.1 -> 0.9, t=0.9
+t-=1 -> 0, t=0
+t-=1.3 -> -0.3, t=-0.3
+t+=t2 -> 1.333333333, t=1.333333333
+t-=t2 -> 0.666666667, t=0.666666667
+t*=3 -> 3, t=3
+t/=3 -> 0.333333333, t=0.333333333
+t==1 -> 1
+t!=1 -> 0
+t==2 -> 0
+t!=2 -> 1
+t==t2 -> 0
+t!=t2 -> 1
+t<1 -> 0
+t<=1 -> 1
+t>1 -> 0
+t>=1 -> 1
+t<t -> 0
+t<=t -> 1
+t>t -> 0
+t>=t -> 1
+t<t2 -> 0
+t<=t2 -> 0
+t>t2 -> 1
+t>=t2 -> 1
+.
+
