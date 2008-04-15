@@ -14,15 +14,14 @@ for (int i=-18; i<=0; i++)
     SimTimeExt::reset();
     SimTime::setScaleExp(i);
 
-    char *u="";
+    const char *u="";
     if (SimTime::scaleExp()==SimTime::SCALEEXP_S)  u =  "s";
     if (SimTime::scaleExp()==SimTime::SCALEEXP_MS) u = "ms";
     if (SimTime::scaleExp()==SimTime::SCALEEXP_US) u = "us";
     if (SimTime::scaleExp()==SimTime::SCALEEXP_NS) u = "ns";
     if (SimTime::scaleExp()==SimTime::SCALEEXP_PS) u = "ps";
     if (SimTime::scaleExp()==SimTime::SCALEEXP_FS) u = "fs";
-
-    ev.printf("%d: scale=%I64d %s\n", i, SimTime::scale(), u);
+    ev.printf("%d: scale=%"INT64_PRINTF_FORMAT"d %s\n", i, SimTime::scale(), u);
 }
 ev << ".\n";
 

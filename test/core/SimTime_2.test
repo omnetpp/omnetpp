@@ -10,7 +10,6 @@ class SimTimeExt : SimTime {
 %activity:
 SimTimeExt::reset();
 SimTime::setScaleExp(SimTime::SCALEEXP_NS);
-ev.printf("using nanosecond precision: scale=%I64d\n", SimTime::scale());
 
 SimTime t, t2, tmp;
 
@@ -24,7 +23,6 @@ P(1e18); P(1e19); P(1e20);
 ev << ".\n";
 
 %contains: stdout
-using nanosecond precision: scale=1000000000
 1e-15 -> 0
 1e-14 -> 0
 1e-13 -> 0
