@@ -1,0 +1,6 @@
+#! /bin/sh
+omnetpp_root=`dirname $0`
+omnetpp_root=`cd $root; pwd`
+export PATH=$PATH:$omnetpp_root/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$omnetpp_root/lib
+
