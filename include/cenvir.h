@@ -354,40 +354,59 @@ class SIM_API cEnvir
      */
     bool disabled() {return disable_tracing;}
 
-//XXX comment
-    // note: eventually delegates to sputn(), via internal ostream
+    /**
+     * Overloaded << operator to make cEnvir behave like an ostream.
+     * @see ostream()
+     */
+    // implementation note: needed because otherwise the templated version
+    // would cause ambiguity errors in some cases
     cEnvir& operator<<(const std::string& t) {out << t; return *this;}
 
     /**
      * Overloaded << operator to make cEnvir behave like an ostream.
+     *
+     * This method can be used by modules and channels to display debugging output.
+     * It is up to the user interface implementation to display the text in
+     * the way it wants. The text is usually associated with the module or channel
+     * in context (see cSimulation::context()), and may get displayed in the
+     * module's debug window, or enabled/disabled per module.
+     *
+     * @see ostream()
      */
-    // note: eventually delegates to sputn(), via internal ostream
     template<typename T> cEnvir& operator<<(const T& t) {out << t; return *this;}
 
+    /**
+     * Overloaded << operator to handle stream manipulators such as <tt>endl</tt>.
+     */
     cEnvir& operator<<(std::ostream& (t)(std::ostream&)) {out << t; return *this;}
 
-//XXX comment
+    /**
+     * Returns the std::ostream instance where '<<' operators delegate.
+     * Writes will be eventually delegated to cEnvir::sputn(), after buffering.
+     */
     std::ostream& ostream() {return out;}
 
     /**
-     * In Tkenv it pops up a "bubble" over the module icon.
+     * In graphical user interfaces (Tkenv), it pops up a "bubble" over the
+     * module icon.
      */
     virtual void bubble(cComponent *component, const char *text) = 0;
 
     /**
-     * Displays a message in dialog box. This function should not be
-     * used too much by simple modules, if ever. Delegates to
-     * showmsg();
+     * Displays the given text in a dialog box. This function should not be
+     * used by simple modules. Delegates to putsmsg().
      */
-    // note: non-virtual, delegates to putsmsg()
     void printfmsg(const char *fmt,...);
 
     /**
-     * Simple modules can output text into their own window through this
-     * function. The text is expected in printf() format (format
-     * string + arguments).
+     * This method can be used by modules and channels to display debugging output.
+     * It is up to the user interface implementation to display the text in
+     * the way it wants. The text is usually associated with the module or channel
+     * in context (see cSimulation::context()), and may get displayed in the
+     * module's debug window, or enabled/disabled per module.
      *
-     * It is recommended to use C++-style I/O instead of this function.
+     * The function's arguments are identical to the standard <stdio.h> printf().
+     * It is recommended to use C++-style I/O (operator<<) instead of this function.
      */
     // note: non-virtual, delegates to sputn()
     int printf(const char *fmt,...);
