@@ -53,19 +53,16 @@ base: $(BASE)
 ui : common layout eventlog scave nedxml $(JNILIBS)
 samples: $(SAMPLES)
 
-# dependencies (because of ver.h, tcl2c, opp_msgc, etc)
+# dependencies (because of ver.h, opp_msgc, etc)
 clean depend: makefiles
 common layout eventlog scave nedxml sim envir cmdenv tkenv makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv tkenv : common
-sim : nedxml
-$(SAMPLES) : makefiles base
-
-# create some additional dependecies required to build windows DLLs
-ifeq ($(LIB_SUFFIX),$(DLL_LIB_SUFFIX))
 envir : sim
 tkenv cmdenv : envir
 tkenv : layout
-endif
+sim : nedxml
+$(SAMPLES) : makefiles base
+
 
 #
 # Core libraries and programs
