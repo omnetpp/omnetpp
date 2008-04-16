@@ -1,4 +1,6 @@
 %description:
+Test the compiler: type casts between integer types, 32/64 bits
+Should pass both on 32 and 64 bit architectures
 
 %activity:
 
