@@ -1,0 +1,90 @@
+%description:
+Test cHasher, the class for calculating simulation fingerprints.
+
+%global:
+
+int randint32()
+{
+    return intuniform(0,65535) | (intuniform(0,65535) << 16);
+}
+
+int64 randint64()
+{
+    return (int64)randint32() | ((int64)randint32() << 32);
+}
+
+%activity:
+cHasher hasher;
+
+#define HASH(n,type,expr) \
+    { \
+        cHasher tmp; \
+        for (int i=0; i<n; i++) {type x = expr; tmp.add(x); hasher.add(x); } \
+        ev << #type << ": " << tmp.str() << "\n"; \
+    }
+
+ev << "rng start: " << intrand(1000000) << "\n";
+
+// signed integers
+HASH(100, char,  intuniform(-128,127));
+HASH(100, short, intuniform(-32768, 32767));
+HASH(100, int,   (int)randint32());
+HASH(100, long,  (int)randint32());
+HASH(100, int64, (int64)randint64());
+
+// unsigned integers
+HASH(100, unsigned short, intuniform(-32768, 32767));
+HASH(100, unsigned int,   (unsigned int)randint32());
+HASH(100, unsigned long,  (unsigned int)randint32());
+HASH(100, uint64,         (uint64)randint64());
+
+// double
+HASH(100, double, (dblrand()-0.5)*2e100);
+
+// string
+HASH(1, const char *, "");
+HASH(1, const char *, "H");
+HASH(1, const char *, "He");
+HASH(1, const char *, "Hel");
+HASH(1, const char *, "Hell");
+HASH(1, const char *, "Hello");
+HASH(1, const char *, "Hello ");
+HASH(1, const char *, "Hello W");
+HASH(1, const char *, "Hello Wo");
+HASH(1, const char *, "Hello Worl");
+HASH(1, const char *, "Hello World");
+HASH(1, const char *, "\x80\xcc\xff");
+
+//TODO add(const char *s, size_t len)
+
+ev << "cumulative: " << hasher.str() << "\n";
+
+ev << ".\n";
+
+%contains: stdout
+rng start: 985772
+char: ca08-9f13
+short: 4f4f-727f
+int: 0c64-463b
+long: a787-9cac
+int64: d6e3-f83f
+unsigned short: f1c9-fa54
+unsigned int: 266b-2736
+unsigned long: 0cc2-da08
+uint64: 9b34-cd8d
+double: 626b-a100
+const char *: 0000-0000
+const char *: 0000-0048
+const char *: 0000-6548
+const char *: 006c-6548
+const char *: d8d8-ca90
+const char *: d8d8-caff
+const char *: d8d8-eaff
+const char *: d88f-eaff
+const char *: 6f1f-d5ff
+const char *: 6f1f-b98d
+const char *: 6f7b-b98d
+const char *: ffff-ff80
+cumulative: be27-7dd4
+.
+
