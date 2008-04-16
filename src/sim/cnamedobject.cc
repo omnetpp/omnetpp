@@ -73,7 +73,7 @@ cNamedObject::~cNamedObject()
 
 cNamedObject& cNamedObject::operator=(const cNamedObject& obj)
 {
-    // Not too much to do:
+    // Not much to do:
     // - ownership not affected
     // - name string is NOT copied from other object
     // - flags are taken over, except for FL_NAMEPOOLING which is preserved

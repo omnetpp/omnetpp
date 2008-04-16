@@ -25,8 +25,6 @@
 
 NAMESPACE_BEGIN
 
-//class cProperties;
-
 
 /**
  * Stores a property with its value. The value consists of key-valuelist pairs;
@@ -39,12 +37,16 @@ class SIM_API cProperty : public cNamedObject
   public:
     static const char *DEFAULTKEY;
 
+  private:
+    enum {
+      FL_ISLOCKED = 4,
+      FL_ISIMPLICIT = 8,
+    };
+
   protected:
     // property names, keys and values are all stringpooled to reduce memory consumption
     static cStringPool stringPool;
 
-    bool islocked;  //FIXME turn into cNamedObject flags
-    bool isimplicit;
     cProperties *ownerp;
 
     const char *propindex;
@@ -56,15 +58,17 @@ class SIM_API cProperty : public cNamedObject
 
   protected:
     static void releaseValues(CharPtrVector& vals);
-    void updateFullName() const;
     int findKey(const char *key) const;
     CharPtrVector& valuesVector(const char *key) const;
 
   public:
-    // internal: locks the object and all contained properties against modifications.
-    // The object cannot be unlocked -- one must copy contents to an unlocked
-    // object, or call dup() (new objects are created in unlocked state).
-    virtual void lock() {islocked=true;}
+    // internal: locks the object against modifications. It cannot be unlocked
+    // -- one must copy contents to an unlocked object, or call dup()
+    // (new objects are created in unlocked state).
+    virtual void lock() {setFlag(FL_ISLOCKED, true);}
+
+    // internal:
+    virtual bool isLocked() {return flags&FL_ISLOCKED;}
 
     // internal: set the containing cProperties
     virtual void setOwner(cProperties *p) {ownerp = p;}
@@ -81,7 +85,7 @@ class SIM_API cProperty : public cNamedObject
     /**
      * Copy constructor.
      */
-    cProperty(const cProperty& other) {islocked=false; propindex=propfullname=NULL; operator=(other);}
+    cProperty(const cProperty& other) {setFlag(FL_ISLOCKED,false); propindex=propfullname=NULL; operator=(other);}
 
     /**
      * Destructor.
