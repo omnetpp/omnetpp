@@ -17,15 +17,15 @@ ev << "rng start: " << intrand(1000000) << "\n";
 // signed integers
 HASH(100, char,  intuniform(-128,127));
 HASH(100, short, intuniform(-32768, 32767));
-HASH(100, int,   (int)((dblrand()-0.5)*pow(2.0,32)));
-HASH(100, long,  (long)((dblrand()-0.5)*pow(2.0,32)));
-HASH(100, int64, (int64)((dblrand()-0.5)*pow(2.0,64)));
+HASH(100, int,   (int)floor(0.9*(dblrand()-0.5)*pow(2.0,32)));
+HASH(100, long,  (long)floor(0.9*(dblrand()-0.5)*pow(2.0,32)));
+HASH(100, int64, (int64)floor(0.9*(dblrand()-0.5)*pow(2.0,64)));
 
 // unsigned integers
 HASH(100, unsigned short, intuniform(-32768, 32767));
-HASH(100, unsigned int,   (unsigned int)(dblrand()*pow(2.0,32)));
-HASH(100, unsigned long,  (unsigned long)(dblrand()*pow(2.0,32)));
-HASH(100, uint64,         (uint64)(dblrand()*pow(2.0,64)));
+HASH(100, unsigned int,   (unsigned int)floor(0.9*dblrand()*pow(2.0,32)));
+HASH(100, unsigned long,  (unsigned long)floor(0.9*dblrand()*pow(2.0,32)));
+HASH(100, uint64,         (uint64)floor(0.9*dblrand()*pow(2.0,64)));
 
 // double
 HASH(100, double, (dblrand()-0.5)*2e100);
@@ -54,13 +54,13 @@ ev << ".\n";
 rng start: 985772
 char: ca08-9f13
 short: 4f4f-727f
-int: cb0d-96c9
-long: dabb-14e3
-int64: f62c-fa57
+int: cf06-5fea
+long: 0a04-13eb
+int64: f300-c996
 unsigned short: c853-4518
-unsigned int: 3959-5765
-unsigned long: f029-e8b7
-uint64: 5d81-50f0
+unsigned int: 236b-c5ca
+unsigned long: 25b7-99d4
+uint64: b41d-ecb2
 double: f7db-bb17
 const char *: 0000-0000
 const char *: 0000-0048
@@ -74,6 +74,6 @@ const char *: 6f1f-d5ff
 const char *: 6f1f-b98d
 const char *: 6f7b-b98d
 const char *: ffff-ff80
-cumulative: 8eb4-d5b6
+cumulative: 3178-a6d0
 .
 
