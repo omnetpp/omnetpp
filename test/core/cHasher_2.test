@@ -3,12 +3,12 @@ Test cHasher, the class for calculating simulation fingerprints.
 
 %global:
 
-int randint32()
+unsigned int randint32()
 {
     return intuniform(0,65535) | (intuniform(0,65535) << 16);
 }
 
-int64 randint64()
+uint64 randint64()
 {
     return (int64)randint32() | ((int64)randint32() << 32);
 }
@@ -29,13 +29,13 @@ ev << "rng start: " << intrand(1000000) << "\n";
 HASH(100, char,  intuniform(-128,127));
 HASH(100, short, intuniform(-32768, 32767));
 HASH(100, int,   (int)randint32());
-HASH(100, long,  (int)randint32());
+HASH(100, long,  (long)randint32());
 HASH(100, int64, (int64)randint64());
 
 // unsigned integers
 HASH(100, unsigned short, intuniform(-32768, 32767));
 HASH(100, unsigned int,   (unsigned int)randint32());
-HASH(100, unsigned long,  (unsigned int)randint32());
+HASH(100, unsigned long,  (unsigned long)randint32());
 HASH(100, uint64,         (uint64)randint64());
 
 // double
@@ -67,11 +67,11 @@ char: ca08-9f13
 short: 4f4f-727f
 int: 0c64-463b
 long: a787-9cac
-int64: d6e3-f83f
+int64: c8eb-4418
 unsigned short: f1c9-fa54
 unsigned int: 266b-2736
 unsigned long: 0cc2-da08
-uint64: 9b34-cd8d
+uint64: 927b-52b4
 double: 626b-a100
 const char *: 0000-0000
 const char *: 0000-0048
@@ -85,6 +85,5 @@ const char *: 6f1f-d5ff
 const char *: 6f1f-b98d
 const char *: 6f7b-b98d
 const char *: ffff-ff80
-cumulative: be27-7dd4
+cumulative: f5b3-1835
 .
-
