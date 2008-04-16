@@ -31,13 +31,7 @@
 
 NAMESPACE_BEGIN
 
-//=== classes declared here:
-class cTransientDetection;
-class cAccuracyDetection;
-class cTDExpandingWindows;
-class cADByStddev;
 
-//=== class mentioned here:
 class cStatistic;
 
 /**
@@ -52,14 +46,13 @@ typedef void (*PostTDFunc)(cTransientDetection *, void *);
  */
 typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 
-//==========================================================================
 
 /**
  * Virtual base class for transient detection classes.
  *
  * @ingroup Statistics
  */
-class SIM_API cTransientDetection : public cOwnedObject, noncopyable  //FIXME should not be noncopyable
+class SIM_API cTransientDetection : public cOwnedObject, noncopyable
 {
   protected:
     cStatistic *back;    // ptr to cStatistic that uses this object
@@ -140,14 +133,15 @@ class SIM_API cTransientDetection : public cOwnedObject, noncopyable  //FIXME sh
     //@}
 };
 
-//==========================================================================
+
+//----
 
 /**
  * Virtual base class for result accuracy detection classes.
  *
  * @ingroup Statistics
  */
-class SIM_API cAccuracyDetection : public cOwnedObject
+class SIM_API cAccuracyDetection : public cOwnedObject, noncopyable
 {
   protected:
     cStatistic *back;           // ptr to cStatistic that uses this object
@@ -232,7 +226,7 @@ class SIM_API cAccuracyDetection : public cOwnedObject
     //@}
 };
 
-//===========================================================================
+//----
 
 /**
  * A transient detection algorithm. Uses sliding window approach
@@ -338,7 +332,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
 };
 
 
-//===========================================================================
+//----
 
 /**
  * An algorithm for result accuracy detection. The actual algorithm:

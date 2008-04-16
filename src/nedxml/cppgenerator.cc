@@ -27,8 +27,9 @@ USING_NAMESPACE
 
 using std::ostream;
 
-#define NEDC_VERSION "4.0"
-#define NEDC_VERSION_HEX "0x0400"
+//Note: these should come from ver.h or omnetpp.h
+//#define NEDC_VERSION "4.0"
+//#define NEDC_VERSION_HEX "0x0400"
 
 
 void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDTypeResolver *resolver, NEDErrorStore *errors)
