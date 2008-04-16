@@ -71,7 +71,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual void setComponentType(cComponentType *componenttype);
 
     // internal: adds a new parameter to the component; called as part of the creation process
-    //XXX consider locking against addPar() during runtime
     virtual void addPar(cParImpl *value);
 
     // internal: reallocates paramv (size must be >= numparams)

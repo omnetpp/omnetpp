@@ -110,8 +110,10 @@ void cComponent::reallocParamv(int size)
 
 void cComponent::addPar(cParImpl *value)
 {
+    if (areParamsFinalized())
+        throw cRuntimeError(this, "cannot add parameters at runtime");
     if (findPar(value->name())>=0)
-        throw cRuntimeError(this, "addPar(): Parameter %s.%s already present", fullPath().c_str(), value->name());
+        throw cRuntimeError(this, "cannot add `%s': already exists", value->name());
     if (numparams==paramvsize)
         reallocParamv(paramvsize+1);
     paramv[numparams++].init(this, value);

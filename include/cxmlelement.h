@@ -71,7 +71,6 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  *
  * @ingroup SimSupport
  */
-// TBD if namespaces are supported by Expat & libxml in an easy way, maybe do it here
 class SIM_API cXMLElement
 {
   public:
