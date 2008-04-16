@@ -267,6 +267,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * See sendDirect(cMessage *, simtime_t, cModule *, const char *, in) for a
      * more detailed description.
      */
+    //FIXME remove this method? see next ones!
     int sendDirect(cMessage *msg, simtime_t propagationDelay, cModule *mod, int inputgateid);
 
     /**
@@ -291,6 +292,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
      */
+    //FIXME remove this method? see next ones!
     int sendDirect(cMessage *msg, simtime_t propagationDelay, cModule *mod, const char *inputgatename, int gateindex=-1);
 
     /**
@@ -298,6 +300,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * See sendDirect(cMessage *, simtime_t, cModule *, const char *, in) for a
      * more detailed description.
      */
+    //FIXME remove this method? see next ones!
     int sendDirect(cMessage *msg, simtime_t propagationDelay, cGate *inputgate);
 
     /**
@@ -307,6 +310,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      */
     //XXX refine doc -- transmissionDelay is currently IGNORED (only used by animation), as we want to deliver the msg when the *first* bit arrives, not the last one
     //XXX make transmissionDelay first?
+    //XXX rename transmissionDelay to transmissionTime? or transmissionDuration? or transmissionInterval?
     int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t transmissionDelay, cModule *mod, int inputgateid);
 
     /**
@@ -316,6 +320,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      */
     //XXX refine doc -- transmissionDelay is currently IGNORED (only used by animation), as we want to deliver the msg when the *first* bit arrives, not the last one
     //XXX make transmissionDelay first?
+    //XXX rename transmissionDelay to transmissionTime? or transmissionDuration? or transmissionInterval?
     int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t transmissionDelay, cModule *mod, const char *inputgatename, int gateindex=-1);
 
     /**
@@ -325,6 +330,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      */
     //XXX refine doc -- transmissionDelay is currently IGNORED (only used by animation), as we want to deliver the msg when the *first* bit arrives, not the last one
     //XXX make transmissionDelay first?
+    //XXX rename transmissionDelay to transmissionTime? or transmissionDuration? or transmissionInterval?
     int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t transmissionDelay, cGate *inputgate);
     //@}
 
