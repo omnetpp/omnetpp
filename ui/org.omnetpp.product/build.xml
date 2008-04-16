@@ -2,6 +2,10 @@
         <property environment="env" /> 
 	<property file="build.properties" />
 	
+	<target name="clean">
+		<delete dir="${buildDirectory}" />
+	</target>
+
 	<target name="init">
 		<mkdir dir="${buildDirectory}" />
 		<mkdir dir="${buildDirectory}/plugins" />
@@ -56,7 +60,7 @@
 	</target>
 
 	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->	
-	<target name="prepare-omnest">
+	<target name="init-omnest" depends="init">
 	    <replace dir="${buildDirectory}" token="OMNeT++" value="OMNEST">
 		<include name="**/*.java"/>
 		<include name="**/*.htm" />
@@ -71,15 +75,21 @@
     	</target>
 	
 	<!-- prepare for academic build / throw out commercial features etc. -->	
-	<target name="prepare-omnetpp">
+	<target name="init-omnetpp" depends="init">
 	    <copy file="${buildDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${buildDirectory}/plugins/org.omnetpp.product/ide.product"/>
     	</target>
 	
-	<target name="clean">
-		<delete dir="${buildDirectory}" />
+	<target name="build-omnetpp" depends="clean, init-omnetpp, pde-build" >
+	    <!-- special handling of the 64 bit linux executable -->
+	    <copy file="${eclipseLocation}/eclipse64" tofile="${buildDirectory}/tmp/${archivePrefix}/omnetpp64"/>
+	    <chmod file="${buildDirectory}/tmp/${archivePrefix}/omnetpp64" perm="755"/>
+	    <delete file="${buildDirectory}/tmp/${archivePrefix}/libcairo-swt.so" />
 	</target>
-
-	<target name="build-omnetpp" depends="clean, init, prepare-omnetpp, pde-build" />
-
-	<target name="build-omnest" depends="clean, init, prepare-omnest, pde-build" />
+	
+	<target name="build-omnest" depends="clean, init-omnest, pde-build" >
+	    <!-- special handling of the 64 bit linux executable -->
+	    <copy file="${eclipseLocation}/eclipse64" tofile="${buildDirectory}/tmp/${archivePrefix}/omnest64"/>
+	    <chmod file="${buildDirectory}/tmp/${archivePrefix}/omnest64" perm="755"/>
+	    <delete file="${buildDirectory}/tmp/${archivePrefix}/libcairo-swt.so" />
+	</target>
 </project>
