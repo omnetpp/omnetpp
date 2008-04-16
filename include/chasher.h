@@ -39,6 +39,7 @@ class SIM_API cHasher : noncopyable
 {
   private:
     uint32 value;
+
     void merge(uint32 x) {
         // rotate value left by one bit, and xor with new data
         uint32 carry = (value & 0x80000000U) >> 31;
@@ -46,9 +47,8 @@ class SIM_API cHasher : noncopyable
     }
 
     void merge2(uint64 x) {
-        uint32 *p = (uint32 *)&x;
-        merge(p[0]);
-        merge(p[1]);
+        merge((uint32)x);
+        merge((uint32)(x>>32));
     }
 
   public:
@@ -64,14 +64,15 @@ class SIM_API cHasher : noncopyable
     void add(int d)   {merge((uint32)d);}
     void add(short d) {merge((uint32)d);}
     void add(char d)  {merge((uint32)d);}
-    void add(long d)  {merge((uint64)d);}
-    void add(int64 d) {merge2(d);}
+    void add(long d)  {merge2((uint64)d);}
+    void add(int64 d) {merge2((uint64)d);}
     void add(unsigned int d)   {merge((uint32)d);}
     void add(unsigned short d) {merge((uint32)d);}
     void add(unsigned char d)  {merge((uint32)d);}
-    void add(unsigned long d)  {merge((uint64)(int64)d);} // sign! TODO regression test! as this is tricky
-    void add(uint64 d)         {merge2(*(uint64 *)&d);}  //TODO regression test!
-    void add(double d)         {merge2(*(uint64 *)&d);}
+    void add(unsigned long d)  {merge2((uint64)d);}
+    void add(uint64 d)         {merge2(d);}
+    // note safe(r) type punning, see http://cocoawithlove.decenturl.com/type-punning
+    void add(double d)         {union _ {double d; uint64 i;}; merge2(((union _ *)&d)->i);}
     void add(const char *s)    {if (s) add(s, strlen(s)+1); else add(0);}
     //@}
 
@@ -102,7 +103,6 @@ class SIM_API cHasher : noncopyable
 };
 
 NAMESPACE_END
-
 
 #endif
 

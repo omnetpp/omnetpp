@@ -1,0 +1,79 @@
+%description:
+Test cHasher, the class for calculating simulation fingerprints.
+
+%activity:
+cHasher hasher;
+
+#define HASH(n,type,expr) \
+    { \
+        cHasher tmp; \
+        for (int i=0; i<n; i++) {type x = expr; tmp.add(x); hasher.add(x); } \
+        ev << #type << ": " << tmp.str() << "\n"; \
+    }
+
+
+ev << "rng start: " << intrand(1000000) << "\n";
+
+// signed integers
+HASH(100, char,  intuniform(-128,127));
+HASH(100, short, intuniform(-32768, 32767));
+HASH(100, int,   (int)((dblrand()-0.5)*pow(2.0,32)));
+HASH(100, long,  (long)((dblrand()-0.5)*pow(2.0,32)));
+HASH(100, int64, (int64)((dblrand()-0.5)*pow(2.0,64)));
+
+// unsigned integers
+HASH(100, unsigned short, intuniform(-32768, 32767));
+HASH(100, unsigned int,   (unsigned int)(dblrand()*pow(2.0,32)));
+HASH(100, unsigned long,  (unsigned long)(dblrand()*pow(2.0,32)));
+HASH(100, uint64,         (uint64)(dblrand()*pow(2.0,64)));
+
+// double
+HASH(100, double, (dblrand()-0.5)*2e100);
+
+// string
+HASH(1, const char *, "");
+HASH(1, const char *, "H");
+HASH(1, const char *, "He");
+HASH(1, const char *, "Hel");
+HASH(1, const char *, "Hell");
+HASH(1, const char *, "Hello");
+HASH(1, const char *, "Hello ");
+HASH(1, const char *, "Hello W");
+HASH(1, const char *, "Hello Wo");
+HASH(1, const char *, "Hello Worl");
+HASH(1, const char *, "Hello World");
+HASH(1, const char *, "\x80\xcc\xff");
+
+//TODO add(const char *s, size_t len)
+
+ev << "cumulative: " << hasher.str() << "\n";
+
+ev << ".\n";
+
+%contains: stdout
+rng start: 985772
+char: ca08-9f13
+short: 4f4f-727f
+int: cb0d-96c9
+long: dabb-14e3
+int64: f62c-fa57
+unsigned short: c853-4518
+unsigned int: 3959-5765
+unsigned long: f029-e8b7
+uint64: 5d81-50f0
+double: f7db-bb17
+const char *: 0000-0000
+const char *: 0000-0048
+const char *: 0000-6548
+const char *: 006c-6548
+const char *: d8d8-ca90
+const char *: d8d8-caff
+const char *: d8d8-eaff
+const char *: d88f-eaff
+const char *: 6f1f-d5ff
+const char *: 6f1f-b98d
+const char *: 6f7b-b98d
+const char *: ffff-ff80
+cumulative: 8eb4-d5b6
+.
+
