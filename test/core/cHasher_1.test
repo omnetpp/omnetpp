@@ -1,6 +1,18 @@
 %description:
 Test cHasher, the class for calculating simulation fingerprints.
 
+global:
+
+int randint32()
+{
+    return intuniform(0,65535) | (intuniform(0,65535) << 16);
+}
+
+int64 randint64()
+{
+    return (int64)randint32() | ((int64)randint32() << 32);
+}
+
 %activity:
 cHasher hasher;
 
@@ -10,7 +22,6 @@ cHasher hasher;
         for (int i=0; i<n; i++) {type x = expr; tmp.add(x); hasher.add(x); } \
         ev << #type << ": " << tmp.str() << "\n"; \
     }
-
 
 ev << "rng start: " << intrand(1000000) << "\n";
 
