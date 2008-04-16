@@ -103,7 +103,7 @@ class SIM_API cEnvir
 {
     friend class evbuf;
   public:
-    // Internal flag for express mode. XXX define exactly
+    // Internal flag for express mode.
     bool disable_tracing;
 
     // Internal flag. When set to true, the simulation kernel MAY omit calling
