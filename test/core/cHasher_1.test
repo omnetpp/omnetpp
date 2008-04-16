@@ -3,7 +3,7 @@
 %activity:
 
 unsigned int x = 0xffffffff; ev<<"x="<<x<<"\n";
-long ll = x;                 ev<<"ll="<<ll<<"\n";
+long ll = (int)x;            ev<<"ll="<<ll<<"\n";
 int64 i64 = ll;              ev<<"i64="<<i64<<"\n";
 uint64 ui64 = i64;           ev<<"ui64="<<ui64<<"\n";
 

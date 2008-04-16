@@ -29,7 +29,7 @@ ev << "rng start: " << intrand(1000000) << "\n";
 HASH(100, char,  intuniform(-128,127));
 HASH(100, short, intuniform(-32768, 32767));
 HASH(100, int,   (int)randint32());
-HASH(100, long,  (long)randint32());
+HASH(100, long,  (long)(int)randint32());
 HASH(100, int64, (int64)randint64());
 
 // unsigned integers
