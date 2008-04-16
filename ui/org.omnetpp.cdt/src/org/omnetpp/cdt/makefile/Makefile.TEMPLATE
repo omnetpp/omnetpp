@@ -60,7 +60,7 @@ MSG_H_FILES = {msghfiles}
 {nmake:}!endif
 {nmake:}
 {nmake:}!if !exist($(CONFIGFILE))
-{nmake:}!error '$(CONFIGFILE)' does not exist -- specify "configuser.vc" in the OMNETPP_CONFIGFILE variable (as environment variable or command-line nmake argument), or edit or re-generate this makefile.
+{nmake:}!error '$(CONFIGFILE)' does not exist -- set the OMNETPP_CONFIGFILE variable to point to configuser.vc, or edit/regenerate this makefile.
 {nmake:}!endif
 {nmake:}
 {nmake:}!include $(CONFIGFILE)
@@ -76,7 +76,7 @@ MSG_H_FILES = {msghfiles}
 {~nmake:}endif
 {~nmake:}
 {~nmake:}ifeq ("$(wildcard $(CONFIGFILE))","")
-{~nmake:}$(error Config file '$(CONFIGFILE)' does not exist -- specify "Makefile.inc" in the OMNETPP_CONFIGFILE variable (as environment variable or command-line make argument), or add the OMNeT++ bin directory to the path so that opp_configfilepath can be found)
+{~nmake:}$(error Config file '$(CONFIGFILE)' does not exist -- add the OMNeT++ bin directory to the path so that opp_configfilepath can be found, or set the OMNETPP_CONFIGFILE variable to point to Makefile.inc)
 {~nmake:}endif
 {~nmake:}
 {~nmake:}include $(CONFIGFILE)
@@ -158,6 +158,10 @@ generateheaders: $(MSGFILES)
 clean:
 {nmake:}	-rmdir /s /q $(O:/=\) 2>nul
 {~nmake:}	-rm -rf $O
+{@dir:sourcedirs}
+{~nmake:}	-rm -f {dir}/*_m.{cc} {dir}/*_m.h {/@}
+{@bsdir:backslashedsourcedirs}
+{nmake:}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul {/@}
 {submakedirs:}{nmake:}	-if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && @popd || exit /b 1
 {submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) clean); fi; done;
 
@@ -175,3 +179,4 @@ makefiles:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 {deps}
+
