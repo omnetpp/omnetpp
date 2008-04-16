@@ -1215,6 +1215,10 @@ generateheaders: $(MSGFILES)
 clean:
 {nmake:}	-rmdir /s /q $(O:/=\) 2>nul
 {~nmake:}	-rm -rf $O
+{@dir:sourcedirs}
+{~nmake:}	-rm -f {dir}/*_m.{cc} {dir}/*_m.h {/@}
+{@bsdir:backslashedsourcedirs}
+{nmake:}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul {/@}
 {submakedirs:}{nmake:}	-if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && @popd || exit /b 1
 {submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) clean); fi; done;
 
