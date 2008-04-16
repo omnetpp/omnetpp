@@ -496,9 +496,12 @@ void EnvirBase::dumpComponentList(const char *category)
                 ev << "\"" << opp_replacesubstring(key->defaultValue(), "\"", "\\\"", true) << "\"";
             ev << ",\n";
 
-            std::string desc = opp_breaklines(key->description(),75);
+            std::string desc = key->description();
+            desc = opp_replacesubstring(desc.c_str(), "\n", "\\n\n", true); // keep explicit line breaks
+            desc = opp_breaklines(desc.c_str(), 75);  // break long lines
             desc = opp_replacesubstring(desc.c_str(), "\"", "\\\"", true);
             desc = opp_replacesubstring(desc.c_str(), "\n", " \" +\n\"", true);
+            desc = opp_replacesubstring(desc.c_str(), "\\n \"", "\\n\"", true); // remove bogus space after explicit line breaks
             desc = "\"" + desc + "\"";
 
             ev << opp_indentlines(desc.c_str(), "        ") << ");\n";
