@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_AUTOFLUSH;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNERS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNER_DETAILS;
@@ -161,6 +161,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(form, CFGID_SIMTIME_SCALE, "Simtime scale exponent"); //FIXME use ComboBoxFieldEditor (which displays "ms", "us", "ns", etc)
 			addTextFieldEditor(form, CFGID_TOTAL_STACK_KB, "Total activity() stack (Kb)");
 			addTextFieldEditor(form, CFGID_FINGERPRINT, "Fingerprint to verify");
+			addTextFieldEditor(form, CFGID_MAX_MODULE_NESTING, "Max module nesting");
 			addCheckboxFieldEditor(form, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
 		}
 		else if (category.equals(CAT_RANDOMNUMBERS)) {
@@ -184,6 +185,14 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group2, CFGID_CONSTRAINT, "Constraint");
 		}
 		else if (category.equals(CAT_OUTPUTFILES)) {
+			addTextFieldEditor(form, CFGID_RESULT_DIR, "Result directory");
+			addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
+			addSpacer(form);
+			Group group0 = createGroup(form, "Event log");
+			addCheckboxFieldEditor(group0, CFGID_RECORD_EVENTLOG, "Enable recording");
+			addTextFieldEditor(group0, CFGID_EVENTLOG_FILE, "Eventlog file");
+			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Details to record");
+			addSpacer(form);
 			Group group1 = createGroup(form, "Result collection");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_PRECISION, "Output vector precision");
@@ -194,10 +203,6 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group1, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file");
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_SNAPSHOT_FILE, "Snapshot file");
-			addTextFieldEditor(form, CFGID_EVENTLOG_FILE, "Eventlog file");
-			addTextFieldEditor(form, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Details to record");
-			addSpacer(form);
-			addCheckboxFieldEditor(form, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
 		}
 		else if (category.equals(CAT_EXTENSIONS)) {
 			addTextFieldEditor(form, CFGID_LOAD_LIBS, "Shared libraries to load");

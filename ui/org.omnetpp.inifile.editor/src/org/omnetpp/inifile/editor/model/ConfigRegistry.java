@@ -230,8 +230,8 @@ public class ConfigRegistry {
         "enable-recording", CFG_BOOL, "true",
         "Whether data written into an output vector should be recorded.");
     public static final ConfigKey CFGID_EVENTLOG_FILE = addPerRunEntry(
-        "eventlog-file", CFG_FILENAME, null,
-        "Name of the event log file to generate. If empty, no file is generated.");
+        "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.log",
+        "Name of the event log file to generate.");
     public static final ConfigKey CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN = addGlobalEntry(
         "eventlog-message-detail-pattern", CFG_CUSTOM, null,
         "A list of patterns separated by '|' character which will be used to write " +
@@ -287,6 +287,10 @@ public class ConfigRegistry {
         "max-buffered-samples", CFG_INT, null,
         "For output vectors: the maximum number of values to buffer per vector, " +
         "before writing out a block into the output vector file.");
+    public static final ConfigKey CFGID_MAX_MODULE_NESTING = addPerRunEntry(
+        "max-module-nesting", CFG_INT, "50",
+        "The maximum allowed depth of submodule nesting. This is used to catch " +
+        "accidental infinite recursions in NED.");
     public static final ConfigKey CFGID_MEASUREMENT_LABEL = addPerRunEntry(
         "measurement-label", CFG_STRING, "${iterationvars}",
         "Identifies the measurement within the experiment. This string gets recorded " +
@@ -304,7 +308,7 @@ public class ConfigRegistry {
         "num-rngs", CFG_INT, "1",
         "The number of random number generators.");
     public static final ConfigKey CFGID_OUTPUT_SCALAR_FILE = addPerRunEntry(
-        "output-scalar-file", CFG_FILENAME, "${configname}-${runnumber}.sca",
+        "output-scalar-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.sca",
         "Name for the output scalar file.");
     public static final ConfigKey CFGID_OUTPUT_SCALAR_FILE_APPEND = addPerRunEntry(
         "output-scalar-file-append", CFG_BOOL, "false",
@@ -315,7 +319,7 @@ public class ConfigRegistry {
         "The number of significant digits for recording data into the output scalar " +
         "file. The maximum value is ~15 (IEEE double precision).");
     public static final ConfigKey CFGID_OUTPUT_VECTOR_FILE = addPerRunEntry(
-        "output-vector-file", CFG_FILENAME, "${configname}-${runnumber}.vec",
+        "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.vec",
         "Name for the output vector file.");
     public static final ConfigKey CFGID_OUTPUT_VECTOR_PRECISION = addPerRunEntry(
         "output-vector-precision", CFG_INT, "14",
@@ -351,7 +355,7 @@ public class ConfigRegistry {
         "If parallel-simulation=true, it selects the parallel simulation algorithm. " +
         "The class must implement the cParsimSynchronizer interface.");
     public static final ConfigKey CFGID_PARTITION_ID = addPerObjectEntry(
-        "partition-id", CFG_INT, null,
+        "partition-id", CFG_STRING, null,
         "With parallel simulation: in which partition the module should be " +
         "instantiated.");
     public static final ConfigKey CFGID_PERFORM_GC = addGlobalEntry(
@@ -373,6 +377,15 @@ public class ConfigRegistry {
         "Whether to record event numbers for an output vector. Simulation time and " +
         "value are always recorded. Event numbers are needed by the Sequence Chart " +
         "Tool, for example.");
+    public static final ConfigKey CFGID_RECORD_EVENTLOG = addPerRunEntry(
+        "record-eventlog", CFG_BOOL, "false",
+        "Enables recording an eventlog file, which can be later visualized on a " +
+        "sequence chart. See eventlog-file= option too.");
+    public static final ConfigKey CFGID_RECORD_SCALAR = addPerObjectEntry(
+        "record-scalar", CFG_BOOL, "true",
+        "Whether the matching output scalars should be recorded. Syntax: " +
+        "<module-full-path>.<scalar-name>.record-scalar=true/false. Example: " +
+        "**.queue.packetsDropped.record-scalar=true");
     public static final ConfigKey CFGID_RECORDING_INTERVAL = addPerObjectEntry(
         "recording-interval", CFG_CUSTOM, null,
         "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... " +
@@ -389,6 +402,16 @@ public class ConfigRegistry {
         "Identifies one replication of a measurement (see repeat= and " +
         "measurement-label= as well). This string gets recorded into result files, " +
         "and may be referred to during result analysis.");
+    public static final ConfigKey CFGID_RESULT_DIR = addPerRunEntry(
+        "result-dir", CFG_STRING, "results",
+        "Value for the ${resultdir} variable, which is used as the default directory " +
+        "for result files (output vector file, output scalar file, eventlog file, " +
+        "etc.)");
+    public static final ConfigKey CFGID_RNG_n = addPerObjectEntry(
+        "rng-%", CFG_INT, null,
+        "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 " +
+        "maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The " +
+        "default is one-to-one mapping.");
     public static final ConfigKey CFGID_RNG_CLASS = addPerRunEntry(
         "rng-class", CFG_STRING, "cMersenneTwister",
         "The random number generator class to be used. It can be `cMersenneTwister', " +
@@ -434,7 +457,7 @@ public class ConfigRegistry {
         "example, -6 selects microsecond resolution. -12 means picosecond " +
         "resolution, with a maximum simtime of ~110 days.");
     public static final ConfigKey CFGID_SNAPSHOT_FILE = addPerRunEntry(
-        "snapshot-file", CFG_FILENAME, "${configname}-${runnumber}.sna",
+        "snapshot-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.sna",
         "Name of the snapshot file.");
     public static final ConfigKey CFGID_SNAPSHOTMANAGER_CLASS = addGlobalEntry(
         "snapshotmanager-class", CFG_STRING, "cFileSnapshotManager",
@@ -465,6 +488,9 @@ public class ConfigRegistry {
         "Specifies the maximum memory for activity() simple module stacks in " +
         "kilobytes. You need to increase this value if you get a ``Cannot allocate " +
         "coroutine stack'' error.");
+    public static final ConfigKey CFGID_TYPE_NAME = addPerObjectEntry(
+        "type-name", CFG_STRING, null,
+        "Specifies type for submodules and channels declared with 'like <>'.");
     public static final ConfigKey CFGID_USER_INTERFACE = addGlobalEntry(
         "user-interface", CFG_STRING, null,
         "Selects the user interface to be started. Possible values are Cmdenv and " +
