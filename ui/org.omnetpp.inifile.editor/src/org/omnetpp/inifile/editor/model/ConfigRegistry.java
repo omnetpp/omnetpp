@@ -241,18 +241,18 @@ public class ConfigRegistry {
         "character and a comma separated list of field patterns. In both patterns " +
         "and/or/not/* and various field matcher expressions can be used. The object " +
         "pattern matches to class name, the field pattern matches to field name by " +
-        "default. " +
-        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN " +
-        "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ] " +
-        "  OBJECT-PATTERN := MATCHER-EXPRESSION " +
-        "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN " +
-        "  FIELD-PATTERN := MATCHER-EXPRESSION " +
-        "Examples (enter them without quotes): " +
-        "  \"*\": captures all fields of all messages " +
+        "default.\n" +
+        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN\n" +
+        "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n" +
+        "  OBJECT-PATTERN := MATCHER-EXPRESSION\n" +
+        "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n" +
+        "  FIELD-PATTERN := MATCHER-EXPRESSION\n" +
+        "Examples (enter them without quotes):\n" +
+        "  \"*\": captures all fields of all messages\n" +
         "  \"*Frame:*Address,*Id\": captures all fields named ...Address and ...Id " +
-        "from messages of any class named ...Frame " +
+        "from messages of any class named ...Frame\n" +
         "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage " +
-        "recording the fields declared on the MyMessage class " +
+        "recording the fields declared on the MyMessage class\n" +
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not " +
         "declaredOn(cObject))\": records user-defined fields from all messages");
     public static final ConfigKey CFGID_EXPERIMENT_LABEL = addPerRunEntry(
