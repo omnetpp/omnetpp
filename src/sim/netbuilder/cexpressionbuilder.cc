@@ -232,6 +232,8 @@ void cExpressionBuilder::doIdent(IdentElement *node)
     const char *parname = node->getName();
     const char *modulename = node->getModule();
     bool hasChild = node->getFirstChild()!=NULL;
+    if (hasChild)
+        doNode(node->getFirstChild()); // push module index
 
     if (opp_isempty(modulename) && isLoopVar(parname))
         elems[pos++] = new NEDSupport::LoopVar(parname);

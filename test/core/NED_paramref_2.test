@@ -1,0 +1,95 @@
+%description:
+
+Test reference to:
+     other submodule's parameter, if it's a vector submodule
+from
+     module parameter assignment,
+     gatesize assignment,
+     module vector size expression
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Ref
+{
+    parameters:
+        int p;
+}
+
+module Node
+{
+    parameters:
+        int c = default(333);
+    gates:
+        input gc[];
+    connections allowunconnected:
+}
+
+module Nil
+{
+}
+
+network Test
+{
+    parameters:
+        int p = 0;
+    submodules:
+        ref[2] : Ref { p = index+1; }
+        m: Node {
+            parameters:
+                c = ref[0].p;  //1
+            gates:
+                gc[ref[1].p];  //2
+        };
+
+        mc[ref[0].p]: Nil;     //1
+        ini: Node;
+
+        dump: Dump;
+
+    connections allowunconnected:
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+debug-on-errors = true
+
+*.ini.c = ref[1].p  #2
+
+**.apply-default = true
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        p = 0
+    submodules:
+        module Test.ref[0]: Ref {
+            parameters:
+                p = 1
+        }
+        module Test.ref[1]: Ref {
+            parameters:
+                p = 2
+        }
+        module Test.m: Node {
+            parameters:
+                c = 1
+            gates:
+                 0 gc[0]: not connected
+                 1 gc[1]: not connected
+        }
+        module Test.mc[0]: Nil {
+        }
+        module Test.ini: Node {
+            parameters:
+                c = 2
+        }
+}
+

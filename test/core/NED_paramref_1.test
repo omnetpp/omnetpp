@@ -1,18 +1,12 @@
 %description:
- - reference to:
+Test reference to:
      parent module parameter,
      local submodule parameter,
      other submodule's parameter
-   from
-     module parameter assigment,
+from
+     module parameter assignment,
      gatesize assignment,
-     module vector size expression,
-     connections part ("for" start/end, module or gate index, etc)
-     connection parameter value
-
-FIXME TODO also with module vectors
-FIXME TODO also within connections
-
+     module vector size expression
 
 %file: test.ned
 
@@ -61,7 +55,7 @@ network Test
 
         // from module vector size:
         ma[p]: Nil;      // parent module's parameter
-        mb[this.p]: Nil; // local submodule's parameter
+        mb[this.p]: Nil; // parent submodule's parameter, too
         mc[n.p]: Nil;    // other submodule's parameter
 
         // from ini file
@@ -70,7 +64,6 @@ network Test
         dump: Dump;
 
     connections allowunconnected:
-        //TODO from module/gate index, from "for" start/end value, from "if" condition etc
 }
 
 %file: test.cc
@@ -123,4 +116,12 @@ module Test: Test {
         }
         module Test.mc[1]: Nil {
         }
+        module Test.ini: Node {
+            parameters:
+                p = 4
+                a = 1
+                b = 4
+                c = 2
+        }
 }
+

@@ -1,0 +1,72 @@
+%description:
+Test reference to:
+     parent module parameter,
+     local submodule parameter,
+from
+     connections part ("for" start/end, module or gate index, etc)
+     connection parameter value
+
+%file: test.ned
+
+import testlib.Dump;
+
+module TestNode
+{
+    gates:
+        input i[2];
+    connections allowunconnected:
+}
+
+module RefNode
+{
+    parameters:
+        int p = 1;
+    gates:
+        output o[7];
+    connections allowunconnected:
+}
+
+
+network Test
+{
+    parameters:
+        int p = 0;
+    submodules:
+        r : RefNode;
+        n[7] : TestNode; // n[*].p=1
+        dump: Dump;
+    connections allowunconnected:
+        // from module index
+        r.o[0] --> n[p].i[0];   //0
+        r.o[1] --> n[r.p].i[0]; //1
+
+        // from gate index
+        r.o[2] --> n[2].i[p];   //0
+        r.o[3] --> n[3].i[r.p]; //1
+
+        // from "for" start/end value, from "if"
+        for i=p..r.p {          //0..1
+            r.o[4+i] --> n[4+i].i[0];
+        }
+
+        // from channel parameter
+        r.o[6] --> {delay=p*1s; datarate=r.p*1bps;} --> n[6].i[0];
+}
+
+%file: test.cc
+
+%contains: stdout
+    submodules:
+        module Test.r: RefNode {
+            parameters:
+                p = 1
+            gates:
+                 0 o[0]: --> n[0].i[0]
+                 1 o[1]: --> n[1].i[0]
+                 2 o[2]: --> n[2].i[0]
+                 3 o[3]: --> n[3].i[1]
+                 4 o[4]: --> n[4].i[0]
+                 5 o[5]: --> n[5].i[0]
+                 6 o[6]: --> n[6].i[0], ned.BasicChannel disabled=false delay=0 error=0 datarate=1
+        }
+
