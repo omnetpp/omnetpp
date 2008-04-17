@@ -22,6 +22,7 @@
 #include "cenvir.h"
 #include "cmodule.h"
 #include "nedsupport.h"
+#include "stringutil.h"
 
 
 NAMESPACE_BEGIN
@@ -76,6 +77,7 @@ std::string ParameterRef::str(std::string args[], int numargs)
 
 SiblingModuleParameterRef::SiblingModuleParameterRef(const char *moduleName, const char *paramName, bool ofParent, bool withModuleIndex)
 {
+    ASSERT(!opp_isempty(moduleName) && !opp_isempty(paramName) && opp_strcmp(moduleName,"this")!=0);
     this->moduleName = moduleName;
     this->paramName = paramName;
     this->ofParent = ofParent;
@@ -91,9 +93,10 @@ Value SiblingModuleParameterRef::evaluate(cComponent *context, Value args[], int
         throw cRuntimeError(context,eENOPARENT);
     int moduleIndex = withModuleIndex ? (int)args[0].dbl : -1;
     cModule *siblingModule = compoundModule->submodule(moduleName.c_str(), moduleIndex);
-    if (!siblingModule)
-        throw cRuntimeError(context,"cannot find submodule `%s[%d]' for parameter `%s[%d].%s'",
-                                moduleName.c_str(), moduleIndex, moduleName.c_str(), moduleIndex, paramName.c_str());
+    if (!siblingModule) {
+        std::string modName = moduleIndex==-1 ? moduleName : opp_stringf("%s[%d]", moduleName.c_str(), moduleIndex);
+        throw cRuntimeError(context,"cannot find submodule for parameter `%s.%s'", modName.c_str(), paramName);
+    }
     return siblingModule->par(paramName.c_str());
 }
 

@@ -10,7 +10,8 @@
      connections part ("for" start/end, module or gate index, etc)
      connection parameter value
 
-
+FIXME TODO also with module vectors
+FIXME TODO also within connections
 
 
 %file: test.ned
