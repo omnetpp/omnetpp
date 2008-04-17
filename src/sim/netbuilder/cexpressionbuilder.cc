@@ -233,11 +233,12 @@ void cExpressionBuilder::doIdent(IdentElement *node)
     const char *modulename = node->getModule();
     bool hasChild = node->getFirstChild()!=NULL;
 
-//FIXME handle "this." prefix!
     if (opp_isempty(modulename) && isLoopVar(parname))
         elems[pos++] = new NEDSupport::LoopVar(parname);
     else if (opp_isempty(modulename))
         elems[pos++] = new NEDSupport::ParameterRef(parname, inSubcomponentScope, false);
+    else if (strcmp(modulename, "this")==0)
+        elems[pos++] = new NEDSupport::ParameterRef(parname, false, true);
     else
         elems[pos++] = new NEDSupport::SiblingModuleParameterRef(modulename, parname, inSubcomponentScope, hasChild);
 }

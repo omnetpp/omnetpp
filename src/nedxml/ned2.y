@@ -1103,22 +1103,9 @@ submodulename
 likeparam
         : '<' '>'
                 { $$ = NULL; }
-        | '<' '@' NAME '>'
-                { $$ = NULL; }
-        | '<' thisqualifier '.' '@' NAME '>'
-                { $$ = NULL; }
         | '<' expression '>' /* XXX this expression is the source of one shift-reduce conflict because it may contain '>' */
                 { $$ = $2; }
         ;
-
-thisqualifier
-        : THIS_
-        | NAME
-                { np->getErrors()->addError(currentLocation(), "invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
-        | NAME vector
-                { np->getErrors()->addError(currentLocation(), "invalid property qualifier `%s', only `this' is allowed here", toString(@1)); }
-        ;
-
 
 /*
  * Connections

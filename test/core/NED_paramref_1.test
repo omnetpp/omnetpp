@@ -57,12 +57,18 @@ network Test
                 gb[this.p]; // local submodule's parameter
                 gc[n.p];    // other submodule's parameter
         };
+
         // from module vector size:
         ma[p]: Nil;      // parent module's parameter
         mb[this.p]: Nil; // local submodule's parameter
         mc[n.p]: Nil;    // other submodule's parameter
+
+        // from ini file
+        ini: Node;
+
         dump: Dump;
-    connections:
+
+    connections allowunconnected:
         //TODO from module/gate index, from "for" start/end value, from "if" condition etc
 }
 
@@ -73,7 +79,47 @@ network Test
 network = Test
 cmdenv-express-mode = false
 cmdenv-event-banners = false
+
+*.ini.p = 4
+*.ini.a = p      # parent module's parameter
+*.ini.b = this.p # local submodule's parameter
+*.ini.c = n.p    # other submodule's parameter
+
 **.apply-default = true
 
 %contains: stdout
-TODO
+module Test: Test {
+    parameters:
+        @isNetwork
+        p = 1
+    submodules:
+        module Test.n: Node {
+            parameters:
+                p = 2
+                a = 111
+                b = 222
+                c = 333
+        }
+        module Test.m: Node {
+            parameters:
+                p = 3
+                a = 1
+                b = 3
+                c = 2
+            gates:
+                 0 ga[0]: not connected
+                 1 gb[0]: not connected
+                 2 gb[1]: not connected
+                 3 gb[2]: not connected
+                 4 gc[0]: not connected
+                 5 gc[1]: not connected
+        }
+        module Test.ma[0]: Nil {
+        }
+        module Test.mb[0]: Nil {
+        }
+        module Test.mc[0]: Nil {
+        }
+        module Test.mc[1]: Nil {
+        }
+}
