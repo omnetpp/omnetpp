@@ -1,0 +1,71 @@
+%description:
+ - reference to:
+     parent module parameter,
+     local submodule parameter,
+     other submodule's parameter
+   from
+     module parameter assigment,
+     gatesize assignment,
+     module vector size expression,
+     connections part ("for" start/end, module or gate index, etc)
+     connection parameter value
+
+
+
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    parameters:
+        int p;
+        int a = default(111);
+        int b = default(222);
+        int c = default(333);
+    gates:
+        input ga[];
+        input gb[];
+        input gc[];
+    connections allowunconnected:
+}
+
+module Nil
+{
+}
+
+network Test
+{
+    parameters:
+        int p = 1;
+    submodules:
+        n: Node {
+            parameters:
+                p = 2;
+        m: Node {
+            parameters:
+                p = 3;
+                // from parameter assignment:
+                a = p;      // parent module's parameter
+                b = this.p; // local submodule's parameter
+                c = n.p;    // other submodule's parameter
+            gates:
+                // from gate vector size:
+                ga[p];      // parent module's parameter
+                gb[this.p]; // local submodule's parameter
+                gc[n.p];    // other submodule's parameter
+        };
+        // from module vector size:
+        ma[p]: Nil;      // parent module's parameter
+        mb[this.p]: Nil; // local submodule's parameter
+        mc[n.p]: Nil;    // other submodule's parameter
+        dump: Dump;
+    connections:
+        //TODO from module/gate index, from "for" start/end value, from "if" condition etc
+}
+
+%file: test.cc
+
+%contains: stdout
+TODO
