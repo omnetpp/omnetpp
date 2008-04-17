@@ -1354,22 +1354,22 @@ unsigned long EnvirBase::getUniqueNumber()
     return nextuniquenumber++;
 }
 
-void EnvirBase::displayError(std::exception& exception)
+void EnvirBase::displayError(std::exception& ex)
 {
-    cException *e = dynamic_cast<cException *>(&exception);
+    cException *e = dynamic_cast<cException *>(&ex);
     if (!e || !e->hasContext())
-        ev.printfmsg("Error: %s.", e->what());
+        ev.printfmsg("Error: %s.", ex.what());
     else if (e->moduleID()==-1)
         ev.printfmsg("Error in component (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->what());
     else
         ev.printfmsg("Error in module (%s) %s (id=%d): %s.", e->contextClassName(), e->contextFullPath(), e->moduleID(), e->what());
 }
 
-void EnvirBase::displayMessage(std::exception& exception)
+void EnvirBase::displayMessage(std::exception& ex)
 {
-    cException *e = dynamic_cast<cException *>(&exception);
+    cException *e = dynamic_cast<cException *>(&ex);
     if (!e || !e->hasContext())
-        ev.printfmsg("%s.", e->what());
+        ev.printfmsg("%s.", ex.what());
     else if (e->moduleID()==-1)
         ev.printfmsg("Component (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->what());
     else

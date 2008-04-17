@@ -43,6 +43,7 @@ network Test
         n: Node {
             parameters:
                 p = 2;
+        }
         m: Node {
             parameters:
                 p = 3;
@@ -66,6 +67,13 @@ network Test
 }
 
 %file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+**.apply-default = true
 
 %contains: stdout
 TODO

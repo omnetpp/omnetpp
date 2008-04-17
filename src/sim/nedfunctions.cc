@@ -154,6 +154,7 @@ DEF(tail, "SL->S", {
     return argv[0].s.substr(std::max(0, size - length), size);
 })
 
+//FIXME TODO: add arg: "from position"; split to replaceall() and replacefirst()?
 DEF(replace, "SSS->S", {
     std::string str = argv[0].s;
     std::string& search = argv[1].s;
