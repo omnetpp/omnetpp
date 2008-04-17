@@ -92,7 +92,7 @@ Value SiblingModuleParameterRef::evaluate(cComponent *context, Value args[], int
     int moduleIndex = withModuleIndex ? (int)args[0].dbl : -1;
     cModule *siblingModule = compoundModule->submodule(moduleName.c_str(), moduleIndex);
     if (!siblingModule)
-        throw cRuntimeError(context,"cannot find submodule `%[%d]' for parameter `%s[%d].%s'",
+        throw cRuntimeError(context,"cannot find submodule `%s[%d]' for parameter `%s[%d].%s'",
                                 moduleName.c_str(), moduleIndex, moduleName.c_str(), moduleIndex, paramName.c_str());
     return siblingModule->par(paramName.c_str());
 }

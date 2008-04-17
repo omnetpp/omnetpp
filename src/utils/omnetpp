@@ -9,13 +9,13 @@ LAUNCHER=omnetpp
 
 case $PLATFORM in 
 *MINGW*)
-	./${LAUNCHER}.exe >out.log 2>&1 & 
+	./${LAUNCHER}.exe & 
         ;; 
 *Linux*x86_64*) 
-	./${LAUNCHER}64 >out.log 2>&1 & 
+	./${LAUNCHER}64 & 
         ;; 
 *Linux*) 
-	./$LAUNCHER >out.log 2>&1 & 
+	./$LAUNCHER & 
         ;; 
 *Darwin*)
 	open ${LAUNCHER}.app
