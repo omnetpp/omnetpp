@@ -1,4 +1,4 @@
-package org.omnetpp.ide.properties;
+package org.omnetpp.neddoc.properties;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,6 +29,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.ProcessUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
 
 /**
@@ -91,7 +92,7 @@ public class DocumentationGeneratorPropertyPage
 
         doxyConfigFilePath = addTextAndBrowse(group, "Configuration file path:", false);
         
-        IPreferenceStore store = org.omnetpp.ide.OmnetppMainPlugin.getDefault().getPreferenceStore();
+        IPreferenceStore store = OmnetppMainPlugin.getDefault().getPreferenceStore();
         final String doxyExecutablePath = store.getString(OmnetppPreferencePage.DOXYGEN_EXECUTABLE);
 
         Button button = new Button(group, SWT.PUSH);

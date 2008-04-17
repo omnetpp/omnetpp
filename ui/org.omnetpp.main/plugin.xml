@@ -5,8 +5,10 @@
      <extension id="product"
          name="OMNeT++ Integrated Development Environment"
 	 point="org.eclipse.core.runtime.products">
-      <product name="OMNeT++ IDE" application="org.eclipse.ui.ide.workbench">
-          <property name="appName" value="OMNeT++ IDE"/>
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="OMNEST IDE">
+          <property name="appName" value="OMNEST IDE"/>
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
@@ -27,8 +29,8 @@
 				name="introDescription-samples"
 				value="%introDescription-samples"/>
     <property
-          name="aboutText" 
-          value="OMNeT++ Integrated Development Environment."/>
+          name="aboutText"
+          value="OMNEST Integrated Development Environment&#x0A;&#x0A;Version: {featureVersion}&#x0A;&#x0A;Copyright (C) 2005, 2008 OpenSim Ltd.&#x0A;For more info, please visit http://www.omnetpp.org"/>
     <property
           name="aboutImage"
           value="icons/omnest128.gif"/>
@@ -130,17 +132,6 @@
             class="org.omnetpp.ide.properties.NEDSourceFoldersPropertyPage"
             id="org.omnetpp.main.NEDSourceFolders"
             name="NED Source Folders">
-         <enabledWhen>
-            <adapt type="org.eclipse.core.resources.IProject">
-               <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
-            </adapt>
-         </enabledWhen>
-      </page>
-      <page
-            category="org.omnetpp.main.OmnetppCategory"
-            class="org.omnetpp.ide.properties.DocumentationGeneratorPropertyPage"
-            id="org.omnetpp.main.DocumentationGenerator"
-            name="Documentation Generator">
          <enabledWhen>
             <adapt type="org.eclipse.core.resources.IProject">
                <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>

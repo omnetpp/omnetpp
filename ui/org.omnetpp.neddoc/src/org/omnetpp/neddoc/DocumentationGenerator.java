@@ -50,7 +50,6 @@ import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.preferences.OmnetppPreferencePage;
-import org.omnetpp.ide.properties.DocumentationGeneratorPropertyPage;
 import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
@@ -87,6 +86,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
+import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 

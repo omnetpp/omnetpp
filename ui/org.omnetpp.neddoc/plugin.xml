@@ -61,4 +61,18 @@
          </action>
       </objectContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            category="org.omnetpp.main.OmnetppCategory"
+            class="org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage"
+            id="org.omnetpp.neddoc.DocumentationGenerator"
+            name="Documentation Generator">
+         <enabledWhen>
+            <adapt type="org.eclipse.core.resources.IProject">
+               <test property="org.eclipse.core.resources.projectNature" value="org.omnetpp.main.omnetppnature"/>
+            </adapt>
+         </enabledWhen>
+      </page>
+   </extension>
 </plugin>

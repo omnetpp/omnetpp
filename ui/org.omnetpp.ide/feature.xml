@@ -337,18 +337,6 @@ END OF TERMS AND CONDITIONS
       <update label="OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetpp"/>
    </url>
 
-   <includes
-         id="org.eclipse.gmf.runtime.thirdparty"
-         version="0.0.0"/>
-
-   <includes
-         id="org.eclipse.gmf"
-         version="0.0.0"/>
-
-   <includes
-         id="de.unikassel.imageexport"
-         version="0.0.0"/>
-
    <requires>
       <import feature="org.eclipse.cdt" version="4.0.3.200802251018" match="compatible"/>
       <import feature="org.eclipse.emf.common" version="2.3.1.v200802051830" match="compatible"/>
@@ -359,7 +347,6 @@ END OF TERMS AND CONDITIONS
       <import feature="org.eclipse.gef" version="3.3.2.v20080129" match="compatible"/>
       <import feature="org.eclipse.gmf" version="1.0.101.v20080114-2222-7d-EVOEYjiMWaZ4YWeu3dCypkm71" match="compatible"/>
       <import feature="org.eclipse.platform" version="3.3.3.r33x_r20080129-_19UEl7Ezk_gXF1kouft" match="compatible"/>
-      <import feature="org.eclipse.rcp" version="3.3.3.r33x_r20080129-8y8eE9UEUWI6qujeED0xT7bc" match="compatible"/>
       <import feature="de.unikassel.imageexport" version="0.9.0" match="compatible"/>
       <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.0.0.v20070809-0000-7G8D-ED-z0UWCVxojl60L" match="compatible"/>
    </requires>
