@@ -1166,7 +1166,7 @@ MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 # Main target
 all: $O/$(TARGET)
 
-{exe:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{exe:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@mkdir -p $O
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
@@ -1176,15 +1176,15 @@ all: $O/$(TARGET)
 {exe:}{~nmake:}else
 {exe:}{~nmake:}	ln -s -f $O/$(TARGET) .
 {exe:}{~nmake:}endif
-{sharedlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{sharedlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@mkdir -p $O
 {sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)} {nmake_inlineend}
-{staticlib:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
+{staticlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O
 {staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) {nmake_inlineend}
-{nolink:}$O/$(TARGET): generateheaders $(OBJS) {submakedirs?submakedirs} {makefile}
+{nolink:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
 {submakedirs:}submakedirs:
@@ -1207,10 +1207,10 @@ all: $O/$(TARGET)
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:}{~nmake:}	$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
 {msgfiles:}{~nmake:}
-generateheaders: $(MSGFILES)
+msgheaders: $(MSGFILES)
 	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
-{submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc generateheaders && @popd || exit /b 1
-{submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) generateheaders) || exit 1; fi; done;
+{submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc msgheaders && @popd || exit /b 1
+{submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) msgheaders) || exit 1; fi; done;
 
 clean:
 {nmake:}	-rmdir /s /q $(O:/=\) 2>nul
