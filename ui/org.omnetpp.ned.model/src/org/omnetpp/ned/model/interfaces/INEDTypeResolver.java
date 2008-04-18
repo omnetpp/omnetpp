@@ -174,6 +174,13 @@ public interface INEDTypeResolver {
 	 */
 	public INEDTypeInfo lookupNedType(String name, INedTypeLookupContext context);
 
+    /**
+     * Determines the actual type for a "like" submodule or channel. If name is
+     * a simple name (i.e. unqualified), there must be exactly one NED type 
+     * with that name that implements the given interface. 
+     */
+	public INEDTypeInfo lookupLikeType(String name, INEDTypeInfo interfaceType, IProject context);
+
 	/**
 	 * Return all NED type names visible in the given context without
 	 * fully qualifying them, including inner types.

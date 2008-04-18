@@ -203,7 +203,7 @@ public class HoverSupport {
 			hoverControl = getHoverControlCreator().createInformationControl(control.getShell());
 			configureControl(hoverControl, hoverText, control.toDisplay(x, y), preferredSize);
 			hoverControl.addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent e) {
+				public void widgetDisposed(DisposeEvent e) {  //XXX issue: this doesn't always get called on Linux; see note in removeHover() too
 					hoverControl = null;
 				}
 			});
@@ -211,8 +211,13 @@ public class HoverSupport {
 	}
 
 	protected void removeHover() {
-		if (hoverControl != null)
-			hoverControl.dispose();
+		if (hoverControl != null) {
+		    // note: hoverControl may have been disposed already, but there's 
+		    // no getter method to find that out. So try dispose() anyway, and 
+		    // catch potential NPE from BrowserInformationControl.dispose().
+		    try { hoverControl.dispose(); } catch (RuntimeException e) { }
+			hoverControl = null;
+		}
 	}
 
 	/**
@@ -252,12 +257,13 @@ public class HoverSupport {
                     public void focusGained(FocusEvent e) {
                     }
                     public void focusLost(FocusEvent e) {
-                    	// async exec needed because on browser creation the focus is temporarily lost
+                    	// asyncExec() is needed because on browser creation the focus is temporarily lost
                     	// and transferred to the browser (this would close the infoControl on browser creation)
             			Display.getCurrent().asyncExec(new Runnable() {
             				public void run() {
-            					if (informationControl != null && !informationControl.isFocusControl())
+            					if (informationControl != null && !informationControl.isFocusControl()) {
             						informationControl.dispose();
+            					}
             				}
             			});
                     }
@@ -413,7 +419,7 @@ public class HoverSupport {
 	/**
 	 * Adds a mouse listener to the shell which implements resize behavior. Any of the edges
 	 * can be dragged to resize the shell, but the shell must expose a border which 
-	 * can be dragged. (ie. must not be fully covered by the contained Composite)
+	 * can be dragged. (i.e. must not be fully covered by the contained Composite)
 	 */
 	public static void makeShellResizeable(final Shell shell) {
 		class MouseListener extends MouseAdapter implements MouseMoveListener {

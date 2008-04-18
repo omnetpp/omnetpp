@@ -332,12 +332,14 @@ public class NedCompletionProcessor extends NedTemplateCompletionProcessor {
 	    	}
 	    	else if (line.endsWith(".")) {
 	    		// after dot: offer gates of given submodule
-	    		if (nedTypeInfo!=null) {
-					String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
-					// System.out.println(" offering gates of type "+submodTypeName);
-					INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
-					if (submodType!=null)
-						addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
+	    		if (nedTypeInfo != null) {
+	    		    String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
+	    		    if (submodTypeName != null) {
+	    		        // System.out.println(" offering gates of type "+submodTypeName);
+	    		        INEDTypeInfo submodType = res.lookupNedType(submodTypeName, context);
+	    		        if (submodType != null)
+	    		            addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
+	    		    }
 	    		}
 	    	}
 

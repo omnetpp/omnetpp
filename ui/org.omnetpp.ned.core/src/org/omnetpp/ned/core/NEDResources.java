@@ -476,6 +476,25 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return null;
     }
 
+    public INEDTypeInfo lookupLikeType(String name, INEDTypeInfo interfaceType, IProject context) {
+        if (name.contains(".")) {
+            // must be a fully qualified name (as we don't accept partially qualified names)
+            return getToplevelNedType(name, context);
+        }
+        else {
+            // there must be exactly one NED type with that name that implements the given interface
+            INEDTypeInfo result = null;
+            for (INEDTypeInfo type : getNedTypes(context))  //XXX linear search
+                if (type.getName().equals(name))
+                    if (type.getInterfaces().contains(interfaceType.getNEDElement()))
+                        if (result != null)
+                            return null; // more than one match --> error
+                        else
+                            result = type;
+            return result;
+        }
+    }
+
 	public synchronized Set<String> getVisibleTypeNames(INedTypeLookupContext lookupContext) {
 		return getVisibleTypeNames(lookupContext, new IPredicate() {
 			public boolean matches(INEDTypeInfo typeInfo) {return true;}

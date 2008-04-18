@@ -715,6 +715,8 @@ public class InifileAnalyzer {
 				} catch (RuntimeException e) {
 					return null; // something is wrong: value is not a string constant?
 				}
+				// note: value is likely a simple (unqualified) name, it'll be resolved 
+				// to fully qualified name in the caller (NEDTreeTraversal)
 				return value;
 			}
 		};

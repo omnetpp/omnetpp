@@ -270,3 +270,5 @@ cc
 msg
 ifdef
 inline
+sizeof
+allowunconnected
