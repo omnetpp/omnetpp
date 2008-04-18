@@ -164,12 +164,12 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
     if (!strcmp(funcname, "index"))
     {
         if (!inSubcomponentScope)
-            throw cRuntimeError("`index' operator is only supported on submodule parameters");
+            throw cRuntimeError("`index' operator is only supported in submodule parameters");
         elems[pos++] = new NEDSupport::ModuleIndex();
     }
     else if (!strcmp(funcname, "const"))
     {
-        throw cRuntimeError("`const' operator: not yet supported"); //FIXME
+        throw cRuntimeError("`const' operator: not yet supported"); //TBD
     }
     else if (!strcmp(funcname, "sizeof"))
     {
@@ -185,9 +185,11 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
         // we don't have to do it at runtime in the Sizeof functor class.
         if (opp_isempty(modulename))
             elems[pos++] = new NEDSupport::Sizeof(ident, inSubcomponentScope, false);
-        else //FIXME handle "this.ident"
+        else if (strcmp(modulename, "this")==0)
+            elems[pos++] = new NEDSupport::Sizeof(ident, false, true);
+        else
             //XXX elems[pos++] = new NEDSupport::Sizeof(modulename, ident, inSubcomponentScope, hasChild);
-            throw cRuntimeError("dynamic module builder: sizeof(module.ident): not yet");
+            throw cRuntimeError("dynamic module builder: sizeof(module.ident): not yet supported"); //TBD
     }
     else if (!strcmp(funcname, "xmldoc"))
     {

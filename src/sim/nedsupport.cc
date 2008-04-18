@@ -164,6 +164,9 @@ Value Sizeof::evaluate(cComponent *context, Value args[], int numargs)
     if (!module)
         throw cRuntimeError(context,eENOPARENT);
 
+//FIXME stuff already implemented at the bottom of this file????
+
+//FIXME decide it at buildtime, not now? (info is known then already!)
     // ident might be a gate vector of the *parent* module, or a sibling submodule vector
     // Note: it might NOT mean gate vector of this module
     if (module->hasGate(ident.c_str()))
@@ -171,7 +174,7 @@ Value Sizeof::evaluate(cComponent *context, Value args[], int numargs)
         return (long) module->gateSize(ident.c_str()); // returns 1 if it's not a vector
     }
     else
-    {
+    {        //FIXME ofparent must be "true" here!
         // Find ident among submodules. If there's no such submodule, it may
         // be that such submodule vector never existed, or can be that it's zero
         // size -- we cannot tell, so we have to return 0 (and cannot throw error).
