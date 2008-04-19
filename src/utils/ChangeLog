@@ -19,11 +19,7 @@ added -M, --mode option
 removed -t,--importlib option, as plain -l does the job as well
 added -a,--make-lib option, which builds a static lib
 removed tstamp mechanism from opp_makemake (wasn't very useful)
-
-from now on, we expect perl to be available as /usr/bin/perl on ALL SYSTEMS, including Cygwin and MSYS.
-why? because Ubuntu 7.10 uses a broken ("compliant"?) sh version where the magic described
-on the "perlrun" man page ("eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' ...." 
-can no longer be gotten to run.
+generates dependencies for msg files too, but expects _m.cc files on the command line for that!
 
 
 

@@ -26,6 +26,9 @@ where possible options are:
   --makefile <makefile-name>
   -P<object-file-prefix>, --objprefix <object-file-prefix>
   --objsuffix <object-file-suffix>
+  --msgsuffix <msg-file-suffix>
+  --msghsuffix <msg-header-file-suffix>
+  --msgccsuffix <msg-cc-file-suffix>
   --srcdir <source-directory>
   --objdirtree
 
@@ -40,9 +43,11 @@ where possible options are:
    "Makefile".
  --stdout causes dependencies to be written to the standard output,
    (instead of updating a makefile)
- --objsuffix sets the suffix of the object filename. It defaults to ".o".
  -P, --objprefix prefixes each object file with the given string. When used,
    prefix is usually a directory prefix (for example "$(OBJDIR)/").
+ --objsuffix sets the suffix of the object filename. It defaults to ".o".
+ --msgsuffix, --msghsuffix, --msgccsuffix  specify the suffixes for .msg
+   files and the files generated from them.
  --srcdir specifies the directory for the source files.
  --objdirtree the object files are assumed to be in a similar directory
    structure as the sources (by default, they are assumed to be all in a
@@ -68,6 +73,11 @@ $Separator = '# DO NOT DELETE THIS LINE -- make depend depends on it.';
 # Below is the default suffix for the object file printed in the
 # dependency list.  This default is overriden with --objsuffix
 $ObjSuffix = ".o";
+
+# Message file suffix, and suffix of the files generated from them
+$MsgSuffix = ".msg";
+$MsgHSuffix = "_m.h";
+$MsgCCSuffix = "_m.cc";
 
 # Source directory
 $SourceDirectory = "";
@@ -168,6 +178,18 @@ while (@ARGV)
     {
         $ObjPrefix = shift @ARGV;
     }
+    elsif ($arg eq "--msgsuffix")
+    {
+        $MsgSuffix = shift @ARGV;
+    }
+    elsif ($arg eq "--msghsuffix")
+    {
+        $MsgHSuffix = shift @ARGV;
+    }
+    elsif ($arg eq "--msgccsuffix")
+    {
+        $MsgCCSuffix = shift @ARGV;
+    }
     elsif ($arg eq "--objdirtree")
     {
         $ObjDirTree = 1;
@@ -239,7 +261,8 @@ sub scan {
    local( @list ) = ();
    local($IncludeDir);
 
-   if (!open( INPUT, $filename ))
+   my $txt = &read_file($filename);
+   if ($txt eq '-')
    {
       # be more tolerant if filename contains wildcard (which means the shell couldn't expand it)
       if ($filename =~ /[\*\?]/) {
@@ -250,7 +273,7 @@ sub scan {
       }
    }
 
-   while (<INPUT>)
+   foreach $_ (split ("\n", $txt))
    {
       if ( /${Syntax}/ )
       {
@@ -262,7 +285,7 @@ sub scan {
          if ( $included =~ /^\// )
          {
             # absolute path -- no search needed
-            if (-e $included)
+            if (&exists($included))
             {
                $found = 1;
             }
@@ -275,7 +298,7 @@ sub scan {
             {
                $filename =~ /^(.*?)[^\/]*$/;
                $dir = $1;
-               if (-e $dir.$included)
+               if (&exists($dir.$included))
                {
                   $found = 1;
                   $included = $dir.$included;
@@ -287,7 +310,7 @@ sub scan {
             {
                foreach $IncludeDir (@IncludePath)
                {
-                  if (-e "$IncludeDir/$included")
+                  if (&exists("$IncludeDir/$included"))
                   {
                      $found = 1;
                      $included = "$IncludeDir/$included";
@@ -326,12 +349,70 @@ sub scan {
          }
       }
    }
-   close( INPUT );
 
    # scan through each of the files that turned up
    for ( @list ) {
       &scan( $_ );
    }
+}
+
+#
+# Returns true if the given file exists
+#
+sub exists {
+   local($filename) = @_;
+   return 1 if (-e $filename);
+
+   # for *_m.h files, pretend that the file exists if the corresponding .msg file exists
+   if ($filename =~ /${MsgHSuffix}$/) {
+       my $msgfilename = $filename;
+       $msgfilename =~ s/${MsgHSuffix}$/${MsgSuffix}/;
+       return 1 if (-e $msgfilename);
+   }
+   elsif ($filename =~ /${MsgCCSuffix}$/) {
+       my $msgfilename = $filename;
+       $msgfilename =~ s/${MsgCCSuffix}$/${MsgSuffix}/;
+       return 1 if (-e $msgfilename);
+   }
+   return 0;
+}
+
+#
+# Returns the file's contents if exists, otherwise returns "-" (not "" because
+# that might be the actual file contents, but "-" is not valid as C/C++ code).
+#
+sub read_file {
+   local($filename) = @_;
+   local($txt);
+
+   if (!open(INFILE, $filename)) {
+       if ($filename =~ /${MsgHSuffix}$/) {
+           # for *_m.h files, return the corresponding .msg file contents (which will be parsed for includes)
+           my $msgfilename = $filename;
+           $msgfilename =~ s/${MsgHSuffix}$/${MsgSuffix}/;
+           open(INFILE, $msgfilename) || return "-";
+           $filename = $msgfilename;
+       }
+       elsif ($filename =~ /${MsgCCSuffix}$/) {
+           # for *_m.cc files, pretend it exists and includes its header file
+           my $msgfilename = $filename;
+           $msgfilename =~ s/${MsgCCSuffix}$/${MsgSuffix}/;
+           if (-e $msgfilename) {
+               my $msgheaderfile = $filename;
+               $msgheaderfile =~ s/${MsgCCSuffix}$/${MsgHSuffix}/;
+               return "#include <$msgheaderfile>\n";
+           }
+           else {
+               return "-";
+           }
+       }
+       else {
+           return "-";
+       }
+   }
+   read(INFILE, $txt, 100000) || die "cannot read $filename";
+   close INFILE;
+   return $txt;
 }
 
 #
