@@ -1207,10 +1207,12 @@ all: $O/$(TARGET)
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:}{~nmake:}	$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
 {msgfiles:}{~nmake:}
-msgheaders: $(MSGFILES)
-	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
+{msgfiles:}$(MSG_H_FILES) $(MSG_CC_FILES): $(MSGFILES)
+{msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
 {submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc msgheaders && @popd || exit /b 1
 {submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) msgheaders) || exit 1; fi; done;
+
+msgheaders: $(MSG_H_FILES)
 
 clean:
 {nmake:}	-rmdir /s /q $(O:/=\) 2>nul
