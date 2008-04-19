@@ -26,7 +26,6 @@
 
 USING_NAMESPACE
 
-//TODO add "list handling" functions (like Tcl lists): lindex "SL->S", "SL->D" etc
 //FIXME cDynamicExpression to add function name to exceptions thrown from functions
 
 void nedfunctions_dummy() {} //see util.cc
@@ -92,24 +91,24 @@ DEF(max, "QQ->Q", {
 
 static cStringPool stringPool;
 
-DEF(dropunit, "Q->D", {
+DEF(dropUnit, "Q->D", {
     argv[0].dblunit = NULL;
     return argv[0];
 })
 
-DEF(replaceunit, "QS->Q", {
+DEF(replaceUnit, "QS->Q", {
     argv[0].dblunit = stringPool.get(argv[1].s.c_str());
     return argv[0];
 })
 
-DEF(convertunit, "QS->Q", {
+DEF(convertUnit, "QS->Q", {
     const char *newUnit = stringPool.get(argv[1].s.c_str());
     argv[0].dbl = UnitConversion::convertUnit(argv[0].dbl, argv[0].dblunit, newUnit);
     argv[0].dblunit = newUnit;
     return argv[0];
 })
 
-DEF(unitof, "Q->S", {
+DEF(unitOf, "Q->S", {
     return argv[0].dblunit;
 })
 
@@ -132,17 +131,37 @@ DEF(substring, "SL/L->S", {  // Note: substring(str,index[,length]), i.e. length
     int length = argc==3 ? (int)argv[2].dbl : size-index;
 
     if (index < 0 || index > size)
-        throw cRuntimeError("substring(): index out of range");
+        throw cRuntimeError("substring(): index out of bounds");
     if (length < 0)
         throw cRuntimeError("substring(): length is negative");
     return argv[0].s.substr(index, length);
 })
 
-DEF(startswith, "SS->B", {
+DEF(substringBefore, "SS->S", {
+    unsigned int pos = argv[0].s.find(argv[1].s);
+    return pos<0 ? "" : argv[0].s.substr(0,pos);
+})
+
+DEF(substringAfter, "SS->S", {
+    unsigned int pos = argv[0].s.find(argv[1].s);
+    return pos<0 ? "" : argv[0].s.substr(pos+argv[1].s.size());
+})
+
+DEF(substringBeforeLast, "SS->S", {
+    unsigned int pos = argv[0].s.rfind(argv[1].s);
+    return pos<0 ? "" : argv[0].s.substr(0,pos);
+})
+
+DEF(substringAfterLast, "SS->S", {
+    unsigned int pos = argv[0].s.rfind(argv[1].s);
+    return pos<0 ? "" : argv[0].s.substr(pos+argv[1].s.size());
+})
+
+DEF(startsWith, "SS->B", {
     return argv[0].s.find(argv[1].s) == 0;
 })
 
-DEF(endswith, "SS->B", {
+DEF(endsWith, "SS->B", {
     return argv[0].s.rfind(argv[1].s) == argv[0].s.size() - argv[1].s.size();
 })
 
@@ -154,15 +173,19 @@ DEF(tail, "SL->S", {
     return argv[0].s.substr(std::max(0, size - length), size);
 })
 
-//FIXME TODO: add arg: "from position"; split to replaceall() and replacefirst()?
-DEF(replace, "SSS->S", {
+DEF(replace, "SSS/L->S", {
     std::string str = argv[0].s;
     std::string& search = argv[1].s;
     std::string& replacement = argv[2].s;
+    int index = 0;
+    if (argc==4) {
+        index = (int)argv[3].dbl;
+        if (index<0 || index>str.size())
+            throw cRuntimeError("replace(): start index out of bounds");
+    }
 
     unsigned int searchSize = search.size();
     unsigned int replacementSize = replacement.size();
-    unsigned int  index = 0;
     while ((index = str.find(search, index)) != std::string::npos) {
         str.replace(index, searchSize, replacement);
         index += replacementSize - searchSize + 1;
@@ -170,7 +193,29 @@ DEF(replace, "SSS->S", {
     return str;
 })
 
-DEF(indexof, "SS->L", {
+DEF(replaceFirst, "SSS/L->S", {
+    std::string str = argv[0].s;
+    std::string& search = argv[1].s;
+    std::string& replacement = argv[2].s;
+    int index = 0;
+    if (argc==4) {
+        index = (int)argv[3].dbl;
+        if (index<0 || index>str.size())
+            throw cRuntimeError("replaceFirst(): start index out of bounds");
+    }
+
+    unsigned int searchSize = search.size();
+    unsigned int replacementSize = replacement.size();
+    if ((index = str.find(search, index)) != std::string::npos)
+        str.replace(index, searchSize, replacement);
+    return str;
+})
+
+DEF(trim, "S->S", {
+    return opp_trim(argv[0].s.c_str());
+})
+
+DEF(indexOf, "SS->L", {
     return (long)argv[0].s.find(argv[1].s);
 })
 
@@ -182,11 +227,11 @@ DEF(choose, "LS->S", {
     for (int i=0; i<index && tokenizer.hasMoreTokens(); i++)
         tokenizer.nextToken();
     if (!tokenizer.hasMoreTokens())
-        throw cRuntimeError("choose(): index=%d is out of range", index);
+        throw cRuntimeError("choose(): index out of bounds: %d", index);
     return tokenizer.nextToken();
 })
 
-DEF(toupper, "S->S", {
+DEF(toUpper, "S->S", {
     std::string tmp = argv[0].s;
     int length = tmp.length();
     for (int i=0; i<length; i++)
@@ -194,7 +239,7 @@ DEF(toupper, "S->S", {
     return tmp;
 })
 
-DEF(tolower, "S->S", {
+DEF(toLower, "S->S", {
     std::string tmp = argv[0].s;
     int length = tmp.length();
     for (int i=0; i<length; i++)
@@ -235,6 +280,48 @@ DEF(double, "*->D", {
 DEF(string, "*->S", {
     return argv[0].str();
 })
+
+
+//
+// Reflection
+//
+
+DEF(fullPath, "->S", {
+    return context->fullPath();
+})
+
+DEF(fullName, "->S", {
+    return context->fullName();
+})
+
+DEF(parentIndex, "->L", {
+    cModule *mod = context->parentModule();
+    if (!mod)
+        throw cRuntimeError("parentIndex(): `%s' has no parent module", context->fullPath().c_str());
+    if (!mod->isVector())
+        throw cRuntimeError("parentIndex(): module `%s' is not a vector", mod->fullPath().c_str());
+    return (long)mod->index();
+})
+
+DEF(ancestorIndex, "/L->L", {
+    int levels = 1;
+    if (argc==1) {
+        levels = (int)argv[0].dbl;
+        if (levels<0)
+            throw cRuntimeError("ancestorIndex(): negative number of levels");
+    }
+    if (levels==0 && !context->isModule())
+        throw cRuntimeError("ancestorIndex(): numlevels==0 and this is not a module");
+    cModule *mod = dynamic_cast<cModule *>(context);
+    for (int i=0; mod && i<levels; i++)
+        mod = mod->parentModule();
+    if (!mod)
+        throw cRuntimeError("ancestorIndex(): argument is larger than current nesting level");
+    if (!mod->isVector())
+        throw cRuntimeError("ancestorIndex(): module `%s' is not a vector", mod->fullPath().c_str());
+    return (long)mod->index();
+})
+
 
 //
 // Random variate generation.
