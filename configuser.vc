@@ -118,7 +118,7 @@ JNILIBS_IF_POSSIBLE=jnilibs
 # This option is available at present for Tkenv.
 # Set the following variable to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=yes
+EMBED_TCL_CODE=no
 
 #
 # It is possible to compile Tkenv as a Windows GUI app (as opposed to

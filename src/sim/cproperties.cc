@@ -59,7 +59,7 @@ std::string cProperties::info() const
     std::stringstream out;
     //out << "size=" << propv.size();
     for (int i = 0; i < (int)propv.size(); i++)
-        out << (i==0 ? "" : " ") << "@" << propv[i]->fullName();
+        out << (i==0 ? "" : " ") << propv[i]->info();
     return out.str();
 }
 

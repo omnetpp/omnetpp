@@ -61,6 +61,8 @@ cProperty& cProperty::operator=(const cProperty& other)
     cNamedObject::operator=(other);
     setFlag(FL_ISLOCKED, oldIsLocked);
 
+    setName(other.name()); // cNamedObject doesn't do that
+
     stringPool.release(propfullname);
     propfullname = NULL;
 
