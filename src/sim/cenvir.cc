@@ -49,7 +49,7 @@ class evbuf : public std::basic_stringbuf<char>
 
 //----
 
-cEnvir::cEnvir() : std::ostream(new evbuf())
+cEnvir::cEnvir() : out(new evbuf())
 {
     disable_tracing = false;
     debug_on_errors = false;
@@ -63,7 +63,7 @@ cEnvir::~cEnvir()
 // note: exploits the fact that evbuf does sync() on "\n"'s
 void cEnvir::flushLastLine()
 {
-    evbuf *buf = (evbuf *)rdbuf();
+    evbuf *buf = (evbuf *)out.rdbuf();
     if (!buf->isempty())
         buf->sputn("\n",1);
 }
@@ -98,7 +98,7 @@ int cEnvir::printf(const char *fmt,...)
     va_end(va);
 
     // route it through streambuf to preserve ordering
-    rdbuf()->sputn(buffer, len);
+    out.rdbuf()->sputn(buffer, len);
     return len;
 }
 
