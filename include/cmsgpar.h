@@ -53,7 +53,7 @@ class  cXMLElement;
 class SIM_API cMsgPar : public cOwnedObject
 {
   protected:
-    static char *possibletypes;
+    static const char *possibletypes;
 
   private:
     char typechar;     // S/B/L/D/F/T/P/O

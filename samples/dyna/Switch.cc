@@ -26,7 +26,7 @@ Define_Module( Switch );
 
 void Switch::activity()
 {
-    double pkDelay = 1 / (double)par("pkRate");
+    simtime_t pkDelay = 1 / (double)par("pkRate");
     int queueMaxLen = (int) par("queueMaxLen");
     cQueue queue("queue");
     for(;;)

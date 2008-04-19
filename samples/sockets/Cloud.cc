@@ -18,7 +18,7 @@
 class Cloud : public cSimpleModule
 {
   private:
-    double propDelay;
+    simtime_t propDelay;
 
   protected:
     virtual void initialize();

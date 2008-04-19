@@ -23,7 +23,7 @@
 class Tic7 : public cSimpleModule
 {
   private:
-    double timeout;  // timeout
+    simtime_t timeout;  // timeout
     cMessage *timeoutEvent;  // holds pointer to the timeout self-message
 
   public:

@@ -292,7 +292,7 @@ double cDensityEstBase::cellPDF(int k) const
     return cellsize==0 ? 0.0 : cell(k)/cellsize/count();
 }
 
-void cDensityEstBase::plotline(ostream& os, char *pref, double xval, double count, double a)
+void cDensityEstBase::plotline(ostream& os, const char *pref, double xval, double count, double a)
 {
     const int picwidth=54;  // width of picture
     char buf[101], *s;
@@ -337,8 +337,8 @@ std::string cDensityEstBase::detailedInfo() const
 
         os << "Distribution density function:\n";
         for (k=0; k<nc; k++)
-            plotline(os,"< ", basepoint(k), (k==0 ? cell_under : cell(k-1)), a);
-        plotline(os,">=",basepoint(nc), cell_over, a);
+            plotline(os, "< ", basepoint(k), (k==0 ? cell_under : cell(k-1)), a);
+        plotline(os, ">=", basepoint(nc), cell_over, a);
         os << "\n";
     }
     return os.str();

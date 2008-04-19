@@ -79,7 +79,7 @@ void Txc6::handleMessage(cMessage *msg)
             // The "delayTime" module parameter can be set to values like
             // "exponential(5)" (tictoc6.ned, omnetpp.ini), and then here
             // we'll get a different delay every time.
-            double delay = par("delayTime");
+            simtime_t delay = par("delayTime");
 
             ev << "Message arrived, starting to wait " << delay << " secs...\n";
             tictocMsg = msg;

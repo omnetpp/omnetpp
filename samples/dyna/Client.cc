@@ -27,7 +27,7 @@ Define_Module( Client );
 void Client::activity()
 {
     // query module parameters
-    double timeout = par("timeout");
+    simtime_t timeout = par("timeout");
     cPar& connectionIaTime = par("connIaTime");
     cPar& queryIaTime = par("queryIaTime");
     cPar& numQuery = par("numQuery");

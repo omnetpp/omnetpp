@@ -157,7 +157,7 @@ cModule *cModuleType::instantiateModuleClass(const char *classname)
     return mod;
 }
 
-cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
+cModule *cModuleType::createScheduleInit(const char *modname, cModule *parentmod)
 {
     if (!parentmod)
         throw cRuntimeError("createScheduleInit(): parent module pointer cannot be NULL "

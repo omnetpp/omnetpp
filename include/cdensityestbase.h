@@ -110,7 +110,7 @@ class SIM_API cDensityEstBase : public cStdDev
     double *firstvals;         // pointer to array of "pre-collected" observations
 
   protected:
-    static void plotline (std::ostream& os, char* pref, double xval, double count, double a);
+    static void plotline (std::ostream& os, const char *pref, double xval, double count, double a);
 
     // part of merge(); to be implemented in subclasses
     virtual void doMergeCellValues(const cDensityEstBase *other) = 0;

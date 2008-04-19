@@ -77,7 +77,7 @@ void Host::handleMessage(cMessage *msg)
 
         cMessage *pk = new cMessage(pkname);
         pk->setLength(pkLenBits->longValue());
-        double txtime = pk->length() / txRate;
+        simtime_t txtime = pk->length() / txRate;
         sendDirect(pk, radioDelay, server->gate("in"));
 
         scheduleAt(simTime()+txtime, endTxEvent);

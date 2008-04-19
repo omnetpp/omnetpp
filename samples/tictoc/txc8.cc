@@ -21,7 +21,7 @@
 class Tic8 : public cSimpleModule
 {
   private:
-    double timeout;  // timeout
+    simtime_t timeout;  // timeout
     cMessage *timeoutEvent;  // holds pointer to the timeout self-message
     int seq;  // message sequence number
     cMessage *message;  // message that has to be re-sent on timeout

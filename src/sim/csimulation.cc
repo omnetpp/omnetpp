@@ -60,7 +60,7 @@ cSimulation simulation("simulation");
 // writing date and time on a stream - used in cSimulation::writeresult(..)
 ostream& operator<<(ostream& os, struct tm d)
 {
-    static char *month[] =
+    static const char *month[] =
        {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
