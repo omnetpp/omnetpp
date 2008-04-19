@@ -36,22 +36,22 @@ P( max(1m, 1));
 P( max(1m, 1s));
 ev << "\n";
 
-P( convertunit(1.5h, "s"));
-P( convertunit(1.5h, ""));
-P( convertunit(1.5h, "kg"));
+P( convertUnit(1.5h, "s"));
+P( convertUnit(1.5h, ""));
+P( convertUnit(1.5h, "kg"));
 ev << "\n";
 
-P( replaceunit(1.5h, "s"));
-P( replaceunit(1.5h, "kg"));
-P( replaceunit(1.5h, ""));
+P( replaceUnit(1.5h, "s"));
+P( replaceUnit(1.5h, "kg"));
+P( replaceUnit(1.5h, ""));
 ev << "\n";
 
-P( dropunit(1.5h));
-P( dropunit(1.5));
+P( dropUnit(1.5h));
+P( dropUnit(1.5));
 ev << "\n";
 
-P( unitof(1km));
-P( unitof(5 kilometers));
+P( unitOf(1km));
+P( unitOf(5 kilometers));
 ev << "\n";
 
 P( length(""));
@@ -81,16 +81,28 @@ P( substring("Hello", -1, 3));
 P( substring("Hello", -1, 10));
 ev << "\n";
 
-P( startswith("", ""));
-P( startswith("Hello", ""));
-P( startswith("Hello", "He"));
-P( startswith("Hello", "ell"));
+P( substringBefore("this and this and that", "and"));  // note: two "and"'s
+P( substringBefore("this and this and that", "XXX"));
+P( substringAfter("this and this and that", "and"));
+P( substringAfter("this and this and that", "XXX"));
 ev << "\n";
 
-P( endswith("", ""));
-P( endswith("Hello", ""));
-P( endswith("Hello", "lo"));
-P( endswith("Hello", "ell"));
+P( substringBeforeLast("this and this and that", "and"));
+P( substringBeforeLast("this and this and that", "XXX"));
+P( substringAfterLast("this and this and that", "and"));
+P( substringAfterLast("this and this and that", "XXX"));
+ev << "\n";
+
+P( startsWith("", ""));
+P( startsWith("Hello", ""));
+P( startsWith("Hello", "He"));
+P( startsWith("Hello", "ell"));
+ev << "\n";
+
+P( endsWith("", ""));
+P( endsWith("Hello", ""));
+P( endsWith("Hello", "lo"));
+P( endsWith("Hello", "ell"));
 ev << "\n";
 
 P( tail("Hello", 0));
@@ -107,14 +119,22 @@ P( replace("Hello", "e", ""));
 P( replace("Hello", "", "x"));
 ev << "\n";
 
-P( indexof("", ""));
-P( indexof("Hello", ""));
-P( indexof("Hello", "ell"));
-P( indexof("Hello", "bubu"));
+P( replaceFirst("Hello", "l", "(_)"));
+P( replaceFirst("Hello", "X", "(_)"));
 ev << "\n";
 
-P( toupper("Hello"));
-P( tolower("HeLLo"));
+P( indexOf("", ""));
+P( indexOf("Hello", ""));
+P( indexOf("Hello", "ell"));
+P( indexOf("Hello", "bubu"));
+ev << "\n";
+
+P( toUpper("Hello"));
+P( toLower("HeLLo"));
+ev << "\n";
+
+P( trim("  \tfoo \n "));
+P( trim("foo"));
 ev << "\n";
 
 P( choose(0, "Zero One Two Three"));
@@ -155,19 +175,19 @@ max(2km, 3m) ==> 2km
 max(1m, 1) ==> Cannot convert unit none to 'm' (meter)
 max(1m, 1s) ==> Cannot convert unit 's' (second) to 'm' (meter)
 
-convertunit(1.5h, "s") ==> 5400s
-convertunit(1.5h, "") ==> Cannot convert unit 'h' (hour) to none
-convertunit(1.5h, "kg") ==> Cannot convert unit 'h' (hour) to 'kg' (kilogram)
+convertUnit(1.5h, "s") ==> 5400s
+convertUnit(1.5h, "") ==> Cannot convert unit 'h' (hour) to none
+convertUnit(1.5h, "kg") ==> Cannot convert unit 'h' (hour) to 'kg' (kilogram)
 
-replaceunit(1.5h, "s") ==> 1.5s
-replaceunit(1.5h, "kg") ==> 1.5kg
-replaceunit(1.5h, "") ==> 1.5
+replaceUnit(1.5h, "s") ==> 1.5s
+replaceUnit(1.5h, "kg") ==> 1.5kg
+replaceUnit(1.5h, "") ==> 1.5
 
-dropunit(1.5h) ==> 1.5
-dropunit(1.5) ==> 1.5
+dropUnit(1.5h) ==> 1.5
+dropUnit(1.5) ==> 1.5
 
-unitof(1km) ==> "km"
-unitof(5 kilometers) ==> "kilometers"
+unitOf(1km) ==> "km"
+unitOf(5 kilometers) ==> "kilometers"
 
 length("") ==> 0
 length("Hello") ==> 5
@@ -181,26 +201,36 @@ contains("Hello", "bubu") ==> false
 substring("Hello", 0) ==> "Hello"
 substring("Hello", 3) ==> "lo"
 substring("Hello", 5) ==> ""
-substring("Hello", -1) ==> substring(): index out of range
-substring("Hello", 6) ==> substring(): index out of range
+substring("Hello", -1) ==> substring(): index out of bounds
+substring("Hello", 6) ==> substring(): index out of bounds
 
 substring("Hello", 0, 2) ==> "He"
 substring("Hello", 1, 3) ==> "ell"
 substring("Hello", 1, 0) ==> ""
 substring("Hello", 1, 10) ==> "ello"
 substring("Hello", 1, -1) ==> substring(): length is negative
-substring("Hello", -1, 3) ==> substring(): index out of range
-substring("Hello", -1, 10) ==> substring(): index out of range
+substring("Hello", -1, 3) ==> substring(): index out of bounds
+substring("Hello", -1, 10) ==> substring(): index out of bounds
 
-startswith("", "") ==> true
-startswith("Hello", "") ==> true
-startswith("Hello", "He") ==> true
-startswith("Hello", "ell") ==> false
+substringBefore("this and this and that", "and") ==> "this "
+substringBefore("this and this and that", "XXX") ==> ""
+substringAfter("this and this and that", "and") ==> " this and that"
+substringAfter("this and this and that", "XXX") ==> ""
 
-endswith("", "") ==> true
-endswith("Hello", "") ==> true
-endswith("Hello", "lo") ==> true
-endswith("Hello", "ell") ==> false
+substringBeforeLast("this and this and that", "and") ==> "this and this "
+substringBeforeLast("this and this and that", "XXX") ==> ""
+substringAfterLast("this and this and that", "and") ==> " that"
+substringAfterLast("this and this and that", "XXX") ==> ""
+
+startsWith("", "") ==> true
+startsWith("Hello", "") ==> true
+startsWith("Hello", "He") ==> true
+startsWith("Hello", "ell") ==> false
+
+endsWith("", "") ==> true
+endsWith("Hello", "") ==> true
+endsWith("Hello", "lo") ==> true
+endsWith("Hello", "ell") ==> false
 
 tail("Hello", 0) ==> ""
 tail("Hello", 2) ==> "lo"
@@ -214,19 +244,25 @@ replace("Hello", "e", "e") ==> "Hello"
 replace("Hello", "e", "") ==> "Hllo"
 replace("Hello", "", "x") ==> "xHxexlxlxox"
 
-indexof("", "") ==> 0
-indexof("Hello", "") ==> 0
-indexof("Hello", "ell") ==> 1
-indexof("Hello", "bubu") ==> -1
+replaceFirst("Hello", "l", "(_)") ==> "He(_)lo"
+replaceFirst("Hello", "X", "(_)") ==> "Hello"
 
-toupper("Hello") ==> "HELLO"
-tolower("HeLLo") ==> "hello"
+indexOf("", "") ==> 0
+indexOf("Hello", "") ==> 0
+indexOf("Hello", "ell") ==> 1
+indexOf("Hello", "bubu") ==> -1
+
+toUpper("Hello") ==> "HELLO"
+toLower("HeLLo") ==> "hello"
+
+trim("  \tfoo \n ") ==> "foo"
+trim("foo") ==> "foo"
 
 choose(0, "Zero One Two Three") ==> "Zero"
 choose(2, "Zero One Two Three") ==> "Two"
 choose(3, "Zero One Two Three") ==> "Three"
 choose(-1, "Zero One Two Three") ==> choose(): negative index
-choose(4, "Zero One Two Three") ==> choose(): index=4 is out of range
+choose(4, "Zero One Two Three") ==> choose(): index out of bounds: 4
 
 int(true) ==> 1
 int(3.14) ==> 3
