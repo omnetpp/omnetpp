@@ -6,7 +6,8 @@
 //
 // Random variate generation
 //
-// @author Werner Sandmann (ws), Kay Michael Masslow (kmm)
+// Authors: Werner Sandmann (ws), Kay Michael Masslow (kmm)
+// Documentation, maintenance: Andras Varga
 //
 // @date 11/26/2002 "doxygenification" (kmm)
 // @date 11/20/2002 some final comments (ws)
@@ -20,6 +21,7 @@
 
 #include "simkerneldefs.h"
 #include "random.h"
+#include "simtime.h"
 
 NAMESPACE_BEGIN
 
@@ -40,6 +42,11 @@ NAMESPACE_BEGIN
 SIM_API double uniform(double a, double b, int rng=0);
 
 /**
+ * SimTime version of uniform(double,double,int), for convenience.
+ */
+inline SimTime uniform(SimTime a, SimTime b, int rng=0) {return uniform(a.dbl(), b.dbl(), rng);}
+
+/**
  * Returns a random variate from the exponential distribution with the
  * given mean (that is, with parameter lambda=1/mean).
  *
@@ -47,6 +54,11 @@ SIM_API double uniform(double a, double b, int rng=0);
  * @param rng the underlying random number generator
  */
 SIM_API double exponential(double mean, int rng=0);
+
+/**
+ * SimTime version of exponential(double,int), for convenience.
+ */
+inline SimTime exponential(SimTime mean, int rng=0) {return exponential(mean.dbl(), rng);}
 
 /**
  * Returns a random variate from the normal distribution with the given mean
@@ -57,6 +69,11 @@ SIM_API double exponential(double mean, int rng=0);
  * @param rng the underlying random number generator
  */
 SIM_API double normal(double mean, double stddev, int rng=0);
+
+/**
+ * SimTime version of normal(double,double,int), for convenience.
+ */
+inline SimTime normal(SimTime mean, SimTime stddev, int rng=0) {return normal(mean.dbl(), stddev.dbl(), rng);}
 
 /**
  * Normal distribution truncated to nonnegative values.
@@ -74,6 +91,11 @@ SIM_API double normal(double mean, double stddev, int rng=0);
  * @param rng the underlying random number generator
  */
 SIM_API double truncnormal(double mean, double stddev, int rng=0);
+
+/**
+ * XXX
+ */
+inline SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) {return normal(mean.dbl(), stddev.dbl(), rng);}
 
 /**
  * Returns a random variate from the gamma distribution with parameters
