@@ -248,7 +248,7 @@ OmnetTclCommand tcl_commands[] = {
 
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    exit_omnetpp = 1;
    return TCL_OK;
 }
@@ -256,7 +256,7 @@ int exitOmnetpp_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    app->newNetwork( argv[1] );
    return TCL_OK;
@@ -266,7 +266,7 @@ int newNetwork_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    const char *configname = argv[1];
@@ -279,7 +279,7 @@ int newRun_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cConfiguration *cfg = app->config();
@@ -295,7 +295,7 @@ int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 int getConfigDescription_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
@@ -309,7 +309,7 @@ int getConfigDescription_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 int getBaseConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
@@ -323,7 +323,7 @@ int getBaseConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
@@ -336,7 +336,7 @@ int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 
 int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    TRY( app->createSnapshot(argv[1]) );
@@ -345,7 +345,7 @@ int createSnapshot_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 
 int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    app->doOneStep();
    return TCL_OK;
@@ -368,11 +368,11 @@ static int resolveRunMode(const char *mode)
 
 int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2 && argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    int mode = resolveRunMode(argv[1]);
-   if (mode==-1) {Tcl_SetResult(interp, "wrong mode argument, should be slow, normal, fast or express", TCL_STATIC);return TCL_ERROR;}
+   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
 
    simtime_t until_time = 0;
    long until_event = 0;
@@ -389,11 +389,11 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    int mode = resolveRunMode(argv[1]);
-   if (mode==-1) {Tcl_SetResult(interp, "wrong mode argument, should be slow, normal, fast or express", TCL_STATIC);return TCL_ERROR;}
+   if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
 
    app->setSimulationRunMode(mode);
    return TCL_OK;
@@ -401,7 +401,7 @@ int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=1 && argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1 && argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    if (argc==1)
@@ -422,7 +422,7 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc>2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc>2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    if (argc==1)
@@ -433,9 +433,9 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    {
        cObject *object; int type;
        splitInspectorName( argv[1], object, type);
-       if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+       if (!object) {Tcl_SetResult(interp, TCLCONST("wrong inspectorname string"), TCL_STATIC); return TCL_ERROR;}
        cModule *mod = dynamic_cast<cModule *>(object);
-       if (!mod) {Tcl_SetResult(interp, "object is not a module", TCL_STATIC); return TCL_ERROR;}
+       if (!mod) {Tcl_SetResult(interp, TCLCONST("object is not a module"), TCL_STATIC); return TCL_ERROR;}
 
        app->setSimulationRunUntilModule(mod);
    }
@@ -444,20 +444,20 @@ int setRunUntilModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2 && argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2 && argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName(argv[1], object, type);
-   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("wrong inspectorname string"), TCL_STATIC); return TCL_ERROR;}
    cModule *mod = dynamic_cast<cModule *>(object);
-   if (!mod) {Tcl_SetResult(interp, "object is not a module", TCL_STATIC); return TCL_ERROR;}
+   if (!mod) {Tcl_SetResult(interp, TCLCONST("object is not a module"), TCL_STATIC); return TCL_ERROR;}
 
    int mode = Tkenv::RUNMODE_NORMAL;
    if (argc==3)
    {
        mode = resolveRunMode(argv[2]);
-       if (mode==-1) {Tcl_SetResult(interp, "wrong mode argument, should be slow, normal, fast or express", TCL_STATIC);return TCL_ERROR;}
+       if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
    }
 
    // fast run until we get to that module
@@ -468,7 +468,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 
 int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    app->rebuildSim();
    return TCL_OK;
@@ -476,7 +476,7 @@ int rebuild_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 
 int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    app->startAll();
    return TCL_OK;
@@ -484,7 +484,7 @@ int startAll_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 
 int finishSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    app->finishSimulation();
    return TCL_OK;
@@ -492,7 +492,7 @@ int finishSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
 
 int loadLib_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    TRY(loadExtensionLibrary(argv[1]));
    return TCL_OK;
 }
@@ -501,7 +501,7 @@ int loadLib_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int getActiveConfigName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    Tcl_SetResult(interp, TCLCONST(app->config()->getActiveConfigName()), TCL_VOLATILE);
    return TCL_OK;
@@ -509,7 +509,7 @@ int getActiveConfigName_cmd(ClientData, Tcl_Interp *interp, int argc, const char
 
 int getActiveRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    char buf[16];
    Tkenv *app = getTkenv();
    sprintf(buf, "%d", app->config()->getActiveRunNumber());
@@ -519,7 +519,7 @@ int getActiveRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cModuleType *n = simulation.networkType();
    Tcl_SetResult(interp, TCLCONST(!n ? "" : n->name()), TCL_VOLATILE);
    return TCL_OK;
@@ -527,7 +527,7 @@ int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 
 int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    const char *s = NULL;
@@ -547,36 +547,36 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int getObjectFullName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(object->fullName()), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(object->fullPath().c_str()), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int getObjectOwner_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    Tcl_SetResult(interp, ptrToStr(object->owner()), TCL_VOLATILE);
    return TCL_OK;
@@ -584,9 +584,9 @@ int getObjectOwner_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    Tcl_SetResult(interp, TCLCONST(object->info().c_str()), TCL_VOLATILE);
    return TCL_OK;
@@ -594,9 +594,9 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char
 
 int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    const char *field = argv[2];
 
    if (!strcmp(field,"fullName")) {
@@ -622,7 +622,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
            const char *str = (chan && chan->hasDisplayString()) ? chan->displayString().str() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else {
-           Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
+           Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
        }
    } else if (!strcmp(field,"kind")) {
        if (dynamic_cast<cMessage *>(object)) {
@@ -630,7 +630,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
            sprintf(buf,"%d", dynamic_cast<cMessage *>(object)->kind());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
        } else {
-           Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
+           Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
        }
    } else if (!strcmp(field,"length")) {
        if (dynamic_cast<cMessage *>(object)) {
@@ -642,46 +642,46 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
            sprintf(buf,"%d", dynamic_cast<cQueue *>(object)->length());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
        } else {
-           Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
+           Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
        }
    } else {
-       Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
+       Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
    }
    return TCL_OK;
 }
 
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
-       Tcl_SetResult(interp, "cPlaceholderModule", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cPlaceholderModule"), TCL_STATIC);
    else if (dynamic_cast<cSimpleModule *>(object))
-       Tcl_SetResult(interp, "cSimpleModule", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cSimpleModule"), TCL_STATIC);
    else if (dynamic_cast<cCompoundModule *>(object))
-       Tcl_SetResult(interp, "cCompoundModule", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cCompoundModule"), TCL_STATIC);
    else if (dynamic_cast<cMessage *>(object))
-       Tcl_SetResult(interp, "cMessage", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cMessage"), TCL_STATIC);
    else if (dynamic_cast<cArray *>(object))
-       Tcl_SetResult(interp, "cArray", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cArray"), TCL_STATIC);
    else if (dynamic_cast<cQueue *>(object))
-       Tcl_SetResult(interp, "cQueue", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cQueue"), TCL_STATIC);
    else if (dynamic_cast<cGate *>(object))
-       Tcl_SetResult(interp, "cGate", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cGate"), TCL_STATIC);
    else if (dynamic_cast<cPar *>(object))
-       Tcl_SetResult(interp, "cPar", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cPar"), TCL_STATIC);
    else if (dynamic_cast<cChannel *>(object))
-       Tcl_SetResult(interp, "cChannel", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cChannel"), TCL_STATIC);
    else if (dynamic_cast<cOutVector *>(object))
-       Tcl_SetResult(interp, "cOutVector", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cOutVector"), TCL_STATIC);
    else if (dynamic_cast<cStatistic *>(object))
-       Tcl_SetResult(interp, "cStatistic", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cStatistic"), TCL_STATIC);
    else if (dynamic_cast<cMessageHeap *>(object))
-       Tcl_SetResult(interp, "cMessageHeap", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cMessageHeap"), TCL_STATIC);
    else if (dynamic_cast<cWatchBase *>(object))
-       Tcl_SetResult(interp, "cWatchBase", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("cWatchBase"), TCL_STATIC);
    else
        Tcl_SetResult(interp, TCLCONST(object->className()), TCL_STATIC);
    return TCL_OK;
@@ -689,9 +689,9 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    if (dynamic_cast<cModule *>(object))
    {
@@ -701,18 +701,18 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    }
    else
    {
-       Tcl_SetResult(interp, "", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC);
    }
    return TCL_OK;
 }
 
 int getComponentTypeObject_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    cComponent *component = dynamic_cast<cModule *>(object);
-   if (!component) {Tcl_SetResult(interp, "object is not a module or channel", TCL_STATIC); return TCL_ERROR;}
+   if (!component) {Tcl_SetResult(interp, TCLCONST("object is not a module or channel"), TCL_STATIC); return TCL_ERROR;}
 
    Tcl_SetResult(interp, ptrToStr(component->componentType()), TCL_VOLATILE);
    return TCL_OK;
@@ -720,9 +720,9 @@ int getComponentTypeObject_cmd(ClientData, Tcl_Interp *interp, int argc, const c
 
 int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    cCollectChildrenVisitor visitor(object);
    visitor.process(object);
@@ -733,9 +733,9 @@ int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 
 int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    cCountChildrenVisitor visitor(object);
    visitor.process(object);
@@ -749,9 +749,9 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int hasChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    // TBD may be optimized, by exiting foreach on 1st child
    cCountChildrenVisitor visitor(object);
@@ -765,11 +765,11 @@ int hasChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <ptr> <maxcount>
-   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    int maxcount = atoi(argv[2]);
-   if (!maxcount) {Tcl_SetResult(interp, "maxcount must be a nonzero integer", TCL_STATIC); return TCL_ERROR;}
+   if (!maxcount) {Tcl_SetResult(interp, TCLCONST("maxcount must be a nonzero integer"), TCL_STATIC); return TCL_ERROR;}
 
    cCollectObjectsVisitor visitor;
    visitor.setSizeLimit(maxcount);
@@ -786,9 +786,9 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    //    <category> consists of letters m,q,s,g,v,o;
    //    <class> and <fullpath> may contain wildcards
    //    <order> is one of "Name", "Full Name", "Class" or empty string
-   if (argc!=7) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=7) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    const char *catstr = argv[2];
    unsigned int category = 0;
@@ -810,7 +810,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    const char *classnamepattern = argv[3];
    const char *objfullpathpattern = argv[4];
    int maxcount = atoi(argv[5]);
-   if (!maxcount) {Tcl_SetResult(interp, "maxcount must be a nonzero integer", TCL_STATIC); return TCL_ERROR;}
+   if (!maxcount) {Tcl_SetResult(interp, TCLCONST("maxcount must be a nonzero integer"), TCL_STATIC); return TCL_ERROR;}
    const char *orderby = argv[6];
 
    // get filtered list
@@ -830,7 +830,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    else if (!strcmp(orderby,"Class"))
        sortObjectsByClassName(visitor.getArray(), visitor.getArraySize());
    else
-       {Tcl_SetResult(interp, "wrong sort criteria", TCL_STATIC); return TCL_ERROR;}
+       {Tcl_SetResult(interp, TCLCONST("wrong sort criteria"), TCL_STATIC); return TCL_ERROR;}
 
    // return list
    setObjectListResult(interp, &visitor);
@@ -840,7 +840,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    char *statename;
@@ -854,7 +854,7 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        case Tkenv::SIM_ERROR:       statename = "SIM_ERROR"; break;
        case Tkenv::SIM_FINISHCALLED:statename = "SIM_FINISHCALLED"; break;
        case Tkenv::SIM_BUSY:        statename = "SIM_BUSY"; break;
-       default: Tcl_SetResult(interp, "invalid simulation state", TCL_STATIC); return TCL_ERROR;
+       default: Tcl_SetResult(interp, TCLCONST("invalid simulation state"), TCL_STATIC); return TCL_ERROR;
    }
    Tcl_SetResult(interp, statename, TCL_STATIC);
    return TCL_OK;
@@ -862,7 +862,7 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    app->setStopSimulationFlag();
    return TCL_OK;
@@ -870,7 +870,7 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 
 int simulationIsStopping_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    bool stopping = app->getStopSimulationFlag();
    Tcl_SetResult(interp, TCLCONST(stopping ? "1" : "0"), TCL_STATIC);
@@ -879,7 +879,7 @@ int simulationIsStopping_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 
 int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    char buffer[32];
@@ -934,7 +934,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 
 int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    if (0==strcmp(argv[1], "stepdelay"))
@@ -1000,7 +1000,7 @@ int getNetworkTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 
 int getStringHashCode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    const char *s = argv[1];
    int i = 0;
@@ -1017,12 +1017,12 @@ int getStringHashCode_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc<3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    const char *dispstr = argv[1];
    if (0==strcmp(argv[2], "ptrparse"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong argcount for ptrparse", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount for ptrparse"), TCL_STATIC); return TCL_ERROR;}
        cDisplayString *dp = (cDisplayString *)strToVoidPtr(argv[1]);
        const char *array = argv[3];
        for (int k=0; k<dp->getNumTags(); k++)
@@ -1038,7 +1038,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    }
    else if (0==strcmp(argv[2], "parse"))
    {
-       if (argc!=4) {Tcl_SetResult(interp, "wrong argcount for parse", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount for parse"), TCL_STATIC); return TCL_ERROR;}
        const char *array = argv[3];
        cDisplayString dp(dispstr);
        for (int k=0; k<dp.getNumTags(); k++)
@@ -1055,7 +1055,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    else if (0==strcmp(argv[2], "getTagArg"))
    {
        // gettag <tag> <k> -- get kth component of given tag
-       if (argc!=5) {Tcl_SetResult(interp, "wrong argcount for getTagArg", TCL_STATIC); return TCL_ERROR;}
+       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount for getTagArg"), TCL_STATIC); return TCL_ERROR;}
        const char *tag = argv[3];
        int k = atoi(argv[4]);
        cDisplayString dp(dispstr);
@@ -1064,7 +1064,7 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    }
    else
    {
-       Tcl_SetResult(interp, "bad command", TCL_STATIC); return TCL_ERROR;
+       Tcl_SetResult(interp, TCLCONST("bad command"), TCL_STATIC); return TCL_ERROR;
    }
    return TCL_OK;
 }
@@ -1072,10 +1072,10 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 int setModDispStrTagArg_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <modp> <tag> <index> <value>
-   if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
    cModule *modp = dynamic_cast<cModule *>(object);
-   if (!modp) {Tcl_SetResult(interp, "wrong or null module pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!modp) {Tcl_SetResult(interp, TCLCONST("wrong or null module pointer"), TCL_STATIC); return TCL_ERROR;}
 
    const char *tag = argv[2];
    int k = atoi(argv[3]);
@@ -1165,9 +1165,9 @@ inline int h2d(char c)
 
 int hsbToRgb_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc<2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *hsb = argv[1];
-   if (hsb[0]!='@' || strlen(hsb)!=7) {Tcl_SetResult(interp, "malformed HSB color, format is @hhssbb where h,s,b are hex digits", TCL_STATIC); return TCL_ERROR;}
+   if (hsb[0]!='@' || strlen(hsb)!=7) {Tcl_SetResult(interp, TCLCONST("malformed HSB color, format is @hhssbb where h,s,b are hex digits"), TCL_STATIC); return TCL_ERROR;}
 
    // parse hsb
    double hue =        (h2d(hsb[1])*16+h2d(hsb[2]))/256.0;
@@ -1191,9 +1191,9 @@ int hsbToRgb_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int getModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cModule *mod = dynamic_cast<cModule *>(strToPtr(argv[1]));
-   if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!mod) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    const char *parname = argv[2];
    string result;
@@ -1206,9 +1206,9 @@ int getModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 
 int setModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cModule *mod = dynamic_cast<cModule *>(strToPtr(argv[1]));
-   if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!mod) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    const char *parname = argv[2];
    const char *value = argv[3];
 
@@ -1219,7 +1219,7 @@ int setModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 
 int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *path = argv[1];
    cModule *mod;
    TRY(mod = simulation.moduleByPath(path));
@@ -1230,7 +1230,7 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int checkPattern_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *pattern = argv[1];
    // try parse pattern
    MatchExpression matcher(pattern, false, true, true);
@@ -1245,7 +1245,7 @@ int checkPattern_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    int maxNum = atoi(argv[1]);
    bool wantSelfMsgs = atoi(argv[2])!=0;
    bool wantNonSelfMsgs = atoi(argv[3])!=0;
@@ -1282,12 +1282,12 @@ int fesMsgs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    // find smallest t!=simTime() element, and greatest element.
    simulation.msgQueue.sort();
    int len = simulation.msgQueue.length();
-   if (len==0) {Tcl_SetResult(interp, "0 0", TCL_STATIC); return TCL_OK;}
+   if (len==0) {Tcl_SetResult(interp, TCLCONST("0 0"), TCL_STATIC); return TCL_OK;}
    simtime_t now = simulation.simTime();
    simtime_t tmin = now;
    for (int i=0; i<len; i++)
@@ -1305,9 +1305,9 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cMessage *msg = dynamic_cast<cMessage *>(strToPtr( argv[1] ));
-   if (!msg) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!msg) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
    simtime_t dt = msg->arrivalTime()-simulation.simTime();
    Tcl_SetObjResult(interp, Tcl_NewDoubleObj(SIMTIME_DBL(dt)));
    return TCL_OK;
@@ -1315,7 +1315,7 @@ int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
 int patmatch_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *s = argv[1];
    const char *p = argv[2];
    PatternMatcher pat;
@@ -1326,7 +1326,7 @@ int patmatch_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int setMsgWindowExists_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    app->hasmessagewindow = argv[1][0]!='0';
    return TCL_OK;
@@ -1336,17 +1336,17 @@ int setMsgWindowExists_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3 && argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    int type;
    if (argv[2][0]>='0' && argv[2][0]<='9')
         type = atoi( argv[2] );
    else if ((type=insptypeCodeFromName(argv[2])) < 0)
-        {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
+        {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
 
    void *dat = (argc==4) ? (void *)argv[3] : NULL;
    TInspector *insp = app->inspect(object, type, "", dat);
@@ -1357,9 +1357,9 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // expected arg: pointer
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    // collect supported inspector types
    int insp_types[20];
@@ -1396,7 +1396,7 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <objfullpath> <classname> <insptype> ?geom?
-   if (argc!=4 && argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=4 && argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    const char *fullpath = argv[1];
    const char *classname = argv[2];
@@ -1405,7 +1405,7 @@ int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    if (argv[3][0]>='0' && argv[3][0]<='9')
         insptype = atoi( argv[3] );
    else if ((insptype=insptypeCodeFromName(argv[3])) < 0)
-        {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
+        {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
 
    const char *geometry = (argc==5) ? argv[4] : NULL;
 
@@ -1416,12 +1416,12 @@ int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
 int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
-   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("wrong inspectorname string"), TCL_STATIC); return TCL_ERROR;}
 
    TInspector *insp = app->findInspector( object, type );
    assert(insp!=NULL);
@@ -1433,12 +1433,12 @@ int updateInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 
 int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
-   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("wrong inspectorname string"), TCL_STATIC); return TCL_ERROR;}
 
    TInspector *insp = app->findInspector( object, type );
    assert(insp!=NULL);
@@ -1451,12 +1451,12 @@ int writeBackInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
-   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("wrong inspectorname string"), TCL_STATIC); return TCL_ERROR;}
 
    TInspector *insp = app->findInspector( object, type );
    assert(insp!=NULL);
@@ -1467,12 +1467,12 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 
 int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
-   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("wrong inspectorname string"), TCL_STATIC); return TCL_ERROR;}
 
    TInspector *insp = app->findInspector( object, type );
    assert(insp!=NULL);
@@ -1483,12 +1483,12 @@ int markInspectorForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const
 
 int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
-   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("wrong inspectorname string"), TCL_STATIC); return TCL_ERROR;}
 
    TInspector *insp = app->findInspector( object, type );
    assert(insp!=NULL);
@@ -1499,7 +1499,7 @@ int inspMarkedForDeletion_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 
 int updateInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
    app->updateInspectors();
    return TCL_OK;
@@ -1507,7 +1507,7 @@ int updateInspectors_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
 
 int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    if (strcmp(argv[1],"all")==0)
    {
@@ -1526,14 +1526,14 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         int type = atoi( argv[1] );
         const char *namestr = insptypeNameFromCode( type );
         if (namestr==NULL)
-           {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
+           {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
         Tcl_SetResult(interp, TCLCONST(namestr), TCL_STATIC);
    }
    else
    {
         int type = insptypeCodeFromName( argv[1] );
         if (type<0)
-           {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
+           {Tcl_SetResult(interp, TCLCONST("unrecognized inspector type"), TCL_STATIC);return TCL_ERROR;}
         char buf[20];
         sprintf(buf, "%d", type);
         Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1543,12 +1543,12 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
 int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc<2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);
-   if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("wrong inspectorname string"), TCL_STATIC); return TCL_ERROR;}
 
    TInspector *insp = app->findInspector( object, type );
    assert(insp!=NULL);
@@ -1558,7 +1558,7 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
 
 int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
    cObject *object = strToPtr(argv[1]);
    cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
@@ -1569,14 +1569,14 @@ int getClassDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 //--------------
 int nullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr(NULL), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int isNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *ptr = argv[1];
    Tcl_SetResult(interp, TCLCONST(strcmp(ptr,ptrToStr(NULL))==0 ? "1" : "0"), TCL_STATIC);
    return TCL_OK;
@@ -1584,7 +1584,7 @@ int isNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
 int isNotNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *ptr = argv[1];
    Tcl_SetResult(interp, TCLCONST(strcmp(ptr,ptrToStr(NULL))==0 ? "0" : "1"), TCL_STATIC);
    return TCL_OK;
@@ -1592,70 +1592,70 @@ int isNotNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
 
 int objectDefaultList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( &defaultList ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( &simulation ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectSystemModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( simulation.systemModule() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( &simulation.msgQueue ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( componentTypes.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectFunctions_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( nedFunctions.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectClasses_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( classes.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectEnums_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( enums.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectConfigEntries_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( configKeys.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int loadNEDFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "1 arg expected", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("1 arg expected"), TCL_STATIC); return TCL_ERROR;}
    const char *fname = argv[1];
    Tkenv *app = getTkenv();
    app->loadNedFile(fname);
@@ -1667,14 +1667,14 @@ static int getTkPhotoImageBlock(Tcl_Interp *interp, const char *imgname, Tk_Phot
    Tk_PhotoHandle imghandle = Tk_FindPhoto(interp, TCLCONST(imgname));
    if (!imghandle)
    {
-       Tcl_SetResult(interp, "image doesn't exist or is not a photo image", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("image doesn't exist or is not a photo image"), TCL_STATIC);
        return TCL_ERROR;
    }
    Tk_PhotoGetImage(imghandle, destImgblockptr);
 
    if (destImgblockptr->pixelSize!=4)
    {
-       Tcl_SetResult(interp, "unsupported pixelsize in photo image", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("unsupported pixelsize in photo image"), TCL_STATIC);
        return TCL_ERROR;
    }
    return TCL_OK;
@@ -1682,7 +1682,7 @@ static int getTkPhotoImageBlock(Tcl_Interp *interp, const char *imgname, Tk_Phot
 
 int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=4) {Tcl_SetResult(interp, "3 args expected", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=4) {Tcl_SetResult(interp, TCLCONST("3 args expected"), TCL_STATIC); return TCL_ERROR;}
    const char *imgname = argv[1];
    const char *targetcolorname = argv[2];
    const char *weightstr = argv[3]; // 0-100
@@ -1693,7 +1693,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    XColor *targetcolor = Tk_GetColor(interp, Tk_MainWindow(interp), TCLCONST(targetcolorname));
    if (!targetcolor)
    {
-       Tcl_SetResult(interp, "invalid color", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("invalid color"), TCL_STATIC);
        return TCL_ERROR;
    }
    int rdest = targetcolor->red / 256;  // scale down to 8 bits
@@ -1704,7 +1704,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    double weight = atol(weightstr)/100.0;
    if (weight<0 || weight>1.0)
    {
-       Tcl_SetResult(interp, "colorizing weight is out of range, should be between 0 and 100", TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST("colorizing weight is out of range, should be between 0 and 100"), TCL_STATIC);
        return TCL_ERROR;
    }
 
@@ -1743,7 +1743,7 @@ int colorizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
 int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=3) {Tcl_SetResult(interp, "2 args expected", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("2 args expected"), TCL_STATIC); return TCL_ERROR;}
    const char *destimgname = argv[1];
    const char *srcimgname = argv[2];
 
@@ -1802,7 +1802,7 @@ int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 
 int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc<2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
    cClassDescriptor *sd = object ? object->getDescriptor() : NULL;
    Tcl_SetResult(interp, ptrToStr(sd), TCL_VOLATILE);
@@ -1811,7 +1811,7 @@ int getClassDescriptorFor_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 
 int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc<3) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *enumName = argv[1];
    int value = atoi(argv[2]);
    cEnum *e = cEnum::find(enumName);
@@ -1824,17 +1824,17 @@ static char tmpbuf[16384];  //XXX
 int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
-   if (argc<4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc<4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    void *object = strToPtr(argv[1]);
    cClassDescriptor *sd = dynamic_cast<cClassDescriptor *>(strToPtr(argv[2]));
-   if (!object) {Tcl_SetResult(interp, "object is null", TCL_STATIC); return TCL_ERROR;}
-   if (!sd) {Tcl_SetResult(interp, "classdescriptor is null", TCL_STATIC); return TCL_ERROR;}
+   if (!object) {Tcl_SetResult(interp, TCLCONST("object is null"), TCL_STATIC); return TCL_ERROR;}
+   if (!sd) {Tcl_SetResult(interp, TCLCONST("classdescriptor is null"), TCL_STATIC); return TCL_ERROR;}
    const char *cmd = argv[3];
 
    // 'opp_classdescriptor <object> <classdescr> name'
    if (strcmp(cmd,"name")==0)
    {
-      if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       Tcl_SetResult(interp, TCLCONST(sd->name()), TCL_VOLATILE);
       return TCL_OK;
    }
@@ -1842,7 +1842,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> baseclassdesc'
    if (strcmp(cmd,"baseclassdesc")==0)
    {
-      if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       Tcl_SetResult(interp, ptrToStr(sd->getBaseClassDescriptor()), TCL_VOLATILE);
       return TCL_OK;
    }
@@ -1850,7 +1850,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> property <propertyname>'
    if (strcmp(cmd,"property")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       const char *propertyname = argv[4];
 
       // "object" is unused, but what the hell
@@ -1860,7 +1860,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
 
    if (strcmp(cmd,"fieldcount")==0)
    {
-      if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       char buf[20];
       sprintf(buf, "%d", sd->getFieldCount(object));
       Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -1870,7 +1870,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldisarray <fieldindex>'
    if (strcmp(cmd,"fieldisarray")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldIsArray(object, fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
@@ -1879,7 +1879,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldiscompound <fieldindex>'
    if (strcmp(cmd,"fieldiscompound")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCompound(object, fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
@@ -1888,7 +1888,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldispointer <fieldindex>'
    if (strcmp(cmd,"fieldispointer")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldIsPointer(object, fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
@@ -1897,7 +1897,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldiscpolymorphic <fieldindex>'
    if (strcmp(cmd,"fieldiscpolymorphic")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCPolymorphic(object, fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
@@ -1906,7 +1906,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldiscobject <fieldindex>'
    if (strcmp(cmd,"fieldiscobject")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCObject(object, fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
@@ -1915,7 +1915,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldiseditable <fieldindex>'
    if (strcmp(cmd,"fieldiseditable")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldIsEditable(object, fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
@@ -1924,7 +1924,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldname <fieldindex>'
    if (strcmp(cmd,"fieldname")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldName(object, fld)), TCL_VOLATILE);
       return TCL_OK;
@@ -1933,7 +1933,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldtypename <fieldindex>'
    if (strcmp(cmd,"fieldtypename")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldTypeString(object, fld)), TCL_VOLATILE);
       return TCL_OK;
@@ -1942,7 +1942,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldarraysize <fieldindex>'
    if (strcmp(cmd,"fieldarraysize")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       char buf[20];
       sprintf(buf, "%d", sd->getArraySize(object, fld));
@@ -1953,12 +1953,12 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldvalue <fieldindex> ?index?'
    if (strcmp(cmd,"fieldvalue")==0)
    {
-      if (argc!=5 && argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5 && argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       int i = (argc==6) ? atoi(argv[5]) : 0;
       if (!sd->getFieldAsString(object, fld, i, tmpbuf, sizeof(tmpbuf)-1))
       {
-         Tcl_SetResult(interp, "error in getFieldAsString()", TCL_STATIC);
+         Tcl_SetResult(interp, TCLCONST("error in getFieldAsString()"), TCL_STATIC);
          return TCL_ERROR;
       }
       Tcl_SetResult(interp, tmpbuf, TCL_VOLATILE);
@@ -1968,13 +1968,13 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldsetvalue <fieldindex> <index> <value>'
    if (strcmp(cmd,"fieldsetvalue")==0)
    {
-      if (argc!=7) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=7) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       int i = atoi(argv[5]);  // 0 if unspec (empty string)
       const char *value = argv[6];
       if (!sd->setFieldAsString(object, fld, i, value))
       {
-         Tcl_SetResult(interp, "Syntax error", TCL_STATIC);
+         Tcl_SetResult(interp, TCLCONST("Syntax error"), TCL_STATIC);
          return TCL_ERROR;
       }
       return TCL_OK;
@@ -1983,7 +1983,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldproperty <fieldindex> <propertyname>'
    if (strcmp(cmd,"fieldproperty")==0)
    {
-      if (argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       const char *propertyname = argv[5];
 
@@ -1994,7 +1994,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldstructname <fieldindex>'
    if (strcmp(cmd,"fieldstructname")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       Tcl_SetResult(interp, TCLCONST(sd->getFieldStructName(object, fld)), TCL_VOLATILE);
       return TCL_OK;
@@ -2003,7 +2003,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldstructdesc <fieldindex>'
    if (strcmp(cmd,"fieldstructdesc")==0)
    {
-      if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       const char *fieldStructName = sd->getFieldStructName(object, fld);
       Tcl_SetResult(interp, ptrToStr(cClassDescriptor::getDescriptorFor(fieldStructName)), TCL_VOLATILE);
@@ -2013,13 +2013,13 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    // 'opp_classdescriptor <object> <classdescr> fieldstructpointer <fieldindex> ?index?'
    if (strcmp(cmd,"fieldstructpointer")==0)
    {
-      if (argc!=5 && argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=5 && argc!=6) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       int i = (argc==6) ? atoi(argv[5]) : 0;
       Tcl_SetResult(interp, voidPtrToStr(sd->getFieldStructPointer(object, fld, i)), TCL_VOLATILE);
       return TCL_OK;
    }
-   Tcl_SetResult(interp, "first arg is not a valid option", TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST("first arg is not a valid option"), TCL_STATIC);
    return TCL_ERROR;
    E_CATCH;
 }

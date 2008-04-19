@@ -25,6 +25,7 @@
 #include <tk.h>
 
 #include "tklib.h"
+#include "tkutil.h"
 #include "tkenv.h"
 #include "exception.h"
 
@@ -34,7 +35,7 @@ int exit_omnetpp;
 extern "C" int Tkpng_Init(Tcl_Interp *interp);
 
 // Procedure to handle X errors
-static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
+static int XErrorProc(ClientData, XErrorEvent *errEventPtr)
 {
     fprintf(stderr, "X protocol error: ");
     fprintf(stderr, "error=%d request=%d minor=%d\n",
@@ -87,11 +88,11 @@ Tcl_Interp *initTk(int argc, char **argv)
 }
 
 // create custom commands (implemented in tkcmd.cc) in Tcl
-int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
+int createTkCommands(Tcl_Interp *interp, OmnetTclCommand *commands)
 {
-    for(;commands->namestr!=NULL; commands++)
+    for (; commands->namestr!=NULL; commands++)
     {
-        Tcl_CreateCommand( interp, commands->namestr,
+        Tcl_CreateCommand( interp, TCLCONST(commands->namestr),
                                    (Tcl_CmdProc *)commands->func,
                                    (ClientData)NULL,
                                    (Tcl_CmdDeleteProc *)NULL);
@@ -100,7 +101,7 @@ int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
 }
 
 // run the Tk application
-int runTk( Tcl_Interp *)
+int runTk(Tcl_Interp *)
 {
     // Custom event loop
     //  the C++ variable exit_omnetpp is used for exiting

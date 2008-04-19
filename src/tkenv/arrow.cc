@@ -22,6 +22,7 @@
 #include <math.h>
 
 #include "arrow.h"
+#include "tkutil.h"
 
 USING_NAMESPACE
 
@@ -121,7 +122,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
               printf(" <%s>", argv[i]);
           }
           printf("\n");
-          Tcl_SetResult(interp, "17 args expected", TCL_STATIC);
+          Tcl_SetResult(interp, TCLCONST("17 args expected"), TCL_STATIC);
           return TCL_ERROR;
       }
 
@@ -156,7 +157,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
 
       // error checks
       if (!strchr("amnews",mode)) {
-          Tcl_SetResult(interp, "mode must be one of (a,m,n,e,w,s)", TCL_STATIC);
+          Tcl_SetResult(interp, TCLCONST("mode must be one of (a,m,n,e,w,s)"), TCL_STATIC);
           return TCL_ERROR;
       }
 

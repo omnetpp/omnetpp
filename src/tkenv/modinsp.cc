@@ -685,7 +685,7 @@ void TGraphicalModWindow::bubble(cModule *mod, const char *text)
 
 int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<1) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
    // supported commands:
    //   arrowcoords, relayout, etc...
@@ -726,11 +726,11 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
 int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <module ptr> <parname> <searchparent>
-   if (argc!=4) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
    bool searchparents = atoi(argv[3])!=0;
    cModule *mod = dynamic_cast<cModule *>(strToPtr( argv[1] ));
-   if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   if (!mod) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
    const char *parname = argv[2];
 
@@ -765,7 +765,7 @@ int TGraphicalModWindow::getSubmoduleCount(Tcl_Interp *interp, int argc, const c
 int TGraphicalModWindow::getSubmodQ(Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <module ptr> <qname>
-   if (argc!=3) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
    cModule *mod = dynamic_cast<cModule *>(strToPtr( argv[1] ));
    const char *qname = argv[2];
@@ -779,12 +779,12 @@ int TGraphicalModWindow::getSubmodQ(Tcl_Interp *interp, int argc, const char **a
 int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <module ptr> <qname>
-   if (argc!=3) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=3) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
    cModule *mod = dynamic_cast<cModule *>(strToPtr( argv[1] ));
    const char *qname = argv[2];
    cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname)); //FIXME THIS MUST BE REFINED! SEARCHES WAY TOO DEEEEEP!!!!
-   if (!q) {Tcl_SetResult(interp, "", TCL_STATIC); return TCL_OK;}
+   if (!q) {Tcl_SetResult(interp, TCLCONST(""), TCL_STATIC); return TCL_OK;}
 
    char buf[20];
    sprintf(buf, "%d", q->length());
@@ -1155,7 +1155,7 @@ void TGraphicalGateWindow::update()
 
 int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<1) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong number of args"), TCL_STATIC); return TCL_ERROR;}
 
    // supported commands:
    //   redraw
@@ -1165,7 +1165,7 @@ int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const c
       return redraw(interp,argc,argv);
    }
 
-   Tcl_SetResult(interp, "invalid arg: must be 'redraw'", TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST("invalid arg: must be 'redraw'"), TCL_STATIC);
    return TCL_ERROR;
 }
 

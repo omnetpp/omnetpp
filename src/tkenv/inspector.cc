@@ -30,7 +30,7 @@ USING_NAMESPACE
 //
 // Inspector type code <--> string conversions
 //
-struct InspTypeName {int code; char *namestr;} insp_typenames[] =
+struct InspTypeName {int code; const char *namestr;} insp_typenames[] =
 {
      { INSP_DEFAULT,          "(default)"     },
      { INSP_OBJECT,           "As Object"     },
