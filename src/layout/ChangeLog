@@ -1,3 +1,7 @@
+2008-04-19  Andras Varga
+
+	* basicspringembedderlayout: changed initial rect to 1000x1000 (was 100x100)
+
 2008-02-23  Andras Varga
 
 	* Started the ChangeLog. The Layout library was added in omnetpp-4.0. 

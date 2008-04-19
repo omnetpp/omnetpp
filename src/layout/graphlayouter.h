@@ -23,11 +23,16 @@ NAMESPACE_BEGIN
 
 class cModule;
 
+/**
+ * Allows drawing during layouting for debug purposes, and makes it possible to
+ * stop the layouter if it's taking too long.
+ */
 class LAYOUT_API GraphLayouterEnvironment
 {
     public:
         virtual ~GraphLayouterEnvironment() {}
         virtual bool inspected() = 0;
+        virtual bool okToProceed() = 0;  // should return false if layouting is taking too long
 
         virtual bool getBoolParameter(const char *tagName, int index, bool defaultValue) = 0;
         virtual long getLongParameter(const char *tagName, int index, long defaultValue) = 0;

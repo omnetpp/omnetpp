@@ -437,7 +437,7 @@ void ForceDirectedGraphLayouter::execute()
         // always calculate graph components
         graphComponent.calculateConnectedSubComponents();
 
-        // call pre embedding if requested
+        // call pre-embedding if requested
         if (preEmbedding) {
             setInitialPositions();
 

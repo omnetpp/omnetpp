@@ -181,8 +181,8 @@ void BasicSpringEmbedderLayout::execute()
     for (AnchorList::iterator l=anchors.begin(); l!=anchors.end(); ++l)
     {
         Anchor& a = *(*l);
-        a.x = 100 * privRand01();
-        a.y = 100 * privRand01();
+        a.x = 1000 * privRand01();
+        a.y = 1000 * privRand01();
         a.dx = a.dy = 0;
     }
     for (NodeList::iterator k=nodes.begin(); k!=nodes.end(); ++k)
@@ -199,18 +199,18 @@ void BasicSpringEmbedderLayout::execute()
         }
         else // movable
         {
-            n.x = 100 * privRand01();
-            n.y = 100 * privRand01();
+            n.x = 1000 * privRand01(); //TODO we should use bounding box of fixed nodes instead of hardcoded 1000x1000
+            n.y = 1000 * privRand01(); //  also, take pixel-per-unit into account
         }
         n.dx = n.dy = 0;
     }
 
 #ifdef USE_CONTRACTING_BOX
     // initial box (slightly bigger than bounding box of nodes):
-    box.x1 = -10;
-    box.y1 = -10;
-    box.x2 = 110;
-    box.y2 = 110;
+    box.x1 = -100;
+    box.y1 = -100;
+    box.x2 = 1100;
+    box.y2 = 1100;
     box.dx1 = box.dy1 = box.dx2 = box.dy2 = 0;
 #endif
 
@@ -236,7 +236,7 @@ void BasicSpringEmbedderLayout::execute()
     // now the real job -- stop if max moved distance is <0.05 at least 20 times in a row
     //clock_t beg = clock();
     int i, maxdcounter=0;
-    for (i=1; i<maxIterations && maxdcounter<20; i++)
+    for (i=1; i<maxIterations && maxdcounter<20 && environment->okToProceed(); i++)
     {
         double maxd = relax();
 
