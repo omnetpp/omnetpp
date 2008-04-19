@@ -1,0 +1,95 @@
+%description:
+Test the following NED functions:
+   fullPath()
+   fullName()
+   parentIndex()
+   ancestorIndex(int numlevels)
+
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node {
+    parameters:
+        string fullpath = fullPath();
+        string fullname = fullName();
+        int parentindex = parentIndex();
+        int ancestorindex0 = ancestorIndex(0);
+        int ancestorindex1 = ancestorIndex(1);
+        int ancestorindex2 = ancestorIndex(2);
+}
+
+module Parent
+{
+    submodules:
+        node[2] : Node;
+}
+
+module GrandParent
+{
+    submodules:
+        Parent[2] : Parent;
+}
+
+network Test
+{
+    submodules:
+        x[1] : GrandParent;
+        dump : Dump;
+}
+
+%file: test.cc
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.x[0]: GrandParent {
+            submodules:
+                module Test.x[0].Parent[0]: Parent {
+                    submodules:
+                        module Test.x[0].Parent[0].node[0]: Node {
+                            parameters:
+                                fullpath = "Test.x[0].Parent[0].node[0]"
+                                fullname = "node[0]"
+                                parentindex = 0
+                                ancestorindex0 = 0
+                                ancestorindex1 = 0
+                                ancestorindex2 = 0
+                        }
+                        module Test.x[0].Parent[0].node[1]: Node {
+                            parameters:
+                                fullpath = "Test.x[0].Parent[0].node[1]"
+                                fullname = "node[1]"
+                                parentindex = 0
+                                ancestorindex0 = 1
+                                ancestorindex1 = 0
+                                ancestorindex2 = 0
+                        }
+                }
+                module Test.x[0].Parent[1]: Parent {
+                    submodules:
+                        module Test.x[0].Parent[1].node[0]: Node {
+                            parameters:
+                                fullpath = "Test.x[0].Parent[1].node[0]"
+                                fullname = "node[0]"
+                                parentindex = 1
+                                ancestorindex0 = 0
+                                ancestorindex1 = 1
+                                ancestorindex2 = 0
+                        }
+                        module Test.x[0].Parent[1].node[1]: Node {
+                            parameters:
+                                fullpath = "Test.x[0].Parent[1].node[1]"
+                                fullname = "node[1]"
+                                parentindex = 1
+                                ancestorindex0 = 1
+                                ancestorindex1 = 1
+                                ancestorindex2 = 0
+                        }
+                }
+        }
+}
+
