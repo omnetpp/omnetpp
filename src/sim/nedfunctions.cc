@@ -139,22 +139,22 @@ DEF(substring, "SL/L->S", {  // Note: substring(str,index[,length]), i.e. length
 
 DEF(substringBefore, "SS->S", {
     unsigned int pos = argv[0].s.find(argv[1].s);
-    return pos<0 ? "" : argv[0].s.substr(0,pos);
+    return pos==std::string::npos ? "" : argv[0].s.substr(0,pos);
 })
 
 DEF(substringAfter, "SS->S", {
     unsigned int pos = argv[0].s.find(argv[1].s);
-    return pos<0 ? "" : argv[0].s.substr(pos+argv[1].s.size());
+    return pos==std::string::npos ? "" : argv[0].s.substr(pos+argv[1].s.size());
 })
 
 DEF(substringBeforeLast, "SS->S", {
     unsigned int pos = argv[0].s.rfind(argv[1].s);
-    return pos<0 ? "" : argv[0].s.substr(0,pos);
+    return pos==std::string::npos ? "" : argv[0].s.substr(0,pos);
 })
 
 DEF(substringAfterLast, "SS->S", {
     unsigned int pos = argv[0].s.rfind(argv[1].s);
-    return pos<0 ? "" : argv[0].s.substr(pos+argv[1].s.size());
+    return pos==std::string::npos ? "" : argv[0].s.substr(pos+argv[1].s.size());
 })
 
 DEF(startsWith, "SS->B", {
@@ -303,13 +303,10 @@ DEF(parentIndex, "->L", {
     return (long)mod->index();
 })
 
-DEF(ancestorIndex, "/L->L", {
-    int levels = 1;
-    if (argc==1) {
-        levels = (int)argv[0].dbl;
-        if (levels<0)
-            throw cRuntimeError("ancestorIndex(): negative number of levels");
-    }
+DEF(ancestorIndex, "L->L", {
+    int levels = (int)argv[0].dbl;
+    if (levels<0)
+        throw cRuntimeError("ancestorIndex(): negative number of levels");
     if (levels==0 && !context->isModule())
         throw cRuntimeError("ancestorIndex(): numlevels==0 and this is not a module");
     cModule *mod = dynamic_cast<cModule *>(context);
