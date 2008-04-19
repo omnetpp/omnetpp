@@ -33,6 +33,18 @@ bool opp_isblank(const char *txt)
     return true;
 }
 
+std::string opp_trim(const char *txt)
+{
+    if (!txt)
+        return "";
+    while (opp_isspace(*txt))
+        txt++;
+    const char *end = txt + strlen(txt);
+    while (end>txt && opp_isspace(*(end-1)))
+        end--;
+    return std::string(txt, end-txt);
+}
+
 std::string opp_parsequotedstr(const char *txt)
 {
     const char *endp;

@@ -88,6 +88,11 @@ inline int opp_strcmp(const char *s1, const char *s2)
 #endif //__SIM_UTIL_H
 
 /**
+ * Removes any leading and trailing whitespace.
+ */
+COMMON_API std::string opp_trim(const char *txt);
+
+/**
  * Reverse of opp_quotestr(): remove quotes and resolve backslashed escapes.
  *
  * Throws an exception if there's a parse error. If there's anything
