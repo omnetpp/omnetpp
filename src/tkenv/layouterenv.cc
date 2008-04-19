@@ -107,10 +107,21 @@ void TGraphLayouterEnvironment::cleanup()
     if (inspected())
     {
         Tcl_VarEval(interp, canvas, " delete all\n",
-        //Tcl_VarEval(interp, canvas, " delete node edge force\n",
                             canvas, " config -scrollregion {0 0 1 1}\n",
                             canvas, " xview moveto 0\n",
                             canvas, " yview moveto 0\n",
                             NULL);
     }
+}
+
+bool TGraphLayouterEnvironment::okToProceed()
+{
+    // process UI events; we assume that a "grab" is in effect to the Stop button
+    // (ie user can only interact with the Stop button but nothing else)
+    Tcl_VarEval(interp, "update\n", NULL);
+    const char *var = Tcl_GetVar(interp, "stoplayouting", TCL_GLOBAL_ONLY);
+    bool stopNow = var && var[0] && var[0]!='0';
+    if (stopNow)
+        printf("DBG: telling the layouter to stop...\n");
+    return !stopNow;
 }

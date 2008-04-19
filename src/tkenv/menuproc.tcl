@@ -499,13 +499,16 @@ proc rebuild {} {
 
 proc stop_simulation {} {
     # implements Simulate|Stop
-
     if {[opp_getsimulationstate] == "SIM_RUNNING" || [opp_getsimulationstate] == "SIM_BUSY"} {
        # "opp_stopsimulation" just *asks* the simulation to stop, causing it to return
        # from the "opp_run" command.
        # "set_gui_for_runmode notrunning" will be called after "opp_run" has returned.
        opp_stopsimulation
     }
+
+    # this proc doubles as "stop layouting", when in graphical module inspectors
+    global stoplayouting
+    set stoplayouting 1
 }
 
 proc message_windows {} {

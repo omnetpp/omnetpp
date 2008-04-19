@@ -42,6 +42,7 @@ class TGraphLayouterEnvironment : public GraphLayouterEnvironment
       void cleanup();
 
       virtual bool inspected() { return canvas && interp; }
+      virtual bool okToProceed();
 
       virtual bool getBoolParameter(const char *tagName, int index, bool defaultValue);
       virtual long getLongParameter(const char *tagName, int index, long defaultValue);

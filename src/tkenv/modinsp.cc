@@ -380,14 +380,14 @@ void TGraphicalModWindow::refreshLayout()
     int32 seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, random_seed);
     layouter->setSeed(seed);
 
+    Tcl_Interp *interp = getTkenv()->getInterp();
+
     TGraphLayouterEnvironment environment(parentmodule, ds);
+    environment.setInterpreter(interp);
 
     // enable graphics only if full re-layouting (no cached coordinates in submodPosMap)
     if (submodPosMap.empty() && getTkenv()->opt_showlayouting)
-    {
-        environment.setInterpreter(getTkenv()->getInterp());
         environment.setCanvas(canvas);
-    }
     layouter->setEnvironment(&environment);
 
     // size
@@ -457,8 +457,17 @@ void TGraphicalModWindow::refreshLayout()
         }
     }
 
+    bool isFullLayout = submodPosMap.empty();
+    if (isFullLayout) {
+        Tcl_SetVar(interp, "stoplayouting", "0", TCL_GLOBAL_ONLY);
+        Tcl_VarEval(interp, "layouter_startgrab ", windowName(), ".toolbar.stop", NULL);
+    }
     // layout the graph -- should be VERY fast if most nodes are fixed!
     layouter->execute();
+
+    if (isFullLayout) {
+        Tcl_VarEval(interp, "layouter_releasegrab ", windowName(), ".toolbar.stop", NULL);
+    }
 
     // fill the map with the results
     submodPosMap.clear();
