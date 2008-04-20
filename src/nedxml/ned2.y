@@ -19,7 +19,7 @@
 %token MODULE SIMPLE NETWORK CHANNEL MODULEINTERFACE CHANNELINTERFACE
 %token EXTENDS LIKE
 %token TYPES PARAMETERS GATES SUBMODULES CONNECTIONS ALLOWUNCONNECTED
-%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE VOLATILE TYPENAME
+%token DOUBLETYPE INTTYPE STRINGTYPE BOOLTYPE XMLTYPE VOLATILE
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
@@ -700,11 +700,6 @@ param_typename
                   ps.param = addParameter(ps.parameters, @1);
                   ps.propertyscope.push(ps.param);
                 }
-        | TYPENAME /* this is to assign module type with the "<> like Foo" syntax */
-                {
-                  ps.param = addParameter(ps.parameters, @1);
-                  ps.propertyscope.push(ps.param);
-                }
         ;
 
 pattern_value
@@ -773,7 +768,7 @@ pattern_elem
         | IMPORT | PACKAGE | PROPERTY
         | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
         | EXTENDS | LIKE
-        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | VOLATILE | TYPENAME
+        | DOUBLETYPE | INTTYPE | STRINGTYPE | BOOLTYPE | XMLTYPE | VOLATILE
         | INPUT_ | OUTPUT_ | INOUT_ | IF | FOR
         | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
         | TRUE_ | FALSE_ | THIS_ | DEFAULT | CONST_ | SIZEOF | INDEX_ | XMLDOC

@@ -10,7 +10,7 @@ public interface NEDElementConstants
         { "import", "package","property","module","simple","network","channel",
         "moduleinterface","channelinterface","extends","like","withcppclass","types",
         "parameters","gates","submodules","connections","allowunconnected","double",
-        "int","string","bool","xml","volatile","typename","input","output","inout",
+        "int","string","bool","xml","volatile","input","output","inout",
         "if","for","true","false","this","default","const","sizeof","index","xmldoc"};
 
 

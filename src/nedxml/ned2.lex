@@ -98,7 +98,6 @@ USING_NAMESPACE
 "bool"                   { count(); return BOOLTYPE; }
 "xml"                    { count(); return XMLTYPE; }
 "volatile"               { count(); return VOLATILE; }
-"typename"               { count(); return TYPENAME; }
 
 "input"                  { count(); return INPUT_; }
 "output"                 { count(); return OUTPUT_; }

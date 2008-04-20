@@ -55,6 +55,7 @@ public final class NedCompletionHelper {
     };
 
     public final static Template[] proposedNedFunctionsTempl = new Template[] {
+        // math
     	makeShortTemplate("acos(${x})", "function"),
     	makeShortTemplate("asin(${x})", "function"),
     	makeShortTemplate("atan(${x})", "function"),
@@ -74,6 +75,45 @@ public final class NedCompletionHelper {
     	makeShortTemplate("hypot(${x},${y})", "function"),
     	makeShortTemplate("log(${x})", "function"),
     	makeShortTemplate("log10(${x})", "function"),
+    	
+    	// unit
+    	makeShortTemplate("dropUnit(${quantity})", "function"),
+    	makeShortTemplate("replaceUnit(${quantity}, ${string})", "function"),
+    	makeShortTemplate("convertUnit(${quantity}, ${string})", "function"),
+    	makeShortTemplate("unitOf(${quantity})", "function"),
+    	
+    	// string
+    	makeShortTemplate("length(${string})", "function"),
+    	makeShortTemplate("contains(${string}, ${string})", "function"),
+    	makeShortTemplate("substring(${string}, ${int})", "function"),
+    	makeShortTemplate("substring(${string}, ${int}, ${int})", "function"),
+    	makeShortTemplate("substringBefore(${string}, ${string})", "function"),
+    	makeShortTemplate("substringAfter(${string}, ${string})", "function"),
+    	makeShortTemplate("substringBeforeLast(${string}, ${string})", "function"),
+    	makeShortTemplate("substringAfterLast(${string}, ${string})", "function"),
+    	makeShortTemplate("startsWith(${string}, ${string})", "function"),
+    	makeShortTemplate("endsWith(${string}, ${string})", "function"),
+    	makeShortTemplate("tail(${string}, ${int})", "function"),
+    	makeShortTemplate("replace(${string}, ${string}, ${string})", "function"),
+    	makeShortTemplate("replace(${string}, ${string}, ${string}, ${int})", "function"),
+    	makeShortTemplate("replaceFirst(${string}, ${string}, ${string})", "function"),
+    	makeShortTemplate("replaceFirst(${string}, ${string}, ${string}, ${int})", "function"),
+    	makeShortTemplate("trim(${string})", "function"),
+    	makeShortTemplate("indexOf(${string})", "function"),
+    	makeShortTemplate("choose(${int}, ${string})", "function"),
+    	makeShortTemplate("toUpper(${string})", "function"),
+    	makeShortTemplate("toLower(${string})", "function"),
+    	
+    	// conversion
+    	makeShortTemplate("int(${x})", "function"),
+    	makeShortTemplate("double(${x})", "function"),
+    	makeShortTemplate("string(${x})", "function"),
+    	
+    	// reflection
+    	makeShortTemplate("fullPath()", "function"),
+    	makeShortTemplate("fullName()", "function"),
+    	makeShortTemplate("parentIndex()", "function"),
+    	makeShortTemplate("ancestorIndex(${int})", "function"),
     };
 
     public final static Template[] proposedNedContinuousDistributionsTempl = new Template[] {

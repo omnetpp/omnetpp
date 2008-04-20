@@ -234,7 +234,7 @@ s	 * before getting presented to the user.
 		    Collection<INEDTypeInfo> types = getProposedNedTypesFor(resList);
 		    if (types != null)
 	            for (INEDTypeInfo type : types)
-	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", null)); //FIXME display package, docu!
+	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", "TODO")); //FIXME display package, docu!
 			p.addAll(toProposals(new String[] {"\"\""}, "or any string value")); 
 			break;
 		case NEDElementConstants.NED_PARTYPE_XML: 
@@ -287,7 +287,7 @@ s	 * before getting presented to the user.
         //FIXME there's a chance that the module instantiated in the network is actually
         // a subclass of this compound module ("StandardHostExt" not "StandardHost"),
 	    // so we miss submodules added in the subclass. However, I doubt that we can
-	    // find out the subclass from ParamResolution...
+	    // find out the subclass from ParamResolution -- TODO add it
         INedTypeLookupContext paramContext = param.paramDeclNode.getEnclosingLookupContext();
         Assert.isTrue(paramContext instanceof CompoundModuleElementEx);
         CompoundModuleElementEx module = (CompoundModuleElementEx)paramContext;
@@ -308,6 +308,7 @@ s	 * before getting presented to the user.
                     result.add(likeInterface);
             }
         }
+        //TODO: look for "like" channels as well
 	    return result;
 	}
 
