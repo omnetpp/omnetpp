@@ -404,20 +404,19 @@ class SIM_API cTopology : public cOwnedObject
     void extractFromNetwork(Predicate *predicate);
 
     /**
-     * Extracts model topology by module name (more precisely, full path).
-     * Includes into the graph all modules whose fullPath() matches
-     * one of the patterns in given string vector. The patterns can
-     * contain wilcards in the same syntax as in ini files.
+     * Extracts model topology by module full path. All modules whole fullPath()
+     * matches one of the patterns in given string vector will get included.
+     * The patterns may contain wilcards in the same syntax as in ini files.
      *
      * An example:
-     * <tt>topo.extractByModuleName(cStringTokenizer("**.host[*] **.router*").asVector());</tt>
+     * <tt>topo.extractByModulePath(cStringTokenizer("**.host[*] **.router*").asVector());</tt>
      */
-    void extractByModuleName(const std::vector<std::string>& fullPathPatterns);
+    void extractByModulePath(const std::vector<std::string>& fullPathPatterns);
 
     /**
      * Extracts model topology by the fully qualified NED type name of the
-     * modules. Includes into the graph all modules whose nedTypeName()
-     * occurs in the given string vector.
+     * modules. All modules whose nedTypeName() is listed in the given string
+     * vector will get included.
      *
      * Note: If you have all class names as a single, space-separated
      * string, you can use cStringTokenizer to turn it into a string vector
@@ -428,11 +427,19 @@ class SIM_API cTopology : public cOwnedObject
     void extractByNedTypeName(const std::vector<std::string>& nedTypeNames);
 
     /**
-     * Extracts model topology by a module parameter. Includes into the graph
-     * all modules that have a parameter with the given name, and
-     * the parameter's str() method returns the paramValue string.
-     * If paramValue is NULL, only the parameter's existence is checked
-     * but not its value.
+     * Extracts model topology by a module property. All modules get included
+     * that have a property with the given name and the given value
+     * (more precisely, the first value of its default key being the specified
+     * value). If value is NULL, the property's value may be anything except
+     * "false" (i.e. the first value of the default key may not be "false").
+     */
+    void extractByProperty(const char *propertyName, const char *value=NULL);
+
+    /**
+     * Extracts model topology by a module parameter. All modules get included
+     * that have a parameter with the given name, and the parameter's str()
+     * method returns the paramValue string. If paramValue is NULL, only the
+     * parameter's existence is checked but not its value.
      */
     void extractByParameter(const char *paramName, const char *paramValue=NULL);
 

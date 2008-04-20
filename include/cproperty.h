@@ -198,8 +198,9 @@ class SIM_API cProperty : public cNamedObject
 
     /**
      * Returns the kth value for the given key in the property.
-     * Specify "" for the default key. For k>numValues(key), it returns "".
+     * Specify "" for the default key. For k>numValues(key), it returns "".  XXX why not NULL?
      */
+    //XXX should return NULL/"" if key does not exist? currently it's an error
     virtual const char *value(const char *key, int k=0) const;
 
     /**
@@ -208,6 +209,7 @@ class SIM_API cProperty : public cNamedObject
      * k may be greater than numValues(k), which will cause the values list,
      * to expand, the new elements filled with "".
      */
+    //XXX create key if does not exist?
     virtual void setValue(const char *key, int k, const char *value);
 
     /**

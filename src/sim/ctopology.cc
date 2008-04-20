@@ -27,6 +27,7 @@
 #include "cpar.h"
 #include "globals.h"
 #include "cexception.h"
+#include "cproperty.h"
 #include "patternmatcher.h"
 
 #ifdef WITH_PARSIM
@@ -109,7 +110,7 @@ void cTopology::clear()
 
 //---
 
-static bool selectByModuleName(cModule *mod, void *data)
+static bool selectByModulePath(cModule *mod, void *data)
 {
     // actually, this is selectByModuleFullPathPattern()
     const std::vector<std::string>& v = *(const std::vector<std::string> *)data;
@@ -126,24 +127,43 @@ static bool selectByNedTypeName(cModule *mod, void *data)
     return std::find(v.begin(), v.end(), mod->nedTypeName()) != v.end();
 }
 
-static bool selectByParameter(cModule *mod, void *data)
+static bool selectByProperty(cModule *mod, void *data)
 {
     struct ParamData {const char *name; const char *value;};
     ParamData *d = (ParamData *)data;
-    //FIXME if parameter is string type, check against stringValue() as well!!! (quote marks!!)
+    cProperty *prop = mod->properties()->get(d->name);
+    if (!prop)
+        return false;
+    const char *value = prop->hasKey(cProperty::DEFAULTKEY) ? prop->value(cProperty::DEFAULTKEY, 0) : NULL;
+    if (d->value)
+        return opp_strcmp(value, d->value)==0;
+    else
+        return opp_strcmp(value, "false")!=0;
+}
+
+static bool selectByParameter(cModule *mod, void *data)
+{
+    struct PropertyData{const char *name; const char *value;};
+    PropertyData *d = (PropertyData *)data;
     return mod->hasPar(d->name) && (d->value==NULL || mod->par(d->name).str()==std::string(d->value));
 }
 
 //---
 
-void cTopology::extractByModuleName(const std::vector<std::string>& fullPathPatterns)
+void cTopology::extractByModulePath(const std::vector<std::string>& fullPathPatterns)
 {
-    extractFromNetwork(selectByModuleName, (void *)&fullPathPatterns);
+    extractFromNetwork(selectByModulePath, (void *)&fullPathPatterns);
 }
 
 void cTopology::extractByNedTypeName(const std::vector<std::string>& nedTypeNames)
 {
     extractFromNetwork(selectByNedTypeName, (void *)&nedTypeNames);
+}
+
+void cTopology::extractByProperty(const char *propertyName, const char *value)
+{
+    struct {const char *name; const char *value;} data = {propertyName, value};
+    extractFromNetwork(selectByProperty, (void *)&data);
 }
 
 void cTopology::extractByParameter(const char *paramName, const char *paramValue)
