@@ -122,6 +122,13 @@ public interface INEDTypeResolver {
 	public Collection<INEDTypeInfo> getNedTypes(IProject context);
 
     /**
+     * Returns all toplevel (non-inner) types in the NED files that implement
+     * the given interface, excluding duplicate names, from the given project 
+     * and its dependent projects.
+     */
+    public Collection<INEDTypeInfo> getNedTypesThatImplement(INEDTypeInfo interfaceType, IProject context);
+	
+    /**
      * Returns all toplevel (non-inner) type names in the NED files, excluding
      * duplicate names, from the given project and its dependent projects.
      * Returned names are fully qualified.

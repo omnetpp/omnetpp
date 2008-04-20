@@ -10,11 +10,13 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.PREDEFINED_CONFIGV
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.text.templates.Template;
 import org.omnetpp.common.contentassist.ContentProposal;
@@ -31,7 +33,13 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.model.NEDElementConstants;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
+import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
 /**
@@ -202,7 +210,7 @@ s	 * before getting presented to the user.
 			p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
 			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
 		}
-		
+
 		switch (dataType) {
 		case NEDElementConstants.NED_PARTYPE_BOOL: 
 			p.addAll(toProposals(new String[] {"true", "false"})); 
@@ -222,6 +230,11 @@ s	 * before getting presented to the user.
 			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG")); 
 			break;
 		case NEDElementConstants.NED_PARTYPE_STRING: 
+		    // if the param is used in a "<param> like IFoo", propose all modules that implement IFoo
+		    Collection<INEDTypeInfo> types = getProposedNedTypesFor(resList);
+		    if (types != null)
+	            for (INEDTypeInfo type : types)
+	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", null)); //FIXME display package, docu!
 			p.addAll(toProposals(new String[] {"\"\""}, "or any string value")); 
 			break;
 		case NEDElementConstants.NED_PARTYPE_XML: 
@@ -231,7 +244,74 @@ s	 * before getting presented to the user.
 		return p;
 	}
 
-	protected static String[] templatesToProposals(Template[] templates) {
+	/**
+	 * If some of the matching parameters are used in a "&lt;param&gt; like IFoo" submodule, 
+	 * propose all modules that implement IFoo. If there's IFoo, IBar etc, propose modules
+	 * that implement both (all).
+	 */
+	protected Collection<INEDTypeInfo> getProposedNedTypesFor(ParamResolution[] paramResList) {
+        IProject context = doc.getDocumentFile().getProject();
+
+	    // collect all interfaces that parameters require
+	    Set<INEDTypeInfo> likeInterfaces = new HashSet<INEDTypeInfo>();
+        for (ParamResolution param : paramResList)
+            likeInterfaces.addAll(extractParamLikeInterfaces(param, context));
+
+        // if different params require different interfaces, find the common subset 
+        // of modules that implement both/all, and return that.
+	    INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+        Set<INEDTypeInfo> result = new HashSet<INEDTypeInfo>();
+        boolean firstIter = true;
+	    for (INEDTypeInfo likeInterface : likeInterfaces) {
+	        Collection<INEDTypeInfo> types = res.getNedTypesThatImplement(likeInterface, context);
+	        if (firstIter) {
+	            result.addAll(types);
+	            firstIter = false;
+	        }
+	        else {
+	            result.retainAll(types); // that is, result = intersect(result,types)   
+	        }
+	        if (result.isEmpty())
+	            break; // common subset is empty, makes no sense to continue
+	    }
+	    return result;
+    }
+	
+	/**
+	 * If the param is used in a "<param> like IFoo", return IFoo. If it's used
+	 * in several submodules (IFoo, IBar, etc), return all.
+	 */
+	protected Set<INEDTypeInfo> extractParamLikeInterfaces(ParamResolution param, IProject context) {
+        // find compound module in which parameter is declared. We'll be looking for
+        // matching "like" submodules in there.
+        //FIXME there's a chance that the module instantiated in the network is actually
+        // a subclass of this compound module ("StandardHostExt" not "StandardHost"),
+	    // so we miss submodules added in the subclass. However, I doubt that we can
+	    // find out the subclass from ParamResolution...
+        INedTypeLookupContext paramContext = param.paramDeclNode.getEnclosingLookupContext();
+        Assert.isTrue(paramContext instanceof CompoundModuleElementEx);
+        CompoundModuleElementEx module = (CompoundModuleElementEx)paramContext;
+            
+        // collect its "like" submodules that refer to our parameter.
+        // note: we only look to local submodules: inherited submodules wouldn't see 
+        // this parameter (since it's declared in a subclass)
+        Set<INEDTypeInfo> result = new HashSet<INEDTypeInfo>();
+        INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
+        String paramName = param.paramDeclNode.getName();
+        for (SubmoduleElementEx submodule : module.getSubmodules()) {
+            if (submodule.getLikeParam().equals(paramName)) {
+                // resolve interface, then add to the result
+                //System.out.println("found 'like' submodule: " + submodule + " --> " + submodule.getLikeType());
+                String likeType = submodule.getLikeType();
+                INEDTypeInfo likeInterface = res.lookupNedType(likeType, module);
+                if (likeInterface != null && likeInterface.getNEDElement() instanceof ModuleInterfaceElement)
+                    result.add(likeInterface);
+            }
+        }
+	    return result;
+	}
+
+    protected static String[] templatesToProposals(Template[] templates) {
 		//XXX find a way to return these things as TemplateProposals to the text editor!
 		String[] s = new String[templates.length];
 		for (int i=0; i<templates.length; i++) {

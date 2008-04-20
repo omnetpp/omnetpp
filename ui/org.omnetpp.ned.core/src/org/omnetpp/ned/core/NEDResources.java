@@ -328,6 +328,15 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 		return projectData==null ? new ArrayList<INEDTypeInfo>() : projectData.components.values();
     }
 
+    public synchronized Collection<INEDTypeInfo> getNedTypesThatImplement(INEDTypeInfo interfaceType, IProject context) {
+        Collection<INEDTypeInfo> result = new ArrayList<INEDTypeInfo>();
+        Collection<INEDTypeInfo> types = getNedTypes(context);
+        for (INEDTypeInfo type : types)
+            if (type.getInterfaces().contains(interfaceType.getNEDElement()))
+                result.add(type);
+        return result;
+    }
+
     public synchronized Set<String> getNedTypeQNames(IPredicate predicate, IProject context) {
         Set<String> result = new HashSet<String>();
         for (INEDTypeInfo typeInfo : getNedTypes(context))
