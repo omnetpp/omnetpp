@@ -145,7 +145,7 @@ public class InifileHoverUtils {
 		if (entry.getUnit()!=null)
 			text += ", unit: "+entry.getUnit();
 		text += "&gt;</b><br>\n<br>\n";
-		text += entry.getDescription() + "<br>\n";
+		text += htmlizeDescription(entry.getDescription()) + "<br>\n";
 
 		if (doc != null && entry!=CFGID_DESCRIPTION && entry!=CFGID_EXTENDS) {
 			List<String> sectionList = new ArrayList<String>();
@@ -161,6 +161,15 @@ public class InifileHoverUtils {
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 
+	protected static String htmlizeDescription(String text) {
+	    text = text.replace("<", "&lt;");
+	    text = text.replace(">", "&gt;");
+        text = text.replaceAll("\n( *)    ", "\n$1&nbsp;&nbsp;&nbsp;&nbsp;");
+        text = text.replaceAll("\n( *)  ", "\n$1&nbsp;&nbsp;");
+        text = text.replaceAll("\n ", "\n&nbsp;");
+	    text = text.replace("\n", "<p>");
+	    return text;
+	}
 	/**
 	 * Generate tooltip for a param key entry
 	 */

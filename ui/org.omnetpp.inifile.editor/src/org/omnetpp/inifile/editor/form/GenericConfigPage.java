@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.form;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_AUTOFLUSH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNERS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNER_DETAILS;
@@ -24,6 +24,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_INI_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOAD_LIBS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MAX_MODULE_NESTING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
@@ -42,8 +43,10 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_SYNCH
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENTLOG;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION_LABEL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_DIR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
@@ -139,30 +142,35 @@ public class GenericConfigPage extends ScrolledFormPage {
 
 	private void createFieldEditors(Composite form, String category) {
 		if (category.equals(CAT_GENERAL)) {
-			addTextFieldEditor(form, CFGID_NETWORK, "Network to simulate"); //FIXME use ComboBoxFieldEditor
-			addSpacer(form);
-			Group group1 = createGroup(form, "Setup");
-			addTextFieldEditor(group1, CFGID_NED_PATH, "NED file path");
-			addTextFieldEditor(group1, CFGID_USER_INTERFACE, "User interface");
+            Group group1 = createGroup(form, "Network");
+			addTextFieldEditor(group1, CFGID_NETWORK, "Network to simulate"); //FIXME use ComboBoxFieldEditor
 			addSpacer(form);
 			Group group2 = createGroup(form, "Stopping condition");
 			addTextFieldEditor(group2, CFGID_SIM_TIME_LIMIT, "Simulation time limit");
 			addTextFieldEditor(group2, CFGID_CPU_TIME_LIMIT, "CPU time limit");
+			addSpacer(form);
+            Group group3 = createGroup(form, "Other");
+			addTextFieldEditor(group3, CFGID_SIMTIME_SCALE, "Simulation time precision"); //FIXME use ComboBoxFieldEditor (which displays "ms", "us", "ns", etc)
+			addCheckboxFieldEditor(group3, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
 		}
 		else if (category.equals(CAT_ADVANCED)) {
+		    Group group0 = createGroup(form, "Regression");
+		    addTextFieldEditor(group0, CFGID_FINGERPRINT, "Fingerprint to verify");
+            addSpacer(form);
+		    Group group3 = createGroup(form, "Setup");
+            addTextFieldEditor(group3, CFGID_NED_PATH, "NED file path");
+            addTextFieldEditor(group3, CFGID_USER_INTERFACE, "User interface");
+            addTextFieldEditor(group3, CFGID_TOTAL_STACK_KB, "Total activity stack (KB)");
+            addTextFieldEditor(group3, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting");
+            addSpacer(form);
 			Group group1 = createGroup(form, "Debugging");
-			addCheckboxFieldEditor(group1, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
 			addCheckboxFieldEditor(group1, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
+			addCheckboxFieldEditor(group1, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
 			addSpacer(form);
 			Group group2 = createGroup(form, "Warnings");
 			addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
 			addCheckboxFieldEditor(group2, CFGID_INI_WARNINGS, "Ini warnings"); //XXX
 			addSpacer(form);
-			addTextFieldEditor(form, CFGID_SIMTIME_SCALE, "Simtime scale exponent"); //FIXME use ComboBoxFieldEditor (which displays "ms", "us", "ns", etc)
-			addTextFieldEditor(form, CFGID_TOTAL_STACK_KB, "Total activity() stack (Kb)");
-			addTextFieldEditor(form, CFGID_FINGERPRINT, "Fingerprint to verify");
-			addTextFieldEditor(form, CFGID_MAX_MODULE_NESTING, "Max module nesting");
-			addCheckboxFieldEditor(form, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
 		}
 		else if (category.equals(CAT_RANDOMNUMBERS)) {
 			Group group1 = createGroup(form, "Random Number Generators");
@@ -245,16 +253,16 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addSpacer(form);
 			Group group4 = createGroup(form, "Paths");
 			addTextFieldEditor(group4, CFGID_TKENV_IMAGE_PATH, "Image path");
-			addTextFieldEditor(group4, CFGID_TKENV_PLUGIN_PATH, "Plugin path");  //FIXME remove (not needed)
+			addTextFieldEditor(group4, CFGID_TKENV_PLUGIN_PATH, "Plugin path");
 			addSpacer(form);
-			addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK_KB, "Tkenv extra stack (Kb)");
+			addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK_KB, "Tkenv extra stack (KB)");
 		}
 		else if (category.equals(CAT_PARSIM)) {
 			addCheckboxFieldEditor(form, CFGID_PARALLEL_SIMULATION, "Enable parallel simulation");
 			Group group1 = createGroup(form, "General");
 			addTextFieldEditor(group1, CFGID_PARSIM_COMMUNICATIONS_CLASS, "Communications class");
 			addTextFieldEditor(group1, CFGID_PARSIM_SYNCHRONIZATION_CLASS, "Synchronization class");
-/*FIXME XXX TODO put back!
+/*FIXME PUT BACK!
 			addCheckboxFieldEditor(group1, CFGID_PARSIM_DEBUG, "Debug parallel simulation");
 			addSpacer(form);
 			Group group2 = createGroup(form, "Communications");

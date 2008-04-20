@@ -249,8 +249,8 @@ public class ConfigRegistry {
         "  FIELD-PATTERN := MATCHER-EXPRESSION\n" +
         "Examples (enter them without quotes):\n" +
         "  \"*\": captures all fields of all messages\n" +
-        "  \"*Frame:*Address,*Id\": captures all fields named ...Address and ...Id " +
-        "from messages of any class named ...Frame\n" +
+        "  \"*Frame:*Address,*Id\": captures all fields named somethingAddress and " +
+        "somethingId from messages of any class named somethingFrame\n" +
         "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage " +
         "recording the fields declared on the MyMessage class\n" +
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not " +
