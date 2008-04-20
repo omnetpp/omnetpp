@@ -357,7 +357,9 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_PARTITION_ID = addPerObjectEntry(
         "partition-id", CFG_STRING, null,
         "With parallel simulation: in which partition the module should be " +
-        "instantiated.");
+        "instantiated. Specify numeric partition ID, or a comma-separated list of " +
+        "partition IDs for compound modules that span across multiple partitions. " +
+        "Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
     public static final ConfigKey CFGID_PERFORM_GC = addGlobalEntry(
         "perform-gc", CFG_BOOL, "false",
         "Whether the simulation kernel should delete on network cleanup the " +
