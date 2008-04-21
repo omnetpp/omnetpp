@@ -1,4 +1,3 @@
-#
 # configure.user
 #
 # This file contains additional input for 'configure'. It is read (sourced)
@@ -12,8 +11,8 @@
 # Edit here if you want to use a different compiler from the one autodetected
 # by configure.
 #
-#CC=/usr/local/gcc/4.0.1/bin/gcc
-#CXX=/usr/local/gcc/4.0.1/bin/g++
+#CC=gcc
+#CXX=g++
 
 #
 # Compiler optimization switches. There are two sets of switches,
@@ -41,7 +40,7 @@ WITH_NETBUILDER=yes
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
-WITH_PARSIM=yes
+WITH_PARSIM=no
 
 #
 # Compiler and linker options for Tcl/Tk
