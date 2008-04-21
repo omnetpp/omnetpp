@@ -55,7 +55,7 @@ class SIM_API cStdVectorWatcherBase : public cWatchBase
 // Internal class
 //
 template<class T>
-class SIM_API cStdVectorWatcher : public cStdVectorWatcherBase
+class cStdVectorWatcher : public cStdVectorWatcherBase
 {
   protected:
     std::vector<T>& v;
@@ -81,7 +81,7 @@ void createStdVectorWatcher(const char *varname, std::vector<T>& v)
 // Internal class
 //
 template<class T>
-class SIM_API cStdPointerVectorWatcher : public cStdVectorWatcher<T>
+class cStdPointerVectorWatcher : public cStdVectorWatcher<T>
 {
   public:
     cStdPointerVectorWatcher(const char *name, std::vector<T>& var) : cStdVectorWatcher<T>(name, var) {}
@@ -98,7 +98,7 @@ void createStdPointerVectorWatcher(const char *varname, std::vector<T>& v)
 // Internal class
 //
 template<class T>
-class SIM_API cStdListWatcher : public cStdVectorWatcherBase
+class cStdListWatcher : public cStdVectorWatcherBase
 {
   protected:
     std::list<T>& v;
@@ -149,7 +149,7 @@ void createStdListWatcher(const char *varname, std::list<T>& v)
 // Internal class
 //
 template<class T>
-class SIM_API cStdPointerListWatcher : public cStdListWatcher<T>
+class cStdPointerListWatcher : public cStdListWatcher<T>
 {
   public:
     cStdPointerListWatcher(const char *name, std::list<T>& var) : cStdListWatcher<T>(name, var) {}
@@ -171,7 +171,7 @@ void createStdPointerListWatcher(const char *varname, std::list<T>& v)
 // Internal class
 //
 template<class T>
-class SIM_API cStdSetWatcher : public cStdVectorWatcherBase
+class cStdSetWatcher : public cStdVectorWatcherBase
 {
   protected:
     std::set<T>& v;
@@ -222,7 +222,7 @@ void createStdSetWatcher(const char *varname, std::set<T>& v)
 // Internal class
 //
 template<class T>
-class SIM_API cStdPointerSetWatcher : public cStdSetWatcher<T>
+class cStdPointerSetWatcher : public cStdSetWatcher<T>
 {
   public:
     cStdPointerSetWatcher(const char *name, std::set<T>& var) : cStdSetWatcher<T>(name, var) {}
@@ -244,7 +244,7 @@ void createStdPointerSetWatcher(const char *varname, std::set<T>& v)
 // Internal class
 //
 template<class KeyT, class ValueT, class CmpT>
-class SIM_API cStdMapWatcher : public cStdVectorWatcherBase
+class cStdMapWatcher : public cStdVectorWatcherBase
 {
   protected:
     std::map<KeyT,ValueT,CmpT>& m;
@@ -295,7 +295,7 @@ void createStdMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>& m)
 // Internal class
 //
 template<class KeyT, class ValueT, class CmpT>
-class SIM_API cStdPointerMapWatcher : public cStdMapWatcher<KeyT,ValueT,CmpT>
+class cStdPointerMapWatcher : public cStdMapWatcher<KeyT,ValueT,CmpT>
 {
   public:
     cStdPointerMapWatcher(const char *name, std::map<KeyT,ValueT,CmpT>& var) : cStdMapWatcher<KeyT,ValueT,CmpT>(name, var) {}
