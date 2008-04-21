@@ -18,11 +18,13 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
 import org.omnetpp.scave.editors.forms.BarChartEditForm;
 import org.omnetpp.scave.editors.forms.ChartEditForm;
+import org.omnetpp.scave.editors.forms.HistogramChartEditForm;
 import org.omnetpp.scave.editors.forms.LineChartEditForm;
 import org.omnetpp.scave.editors.forms.ScatterChartEditForm;
 import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
@@ -62,6 +64,9 @@ public class ChartMenuManager extends MenuManager {
 			else if (chart instanceof ScatterChart) {
 				add(new EditAction("Content...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ScatterChartEditForm.TAB_CONTENT)));
 				add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
+			}
+			else if (chart instanceof HistogramChart) {
+				add(new EditAction("Plot...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, HistogramChartEditForm.TAB_PLOT)));
 			}
 			add(new EditAction("Axes...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_AXES)));
 			add(new EditAction("Title...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_TITLES)));

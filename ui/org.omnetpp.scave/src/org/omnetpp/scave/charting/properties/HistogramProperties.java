@@ -15,7 +15,7 @@ public class HistogramProperties extends PropertySource {
 	private String propertyName(String baseName) {
 		return chartProps.propertyName(baseName, histogramId);
 	}
-
+	
 	@org.omnetpp.common.properties.Property(category="Histograms",id=ChartProperties.PROP_HIST_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
 	public String getHistColor() { return chartProps.getStringProperty(propertyName(ChartProperties.PROP_HIST_COLOR)); } // FIXME use RGB
 	public void setHistColor(String color) { chartProps.setProperty(propertyName(ChartProperties.PROP_HIST_COLOR), color); }

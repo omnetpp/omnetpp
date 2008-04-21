@@ -1,13 +1,24 @@
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LABELS_FONT;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_AXIS_TITLE_FONT;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BAR_BASELINE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_HIST_BAR;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_HIST_COLOR;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LABEL_FONT;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
+import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
@@ -46,20 +57,79 @@ public class HistogramChartCanvas extends ChartCanvas {
 		Assert.isLegal(name != null);
 		if (debug) System.out.println("HistogramChartCanvas.setProperty: "+name+"='"+value+"'");
 
-		if (PROP_HIST_BAR.equals(name))
+		if (PROP_X_AXIS_TITLE.equals(name))
+			setXAxisTitle(value);
+		else if (PROP_Y_AXIS_TITLE.equals(name))
+			setYAxisTitle(value);
+		else if (PROP_AXIS_TITLE_FONT.equals(name))
+			setAxisTitleFont(Converter.stringToSwtfont(value));
+		else if (PROP_LABEL_FONT.equals(name))
+			setTickLabelFont(Converter.stringToSwtfont(value));
+		else if (PROP_X_LABELS_ROTATE_BY.equals(name))
+			; //TODO PROP_X_LABELS_ROTATE_BY
+		else if (PROP_HIST_BAR.equals(name))
 			setBarType(Converter.stringToEnum(value, HistogramBar.class));
+		else if (PROP_BAR_BASELINE.equals(name))
+			setBarBaseline(Converter.stringToDouble(value));
 		else if (name.startsWith(PROP_HIST_COLOR))
 			setHistogramColor(getElementId(name), ColorFactory.asRGB(value));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
-			; // TODO
+			setLogarithmicY(Converter.stringToBoolean(value));
 		else 
 			super.setProperty(name, value);
+	}
+	
+	public void setXAxisTitle(String value) {
+		xAxis.setTitle(value != null ? value : DEFAULT_X_AXIS_TITLE);
+		chartChanged();
+	}
+	
+	public void setYAxisTitle(String value) {
+		yAxis.setTitle(value != null ? value : DEFAULT_Y_AXIS_TITLE);
+		chartChanged();
+	}
+	
+	public void setAxisTitleFont(Font value) {
+		if (value != null) {
+			xAxis.setTitleFont(value);
+			yAxis.setTitleFont(value);
+			chartChanged();
+		}
+	}
+
+	public void setTickLabelFont(Font font) {
+		if (font == null)
+			font = DEFAULT_LABELS_FONT;
+		if (font != null) {
+			xAxis.setTickFont(font);
+			yAxis.setTickFont(font);
+			chartChanged();
+		}
 	}
 	
 	public void setBarType(HistogramBar barType) {
 		if (barType == null)
 			barType = ChartDefaults.DEFAULT_HIST_BAR;
 		plot.setBarType(barType);
+		chartChanged();
+	}
+	
+	public void setBarBaseline(Double value) {
+		if (value == null)
+			value = DEFAULT_BAR_BASELINE;
+
+		plot.baseline = value;
+		chartArea = calculatePlotArea();
+		updateArea();
+		chartChanged();
+	}
+
+	public void setLogarithmicY(Boolean value) {
+		boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
+		transform = logarithmic ? new LogarithmicYTransform() : null;
+		yAxis.setLogarithmic(logarithmic);
+		chartArea = calculatePlotArea();
+		updateArea();
 		chartChanged();
 	}
 	

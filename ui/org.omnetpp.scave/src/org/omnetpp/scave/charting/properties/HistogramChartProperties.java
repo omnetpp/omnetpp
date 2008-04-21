@@ -25,6 +25,11 @@ public class HistogramChartProperties extends ChartProperties
 	public void setBarType(HistogramBar placement) { setProperty(ChartProperties.PROP_HIST_BAR, placement); }
 	public HistogramBar defaultBarType() { return ChartDefaults.DEFAULT_HIST_BAR; }
 	
+	@org.omnetpp.common.properties.Property(category="Plot",id=ChartProperties.PROP_BAR_BASELINE)
+	public Double getBarBaseline() { return getDoubleProperty(ChartProperties.PROP_BAR_BASELINE); }
+	public void setBarBaseline(Double baseline) { setProperty(ChartProperties.PROP_BAR_BASELINE, baseline); }
+	public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
+
 	/*======================================================================
 	 *                             Histograms
 	 *======================================================================*/

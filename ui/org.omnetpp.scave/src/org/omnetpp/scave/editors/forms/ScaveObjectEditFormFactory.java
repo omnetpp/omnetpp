@@ -11,6 +11,7 @@ import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
+import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
@@ -56,6 +57,8 @@ public class ScaveObjectEditFormFactory {
 			return new ScatterChartEditForm((ScatterChart)object, parent, formParameters, manager);
 		else if (object instanceof LineChart)
 			return new LineChartEditForm((LineChart)object, parent, formParameters, manager);
+		else if (object instanceof HistogramChart)
+			return new HistogramChartEditForm((HistogramChart)object, parent, formParameters, manager);
 		else if (object instanceof Chart)
 			return new ChartEditForm((Chart)object, parent, formParameters, manager);
 		else if (object instanceof ChartSheet)
