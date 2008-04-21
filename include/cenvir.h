@@ -70,7 +70,7 @@ extern SIM_API cEnvir *evPtr;
 
 
 /**
- * Interface to the environment (user interface) of the simulation. cEnvir
+ * cEnvir represents the "environment" of the simulation. cEnvir
  * is a common facade for the Cmdenv and Tkenv user interfaces (and any
  * other future user interface).
  *
@@ -82,18 +82,9 @@ extern SIM_API cEnvir *evPtr;
  *  - functions for exchanging information between the simulation and the
  *    environment.
  *
- * The implementation of cEnvir is <b>not</b> part of the simulation kernel,
- * it is in a separate library (the Envir library; see src/envir). This means that
- * customizers are free to replace the environment of the simulation as
- * they like, by simply linking the executable with a different library.
- *
- * The default (Envir library) implementation of cEnvir delegates its task to an
- * internal "simulation application" object. Cmdenv and Tkenv inherit from the
- * default simulation application class.
- *
- * The default (src/envir) implementation of cEnvir can be customized
- * by subclassing the classes declared in the envirext.h header (e.g.
- * cConfiguration, cRNG, cOutputVectorManager, cOutputScalarManager),
+ * The default implementation of cEnvir can be customized by subclassing 
+ * the classes declared in the envirext.h header (e.g. cConfiguration, 
+ * cRNG, cOutputVectorManager, cOutputScalarManager),
  * and selecting the new classes from <tt>omnetpp.ini</tt>.
  *
  * @ingroup Envir
