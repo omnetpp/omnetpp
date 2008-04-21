@@ -115,7 +115,7 @@ static bool selectByModulePath(cModule *mod, void *data)
     // actually, this is selectByModuleFullPathPattern()
     const std::vector<std::string>& v = *(const std::vector<std::string> *)data;
     std::string path = mod->fullPath();
-    for (int i=0; i<v.size(); i++)
+    for (int i=0; i<(int)v.size(); i++)
         if (PatternMatcher(v[i].c_str(), true, true, true).matches(path.c_str()))
             return true;
     return false;

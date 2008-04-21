@@ -180,7 +180,7 @@ DEF(replace, "SSS/L->S", {
     int index = 0;
     if (argc==4) {
         index = (int)argv[3].dbl;
-        if (index<0 || index>str.size())
+        if (index<0 || index>(int)str.size())
             throw cRuntimeError("replace(): start index out of bounds");
     }
 
@@ -200,12 +200,11 @@ DEF(replaceFirst, "SSS/L->S", {
     int index = 0;
     if (argc==4) {
         index = (int)argv[3].dbl;
-        if (index<0 || index>str.size())
+        if (index<0 || index>(int)str.size())
             throw cRuntimeError("replaceFirst(): start index out of bounds");
     }
 
     unsigned int searchSize = search.size();
-    unsigned int replacementSize = replacement.size();
     if ((index = str.find(search, index)) != std::string::npos)
         str.replace(index, searchSize, replacement);
     return str;

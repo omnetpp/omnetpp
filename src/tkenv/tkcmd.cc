@@ -843,7 +843,7 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
-   char *statename;
+   const char *statename;
    switch (app->getSimulationState())
    {
        case Tkenv::SIM_NONET:       statename = "SIM_NONET"; break;
@@ -856,7 +856,7 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        case Tkenv::SIM_BUSY:        statename = "SIM_BUSY"; break;
        default: Tcl_SetResult(interp, TCLCONST("invalid simulation state"), TCL_STATIC); return TCL_ERROR;
    }
-   Tcl_SetResult(interp, statename, TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST(statename), TCL_STATIC);
    return TCL_OK;
 }
 
