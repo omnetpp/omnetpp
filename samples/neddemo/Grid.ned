@@ -8,7 +8,7 @@
 //
 
 
-simple MeshNode extends Node
+simple GridNode extends Node
 {
     gates:
         inout up;
@@ -18,13 +18,13 @@ simple MeshNode extends Node
 }
 
 
-network Mesh
+network Grid
 {
     parameters:
         int height @prompt("Number of rows") = default(4);
         int width @prompt("Number of columns") = default(6);
     submodules:
-        node[height*width]: MeshNode {
+        node[height*width]: GridNode {
             parameters:
                 @display("p=,,m,$width");
         }
