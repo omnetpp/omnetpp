@@ -136,7 +136,7 @@ void cGate::setGateId(int id)
     // invalidate fullname, as it may have changed (it'll be recreated on demand)
     if (fullname)
     {
-        delete [] fullname;
+        stringPool.release(fullname);
         fullname = NULL;
     }
 }
