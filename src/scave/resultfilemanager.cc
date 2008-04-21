@@ -1033,7 +1033,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         			"invalid scalar file: missing statistics declaration");
         	Statistics stat(ctx.count, ctx.min, ctx.max, ctx.sum, ctx.sumSqr);
         	const ScalarResults &scalars = ctx.fileRef->scalarResults;
-        	const StringMap &attrs = ctx.lastResultItemIndex < scalars.size() ?
+        	const StringMap &attrs = ctx.lastResultItemIndex < (int)scalars.size() ?
         								scalars[ctx.lastResultItemIndex].attributes : StringMap();
     		ctx.lastResultItemType = HISTOGRAM;
     		ctx.lastResultItemIndex = addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.statisticName.c_str(), stat, attrs);
@@ -1064,17 +1064,17 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         else if (ctx.lastResultItemIndex >= 0) // resultItem attribute
         {
         	if (ctx.lastResultItemType == SCALAR)
-        		for (int i=ctx.lastResultItemIndex; i < ctx.fileRef->scalarResults.size() ;++i)
+        		for (int i=ctx.lastResultItemIndex; i < (int)ctx.fileRef->scalarResults.size() ;++i)
         		{
         			ctx.fileRef->scalarResults[i].attributes[attrName] = attrValue;
         		}
         	else if (ctx.lastResultItemType == VECTOR)
-        		for (int i=ctx.lastResultItemIndex; i < ctx.fileRef->vectorResults.size() ;++i)
+        		for (int i=ctx.lastResultItemIndex; i < (int)ctx.fileRef->vectorResults.size() ;++i)
         		{
         			ctx.fileRef->vectorResults[i].attributes[attrName] = attrValue;
         		}
         	else if (ctx.lastResultItemType == HISTOGRAM)
-        		for (int i=ctx.lastResultItemIndex; i < ctx.fileRef->histogramResults.size() ;++i)
+        		for (int i=ctx.lastResultItemIndex; i < (int)ctx.fileRef->histogramResults.size() ;++i)
         		{
         			ctx.fileRef->histogramResults[i].attributes[attrName] = attrValue;
         		}
