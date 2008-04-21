@@ -59,9 +59,24 @@ while (<FILE>)
          $fieldPrintfType = "%s";
          $fieldDefault = "NULL";
       }
+      elsif ($fieldType eq "bool")
+      {
+         $fieldPrintfType = "%d";
+         $fieldDefault = "false";
+      }
+      elsif ($fieldType eq "int64")
+      {
+         $fieldPrintfType = "%\"INT64_PRINTF_FORMAT\"d";
+         $fieldDefault = "-1";
+      }
       elsif ($fieldType eq "long")
       {
          $fieldPrintfType = "%ld";
+         $fieldDefault = "-1";
+      }
+      elsif ($fieldType eq "short")
+      {
+         $fieldPrintfType = "%d";
          $fieldDefault = "-1";
       }
       elsif ($fieldType eq "int")
@@ -338,7 +353,7 @@ foreach $class (@classes)
       else
       {
          print ENTRIES_CC_FILE "    {\n";
-         print ENTRIES_CC_FILE "        sprintf(buffer, \"%ld\", (long)$field->{NAME});\n";
+         print ENTRIES_CC_FILE "        sprintf(buffer, \"$field->{PRINTFTYPE}\", $field->{NAME});\n";
          print ENTRIES_CC_FILE "        return buffer;\n";
          print ENTRIES_CC_FILE "    }\n";
       }
