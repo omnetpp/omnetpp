@@ -2026,6 +2026,15 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    E_CATCH;
 }
 
+// On Linux, it would be advisable to set the window type property properly
+// (dialog, tooltip, etc), so that Compiz etc chooses the correct animation
+// effects. In the Tcl code it would go like this:
+//
+//  setwindowproperty .tooltip _NET_WM_WINDOW_TYPE _NET_WM_WINDOW_TYPE_TOOLTIP
+//
+// Using the command defined below. It is currently unused (code doesn't compile
+// because it refers to TkWindow which is an internal Tk data structure).
+//
 int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=4) {Tcl_SetResult(interp, TCLCONST("3 args expected"), TCL_STATIC); return TCL_ERROR;}
