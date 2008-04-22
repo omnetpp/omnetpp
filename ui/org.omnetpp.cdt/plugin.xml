@@ -44,7 +44,6 @@
             id="org.omnetpp.cdt.msvc.toolchain.base"
             isAbstract="true"
             name="Microsoft Visual C++ for OMNeT++"
-            osList="win32"
             superClass="org.eclipse.cdt.msvc.toolchain.base"
             supportsManagedBuild="false">
          <builder
@@ -56,7 +55,7 @@
       <toolChain
             id="org.omnetpp.cdt.mingw.toolchain.base"
             isAbstract="true"
-            name="MinGW GCC for OMNeT++"
+            name="MinGW for OMNeT++"
             superClass="cdt.managedbuild.toolchain.gnu.mingw.base"
             supportsManagedBuild="false">
          <builder
@@ -68,7 +67,7 @@
       <toolChain
             id="org.omnetpp.cdt.gnu.toolchain.base"
             isAbstract="true"
-            name="Linux GCC for OMNeT++"
+            name="GCC for OMNeT++"
             superClass="cdt.managedbuild.toolchain.gnu.base"
             supportsManagedBuild="false">
          <builder
