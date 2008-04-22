@@ -80,7 +80,7 @@ public class SetFilterAction extends AbstractScaveAction {
 				RunAttribute attr = (RunAttribute)payload;
 				String name = attr.getName();
 				String value = attr.getValue();
-				filterUtil.setField(name, value);
+				filterUtil.setField("attr:"+name, value);
 			}
 			return filterUtil;
 		}
