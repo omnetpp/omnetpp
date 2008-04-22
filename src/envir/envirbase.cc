@@ -843,6 +843,7 @@ void EnvirBase::simulationEvent(cMessage *msg)
     if (feventlog)
     {
         cModule *mod = simulation.contextModule();
+        EventLogWriter::updateEventLogRecordingEnabled();
         EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog,
             simulation.eventNumber(), simulation.simTime(), mod->id(),
             msg->previousEventNumber(), msg->id());
