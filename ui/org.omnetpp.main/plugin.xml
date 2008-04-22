@@ -7,8 +7,8 @@
 	 point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="OMNEST IDE">
-          <property name="appName" value="OMNEST IDE"/>
+            name="OMNeT++ IDE - Academic Edition">
+          <property name="appName" value="OMNeT++ IDE - Academic Edition"/>
           <property name="preferenceCustomization" value="plugin_customization.ini"/>
          <property
           		name="introTitle"
@@ -30,7 +30,7 @@
 				value="%introDescription-samples"/>
     <property
           name="aboutText"
-          value="OMNEST Integrated Development Environment&#x0A;&#x0A;Version: {featureVersion}&#x0A;&#x0A;Copyright (C) 2005, 2008 OpenSim Ltd.&#x0A;For more info, please visit http://www.omnetpp.org"/>
+          value="OMNeT++ Integrated Development Environment."/>
     <property
           name="aboutImage"
           value="icons/omnest128.gif"/>
