@@ -86,7 +86,7 @@ public class ComboFieldEditor extends FieldEditor {
 			}
 		});
 
-		// commit on losing focus, select all on gaining focus, etc.
+		// commit on losing focus
 		addFocusListenerTo(combo);
 		
 		// when the background gets clicked, transfer focus to the text widget
