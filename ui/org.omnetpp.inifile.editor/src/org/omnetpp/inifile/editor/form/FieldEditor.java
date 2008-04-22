@@ -87,7 +87,14 @@ public abstract class FieldEditor extends Composite {
 	}
 	
 	protected void showErrorDialog(RuntimeException e) {
-		reread(); // restore "legal" widget contents; must be done first, or error dialog will pop up twice
+	    try {
+	        reread(); // restore "legal" widget contents; must be done first, or error dialog will pop up twice
+	    } 
+	    catch (RuntimeException e2) {
+	        InifileEditorPlugin.logError("error while handling error \""+e.getMessage()+"\"", e2);
+	        MessageDialog.openError(getShell(), "Error", e.getMessage()+".\nAlso: unable to re-parse document after the error: "+e2.getMessage());
+	        return;
+	    }
 		MessageDialog.openError(getShell(), "Error", e.getMessage()+".");
 	}
 
