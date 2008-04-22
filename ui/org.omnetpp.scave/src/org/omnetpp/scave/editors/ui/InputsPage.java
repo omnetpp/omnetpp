@@ -190,11 +190,6 @@ public class InputsPage extends ScaveEditorPage {
 				inputFilesPanel.getRemoveFileButton(), 
 				inputFilesPanel.getTreeViewer(),
 				new RemoveAction());
-		
-		// double-clicks
-		configureViewerDefaultAction(
-				inputFilesPanel.getTreeViewer(),
-				new SetFilterAction());
 	}
 
 	/**
