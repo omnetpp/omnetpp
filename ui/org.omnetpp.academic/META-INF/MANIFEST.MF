@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Dummy Plug-in
+Bundle-SymbolicName: org.omnetpp.academic
+Bundle-Version: 4.0.0.qualifier
+Bundle-Vendor: OpenSim Ltd.
