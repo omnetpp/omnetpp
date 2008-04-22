@@ -14,6 +14,7 @@ import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
+import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 
 /**
@@ -198,9 +199,10 @@ public class EventLogInput
 
 	public ModuleTreeItem getModuleTreeRoot() {
 		if (moduleTreeRoot == null) {
-			ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
-			for (int i = 1; i <= eventLog.getNumModuleCreatedEntries(); i++) {
-				ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(i);
+		    ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
+            ModuleCreatedEntryList moduleCreatedEntryList = eventLog.getModuleCreatedEntries();
+            for (int i = 0; i < moduleCreatedEntryList.size(); i++) {
+                ModuleCreatedEntry entry = moduleCreatedEntryList.get(i);
 				
 				if (entry != null)
 					treeBuilder.addModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName());

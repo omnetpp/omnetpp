@@ -129,6 +129,7 @@ namespace std {
    //specialize_std_map_on_both(string,,,,string,,,);
    //%template(StringMap) map<string,string>;
 
+   %template(ModuleCreatedEntryList) vector<ModuleCreatedEntry*>;
    %template(IMessageDependencyList) vector<IMessageDependency*>;
    %template(MessageDependencyList) vector<MessageDependency*>;
    %template(FilteredMessageDependencyList) vector<FilteredMessageDependency*>;

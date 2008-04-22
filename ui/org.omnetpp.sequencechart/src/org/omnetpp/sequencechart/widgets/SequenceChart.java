@@ -184,7 +184,8 @@ public class SequenceChart
 
 	private boolean showArrowHeads = true; // whether arrow heads are drawn or not
 	private boolean showMessageNames = true;
-	private boolean showReuseMessages; // show or hide reuse message arrows
+    private boolean showSelfMessages = true; // show or hide reuse message arrows
+	private boolean showReuseMessages = false; // show or hide reuse message arrows
 	private boolean showEventNumbers = true;
 	private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of timelines
 
@@ -416,6 +417,21 @@ public class SequenceChart
 		this.showMessageNames = showMessageNames;
 		clearCanvasCacheAndRedraw();
 	}
+
+    /**
+     * Returns whether self messages are shown in the chart.
+     */
+    public boolean getShowSelfMessages() {
+        return showSelfMessages;
+    }
+
+    /**
+     * Shows/Hides self messages.
+     */
+    public void setShowSelfMessages(boolean showSelfMessages) {
+        this.showSelfMessages = showSelfMessages;
+        clearCanvasCacheAndRedraw();
+    }
 
 	/**
 	 * Returns whether reuse messages are shown in the chart.
@@ -2008,6 +2024,7 @@ public class SequenceChart
         int x1, y1 = getEventYViewportCoordinate(causeEventPtr);
         int x2, y2 = getEventYViewportCoordinate(consequenceEventPtr);
         int invalid = -Integer.MAX_VALUE;
+        int fontHeight = font.getFontData()[0].getHeight();
 
         // calculate horizontal coordinates based on the maximum width
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / pixelPerTimelineCoordinate;
@@ -2050,7 +2067,9 @@ public class SequenceChart
 
 		// test if self-message
 		if (y1 == y2) {
-			int fontHeight = font.getFontData()[0].getHeight();
+		    if (!showSelfMessages)
+		        return false;
+
 			int eventNumberDelta = sequenceChartFacade.Event_getEventNumber(consequenceEventPtr) - sequenceChartFacade.Event_getEventNumber(causeEventPtr);
 			int numberOfPossibleEllipseHeights = Math.max(1, (int)Math.round((axisSpacing - fontHeight) / (fontHeight + 10)));
 			int halfEllipseHeight = (int)Math.max(axisSpacing * (eventNumberDelta % numberOfPossibleEllipseHeights + 1) / (numberOfPossibleEllipseHeights + 1), MINIMUM_HALF_ELLIPSE_HEIGHT);
@@ -2213,8 +2232,17 @@ public class SequenceChart
 			if (showArrowHeads)
 				drawArrowHead(graphics, arrowHeadFillColor, x2, y2, x2 - x1, y2 - y1);
 
-			if (showMessageNames)
-				drawMessageDependencyLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, (y1 + y2) / 2, 3, y1 < y2 ? -15 : 0);
+			if (showMessageNames) {
+			    int mx = (x1 + x2) / 2;
+			    int my = (y1 + y2) / 2;
+			    int rowCount = Math.min(7, Math.max(1, Math.abs(y2 - y1) / fontHeight - 8));
+			    int rowIndex = ((causeEventNumber + consequenceEventNumber) % rowCount) - rowCount / 2;
+			    int dy = rowIndex * fontHeight;
+			    int dx = y2 == y1 ? 0 : (int)((double)(x2 - x1) / (y2 - y1) * dy);
+                mx += dx;
+			    my += dy;
+				drawMessageDependencyLabel(graphics, messageDependencyPtr, mx, my, 3, y1 < y2 ? -15 : 0);
+			}
 		}
 
 		// when fitting we should have already returned

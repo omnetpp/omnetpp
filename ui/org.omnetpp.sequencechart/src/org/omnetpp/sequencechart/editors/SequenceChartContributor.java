@@ -139,6 +139,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 	protected SequenceChartAction showMessageNamesAction;
 
+    protected SequenceChartAction showSelfMessagesAction;
+	
 	protected SequenceChartAction showReuseMessagesAction;
 
 	protected SequenceChartAction showArrowHeadsAction;
@@ -180,6 +182,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.filterAction = createFilterAction();
 		this.showEventNumbersAction = createShowEventNumbersAction();
 		this.showMessageNamesAction = createShowMessageNamesAction();
+        this.showSelfMessagesAction = createShowSelfMessagesAction();
 		this.showReuseMessagesAction = createShowReuseMessagesAction();
 		this.showArrowHeadsAction = createShowArrowHeadsAction();
 		this.increaseSpacingAction = createIncreaseSpacingAction();
@@ -288,6 +291,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				menuManager.add(separatorAction);
 				menuManager.add(showEventNumbersAction);
 				menuManager.add(showMessageNamesAction);
+                menuManager.add(showSelfMessagesAction);
 				menuManager.add(showReuseMessagesAction);
 				menuManager.add(showArrowHeadsAction);
 				menuManager.add(separatorAction);
@@ -801,21 +805,36 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		};
 	}
 	
-	private SequenceChartAction createShowReuseMessagesAction() {
-		return new SequenceChartAction("Show Reuse Messages", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
+	private SequenceChartAction createShowSelfMessagesAction() {
+		return new SequenceChartAction("Show Self Messages", Action.AS_CHECK_BOX) {
 			@Override
 			public void run() {
-				sequenceChart.setShowReuseMessages(!sequenceChart.getShowReuseMessages());
+				sequenceChart.setShowSelfMessages(!sequenceChart.getShowSelfMessages());
 				update();
 			}
 			
 			@Override
 			public void update() {
-				setChecked(sequenceChart.getShowReuseMessages());
+				setChecked(sequenceChart.getShowSelfMessages());
 			}
 		};
 	}
 	
+    private SequenceChartAction createShowReuseMessagesAction() {
+        return new SequenceChartAction("Show Reuse Messages", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
+            @Override
+            public void run() {
+                sequenceChart.setShowReuseMessages(!sequenceChart.getShowReuseMessages());
+                update();
+            }
+            
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowReuseMessages());
+            }
+        };
+    }
+    
 	private SequenceChartAction createShowArrowHeadsAction() {
 		return new SequenceChartAction("Show Arrowheads", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_ARROW_HEADS)) {
 			@Override

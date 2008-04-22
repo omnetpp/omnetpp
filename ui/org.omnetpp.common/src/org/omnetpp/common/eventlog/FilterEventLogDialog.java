@@ -33,6 +33,7 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
+import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
 import org.omnetpp.eventlog.engine.PStringVector;
 
 @SuppressWarnings("unused")
@@ -630,10 +631,10 @@ public class FilterEventLogDialog
             }
         });
 
-        int count = eventLog.getNumModuleCreatedEntries();
+        ModuleCreatedEntryList moduleCreatedEntryList = eventLog.getModuleCreatedEntries();
 		Set<String> moduleClassNameSet = new HashSet<String>();
-		for (int i = 0; i < count; i++) {
-			ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(i);
+		for (int i = 0; i < moduleCreatedEntryList.size(); i++) {
+			ModuleCreatedEntry moduleCreatedEntry = moduleCreatedEntryList.get(i);
 			if (moduleCreatedEntry != null)
 				moduleClassNameSet.add(moduleCreatedEntry.getModuleClassName());
 		}
@@ -677,8 +678,9 @@ public class FilterEventLogDialog
 				return "(id = " + moduleTreeItem.getModuleId() + ") " + moduleTreeItem.getModuleFullPath();
 			}
 		});
-		for (int i = 0; i < eventLog.getNumModuleCreatedEntries(); i++) {
-			ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(i);
+		ModuleCreatedEntryList moduleCreatedEntries = eventLog.getModuleCreatedEntries();
+		for (int i = 0; i < moduleCreatedEntries.size(); i++) {
+			ModuleCreatedEntry moduleCreatedEntry = moduleCreatedEntries.get(i);
 			
 			if (moduleCreatedEntry != null)
 				moduleIds.add(moduleCreatedEntry.getModuleId());
