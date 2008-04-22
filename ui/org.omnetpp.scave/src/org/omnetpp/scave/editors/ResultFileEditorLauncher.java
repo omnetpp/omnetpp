@@ -1,10 +1,15 @@
 package org.omnetpp.scave.editors;
 
+import java.util.regex.Pattern;
+
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -73,20 +78,26 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
 		if (resultFiles.length > 0)
 		{
 			IFile resultFile = resultFiles[0];
-			IPath analysisFilePath = resultFile.getFullPath().removeFileExtension().addFileExtension("anf");
-			IFile analysisFile = root.getFile(analysisFilePath);
+			IPath baseName = resultFile.getFullPath().removeFileExtension();
+
+			IContainer container = resultFile.getParent() instanceof IProject ? resultFile.getParent() : resultFile.getParent().getParent(); 
+			IPath analysisFileName = new Path(suffixPattern.matcher(baseName.lastSegment()).replaceFirst("")).addFileExtension("anf"); 
+			IFile analysisFile = container.getFile(analysisFileName);
+			
 			if (analysisFile.getLocation().toFile().exists()) {
 				return analysisFile; // return existing
 			}
 			else {
-				String baseName  = analysisFile.getFullPath().removeFileExtension().toString();
-				openNewAnalysisWizard(analysisFile, new String[] {baseName+".vec", baseName+".sca"}); 
+				String fileName = suffixPattern.matcher(baseName.toString()).replaceFirst("-*");  // convert numeric suffices to *
+				openNewAnalysisWizard(analysisFile, new String[] {fileName+".vec", fileName+".sca"}); 
 				return null; // wizard opens the editor, too, so we don't need to
 			}
 		}
 		else
 			return null;
 	}
+	
+	private static final Pattern suffixPattern = Pattern.compile("-[0-9]+$");
 	
 	/**
 	 * Opens the "New Analysis" wizard. The new analysis file will
