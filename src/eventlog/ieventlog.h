@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include <set>
+#include <vector>
 #include "filereader.h"
 #include "eventlogdefs.h"
 #include "ievent.h"
@@ -95,13 +96,17 @@ class EVENTLOG_API IEventLog
          */
         virtual std::set<const char *>& getMessageClassNames() = 0;
         /**
-         * Returns the entry which describes the module with the given id.
-         */
-        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) = 0;
-        /**
          * Returns the number of module created entries which is actually the next unused module id.
          */
         virtual int getNumModuleCreatedEntries() = 0;
+        /**
+         * Returns the entry with the given index.
+         */
+        virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries() = 0;
+        /**
+         * Returns the entry which describes the module with the given id.
+         */
+        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) = 0;
 
         /**
          * Returns the event log entry describing the whole simulation.
@@ -138,9 +143,12 @@ class EVENTLOG_API IEventLog
 
         /**
          * Returns the approximate number of events present in the log.
-         * This value may be less, equal or greater than the real number of events.
+         * This value may be less, equal or greater than the real number of events if there are many.
          */
         virtual long getApproximateNumberOfEvents() = 0;
+        /**
+         * Returns an event approximately at the given percentage in terms of eventlog size.
+         */
         virtual IEvent *getApproximateEventAt(double percentage) = 0;
 
         /**

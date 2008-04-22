@@ -23,8 +23,8 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
 
     // collection limits
     collectMessageReuses = false;
-    maximumNumberOfCauses = maximumNumberOfConsequences = 10;
-    maximumCauseDepth = maximumConsequenceDepth = 30;
+    maximumNumberOfCauses = maximumNumberOfConsequences = 5;
+    maximumCauseDepth = maximumConsequenceDepth = 15;
 
     // trace filter parameters
     tracedEventNumber = -1;
@@ -210,10 +210,39 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
 
     // event's module
     if (enableModuleFilter) {
-        ModuleCreatedEntry *moduleCreatedEntry = event->getModuleCreatedEntry();
+        ModuleCreatedEntry *eventModuleCreatedEntry = event->getModuleCreatedEntry();
+        ModuleCreatedEntry *moduleCreatedEntry = eventModuleCreatedEntry;
+        // match parent chain of event's module (to handle compound modules too)
+        while (moduleCreatedEntry) {
+            if (matchesModuleCreatedEntry(moduleCreatedEntry)) {
+                if (moduleCreatedEntry == eventModuleCreatedEntry)
+                    goto MATCHES;
+                else {
+                    // check if the event has a cause or consequence referring
+                    // outside the matching compound module
+                    IMessageDependencyList *causes = event->getCauses();
+                    for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
+                        IEvent *causeEvent = (*it)->getCauseEvent();
+                        if (causeEvent && !isAncestorModuleCreatedEntry(moduleCreatedEntry, causeEvent->getModuleCreatedEntry()))
+                            goto MATCHES;
+                    }
 
-        if (!moduleCreatedEntry || !matchesModuleCreatedEntry(moduleCreatedEntry))
-            return false;
+                    IMessageDependencyList *consequences = event->getConsequences();
+                    for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++) {
+                        IEvent *consequenceEvent = (*it)->getConsequenceEvent();
+                        if (consequenceEvent && !isAncestorModuleCreatedEntry(moduleCreatedEntry, consequenceEvent->getModuleCreatedEntry()))
+                            goto MATCHES;
+                    }
+                }
+            }
+
+            moduleCreatedEntry = getModuleCreatedEntry(moduleCreatedEntry->parentModuleId);
+        }
+
+        // no match
+        return false; 
+        // match found
+        MATCHES:;
     }
 
     // event's message
@@ -494,9 +523,10 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
 std::vector<int> FilteredEventLog::getSelectedModuleIds()
 {
     std::vector<int> moduleIds;
+    std::vector<ModuleCreatedEntry *> &moduleCreatedEntries = eventLog->getModuleCreatedEntries();
 
-    for (int i = 0; i < eventLog->getNumModuleCreatedEntries(); i++) {
-        ModuleCreatedEntry *moduleCreatedEntry = eventLog->getModuleCreatedEntry(i);
+    for (std::vector<ModuleCreatedEntry *>::iterator it = moduleCreatedEntries.begin(); it != moduleCreatedEntries.end(); it++) {
+        ModuleCreatedEntry *moduleCreatedEntry = *it;
 
         if (moduleCreatedEntry && matchesModuleCreatedEntry(moduleCreatedEntry))
             moduleIds.push_back(moduleCreatedEntry->moduleId);
@@ -600,4 +630,16 @@ FilteredEvent *FilteredEventLog::cacheFilteredEvent(long eventNumber)
         eventNumberToFilteredEventMap[eventNumber] = filteredEvent;
         return filteredEvent;
     }
+}
+
+bool FilteredEventLog::isAncestorModuleCreatedEntry(ModuleCreatedEntry *ancestor, ModuleCreatedEntry *descendant)
+{
+    while (descendant) {
+        if (descendant == ancestor)
+            return true;
+        else
+            descendant = getModuleCreatedEntry(descendant->parentModuleId);
+    }
+
+    return false;
 }

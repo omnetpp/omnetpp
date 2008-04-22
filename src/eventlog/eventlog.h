@@ -96,8 +96,9 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual long getNumParsedEvents() { return numParsedEvents; }
         virtual std::set<const char *>& getMessageNames() { return messageNames; }
         virtual std::set<const char *>& getMessageClassNames() { return messageClassNames; }
-        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }
         virtual int getNumModuleCreatedEntries() { return initializationModuleIdToModuleCreatedEntryMap.size(); }
+        virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries();
+        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }
         virtual SimulationBeginEntry *getSimulationBeginEntry() { return simulationBeginEntry; }
 
         virtual Event *getFirstEvent();

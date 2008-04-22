@@ -28,6 +28,25 @@ IMessageDependency::IMessageDependency(IEventLog *eventLog, bool isReuse)
     this->isReuse = isReuse;
 }
 
+
+bool IMessageDependency::corresponds(IMessageDependency *dependency1, IMessageDependency *dependency2)
+{
+    if (!dependency1 || !dependency2)
+        return false;
+
+    BeginSendEntry *entry1 = dependency1->getBeginSendEntry();
+    BeginSendEntry *entry2 = dependency2->getBeginSendEntry();
+
+    if (!entry1 || !entry2)
+        return false;
+
+    return
+        (entry1->messageId != -1 && entry1->messageId == entry2->messageId) || 
+        (entry1->messageTreeId != -1 && entry1->messageTreeId == entry2->messageTreeId) ||
+        (entry1->messageEncapsulationId != -1 && entry1->messageEncapsulationId == entry2->messageEncapsulationId) ||
+        (entry1->messageEncapsulationTreeId != -1 && entry1->messageEncapsulationTreeId == entry2->messageEncapsulationTreeId);
+}
+
 /**************************************************/
 
 MessageDependency::MessageDependency(IEventLog *eventLog, bool isReuse, long eventNumber, int beginSendEntryNumber)
@@ -194,6 +213,16 @@ simtime_t& MessageDependency::getConsequenceSimulationTime()
     }
 }
 
+bool MessageDependency::equals(IMessageDependency *other)
+{
+    MessageDependency *otherMessageDependency = dynamic_cast<MessageDependency *>(other);
+    return otherMessageDependency && 
+        getCauseEventNumber() == otherMessageDependency->getCauseEventNumber() &&
+        getCauseBeginSendEntryNumber() == otherMessageDependency->getCauseBeginSendEntryNumber() &&
+        getConsequenceEventNumber() == otherMessageDependency->getConsequenceEventNumber() &&
+        getConsequenceBeginSendEntryNumber() == otherMessageDependency->getConsequenceBeginSendEntryNumber();
+}
+
 void MessageDependency::print(FILE *file)
 {
     printCause(file);
@@ -256,6 +285,14 @@ IEvent *FilteredMessageDependency::getConsequenceEvent()
         return NULL;
     else
         return eventLog->getEventForEventNumber(consequenceEventNumber);
+}
+
+bool FilteredMessageDependency::equals(IMessageDependency *other)
+{
+    FilteredMessageDependency *otherFiltered = dynamic_cast<FilteredMessageDependency *>(other);
+    return otherFiltered && 
+        beginMessageDependency->equals(otherFiltered->beginMessageDependency) &&
+        endMessageDependency->equals(otherFiltered->endMessageDependency);
 }
 
 void FilteredMessageDependency::print(FILE *file)

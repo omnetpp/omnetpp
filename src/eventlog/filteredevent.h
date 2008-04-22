@@ -83,8 +83,9 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual void print(FILE *file = stdout, bool outputEventLogMessages = true) { getEvent()->print(file, outputEventLogMessages); }
 
     protected:
-        IMessageDependencyList *getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool isReuse, int level);
-        IMessageDependencyList *getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool isReuse, int level);
+        void getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool isReuse, int level);
+        void getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool isReuse, int level);
+        void pushNewFilteredMessageDependency(IMessageDependencyList *messageDependencies, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency);
 };
 
 NAMESPACE_END

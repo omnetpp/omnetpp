@@ -67,6 +67,7 @@ void Event::clearInternalState()
     numBeginSendEntries = -1;
 
     eventEntry = NULL;
+    moduleCreatedEntry = NULL;
     cause = NULL;
     causes = NULL;
     consequences = NULL;
@@ -92,7 +93,10 @@ IEventLog *Event::getEventLog()
 
 ModuleCreatedEntry *Event::getModuleCreatedEntry()
 {
-    return eventLog->getModuleCreatedEntry(getModuleId());
+    if (!moduleCreatedEntry)
+        moduleCreatedEntry = eventLog->getModuleCreatedEntry(getModuleId());
+
+    return moduleCreatedEntry;
 }
 
 file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
@@ -239,16 +243,20 @@ Event *Event::getNextEvent()
 
 Event *Event::getCauseEvent()
 {
-    if (getCauseEventNumber() != -1)
-        return eventLog->getEventForEventNumber(getCauseEventNumber());
+    int causeEventNumber = getCauseEventNumber();
+
+    if (causeEventNumber != -1)
+        return eventLog->getEventForEventNumber(causeEventNumber);
     else
         return NULL;
 }
 
 BeginSendEntry *Event::getCauseBeginSendEntry()
 {
-    if (getCause())
-        return getCause()->getCauseBeginSendEntry();
+    MessageDependency *cause = getCause();
+
+    if (cause)
+        return cause->getCauseBeginSendEntry();
     else
         return NULL;
 }

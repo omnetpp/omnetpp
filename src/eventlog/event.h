@@ -41,6 +41,7 @@ class EVENTLOG_API Event : public IEvent
         file_offset_t beginOffset; // file offset where the event starts
         file_offset_t endOffset; // file offset where the event ends (ie. begin of next event)
         EventEntry *eventEntry; // the event log entry that corresponds to the actual event ("E" line)
+        ModuleCreatedEntry *moduleCreatedEntry;
         int numEventLogMessages;
         int numBeginSendEntries;
 

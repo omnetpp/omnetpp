@@ -175,17 +175,17 @@ static void setupEventLogObjectPrinter()
                  std::vector<MatchExpression> fieldNameMatchExpressions;
 
                  for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
-                     fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, false, false));
+                     fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
 
                  fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
              }
              else {
                  std::vector<MatchExpression> fieldNameMatchExpressions;
-                 fieldNameMatchExpressions.push_back(MatchExpression("*", false, false, false));
+                 fieldNameMatchExpressions.push_back(MatchExpression("*", false, true, true));
                  fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
              }
 
-             objectMatchExpressions.push_back(MatchExpression(objectPattern, false, false, false));
+             objectMatchExpressions.push_back(MatchExpression(objectPattern, false, true, true));
          }
 
          eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNameMatchExpressionsList, 3);

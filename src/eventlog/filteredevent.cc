@@ -178,7 +178,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
 
 // TODO: LONG RUNNING OPERATION
 // this is recursive and might take some time
-IMessageDependencyList *FilteredEvent::getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool isReuse, int level)
+void FilteredEvent::getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool isReuse, int level)
 {
     // returns a list of dependencies, where the consequence is this event,
     // and the other end is no further away than getMaximumCauseDepth() and
@@ -190,28 +190,28 @@ IMessageDependencyList *FilteredEvent::getCauses(IEvent *event, IMessageDependen
         IMessageDependency *messageDependency = *it;
         IEvent *causeEvent = messageDependency->getCauseEvent();
 
+        if (causes->size() == filteredEventLog->getMaximumNumberOfCauses())
+            return;
+
         if (causeEvent && (filteredEventLog->getCollectMessageReuses() || !messageDependency->getIsReuse())) {
             //printf("*** Checking at level %d for cause event number %ld\n", level, causeEvent->getEventNumber());
             // TODO: take care about maximum number of dependencies
             bool effectiveIsReuse = isReuse | messageDependency->getIsReuse();
-            if (filteredEventLog->matchesFilter(causeEvent)) {
+            if (filteredEventLog->matchesFilter(causeEvent) &&
+                (level == 0 || IMessageDependency::corresponds(messageDependency, endMessageDependency)))
+            {
                 if (level == 0)
                     causes->push_back(messageDependency->duplicate(filteredEventLog));
                 else
-                    causes->push_back(
-                        new FilteredMessageDependency(filteredEventLog, effectiveIsReuse,
-                            messageDependency->duplicate(filteredEventLog->getEventLog()),
-                            endMessageDependency->duplicate(filteredEventLog->getEventLog())));
+                    pushNewFilteredMessageDependency(causes, effectiveIsReuse, messageDependency, endMessageDependency);
             }
-            else if (level < filteredEventLog->getMaximumCauseDepth() && !messageDependency->getIsReuse())
+            else if (level < filteredEventLog->getMaximumCauseDepth())
                 getCauses(causeEvent,
                     level == 0 ? messageDependency : endMessageDependency,
                     effectiveIsReuse,
                     level + 1);
         }
     }
-
-    return causes;
 }
 
 IMessageDependencyList *FilteredEvent::getConsequences()
@@ -227,7 +227,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
 
 // TODO: LONG RUNNING OPERATION
 // this is recursive and might take some time
-IMessageDependencyList *FilteredEvent::getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool isReuse, int level)
+void FilteredEvent::getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool isReuse, int level)
 {
     // similar to getCause
     IMessageDependencyList *eventConsequences = event->getConsequences();
@@ -237,18 +237,20 @@ IMessageDependencyList *FilteredEvent::getConsequences(IEvent *event, IMessageDe
         IMessageDependency *messageDependency = *it;
         IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
+        if (consequences->size() == filteredEventLog->getMaximumNumberOfConsequences())
+            return;
+
         if (consequenceEvent && (filteredEventLog->getCollectMessageReuses() || !messageDependency->getIsReuse())) {
             //printf("*** Checking at level %d for consequence event number %ld\n", level, consequenceEvent->getEventNumber());
             // TODO: take care about maximum number of dependencies
             bool effectiveIsReuse = isReuse | messageDependency->getIsReuse();
-            if (filteredEventLog->matchesFilter(consequenceEvent)) {
+            if (filteredEventLog->matchesFilter(consequenceEvent) &&
+                (level == 0 || IMessageDependency::corresponds(beginMessageDependency, messageDependency)))
+            {
                 if (level == 0)
                     consequences->push_back(messageDependency->duplicate(filteredEventLog));
                 else
-                    consequences->push_back(
-                        new FilteredMessageDependency(filteredEventLog, effectiveIsReuse,
-                            beginMessageDependency->duplicate(filteredEventLog->getEventLog()),
-                            messageDependency->duplicate(filteredEventLog->getEventLog())));
+                    pushNewFilteredMessageDependency(consequences, effectiveIsReuse, beginMessageDependency, messageDependency);
             }
             else if (level < filteredEventLog->getMaximumConsequenceDepth())
                 getConsequences(consequenceEvent,
@@ -257,6 +259,20 @@ IMessageDependencyList *FilteredEvent::getConsequences(IEvent *event, IMessageDe
                     level + 1);
         }
     }
+}
 
-    return consequences;
+void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *messageDependencies, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)
+{
+    FilteredMessageDependency *newMessageDependency = new FilteredMessageDependency(filteredEventLog, isReuse,
+            beginMessageDependency->duplicate(filteredEventLog->getEventLog()),
+            endMessageDependency->duplicate(filteredEventLog->getEventLog()));
+
+    for (IMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++) {
+        if ((*it)->equals(newMessageDependency)) {
+            delete newMessageDependency;
+            return;
+        }
+    }
+
+    messageDependencies->push_back(newMessageDependency);
 }

@@ -143,8 +143,9 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual long getNumParsedEvents() { return eventLog->getNumParsedEvents(); }
         virtual std::set<const char *>& getMessageNames() { return eventLog->getMessageNames(); }
         virtual std::set<const char *>& getMessageClassNames() { return eventLog->getMessageClassNames(); }
-        virtual ModuleCreatedEntry *getModuleCreatedEntry(int index) { return eventLog->getModuleCreatedEntry(index); }
         virtual int getNumModuleCreatedEntries() { return eventLog->getNumModuleCreatedEntries(); }
+        virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries() { return eventLog->getModuleCreatedEntries(); }
+        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return eventLog->getModuleCreatedEntry(moduleId); }
         virtual SimulationBeginEntry *getSimulationBeginEntry() { return eventLog->getSimulationBeginEntry(); }
 
         virtual bool isEmpty();
@@ -187,6 +188,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
 
         void deleteAllocatedObjects();
         void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
+
+        bool isAncestorModuleCreatedEntry(ModuleCreatedEntry *ancestor, ModuleCreatedEntry *descendant);
 };
 
 NAMESPACE_END

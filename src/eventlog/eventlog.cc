@@ -223,6 +223,16 @@ void EventLog::printInitializationLogEntries(FILE *file)
         (*it)->print(file);
 }
 
+std::vector<ModuleCreatedEntry *> EventLog::getModuleCreatedEntries()
+{
+    std::vector<ModuleCreatedEntry *> moduleCreatedEntries;
+
+    for (ModuleIdToModuleCreatedEntryMap::iterator it = initializationModuleIdToModuleCreatedEntryMap.begin(); it != initializationModuleIdToModuleCreatedEntryMap.end(); it++)
+        moduleCreatedEntries.push_back(it->second);
+
+    return moduleCreatedEntries;
+}
+
 Event *EventLog::getFirstEvent()
 {
     if (!firstEvent) {
@@ -299,22 +309,23 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
     reader->seekTo(start->getEvent()->getBeginOffset());
     int index = start->getIndex();
 
-    for (int i = 0; i < index; i++)
+    for (int i = 0; i < index + forward ? 1 : 0; i++)
         reader->getNextLineBufferPointer();
 
-    if (forward) {
-        reader->getNextLineBufferPointer();
+    if (forward)
         line = reader->findNextLineBufferPointer(search);
-    }
     else
         line = reader->findPreviousLineBufferPointer(search);
 
     if (line) {
+        if (forward)
+            line = reader->getPreviousLineBufferPointer();
+
         index = 0;
 
         do {
             if (line[0] == 'E' && line[1] == ' ')
-                return getEventForBeginOffset(reader->getCurrentLineStartOffset())->getEventLogEntry(index - 1);
+                return getEventForBeginOffset(reader->getCurrentLineStartOffset())->getEventLogEntry(index);
             else if (line[0] != '\r' && line[0] != '\n')
                 index++;
         }
