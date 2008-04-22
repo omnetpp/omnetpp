@@ -2,7 +2,6 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
