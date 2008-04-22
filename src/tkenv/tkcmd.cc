@@ -143,6 +143,7 @@ int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int colorizeImage_cmd(ClientData, Tcl_Interp *, int, const char **);
 int resizeImage_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
+int setWindowProperty_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv);
 
 // command table
 OmnetTclCommand tcl_commands[] = {
@@ -239,6 +240,7 @@ OmnetTclCommand tcl_commands[] = {
    // experimental
    { "opp_colorizeimage",       colorizeImage_cmd      },   // args: <image> ... ret: -
    { "opp_resizeimage",         resizeImage_cmd        },   // args: <destimage> <srcimage>
+   { "opp_setwindowproperty",   setWindowProperty_cmd  },   // args: <window> <propertyname> <value>
    // end of list
    { NULL, },
 };
@@ -2022,5 +2024,42 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    Tcl_SetResult(interp, TCLCONST("first arg is not a valid option"), TCL_STATIC);
    return TCL_ERROR;
    E_CATCH;
+}
+
+int setWindowProperty_cmd(ClientData clientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=4) {Tcl_SetResult(interp, TCLCONST("3 args expected"), TCL_STATIC); return TCL_ERROR;}
+#if 0
+   const char *windowname = argv[1];
+   const char *propertyname = argv[2]; // e.g. "_NET_WM_NAME" or "_NET_WM_WINDOW_TYPE"
+   const char *value = argv[3];
+
+   // resolve the window
+   Tk_Window tkwin = Tk_MainWindow(interp);
+   Tcl_Obj *windownameobj = Tcl_NewStringObj(windowname, strlen(windowname));
+   TkWindow *winPtr;
+   if (TkGetWindowFromObj(interp, tkwin, windownameobj, (Tk_Window *) &winPtr) != TCL_OK) {
+       return TCL_ERROR;
+   }
+   if (!Tk_IsTopLevel(winPtr)) {
+       Tcl_AppendResult(interp, "window \"", winPtr->pathName, "\" isn't a top-level window", (char *) NULL);
+       return TCL_ERROR;
+   }
+
+   // set the property
+   WmInfo *wmPtr = winPtr->wmInfoPtr;
+   Atom XA_UTF8_STRING = Tk_InternAtom((Tk_Window) winPtr, "UTF8_STRING");
+   Tcl_DString ds;
+
+   Tcl_UtfToExternalDString(NULL, value, -1, &ds);
+   XStoreName(winPtr->display, wmPtr->wrapperPtr->window, Tcl_DStringValue(&ds));
+   Tcl_DStringFree(&ds);
+
+   XChangeProperty(winPtr->display, wmPtr->wrapperPtr->window,
+       Tk_InternAtom((Tk_Window) winPtr, propertyname),
+       XA_UTF8_STRING, 8, PropModeReplace,
+       (const unsigned char*)value, (signed int)strlen(value));
+#endif
+   return TCL_OK;
 }
 
