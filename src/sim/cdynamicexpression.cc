@@ -256,6 +256,11 @@ cXMLElement *cDynamicExpression::xmlValue(cComponent *context)
 #define ulong(x) ((unsigned long)(x))
 
 
+inline double trunc(double x) 
+{
+   return x < 0.0 ? ceil(x) : floor(x);
+}
+
 static const int stksize = 20;
 
 // we have a static stack to avoid new[] and call to Value ctor stksize times
@@ -482,7 +487,7 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw cRuntimeError(eEBADARGS,"%");
                        stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
-                       stk[tos-1].dbl = fmod(stk[tos-1].dbl, stk[tos].dbl);
+                       stk[tos-1].dbl = fmod(trunc(stk[tos-1].dbl), trunc(stk[tos].dbl));
                        tos--;
                        break;
                    case POW:
