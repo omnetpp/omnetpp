@@ -41,7 +41,6 @@ public abstract class TableFieldEditor extends FieldEditor {
 	protected Button addButton;
 	protected Button removeButton;
 
-
 	public TableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 

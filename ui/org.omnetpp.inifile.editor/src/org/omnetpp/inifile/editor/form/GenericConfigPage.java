@@ -65,8 +65,11 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -100,8 +103,11 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_TKENV = "Tkenv";
     public static final String CAT_EXTENSIONS = "Extensions";
     public static final String CAT_PARSIM = "Parallel Simulation";
-    //XXX public static final String CAT_OUTPUTVECTORS = "Output Vectors";
 
+    public static final String[] SIMTIME_SCALE_CHOICES = new String[] {
+        "0", "-3", "-6", "-9", "-12", "-15", "-18",  //TODO add (s),(ms),(us),(ns),(ps),(fs),(as) once combo supports it 
+    };
+    
 	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png"); //XXX
 
     public static String[] getCategoryNames() {
@@ -147,10 +153,11 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addSpacer(form);
 			Group group2 = createGroup(form, "Stopping condition");
 			addTextFieldEditor(group2, CFGID_SIM_TIME_LIMIT, "Simulation time limit");
-			addTextFieldEditor(group2, CFGID_CPU_TIME_LIMIT, "CPU time limit");
+            addTextFieldEditor(group2, CFGID_CPU_TIME_LIMIT, "CPU time limit");
 			addSpacer(form);
             Group group3 = createGroup(form, "Other");
-			addTextFieldEditor(group3, CFGID_SIMTIME_SCALE, "Simulation time precision"); //FIXME use ComboBoxFieldEditor (which displays "ms", "us", "ns", etc)
+            addComboboxFieldEditor(group3, CFGID_SIMTIME_SCALE, "Simulation time precision");
+            //TODO display extra info: "nanosecond resolution; range: +-100 days"
 			addCheckboxFieldEditor(group3, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
 		}
 		else if (category.equals(CAT_ADVANCED)) {
@@ -281,6 +288,10 @@ public class GenericConfigPage extends ScrolledFormPage {
 		else {
 			throw new IllegalArgumentException("no such category: "+category);
 		}
+
+		// initialize combo boxes with static content
+        FieldEditor simtimeScaleEditor = getFieldEditorFor(CFGID_SIMTIME_SCALE);
+        simtimeScaleEditor.setComboContents(Arrays.asList(SIMTIME_SCALE_CHOICES));
 	}
 
 //	private void addMessage(Composite parent, Image image, String text) {
@@ -292,8 +303,8 @@ public class GenericConfigPage extends ScrolledFormPage {
 //		warnLabel.setText(text);
 //	}
 
-	private void addSpacer(Composite parent) {
-		new Label(parent, SWT.NONE);
+	private Label addSpacer(Composite parent) {
+		return new Label(parent, SWT.NONE);
 	}
 
 	private Group createGroup(Composite parent, String groupLabel) {
@@ -318,24 +329,41 @@ public class GenericConfigPage extends ScrolledFormPage {
 		return group;
 	}
 
-	protected void addTextFieldEditor(Composite parent, ConfigKey e, String label) {
+    protected FieldEditor addTextFieldEditor(Composite parent, ConfigKey e, String label) {
+        FieldEditor editor = e.isGlobal() ?
+                new TextFieldEditor(parent, e, getInifileDocument(), this, label) :
+                new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label);
+        addFieldEditor(editor);
+        return editor;
+    }
+
+    protected FieldEditor addComboboxFieldEditor(Composite parent, ConfigKey e, String label) {
 		FieldEditor editor = e.isGlobal() ?
-				new TextFieldEditor(parent, e, getInifileDocument(), this, label) :
-				new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label);
+				new ComboFieldEditor(parent, e, getInifileDocument(), this, label) :
+				new ExpandableTextFieldEditor(parent, e, getInifileDocument(), this, label); //FIXME make it combo too
 		addFieldEditor(editor);
+        return editor;
 	}
 
-	protected void addCheckboxFieldEditor(Composite parent, ConfigKey e, String label) {
+	protected FieldEditor addCheckboxFieldEditor(Composite parent, ConfigKey e, String label) {
 		FieldEditor editor = e.isGlobal() ?
 				new CheckboxFieldEditor(parent, e, getInifileDocument(), this, label) :
 				new ExpandableCheckboxFieldEditor(parent, e, getInifileDocument(), this, label);
 		addFieldEditor(editor);
+		return editor;
 	}
 
 	protected void addFieldEditor(FieldEditor editor) {
 		fieldEditors.add(editor);
 		editor.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 	}
+
+	protected FieldEditor getFieldEditorFor(ConfigKey configKey) {
+        for (FieldEditor e : fieldEditors)
+            if (e.getConfigKey() == configKey)
+                return e;
+        return null;
+    }
 
 	protected boolean occursOutsideGeneral(String key) {
 		IInifileDocument doc = getInifileDocument();

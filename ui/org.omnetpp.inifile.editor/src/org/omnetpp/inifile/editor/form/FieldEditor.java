@@ -2,6 +2,8 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -138,6 +140,10 @@ public abstract class FieldEditor extends Composite {
 		});
 	}
 
+	public void setComboContents(List<String> values) {
+	    // do-nothing convenience implementation
+	}
+	
 	public abstract void reread();
 	
 	public abstract void commit();

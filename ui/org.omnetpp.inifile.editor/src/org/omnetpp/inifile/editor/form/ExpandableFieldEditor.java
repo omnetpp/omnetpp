@@ -125,4 +125,11 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 			toggleButton.setEnabled(shouldBeEnabled);
 	}
 
+	public boolean isExpanded() {
+	    return isExpanded;
+	}
+	
+	public FieldEditor getInnerFieldEditor() {
+	    return fieldEditor;
+	}
 }
