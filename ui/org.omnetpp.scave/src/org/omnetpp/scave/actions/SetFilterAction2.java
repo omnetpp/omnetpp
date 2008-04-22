@@ -42,7 +42,7 @@ public class SetFilterAction2 extends Action
 				value = field.getFieldValue(item);
 				
 				if (value != null) {
-					setText(String.format("Set filter: %s=%s", field, value));
+					setText(String.format("Set filter: %s=%s", field.getName(), value));
 					setEnabled(true);
 					return;
 				}

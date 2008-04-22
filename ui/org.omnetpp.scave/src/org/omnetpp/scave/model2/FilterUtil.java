@@ -31,6 +31,7 @@ import org.omnetpp.scave.model2.FilterSyntax.TokenType;
  * parentheses cannot be represented, only ones that contain terms connected with AND.
  * Whether a pattern is in a representable form can be determined by calling isANDPattern().
  */
+// XXX attr: and param: prefixes should be used in field names everywhere!
 public class FilterUtil {
 
 	// separate fields connected with AND operator. The full string is NOT STORED.
@@ -137,6 +138,8 @@ public class FilterUtil {
 	}
 
 	private void appendField(StringBuffer sb, String attrName, String attrPattern) {
+		if (RunAttribute.isAttributeName(attrName))
+			attrName = "attr:" + attrName;
 		if (attrPattern != null && attrPattern.length() > 0) {
 			if (sb.length() > 0)
 				sb.append(" AND ");
@@ -176,8 +179,15 @@ public class FilterUtil {
 		Node node = FilterSyntax.parseFilter(pattern);
 		FilterNodeVisitor visitor = new FilterNodeVisitor();
 		node.accept(visitor);
-		for (Map.Entry<String,String> entry : visitor.fields.entrySet())
-			setField(entry.getKey(), entry.getValue());
+		for (Map.Entry<String,String> entry : visitor.fields.entrySet()) {
+			String name = entry.getKey();
+			String value = entry.getValue();
+			if (name.startsWith("attr:"))
+				name = name.substring(5);
+			else if (name.startsWith("param:"))
+				name = name.substring(6);
+			setField(name, value);
+		}
 	}
 
 	/**
