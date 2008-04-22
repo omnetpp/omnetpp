@@ -144,6 +144,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
     static std::string lastmodulefullpath; // cached result of last fullPath() call
     static const cModule *lastmodulefullpathmod; // module of lastmodulefullpath
 
+  private:
+    enum {
+        FL_RECORD_EVENTS = 64,   // enables recording events in this module
+    };
+
   protected:
     mutable char *fullname; // buffer to store full name of object
     int mod_id;             // id (subscript into cSimulation)
@@ -161,6 +166,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     int idx;      // index if module vector, 0 otherwise
     int vectsize; // vector size, -1 if not a vector
+
+  public:
+    // internal: currently used by init
+    void setRecordEvents(bool e)  {setFlag(FL_RECORD_EVENTS,e);}
+    bool isRecordEvents()  {return flags&FL_RECORD_EVENTS;}
 
   protected:
     // internal: called from callInitialize(). Does one stage for this submodule

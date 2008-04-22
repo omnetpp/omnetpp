@@ -66,9 +66,9 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
 
   private:
     enum {
-        FL_USESACTIVITY = 64,   // uses activity() or handleMessage()
-        FL_ISTERMINATED = 128,  // for both activity and handleMessage modules
-        FL_STACKALREADYUNWOUND = 256, // only for activity modules
+        FL_USESACTIVITY = 128,   // uses activity() or handleMessage()
+        FL_ISTERMINATED = 256,  // for both activity and handleMessage modules
+        FL_STACKALREADYUNWOUND = 512, // only for activity modules
     };
     cMessage *timeoutmsg;   // msg used in wait() and receive() with timeout
     cCoroutine *coroutine;
