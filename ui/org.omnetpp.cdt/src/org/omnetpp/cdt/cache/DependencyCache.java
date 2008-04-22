@@ -56,7 +56,7 @@ import org.omnetpp.common.util.StringUtils;
  */
 // Note: we may need to factor out a getNonTransitiveFolderDependencies() too
 // when we write a "Cross-folder Dependencies View" (using DOT to render the graph?)
-//XXX mindenki a SAJAT projektre tegye csak rá a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz!
+//XXX mindenki a SAJAT projektre tegye csak rï¿½ a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz!
 public class DependencyCache {
     // the standard C/C++ headers (we'll ignore those #include directives)
     protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.split(" ")));
@@ -516,6 +516,15 @@ public class DependencyCache {
         }
     }
 
+    public void dumpPerFileDependencies(IProject project) {
+    	Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = getPerFileDependencies(project);
+    	for(IContainer con : perFileDependencies.keySet()) {
+    		System.out.println("folder: "+con.getFullPath());
+    		for(IFile file : perFileDependencies.get(con).keySet())
+    			System.out.println("  file: "+file.getName()+": "+perFileDependencies.get(con).get(file).toString());
+    	}
+    }
+    
     protected void addMarker(ProblemMarkerSynchronizer markerSynchronizer, IResource file, int severity, String message, int line) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(IMarker.SEVERITY, severity);

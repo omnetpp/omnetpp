@@ -51,6 +51,9 @@ public class MetaMakemake {
     public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options) throws CoreException {
         MakemakeOptions translatedOptions = translateOptions(makefileFolder, options);
         IProject project = makefileFolder.getProject();
+
+        // Activator.getDependencyCache().dumpPerFileDependencies(project);
+        
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies(project);
         new Makemake().generateMakefile(makefileFolder, translatedOptions, perFileDependencies);
     }
