@@ -95,16 +95,19 @@
 //
 #ifdef USE_DOUBLE_SIMTIME
 
+#include <stdlib.h>
+#include <string>
+
 // "Legacy" module: double simtime_t
 typedef double         simtime_t;
 typedef const double   const_simtime_t;
 #define MAXTIME        DBL_MAX
 #define SIMTIME_ZERO   0.0
-#define SIMTIME_STR(t) simtimeToStr(t)
+#define SIMTIME_STR(t) double_to_str(t).c_str()
 #define SIMTIME_DBL(t) (t)
 #define SIMTIME_RAW(t) (t)
 #define STR_SIMTIME(s) strToSimtime(s)
-#define SIMTIME_TTOA(buf,t) simtimeToStr(t,buf)
+#define SIMTIME_TTOA(buf,t) gcvt(t,16,buf)
 
 #else
 

@@ -31,7 +31,7 @@
 #define chdir  _chdir
 #define usleep(x) _sleep((x)/1000)
 #define mkdir(x,y) _mkdir(x)
-
+#define gcvt _gcvt
 #else
 
 #include <sys/types.h>

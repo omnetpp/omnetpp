@@ -22,6 +22,7 @@
 #include <stdarg.h>  // for va_list
 #include <stdio.h>   // for sprintf
 #include <typeinfo>  // for type_info
+#include "platdep/platmisc.h"
 #include "simkerneldefs.h"
 #include "errmsg.h"
 
@@ -383,6 +384,15 @@ inline long double_to_long(double d)
     unsigned long ul = (unsigned long)d;
     return d<0 ? l : ul;
 }
+
+// internal 
+inline std::string double_to_str(double t)
+{
+   char buff[50];
+   gcvt(t,16,buff);
+   return buff;
+}
+
 
 NAMESPACE_END
 
