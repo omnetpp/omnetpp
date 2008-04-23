@@ -196,7 +196,7 @@ void IDList::checkIntegrityAllHistograms(ResultFileManager *mgr) const
         throw opp_runtime_error("These items are not all histograms");
 }
 
-class CmpBase : std::binary_function<ID, ID, bool> {
+class CmpBase : public std::binary_function<ID, ID, bool> {
     protected:
        ResultFileManager *mgr;
        bool less(const std::string& a, const std::string& b)
