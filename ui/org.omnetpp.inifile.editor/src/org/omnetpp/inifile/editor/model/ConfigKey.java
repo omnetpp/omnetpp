@@ -33,6 +33,7 @@ public class ConfigKey {
     ConfigKey(String name, boolean isPerObject, boolean isGlobal,
                  DataType dataType, String unit, String defaultValue, String description) {
         this.name = name;
+        this.isPerObject = isPerObject;
         this.isGlobal = isGlobal;
         this.dataType = dataType;
         this.unit = unit;

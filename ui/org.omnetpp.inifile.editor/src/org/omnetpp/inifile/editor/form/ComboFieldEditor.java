@@ -25,22 +25,22 @@ import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
 
 /**
  * Combobox-based editor for inifile entries.
- * 
+ *
  * NOTE: This class edits the [General] section ONLY. All other sections
  * are ignored. For example, the Reset button only removes the setting
  * from the [General] section. When a setting is present outside
  * [General], the table-based field editor has to be used.
- * 
+ *
  * @author Andras
  */
 //FIXME this is unfinished code.
 //XXX disable Combo when value is not editable (comes from included file)?
+//XXX set up content assist (like in TextFieldEditor)
 public class ComboFieldEditor extends FieldEditor {
 	private Combo combo;
 	private Label label;
 	private Button resetButton;
 	private boolean isEdited;
-	private String section = GENERAL;
 	private ControlDecoration problemDecoration;
 
 	public ComboFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
@@ -59,7 +59,7 @@ public class ComboFieldEditor extends FieldEditor {
 
 		problemDecoration = new ControlDecoration(combo, SWT.LEFT | SWT.TOP);
 		problemDecoration.setShowOnlyOnFocus(false);
-		
+
 		// set layout data
 		label.setLayoutData(new GridData());
 		int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
@@ -88,7 +88,7 @@ public class ComboFieldEditor extends FieldEditor {
 
 		// commit on losing focus
 		addFocusListenerTo(combo);
-		
+
 		// when the background gets clicked, transfer focus to the text widget
 		addFocusTransfer(label, combo);
 		addFocusTransfer(this, combo);
@@ -103,9 +103,10 @@ public class ComboFieldEditor extends FieldEditor {
 	@Override
 	public void reread() {
 		// update text and reset button
-		String value = getValueFromFile(section);
+		String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+		String value = getValueFromFile(GENERAL, key);
 		if (value==null) {
-			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString(); 
+			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
 			combo.setText(defaultValue);
 			//textField.setForeground(ColorFactory.asColor("darkGreen"));
 			combo.setForeground(ColorFactory.GREY50);
@@ -119,10 +120,10 @@ public class ComboFieldEditor extends FieldEditor {
 		isEdited = false;
 
 		// update problem decoration
-		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
+		IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
 		problemDecoration.setImage(getProblemImage(markers, true));
 		problemDecoration.setDescriptionText(getProblemsText(markers));
-		redraw(); // otherwise an obsolete error decoration doesn't disappear 
+		redraw(); // otherwise an obsolete error decoration doesn't disappear
 	}
 
 	public void setComboContents(List<String> list) {
@@ -133,12 +134,13 @@ public class ComboFieldEditor extends FieldEditor {
 	    combo.setText(oldValue);
 	    reread();
 	}
-	
+
 	@Override
 	public void commit() {
 		if (isEdited) {
+			String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
 			String value = combo.getText();
-			setValueInFile(section, value);
+			setValueInFile(GENERAL, key, value);
 			isEdited = false;
 		}
 	}

@@ -30,12 +30,12 @@ import org.omnetpp.inifile.editor.model.ConfigKey.DataType;
 
 /**
  * Text-based editor for inifile entries.
- * 
+ *
  * NOTE: This class edits the [General] section ONLY. All other sections
  * are ignored. For example, the Reset button only removes the setting
  * from the [General] section. When a setting is present outside
  * [General], the table-based field editor has to be used.
- * 
+ *
  * @author Andras
  */
 //XXX disable Text when value is not editable (comes from included file)?
@@ -45,7 +45,6 @@ public class TextFieldEditor extends FieldEditor {
 	private Label label;
 	private Button resetButton;
 	private boolean isEdited;
-	private String section = GENERAL;
 	private ControlDecoration problemDecoration;
 
 	public TextFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
@@ -64,7 +63,7 @@ public class TextFieldEditor extends FieldEditor {
 
 		problemDecoration = new ControlDecoration(textField, SWT.LEFT | SWT.TOP);
 		problemDecoration.setShowOnlyOnFocus(false);
-		
+
 		// set layout data
 		label.setLayoutData(new GridData());
 		int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
@@ -98,7 +97,7 @@ public class TextFieldEditor extends FieldEditor {
 				textField.selectAll();
 			}
 		});
-		
+
 		// when the background gets clicked, transfer focus to the text widget
 		addFocusTransfer(label, textField);
 		addFocusTransfer(this, textField);
@@ -107,11 +106,12 @@ public class TextFieldEditor extends FieldEditor {
 
 	protected Text createContentAssistField() {
 		Text text = new Text(this, SWT.SINGLE | SWT.BORDER);
-		InifileValueContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, entry.getKey(), inifile, null, false);
+        String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+		InifileValueContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, key, inifile, null, false);
 		if (proposalProvider.isContentAssistAvailable()) {
 			// only make it a content assist field if proposals are really available
-			ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, 
-					new TextContentAdapter(), proposalProvider, 
+			ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text,
+					new TextContentAdapter(), proposalProvider,
 					ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, AUTOACTIVATION_CHARS, true);
 			commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
 		}
@@ -121,9 +121,10 @@ public class TextFieldEditor extends FieldEditor {
 	@Override
 	public void reread() {
 		// update text and reset button
-		String value = getValueFromFile(section);
+		String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+		String value = getValueFromFile(GENERAL, key);
 		if (value==null) {
-			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString(); 
+			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
 			textField.setText(defaultValue);
 			//textField.setForeground(ColorFactory.asColor("darkGreen"));
 			textField.setForeground(ColorFactory.GREY50);
@@ -137,17 +138,18 @@ public class TextFieldEditor extends FieldEditor {
 		isEdited = false;
 
 		// update problem decoration
-		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
+		IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
 		problemDecoration.setImage(getProblemImage(markers, true));
 		problemDecoration.setDescriptionText(getProblemsText(markers));
-		redraw(); // otherwise an obsolete error decoration doesn't disappear 
+		redraw(); // otherwise an obsolete error decoration doesn't disappear
 	}
 
 	@Override
 	public void commit() {
 		if (isEdited) {
+			String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
 			String value = textField.getText();
-			setValueInFile(section, value);
+			setValueInFile(GENERAL, key, value);
 			isEdited = false;
 		}
 	}

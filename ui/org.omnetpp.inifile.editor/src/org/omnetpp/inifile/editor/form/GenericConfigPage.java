@@ -4,6 +4,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_AUTOF
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNERS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNER_DETAILS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EV_OUTPUT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXTRA_STACK_KB;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_INTERACTIVE;
@@ -17,6 +18,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONFIGURATIO
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CPU_TIME_LIMIT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERRORS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_ENABLE_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT_LABEL;
@@ -24,6 +26,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_INI_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOAD_LIBS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MAX_BUFFERED_SAMPLES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MAX_MODULE_NESTING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
@@ -40,14 +43,19 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTO
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARALLEL_SIMULATION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_COMMUNICATIONS_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_SYNCHRONIZATION_CLASS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARTITION_ID;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENTLOG;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENT_NUMBERS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_SCALAR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_DIR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SAVE_AS_SCALAR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
@@ -162,20 +170,28 @@ public class GenericConfigPage extends ScrolledFormPage {
 		    Group group0 = createGroup(form, "Regression");
 		    addTextFieldEditor(group0, CFGID_FINGERPRINT, "Fingerprint to verify");
             addSpacer(form);
-		    Group group3 = createGroup(form, "Setup");
-            addTextFieldEditor(group3, CFGID_NED_PATH, "NED file path");
-            addTextFieldEditor(group3, CFGID_USER_INTERFACE, "User interface");
-            addTextFieldEditor(group3, CFGID_TOTAL_STACK_KB, "Total activity stack (KB)");
-            addTextFieldEditor(group3, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting");
+		    Group group1 = createGroup(form, "Setup");
+            addTextFieldEditor(group1, CFGID_NED_PATH, "NED file path");
+            addTextFieldEditor(group1, CFGID_USER_INTERFACE, "User interface");
+            addTextFieldEditor(group1, CFGID_TOTAL_STACK_KB, "Total activity stack (KB)");
+            addTextFieldEditor(group1, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting");
             addSpacer(form);
-			Group group1 = createGroup(form, "Debugging");
-			addCheckboxFieldEditor(group1, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
-			addCheckboxFieldEditor(group1, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
+			Group group2 = createGroup(form, "Debugging");
+			addCheckboxFieldEditor(group2, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
+			addCheckboxFieldEditor(group2, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
 			addSpacer(form);
-			Group group2 = createGroup(form, "Warnings");
-			addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
-			addCheckboxFieldEditor(group2, CFGID_INI_WARNINGS, "Ini warnings"); //XXX
+			Group group3 = createGroup(form, "Warnings");
+			addCheckboxFieldEditor(group3, CFGID_WARNINGS, "Warnings"); //XXX
+			addCheckboxFieldEditor(group3, CFGID_INI_WARNINGS, "Ini warnings"); //XXX
 			addSpacer(form);
+            Group group4 = createGroup(form, "Output vector recording");
+	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTOR_PRECISION, "Precision");
+	        addCheckboxFieldEditor(group4, CFGID_RECORD_EVENT_NUMBERS, "Record event numbers");
+	        addTextFieldEditor(group4, CFGID_MAX_BUFFERED_SAMPLES, "Buffered size for output vectors");
+	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit");
+            addSpacer(form);
+            Group group5 = createGroup(form, "Output scalar recording");
+            addTextFieldEditor(group5, CFGID_OUTPUT_SCALAR_PRECISION, "Precision");
 		}
 		else if (category.equals(CAT_RANDOMNUMBERS)) {
 			Group group1 = createGroup(form, "Random Number Generators");
@@ -185,6 +201,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			Group group2 = createGroup(form, "Automatic Seeds");
 			addTextFieldEditor(group2, CFGID_SEED_SET, "Seed set");
 			//Group group3 = createGroup(form, "Manual Seeds");
+            //addTextTableFieldEditor(form, CFGID_RNG_n, "Module RNG mapping"); //XXX todo
 			//XXX todo: seed-%-mt, seed-%-mt-p%, seed-%-lcg32
 		}
 		else if (category.equals(CAT_SCENARIO)) {
@@ -206,14 +223,16 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group0, CFGID_EVENTLOG_FILE, "Eventlog file");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Details to record");
 			addSpacer(form);
-			Group group1 = createGroup(form, "Result collection");
+            Group group1 = createGroup(form, "Output vector recording");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
-			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_PRECISION, "Output vector precision");
-			addTextFieldEditor(group1, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Output vectors memory limit");
-			addSpacer(group1);
-			addTextFieldEditor(group1, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
-			addTextFieldEditor(group1, CFGID_OUTPUT_SCALAR_PRECISION, "Output scalar precision");
-			addCheckboxFieldEditor(group1, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file");
+            addCheckboxFieldEditor(group1, CFGID_ENABLE_RECORDING, "Enable recording");
+            addTextFieldEditor(group1, CFGID_RECORDING_INTERVAL, "Recording interval");
+            addSpacer(form);
+            Group group2 = createGroup(form, "Output scalar recording");
+			addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
+			addCheckboxFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
+            addTextTableFieldEditor(group2, CFGID_RECORD_SCALAR, "Enable recording");
+            addTextTableFieldEditor(group2, CFGID_SAVE_AS_SCALAR, "Parameters to save as scalars");
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_SNAPSHOT_FILE, "Snapshot file");
 		}
@@ -244,6 +263,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_MESSAGE_TRACE, "Message trace");
+            addTextTableFieldEditor(group2, CFGID_CMDENV_EV_OUTPUT, "Enable text output for modules"); //XXX CheckboxTable?
 			addSpacer(form);
             Group group3 = createGroup(form, "Miscellaneus");
             addCheckboxFieldEditor(group3, CFGID_CMDENV_INTERACTIVE, "Interactive mode");
@@ -264,6 +284,8 @@ public class GenericConfigPage extends ScrolledFormPage {
 		}
 		else if (category.equals(CAT_PARSIM)) {
 			addCheckboxFieldEditor(form, CFGID_PARALLEL_SIMULATION, "Enable parallel simulation");
+            Group group0 = createGroup(form, "General");
+            addTextTableFieldEditor(group0, CFGID_PARTITION_ID, "Module partitioning");
 			Group group1 = createGroup(form, "General");
 			addTextFieldEditor(group1, CFGID_PARSIM_COMMUNICATIONS_CLASS, "Communications class");
 			addTextFieldEditor(group1, CFGID_PARSIM_SYNCHRONIZATION_CLASS, "Synchronization class");
@@ -289,7 +311,8 @@ public class GenericConfigPage extends ScrolledFormPage {
 
 		// initialize combo boxes with static content
         FieldEditor simtimeScaleEditor = getFieldEditorFor(CFGID_SIMTIME_SCALE);
-        simtimeScaleEditor.setComboContents(Arrays.asList(SIMTIME_SCALE_CHOICES));
+        if (simtimeScaleEditor != null)
+            simtimeScaleEditor.setComboContents(Arrays.asList(SIMTIME_SCALE_CHOICES));
 	}
 
 //	private void addMessage(Composite parent, Image image, String text) {
@@ -350,6 +373,12 @@ public class GenericConfigPage extends ScrolledFormPage {
 		addFieldEditor(editor);
 		return editor;
 	}
+
+    protected FieldEditor addTextTableFieldEditor(Composite parent, ConfigKey e, String label) {
+        FieldEditor editor = new TextTableFieldEditor(parent, e, getInifileDocument(), this, label);
+        addFieldEditor(editor);
+        return editor;
+    }
 
 	protected void addFieldEditor(FieldEditor editor) {
 		fieldEditors.add(editor);

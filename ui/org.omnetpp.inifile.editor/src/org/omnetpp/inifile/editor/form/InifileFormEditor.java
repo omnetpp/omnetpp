@@ -245,6 +245,9 @@ public class InifileFormEditor extends Composite {
 		for (ConfigKey key : ConfigRegistry.getEntries())
 			if (!supportedKeys.contains(key))
 				System.out.println(" - forgotten key: "+key.getKey());
+        for (ConfigKey key : ConfigRegistry.getPerObjectEntries())
+            if (!supportedKeys.contains(key))
+                System.out.println(" - forgotten key: **."+key.getKey());
 
 		System.out.println("Checking done.");
 	}

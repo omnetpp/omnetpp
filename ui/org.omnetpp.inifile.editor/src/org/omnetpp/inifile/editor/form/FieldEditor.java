@@ -5,6 +5,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -40,11 +41,11 @@ public abstract class FieldEditor extends Composite {
 	public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
 	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png");
 	public static final Image ICON_INFO = InifileEditorPlugin.getCachedImage("icons/full/obj16/Info.gif");
-	
+
 	protected ConfigKey entry;
 	protected IInifileDocument inifile;
 	protected FormPage formPage; // to access hoverSupport, and to be able to call setEditorSelection()
-	
+
 	protected IHoverTextProvider hoverTextProvider = new IHoverTextProvider() {
 		public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 			return getTooltipText();
@@ -60,38 +61,55 @@ public abstract class FieldEditor extends Composite {
 
 	}
 
-	protected String getValueFromFile(String section) {
-		String key = entry.getKey();
+	protected String getValueFromFile(String section, String key) {
+		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getKey()) : key.equals(entry.getKey()));
 		return inifile.getValue(section, key);
 	}
 
-	protected void setValueInFile(String section, String value) {
+    protected void setValueInFile(String section, String key, String value) {
+		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getKey()) : key.equals(entry.getKey()));
 		try {
-			String key = entry.getKey();
 			if (!inifile.containsKey(section, key))
 				InifileUtils.addEntry(inifile, section, key, value, "");
 			else
 				inifile.setValue(section, key, value);
-		} 
+		}
 		catch (RuntimeException e) {
 			showErrorDialog(e);
 		}
 	}
 
-	protected void removeFromFile(String section) {
-		try {
-			String key = entry.getKey();
+    protected void renameKeyInInifile(String section, String key, String newKey) {
+        Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getKey()) : key.equals(entry.getKey()));
+        Assert.isTrue(entry.isPerObject() ? newKey.endsWith("."+entry.getKey()) : newKey.equals(entry.getKey()));
+        try {
+            if (key.equals(newKey))
+                return;
+            if (inifile.containsKey(section, newKey))
+                throw new IllegalArgumentException("Cannot rename key to "+newKey+": already exists");
+            String value = inifile.getValue(section, key);
+            InifileUtils.addEntry(inifile, section, newKey, value, "");
+            inifile.removeKey(section, key);
+        }
+        catch (RuntimeException e) {
+            showErrorDialog(e);
+        }
+    }
+    
+	protected void removeFromFile(String section, String key) {
+		Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getKey()) : key.equals(entry.getKey()));
+	    try {
 			inifile.removeKey(section, key);
 		}
 		catch (RuntimeException e) {
-			showErrorDialog(e);
-		}
+	        showErrorDialog(e);
+	    }
 	}
-	
+
 	protected void showErrorDialog(RuntimeException e) {
 	    try {
 	        reread(); // restore "legal" widget contents; must be done first, or error dialog will pop up twice
-	    } 
+	    }
 	    catch (RuntimeException e2) {
 	        InifileEditorPlugin.logError("error while handling error \""+e.getMessage()+"\"", e2);
 	        MessageDialog.openError(getShell(), "Error", e.getMessage()+".\nAlso: unable to re-parse document after the error: "+e2.getMessage());
@@ -111,7 +129,7 @@ public abstract class FieldEditor extends Composite {
 	protected void addTooltipSupport(Control control) {
 		formPage.addTooltipSupport(control, hoverTextProvider);
 	}
-	
+
 	protected String getTooltipText() {
 		return InifileHoverUtils.getConfigHoverText(GENERAL, entry.getKey(), inifile);
 	}
@@ -140,20 +158,23 @@ public abstract class FieldEditor extends Composite {
 		});
 	}
 
+	/**
+	 * Override in subclasses that have combobox-like behavior
+	 */
 	public void setComboContents(List<String> values) {
 	    // do-nothing convenience implementation
 	}
-	
+
 	public abstract void reread();
-	
+
 	public abstract void commit();
-	
+
 	public void resetToDefault() {
-		removeFromFile(GENERAL);
+		removeFromFile(GENERAL, entry.isPerObject() ? "**."+entry.getKey() : entry.getKey());  //XXX
 		reread();
 	}
 
-	/** 
+	/**
 	 * Utility function: sets up a mouse listener so when a composite or label is clicked,
 	 * another control (editfield etc) gets the focus.
 	 */
@@ -164,7 +185,7 @@ public abstract class FieldEditor extends Composite {
 			}
 		});
 	}
-	
+
 	protected static Image getProblemImage(IMarker[] markers, boolean small) {
 		int severity = InifileUtils.getMaximumSeverity(markers);
 		switch (severity) {
@@ -175,7 +196,7 @@ public abstract class FieldEditor extends Composite {
 		}
 	}
 	protected static String getProblemsText(IMarker[] markers) {
-		if (markers.length==0) 
+		if (markers.length==0)
 			return null;
 		String text = "";
 		for (IMarker marker : markers)

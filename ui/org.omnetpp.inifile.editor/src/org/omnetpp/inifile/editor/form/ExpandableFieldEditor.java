@@ -49,7 +49,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 		gridLayout.marginHeight = gridLayout.marginWidth = 0;
 		setLayout(gridLayout);
 
-		isExpanded = (!entry.isGlobal() && occursOutsideGeneral(inifile, entry.getKey()));
+		isExpanded = (!entry.isGlobal() && !canBeCollapsed());
 		createControl();
 		
 		// need to update the toggle button's state on inifile changes
@@ -101,11 +101,20 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
         return item;
 	}
 	
-	protected static boolean occursOutsideGeneral(IInifileDocument doc, String key) {
-		for (String section : doc.getSectionNames())
-			if (doc.containsKey(section, key) && !section.equals(GENERAL))
-				return true;
-		return false;
+	protected boolean canBeCollapsed() {
+	    if (!entry.isPerObject()) {
+	        for (String section : inifile.getSectionNames())
+	            if (inifile.containsKey(section, entry.getKey()) && !section.equals(GENERAL))
+	                return false;
+	    } 
+	    else {
+	        // if it contains any occurrence of this key except **.<key> in [General], it cannot be collapsed
+            for (String section : inifile.getSectionNames())
+                for (String key : inifile.getKeys(section))
+                    if (key.endsWith("."+entry.getKey()) && (!section.equals(GENERAL) || !key.equals("**."+entry.getKey())))
+                        return false;
+	    }
+		return true;
 	}
 	
 	@Override
@@ -120,7 +129,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 
 	protected void updateToggleButton() {
 		// need to update the toggle button's state when the last per-section value is removed
-		boolean shouldBeEnabled = !isExpanded || !occursOutsideGeneral(inifile, entry.getKey());
+		boolean shouldBeEnabled = !isExpanded || canBeCollapsed();
 		if (toggleButton.getEnabled() != shouldBeEnabled)
 			toggleButton.setEnabled(shouldBeEnabled);
 	}

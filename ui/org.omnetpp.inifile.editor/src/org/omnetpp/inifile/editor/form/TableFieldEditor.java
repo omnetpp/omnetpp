@@ -29,11 +29,12 @@ import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
+import org.omnetpp.inifile.editor.model.SectionKey;
 
 /**
  * Base class for field editors that allow the user edit a setting
- * with section granularity. 
- *  
+ * with section granularity.
+ *
  * @author Andras
  */
 public abstract class TableFieldEditor extends FieldEditor {
@@ -53,7 +54,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		createTableWithButtons(this);
 		addFocusTransfer(label, tableViewer.getTable());
 		addFocusTransfer(this, tableViewer.getTable());
-		
+
 		reread();
 	}
 
@@ -61,7 +62,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 		composite.setLayout(new GridLayout(2, false));
-		
+
 		tableViewer = createTableViewer(composite);
 		tableViewer.setContentProvider(new ArrayContentProvider());
 
@@ -69,12 +70,12 @@ public abstract class TableFieldEditor extends FieldEditor {
  		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-				String section = (String) sel.getFirstElement();
-				if (entry!=null)
-					formPage.setEditorSelection(section, entry.getKey());
+				SectionKey sectionKey = (SectionKey) sel.getFirstElement();
+				if (sectionKey!=null)
+					formPage.setEditorSelection(sectionKey.section, sectionKey.key);
 			}
  		});
-		
+
 		// add button group
 		Composite buttonGroup = new Composite(composite, SWT.NONE);
 		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
@@ -109,18 +110,18 @@ public abstract class TableFieldEditor extends FieldEditor {
 		formPage.addTooltipSupport(tableViewer.getTable(), new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
-				String section = (String) (item==null ? null : item.getData());
-				return section==null ? null : InifileHoverUtils.getConfigHoverText(section, entry.getKey(), inifile);
+				SectionKey sectionKey = (SectionKey) (item==null ? null : item.getData());
+				return sectionKey==null ? null : InifileHoverUtils.getConfigHoverText(sectionKey.section, sectionKey.key, inifile);
 			}
 		});
-		
+
 	}
 
 	protected void removeSelected() {
 		IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 		for (Object o : selection.toArray()) {
-			String section = (String) o;
-			removeFromFile(section);
+		    SectionKey sectionKey = (SectionKey) o;
+			removeFromFile(sectionKey.section, sectionKey.key);
 		}
 		reread();
 	}
@@ -128,7 +129,8 @@ public abstract class TableFieldEditor extends FieldEditor {
 	protected void addNewEntry() {
 		String section = askTargetSection();
 		if (section != null) {
-			setValueInFile(section, getDefaultValueFor(section));
+			String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+			setValueInFile(section, key, getDefaultValueFor(section));
 			reread();
 		}
 	}
@@ -140,7 +142,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		// collect section which not yet contain this key
 		ArrayList<String> list = new ArrayList<String>();
 		for (String section : inifile.getSectionNames())
-			if (!inifile.containsKey(section, entry.getKey()))
+			if (entry.isPerObject() || !inifile.containsKey(section, entry.getKey()))
 				list.add(section);
 
 		// and pop up a chooser dialog
@@ -158,7 +160,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 	/**
 	 * Generate default value for a new entry (in the given section).
 	 */
-	protected String getDefaultValueFor(String section) {
+	protected String getDefaultValueFor(String section) {  //XXX needed?
 		if (entry.getDefaultValue() != null)
 			return entry.getDefaultValue().toString();
 		switch (entry.getDataType()) {
@@ -194,7 +196,7 @@ public abstract class TableFieldEditor extends FieldEditor {
 		button.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
 		return button;
 	}
-	
+
 	/**
 	 * Does nothing.
 	 */
@@ -208,12 +210,24 @@ public abstract class TableFieldEditor extends FieldEditor {
 	 */
 	@Override
 	public void reread() {
-		// find out in which sections this key occurs, and set it to the table as input
-		ArrayList<String> list = new ArrayList<String>();
-		for (String section : inifile.getSectionNames())
-			if (inifile.containsKey(section, entry.getKey()))
-				list.add(section);
-		tableViewer.setInput(list.toArray(new String[list.size()]));
+		ArrayList<SectionKey> list = new ArrayList<SectionKey>();
+		if (!entry.isPerObject()) {
+		    // find out in which sections this key occurs
+		    for (String section : inifile.getSectionNames())
+		        if (inifile.containsKey(section, entry.getKey()))
+		            list.add(new SectionKey(section, entry.getKey()));
+		}
+		else {
+            // find matching entries from all sections
+		    String keySuffix = "."+entry.getKey();
+            for (String section : inifile.getSectionNames())
+                for (String key : inifile.getKeys(section))
+                    if (key.endsWith(keySuffix))
+                        list.add(new SectionKey(section, key));
+        }
+
+		// give it to the table as input
+		tableViewer.setInput(list.toArray(new SectionKey[list.size()]));
 	}
 
 }

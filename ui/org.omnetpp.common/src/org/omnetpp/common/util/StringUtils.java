@@ -17,6 +17,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         // run unit test
         testToInstanceName();
     }
+
     /**
      * For null it returns "", otherwise it returns the passed string itself.
      *
@@ -26,6 +27,13 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	public static String nullToEmpty(String str) {
         return str == null ? EMPTY : str;
     }
+
+    /**
+     * For null it returns the given fallback string, otherwise it returns the passed string itself.
+     */
+	public static String fallback(String str, String valueIfNull) {
+	    return str == null ? valueIfNull : str;
+	}
 
 	/**
 	 * Converts a java id string (camel case and '_' used as word separators)

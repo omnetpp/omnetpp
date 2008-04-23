@@ -63,7 +63,7 @@ import org.omnetpp.inifile.editor.views.AbstractModuleView;
 
 /**
  * For editing module parameters.
- * 
+ *
  * @author Andras
  */
 //XXX extract a "PerObjectFieldEditor" from it? (So we can build an Output Vector Configuration editor, an RNG Mapping editor, etc...)
@@ -110,7 +110,7 @@ public class ParametersPage extends FormPage {
 		hintLabel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		((GridData)hintLabel.getLayoutData()).horizontalSpan = 2;
 		hintLabel.setText("HINT: Drag the icons to change the order of entries.");
-		
+
 		// create table and buttons
 		treeViewer = createAndConfigureTable();
 		treeViewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -119,11 +119,11 @@ public class ParametersPage extends FormPage {
 		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
 
 		numUnassignedParamsLabel = createLabel(this, SWT.END, "0 unassigned parameters");
-		
+
 		sectionsCombo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				// publish section as editor selection
-				String selectedSection = sectionsCombo.getText(); 
+				String selectedSection = sectionsCombo.getText();
 				if (getInifileDocument().containsSection(selectedSection)) // because we may have lied that [General] existed
 					setEditorSelection(selectedSection, null);
 
@@ -162,7 +162,7 @@ public class ParametersPage extends FormPage {
 					SectionKey item = (SectionKey) element;
 					switch (columnIndex) {
 					case 0: return item.key;
-					case 1: return nullToEmpty(getInifileDocument().getValue(item.section, item.key)); 
+					case 1: return nullToEmpty(getInifileDocument().getValue(item.section, item.key));
 					case 2: return nullToEmpty(getInifileDocument().getComment(item.section, item.key));
 					default: throw new IllegalArgumentException();
 					}
@@ -201,7 +201,7 @@ public class ParametersPage extends FormPage {
 					treeViewer.getTree().selectAll(); //XXX this does not work, because text editor hotkey masks it
 			}
 		});
-		
+
 		// set up cell editing
 		treeViewer.setColumnProperties(new String[] {"key", "value", "comment"});
 		final TableTextCellEditor editors[] = new TableTextCellEditor[3];
@@ -223,7 +223,7 @@ public class ParametersPage extends FormPage {
 				if (property.equals("key"))
 					return item.key;
 				else if (property.equals("value"))
-					return nullToEmpty(getInifileDocument().getValue(item.section, item.key)); 
+					return nullToEmpty(getInifileDocument().getValue(item.section, item.key));
 				else if (property.equals("comment"))
 					return nullToEmpty(getInifileDocument().getComment(item.section, item.key));
 				else
@@ -259,7 +259,7 @@ public class ParametersPage extends FormPage {
 					}
 					else if (property.equals("comment")) {
 					    String comment = (String)value;
-					    if (comment.equals("")) 
+					    if (comment.equals(""))
 					        comment = null;  // i.e. don't create empty comment, '#' followed by nothing
 						if (!StringUtils.equals(comment, doc.getComment(item.section, item.key))) {
 							doc.setComment(item.section, item.key, comment);
@@ -335,7 +335,7 @@ public class ParametersPage extends FormPage {
 		addTooltipSupport(treeViewer.getTree(), new IHoverTextProvider() {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
-				Object element = item==null ? null : item.getData(); 
+				Object element = item==null ? null : item.getData();
 				element = element!=null ? ((GenericTreeNode)element).getPayload() : null;
 				if (element instanceof SectionKey) {
 					SectionKey entry = (SectionKey) element;
@@ -361,8 +361,8 @@ public class ParametersPage extends FormPage {
 		viewer.addDropSupport(dndOperations, transfers, new DropTargetAdapter() {
 			public void drop(DropTargetEvent event) {
 				// note: in theory, the user can drag across different treeViewers
-				// (i.e. from a different inifile editor, or even from a Scave editor!), 
-				// so we have to be careful when looking at the dragged data 
+				// (i.e. from a different inifile editor, or even from a Scave editor!),
+				// so we have to be careful when looking at the dragged data
 				SectionKey[] draggedEntries = getEntriesFromTreeSelection((IStructuredSelection) event.data);
 				Object target = event.item==null ? null : event.item.getData();
 				if (target instanceof GenericTreeNode)
@@ -395,7 +395,7 @@ public class ParametersPage extends FormPage {
 			return (SectionKey) data;
 		return null;
 	}
-	
+
 	/**
 	 * Invoked when the user selects a few sections, and drags them to another section.
 	 */
@@ -403,7 +403,7 @@ public class ParametersPage extends FormPage {
 		try {
 			System.out.println(draggedEntries.length + " items dropped to: "+target);
 			IInifileDocument doc = getInifileDocument();
-			
+
 			int n = draggedEntries.length;
 			String[] sections = new String[n];
 			String[] keys = new String[n];
@@ -418,7 +418,7 @@ public class ParametersPage extends FormPage {
 
 			doc.removeKeys(sections, keys);
 
-			String section = target instanceof SectionKey ? ((SectionKey)target).section : (String)target; 
+			String section = target instanceof SectionKey ? ((SectionKey)target).section : (String)target;
 			String beforeKey = target instanceof SectionKey ? ((SectionKey)target).key : null;
 			// doc.getKeys(section).length>0 ? doc.getKeys(section)[0] : null;
 			doc.addEntries(section, keys, values, rawComments, beforeKey);
@@ -436,7 +436,7 @@ public class ParametersPage extends FormPage {
 	protected static boolean nullSafeEquals(String first, String second) {
 		return first==null ? second == null : first.equals(second);
 	}
-	
+
 	private TreeColumn addTreeColumn(Tree tree, String label, int width) {
 		TreeColumn column = new TreeColumn(tree, SWT.NONE);
 		column.setText(label);
@@ -454,7 +454,7 @@ public class ParametersPage extends FormPage {
 		addMissingButton = createButton(buttonGroup, "Add...");
 		addMissingButton.setImage(InifileEditorPlugin.getCachedImage("icons/full/etool16/genkeys.png"));
 		addMissingButton.setToolTipText("Add entries for unassigned parameters");
-		
+
 		newButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				addEntry();
@@ -489,10 +489,10 @@ public class ParametersPage extends FormPage {
 		removeButton.setEnabled(getEntriesFromTreeSelection(treeSelection).length>0);
 		newButton.setEnabled(!treeSelection.isEmpty() || !"".equals(selectedSection));
 	}
-	
+
 	protected void addEntry() {
 		treeViewer.cancelEditing();
-		
+
 		// determine where to insert new element
 		IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
 		Object o = sel.getFirstElement();
@@ -512,7 +512,7 @@ public class ParametersPage extends FormPage {
 			section = sectionsCombo.getText();
 			beforeKey = null;
 		}
-		
+
 		// generate unique key
 		IInifileDocument doc = getInifileDocument();
 		String newKey = "**.newKey";
@@ -586,7 +586,7 @@ public class ParametersPage extends FormPage {
 			treeViewer.setSelection(sel);
 		}
 	}
-	
+
 	@Override
 	public void gotoSection(String section) {
 		sectionsCombo.setText(section);
@@ -599,7 +599,7 @@ public class ParametersPage extends FormPage {
 		reread(); // refresh page contents
 		//XXX if key is a param key, select it in the table!
 	}
-	
+
 	@Override
 	public boolean setFocus() {
 		return sectionsCombo.setFocus();
@@ -608,7 +608,7 @@ public class ParametersPage extends FormPage {
 	@Override
 	public void reread() {
 		super.reread();
-		
+
 		// refresh combo with the current section names, trying to preserve existing selection
 		IInifileDocument doc = getInifileDocument();
 		String selectedSection = sectionsCombo.getText();  // Note: "" if inifile is empty
@@ -629,7 +629,7 @@ public class ParametersPage extends FormPage {
 				if (key.contains("."))
 					sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
 		}
-		
+
 		if (treeViewer.isCellEditorActive()) {
 		    // refreshing the tree would close the cell editor, so don't do it.
 		    // however, we'll need to do a refresh once the cell editor loses focus (commits or cancels).
@@ -638,7 +638,7 @@ public class ParametersPage extends FormPage {
 		    // (listener doesn't get called), so we just schedule another reread into the future.
             System.out.println("cell editor active -- postponing tree refresh");
 		    delayedRereadJob.restartTimer();
-		} 
+		}
 		else {
 		    // refresh the tree
 		    System.out.println("refreshing the tree");
@@ -646,7 +646,7 @@ public class ParametersPage extends FormPage {
 		    treeViewer.expandAll();
 		    treeViewer.refresh();
 		}
-		
+
 		// update labels: "Network" and "Section fallback chain"
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
 		int numUnassigned = "".equals(selectedSection) ? 0 : getInifileAnalyzer().getUnassignedParams(selectedSection).length;
@@ -654,7 +654,7 @@ public class ParametersPage extends FormPage {
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > ")));
 		numUnassignedParamsLabel.setText(numUnassigned+" unassigned parameter"+(numUnassigned!=1 ? "s" : ""));
 		sectionChainLabel.getParent().layout();
-		
+
 		updateButtonStates();
 		addMissingButton.setEnabled(selectedSection!=null);
 	}

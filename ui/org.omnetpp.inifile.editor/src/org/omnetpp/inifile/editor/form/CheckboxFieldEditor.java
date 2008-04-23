@@ -20,12 +20,12 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 /**
  * Checkbox-based editor for boolean inifile entries. This editor commits changes
  * immediately, not only on losing the focus.
- * 
+ *
  * NOTE: This class edits the [General] section ONLY. All other sections
  * are ignored. For example, the Reset button only removes the setting
  * from the [General] section. When the setting is present outside
  * [General], the table-based field editor has to be used.
- * 
+ *
  * @author Andras
  */
 //XXX disable checkbox when value is not editable (comes from included file)?
@@ -34,17 +34,16 @@ public class CheckboxFieldEditor extends FieldEditor {
 	private Label label;
 	private ControlDecoration problemDecoration;
 	private Button resetButton;
-	private String section = GENERAL;
 
 	public CheckboxFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, SWT.NONE, entry, inifile, formPage);
 
 		Assert.isTrue(entry.getDataType()==ConfigKey.DataType.CFG_BOOL);
 
-		GridLayout gridLayout = new GridLayout(4, false); 
+		GridLayout gridLayout = new GridLayout(4, false);
 		gridLayout.marginHeight = 0;
 		setLayout(gridLayout);
-		
+
 		checkbox = new Button(this, SWT.CHECK);
 		checkbox.setBackground(BGCOLOR);
 		addTooltipSupport(checkbox);
@@ -67,16 +66,17 @@ public class CheckboxFieldEditor extends FieldEditor {
 				resetButton.setEnabled(true);
 			}
 		});
-		
+
 		addFocusTransfer(label, checkbox);
 		addFocusTransfer(this, checkbox);
 	}
 
 	@Override
 	public void reread() {
-		String value = getValueFromFile(section);
+		String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
+        String value = getValueFromFile(GENERAL, key);
 		if (value==null) {
-			boolean defaultValue = entry.getDefaultValue()==null ? false : entry.getDefaultValue().equals("true"); 
+			boolean defaultValue = entry.getDefaultValue()==null ? false : entry.getDefaultValue().equals("true");
 			checkbox.setSelection(defaultValue);
 			resetButton.setEnabled(false);
 		}
@@ -86,7 +86,7 @@ public class CheckboxFieldEditor extends FieldEditor {
 		}
 
 		// update problem decoration
-		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
+		IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, entry.getKey(), inifile);
 		problemDecoration.setImage(getProblemImage(markers, true));
 		problemDecoration.setDescriptionText(getProblemsText(markers));
 		redraw();
@@ -94,7 +94,8 @@ public class CheckboxFieldEditor extends FieldEditor {
 
 	@Override
 	public void commit() {
+		String key = entry.isPerObject() ? "**."+entry.getKey() : entry.getKey();
 		boolean value = checkbox.getSelection();
-		setValueInFile(section, value ? "true" : "false");
+		setValueInFile(GENERAL, key, value ? "true" : "false");
 	}
 }

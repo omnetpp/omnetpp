@@ -16,12 +16,13 @@ import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.SectionKey;
 
 
 /**
  * Checkbox-table based field editor, for editing boolean config entries
  * in all sections.
- * 
+ *
  * @author Andras
  */
 public class CheckboxTableFieldEditor extends TableFieldEditor {
@@ -40,44 +41,44 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		tableViewer.setLabelProvider(new TableLabelProvider() {
 			@Override
 			public String getColumnText(Object element, int columnIndex) {
-				String section = (String) element;
+                SectionKey sectionKey = (SectionKey) element;
 				switch (columnIndex) {
-					case 0: return "in section ["+section+"]";
-					default: throw new IllegalArgumentException(); 
+					case 0: return "in section ["+sectionKey.section+"]";
+					default: throw new IllegalArgumentException();
 				}
 			}
 			@Override
 			public Image getColumnImage(Object element, int columnIndex) {
 				if (columnIndex == 0) {
-					String section = (String) element;
-					IMarker[] markers = InifileUtils.getProblemMarkersFor(section, entry.getKey(), inifile);
+	                SectionKey sectionKey = (SectionKey) element;
+					IMarker[] markers = InifileUtils.getProblemMarkersFor(sectionKey.section, sectionKey.key, inifile);
 					return getProblemImage(markers, true);
 				}
 				return null;
 			}
 		});
-		
+
 		tableViewer.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
-				String section = (String) event.getElement();
+                SectionKey sectionKey = (SectionKey) event.getElement();
 				String value = event.getChecked() ? "true" : "false";
-				setValueInFile(section, value); 
+				setValueInFile(sectionKey.section, sectionKey.key, value);
 			}
 		});
-		
- 		return tableViewer; 
+
+ 		return tableViewer;
 	}
 
 	@Override
 	public void reread() {
 		super.reread();
 
-		// (Checkbox)TableViewer cannot read the checked state via a label provider-like 
+		// (Checkbox)TableViewer cannot read the checked state via a label provider-like
 		// interface, so we have to set it explicitly here...
-		ArrayList<String> list = new ArrayList<String>();
-		for (String section : (String[]) tableViewer.getInput())
-			if (InifileUtils.parseAsBool(inifile.getValue(section, entry.getKey())))
-				list.add(section);
+		ArrayList<SectionKey> list = new ArrayList<SectionKey>();
+		for (SectionKey sectionKey : (SectionKey[]) tableViewer.getInput())
+			if (InifileUtils.parseAsBool(inifile.getValue(sectionKey.section, sectionKey.key)))
+				list.add(sectionKey);
 		((CheckboxTableViewer)tableViewer).setCheckedElements(list.toArray());
 	}
 
