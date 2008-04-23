@@ -233,8 +233,8 @@ public class GenericConfigPage extends ScrolledFormPage {
             Group group2 = createGroup(form, "Output scalar recording");
 			addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
 			addCheckboxFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
-            addTextTableFieldEditor(group2, CFGID_RECORD_SCALAR, "Enable recording");
-            addTextTableFieldEditor(group2, CFGID_SAVE_AS_SCALAR, "Parameters to save as scalars");
+			addCheckboxFieldEditor(group2, CFGID_RECORD_SCALAR, "Enable recording");
+			addCheckboxFieldEditor(group2, CFGID_SAVE_AS_SCALAR, "Parameters to save as scalars");
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_SNAPSHOT_FILE, "Snapshot file");
 		}
@@ -266,13 +266,13 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_EVENT_BANNER_DETAILS, "Detailed event banners");
 			addCheckboxFieldEditor(group2, CFGID_CMDENV_MESSAGE_TRACE, "Message trace");
-            addTextTableFieldEditor(group2, CFGID_CMDENV_EV_OUTPUT, "Enable text output for modules"); //XXX CheckboxTable?
+			addCheckboxFieldEditor(group2, CFGID_CMDENV_EV_OUTPUT, "Enable text output for modules");
 			addSpacer(form);
             Group group3 = createGroup(form, "Miscellaneus");
             addCheckboxFieldEditor(group3, CFGID_CMDENV_INTERACTIVE, "Interactive mode");
             addCheckboxFieldEditor(group3, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
 			addTextFieldEditor(group3, CFGID_CMDENV_OUTPUT_FILE, "Redirect stdout to file");
-			addTextFieldEditor(group3, CFGID_CMDENV_EXTRA_STACK_KB, "Cmdenv extra stack (Kb)");
+			addTextFieldEditor(group3, CFGID_CMDENV_EXTRA_STACK_KB, "Cmdenv extra stack (KB)");
 		}
 		else if (category.equals(CAT_TKENV)) {
 			Group group0 = createGroup(form, "On startup, set up the following simulation:");
