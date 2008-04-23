@@ -266,9 +266,17 @@ foreach $class (@classes)
       {
         $parserFunction = "getIntToken";
       }
+      elsif ($field->{TYPE} eq "short")
+      {
+        $parserFunction = "getShortToken";
+      }
       elsif ($field->{TYPE} eq "long")
       {
         $parserFunction = "getLongToken";
+      }
+      elsif ($field->{TYPE} eq "int64")
+      {
+        $parserFunction = "getInt64Token";
       }
       elsif ($field->{TYPE} eq "string")
       {
@@ -277,6 +285,14 @@ foreach $class (@classes)
       elsif ($field->{TYPE} eq "simtime_t")
       {
         $parserFunction = "getSimtimeToken";
+      }
+      elsif ($field->{TYPE} eq "bool")
+      {
+        $parserFunction = "getBoolToken";
+      }
+      else
+      {
+         die "Unknown type: $field->{TYPE}";
       }
       if ($field->{MANDATORY})
       {

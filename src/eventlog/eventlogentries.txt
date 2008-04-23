@@ -27,10 +27,11 @@ ME ModuleMethodEndEntry // end of a call to another module
 
 MC ModuleCreatedEntry // creating a module
 {
-   id int moduleId            // id of the new module
-   c string moduleClassName   // C++ class name of the module
-   pid int parentModuleId  -1 // id of the parent module
-   n string fullName          // full dotted hierarchic module name
+   id int moduleId              // id of the new module
+   c string moduleClassName     // C++ class name of the module
+   pid int parentModuleId  -1   // id of the parent module
+   n string fullName            // full dotted hierarchic module name
+   cm bool compoundModule false // simple or compound module
 }
 
 MD ModuleDeletedEntry // deleting a module

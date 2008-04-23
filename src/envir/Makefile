@@ -1,4 +1,4 @@
-#
+
 # Definitions to be customized by 'configure'
 #
 
@@ -73,8 +73,8 @@ envir-implib : $(OBJS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
-eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
-	$(PERL) eventlogentries.pl
+eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentries.txt
+	$(PERL) eventlogwriter.pl
 
 $O/envirbase.o: eventlogwriter.h
 

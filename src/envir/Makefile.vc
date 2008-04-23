@@ -71,8 +71,8 @@ $O/$(LIBNAME).dll : $(OBJS) $L
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
 	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-eventlogwriter.cc eventlogwriter.h : eventlogentries.pl ../eventlog/eventlogentries.txt
-	$(PERL) eventlogentries.pl
+eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentries.txt
+	$(PERL) eventlogwriter.pl
 
 $O/envirbase.obj: eventlogwriter.h
 

@@ -65,8 +65,11 @@ class EVENTLOG_API EventLogTokenBasedEntry : public EventLogEntry
 {
     protected:
         char *getToken(char **tokens, int numTokens, const char *sign, bool mandatory);
+        bool getBoolToken(char **tokens, int numTokens, const char *sign, bool mandatory, bool defaultValue);
         int getIntToken(char **tokens, int numTokens, const char *sign, bool mandatory, int defaultValue);
+        short getShortToken(char **tokens, int numTokens, const char *sign, bool mandatory, short defaultValue);
         long getLongToken(char **tokens, int numTokens, const char *sign, bool mandatory, long defaultValue);
+        int64 getInt64Token(char **tokens, int numTokens, const char *sign, bool mandatory, int64 defaultValue);
         simtime_t getSimtimeToken(char **tokens, int numTokens, const char *sign, bool mandatory, simtime_t defaultValue);
         const char *getStringToken(char **tokens, int numTokens, const char *sign, bool mandatory, const char *defaultValue);
 

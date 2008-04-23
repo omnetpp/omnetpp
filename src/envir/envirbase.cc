@@ -35,6 +35,7 @@
 #include "random.h"
 #include "crng.h"
 #include "cmodule.h"
+#include "ccompoundmodule.h"
 #include "cchannel.h"
 #include "ccomponenttype.h"
 #include "cmessage.h"
@@ -955,15 +956,17 @@ void EnvirBase::moduleCreated(cModule *newmodule)
         bool recordModuleEvents = config()->getAsBool(m->fullPath().c_str(), CFGID_RECORD_MODULE_EVENTS);
         m->setRecordEvents(recordModuleEvents);
 
+        bool isCompoundModule = dynamic_cast<cCompoundModule *>(m);
+
         if (m->parentModule())
         {
-            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n(feventlog,
-                m->id(), m->className(), m->parentModule()->id(), m->fullName()); //FIXME size() is missing
+            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n_cm(feventlog,
+                m->id(), m->className(), m->parentModule()->id(), m->fullName(), isCompoundModule); //FIXME size() is missing
         }
         else
         {
-            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n(feventlog,
-                m->id(), m->className(), -1, m->fullName()); //FIXME size() is missing; omit parentModuleId
+            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n_cm(feventlog,
+                m->id(), m->className(), -1, m->fullName(), isCompoundModule); //FIXME size() is missing; omit parentModuleId
         }
     }
 }
