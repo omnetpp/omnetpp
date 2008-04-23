@@ -145,7 +145,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 	protected SequenceChartAction showArrowHeadsAction;
 
-	protected SequenceChartAction increaseSpacingAction;
+    protected SequenceChartAction showZeroSimulationTimeRegionsAction;
+
+    protected SequenceChartAction showAxisLabelsAction;
+
+    protected SequenceChartAction increaseSpacingAction;
 
 	protected SequenceChartAction decreaseSpacingAction;
 
@@ -185,6 +189,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.showSelfMessagesAction = createShowSelfMessagesAction();
 		this.showReuseMessagesAction = createShowReuseMessagesAction();
 		this.showArrowHeadsAction = createShowArrowHeadsAction();
+        this.showZeroSimulationTimeRegionsAction = createShowZeroSimulationTimeRegionsAction();
+        this.showAxisLabelsAction = createShowAxisLabelsAction();
 		this.increaseSpacingAction = createIncreaseSpacingAction();
 		this.decreaseSpacingAction = createDecreaseSpacingAction();
         this.defaultZoomAction = createDefaultZoomAction();
@@ -294,6 +300,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 menuManager.add(showSelfMessagesAction);
 				menuManager.add(showReuseMessagesAction);
 				menuManager.add(showArrowHeadsAction);
+                menuManager.add(showZeroSimulationTimeRegionsAction);
+                menuManager.add(showAxisLabelsAction);
 				menuManager.add(separatorAction);
 				menuManager.add(increaseSpacingAction);
 				menuManager.add(decreaseSpacingAction);
@@ -850,6 +858,36 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		};
 	}
 	
+    private SequenceChartAction createShowZeroSimulationTimeRegionsAction() {
+        return new SequenceChartAction("Show Zero Simulation Time Regions", Action.AS_CHECK_BOX) {
+            @Override
+            public void run() {
+                sequenceChart.setShowZeroSimulationTimeRegions(!sequenceChart.getShowZeroSimulationTimeRegions());
+                update();
+            }
+            
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowZeroSimulationTimeRegions());
+            }
+        };
+    }
+    
+    private SequenceChartAction createShowAxisLabelsAction() {
+        return new SequenceChartAction("Show Axis Labels", Action.AS_CHECK_BOX) {
+            @Override
+            public void run() {
+                sequenceChart.setShowAxisLabels(!sequenceChart.getShowAxisLabels());
+                update();
+            }
+            
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowAxisLabels());
+            }
+        };
+    }
+    
 	private SequenceChartAction createIncreaseSpacingAction() {
 		return new SequenceChartAction("Increase Spacing", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_INCREASE_SPACING)) {
 			@Override
@@ -1069,7 +1107,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		return new SequenceChartAction("Detach Vector from Axis", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_ATTACH_VECTOR_TO_AXIS)) {
 			@Override
 			public void run() {
-				sequenceChart.setAxisRenderer(axisModule, new AxisLineRenderer(sequenceChart));
+				sequenceChart.setAxisRenderer(axisModule, new AxisLineRenderer(sequenceChart, axisModule));
 			}
 		};
 	}

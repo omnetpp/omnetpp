@@ -187,6 +187,8 @@ public class SequenceChart
     private boolean showSelfMessages = true; // show or hide reuse message arrows
 	private boolean showReuseMessages = false; // show or hide reuse message arrows
 	private boolean showEventNumbers = true;
+    private boolean showZeroSimulationTimeRegions = true;
+    private boolean showAxisLabels = true;
 	private AxisOrderingMode axisOrderingMode = AxisOrderingMode.MODULE_ID; // specifies the ordering mode of timelines
 
 	private HoverSupport hoverSupport;
@@ -473,12 +475,42 @@ public class SequenceChart
 	/**
 	 * Returns whether arrow heads are shown in the chart.
 	 */
-	public void setShowArrowHeads(boolean drawArrowHeads) {
-		this.showArrowHeads = drawArrowHeads;
+	public void setShowArrowHeads(boolean showArrowHeads) {
+		this.showArrowHeads = showArrowHeads;
 		clearCanvasCacheAndRedraw();
 	}
 
-	/**
+    /**
+     * Shows/hides zero simulation time regions.
+     */
+    public boolean getShowZeroSimulationTimeRegions() {
+        return showZeroSimulationTimeRegions;
+    }
+
+    /**
+     * Returns whether zero simulation time regions are shown in the chart.
+     */
+    public void setShowZeroSimulationTimeRegions(boolean showZeroSimulationTimeRegions) {
+        this.showZeroSimulationTimeRegions = showZeroSimulationTimeRegions;
+        clearCanvasCacheAndRedraw();
+    }
+
+    /**
+     * Shows/hides zero simulation time regions.
+     */
+    public boolean getShowAxisLabels() {
+        return showAxisLabels;
+    }
+
+    /**
+     * Returns whether zero simulation time regions are shown in the chart.
+     */
+    public void setShowAxisLabels(boolean showAxisLabels) {
+        this.showAxisLabels = showAxisLabels;
+        clearCanvasCacheAndRedraw();
+    }
+
+    /**
 	 * Returns the current timeline mode.
 	 */
 	public TimelineMode getTimelineMode() {
@@ -1213,10 +1245,11 @@ public class SequenceChart
 		this.axisRenderers = new IAxisRenderer[axisModules.size()];
 
 		for (int i = 0; i < axisRenderers.length; i++) {
-			IAxisRenderer axisRenderer = getAxisRenderer(axisModules.get(i));
+		    ModuleTreeItem axisModule = axisModules.get(i);
+			IAxisRenderer axisRenderer = getAxisRenderer(axisModule);
 
 			if (axisRenderer == null)
-				axisRenderer = new AxisLineRenderer(this);
+				axisRenderer = new AxisLineRenderer(this, axisModule);
 
 			moduleIdToAxisRendererMap.put(axisModules.get(i).getModuleId(), axisRenderer);
 			axisRenderers[i] = axisRenderer;
@@ -1469,7 +1502,9 @@ public class SequenceChart
 			Graphics graphics = createGraphics(gc);
 			graphics.translate(0, GUTTER_HEIGHT);
 
-			drawAxisLabels(graphics);
+			if (showAxisLabels)
+			    drawAxisLabels(graphics);
+
 	        drawEventBookmarks(graphics);
 	        drawEventSelectionMarks(graphics);
 
@@ -1628,7 +1663,9 @@ public class SequenceChart
 			if (debug && !eventLog.isEmpty())
 				System.out.println("Redrawing events from: " + sequenceChartFacade.Event_getEventNumber(startEventPtr) + " to: " + sequenceChartFacade.Event_getEventNumber(endEventPtr));
 
-			drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
+			if (showZeroSimulationTimeRegions)
+			    drawZeroSimulationTimeRegions(graphics, startEventPtr, endEventPtr);
+
 			drawAxes(graphics, startEventPtr, endEventPtr);
 	        drawMessageDependencies(graphics);
 	        drawEvents(graphics, startEventPtr, endEventPtr);
@@ -1697,13 +1734,18 @@ public class SequenceChart
 	 */
 	private void drawAxes(Graphics graphics, long startEventPtr, long endEventPtr) {
 		for (int i = 0; i < axisModules.size(); i++) {
-			int y = axisModuleYs[i] - (int)getViewportTop();
-			IAxisRenderer axisRenderer = axisRenderers[i];
-			int dy = y;
-			graphics.translate(0, dy);
-			axisRenderer.drawAxis(graphics, startEventPtr, endEventPtr);
-			graphics.translate(0, -dy);
+		    ModuleTreeItem axisModule = axisModules.get(i);
+		    drawAxis(graphics, startEventPtr, endEventPtr, i, axisModule);
 		}
+	}
+	
+	private void drawAxis(Graphics graphics, long startEventPtr, long endEventPtr, int index, ModuleTreeItem axisModule) {
+        int y = axisModuleYs[index] - (int)getViewportTop();
+        IAxisRenderer axisRenderer = axisRenderers[index];
+        int dy = y;
+        graphics.translate(0, dy);
+        axisRenderer.drawAxis(graphics, startEventPtr, endEventPtr);
+        graphics.translate(0, -dy);
 	}
 
 	/**
@@ -1853,10 +1895,16 @@ public class SequenceChart
 		else {
 			// 3) no events or message arrows: highlight axis label
 			ModuleTreeItem axisModule = findAxisAt(p.y);
+
 			if (axisModule != null) {
-				graphics.setLineWidth(2);
-				int i = moduleIdToAxisModuleIndexMap.get(axisModule.getModuleId());
-				drawAxisLabel(graphics, i, axisModule);
+	            long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
+	            long startEventPtr = eventPtrRange[0];
+	            long endEventPtr = eventPtrRange[1];
+
+	            int i = moduleIdToAxisModuleIndexMap.get(axisModule.getModuleId());
+				
+	            drawAxisLabel(graphics, i, axisModule);
+				drawAxis(graphics, startEventPtr, endEventPtr, i, axisModule);
 			}
 		}
 	}
@@ -1987,8 +2035,8 @@ public class SequenceChart
 		}
 	}
 
-	private void drawAxisLabel(Graphics graphics, int i, ModuleTreeItem treeItem) {
-		int y = axisModuleYs[i] - (int)getViewportTop();
+	private void drawAxisLabel(Graphics graphics, int index, ModuleTreeItem treeItem) {
+		int y = axisModuleYs[index] - (int)getViewportTop();
 		String label = treeItem.getModuleFullPath();
 		graphics.setForegroundColor(LABEL_COLOR);
 		graphics.setFont(font);
@@ -2184,7 +2232,7 @@ public class SequenceChart
 				}
 
 				if (showMessageNames)
-					drawMessageDependencyLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, y1, 0, -halfEllipseHeight - 15);
+					drawMessageDependencyLabel(graphics, messageDependencyPtr, (x1 + x2) / 2, y1, 0, -halfEllipseHeight - 18);
 			}
 		}
 		else {

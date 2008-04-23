@@ -10,6 +10,8 @@ import java.util.ArrayList;
  */
 public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	private int moduleId = -1;
+	
+	private boolean isCompoundModule;
 
 	private String moduleName;
 	
@@ -37,11 +39,16 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	 * @param moduleName cannot be null
 	 * @param parent null is allowed
 	 */
-	public ModuleTreeItem(String moduleName, ModuleTreeItem parent) {
+	public ModuleTreeItem(String moduleName, ModuleTreeItem parent, boolean isCompoundModule) {
 		setModuleName(moduleName);
+		this.isCompoundModule = isCompoundModule;
 		parentModule = parent;
 		if (parentModule != null)
 			parentModule.addSubmodule(this);
+	}
+	
+	public boolean isCompoundModule() {
+	    return isCompoundModule;
 	}
 	
 	private void addSubmodule(ModuleTreeItem submodule) {

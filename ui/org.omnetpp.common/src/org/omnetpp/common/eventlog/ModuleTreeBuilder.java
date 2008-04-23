@@ -12,13 +12,13 @@ public class ModuleTreeBuilder {
 
 	private ModuleTreeItem treeRoot = new ModuleTreeItem();
 	
-	public ModuleTreeItem addModule(int parentModuleId, int moduleId, String moduleClassName, String moduleFullName) {
+	public ModuleTreeItem addModule(int parentModuleId, int moduleId, String moduleClassName, String moduleFullName, boolean isCompoundModule) {
 		ModuleTreeItem parentModule = (ModuleTreeItem)moduleIdToModuleMap.get(parentModuleId);
 		
 		if (parentModule == null)
 			parentModule = treeRoot;
 		
-		ModuleTreeItem module = new ModuleTreeItem(moduleFullName, parentModule);
+		ModuleTreeItem module = new ModuleTreeItem(moduleFullName, parentModule, isCompoundModule);
 		module.setModuleId(moduleId);
 		module.setModuleClassName(moduleClassName);
 		moduleIdToModuleMap.put(moduleId, module);

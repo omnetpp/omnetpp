@@ -24,10 +24,11 @@ Features:
    + display event numbers
    + display message names
    + display arrow heads
-   - display axis names
+   + display axis names
    - display simulation time gutter
    - display info
-   - display zero simulation time ranges
+   + display zero simulation time ranges
+   + display self messages
  + display simulation time for horizontal mouse position on the gutter
  + show multiple tooltip information:
    + event information
@@ -76,6 +77,10 @@ Features:
  - minimize crossings for modules having events in visible area
  - filter for modules present in visible area
  - hide individual events and messages
+ + display compound module axes differently
+ + case sensitive full string search in message detail pattern
+ + filtering for module events during writing eventlog
+ - per run eventlog-message-detail-pattern configuration key
 
 Known bugs:
  - tracing events sometimes slows down or kills eclipse
