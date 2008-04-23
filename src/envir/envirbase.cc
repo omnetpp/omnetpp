@@ -154,44 +154,45 @@ Register_PerObjectConfigEntry(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-
 // used to write message details into the event log during the simulation
 ObjectPrinter *eventLogObjectPrinter = NULL;
 
-static void setupEventLogObjectPrinter()
+static void setupEventLogObjectPrinter(cConfiguration *cfg)
 {
-     // set up event log object printer
-     const char *eventLogMessageDetailPattern = ev.config()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
+    // set up event log object printer
+    delete eventLogObjectPrinter;
+    const char *eventLogMessageDetailPattern = cfg->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
 
-     if (eventLogMessageDetailPattern) {
-         std::vector<MatchExpression> objectMatchExpressions;
-         std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
+    if (eventLogMessageDetailPattern) {
+        std::vector<MatchExpression> objectMatchExpressions;
+        std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
 
-         StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
-         std::vector<std::string> patterns = tokenizer.asVector();
+        StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
+        std::vector<std::string> patterns = tokenizer.asVector();
 
-         for (int i = 0; i < (int)patterns.size(); i++) {
-             char *objectPattern = (char *)patterns[i].c_str();
-             char *fieldNamePattern = strchr(objectPattern, ':');
+        for (int i = 0; i < (int)patterns.size(); i++) {
+            char *objectPattern = (char *)patterns[i].c_str();
+            char *fieldNamePattern = strchr(objectPattern, ':');
 
-             if (fieldNamePattern) {
-                 *fieldNamePattern = '\0';
-                 StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
-                 std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
-                 std::vector<MatchExpression> fieldNameMatchExpressions;
+            if (fieldNamePattern) {
+                *fieldNamePattern = '\0';
+                StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
+                std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
+                std::vector<MatchExpression> fieldNameMatchExpressions;
 
-                 for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
-                     fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
+                for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
+                    fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
 
-                 fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
-             }
-             else {
-                 std::vector<MatchExpression> fieldNameMatchExpressions;
-                 fieldNameMatchExpressions.push_back(MatchExpression("*", false, true, true));
-                 fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
-             }
+                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
+            }
+            else {
+                std::vector<MatchExpression> fieldNameMatchExpressions;
+                fieldNameMatchExpressions.push_back(MatchExpression("*", false, true, true));
+                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
+            }
 
-             objectMatchExpressions.push_back(MatchExpression(objectPattern, false, true, true));
-         }
+            objectMatchExpressions.push_back(MatchExpression(objectPattern, false, true, true));
+        }
 
-         eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNameMatchExpressionsList, 3);
-     }
+        eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNameMatchExpressionsList, 3);
+    }
 }
 
 //-------------------------------------------------------------
@@ -372,8 +373,6 @@ void EnvirBase::setup()
         //    }
         //    simulation.doneLoadingNedFiles();
         //}
-
-        setupEventLogObjectPrinter();  //FIXME TBD: move it into readPerRunOptions()
     }
     catch (std::exception& e)
     {
@@ -1161,6 +1160,7 @@ void EnvirBase::readPerRunOptions()
     // open message log file (in startRun() it's too late, because modules have already been created then)
     if (!opt_eventlogfilename.empty())
     {
+        setupEventLogObjectPrinter(cfg);
         processFileName(opt_eventlogfilename);
         ::printf("Recording event log to file `%s'...\n", opt_eventlogfilename.c_str());
         mkPath(directoryOf(opt_eventlogfilename.c_str()).c_str());
