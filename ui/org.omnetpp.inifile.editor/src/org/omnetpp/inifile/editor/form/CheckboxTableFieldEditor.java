@@ -53,11 +53,11 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		else {
 		    table.setLinesVisible(true);
 		    table.setHeaderVisible(true);
-		    addTableColumn(table, "Object", 100);
-		    addTableColumn(table, "Section", 100);
-		    height = table.getHeaderHeight() + 3*table.getItemHeight();
+		    addTableColumn(table, "Object", 150);
+		    addTableColumn(table, "Section", 150);
+		    height = table.getHeaderHeight() + 6*table.getItemHeight();
 		}
-        table.setLayoutData(new GridData(220, height)); 
+        table.setLayoutData(new GridData(305, height)); 
 
 		CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
 

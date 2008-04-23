@@ -54,18 +54,20 @@ public class TextTableFieldEditor extends TableFieldEditor {
 	protected TableViewer createTableViewer(Composite parent) {
 		// add table
 		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
-        table.setLayoutData(new GridData(320, table.getHeaderHeight()+4*table.getItemHeight()+2));
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		if (entry.isPerObject()) {
 		    addTableColumn(table, "Section", 100);
-		    addTableColumn(table, "Object", 80);
-		    addTableColumn(table, "Value", 120);
+		    addTableColumn(table, "Object", 100);
+		    addTableColumn(table, "Value", 160);
 		}
 		else {
             addTableColumn(table, "Section", 100);
-            addTableColumn(table, "Value", 200);
+            addTableColumn(table, "Value", 260);
 		}
+		int numLines = entry.isPerObject() ? 6 : 3;
+		int height = table.getHeaderHeight()+numLines*table.getItemHeight()+2;
+        table.setLayoutData(new GridData(365, height));
 		
 		final int objectColumnIndex = entry.isPerObject() ? 1 : -1;
 		final int valueColumnIndex = entry.isPerObject() ? 2 : 1;
