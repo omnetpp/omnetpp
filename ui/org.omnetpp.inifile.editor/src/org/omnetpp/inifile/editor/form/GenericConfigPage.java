@@ -165,6 +165,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addComboboxFieldEditor(group3, CFGID_SIMTIME_SCALE, "Simulation time precision");
             //TODO display extra info: "nanosecond resolution; range: +-100 days"
 			addCheckboxFieldEditor(group3, CFGID_DEBUG_ON_ERRORS, "Debug on errors");
+            addSpacer(form);
 		}
 		else if (category.equals(CAT_ADVANCED)) {
 		    Group group0 = createGroup(form, "Regression");
@@ -213,6 +214,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			Group group2 = createGroup(form, "Scenario generation");
 			addTextFieldEditor(group2, CFGID_REPEAT, "Repeat count");
 			addTextFieldEditor(group2, CFGID_CONSTRAINT, "Constraint");
+            addSpacer(form);
 		}
 		else if (category.equals(CAT_OUTPUTFILES)) {
 			addTextFieldEditor(form, CFGID_RESULT_DIR, "Result directory");
@@ -246,6 +248,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group1, CFGID_OUTPUTVECTORMANAGER_CLASS, "Output vector manager class");
 			addTextFieldEditor(group1, CFGID_OUTPUTSCALARMANAGER_CLASS, "Output scalar manager class");
 			addTextFieldEditor(group1, CFGID_SNAPSHOTMANAGER_CLASS, "Snapshot manager class");
+            addSpacer(form);
 		}
 		else if (category.equals(CAT_CMDENV)) {
 			Group group0 = createGroup(form, "When no command-line options are present, run the following:");
@@ -281,11 +284,13 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group4, CFGID_TKENV_PLUGIN_PATH, "Plugin path");
 			addSpacer(form);
 			addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK_KB, "Tkenv extra stack (KB)");
+            addSpacer(form);
 		}
 		else if (category.equals(CAT_PARSIM)) {
 			addCheckboxFieldEditor(form, CFGID_PARALLEL_SIMULATION, "Enable parallel simulation");
-            Group group0 = createGroup(form, "General");
+            Group group0 = createGroup(form, "Partitioning");
             addTextTableFieldEditor(group0, CFGID_PARTITION_ID, "Module partitioning");
+            addSpacer(form);
 			Group group1 = createGroup(form, "General");
 			addTextFieldEditor(group1, CFGID_PARSIM_COMMUNICATIONS_CLASS, "Communications class");
 			addTextFieldEditor(group1, CFGID_PARSIM_SYNCHRONIZATION_CLASS, "Synchronization class");
@@ -304,6 +309,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group3, CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS, "Null Message Protocol: laziness");
 			addTextFieldEditor(group3, CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE, "Ideal Simulation Protocol: table size");
 */
+            addSpacer(form);
 		}
 		else {
 			throw new IllegalArgumentException("no such category: "+category);

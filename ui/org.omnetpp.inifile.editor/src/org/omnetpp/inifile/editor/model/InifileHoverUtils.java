@@ -135,10 +135,13 @@ public class InifileHoverUtils {
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
 		String text = getProblemsHoverText(markers, false);
 		ConfigKey entry = ConfigRegistry.getEntry(key);
+		if (entry==null)
+		    entry = ConfigRegistry.getPerObjectEntry(key.replaceFirst("^.*\\.", ""));
 		if (entry == null)
 			return HoverSupport.addHTMLStyleSheet(text);
 
-		text += "<b>[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / "+entry.getKey();
+		text += "<b>[General]"+(entry.isGlobal() ? "" : " or [Config X]")+" / ";
+		text += (entry.isPerObject() ? "**." : "") + entry.getKey();
 		text += " = &lt;" + entry.getDataType().name().replaceFirst("CFG_", "");
 		if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
 			text += ", default: " + entry.getDefaultValue();
