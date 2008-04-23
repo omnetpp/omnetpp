@@ -21,7 +21,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERR
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_ENABLE_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_RECORD_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
@@ -237,9 +237,9 @@ public class GenericConfigPage extends ScrolledFormPage {
 			Group group0 = createGroup(form, "Event log");
 			addCheckboxFieldEditor(group0, CFGID_RECORD_EVENTLOG, "Enable recording");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_FILE, "Eventlog file");
-			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORD_INTERVAL, "Recording interval");
+			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORDING_INTERVAL, "Recording interval");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record");
-			addCheckboxTableFieldEditor(group0, CFGID_RECORD_MODULE_EVENTS, "Modules to include");
+			addCheckboxFieldEditor(group0, CFGID_RECORD_MODULE_EVENTS, "Record events");
 			addSpacer(form);
             Group group1 = createGroup(form, "Output vector recording");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");

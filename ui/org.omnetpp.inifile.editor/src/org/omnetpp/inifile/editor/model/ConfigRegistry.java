@@ -256,8 +256,8 @@ public class ConfigRegistry {
         "recording the fields declared on the MyMessage class\n" +
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not " +
         "declaredOn(cObject))\": records user-defined fields from all messages");
-    public static final ConfigKey CFGID_EVENTLOG_RECORD_INTERVAL = addPerRunEntry(
-        "eventlog-record-interval", CFG_CUSTOM, null,
+    public static final ConfigKey CFGID_EVENTLOG_RECORDING_INTERVAL = addPerRunEntry(
+        "eventlog-recording-interval", CFG_CUSTOM, null,
         "Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... " +
         "That is, both start and end of an interval are optional, and intervals are " +
         "separated by comma. Example: ..100, 200..400, 900..");
