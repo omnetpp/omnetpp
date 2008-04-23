@@ -3,17 +3,27 @@ package org.omnetpp.inifile.editor.form;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
+import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.TableLabelProvider;
+import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalProvider;
+import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -59,8 +69,9 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		}
         table.setLayoutData(new GridData(305, height)); 
 
-		CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
-
+		final CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
+   
+		// set up label provider
         tableViewer.setLabelProvider(new TableLabelProvider() {
 			@Override
 			public String getColumnText(Object element, int columnIndex) {
@@ -88,6 +99,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 			}
 		});
 
+        // checkbox behavior
 		tableViewer.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
                 SectionKey sectionKey = (SectionKey) event.getElement();
@@ -96,6 +108,37 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 			}
 		});
 
+		if (entry.isPerObject()) {
+		    // set up cell editor for object column
+		    tableViewer.setColumnProperties(new String[] {"object", "value"});
+		    final TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {new TableTextCellEditor(tableViewer,1), null};
+		    tableViewer.setCellEditors(cellEditors);
+
+		    tableViewer.setCellModifier(new ICellModifier() {
+		        public boolean canModify(Object element, String property) {
+		            return property.equals("object");
+		        }
+
+		        public Object getValue(Object element, String property) {
+		            Assert.isTrue(property.equals("object"));
+		            SectionKey sectionKey = (SectionKey) element;
+		            return StringUtils.removeEnd(sectionKey.key, "."+entry.getKey());
+		        }
+
+		        public void modify(Object element, String property, Object value) {
+                    Assert.isTrue(property.equals("object"));
+		            if (element instanceof Item)
+		                element = ((Item) element).getData(); // workaround, see super's comment
+		            SectionKey sectionKey = (SectionKey) element;
+		            renameKeyInInifile(sectionKey.section, sectionKey.key, value+"."+entry.getKey());
+		            tableViewer.refresh();
+		        }
+		    });
+
+		    // content assist for the Object column
+		    //TODO see TextTableFieldEditor and InifileParamKeyContentProposalProvider
+		}
+		
  		return tableViewer;
 	}
 
