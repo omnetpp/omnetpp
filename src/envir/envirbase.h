@@ -28,6 +28,8 @@
 #include "envirext.h"
 #include "cconfiguration.h"
 #include "timeutil.h"
+#include "objectprinter.h"
+#include "intervals.h"
 
 NAMESPACE_BEGIN
 
@@ -52,6 +54,10 @@ class ENVIR_API EnvirBase : public cEnvir
     cConfiguration *cfg;
     ArgList *args;
     cXMLDocCache *xmlcache;
+    
+    // used to write message details into the event log during the simulation
+    ObjectPrinter *eventLogObjectPrinter;
+    Intervals *eventLogRecordingIntervals;
 
     //
     // Configuration options
@@ -212,6 +218,7 @@ class ENVIR_API EnvirBase : public cEnvir
     cModuleType *resolveNetwork(const char *networkname);
 
     void printHelp();
+    void setupEventLog();
 
     /**
      * Prints the contents of a registration list to the standard output.

@@ -28,7 +28,6 @@
 #include "cmodule.h"
 #include "fileoutvectormgr.h"
 #include "ccomponenttype.h"
-#include "stringtokenizer.h"
 #include "stringutil.h"
 
 USING_NAMESPACE
@@ -126,47 +125,16 @@ void cFileOutputVectorManager::endRun()
 
 void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char *vecname,
                                                   bool& outEnabled, bool& outRecordEventNumbers,
-                                                  Interval *&outIntervals)
+                                                  Intervals &outIntervals)
 {
     std::string vectorfullpath = std::string(modname) + "." + vecname;
     outEnabled = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_OUTVECTOR_ENABLED);
     outRecordEventNumbers = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_OUTVECTOR_EVENT_NUMBERS);
 
     // get interval string
-    outIntervals = NULL;
     const char *text = ev.config()->getAsCustom(vectorfullpath.c_str(), CFGID_OUTVECTOR_INTERVAL);
     if (text)
-    {
-        // parse the string, syntax is "start..end, start..end, start.."
-        std::vector<Interval> intervals;
-        StringTokenizer tokenizer(text, ",");
-        while (tokenizer.hasMoreTokens())
-        {
-            // parse interval string
-            const char *s = tokenizer.nextToken();
-            const char *ellipsis = strstr(s, "..");
-            if (!ellipsis)
-                throw cRuntimeError("Wrong syntax in output vector interval %s=%s", text, s);
-
-            const char *startstr = s;
-            const char *stopstr = ellipsis+2;
-            while (opp_isspace(*startstr)) startstr++;
-            while (opp_isspace(*stopstr)) stopstr++;
-
-            // add to vector
-            Interval interval;
-            if (startstr!=ellipsis)
-                interval.startTime = STR_SIMTIME(std::string(startstr, ellipsis-startstr).c_str());
-            if (*stopstr)
-                interval.stopTime = STR_SIMTIME(stopstr);
-            intervals.push_back(interval);
-        }
-
-        // return as plain C++ array
-        outIntervals = new Interval[intervals.size()+1]; // +1: terminating (0,0)
-        for (int i=0; i<(int)intervals.size(); i++)
-            outIntervals[i] = intervals[i];
-    }
+        outIntervals.parse(text);
 }
 
 void *cFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
@@ -189,7 +157,6 @@ void cFileOutputVectorManager::deregisterVector(void *vectorhandle)
 {
     ASSERT(vectorhandle!=NULL);
     sVectorData *vp = (sVectorData *)vectorhandle;
-    delete [] vp->intervals;
     delete vp;
 }
 
@@ -210,7 +177,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
     if (!vp->enabled)
         return false;
 
-    if (!vp->intervals || containsTime(t, vp->intervals))
+    if (vp->intervals.contains(t))
     {
         if (!vp->initialized)
             initVector(vp);
@@ -226,14 +193,6 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         }
         return true;
     }
-    return false;
-}
-
-bool cFileOutputVectorManager::containsTime(simtime_t t, Interval *intervals)
-{
-    for (Interval *i = intervals; i->startTime!=0 || i->stopTime!=0; i++)
-        if (i->startTime <= t && (i->stopTime == 0 || t <= i->stopTime))
-            return true;
     return false;
 }
 

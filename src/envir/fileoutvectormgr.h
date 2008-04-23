@@ -20,6 +20,7 @@
 #include "envirext.h"
 #include "util.h"
 #include "runattributes.h"
+#include "intervals.h"
 
 NAMESPACE_BEGIN
 
@@ -43,7 +44,7 @@ class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
        bool initialized;    // true if the vector declaration has been written out
        bool enabled;        // write to the output file can be enabled/disabled
        bool recordEventNumbers; // record the current event number for each sample
-       Interval *intervals; // array of (starttime, stoptime) pairs terminated with (0,0), or NULL
+       Intervals intervals;
 
        const char *getColumns() { return recordEventNumbers ? "ETV" : "TV"; }
     };
@@ -60,7 +61,6 @@ class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
     virtual void initVector(sVectorData *vp);
     virtual sVectorData *createVectorData();
     virtual void writeRunData();
-    static bool containsTime(simtime_t t, Interval *intervals);
 
   public:
     /** @name Constructors, destructor */
@@ -81,7 +81,7 @@ class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
      * Utility function for parsing the configuration of an output vector.
      */
     static void getOutVectorConfig(const char *modname, const char *vecname,
-                                   bool& outEnabled, bool& outRecordEventNumbers, Interval *&outIntervals);
+                                   bool& outEnabled, bool& outRecordEventNumbers, Intervals &outIntervals);
 
     /** @name Redefined cOutputVectorManager member functions. */
     //@{

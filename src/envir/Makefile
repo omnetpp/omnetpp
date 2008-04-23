@@ -32,7 +32,7 @@ OBJS= $O/args.o $O/bootenv.o $O/main.o $O/envirbase.o $O/fsutils.o \
       $O/indexedfileoutvectormgr.o $O/akoutvectormgr.o \
       $O/speedometer.o $O/matchableobject.o $O/matchablefield.o \
       $O/akaroarng.o $O/cxmldoccache.o $O/eventlogwriter.o $O/objectprinter.o \
-      $O/runattributes.o
+      $O/runattributes.o $O/intervals.o
 
 
 #

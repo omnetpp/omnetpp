@@ -59,7 +59,6 @@
 
 #include "opp_ctype.h"
 #include "stringtokenizer.h"
-#include "objectprinter.h"
 #include "fileglobber.h"
 #include "commonutil.h"
 
@@ -143,57 +142,11 @@ Register_PerRunConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mess
         "  \"*Frame:*Address,*Id\": captures all fields named somethingAddress and somethingId from messages of any class named somethingFrame\n"
         "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage recording the fields declared on the MyMessage class\n"
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not declaredOn(cObject))\": records user-defined fields from all messages");
-Register_PerRunConfigEntry(CFGID_EVENTLOG_RECORDING_INTERVAL, "eventlog-recording-interval", CFG_CUSTOM, NULL, "Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
+Register_PerRunConfigEntry(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, NULL, "Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
 Register_PerObjectConfigEntry(CFGID_RECORD_MODULE_EVENTS, "record-module-events", CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.record-module-events = true\n **.record-module-events = false");
 Register_PerObjectConfigEntry(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigEntry(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
 
-
-//-------------------------------------------------------------
-
-// used to write message details into the event log during the simulation
-ObjectPrinter *eventLogObjectPrinter = NULL;
-
-static void setupEventLogObjectPrinter(cConfiguration *cfg)
-{
-    // set up event log object printer
-    delete eventLogObjectPrinter;
-    const char *eventLogMessageDetailPattern = cfg->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
-
-    if (eventLogMessageDetailPattern) {
-        std::vector<MatchExpression> objectMatchExpressions;
-        std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
-
-        StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
-        std::vector<std::string> patterns = tokenizer.asVector();
-
-        for (int i = 0; i < (int)patterns.size(); i++) {
-            char *objectPattern = (char *)patterns[i].c_str();
-            char *fieldNamePattern = strchr(objectPattern, ':');
-
-            if (fieldNamePattern) {
-                *fieldNamePattern = '\0';
-                StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
-                std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
-                std::vector<MatchExpression> fieldNameMatchExpressions;
-
-                for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
-                    fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
-
-                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
-            }
-            else {
-                std::vector<MatchExpression> fieldNameMatchExpressions;
-                fieldNameMatchExpressions.push_back(MatchExpression("*", false, true, true));
-                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
-            }
-
-            objectMatchExpressions.push_back(MatchExpression(objectPattern, false, true, true));
-        }
-
-        eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNameMatchExpressionsList, 3);
-    }
-}
 
 //-------------------------------------------------------------
 
@@ -202,6 +155,9 @@ EnvirBase::EnvirBase()
     args = NULL;
     cfg = NULL;
     xmlcache = NULL;
+
+    eventLogObjectPrinter = NULL;
+    eventLogRecordingIntervals = NULL;
 
     outvectormgr = NULL;
     outscalarmgr = NULL;
@@ -242,6 +198,7 @@ EnvirBase::~EnvirBase()
 #endif
 
     delete eventLogObjectPrinter;
+    delete eventLogRecordingIntervals;
 }
 
 int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
@@ -843,7 +800,11 @@ void EnvirBase::simulationEvent(cMessage *msg)
     if (feventlog)
     {
         cModule *mod = simulation.contextModule();
-        EventLogWriter::updateEventLogRecordingEnabled();
+        
+        EventLogWriter::isModuleEventLogRecordingEnabled = simulation.contextModule()->isRecordEvents();
+        EventLogWriter::isIntervalEventLogRecordingEnabled = !eventLogRecordingIntervals || eventLogRecordingIntervals->contains(simulation.simTime());
+        EventLogWriter::isEventLogRecordingEnabled = EventLogWriter::isModuleEventLogRecordingEnabled && EventLogWriter::isIntervalEventLogRecordingEnabled;
+        
         EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog,
             simulation.eventNumber(), simulation.simTime(), mod->id(),
             msg->previousEventNumber(), msg->id());
@@ -1159,17 +1120,65 @@ void EnvirBase::readPerRunOptions()
 
     // open message log file (in startRun() it's too late, because modules have already been created then)
     if (!opt_eventlogfilename.empty())
-    {
-        setupEventLogObjectPrinter(cfg);
-        processFileName(opt_eventlogfilename);
-        ::printf("Recording event log to file `%s'...\n", opt_eventlogfilename.c_str());
-        mkPath(directoryOf(opt_eventlogfilename.c_str()).c_str());
-        FILE *out = fopen(opt_eventlogfilename.c_str(), "w");
-        if (!out)
-            throw cRuntimeError("Cannot open event log file `%s' for write", opt_eventlogfilename.c_str());
-        feventlog = out;
+        setupEventLog();
+
+}
+
+void EnvirBase::setupEventLog()
+{
+    // setup event log object printer
+    delete eventLogObjectPrinter;
+    const char *eventLogMessageDetailPattern = config()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
+
+    if (eventLogMessageDetailPattern) {
+        std::vector<MatchExpression> objectMatchExpressions;
+        std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
+
+        StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
+        std::vector<std::string> patterns = tokenizer.asVector();
+
+        for (int i = 0; i < (int)patterns.size(); i++) {
+            char *objectPattern = (char *)patterns[i].c_str();
+            char *fieldNamePattern = strchr(objectPattern, ':');
+
+            if (fieldNamePattern) {
+                *fieldNamePattern = '\0';
+                StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
+                std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
+                std::vector<MatchExpression> fieldNameMatchExpressions;
+
+                for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
+                    fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
+
+                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
+            }
+            else {
+                std::vector<MatchExpression> fieldNameMatchExpressions;
+                fieldNameMatchExpressions.push_back(MatchExpression("*", false, true, true));
+                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
+            }
+
+            objectMatchExpressions.push_back(MatchExpression(objectPattern, false, true, true));
+        }
+
+        eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNameMatchExpressionsList, 3);
     }
 
+    // setup eventlog recording intervals
+    const char *text = config()->getAsCustom(CFGID_EVENTLOG_RECORDING_INTERVALS);
+    if (text) {
+        eventLogRecordingIntervals = new Intervals();
+        eventLogRecordingIntervals->parse(text);
+    }
+
+    // setup file
+    processFileName(opt_eventlogfilename);
+    ::printf("Recording event log to file `%s'...\n", opt_eventlogfilename.c_str());
+    mkPath(directoryOf(opt_eventlogfilename.c_str()).c_str());
+    FILE *out = fopen(opt_eventlogfilename.c_str(), "w");
+    if (!out)
+        throw cRuntimeError("Cannot open event log file `%s' for write", opt_eventlogfilename.c_str());
+    feventlog = out;
 }
 
 //void EnvirBase::globAndLoadNedFile(const char *fnamepattern)

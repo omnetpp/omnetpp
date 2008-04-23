@@ -145,8 +145,6 @@ class EventLogWriter
     static bool isModuleEventLogRecordingEnabled;
     static bool isIntervalEventLogRecordingEnabled;
 
-    static void updateEventLogRecordingEnabled();
-
     static void recordLogLine(FILE *f, const char *s, int n);
 ";
 
@@ -189,12 +187,6 @@ print CC "
 bool EventLogWriter::isEventLogRecordingEnabled = true;
 bool EventLogWriter::isIntervalEventLogRecordingEnabled = true;
 bool EventLogWriter::isModuleEventLogRecordingEnabled = true;
-
-void EventLogWriter::updateEventLogRecordingEnabled()
-{
-    isModuleEventLogRecordingEnabled = simulation.contextModule()->isRecordEvents();
-    isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
-}
 
 void EventLogWriter::recordLogLine(FILE *f, const char *s, int n)
 {

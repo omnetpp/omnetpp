@@ -155,8 +155,7 @@ void cIndexedFileOutputVectorManager::deregisterVector(void *vectorhandle)
     Vectors::iterator newEnd = std::remove(vectors.begin(), vectors.end(), vp);
     vectors.erase(newEnd, vectors.end());
     finalizeVector(vp);
-    delete[] vp->intervals;
-    delete vp;
+    cFileOutputVectorManager::deregisterVector(vectorhandle);
 }
 
 void cIndexedFileOutputVectorManager::initVector(sVectorData *vp)
@@ -189,7 +188,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
     if (!vp->enabled)
         return false;
 
-    if (!vp->intervals || containsTime(t, vp->intervals))
+    if (vp->intervals.contains(t))
     {
         if (!vp->initialized)
             initVector(vp);
