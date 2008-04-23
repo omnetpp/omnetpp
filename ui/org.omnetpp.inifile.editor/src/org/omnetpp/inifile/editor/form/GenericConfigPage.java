@@ -21,6 +21,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERR
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_ENABLE_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_RECORD_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
@@ -59,6 +60,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHE
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENTLOG;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENT_NUMBERS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_MODULE_EVENTS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_SCALAR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION_LABEL;
@@ -210,9 +212,12 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addSpacer(form);
 			Group group2 = createGroup(form, "Automatic Seeds");
 			addTextFieldEditor(group2, CFGID_SEED_SET, "Seed set");
+			//TODO the ones that contain "%":
 			//Group group3 = createGroup(form, "Manual Seeds");
-            //addTextTableFieldEditor(form, CFGID_RNG_n, "Module RNG mapping"); //XXX todo
-			//XXX todo: seed-%-mt, seed-%-mt-p%, seed-%-lcg32
+            //addTextTableFieldEditor(form, CFGID_RNG_n, "Module RNG mapping");
+            //addTextTableFieldEditor(form, CFGID_SEED_n_LCG32, "Seed for LCG32 RNG");
+            //addTextTableFieldEditor(form, CFGID_SEED_n_MT, "Seed for Mersenne Twister RNG");
+            //addTextTableFieldEditor(form, CFGID_SEED_n_MT_Pn, "Per-partition Mersenne Twister seeds (for parsim)");
 		}
 		else if (category.equals(CAT_SCENARIO)) {
 			Group group1 = createGroup(form, "Run labeling");
@@ -232,7 +237,9 @@ public class GenericConfigPage extends ScrolledFormPage {
 			Group group0 = createGroup(form, "Event log");
 			addCheckboxFieldEditor(group0, CFGID_RECORD_EVENTLOG, "Enable recording");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_FILE, "Eventlog file");
-			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Details to record");
+			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORD_INTERVAL, "Recording interval");
+			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record");
+			addCheckboxTableFieldEditor(group0, CFGID_RECORD_MODULE_EVENTS, "Modules to include");
 			addSpacer(form);
             Group group1 = createGroup(form, "Output vector recording");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
@@ -245,7 +252,9 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addCheckboxFieldEditor(group2, CFGID_RECORD_SCALAR, "Enable recording");
 			addCheckboxFieldEditor(group2, CFGID_SAVE_AS_SCALAR, "Parameters to save as scalars");
 			addSpacer(form);
-			addTextFieldEditor(form, CFGID_SNAPSHOT_FILE, "Snapshot file");
+            Group group3 = createGroup(form, "Snapshots");
+			addTextFieldEditor(group3, CFGID_SNAPSHOT_FILE, "Snapshot file");
+			addSpacer(form);
 		}
 		else if (category.equals(CAT_EXTENSIONS)) {
 			addTextFieldEditor(form, CFGID_LOAD_LIBS, "Shared libraries to load");
@@ -389,6 +398,12 @@ public class GenericConfigPage extends ScrolledFormPage {
 
     protected FieldEditor addTextTableFieldEditor(Composite parent, ConfigKey e, String label) {
         FieldEditor editor = new TextTableFieldEditor(parent, e, getInifileDocument(), this, label);
+        addFieldEditor(editor);
+        return editor;
+    }
+
+    protected FieldEditor addCheckboxTableFieldEditor(Composite parent, ConfigKey e, String label) {
+        FieldEditor editor = new CheckboxTableFieldEditor(parent, e, getInifileDocument(), this, label);
         addFieldEditor(editor);
         return editor;
     }

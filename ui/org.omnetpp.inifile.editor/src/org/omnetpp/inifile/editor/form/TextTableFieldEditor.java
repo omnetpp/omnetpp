@@ -32,12 +32,25 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  */
 //XXX fix up content assist!!!
 public class TextTableFieldEditor extends TableFieldEditor {
-
 	public TextTableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, entry, inifile, formPage, labelText);
 	}
 
-	@Override
+    public void setSectionColumnTitle(String text) {
+        tableViewer.getTable().getColumn(0).setText(text);
+    }
+
+    public void setObjectColumnTitle(String text) {
+        if (entry.isPerObject())  // otherwise there's no "Object" column
+            tableViewer.getTable().getColumn(1).setText(text);
+    }
+
+    public void setValueColumnTitle(String text) {
+        int valueColumnIndex = entry.isPerObject() ? 2 : 1;
+        tableViewer.getTable().getColumn(valueColumnIndex).setText(text);
+    }
+
+    @Override
 	protected TableViewer createTableViewer(Composite parent) {
 		// add table
 		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);

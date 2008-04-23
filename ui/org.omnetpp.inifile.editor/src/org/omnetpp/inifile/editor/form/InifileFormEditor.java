@@ -40,7 +40,8 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
  * 
  * IMPORTANT: to check whether all config keys are covered by
  * the form editor, set DUMP_FORGOTTEN_CONFIG_KEYS to true, 
- * launch the IDE, and open an ini file in the editor. 
+ * launch the IDE, and open an ini file in the editor.
+ * Then check the console window.
  * 
  * @author andras
  */

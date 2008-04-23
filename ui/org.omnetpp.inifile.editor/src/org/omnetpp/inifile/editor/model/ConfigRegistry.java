@@ -232,7 +232,7 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_EVENTLOG_FILE = addPerRunEntry(
         "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.log",
         "Name of the event log file to generate.");
-    public static final ConfigKey CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN = addGlobalEntry(
+    public static final ConfigKey CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN = addPerRunEntry(
         "eventlog-message-detail-pattern", CFG_CUSTOM, null,
         "A list of patterns separated by '|' character which will be used to write " +
         "message detail information into the event log for each message sent during " +
@@ -256,6 +256,11 @@ public class ConfigRegistry {
         "recording the fields declared on the MyMessage class\n" +
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not " +
         "declaredOn(cObject))\": records user-defined fields from all messages");
+    public static final ConfigKey CFGID_EVENTLOG_RECORD_INTERVAL = addPerRunEntry(
+        "eventlog-record-interval", CFG_CUSTOM, null,
+        "Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... " +
+        "That is, both start and end of an interval are optional, and intervals are " +
+        "separated by comma. Example: ..100, 200..400, 900..");
     public static final ConfigKey CFGID_EXPERIMENT_LABEL = addPerRunEntry(
         "experiment-label", CFG_STRING, "${configname}",
         "Identifies the simulation experiment (which consists of several, " +
@@ -374,11 +379,6 @@ public class ConfigRegistry {
         "parsim-idealsimulationprotocol-tablesize", CFG_INT, "100000",
         "When cIdealSimulationProtocol is selected as parsim synchronization class: " +
         "specifies the memory buffer size for reading the ISP event trace file.");
-    public static final ConfigKey CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER = addGlobalEntry(
-            "parsim-mpicommunications-mpibuffer", CFG_INT, null,
-            "When cMPICommunications is selected as parsim communications class: " +
-            "specifies the size of the MPI communications buffer. The default is to " +
-            "calculate a buffer size based on the number of partitions.");
     public static final ConfigKey CFGID_PARSIM_NAMEDPIPECOMMUNICATIONS_PREFIX = addGlobalEntry(
         "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp",
         "When cNamedPipeCommunications is selected as parsim communications class: " +
@@ -427,6 +427,13 @@ public class ConfigRegistry {
         "record-eventlog", CFG_BOOL, "false",
         "Enables recording an eventlog file, which can be later visualized on a " +
         "sequence chart. See eventlog-file= option too.");
+    public static final ConfigKey CFGID_RECORD_MODULE_EVENTS = addPerObjectEntry(
+        "record-module-events", CFG_BOOL, "true",
+        "Enables recording events on a per module basis. This is meaningful for " +
+        "simple modules only. \n" +
+        "Example:\n" +
+        " **.router[10..20].**.record-module-events = true\n" +
+        " **.record-module-events = false");
     public static final ConfigKey CFGID_RECORD_SCALAR = addPerObjectEntry(
         "record-scalar", CFG_BOOL, "true",
         "Whether the matching output scalars should be recorded. Syntax: " +
@@ -545,6 +552,11 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_WARNINGS = addPerRunEntry(
         "warnings", CFG_BOOL, "true",
         "Enables warnings.");
+    public static final ConfigKey CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER = addGlobalEntry(
+        "parsim-mpicommunications-mpibuffer", CFG_INT, null,
+        "When cMPICommunications is selected as parsim communications class: " +
+        "specifies the size of the MPI communications buffer. The default is to " +
+        "calculate a buffer size based on the number of partitions.");
 
     static {
     	 EXTENDS = CFGID_EXTENDS.getKey();

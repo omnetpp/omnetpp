@@ -28,8 +28,18 @@ import org.omnetpp.inifile.editor.model.SectionKey;
  */
 public class CheckboxTableFieldEditor extends TableFieldEditor {
 
-	public CheckboxTableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
+    public CheckboxTableFieldEditor(Composite parent, ConfigKey entry, IInifileDocument inifile, FormPage formPage, String labelText) {
 		super(parent, entry, inifile, formPage, labelText);
+	}
+
+	public void setSectionColumnTitle(String text) {
+	    if (entry.isPerObject())  // otherwise there're no table headers
+	        tableViewer.getTable().getColumn(1).setText(text);
+	}
+
+	public void setObjectColumnTitle(String text) {
+        if (entry.isPerObject())  // otherwise there're no table headers
+            tableViewer.getTable().getColumn(0).setText(text);
 	}
 
 	@Override
@@ -44,7 +54,7 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 		    table.setLinesVisible(true);
 		    table.setHeaderVisible(true);
 		    addTableColumn(table, "Object", 100);
-		    addTableColumn(table, "In Section", 100);
+		    addTableColumn(table, "Section", 100);
 		    height = table.getHeaderHeight() + 3*table.getItemHeight();
 		}
         table.setLayoutData(new GridData(220, height)); 

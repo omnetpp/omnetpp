@@ -272,3 +272,4 @@ ifdef
 inline
 sizeof
 allowunconnected
+mersenne
