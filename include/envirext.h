@@ -51,16 +51,6 @@ class cStatistic;
  */
 class SIM_API cOutputVectorManager : public cObject
 {
-  public:
-    /**
-     * For use in subclasses: recording interval
-     */
-    struct Interval {
-        simtime_t startTime;
-        simtime_t stopTime;  // 0 if unspecified
-        Interval() {startTime = stopTime = 0;}
-    };
-
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
     cOutputVectorManager(const cOutputVectorManager&);
