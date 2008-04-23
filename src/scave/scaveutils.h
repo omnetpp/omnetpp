@@ -16,6 +16,7 @@
 #define _SCAVEUTILS_H_
 
 #include <string>
+#include <functional>
 #include "inttypes.h"
 #include "scavedefs.h"
 #include "timeutil.h"
@@ -45,6 +46,30 @@ SCAVE_API std::string unquoteString(const char *str);
 	                     gettimeofday(&end,NULL); \
 	                     var += timeval_diff_usec(end,start); }
 
+template <class Operation>
+class FlipArgs
+	: public std::binary_function<typename Operation::second_argument_type,
+					        		typename Operation::first_argument_type,
+					        		typename Operation::result_type> 
+{
+	public:
+		typedef typename Operation::second_argument_type first_argument_type;
+		typedef typename Operation::first_argument_type second_argument_type;
+		typedef typename Operation::result_type result_type;
+        FlipArgs(const Operation & _Func) : op(_Func) {};
+        result_type operator()(const first_argument_type& _Left, const second_argument_type& _Right)
+        {
+        	return op(_Right, _Left);
+        }
+	protected:
+		Operation op;
+};
+
+template<class Operation>
+inline FlipArgs<Operation> flipArgs(const Operation& op)
+{
+	return FlipArgs<Operation>(op);
+}
 
 NAMESPACE_END
 

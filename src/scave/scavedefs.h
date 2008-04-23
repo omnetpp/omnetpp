@@ -31,7 +31,10 @@ NAMESPACE_BEGIN
 
 #define DEFAULT_PRECISION  14
 
+// simulation time
 typedef BigDecimal simultime_t;
+#define SIMTIME_MIN BigDecimal::NegativeInfinity
+#define SIMTIME_MAX BigDecimal::PositiveInfinity
 
 /**
  * Used by VectorResult as well as filter nodes e.g. Integrate

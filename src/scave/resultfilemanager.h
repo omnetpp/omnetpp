@@ -93,7 +93,11 @@ struct SCAVE_API VectorResult : public ResultItem
 {
     int vectorId;
     std::string columns;
+    long startEventNum, endEventNum;
+    simultime_t startTime, endTime;
     Statistics stat;
+    
+    VectorResult() : vectorId(-1), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
     long count()      const { return stat.count(); }
     double min()      const { return stat.min(); }

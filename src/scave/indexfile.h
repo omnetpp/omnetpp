@@ -58,8 +58,8 @@ struct Block {
             startEventNum = eventNum;
             startTime = simtime;
         }
-        endTime = simtime;
         endEventNum = eventNum;
+        endTime = simtime;
         stat.collect(value);
     }
 };
@@ -78,6 +78,10 @@ struct VectorData {
     std::string columns;
     StringMap attributes;
     int64 blockSize;
+    long startEventNum;
+    long endEventNum;
+    simultime_t startTime;
+    simultime_t endTime;
     Statistics stat;
     Blocks blocks;
 
@@ -86,7 +90,8 @@ struct VectorData {
      */
     VectorData() : vectorId(-1), blockSize(0) {}
     VectorData(int vectorId, std::string moduleName, std::string name, std::string columns, int64 blockSize)
-        : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize) {}
+        : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize),
+          startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
     long count() const { return stat.count(); }
     double min() const { return stat.min(); }
@@ -99,6 +104,13 @@ struct VectorData {
      */
     void collect(const Block &block)
     {
+        if (count() == 0)
+        {
+            startEventNum = block.startEventNum;
+            startTime = block.startTime;
+        }
+        endEventNum = block.endEventNum;
+        endTime = block.endTime;
         stat.adjoin(block.stat);
         if (block.size > blockSize)
             blockSize = block.size;

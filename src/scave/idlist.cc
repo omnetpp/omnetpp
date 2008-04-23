@@ -19,9 +19,11 @@
 
 #include <stdlib.h>
 #include <algorithm>
+#include <functional>
 #include "idlist.h"
 #include "resultfilemanager.h"
 #include "stringutil.h"
+#include "scaveutils.h"
 
 USING_NAMESPACE
 
@@ -194,7 +196,7 @@ void IDList::checkIntegrityAllHistograms(ResultFileManager *mgr) const
         throw opp_runtime_error("These items are not all histograms");
 }
 
-class CmpBase {
+class CmpBase : std::binary_function<ID, ID, bool> {
     protected:
        ResultFileManager *mgr;
        bool less(const std::string& a, const std::string& b)
@@ -218,21 +220,6 @@ class FileAndRunLess : public CmpBase {
         }
 };
 
-class FileAndRunMore : public CmpBase {
-    public:
-        FileAndRunMore(ResultFileManager *m) : CmpBase(m) {}
-        bool operator()(ID a, ID b) { // implements operator<
-            const FileRun *da = mgr->getItem(a).fileRunRef;
-            const FileRun *db = mgr->getItem(b).fileRunRef;
-            if (da==db)
-                return false;
-            else if (da->fileRef==db->fileRef)
-                return db->runRef->runName < da->runRef->runName;
-            else
-                return db->fileRef->filePath < da->fileRef->filePath;
-        }
-};
-
 class RunAndFileLess : public CmpBase {
     public:
         RunAndFileLess(ResultFileManager *m) : CmpBase(m) {}
@@ -248,21 +235,6 @@ class RunAndFileLess : public CmpBase {
         }
 };
 
-class RunAndFileMore : public CmpBase {
-    public:
-        RunAndFileMore(ResultFileManager *m) : CmpBase(m) {}
-        bool operator()(ID a, ID b) { // implements operator<
-            const FileRun *da = mgr->getItem(a).fileRunRef;
-            const FileRun *db = mgr->getItem(b).fileRunRef;
-            if (da==db)
-                return false;
-            else if (da->runRef==db->runRef)
-                return db->fileRef->filePath < da->fileRef->filePath;
-            else
-                return db->runRef->runName < da->runRef->runName;
-        }
-};
-
 void IDList::sortByFileAndRun(ResultFileManager *mgr, bool ascending)
 {
     checkV();
@@ -271,7 +243,7 @@ void IDList::sortByFileAndRun(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), FileAndRunLess(mgr));
     else
-        std::sort(v->begin(), v->end(), FileAndRunMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(FileAndRunLess(mgr)));
 }
 
 void IDList::sortByRunAndFile(ResultFileManager *mgr, bool ascending)
@@ -282,37 +254,29 @@ void IDList::sortByRunAndFile(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), RunAndFileLess(mgr));
     else
-        std::sort(v->begin(), v->end(), RunAndFileMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(RunAndFileLess(mgr)));
 }
 
 #define CMP(clazz,method) class clazz : public CmpBase { \
     public: \
         clazz(ResultFileManager *m) : CmpBase(m) {} \
-        bool operator()(ID a, ID b) {return method;} \
+        bool operator()(const ID a, const ID b) {return method;} \
     };
 
 CMP(DirectoryLess, less(mgr->uncheckedGetItem(a).fileRunRef->fileRef->directory, mgr->uncheckedGetItem(b).fileRunRef->fileRef->directory))
-CMP(DirectoryMore, less(mgr->uncheckedGetItem(b).fileRunRef->fileRef->directory, mgr->uncheckedGetItem(a).fileRunRef->fileRef->directory))
 CMP(FileNameLess, less(mgr->uncheckedGetItem(a).fileRunRef->fileRef->fileName, mgr->uncheckedGetItem(b).fileRunRef->fileRef->fileName))
-CMP(FileNameMore, less(mgr->uncheckedGetItem(b).fileRunRef->fileRef->fileName, mgr->uncheckedGetItem(a).fileRunRef->fileRef->fileName))
 CMP(RunLess, less(mgr->uncheckedGetItem(a).fileRunRef->runRef->runName, mgr->uncheckedGetItem(b).fileRunRef->runRef->runName))
-CMP(RunMore, less(mgr->uncheckedGetItem(b).fileRunRef->runRef->runName, mgr->uncheckedGetItem(a).fileRunRef->runRef->runName))
 CMP(ModuleLess, less(*(mgr->uncheckedGetItem(a).moduleNameRef), *(mgr->uncheckedGetItem(b).moduleNameRef)))
-CMP(ModuleMore, less(*(mgr->uncheckedGetItem(b).moduleNameRef), *(mgr->uncheckedGetItem(a).moduleNameRef)))
 CMP(NameLess, less(*(mgr->uncheckedGetItem(a).nameRef), *(mgr->uncheckedGetItem(b).nameRef)))
-CMP(NameMore, less(*(mgr->uncheckedGetItem(b).nameRef), *(mgr->uncheckedGetItem(a).nameRef)))
 CMP(ValueLess, mgr->uncheckedGetScalar(a).value < mgr->uncheckedGetScalar(b).value)
-CMP(ValueMore, mgr->uncheckedGetScalar(b).value < mgr->uncheckedGetScalar(a).value)
+CMP(VectorIdLess, mgr->uncheckedGetVector(a).vectorId < mgr->uncheckedGetVector(b).vectorId)
 CMP(CountLess, mgr->uncheckedGetVector(a).count() < mgr->uncheckedGetVector(b).count())
-CMP(CountMore, mgr->uncheckedGetVector(b).count() < mgr->uncheckedGetVector(a).count())
 CMP(MeanLess, mgr->uncheckedGetVector(a).mean() < mgr->uncheckedGetVector(b).mean())
-CMP(MeanMore, mgr->uncheckedGetVector(b).mean() < mgr->uncheckedGetVector(a).mean())
 CMP(StddevLess, mgr->uncheckedGetVector(a).stddev() < mgr->uncheckedGetVector(b).stddev())
-CMP(StddevMore, mgr->uncheckedGetVector(b).stddev() < mgr->uncheckedGetVector(a).stddev())
 CMP(MinLess, mgr->uncheckedGetVector(a).min() < mgr->uncheckedGetVector(b).min())
-CMP(MinMore, mgr->uncheckedGetVector(b).min() < mgr->uncheckedGetVector(a).min())
 CMP(MaxLess, mgr->uncheckedGetVector(a).max() < mgr->uncheckedGetVector(b).max())
-CMP(MaxMore, mgr->uncheckedGetVector(b).max() < mgr->uncheckedGetVector(a).max())
+CMP(StartTimeLess, mgr->uncheckedGetVector(a).startTime < mgr->uncheckedGetVector(b).startTime)
+CMP(EndTimeLess, mgr->uncheckedGetVector(a).endTime < mgr->uncheckedGetVector(b).endTime)
 
 void IDList::sortByDirectory(ResultFileManager *mgr, bool ascending)
 {
@@ -322,7 +286,7 @@ void IDList::sortByDirectory(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), DirectoryLess(mgr));
     else
-        std::sort(v->begin(), v->end(), DirectoryMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(DirectoryLess(mgr)));
 }
 
 void IDList::sortByFileName(ResultFileManager *mgr, bool ascending)
@@ -333,7 +297,7 @@ void IDList::sortByFileName(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), FileNameLess(mgr));
     else
-        std::sort(v->begin(), v->end(), FileNameMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(FileNameLess(mgr)));
 }
 
 void IDList::sortByRun(ResultFileManager *mgr, bool ascending)
@@ -345,7 +309,7 @@ void IDList::sortByRun(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), RunLess(mgr));
     else
-        std::sort(v->begin(), v->end(), RunMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(RunLess(mgr)));
 }
 
 void IDList::sortByModule(ResultFileManager *mgr, bool ascending)
@@ -356,7 +320,7 @@ void IDList::sortByModule(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), ModuleLess(mgr));
     else
-        std::sort(v->begin(), v->end(), ModuleMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(ModuleLess(mgr)));
 }
 
 void IDList::sortByName(ResultFileManager *mgr, bool ascending)
@@ -367,7 +331,7 @@ void IDList::sortByName(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), NameLess(mgr));
     else
-        std::sort(v->begin(), v->end(), NameMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(NameLess(mgr)));
 }
 
 void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending)
@@ -378,8 +342,20 @@ void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), ValueLess(mgr));
     else
-        std::sort(v->begin(), v->end(), ValueMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(ValueLess(mgr)));
 }
+
+void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending)
+{
+    checkIntegrityAllVectors(mgr);
+    if (v->size()>=2 && VectorIdLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), VectorIdLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(VectorIdLess(mgr)));
+}
+
 
 void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending)
 {
@@ -389,7 +365,7 @@ void IDList::sortVectorsByLength(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), CountLess(mgr));
     else
-        std::sort(v->begin(), v->end(), CountMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(CountLess(mgr)));
 }
 
 void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending)
@@ -400,7 +376,7 @@ void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), MeanLess(mgr));
     else
-        std::sort(v->begin(), v->end(), MeanMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(MeanLess(mgr)));
 }
 
 void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending)
@@ -411,7 +387,7 @@ void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), StddevLess(mgr));
     else
-        std::sort(v->begin(), v->end(), StddevMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(StddevLess(mgr)));
 }
 
 void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending)
@@ -422,7 +398,7 @@ void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), MinLess(mgr));
     else
-        std::sort(v->begin(), v->end(), MinMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(MinLess(mgr)));
 }
 
 void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending)
@@ -433,10 +409,32 @@ void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending)
     if (ascending)
         std::sort(v->begin(), v->end(), MaxLess(mgr));
     else
-        std::sort(v->begin(), v->end(), MaxMore(mgr));
+        std::sort(v->begin(), v->end(), flipArgs(MaxLess(mgr)));
 }
 
-class RunAttributeLess : CmpBase {
+void IDList::sortVectorsByStartTime(ResultFileManager *mgr, bool ascending)
+{
+    checkIntegrityAllVectors(mgr);
+    if (v->size()>=2 && StartTimeLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), StartTimeLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(StartTimeLess(mgr)));
+}
+
+void IDList::sortVectorsByEndTime(ResultFileManager *mgr, bool ascending)
+{
+    checkIntegrityAllVectors(mgr);
+    if (v->size()>=2 && EndTimeLess(mgr)(v->at(0), v->at(v->size()-1))!=ascending)
+       reverse();
+    if (ascending)
+        std::sort(v->begin(), v->end(), EndTimeLess(mgr));
+    else
+        std::sort(v->begin(), v->end(), flipArgs(EndTimeLess(mgr)));
+}
+
+class RunAttributeLess : public CmpBase {
     private:
         const char* attrName;
     public:
@@ -449,19 +447,6 @@ class RunAttributeLess : CmpBase {
         }
 };
 
-class RunAttributeMore : CmpBase {
-    private:
-        const char* attrName;
-    public:
-        RunAttributeMore(ResultFileManager* m, const char* attrName)
-            : CmpBase(m), attrName(attrName) {}
-        bool operator()(ID a, ID b) {
-            const char* aValue = mgr->uncheckedGetItem(a).fileRunRef->runRef->getAttribute(attrName);
-            const char* bValue = mgr->uncheckedGetItem(b).fileRunRef->runRef->getAttribute(attrName);
-            return ((bValue && aValue) ? less(bValue, aValue) : bValue!=NULL);
-        }
-};
-
 void IDList::sortByRunAttribute(ResultFileManager *mgr, const char* runAttribute, bool ascending) {
     checkIntegrity(mgr);
     if (v->size()>=2 && RunAttributeLess(mgr, runAttribute)(v->at(0), v->at(v->size()-1)) != ascending)
@@ -469,7 +454,7 @@ void IDList::sortByRunAttribute(ResultFileManager *mgr, const char* runAttribute
     if (ascending)
         std::sort(v->begin(), v->end(), RunAttributeLess(mgr, runAttribute));
     else
-        std::sort(v->begin(), v->end(), RunAttributeMore(mgr, runAttribute));
+        std::sort(v->begin(), v->end(), flipArgs(RunAttributeLess(mgr, runAttribute)));
 }
 
 void IDList::reverse()

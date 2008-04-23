@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.engine.HistogramResult;
@@ -94,22 +95,26 @@ public class DataTable extends Table {
 		}
 	}
 
-	private static final Column COL_DIRECTORY = new Column("Directory", null, 60, true);
-	private static final Column COL_FILE = new Column("File name", FILE,100, true);
-	private static final Column COL_CONFIG = new Column("Config name", CONFIG, 100, true);
-	private static final Column COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 20, true);
-	private static final Column COL_RUN_ID = new Column("Run id", RUN, 100, true);
-	private static final Column COL_MODULE = new Column("Module", MODULE, 160, true);
-	private static final Column COL_DATA = new Column("Name", NAME, 100, true);
-	private static final Column COL_VALUE = new Column("Value", null, 80, true);
-	private static final Column COL_COUNT = new Column("Count", null, 50, true);
-	private static final Column COL_MEAN = new Column("Mean", null, 60, true);
-	private static final Column COL_STDDEV = new Column("StdDev", null, 60, true);
-	private static final Column COL_MIN = new Column("Min", null, 60, false);
-	private static final Column COL_MAX = new Column("Max", null, 60, false);
-	private static final Column COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 60, false);
-	private static final Column COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 60, false);
-	private static final Column COL_REPLICATION = new Column("Replication", REPLICATION, 60, false);
+	private static final Column
+		COL_DIRECTORY = new Column("Directory", null, 60, true),
+		COL_FILE = new Column("File name", FILE,100, true),
+		COL_CONFIG = new Column("Config name", CONFIG, 100, true),
+		COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 20, true),
+		COL_RUN_ID = new Column("Run id", RUN, 100, true),
+		COL_MODULE = new Column("Module", MODULE, 160, true),
+		COL_DATA = new Column("Name", NAME, 100, true),
+		COL_VALUE = new Column("Value", null, 80, true),
+		COL_COUNT = new Column("Count", null, 50, true),
+		COL_MEAN = new Column("Mean", null, 60, true),
+		COL_STDDEV = new Column("StdDev", null, 60, true),
+		COL_MIN = new Column("Min", null, 60, false),
+		COL_MAX = new Column("Max", null, 60, false),
+		COL_EXPERIMENT = new Column("Experiment", EXPERIMENT, 60, false),
+		COL_MEASUREMENT = new Column("Measurement", MEASUREMENT, 60, false),
+		COL_REPLICATION = new Column("Replication", REPLICATION, 60, false),
+		COL_VECTOR_ID = new Column("Vector id", null, 60, false),
+		COL_MIN_TIME = new Column("Min time", null, 60, false),
+		COL_MAX_TIME = new Column("Max time", null, 60, false);
 	
 	private static final Column[] allScalarColumns = new Column[] {
 		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
@@ -119,8 +124,9 @@ public class DataTable extends Table {
 
 	private static final Column[] allVectorColumns = new Column[] {
 		COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID, COL_MODULE, COL_DATA,
+		COL_VECTOR_ID,
 		COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX
+		COL_COUNT, COL_MEAN, COL_STDDEV, COL_MIN, COL_MAX, COL_MIN_TIME, COL_MAX_TIME
 	};
 
 	private static final Column[] allHistogramColumns = new Column[] {
@@ -344,6 +350,8 @@ public class DataTable extends Table {
 			idlist.sortByName(manager, ascending);
 		else if (COL_VALUE.equals(column))
 			idlist.sortScalarsByValue(manager, ascending);
+		else if (COL_VECTOR_ID.equals(column))
+			idlist.sortVectorsByVectorId(manager, ascending);
 		else if (COL_COUNT.equals(column))
 			idlist.sortVectorsByLength(manager, ascending);
 		else if (COL_MEAN.equals(column))
@@ -360,6 +368,10 @@ public class DataTable extends Table {
 			idlist.sortByRunAttribute(manager, MEASUREMENT, ascending);
 		else if (COL_REPLICATION.equals(column))
 			idlist.sortByRunAttribute(manager, REPLICATION, ascending);
+		else if (COL_MIN_TIME.equals(column))
+			idlist.sortVectorsByStartTime(manager, ascending);
+		else if (COL_MAX_TIME.equals(column))
+			idlist.sortVectorsByEndTime(manager, ascending);
 	}
 
 	protected void layoutColumns() {
@@ -390,89 +402,8 @@ public class DataTable extends Table {
 
 		for (int i = 0; i < visibleColumns.size(); ++i) {
 			Column column = visibleColumns.get(i);
-			if (COL_DIRECTORY.equals(column))
-				item.setText(i, result.getFileRun().getFile().getDirectory());
-			else if (COL_FILE.equals(column)) {
-				String fileName = result.getFileRun().getFile().getFileName();
-				item.setText(i, fileName);
-			}
-			else if (COL_CONFIG.equals(column)) {
-				String config = result.getFileRun().getRun().getAttribute(CONFIG);
-				item.setText(i, config != null ? config : "n.a.");
-			}
-			else if (COL_RUNNUMBER.equals(column)) {
-				String runNumber = result.getFileRun().getRun().getAttribute(RUNNUMBER);
-				item.setText(i, runNumber != null ? runNumber : "n.a.");
-			}
-			else if (COL_RUN_ID.equals(column))
-				item.setText(i, result.getFileRun().getRun().getRunName());
-			else if (COL_MODULE.equals(column))
-				item.setText(i, result.getModuleName());
-			else if (COL_DATA.equals(column))
-				item.setText(i, result.getName());
-			else if (COL_EXPERIMENT.equals(column)) {
-				String experiment = result.getFileRun().getRun().getAttribute(EXPERIMENT);
-				item.setText(i, experiment != null ? experiment : "n.a.");
-			}
-			else if (COL_MEASUREMENT.equals(column)) {
-				String measurement = result.getFileRun().getRun().getAttribute(MEASUREMENT);
-				item.setText(i, measurement != null ? measurement : "n.a.");
-			}
-			else if (COL_REPLICATION.equals(column)) {
-				String replication = result.getFileRun().getRun().getAttribute(REPLICATION);
-				item.setText(i, replication != null ? replication : "n.a.");
-			}
-			else if (type == ResultType.SCALAR_LITERAL) {
-				ScalarResult scalar = (ScalarResult)result;
-				if (COL_VALUE.equals(column))
-					item.setText(i, String.valueOf(scalar.getValue()));
-			}
-			else if (type == ResultType.VECTOR_LITERAL) {
-				VectorResult vector = (VectorResult)result;
-				if (COL_COUNT.equals(column)) {
-					int count = vector.count();
-					item.setText(i, count >= 0 ? String.valueOf(count) : "n.a.");
-				}
-				else if (COL_MEAN.equals(column)) {
-					double mean = vector.mean();
-					item.setText(i, Double.isNaN(mean) ? "n.a." : String.valueOf(mean));
-				}
-				else if (COL_STDDEV.equals(column)) {
-					double stddev = vector.stddev();
-					item.setText(i, Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev));
-				}
-				else if (COL_MIN.equals(column)) {
-					double min = vector.min();
-					item.setText(i, Double.isNaN(min) ? "n.a." : String.valueOf(min));
-				}
-				else if (COL_MAX.equals(column)) {
-					double max = vector.max();
-					item.setText(i, Double.isNaN(max) ? "n.a." : String.valueOf(max));
-				}
-			}
-			else if (type == ResultType.HISTOGRAM_LITERAL) {
-				HistogramResult histogram = (HistogramResult)result;
-				if (COL_COUNT.equals(column)) {
-					int count = histogram.count();
-					item.setText(i, count >= 0 ? String.valueOf(count) : "n.a.");
-				}
-				else if (COL_MEAN.equals(column)) {
-					double mean = histogram.mean();
-					item.setText(i, Double.isNaN(mean) ? "n.a." : String.valueOf(mean));
-				}
-				else if (COL_STDDEV.equals(column)) {
-					double stddev = histogram.stddev();
-					item.setText(i, Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev));
-				}
-				else if (COL_MIN.equals(column)) {
-					double min = histogram.min();
-					item.setText(i, Double.isNaN(min) ? "n.a." : String.valueOf(min));
-				}
-				else if (COL_MAX.equals(column)) {
-					double max = histogram.max();
-					item.setText(i, Double.isNaN(max) ? "n.a." : String.valueOf(max));
-				}
-			}
+			String value = getCellValue(lineNumber, column);
+			item.setText(i, value);
 		}
 	}
 
@@ -480,76 +411,117 @@ public class DataTable extends Table {
 		if (manager == null)
 			return;
 		
-		ResultItem result = manager.getItem(idlist.get(lineNumber));
-
 		for (int i = 0; i < visibleColumns.size(); ++i) {
 			Column column = visibleColumns.get(i);
-			if (COL_DIRECTORY.equals(column))
-				writer.addField(result.getFileRun().getFile().getDirectory());
-			else if (COL_FILE.equals(column)) {
-				String fileName = result.getFileRun().getFile().getFileName();
-				writer.addField(fileName);
-			}
-			else if (COL_CONFIG.equals(column)) {
-				String config = result.getFileRun().getRun().getAttribute(CONFIG);
-				writer.addField(config != null ? config : "n.a.");
-			}
-			else if (COL_RUNNUMBER.equals(column)) {
-				String config = result.getFileRun().getRun().getAttribute(RUNNUMBER);
-				writer.addField(config != null ? config : "n.a.");
-			}
-			else if (COL_RUN_ID.equals(column))
-				writer.addField(result.getFileRun().getRun().getRunName());
-			else if (COL_MODULE.equals(column))
-				writer.addField(result.getModuleName());
-			else if (COL_DATA.equals(column))
-				writer.addField(result.getName());
-			else if (COL_EXPERIMENT.equals(column)) {
-				String experiment = result.getFileRun().getRun().getAttribute(EXPERIMENT);
-				writer.addField(experiment != null ? experiment : "n.a.");
-			}
-			else if (COL_MEASUREMENT.equals(column)) {
-				String measurement = result.getFileRun().getRun().getAttribute(MEASUREMENT);
-				writer.addField(measurement != null ? measurement : "n.a.");
-			}
-			else if (COL_REPLICATION.equals(column)) {
-				String replication = result.getFileRun().getRun().getAttribute(REPLICATION);
-				writer.addField(replication != null ? replication : "n.a.");
-			}
-			else if (type == ResultType.SCALAR_LITERAL) {
-				ScalarResult scalar = manager.getScalar(idlist.get(lineNumber));
-				if (COL_VALUE.equals(column))
-					writer.addField(String.valueOf(scalar.getValue()));
-			}
-			else if (type == ResultType.VECTOR_LITERAL) {
-				VectorResult vector = manager.getVector(idlist.get(lineNumber));
-				if (COL_COUNT.equals(column)) {
-					int count = vector.count();
-					writer.addField(count >= 0 ? String.valueOf(count) : "n.a.");
-				}
-				else if (COL_MEAN.equals(column)) {
-					double mean = vector.mean();
-					writer.addField(Double.isNaN(mean) ? "n.a." : String.valueOf(mean));
-				}
-				else if (COL_STDDEV.equals(column)) {
-					double stddev = vector.stddev(); 
-					writer.addField(Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev));
-				}
-				else if (COL_MIN.equals(column)) {
-					double min = vector.min();
-					writer.addField(Double.isNaN(min) ? "n.a." : String.valueOf(min));
-				}
-				else if (COL_MAX.equals(column)) {
-					double max = vector.max();
-					writer.addField(Double.isNaN(max) ? "n.a." : String.valueOf(max));
-				}
-			}
-			else if (type == ResultType.HISTOGRAM_LITERAL) {
-				// TODO histogram table columns
-			}
+			writer.addField(getCellValue(lineNumber, column));
 		}
 
 		writer.endRecord();
+	}
+	
+	protected String getCellValue(int row, Column column) {
+		if (manager == null)
+			return "";
+		
+		long id = idlist.get(row);
+		ResultItem result = manager.getItem(id);
+		
+		if (COL_DIRECTORY.equals(column))
+			return result.getFileRun().getFile().getDirectory();
+		else if (COL_FILE.equals(column)) {
+			String fileName = result.getFileRun().getFile().getFileName();
+			return fileName;
+		}
+		else if (COL_CONFIG.equals(column)) {
+			String config = result.getFileRun().getRun().getAttribute(CONFIG);
+			return config != null ? config : "n.a.";
+		}
+		else if (COL_RUNNUMBER.equals(column)) {
+			String runNumber = result.getFileRun().getRun().getAttribute(RUNNUMBER);
+			return runNumber != null ? runNumber : "n.a.";
+		}
+		else if (COL_RUN_ID.equals(column))
+			return result.getFileRun().getRun().getRunName();
+		else if (COL_MODULE.equals(column))
+			return result.getModuleName();
+		else if (COL_DATA.equals(column))
+			return result.getName();
+		else if (COL_EXPERIMENT.equals(column)) {
+			String experiment = result.getFileRun().getRun().getAttribute(EXPERIMENT);
+			return experiment != null ? experiment : "n.a.";
+		}
+		else if (COL_MEASUREMENT.equals(column)) {
+			String measurement = result.getFileRun().getRun().getAttribute(MEASUREMENT);
+			return measurement != null ? measurement : "n.a.";
+		}
+		else if (COL_REPLICATION.equals(column)) {
+			String replication = result.getFileRun().getRun().getAttribute(REPLICATION);
+			return replication != null ? replication : "n.a.";
+		}
+		else if (type == ResultType.SCALAR_LITERAL) {
+			ScalarResult scalar = (ScalarResult)result;
+			if (COL_VALUE.equals(column))
+				return String.valueOf(scalar.getValue());
+		}
+		else if (type == ResultType.VECTOR_LITERAL) {
+			VectorResult vector = (VectorResult)result;
+			if (COL_VECTOR_ID.equals(column)) {
+				return String.valueOf(vector.getVectorId());
+			}
+			else if (COL_COUNT.equals(column)) {
+				int count = vector.count();
+				return count >= 0 ? String.valueOf(count) : "n.a.";
+			}
+			else if (COL_MEAN.equals(column)) {
+				double mean = vector.mean();
+				return Double.isNaN(mean) ? "n.a." : String.valueOf(mean);
+			}
+			else if (COL_STDDEV.equals(column)) {
+				double stddev = vector.stddev();
+				return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
+			}
+			else if (COL_MIN.equals(column)) {
+				double min = vector.min();
+				return Double.isNaN(min) ? "n.a." : String.valueOf(min);
+			}
+			else if (COL_MAX.equals(column)) {
+				double max = vector.max();
+				return Double.isNaN(max) ? "n.a." : String.valueOf(max);
+			}
+			else if (COL_MIN_TIME.equals(column)) {
+				BigDecimal minTime = vector.getStartTime();
+				return minTime == null || minTime.isNaN() ? "n.a." : String.valueOf(minTime);
+			}
+			else if (COL_MAX_TIME.equals(column)) {
+				BigDecimal maxTime = vector.getEndTime();
+				return maxTime == null || maxTime.isNaN() ? "n.a." : String.valueOf(maxTime);
+			}
+		}
+		else if (type == ResultType.HISTOGRAM_LITERAL) {
+			HistogramResult histogram = (HistogramResult)result;
+			if (COL_COUNT.equals(column)) {
+				int count = histogram.count();
+				return count >= 0 ? String.valueOf(count) : "n.a.";
+			}
+			else if (COL_MEAN.equals(column)) {
+				double mean = histogram.mean();
+				return Double.isNaN(mean) ? "n.a." : String.valueOf(mean);
+			}
+			else if (COL_STDDEV.equals(column)) {
+				double stddev = histogram.stddev();
+				return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
+			}
+			else if (COL_MIN.equals(column)) {
+				double min = histogram.min();
+				return Double.isNaN(min) ? "n.a." : String.valueOf(min);
+			}
+			else if (COL_MAX.equals(column)) {
+				double max = histogram.max();
+				return Double.isNaN(max) ? "n.a." : String.valueOf(max);
+			}
+		}
+		
+		return "";
 	}
 
 	public void copySelectionToClipboard() {

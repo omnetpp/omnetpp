@@ -85,11 +85,14 @@ class SCAVE_API IDList
         void sortByModule(ResultFileManager *mgr, bool ascending);
         void sortByName(ResultFileManager *mgr, bool ascending);
         void sortScalarsByValue(ResultFileManager *mgr, bool ascending);
+        void sortVectorsByVectorId(ResultFileManager *mgr, bool ascending);
         void sortVectorsByLength(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMean(ResultFileManager *mgr, bool ascending);
         void sortVectorsByStdDev(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMin(ResultFileManager *mgr, bool ascending);
         void sortVectorsByMax(ResultFileManager *mgr, bool ascending);
+        void sortVectorsByStartTime(ResultFileManager *mgr, bool ascending);
+        void sortVectorsByEndTime(ResultFileManager *mgr, bool ascending);
         void sortByRunAttribute(ResultFileManager *mgr, const char* runAttr, bool ascending);
         void reverse();
         void toByteArray(char *array, int n) const;

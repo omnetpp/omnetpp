@@ -1096,6 +1096,8 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     else if (opp_isdigit(vec[0][0]) && numTokens>=3)
     {
         // this looks like a vector data line, skip it this time
+    	
+    	// TODO collect statistics
     }
     else
     {
@@ -1208,6 +1210,10 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
         vectorResult.moduleNameRef = stringSetFindOrInsert(moduleNames, vectorRef->moduleName);
         vectorResult.nameRef = stringSetFindOrInsert(names, vectorRef->name);
         vectorResult.columns = vectorRef->columns;
+        vectorResult.startEventNum = vectorRef->startEventNum;
+        vectorResult.endEventNum = vectorRef->endEventNum;
+        vectorResult.startTime = vectorRef->startTime;
+        vectorResult.endTime = vectorRef->endTime;
         vectorResult.stat = vectorRef->stat;
         fileRef->vectorResults.push_back(vectorResult);
     }
