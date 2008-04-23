@@ -92,7 +92,7 @@ $(BASE):
 #
 # Native libs for the UI
 #
-$(JNILIBS):
+$(JNILIBS): nedxml
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_UI_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	cd /d $(OMNETPP_UI_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
