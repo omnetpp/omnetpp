@@ -89,6 +89,7 @@ bool EventLogTokenBasedEntry::getBoolToken(char **tokens, int numTokens, const c
 
 int EventLogTokenBasedEntry::getIntToken(char **tokens, int numTokens, const char *sign, bool mandatory, int defaultValue)
 {
+    errno = 0;
     char *token = getToken(tokens, numTokens, sign, mandatory);
     int value = token ? atoi(token) : defaultValue;
     if (errno)
@@ -98,6 +99,7 @@ int EventLogTokenBasedEntry::getIntToken(char **tokens, int numTokens, const cha
 
 short EventLogTokenBasedEntry::getShortToken(char **tokens, int numTokens, const char *sign, bool mandatory, short defaultValue)
 {
+    errno = 0;
     char *token = getToken(tokens, numTokens, sign, mandatory);
     short value = token ? atoi(token) : defaultValue;
     if (errno)
@@ -107,6 +109,7 @@ short EventLogTokenBasedEntry::getShortToken(char **tokens, int numTokens, const
 
 long EventLogTokenBasedEntry::getLongToken(char **tokens, int numTokens, const char *sign, bool mandatory, long defaultValue)
 {
+    errno = 0;
     char *token = getToken(tokens, numTokens, sign, mandatory);
     long value = token ? atol(token) : defaultValue;
     if (errno)
@@ -116,6 +119,7 @@ long EventLogTokenBasedEntry::getLongToken(char **tokens, int numTokens, const c
 
 int64 EventLogTokenBasedEntry::getInt64Token(char **tokens, int numTokens, const char *sign, bool mandatory, int64 defaultValue)
 {
+    errno = 0;
     char *end;
     char *token = getToken(tokens, numTokens, sign, mandatory);
     int64 value = token ? strtoi64(token, &end, 10) : defaultValue;
