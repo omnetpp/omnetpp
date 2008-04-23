@@ -242,7 +242,8 @@ public class ConfigRegistry {
         "and/or/not/* and various field matcher expressions can be used. The object " +
         "pattern matches to class name, the field pattern matches to field name by " +
         "default.\n" +
-        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN\n" +
+        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* " +
+        "DETAIL_PATTERN\n" +
         "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n" +
         "  OBJECT-PATTERN := MATCHER-EXPRESSION\n" +
         "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n" +
@@ -350,6 +351,49 @@ public class ConfigRegistry {
         "If parallel-simulation=true, it selects the class that implements " +
         "communication between partitions. The class must implement the " +
         "cParsimCommunications interface.");
+    public static final ConfigKey CFGID_PARSIM_DEBUG = addGlobalEntry(
+        "parsim-debug", CFG_BOOL, "true",
+        "With parallel-simulation=true: turns on printing of log messages from the " +
+        "parallel simulation code.");
+    public static final ConfigKey CFGID_PARSIM_FILECOMMUNICATIONS_PREFIX = addGlobalEntry(
+        "parsim-filecommunications-prefix", CFG_STRING, "comm/",
+        "When cFileCommunications is selected as parsim communications class: " +
+        "specifies the prefix (directory+potential filename prefix) for creating the " +
+        "files for cross-partition messages.");
+    public static final ConfigKey CFGID_PARSIM_FILECOMMUNICATIONS_PRESERVE_READ = addGlobalEntry(
+        "parsim-filecommunications-preserve-read", CFG_BOOL, "false",
+        "When cFileCommunications is selected as parsim communications class: " +
+        "specifies that consumed files should be moved into another directory " +
+        "instead of being deleted.");
+    public static final ConfigKey CFGID_PARSIM_FILECOMMUNICATIONS_READ_PREFIX = addGlobalEntry(
+        "parsim-filecommunications-read-prefix", CFG_STRING, "comm/read/",
+        "When cFileCommunications is selected as parsim communications class: " +
+        "specifies the prefix (directory) where files will be moved after having " +
+        "been consumed.");
+    public static final ConfigKey CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE = addGlobalEntry(
+        "parsim-idealsimulationprotocol-tablesize", CFG_INT, "100000",
+        "When cIdealSimulationProtocol is selected as parsim synchronization class: " +
+        "specifies the memory buffer size for reading the ISP event trace file.");
+    public static final ConfigKey CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER = addGlobalEntry(
+            "parsim-mpicommunications-mpibuffer", CFG_INT, null,
+            "When cMPICommunications is selected as parsim communications class: " +
+            "specifies the size of the MPI communications buffer. The default is to " +
+            "calculate a buffer size based on the number of partitions.");
+    public static final ConfigKey CFGID_PARSIM_NAMEDPIPECOMMUNICATIONS_PREFIX = addGlobalEntry(
+        "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp",
+        "When cNamedPipeCommunications is selected as parsim communications class: " +
+        "selects the name prefix for Windows named pipes created.");
+    public static final ConfigKey CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS = addGlobalEntry(
+        "parsim-nullmessageprotocol-laziness", CFG_DOUBLE, "0.5",
+        "When cNullMessageProtocol is selected as parsim synchronization class: " +
+        "specifies the laziness of sending null messages. Values in the range [0,1) " +
+        "are accepted. Laziness=0 causes null messages to be sent out immediately as " +
+        "a new EOT is learned, which may result in excessive null message traffic.");
+    public static final ConfigKey CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS = addGlobalEntry(
+        "parsim-nullmessageprotocol-lookahead-class", CFG_STRING, "cLinkDelayLookahead",
+        "When cNullMessageProtocol is selected as parsim synchronization class: " +
+        "specifies the C++ class that calculates lookahead. The class should " +
+        "subclass from cNMPLookahead.");
     public static final ConfigKey CFGID_PARSIM_SYNCHRONIZATION_CLASS = addGlobalEntry(
         "parsim-synchronization-class", CFG_STRING, "cNullMessageProtocol",
         "If parallel-simulation=true, it selects the parallel simulation algorithm. " +

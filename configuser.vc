@@ -134,7 +134,7 @@ WITH_NETBUILDER=yes
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
-WITH_PARSIM=no
+WITH_PARSIM=yes
 
 #==============================================================================
 #======!!!         Try not to change anything below this line       !!!======
