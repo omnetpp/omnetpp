@@ -770,11 +770,15 @@ public class VirtualTable<T>
 					}
 	
 					for (int j = 0; j < table.getColumnCount(); j++) {
+					    int y = i * getRowHeight();
 						TableColumn column = table.getColumn(columnOrder[j]);
-						rowTransform.setElements(1, 0, 0, 1, 0, 0);
-						rowTransform.translate(x, i * getRowHeight());
+						// clipping has to be set explicitly without using the graphics transformation
+						// to work correctly on Mac OS X
+                        gc.setClipping(new Rectangle(x, y, column.getWidth(), getRowHeight()));
+                        // do the transformation afterwards
+                        rowTransform.setElements(1, 0, 0, 1, 0, 0);
+                        rowTransform.translate(x, y);
 						gc.setTransform(rowTransform);
-						gc.setClipping(new Rectangle(0, 0, column.getWidth(), getRowHeight()));
 
 						if (isSelectedElement && canvas.isFocusControl())
 							gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));

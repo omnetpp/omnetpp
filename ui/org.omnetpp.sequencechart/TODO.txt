@@ -80,7 +80,7 @@ Features:
  + display compound module axes differently
  + case sensitive full string search in message detail pattern
  + filtering for module events during writing eventlog
- - per run eventlog-message-detail-pattern configuration key
+ + per run eventlog-message-detail-pattern configuration key
 
 Known bugs:
  - tracing events sometimes slows down or kills eclipse
