@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.omnetpp.cdt;singleton:=true
 Bundle-Version: 4.0.0.qualifier
 Bundle-Activator: org.omnetpp.cdt.Activator
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.variables,
  org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.debug.ui,

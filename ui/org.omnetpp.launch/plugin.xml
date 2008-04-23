@@ -38,15 +38,6 @@
       </launchConfigurationTypeImage>
    </extension>
    <extension
-         point="org.eclipse.core.variables.dynamicVariables">
-      <variable
-            description="Expands to the NED source path"
-            name="ned_path"
-            resolver="org.omnetpp.launch.NedPathResolver"
-            supportsArgument="true">
-      </variable>
-   </extension>
-   <extension
          point="org.eclipse.ui.editors">
       <editor
             default="true"

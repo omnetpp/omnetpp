@@ -82,6 +82,15 @@
    </extension>
    -->
    <extension
+         id="omnetppNatureImage"
+         name="OMNeT++ Nature Overlay Image"
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/o_ovr.gif"
+            id="omnetppNatureImage"
+            natureId="omnetppnature"/>
+   </extension>
+   <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.omnetpp.ide.PerspectiveFactory"
@@ -117,13 +126,20 @@
       </perspectiveExtension>
    </extension>
    <extension
-         id="omnetppNatureImagea"
-         name="OMNeT++ Nature Overlay Image"
-         point="org.eclipse.ui.ide.projectNatureImages">
-      <image
-            icon="icons/o_ovr.gif"
-            id="omnetppNatureImage"
-            natureId="org.omnetpp.ide.omnetppnature"/>
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="org.omnetpp.main.contribution1"
+            nameFilter="*"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="org.omnetpp.ide.ToggleNatureAction"
+               enablesFor="+"
+               id="org.omnetpp.ide.addRemoveNatureAction"
+               label="Add/Remove OMNeT++ Nature"
+               menubarPath="additions">
+         </action>
+      </objectContribution>
    </extension>
    <extension
          point="org.eclipse.ui.propertyPages">
@@ -150,22 +166,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            adaptable="true"
-            id="org.omnetpp.main.contribution1"
-            nameFilter="*"
-            objectClass="org.eclipse.core.resources.IProject">
-         <action
-               class="org.omnetpp.ide.ToggleNatureAction"
-               enablesFor="+"
-               id="org.omnetpp.ide.addRemoveNatureAction"
-               label="Add/Remove OMNeT++ Nature"
-               menubarPath="additions">
-         </action>
-      </objectContribution>
-   </extension>
-   <extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="org.omnetpp.ide.preferences.OmnetppPreferencePage"
@@ -178,5 +178,38 @@
       <initializer
             class="org.omnetpp.ide.preferences.OmnetppPreferenceInitializer">
       </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.core.variables.dynamicVariables">
+      <variable
+            description="Expands to the OMNeT++ root directory"
+            name="OMNETPP_ROOT"
+            resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
+            supportsArgument="false">
+      </variable>
+      <variable
+            description="Expands to the OMNeT++ bin directory"
+            name="OMNETPP_BIN_DIR"
+            resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
+            supportsArgument="false">
+      </variable>
+      <variable
+            description="Expands to the OMNeT++ include directory"
+            name="OMNETPP_INCL_DIR"
+            resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
+            supportsArgument="false">
+      </variable>
+      <variable
+            description="Expands to the OMNeT++ lib directory"
+            name="OMNETPP_LIB_DIR"
+            resolver="org.omnetpp.ide.variables.OmnetppDirResolver"
+            supportsArgument="false">
+      </variable>
+      <variable
+            description="Expands to the NED source path"
+            name="ned_path"
+            resolver="org.omnetpp.ide.variables.NedPathResolver"
+            supportsArgument="true">
+      </variable>
    </extension>
 </plugin>

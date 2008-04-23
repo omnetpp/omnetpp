@@ -32,9 +32,7 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
         }
         
         public String getValue() {
-            // FIXME in fact we have to look into the config files and get the bin directory from there
-            String omnetppBin = new Path(OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT)).append("bin").toOSString();
-            return omnetppBin;
+            return OmnetppMainPlugin.getOmnetppBinDir();
         }
         
         public int getOperation() {
@@ -61,6 +59,7 @@ public class OmnetppProjectEnvironmentSupplier implements IProjectEnvironmentVar
             IEnvironmentVariableProvider provider) {
         return new IBuildEnvironmentVariable[] {omnetppBinPathEnvironmentVariable};
     }
+    
     
 }
 

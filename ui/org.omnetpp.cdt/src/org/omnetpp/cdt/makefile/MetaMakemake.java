@@ -225,13 +225,13 @@ public class MetaMakemake {
                 String value = pathEntry.getValue();
                 boolean isWorkspacePath = (pathEntry.getFlags() & ICSettingEntry.VALUE_WORKSPACE_PATH) != 0;
                 if (isWorkspacePath) {
-                    // convert to filesystem path
+                    // convert to file-system path
                     IFolder pathFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(value));
                     IPath location = pathFolder.getLocation(); // null if project doesn't exist etc
                     value = location == null ? null : location.toString();
                 }
                 if (value != null) {
-                    result.add(value);
+						result.add(value);
                 }
             }
         }

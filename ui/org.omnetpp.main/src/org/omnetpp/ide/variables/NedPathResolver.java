@@ -1,5 +1,6 @@
-package org.omnetpp.launch;
+package org.omnetpp.ide.variables;
 
+import org.eclipse.core.internal.runtime.IRuntimeConstants;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -10,9 +11,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
-import org.eclipse.debug.internal.ui.DebugUIPlugin;
-import org.eclipse.debug.ui.IDebugUIConstants;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Assembles the value of the NEDPATH environment variable. Argument
@@ -45,12 +45,12 @@ public class NedPathResolver implements IDynamicVariableResolver {
 					result += pathSep + folder.getLocation().toOSString();
 		}
 		catch (Exception e) {
-			LaunchPlugin.logError(e);
+			OmnetppMainPlugin.logError(e);
 		}
 		return result;
 	}
 
     protected void abort(String message, Throwable exception) throws CoreException {
-        throw new CoreException(new Status(IStatus.ERROR, DebugUIPlugin.getUniqueIdentifier(), IDebugUIConstants.INTERNAL_ERROR, message, exception));
+        throw new CoreException(new Status(IStatus.ERROR, OmnetppMainPlugin.PLUGIN_ID, 1, message, exception));
     }
 }

@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.variables.VariablesPlugin;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -345,17 +348,34 @@ public class MakemakeOptions implements Cloneable {
         return result.toArray(new String[]{});
     }
 
+    /**
+     * carry out a string substitution on all args in the list
+     */
+    private static List<String> makeStringSubstitution(List<String> args) {
+    	List<String> substedArgs = new ArrayList<String>(); 
+    	for(String arg : args) {
+    		String substedArg = arg;
+			try {
+				substedArg = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(arg);
+			} catch (CoreException e) {
+				Activator.logError("Cannot resolve variable in: "+arg, e);
+			}
+			substedArgs.add(substedArg);
+    	}
+    	return substedArgs;
+    }
+    
     private void add(List<String> argList, String...args) {
-        argList.addAll(Arrays.asList(args));
+        argList.addAll(makeStringSubstitution(Arrays.asList(args)));
     }
 
     private void addOpts1(List<String> argList, List<String> args, String option) {
-        for (String arg : args)
+        for (String arg : makeStringSubstitution(args))
             argList.add(option + arg);
     }
 
     private void addOpts2(List<String> argList, List<String> args, String option) {
-        for (String arg : args) {
+        for (String arg : makeStringSubstitution(args)) {
             argList.add(option);
             argList.add(arg);
         }
