@@ -178,10 +178,10 @@ $O/datasorter.o: datasorter.cc \
   enumtype.h \
   ../common/exception.h \
   statistics.h \
+  scaveutils.h \
   scavedefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
-  scaveutils.h \
   ../common/patternmatcher.h \
   fields.h
 $O/diffquot.o: diffquot.cc \
@@ -442,7 +442,9 @@ $O/resultfilemanager.o: resultfilemanager.cc \
   ../common/stringtokenizer.h \
   indexfile.h \
   scaveutils.h \
+  scaveexception.h \
   resultfilemanager.h \
+  ../common/fileutil.h \
   ../common/commonutil.h \
   ../common/commondefs.h \
   ../common/exception.h \

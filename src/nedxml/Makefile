@@ -344,6 +344,17 @@ $O/nedtypeinfo.o: nedtypeinfo.cc \
   nedxmldefs.h \
   nedelement.h \
   nedelements.h
+$O/nedtypeinfo2.o: nedtypeinfo2.cc \
+  nederror.h \
+  nedutil.h \
+  nedexception.h \
+  nedtypeinfo2.h \
+  nedresourcecache.h \
+  ned2generator.h \
+  nedxmldefs.h \
+  nedelement.h \
+  nedelements.h \
+  nedtypeinfo.h
 $O/nedutil.o: nedutil.cc \
   nedexception.h \
   nedutil.h \

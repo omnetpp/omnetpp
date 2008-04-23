@@ -157,12 +157,6 @@ $O/lex.expressionyy.o: lex.expressionyy.cc \
   expression.h \
   commondefs.h \
   commonutil.h
-$O/lex.matchexpressionyy.o: lex.matchexpressionyy.cc \
-  stringutil.h \
-  matchexpression.tab.h \
-  commondefs.h \
-  commonutil.h \
-  exception.h
 $O/linetokenizer.o: linetokenizer.cc \
   exception.h \
   linetokenizer.h \

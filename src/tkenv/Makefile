@@ -324,8 +324,8 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -383,8 +383,8 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -509,6 +509,7 @@ $O/objinsp.o: objinsp.cc \
   ../envir/envirdefs.h \
   inspector.h \
   tkutil.h
+$O/osxproctype.o: osxproctype.cc
 $O/statinsp.o: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -529,8 +530,8 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
@@ -561,7 +562,6 @@ $O/statinsp.o: statinsp.cc \
   ../../include/ccomponenttype.h \
   inspector.h \
   tkutil.h
-$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
@@ -588,8 +588,8 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
@@ -639,7 +639,6 @@ $O/tkenv.o: tkenv.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
-  tclcode.cc \
   ../envir/envirdefs.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
@@ -648,8 +647,8 @@ $O/tkenv.o: tkenv.cc \
   ../../include/simkerneldefs.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/util.h \
   ../../include/cobject.h \
   ../../include/cexception.h \
@@ -706,8 +705,8 @@ $O/tklib.o: tklib.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -740,8 +739,8 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -786,8 +785,8 @@ $O/visitor.o: visitor.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cvisitor.h \
