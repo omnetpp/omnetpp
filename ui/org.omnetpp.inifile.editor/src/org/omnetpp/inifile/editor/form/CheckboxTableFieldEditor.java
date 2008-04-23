@@ -13,6 +13,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.omnetpp.common.ui.TableLabelProvider;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigKey;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -35,17 +36,36 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
 	protected TableViewer createTableViewer(Composite parent) {
 		// set up table viewer and its label provider
 		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.CHECK);
-		table.setLayoutData(new GridData(200, 2*table.getItemHeight())); // for some reason, 2* results in 3-line table...
+        int height;
+		if (!entry.isPerObject()) {
+		    height = 2*table.getItemHeight(); // for some reason, 2* results in 3-line table...
+		}
+		else {
+		    table.setLinesVisible(true);
+		    table.setHeaderVisible(true);
+		    addTableColumn(table, "Object", 100);
+		    addTableColumn(table, "In Section", 100);
+		    height = table.getHeaderHeight() + 3*table.getItemHeight();
+		}
+        table.setLayoutData(new GridData(220, height)); 
+
 		CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
 
-		tableViewer.setLabelProvider(new TableLabelProvider() {
+        tableViewer.setLabelProvider(new TableLabelProvider() {
 			@Override
 			public String getColumnText(Object element, int columnIndex) {
                 SectionKey sectionKey = (SectionKey) element;
-				switch (columnIndex) {
-					case 0: return "in section ["+sectionKey.section+"]";
-					default: throw new IllegalArgumentException();
-				}
+                if (!entry.isPerObject())
+                    switch (columnIndex) {
+                        case 0: return "in section ["+sectionKey.section+"]";
+                        default: throw new IllegalArgumentException();
+                    }
+                else
+                    switch (columnIndex) {
+                        case 0: return StringUtils.removeEnd(sectionKey.key, "."+entry.getKey());
+                        case 1: return "["+sectionKey.section+"]";
+                        default: throw new IllegalArgumentException();
+                    }
 			}
 			@Override
 			public Image getColumnImage(Object element, int columnIndex) {
