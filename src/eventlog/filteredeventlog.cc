@@ -523,7 +523,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
 std::vector<int> FilteredEventLog::getSelectedModuleIds()
 {
     std::vector<int> moduleIds;
-    std::vector<ModuleCreatedEntry *> &moduleCreatedEntries = eventLog->getModuleCreatedEntries();
+    std::vector<ModuleCreatedEntry *> moduleCreatedEntries = eventLog->getModuleCreatedEntries();
 
     for (std::vector<ModuleCreatedEntry *>::iterator it = moduleCreatedEntries.begin(); it != moduleCreatedEntries.end(); it++) {
         ModuleCreatedEntry *moduleCreatedEntry = *it;
