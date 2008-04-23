@@ -11,16 +11,14 @@ Copy the omnetpp archive to the directory where you want to install it
 
     tar zxvf omnetpp.tgz
 
-A sub-directory called omnetpp will be created which will contain the simulator
+A sub-directory called omnetpp-version will be created which will contain the simulator
 files. You should now add the following lines to your startup file (.bashrc
 or .bash_profile if you're using bash; .profile if you're using some other
 sh-like shell):
 
     export PATH=$PATH:~/omnetpp/bin
-    export LD_LIBRARY_PATH=~/omnetpp/lib
 
-For these variables to be included in the environment you will need to
-restart the shell before proceeding (logout and login again).
+You will need to restart the shell before proceeding (logout and login again).
 
 First you should check configure.user to make sure it contains the settings
 you need:
@@ -29,6 +27,8 @@ you need:
 Then the usual GNU-like stuff:
     ./configure
     make
+
+This will create both debug and release binaries.
 
 You should now test all samples and check they run correctly. As an example,
 the dyna example is started by entering the following commands:
@@ -43,7 +43,7 @@ nice gui windows and dialogs.
 2. Reconfiguring the libraries
 
 If you need to recompile the OMNeT++ components with different flags (e.g.
-for debugging or optimized for speed), then cd to the top-level omnetpp
+different optimization), then cd to the top-level omnetpp
 directory, edit configure.user accordingly, then say:
 
     ./configure
@@ -56,9 +56,18 @@ of the library and type:
     make clean
     make
 
-NOTE: the 'install-local' make target found in earlier OMNeT++ versions
-was removed in 2.0beta4. The built libraries and programs are immediately
-copied to the lib/ and bin/ subdirs.
+If you want to build ONLY release or debug builds use: 
+(if MODE is not specified both debug and release will be created)
+   
+    make MODE=release
+    
+If you want to create static libraries use: 
+(by default it will create shared libraries)
+    
+    make BUILD_SHARED_LIBS=no    
+
+NOTE: The built libraries and programs are immediately copied 
+to the lib/ and bin/ subdirs.
 
 
 3. Portability issues
