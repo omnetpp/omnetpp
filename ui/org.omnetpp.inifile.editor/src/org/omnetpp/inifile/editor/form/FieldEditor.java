@@ -83,13 +83,7 @@ public abstract class FieldEditor extends Composite {
         Assert.isTrue(entry.isPerObject() ? key.endsWith("."+entry.getKey()) : key.equals(entry.getKey()));
         Assert.isTrue(entry.isPerObject() ? newKey.endsWith("."+entry.getKey()) : newKey.equals(entry.getKey()));
         try {
-            if (key.equals(newKey))
-                return;
-            if (inifile.containsKey(section, newKey))
-                throw new IllegalArgumentException("Cannot rename key to "+newKey+": already exists");
-            String value = inifile.getValue(section, key);
-            InifileUtils.addEntry(inifile, section, newKey, value, "");
-            inifile.removeKey(section, key);
+            inifile.renameKey(section, key, newKey);
         }
         catch (RuntimeException e) {
             showErrorDialog(e);

@@ -128,7 +128,7 @@ public interface IInifileDocument {
 	/** 
 	 * Renames the given key. Throws error if key doesn't exist, or the entry is readonly.
 	 */
-	void changeKey(String section, String oldKey, String newKey);
+	void renameKey(String section, String oldKey, String newKey);
 	
 	/** 
 	 * Removes the given key from the given section. Nothing happens if it's not there.

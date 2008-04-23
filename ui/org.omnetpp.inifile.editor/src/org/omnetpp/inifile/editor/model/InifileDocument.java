@@ -583,7 +583,7 @@ public class InifileDocument implements IInifileDocument {
         return prefix + newComment;
     }
 
-    public void changeKey(String section, String oldKey, String newKey) {
+    public void renameKey(String section, String oldKey, String newKey) {
         if (validateKey(newKey) != null)
             throw new IllegalArgumentException("Cannot rename key to "+newKey+": "+validateKey(newKey));
         KeyValueLine line = getEditableEntry(section, oldKey);

@@ -1,6 +1,8 @@
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_APPLY_DEFAULT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TYPE_NAME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,11 +64,10 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.views.AbstractModuleView;
 
 /**
- * For editing module parameters.
+ * For editing module parameters, apply-default and type-name lines.
  *
  * @author Andras
  */
-//XXX extract a "PerObjectFieldEditor" from it? (So we can build an Output Vector Configuration editor, an RNG Mapping editor, etc...)
 //XXX when adding params here, editor annotations become out of sync with markers
 public class ParametersPage extends FormPage {
 	private TreeViewer treeViewer;
@@ -246,8 +247,11 @@ public class ParametersPage extends FormPage {
 						if (!newKey.equals(item.key)) {
 							if (!newKey.contains("."))
 								throw new RuntimeException("Parameter key must contain at least one dot");
+                            String suffix = StringUtils.substringAfterLast(newKey, ".");
+                            if (suffix.contains("-") && !suffix.equals(CFGID_APPLY_DEFAULT.getKey()) && !suffix.equals(CFGID_TYPE_NAME.getKey()))
+                                throw new RuntimeException("Key should match a parameter, or end in \".apply-default\" or \".type-name\"");
 							// Note: all other validation is done within InifileDocument.changeKey()
-							doc.changeKey(item.section, item.key, (String)value);
+							doc.renameKey(item.section, item.key, (String)value);
 							reread(); // treeViewer.refresh() not enough, because input consists of keys
 						}
 					}
@@ -625,9 +629,13 @@ public class ParametersPage extends FormPage {
 		for (String section : sectionChain) {
 			GenericTreeNode sectionNode = new GenericTreeNode(section);
 			rootNode.addChild(sectionNode);
-			for (String key : doc.getKeys(section))
-				if (key.contains("."))
-					sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
+			for (String key : doc.getKeys(section)) {
+				if (key.contains(".")) { 
+				    String suffix = StringUtils.substringAfterLast(key, ".");
+				    if (!suffix.contains("-") || suffix.equals(CFGID_APPLY_DEFAULT.getKey()) || suffix.equals(CFGID_TYPE_NAME.getKey()))
+				        sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
+				}
+			}
 		}
 
 		if (treeViewer.isCellEditorActive()) {
