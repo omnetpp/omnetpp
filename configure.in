@@ -523,6 +523,9 @@ CFLAGS_DEBUG="$CFLAGS_DEBUG $CFLAGS_ARCH"
 CFLAGS_RELEASE="$CFLAGS_RELEASE $CFLAGS_ARCH"
 LDFLAGS="$LDFLAGS $LDFLAGS_ARCH"
 
+# add RUNTIME_PATH option so setting LD_LIBRARY_PATH is no longer needed when using shared libs
+LDFLAGS="$LDFLAGS -Wl,-rpath,\$(OMNETPP_LIB_DIR)"
+
 #----------------------
 # Checks for programs.
 #----------------------
@@ -1092,36 +1095,6 @@ EOT
 fi
 
 #----------------------
-# Check LD_LIBRARY path if we're building shared libs. This is not necessary
-# with Cygwin because Windows locates DLLs another way.
-#----------------------
-
-if test "$BUILD_SHARED_LIBS" = yes -a "$cygwin" != yes -a "$mingw" != yes; then
-  if echo $LD_LIBRARY_PATH | grep `eval echo $OMNETPP_LIB_DIR` >/dev/null; then
-    echo "Your LD_LIBRARY_PATH is set. Good!"
-  else
-    cat 1>&2 << EOT
-
-WARNING: You selected shared libraries in configure.user, but your
-LD_LIBRARY_PATH doesn't seem to contain $OMNETPP_LIB_DIR!
-
-So that the dynamic linker can find the OMNeT++/OMNEST shared libs, you either
-have to create symbolic links from /usr/lib to the OMNeT++/OMNEST shared
-libraries (you can do it as root), or better, set the LD_LIBRARY_PATH
-environment variable.
-
-Add the following line to your .profile or .bash_profile (provided you use bash):
-  export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
-
-If you prefer static libraries, edit Makefile.inc and change the
-BUILD_SHARED_LIBS=yes line to BUILD_SHARED_LIBS=no or define an environment 
-variable as BUILD_SHARED_LIBS=no, then delete the shared libraries, re-run make.
-
-EOT
-  fi
-fi
-
-#----------------------
 # Check if TCL_LIBRARY is set.
 #----------------------
 
@@ -1148,12 +1121,12 @@ For additional information, please visit the "Common installation problems"
 page on www.omnetpp.org.
 EOT
 
-elif test ! -f "$TCL_LIBRARY/init.tcl"; then
+elif test ! -f "$TCL_LIBRARY/init.tcl" -a ! -f "$TCL_LIBRARY/tclConfig.sh"; then
 
     cat 1>&2 << EOT
 
 WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
-init.tcl file in that directory. (Usual TCL_LIBRARY is /usr/lib/tcl8.4.)
+init.tcl or tclConfig.sh file in that directory. (Usual TCL_LIBRARY is /usr/lib/tcl8.4.)
 EOT
 
 else
