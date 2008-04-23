@@ -22,10 +22,6 @@
 #include "args.h"
 #include "envirbase.h"
 #include "appreg.h"
-#include "patternmatcher.h"
-#include "fsutils.h"
-#include "eventlogwriter.h"
-
 #include "ccoroutine.h"
 #include "csimulation.h"
 #include "cscheduler.h"
@@ -35,11 +31,7 @@
 #include "random.h"
 #include "crng.h"
 #include "cmodule.h"
-#include "ccompoundmodule.h"
-#include "cchannel.h"
 #include "ccomponenttype.h"
-#include "cmessage.h"
-#include "cdisplaystring.h"
 #include "cxmlelement.h"
 #include "cxmldoccache.h"
 #include "fnamelisttokenizer.h"
@@ -123,32 +115,10 @@ Register_PerRunConfigEntry(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneT
 Register_PerRunConfigEntry(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
 Register_PerRunConfigEntry(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results", "Value for the ${resultdir} variable, which is used as the default directory for result files (output vector file, output scalar file, eventlog file, etc.)");
 Register_PerRunConfigEntry(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See eventlog-file= option too.");
-Register_PerRunConfigEntry(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.log", "Name of the event log file to generate.");
-Register_PerRunConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL,
-        "A list of patterns separated by '|' character which will be used to write "
-        "message detail information into the event log for each message sent during "
-        "the simulation. The message detail will be presented in the sequence chart "
-        "tool. Each pattern starts with an object pattern optionally followed by ':' "
-        "character and a comma separated list of field patterns. In both "
-        "patterns and/or/not/* and various field matcher expressions can be used. "
-        "The object pattern matches to class name, the field pattern matches to field name by default.\n"
-        "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN\n"
-        "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n"
-        "  OBJECT-PATTERN := MATCHER-EXPRESSION\n"
-        "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n"
-        "  FIELD-PATTERN := MATCHER-EXPRESSION\n"
-        "Examples (enter them without quotes):\n"
-        "  \"*\": captures all fields of all messages\n"
-        "  \"*Frame:*Address,*Id\": captures all fields named somethingAddress and somethingId from messages of any class named somethingFrame\n"
-        "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage recording the fields declared on the MyMessage class\n"
-        "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not declaredOn(cObject))\": records user-defined fields from all messages");
-Register_PerRunConfigEntry(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, NULL, "Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
-Register_PerObjectConfigEntry(CFGID_RECORD_MODULE_EVENTS, "record-module-events", CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.record-module-events = true\n **.record-module-events = false");
 Register_PerObjectConfigEntry(CFGID_PARTITION_ID, "partition-id", CFG_STRING, NULL, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (\"5..9\") and \"*\" (=all) are accepted too.");
 Register_PerObjectConfigEntry(CFGID_RNG_K, "rng-%", CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The default is one-to-one mapping.");
 
 
-//-------------------------------------------------------------
 
 EnvirBase::EnvirBase()
 {
@@ -156,14 +126,10 @@ EnvirBase::EnvirBase()
     cfg = NULL;
     xmlcache = NULL;
 
-    eventLogObjectPrinter = NULL;
-    eventLogRecordingIntervals = NULL;
-
+    eventlogmgr = NULL;
     outvectormgr = NULL;
     outscalarmgr = NULL;
     snapshotmgr = NULL;
-
-    feventlog = NULL;
 
     num_rngs = 0;
     rngs = NULL;
@@ -196,14 +162,11 @@ EnvirBase::~EnvirBase()
     delete parsimcomm;
     delete parsimpartition;
 #endif
-
-    delete eventLogObjectPrinter;
-    delete eventLogRecordingIntervals;
 }
 
 int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
-    args = new ArgList(argc, argv, "h?f:u:l:c:r:p:n:x:gG");  //FIXME share spec with BootEnv!
+    args = new ArgList(argc, argv, "h?f:u:l:c:r:p:n:x:gG");  //TODO share spec with BootEnv!
     cfg = configobject;
 
     setup();
@@ -583,10 +546,8 @@ void EnvirBase::startRun()
     outvectormgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
-    if (feventlog)
-    {
-        EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runid.c_str());
-    }
+    if (eventlogmgr)
+        eventlogmgr->startRun(runid.c_str());
     if (opt_parsim)
     {
 #ifdef WITH_PARSIM
@@ -609,15 +570,11 @@ void EnvirBase::endRun()
         parsimpartition->endRun();
 #endif
     }
-
-    // close message log file
-    if (feventlog)
-    {
-        EventLogWriter::recordSimulationEndEntry(feventlog);
-        fclose(feventlog);
-        feventlog = NULL;
+    if (eventlogmgr) {
+        eventlogmgr->endRun();
+        delete eventlogmgr;
+        eventlogmgr = NULL;
     }
-
     snapshotmgr->endRun();
     outscalarmgr->endRun();
     outvectormgr->endRun();
@@ -675,13 +632,14 @@ void EnvirBase::readParameter(cPar *par)
         cProperty *prop = props->get("prompt");
         std::string prompt = prop ? prop->value(cProperty::DEFAULTKEY) : "";
         std::string reply;
+
+        // ask the user. note: gets() will signal "cancel" by throwing an exception
         if (!prompt.empty())
-            reply = ev.gets(prompt.c_str(), par->str().c_str());
+            reply = this->gets(prompt.c_str(), par->str().c_str());
         else
             // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
             // against this string for detecting user input
-            reply = ev.gets((std::string("Enter parameter `")+par->fullPath()+"':").c_str(), par->str().c_str());
-        //FIXME any chance to cancel?
+            reply = this->gets((std::string("Enter parameter `")+par->fullPath()+"':").c_str(), par->str().c_str());
 
         try
         {
@@ -777,18 +735,8 @@ cConfiguration *EnvirBase::config()
 
 void EnvirBase::bubble(cComponent *component, const char *text)
 {
-    if (feventlog)
-    {
-        if (dynamic_cast<cModule *>(component))
-        {
-            cModule *mod = (cModule *)component;
-            EventLogWriter::recordBubbleEntry_id_txt(feventlog, mod->id(), text);
-        }
-        else if (dynamic_cast<cChannel *>(component))
-        {
-            //TODO
-        }
-    }
+    if (eventlogmgr)
+        eventlogmgr->bubble(component, text);
 }
 
 void EnvirBase::objectDeleted(cObject *object)
@@ -797,209 +745,116 @@ void EnvirBase::objectDeleted(cObject *object)
 
 void EnvirBase::simulationEvent(cMessage *msg)
 {
-    if (feventlog)
-    {
-        cModule *mod = simulation.contextModule();
-        
-        EventLogWriter::isModuleEventLogRecordingEnabled = simulation.contextModule()->isRecordEvents();
-        EventLogWriter::isIntervalEventLogRecordingEnabled = !eventLogRecordingIntervals || eventLogRecordingIntervals->contains(simulation.simTime());
-        EventLogWriter::isEventLogRecordingEnabled = EventLogWriter::isModuleEventLogRecordingEnabled && EventLogWriter::isIntervalEventLogRecordingEnabled;
-        
-        EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog,
-            simulation.eventNumber(), simulation.simTime(), mod->id(),
-            msg->previousEventNumber(), msg->id());
-    }
+    if (eventlogmgr)
+        eventlogmgr->simulationEvent(msg);
 }
 
 void EnvirBase::beginSend(cMessage *msg)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_p_l_er_d(feventlog,
-            msg->id(), msg->treeId(), msg->encapsulationId(), msg->encapsulationTreeId(),
-            msg->className(), msg->fullName(), msg->previousEventNumber(),
-            msg->kind(), msg->priority(), msg->length(), msg->hasBitError(),
-            eventLogObjectPrinter ? eventLogObjectPrinter->printObjectToString(msg).c_str() : NULL);
-               //XXX message display string, etc?
-               //XXX plus many other fields...
-    }
+    if (eventlogmgr)
+        eventlogmgr->beginSend(msg);
 }
 
 void EnvirBase::messageScheduled(cMessage *msg)
 {
-    if (feventlog)
-    {
-        EnvirBase::beginSend(msg);
-        EnvirBase::endSend(msg);
-    }
+    if (eventlogmgr)
+        eventlogmgr->messageScheduled(msg);
 }
 
 void EnvirBase::messageCancelled(cMessage *msg)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordCancelEventEntry_id_pe(feventlog, msg->id(), msg->previousEventNumber());
-    }
+    if (eventlogmgr)
+        eventlogmgr->messageCancelled(msg);
 }
 
 void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordSendDirectEntry_sm_dm_dg_pd_td(feventlog,
-            msg->senderModuleId(), toGate->ownerModule()->id(), toGate->id(),
-            propagationDelay, transmissionDelay);
-    }
+    if (eventlogmgr)
+        eventlogmgr->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordSendHopEntry_sm_sg(feventlog,
-            srcGate->ownerModule()->id(), srcGate->id());
-    }
+    if (eventlogmgr)
+        eventlogmgr->messageSendHop(msg, srcGate);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordSendHopEntry_sm_sg_pd_td(feventlog,
-            srcGate->ownerModule()->id(), srcGate->id(), transmissionDelay, propagationDelay);
-    }
+    if (eventlogmgr)
+        eventlogmgr->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 }
 
 void EnvirBase::endSend(cMessage *msg)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordEndSendEntry_t(feventlog, msg->arrivalTime());
-    }
+    if (eventlogmgr)
+        eventlogmgr->endSend(msg);
 }
 
 void EnvirBase::messageDeleted(cMessage *msg)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordDeleteMessageEntry_id_pe(feventlog, msg->id(), msg->previousEventNumber());
-    }
+    if (eventlogmgr)
+        eventlogmgr->messageDeleted(msg);
 }
 
 void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
 {
-    if (feventlog)
-    {
-        if (from->isModule() && to->isModule())
-        {
-            EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog,
-                ((cModule *)from)->id(), ((cModule *)to)->id(), method);
-        }
-    }
+    if (eventlogmgr)
+        eventlogmgr->componentMethodBegin(from, to, method);
 }
 
 void EnvirBase::componentMethodEnd()
 {
-    if (feventlog)
-    {
-        //XXX problem when channel method is called: we'll emit an "End" entry but no "Begin"
-        EventLogWriter::recordModuleMethodEndEntry(feventlog);
-    }
+    if (eventlogmgr)
+        eventlogmgr->componentMethodEnd();
 }
 
 void EnvirBase::moduleCreated(cModule *newmodule)
 {
-    if (feventlog)
-    {
-        cModule *m = newmodule;
-
-        bool recordModuleEvents = config()->getAsBool(m->fullPath().c_str(), CFGID_RECORD_MODULE_EVENTS);
-        m->setRecordEvents(recordModuleEvents);
-
-        bool isCompoundModule = dynamic_cast<cCompoundModule *>(m);
-
-        if (m->parentModule())
-        {
-            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n_cm(feventlog,
-                m->id(), m->className(), m->parentModule()->id(), m->fullName(), isCompoundModule); //FIXME size() is missing
-        }
-        else
-        {
-            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n_cm(feventlog,
-                m->id(), m->className(), -1, m->fullName(), isCompoundModule); //FIXME size() is missing; omit parentModuleId
-        }
-    }
+    if (eventlogmgr)
+        eventlogmgr->moduleCreated(newmodule);
 }
 
 void EnvirBase::moduleDeleted(cModule *module)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordModuleDeletedEntry_id(feventlog, module->id());
-    }
+    if (eventlogmgr)
+        eventlogmgr->moduleDeleted(module);
 }
 
 void EnvirBase::moduleReparented(cModule *module, cModule *oldparent)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordModuleReparentedEntry_id_p(feventlog, module->id(), module->parentModule()->id());
-    }
+    if (eventlogmgr)
+        eventlogmgr->moduleReparented(module, oldparent);
 }
 
 void EnvirBase::connectionCreated(cGate *srcgate)
 {
-    if (feventlog)
-    {
-        cGate *destgate = srcgate->toGate();
-        EventLogWriter::recordConnectionCreatedEntry_sm_sg_sn_dm_dg_dn(feventlog,
-            srcgate->ownerModule()->id(), srcgate->id(), srcgate->fullName(),
-            destgate->ownerModule()->id(), destgate->id(), destgate->fullName());  //XXX channel, channel attributes, etc
-    }
+    if (eventlogmgr)
+        eventlogmgr->connectionCreated(srcgate);
 }
 
 void EnvirBase::connectionRemoved(cGate *srcgate)
 {
-    if (feventlog)
-    {
-        EventLogWriter::recordConnectionDeletedEntry_sm_sg(feventlog,
-            srcgate->ownerModule()->id(), srcgate->id());
-    }
+    if (eventlogmgr)
+        eventlogmgr->connectionRemoved(srcgate);
 }
 
 void EnvirBase::displayStringChanged(cComponent *component)
 {
-    if (feventlog)
-    {
-        if (dynamic_cast<cModule *>(component))
-        {
-            cModule *module = (cModule *)component;
-            EventLogWriter::recordModuleDisplayStringChangedEntry_id_d(feventlog,
-                module->id(), module->displayString().str());
-        }
-        else if (dynamic_cast<cChannel *>(component))
-        {
-            cChannel *channel = (cChannel *)component;
-            cGate *gate = channel->fromGate();
-            EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog,
-                gate->ownerModule()->id(), gate->id(), channel->displayString().str());
-        }
-    }
+    if (eventlogmgr)
+        eventlogmgr->displayStringChanged(component);
+}
+
+void EnvirBase::sputn(const char *s, int n)
+{
+    if (eventlogmgr)
+        eventlogmgr->sputn(s, n);
 }
 
 void EnvirBase::undisposedObject(cObject *obj)
 {
     if (opt_print_undisposed)
         ::printf("undisposed object: (%s) %s -- check module destructor\n", obj->className(), obj->fullPath().c_str());
-}
-
-void EnvirBase::sputn(const char *s, int n)
-{
-    if (feventlog)
-    {
-        EventLogWriter::recordLogLine(feventlog, s, n);
-    }
-    //TODO: autoflush for feventlog (after each event? after each line?)
 }
 
 //-------------------------------------------------------------
@@ -1078,10 +933,10 @@ void EnvirBase::readPerRunOptions()
     opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
     opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
     opt_fingerprint = cfg->getAsString(CFGID_FINGERPRINT);
-    opt_eventlogfilename = cfg->getAsBool(CFGID_RECORD_EVENTLOG) ? cfg->getAsFilename(CFGID_EVENTLOG_FILE).c_str() : "";
     opt_num_rngs = cfg->getAsInt(CFGID_NUM_RNGS);
     opt_rng_class = cfg->getAsString(CFGID_RNG_CLASS);
     opt_seedset = cfg->getAsInt(CFGID_SEED_SET);
+    opt_record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
 
     // install hasher object
     if (!opt_fingerprint.empty())
@@ -1118,67 +973,14 @@ void EnvirBase::readPerRunOptions()
         nextuniquenumber = (unsigned)parsimcomm->getProcId() * ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
 #endif
 
-    // open message log file (in startRun() it's too late, because modules have already been created then)
-    if (!opt_eventlogfilename.empty())
-        setupEventLog();
-
-}
-
-void EnvirBase::setupEventLog()
-{
-    // setup event log object printer
-    delete eventLogObjectPrinter;
-    const char *eventLogMessageDetailPattern = config()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
-
-    if (eventLogMessageDetailPattern) {
-        std::vector<MatchExpression> objectMatchExpressions;
-        std::vector<std::vector<MatchExpression> > fieldNameMatchExpressionsList;
-
-        StringTokenizer tokenizer(eventLogMessageDetailPattern, "|"); // TODO: use ; when it does not mean comment anymore
-        std::vector<std::string> patterns = tokenizer.asVector();
-
-        for (int i = 0; i < (int)patterns.size(); i++) {
-            char *objectPattern = (char *)patterns[i].c_str();
-            char *fieldNamePattern = strchr(objectPattern, ':');
-
-            if (fieldNamePattern) {
-                *fieldNamePattern = '\0';
-                StringTokenizer fieldNameTokenizer(fieldNamePattern + 1, ",");
-                std::vector<std::string> fieldNamePatterns = fieldNameTokenizer.asVector();
-                std::vector<MatchExpression> fieldNameMatchExpressions;
-
-                for (int j = 0; j < (int)fieldNamePatterns.size(); j++)
-                    fieldNameMatchExpressions.push_back(MatchExpression(fieldNamePatterns[j].c_str(), false, true, true));
-
-                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
-            }
-            else {
-                std::vector<MatchExpression> fieldNameMatchExpressions;
-                fieldNameMatchExpressions.push_back(MatchExpression("*", false, true, true));
-                fieldNameMatchExpressionsList.push_back(fieldNameMatchExpressions);
-            }
-
-            objectMatchExpressions.push_back(MatchExpression(objectPattern, false, true, true));
-        }
-
-        eventLogObjectPrinter = new ObjectPrinter(objectMatchExpressions, fieldNameMatchExpressionsList, 3);
+    if (opt_record_eventlog)
+    {
+        // open message log file. Note: in startRun() it would be too late,
+        // because modules have already been created by then
+        eventlogmgr = new EventlogFileManager();
+        eventlogmgr->setup();
     }
 
-    // setup eventlog recording intervals
-    const char *text = config()->getAsCustom(CFGID_EVENTLOG_RECORDING_INTERVALS);
-    if (text) {
-        eventLogRecordingIntervals = new Intervals();
-        eventLogRecordingIntervals->parse(text);
-    }
-
-    // setup file
-    processFileName(opt_eventlogfilename);
-    ::printf("Recording event log to file `%s'...\n", opt_eventlogfilename.c_str());
-    mkPath(directoryOf(opt_eventlogfilename.c_str()).c_str());
-    FILE *out = fopen(opt_eventlogfilename.c_str(), "w");
-    if (!out)
-        throw cRuntimeError("Cannot open event log file `%s' for write", opt_eventlogfilename.c_str());
-    feventlog = out;
 }
 
 //void EnvirBase::globAndLoadNedFile(const char *fnamepattern)

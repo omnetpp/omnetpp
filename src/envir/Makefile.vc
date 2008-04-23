@@ -30,7 +30,7 @@ OBJS= $O/args.obj $O/bootenv.obj $O/main.obj $O/envirbase.obj $O/fsutils.obj \
       $O/indexedfileoutvectormgr.obj $O/akoutvectormgr.obj \
       $O/speedometer.obj $O/matchableobject.obj $O/matchablefield.obj \
       $O/akaroarng.obj $O/cxmldoccache.obj $O/eventlogwriter.obj $O/objectprinter.obj \
-      $O/runattributes.obj $O/intervals.obj
+      $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj
 
 
 !if "$(LIB_SUFFIX)"==".dll"
@@ -114,8 +114,9 @@ $O/akaroarng.obj: akaroarng.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   envirdefs.h \
   ../../include/crng.h \
@@ -133,9 +134,10 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/util.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/carray.h \
   ../../include/globals.h \
@@ -160,7 +162,9 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  fileoutvectormgr.h
+  fileoutvectormgr.h \
+  runattributes.h \
+  intervals.h
 $O/args.obj: args.cc \
   args.h \
   envirdefs.h
@@ -185,8 +189,8 @@ $O/bootenv.obj: bootenv.cc \
   envirdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/random.h \
-  ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
+  ../../include/platdep/platdefs.h \
   ../../include/platdep/inttypes.h \
   ../../include/csimulation.h \
   ../../include/crng.h \
@@ -194,6 +198,7 @@ $O/bootenv.obj: bootenv.cc \
   ../../include/globals.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
@@ -214,7 +219,9 @@ $O/bootenv.obj: bootenv.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/envirext.h
+  ../../include/envirext.h \
+  runattributes.h \
+  intervals.h
 $O/cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cobject.h \
   cxmldoccache.h \
@@ -226,8 +233,9 @@ $O/cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   envirdefs.h \
   ../../include/cenvir.h \
@@ -238,6 +246,7 @@ $O/envirbase.obj: envirbase.cc \
   envirbase.h \
   appreg.h \
   fsutils.h \
+  eventlogfilemgr.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
@@ -247,6 +256,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/random.h \
   ../../include/crng.h \
   ../../include/cmodule.h \
+  ../../include/ccompoundmodule.h \
   ../../include/cchannel.h \
   ../../include/ccomponenttype.h \
   ../../include/cmessage.h \
@@ -258,7 +268,6 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/regmacros.h \
   ../../include/simtime.h \
   ../../include/cparsimcomm.h \
-  objectprinter.h \
   envirdefs.h \
   ../../include/carray.h \
   ../../include/globals.h \
@@ -271,6 +280,8 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -279,6 +290,10 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
   ../../include/opp_string.h \
+  objectprinter.h \
+  intervals.h \
+  matchablefield.h \
+  matchableobject.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/timeutil.h \
   ../../include/cexpression.h \
@@ -286,10 +301,91 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cmsgpar.h \
-  ../../include/cmathfunction.h \
+  ../../include/cmathfunction.h
+$O/eventlogfilemgr.obj: eventlogfilemgr.cc \
+  eventlogfilemgr.h \
+  eventlogwriter.h \
+  ../../include/cconfigkey.h \
+  ../../include/cconfiguration.h \
+  envirbase.h \
+  ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/cgate.h \
+  ../../include/cchannel.h \
+  ../../include/csimplemodule.h \
+  ../../include/ccompoundmodule.h \
+  ../../include/cdisplaystring.h \
+  ../../include/simkerneldefs.h \
+  envirdefs.h \
+  ../../include/opp_string.h \
+  objectprinter.h \
+  intervals.h \
+  ../../include/platdep/platdefs.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/util.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
   matchablefield.h \
-  matchableobject.h
+  matchableobject.h \
+  ../../include/cobject.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/cexception.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cstringpool.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  args.h \
+  ../../include/envirext.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cclassfactory.h \
+  ../../include/ccomponent.h \
+  ../../include/csimulation.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/cmsgpar.h \
+  ../../include/cmathfunction.h \
+  ../../include/ccomponenttype.h
+$O/eventlogwriter.obj: eventlogwriter.cc \
+  eventlogwriter.h \
+  ../../include/cconfigkey.h \
+  ../../include/csimulation.h \
+  ../../include/cmodule.h \
+  envirdefs.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/util.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/globals.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cclassfactory.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h
 $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -302,14 +398,15 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   fileoutscalarmgr.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -331,7 +428,8 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  ../../include/cstddev.h
+  ../../include/cstddev.h \
+  runattributes.h
 $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -342,14 +440,15 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   fileoutvectormgr.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -370,7 +469,9 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/cgate.h \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
-  ../../include/cexpression.h
+  ../../include/cexpression.h \
+  runattributes.h \
+  intervals.h
 $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -378,14 +479,15 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   envirbase.h \
   filesnapshotmgr.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -406,11 +508,12 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/cexception.h \
   envirdefs.h \
   ../../include/util.h \
+  ../../include/platdep/platmisc.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
+  ../../include/platdep/inttypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
-  ../../include/platdep/inttypes.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
@@ -430,12 +533,13 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/cstatistic.h \
   indexedfileoutvectormgr.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -457,7 +561,9 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  fileoutvectormgr.h
+  fileoutvectormgr.h \
+  runattributes.h \
+  intervals.h
 $O/inifilereader.obj: inifilereader.cc \
   inifilereader.h \
   fsutils.h \
@@ -466,10 +572,39 @@ $O/inifilereader.obj: inifilereader.cc \
   ../../include/cconfigreader.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/util.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
+  ../../include/opp_string.h
+$O/intervals.obj: intervals.cc \
+  envirbase.h \
+  intervals.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  args.h \
+  envirdefs.h \
+  ../../include/envirext.h \
+  ../../include/cconfiguration.h \
+  ../../include/cownedobject.h \
+  ../../include/simkerneldefs.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cclassfactory.h \
   ../../include/opp_string.h
 $O/main.obj: main.cc \
   ../../include/cownedobject.h \
@@ -482,8 +617,9 @@ $O/main.obj: main.cc \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -500,8 +636,9 @@ $O/matchablefield.obj: matchablefield.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -519,8 +656,9 @@ $O/matchableobject.obj: matchableobject.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -538,11 +676,12 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -571,10 +710,43 @@ $O/opp_run.obj: opp_run.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/util.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h
+$O/runattributes.obj: runattributes.cc \
+  ../../include/simkerneldefs.h \
+  ../../include/cconfigkey.h \
+  envirbase.h \
+  ../../include/csimulation.h \
+  runattributes.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/carray.h \
+  ../../include/globals.h \
+  args.h \
+  envirdefs.h \
+  ../../include/envirext.h \
+  ../../include/cconfiguration.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cclassfactory.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h
 $O/scenario.obj: scenario.cc \
   scenario.h \
   valueiterator.h \
@@ -586,11 +758,12 @@ $O/scenario.obj: scenario.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h
 $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
@@ -606,11 +779,12 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
@@ -625,8 +799,8 @@ $O/speedometer.obj: speedometer.cc \
   ../../include/simkerneldefs.h \
   envirdefs.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
-  ../../include/platdep/inttypes.h
+  ../../include/platdep/inttypes.h \
+  ../../include/simtime.h
 $O/valueiterator.obj: valueiterator.cc \
   valueiterator.h \
   ../../include/cexception.h \
@@ -635,6 +809,7 @@ $O/valueiterator.obj: valueiterator.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/simtime.h \
   ../../include/platdep/inttypes.h \
-  ../../include/util.h
+  ../../include/simtime.h \
+  ../../include/util.h \
+  ../../include/platdep/platmisc.h

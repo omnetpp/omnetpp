@@ -334,8 +334,8 @@ void Tkenv::doOneStep()
         simstate = SIM_READY;
         outvectormgr->flush();
         outscalarmgr->flush();
-        if (feventlog)
-            fflush(feventlog);
+        if (eventlogmgr)
+            eventlogmgr->flush();
     }
     catch (cTerminationException& e)
     {
@@ -398,8 +398,8 @@ void Tkenv::runSimulation(int mode, simtime_t until_time, long until_event, cMod
         simstate = SIM_READY;
         outvectormgr->flush();
         outscalarmgr->flush();
-        if (feventlog)
-            fflush(feventlog);
+        if (eventlogmgr)
+            eventlogmgr->flush();
     }
     catch (cTerminationException& e)
     {
@@ -690,8 +690,6 @@ void Tkenv::newNetwork(const char *networkname)
         opt_network_name = network->name();  // override config setting
         simulation.setupNetwork(network);
         startRun();
-        if (feventlog)
-            fflush(feventlog);
 
         simstate = SIM_NEW;
     }
@@ -739,8 +737,6 @@ void Tkenv::newRun(const char *configname, int runnumber)
 
         simulation.setupNetwork(network);
         startRun();
-        if (feventlog)
-            fflush(feventlog);
 
         simstate = SIM_NEW;
     }

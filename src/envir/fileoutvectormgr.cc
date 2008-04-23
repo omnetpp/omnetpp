@@ -80,8 +80,8 @@ void cFileOutputVectorManager::closeFile()
 
 void cFileOutputVectorManager::writeRunData()
 {
-	run.initRun();
-	run.writeRunData(f, fname);
+    run.initRun();
+    run.writeRunData(f, fname);
 }
 
 void cFileOutputVectorManager::initVector(sVectorData *vp)
@@ -125,7 +125,7 @@ void cFileOutputVectorManager::endRun()
 
 void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char *vecname,
                                                   bool& outEnabled, bool& outRecordEventNumbers,
-                                                  Intervals &outIntervals)
+                                                  Intervals& outIntervals)
 {
     std::string vectorfullpath = std::string(modname) + "." + vecname;
     outEnabled = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_OUTVECTOR_ENABLED);

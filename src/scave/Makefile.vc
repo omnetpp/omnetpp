@@ -183,10 +183,10 @@ $O/datasorter.obj: datasorter.cc \
   enumtype.h \
   ../common/exception.h \
   statistics.h \
+  scaveutils.h \
   scavedefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
-  scaveutils.h \
   ../common/patternmatcher.h \
   fields.h
 $O/diffquot.obj: diffquot.cc \
@@ -276,14 +276,14 @@ $O/idlist.obj: idlist.cc \
   idlist.h \
   resultfilemanager.h \
   ../common/stringutil.h \
+  scaveutils.h \
   scavedefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h \
   enumtype.h \
   ../common/commonutil.h \
-  statistics.h \
-  scaveutils.h
+  statistics.h
 $O/indexedvectorfile.obj: indexedvectorfile.cc \
   ../common/exception.h \
   ../common/linetokenizer.h \
@@ -447,6 +447,7 @@ $O/resultfilemanager.obj: resultfilemanager.cc \
   ../common/stringtokenizer.h \
   indexfile.h \
   scaveutils.h \
+  scaveexception.h \
   resultfilemanager.h \
   ../common/fileutil.h \
   ../common/commonutil.h \

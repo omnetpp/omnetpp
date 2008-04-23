@@ -26,10 +26,9 @@
 #include "args.h"
 #include "envirdefs.h"
 #include "envirext.h"
+#include "eventlogfilemgr.h"
 #include "cconfiguration.h"
 #include "timeutil.h"
-#include "objectprinter.h"
-#include "intervals.h"
 
 NAMESPACE_BEGIN
 
@@ -54,10 +53,6 @@ class ENVIR_API EnvirBase : public cEnvir
     cConfiguration *cfg;
     ArgList *args;
     cXMLDocCache *xmlcache;
-    
-    // used to write message details into the event log during the simulation
-    ObjectPrinter *eventLogObjectPrinter;
-    Intervals *eventLogRecordingIntervals;
 
     //
     // Configuration options
@@ -80,9 +75,8 @@ class ENVIR_API EnvirBase : public cEnvir
     opp_string opt_outputvectormanager_class;
     opp_string opt_outputscalarmanager_class;
     opp_string opt_snapshotmanager_class;
+    bool opt_record_eventlog;
     bool opt_fname_append_host;
-
-    opp_string opt_eventlogfilename;
 
     bool opt_warnings;
     bool opt_print_undisposed;
@@ -108,7 +102,7 @@ class ENVIR_API EnvirBase : public cEnvir
     opp_string runid;
 
     // Output file managers
-    FILE *feventlog;  // the eventlog file; NULL if no event log is being written
+    EventlogFileManager *eventlogmgr;  // NULL if no event log is being written
     cOutputVectorManager *outvectormgr;
     cOutputScalarManager *outscalarmgr;
     cSnapshotManager *snapshotmgr;
@@ -204,6 +198,7 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual const char *getRunId()  {return runid.c_str();}
     virtual unsigned long getUniqueNumber();
     virtual bool idle();
+    //@}
 
   protected:
     // functions added locally
