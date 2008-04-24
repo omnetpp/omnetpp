@@ -143,7 +143,7 @@ class EVENTLOG_API IEventLog
         /**
          * Finds the closest event log entry containing the given text.
          */
-        virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward) = 0;
+        virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive) = 0;
 
         /**
          * Returns the approximate number of events present in the log.

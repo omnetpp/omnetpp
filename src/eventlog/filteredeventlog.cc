@@ -444,12 +444,12 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
     return NULL;
 }
 
-EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward)
+EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive)
 {
     EventLogEntry *eventLogEntry = start;
 
     do {
-        eventLogEntry = eventLog->findEventLogEntry(eventLogEntry, search, forward);
+        eventLogEntry = eventLog->findEventLogEntry(eventLogEntry, search, forward, caseSensitive);
     }
     while (!matchesFilter(eventLogEntry->getEvent()));
 

@@ -313,7 +313,7 @@ Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind m
         return getEventForBeginOffset(offset);
 }
 
-EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward)
+EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive)
 {
     char *line;
     reader->seekTo(start->getEvent()->getBeginOffset());
@@ -323,9 +323,9 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
         reader->getNextLineBufferPointer();
 
     if (forward)
-        line = reader->findNextLineBufferPointer(search);
+        line = reader->findNextLineBufferPointer(search, caseSensitive);
     else
-        line = reader->findPreviousLineBufferPointer(search);
+        line = reader->findPreviousLineBufferPointer(search, caseSensitive);
 
     if (line) {
         if (forward)

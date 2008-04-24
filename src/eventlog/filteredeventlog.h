@@ -156,7 +156,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual FilteredEvent *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         virtual FilteredEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
 
-        virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward);
+        virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive);
 
         virtual long getApproximateNumberOfEvents();
         virtual double getApproximatePercentageForEventNumber(long eventNumber);

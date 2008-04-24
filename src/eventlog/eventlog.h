@@ -111,7 +111,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual Event *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
         virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
 
-        virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward);
+        virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive);
 
         virtual long getApproximateNumberOfEvents();
         virtual Event *getApproximateEventAt(double percentage);
