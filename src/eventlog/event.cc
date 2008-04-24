@@ -190,6 +190,17 @@ void Event::print(FILE *file, bool outputEventLogMessages)
     }
 }
 
+bool Event::isSelfMessage(BeginSendEntry *beginSendEntry)
+{
+    Assert(beginSendEntry && this == beginSendEntry->getEvent());
+    int index = beginSendEntry->getIndex();
+
+    if (index + 1 < eventLogEntries.size())
+        return dynamic_cast<EndSendEntry *>(eventLogEntries[index + 1]);
+    else
+        return false;
+}
+
 EventLogMessageEntry *Event::getEventLogMessage(int index)
 {
     Assert(index >= 0);

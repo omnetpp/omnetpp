@@ -38,6 +38,9 @@ class ENVIR_API EventlogFileManager
     FILE *feventlog;
     ObjectPrinter *objectPrinter;
     Intervals *recordingIntervals;
+    bool isEventLogRecordingEnabled;
+    bool isModuleEventLogRecordingEnabled;
+    bool isIntervalEventLogRecordingEnabled;
 
   public:
     EventlogFileManager();
@@ -66,8 +69,10 @@ class ENVIR_API EventlogFileManager
     virtual void componentMethodEnd();
     virtual void moduleCreated(cModule *newmodule);
     virtual void moduleDeleted(cModule *module);
+    virtual void gateCreated(cGate *newgate);
+    virtual void gateDeleted(cGate *gate);
     virtual void connectionCreated(cGate *srcgate);
-    virtual void connectionRemoved(cGate *srcgate);
+    virtual void connectionDeleted(cGate *srcgate);
     virtual void displayStringChanged(cComponent *component);
     virtual void sputn(const char *s, int n);
     //@}

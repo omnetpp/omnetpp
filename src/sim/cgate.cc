@@ -201,7 +201,7 @@ void cGate::disconnect()
     if (!togatep) return;
 
     // notify envir that old conn gets removed
-    EVCB.connectionRemoved(this);
+    EVCB.connectionDeleted(this);
 
     // remove connection
     togatep->fromgatep = NULL;

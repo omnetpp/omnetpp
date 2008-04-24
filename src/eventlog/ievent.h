@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include "eventlogentry.h"
+#include "eventlogentries.h"
 #include "messagedependency.h"
 
 NAMESPACE_BEGIN
@@ -70,6 +71,7 @@ class EVENTLOG_API IEvent
          * Returns the nth entry (line) for this event.
          */
         virtual EventLogEntry *getEventLogEntry(int index) = 0;
+        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) = 0;
 
         // simple text lines
         virtual int getNumEventLogMessages() = 0;

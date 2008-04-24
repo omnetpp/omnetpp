@@ -827,16 +827,28 @@ void EnvirBase::moduleReparented(cModule *module, cModule *oldparent)
         eventlogmgr->moduleReparented(module, oldparent);
 }
 
+void EnvirBase::gateCreated(cGate *newgate)
+{
+    if (eventlogmgr)
+        eventlogmgr->gateCreated(newgate);
+}
+
+void EnvirBase::gateDeleted(cGate *gate)
+{
+    if (eventlogmgr)
+        eventlogmgr->gateDeleted(gate);
+}
+
 void EnvirBase::connectionCreated(cGate *srcgate)
 {
     if (eventlogmgr)
         eventlogmgr->connectionCreated(srcgate);
 }
 
-void EnvirBase::connectionRemoved(cGate *srcgate)
+void EnvirBase::connectionDeleted(cGate *srcgate)
 {
     if (eventlogmgr)
-        eventlogmgr->connectionRemoved(srcgate);
+        eventlogmgr->connectionDeleted(srcgate);
 }
 
 void EnvirBase::displayStringChanged(cComponent *component)

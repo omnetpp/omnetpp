@@ -45,6 +45,21 @@ MR ModuleReparentedEntry // reparenting a module
    p int newParentModuleId // id of the new parent module
 }
 
+GC GateCreatedEntry
+{
+   m int moduleId
+   g int gateId
+   n string name
+   i int index
+   o bool isOutput
+}
+
+GD GateDeletedEntry
+{
+   m int moduleId
+   g int gateId
+}
+
 CC ConnectionCreatedEntry // creating a connection
 {
    sm int sourceModuleId        // id of the source module identifying the connection

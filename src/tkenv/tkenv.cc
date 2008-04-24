@@ -1325,9 +1325,9 @@ void Tkenv::connectionCreated(cGate *srcgate)
     modinsp->connectionCreated(srcgate);
 }
 
-void Tkenv::connectionRemoved(cGate *srcgate)
+void Tkenv::connectionDeleted(cGate *srcgate)
 {
-    EnvirBase::connectionRemoved(srcgate);
+    EnvirBase::connectionDeleted(srcgate);
 
     // notify compound module where the connection (whose source is this gate) is displayed
     // note: almost the same code as above
@@ -1340,7 +1340,7 @@ void Tkenv::connectionRemoved(cGate *srcgate)
     if (!insp) return;
     TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
     assert(modinsp);
-    modinsp->connectionRemoved(srcgate);
+    modinsp->connectionDeleted(srcgate);
 }
 
 void Tkenv::displayStringChanged(cComponent *component)

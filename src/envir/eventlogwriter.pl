@@ -141,10 +141,6 @@ USING_NAMESPACE
 class EventLogWriter
 {
   public:
-    static bool isEventLogRecordingEnabled;
-    static bool isModuleEventLogRecordingEnabled;
-    static bool isIntervalEventLogRecordingEnabled;
-
     static void recordLogLine(FILE *f, const char *s, int n);
 ";
 
@@ -184,16 +180,10 @@ print CC "
 
 #define LL    INT64_PRINTF_FORMAT
 
-bool EventLogWriter::isEventLogRecordingEnabled = true;
-bool EventLogWriter::isIntervalEventLogRecordingEnabled = true;
-bool EventLogWriter::isModuleEventLogRecordingEnabled = true;
-
 void EventLogWriter::recordLogLine(FILE *f, const char *s, int n)
 {
-    if (isEventLogRecordingEnabled) {
-        CHECK(fprintf(f, \"- \"));
-        CHECK(fwrite(s, 1, n, f));
-    }
+    CHECK(fprintf(f, \"- \"));
+    CHECK(fwrite(s, 1, n, f));
 }
 
 ";
@@ -218,8 +208,6 @@ sub makeMethodImpl ()
    $fmt = "\\n".$fmt if ($class->{CODE} eq "E");
    my $args = "";
 
-   $txt .= "    if (isEventLogRecordingEnabled) {\n";
-
    foreach $field (@{ $class->{FIELDS} })
    {
       # if wantOptFields==false, skip optional fields
@@ -234,16 +222,15 @@ sub makeMethodImpl ()
       else
       {
          # optional field: flush current fprintf statement, and generate a conditional fprintf
-         $txt .= "        CHECK(fprintf(f, \"$fmt\"$args));\n" if ($fmt ne "");
+         $txt .= "    CHECK(fprintf(f, \"$fmt\"$args));\n" if ($fmt ne "");
          $fmt = "";
          $args = "";
-         $txt .= "        if ($field->{NAME}!=$field->{DEFAULTVALUE})\n";
-         $txt .= "            CHECK(fprintf(f, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{PRINTFVALUE}));\n";
+         $txt .= "    if ($field->{NAME}!=$field->{DEFAULTVALUE})\n";
+         $txt .= "        CHECK(fprintf(f, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{PRINTFVALUE}));\n";
       }
    }
    # flush final fprintf statement (or at least a newline if $fmt=="")
-   $txt .= "        CHECK(fprintf(f, \"$fmt\\n\"$args));\n";
-   $txt .= "    }\n";
+   $txt .= "    CHECK(fprintf(f, \"$fmt\\n\"$args));\n";
 
    $txt .= "}\n\n";
    $txt;

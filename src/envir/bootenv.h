@@ -65,8 +65,10 @@ class ENVIR_API BootEnv : public cEnvir
     virtual void componentMethodEnd()  {UNSUPPORTED;}
     virtual void moduleCreated(cModule *newmodule)  {UNSUPPORTED;}
     virtual void moduleDeleted(cModule *module)  {UNSUPPORTED;}
+    virtual void gateCreated(cGate *newgate)  {UNSUPPORTED;}
+    virtual void gateDeleted(cGate *gate)  {UNSUPPORTED;}
     virtual void connectionCreated(cGate *srcgate)  {UNSUPPORTED;}
-    virtual void connectionRemoved(cGate *srcgate)  {UNSUPPORTED;}
+    virtual void connectionDeleted(cGate *srcgate)  {UNSUPPORTED;}
     virtual void displayStringChanged(cComponent *component)  {UNSUPPORTED;}
     virtual void undisposedObject(cObject *obj);
 

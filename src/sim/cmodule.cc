@@ -91,8 +91,11 @@ cModule::~cModule()
     }
 
     // delete all gates
-    for (int i=0; i<numgates; i++)
-        delete gatev[i];
+    for (int i=0; i<numgates; i++) {
+        cGate *gate = gatev[i];
+        delete gate;
+        EVCB.gateDeleted(gate);
+    }
 
     // release gatedescs
     for (int i=0; i<numgatedescs; i++)
@@ -347,6 +350,7 @@ void cModule::addGate(const char *gatename, cGate::Type type, bool isvector)
             cGate *newgate = createGateObject(&desc);
             newgate->setGateId(desc.inGateId = gatev.size());
             gatev.push_back(newgate);
+            EVCB.gateCreated(newgate);
         }
     }
     if (type==cGate::OUTPUT || type==cGate::INOUT)
@@ -357,6 +361,7 @@ void cModule::addGate(const char *gatename, cGate::Type type, bool isvector)
             cGate *newgate = createGateObject(&desc);
             newgate->setGateId(desc.outGateId = gatev.size());
             gatev.push_back(newgate);
+            EVCB.gateCreated(newgate);
         }
     }
 }

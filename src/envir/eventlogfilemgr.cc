@@ -62,6 +62,9 @@ EventlogFileManager::EventlogFileManager()
     feventlog = NULL;
     objectPrinter = NULL;
     recordingIntervals = NULL;
+    isEventLogRecordingEnabled = true;
+    isIntervalEventLogRecordingEnabled = true;
+    isModuleEventLogRecordingEnabled = true;
 }
 
 EventlogFileManager::~EventlogFileManager()
@@ -132,7 +135,7 @@ void EventlogFileManager::setup()
 
 void EventlogFileManager::startRun(const char *runId)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
         fflush(feventlog);
@@ -141,7 +144,7 @@ void EventlogFileManager::startRun(const char *runId)
 
 void EventlogFileManager::endRun()
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordSimulationEndEntry(feventlog);
         fclose(feventlog);
@@ -151,7 +154,7 @@ void EventlogFileManager::endRun()
 
 void EventlogFileManager::flush()
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         fflush(feventlog);
     }
@@ -159,13 +162,13 @@ void EventlogFileManager::flush()
 
 void EventlogFileManager::simulationEvent(cMessage *msg)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         cModule *mod = simulation.contextModule();
 
-        EventLogWriter::isModuleEventLogRecordingEnabled = simulation.contextModule()->isRecordEvents();
-        EventLogWriter::isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.simTime());
-        EventLogWriter::isEventLogRecordingEnabled = EventLogWriter::isModuleEventLogRecordingEnabled && EventLogWriter::isIntervalEventLogRecordingEnabled;
+        isModuleEventLogRecordingEnabled = simulation.contextModule()->isRecordEvents();
+        isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.simTime());
+        isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
 
         EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog,
             simulation.eventNumber(), simulation.simTime(), mod->id(),
@@ -175,7 +178,7 @@ void EventlogFileManager::simulationEvent(cMessage *msg)
 
 void EventlogFileManager::bubble(cComponent *component, const char *text)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         if (dynamic_cast<cModule *>(component))
         {
@@ -191,7 +194,7 @@ void EventlogFileManager::bubble(cComponent *component, const char *text)
 
 void EventlogFileManager::beginSend(cMessage *msg)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_p_l_er_d(feventlog,
             msg->id(), msg->treeId(), msg->encapsulationId(), msg->encapsulationTreeId(),
@@ -204,7 +207,7 @@ void EventlogFileManager::beginSend(cMessage *msg)
 
 void EventlogFileManager::messageScheduled(cMessage *msg)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventlogFileManager::beginSend(msg);
         EventlogFileManager::endSend(msg);
@@ -213,7 +216,7 @@ void EventlogFileManager::messageScheduled(cMessage *msg)
 
 void EventlogFileManager::messageCancelled(cMessage *msg)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordCancelEventEntry_id_pe(feventlog, msg->id(), msg->previousEventNumber());
     }
@@ -221,7 +224,7 @@ void EventlogFileManager::messageCancelled(cMessage *msg)
 
 void EventlogFileManager::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordSendDirectEntry_sm_dm_dg_pd_td(feventlog,
             msg->senderModuleId(), toGate->ownerModule()->id(), toGate->id(),
@@ -231,7 +234,7 @@ void EventlogFileManager::messageSendDirect(cMessage *msg, cGate *toGate, simtim
 
 void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordSendHopEntry_sm_sg(feventlog,
             srcGate->ownerModule()->id(), srcGate->id());
@@ -240,7 +243,7 @@ void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate)
 
 void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordSendHopEntry_sm_sg_pd_td(feventlog,
             srcGate->ownerModule()->id(), srcGate->id(), transmissionDelay, propagationDelay);
@@ -249,7 +252,7 @@ void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, simtime_
 
 void EventlogFileManager::endSend(cMessage *msg)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordEndSendEntry_t(feventlog, msg->arrivalTime());
     }
@@ -257,7 +260,7 @@ void EventlogFileManager::endSend(cMessage *msg)
 
 void EventlogFileManager::messageDeleted(cMessage *msg)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordDeleteMessageEntry_id_pe(feventlog, msg->id(), msg->previousEventNumber());
     }
@@ -265,7 +268,7 @@ void EventlogFileManager::messageDeleted(cMessage *msg)
 
 void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         if (from->isModule() && to->isModule())
         {
@@ -277,7 +280,7 @@ void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to,
 
 void EventlogFileManager::componentMethodEnd()
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         //XXX problem when channel method is called: we'll emit an "End" entry but no "Begin"
         EventLogWriter::recordModuleMethodEndEntry(feventlog);
@@ -286,7 +289,7 @@ void EventlogFileManager::componentMethodEnd()
 
 void EventlogFileManager::moduleCreated(cModule *newmodule)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         cModule *m = newmodule;
 
@@ -310,7 +313,7 @@ void EventlogFileManager::moduleCreated(cModule *newmodule)
 
 void EventlogFileManager::moduleDeleted(cModule *module)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordModuleDeletedEntry_id(feventlog, module->id());
     }
@@ -318,15 +321,32 @@ void EventlogFileManager::moduleDeleted(cModule *module)
 
 void EventlogFileManager::moduleReparented(cModule *module, cModule *oldparent)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordModuleReparentedEntry_id_p(feventlog, module->id(), module->parentModule()->id());
     }
 }
 
+void EventlogFileManager::gateCreated(cGate *newgate)
+{
+    if (isEventLogRecordingEnabled)
+    {
+        EventLogWriter::recordGateCreatedEntry_m_g_n_i_o(feventlog, 
+            newgate->ownerModule()->id(), newgate->id(), newgate->name(), newgate->index(), newgate->type() == cGate::OUTPUT);
+    }
+}
+
+void EventlogFileManager::gateDeleted(cGate *gate)
+{
+    if (isEventLogRecordingEnabled)
+    {
+        EventLogWriter::recordGateDeletedEntry_m_g(feventlog, gate->ownerModule()->id(), gate->id());
+    }
+}
+
 void EventlogFileManager::connectionCreated(cGate *srcgate)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         cGate *destgate = srcgate->toGate();
         EventLogWriter::recordConnectionCreatedEntry_sm_sg_sn_dm_dg_dn(feventlog,
@@ -335,9 +355,9 @@ void EventlogFileManager::connectionCreated(cGate *srcgate)
     }
 }
 
-void EventlogFileManager::connectionRemoved(cGate *srcgate)
+void EventlogFileManager::connectionDeleted(cGate *srcgate)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordConnectionDeletedEntry_sm_sg(feventlog,
             srcgate->ownerModule()->id(), srcgate->id());
@@ -346,7 +366,7 @@ void EventlogFileManager::connectionRemoved(cGate *srcgate)
 
 void EventlogFileManager::displayStringChanged(cComponent *component)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         if (dynamic_cast<cModule *>(component))
         {
@@ -366,7 +386,7 @@ void EventlogFileManager::displayStringChanged(cComponent *component)
 
 void EventlogFileManager::sputn(const char *s, int n)
 {
-    if (feventlog)
+    if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordLogLine(feventlog, s, n);
     }

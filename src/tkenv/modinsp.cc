@@ -666,7 +666,7 @@ void TGraphicalModWindow::connectionCreated(cGate *srcgate)
    needs_redraw = true;
 }
 
-void TGraphicalModWindow::connectionRemoved(cGate *srcgate)
+void TGraphicalModWindow::connectionDeleted(cGate *srcgate)
 {
    needs_redraw = true;
 }

@@ -154,8 +154,10 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void componentMethodEnd();
     virtual void moduleCreated(cModule *newmodule);
     virtual void moduleDeleted(cModule *module);
+    virtual void gateCreated(cGate *newgate);
+    virtual void gateDeleted(cGate *gate);
     virtual void connectionCreated(cGate *srcgate);
-    virtual void connectionRemoved(cGate *srcgate);
+    virtual void connectionDeleted(cGate *srcgate);
     virtual void displayStringChanged(cComponent *component);
     virtual void undisposedObject(cObject *obj);
 

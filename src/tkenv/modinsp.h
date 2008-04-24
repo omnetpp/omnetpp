@@ -106,7 +106,7 @@ class TGraphicalModWindow : public TInspector
       virtual void submoduleCreated(cModule *newmodule);
       virtual void submoduleDeleted(cModule *module);
       virtual void connectionCreated(cGate *srcgate);
-      virtual void connectionRemoved(cGate *srcgate);
+      virtual void connectionDeleted(cGate *srcgate);
       virtual void displayStringChanged();
       virtual void displayStringChanged(cModule *submodule);
       virtual void displayStringChanged(cGate *gate);

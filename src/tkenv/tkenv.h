@@ -140,7 +140,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void moduleDeleted(cModule *module);
       virtual void moduleReparented(cModule *module, cModule *oldparent);
       virtual void connectionCreated(cGate *srcgate);
-      virtual void connectionRemoved(cGate *srcgate);
+      virtual void connectionDeleted(cGate *srcgate);
       virtual void displayStringChanged(cComponent *component);
 
       virtual bool isGUI() {return true;}
