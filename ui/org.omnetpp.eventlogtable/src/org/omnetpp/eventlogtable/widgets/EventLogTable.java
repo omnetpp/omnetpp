@@ -271,6 +271,15 @@ public class EventLogTable
 		stayNear();
 	}
 	
+    public int getNameMode() {
+        return eventLogTableFacade.getNameMode();
+    }
+
+    public void setNameMode(int i) {
+        eventLogTableFacade.setNameMode(i);
+        stayNear();
+    }
+    
 	public String getCustomFilter() {
 		return eventLogTableFacade.getCustomFilter();
 	}

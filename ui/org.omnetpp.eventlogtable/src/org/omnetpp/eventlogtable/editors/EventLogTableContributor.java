@@ -77,7 +77,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	protected EventLogTableAction toggleBookmarkAction;
 
-	protected EventLogTableMenuAction filterModeAction;
+    protected EventLogTableMenuAction nameModeAction;
+
+    protected EventLogTableMenuAction filterModeAction;
 
 	protected EventLogTableMenuAction displayModeAction;
 
@@ -99,6 +101,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		this.gotoMessageOriginAction = createGotoMessageOriginAction();
 		this.gotoMessageReuseAction = createGotoMessageReuseAction();
 		this.toggleBookmarkAction = createToggleBookmarkAction();
+        this.nameModeAction = createNameModeAction();
 		this.filterModeAction = createFilterModeAction();
 		this.displayModeAction = createDisplayModeAction();
 		this.filterAction = createFilterAction();
@@ -150,12 +153,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		menuManager.add(separatorAction);
 		menuManager.add(toggleBookmarkAction);
 		menuManager.add(separatorAction);
+        menuManager.add(nameModeAction);
 		menuManager.add(filterModeAction);
 		menuManager.add(displayModeAction);
 	}
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
+        toolBarManager.add(nameModeAction);
 		toolBarManager.add(filterModeAction);
 		toolBarManager.add(displayModeAction);
 		toolBarManager.add(filterAction);
@@ -580,6 +585,57 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 		};
 	}
+    private EventLogTableMenuAction createNameModeAction() {
+        return new EventLogTableMenuAction("Name mode", Action.AS_DROP_DOWN_MENU) {
+            private AbstractMenuCreator menuCreator;
+
+            @Override
+            public void run() {
+                eventLogTable.setNameMode((eventLogTable.getNameMode() + 1) % 2);
+                eventLogTable.configureVerticalScrollBar();
+                update();
+            }
+
+            @Override
+            protected int getMenuIndex() {
+                return eventLogTable.getNameMode();
+            }
+            
+            @Override
+            public IMenuCreator getMenuCreator() {
+                if (menuCreator == null) {
+                    menuCreator = new AbstractMenuCreator() {
+                        @Override
+                        protected void createMenu(Menu menu) {
+                            addSubMenuItem(menu, "Short", 0);
+                            addSubMenuItem(menu, "Full path", 1);
+                        }
+    
+                        private void addSubMenuItem(final Menu menu, String text, final int nameMode) {
+                            addSubMenuItem(menu, text, new SelectionAdapter() {
+                                public void widgetSelected(SelectionEvent e) {
+                                    MenuItem menuItem = (MenuItem)e.widget;
+                                    
+                                    if (menuItem.getSelection()) {
+                                        eventLogTable.setNameMode(nameMode);
+                                        update();
+                                    }
+                                }
+                            });
+                        }
+    
+                        private void addSubMenuItem(Menu menu, String text, SelectionListener adapter) {
+                            MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+                            subMenuItem.setText(text);
+                            subMenuItem.addSelectionListener(adapter);
+                        }
+                    };
+                }
+                
+                return menuCreator;
+            }
+        };
+    }
 
 	private EventLogTableMenuAction createDisplayModeAction() {
 		return new EventLogTableMenuAction("Display mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
@@ -629,7 +685,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 		};
 	}
-
+	
 	private EventLogTableMenuAction createFilterModeAction() {
 		return new EventLogTableMenuAction("Filter mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
 			private AbstractMenuCreator menuCreator;
@@ -809,6 +865,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			super(text);
 		}
 
+        public EventLogTableAction(String text, int style) {
+            super(text, style);
+        }
+
 		public EventLogTableAction(String text, int style, ImageDescriptor image) {
 			super(text, style);
 			setImageDescriptor(image);
@@ -821,6 +881,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	private abstract class EventLogTableMenuAction extends EventLogTableAction {
 		protected ArrayList<Menu> menus = new ArrayList<Menu>();
 
+        public EventLogTableMenuAction(String text, int style) {
+            super(text, style);
+        }
+        
 		public EventLogTableMenuAction(String text, int style, ImageDescriptor image) {
 			super(text, style, image);
 		}

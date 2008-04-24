@@ -3,6 +3,8 @@ package org.omnetpp.sequencechart.editors;
 import java.awt.RenderingHints;
 import java.io.File;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -566,7 +568,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 									}
 									
 									private void setNonLinearMinimumTimelineCoordinateDeltaText() {
-										minimumLabel.setText("Relative minimum distance to maximum distance: " + 100 * getNonLinearMinimumTimelineCoordinateDelta() + "%");
+                                        BigDecimal value = new BigDecimal(100 * getNonLinearMinimumTimelineCoordinateDelta());
+                                        value = value.round(new MathContext(3));
+										minimumLabel.setText("Relative minimum distance to maximum distance: " + value + "%");
 									}
 
 									private int getNonLinearMinimumTimelineCoordinateDeltaScale() {
@@ -586,7 +590,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 									}
 
 									private void setNonLinearFocusText() {
-										focusLabel.setText("Nonlinear simulation time focus: " + TimeUtils.secondsToTimeString(getNonLinearFocus()));
+                                        BigDecimal value = new BigDecimal(getNonLinearFocus());
+                                        value = value.round(new MathContext(3));
+										focusLabel.setText("Nonlinear simulation time focus: " + TimeUtils.secondsToTimeString(value));
 									}
 								};
 								

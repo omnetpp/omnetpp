@@ -30,8 +30,9 @@ import org.omnetpp.eventlog.engine.Event;
 import org.omnetpp.eventlog.engine.EventEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;
+import org.omnetpp.eventlog.engine.EventLogTableNameMode;
+import org.omnetpp.eventlog.engine.GateCreatedEntry;
 import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleDeletedEntry;
@@ -253,8 +254,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							else if (eventLogEntry instanceof ConnectionCreatedEntry) {
 								ConnectionCreatedEntry connectionCreatedEntry = (ConnectionCreatedEntry)eventLogEntry;
 								drawText("Creating ", CONSTANT_TEXT_COLOR);
-								drawConnectionDescription(connectionCreatedEntry.getSourceModuleId(), connectionCreatedEntry.getSourceGateFullName(),
-									connectionCreatedEntry.getDestModuleId(), connectionCreatedEntry.getDestGateFullName());
+								drawConnectionDescription(connectionCreatedEntry.getSourceModuleId(), connectionCreatedEntry.getSourceGateId(),
+									connectionCreatedEntry.getDestModuleId(), connectionCreatedEntry.getDestGateId());
 							}
 							else if (eventLogEntry instanceof ConnectionDeletedEntry) {
 								ConnectionDeletedEntry connectionDeletedEntry = (ConnectionDeletedEntry)eventLogEntry;
@@ -262,18 +263,19 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawConnectionDescription(connectionDeletedEntry.getSourceModuleId(), connectionDeletedEntry.getSourceGateId());
 							}
 							else if (eventLogEntry instanceof ConnectionDisplayStringChangedEntry) {
-								// TODO: print connection info
 								ConnectionDisplayStringChangedEntry connectionDisplayStringChangedEntry = (ConnectionDisplayStringChangedEntry)eventLogEntry;
-								drawText("Connection display string changed to ", CONSTANT_TEXT_COLOR);
+								drawText("Display string changed for ", CONSTANT_TEXT_COLOR);
+                                drawConnectionDescription(connectionDisplayStringChangedEntry.getSourceModuleId(), connectionDisplayStringChangedEntry.getSourceGateId());
+                                drawText(" to ", CONSTANT_TEXT_COLOR);
 								drawText(connectionDisplayStringChangedEntry.getDisplayString(), DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof ModuleDisplayStringChangedEntry) {
 								ModuleDisplayStringChangedEntry moduleDisplayStringChangedEntry = (ModuleDisplayStringChangedEntry)eventLogEntry;
 								drawText("Display string changed", CONSTANT_TEXT_COLOR);
 
-								if (event.getModuleId() != moduleDisplayStringChangedEntry.getContextModuleId())	{
-									drawText("for ", CONSTANT_TEXT_COLOR);
-									drawModuleDescription(moduleDisplayStringChangedEntry.getContextModuleId());
+								if (event.getModuleId() != moduleDisplayStringChangedEntry.getModuleId())	{
+									drawText(" for ", CONSTANT_TEXT_COLOR);
+									drawModuleDescription(moduleDisplayStringChangedEntry.getModuleId());
 								}
 
 								drawText(" to ", CONSTANT_TEXT_COLOR);							
@@ -286,7 +288,12 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							}
 							else if (eventLogEntry instanceof BeginSendEntry) {
 								BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
-								drawText("Begin sending of ", CONSTANT_TEXT_COLOR);
+								
+								if (event.isSelfMessage(beginSendEntry))
+								    drawText("Scheduling self ", CONSTANT_TEXT_COLOR);
+								else
+								    drawText("Begin sending ", CONSTANT_TEXT_COLOR);
+
 								drawMessageDescription(beginSendEntry);
 								drawText(" kind = ", CONSTANT_TEXT_COLOR);
 								drawText(String.valueOf(beginSendEntry.getMessageKind()), DATA_COLOR);
@@ -299,17 +306,23 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawText(endSendEntry.getArrivalTime() + "s", DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof SendHopEntry) {
-								// TODO: add senderGateId
 								SendHopEntry sendHopEntry = (SendHopEntry)eventLogEntry;
-								drawText("Sending from ", CONSTANT_TEXT_COLOR);
+								drawText("Sending through ", CONSTANT_TEXT_COLOR);
 								drawModuleDescription(sendHopEntry.getSenderModuleId());
-								drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
-								drawText(sendHopEntry.getTransmissionDelay() + "s", DATA_COLOR);
-								drawText(" and propagation delay ", CONSTANT_TEXT_COLOR);
-								drawText(sendHopEntry.getPropagationDelay() + "s", DATA_COLOR);
+								drawText(" ", CONSTANT_TEXT_COLOR);
+								drawGateDescription(sendHopEntry.getSenderModuleId(), sendHopEntry.getSenderGateId());
+								
+								if (sendHopEntry.getTransmissionDelay().doubleValue() != 0) {
+    								drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
+    								drawText(sendHopEntry.getTransmissionDelay() + "s", DATA_COLOR);
+								}
+
+								if (sendHopEntry.getPropagationDelay().doubleValue() != 0) {
+    								drawText(" and propagation delay ", CONSTANT_TEXT_COLOR);
+    								drawText(sendHopEntry.getPropagationDelay() + "s", DATA_COLOR);
+								}
 							}
 							else if (eventLogEntry instanceof SendDirectEntry) {
-								// TODO: add destGate name
 								SendDirectEntry sendDirectEntry = (SendDirectEntry)eventLogEntry;
 								drawText("Sending direct message ", CONSTANT_TEXT_COLOR);
 
@@ -320,6 +333,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
 								drawText(" to ", CONSTANT_TEXT_COLOR);
 								drawModuleDescription(sendDirectEntry.getDestModuleId());
+                                drawText(" ", CONSTANT_TEXT_COLOR);
+								drawGateDescription(sendDirectEntry.getDestModuleId(), sendDirectEntry.getDestGateId());
 								drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
 								drawText(sendDirectEntry.getTransmissionDelay() + "s", DATA_COLOR);
 								drawText(" and propagation delay ", CONSTANT_TEXT_COLOR);
@@ -394,51 +409,66 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		drawText("module ", CONSTANT_TEXT_COLOR);
 
 		if (moduleCreatedEntry != null) {
-			// TODO: print submodule (fullName), parent (fullName) or module (fullPath)
 			drawText("(" + moduleCreatedEntry.getModuleClassName() + ") ", TYPE_COLOR);
-			drawText(moduleCreatedEntry.getFullName(), NAME_COLOR, true);
+			
+			if (eventLogInput.getEventLogTableFacade().getNameMode() == EventLogTableNameMode.SHORT_NAME)
+			    drawText(moduleCreatedEntry.getFullName(), NAME_COLOR, true);
+			else
+			    drawText(eventLogInput.getEventLogTableFacade().EventLogEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()), NAME_COLOR, true);
 		}
 		else
-			drawText("<unknown>", CONSTANT_TEXT_COLOR);
+			drawText("<unknown>", NAME_COLOR, true);
+	}
+
+	private void drawGateDescription(int moduleId, int gateId) {
+        drawGateDescription(eventLogInput.getEventLog().getGateCreatedEntry(moduleId, gateId));
 	}
 	
-	private void drawConnectionDescription(int sourceModuleId, String sourceGateFullName, int destModuleId, String destGateFullName) {
-		IEventLog eventLog = eventLogInput.getEventLog();
-		drawConnectionDescription(eventLog.getModuleCreatedEntry(sourceModuleId), sourceGateFullName, eventLog.getModuleCreatedEntry(destModuleId), destGateFullName);
+	private void drawGateDescription(GateCreatedEntry gateCreatedEntry) {
+        drawText("gate ", CONSTANT_TEXT_COLOR);
+
+        if (gateCreatedEntry != null) {
+            int index = gateCreatedEntry.getIndex();
+            drawText(gateCreatedEntry.getName() + (index != -1 ? "[" + index + "]" : ""), NAME_COLOR, true);
+        }
+        else
+            drawText("<unknown>", NAME_COLOR, true);
 	}
 
-	private void drawConnectionDescription(int sourceModuleId, int sourceGateId) {
-		IEventLog eventLog = eventLogInput.getEventLog();
-		// TODO: find out source gate name and dest stuff
-		drawConnectionDescription(eventLog.getModuleCreatedEntry(sourceModuleId), String.valueOf(sourceGateId), null, null);
-	}
+    private void drawConnectionDescription(int sourceModuleId, int sourceGateId) {
+        drawConnectionDescription(sourceModuleId, sourceGateId, -1, -1);
+    }
+	
+	private void drawConnectionDescription(int sourceModuleId, int sourceGateId, int destModuleId, int destGateId) {
+        drawText("connection from ", CONSTANT_TEXT_COLOR);
+        
+        ModuleCreatedEntry sourceModuleCreatedEntry = eventLogInput.getEventLog().getModuleCreatedEntry(sourceModuleId);
 
-	private void drawConnectionDescription(ModuleCreatedEntry sourceModuleCreatedEntry, String sourceGateFullName, ModuleCreatedEntry destModuleCreatedEntry, String destGateFullName) {
-		drawText("connection from ", CONSTANT_TEXT_COLOR);
+        if (sourceModuleCreatedEntry != null) {
+            drawModuleDescription(sourceModuleCreatedEntry);
+            drawText(" ", CONSTANT_TEXT_COLOR);
+            drawGateDescription(sourceModuleId, sourceGateId);
+        }
 
-		if (sourceModuleCreatedEntry != null) {
-			drawModuleDescription(sourceModuleCreatedEntry);
-			drawText(" gate ", CONSTANT_TEXT_COLOR);
-			drawText(sourceGateFullName, DATA_COLOR);
-		}
+        ModuleCreatedEntry destModuleCreatedEntry = eventLogInput.getEventLog().getModuleCreatedEntry(destModuleId);
 
-		drawText(" to ", CONSTANT_TEXT_COLOR);
-
-		if (destModuleCreatedEntry != null) {
-			drawModuleDescription(destModuleCreatedEntry);
-			drawText(" gate ", CONSTANT_TEXT_COLOR);
-			drawText(destGateFullName, DATA_COLOR);
-		}
+        if (destModuleCreatedEntry != null) {
+            drawText(" to ", CONSTANT_TEXT_COLOR);
+            drawModuleDescription(destModuleCreatedEntry);
+            drawText(" ", CONSTANT_TEXT_COLOR);
+            drawGateDescription(destModuleId, destGateId);
+        }
 	}
 
 	private void drawMessageDescription(BeginSendEntry beginSendEntry) {
-		if (beginSendEntry != null) {
-			drawText("message ", CONSTANT_TEXT_COLOR);
+        drawText("message ", CONSTANT_TEXT_COLOR);
+
+        if (beginSendEntry != null) {
 			drawText("(" + beginSendEntry.getMessageClassName() + ") ", TYPE_COLOR);
 			drawText(beginSendEntry.getMessageFullName(), NAME_COLOR, true);
 		}
 		else
-			drawText("message <unknown>", CONSTANT_TEXT_COLOR);
+			drawText("<unknown>", NAME_COLOR, true);
 	}
 	
 	private void drawRawEntry(EventLogEntry eventLogEntry) {
@@ -461,6 +491,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	}
 	
 	private void drawText(String text, Color color, boolean bold) {
+	    text = text.replaceAll("\n", "\\\\n");
 		Font oldFont = gc.getFont();
 		FontData fontData = font.getFontData()[0];
 		Font newFont = new Font(oldFont.getDevice(), fontData.getName(), fontData.getHeight(), bold ? SWT.BOLD : SWT.NORMAL);

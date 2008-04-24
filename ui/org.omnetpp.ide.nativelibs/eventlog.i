@@ -227,6 +227,10 @@ import java.lang.reflect.Constructor;
    @SuppressWarnings("unchecked")
    private static Constructor[] eventLogEntryConstructors = new Constructor[100];
 
+   public long getCPtr() {
+      return swigCPtr;
+   }
+
    public boolean equals(Object obj) {
       return (obj instanceof EventLogEntry) && getCPtr(this)==getCPtr((EventLogEntry)obj);
    }
