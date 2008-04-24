@@ -24,10 +24,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
@@ -59,9 +62,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	protected EventLogTable eventLogTable;
 
+    protected SearchTextDialog searchDialog;
+
 	protected Separator separatorAction;
 
 	protected EventLogTableAction searchTextAction;
+
+    protected EventLogTableAction findNextAction;
 
 	protected EventLogTableAction gotoEventAction;
 
@@ -94,6 +101,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	public EventLogTableContributor() {
 		this.separatorAction = new Separator();
 		this.searchTextAction = createSearchTextAction();
+        this.findNextAction = createFindNextAction();
 		this.gotoEventAction = createGotoEventAction();
 		this.gotoSimulationTimeAction = createGotoSimulationTimeAction();
 		this.gotoEventCauseAction = createGotoEventCauseAction();
@@ -142,6 +150,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	public void contributeToPopupMenu(IMenuManager menuManager) {
 		menuManager.add(searchTextAction);
+        menuManager.add(findNextAction);
 		menuManager.add(separatorAction);
 		menuManager.add(gotoEventAction);
 		menuManager.add(gotoSimulationTimeAction);
@@ -160,9 +169,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
+        toolBarManager.add(searchTextAction);
+        toolBarManager.add(findNextAction);
+        toolBarManager.add(separatorAction);
         toolBarManager.add(nameModeAction);
 		toolBarManager.add(filterModeAction);
 		toolBarManager.add(displayModeAction);
+		toolBarManager.add(separatorAction);
 		toolBarManager.add(filterAction);
 	}
 
@@ -263,27 +276,78 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	 * ACTIONS
 	 */
 	
-	private EventLogTableAction createSearchTextAction() {
-		return new EventLogTableAction("Search raw text...") {
-		    private InputDialog dialog;
+    private final class SearchTextDialog extends InputDialog {
+        private Button searchBackward;
 
+        private Button searchCaseInsensitive;
+
+        private boolean isSearchBackward;
+
+        private boolean isSearchCaseInsensitive;
+
+        private SearchTextDialog(Shell parentShell, String dialogTitle, String dialogMessage, String initialValue, IInputValidator validator) {
+            super(parentShell, dialogTitle, dialogMessage, initialValue, validator);
+        }
+
+        @Override
+        protected Control createDialogArea(Composite parent) {
+            Composite composite = (Composite)super.createDialogArea(parent);
+            
+            searchBackward = new Button(composite, SWT.CHECK);
+            searchBackward.setText("Search bacwards");
+            searchBackward.setSelection(isSearchBackward);
+
+            searchCaseInsensitive = new Button(composite, SWT.CHECK);
+            searchCaseInsensitive.setText("Search case insensitive");
+            searchCaseInsensitive.setSelection(isSearchCaseInsensitive);
+
+            return composite;
+        }
+ 
+        @Override
+        protected void okPressed() {
+            isSearchBackward = searchBackward.getSelection();
+            isSearchCaseInsensitive = searchCaseInsensitive.getSelection();
+
+            super.okPressed();
+        }
+
+        public boolean isSearchBackward() {
+            return isSearchBackward;
+        }
+
+        public boolean isSearchCaseInsensitive() {
+            return isSearchCaseInsensitive;
+        }
+    }
+
+	private void findNext() {
+	    if (searchDialog != null) {
+            String searchText = searchDialog.getValue();
+            
+            if (searchText != null) {
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                EventLogEntry startEventLogEntry = eventLogEntryReference == null ? 
+                        eventLogTable.getEventLog().getFirstEvent().getEventEntry() : eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
+                EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(startEventLogEntry, searchText, !searchDialog.isSearchBackward(), !searchDialog.isSearchCaseInsensitive());
+    
+                if (foundEventLogEntry != null)
+                    eventLogTable.gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
+                else
+                    MessageDialog.openInformation(null, "Search raw text", "No more matches found for " + searchText);
+            }
+	    }
+	}
+	
+	private EventLogTableAction createSearchTextAction() {
+	    return new EventLogTableAction("Search raw text...") {
 		    @Override
 			public void run() {
-		        if (dialog == null)
-		            dialog = new InputDialog(null, "Search raw text", "Please enter the search text", null, null);
+		        if (searchDialog == null)
+		            searchDialog = new SearchTextDialog(null, "Search raw text", "Please enter the search text", null, null);
 				
-				if (dialog.open() == Window.OK) {
-					
-					// TODO: add case sensitivity, forward/backward search, etc.
-	
-					String searchText = dialog.getValue();
-					EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(eventLogTable.getSelectionElement().getEventLogEntry(eventLogTable.getEventLogInput()), searchText, true);
-	
-					if (foundEventLogEntry != null)
-						eventLogTable.gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
-					else
-						MessageDialog.openInformation(null, "Search raw text", "No matches found!");
-				}
+				if (searchDialog.open() == Window.OK)
+				    findNext();
 			}
 			
 			@Override
@@ -292,7 +356,21 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 		};
 	}
-	
+
+    private EventLogTableAction createFindNextAction() {
+        return new EventLogTableAction("Find Next") {
+            @Override
+            public void run() {
+                findNext();
+            }
+            
+            @Override
+            public void update() {
+                setEnabled(getEventLog().getApproximateNumberOfEvents() != 0);
+            }
+        };
+    }
+    
 	private void gotoEventLogEntry(EventLogEntry entry, Action action, boolean gotoClosest) {
         if (entry != null) {
             EventLogEntryReference reference = new EventLogEntryReference(entry);
@@ -860,7 +938,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		};
 	}
 
-	private abstract class EventLogTableAction extends Action {
+    private abstract class EventLogTableAction extends Action {
 		public EventLogTableAction(String text) {
 			super(text);
 		}

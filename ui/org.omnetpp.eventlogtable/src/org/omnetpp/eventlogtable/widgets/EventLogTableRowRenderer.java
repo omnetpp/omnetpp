@@ -411,7 +411,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		if (moduleCreatedEntry != null) {
 			drawText("(" + moduleCreatedEntry.getModuleClassName() + ") ", TYPE_COLOR);
 			
-			if (eventLogInput.getEventLogTableFacade().getNameMode() == EventLogTableNameMode.SHORT_NAME)
+			if (eventLogInput.getEventLogTableFacade().getNameMode() == EventLogTableNameMode.FULL_NAME)
 			    drawText(moduleCreatedEntry.getFullName(), NAME_COLOR, true);
 			else
 			    drawText(eventLogInput.getEventLogTableFacade().EventLogEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()), NAME_COLOR, true);

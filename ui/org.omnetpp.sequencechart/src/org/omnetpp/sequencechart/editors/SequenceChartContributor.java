@@ -297,14 +297,19 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				menuManager.add(axisOrderingModeAction);
 				menuManager.add(filterAction);
 				menuManager.add(separatorAction);
-				menuManager.add(showEventNumbersAction);
-				menuManager.add(showMessageNamesAction);
-                menuManager.add(showSelfMessagesAction);
-				menuManager.add(showReuseMessagesAction);
-				menuManager.add(showArrowHeadsAction);
-                menuManager.add(showZeroSimulationTimeRegionsAction);
-                menuManager.add(showAxisLabelsAction);
-				menuManager.add(separatorAction);
+                
+				// show/hide submenu
+				IMenuManager subMenuManager = new MenuManager("Show/Hide");
+                menuManager.add(subMenuManager);
+                subMenuManager.add(showEventNumbersAction);
+                subMenuManager.add(showMessageNamesAction);
+                subMenuManager.add(showSelfMessagesAction);
+                subMenuManager.add(showReuseMessagesAction);
+                subMenuManager.add(showArrowHeadsAction);
+                subMenuManager.add(showZeroSimulationTimeRegionsAction);
+                subMenuManager.add(showAxisLabelsAction);
+
+                menuManager.add(separatorAction);
 				menuManager.add(increaseSpacingAction);
 				menuManager.add(decreaseSpacingAction);
 				menuManager.add(separatorAction);
