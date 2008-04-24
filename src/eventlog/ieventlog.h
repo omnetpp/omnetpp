@@ -107,6 +107,10 @@ class EVENTLOG_API IEventLog
          * Returns the entry which describes the module with the given id.
          */
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) = 0;
+        /**
+         * Returns the entry which describes the gate with the given ids.
+         */
+        virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId) = 0;
 
         /**
          * Returns the event log entry describing the whole simulation.

@@ -50,7 +50,7 @@ GC GateCreatedEntry
    m int moduleId
    g int gateId
    n string name
-   i int index
+   i int index -1
    o bool isOutput
 }
 
@@ -64,10 +64,8 @@ CC ConnectionCreatedEntry // creating a connection
 {
    sm int sourceModuleId        // id of the source module identifying the connection
    sg int sourceGateId          // id of the gate at the source module identifying the connection
-   sn string sourceGateFullName // full name of the gate at the source module
    dm int destModuleId          // id of the destination module
    dg int destGateId            // id of the gate at the destination module
-   dn string destGateFullName   // full name of the gate at the destination module
    //XXX channel, channel attributes, etc
 }
 

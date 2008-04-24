@@ -332,7 +332,8 @@ void EventlogFileManager::gateCreated(cGate *newgate)
     if (isEventLogRecordingEnabled)
     {
         EventLogWriter::recordGateCreatedEntry_m_g_n_i_o(feventlog, 
-            newgate->ownerModule()->id(), newgate->id(), newgate->name(), newgate->index(), newgate->type() == cGate::OUTPUT);
+            newgate->ownerModule()->id(), newgate->id(), newgate->name(),
+            newgate->isVector() ? newgate->index() : -1, newgate->type() == cGate::OUTPUT);
     }
 }
 
@@ -349,9 +350,8 @@ void EventlogFileManager::connectionCreated(cGate *srcgate)
     if (isEventLogRecordingEnabled)
     {
         cGate *destgate = srcgate->toGate();
-        EventLogWriter::recordConnectionCreatedEntry_sm_sg_sn_dm_dg_dn(feventlog,
-            srcgate->ownerModule()->id(), srcgate->id(), srcgate->fullName(),
-            destgate->ownerModule()->id(), destgate->id(), destgate->fullName());  //XXX channel, channel attributes, etc
+        EventLogWriter::recordConnectionCreatedEntry_sm_sg_dm_dg(feventlog,
+            srcgate->ownerModule()->id(), srcgate->id(), destgate->ownerModule()->id(), destgate->id());  //XXX channel, channel attributes, etc
     }
 }
 

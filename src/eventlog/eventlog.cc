@@ -64,6 +64,7 @@ void EventLog::clearInternalState(FileReader::FileChangedState change)
 
         initializationLogEntries.clear();
         initializationModuleIdToModuleCreatedEntryMap.clear();
+        initializationModuleIdAndGateIdToGateCreatedEntryMap.clear();
 
         simulationBeginEntry = NULL;
 
@@ -210,10 +211,19 @@ void EventLog::parseInitializationLogEntries()
         if (eventLogEntry)
             initializationLogEntries.push_back(eventLogEntry);
 
+        // collect module created entries
         ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
 
         if (moduleCreatedEntry)
             initializationModuleIdToModuleCreatedEntryMap[moduleCreatedEntry->moduleId] = moduleCreatedEntry;
+
+        // collect gate created entries
+        GateCreatedEntry *gateCreatedEntry = dynamic_cast<GateCreatedEntry *>(eventLogEntry);
+
+        if (gateCreatedEntry) {
+            std::pair<int, int> key(gateCreatedEntry->moduleId, gateCreatedEntry->gateId);
+            initializationModuleIdAndGateIdToGateCreatedEntryMap[key] = gateCreatedEntry;
+        }
     }
 }
 

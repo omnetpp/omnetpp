@@ -58,6 +58,9 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         typedef std::map<int, ModuleCreatedEntry *> ModuleIdToModuleCreatedEntryMap;
         ModuleIdToModuleCreatedEntryMap initializationModuleIdToModuleCreatedEntryMap;
 
+        typedef std::map<std::pair<int, int>, GateCreatedEntry *> ModuleIdAndGateIdToGateCreatedEntryMap;
+        ModuleIdAndGateIdToGateCreatedEntryMap initializationModuleIdAndGateIdToGateCreatedEntryMap;
+
         std::set<const char *> messageClassNames; // message class names seen so far (see Event::parse)
         std::set<const char *> messageNames; // message names seen so far (see Event::parse)
 
@@ -99,6 +102,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual int getNumModuleCreatedEntries() { return initializationModuleIdToModuleCreatedEntryMap.size(); }
         virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries();
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }
+        virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId) { std::pair<int, int> key(moduleId, gateId); return initializationModuleIdAndGateIdToGateCreatedEntryMap[key]; }
         virtual SimulationBeginEntry *getSimulationBeginEntry() { return simulationBeginEntry; }
 
         virtual Event *getFirstEvent();
