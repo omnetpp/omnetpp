@@ -762,4 +762,14 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         else
             throw new RuntimeException("template error: template parameter '" + key + "' was expected to be list, but it is " + object.getClass().toString());
     }
+    
+    public static String formatList(List<? extends Object> list, String elementFormat, String separator) {
+    	StringBuilder builder = new StringBuilder();
+    	for (int i = 0; i < list.size(); ++i) {
+    		if (i > 0)
+    			builder.append(separator);
+    		builder.append(String.format(elementFormat, list.get(i)));
+    	}
+    	return builder.toString();
+    }
 }
