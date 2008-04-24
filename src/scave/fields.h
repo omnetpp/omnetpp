@@ -51,8 +51,9 @@ class SCAVE_API ResultItemField
         static int getFieldID(const std::string fieldName);
 	public:
 		ResultItemField(const std::string fieldName);
-		const std::string getName() { return name; };
-		std::string getFieldValue(const ResultItem &d);
+		int getID() const { return id; }
+		const std::string getName() const { return name; };
+		std::string getFieldValue(const ResultItem &d) const ;
 		bool equal(const ResultItem &d1, const ResultItem &d2) const;
 		int compare(const ResultItem &d1, const ResultItem &d2) const;
 };
@@ -101,7 +102,7 @@ inline const char *getRunParam(const ResultItem &d, const std::string paramName)
     return value ? value : ""; 
 }
 
-inline std::string ResultItemField::getFieldValue(const ResultItem &d)
+inline std::string ResultItemField::getFieldValue(const ResultItem &d) const
 {
 	switch(id)
 	{

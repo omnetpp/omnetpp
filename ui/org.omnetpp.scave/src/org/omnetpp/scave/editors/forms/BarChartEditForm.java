@@ -2,33 +2,41 @@ package org.omnetpp.scave.editors.forms;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.collections.set.ListOrderedSet;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TableDropTargetEffect;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
+import org.omnetpp.common.ui.ListContentProvider;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
@@ -49,21 +57,25 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 public class BarChartEditForm extends ChartEditForm {
 	
 	public static final String TAB_BARS = "Bars";
+	public static final String TAB_CONTENT = "Content";
 
+	public static final List<String> EMPTY_STRING_LIST = Collections.unmodifiableList(new ArrayList<String>());
+	
 	private static final EStructuralFeature[] features = new EStructuralFeature[] {
 		pkg.getChart_Name(),
-		pkg.getBarChart_GroupBy(),
+		pkg.getBarChart_GroupByFields(),
 		pkg.getBarChart_BarFields(),
+		pkg.getBarChart_AveragedFields(),
 		pkg.getChart_Properties(),
 	};
 	
 	private static final String[] fieldNames = ResultItemFields.getFieldNames().toArray();
 
 	// Main
-	//private Button[] groupByCheckboxes;
-	private List groupFieldsList;
-	private List barFieldsList;
-	private List averagingFieldsList;
+	private Viewer unusedFieldsList;
+	private Viewer groupFieldsList;
+	private Viewer barFieldsList;
+	private Viewer averagedFieldsList;
 	
 	// Labels
 	private Button wrapLabelsCheckbox;
@@ -78,29 +90,32 @@ public class BarChartEditForm extends ChartEditForm {
 	
 	public void populateTabFolder(TabFolder tabfolder) {
 		super.populateTabFolder(tabfolder);
-		createTab("Bars", tabfolder, 2);
+		createTab(TAB_CONTENT, tabfolder, 1);
+		createTab(TAB_BARS, tabfolder, 2);
 	}
 	
 	public void populateTabItem(TabItem item) {
 		super.populateTabItem(item);
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
-		if (TAB_MAIN.equals(name)) {
+		if (TAB_TITLES.equals(name)) {
+			wrapLabelsCheckbox = createCheckboxField("wrap labels", axisTitlesGroup);
+			wrapLabelsCheckbox.setSelection(ChartDefaults.DEFAULT_WRAP_LABELS);
+		}
+		else if (TAB_CONTENT.equals(name)) {
 			Group group = createGroup("Content", panel, 1, 3, true);
 			Label label = new Label(group, SWT.WRAP);
 			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 			label.setText("You can move fields by dragging.");
+			unusedFieldsList = createFieldsList(group, true);
+			unusedFieldsList.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+			unusedFieldsList.setInput(Arrays.asList(fieldNames));
 			createLabel("Groups", group);
 			createLabel("Bars", group);
 			createLabel("Averaged", group);
-			groupFieldsList = createFieldsList(group);
-			barFieldsList = createFieldsList(group);
-			averagingFieldsList = createFieldsList(group);
-			barFieldsList.setItems(fieldNames);
-		}
-		else if (TAB_TITLES.equals(name)) {
-			wrapLabelsCheckbox = createCheckboxField("wrap labels", axisTitlesGroup);
-			wrapLabelsCheckbox.setSelection(ChartDefaults.DEFAULT_WRAP_LABELS);
+			groupFieldsList = createFieldsList(group, false);
+			barFieldsList = createFieldsList(group, false);
+			averagedFieldsList = createFieldsList(group, true);
 		}
 		else if (TAB_BARS.equals(name)) {
 			if (chart instanceof BarChart) {
@@ -110,62 +125,134 @@ public class BarChartEditForm extends ChartEditForm {
 		}
 	}
 	
-	private List createFieldsList(Composite parent) {
-		final List control = new List(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	private TableViewer createFieldsList(Composite parent, final boolean sorted) {
+		final TableViewer viewer = new TableViewer(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		viewer.setLabelProvider(new LabelProvider());
+		viewer.setContentProvider(new ListContentProvider());
+		viewer.setInput(EMPTY_STRING_LIST);
+		final Table control = viewer.getTable();  
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gridData.minimumHeight = control.getItemHeight() * fieldNames.length; 
+		control.setLayoutData(gridData);
+		control.setLinesVisible(false);
+		control.setHeaderVisible(false);
+		
+		final Widget[] dropTarget = new Widget[1], dragSource = new Widget[1];
 		
 		// configure as drag source
 		final Transfer transfer = LocalTransfer.getInstance();
-		DragSource dragSource = new DragSource(control, DND.DROP_MOVE);
-		dragSource.setTransfer(new Transfer[] { transfer });
-		dragSource.addDragListener(new DragSourceListener() {
-			public void dragStart(DragSourceEvent event) {
-				event.doit = control.getSelectionCount() > 0;
-			}
-			
-			public void dragSetData(DragSourceEvent event) {
-				if (transfer.isSupportedType(event.dataType)) {
-					event.data = control.getSelection();
+		viewer.addDragSupport(DND.DROP_MOVE, new Transfer[] { transfer }, 
+			new DragSourceListener() {
+				public void dragStart(DragSourceEvent event) {
+					dropTarget[0] = null;
+					ISelection selection = viewer.getSelection();
+					if (!selection.isEmpty()) {
+						event.doit = true;
+						dragSource[0] = control;
+						
+					}
+					else
+						event.doit = false;
 				}
-			}
-
-			public void dragFinished(DragSourceEvent event) {
-				if (event.doit && event.detail == DND.DROP_MOVE) {
-					String[] selection = control.getSelection();
-					for (String item : selection)
-						control.remove(item);
+				
+				public void dragSetData(DragSourceEvent event) {
+					if (transfer.isSupportedType(event.dataType)) {
+						ISelection selection = viewer.getSelection();
+						event.data = (selection instanceof IStructuredSelection ?
+										((IStructuredSelection)selection).toList() :
+										EMPTY_STRING_LIST);
+					}
 				}
-			}
+	
+				public void dragFinished(DragSourceEvent event) {
+					if (event.doit && event.detail == DND.DROP_MOVE &&  dropTarget[0] != control) {
+						ISelection selection = viewer.getSelection();
+						if (selection instanceof IStructuredSelection) {
+							List<String> input = new ArrayList<String>(getInput(viewer));
+							input.removeAll(((IStructuredSelection)selection).toList());
+							viewer.setInput(input);
+						}
+					}
+					dragSource[0] = null;
+				}
 		});
 		
 		// configure drop target
-		DropTarget dropTarget = new DropTarget(control, DND.DROP_MOVE);
-		dropTarget.setTransfer(new Transfer[] { transfer });
-		dropTarget.addDropListener(new DropTargetAdapter() {
-			public void drop(DropTargetEvent event) {
-				if (transfer.isSupportedType(event.currentDataType) && (event.data instanceof String[])) {
-					java.util.List<String> items = new ArrayList<String>();
-					items.addAll(Arrays.asList(control.getItems()));
-					items.addAll(Arrays.asList((String[])event.data));
-					control.setItems(sortFields(items));
+		viewer.addDropSupport(DND.DROP_MOVE, new Transfer[] { transfer },
+			new TableDropTargetEffect(control) {
+				@Override
+				public void dragEnter(DropTargetEvent event) {
+					event.feedback = DND.FEEDBACK_NONE;
+					super.dragEnter(event);
 				}
-				else {
-					event.detail = DND.DROP_NONE;
+	
+				@Override
+				public void dragLeave(DropTargetEvent event) {
+					event.feedback = DND.FEEDBACK_NONE;
+					super.dragLeave(event);
 				}
-			}
-		});
+	
+				@Override
+				public void dragOver(DropTargetEvent event) {
+					if (!sorted)
+						event.feedback = DND.FEEDBACK_SELECT;
+					else if (dragSource[0] == control)
+						event.detail = DND.DROP_NONE;
+					super.dragOver(event);
+				}
+	
+				@SuppressWarnings("unchecked")
+				public void drop(DropTargetEvent event) {
+					if (transfer.isSupportedType(event.currentDataType) && (event.data instanceof List)) {
+						dropTarget[0] = control;
+						List<String> data = (List<String>)event.data;
+						ListOrderedSet items = new ListOrderedSet();
+						items.addAll(getInput(viewer));
+						
+						if (sorted) {
+							items.addAll(data);
+							viewer.setInput(sortFields((Set<String>)items));
+						}
+						else {
+							int index = getInsertionIndex(event);
+							items.removeAll(data);
+							items.addAll(index, data);
+							viewer.setInput(new ArrayList<String>(items));
+						}
+					}
+					else {
+						event.detail = DND.DROP_NONE;
+					}
+				}
+				
+				@SuppressWarnings("unchecked")
+				private int getInsertionIndex(DropTargetEvent event) {
+					if (event.item instanceof Item) {
+						List<String> data = (List<String>)event.data;
+						int index = 0;
+						for (int i=0; i < control.getItemCount(); ++i) {
+							Item item = control.getItem(i);
+							if (item == event.item)
+								return index;
+							if (!data.contains(item.getText()))
+								++index;
+						}
+					}
+					return control.getItemCount();
+				}
+			});
 		
-		return control;
+		return viewer;
 	}
 	
-	private String[] sortFields(Collection<String> fields) {
-		String[] result = new String[fields.size()];
-		int i=0;
+	private List<String> sortFields(Set<String> fields) {
+		List<String> result = new ArrayList<String>(fields.size());
+		
 		for (String field : fieldNames) {
 			if (fields.contains(field))
-				result[i++] = field;
+				result.add(field);
 		}
-		Assert.isTrue(i == result.length);
+		Assert.isTrue(fields.size() == result.size());
 		return result;
 	}
 
@@ -175,10 +262,12 @@ public class BarChartEditForm extends ChartEditForm {
 	
 	public Object getValue(EStructuralFeature feature) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.BAR_CHART__GROUP_BY:
-			return Arrays.asList(groupFieldsList.getItems());
+		case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
+			return getInput(groupFieldsList);
 		case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
-			return Arrays.asList(barFieldsList.getItems());
+			return getInput(barFieldsList);
+		case ScaveModelPackage.BAR_CHART__AVERAGED_FIELDS:
+			return getInput(averagedFieldsList);
 		}
 		return super.getValue(feature);
 	}
@@ -186,33 +275,29 @@ public class BarChartEditForm extends ChartEditForm {
 	@SuppressWarnings("unchecked")
 	public void setValue(EStructuralFeature feature, Object value) {
 		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.BAR_CHART__GROUP_BY:
-			String[] groupingFields = ((java.util.List<String>)value).toArray(new String[0]);
-			setContent(groupFieldsList, groupingFields);
+		case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
+			setContent(groupFieldsList, (List<String>)value);
 			break;
 		case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
-			String[] barFields = ((java.util.List<String>)value).toArray(new String[0]);
-			setContent(barFieldsList, barFields);
+			setContent(barFieldsList, (List<String>)value);
+			break;
+		case ScaveModelPackage.BAR_CHART__AVERAGED_FIELDS:
+			setContent(averagedFieldsList, (List<String>)value);
 			break;
 		}
 		super.setValue(feature, value);
 	}
 	
-	private void setContent(List list, String[] fields) {
-		Assert.isTrue(list == groupFieldsList || list == barFieldsList);
-		List otherList = list == groupFieldsList ? barFieldsList : groupFieldsList;
-		String[] otherFields = otherList.getItems();
-
-		list.setItems(fields);
-		for (String field : fields)
-			if (ArrayUtils.contains(otherFields, field))
-				otherList.remove(field);
-		otherFields = otherList.getItems();
-		
-		averagingFieldsList.removeAll();
-		for (String field : fieldNames)
-			if (!ArrayUtils.contains(fields, field) && !ArrayUtils.contains(otherFields, field))
-				averagingFieldsList.add(field);
+	@SuppressWarnings("unchecked")
+	private List<String> getInput(Viewer list) {
+		return (List<String>)list.getInput();
+	}
+	
+	private void setContent(Viewer list, List<String> fields) {
+		list.setInput(fields);
+		List<String> unusedFields = new ArrayList<String>(getInput(unusedFieldsList));
+		unusedFields.removeAll(fields);
+		unusedFieldsList.setInput(unusedFields);
 	}
 	
 	@Override

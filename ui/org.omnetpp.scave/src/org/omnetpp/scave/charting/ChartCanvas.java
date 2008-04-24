@@ -72,7 +72,7 @@ import org.omnetpp.scave.editors.ScaveEditorContributor;
  */
 public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 	
 	// when displaying confidence intervals, XXX chart parameter?
 	protected static final double CONFIDENCE_LEVEL = 0.95;

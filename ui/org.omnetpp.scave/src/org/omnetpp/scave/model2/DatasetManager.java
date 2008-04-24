@@ -235,7 +235,7 @@ public class DatasetManager {
 		long startTime = System.currentTimeMillis();
 		if (arrayBuilders.size() > 0) // XXX DataflowManager crashes when there are no sinks
 			manager.execute(monitor);
-		System.out.println("execute dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
+		if (debug) System.out.println("execute dataflow network: "+(System.currentTimeMillis()-startTime)+" ms");
 
 		XYArray[] result = new XYArray[arrayBuilders.size()];
 		for (int i = 0; i < result.length; ++i)
@@ -247,15 +247,8 @@ public class DatasetManager {
 		//TODO update progressMonitor
 		Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 		IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-		List<String> rowFieldNames = (List<String>)chart.getGroupBy();
-		List<String> columnFieldNames = (List<String>)chart.getBarFields();
-		ResultItemFields rowFields = rowFieldNames == null || rowFieldNames.isEmpty() ? null :
-									new ResultItemFields(StringVector.fromArray(
-											rowFieldNames.toArray(new String[rowFieldNames.size()])));
-		ResultItemFields columnFields = columnFieldNames == null || columnFieldNames.isEmpty() ? null :
-										new ResultItemFields(StringVector.fromArray(
-											columnFieldNames.toArray(new String[columnFieldNames.size()])));
- 		return new ScalarDataset(idlist, rowFields, columnFields, manager);
+ 		return new ScalarDataset(idlist, chart.getGroupByFields(), chart.getBarFields(),
+ 										chart.getAveragedFields(), manager);
 	}
 	
 	public static VectorDataset createVectorDataset(LineChart chart, ResultFileManager manager, IProgressMonitor progressMonitor) {

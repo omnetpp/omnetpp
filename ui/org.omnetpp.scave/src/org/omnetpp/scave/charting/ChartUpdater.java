@@ -97,8 +97,9 @@ public class ChartUpdater {
 			}
 			if (notifier instanceof BarChart) {
 				switch (notification.getFeatureID(BarChart.class)) {
-				case ScaveModelPackage.BAR_CHART__GROUP_BY:
+				case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
 				case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
+				case ScaveModelPackage.BAR_CHART__AVERAGED_FIELDS:
 				case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
 				case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
 					scheduleDatasetUpdate();

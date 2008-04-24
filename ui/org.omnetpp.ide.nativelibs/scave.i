@@ -346,6 +346,7 @@ int strdictcmp(const char *s1, const char *s2);
 %ignore ResultFile::id;
 %ignore ResultFile::scalarResults;
 %ignore ResultFile::vectorResults;
+%ignore ResultFile::histogramResults;
 
 %rename FileRun::fileRef file;
 %rename FileRun::runRef run;

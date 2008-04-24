@@ -17,10 +17,11 @@ import org.eclipse.emf.common.util.EList;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.omnetpp.scave.model.BarChart#getGroupBy <em>Group By</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.BarChart#getGroupByFields <em>Group By Fields</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.BarChart#getGroupNameFormat <em>Group Name Format</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.BarChart#getBarNameFormat <em>Bar Name Format</em>}</li>
  *   <li>{@link org.omnetpp.scave.model.BarChart#getBarFields <em>Bar Fields</em>}</li>
+ *   <li>{@link org.omnetpp.scave.model.BarChart#getAveragedFields <em>Averaged Fields</em>}</li>
  * </ul>
  * </p>
  *
@@ -30,20 +31,20 @@ import org.eclipse.emf.common.util.EList;
  */
 public interface BarChart extends Chart {
 	/**
-	 * Returns the value of the '<em><b>Group By</b></em>' attribute list.
+	 * Returns the value of the '<em><b>Group By Fields</b></em>' attribute list.
 	 * The list contents are of type {@link java.lang.String}.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Group By</em>' attribute isn't clear,
+	 * If the meaning of the '<em>Group By Fields</em>' attribute list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Group By</em>' attribute list.
-	 * @see org.omnetpp.scave.model.ScaveModelPackage#getBarChart_GroupBy()
+	 * @return the value of the '<em>Group By Fields</em>' attribute list.
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getBarChart_GroupByFields()
 	 * @model ordered="false"
 	 * @generated
 	 */
-	EList<String> getGroupBy();
+	EList<String> getGroupByFields();
 
 	/**
 	 * Returns the value of the '<em><b>Group Name Format</b></em>' attribute.
@@ -108,9 +109,25 @@ public interface BarChart extends Chart {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Bar Fields</em>' attribute list.
 	 * @see org.omnetpp.scave.model.ScaveModelPackage#getBarChart_BarFields()
-	 * @model
+	 * @model ordered="false"
 	 * @generated
 	 */
 	EList<String> getBarFields();
+
+	/**
+	 * Returns the value of the '<em><b>Averaged Fields</b></em>' attribute list.
+	 * The list contents are of type {@link java.lang.String}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Averaged Fields</em>' attribute list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Averaged Fields</em>' attribute list.
+	 * @see org.omnetpp.scave.model.ScaveModelPackage#getBarChart_AveragedFields()
+	 * @model ordered="false"
+	 * @generated
+	 */
+	EList<String> getAveragedFields();
 
 } // BarChart

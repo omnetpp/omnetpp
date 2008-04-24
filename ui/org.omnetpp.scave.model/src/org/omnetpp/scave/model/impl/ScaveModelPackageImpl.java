@@ -850,7 +850,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getBarChart_GroupBy() {
+	public EAttribute getBarChart_GroupByFields() {
 		return (EAttribute)barChartEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -879,6 +879,15 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	 */
 	public EAttribute getBarChart_BarFields() {
 		return (EAttribute)barChartEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getBarChart_AveragedFields() {
+		return (EAttribute)barChartEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -1063,10 +1072,11 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		computeEClass = createEClass(COMPUTE);
 
 		barChartEClass = createEClass(BAR_CHART);
-		createEAttribute(barChartEClass, BAR_CHART__GROUP_BY);
+		createEAttribute(barChartEClass, BAR_CHART__GROUP_BY_FIELDS);
 		createEAttribute(barChartEClass, BAR_CHART__GROUP_NAME_FORMAT);
 		createEAttribute(barChartEClass, BAR_CHART__BAR_NAME_FORMAT);
 		createEAttribute(barChartEClass, BAR_CHART__BAR_FIELDS);
+		createEAttribute(barChartEClass, BAR_CHART__AVERAGED_FIELDS);
 
 		lineChartEClass = createEClass(LINE_CHART);
 		createEAttribute(lineChartEClass, LINE_CHART__LINE_NAME_FORMAT);
@@ -1210,10 +1220,11 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 		initEClass(computeEClass, Compute.class, "Compute", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(barChartEClass, BarChart.class, "BarChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getBarChart_GroupBy(), ecorePackage.getEString(), "groupBy", null, 0, -1, BarChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEAttribute(getBarChart_GroupByFields(), ecorePackage.getEString(), "groupByFields", null, 0, -1, BarChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 		initEAttribute(getBarChart_GroupNameFormat(), ecorePackage.getEString(), "groupNameFormat", null, 0, 1, BarChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getBarChart_BarNameFormat(), ecorePackage.getEString(), "barNameFormat", null, 0, 1, BarChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getBarChart_BarFields(), ecorePackage.getEString(), "barFields", null, 0, -1, BarChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getBarChart_BarFields(), ecorePackage.getEString(), "barFields", null, 0, -1, BarChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
+		initEAttribute(getBarChart_AveragedFields(), ecorePackage.getEString(), "averagedFields", null, 0, -1, BarChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		initEClass(lineChartEClass, LineChart.class, "LineChart", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getLineChart_LineNameFormat(), ecorePackage.getEString(), "lineNameFormat", null, 0, 1, LineChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

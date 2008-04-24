@@ -498,7 +498,8 @@ public class DataflowNetworkBuilder {
 			return buildNetwork();
 		}
 		finally {
-			System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
+			if (debug)
+				System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
 		}
 	}
 	
@@ -515,7 +516,8 @@ public class DataflowNetworkBuilder {
 			return createDataflowManager ? buildNetwork() : null;
 		}
 		finally {
-			System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
+			if (debug)
+				System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
 		}
 	}
 	
@@ -532,7 +534,8 @@ public class DataflowNetworkBuilder {
 			return buildNetwork();
 		}
 		finally {
-			System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
+			if (debug)
+				System.out.format("build dataflow network: %dms%n", System.currentTimeMillis() - start);
 		}
 	}
 	

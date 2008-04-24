@@ -1157,13 +1157,13 @@ public interface ScaveModelPackage extends EPackage {
 	int BAR_CHART__PROPERTIES = CHART__PROPERTIES;
 
 	/**
-	 * The feature id for the '<em><b>Group By</b></em>' attribute list.
+	 * The feature id for the '<em><b>Group By Fields</b></em>' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int BAR_CHART__GROUP_BY = CHART_FEATURE_COUNT + 0;
+	int BAR_CHART__GROUP_BY_FIELDS = CHART_FEATURE_COUNT + 0;
 
 	/**
 	 * The feature id for the '<em><b>Group Name Format</b></em>' attribute.
@@ -1193,13 +1193,22 @@ public interface ScaveModelPackage extends EPackage {
 	int BAR_CHART__BAR_FIELDS = CHART_FEATURE_COUNT + 3;
 
 	/**
+	 * The feature id for the '<em><b>Averaged Fields</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int BAR_CHART__AVERAGED_FIELDS = CHART_FEATURE_COUNT + 4;
+
+	/**
 	 * The number of structural features of the '<em>Bar Chart</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int BAR_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 4;
+	int BAR_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 5;
 
 	/**
 	 * The meta object id for the '{@link org.omnetpp.scave.model.impl.LineChartImpl <em>Line Chart</em>}' class.
@@ -2012,15 +2021,15 @@ public interface ScaveModelPackage extends EPackage {
 	EClass getBarChart();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.omnetpp.scave.model.BarChart#getGroupBy <em>Group By</em>}'.
+	 * Returns the meta object for the attribute list '{@link org.omnetpp.scave.model.BarChart#getGroupByFields <em>Group By Fields</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute list '<em>Group By</em>'.
-	 * @see org.omnetpp.scave.model.BarChart#getGroupBy()
+	 * @return the meta object for the attribute list '<em>Group By Fields</em>'.
+	 * @see org.omnetpp.scave.model.BarChart#getGroupByFields()
 	 * @see #getBarChart()
 	 * @generated
 	 */
-	EAttribute getBarChart_GroupBy();
+	EAttribute getBarChart_GroupByFields();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.BarChart#getGroupNameFormat <em>Group Name Format</em>}'.
@@ -2054,6 +2063,17 @@ public interface ScaveModelPackage extends EPackage {
 	 * @generated
 	 */
 	EAttribute getBarChart_BarFields();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link org.omnetpp.scave.model.BarChart#getAveragedFields <em>Averaged Fields</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Averaged Fields</em>'.
+	 * @see org.omnetpp.scave.model.BarChart#getAveragedFields()
+	 * @see #getBarChart()
+	 * @generated
+	 */
+	EAttribute getBarChart_AveragedFields();
 
 	/**
 	 * Returns the meta object for class '{@link org.omnetpp.scave.model.LineChart <em>Line Chart</em>}'.
@@ -2682,12 +2702,12 @@ public interface ScaveModelPackage extends EPackage {
 		EClass BAR_CHART = eINSTANCE.getBarChart();
 
 		/**
-		 * The meta object literal for the '<em><b>Group By</b></em>' attribute list feature.
+		 * The meta object literal for the '<em><b>Group By Fields</b></em>' attribute list feature.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
 		 * @generated
 		 */
-		EAttribute BAR_CHART__GROUP_BY = eINSTANCE.getBarChart_GroupBy();
+		EAttribute BAR_CHART__GROUP_BY_FIELDS = eINSTANCE.getBarChart_GroupByFields();
 
 		/**
 		 * The meta object literal for the '<em><b>Group Name Format</b></em>' attribute feature.
@@ -2712,6 +2732,14 @@ public interface ScaveModelPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute BAR_CHART__BAR_FIELDS = eINSTANCE.getBarChart_BarFields();
+
+		/**
+		 * The meta object literal for the '<em><b>Averaged Fields</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute BAR_CHART__AVERAGED_FIELDS = eINSTANCE.getBarChart_AveragedFields();
 
 		/**
 		 * The meta object literal for the '{@link org.omnetpp.scave.model.impl.LineChartImpl <em>Line Chart</em>}' class.

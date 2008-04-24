@@ -59,8 +59,10 @@ public class ChartMenuManager extends MenuManager {
 			add(new EditAction("Chart...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ChartEditForm.TAB_MAIN)));
 			if (chart instanceof LineChart)
 				add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));
-			else if (chart instanceof BarChart)
+			else if (chart instanceof BarChart) {
+				add(new EditAction("Content...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, BarChartEditForm.TAB_CONTENT)));
 				add(new EditAction("Bars...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, BarChartEditForm.TAB_BARS)));
+			}
 			else if (chart instanceof ScatterChart) {
 				add(new EditAction("Content...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, ScatterChartEditForm.TAB_CONTENT)));
 				add(new EditAction("Lines...", createFormProperties(ChartEditForm.PROP_DEFAULT_TAB, LineChartEditForm.TAB_LINES)));

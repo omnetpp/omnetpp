@@ -107,12 +107,14 @@
   <eClassifiers xsi:type="ecore:EClass" name="Apply" eSuperTypes="#//ProcessingOp"/>
   <eClassifiers xsi:type="ecore:EClass" name="Compute" eSuperTypes="#//ProcessingOp"/>
   <eClassifiers xsi:type="ecore:EClass" name="BarChart" eSuperTypes="#//Chart">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="groupBy" ordered="false"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="groupByFields" ordered="false"
         upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="groupNameFormat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="barNameFormat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="barFields" upperBound="-1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="barFields" ordered="false"
+        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="averagedFields" ordered="false"
+        upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="LineChart" eSuperTypes="#//Chart">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="lineNameFormat" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>

@@ -65,28 +65,29 @@ public class BarChartItemProvider
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
-			addGroupByPropertyDescriptor(object);
+			addGroupByFieldsPropertyDescriptor(object);
 			addGroupNameFormatPropertyDescriptor(object);
 			addBarNameFormatPropertyDescriptor(object);
 			addBarFieldsPropertyDescriptor(object);
+			addAveragedFieldsPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
 
 	/**
-	 * This adds a property descriptor for the Group By feature.
+	 * This adds a property descriptor for the Group By Fields feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addGroupByPropertyDescriptor(Object object) {
+	protected void addGroupByFieldsPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
 			(createItemPropertyDescriptor
 				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
 				 getResourceLocator(),
-				 getString("_UI_BarChart_groupBy_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_groupBy_feature", "_UI_BarChart_type"),
-				 ScaveModelPackage.Literals.BAR_CHART__GROUP_BY,
+				 getString("_UI_BarChart_groupByFields_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_groupByFields_feature", "_UI_BarChart_type"),
+				 ScaveModelPackage.Literals.BAR_CHART__GROUP_BY_FIELDS,
 				 true,
 				 false,
 				 false,
@@ -162,6 +163,28 @@ public class BarChartItemProvider
 	}
 
 	/**
+	 * This adds a property descriptor for the Averaged Fields feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addAveragedFieldsPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_BarChart_averagedFields_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_BarChart_averagedFields_feature", "_UI_BarChart_type"),
+				 ScaveModelPackage.Literals.BAR_CHART__AVERAGED_FIELDS,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
 	 * This returns BarChart.gif.
 	 * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -198,10 +221,11 @@ public class BarChartItemProvider
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(BarChart.class)) {
-			case ScaveModelPackage.BAR_CHART__GROUP_BY:
+			case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
 			case ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT:
 			case ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT:
 			case ScaveModelPackage.BAR_CHART__BAR_FIELDS:
+			case ScaveModelPackage.BAR_CHART__AVERAGED_FIELDS:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 		}

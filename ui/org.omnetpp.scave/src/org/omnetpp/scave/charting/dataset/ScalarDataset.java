@@ -4,13 +4,19 @@ import static org.omnetpp.scave.engine.ResultItemField.FILE;
 import static org.omnetpp.scave.engine.ResultItemField.MODULE;
 import static org.omnetpp.scave.engine.ResultItemField.NAME;
 import static org.omnetpp.scave.engine.ResultItemField.RUN;
+import static org.omnetpp.scave.engine.ResultItemField.RUN_ATTR_ID;
+import static org.omnetpp.scave.engine.ResultItemField.RUN_ID;
 import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
 import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
@@ -21,14 +27,14 @@ import org.omnetpp.scave.engine.XYDataset;
 import org.omnetpp.scave.model2.StatUtils;
 
 /**
- * Class storing the dataset of a scalar chart.
+ * Class representing the dataset of a scalar chart.
  *
  * @author tomi
  */
 public class ScalarDataset implements IAveragedScalarDataset {
 	
-	private static ResultItemFields defaultGrouping =  new ResultItemFields(new StringVector()); //new ResultItemFields(MODULE).complement();
-
+	private ResultItemFields rowFields, columnFields;
+	
 	/** The row keys. */
     private List<String> rowKeys;
 
@@ -40,34 +46,13 @@ public class ScalarDataset implements IAveragedScalarDataset {
 
     /**
      * Creates a dataset from the given scalars.
-     * The columns are the different module names found.
-     * Each different value of the other fields gives a row.  
-     */
-    public ScalarDataset(IDList idlist, ResultFileManager manager) {
-    	this(idlist, defaultGrouping, null, manager);
-    }
-    
-    /**
-     * Creates a dataset from the given scalars.
      * Groups are formed by {@code groupingFields}, other fields
      * determines the columns. 
      */
-    public ScalarDataset(IDList idlist, StringVector groupingFields, ResultFileManager manager) {
-    	this(idlist, new ResultItemFields(groupingFields), null, manager);
-    }
-    
-    /**
-     * Creates a dataset from the given scalars.
-     * Groups are formed by {@code groupingFields}, other fields
-     * determines the columns. 
-     */
-    public ScalarDataset(IDList idlist, ResultItemFields rowFields, ResultItemFields columnFields, ResultFileManager manager) {
-    	if (rowFields == null)
-    		rowFields = defaultGrouping;
-    	if (columnFields == null)
-    		columnFields = rowFields.complement();
-    	//ScalarFields groupingFields = addDependentFields(rowFields, idlist, manager);
-    	ScalarDataSorter sorter = new ScalarDataSorter(manager);
+    public ScalarDataset(IDList idlist, List<String> groupByFields, List<String> barFields,
+    						List<String> averagedFields, ResultFileManager manager) {
+   		computeFields(groupByFields, barFields, averagedFields, idlist, manager);
+   		ScalarDataSorter sorter = new ScalarDataSorter(manager);
     	this.data = sorter.groupAndAggregate(idlist, rowFields, columnFields);
     	this.data.sortRows();
     	this.data.sortColumns();
@@ -136,6 +121,90 @@ public class ScalarDataset implements IAveragedScalarDataset {
     public double getConfidenceInterval(int row, int column, double p) {
 		return StatUtils.confidenceInterval(data.getValue(row, column), p);
 	}
+    
+    private void computeFields(List<String> groupByFields, List<String> barFields, List<String> averagedFields,
+    							IDList idlist, ResultFileManager manager) {
+   		List<String> fields = Arrays.asList(ResultItemFields.getFieldNames().toArray());
+   		List<String> rowFields = new ArrayList<String>();
+   		List<String> columnFields = new ArrayList<String>();
+   		List<String> unusedFields = new ArrayList<String>();
+   		unusedFields.addAll(fields);
+   		
+   		if (groupByFields != null) {
+   			rowFields.addAll(groupByFields);
+   			unusedFields.removeAll(groupByFields);
+   		}
+   		if (barFields != null) {
+   			columnFields.addAll(barFields);
+   			unusedFields.removeAll(barFields);
+   		}
+   		if (averagedFields != null)
+   			unusedFields.removeAll(averagedFields);
+
+   		if (!unusedFields.isEmpty()) {
+	   		Map<String,List<String>> dependencies = buildDependencyMap(fields, idlist, manager);
+	   		rowFields = addDependentFields(rowFields, unusedFields, dependencies);
+	   		columnFields = addDependentFields(columnFields, unusedFields, dependencies);
+	   		applyDefaults(rowFields, columnFields, unusedFields);
+   		}
+   		
+   		//System.out.format("Row fields: %s%n", StringUtils.formatList(rowFields, "%s", ","));
+   		//System.out.format("Column fields: %s%n", StringUtils.formatList(columnFields, "%s", ","));
+
+   		this.rowFields = new ResultItemFields(StringVector.fromArray(rowFields.toArray(new String[rowFields.size()])));
+   		this.columnFields = new ResultItemFields(StringVector.fromArray(columnFields.toArray(new String[columnFields.size()])));
+    }
+    
+    private Map<String,List<String>> buildDependencyMap(List<String> fields, IDList idlist, ResultFileManager manager) {
+    	int size = fields.size();
+    	Map<String,List<String>> map = new HashMap<String,List<String>>();
+    	List<String> dependents;
+    	for (int i = 0; i < size; ++i) {
+    		ResultItemField f1 = new ResultItemField(fields.get(i));
+    		map.put(f1.getName(), dependents = new ArrayList<String>());
+    		for (int j = 0; j < size; ++j) {
+    			ResultItemField f2 = new ResultItemField(fields.get(j));
+    			if (i == j)
+    				dependents.add(f2.getName());
+    			else if (f1.getID() == RUN_ID && f2.getID() == RUN_ATTR_ID)
+    				dependents.add(f2.getName());
+    			else if (f1.getName().equals(REPLICATION) &&
+    					 (f2.getName().equals(MEASUREMENT) || f2.getName().equals(EXPERIMENT)))
+    				dependents.add(f2.getName());
+    			else if (f1.getName().equals(MEASUREMENT) && f2.getName().equals(EXPERIMENT))
+    				dependents.add(f2.getName());
+    		}
+    	}
+    	return map;
+    }
+    
+    private static List<String> addDependentFields(List<String> fields, List<String> unusedFields, Map<String,List<String>> dependencies) {
+    	if (unusedFields.isEmpty())
+    		return fields;
+    	
+   		List<String> result = new ArrayList<String>();
+    	for (String field1 : fields) {
+    		result.add(field1);
+   			for (String field2 : dependencies.get(field1)) {
+   				int index = unusedFields.indexOf(field2);
+   				if (index >= 0) {
+   					result.add(field2);
+   					unusedFields.remove(index);
+   				}
+   			}
+   		}
+    	return result;
+    }
+    
+    private static void applyDefaults(List<String> rowFields, List<String> columnFields, List<String> unusedFields) {
+    	for (String field : unusedFields) {
+    		if (field.equals(FILE) || field.equals(MODULE))
+    			rowFields.add(field);
+    		else if (field.equals(NAME))
+    			columnFields.add(field);
+    		// other fields are averaged
+    	}
+    }
     
     private static final ResultItemField[] allFields = new ResultItemField[] {
     	new ResultItemField(FILE), new ResultItemField(RUN), new ResultItemField(MODULE),
