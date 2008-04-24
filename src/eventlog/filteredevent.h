@@ -59,7 +59,6 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual EventEntry *getEventEntry() { return getEvent()->getEventEntry(); }
         virtual int getNumEventLogEntries() { return getEvent()->getNumEventLogEntries(); }
         virtual EventLogEntry *getEventLogEntry(int index) { return getEvent()->getEventLogEntry(index); }
-        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) { return getEvent()->isSelfMessage(beginSendEntry); }
 
         virtual int getNumEventLogMessages() { return getEvent()->getNumEventLogMessages(); }
         virtual int getNumBeginSendEntries() { return getEvent()->getNumBeginSendEntries(); }
@@ -71,6 +70,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual long getMessageId() { return getEvent()->getMessageId(); }
         virtual long getCauseEventNumber() { return getEvent()->getCauseEventNumber(); }
 
+        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) { return getEvent()->isSelfMessage(beginSendEntry); }
         virtual bool isSelfMessageProcessingEvent() { return getEvent()->isSelfMessageProcessingEvent(); }
         virtual FilteredEvent *getPreviousEvent();
         virtual FilteredEvent *getNextEvent();

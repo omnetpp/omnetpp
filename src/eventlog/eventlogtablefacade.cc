@@ -23,6 +23,7 @@ USING_NAMESPACE
 
 EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
+    setNameMode(FULL_NAME);
     setDisplayMode(DESCRIPTIVE);
     setFilterMode(ALL_ENTRIES);
     setCustomFilter("*");

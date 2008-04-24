@@ -78,7 +78,6 @@ class EVENTLOG_API Event : public IEvent
         virtual EventEntry *getEventEntry() { return eventEntry; }
         virtual int getNumEventLogEntries() { return eventLogEntries.size(); }
         virtual EventLogEntry *getEventLogEntry(int index) { return eventLogEntries[index]; }
-        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry);
 
         virtual int getNumEventLogMessages() { return numEventLogMessages; }
         virtual int getNumBeginSendEntries() { return numBeginSendEntries; }
@@ -90,6 +89,7 @@ class EVENTLOG_API Event : public IEvent
         virtual long getMessageId() { return eventEntry->messageId; }
         virtual long getCauseEventNumber() { return eventEntry->causeEventNumber; }
 
+        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry);
         virtual bool isSelfMessageProcessingEvent();
         virtual Event *getPreviousEvent();
         virtual Event *getNextEvent();

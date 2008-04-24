@@ -133,6 +133,29 @@ bool EventLogFacade::Event_isSelfMessageProcessingEvent(ptr_t ptr)
     return ((IEvent*)ptr)->isSelfMessageProcessingEvent();
 }
 
+bool EventLogFacade::EventLogEntry_isSelfMessage(ptr_t ptr)
+{
+    EVENTLOGENTRY_PTR(ptr);
+    BeginSendEntry *beginSendEntry = (BeginSendEntry *)ptr;
+    return beginSendEntry->getEvent()->isSelfMessage(beginSendEntry);
+}
+
+const char *EventLogFacade::EventLogEntry_getModuleFullPath(ptr_t ptr)
+{
+    std::string fullPath;
+    EVENTLOGENTRY_PTR(ptr);
+    ModuleCreatedEntry *moduleCreatedEntry = (ModuleCreatedEntry *)ptr;
+
+    while (moduleCreatedEntry) {
+        fullPath = moduleCreatedEntry->fullName + fullPath;
+        moduleCreatedEntry = eventLog->getModuleCreatedEntry(moduleCreatedEntry->parentModuleId);
+        if (moduleCreatedEntry)
+            fullPath = "." + fullPath;
+    }
+
+    return eventLogStringPool.get(fullPath.c_str());
+}
+
 IMessageDependency *EventLogFacade::MessageDependency_getMessageDependency(ptr_t ptr)
 {
     MESSAGE_DEPENDENCY_PTR(ptr);

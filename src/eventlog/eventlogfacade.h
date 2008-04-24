@@ -22,6 +22,7 @@ NAMESPACE_BEGIN
 
 #define PTR(ptr) if (ptr == 0) throw opp_runtime_error("NULL ptr exception");
 #define EVENT_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IEvent *>((IEvent *)ptr));
+#define EVENTLOGENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<EventLogEntry *>((EventLogEntry *)ptr));
 #define MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IMessageDependency *>((IMessageDependency *)ptr));
 
 /**
@@ -58,6 +59,9 @@ class EVENTLOG_API EventLogFacade
         ptr_t Event_getCause(ptr_t ptr, int index);
         ptr_t Event_getConsequence(ptr_t ptr, int index);
         bool Event_isSelfMessageProcessingEvent(ptr_t ptr);
+
+        bool EventLogEntry_isSelfMessage(ptr_t ptr);
+        const char *EventLogEntry_getModuleFullPath(ptr_t ptr);
 
         IMessageDependency *MessageDependency_getMessageDependency(ptr_t ptr);
         const char *MessageDependency_getMessageName(ptr_t ptr);

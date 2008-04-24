@@ -190,17 +190,6 @@ void Event::print(FILE *file, bool outputEventLogMessages)
     }
 }
 
-bool Event::isSelfMessage(BeginSendEntry *beginSendEntry)
-{
-    Assert(beginSendEntry && this == beginSendEntry->getEvent());
-    int index = beginSendEntry->getIndex();
-
-    if (index + 1 < eventLogEntries.size())
-        return dynamic_cast<EndSendEntry *>(eventLogEntries[index + 1]);
-    else
-        return false;
-}
-
 EventLogMessageEntry *Event::getEventLogMessage(int index)
 {
     Assert(index >= 0);
@@ -220,10 +209,21 @@ EventLogMessageEntry *Event::getEventLogMessage(int index)
     throw opp_runtime_error("index out of range");
 }
 
+bool Event::isSelfMessage(BeginSendEntry *beginSendEntry)
+{
+    Assert(beginSendEntry && this == beginSendEntry->getEvent());
+    int index = beginSendEntry->getIndex();
+
+    if (index + 1 < eventLogEntries.size())
+        return dynamic_cast<EndSendEntry *>(eventLogEntries[index + 1]);
+    else
+        return false;
+}
+
 bool Event::isSelfMessageProcessingEvent()
 {
     BeginSendEntry *beginSendEntry = getCauseBeginSendEntry();
-    return beginSendEntry && dynamic_cast<EndSendEntry *>(getCauseEvent()->getEventLogEntry(beginSendEntry->getIndex() + 1));
+    return beginSendEntry && beginSendEntry->getEvent()->isSelfMessage(beginSendEntry);
 }
 
 Event *Event::getPreviousEvent()

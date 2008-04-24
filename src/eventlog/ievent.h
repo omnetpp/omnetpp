@@ -71,7 +71,6 @@ class EVENTLOG_API IEvent
          * Returns the nth entry (line) for this event.
          */
         virtual EventLogEntry *getEventLogEntry(int index) = 0;
-        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) = 0;
 
         // simple text lines
         virtual int getNumEventLogMessages() = 0;
@@ -118,6 +117,10 @@ class EVENTLOG_API IEvent
          */
         virtual int findBeginSendEntryIndex(int messageId);
 
+        /**
+         * Returns true if the sent message is a self message.
+         */
+        virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) = 0;
         /**
          * Returns true if the received message was a self message.
          */
