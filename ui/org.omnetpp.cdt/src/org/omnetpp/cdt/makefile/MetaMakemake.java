@@ -138,7 +138,10 @@ public class MetaMakemake {
             translatedOptions.metaLinkWithAllObjectsInProject = false;
         }
         
-        System.out.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
+        // substitute all ${eclipse_variables}
+        translatedOptions.substituteVariables(makefileFolder.getProject());
+        
+        // System.out.println("Translated makemake options for " + makefileFolder + ": " + translatedOptions.toString());
         return translatedOptions;
     }
 

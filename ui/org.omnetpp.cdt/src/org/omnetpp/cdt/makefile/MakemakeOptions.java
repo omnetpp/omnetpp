@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.VariablesPlugin;
@@ -348,34 +351,17 @@ public class MakemakeOptions implements Cloneable {
         return result.toArray(new String[]{});
     }
 
-    /**
-     * carry out a string substitution on all args in the list
-     */
-    private static List<String> makeStringSubstitution(List<String> args) {
-    	List<String> substedArgs = new ArrayList<String>(); 
-    	for(String arg : args) {
-    		String substedArg = arg;
-			try {
-				substedArg = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(arg);
-			} catch (CoreException e) {
-				Activator.logError("Cannot resolve variable in: "+arg, e);
-			}
-			substedArgs.add(substedArg);
-    	}
-    	return substedArgs;
-    }
-    
     private void add(List<String> argList, String...args) {
-        argList.addAll(makeStringSubstitution(Arrays.asList(args)));
+        argList.addAll(Arrays.asList(args));
     }
 
     private void addOpts1(List<String> argList, List<String> args, String option) {
-        for (String arg : makeStringSubstitution(args))
+        for (String arg : args)
             argList.add(option + arg);
     }
 
     private void addOpts2(List<String> argList, List<String> args, String option) {
-        for (String arg : makeStringSubstitution(args)) {
+        for (String arg : args) {
             argList.add(option);
             argList.add(arg);
         }
@@ -390,6 +376,67 @@ public class MakemakeOptions implements Cloneable {
     @Override
     public boolean equals(Object obj) {
         return obj != null && obj.getClass() == getClass() && Arrays.equals(((MakemakeOptions)obj).toArgs(), toArgs());
+    }
+    
+    /**
+     * carry out a eclipse variable substitution on all args in the list
+     */
+    private static List<String> makeVariableSubstitution(List<String> args, IProject project) {
+		if (args == null)
+			return null;
+		
+    	List<String> substedArgs = new ArrayList<String>(); 
+    	for(String arg : args) 
+			substedArgs.add(makeVariableSubstitution(arg, project));
+    	
+    	return substedArgs;
+    }
+
+    /**
+     * carry out a eclipse variable substitution on arg
+     */
+	private static String makeVariableSubstitution(String arg, IProject project) {
+		if (arg == null)
+			return null;
+		
+		// resolve macros for this configuration
+		try {
+			IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
+			arg = provider.resolveValue(arg, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration());
+		} catch (CoreException e) {
+			Activator.logError("Cannot resolve variable in: "+arg, e);
+		}
+		// resolve global eclipse variables
+		try {
+			arg = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(arg);
+		} catch (CoreException e) {
+			Activator.logError("Cannot resolve variable in: "+arg, e);
+		}
+
+		return arg;
+	}
+    
+    /**
+     * Substitutes all ${XXX} eclipse variables in all String options.
+     * project is used for context information to evaluate BuildMacros
+     */
+    public void substituteVariables(IProject project) {
+        projectDir = makeVariableSubstitution(projectDir, project);
+        target = makeVariableSubstitution(target, project);
+        outRoot = makeVariableSubstitution(outRoot, project);
+        defaultMode = makeVariableSubstitution(defaultMode, project);
+        userInterface = makeVariableSubstitution(userInterface, project);
+        ccext = makeVariableSubstitution(ccext, project);
+        dllSymbol = makeVariableSubstitution(dllSymbol, project);
+        fragmentFiles = makeVariableSubstitution(fragmentFiles, project);
+        submakeDirs = makeVariableSubstitution(submakeDirs, project);
+        exceptSubdirs = makeVariableSubstitution(exceptSubdirs, project);
+        includeDirs = makeVariableSubstitution(includeDirs, project);
+        libDirs = makeVariableSubstitution(libDirs, project);
+        libs = makeVariableSubstitution(libs, project);
+        defines = makeVariableSubstitution(defines, project);
+        makefileDefines = makeVariableSubstitution(makefileDefines, project);
+        extraArgs = makeVariableSubstitution(extraArgs, project);
     }
     
     @Override
