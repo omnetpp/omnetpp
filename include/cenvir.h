@@ -102,7 +102,7 @@ class SIM_API cEnvir
     // beginSend(), messageSendDirect(), messageSendHop(), messageSendHop(),
     // messageSendHop(), messageDeleted(), moduleReparented(), simulationEvent(),
     // componentMethodBegin(), moduleCreated(), moduleDeleted(), connectionCreated(),
-    // connectionRemoved(), displayStringChanged().
+    // connectionDeleted(), displayStringChanged().
     bool suppress_notifications;
 
     // Internal flag. When set, cRuntimeError constructor to raises an exception.
@@ -265,16 +265,26 @@ class SIM_API cEnvir
     virtual void moduleDeleted(cModule *module) = 0;
 
     /**
+     * TODO:
+     */
+    virtual void gateCreated(cGate *newgate) = 0;
+
+    /**
+     * TODO:
+     */
+    virtual void gateDeleted(cGate *gate) = 0;
+
+    /**
      * Notifies the environment that a connection has been created using
      * srcgate->connectTo().
      */
     virtual void connectionCreated(cGate *srcgate) = 0;
 
     /**
-     * Notifies the environment that a connection has been removed using
+     * Notifies the environment that a connection has been deleted using
      * srcgate->disconnect().
      */
-    virtual void connectionRemoved(cGate *srcgate) = 0;
+    virtual void connectionDeleted(cGate *srcgate) = 0;
 
     /**
      * Notifies the environment that a module or channel display string has
