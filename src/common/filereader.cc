@@ -510,7 +510,7 @@ char *FileReader::getLastLineBufferPointer()
     return getPreviousLineBufferPointer();
 }
 
-const char *strnistr(const char *haystack, const char *needle, int n)
+const char *strnistr(const char *haystack, const char *needle, int n, bool caseSensitive)
 {
     int needleLen = strlen(needle);
     if (n == 0)
@@ -519,26 +519,26 @@ const char *strnistr(const char *haystack, const char *needle, int n)
     int slen = n - needleLen;
 
     for (const char *s = haystack; slen>0 && *s; s++, slen--)
-        if (strncasecmp(s, needle, needleLen) == 0)
+        if (!(caseSensitive ? strncmp(s, needle, needleLen) : strncasecmp(s, needle, needleLen)))
             return s;
     return NULL;
 }
 
-char *FileReader::findNextLineBufferPointer(const char *search)
+char *FileReader::findNextLineBufferPointer(const char *search, bool caseSensitive)
 {
     char *line;
     while ((line = getNextLineBufferPointer()) != NULL)
-        if (strnistr(line, search, getCurrentLineLength()))
+        if (strnistr(line, search, getCurrentLineLength(), caseSensitive))
             return line;
 
     return NULL;
 }
 
-char *FileReader::findPreviousLineBufferPointer(const char *search)
+char *FileReader::findPreviousLineBufferPointer(const char *search, bool caseSensitive)
 {
     char *line;
     while ((line = getPreviousLineBufferPointer()) != NULL)
-        if (strnistr(line, search, getCurrentLineLength()))
+        if (strnistr(line, search, getCurrentLineLength(), caseSensitive))
             return line;
 
     return NULL;
