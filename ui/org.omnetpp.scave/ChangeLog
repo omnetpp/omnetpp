@@ -1,3 +1,42 @@
+2008-04-25
+----------
+
+Additions:
+
+   + Edit dialog for histogram charts.
+   
+   + New columns in data tables: 'Vector id', 'Min time', 'Max time'.
+
+Fixes:
+
+   + Edit dialog of bar charts:
+       added 'Content' tab,
+       fields can be "unused" (meaning grouping for file/module, separate bars
+         for names, and averaging for others)
+         
+   + Missing 'attr:' prefix in filter patterns when the filter was set
+     by clicking in the Inputs page/Logical view tree or by selecting 'Set filter'
+     from the context menu of data tables.
+     
+   + Fix label of 'Set filter' menu item.
+     
+   + Inputs page/Input files section/double click on a file -> 
+     switched to 'Browse data' page before opening the edit dialog.
+   
+   + When the 'New Analysis file' wizard opened by double clicking on a 
+     result file, the default location of the analysis file is outside the 
+     directory of the result file (so results can be deleted by removing their
+     directory).
+
+   + Fix legend button size (gtk only).
+   
+   + Select all lines by default in LineChart edit dialog,
+     add 'Select all' button.
+     
+   + Limit the number of items in filter combos (~10000 items halts the gui
+     for a minute on linux). If the number of modules > 100 then numbers 
+     in module name hints are replaced with '*'.
+
 2008-04-12
 ----------
 
