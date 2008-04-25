@@ -50,6 +50,8 @@ class EVENTLOG_API IMessageDependency
         virtual simtime_t& getCauseSimulationTime() = 0;
         virtual simtime_t& getConsequenceSimulationTime() = 0;
         virtual BeginSendEntry *getBeginSendEntry() = 0;
+        virtual BeginSendEntry *getCauseBeginSendEntry() = 0;
+        virtual BeginSendEntry *getConsequenceBeginSendEntry() = 0;
 
         virtual bool equals(IMessageDependency *other) = 0;
 
@@ -93,10 +95,10 @@ class EVENTLOG_API MessageDependency : public IMessageDependency
         virtual IEvent *getConsequenceEvent();
 
         long getCauseBeginSendEntryNumber() { return causeBeginSendEntryNumber; }
-        BeginSendEntry *getCauseBeginSendEntry();
+        virtual BeginSendEntry *getCauseBeginSendEntry();
 
         long getConsequenceBeginSendEntryNumber() { return consequenceBeginSendEntryNumber; }
-        BeginSendEntry *getConsequenceBeginSendEntry();
+        virtual BeginSendEntry *getConsequenceBeginSendEntry();
 
         virtual BeginSendEntry *getBeginSendEntry() { return isReuse ? getConsequenceBeginSendEntry() : getCauseBeginSendEntry(); }
 
@@ -137,7 +139,9 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
 
         virtual simtime_t& getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };
         virtual simtime_t& getConsequenceSimulationTime() { return endMessageDependency->getConsequenceSimulationTime(); };
-        virtual BeginSendEntry *getBeginSendEntry() { throw opp_runtime_error("getBeginSendEntry is not supported on a FilteredMessageDependency"); }
+        virtual BeginSendEntry *getBeginSendEntry() { return isReuse ? getConsequenceBeginSendEntry() : getCauseBeginSendEntry(); }
+        virtual BeginSendEntry *getCauseBeginSendEntry();
+        virtual BeginSendEntry *getConsequenceBeginSendEntry();
 
         virtual bool equals(IMessageDependency *other);
 

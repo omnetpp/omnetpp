@@ -287,6 +287,16 @@ IEvent *FilteredMessageDependency::getConsequenceEvent()
         return eventLog->getEventForEventNumber(consequenceEventNumber);
 }
 
+BeginSendEntry *FilteredMessageDependency::getCauseBeginSendEntry()
+{
+    return beginMessageDependency->getBeginSendEntry();
+}
+
+BeginSendEntry *FilteredMessageDependency::getConsequenceBeginSendEntry()
+{
+    return endMessageDependency->getBeginSendEntry();
+}
+
 bool FilteredMessageDependency::equals(IMessageDependency *other)
 {
     FilteredMessageDependency *otherFiltered = dynamic_cast<FilteredMessageDependency *>(other);
