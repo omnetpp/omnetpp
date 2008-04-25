@@ -93,37 +93,35 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
 
 public class SequenceChartContributor extends EditorActionBarContributor implements IEventLogChangeListener {
-    public final static String TOOLIMAGE_DIR = "icons/full/etool16/";
+    public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
 
-    public final static String IMAGE_TIMELINE_MODE = TOOLIMAGE_DIR + "timelinemode.png";
+    public final static String IMAGE_TIMELINE_MODE = TOOL_IMAGE_DIR + "timelinemode.png";
     
-    public final static String IMAGE_AXIS_ORDERING_MODE = TOOLIMAGE_DIR + "axisordering.gif";
+    public final static String IMAGE_AXIS_ORDERING_MODE = TOOL_IMAGE_DIR + "axisordering.gif";
     
-    public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOLIMAGE_DIR + "eventnumbers.png";
+    public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOL_IMAGE_DIR + "eventnumbers.png";
     
-    public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOLIMAGE_DIR + "messagenames.png";
+    public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOL_IMAGE_DIR + "messagenames.png";
     
-    public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOLIMAGE_DIR + "reusearrows.png";
+    public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOL_IMAGE_DIR + "reusearrows.png";
     
-    public final static String IMAGE_SHOW_ARROW_HEADS = TOOLIMAGE_DIR + "arrowhead.png";
+    public final static String IMAGE_SHOW_ARROW_HEADS = TOOL_IMAGE_DIR + "arrowhead.png";
     
-    public final static String IMAGE_INCREASE_SPACING = TOOLIMAGE_DIR + "incr_spacing.png";
+    public final static String IMAGE_INCREASE_SPACING = TOOL_IMAGE_DIR + "incr_spacing.png";
     
-    public final static String IMAGE_DECREASE_SPACING = TOOLIMAGE_DIR + "decr_spacing.png";
+    public final static String IMAGE_DECREASE_SPACING = TOOL_IMAGE_DIR + "decr_spacing.png";
     
-    public final static String IMAGE_DENSE_AXES = TOOLIMAGE_DIR + "denseaxes.png";
+    public final static String IMAGE_DENSE_AXES = TOOL_IMAGE_DIR + "denseaxes.png";
     
-    public final static String IMAGE_BALANCED_AXES = TOOLIMAGE_DIR + "balancedaxes.png";
+    public final static String IMAGE_BALANCED_AXES = TOOL_IMAGE_DIR + "balancedaxes.png";
 	
-    public final static String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOLIMAGE_DIR + "attachvector.png";
+    public final static String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOL_IMAGE_DIR + "attachvector.png";
 	
-    public final static String IMAGE_TOGGLE_BOOKMARK = TOOLIMAGE_DIR + "bkmrk_nav.gif";
+    public final static String IMAGE_EXPORT_SVG = TOOL_IMAGE_DIR + "export_wiz.gif";
 	
-    public final static String IMAGE_EXPORT_SVG = TOOLIMAGE_DIR + "export_wiz.gif";
+    public final static String IMAGE_REFRESH = TOOL_IMAGE_DIR + "refresh.gif";
 	
-    public final static String IMAGE_REFRESH = TOOLIMAGE_DIR + "refresh.gif";
-	
-    public final static String IMAGE_FILTER = TOOLIMAGE_DIR + "filter.png";
+    public final static String IMAGE_FILTER = TOOL_IMAGE_DIR + "filter.png";
 	
 	private static SequenceChartContributor singleton;
 
@@ -337,6 +335,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
+        toolBarManager.add(showReuseMessagesAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(increaseSpacingAction);
 		toolBarManager.add(decreaseSpacingAction);
@@ -1125,13 +1124,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 	
 	private SequenceChartAction createToggleBookmarkAction() {
-		return new SequenceChartAction("Toggle bookmark", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_TOGGLE_BOOKMARK)) {
+		return new SequenceChartAction("Toggle bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
 			@Override
 			public void run() {
 				try {
 					EventLogInput eventLogInput = (EventLogInput)sequenceChart.getInput();
 					IEvent event = sequenceChart.getSelectionEvent();
-					
+
 					if (event != null) {
 						boolean found = false;
 						IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);

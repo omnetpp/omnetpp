@@ -74,6 +74,9 @@ public class ImageFactory {
     public final static String TOOLBAR_IMAGE_OPEN = TOOL_IMAGE_DIR + "open";
     public final static String TOOLBAR_IMAGE_PLOT = TOOL_IMAGE_DIR + "plot";
     public final static String TOOLBAR_IMAGE_FILTER = TOOL_IMAGE_DIR + "filter";
+    public final static String TOOLBAR_IMAGE_SEARCH = TOOL_IMAGE_DIR + "Search";
+    public final static String TOOLBAR_IMAGE_SEARCH_NEXT = TOOL_IMAGE_DIR + "SearchNext";
+    public final static String TOOLBAR_IMAGE_TOGGLE_BOOKMARK = TOOL_IMAGE_DIR + "bkmrk_nav";
     public final static String TOOLBAR_IMAGE_DISPLAY_MODE = TOOL_IMAGE_DIR + "displaymode";
     public final static String TOOLBAR_IMAGE_ADDFILTERTODATASET = TOOL_IMAGE_DIR + "AddFilterToDataset";
     public final static String TOOLBAR_IMAGE_ADDSELECTEDTODATASET = TOOL_IMAGE_DIR + "AddSelectedToDataset";

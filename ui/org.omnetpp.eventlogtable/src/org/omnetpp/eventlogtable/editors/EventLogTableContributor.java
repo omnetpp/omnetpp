@@ -24,10 +24,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -56,17 +59,19 @@ import org.omnetpp.eventlogtable.widgets.EventLogTable;
 public class EventLogTableContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
 	private static EventLogTableContributor singleton;
 
-    public final static String TOOLIMAGE_DIR = "icons/full/etool16/";
+    public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
 
-    public final static String IMAGE_FILTER = TOOLIMAGE_DIR + "filter.png";
+    public final static String IMAGE_FILTER = TOOL_IMAGE_DIR + "filter.png";
+
+    public final static String IMAGE_NAME_MODE = TOOL_IMAGE_DIR + "NameMode.gif";
 
 	protected EventLogTable eventLogTable;
 
-    protected SearchTextDialog searchDialog;
+    protected FindTextDialog findDialog;
 
 	protected Separator separatorAction;
 
-	protected EventLogTableAction searchTextAction;
+	protected EventLogTableAction findTextAction;
 
     protected EventLogTableAction findNextAction;
 
@@ -100,7 +105,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	public EventLogTableContributor() {
 		this.separatorAction = new Separator();
-		this.searchTextAction = createSearchTextAction();
+		this.findTextAction = createFindTextAction();
         this.findNextAction = createFindNextAction();
 		this.gotoEventAction = createGotoEventAction();
 		this.gotoSimulationTimeAction = createGotoSimulationTimeAction();
@@ -149,7 +154,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	 */
 
 	public void contributeToPopupMenu(IMenuManager menuManager) {
-		menuManager.add(searchTextAction);
+		menuManager.add(findTextAction);
         menuManager.add(findNextAction);
 		menuManager.add(separatorAction);
 		menuManager.add(gotoEventAction);
@@ -169,7 +174,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-        toolBarManager.add(searchTextAction);
+        toolBarManager.add(findTextAction);
         toolBarManager.add(findNextAction);
         toolBarManager.add(separatorAction);
         toolBarManager.add(nameModeAction);
@@ -276,77 +281,102 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	 * ACTIONS
 	 */
 	
-    private final class SearchTextDialog extends InputDialog {
-        private Button searchBackward;
+    private final class FindTextDialog extends InputDialog {
+        private Button forward;
 
-        private Button searchCaseInsensitive;
+        private Button backward;
 
-        private boolean isSearchBackward;
+        private Button caseSensitive;
 
-        private boolean isSearchCaseInsensitive;
+        private Button caseInsensitive;
 
-        private SearchTextDialog(Shell parentShell, String dialogTitle, String dialogMessage, String initialValue, IInputValidator validator) {
+        private boolean isBackward;
+
+        private boolean isCaseInsensitive;
+
+        private FindTextDialog(Shell parentShell, String dialogTitle, String dialogMessage, String initialValue, IInputValidator validator) {
             super(parentShell, dialogTitle, dialogMessage, initialValue, validator);
         }
 
         @Override
         protected Control createDialogArea(Composite parent) {
-            Composite composite = (Composite)super.createDialogArea(parent);
+            Composite parentComposite = (Composite)super.createDialogArea(parent);
+            Composite composite = new Composite(parentComposite, SWT.NONE);
+            composite.setLayout(new GridLayout(2, true));
+            composite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+
+            Group group = new Group(composite, SWT.SHADOW_ETCHED_IN);
+            group.setText("Direction");
+            group.setLayout(new GridLayout());
+            group.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, 1, 1));
             
-            searchBackward = new Button(composite, SWT.CHECK);
-            searchBackward.setText("Search bacwards");
-            searchBackward.setSelection(isSearchBackward);
+            forward = new Button(group, SWT.RADIO);
+            forward.setText("Forward");
+            forward.setSelection(!isBackward);
 
-            searchCaseInsensitive = new Button(composite, SWT.CHECK);
-            searchCaseInsensitive.setText("Search case insensitive");
-            searchCaseInsensitive.setSelection(isSearchCaseInsensitive);
+            backward = new Button(group, SWT.RADIO);
+            backward.setText("Bacward");
+            backward.setSelection(isBackward);
 
-            return composite;
+            group = new Group(composite, SWT.SHADOW_ETCHED_IN);
+            group.setText("Case");
+            group.setLayout(new GridLayout());
+            group.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false, 1, 1));
+            
+            caseSensitive = new Button(group, SWT.RADIO);
+            caseSensitive.setText("Sensitive");
+            caseSensitive.setSelection(!isCaseInsensitive);
+
+            caseInsensitive = new Button(group, SWT.RADIO);
+            caseInsensitive.setText("Insensitive");
+            caseInsensitive.setSelection(isCaseInsensitive);
+
+            return parentComposite;
         }
  
         @Override
         protected void okPressed() {
-            isSearchBackward = searchBackward.getSelection();
-            isSearchCaseInsensitive = searchCaseInsensitive.getSelection();
+            isBackward = backward.getSelection();
+            isCaseInsensitive = caseInsensitive.getSelection();
 
             super.okPressed();
         }
 
-        public boolean isSearchBackward() {
-            return isSearchBackward;
+        public boolean isBackward() {
+            return isBackward;
         }
 
-        public boolean isSearchCaseInsensitive() {
-            return isSearchCaseInsensitive;
+        public boolean isCaseInsensitive() {
+            return isCaseInsensitive;
         }
     }
 
 	private void findNext() {
-	    if (searchDialog != null) {
-            String searchText = searchDialog.getValue();
+	    if (findDialog != null) {
+            String findText = findDialog.getValue();
             
-            if (searchText != null) {
+            if (findText != null) {
                 EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
                 EventLogEntry startEventLogEntry = eventLogEntryReference == null ? 
                         eventLogTable.getEventLog().getFirstEvent().getEventEntry() : eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
-                EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(startEventLogEntry, searchText, !searchDialog.isSearchBackward(), !searchDialog.isSearchCaseInsensitive());
+                EventLogEntry foundEventLogEntry = getEventLog().findEventLogEntry(startEventLogEntry, findText, !findDialog.isBackward(), !findDialog.isCaseInsensitive());
     
                 if (foundEventLogEntry != null)
                     eventLogTable.gotoClosestElement(new EventLogEntryReference(foundEventLogEntry));
                 else
-                    MessageDialog.openInformation(null, "Search raw text", "No more matches found for " + searchText);
+                    MessageDialog.openInformation(null, "Find raw text", "No more matches found for " + findText);
             }
 	    }
 	}
 	
-	private EventLogTableAction createSearchTextAction() {
-	    return new EventLogTableAction("Search raw text...") {
+	private EventLogTableAction createFindTextAction() {
+	    return new EventLogTableAction("Find raw text...", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH)) {
 		    @Override
 			public void run() {
-		        if (searchDialog == null)
-		            searchDialog = new SearchTextDialog(null, "Search raw text", "Please enter the search text", null, null);
+		        if (findDialog == null)
+		            findDialog = new FindTextDialog(null, "Find raw text", "Please enter the text to find", null, null);
 				
-				if (searchDialog.open() == Window.OK)
+				if (findDialog.open() == Window.OK)
 				    findNext();
 			}
 			
@@ -358,7 +388,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
     private EventLogTableAction createFindNextAction() {
-        return new EventLogTableAction("Find Next") {
+        return new EventLogTableAction("Find Next", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH_NEXT)) {
             @Override
             public void run() {
                 findNext();
@@ -618,7 +648,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createToggleBookmarkAction() {
-		return new EventLogTableAction("Toggle bookmark") {
+		return new EventLogTableAction("Toggle bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
 			@Override
 			public void run() {
 				try {
@@ -664,7 +694,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		};
 	}
     private EventLogTableMenuAction createNameModeAction() {
-        return new EventLogTableMenuAction("Name mode", Action.AS_DROP_DOWN_MENU) {
+        return new EventLogTableMenuAction("Name mode", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_NAME_MODE)) {
             private AbstractMenuCreator menuCreator;
 
             @Override
