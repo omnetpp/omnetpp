@@ -116,6 +116,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual long getApproximateNumberOfEvents();
         virtual Event *getApproximateEventAt(double percentage);
 
+        virtual int getNumInitializationLogEntries() { return initializationLogEntries.size(); }
+        virtual EventLogEntry *getInitializationLogEntry(int index) { return initializationLogEntries[index]; }
         virtual void printInitializationLogEntries(FILE *file = stdout);
 
     protected:

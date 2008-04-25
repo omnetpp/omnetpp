@@ -155,6 +155,8 @@ class EVENTLOG_API IEventLog
          */
         virtual IEvent *getApproximateEventAt(double percentage) = 0;
 
+        virtual int getNumInitializationLogEntries() = 0;
+        virtual EventLogEntry *getInitializationLogEntry(int index) = 0;
         /**
          * Prints initialization entries present before the first event.
          */

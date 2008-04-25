@@ -177,7 +177,7 @@ class EVENTLOG_API $class->{NAME} : public EventLogTokenBasedEntry
 {
    public:
       $class->{NAME}();
-      $class->{NAME}(Event *event);
+      $class->{NAME}(Event *event, int index);
 
    public:";
    foreach $field (@{ $class->{FIELDS} })
@@ -248,9 +248,10 @@ foreach $class (@classes)
    }
    print ENTRIES_CC_FILE "}\n\n";
 
-   print ENTRIES_CC_FILE "$className\::$className(Event *event)\n";
+   print ENTRIES_CC_FILE "$className\::$className(Event *event, int index)\n";
    print ENTRIES_CC_FILE "{\n";
    print ENTRIES_CC_FILE "    this->event = event;\n";
+   print ENTRIES_CC_FILE "    this->index = index;\n";
    foreach $field (@{ $class->{FIELDS} })
    {
       print ENTRIES_CC_FILE "    $field->{NAME} = $field->{DEFAULTVALUE};\n";
@@ -405,7 +406,7 @@ print FACTORY_CC_FILE "\
 
 USING_NAMESPACE
 
-EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, char **tokens, int numTokens)
+EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, int index, char **tokens, int numTokens)
 {
     if (numTokens < 1)
         return NULL;
@@ -428,7 +429,7 @@ foreach $class (@classes)
    }
    print FACTORY_CC_FILE "code[$i]==0)  // $class->{CODE}\n";
 
-   print FACTORY_CC_FILE "        entry = new $class->{NAME}(event);\n";
+   print FACTORY_CC_FILE "        entry = new $class->{NAME}(event, index);\n";
 }
 print FACTORY_CC_FILE "    else\n";
 print FACTORY_CC_FILE "        return NULL;\n\n";

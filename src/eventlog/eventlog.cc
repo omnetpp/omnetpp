@@ -185,6 +185,7 @@ Event *EventLog::getApproximateEventAt(double percentage)
 
 void EventLog::parseInitializationLogEntries()
 {
+    int index = 0;
     reader->seekTo(0);
 
     if (PRINT_DEBUG_MESSAGES) printf("Parsing initialization log entries at: 0\n");
@@ -196,7 +197,12 @@ void EventLog::parseInitializationLogEntries()
         if (!line)
             break;
 
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, line, reader->getCurrentLineLength());
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, index, line, reader->getCurrentLineLength());
+
+        if (!eventLogEntry)
+            continue;
+        else
+            index++;
 
         if (dynamic_cast<SimulationBeginEntry *>(eventLogEntry)) {
             Assert(!simulationBeginEntry);
@@ -208,8 +214,7 @@ void EventLog::parseInitializationLogEntries()
             break;
         }
 
-        if (eventLogEntry)
-            initializationLogEntries.push_back(eventLogEntry);
+        initializationLogEntries.push_back(eventLogEntry);
 
         // collect module created entries
         ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);

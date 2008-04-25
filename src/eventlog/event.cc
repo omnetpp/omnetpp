@@ -113,6 +113,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
 
     if (PRINT_DEBUG_MESSAGES) printf("Parsing event at offset: %"LL"d\n", offset);
 
+    int index = 0;
     std::deque<int> contextModuleIds;
 
     while (true)
@@ -125,11 +126,13 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             return endOffset;
         }
 
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(this, line, reader->getCurrentLineLength());
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(this, index, line, reader->getCurrentLineLength());
 
         // skip empty lines
         if (!eventLogEntry)
             continue;
+        else
+            index++;
 
         // first line must be an event entry
         EventEntry *readEventEntry = dynamic_cast<EventEntry *>(eventLogEntry);
@@ -152,11 +155,9 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             contextModuleIds.pop_front();
 
         // store log entry
-        if (eventLogEntry) {
-            eventLogEntry->level = contextModuleIds.size() - 1;
-            eventLogEntry->contextModuleId = contextModuleIds.front();
-            eventLogEntries.push_back(eventLogEntry);
-        }
+        eventLogEntry->level = contextModuleIds.size() - 1;
+        eventLogEntry->contextModuleId = contextModuleIds.front();
+        eventLogEntries.push_back(eventLogEntry);
 
         // handle module method begin
         ModuleMethodBeginEntry *moduleMethodBeginEntry = dynamic_cast<ModuleMethodBeginEntry *>(eventLogEntry);

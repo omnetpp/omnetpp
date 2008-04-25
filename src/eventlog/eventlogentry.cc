@@ -28,9 +28,11 @@ EventLogEntry::EventLogEntry()
 {
     contextModuleId = -1;
     level = -1;
+    event = NULL;
+    index = -1;
 }
 
-EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line, int length)
+EventLogEntry *EventLogEntry::parseEntry(Event *event, int index, char *line, int length)
 {
     currentLine = line;
     currentLineLength = length;
@@ -45,17 +47,8 @@ EventLogEntry *EventLogEntry::parseEntry(Event *event, char *line, int length)
     {
         EventLogEntryFactory factory;
         tokenizer.tokenize(line, length);
-        return factory.parseEntry(event, tokenizer.tokens(), tokenizer.numTokens());
+        return factory.parseEntry(event, index, tokenizer.tokens(), tokenizer.numTokens());
     }
-}
-
-int EventLogEntry::getIndex()
-{
-    for (int i = 0; i < event->getNumEventLogEntries(); i++)
-        if (this == event->getEventLogEntry(i))
-            return i;
-
-    Assert(false);
 }
 
 bool EventLogEntry::isMessageSend()

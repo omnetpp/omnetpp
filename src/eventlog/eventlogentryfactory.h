@@ -22,7 +22,7 @@ NAMESPACE_BEGIN
 class EVENTLOG_API EventLogEntryFactory
 {
    public:
-      EventLogTokenBasedEntry * parseEntry(Event *event, char **tokens, int numTokens);
+      EventLogTokenBasedEntry * parseEntry(Event *event, int index, char **tokens, int numTokens);
 };
 
 NAMESPACE_END
