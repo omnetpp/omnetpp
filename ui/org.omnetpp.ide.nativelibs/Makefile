@@ -117,7 +117,7 @@ depend:
 	$(MAKEDEPEND) $(INCLUDES) -fMakefile -- *.cxx *.cc
 
 clean:
-	-rm -f *.cxx *.o *.a *.so
+	-rm -f *.cxx *.o *.a *.so $(DLL_TARGET_DIR)/*.dll $(DLL_TARGET_DIR)/*.so $(DLL_TARGET_DIR)/*.jnilib
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
