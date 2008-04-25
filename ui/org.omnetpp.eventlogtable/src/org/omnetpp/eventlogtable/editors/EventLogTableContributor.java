@@ -87,7 +87,11 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	protected EventLogTableAction gotoMessageReuseAction;
 
-	protected EventLogTableAction toggleBookmarkAction;
+    protected EventLogTableAction gotoPreviousModuleEventAction;
+
+    protected EventLogTableAction gotoNextModuleEventAction;
+
+    protected EventLogTableAction toggleBookmarkAction;
 
     protected EventLogTableMenuAction nameModeAction;
 
@@ -113,7 +117,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		this.gotoMessageArrivalAction = createGotoMessageArrivalAction();
 		this.gotoMessageOriginAction = createGotoMessageOriginAction();
 		this.gotoMessageReuseAction = createGotoMessageReuseAction();
-		this.toggleBookmarkAction = createToggleBookmarkAction();
+        this.gotoPreviousModuleEventAction = createGotoPreviousModuleEventAction();
+        this.gotoNextModuleEventAction = createGotoNextModuleEventAction();
+        this.toggleBookmarkAction = createToggleBookmarkAction();
         this.nameModeAction = createNameModeAction();
 		this.filterModeAction = createFilterModeAction();
 		this.displayModeAction = createDisplayModeAction();
@@ -165,6 +171,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		menuManager.add(gotoMessageOriginAction);
 		menuManager.add(gotoMessageReuseAction);
 		menuManager.add(separatorAction);
+        menuManager.add(gotoPreviousModuleEventAction);
+        menuManager.add(gotoNextModuleEventAction);
+        menuManager.add(separatorAction);
 		menuManager.add(toggleBookmarkAction);
 		menuManager.add(separatorAction);
         menuManager.add(nameModeAction);
@@ -212,6 +221,22 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			update();
 		}
 	}
+	
+	public void gotoEventCause() {
+	    gotoEventCauseAction.run();
+	}
+
+    public void gotoMessageArrival() {
+        gotoMessageArrivalAction.run();
+    }
+
+    public void gotoPreviousModuleEvent() {
+        gotoPreviousModuleEventAction.run();
+    }
+
+    public void gotoNextModuleEvent() {
+        gotoNextModuleEventAction.run();
+    }
 
 	private void update() {
 		try {
@@ -370,7 +395,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 	
 	private EventLogTableAction createFindTextAction() {
-	    return new EventLogTableAction("Find raw text...", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH)) {
+	    return new EventLogTableAction("Find Raw Text...", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH)) {
 		    @Override
 			public void run() {
 		        if (findDialog == null)
@@ -404,20 +429,21 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	private void gotoEventLogEntry(EventLogEntry entry, Action action, boolean gotoClosest) {
         if (entry != null) {
             EventLogEntryReference reference = new EventLogEntryReference(entry);
+
             if (reference.isPresent(getEventLog()))
                 if (gotoClosest)
                     eventLogTable.gotoClosestElement(reference);
                 else
                     eventLogTable.gotoElement(reference);
             else
-                MessageDialog.openError(null, action.getText() , "Event not present in event log file");
+                MessageDialog.openError(null, action.getText() , "Event not present in current event log input.");
         }
         else
             MessageDialog.openError(null, action.getText() , "No such event");
 	}
 
 	private EventLogTableAction createGotoEventCauseAction() {
-		return new EventLogTableAction("Goto event cause") {
+		return new EventLogTableAction("Goto Event Cause") {
 			@Override
 			public void run() {
 			    gotoEventLogEntry(getCauseEventLogEntry(), this, true);
@@ -431,22 +457,20 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			private EventLogEntry getCauseEventLogEntry() {
 				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 				
-				if (eventLogEntryReference == null)
-					return null;
-				else {
-					IMessageDependency cause = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput()).getEvent().getCause();
+				if (eventLogEntryReference != null) {
+				    IMessageDependency cause = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber()).getCause();
 					
-					if (cause == null)
-						return null;
-					else
+					if (cause != null)
 						return cause.getBeginSendEntry();
 				}
+				
+				return null;
 			}
 		};
 	}
 
 	private EventLogTableAction createGotoMessageArrivalAction() {
-		return new EventLogTableAction("Goto message arrival") {
+		return new EventLogTableAction("Goto Message Arrival") {
 			@Override
 			public void run() {
 			    gotoEventLogEntry(getConsequenceEventLogEntry(), this, false);
@@ -462,7 +486,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 				if (eventLogEntryReference != null) {
 					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
-					IEvent event = eventLogEntry.getEvent();
+					IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
 					IMessageDependencyList consequences = event.getConsequences();
 					
 					for (int i = 0; i < consequences.size(); i++) {
@@ -485,7 +509,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createGotoMessageOriginAction() {
-		return new EventLogTableAction("Goto message origin") {
+		return new EventLogTableAction("Goto Message Origin") {
 			@Override
 			public void run() {
 			    gotoEventLogEntry(getMessageOriginEventLogEntry(), this, false);
@@ -501,7 +525,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 				if (eventLogEntryReference != null) {
 					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
-					IEvent event = eventLogEntry.getEvent();
+                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
 					IMessageDependencyList causes = event.getCauses();
 					
 					for (int i = 0; i < causes.size(); i++) {
@@ -523,7 +547,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createGotoMessageReuseAction() {
-		return new EventLogTableAction("Goto message reuse") {
+		return new EventLogTableAction("Goto Message Reuse") {
 			@Override
 			public void run() {
 			    gotoEventLogEntry(getMessageReuseEventLogEntry(), this, true);
@@ -538,15 +562,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
 				if (eventLogEntryReference != null) {
-					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
-					IEvent event = eventLogEntry.getEvent();
+                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
 					IMessageDependencyList consequences = event.getConsequences();
 					
 					for (int i = 0; i < consequences.size(); i++) {
 						IMessageDependency consequence = consequences.get(i);
 
 						if (eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(consequence.getCPtr())) {
-							BeginSendEntry beginSendEntry = consequence.getBeginSendEntry();
+							BeginSendEntry beginSendEntry = consequence.getConsequenceBeginSendEntry();
 							
 							if (beginSendEntry != null)
 								return beginSendEntry;
@@ -559,8 +582,76 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		};
 	}
 
-	private EventLogTableAction createGotoEventAction() {
-		return new EventLogTableAction("Goto event...") {
+    private EventLogTableAction createGotoPreviousModuleEventAction() {
+        return new EventLogTableAction("Goto Previous Module Event") {
+            @Override
+            public void run() {
+                gotoEventLogEntry(getPreviousModuleEventEntry(), this, false);
+            }
+
+            @Override
+            public void update() {
+            }
+            
+            private EventLogEntry getPreviousModuleEventEntry() {
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+
+                if (eventLogEntryReference != null) {
+                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    
+                    if (event != null) {
+                        int moduleId = event.getModuleId();
+            
+                        while (event != null) {
+                            event = event.getPreviousEvent();
+                            
+                            if (event != null && moduleId == event.getModuleId())
+                                return event.getEventEntry();
+                        }
+                    }
+                }
+                
+                return null;
+            }
+        };
+    }
+
+    private EventLogTableAction createGotoNextModuleEventAction() {
+        return new EventLogTableAction("Goto Next Module Event") {
+            @Override
+            public void run() {
+                gotoEventLogEntry(getNextModuleEventEntry(), this, false);
+            }
+
+            @Override
+            public void update() {
+            }
+            
+            private EventLogEntry getNextModuleEventEntry() {
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+
+                if (eventLogEntryReference != null) {
+                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    
+                    if (event != null) {
+                        int moduleId = event.getModuleId();
+            
+                        while (event != null) {
+                            event = event.getNextEvent();
+                            
+                            if (event != null && moduleId == event.getModuleId())
+                                return event.getEventEntry();
+                        }
+                    }
+                }
+                
+                return null;
+            }
+        };
+    }
+
+    private EventLogTableAction createGotoEventAction() {
+		return new EventLogTableAction("Goto Event...") {
 			@Override
 			public void run() {
 				InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
@@ -604,7 +695,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createGotoSimulationTimeAction() {
-		return new EventLogTableAction("Goto simulation time...") {
+		return new EventLogTableAction("Goto Simulation Time...") {
 			@Override
 			public void run() {
 				InputDialog dialog = new InputDialog(null, "Goto simulation time", "Please enter the simulation time to go to", null, new IInputValidator() {
@@ -648,7 +739,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createToggleBookmarkAction() {
-		return new EventLogTableAction("Toggle bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
+		return new EventLogTableAction("Toggle Bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
 			@Override
 			public void run() {
 				try {
@@ -694,7 +785,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		};
 	}
     private EventLogTableMenuAction createNameModeAction() {
-        return new EventLogTableMenuAction("Name mode", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_NAME_MODE)) {
+        return new EventLogTableMenuAction("Name Mode", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_NAME_MODE)) {
             private AbstractMenuCreator menuCreator;
 
             @Override
@@ -716,7 +807,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                         @Override
                         protected void createMenu(Menu menu) {
                             addSubMenuItem(menu, "Short", 0);
-                            addSubMenuItem(menu, "Full path", 1);
+                            addSubMenuItem(menu, "Full Path", 1);
                         }
     
                         private void addSubMenuItem(final Menu menu, String text, final int nameMode) {
@@ -746,7 +837,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     }
 
 	private EventLogTableMenuAction createDisplayModeAction() {
-		return new EventLogTableMenuAction("Display mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+		return new EventLogTableMenuAction("Display Mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
 			private AbstractMenuCreator menuCreator;
 
 			@Override
@@ -795,7 +886,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 	
 	private EventLogTableMenuAction createFilterModeAction() {
-		return new EventLogTableMenuAction("Filter mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
+		return new EventLogTableMenuAction("Filter Mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
 			private AbstractMenuCreator menuCreator;
 
 			@Override
@@ -867,7 +958,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createFilterAction() {
-		return new EventLogTableMenuAction("Event filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_FILTER)) {
+		return new EventLogTableMenuAction("Event Filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_FILTER)) {
 			@Override
 			public void run() {
 				if (isFilteredEventLog())

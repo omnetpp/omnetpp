@@ -98,9 +98,9 @@ public class EventLogFilterParameters implements Serializable {
 
 	public boolean collectMessageReuses = false;
     
-    public int maximumNumberOfMessageDependencies = 10;
+    public int maximumNumberOfMessageDependencies = 5;
 	
-	public int maximumDepthOfMessageDependencies = 30;
+	public int maximumDepthOfMessageDependencies = 15;
 
 	public EventLogFilterParameters(EventLogInput eventLogInput) {
 		this.eventLogInput = eventLogInput;

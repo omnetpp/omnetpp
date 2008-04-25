@@ -9,8 +9,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -50,6 +52,8 @@ public class EventLogTable
 	private IEventLog eventLog;
 
 	private EventLogTableFacade eventLogTableFacade;
+	
+	private EventLogTableContributor eventLogTableContributor;
 
 	/*************************************************************************************
 	 * CONSTRUCTION
@@ -84,6 +88,7 @@ public class EventLogTable
 	}
 
 	public void setEventLogTableContributor(EventLogTableContributor eventLogTableContributor) {
+	    this.eventLogTableContributor = eventLogTableContributor;
 		MenuManager menuManager = new MenuManager();
 		eventLogTableContributor.contributeToPopupMenu(menuManager);
 		setMenu(menuManager.createContextMenu(this));
@@ -92,6 +97,26 @@ public class EventLogTable
 	/*************************************************************************************
 	 * OVERRIDING BEHAVIOR
 	 */
+
+    @Override
+    protected void keyUpPressed(KeyEvent e) {
+        if (e.stateMask == 0)
+            super.keyUpPressed(e);
+        else if (e.stateMask == SWT.CTRL)
+            eventLogTableContributor.gotoEventCause();
+        else if (e.stateMask == SWT.SHIFT)
+            eventLogTableContributor.gotoPreviousModuleEvent();
+    }
+
+    @Override
+    protected void keyDownPressed(KeyEvent e) {
+        if (e.stateMask == 0)
+            super.keyDownPressed(e);
+        else if (e.stateMask == SWT.CTRL)
+            eventLogTableContributor.gotoMessageArrival();
+        else if (e.stateMask == SWT.SHIFT)
+            eventLogTableContributor.gotoNextModuleEvent();
+    }
 
 	@Override
 	protected void paint(final GC gc)

@@ -73,6 +73,7 @@ import org.omnetpp.eventlog.engine.FilteredMessageDependency;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
+import org.omnetpp.eventlog.engine.IMessageDependencyList;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.PtrVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
@@ -318,10 +319,64 @@ public class SequenceChart
             public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.F5)
 					refresh();
-				else if (e.keyCode == SWT.ARROW_LEFT)
-					moveSelection(-1);
-				else if (e.keyCode == SWT.ARROW_RIGHT)
-					moveSelection(1);
+				else if (e.keyCode == SWT.ARROW_LEFT) {
+				    if (e.stateMask == 0)
+				        moveSelection(-1);
+				    else if (e.stateMask == SWT.CTRL) {
+				        IEvent event = getSelectionEvent();
+				        
+				        if (event != null) {
+				            event = event.getCauseEvent();
+
+				            if (event != null)
+			                    gotoClosestElement(event);
+				        }
+				    }
+                    else if (e.stateMask == SWT.SHIFT) {
+                        IEvent event = getSelectionEvent();
+                        int moduleId = event.getModuleId();
+
+                        while (event != null) {
+                            event = event.getPreviousEvent();
+                            
+                            if (moduleId == event.getModuleId()) {
+                                gotoClosestElement(event);
+                                break;
+                            }
+                        }
+                    }
+				}
+				else if (e.keyCode == SWT.ARROW_RIGHT) {
+                    if (e.stateMask == 0)
+                        moveSelection(1);
+                    else if (e.stateMask == SWT.CTRL) {
+                        IEvent event = getSelectionEvent();
+                        
+                        if (event != null) {
+                            IMessageDependencyList consequences = event.getConsequences();
+
+                            if (consequences.size() > 0) {
+                                event = consequences.get(0).getConsequenceEvent();
+                                
+                                if (event != null)
+                                    gotoClosestElement(event);
+                            }
+                        }
+                    }
+                    else if (e.stateMask == SWT.SHIFT) {
+                        IEvent event = getSelectionEvent();
+                        int moduleId = event.getModuleId();
+
+                        while (event != null) {
+                            event = event.getNextEvent();
+                            
+                            if (moduleId == event.getModuleId()) {
+                                gotoClosestElement(event);
+                                break;
+                            }
+                        }
+                    }
+				}
 				else if (e.keyCode == SWT.ARROW_UP)
 					scrollAxes((int)Math.floor(-axisSpacing - 1));
 				else if (e.keyCode == SWT.ARROW_DOWN)

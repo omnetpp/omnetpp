@@ -248,9 +248,9 @@ public class VirtualTable<T>
 				else if (e.keyCode == SWT.ARROW_RIGHT)
 					scrollHorizontal(10);
 				else if (e.keyCode == SWT.ARROW_UP)
-					moveSelection(-1);
+				    keyUpPressed(e);
 				else if (e.keyCode == SWT.ARROW_DOWN)
-					moveSelection(1);
+				    keyDownPressed(e);
 				else if (e.keyCode == SWT.PAGE_UP)
 					moveSelection(-getPageJumpCount());
 				else if (e.keyCode == SWT.PAGE_DOWN)
@@ -295,6 +295,14 @@ public class VirtualTable<T>
 			}
 		});
 	}
+
+	protected void keyUpPressed(KeyEvent e) {
+        moveSelection(-1);
+	}
+
+    protected void keyDownPressed(KeyEvent e) {
+        moveSelection(1);
+    }
 
 	private void createTable(Composite parent) {
 		table = new Table(parent, SWT.NONE);
