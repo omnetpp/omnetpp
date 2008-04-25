@@ -71,10 +71,22 @@ public class FilteringPanel extends Composite {
 	}
 
 	public void setFilterHints(FilterHints hints) {
-		runCombo.setItems(hints.getHints(RUN));
-		moduleCombo.setItems(hints.getHints(MODULE));
-		dataCombo.setItems(hints.getHints(NAME));
+		setFilterHints(runCombo, hints.getHints(RUN));
+		setFilterHints(moduleCombo, hints.getHints(MODULE));
+		setFilterHints(dataCombo, hints.getHints(NAME));
 		advancedFilter.setFilterHints(hints);
+	}
+	
+	private void setFilterHints(Combo filterCombo, String[] hints) {
+		String[] items = hints;
+		// prevent gtk halting when the item count ~10000
+		int maxCount = 1000;
+		if (hints.length > maxCount) {
+			items = new String[maxCount];
+			System.arraycopy(hints, 0, items, 0, maxCount - 1);
+			items[maxCount - 1] = String.format("<%d skipped>", hints.length - (maxCount - 1));
+		}
+		filterCombo.setItems(items);
 	}
 
 	public void showSimpleFilter() {

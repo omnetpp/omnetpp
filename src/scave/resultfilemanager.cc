@@ -19,6 +19,7 @@
 #include <memory>
 #include <algorithm>
 #include <utility>
+#include <functional>
 #include "opp_ctype.h"
 #include "platmisc.h"
 #include "matchexpression.h"
@@ -33,6 +34,7 @@
 #include "resultfilemanager.h"
 #include "fileutil.h"
 #include "commonutil.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
@@ -1299,6 +1301,31 @@ class DuplicateStringCollector
     }
 };
 
+inline bool strdictLess(const std::string &first, const std::string &second)
+{
+	return strdictcmp(first.c_str(), second.c_str()) < 0;
+}
+
+struct StrDictCompare
+{
+	bool operator()(const std::string &first, const std::string &second)
+	{ 
+		return strdictLess(first, second);
+	}
+};
+
+typedef std::set<std::string, StrDictCompare> SortedStringSet;
+
+static void replaceDigitsWithWildcard(std::string &str)
+{
+	std::string::iterator start;
+	while ((start=std::find_if(str.begin(), str.end(), opp_isdigit))!=str.end())
+	{
+		std::string::iterator end = std::find_if(start, str.end(), std::not1(std::ptr_fun(opp_isdigit)));
+		str.replace(start, end, 1, '*');
+	}
+}
+
 StringVector *ResultFileManager::getFileAndRunNumberFilterHints(const IDList& idlist) const
 {
     FileRunList *fileRuns = getUniqueFileRuns(idlist);
@@ -1325,8 +1352,8 @@ StringVector *ResultFileManager::getFileAndRunNumberFilterHints(const IDList& id
 
     // sort and concatenate them, and return the result
     StringVector *wildvec = new StringVector(coll.get());
-    std::sort(vec.begin(), vec.end());
-    std::sort(wildvec->begin(), wildvec->end());
+    std::sort(vec.begin(), vec.end(), strdictLess);
+    std::sort(wildvec->begin(), wildvec->end(), strdictLess);
     wildvec->insert(wildvec->end(), vec.begin(), vec.end());
     return wildvec;
 }
@@ -1336,7 +1363,7 @@ StringVector *ResultFileManager::getFilePathFilterHints(const ResultFileList &fi
     StringVector *filterHints = new StringVector;
     for (ResultFileList::const_iterator it = fileList.begin(); it != fileList.end(); ++it)
         filterHints->push_back((*it)->filePath);
-    std::sort(filterHints->begin(), filterHints->end());
+    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
     filterHints->insert(filterHints->begin(), "*");
     return filterHints;
 }
@@ -1347,7 +1374,7 @@ StringVector *ResultFileManager::getRunNameFilterHints(const RunList &runList) c
     for (RunList::const_iterator it = runList.begin(); it != runList.end(); ++it)
         if ((*it)->runName.size() > 0)
             filterHints->push_back((*it)->runName);
-    std::sort(filterHints->begin(), filterHints->end());
+    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
     filterHints->insert(filterHints->begin(), "*");
     return filterHints;
 }
@@ -1356,17 +1383,18 @@ StringVector *ResultFileManager::getModuleFilterHints(const IDList& idlist) cons
 {
     StringSet& names = *getUniqueModuleNames(idlist);
 
-    StringVector vec;
+    SortedStringSet nameHints;
     DuplicateStringCollector coll;
 
     for (StringSet::iterator i=names.begin(); i!=names.end(); i++)
     {
         std::string a = (*i);
-        vec.push_back(a);
-
+        
         // replace embedded numbers with "*"
-        //FIXME TODO!!!!!!!!!!!!!!
-
+        if (names.size() > 100)
+        	replaceDigitsWithWildcard(a);
+        nameHints.insert(a);
+        
         // break it up along dots, and...
         StringTokenizer tokenizer(a.c_str(), ".");
         const char *prefix = "";
@@ -1383,9 +1411,8 @@ StringVector *ResultFileManager::getModuleFilterHints(const IDList& idlist) cons
     // sort and concatenate them, and return the result
     StringVector *wildvec = new StringVector(coll.get());
     wildvec->push_back(std::string("*"));
-    std::sort(vec.begin(), vec.end());
-    std::sort(wildvec->begin(), wildvec->end());
-    wildvec->insert(wildvec->end(), vec.begin(), vec.end());
+    std::sort(wildvec->begin(), wildvec->end(), strdictLess);
+    wildvec->insert(wildvec->end(), nameHints.begin(), nameHints.end());
     return wildvec;
 }
 
@@ -1417,8 +1444,8 @@ StringVector *ResultFileManager::getNameFilterHints(const IDList& idlist) const
     // sort and concatenate them, and return the result
     StringVector *wildvec = new StringVector(coll.get());
     wildvec->push_back(std::string("*"));
-    std::sort(vec.begin(), vec.end());
-    std::sort(wildvec->begin(), wildvec->end());
+    std::sort(vec.begin(), vec.end(), strdictLess);
+    std::sort(wildvec->begin(), wildvec->end(), strdictLess);
     wildvec->insert(wildvec->end(), vec.begin(), vec.end());
     return wildvec;
 }
@@ -1427,6 +1454,7 @@ StringVector *ResultFileManager::getResultItemAttributeFilterHints(const IDList 
 {
     StringSet *attrValues = getUniqueAttributeValues(idlist, attrName);
     StringVector *filterHints = new StringVector(attrValues->begin(), attrValues->end());
+    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
     filterHints->insert(filterHints->begin(), "*");
     delete attrValues;
     return filterHints;
@@ -1436,6 +1464,7 @@ StringVector *ResultFileManager::getRunAttributeFilterHints(const RunList &runLi
 {
     StringSet *attrValues = getUniqueRunAttributeValues(runList, attrName);
     StringVector *filterHints = new StringVector(attrValues->begin(), attrValues->end());
+    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
     filterHints->insert(filterHints->begin(), "*");
     delete attrValues;
     return filterHints;
@@ -1445,6 +1474,7 @@ StringVector *ResultFileManager::getModuleParamFilterHints(const RunList &runLis
 {
     StringSet *paramValues = getUniqueModuleParamValues(runList, paramName);
     StringVector *filterHints = new StringVector(paramValues->begin(), paramValues->end());
+    std::sort(filterHints->begin(), filterHints->end(), strdictLess);
     filterHints->insert(filterHints->begin(), "*");
     delete paramValues;
     return filterHints;
