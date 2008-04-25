@@ -42,10 +42,10 @@ class LegendTooltip implements ILegend
 	}
 	
 	public LegendTooltip(ChartCanvas parent) {
-		button = new Button(parent, SWT.TOGGLE | SWT.FLAT);
+		button = new Button(parent, SWT.TOGGLE | SWT.FLAT | SWT.CENTER);
 		Image icon = ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
 		button.setImage(icon);
-		button.setSize(icon.getBounds().width, icon.getBounds().height);
+		button.setSize(button.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		
 		final HoverSupport hoverSupport = new HoverSupport();
 		hoverSupport.setHoverSizeConstaints(320,400);
