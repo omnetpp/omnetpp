@@ -29,9 +29,6 @@ class EVENTLOG_API IEvent
         IEvent *nextEvent;
 
     public:
-        // gui state for EventLogTable
-        bool isExpandedInEventLogTable;
-
         // gui state for SequenceChart
         double cachedTimelineCoordinate;
         long cachedTimelineCoordinateSystemVersion;

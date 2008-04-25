@@ -20,7 +20,6 @@ IEvent::IEvent()
 {
     nextEvent = NULL;
     previousEvent = NULL;
-    isExpandedInEventLogTable = true;
     cachedTimelineCoordinate = -1;
     cachedTimelineCoordinateSystemVersion = -1;
 }
@@ -41,14 +40,12 @@ int IEvent::findBeginSendEntryIndex(int messageId)
 
 void IEvent::linkEvents(IEvent *previousEvent, IEvent *nextEvent)
 {
-    // used to build the linked list
     previousEvent->nextEvent = nextEvent;
     nextEvent->previousEvent = previousEvent;
 }
 
 void IEvent::unlinkEvents(IEvent *previousEvent, IEvent *nextEvent)
 {
-    // used to build the linked list
     previousEvent->nextEvent = NULL;
     nextEvent->previousEvent = NULL;
 }
