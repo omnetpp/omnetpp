@@ -25,6 +25,7 @@
 			<fileset dir="../">
 				<include name="org.omnetpp.ide/**" />
 				<include name="org.omnetpp.ide.commercial/**" />
+				<include name="org.omnetpp.ide.academic/**" />
 			</fileset>
 		</copy>
 	</target>
@@ -44,19 +45,6 @@
 				<pathelement location="${eclipseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar" />
 			</classpath>
 		</java>
-		<!--
-		<copy todir="${buildDirectory}/plugins">
-			<fileset dir="../">
-				<include name="org.omnetpp.*/**" />
-				<include name="org.eclipse.cdt.*/**" />
-				<exclude name="*/bin/**" />
-				<exclude name="org.omnetpp.ide/**" />
-				<exclude name="org.omnetpp.scave.old/**" />
-				<exclude name="org.omnetpp.test.*/**" />
-				<exclude name="org.omnetpp.experimental.*/**" />
-			</fileset>
-		</copy>
-		-->
 	</target>
 
 	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->	
