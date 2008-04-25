@@ -30,6 +30,8 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -147,6 +149,14 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		else if (TAB_LINES.equals(name)) {
 			Label label = new Label(panel, SWT.NONE);
 			label.setText("Select line(s) to apply changes to:");
+			Button selectAllButton = new Button(panel, SWT.PUSH);
+			selectAllButton.setText("Select all");
+			selectAllButton.addSelectionListener(new SelectionAdapter() {
+				@Override public void widgetSelected(SelectionEvent e) {
+					linesTableViewer.getTable().selectAll();
+				}
+			});
+
 			linesTableViewer = new TableViewer(panel, SWT.BORDER | SWT.MULTI);
 			GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
 			int itemsVisible = Math.max(Math.min(lines.length, 15), 3);
@@ -249,8 +259,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 				return;
 			}
 		}
-		
-		linesTableViewer.getTable().select(0);
+		linesTableViewer.getTable().selectAll();
 	}
 	
 	protected ImageCombo createImageComboField(String labelText, Composite parent) {
