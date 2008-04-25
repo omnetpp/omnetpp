@@ -77,3 +77,10 @@ It probably makes things easier if you have gcc and the usual GNU tools
 installed, but you should be able to get along using other C++ compilers too.
 If you get it to work, please send me a mail!
 
+4. TIPS
+- If you are using Advanced Desktop effects on Linux you may notice that all windows
+  (including tooltip, menu etc.) are using the the open/close animation. This can be
+  quite annoying for menus and tooltips. To disable this behavior, go to 
+  Advanced Desktop Effect Settings / Animations and on the Open/Close  Animation tab
+  and change the "type=Unknown" to "name=tk" selection entries. This will effectively 
+  disable the animation for non toplevel Tcl/Tk windows.
