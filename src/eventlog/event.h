@@ -55,8 +55,6 @@ class EVENTLOG_API Event : public IEvent
         IMessageDependencyList *causes; // the arrival message sends of messages which we send in this event
         IMessageDependencyList *consequences; // message sends in this event
 
-        Event *getReuserEvent(int &beginSendEntryNumber);
-
     public:
         Event(EventLog *eventLog);
         ~Event();
@@ -105,11 +103,10 @@ class EVENTLOG_API Event : public IEvent
     protected:
         void deleteAllocatedObjects();
         void clearInternalState();
+        Event *getReuserEvent(int &beginSendEntryNumber);
 };
 
 NAMESPACE_END
 
 
 #endif
-
-
