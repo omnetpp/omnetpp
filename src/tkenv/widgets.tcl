@@ -106,20 +106,56 @@ proc setupTkOptions {} {
    #  fixed:   text windows and listboxes
    #
 
-   if {$tcl_platform(platform) == "unix"} {
+   if {[string equal [tk windowingsystem] x11]} {
       set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
       set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-12-*-*-*-*-*-*-*
       set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-18-*-*-*-*-*-*-*
       set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
       set fonts(fixed)   fixed
       set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-12-*-*-*-*-*-*-*
+
+      option add *Scrollbar.width  12
+      option add *Menubutton.font  $fonts(normal)
+      option add *Menu.font        $fonts(normal)
+      option add *Label.font       $fonts(normal)
+      option add *Entry.font       $fonts(normal)
+      option add *Listbox.font     $fonts(fixed)
+      option add *Text.font        $fonts(fixed)
+      option add *TreeView.font    $fonts(fixed)
+      option add *Button.font      $fonts(bold)
+
+      # make menus look more contemporary
+      menu .tmp
+      set activebg [.tmp cget -activebackground]
+      set activefg [.tmp cget -activeforeground]
+      destroy .tmp
+      option add *Menu.activeBorderWidth 0
+      option add *Menu.relief raised
+      option add *Menu.activeBackground #800000
+      option add *Menu.activeForeground white
+      option add *menubar.borderWidth 1
+      option add *menubar.activeBorderWidth 1
+      option add *menubar.activeBackground $activebg
+      option add *menubar.activeForeground $activefg
+
+   } elseif {[string equal [tk windowingsystem] aqua]} {
+      # Mac
+      font create opp_normal -family "Arial" -size 12
+      font create opp_bold   -family "Arial" -size 12 -weight bold
+      font create opp_balloon -family "Arial" -size 12
+      font create opp_fixed -family "Courier" -size 12
+
+      set fonts(normal)  opp_normal
+      set fonts(bold)    opp_bold
+      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
+      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
+      set fonts(fixed)   opp_fixed
+      set fonts(balloon) opp_balloon
+
+      option add *Listbox.font   $fonts(fixed)
+      option add *TreeView.font  $fonts(fixed)
    } else {
-      # Windows, Mac
-      if {$tk_version<8.2} {
-         set s 140
-      } else {
-         set s 110
-      }
+      # Windows
       font create opp_normal -family "MS Sans Serif" -size 8
       font create opp_bold   -family "MS Sans Serif" -size 8 -weight bold
       font create opp_balloon -family "MS Sans Serif" -size 8
@@ -127,14 +163,14 @@ proc setupTkOptions {} {
       set fonts(normal)  opp_normal
       set fonts(bold)    opp_bold
       set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
-      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
+      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-110-*-*-*-*-*-*
       set fonts(fixed)   FixedSys
       set fonts(balloon) opp_balloon
 
       option add *TreeView.font  $fonts(normal)
    }
 
-   if {$tcl_platform(platform) == "unix"} {
+   if {[string equal [tk windowingsystem] x11]} {
        option add *Scrollbar.width  12
        option add *Menubutton.font  $fonts(normal)
        option add *Menu.font        $fonts(normal)
@@ -755,7 +791,7 @@ proc _focusTableEntry {e c} {
 #
 #
 proc multicolumnlistbox {w columnlist args} {
-    global HAVE_BLT B2 B3
+    global HAVE_BLT B2 B3 fonts
     if {$HAVE_BLT} {
         blt::treeview $w -allowduplicates yes -flat yes
         $w column configure treeView -hide no -width 15 -state disabled
@@ -780,7 +816,7 @@ proc multicolumnlistbox {w columnlist args} {
     } else {
         # emulate it with listbox widget
         global mclistbox
-        listbox $w
+        listbox $w -font $fonts(fixed)
         if {$args!=""} {
              eval $w config $args
         }
