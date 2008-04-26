@@ -830,7 +830,12 @@ proc multicolumnlistbox {w columnlist args} {
         # store column names -- we'll need them later
         set cols {}
         foreach i $columnlist {
-            lappend cols [lindex $i 0]
+            set name [lindex $i 0]
+            set label [lindex $i 1]
+            set width [lindex $i 2]
+            if {$width==""} {set width 15} else {set width [expr $width/6]}
+            lappend cols $name
+            set mclistbox($w,columnwidth,$name) $width
         }
         set mclistbox($w,columns) $cols
     }
@@ -870,12 +875,18 @@ proc multicolumnlistbox_insert {w rowname data {icon ""}} {
         global mclistbox
         array set ary $data
         set row ""
+        set overshoot 0
         foreach col $mclistbox($w,columns) {
-            set padlength [expr 15 - [string length $ary($col)]]
-            if {$padlength < 0} { set padlength 0 }
-            set padding [string repeat " " $padlength]
             # catch because it might be missing from the array
-            catch {append row "$ary($col)$padding "}
+            set value "n/a"
+            catch {set value $ary($col)}
+            set width $mclistbox($w,columnwidth,$col)
+            set valuelength [string length $value]
+            set padlength [expr $width - $valuelength - $overshoot]
+            if {$padlength < 0} {set padlength 0}
+            incr overshoot [expr $valuelength + $padlength - $width]
+            set padding [string repeat " " $padlength]
+            append row "$value$padding  "
         }
         append row [string repeat " " 160]
         append row $rowname
