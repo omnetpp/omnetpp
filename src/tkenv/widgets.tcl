@@ -871,8 +871,11 @@ proc multicolumnlistbox_insert {w rowname data {icon ""}} {
         array set ary $data
         set row ""
         foreach col $mclistbox($w,columns) {
+            set padlength [expr 15 - [string length $ary($col)]]
+            if {$padlength < 0} { set padlength 0 }
+            set padding [string repeat " " $padlength]
             # catch because it might be missing from the array
-            catch {append row "$ary($col)   "}
+            catch {append row "$ary($col)$padding "}
         }
         append row [string repeat " " 160]
         append row $rowname
