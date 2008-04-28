@@ -79,7 +79,6 @@ public class CloneSubmoduleCommand extends Command {
         // duplicate the subtree but do not add to the new parent yet
         newModule = (SubmoduleElementEx)oldModule.deepDup();
 
-        newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
 
         // make the cloned submodule's name unique within the parent, before inserting into the model
         // so it wont generate unnecessary notifications
@@ -92,6 +91,8 @@ public class CloneSubmoduleCommand extends Command {
             parent.insertSubmodule(index, newModule);
         }
 
+        newModule.getDisplayString().setLocation(newBounds.getLocation(), scale);
+        
         // keep track of the new modules so we can delete them in undo
         newModules.add(newModule);
 
