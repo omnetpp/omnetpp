@@ -392,26 +392,7 @@ public class NedEditor
                 return true;
 
             Display display = getSite().getShell().getDisplay();
-            if (delta.getKind() == IResourceDelta.REMOVED) {
-                if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) {
-                    // if the file was deleted
-                    display.asyncExec(new Runnable() {
-                        public void run() {
-                            inputFileDeletedFromDisk();
-                        }
-                    });
-                }
-                else {
-                	// else if it was moved or renamed
-                    final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(delta.getMovedToPath());
-                    display.asyncExec(new Runnable() {
-                        public void run() {
-                            inputFileMovedOrRenamedOnDisk(newFile);
-                        }
-                    });
-                }
-            }
-            else if (delta.getKind() == IResourceDelta.CHANGED) {
+            if (delta.getKind() == IResourceDelta.CHANGED) {
                 display.asyncExec(new Runnable() {
                     public void run() {
                     	inputFileModifiedOnDisk();
@@ -422,21 +403,13 @@ public class NedEditor
         }
     }
 
-	protected void inputFileDeletedFromDisk() {
-		if (isDirty()) {
-		    ; //FIXME ask user!
-		}
-		closeEditor(false);
-	}
-
-	protected void inputFileMovedOrRenamedOnDisk(IFile newFile) {
-		setInput(new FileEditorInput(newFile));
-	}
-
 	protected void inputFileModifiedOnDisk() {
         // the file was overwritten somehow (could have been
         // replaced by another version in the repository)
         // TODO ask the user and reload the file
+		if (isDirty()) {
+		    ; //FIXME ask user!
+		}
 	}
 
     public void gotoMarker(IMarker marker) {

@@ -613,6 +613,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * NED editors should call this when they get closed.
      */
     public synchronized void disconnect(IFile file) {
+    	Assert.isTrue(connectCount.containsKey(file));
         int count = connectCount.get(file); // must exist
         if (count <= 1) {
             // there's no open editor -- remove counter and re-read last saved

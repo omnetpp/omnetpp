@@ -5,8 +5,11 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -58,7 +61,7 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 // and InifileAnalyzer is synchronized on NEDResources and has to wait until NED validation ends.
 // Solution: NED validation shouldn't lock NEDResources? (ie run validation on a *clone* of the trees)
 //TODO for units, tooltip should display "seconds" not only "s" 
-public class InifileEditor extends MultiPageEditorPart implements IResourceChangeListener, IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
+public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
 	/* editor pages */
 	private InifileTextEditor textEditor;
 	private InifileFormEditor formEditor;
@@ -66,6 +69,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	public static final int TEXTEDITOR_PAGEINDEX = 1;
 
 	private InifileEditorData editorData = new InifileEditorData();
+	private ResourceTracker resourceTracker = new ResourceTracker();
 	private InifileContentOutlinePage outlinePage;
 	private DelayedJob postSelectionChangedJob;
 	
@@ -74,7 +78,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 */
 	public InifileEditor() {
 		super();
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceTracker);
 	}
  
 	public InifileEditorData getEditorData() {
@@ -235,7 +239,7 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 	 */
 	@Override
 	public void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceTracker);
 		if (outlinePage != null)
 			outlinePage.setInput(null); //XXX ?
 		((InifileDocument)editorData.getInifileDocument()).dispose();
@@ -335,25 +339,91 @@ public class InifileEditor extends MultiPageEditorPart implements IResourceChang
 		return super.getAdapter(required);
 	}
 	
-	/**
-	 * Called on workspace changes.
-	 */
-	public void resourceChanged(IResourceChangeEvent event) {
-		// close editor on project close
-		if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
-			final IEditorPart thisEditor = this;
-			final IResource resource = event.getResource();
-			Display.getDefault().asyncExec(new Runnable(){
-				public void run(){
-					if (((FileEditorInput)thisEditor.getEditorInput()).getFile().getProject().equals(resource)) {
-						thisEditor.getSite().getPage().closeEditor(thisEditor, true);
-					}
-				}            
-			});
-		}
+    /**
+     * This class listens to changes to the file system in the workspace, and
+     * makes changes accordingly.
+     * 1) An open, saved file gets deleted -> close the editor
+     * 2) An open file gets renamed or moved -> change the editor's input accordingly
+     */
+    class ResourceTracker implements IResourceChangeListener, IResourceDeltaVisitor {
+        public void resourceChanged(IResourceChangeEvent event) {
+    		// close editor on project close
+    		if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
+    			final IEditorPart thisEditor = InifileEditor.this;
+    			final IResource resource = event.getResource();
+    			Display.getDefault().asyncExec(new Runnable(){
+    				public void run(){
+    					if (((FileEditorInput)thisEditor.getEditorInput()).getFile().getProject().equals(resource)) {
+    						thisEditor.getSite().getPage().closeEditor(thisEditor, true);
+    					}
+    				}            
+    			});
+    		}
+    		// visit all changed resources and check if we have changed/deleted
+    		IResourceDelta delta = event.getDelta();
+            try {
+                if (delta != null) delta.accept(this);
+            }
+            catch (CoreException e) {
+            	throw new RuntimeException(e);
+            }
+        }
+
+        public boolean visit(IResourceDelta delta) {
+            if (delta == null || !delta.getResource().equals(((IFileEditorInput) getEditorInput()).getFile()))
+                return true;
+
+            Display display = getSite().getShell().getDisplay();
+            if (delta.getKind() == IResourceDelta.REMOVED) {
+                if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) {
+                    // if the file was deleted
+                    display.asyncExec(new Runnable() {
+                        public void run() {
+                            inputFileDeletedFromDisk();
+                        }
+                    });
+                }
+                else {
+                	// else if it was moved or renamed
+                    final IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(delta.getMovedToPath());
+                    display.asyncExec(new Runnable() {
+                        public void run() {
+                            inputFileMovedOrRenamedOnDisk(newFile);
+                        }
+                    });
+                }
+            }
+            else if (delta.getKind() == IResourceDelta.CHANGED) {
+                display.asyncExec(new Runnable() {
+                    public void run() {
+                    	inputFileModifiedOnDisk();
+                    }
+                });
+            }
+            return false;
+        }
+    }
+	
+	protected void inputFileDeletedFromDisk() {
+		closeEditor(false);
 	}
 
-	/* (non-Javadoc)
+	protected void inputFileMovedOrRenamedOnDisk(IFile newFile) {
+		closeEditor(false);
+	}
+	
+	protected void inputFileModifiedOnDisk() {
+		// TODO ask the user to keep/throw away change
+	}
+
+    /**
+     * Closes the editor and optionally saves it.
+     */
+    protected void closeEditor(boolean save) {
+        getSite().getPage().closeEditor(this, save);
+    }
+
+    /* (non-Javadoc)
 	 * Method declared on IGotoMarker
 	 */
 	public void gotoMarker(IMarker marker) {
