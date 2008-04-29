@@ -8,6 +8,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.commands.Command;
 
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.GateAnchor;
@@ -132,6 +133,8 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
         // set the rest of the display properties
         getSubmoduleFigure().setDisplayString(dps);
+        
+        getSubmoduleFigure().setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE)) ? "#" : "");
 
         // show/hide the pin marker
         getSubmoduleFigure().setPinDecoration(dps.getLocation(scale) != null);
