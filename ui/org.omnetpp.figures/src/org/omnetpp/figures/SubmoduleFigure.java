@@ -177,9 +177,9 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds {
         invalidate();
     }
 
-    protected void setQueueText(String qtext) {
+    public void setQueueText(String qtext) {
         queueFigure.setVisible(qtext != null && !"".equals(qtext));
-        queueFigure.setText(qtext);
+        queueFigure.setText("q:"+qtext);
         invalidate();
     }
 
@@ -341,9 +341,6 @@ public class SubmoduleFigure extends NedFigure implements HandleBounds {
         		dps.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
         // tooltip support
         setTooltipText(dps.getAsString(IDisplayString.Prop.TOOLTIP));
-
-        // queue length support
-        setQueueText(dps.getAsString(IDisplayString.Prop.QUEUE));
 
         // additional text support
         setInfoText(dps.getAsString(IDisplayString.Prop.TEXT),
