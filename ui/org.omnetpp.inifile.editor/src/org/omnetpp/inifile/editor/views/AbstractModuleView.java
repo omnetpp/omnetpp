@@ -2,7 +2,6 @@ package org.omnetpp.inifile.editor.views;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -78,6 +77,7 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 		selectionChangedListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 				if (part != AbstractModuleView.this) // ignore our own selection changes
+					// System.out.println("*** AbstractModule selection changed from: "+part);
 					workbenchSelectionChanged();
 			}
 		};
@@ -149,7 +149,6 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 	}
 
 	public void workbenchSelectionChanged() {
-		//System.out.println("*** SELECTIONCHANGE");
 		scheduleRebuildContent();
 	}
 

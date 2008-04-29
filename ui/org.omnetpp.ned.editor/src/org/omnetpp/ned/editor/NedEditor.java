@@ -86,6 +86,7 @@ public class NedEditor
         }
 
         public void partActivated(IWorkbenchPart part) {
+        	System.out.println(part.toString()+" activated");
             if (part == NedEditor.this) {
                 if (getEditorInput() != null && NEDResourcesPlugin.getNEDResources().containsNedFileElement(getFile())) {
                     // when switching from another MultiPageNedEditor to this one for the same file
@@ -268,7 +269,7 @@ public class NedEditor
         super.pageChange(newPageIndex);
 
         // XXX Kludge: currently the workbench do not send a partActivated/deactivated messages
-        // for embedded editors in a MultiPageEditorView. (This is a missing unimplemented feature,
+        // for embedded editors in a MultiPageEditor. (This is a missing unimplemented feature,
         // it works with MultiEditor though).
         // To make the NED editor Outline page active, we need to send activate/deactivate directly.
         // We find the Outline View directly, and send the notification by hand.
@@ -278,16 +279,16 @@ public class NedEditor
         // for a ContentOutlinePage (via getAdapter). The current implementation of
         // MultipageEditorPart.getAdapter delegates this request to the active embedded editor.
         //
-        ContentOutline contentOutline = (ContentOutline)getEditorSite().getPage().findView(IPageLayout.ID_OUTLINE);
-        if (contentOutline != null) {
-            // notify from the old closed editor
-        	// TODO: after switching to text page and back to graphical page the dragging will be broken in the outline view
-        	//       look at somewhere near hookControl() and refreshDragSourceAdapter() in AbstractEditPartView
-        	//       somehow the getDragSource() method returns a non null value and listeners are not correctly hooked up
-        	//       and that's why dragging will not work AFAICT now. KLUDGE: this has been worked around in GraphicalNedEditor
-            contentOutline.partClosed(this);
-            contentOutline.partActivated(this);
-        }
+//        ContentOutline contentOutline = (ContentOutline)getEditorSite().getPage().findView(IPageLayout.ID_OUTLINE);
+//        if (contentOutline != null) {
+//            // notify from the old closed editor
+//        	// TODO: after switching to text page and back to graphical page the dragging will be broken in the outline view
+//        	//       look at somewhere near hookControl() and refreshDragSourceAdapter() in AbstractEditPartView
+//        	//       somehow the getDragSource() method returns a non null value and listeners are not correctly hooked up
+//        	//       and that's why dragging will not work AFAICT now. KLUDGE: this has been worked around in NedOutlinePage
+//            contentOutline.partClosed(this);
+//            contentOutline.partActivated(this);
+//        }
         // end of kludge
 
 		// switch from graphics to text:

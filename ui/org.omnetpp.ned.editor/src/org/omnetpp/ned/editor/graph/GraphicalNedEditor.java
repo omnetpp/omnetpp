@@ -560,8 +560,8 @@ public class GraphicalNedEditor
     public void refresh() {
         getGraphicalViewer().getContents().refresh();
         paletteRefreshJob.restartTimer();
-        if (outlinePage != null)
-            outlinePage.refresh();
+//        if (outlinePage != null)
+//            outlinePage.refresh();
     }
 
     /**

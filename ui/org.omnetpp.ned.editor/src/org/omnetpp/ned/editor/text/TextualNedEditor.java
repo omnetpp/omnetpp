@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.Region;
@@ -18,13 +19,17 @@ import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
@@ -32,7 +37,6 @@ import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
-import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.editor.text.TextEditorUtil;
@@ -48,9 +52,10 @@ import org.omnetpp.ned.editor.text.actions.FormatSourceAction;
 import org.omnetpp.ned.editor.text.actions.GotoDeclarationAction;
 import org.omnetpp.ned.editor.text.actions.OrganizeImportsAction;
 import org.omnetpp.ned.editor.text.actions.ToggleCommentAction;
-import org.omnetpp.ned.editor.text.outline.NedContentOutlinePage;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.NEDSourceRegion;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.interfaces.IModelProvider;
 import org.omnetpp.ned.model.notification.INEDChangeListener;
 import org.omnetpp.ned.model.notification.NEDMarkerChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
@@ -61,7 +66,7 @@ import org.omnetpp.ned.model.notification.NEDModelEvent;
  *
  * @author rhornig
  */
-public class TextualNedEditor extends TextEditor implements INEDChangeListener {
+public class TextualNedEditor extends TextEditor implements INEDChangeListener, ISelectionListener {
 
     private static final String CUSTOM_TEMPLATES_KEY = "org.omnetpp.ned.editor.text.customtemplates";
     public static final String[] KEY_BINDING_SCOPES = { "org.omnetpp.context.nedEditor" };
@@ -74,12 +79,13 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
     private static ContributionContextTypeRegistry fRegistry;
 
     /** The outline page */
-	private NedContentOutlinePage fOutlinePage;
+//	private NedContentOutlinePage fOutlinePage;
 
 	/** The projection support */
 	private ProjectionSupport fProjectionSupport;
 
 	private DelayedJob pullChangesJob;
+	private NedSelectionProvider nedSelectionProvider;
 
 	/**
 	 * Default constructor.
@@ -101,6 +107,7 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 	    super.init(site, input);
         // listen on NED model changes
         NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+        getSite().getPage().addSelectionListener(this);
 	}
 
 	@Override
@@ -114,11 +121,10 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
      */
     @Override
     public void dispose() {
-        if (fOutlinePage != null)
-            fOutlinePage.setInput(null);
         if (pullChangesJob != null)
             pullChangesJob.cancel();
 
+        getSite().getPage().removeSelectionListener(this);
         NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
         super.dispose();
     }
@@ -160,11 +166,8 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning");
         fProjectionSupport.install();
         viewer.doOperation(ProjectionViewer.TOGGLE);
-        // we should set the selection provider as late as possible because the outer multipage editor overrides it
-        // during editor initialization
-        // install a selection provider that provides StructuredSelection of NEDModel elements in getSelection
-        // instead of ITestSelection
-        getSite().setSelectionProvider(new NedSelectionProvider(this));
+        nedSelectionProvider = new NedSelectionProvider(this);
+		getSite().setSelectionProvider(nedSelectionProvider);
     }
 
     /**
@@ -260,50 +263,6 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, FindTextInNedFilesActionDelegate.ID);  //XXX wrong place
     }
 
-
-	/** The <code>TextualNedEditor</code> implementation of this
-	 * <code>AbstractTextEditor</code> method performs any extra
-	 * revert behavior required by the ned editor.
-	 */
-	@Override
-    public void doRevertToSaved() {
-		super.doRevertToSaved();
-		if (fOutlinePage != null)
-			fOutlinePage.update();
-	}
-
-	/** The <code>TextualNedEditor</code> implementation of this
-	 * <code>AbstractTextEditor</code> method performs any extra
-	 * save behavior required by the ned editor.
-	 *
-	 * @param monitor the progress monitor
-	 */
-	@Override
-    public void doSave(IProgressMonitor monitor) {
-		super.doSave(monitor);
-		if (fOutlinePage != null)
-			fOutlinePage.update();
-	}
-
-	/**
-	 * The TextualNedEditor implementation of this AbstractTextEditor
-	 * method performs any extra behavior needed by the NED editor.
-	 */
-	@Override
-    public void doSaveAs() {
-		super.doSaveAs();
-		if (fOutlinePage != null)
-			fOutlinePage.update();
-	}
-
-	@Override
-    public void doSetInput(IEditorInput input) throws CoreException {
-        Assert.isNotNull(input, "Text editor cannot display NULL input");
-		super.doSetInput(input);
-		if (fOutlinePage != null)
-			fOutlinePage.setInput(input);
-	}
-
 	/**
 	 * Sets the content of the text editor to the given string.
 	 */
@@ -344,15 +303,6 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 	 */
 	@SuppressWarnings("unchecked") @Override
     public Object getAdapter(Class required) {
-		if (IContentOutlinePage.class.equals(required)) {
-			if (fOutlinePage == null) {
-				fOutlinePage= new NedContentOutlinePage(getDocumentProvider(), this);
-				if (getEditorInput() != null)
-					fOutlinePage.setInput(getEditorInput());
-			}
-			return fOutlinePage;
-		}
-
 		if (fProjectionSupport != null) {
 			Object adapter= fProjectionSupport.getAdapter(getSourceViewer(), required);
 			if (adapter != null)
@@ -375,11 +325,22 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
 		}
 	}
 
+	/**
+	 * Whether it is the currently active editor (not necessarily the active part however if a view is currently the
+	 * active part.
+	 */
 	public boolean isActive() {
 		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
 		IEditorPart activeEditorPart = activePage==null ? null : activePage.getActiveEditor();
 		return activeEditorPart == this ||
 			(activeEditorPart instanceof NedEditor && ((NedEditor)activeEditorPart).isActiveEditor(this));
+	}
+
+	public boolean isActivePart() {
+		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
+		 IWorkbenchPart activePart = activePage==null ? null : activePage.getActivePart();
+		return activePart == this ||
+			(activePart instanceof NedEditor && ((NedEditor)activePart).isActiveEditor(this));
 	}
 
     public void modelChanged(NEDModelEvent event) {
@@ -453,4 +414,36 @@ public class TextualNedEditor extends TextEditor implements INEDChangeListener {
         TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing
         // TODO: then parse in again, and update line numbers with the resulting tree? I think this should not be done here but somewhere else
     }
+
+    
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		// do not react to notification changes if we are the active editor or we are currently 
+		// setting our selection
+		if (isActivePart() || nedSelectionProvider.isNotificationInProgress())
+			return;
+		
+		// System.out.println("*** TextEditor selection changed from: "+part+" selection: "+selection);
+		if (selection instanceof IStructuredSelection) {
+			Object firstElement = ((IStructuredSelection) selection).getFirstElement();
+			if (selection.isEmpty())
+				resetHighlightRange();
+			else if (firstElement instanceof IModelProvider){
+				INEDElement node = ((IModelProvider)firstElement).getNedModel();
+				//System.out.println("selected: "+node);
+				NEDSourceRegion region = node.getSourceRegion();
+				if (region!=null) {
+					IDocument docu = getDocument();
+					try {
+						int startOffset = docu.getLineOffset(region.getStartLine()-1)+region.getStartColumn();
+						int endOffset = docu.getLineOffset(region.getEndLine()-1)+region.getEndColumn();
+						setHighlightRange(startOffset, endOffset-startOffset, true);
+					} catch (BadLocationException e) {
+					}
+					catch (IllegalArgumentException x) {
+						resetHighlightRange();
+					}
+				}
+			}
+		}
+	}
 }

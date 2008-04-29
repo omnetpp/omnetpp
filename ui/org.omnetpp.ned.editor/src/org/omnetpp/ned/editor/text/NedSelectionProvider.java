@@ -20,6 +20,7 @@ import org.omnetpp.ned.model.INEDElement;
  */
 public class NedSelectionProvider implements IPostSelectionProvider {
         private TextualNedEditor fNedTextEditor;
+		private boolean notificationInProgress = false;
 
         public NedSelectionProvider(TextualNedEditor editor) {
             super();
@@ -68,7 +69,9 @@ public class NedSelectionProvider implements IPostSelectionProvider {
          * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(ISelection)
          */
         public void setSelection(ISelection selection) {
-            fNedTextEditor.getSelectionProvider().setSelection(selection);
+        	notificationInProgress = true;
+        	fNedTextEditor.getSelectionProvider().setSelection(selection);
+        	notificationInProgress = false;
         }
 
         /*
@@ -96,4 +99,8 @@ public class NedSelectionProvider implements IPostSelectionProvider {
                 }
             }
         }
+
+		public boolean isNotificationInProgress() {
+			return notificationInProgress;
+		}
 }

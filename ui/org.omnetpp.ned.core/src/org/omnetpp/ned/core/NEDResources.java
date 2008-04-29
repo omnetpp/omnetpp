@@ -1008,6 +1008,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * Respond to model changes
      */
     protected void nedModelChanged(NEDModelEvent event) {
+    	// System.out.println("**** nedModelChanged - notify");
         if (nedModelChangeNotificationDisabled)
             return;
 
