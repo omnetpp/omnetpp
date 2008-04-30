@@ -67,7 +67,7 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
     memoryUsed = 0;
 
     long d = (long) ev.config()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
-    maxMemoryUsed = (size_t) max(d, MIN_BUFFER_MEMORY);
+    maxMemoryUsed = (size_t) std::max(d, (long)MIN_BUFFER_MEMORY);
 }
 
 void cIndexedFileOutputVectorManager::openIndexFile()
@@ -203,8 +203,8 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
         currentBlock.endTime = t;
         currentBlock.endEventNum = eventNumber;
         currentBlock.count++;
-        currentBlock.min = min(currentBlock.min, value);
-        currentBlock.max = max(currentBlock.max, value);
+        currentBlock.min = std::min(currentBlock.min, value);
+        currentBlock.max = std::max(currentBlock.max, value);
         currentBlock.sum += value;
         currentBlock.sumSqr += value*value;
 

@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <algorithm>
 
 #include "cenvir.h"
 #include "carray.h"
@@ -1183,9 +1184,9 @@ int hsbToRgb_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    // produce rgb
    char rgb[10];
    sprintf(rgb,"#%2.2x%2.2x%2.2x",
-                int(min(red*256,255)),
-                int(min(green*256,255)),
-                int(min(blue*256,255))
+                (int) std::min(red*256, 255.0),
+                (int) std::min(green*256, 255.0),
+                (int) std::min(blue*256, 255.0)
           );
    Tcl_SetResult(interp, rgb, TCL_VOLATILE);
    return TCL_OK;
