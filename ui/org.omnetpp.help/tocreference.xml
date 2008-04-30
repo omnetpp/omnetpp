@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?NLS TYPE="org.eclipse.help.toc"?>
 
-<toc label="Reference" link_to="toc.xml#reference"> 
-	<topic label="Main Topic"  href="html/reference/maintopic.html"> 
-		<topic label="Sub Topic" href="html/reference/subtopic.html" /> 
+<toc label="References" link_to="toc.xml#reference"> 
+	<topic label="Simulation kernel API"  href="http://www.omnetpp.org/doc/omnetpp/4.0/api/main.html"> 
 	</topic>
-	<topic label="Main Topic 2">
-		<topic label="Sub Topic 2" href="html/reference/subtopic2.html" /> 
-	</topic> 
+	<topic label="Parallel Simulation API"  href="http://www.omnetpp.org/doc/omnetpp/4.0/parsim-api/main.html"> 
+	</topic>
+	<topic label="NED XML API"  href="http://www.omnetpp.org/doc/omnetpp/4.0/nedxml-api/main.html"> 
+	</topic>
 </toc>
