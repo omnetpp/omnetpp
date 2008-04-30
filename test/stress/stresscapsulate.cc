@@ -15,22 +15,22 @@ Define_Module(StressCapsulate);
 
 void StressCapsulate::handleMessage(cMessage *msg)
 {
-	if (msg->encapsulatedMsg() && uniform(0, 1) < par("decapsulateProbability").doubleValue()) {
-		ev << "Decapsulating message: "  << msg << "\n";;
-		cMessage *decapsulatedMsg = msg->decapsulate();
+    if (msg->encapsulatedMsg() && uniform(0, 1) < par("decapsulateProbability").doubleValue()) {
+        ev << "Decapsulating message: "  << msg << "\n";;
+        cMessage *decapsulatedMsg = msg->decapsulate();
         decapsulatedMsg->setName("Decapsulated");
-    	delete msg;
-		msg = decapsulatedMsg;
-	}
-	
-	if (uniform(0, 1) < par("encapsulateProbability").doubleValue()) {
-		ev << "Encapsulating message: "  << msg << "\n";;
-		StressPacket *encapsulatedMsg = new StressPacket();
+        delete msg;
+        msg = decapsulatedMsg;
+    }
+
+    if (uniform(0, 1) < par("encapsulateProbability").doubleValue()) {
+        ev << "Encapsulating message: "  << msg << "\n";;
+        StressPacket *encapsulatedMsg = new StressPacket();
         encapsulatedMsg->setName("Encapsulated");
-		encapsulatedMsg->setLength((long)exponential(par("messageLength")));
-	   	encapsulatedMsg->encapsulate(msg);
-	   	msg = encapsulatedMsg;
-	}
-	
-	send(msg, "out", intrand(gateSize("out")));
+        encapsulatedMsg->setLength((long)exponential(par("messageLength").doubleValue()));
+        encapsulatedMsg->encapsulate(msg);
+        msg = encapsulatedMsg;
+    }
+
+    send(msg, "out", intrand(gateSize("out")));
 }
