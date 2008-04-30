@@ -314,9 +314,12 @@ foreach $element (@elements)
 
     $decl = $elementdecl{$element}."\n".$attlistdecl{$element}."\n";
     $decl =~ s/^/ * /mg;
+    $decl =~ s/</\\</mg;
+    $decl =~ s/>/\\>/mg;
+    $decl =~ s/#/\\#/mg;
 
     print H "/**\n";
-    print H " * GENERATED CLASS. Represents the &lt;$element&gt; XML element in memory. DTD declaration:\n";
+    print H " * GENERATED CLASS. Represents the \\<$element\\> XML element in memory. DTD declaration:\n";
     print H " * \n";
     print H " * <pre>\n";
     print H $decl;

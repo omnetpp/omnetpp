@@ -146,7 +146,7 @@
  *
  * The DTD that describes NED XML files:
  *
- * @include ned.dtd
+ * @include ned2.dtd
  */
 
 /**

@@ -33,19 +33,17 @@
  * Parallel simulation support has a layered architecture, with the
  * following layers:
  *
- * 1. Communications layer, represented by cParsimCommunications.
+ *    -# Communications layer, represented by cParsimCommunications.
  *    This encapsulates all details of message passing between parts
  *    of a program that executes in parallel, and hides details of
  *    the communications library (MPI, PVM, ...). Subclasses implemented
  *    here are cMPICommunications, cNamedPipeCommunications,
  *    cFileCommunications.
- *
- * 2. Partition layer, represented by cParsimPartition. This encapsulates
+ *    -# Partition layer, represented by cParsimPartition. This encapsulates
  *    the task of distributing the simulation model over several
  *    partitions, and handles messaging between these partitions.
  *    It relies on layer 1 for this.
- *
- * 3. Synchronization layer, represented by cParsimSynchronizer.
+ *    -# Synchronization layer, represented by cParsimSynchronizer.
  *    It encapsulates the different parallel simulation algorithms
  *    like the conservative null message algorithm. This layer
  *    heavily cooperates with the message scheduler of the simulation.

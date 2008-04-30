@@ -158,7 +158,7 @@ class NEDXML_API NEDTypeInfo2
 
     /**
      * Returns true if this NED type has a local (non-inherited)
-     * @network (or @network(true)) property.
+     * \@network (or \@network(true)) property.
      */
     virtual bool isNetwork();
 
