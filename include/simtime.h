@@ -351,22 +351,6 @@ inline const OPP::SimTime fmod(const OPP::SimTime& x, const OPP::SimTime& y)
     return OPP::SimTime().setRaw(x.raw() % y.raw());
 }
 
-/**
- * Returns the greater of the two arguments.
- */
-inline const OPP::SimTime max(const OPP::SimTime& x, const OPP::SimTime& y)
-{
-    return x > y ? x : y;
-}
-
-/**
- * Returns the smaller of the two arguments.
- */
-inline const OPP::SimTime min(const OPP::SimTime& x, const OPP::SimTime& y)
-{
-    return x < y ? x : y;
-}
-
 #endif
 
 
