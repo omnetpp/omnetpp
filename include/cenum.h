@@ -31,7 +31,7 @@ NAMESPACE_BEGIN
  * Provides string representation for enums. The class basically implements
  * effective integer-to-string and string-to-integer mapping. Primary usage
  * is to support displaying symbolic names for integer values that represent
- * some code (such as an enum or #define).
+ * some code (such as an enum or \#define).
  *
  * @ingroup Internals
  */

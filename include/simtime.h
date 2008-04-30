@@ -207,8 +207,8 @@ class SIM_API SimTime
 
     /**
      * Converts the given string to simulation time. Throws an error if
-     * there is an error during conversion. Accepted format is: <number>
-     * or (<number><unit>)+.
+     * there is an error during conversion. Accepted format is: \<number\>
+     * or (\<number\>\<unit\>)+.
      */
     static const SimTime parse(const char *s);
 
@@ -227,7 +227,7 @@ class SIM_API SimTime
      * Utility function to convert a 64-bit fixed point number into a string
      * buffer. scaleexp must be in the -18..0 range, and the buffer must be
      * at least 64 bytes long. A pointer to the result string will be
-     * returned. A pointer to the terminating '\0' will be returned in endp.
+     * returned. A pointer to the terminating '\\0' will be returned in endp.
      *
      * ATTENTION: For performance reasons, the returned pointer will point
      * *somewhere* into the buffer, but NOT necessarily at the beginning.

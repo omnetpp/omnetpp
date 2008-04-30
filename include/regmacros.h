@@ -20,8 +20,8 @@
 NAMESPACE_BEGIN
 
 /**
- * @name NED function registration macros
  * @ingroup Macros
+ * @defgroup MacrosReg Registration macros
  */
 //@{
 
@@ -31,7 +31,7 @@ NAMESPACE_BEGIN
  * Corresponding C/C++ typedefs: MathFuncNoArg, MathFunc1Arg, MathFunc2Args,
  * MathFunc3Args, MathFunc4Args.
  *
- * Commonly used <math.h> functions have Define_Function() lines in the \opp
+ * Commonly used \<math.h\> functions have Define_Function() lines in the \opp
  * simulation kernel.
  *
  * @see Define_NED_Function
@@ -74,14 +74,6 @@ NAMESPACE_BEGIN
  */
 #define Define_NED_Function2(NAME,FUNCTION,SIGNATURE) \
   EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE));)
-//@}
-
-
-/**
- * @name Misc registration macros
- * @ingroup Macros
- */
-//@{
 
 /**
  * Register class. This defines a factory object which makes it possible
@@ -94,14 +86,6 @@ NAMESPACE_BEGIN
 #define Register_Class(CLASSNAME) \
   static cObject *__FILEUNIQUENAME__() {return new CLASSNAME;} \
   EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__));)
-//@}
-
-
-/**
- * @name Module and channel class declaration macros
- * @ingroup Macros
- */
-//@{
 
 /**
  * Announces the C++ simple module class to \opp, and couples it with the
@@ -176,8 +160,8 @@ NAMESPACE_BEGIN
 
 
 /**
- * @name Configuration entry declaration macros. See cConfigKey.
  * @ingroup Macros
+ * @defgroup MacrosConfigReg Configuration entry declaration macros
  */
 //@{
 

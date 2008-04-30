@@ -69,8 +69,8 @@ class SIM_API cConfigKey : public cNoncopyableOwnedObject
     /**
      * Returns whether this is a per-object configuration. Per-object
      * configuration entries take the form of
-     * <object-full-path>.<configname> = <value> in the inifile,
-     * instead of <configname> = <value>
+     * \<object-full-path\>.\<configname\> = \<value\> in the inifile,
+     * instead of \<configname\> = \<value\>
      */
     bool isPerObject() const {return isPerObject_;}
 

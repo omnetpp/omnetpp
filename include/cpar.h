@@ -250,7 +250,7 @@ class SIM_API cPar : public cObject
     double doubleValue() const;
 
     /**
-     * Returns the parameter's unit, as declared with @unit() in the NED source,
+     * Returns the parameter's unit, as declared with \@unit() in the NED source,
      * or NULL if no unit is specified. Unit is only valid for LONG and DOUBLE
      * types.
      */

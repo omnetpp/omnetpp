@@ -315,8 +315,8 @@ void createStdPointerMapWatcher(const char *varname, std::map<KeyT,ValueT,CmpT>&
 
 
 /**
- * @name WATCH macros for STL container classes
  * @ingroup Macros
+ * @defgroup MacrosWatch WATCH macros
  */
 //@{
 

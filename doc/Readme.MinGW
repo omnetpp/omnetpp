@@ -137,12 +137,9 @@ First you should check the configure.user file to make sure it contains the
 settings you need.
 
 *** IMPORTANT ***
-  Use Windows-style path names in configure.user! Use forward slashes (/)
+  Use Unix-style path names in configure.user! Use forward slashes (/)
   instead of backslashes. If a directory name contains space, use the short
   name (like C:/PROGRA~1).
-
-Note that currently you cannot build dynamic libraries (DLLs) from OMNeT++
-sources.
 
 Then the usual GNU-like stuff:
     ./configure

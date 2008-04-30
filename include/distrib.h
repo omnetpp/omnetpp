@@ -25,11 +25,9 @@
 
 NAMESPACE_BEGIN
 
-
 /**
- * @name Continuous distributions
- *
  * @ingroup RandomNumbers
+ * @defgroup RandomNumbersCont Continuous distributions
  */
 //@{
 
@@ -122,7 +120,7 @@ inline SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) {return norm
  * Wai Wan Tsang, ACM Transactions on Mathematical Software, Vol. 26, No. 3,
  * September 2000.
  *
- * The alpha<1 case makes use of the alpha>1 algorithm, as suggested by the
+ * The alpha\<1 case makes use of the alpha\>1 algorithm, as suggested by the
  * above paper.
  *
  * @remark the name gamma_d is chosen to avoid ambiguity with
@@ -276,9 +274,8 @@ SIM_API double pareto_shifted(double a, double b, double c, int rng=0);
 //@}
 
 /**
- * @name Discrete distributions
- *
  * @ingroup RandomNumbers
+ * @defgroup RandomNumbersDiscr Discrete distributions 
  */
 //@{
 
@@ -351,7 +348,7 @@ SIM_API int negbinomial(int n, double p, int rng=0);
 //
 // hypergeometric() doesn't work yet
 //
-// /**
+// /* *
 //  * Returns a random integer from the hypergeometric distribution with
 //  * parameters a,b and n.
 //  *

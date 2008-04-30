@@ -317,8 +317,8 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 
 
 /**
- * @name WATCH macros
  * @ingroup Macros
+ * @defgroup MacrosWatch WATCH macros
  */
 //@{
 
@@ -332,8 +332,8 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, cObject *&refp, c
 #define WATCH(variable)    createWatch(#variable,(variable))
 
 /**
- * Makes types with operator<< and operator>> inspectable in Tkenv.
- * operator>> is used to enable changing the variable's value interactively.
+ * Makes types with operator\<\< and operator\>\> inspectable in Tkenv.
+ * operator\>\> is used to enable changing the variable's value interactively.
  *
  * @hideinitializer
  */

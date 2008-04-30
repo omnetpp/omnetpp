@@ -177,13 +177,13 @@ class SIM_API cParImpl : public cNamedObject
 
     /**
      * Returns the parameter's unit ("s", "mW", "Hz", "bps", etc),
-     * as declared in the @unit property of the parameter in NED.
+     * as declared in the \@unit property of the parameter in NED.
      * Unit is only meaningful with numeric parameters.
      */
     virtual const char *unit() const;
 
     /**
-     * Initialize the parameter's unit (normally from the @unit property).
+     * Initialize the parameter's unit (normally from the \@unit property).
      */
     virtual void setUnit(const char *s);
     //@}

@@ -204,7 +204,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * These functions delegate to the netbuilder part of the simulation kernel,
      * and they are present so that cEnvir and other libs outside the simkernel
      * don't need to directly depend on nedxml or netbuilder classes, and
-     * conditional compilation (#ifdef WITH_NETBUILDER) can be limited to the
+     * conditional compilation (\#ifdef WITH_NETBUILDER) can be limited to the
      * simkernel.
      */
     int loadNedSourceFolder(const char *folder);
@@ -227,7 +227,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * These functions delegate to the netbuilder part of the simulation kernel,
      * and they are present so that cEnvir and other libs outside the simkernel
      * don't need to directly depend on nedxml or netbuilder classes, and
-     * conditional compilation (#ifdef WITH_NETBUILDER) can be limited to the
+     * conditional compilation (\#ifdef WITH_NETBUILDER) can be limited to the
      * simkernel.
      */
     void loadNedFile(const char *nedfile, const char *expectedPackage=NULL, bool isXML=false);

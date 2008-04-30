@@ -40,8 +40,8 @@ enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 
 #ifdef USE_DOUBLE_SIMTIME
 /**
- * @name Converting simulation time to and from string form.
  * @ingroup Functions
+ * @defgroup FunctionsSimtime Converting simulation time to and from string form
  */
 //@{
 
@@ -86,37 +86,13 @@ SIM_API char *simtimeToStrShort(double t, char *buf=NULL);
 
 
 /**
- * @name Utility functions
- * @ingroup Functions
- */
-//@{
-
-/**
- * Returns the minimum of a and b.
- */
-inline double min(double a, double b) {return a<b ? a : b;}
-
-/**
- * Returns the maximum of a and b.
- */
-inline double max(double a, double b) {return a<b ? b : a;}
-
-/**
- * Tests equality of two doubles, with the given precision.
- */
-inline bool equal(double a, double b, double epsilon);
-//@}
-
-
-/**
- * @name String-related utility functions.
- *
- * Some of these functions are similar to <string.h> functions, with the
+ * Some of these functions are similar to \<string.h\> functions, with the
  * exception that they also accept NULL pointers as empty strings (""),
  * and use operator new instead of malloc(). It is recommended to use these
- * functions instead of the original <string.h> functions.
+ * functions instead of the original \<string.h\> functions.
  *
  * @ingroup Functions
+ * @defgroup FunctionsString String-related 
  */
 //@{
 /**
@@ -385,7 +361,7 @@ inline long double_to_long(double d)
     return d<0 ? l : ul;
 }
 
-// internal 
+// internal
 inline std::string double_to_str(double t)
 {
    char buff[50];

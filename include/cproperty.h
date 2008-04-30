@@ -136,15 +136,15 @@ class SIM_API cProperty : public cNamedObject
     //@{
     /**
      * Sets the index of this property; see NED syntax
-     * <tt>@propname[index](keys-and-values)</tt>.
+     * <tt>\@propname[index](keys-and-values)</tt>.
      */
     virtual void setIndex(const char *index);
 
     /**
      * Returns the index of this property; see NED syntax
-     * <tt>@propname[index](keys-and-values)</tt>.
+     * <tt>\@propname[index](keys-and-values)</tt>.
      * Returns NULL if the property has no index
-     * (<tt>@propname(keys-and-values)</tt>).
+     * (<tt>\@propname(keys-and-values)</tt>).
      */
     virtual const char *index() const;
 

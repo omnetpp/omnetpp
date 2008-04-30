@@ -50,7 +50,7 @@ NAMESPACE_BEGIN
  *
  * <pre>
  * const char *str = "42 13 46 72 41";
- * std::vector<int> array = cStringTokenizer(str).asIntVector();
+ * std::vector\<int\> array = cStringTokenizer(str).asIntVector();
  * </pre>
  *
  * @ingroup SimSupport

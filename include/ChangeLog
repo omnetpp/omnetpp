@@ -189,6 +189,9 @@
 	- cModule: deprecated methods phase(), setPhase() removed
 
 	- removed writeContents() altogether
+	
+	- removed min(double,double), max(double,double), equal(double,double,double). 
+	  Use std::min and std::max instead.
 
 	- snapshot file became XML
 

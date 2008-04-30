@@ -24,8 +24,8 @@
 NAMESPACE_BEGIN
 
 /**
- * @name FSM Macros
  * @ingroup Macros
+ * @defgroup MacrosFSM Final State Machine macros
  */
 //@{
 
@@ -145,7 +145,7 @@ NAMESPACE_BEGIN
 /**
  * To be used in state exit code, to transition to another state.
  *
- * Uses stringize (#state), so it only works correctly if 'state'
+ * Uses stringize (\#state), so it only works correctly if 'state'
  * is the enum name itself and not some variable that contains the
  * state code.
  *

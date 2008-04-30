@@ -319,7 +319,7 @@ inline std::ostream& operator<< (std::ostream& os, cOwnedObject& o) {
 
 /**
  * Cast an object pointer to the given C++ type and throw exception if fails.
- * The method calls dynamic_cast<T>(p) where T is a type you supplied;
+ * The method calls dynamic_cast\<T\>(p) where T is a type you supplied;
  * if the result is NULL (which indicates incompatible types), an exception
  * is thrown.
  *
@@ -328,7 +328,7 @@ inline std::ostream& operator<< (std::ostream& os, cOwnedObject& o) {
  * the simulation stops with an error message as the result of the exception.
  * <pre>
  *   cMessage *msg = receive();
- *   MyPacket *pkt = check_and_cast<MyPacket *>(msg);
+ *   MyPacket *pkt = check_and_cast\<MyPacket *\>(msg);
  * </pre>
  *
  * @ingroup Functions
@@ -346,7 +346,8 @@ T check_and_cast(cObject *p)
 }
 
 /**
- * The 'const' version of check_and_cast<>().
+ * The 'const' version of check_and_cast\<\>().
+ * @ingroup Functions
  */
 template<class T>
 const T check_and_cast(const cObject *p)

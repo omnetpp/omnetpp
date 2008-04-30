@@ -82,8 +82,8 @@ extern SIM_API cEnvir *evPtr;
  *  - functions for exchanging information between the simulation and the
  *    environment.
  *
- * The default implementation of cEnvir can be customized by subclassing 
- * the classes declared in the envirext.h header (e.g. cConfiguration, 
+ * The default implementation of cEnvir can be customized by subclassing
+ * the classes declared in the envirext.h header (e.g. cConfiguration,
  * cRNG, cOutputVectorManager, cOutputScalarManager),
  * and selecting the new classes from <tt>omnetpp.ini</tt>.
  *
@@ -379,7 +379,7 @@ class SIM_API cEnvir
      * The following version may also be useful (it makes use of the fact that <<
      * binds stronger than ?:)
      * <pre>
-     *     #define EV  ev.disabled()?ev:ev
+     *     \#define EV  ev.disabled()?ev:ev
      *     EV << "Packet " << msg->name() << " received";
      * </pre>
      */
@@ -436,7 +436,7 @@ class SIM_API cEnvir
      * in context (see cSimulation::context()), and may get displayed in the
      * module's debug window, or enabled/disabled per module.
      *
-     * The function's arguments are identical to the standard <stdio.h> printf().
+     * The function's arguments are identical to the standard \<stdio.h\> printf().
      * It is recommended to use C++-style I/O (operator<<) instead of this function.
      */
     // note: non-virtual, delegates to sputn()

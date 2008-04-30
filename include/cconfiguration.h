@@ -147,8 +147,8 @@ class SIM_API cConfiguration : public cObject
     virtual std::vector<std::string> getConfigNames() = 0;
 
     /**
-     * Activates the [Scenario <name>] section, or if it does not exist,
-     * the [Config <name>] section. If neither exists, an error is thrown.
+     * Activates the [Scenario \<name\>] section, or if it does not exist,
+     * the [Config \<name\>] section. If neither exists, an error is thrown.
      * ([General] is treated as if it was short for [Config General].)
      * The runNumber must be between 0 and getNumRunsInScenario(name)-1.
      */

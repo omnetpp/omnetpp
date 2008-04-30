@@ -115,8 +115,8 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
 
 
 /**
- * @name Miscellaneous functions.
- * @ingroup Functions
+ *
+ * @addtogroup Functions
  */
 //@{
 /**

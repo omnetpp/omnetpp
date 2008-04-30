@@ -236,7 +236,7 @@ class SIM_API cObject
     /**
      * Returns true if this class is a subclass of cOwnedObject.
      * This is a performance optimization, to avoid frequent calls to
-     * dynamic_cast<>. In cObject this method returns false, in
+     * dynamic_cast\<\>. In cObject this method returns false, in
      * cOwnedObject it returns true, and it MUST NOT be defined on
      * any other class.
      */

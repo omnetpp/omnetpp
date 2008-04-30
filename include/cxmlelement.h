@@ -65,7 +65,7 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  * Supports XPath-like addressing via the getElementByPath() member function.
  *
  * File inclusion via limited support of the XInclude 1.0 spec.
- * An element <xi:include href="doc.xml"/> gets replaced with
+ * An element \<xi:include href="doc.xml"/\> gets replaced with
  * the content of the corresponding document. The "href" and "parse"
  * attributes from the XInclude spec are supported.
  *

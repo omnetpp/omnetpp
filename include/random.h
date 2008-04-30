@@ -32,9 +32,8 @@ inline cRNG *__contextModuleRNG(int k) {
 }
 
 /**
- * @name Random number generation.
- *
  * @ingroup RandomNumbers
+ * @defgroup RandomNumbersGen Random number generation
  */
 //@{
 

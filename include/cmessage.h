@@ -437,7 +437,7 @@ class SIM_API cMessage : public cOwnedObject
 
     /**
      * Returns the nth object in the message's object list, converting it to a cMsgPar.
-     * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast<>),
+     * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
      * the method throws a cRuntimeError.
      *
      * <i>NOTE: This is a convenience function: one may use parList() and
@@ -451,7 +451,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns the object with the given name in the message's object list,
      * converting it to a cMsgPar.
-     * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast<>),
+     * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
      * the method throws a cRuntimeError.
      *
      * <i>NOTE: This is a convenience function: one may use parList() and

@@ -121,14 +121,14 @@ class SIM_API cProperties : public cObject
     /**
      * Returns the given property, or NULL if it does not exist.
      * Name and index correspond to the the NED syntax
-     * <tt>@propertyname[index](keys-and-values)</tt>, where "[index]"
+     * <tt>\@propertyname[index](keys-and-values)</tt>, where "[index]"
      * is optional.
      */
     virtual cProperty *get(const char *name, const char *index=NULL) const;
 
     /**
      * Returns unique indices for a property. Name and index correspond to the
-     * NED syntax <tt>@propertyname[index](keys-and-values)</tt>.
+     * NED syntax <tt>\@propertyname[index](keys-and-values)</tt>.
      * The strings in the returned array do not need to be deallocated and
      * must not be modified.
      */

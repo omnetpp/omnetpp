@@ -39,17 +39,16 @@ SIM_API extern cGlobalRegistrationList classDescriptors;///< List of all class d
 SIM_API extern cGlobalRegistrationList configKeys;      ///< List of supported configuration keys (cConfigKey)
 
 
-/**
- * @name Miscelleous
- * @ingroup Functions
+/** 
+ * 
+ * @addtogroup Functions 
  */
 //@{
-
+   
 /**
  * DEPRECATED. Use cComponentType::find() instead.
  */
 SIM_API _OPPDEPRECATED cModuleType *findModuleType(const char *s);
-
 //@}
 
 NAMESPACE_END
