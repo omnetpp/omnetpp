@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         name="Image Exporter Extension"
+         point="de.unikassel.imageexport.imageExporters">
+      <imageExporter
+            class="org.omnetpp.common.image.export.PNGImageExporter"
+            description="PNG - Portable Network Graphics"
+            extension="png"
+            id="org.omnetpp.imageexport.pngImageExporter"
+            name="PNG Image Exporter">
+      </imageExporter>
+   </extension>
+</plugin>
