@@ -505,6 +505,9 @@ proc inspect_componenttype {win {type "(default)"}} {
 # objects.
 #
 proc get_help_tip {w x y item} {
+   if {![winfo exists $w]} {
+       return ""
+   }
    if {[winfo class $w]=="Canvas" && $item!=""} {
 
        # if this is a simulation object, get its pointer

@@ -1193,7 +1193,6 @@ proc layouter_startgrab {w} {
     # the gabbed widget should be the "Stop" button of the module window
     set help_tips($w) {Calculating the layout -- click the STOP button to end it and start drawing}
 
-    set opp(oldFocus) [focus]
     set opp(oldGrab) [grab current $w]
     grab $w
     focus $w
@@ -1204,9 +1203,8 @@ proc layouter_releasegrab {w} {
     global opp help_tips
 
     # restore tooltip hijacked in layouter_startgrab
-    set help_tips($w.toolbar.stop) {Stop the simulation (F8)}
+    set help_tips($w) {Stop the simulation (F8)}
 
-    catch {focus $opp(oldFocus)}
     catch {grab release $w}
     catch {grab release [grab current]}
 }
