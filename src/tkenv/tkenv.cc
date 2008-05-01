@@ -1314,7 +1314,7 @@ void Tkenv::connectionCreated(cGate *srcgate)
 
     // notify compound module where the connection (whose source is this gate) is displayed
     cModule *notifymodule = NULL;
-    if (srcgate->type()=='O')
+    if (srcgate->type()==cGate::OUTPUT)
         notifymodule = srcgate->ownerModule()->parentModule();
     else
         notifymodule = srcgate->ownerModule();
@@ -1332,7 +1332,7 @@ void Tkenv::connectionDeleted(cGate *srcgate)
     // notify compound module where the connection (whose source is this gate) is displayed
     // note: almost the same code as above
     cModule *notifymodule;
-    if (srcgate->type()=='O')
+    if (srcgate->type()==cGate::OUTPUT)
         notifymodule = srcgate->ownerModule()->parentModule();
     else
         notifymodule = srcgate->ownerModule();
@@ -1359,7 +1359,7 @@ void Tkenv::channelDisplayStringChanged(cChannel *channel)
 
     // notify module inspector which displays connection
     cModule *notifymodule;
-    if (gate->type()=='O')
+    if (gate->type()==cGate::OUTPUT)
         notifymodule = gate->ownerModule()->parentModule();
     else
         notifymodule = gate->ownerModule();
@@ -1417,7 +1417,7 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
     while (g && g->toGate())
     {
         cModule *mod = g->ownerModule();
-        if (g->type()=='O') mod = mod->parentModule();
+        if (g->type()==cGate::OUTPUT) mod = mod->parentModule();
 
         TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
         if (insp)
@@ -1606,7 +1606,7 @@ void Tkenv::animateDelivery(cMessage *msg)
     ASSERT(g);
 
     cModule *mod = g->ownerModule();
-    if (g->type()=='O') mod = mod->parentModule();
+    if (g->type()==cGate::OUTPUT) mod = mod->parentModule();
 
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (insp)
