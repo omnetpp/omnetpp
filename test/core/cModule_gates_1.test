@@ -20,6 +20,13 @@ network Test
 
 namespace {} {
 
+//redefine ASSERT so that checks remain in the code even with NDEBUG defined
+#undef ASSERT
+#define ASSERT(x) \
+     ((void) ((expr) ? 0 : (opp_error("ASSERT: condition %s false in function %s, %s line %d", \
+                                      #expr, __FUNCTION__, __FILE__, __LINE__), 0)))
+
+
 class Node : public cSimpleModule
 {
   private:
@@ -159,7 +166,6 @@ void Node::setTestGateSize(const char *gatename, int size)
     numGates += (type==cGate::INOUT ? 2 : 1) * (size - oldSize);
 
     ASSERT(gateSize(gatename)==size);
-    ASSERT(gateSize(gatename)==size);
 
     for (int i=0; i<size; i++) {
         if (type==cGate::INOUT) {
@@ -205,7 +211,6 @@ void Node::activity()
     numGates = 0;
     for (int i=0; i<100; i++)
     {
-        //random: create/delete/setsize/connect/unconnect/++
         switch (intrand(3)) {
             case 0: createRandomGate(); break;
             case 1: deleteRandomGate(); break;
