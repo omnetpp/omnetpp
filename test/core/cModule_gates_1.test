@@ -22,7 +22,7 @@ namespace {} {
 
 //redefine ASSERT so that checks remain in the code even with NDEBUG defined
 #undef ASSERT
-#define ASSERT(x) \
+#define ASSERT(expr) \
      ((void) ((expr) ? 0 : (opp_error("ASSERT: condition %s false in function %s, %s line %d", \
                                       #expr, __FUNCTION__, __FILE__, __LINE__), 0)))
 
