@@ -137,7 +137,14 @@
 	- removed backgroundDisplayString()/setBackgroundDisplayString() and its compat
 	  #defines displayStringAsParent() and setDisplayStringAsParent()
 	- added isPlaceholder() to cModule
-	- cPlaceHolderModule: renamed to cPlaceHolderModule (lowercase h)
+	- cPlaceHolderModule: renamed to cPlaceholderModule (lowercase h)
+	- gate handling reorganized, so that gate IDs are stable (do not change
+	  when the gate vector gets resized). Gate IDs are now interpreted as a 
+	  bitfield, so they cannot be used for iterating over all gates of a 
+	  module; cModule::GateIterator was introduced for this purpose.
+	- gates() removed, as gate IDs are no longer integers in the 0..gates()-1
+	  interval (use the new cModule::GateIterator for enumerating the gates).
+	- added gateNames() method
 
 	Message parameters:
 	- deprecated; type changed: cMsgPar instead of cPar

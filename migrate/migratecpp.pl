@@ -169,8 +169,13 @@ while (<LISTFILE>)
           print "*** warning at $fname:$lineno: Deprecated moduleState. \n";
           print "$linewithcomment\n";
        }
-       if ($line =~ /\bend\(\)\b/) {
+       if ($line =~ / end\(\)\b/) {  # note: we may give false warning for STL iterator end() methods
           print "*** warning at $fname:$lineno: cSimpleModule::end() -- removed, as there was little value in it. To terminate an activity() module, simply return from the activity() method, or call the new halt() method to end the module while preserving the local variables for inspection.\n";
+          print "$linewithcomment\n";
+       }
+
+       if ($line =~ /\bgates\(\)\b/) {
+          print "*** warning at $fname:$lineno: cModule's gates() method was removed; to iterate over gates of a module, use: for(cModule::GateIterator i(modp); !i.end(); i++) {cGate *gate=i(); ...}\n";
           print "$linewithcomment\n";
        }
 
