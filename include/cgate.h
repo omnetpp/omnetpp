@@ -34,6 +34,18 @@ class  cChannelType;
 class  cChannel;
 class  cProperties;
 
+//
+// internal: gateId bitfield macros.
+// See note in cgate.cc
+//
+#define GATEID_LBITS  20
+#define GATEID_HBITS  (8*sizeof(int)-GATEID_LBITS)   // usually 12
+#define GATEID_HMASK  ((~0)<<GATEID_LBITS)           // usually 0xFFF00000
+#define GATEID_LMASK  (~GATEID_HMASK)                // usually 0x000FFFFF
+
+#define MAX_VECTORGATES  ((1<<(GATEID_HBITS-1))-2)   // usually 2046
+#define MAX_SCALARGATES  ((1<<(GATEID_LBITS-1))-2)   // usually ~500000
+#define MAX_VECTORGATESIZE ((1<<(GATEID_LBITS-1))-1) // usually ~500000
 
 /**
  * Represents a module gate. cGate object are created and managed by modules;
@@ -71,36 +83,19 @@ class SIM_API cGate : public cObject, noncopyable
         Name(const char *name, Type type);
         bool operator<(const Name& other) const;
     };
-     //FIXME must NOT use the uppermost bit!!! as "-1" should not be a valid ID!! it should mean "none"
-    /*XXX explain better
-     * ID usage:
-     *  12 + 20 bits
-     *   H    L
-     * H=0: nonvector gates
-     *   L/2 = descIndex
-     *   L&1 = 0: inputgate 1: outputgate
-     *   allows 500,000 scalar gates
-     * H>0: vector gates (max 1024)
-     *   bit19 of L: input (0) or output (1)
-     *   bits0..18 of L: array index into inputgate[] or outputgate[]
-     *   allows
-     *   max vector size: 500,000
-     */
-    #define GATEID_HMASK  ((~0)<<20)
-    #define GATEID_LMASK  ((1<<20)-1)
-    #define GATEID_LBITS  20
 
   public:
-    // internal; needs to be public because of GateIterator
-    // "size" could be put into slot0 of inputgatev[] or outputgatev[],
-    // to decrease Desc overhead for scalar gates. Notes: could go into Name
-    // as well, but it's impractical because of gate++ operations
+    // Internal data structure, only public for technical reasons (GateIterator).
+    // One instance per module and per gate vector/gate pair/gate.
+    // Note: gate name and type are factored out to a global pool.
+    // Note2: to reduce sizeof(Desc), "size" might be stored in inputgatev[0],
+    // although it might not be worthwhile the extra complication and CPU cycles.
     //
     struct Desc
     {
         cModule *ownerp;
         Name *namep;  // pooled
-        int size; // gate vector size, or -1 if scalar gate
+        int size; // gate vector size, or -1 if scalar gate; actually allocated size is capacityFor(size)
         union { cGate *inputgate; cGate **inputgatev; };
         union { cGate *outputgate; cGate **outputgatev; };
 
@@ -131,8 +126,12 @@ class SIM_API cGate : public cObject, noncopyable
   protected:
     // internal: constructor is protected because only cModule is allowed to create instances
     explicit cGate();
+
     // also protected: only cModule is allowed to delete gates
     virtual ~cGate();
+
+    // internal
+    static void clearFullnamePool();
 
   public:
     /** @name Redefined cObject member functions */

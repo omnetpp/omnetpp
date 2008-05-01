@@ -36,9 +36,13 @@
 USING_NAMESPACE
 
 //XXX rewrite to use Desc& not Desc* ?
-//XXX add note to deleteGate(): IDs of deleted gates are NOT reused!
 //XXX clean up gate(int id)
 //XXX revise "FIXME" error messages
+
+//TODO consider:
+//  call cGate::clearFullnamePool() between events, and add to doc:
+//  "lifetime of the string returned by fullName() is the simulation event"?
+
 
 // static members:
 std::string cModule::lastmodulefullpath;
@@ -251,7 +255,7 @@ void cModule::disposeGateObject(cGate *gate, bool checkConnected)
     if (gate)
     {
         if (checkConnected && (gate->fromGate() || gate->toGate()))
-            throw cRuntimeError(this, "FIXME Cannot delete gate, it is still connected");
+            throw cRuntimeError(this, "Cannot delete gate `%s', it is still connected", gate->fullName());
         EVCB.gateDeleted(gate);
         delete gate;
     }
@@ -288,15 +292,16 @@ void cModule::clearGates()
     descvSize = 0;
 }
 
-void cModule::resetPools()
+void cModule::clearNamePools()
 {
     namePool.clear();
-    //FIXME fullnamePool.clear();
+    cGate::clearFullnamePool();
 }
 
 void cModule::adjustGateDesc(cGate *gate, cGate::Desc *newvec)
 {
     if (gate) {
+        // the "desc" pointer in each gate needs to be updated when descv[] gets reallocated
         ASSERT(descv <= gate->desc && gate->desc < descv+descvSize);
         gate->desc = newvec + (gate->desc - descv);
     }
@@ -304,11 +309,18 @@ void cModule::adjustGateDesc(cGate *gate, cGate::Desc *newvec)
 
 cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool isVector)
 {
-    //TODO this reallocation one-by-one is going to be slow with large networks.
-    // store a descvcapacity as well? we could trim back the size from
-    // buildInside(), for example.
+    // check limits
+    if (isVector) {
+        if (descvSize >= MAX_VECTORGATES)
+            throw cRuntimeError(this, "cannot add gate `%s[]': too many vector gates (limit is %d)", gatename, MAX_VECTORGATES);
+    }
+    else {
+        if (descvSize >= MAX_SCALARGATES)
+            throw cRuntimeError(this, "cannot add gate `%s': too many scalar gates (limit is %d)", gatename, MAX_SCALARGATES);
+    }
 
     // allocate new array
+    //TODO preallocate a larger descv[] in advance?
     cGate::Desc *newv = new cGate::Desc[descvSize+1];
     memcpy(newv, descv, descvSize*sizeof(cGate::Desc));
 
@@ -386,7 +398,7 @@ cGate::Desc *cModule::gateDesc(const char *gatename, char& suffix) const
 {
     int descIndex = findGateDesc(gatename, suffix);
     if (descIndex<0)
-        throw cRuntimeError("FIXME");
+        throw cRuntimeError(this, "no such gate: `%s'", gatename);
     return descv + descIndex;
 }
 
@@ -409,13 +421,13 @@ cGate *cModule::gate(int id)
     else {
         unsigned int descIndex = (h>>GATEID_LBITS)-1;
         if (descIndex >= descvSize)
-            return NULL;
+            return NULL;  //FIXME error/assert instead
         cGate::Desc *desc = descv + descIndex;
         ASSERT(desc->namep); // not deleted
         unsigned int index = id & (GATEID_LMASK>>1);
         //FIXME assert isvector, type, etc
         if (index>=desc->gateSize())
-            return NULL;
+            return NULL;  //FIXME error/assert instead
         bool isOutput = id & (1<<(GATEID_LBITS-1));  // L's MSB
         return isOutput ? desc->outputgatev[index] : desc->inputgatev[index];
     }
@@ -476,8 +488,8 @@ void cModule::setGateSize(const char *gatename, int newSize)
         throw cRuntimeError(this, "setGateSize(): gate `%s' is not a vector gate", gatename);
     if (newSize<0)
         throw cRuntimeError(this, "setGateSize(): negative vector size (%d) requested for gate %s[]", newSize, gatename);
-    if (newSize>GATEID_LMASK/2) //FIXME use macro
-        throw cRuntimeError(this, "setGateSize(): vector size for gate %s[] too large (%d), limit is %d", gatename, newSize, GATEID_LMASK/2);
+    if (newSize>MAX_VECTORGATESIZE)
+        throw cRuntimeError(this, "setGateSize(): vector size for gate %s[] too large (%d), limit is %d", gatename, newSize, MAX_VECTORGATESIZE);
     int oldSize = desc->size;
     cGate::Type type = desc->type();
 
@@ -665,7 +677,7 @@ void cModule::deleteGate(const char *gatename)
     char suffix;
     cGate::Desc *desc = gateDesc(gatename, suffix);
     if (suffix)
-        throw cRuntimeError(this, "FIXME"); // cannot delete half of an inout gate
+        throw cRuntimeError(this, "Cannot delete one half of an inout gate: `%s'", gatename);
     disposeGateDesc(desc, true);
 }
 
@@ -695,9 +707,7 @@ bool cModule::isGateVector(const char *gatename) const
     return desc->isVector();
 }
 
-struct less_gateConnectedInside {
-    bool operator()(cGate *a, cGate *b) {return (a && a->isConnectedInside()) > (b && b->isConnectedInside());}
-//XXX
+//XXX test code:
 //    bool operator()(cGate *a, cGate *b) {
 //        printf("   comparing %s, %s ==> ", (a?a->fullName():NULL), (b?b->fullName():NULL) );
 //        bool x = (a && a->isConnectedInside()) > (b && b->isConnectedInside());
@@ -705,18 +715,13 @@ struct less_gateConnectedInside {
 //        printf("%d\n", x);
 //        return x;
 //    }
+
+struct less_gateConnectedInside {
+    bool operator()(cGate *a, cGate *b) {return (a && a->isConnectedInside()) > (b && b->isConnectedInside());}
 };
 
 struct less_gateConnectedOutside {
     bool operator()(cGate *a, cGate *b) {return (a && a->isConnectedOutside()) > (b && b->isConnectedOutside());}
-//XXX
-//    bool operator()(cGate *a, cGate *b) {
-//        printf("   comparing %s, %s ==> ", (a?a->fullName():NULL), (b?b->fullName():NULL) );
-//        bool x = (a && a->isConnectedOutside()) > (b && b->isConnectedOutside());
-//        printf("%d > %d : ", (a && a->isConnectedOutside()), (b && b->isConnectedOutside()));
-//        printf("%d\n", x);
-//        return x;
-//    }
 };
 
 struct less_gatePairConnectedInside {
@@ -828,7 +833,7 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
     // no unconnected gate: expand gate vector
     if (expand)
     {
-        setGateSize(desc->namep->name.c_str(), oldSize+1);      //FIXME spare extra name lookup!!!
+        setGateSize(desc->namep->name.c_str(), oldSize+1); //FIXME spare extra name lookup!!!
         gatein = desc->inputgatev[oldSize];
         gateout = desc->outputgatev[oldSize];
         return;
@@ -1174,9 +1179,10 @@ cGate *cModule::GateIterator::operator++(int)
 
 cGate *cModule::GateIterator::operator+=(int k)
 {
+    //FIXME this is the primitive solution. We could do better, like skip gate vectors at once, etc
     for (int i=0; i<k; i++)
         (*this)++;
-    return (*this)();  //FIXME make it more efficient!! (skip gate vectors at once etc)
+    return (*this)();
 }
 
 //----

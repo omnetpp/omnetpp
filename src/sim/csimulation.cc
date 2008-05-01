@@ -459,6 +459,7 @@ void cSimulation::deleteNetwork()
     networktype = NULL;
 
     //FIXME todo delete cParImpl caches too (cParImplCache, cParImplCache2)
+    cModule::clearNamePools();
 
     // clear remaining messages (module dtors may have cancelled & deleted some of them)
     msgQueue.clear();

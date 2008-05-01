@@ -40,11 +40,30 @@ USING_NAMESPACE
 
 using std::ostream;
 
-//FIXME TODO empty it on deleteNetwork()? or between events?
-//    and add to doc: "lifetime of the string returned by fullName() is the simulation event"?
+
+/*
+ * Interpretation of gate Ids (32-bit int):
+ *     H (12+ bits) + L (20 bits)
+ *
+ * When H=0: nonvector gate
+ *     L/2 = descIndex
+ *     L&1 = 0: inputgate, 1: outputgate
+ *   note: this allows ~500,000 scalar gates
+ *
+ * When H>0: vector gate
+ *     H = descIndex+1  (so that H>0)
+ *     bit19 of L = input (0) or output (1)
+ *     bits0..18 of L = array index into inputgate[] or outputgate[]
+ *   note: gateId must not be negative (for historical reasons, -1 is used as "none"),
+ *         so H is effectively 11 bits, allowing ~2046 vector gates max.
+ *   note2: 19 bits allow a maximum vector size of ~500,000
+ *
+ * Mostly affected methods are cGate::id() and cModule::gate(int id).
+ */
+
 
 // non-refcounting pool for gate fullnames
-CommonStringPool fullnamePool;
+static CommonStringPool gateFullnamePool;
 
 
 cGate::Name::Name(const char *name, Type type)
@@ -76,6 +95,11 @@ cGate::cGate()
 cGate::~cGate()
 {
     dropAndDelete(channelp);
+}
+
+void cGate::clearFullnamePool()
+{
+    gateFullnamePool.clear();
 }
 
 void cGate::forEachChild(cVisitor *v)
@@ -112,7 +136,7 @@ const char *cGate::fullName() const
     static char tmp[128];
     strcpy(tmp, name());
     opp_appendindex(tmp, index());
-    return fullnamePool.get(tmp); // non-refcounted stringpool
+    return gateFullnamePool.get(tmp); // non-refcounted stringpool
 }
 
 std::string cGate::info() const

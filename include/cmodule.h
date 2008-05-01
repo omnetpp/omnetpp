@@ -30,13 +30,11 @@ class  cModule;
 class  cSimulation;
 class  cModuleType;
 
-//FIXME check max gatesize and max gate count limits!!! (22 bits etc)
 
 /**
  * Common base for cSimpleModule and cCompoundModule.
  * cModule provides gates, parameters, RNG mapping, display strings,
  * and a set of virtual methods.
-//XXX better comment
  *
  * For navigating around in the module tree, see:
  * parentModule(), submodule(), cModule::SubmoduleIterator,
@@ -44,6 +42,7 @@ class  cModuleType;
  *
  * @ingroup SimCore
  */
+//XXX write better comment
 class SIM_API cModule : public cComponent //implies noncopyable
 {
     friend class cGate;
@@ -288,12 +287,13 @@ class SIM_API cModule : public cComponent //implies noncopyable
     void clearGates();
 
   public:
-    static void resetPools(); //FIXME TODO call this from deleteNetwork()
+    // internal
+    static void clearNamePools();
 
-    // internal utility function. Very inefficient as it loops through all gates.
+    // internal utility function. Takes O(n) time as it iterates on the gates
     int gateCount() const;
 
-    // internal utility function. Very inefficient as it linearly loops through the gates.
+    // internal utility function. Takes O(n) time as it iterates on the gates
     cGate *gateByOrdinal(int k) const;
 
   protected:
@@ -383,7 +383,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void setGateSize(const char *gatename, int size);
 
     /**
-     * Helper function to implement NED's "gate++" syntax.
+     * Helper function for implementing NED's "gate++" syntax.
      * Returns the next unconnected gate from an input or output gate vector,
      * or input/output half of an inout vector. When gatename names an inout gate
      * vector, the suffix parameter should be set to 'i' or 'o' to select
@@ -391,7 +391,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * The inside parameter selects whether to use isConnectedInside() or
      * isConnectedOutside() to test if the gate is connected. The expand
      * parameter tells whether the gate vector should be expanded if all its
-     * gates are used up (==connected).
+     * gates are used up.
      */
     virtual cGate *getOrCreateFirstUnconnectedGate(const char *gatename, char suffix,
                                                    bool inside, bool expand);
@@ -497,7 +497,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns the size of the module vector the module is in. For non-vector
      * modules it returns 1.
      */
-    int size() const  {return vectsize<0?1:vectsize;}
+    int size() const  {return vectsize<0 ? 1 : vectsize;}
     //@}
 
     /** @name Submodule access. */
@@ -588,22 +588,27 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual int findGate(const char *gatename, int index=-1) const;
 
     /**
-     * Returns a gate by its ID. Note that the gate array may contain "holes",
-     * that is, this function can return NULL for some IDs in the 0..gates()-1
-     * range. If the ID is out of range, an error is thrown.
+     * Returns a gate by its ID. It throws an error for invalid (stale) IDs.
+     *
+     * Note: as of \opp 4.0, gate IDs are no longer small integers and are
+     * not suitable for enumerating all gates of a module. Use GateIterator
+     * for that purpose.
      */
-//FIXME revise comment!!!!
     virtual cGate *gate(int id);
 
     /**
-     * Returns a gate by its ID. Note that the gate array may contain "holes",
-     * that is, this function can return NULL for some IDs in the 0..gates()-1
-     * range. If the ID is out of range, an error is thrown.
+     * Returns a gate by its ID. It throws an error for invalid (stale) IDs.
+     *
+     * Note: as of \opp 4.0, gate IDs are no longer small integers and are
+     * not suitable for enumerating all gates of a module. Use GateIterator
+     * for that purpose.
      */
     const cGate *gate(int id) const {return const_cast<cModule *>(this)->gate(id);}
 
     /**
-     * Deletes a gate or gate vector.  XXX comment  XXX allow deleting a gate in a gate vector?
+     * Deletes a gate, gate pair, or gate vector. Note: individual gates
+     * in a gate vector and one side of an inout gate (i.e. "foo$i")
+     * cannot be deleted. IDs of deleted gates will not be reused later.
      */
     virtual void deleteGate(const char *gatename);
 
