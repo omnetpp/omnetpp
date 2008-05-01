@@ -41,11 +41,11 @@ module Test: Test {
             parameters:
                 param @unit(s) @prompt(Enter param) = 1
             gates:
-                 0 out @color(LIGHTBLUE) @derived: not connected
-                 1 vec$i[0] @color(red,GREEN) @derived: not connected
-                 2 vec$i[1] @color(red,GREEN) @derived: not connected
-                 3 vec$o[0] @color(red,GREEN) @derived: not connected
-                 4 vec$o[1] @color(red,GREEN) @derived: not connected
+                out @color(LIGHTBLUE) @derived: not connected
+                vec$i[0] @color(red,GREEN) @derived: not connected
+                vec$i[1] @color(red,GREEN) @derived: not connected
+                vec$o[0] @color(red,GREEN) @derived: not connected
+                vec$o[1] @color(red,GREEN) @derived: not connected
         }
 }
 

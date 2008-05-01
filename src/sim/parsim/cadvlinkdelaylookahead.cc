@@ -59,10 +59,9 @@ void cAdvancedLinkDelayLookahead::startRun()
     int myProcId = comm->getProcId();
 
     char buf[30];
-    int i;
 
     // temporarily initialize everything to zero.
-    for (i=0; i<numSeg; i++)
+    for (int i=0; i<numSeg; i++)
     {
         segInfo[i].numLinks = 0;
         segInfo[i].links = NULL;
@@ -72,26 +71,23 @@ void cAdvancedLinkDelayLookahead::startRun()
     ev << "  collecting links...\n";
 
     // step 1: count gates
-    int modId;
-    for (modId=0; modId<=sim->lastModuleId(); modId++)
+    for (int modId=0; modId<=sim->lastModuleId(); modId++)
     {
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
         if (mod)
         {
-            for (int gateId=0; gateId<mod->gates(); gateId++)
+            for (cModule::GateIterator i(mod); !i.end(); i++)
             {
-                cGate *g = mod->gate(gateId);
+                cGate *g = i();
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
                 if (pg && pg->fromGate() && pg->getRemoteProcId()>=0)
-                {
                     segInfo[pg->getRemoteProcId()].numLinks++;
-                }
             }
         }
     }
 
     // step 2: allocate links[]
-    for (i=0; i<numSeg; i++)
+    for (int i=0; i<numSeg; i++)
     {
         int numLinks = segInfo[i].numLinks;
         segInfo[i].links = new LinkOut *[numLinks];
@@ -100,16 +96,16 @@ void cAdvancedLinkDelayLookahead::startRun()
     }
 
     // step 3: fill in
-    for (modId=0; modId<=sim->lastModuleId(); modId++)
+    for (int modId=0; modId<=sim->lastModuleId(); modId++)
     {
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
         if (mod)
         {
-            for (int gateId=0; gateId<mod->gates(); gateId++)
+            for (cModule::GateIterator i(mod); !i.end(); i++)
             {
                 // if this is a properly connected proxygate, process it
                 // FIXME leave out gates from other cPlaceholderModules
-                cGate *g = mod->gate(gateId);
+                cGate *g = i();
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
                 if (pg && pg->fromGate() && pg->getRemoteProcId()>=0)
                 {

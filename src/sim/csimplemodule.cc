@@ -357,7 +357,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
     // error checking:
     if (outgate==NULL)
        throw cRuntimeError("send()/sendDelayed(): gate pointer is NULL");
-    if (outgate->type()=='I')
+    if (outgate->type()==cGate::INPUT)
        throw cRuntimeError("send()/sendDelayed(): cannot send via an input gate (`%s')",outgate->name());
     if (!outgate->toGate())  // NOTE: without this error check, msg would become self-message
        throw cRuntimeError("send()/sendDelayed(): gate `%s' not connected",outgate->fullName());
@@ -396,10 +396,11 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
         throw cRuntimeError("sendDelayed(): negative delay %s", SIMTIME_STR(delay));
 
     // set message parameters and send it
-    msg->setSentFrom(this, outgate->id(), simTime()+delay);
+    simtime_t sendTime = simTime()+delay;
+    msg->setSentFrom(this, outgate->id(), sendTime);
 
     EVCB.beginSend(msg);
-    bool keepit = outgate->deliver(msg, simTime()+delay);
+    bool keepit = outgate->deliver(msg, sendTime);
     if (!keepit)
     {
         delete msg; //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash

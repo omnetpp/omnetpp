@@ -40,15 +40,15 @@ module Test: Test {
             parameters:
                 n = 5
             gates:
-                 0 out[0]: not connected
-                 1 out[1]: not connected
-                 2 out[2]: not connected
-                 3 out[3]: not connected
-                 4 out[4]: not connected
-                 5 in[0]: not connected
-                 6 in[1]: not connected
-                 7 in[2]: not connected
-                 8 in[3]: not connected
-                 9 in[4]: not connected
+                out[0]: not connected
+                out[1]: not connected
+                out[2]: not connected
+                out[3]: not connected
+                out[4]: not connected
+                in[0]: not connected
+                in[1]: not connected
+                in[2]: not connected
+                in[3]: not connected
+                in[4]: not connected
         }
 }

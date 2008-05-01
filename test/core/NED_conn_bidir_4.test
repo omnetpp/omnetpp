@@ -58,29 +58,29 @@ module Test: Test {
     submodules:
         module Test.node: Node {
             gates:
-                 0 g$i: not connected
-                 1 g$o: not connected
-                 2 gv1$i[0]: not connected
-                 3 gv1$i[1]: not connected
-                 4 gv1$o[0]: not connected
-                 5 gv1$o[1]: not connected
-                 6 gv2$i[0]: not connected
-                 7 gv2$i[1]: not connected
-                 8 gv2$o[0]: not connected
-                 9 gv2$o[1]: not connected
+                g$i: not connected
+                g$o: not connected
+                gv1$i[0]: not connected
+                gv1$i[1]: not connected
+                gv1$o[0]: not connected
+                gv1$o[1]: not connected
+                gv2$i[0]: not connected
+                gv2$i[1]: not connected
+                gv2$o[0]: not connected
+                gv2$o[1]: not connected
             submodules:
                 module Test.node.c: Core {
                     gates:
-                         0 g$i: <-- <parent>.g$i
-                         1 g$o: --> <parent>.g$o
-                         2 gv1$i[0]: <-- <parent>.gv1$i[0]
-                         3 gv1$i[1]: <-- <parent>.gv1$i[1]
-                         4 gv1$o[0]: --> <parent>.gv1$o[0]
-                         5 gv1$o[1]: --> <parent>.gv1$o[1]
-                         6 gv2$o[0]: --> <parent>.gv2$o[0]
-                         7 gv2$o[1]: --> <parent>.gv2$o[1]
-                         8 gv2$i[0]: <-- <parent>.gv2$i[0]
-                         9 gv2$i[1]: <-- <parent>.gv2$i[1]
+                        g$i: <-- <parent>.g$i
+                        g$o: --> <parent>.g$o
+                        gv1$i[0]: <-- <parent>.gv1$i[0]
+                        gv1$i[1]: <-- <parent>.gv1$i[1]
+                        gv1$o[0]: --> <parent>.gv1$o[0]
+                        gv1$o[1]: --> <parent>.gv1$o[1]
+                        gv2$i[0]: <-- <parent>.gv2$i[0]
+                        gv2$i[1]: <-- <parent>.gv2$i[1]
+                        gv2$o[0]: --> <parent>.gv2$o[0]
+                        gv2$o[1]: --> <parent>.gv2$o[1]
                 }
         }
 }

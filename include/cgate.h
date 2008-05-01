@@ -19,8 +19,11 @@
 #ifndef __CGATE_H
 #define __CGATE_H
 
+#include <set>
+#include <map>
 #include "cobject.h"
 #include "cstringpool.h"
+#include "opp_string.h"
 
 NAMESPACE_BEGIN
 
@@ -43,10 +46,13 @@ class  cProperties;
 class SIM_API cGate : public cObject, noncopyable
 {
     friend class cModule;
+    friend class cModuleGates;
     friend class cPlaceholderModule;
 
   public:
-    // gate type
+    /**
+     * Gate type
+     */
     enum Type {
         NONE = 0,
         INPUT = 'I',
@@ -55,42 +61,78 @@ class SIM_API cGate : public cObject, noncopyable
     };
 
   protected:
-    // internal: describes a gate vector or a non-vector gate
-    // note: gate type is implicitly stored in inGateId/outGateId
+    // internal
+    struct SIM_API Name
+    {
+        opp_string name;  // "foo"
+        opp_string namei; // "foo$i"
+        opp_string nameo; // "foo$o"
+        Type type;
+        Name(const char *name, Type type);
+        bool operator<(const Name& other) const;
+    };
+     //FIXME must NOT use the uppermost bit!!! as "-1" should not be a valid ID!! it should mean "none"
+    /*XXX explain better
+     * ID usage:
+     *  12 + 20 bits
+     *   H    L
+     * H=0: nonvector gates
+     *   L/2 = descIndex
+     *   L&1 = 0: inputgate 1: outputgate
+     *   allows 500,000 scalar gates
+     * H>0: vector gates (max 1024)
+     *   bit19 of L: input (0) or output (1)
+     *   bits0..18 of L: array index into inputgate[] or outputgate[]
+     *   allows
+     *   max vector size: 500,000
+     */
+    #define GATEID_HMASK  ((~0)<<20)
+    #define GATEID_LMASK  ((1<<20)-1)
+    #define GATEID_LBITS  20
+
+  public:
+    // internal; needs to be public because of GateIterator
+    // "size" could be put into slot0 of inputgatev[] or outputgatev[],
+    // to decrease Desc overhead for scalar gates. Notes: could go into Name
+    // as well, but it's impractical because of gate++ operations
+    //
     struct Desc
     {
-        const char *namep;  // stringpooled
         cModule *ownerp;
-        int size;       // gate vector size; 0 if zero size vector, -1 if not vector
-        int inGateId;   // id of first input gate; -1 if gate is not INPUT/INOUT
-        int outGateId;  // id of first output gate; -1 if gate is not OUTPUT/INOUT
+        Name *namep;  // pooled
+        int size; // gate vector size, or -1 if scalar gate
+        union { cGate *inputgate; cGate **inputgatev; };
+        union { cGate *outputgate; cGate **outputgatev; };
 
-        Desc() {namep=NULL; ownerp=NULL; size=0; inGateId=outGateId=-1;}
-        bool isVector() const {return size!=-1;}
-        bool isScalar() const {return size==-1;}
-        bool isInput() const  {return inGateId!=-1;}
-        bool isOutput() const {return outGateId!=-1;}
-        bool isInout() const  {return inGateId!=-1 && outGateId!=-1;}
-        bool isInInputIdRange(int id) const  {return id>=inGateId && id<inGateId+size;}
-        bool isInOutputIdRange(int id) const {return id>=outGateId && id<outGateId+size;}
+        Desc() {ownerp=NULL; size=-1; namep=NULL; inputgate=outputgate=NULL;}
+        bool inUse() const {return namep!=NULL;}
+        Type type() const {return namep->type;}
+        bool isVector() const {return size>=0;}
+        int indexOf(const cGate *g) const {return (g->pos>>1)==-1 ? 0 : g->pos>>1;}
+        Type typeOf(const cGate *g) const {return (g->pos&1)==0 ? INPUT : OUTPUT;}
+        bool isInput(const cGate *g) const {return (g->pos&1)==0;}
+        bool isOutput(const cGate *g) const {return (g->pos&1)==1;}
+        int gateSize() const {return size>=0 ? size : 1;}
+        void setInputGate(cGate *g) {ASSERT(type()!=OUTPUT && !isVector()); inputgate=g; g->desc=this; g->pos=(-1<<1);}
+        void setOutputGate(cGate *g) {ASSERT(type()!=INPUT && !isVector()); outputgate=g; g->desc=this; g->pos=(-1<<1)|1;}
+        void setInputGate(cGate *g, int index) {ASSERT(type()!=OUTPUT && isVector()); inputgatev[index]=g; g->desc=this; g->pos=(index<<1);}
+        void setOutputGate(cGate *g, int index) {ASSERT(type()!=INPUT && isVector()); outputgatev[index]=g; g->desc=this; g->pos=(index<<1)|1;}
+        static int capacityFor(int size) {return size<8 ? (size+1)&~1 : size<32 ? (size+3)&~3 : size<256 ? (size+15)&~15 : (size+63)&~63;}
     };
-    static cStringPool stringPool;
 
-    Desc *desc;  // descriptor of gate/gate vector, stored in cModule
-    int gateId;  // index within the module's gatev[]
-    const char *fullname; // name[index] string, stringpooled; may be NULL
+  protected:
+    Desc *desc; // descriptor of gate/gate vector, stored in cModule
+    int pos;    // b0: input(0) or output(1); rest (pos>>1): array index, or -1 if scalar gate
 
     cChannel *channelp; // channel object (if exists)
-    cGate *fromgatep;   // previous and next gate
-    cGate *togatep;     //   in the path
+    cGate *fromgatep;   // previous and next gate in the path
+    cGate *togatep;
 
   protected:
     // internal: constructor is protected because only cModule is allowed to create instances
-    explicit cGate(Desc *desc);
+    explicit cGate();
     // also protected: only cModule is allowed to delete gates
     virtual ~cGate();
-    // internal: tells the gate its id (position in the module's gatev[] array)
-    void setGateId(int id);
 
   public:
     /** @name Redefined cObject member functions */
@@ -184,7 +226,7 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Returns the gate name without index and potential "$i"/"$o" suffix.
      */
-    const char *baseName() const  {return desc->namep;}
+    const char *baseName() const;
 
     /**
      * Returns the properties for this gate. Properties cannot be changed
@@ -197,38 +239,46 @@ class SIM_API cGate : public cObject, noncopyable
      * cGate::INOUT, because a cGate object is always either the input or
      * the output half of an inout gate ("name$i" or "name$o").
      */
-    Type type() const;
+    Type type() const  {return desc->typeOf(this);}
 
     /**
      * Returns a pointer to the owner module of the gate.
      */
-    cModule *ownerModule() const  {return desc->ownerp;}
+    cModule *ownerModule() const;
 
     /**
-     * Returns gate ID, the position of the gate in the array of all gates of
-     * the module.
+     * Returns the gate ID, which uniquely identifies the gate within the
+     * module. IDs are guaranteed to be contiguous within a gate vector:
+     * <tt>module->gate(id+index) == module->gate(id)+index</tt>.
+     *
+     * Gate IDs are stable: they are guaranteed not to change during
+     * simulation. (This is a new feature of \opp 4.0. In earlier releases,
+     * gate IDs could change when the containing gate vector was resized.)
+     *
+     * Note: As of \opp 4.0, gate IDs are no longer small integers, and
+     * cannot be used for iterating over the gates of a module.
+     * Use cModule::GateIterator for iteration.
      */
-    int id() const  {return gateId;}
+    int id() const;
 
     /**
      * Returns true if the gate is part of a gate vector.
      */
-    bool isVector() const  {return desc->size>=0;}
+    bool isVector() const  {return desc->isVector();}
 
     /**
      * If the gate is part of a gate vector, returns the gate's index in the vector.
      * Otherwise, it returns 0.
      */
-    int index() const;
+    int index() const  {return desc->indexOf(this);}
 
     /**
      * If the gate is part of a gate vector, returns the size of the vector.
-     * For non-vector gates it returns 1. Zero-size vectors are represented
-     * by a single gate whose size() returns 0.
+     * For non-vector gates it returns 1.
      *
      * The gate vector size can also be obtained by calling the cModule::gateSize().
      */
-    int size()  const  {return desc->size<0 ? 1 : desc->size;}
+    int size() const  {return desc->gateSize();}
     //@}
 
     /** @name Transmission state. */
@@ -317,7 +367,6 @@ class SIM_API cGate : public cObject, noncopyable
 };
 
 NAMESPACE_END
-
 
 #endif
 

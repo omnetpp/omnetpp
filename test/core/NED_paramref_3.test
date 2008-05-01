@@ -61,12 +61,12 @@ network Test
             parameters:
                 p = 1
             gates:
-                 0 o[0]: --> n[0].i[0]
-                 1 o[1]: --> n[1].i[0]
-                 2 o[2]: --> n[2].i[0]
-                 3 o[3]: --> n[3].i[1]
-                 4 o[4]: --> n[4].i[0]
-                 5 o[5]: --> n[5].i[0]
-                 6 o[6]: --> n[6].i[0], ned.BasicChannel disabled=false delay=0 error=0 datarate=1
+                o[0]: --> n[0].i[0]
+                o[1]: --> n[1].i[0]
+                o[2]: --> n[2].i[0]
+                o[3]: --> n[3].i[1]
+                o[4]: --> n[4].i[0]
+                o[5]: --> n[5].i[0]
+                o[6]: --> n[6].i[0], ned.BasicChannel disabled=false delay=0 error=0 datarate=1
         }
 

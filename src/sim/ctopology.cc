@@ -1,5 +1,5 @@
 //=========================================================================
-//  CTOPO.CC - part of
+//  CTOPOLOGY.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -189,14 +189,12 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
 {
     clear();
 
-    int mod_id, gate_id;
-
     Node *temp_nodev = new Node[simulation.lastModuleId()];
 
     // Loop through all modules and find those which have the required
     // parameter with the (optionally) required value.
     int k=0;
-    for (mod_id=0; mod_id<=simulation.lastModuleId(); mod_id++)
+    for (int mod_id=0; mod_id<=simulation.lastModuleId(); mod_id++)
     {
         cModule *mod = simulation.module(mod_id);
         if (mod && selfunc(mod,data))
@@ -213,7 +211,7 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
 
             // create in_links[] arrays (big enough...)
             temp_nodev[k].num_in_links = 0;
-            temp_nodev[k].in_links = new cTopology::Link *[mod->gates()];
+            temp_nodev[k].in_links = new cTopology::Link *[mod->gateCount()];
 
             k++;
         }
@@ -221,35 +219,37 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
     num_nodes = k;
 
     nodev = new Node[num_nodes];
-    memcpy(nodev,temp_nodev,num_nodes*sizeof(Node));
+    memcpy(nodev, temp_nodev, num_nodes*sizeof(Node));
     delete [] temp_nodev;
 
     // Discover out neighbors too.
-    for (k=0; k<num_nodes; k++)
+    for (int k=0; k<num_nodes; k++)
     {
         // Loop through all its gates and find those which come
         // from or go to modules included in the topology.
 
         cModule *mod = simulation.module(nodev[k].module_id);
-        cTopology::Link *temp_out_links = new cTopology::Link[mod->gates()];
+        cTopology::Link *temp_out_links = new cTopology::Link[mod->gateCount()];
 
         int n_out=0;
-        for (gate_id=0; gate_id<mod->gates(); gate_id++)
+        for (cModule::GateIterator i(mod); !i.end(); i++)
         {
-            cGate *gate = mod->gate(gate_id);
-            if (!gate || gate->type()!='O') continue;
+            cGate *gate = i();
+            if (gate->type()!=cGate::OUTPUT)
+                continue;
 
             // follow path
+            cGate *src_gate = gate;
             do {
                 gate = gate->toGate();
             }
             while(gate && !selfunc(gate->ownerModule(),data));
 
-            // if we arrived in a module in the topology, record it.
+            // if we arrived at a module in the topology, record it.
             if (gate)
             {
                 temp_out_links[n_out].src_node = nodev+k;
-                temp_out_links[n_out].src_gate = gate_id;
+                temp_out_links[n_out].src_gate = src_gate->id();
                 temp_out_links[n_out].dest_node = nodeFor(gate->ownerModule());
                 temp_out_links[n_out].dest_gate = gate->id();
                 temp_out_links[n_out].wgt = 1.0;
@@ -260,12 +260,12 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
         nodev[k].num_out_links = n_out;
 
         nodev[k].out_links = new cTopology::Link[n_out];
-        memcpy(nodev[k].out_links,temp_out_links,n_out*sizeof(cTopology::Link));
+        memcpy(nodev[k].out_links, temp_out_links, n_out*sizeof(cTopology::Link));
         delete [] temp_out_links;
     }
 
     // fill in_links[] arrays
-    for (k=0; k<num_nodes; k++)
+    for (int k=0; k<num_nodes; k++)
     {
         for (int l=0; l<nodev[k].num_out_links; l++)
         {

@@ -61,7 +61,7 @@ class SIM_API cProxyGate : public cGate // noncopyable
   protected:
     // internal: constructor is protected because only cPlaceholderModule
     // is allowed to create instances
-    explicit cProxyGate(Desc *desc);
+    explicit cProxyGate();
 
   public:
     /** @name Redefined cObject member functions */

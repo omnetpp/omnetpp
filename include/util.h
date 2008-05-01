@@ -92,7 +92,7 @@ SIM_API char *simtimeToStrShort(double t, char *buf=NULL);
  * functions instead of the original \<string.h\> functions.
  *
  * @ingroup Functions
- * @defgroup FunctionsString String-related 
+ * @defgroup FunctionsString String-related
  */
 //@{
 /**
@@ -301,12 +301,6 @@ class SIM_API cContextTypeSwitcher
 
 //==========================================================================
 //=== Implementation of utility functions:
-
-inline bool equal(double a, double b, double epsilon)
-{
-   double d = a-b;
-   return (d>=0.0 ? d : -d) < epsilon;
-}
 
 #ifndef _STRINGUTIL_H_   // avoid clash with similar defs in common/stringutil.h
 

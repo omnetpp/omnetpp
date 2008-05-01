@@ -36,12 +36,12 @@ void cPlaceholderModule::scheduleStart(simtime_t t)
     // do nothing
 }
 
-cGate *cPlaceholderModule::createGateObject(cGate::Desc *desc)
+cGate *cPlaceholderModule::createGateObject(cGate::Type type)
 {
-    if (desc->isInput())
-        return new cProxyGate(desc);
+    if (type==cGate::INPUT)
+        return new cProxyGate();
     else
-        return cModule::createGateObject(desc);
+        return cModule::createGateObject(type);
 }
 
 //----------------------------------------

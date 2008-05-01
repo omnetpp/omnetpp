@@ -32,7 +32,7 @@ class SIM_API cPlaceholderModule : public cModule // so, noncopyable
 {
   protected:
     // internal: "virtual ctor" for cGate: creates cProxyGate
-    virtual cGate *createGateObject(cGate::Desc *desc);
+    virtual cGate *createGateObject(cGate::Type type);
 
   public:
     /** @name Constructors, destructor, assignment. */

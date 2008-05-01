@@ -700,14 +700,14 @@ class SIM_API cMessage : public cOwnedObject
      * scheduleAt() calls to set the parameters returned by the
      * senderModuleId(), senderGate(), sendingTime() methods.
      */
-    virtual void setSentFrom(cModule *module, int gate, simtime_t t);
+    virtual void setSentFrom(cModule *module, int gateId, simtime_t t);
 
     /**
      * Called internally by the simulation kernel as part of processing
      * the send(), scheduleAt() calls to set the parameters returned
      * by the arrivalModuleId(), arrivalGate() methods.
      */
-    virtual void setArrival(cModule *module, int gate);
+    virtual void setArrival(cModule *module, int gateId);
 
     /**
      * Called internally by the simulation kernel as part of processing

@@ -45,6 +45,7 @@ class COMMON_API CommonStringPool
     CommonStringPool();
     ~CommonStringPool();
     const char *get(const char *s);
+    void clear() {pool.clear();}
 };
 
 NAMESPACE_END

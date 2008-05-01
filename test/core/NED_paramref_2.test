@@ -82,8 +82,8 @@ module Test: Test {
             parameters:
                 c = 1
             gates:
-                 0 gc[0]: not connected
-                 1 gc[1]: not connected
+                gc[0]: not connected
+                gc[1]: not connected
         }
         module Test.mc[0]: Nil {
         }

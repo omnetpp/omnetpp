@@ -200,13 +200,14 @@ void TGraphicalModWindow::update()
 
 void TGraphicalModWindow::relayoutAndRedrawAll()
 {
+   cModule *mod = (cModule *)object;
    int submodcount = 0;
-   int gatecountestimate = static_cast<cModule *>(object)->gates();
-   for (cModule::SubmoduleIterator submod(static_cast<cModule *>(object)); !submod.end(); submod++)
+   int gatecountestimate = mod->gateCount();
+   for (cModule::SubmoduleIterator submod(mod); !submod.end(); submod++)
    {
        submodcount++;
-       // note: gatecountestimate will count unconnected gates and "holes" in the gate array as well
-       gatecountestimate += submod()->gates();
+       // note: gatecountestimate will count unconnected gates in the gate array as well
+       gatecountestimate += submod()->gateCount();
    }
 
    not_drawn = false;
@@ -215,9 +216,9 @@ void TGraphicalModWindow::relayoutAndRedrawAll()
        Tcl_Interp *interp = getTkenv()->getInterp();
        char problem[200];
        if (submodcount>1000)
-           sprintf(problem,"contains more than 1000 submodules (exactly %d)", submodcount);
+           sprintf(problem, "contains more than 1000 submodules (exactly %d)", submodcount);
        else
-           sprintf(problem,"may contain a lot of connections (modules have a large number of gates)");
+           sprintf(problem, "may contain a lot of connections (modules have a large number of gates)");
        CHK(Tcl_VarEval(interp,"tk_messageBox -parent ",windowname," -type yesno -title Warning -icon question "
                               "-message {Module '", object->fullName(), "' ", problem,
                               ", it may take a long time to display the graphics. "
@@ -434,14 +435,11 @@ void TGraphicalModWindow::refreshLayout()
     {
         cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
 
-        int n = mod->gates();
-        for (int i=0; i<n; i++)
+        for (cModule::GateIterator i(mod); !i.end(); i++)
         {
-            cGate *gate = mod->gate(i);
-            if (!gate) continue;
-
+            cGate *gate = i();
             cGate *destgate = gate->toGate();
-            if (gate->type()==(parent?'I':'O') && destgate)
+            if (gate->type()==(parent ? cGate::INPUT : cGate::OUTPUT) && destgate)
             {
                 cModule *destmod = destgate->ownerModule();
                 if (mod==parentmodule && destmod==parentmodule) {
@@ -531,14 +529,11 @@ void TGraphicalModWindow::redrawModules()
     {
         cModule *mod = !it.end() ? it() : (parent=true,parentmodule);
 
-        int n = mod->gates();
-        for (int i=0; i<n; i++)
+        for (cModule::GateIterator i(mod); !i.end(); i++)
         {
-            cGate *gate = mod->gate(i);
-            if (!gate) continue;
-
+            cGate *gate = i();
             cGate *dest_gate = gate->toGate();
-            if (gate->type()==(parent?'I':'O') && dest_gate!=NULL)
+            if (gate->type()==(parent ? cGate::INPUT: cGate::OUTPUT) && dest_gate!=NULL)
             {
                 char gateptr[32], srcptr[32], destptr[32], indices[32];
                 ptrToStr(gate, gateptr);
@@ -1079,10 +1074,10 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    int xsiz = 0;
    char prevdir = ' ';
    cGate *g;
-   for(g = gate->sourceGate(); g!=NULL; g=g->toGate(),k++)
+   for (g = gate->sourceGate(); g!=NULL; g=g->toGate(),k++)
    {
         if (g->type()==prevdir)
-             xsiz += (g->type()=='O') ? 1 : -1;
+             xsiz += (g->type()==cGate::OUTPUT) ? 1 : -1;
         else
              prevdir = g->type();
 

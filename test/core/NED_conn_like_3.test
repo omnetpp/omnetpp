@@ -41,14 +41,14 @@ module Test: Test {
     submodules:
         module Test.a: Node {
             gates:
-                 0 out[0]: --> b.in[0], Channel1
-                 1 out[1]: --> b.in[1], Channel2
-                 2 out[2]: --> b.in[2], Channel2
+                out[0]: --> b.in[0], Channel1
+                out[1]: --> b.in[1], Channel2
+                out[2]: --> b.in[2], Channel2
         }
         module Test.b: Node {
             gates:
-                 0 in[0]: <-- a.out[0], Channel1
-                 1 in[1]: <-- a.out[1], Channel2
-                 2 in[2]: <-- a.out[2], Channel2
+                in[0]: <-- a.out[0], Channel1
+                in[1]: <-- a.out[1], Channel2
+                in[2]: <-- a.out[2], Channel2
         }
 }

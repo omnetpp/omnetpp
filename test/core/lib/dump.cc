@@ -51,11 +51,10 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     }
 
     bool gateheadingprinted = false;
-    for (int i=0; i<mod->gates(); i++) {
-        if (mod->gate(i)) {
-            if (!gateheadingprinted) {printf("%s    gates:\n", indent);gateheadingprinted=true;}
-            printf("%s        %2d %s%s: %s\n", indent, i, mod->gate(i)->fullName(), props2str(mod->gate(i)->properties()).c_str(), mod->gate(i)->info().c_str());
-        }
+    for (cModule::GateIterator i(mod); !i.end(); i++) {
+        cGate *gate = i();
+        if (!gateheadingprinted) {printf("%s    gates:\n", indent);gateheadingprinted=true;}
+        printf("%s        %s%s: %s\n", indent, gate->fullName(), props2str(gate->properties()).c_str(), gate->info().c_str());
     }
 
     bool submodheadingprinted = false;

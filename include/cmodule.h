@@ -30,11 +30,13 @@ class  cModule;
 class  cSimulation;
 class  cModuleType;
 
+//FIXME check max gatesize and max gate count limits!!! (22 bits etc)
 
 /**
  * Common base for cSimpleModule and cCompoundModule.
  * cModule provides gates, parameters, RNG mapping, display strings,
  * and a set of virtual methods.
+//XXX better comment
  *
  * For navigating around in the module tree, see:
  * parentModule(), submodule(), cModule::SubmoduleIterator,
@@ -51,6 +53,66 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
   public:
     /**
+     * Iterates through the gates of a module.
+     *
+     * Example:
+     * \code
+     * for (cModule::GateIterator i(modp); !i.end(); i++)
+     * {
+     *     cGate *gate = i();
+     *     ...
+     * }
+     * \endcode
+     */
+    class SIM_API GateIterator
+    {
+      private:
+        const cModule *module;
+        int descIndex;
+        bool isOutput;
+        int index;
+
+      private:
+        void advance();
+        cGate *current() const;
+
+      public:
+        /**
+         * Constructor. It takes the module on which to iterate.
+         */
+        GateIterator(const cModule *m)  {init(m);}
+
+        /**
+         * Reinitializes the iterator.
+         */
+        void init(const cModule *m);
+
+        /**
+         * Returns a pointer to the current gate. Only returns NULL if the
+         * iterator has reached the end of the list.
+         */
+        cGate *operator()() const {cGate *result=current(); ASSERT(result||end()); return result;}
+
+        /**
+         * Returns true if the iterator reached the end of the list.
+         */
+        bool end() const;
+
+        /**
+         * Returns the current gate, then moves the iterator to the next gate.
+         * Only returns NULL if the iterator has already reached the end of
+         * the list.
+         */
+        cGate *operator++(int);
+
+        /**
+         * Advances the iterator by k gates. Equivalent to calling "++" k times,
+         * but more efficient.
+         */
+        cGate *operator+=(int k);
+    };
+
+    /**
      * Iterates through submodules of a compound module.
      *
      * Example:
@@ -62,7 +124,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * }
      * \endcode
      */
-    class SubmoduleIterator
+    class SIM_API SubmoduleIterator
     {
       private:
         cModule *p;
@@ -103,7 +165,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * among the module and its submodules. This is the same set of channels
      * whose parentModule() would return the iterated module.
      */
-    class ChannelIterator
+    class SIM_API ChannelIterator
     {
       private:
         std::vector<cChannel *> channels;
@@ -146,7 +208,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
   private:
     enum {
-        FL_RECORD_EVENTS = 64,   // enables recording events in this module
+        FL_RECORD_EVENTS = 64, // enables recording events in this module
     };
 
   protected:
@@ -160,9 +222,10 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cModule *firstsubmodp;  // pointer to first submodule
     cModule *lastsubmodp;   // pointer to last submodule (needed for efficient append operation)
 
-    int numgatedescs;       // size of the gatedescv array
-    cGate::Desc *gatedescv; // array with one element per gate or gate vector
-    std::vector<cGate*> gatev;  // stores the gates themselves
+    typedef std::set<cGate::Name> NamePool;
+    static NamePool namePool;
+    int descvSize;    // size of the descv array
+    cGate::Desc *descv; // array with one element per gate or gate vector
 
     int idx;      // index if module vector, 0 otherwise
     int vectsize; // vector size, -1 if not a vector
@@ -200,20 +263,38 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal: "virtual ctor" for cGate, because in cPlaceholderModule
     // we'll need different gate objects
-    virtual cGate *createGateObject(cGate::Desc *desc);
+    virtual cGate *createGateObject(cGate::Type type);
+
+    // internal: called from deleteGate()
+    void disposeGateDesc(cGate::Desc *desc, bool checkConnected);
+
+    // internal: called from deleteGate()
+    void disposeGateObject(cGate *gate, bool checkConnected);
 
     // internal: add a new gatedesc by expanding gatedescv[]
-    cGate::Desc& addGateDesc();
+    cGate::Desc *addGateDesc(const char *name, cGate::Type type, bool isVector);
 
     // internal: finds a gate descriptor with the given name in gatedescv[];
-    // ignores (but gives back) potential "$i"/"$o" suffix in gatename
+    // ignores (but returns) potential "$i"/"$o" suffix in gatename
     int findGateDesc(const char *gatename, char& suffix) const;
 
     // internal: like findGateDesc(), but throws an error if the gate does not exist
-    const cGate::Desc& gateDesc(const char *gatename, char& suffix) const;
+    cGate::Desc *gateDesc(const char *gatename, char& suffix) const;
 
-    // internal: resize a gate vector, possibly moving it in gatev[]. Returns newpos.
-    int moveGates(int oldpos, int oldsize, int newsize, cGate::Desc *desc);
+    // internal: helper for setGateSize()
+    void adjustGateDesc(cGate *g, cGate::Desc *newvec);
+
+    // internal: called as part of the destructor
+    void clearGates();
+
+  public:
+    static void resetPools(); //FIXME TODO call this from deleteNetwork()
+
+    // internal utility function. Very inefficient as it loops through all gates.
+    int gateCount() const;
+
+    // internal utility function. Very inefficient as it linearly loops through the gates.
+    cGate *gateByOrdinal(int k) const;
 
   protected:
     /**
@@ -447,29 +528,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /** @name Gates. */
     //@{
-    /**
-     * Returns the maximum gate ID plus one, which is the same as the size
-     * of the array that holds all module gates. Note that some positions
-     * (gate IDs) may be unused (the array contains NULL).
-     *
-     * Inout gates are represented by two cGate objects, named "<i>name</i>$i"
-     * and "<i>name</i>$o".
-     */
-    virtual int gates() const {return gatev.size();}
-
-    /**
-     * Returns a gate by its ID. Note that the gate array may contain "holes",
-     * that is, this function can return NULL for some IDs in the 0..gates()-1
-     * range. If the ID is out of range, an error is thrown.
-     */
-    virtual cGate *gate(int g);
-
-    /**
-     * Returns a gate by its ID. Note that the gate array may contain "holes",
-     * that is, this function can return NULL for some IDs in the 0..gates()-1
-     * range. If the ID is out of range, an error is thrown.
-     */
-    const cGate *gate(int g) const {return const_cast<cModule *>(this)->gate(g);}
 
     /**
      * Looks up a gate by its name and index. Gate names with the "$i" or "$o"
@@ -521,6 +579,47 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual bool hasGate(const char *gatename, int index=-1) const;
 
     /**
+     * Returns the ID of the gate specified by name and index. Inout gates
+     * cannot be specified (since they are actually two gate objects, not one),
+     * only with a "$i" or "$o" suffix. Returns -1 if the gate doesn't exist.
+     * The presence of the index parameter decides whether a vector or a scalar
+     * gate will be looked for.
+     */
+    virtual int findGate(const char *gatename, int index=-1) const;
+
+    /**
+     * Returns a gate by its ID. Note that the gate array may contain "holes",
+     * that is, this function can return NULL for some IDs in the 0..gates()-1
+     * range. If the ID is out of range, an error is thrown.
+     */
+//FIXME revise comment!!!!
+    virtual cGate *gate(int id);
+
+    /**
+     * Returns a gate by its ID. Note that the gate array may contain "holes",
+     * that is, this function can return NULL for some IDs in the 0..gates()-1
+     * range. If the ID is out of range, an error is thrown.
+     */
+    const cGate *gate(int id) const {return const_cast<cModule *>(this)->gate(id);}
+
+    /**
+     * Deletes a gate or gate vector.  XXX comment  XXX allow deleting a gate in a gate vector?
+     */
+    virtual void deleteGate(const char *gatename);
+
+    /**
+     * Returns the names of the module's gates. For gate vectors and inout gates,
+     * only the base name is returned (without gate index, "[]" or the "$i"/"$o"
+     * suffix). Zero-size gate vectors will also be included.
+     *
+     * The strings in the returned array do not need to be deallocated and
+     * must not be modified.
+     *
+     * @see gateType(), isGateVector(), gateSize()
+     */
+    virtual std::vector<const char *> gateNames() const;
+
+    /**
      * Returns the type of the gate (or gate vector) with the given name.
      * Gate names with the "$i" or "$o" suffix are also accepted. Throws
      * an error if there is no such gate or gate vector.
@@ -545,15 +644,6 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * method of any gate object.
      */
     virtual int gateSize(const char *gatename) const;
-
-    /**
-     * Returns the ID of the gate specified by name and index. Inout gates
-     * cannot be specified (since they are actually two gate objects, not one),
-     * only with a "$i" or "$o" suffix. Returns -1 if the gate doesn't exist.
-     * The presence of the index parameter decides whether a vector or a scalar
-     * gate will be looked for.
-     */
-    virtual int findGate(const char *gatename, int index=-1) const;
 
     /**
      * For compound modules, it checks if all gates are connected inside

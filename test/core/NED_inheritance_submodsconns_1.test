@@ -49,30 +49,30 @@ module Test: Test {
     submodules:
         module Test.a1: Node {
             gates:
-                 0 in1: <-- a2.out1
-                 1 in2: <-- b1.out2
-                 2 out1: --> a2.in1
-                 3 out2: --> b1.in2
+                in1: <-- a2.out1
+                in2: <-- b1.out2
+                out1: --> a2.in1
+                out2: --> b1.in2
         }
         module Test.a2: Node {
             gates:
-                 0 in1: <-- a1.out1
-                 1 in2: <-- b2.out2
-                 2 out1: --> a1.in1
-                 3 out2: --> b2.in2
+                in1: <-- a1.out1
+                in2: <-- b2.out2
+                out1: --> a1.in1
+                out2: --> b2.in2
         }
         module Test.b1: Node {
             gates:
-                 0 in1: <-- b2.out1
-                 1 in2: <-- a1.out2
-                 2 out1: --> b2.in1
-                 3 out2: --> a1.in2
+                in1: <-- b2.out1
+                in2: <-- a1.out2
+                out1: --> b2.in1
+                out2: --> a1.in2
         }
         module Test.b2: Node {
             gates:
-                 0 in1: <-- b1.out1
-                 1 in2: <-- a2.out2
-                 2 out1: --> b1.in1
-                 3 out2: --> a2.in2
+                in1: <-- b1.out1
+                in2: <-- a2.out2
+                out1: --> b1.in1
+                out2: --> a2.in2
         }
 }

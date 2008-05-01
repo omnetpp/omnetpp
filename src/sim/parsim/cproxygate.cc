@@ -28,7 +28,7 @@
 USING_NAMESPACE
 
 
-cProxyGate::cProxyGate(Desc *desc) : cGate(desc)
+cProxyGate::cProxyGate() : cGate()
 {
     partition = NULL;
     remoteProcId = -1;

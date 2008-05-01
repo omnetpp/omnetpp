@@ -15,7 +15,7 @@ module Node {
 
 network Test {
     submodules:
-        n1: Node;  
+        n1: Node;
         n2: Node;
         dump: Dump;
     connections allowunconnected:
@@ -31,18 +31,18 @@ module Test: Test {
             parameters:
                 n = 2
             gates:
-                 0 g$i[0]: <-- n2.g$o[0]
-                 1 g$i[1]: not connected
-                 2 g$o[0]: --> n2.g$i[0]
-                 3 g$o[1]: not connected
+                g$i[0]: <-- n2.g$o[0]
+                g$i[1]: not connected
+                g$o[0]: --> n2.g$i[0]
+                g$o[1]: not connected
         }
         module Test.n2: Node {
             parameters:
                 n = 2
             gates:
-                 0 g$i[0]: <-- n1.g$o[0]
-                 1 g$i[1]: not connected
-                 2 g$o[0]: --> n1.g$i[0]
-                 3 g$o[1]: not connected
+                g$i[0]: <-- n1.g$o[0]
+                g$i[1]: not connected
+                g$o[0]: --> n1.g$i[0]
+                g$o[1]: not connected
         }
 }

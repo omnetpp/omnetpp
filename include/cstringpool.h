@@ -27,6 +27,8 @@ NAMESPACE_BEGIN
  * keys and values, etc. These strings can be stored in a cStringPool as one
  * shared instance. Strings in the cStringPool are refcounted.
  * (See Flyweight GoF pattern.)
+ *
+ * @ingroup internals
  */
 class cStringPool
 {

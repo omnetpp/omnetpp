@@ -101,12 +101,12 @@ module Test: Test {
                 b = 3
                 c = 2
             gates:
-                 0 ga[0]: not connected
-                 1 gb[0]: not connected
-                 2 gb[1]: not connected
-                 3 gb[2]: not connected
-                 4 gc[0]: not connected
-                 5 gc[1]: not connected
+                ga[0]: not connected
+                gb[0]: not connected
+                gb[1]: not connected
+                gb[2]: not connected
+                gc[0]: not connected
+                gc[1]: not connected
         }
         module Test.ma[0]: Nil {
         }

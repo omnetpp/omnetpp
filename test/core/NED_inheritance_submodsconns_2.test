@@ -44,31 +44,31 @@ module Test: Test {
     submodules:
         module Test.a1: Node {
             gates:
-                 0 g1$i: <-- a2.g1$o
-                 1 g1$o: --> a2.g1$i
-                 2 g2$i: <-- b1.g2$o
-                 3 g2$o: --> b1.g2$i
+                g1$i: <-- a2.g1$o
+                g1$o: --> a2.g1$i
+                g2$i: <-- b1.g2$o
+                g2$o: --> b1.g2$i
         }
         module Test.a2: Node {
             gates:
-                 0 g1$i: <-- a1.g1$o
-                 1 g1$o: --> a1.g1$i
-                 2 g2$i: <-- b2.g2$o
-                 3 g2$o: --> b2.g2$i
+                g1$i: <-- a1.g1$o
+                g1$o: --> a1.g1$i
+                g2$i: <-- b2.g2$o
+                g2$o: --> b2.g2$i
         }
         module Test.b1: Node {
             gates:
-                 0 g1$i: <-- b2.g1$o
-                 1 g1$o: --> b2.g1$i
-                 2 g2$i: <-- a1.g2$o
-                 3 g2$o: --> a1.g2$i
+                g1$i: <-- b2.g1$o
+                g1$o: --> b2.g1$i
+                g2$i: <-- a1.g2$o
+                g2$o: --> a1.g2$i
         }
         module Test.b2: Node {
             gates:
-                 0 g1$i: <-- b1.g1$o
-                 1 g1$o: --> b1.g1$i
-                 2 g2$i: <-- a2.g2$o
-                 3 g2$o: --> a2.g2$i
+                g1$i: <-- b1.g1$o
+                g1$o: --> b1.g1$i
+                g2$i: <-- a2.g2$o
+                g2$o: --> a2.g2$i
         }
 }
 

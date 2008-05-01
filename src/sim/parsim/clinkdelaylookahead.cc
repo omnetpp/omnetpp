@@ -59,8 +59,7 @@ void cLinkDelayLookahead::startRun()
     int myProcId = comm->getProcId();
 
     // temporarily initialize everything to zero.
-    int i;
-    for (i=0; i<numSeg; i++)
+    for (int i=0; i<numSeg; i++)
         segInfo[i].minDelay = -1;
 
     // fill in minDelays
@@ -70,11 +69,11 @@ void cLinkDelayLookahead::startRun()
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
         if (mod)
         {
-            for (int gateId=0; gateId<mod->gates(); gateId++)
+            for (cModule::GateIterator i(mod); !i.end(); i++)
             {
                 // if this is a properly connected proxygate, process it
                 // FIXME leave out gates from other cPlaceholderModules
-                cGate *g = mod->gate(gateId);
+                cGate *g = i();
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
                 if (pg && pg->fromGate() && pg->getRemoteProcId()>=0)
                 {
@@ -96,11 +95,11 @@ void cLinkDelayLookahead::startRun()
     }
 
     // if two partitions are not connected, the lookeahead is "infinity"
-    for (i=0; i<numSeg; i++)
+    for (int i=0; i<numSeg; i++)
         if (i!=myProcId && segInfo[i].minDelay==-1)
             segInfo[i].minDelay = MAXTIME;
 
-    for (i=0; i<numSeg; i++)
+    for (int i=0; i<numSeg; i++)
         if (i!=myProcId)
             ev << "    lookahead to procId=" << i << " is " << segInfo[i].minDelay << "\n";
 

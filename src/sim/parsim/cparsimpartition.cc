@@ -93,12 +93,12 @@ void cParsimPartition::connectRemoteGates()
         cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
         if (mod)
         {
-            for (int gateId=0; gateId<mod->gates(); gateId++)
+            for (cModule::GateIterator i(mod); !i.end(); i++)
             {
-                cGate *g = mod->gate(gateId);
+                cGate *g = i();
                 // if this is a normal output gate which leads to a simple module,
                 // send the input gate where it is connected.
-                if (g && g->type()=='O' && g->toGate() &&
+                if (g->type()==cGate::OUTPUT && g->toGate() &&
                     g->destinationGate()->ownerModule()->isSimple())
                 {
                     cGate *ing = g->toGate();

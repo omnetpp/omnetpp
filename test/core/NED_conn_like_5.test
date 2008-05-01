@@ -62,13 +62,13 @@ module Test: Test {
     submodules:
         module Test.a: Node {
             gates:
-                 0 g$i: <-- b.g$o, TestChannel p0="hello" p1=1 p2=2
-                 1 g$o: --> b.g$i, TestChannel p0="hello" p1=1 p2=2
+                g$i: <-- b.g$o, TestChannel p0="hello" p1=1 p2=2
+                g$o: --> b.g$i, TestChannel p0="hello" p1=1 p2=2
         }
         module Test.b: Node {
             gates:
-                 0 g$i: <-- a.g$o, TestChannel p0="hello" p1=1 p2=2
-                 1 g$o: --> a.g$i, TestChannel p0="hello" p1=1 p2=2
+                g$i: <-- a.g$o, TestChannel p0="hello" p1=1 p2=2
+                g$o: --> a.g$i, TestChannel p0="hello" p1=1 p2=2
         }
 }
 

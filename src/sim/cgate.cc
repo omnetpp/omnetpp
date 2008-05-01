@@ -33,20 +33,42 @@
 #include "cdisplaystring.h"
 #include "ccomponenttype.h"
 #include "stringutil.h"
+#include "stringpool.h"
 #include "util.h"
 
 USING_NAMESPACE
 
 using std::ostream;
 
-cStringPool cGate::stringPool;
+//FIXME TODO empty it on deleteNetwork()? or between events?
+//    and add to doc: "lifetime of the string returned by fullName() is the simulation event"?
 
-cGate::cGate(Desc *d)
+// non-refcounting pool for gate fullnames
+CommonStringPool fullnamePool;
+
+
+cGate::Name::Name(const char *name, Type type)
 {
-    desc = d;
-    gateId = -1; // to be set later
-    fullname = NULL;
+    this->name = name;
+    this->type = type;
+    if (type==cGate::INOUT) {
+        namei = opp_concat(name, "$i");
+        nameo = opp_concat(name, "$o");
+    }
+}
 
+bool cGate::Name::operator<(const Name& other) const
+{
+    int d = opp_strcmp(name.c_str(), other.name.c_str());
+    if (d!=0)
+        return d;
+    return type - other.type;
+}
+
+cGate::cGate()
+{
+    desc = NULL;
+    pos = 0;
     fromgatep = togatep = NULL;
     channelp = NULL;
 }
@@ -54,7 +76,6 @@ cGate::cGate(Desc *d)
 cGate::~cGate()
 {
     dropAndDelete(channelp);
-    stringPool.release(fullname);
 }
 
 void cGate::forEachChild(cVisitor *v)
@@ -63,15 +84,17 @@ void cGate::forEachChild(cVisitor *v)
         v->visit(channelp);
 }
 
+const char *cGate::baseName() const
+{
+    return desc->namep->name.c_str();
+}
+
 const char *cGate::name() const
 {
-    if (!desc->isInout())
-        return desc->namep;
-    else {
-        // this is one half of an inout gate, append "$i" or "$o"
-        const char *suffix = type()==INPUT ? "$i" : "$o";
-        return stringPool.get(opp_concat(desc->namep, suffix));
-    }
+    if (desc->namep->type==INOUT)
+        return desc->isInput(this) ? desc->namep->namei.c_str() : desc->namep->nameo.c_str();
+    else
+        return desc->namep->name.c_str();
 }
 
 const char *cGate::fullName() const
@@ -80,17 +103,16 @@ const char *cGate::fullName() const
     if (!isVector())
         return name();
 
-    // otherwise, produce fullname if not yet done
-    if (!fullname)
-    {
-        if (opp_strlen(name()) > 100)
-            throw cRuntimeError(this, "gate name too long, should be under 100 characters");
-        static char tmp[128];
-        strcpy(tmp, name());
-        opp_appendindex(tmp, index()); // much faster than printf
-        const_cast<cGate *>(this)->fullname = stringPool.get(tmp);
-    }
-    return fullname;
+    // otherwise, produce fullname in a temp buffer, and return its stringpooled copy
+    // note: this implementation assumes that this method will be called infrequently
+    // (ie. we reproduce the string every time).
+    if (opp_strlen(name()) > 100)
+        throw cRuntimeError(this, "fullName(): gate name too long, should be under 100 characters");
+
+    static char tmp[128];
+    strcpy(tmp, name());
+    opp_appendindex(tmp, index());
+    return fullnamePool.get(tmp); // non-refcounted stringpool
 }
 
 std::string cGate::info() const
@@ -109,7 +131,7 @@ std::string cGate::info() const
 
     // append useful info to buf
     if (!g)
-        return std::string("not connected");
+        return "not connected";
 
     std::stringstream out;
     out << arrow;
@@ -129,45 +151,21 @@ cObject *cGate::owner() const
     return desc->ownerp;
 }
 
-void cGate::setGateId(int id)
+cModule *cGate::ownerModule() const
 {
-    gateId = id;
-
-    // invalidate fullname, as it may have changed (it'll be recreated on demand)
-    if (fullname)
-    {
-        stringPool.release(fullname);
-        fullname = NULL;
-    }
+    return desc->ownerp;
 }
 
-cGate::Type cGate::type() const
+int cGate::id() const
 {
-    if (!desc->isInout())
-        return desc->isInput() ? INPUT : OUTPUT;
-
-    // otherwise see which gate id range in desc contains this gate's id
-    if (desc->isScalar())
-        return gateId==desc->inGateId ? INPUT : OUTPUT;
-    if (desc->isInInputIdRange(gateId))
-        return INPUT;
-    if (desc->isInOutputIdRange(gateId))
-        return OUTPUT;
-    throw cRuntimeError(this, "internal data structure inconsistency");
-}
-
-int cGate::index() const
-{
-    // if not vector, return 0
-    if (desc->isScalar())
-        return 0;
-
-    // otherwise see which gate id range in desc contains this gate's id
-    if (desc->isInput() && desc->isInInputIdRange(gateId))
-        return gateId - desc->inGateId;
-    if (desc->isOutput() && desc->isInOutputIdRange(gateId))
-        return gateId - desc->outGateId;
-    throw cRuntimeError(this, "internal data structure inconsistency");
+    int descIndex = desc - desc->ownerp->descv;
+    int id;
+    if (!desc->isVector())
+        id = (descIndex<<1)|(pos&1);
+    else
+        // note: we use descIndex+1 otherwise h can remain zero after <<LBITS
+        id = ((descIndex+1)<<GATEID_LBITS) | ((pos&1)<<(GATEID_LBITS-1)) | (pos>>1);
+    return id;
 }
 
 cProperties *cGate::properties() const
@@ -313,4 +311,5 @@ bool cGate::isPathOK() const
     return sourceGate()->ownerModule()->isSimple() &&
            destinationGate()->ownerModule()->isSimple();
 }
+
 

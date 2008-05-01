@@ -79,10 +79,10 @@ module Test: Test {
                 p1 = 1
                 p2 = 2
             gates:
-                 0 in: <-- b.out
-                 1 out: --> b.in
-                 2 g$i: <-- b.g$o
-                 3 g$o: --> b.g$i
+                in: <-- b.out
+                out: --> b.in
+                g$i: <-- b.g$o
+                g$o: --> b.g$i
         }
         module Test.b: Module {
             parameters:
@@ -90,10 +90,10 @@ module Test: Test {
                 p1 = 1
                 p2 = 2
             gates:
-                 0 in: <-- a.out
-                 1 out: --> a.in
-                 2 g$i: <-- a.g$o
-                 3 g$o: --> a.g$i
+                in: <-- a.out
+                out: --> a.in
+                g$i: <-- a.g$o
+                g$o: --> a.g$i
         }
 }
 

@@ -58,9 +58,9 @@ module Test: Test {
                 p1 = 1
                 p2 = 2
             gates:
-                 0 in: <-- a.out
-                 1 out: --> a.in
-                 2 g$i: <-- a.g$o
-                 3 g$o: --> a.g$i
+                in: <-- a.out
+                out: --> a.in
+                g$i: <-- a.g$o
+                g$o: --> a.g$i
         }
 }

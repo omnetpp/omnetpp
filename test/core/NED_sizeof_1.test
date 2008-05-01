@@ -105,9 +105,9 @@ void Simple::activity()
 {
     for (int i=0; i<params(); i++)
         ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
-    for (int k=0; k<gates(); k++)
-        if (gate(k) && gate(k)->index()==0)
-            ev << gate(k)->name() << " size=" << gate(k)->size() << endl;
+    for (cModule::GateIterator i(this); !i.end(); i++)
+        if (i()->index()==0)
+            ev << i()->name() << " size=" << i()->size() << endl;
     for (cModule::SubmoduleIterator j(parentModule()); !j.end(); j++)
         if (j()->index()==0)
             ev << j()->name() << " size=" << j()->size() << endl;

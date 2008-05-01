@@ -41,73 +41,73 @@ module Test: Test {
     submodules:
         module Test.a: Node {
             gates:
-                 0 out[0]: --> b.in[0], Channel1
-                 1 out[1]: --> b.in[1], Channel1
-                 2 out[2]: --> b.in[2], Channel1
-                 3 out[3]: --> b.in[3], Channel2
-                 4 out[4]: --> b.in[4], Channel2
-                 5 out[5]: --> b.in[5], Channel1
-                 6 out[6]: --> b.in[6], Channel2
-                 7 out[7]: --> b.in[7], Channel2
-                 8 out[8]: --> b.in[8], Channel2
-                 9 out[9]: --> b.in[9], Channel2
-                10 out[10]: --> b.in[10], Channel2
-                11 out[11]: --> b.in[11], Channel2
-                12 out[12]: --> b.in[12], Channel2
-                13 out[13]: --> b.in[13], Channel1
-                14 out[14]: --> b.in[14], Channel1
-                15 out[15]: --> b.in[15], Channel2
-                16 out[16]: --> b.in[16], Channel1
-                17 out[17]: --> b.in[17], Channel1
-                18 out[18]: --> b.in[18], Channel1
-                19 out[19]: --> b.in[19], Channel1
-                20 out[20]: --> b.in[20], Channel1
-                21 out[21]: --> b.in[21], Channel2
-                22 out[22]: --> b.in[22], Channel1
-                23 out[23]: --> b.in[23], Channel2
-                24 out[24]: --> b.in[24], Channel2
-                25 out[25]: --> b.in[25], Channel1
-                26 out[26]: --> b.in[26], Channel1
-                27 out[27]: --> b.in[27], Channel2
-                28 out[28]: --> b.in[28], Channel2
-                29 out[29]: --> b.in[29], Channel2
-                30 out[30]: --> b.in[30], Channel2
-                31 out[31]: --> b.in[31], Channel1
+                out[0]: --> b.in[0], Channel1
+                out[1]: --> b.in[1], Channel1
+                out[2]: --> b.in[2], Channel1
+                out[3]: --> b.in[3], Channel2
+                out[4]: --> b.in[4], Channel2
+                out[5]: --> b.in[5], Channel1
+                out[6]: --> b.in[6], Channel2
+                out[7]: --> b.in[7], Channel2
+                out[8]: --> b.in[8], Channel2
+                out[9]: --> b.in[9], Channel2
+                out[10]: --> b.in[10], Channel2
+                out[11]: --> b.in[11], Channel2
+                out[12]: --> b.in[12], Channel2
+                out[13]: --> b.in[13], Channel1
+                out[14]: --> b.in[14], Channel1
+                out[15]: --> b.in[15], Channel2
+                out[16]: --> b.in[16], Channel1
+                out[17]: --> b.in[17], Channel1
+                out[18]: --> b.in[18], Channel1
+                out[19]: --> b.in[19], Channel1
+                out[20]: --> b.in[20], Channel1
+                out[21]: --> b.in[21], Channel2
+                out[22]: --> b.in[22], Channel1
+                out[23]: --> b.in[23], Channel2
+                out[24]: --> b.in[24], Channel2
+                out[25]: --> b.in[25], Channel1
+                out[26]: --> b.in[26], Channel1
+                out[27]: --> b.in[27], Channel2
+                out[28]: --> b.in[28], Channel2
+                out[29]: --> b.in[29], Channel2
+                out[30]: --> b.in[30], Channel2
+                out[31]: --> b.in[31], Channel1
         }
         module Test.b: Node {
             gates:
-                 0 in[0]: <-- a.out[0], Channel1
-                 1 in[1]: <-- a.out[1], Channel1
-                 2 in[2]: <-- a.out[2], Channel1
-                 3 in[3]: <-- a.out[3], Channel2
-                 4 in[4]: <-- a.out[4], Channel2
-                 5 in[5]: <-- a.out[5], Channel1
-                 6 in[6]: <-- a.out[6], Channel2
-                 7 in[7]: <-- a.out[7], Channel2
-                 8 in[8]: <-- a.out[8], Channel2
-                 9 in[9]: <-- a.out[9], Channel2
-                10 in[10]: <-- a.out[10], Channel2
-                11 in[11]: <-- a.out[11], Channel2
-                12 in[12]: <-- a.out[12], Channel2
-                13 in[13]: <-- a.out[13], Channel1
-                14 in[14]: <-- a.out[14], Channel1
-                15 in[15]: <-- a.out[15], Channel2
-                16 in[16]: <-- a.out[16], Channel1
-                17 in[17]: <-- a.out[17], Channel1
-                18 in[18]: <-- a.out[18], Channel1
-                19 in[19]: <-- a.out[19], Channel1
-                20 in[20]: <-- a.out[20], Channel1
-                21 in[21]: <-- a.out[21], Channel2
-                22 in[22]: <-- a.out[22], Channel1
-                23 in[23]: <-- a.out[23], Channel2
-                24 in[24]: <-- a.out[24], Channel2
-                25 in[25]: <-- a.out[25], Channel1
-                26 in[26]: <-- a.out[26], Channel1
-                27 in[27]: <-- a.out[27], Channel2
-                28 in[28]: <-- a.out[28], Channel2
-                29 in[29]: <-- a.out[29], Channel2
-                30 in[30]: <-- a.out[30], Channel2
-                31 in[31]: <-- a.out[31], Channel1
+                in[0]: <-- a.out[0], Channel1
+                in[1]: <-- a.out[1], Channel1
+                in[2]: <-- a.out[2], Channel1
+                in[3]: <-- a.out[3], Channel2
+                in[4]: <-- a.out[4], Channel2
+                in[5]: <-- a.out[5], Channel1
+                in[6]: <-- a.out[6], Channel2
+                in[7]: <-- a.out[7], Channel2
+                in[8]: <-- a.out[8], Channel2
+                in[9]: <-- a.out[9], Channel2
+                in[10]: <-- a.out[10], Channel2
+                in[11]: <-- a.out[11], Channel2
+                in[12]: <-- a.out[12], Channel2
+                in[13]: <-- a.out[13], Channel1
+                in[14]: <-- a.out[14], Channel1
+                in[15]: <-- a.out[15], Channel2
+                in[16]: <-- a.out[16], Channel1
+                in[17]: <-- a.out[17], Channel1
+                in[18]: <-- a.out[18], Channel1
+                in[19]: <-- a.out[19], Channel1
+                in[20]: <-- a.out[20], Channel1
+                in[21]: <-- a.out[21], Channel2
+                in[22]: <-- a.out[22], Channel1
+                in[23]: <-- a.out[23], Channel2
+                in[24]: <-- a.out[24], Channel2
+                in[25]: <-- a.out[25], Channel1
+                in[26]: <-- a.out[26], Channel1
+                in[27]: <-- a.out[27], Channel2
+                in[28]: <-- a.out[28], Channel2
+                in[29]: <-- a.out[29], Channel2
+                in[30]: <-- a.out[30], Channel2
+                in[31]: <-- a.out[31], Channel1
         }
 }
 
