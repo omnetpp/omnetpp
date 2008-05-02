@@ -13,7 +13,7 @@
 	- there is no implicit conversion from SimTime to double. However,
 	  to alleviate this pain, at many places overloaded functions have
 	  been added that take simtime_t.
-	- simtimeToStr(), strToSimtime() is no longer (use SimTime methods
+	- simtimeToStr(), strToSimtime() are no longer (use SimTime methods
 	  instead, or the compatibility macros described below!)
 
 	Simtime compatibility mode:
@@ -59,6 +59,9 @@
 	    - XXX describe what's instead
 
 	Channels:
+	- channels became first-class citizens: they have a common base class
+	  (cComponent) with cModule, they participate in the initialize()/
+	  finish() protocol, and so on.
 	- removed delay(), setDelay(), error(), setError(), dataRate(),
 	  setDataRate() methods from cGate and cBasicChannel -- use generic
 	  component parameter access instead (par("delay"), par("error"),

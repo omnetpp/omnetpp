@@ -102,6 +102,12 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     virtual void callInitialize();
 
     /**
+     * Interface for calling initialize() from outside. It does a single stage
+     * of initialization, and returns <tt>true</tt> if more stages are required.
+     */
+    virtual bool callInitialize(int stage);
+
+    /**
      * Interface for calling finish() from outside.
      */
     virtual void callFinish();

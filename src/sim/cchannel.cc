@@ -81,6 +81,13 @@ void cChannel::callInitialize()
         ++stage;
 }
 
+bool cChannel::callInitialize(int stage)
+{
+    // note: numInitStages() will be checked inside initializeChannel()
+    cContextTypeSwitcher tmp(CTX_INITIALIZE);
+    return initializeChannel(stage);
+}
+
 bool cChannel::initializeChannel(int stage)
 {
     // channels don't contain further subcomponents, so just we just invoke

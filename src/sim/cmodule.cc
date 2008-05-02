@@ -1041,6 +1041,14 @@ void cModule::callInitialize()
     }
 }
 
+bool cModule::callInitialize(int stage)
+{
+    cContextTypeSwitcher tmp(CTX_INITIALIZE);
+    bool moreChannelStages = initializeChannels(stage);
+    bool moreModuleStages = initializeModules(stage);
+    return moreChannelStages || moreModuleStages;
+}
+
 bool cModule::initializeChannels(int stage)
 {
     if (simulation.contextType()!=CTX_INITIALIZE)
