@@ -192,15 +192,26 @@ proc new_network {} {
 
     # get list of network names
     set networks [opp_getnetworktypes]
-    set netnames {}
+    set localpackage [opp_getsimoption localpackage]
+    set networknames {}
+    set localnetworknames {}
     foreach net $networks {
-        lappend netnames [opp_getobjectfullname $net]
+        set networkname [opp_getobjectname $net]
+        set networkqname [opp_getobjectfullname $net]
+        if {"$localpackage.$networkname" == "$networkqname"} {
+            lappend localnetworknames $networkname
+        } else {
+            lappend networknames $networkqname
+        }
     }
-    set netnames [lsort -dictionary $netnames]
+    set localnetworknames [lsort -dictionary $localnetworknames]
+    set networknames [lsort -dictionary $networknames]
+
+    set networknames [concat $localnetworknames $networknames]
 
     # pop up dialog, with current network as default
     set netname [opp_getnetworktype]
-    set ok [comboSelectionDialog "Set up network" "Set up a network, using parameter values defined \nin the \[General\] section of omnetpp.ini." "Select network:" netname $netnames]
+    set ok [comboSelectionDialog "Set up network" "Set up a network, using parameter values defined \nin the \[General\] section of the ini file." "Select network:" netname $networknames]
     if {$ok == 1} {
        busy "Setting up network..."
        opp_newnetwork $netname

@@ -931,6 +931,9 @@ void EnvirBase::readOptions()
     int scaleexp = (int) cfg->getAsInt(CFGID_SIMTIME_SCALE);
     SimTime::setScaleExp(scaleexp);
 
+    // note: this is read per run as well, but Tkenv needs its value on startup too
+    opt_inifile_network_dir = cfg->getConfigEntry(CFGID_NETWORK->name()).getBaseDirectory();
+
     // other options are read on per-run basis
 }
 
@@ -940,7 +943,7 @@ void EnvirBase::readPerRunOptions()
 
     // get options from ini file
     opt_network_name = cfg->getAsString(CFGID_NETWORK);
-    opt_network_inifilepackage = simulation.getNedPackageForFolder(cfg->getConfigEntry(CFGID_NETWORK->name()).getBaseDirectory());
+    opt_inifile_network_dir = cfg->getConfigEntry(CFGID_NETWORK->name()).getBaseDirectory();
     opt_warnings = cfg->getAsBool(CFGID_WARNINGS);
     opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
     opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
@@ -1302,15 +1305,17 @@ void EnvirBase::checkFingerprint()
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)
 {
     cModuleType *network = NULL;
-    bool hasInifilePackage = !opt_network_inifilepackage.empty() && strcmp(opt_network_inifilepackage.c_str(),"-")!=0;
+    std::string inifilePackage = simulation.getNedPackageForFolder(opt_inifile_network_dir.c_str());
+
+    bool hasInifilePackage = !inifilePackage.empty() && strcmp(inifilePackage.c_str(),"-")!=0;
     if (hasInifilePackage)
-        network = cModuleType::find(opp_join(".", opt_network_inifilepackage.c_str(), networkname).c_str());
+        network = cModuleType::find((inifilePackage+"."+networkname).c_str());
     if (!network)
         network = cModuleType::find(networkname);
     if (!network) {
         if (hasInifilePackage)
-            throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files", networkname,
-                                opp_join(".", opt_network_inifilepackage.c_str(), networkname).c_str());
+            throw cRuntimeError("Network `%s' or `%s' not found, check .ini and .ned files",
+                                networkname, (inifilePackage+"."+networkname).c_str());
         else
             throw cRuntimeError("Network `%s' not found, check .ini and .ned files", networkname);
     }

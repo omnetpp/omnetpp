@@ -76,6 +76,7 @@ int getActiveConfigName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getActiveRunNumber_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNetworkType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getFileName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -172,6 +173,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getbaseconfig",    getBaseConfig_cmd        }, // args: <configname>
    { "opp_getnumrunsinscenario",getNumRunsInScenario_cmd}, // args: <configname>
    { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: filename
+   { "opp_getobjectname",    getObjectName_cmd        }, // args: <pointer>  ret: name()
    { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: fullName()
    { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: fullPath()
    { "opp_getobjectclassname",getObjectClassName_cmd  }, // args: <pointer>  ret: className()
@@ -548,6 +550,15 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    return TCL_OK;
 }
 
+int getObjectName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   cObject *object = strToPtr(argv[1]);
+   if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, TCLCONST(object->name()), TCL_VOLATILE);
+   return TCL_OK;
+}
+
 int getObjectFullName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
@@ -891,6 +902,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       buf = const_cast<char *>(app->opt_default_config.c_str());
    else if (0==strcmp(argv[1], "default_run"))
       sprintf(buf,"%d", app->opt_default_run);
+   else if (0==strcmp(argv[1], "localpackage"))
+      sprintf(buf,"%s", app->getLocalPackage().c_str());
    else if (0==strcmp(argv[1], "animation_enabled"))
       sprintf(buf,"%d", app->opt_animation_enabled);
    else if (0==strcmp(argv[1], "nexteventmarkers"))

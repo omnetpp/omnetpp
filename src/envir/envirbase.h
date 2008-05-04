@@ -66,7 +66,7 @@ class ENVIR_API EnvirBase : public cEnvir
     opp_string opt_parsimsynch_class; // if opt_parsim: cParsimSynchronizer class to use
 // end
     opp_string opt_network_name;
-    opp_string opt_network_inifilepackage;
+    opp_string opt_inifile_network_dir; // dir of the inifile containing "network="
 
     int opt_num_rngs;
     opp_string opt_rng_class;
