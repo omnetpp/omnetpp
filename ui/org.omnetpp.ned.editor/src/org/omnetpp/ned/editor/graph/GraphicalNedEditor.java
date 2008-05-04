@@ -58,7 +58,6 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorSite;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-
 import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
@@ -67,7 +66,18 @@ import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
-import org.omnetpp.ned.editor.graph.actions.*;
+import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
+import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
+import org.omnetpp.ned.editor.graph.actions.CopyAction;
+import org.omnetpp.ned.editor.graph.actions.CutAction;
+import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
+import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
+import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
+import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
+import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
+import org.omnetpp.ned.editor.graph.actions.PasteAction;
+import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
+import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
 import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.edit.NedEditPartFactory;
@@ -354,9 +364,9 @@ public class GraphicalNedEditor
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-        action = new ExportImageAction(this);
-        registry.registerAction(action);
-        getSelectionActions().add(action.getId());
+//        action = new ExportImageAction(this);
+//        registry.registerAction(action);
+//        getSelectionActions().add(action.getId());
 
         action = new ChooseIconAction(this);
         registry.registerAction(action);

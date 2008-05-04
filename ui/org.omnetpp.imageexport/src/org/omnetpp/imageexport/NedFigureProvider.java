@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.misc;
+package org.omnetpp.imageexport;
 
 import java.util.HashMap;
 import java.util.List;

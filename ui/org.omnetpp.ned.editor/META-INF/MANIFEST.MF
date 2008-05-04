@@ -19,7 +19,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.ned.model,
  org.omnetpp.ned.core,
  org.omnetpp.figures,
- de.unikassel.imageexport,
  org.eclipse.search
 Eclipse-LazyStart: true
 Bundle-Activator: org.omnetpp.ned.editor.NedEditorPlugin

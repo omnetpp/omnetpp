@@ -37,15 +37,4 @@
          </enablement>
       </decorator>
    </extension>
-   <extension
-         name="Image Exporter Extension"
-         point="de.unikassel.imageexport.imageExporters">
-      <imageExporter
-            class="org.omnetpp.common.image.export.PNGImageExporter"
-            description="PNG - Portable Network Graphics"
-            extension="png"
-            id="org.omnetpp.common.pngImageExporter"
-            name="PNG Image Exporter">
-      </imageExporter>
-   </extension>
 </plugin>

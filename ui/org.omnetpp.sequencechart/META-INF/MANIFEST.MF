@@ -13,12 +13,8 @@ Require-Bundle: org.eclipse.core.resources,
  org.eclipse.jface.text,
  org.eclipse.draw2d,
  org.eclipse.ui.workbench.texteditor,
- org.eclipse.gmf.runtime.draw2d.ui.render.awt,
- org.apache.batik.svggen,
- org.apache.batik.ext.awt,
  org.omnetpp.common,
- org.omnetpp.ide.nativelibs,
- org.apache.batik.util
+ org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.sequencechart,

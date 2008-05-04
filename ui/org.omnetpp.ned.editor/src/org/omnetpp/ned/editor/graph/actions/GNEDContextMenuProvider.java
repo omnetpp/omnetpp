@@ -75,8 +75,9 @@ public class GNEDContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ReLayoutAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(ExportImageAction.ID);
-        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_SAVE, action);
+        // TODO allow extending the context menu via an extensions point
+//        action = getActionRegistry().getAction(ExportImageAction.ID);
+//        if (action.isEnabled()) manager.appendToGroup(GEFActionConstants.GROUP_SAVE, action);
 
         action = getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT);
         action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_RENAME));

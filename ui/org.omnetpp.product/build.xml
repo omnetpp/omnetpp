@@ -19,6 +19,7 @@
 				<exclude name="org.omnetpp.scave.old/**" />
 				<exclude name="org.omnetpp.test.*/**" />
 				<exclude name="org.omnetpp.experimental.*/**" />
+				<include name="com.simulcraft.*/**" />
 			</fileset>
 		</copy>
 		<copy todir="${buildDirectory}/features">
@@ -26,6 +27,7 @@
 				<include name="org.omnetpp.ide/**" />
 				<include name="org.omnetpp.ide.commercial/**" />
 				<include name="org.omnetpp.ide.academic/**" />
+				<include name="com.simulcraft.tracker/**" />
 			</fileset>
 		</copy>
 	</target>

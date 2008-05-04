@@ -1,4 +1,4 @@
-package org.omnetpp.ned.editor.graph.actions;
+package org.omnetpp.imageexport;
 
 import org.eclipse.gef.requests.GroupRequest;
 import org.eclipse.jface.resource.ImageDescriptor;

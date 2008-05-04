@@ -12,10 +12,6 @@
       <update label="OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetpp"/>
    </url>
 
-   <includes
-         id="de.unikassel.imageexport"
-         version="0.9.0"/>
-
    <requires>
       <import feature="org.eclipse.cdt" version="4.0.3.200802251018" match="compatible"/>
       <import feature="org.eclipse.emf.common" version="2.3.1.v200802051830" match="compatible"/>
@@ -181,27 +177,6 @@
          download-size="0"
          install-size="0"
          version="4.0.0.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="org.slf4j.nop"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.rc3"
-         unpack="false"/>
-
-   <plugin
-         id="de.unikassel.imageexport.pdf"
-         download-size="0"
-         install-size="0"
-         version="0.5.0"
-         unpack="false"/>
-
-   <plugin
-         id="de.unikassel.imageexport.svg"
-         download-size="0"
-         install-size="0"
-         version="0.5.0"
          unpack="false"/>
 
 </feature>

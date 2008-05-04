@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.SWTGraphics;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.GraphicsSVG;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.SafeRunnable;
@@ -108,6 +107,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 //TODO proper "hand" cursor - current one is not very intuitive
 //TODO hierarchical sort should be able to reverse order of sorted axes of its submodules
 //TODO rubberband vs. haircross, show them at once
+//TODO factor out the svg export to org.omnetpp.imageexport
 public class SequenceChart
 	extends CachingCanvas
 	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
@@ -1600,13 +1600,14 @@ public class SequenceChart
     }
 
 	protected Point getTextExtent(Graphics graphics, String string) {
-		if (graphics instanceof GraphicsSVG) {
-			java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
-			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(string, g);
-
-			return new Point((int)Math.ceil(r.getWidth()), (int)Math.ceil(r.getHeight()));
-		}
-		else {
+// TODO factor out to the optional org.omnetpp.imageexport plugin		
+//		if (graphics instanceof GraphicsSVG) {
+//			java.awt.Graphics g = ((GraphicsSVG)graphics).getSVGGraphics2D();
+//			java.awt.geom.Rectangle2D r = g.getFontMetrics().getStringBounds(string, g);
+//
+//			return new Point((int)Math.ceil(r.getWidth()), (int)Math.ceil(r.getHeight()));
+//		}
+//		else {
 			try {
 				SWTGraphics g = (SWTGraphics) graphics;
 				Class<SWTGraphics> cls = SWTGraphics.class;
@@ -1620,7 +1621,7 @@ public class SequenceChart
 			catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}
+//		}
 	}
 
 	protected void drawCancelMessage(Graphics graphics) {

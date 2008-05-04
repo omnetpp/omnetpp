@@ -1,6 +1,18 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Imageexport Plug-in
-Bundle-SymbolicName: org.omnetpp.imageexport
+Bundle-SymbolicName: org.omnetpp.imageexport;singleton:=true
 Bundle-Version: 4.0.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
+Require-Bundle: de.unikassel.imageexport,
+ org.omnetpp.common,
+ org.omnetpp.ned.editor,
+ org.omnetpp.ned.model,
+ org.omnetpp.ned.core,
+ org.eclipse.gmf.runtime.draw2d.ui.render.awt,
+ org.apache.batik.svggen,
+ org.apache.batik.ext.awt,
+ org.apache.batik.util,
+ org.eclipse.jface,
+ org.eclipse.ui.workbench
+Export-Package: org.omnetpp.imageexport

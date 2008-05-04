@@ -1,4 +1,4 @@
-package org.omnetpp.common.image.export;
+package org.omnetpp.imageexport;
 
 import org.eclipse.swt.SWT;
 
