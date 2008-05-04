@@ -629,14 +629,25 @@ proc startup_commands {} {
     set configname [opp_getsimoption default_config]
     set runnumber [opp_getsimoption default_run]
 
+    # if no configname is specified but there's only one ("General"),
+    # and it also contains a network, use that without a question.
+    if {$configname==""} {
+        set confignames [opp_getconfignames]
+        set cfgnetworkname [opp_getvaluefromconfig "network"]  ;# CFGID_NETWORK
+        if {($confignames=={General} && $cfgnetworkname!="")} {
+            set configname "General"
+        }
+    }
+
     if {$configname != ""} {
+        # set up the selected config and run number
         opp_newrun $configname $runnumber
         if {[opp_object_systemmodule] != [opp_null]} {
-            opp_inspect [opp_object_systemmodule] (default)
+            opp_inspect [opp_object_systemmodule] "(default)"
             notifyPlugins newNetwork
         }
     } else {
-        set confignames [opp_getconfignames]
+        # ask the user to select a network or a config
         if {$confignames=={} || $confignames=={General}} {
             new_network
         } else {
@@ -651,12 +662,13 @@ proc startup_commands {} {
 proc busy {{msg {}}} {
     if {$msg != ""} {
         #$statusbar.mode config -text $msg
-        update idletasks
+        # note: next 2 lines are useless (on Windows at least)
         . config -cursor watch
+        update idletasks
     } else {
         #$statusbar.mode config -text "Ready"
-        update idletasks
         . config -cursor ""
+        update idletasks
     }
 }
 

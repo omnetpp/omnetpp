@@ -74,6 +74,7 @@ int loadLib_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int getActiveConfigName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getActiveRunNumber_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getValueFromConfig_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNetworkType_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getFileName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectName_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -167,6 +168,7 @@ OmnetTclCommand tcl_commands[] = {
    // Utility commands
    { "opp_getactiveconfigname",getActiveConfigName_cmd}, // args: -  ret: current config name
    { "opp_getactiverunnumber", getActiveRunNumber_cmd }, // args: -  ret: current run number
+   { "opp_getvaluefromconfig", getValueFromConfig_cmd }, // args: <key> ret: value or ""
    { "opp_getnetworktype",   getNetworkType_cmd       }, // args: -  ret: type of current network
    { "opp_getconfignames",   getConfigNames_cmd       }, // args: -
    { "opp_getconfigdescription",getConfigDescription_cmd}, // args: <configname>
@@ -519,6 +521,16 @@ int getActiveRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    Tkenv *app = getTkenv();
    sprintf(buf, "%d", app->config()->getActiveRunNumber());
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int getValueFromConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
+   const char *key = argv[1];
+   Tkenv *app = getTkenv();
+   const char *value = app->config()->getConfigValue(key);
+   Tcl_SetResult(interp, TCLCONST(value ? value : ""), TCL_VOLATILE);
    return TCL_OK;
 }
 
