@@ -354,7 +354,7 @@ cGate::Desc *cModule::addGateDesc(const char *gatename, cGate::Type type, bool i
     NamePool::iterator it = namePool.find(key);
     if (it==namePool.end())
         it = namePool.insert(key).first;
-    newDesc->namep = &(*it);
+    newDesc->namep = const_cast<cGate::Name*>(&(*it));
     newDesc->size = isVector ? 0 : -1;
     return newDesc;
 }
