@@ -8,7 +8,6 @@
 //
 
 
-// FF1PacketFifo --
 //
 // single-server queue, same service rate for each packet
 //

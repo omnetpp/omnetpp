@@ -8,7 +8,6 @@
 //
 
 
-// FF1Generator --
 //
 // generates messages (jobs,packets etc.)
 //

@@ -1,12 +1,3 @@
-
-
-import "gen1";
-import "fifo1";
-import "sink1";
-
-
-
-// FifoNet1 --
 //
 // generator + FIFO + sink
 //

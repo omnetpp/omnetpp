@@ -19,7 +19,7 @@ module BoxedSink
     submodules:
         sink: Sink {
             parameters:
-                @display("b=32,30;p=70,57;i=sink");
+                @display("p=70,57;i=block/sink");
         };
     connections allowunconnected:
         directIn --> sink.in;
@@ -34,15 +34,15 @@ module BoxedGen
     submodules:
         gen: Gen {
             parameters:
-                @display("b=32,30;p=68,69;i=gen");
+                @display("p=68,69;i=block/gen");
         };
         boxedSink: BoxedSink {
             parameters:
-                @display("p=164,97;b=40,28");
+                @display("p=164,97;b=60,60");
         };
         sink: Sink {
             parameters:
-                @display("b=32,30;p=161,37;i=sink");
+                @display("p=161,37;i=block/sink");
         };
 }
 
@@ -62,19 +62,19 @@ network SendDirTest
     submodules:
         boxedGen: BoxedGen {
             parameters:
-                @display("p=71,109;b=40,28");
+                @display("p=71,109;b=60,60");
         };
         boxedSink: BoxedSink {
             parameters:
-                @display("p=190,143;b=40,28");
+                @display("p=190,143;b=60,60");
         };
         sink: Sink {
             parameters:
-                @display("b=32,30;p=192,84;i=sink");
+                @display("p=192,84;i=block/sink");
         };
         dummy: Dummy {
             parameters:
-                @display("p=127,40;i=ball_s;b=13,13");
+                @display("p=127,40;i=ball_s");
         };
     connections allowunconnected:
         boxedGen.out1 --> sink.in;

@@ -2,17 +2,8 @@
 simple WatchTest
 {
     parameters:
-        double num;
-        bool boolean;
-        string str;
+        @isNetwork(true);
+        double num = 100;
+        bool boolean = true;
+        string str = "foo";
 }
-
-network watchTest extends WatchTest
-{
-    parameters:
-        num = 100;
-        boolean = true;
-        str = "foo";
-}
-
-

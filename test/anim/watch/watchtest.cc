@@ -3,7 +3,8 @@
 
 class WatchTest : public cSimpleModule
 {
-    Module_Class_Members(WatchTest,cSimpleModule,16384);
+  public:
+    WatchTest() : cSimpleModule(16384) {}
     virtual void activity();
     virtual void handleParameterChange(const char *parname);
 };

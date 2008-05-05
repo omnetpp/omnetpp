@@ -1,4 +1,3 @@
-import "tx";
 
 module TxNode
 {

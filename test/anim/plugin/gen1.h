@@ -11,7 +11,8 @@
 
 class FF1Generator : public cSimpleModule
 {
-    Module_Class_Members(FF1Generator,cSimpleModule,16384)
+  public:
+    FF1Generator() : cSimpleModule(16384) {}
     virtual void activity();
     virtual void finish();
 };

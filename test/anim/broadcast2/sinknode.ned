@@ -1,5 +1,3 @@
-import "sink";
-
 module SinkNode
 {
     gates:

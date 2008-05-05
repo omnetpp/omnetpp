@@ -16,7 +16,7 @@ void FF1Sink::activity()
     for(;;)
     {
         cMessage *msg = receive();
-        double d = simTime()-msg->timestamp();
+        simtime_t d = simTime() - msg->timestamp();
         ev << "Received " << msg->name() << ", queueing time: " << d << "sec" << endl;
         qtime.record( d );
         qstats.collect( d );
@@ -27,7 +27,7 @@ void FF1Sink::activity()
 void FF1Sink::finish()
 {
     ev << "*** Module: " << fullPath() << "***" << endl;
-    ev << "Total jobs processed: " << qstats.samples() << endl;
+    ev << "Total jobs processed: " << qstats.count() << endl;
     ev << "Avg queueing time:    " << qstats.mean() << endl;
     ev << "Max queueing time:    " << qstats.max() << endl;
     ev << "Standard deviation:   " << qstats.stddev() << endl;

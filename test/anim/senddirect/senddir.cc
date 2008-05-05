@@ -2,7 +2,6 @@
 
 class Sink : public cSimpleModule
 {
-    Module_Class_Members(Sink,cSimpleModule,0)
     virtual void handleMessage(cMessage *msg);
 };
 
@@ -15,8 +14,10 @@ Define_Module(Sink);
 
 class Gen : public cSimpleModule
 {
+  private:
     int ctr;
-    Module_Class_Members(Gen,cSimpleModule,16384)
+  public:
+    Gen() : cSimpleModule(16384) {}
     virtual void activity();
     void sendTo(const char *modname, const char *gatename);
 };
@@ -45,7 +46,7 @@ void Gen::activity()
 void Gen::sendTo(const char *modname, const char *gatename)
 {
     char msgname[32];
-    sprintf( msgname, "job-%d", ctr++);
+    sprintf(msgname, "job-%d", ctr++);
     cMessage *msg = new cMessage(msgname);
 
     cModule *target = simulation.moduleByPath(modname);

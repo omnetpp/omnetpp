@@ -11,10 +11,10 @@
 
 class FF1Sink : public cSimpleModule
 {
-    Module_Class_Members(FF1Sink,cSimpleModule,16384)
-
+  private:
     cStdDev qstats; // needs to be accessed from finish() too
-
+  public:
+    FF1Sink() : cSimpleModule(16384) {}
     virtual void activity();
     virtual void finish();
 };

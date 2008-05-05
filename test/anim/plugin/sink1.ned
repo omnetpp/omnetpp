@@ -8,7 +8,6 @@
 //
 
 
-// FF1Sink --
 //
 // destroys the packets and creates statistics
 //
