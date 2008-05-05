@@ -386,6 +386,7 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
  
                 if (nextEvent) {
                     if (timelineCoordinateDelta == 0) {
+                        // IMPORTANT NOTE: this is just an approximation
                         if (upperLimit)
                             simulationTime = nextEventSimulationTime;
                         else
@@ -445,6 +446,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
 
                 if (nextEvent) {
                     if (simulationTimeDelta == 0) {
+                        // IMPORTANT NOTE: this is just an approximation
                         if (upperLimit)
                             timelineCoordinate = nextEventTimelineCoordinate;
                         else
