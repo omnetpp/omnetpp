@@ -132,9 +132,11 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		group.setText("Parameters");
 		
 		paramsTable = new Table(group, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
-		paramsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		paramsTable.setHeaderVisible(true);
 		paramsTable.setLinesVisible(true);
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gridData.minimumHeight = paramsTable.getHeaderHeight() + paramsTable.getItemHeight() * 5; 
+		paramsTable.setLayoutData(gridData);
 		TableColumn column = new TableColumn(paramsTable, SWT.NONE);
 		column.setText("Name");
 		column.setWidth(100);
@@ -188,9 +190,15 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		int index = operationCombo.getSelectionIndex();
 		NodeType type = index >= 0 ? operationTypes[index] : null;
 		description.setText(type != null ? type.description() : "");
+		description.getParent().getParent().layout();
 	}
 	
 	private void updateTable() {
+		if (tableEditor.getEditor() != null) {
+			tableEditor.getEditor().dispose();
+			tableEditor.setEditor(null);
+		}
+		
 		int index = operationCombo.getSelectionIndex();
 		NodeType type = index >= 0 ? operationTypes[index] : null;
 		paramsTable.removeAll();
@@ -210,6 +218,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 				item.setText(COLUMN_DESC, params.get(name));
 			}
 		}
+		paramsTable.getParent().getParent().layout(true, true);
 	}
 	
 	public Object getValue(EStructuralFeature feature) {
