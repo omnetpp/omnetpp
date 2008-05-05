@@ -79,9 +79,12 @@ cGate::Name::Name(const char *name, Type type)
 bool cGate::Name::operator<(const Name& other) const
 {
     int d = opp_strcmp(name.c_str(), other.name.c_str());
-    if (d!=0)
-        return d;
-    return type - other.type;
+    if (d<0)
+        return true;
+    else if (d>0)
+        return false;
+    else
+        return type < other.type;
 }
 
 cGate::cGate()
