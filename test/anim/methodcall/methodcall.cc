@@ -2,7 +2,7 @@
 
 class Target : public cSimpleModule
 {
-    Module_Class_Members(Target,cSimpleModule,0)
+  protected:
     virtual void handleMessage(cMessage *msg);
   public:  
     virtual void doWhatever(int x);
@@ -23,8 +23,10 @@ Define_Module(Target);
 
 class Mod : public cSimpleModule
 {
+  protected:
     int ctr;
-    Module_Class_Members(Mod,cSimpleModule,16384)
+  public: 
+    Mod() : cSimpleModule(16384) { }
     virtual void activity();
     void callPrintX(const char *modname);
 };

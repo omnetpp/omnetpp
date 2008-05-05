@@ -14,34 +14,50 @@ option animation_msgclassnames	{1}
 option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
+option usenewlayouter	{0}
 option bubbles	{1}
-option animation_speed	{1}
-option bkpts_enabled	{1}
+option animation_speed	{2.12}
 option expressmode_autoupdate	{1}
-config rununtil-event	{}
-config last-nedfile	{}
-config filtobjlist-category	{mqsgvo}
-config filtobjlist-maxcount	{100000}
-config editor-findstring	{}
-config rununtil-time	{}
-config dontshow	{}
-config editor-regexp	{0}
-config filtobjlist-class	{}
-config rununtil-mode	{Express (tracing off)}
-config filtobjlist-name	{}
+config concurrent-anim	{1}
 config confirm-exit	{1}
-config editor-backwards	{1}
+config display-timeline	{1}
 config display-treeview	{1}
+config dontshow	{}
+config editor-backwards	{1}
 config editor-case-sensitive	{0}
+config editor-findstring	{}
+config editor-regexp	{0}
 config editor-whole-words	{0}
+config editor-wrap	{1}
+config filtobjlist-category	{mqsgvo}
+config filtobjlist-class	{}
+config filtobjlist-maxcount	{100000}
+config filtobjlist-name	{}
 config filtobjlist-order	{Class}
-inspector "methodAnimTest.boxedTarget" "BoxedTarget" "2" "337x185+390+477"
-inspector "methodAnimTest" "MethodAnimTest" "2" "328x306+16+-1"
-inspector "methodAnimTest.boxedMod" "BoxedMod" "2" "318x205+72+375"
-inspector "methodAnimTest.boxedSink" "boxedSink" "2" "294x185+375+63"
+config last-nedfile	{}
+config log-save-filename	{omnetpp.out}
+config logwindow-scrollbacklines	{100000}
+config mainwin-geom	{671x454+75+56}
+config mainwin-state	{normal}
+config rununtil-event	{}
+config rununtil-mode	{Express (tracing off)}
+config rununtil-time	{}
+config timeline-maxnumevents	{1000}
+config timeline-msgclassnamepattern	{*}
+config timeline-msgnamepattern	{*}
+config timeline-wantnonselfmsgs	{1}
+config timeline-wantselfmsgs	{1}
+inspector "MethodAnimTest" "MethodAnimTest" "2" "443x325+72+93"
+inspector "MethodAnimTest.boxedMod" "BoxedMod" "2" "443x232+492+49"
+inspector "MethodAnimTest.boxedTarget" "BoxedTarget" "2" "443x213+640+346"
+inspector "MethodAnimTest.boxedMod.boxedTarget" "BoxedTarget" "2" "443x213+78+469"
 inspector "methodAnimTest.boxedSink" "BoxedSink" "2" "180x185+319+52"
-inspector "methodAnimTest.boxedGen" "BoxedGen" "2" "297x237+13+347"
-inspector "methodAnimTest.boxedGen.boxedSink" "boxedSink" "2" "345x185+309+292"
-inspector "methodAnimTest.boxedGen" "boxedGen" "2" "293x205+8+271"
+inspector "methodAnimTest.boxedSink" "boxedSink" "2" "294x185+375+63"
+inspector "methodAnimTest.boxedTarget" "BoxedTarget" "2" "337x185+390+477"
 inspector "methodAnimTest.boxedGen.boxedSink" "BoxedSink" "2" "202x185+318+272"
+inspector "methodAnimTest.boxedGen" "boxedGen" "2" "293x205+8+271"
+inspector "methodAnimTest.boxedGen.boxedSink" "boxedSink" "2" "345x185+309+292"
+inspector "methodAnimTest.boxedGen" "BoxedGen" "2" "297x237+13+347"
+inspector "methodAnimTest.boxedMod" "BoxedMod" "2" "318x205+72+375"
+inspector "methodAnimTest" "MethodAnimTest" "2" "328x306+16+-1"
 

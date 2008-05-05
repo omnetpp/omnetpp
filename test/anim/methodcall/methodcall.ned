@@ -12,7 +12,7 @@ module BoxedTarget
     submodules:
         target: Target {
             parameters:
-                @display("b=32,30;p=70,57;i=sink");
+                @display("p=70,57;i=block/sink");
         };
 }
 
@@ -21,15 +21,15 @@ module BoxedMod
     submodules:
         mod: Mod {
             parameters:
-                @display("b=32,30;p=68,69;i=gen");
+                @display("p=68,69;i=gen");
         };
         boxedTarget: BoxedTarget {
             parameters:
-                @display("p=220,97;b=40,28");
+                @display("p=220,97");
         };
         target: Target {
             parameters:
-                @display("b=32,30;p=220,37;i=sink");
+                @display("p=220,37;i=block/sink");
         };
 }
 
@@ -41,15 +41,15 @@ network MethodAnimTest
     submodules:
         boxedMod: BoxedMod {
             parameters:
-                @display("p=71,109;b=40,28");
+                @display("p=71,109");
         };
         boxedTarget: BoxedTarget {
             parameters:
-                @display("p=230,143;b=40,28");
+                @display("p=230,143");
         };
         target: Target {
             parameters:
-                @display("b=32,30;p=230,84;i=sink");
+                @display("p=230,84;i=block/sink");
         };
 }
 
