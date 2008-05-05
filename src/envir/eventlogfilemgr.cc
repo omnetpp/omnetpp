@@ -137,6 +137,7 @@ void EventlogFileManager::startRun(const char *runId)
 {
     if (isEventLogRecordingEnabled)
     {
+        EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, 0, 0, simulation.systemModule()->id(), -1);
         EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
         fflush(feventlog);
     }

@@ -39,7 +39,7 @@ EventLogEntry *EventLogEntry::parseEntry(Event *event, int index, char *line, in
 
     if (*line == '-')
     {
-        EventLogMessageEntry *eventLogMessage = new EventLogMessageEntry(event);
+        EventLogMessageEntry *eventLogMessage = new EventLogMessageEntry(event, index);
         eventLogMessage->parse(line, length);
         return eventLogMessage;
     }
@@ -47,6 +47,7 @@ EventLogEntry *EventLogEntry::parseEntry(Event *event, int index, char *line, in
     {
         EventLogEntryFactory factory;
         tokenizer.tokenize(line, length);
+        Assert(index >= 0);
         return factory.parseEntry(event, index, tokenizer.tokens(), tokenizer.numTokens());
     }
 }
@@ -141,9 +142,10 @@ void EventLogTokenBasedEntry::parse(char *line, int length)
 
 /***********************************************/
 
-EventLogMessageEntry::EventLogMessageEntry(Event *event)
+EventLogMessageEntry::EventLogMessageEntry(Event *event, int index)
 {
     this->event = event;
+    this->index = index;
     text = NULL;
 }
 

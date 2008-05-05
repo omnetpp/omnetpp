@@ -88,7 +88,7 @@ class EVENTLOG_API EventLogMessageEntry : public EventLogEntry
         const char *text;
 
     public:
-        EventLogMessageEntry(Event *event);
+        EventLogMessageEntry(Event *event, int index);
         virtual void parse(char *line, int length);
         virtual void print(FILE *fout);
         virtual int getClassIndex() { return 0; }

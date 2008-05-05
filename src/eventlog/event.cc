@@ -139,7 +139,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
         if (!eventEntry) {
             Assert(readEventEntry);
             eventEntry = readEventEntry;
-            contextModuleIds.push_back(eventEntry->moduleId);
+            contextModuleIds.push_front(eventEntry->moduleId);
         }
         else if (readEventEntry) {
             // stop at the start of the next event
