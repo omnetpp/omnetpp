@@ -1,6 +1,11 @@
 package org.omnetpp.scave.charting;
 
+import static org.apache.commons.math.util.MathUtils.addAndCheck;
+import static org.apache.commons.math.util.MathUtils.mulAndCheck;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -25,14 +30,13 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.VectorChart.LineProperties;
 import org.omnetpp.scave.charting.dataset.DatasetUtils;
 import org.omnetpp.scave.charting.dataset.IAveragedXYDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
-import static org.apache.commons.math.util.MathUtils.addAndCheck;
-import static org.apache.commons.math.util.MathUtils.mulAndCheck;
 
 /**
  * Displays crosshair mouse cursor for VectorChart.
@@ -258,9 +262,16 @@ class CrossHair {
 	
 	private String getHoverText(int x, int y, SizeConstraint preferredSize, ICoordsMapping coordsMapping) {
 		ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
-		int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT, coordsMapping); 
-		
+		int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT, coordsMapping);
 		if (!dataPoints.isEmpty()) {
+			Collections.sort(dataPoints, new Comparator<DataPoint> () {
+				public int compare(DataPoint dp1, DataPoint dp2) {
+					String key1 = chart.getDataset().getSeriesKey(dp1.series);
+					String key2 = chart.getDataset().getSeriesKey(dp2.series);
+					return StringUtils.dictionaryCompare(key1, key2);
+				}
+			});
+			
 			StringBuilder htmlText = new StringBuilder();
 			StringBuilder plainText  = new StringBuilder();
 			int maxTextLength = 0;

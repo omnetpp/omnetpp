@@ -24,6 +24,7 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
@@ -331,11 +333,15 @@ public class VectorChart extends ChartCanvas {
 	private void updateLegend(ILegend legend) {
 		legend.clearItems();
 		if (dataset != null) {
-			for (int i = 0; i < dataset.getSeriesCount(); ++i) {
-				LineProperties props = getLineProperties(i);
+			String[] keys = new String[dataset.getSeriesCount()];
+			for (int i = 0; i < keys.length; ++i)
+				keys[i] = dataset.getSeriesKey(i);
+			Arrays.sort(keys, StringUtils.dictionaryComparator);
+			
+			for (String key : keys) {
+				LineProperties props = getLineProperties(key);
 				if (props.getDisplayLine()) {
 					Color color = props.getColor();
-					String key = props.getLineId();
 					IChartSymbol symbol = props.getSymbol();
 					legend.addItem(color, key, symbol, true);
 				}
