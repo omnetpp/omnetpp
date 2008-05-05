@@ -105,7 +105,10 @@ public class ToolButton extends Canvas {
 			}
 
 			public void mouseUp(MouseEvent e) {
-				if (isEnabled() && e.button==1) {
+				Point size = ToolButton.this.getSize();
+				Rectangle bounds = new Rectangle(0, 0, size.x, size.y);
+				if (isEnabled() && e.button==1 &&
+						e.widget == ToolButton.this && bounds.contains(e.x, e.y)) {
 					state = ACTIVE_STATE;
 					redraw();
 

@@ -91,7 +91,7 @@ public class ModelObjectPalette {
 		if (showText)
 			toolButton.setText(labelProvider.getText(elementPrototype));
 		String className = elementPrototype.eClass().getName();
-		String hint = "Click or drag &&& drop to create " + StringUtils.indefiniteArticle(className) + " '" + className + "' object.";
+		String hint = "Click or drag and drop to create " + StringUtils.indefiniteArticle(className) + " '" + className + "' object.";
 		String desc = StringUtils.breakLines(getDescription(elementPrototype.eClass()),60);
 		toolButton.setToolTipText(hint + "\n" + desc);
 
@@ -103,23 +103,23 @@ public class ModelObjectPalette {
 
 		// Set up drag source; code is based on the following line from AbstractEMFModelEditor:
 		// viewer.addDragSupport(dndOperations, transfers, new ViewerDragAdapter(viewer));
-//		int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
-//		Transfer[] transferTypes = new Transfer[] { LocalTransfer.getInstance() };
-//		final DragSource dragSource = new DragSource(toolButton, dndOperations);
-//		dragSource.setTransfer(transferTypes);
-//
-//		// modeled after EMF's ViewerDragAdapter
-//		dragSource.addDragListener(new DragSourceListener() {
-//			public void dragStart(DragSourceEvent event) {}
-//			public void dragFinished(DragSourceEvent event) {
-//				LocalTransfer.getInstance().javaToNative(null, null);
-//			}
-//
-//			public void dragSetData(DragSourceEvent event) {
-//				if (LocalTransfer.getInstance().isSupportedType(event.dataType))
-//					event.data = new StructuredSelection(EcoreUtil.copy(elementPrototype));
-//			}
-//		});
+		int dndOperations = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+		Transfer[] transferTypes = new Transfer[] { LocalTransfer.getInstance() };
+		final DragSource dragSource = new DragSource(toolButton, dndOperations);
+		dragSource.setTransfer(transferTypes);
+
+		// modeled after EMF's ViewerDragAdapter
+		dragSource.addDragListener(new DragSourceListener() {
+			public void dragStart(DragSourceEvent event) {}
+			public void dragFinished(DragSourceEvent event) {
+				LocalTransfer.getInstance().javaToNative(null, null);
+			}
+
+			public void dragSetData(DragSourceEvent event) {
+				if (LocalTransfer.getInstance().isSupportedType(event.dataType))
+					event.data = new StructuredSelection(EcoreUtil.copy(elementPrototype));
+			}
+		});
 
 	}
 
