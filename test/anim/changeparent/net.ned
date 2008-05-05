@@ -8,7 +8,7 @@ module Box1
     submodules:
         mod: Mod {
             parameters:
-                @display("b=32,30;p=68,69;i=gen");
+                @display("p=68,69;i=misc/node_s");
         };
 }
 

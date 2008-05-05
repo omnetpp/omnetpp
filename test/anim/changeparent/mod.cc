@@ -2,7 +2,8 @@
 
 class Mod : public cSimpleModule
 {
-    Module_Class_Members(Mod,cSimpleModule,16384)
+  public:
+    Mod() : cSimpleModule(16384) {}
     virtual void activity();
 };
 
