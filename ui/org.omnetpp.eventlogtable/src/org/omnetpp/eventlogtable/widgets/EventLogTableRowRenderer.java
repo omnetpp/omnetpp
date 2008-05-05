@@ -347,11 +347,11 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							}
                             else if (eventLogEntry instanceof SimulationBeginEntry) {
                                 SimulationBeginEntry simulationBeginEntry = (SimulationBeginEntry)eventLogEntry;
-                                drawText("Simulation has been started with runId ", CONSTANT_TEXT_COLOR);
+                                drawText("Simulation started with runId ", CONSTANT_TEXT_COLOR);
                                 drawText(simulationBeginEntry.getRunId(), DATA_COLOR);
                             }
                             else if (eventLogEntry instanceof SimulationEndEntry) {
-                                drawText("Simulation has been finished", CONSTANT_TEXT_COLOR);
+                                drawText("Simulation finished", CONSTANT_TEXT_COLOR);
                             }
 							else
 								throw new RuntimeException("Unknown event log entry: " + eventLogEntry.getClassName());
@@ -501,7 +501,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 			gc.setForeground(color);
 
 		gc.drawText(text, x, VERTICAL_SPACING/2);
-		x += gc.textExtent(text).x;
+		x += gc.textExtent(text).x + 1; // +1 due to avoid cropping antialias
 		newFont.dispose();
 		gc.setFont(oldFont);
 	}

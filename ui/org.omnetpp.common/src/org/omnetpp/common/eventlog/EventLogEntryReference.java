@@ -1,5 +1,6 @@
 package org.omnetpp.common.eventlog;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -13,6 +14,7 @@ public class EventLogEntryReference {
 		IEvent event = eventLogEntry.getEvent();
 		eventNumber = event.getEventNumber();
 		eventEntryIndex = eventLogEntry.getIndex();
+		Assert.isTrue(eventNumber != -1 && eventEntryIndex != -1);
 	}
 
 	public int getEventNumber() {

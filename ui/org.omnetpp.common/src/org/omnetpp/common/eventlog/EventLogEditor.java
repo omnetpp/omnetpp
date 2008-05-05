@@ -91,8 +91,9 @@ public abstract class EventLogEditor extends EditorPart implements INavigationLo
 	@Override
 	public void dispose() {
 		super.dispose();
-		
-		eventLogInput.dispose();
+
+		if (eventLogInput != null)
+		    eventLogInput.dispose();
 	}
 
 	protected void addLocationProviderPaintListener(Control control) {

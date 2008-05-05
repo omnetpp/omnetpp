@@ -131,6 +131,8 @@ public class SequenceChart
 	private static final Color GUTTER_BACKGROUND_COLOR = new Color(null, 255, 255, 160);
 	private static final Color GUTTER_BORDER_COLOR = ColorFactory.BLACK;
 
+    private static final Color INITIALIZATION_EVENT_BORDER_COLOR = ColorFactory.BLACK;
+    private static final Color INITIALIZATION_EVENT_BACKGROUND_COLOR = ColorFactory.WHITE;
 	private static final Color EVENT_BORDER_COLOR = ColorFactory.RED4;
 	private static final Color EVENT_BACKGROUND_COLOR = ColorFactory.RED;
 	private static final Color SELF_EVENT_BORDER_COLOR = ColorFactory.GREEN4;
@@ -834,7 +836,7 @@ public class SequenceChart
 			scrollHorizontalToRange(x - d, x + d);
 		}
 
-		long y = getViewportTop() + getEventYViewportCoordinate(event.getCPtr());
+		long y = getViewportTop() + (isInitializationEvent(event) ? 0 : getEventYViewportCoordinate(event.getCPtr()));
 		scrollVerticalToRange(y - d, y + d);
 		adjustHorizontalScrollBar();
 
@@ -1832,15 +1834,19 @@ public class SequenceChart
 			HashMap<Integer,Integer> axisYtoLastX = new HashMap<Integer, Integer>();
 
 			for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
-				int x = getEventXViewportCoordinate(eventPtr);
-				int y = getEventYViewportCoordinate(eventPtr);
-				Integer lastX = axisYtoLastX.get(y);
-
-				// performance optimization: don't draw event if there's one already drawn exactly there
-				if (lastX == null || lastX.intValue() != x) {
-					axisYtoLastX.put(y, x);
-					drawEvent(graphics, eventPtr, x, y);
-				}
+                if (isInitializationEvent(eventPtr))
+			        drawEvent(graphics, eventPtr);
+			    else {
+	                int x = getEventXViewportCoordinate(eventPtr);
+    				int y = getEventYViewportCoordinate(eventPtr);
+    				Integer lastX = axisYtoLastX.get(y);
+    
+    				// performance optimization: don't draw event if there's one already drawn exactly there
+    				if (lastX == null || lastX.intValue() != x) {
+    					axisYtoLastX.put(y, x);
+    					drawEvent(graphics, eventPtr, getEventAxisModuleIndex(eventPtr), x, y);
+    				}
+			    }
 
 				if (eventPtr == endEventPtr)
 					break;
@@ -1849,11 +1855,25 @@ public class SequenceChart
 	}
 
 	private void drawEvent(Graphics graphics, long eventPtr) {
-		drawEvent(graphics, eventPtr, getEventXViewportCoordinate(eventPtr), getEventYViewportCoordinate(eventPtr));
+        int x = getEventXViewportCoordinate(eventPtr);
+
+        if (isInitializationEvent(eventPtr)) {
+	        for (int i = 0; i < sequenceChartFacade.Event_getNumConsequences(eventPtr); i++) {
+	            long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(sequenceChartFacade.Event_getConsequence(eventPtr, i));
+	            int y = getEventYViewportCoordinate(consequenceEventPtr);
+	            drawEvent(graphics, eventPtr, getEventAxisModuleIndex(consequenceEventPtr), x, y);
+	        }
+	    }
+	    else
+	        drawEvent(graphics, eventPtr, getEventAxisModuleIndex(eventPtr), x, getEventYViewportCoordinate(eventPtr));
 	}
 
-	private void drawEvent(Graphics graphics, long eventPtr, int x, int y) {
-		if (sequenceChartFacade.Event_isSelfMessageProcessingEvent(eventPtr)) {
+	private void drawEvent(Graphics graphics, long eventPtr, int axisModuleIndex, int x, int y) {
+	    if (isInitializationEvent(eventPtr)) {
+            graphics.setForegroundColor(INITIALIZATION_EVENT_BORDER_COLOR);
+            graphics.setBackgroundColor(INITIALIZATION_EVENT_BACKGROUND_COLOR);
+	    }
+	    else if (sequenceChartFacade.Event_isSelfMessageProcessingEvent(eventPtr)) {
 			graphics.setForegroundColor(SELF_EVENT_BORDER_COLOR);
 			graphics.setBackgroundColor(SELF_EVENT_BACKGROUND_COLOR);
 		}
@@ -1868,7 +1888,7 @@ public class SequenceChart
 
 		if (showEventNumbers) {
 			graphics.setFont(font);
-			drawText(graphics, "#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3 + axisRenderers[getEventAxisModuleIndex(eventPtr)].getHeight() / 2);
+			drawText(graphics, "#" + sequenceChartFacade.Event_getEventNumber(eventPtr), x + 3, y + 3 + axisRenderers[axisModuleIndex].getHeight() / 2);
 		}
 	}
 
@@ -2026,15 +2046,9 @@ public class SequenceChart
 				graphics.setLineStyle(SWT.LINE_SOLID);
 			    graphics.setForegroundColor(EVENT_SELECTION_COLOR);
 
-			    for (int selectedEventNumber : selectionEventNumbers) {
+			    for (int selectedEventNumber : selectionEventNumbers)
 			    	if (startEventNumber <= selectedEventNumber && selectedEventNumber <= endEventNumber)
-			    	{
-			    	    IEvent selectedEvent = eventLog.getEventForEventNumber(selectedEventNumber);
-			    		int x = getEventXViewportCoordinate(selectedEvent.getCPtr());
-			    		int y = getEventYViewportCoordinate(selectedEvent.getCPtr());
-			    		graphics.drawOval(x - EVENT_SELECTION_RADIUS, y - EVENT_SELECTION_RADIUS, EVENT_SELECTION_RADIUS * 2 + 1, EVENT_SELECTION_RADIUS * 2 + 1);
-			    	}
-				}
+			    	    drawSelectionMarks(graphics, eventLog.getEventForEventNumber(selectedEventNumber));
 			}
 		}
 	}
@@ -2064,11 +2078,8 @@ public class SequenceChart
 						if (startEventNumber <= eventNumber && eventNumber <= endEventNumber) {
 							IEvent bookmarkedEvent = eventLog.getEventForEventNumber(eventNumber);
 
-							if (bookmarkedEvent != null) {
-					    		int x = getEventXViewportCoordinate(bookmarkedEvent.getCPtr());
-					    		int y = getEventYViewportCoordinate(bookmarkedEvent.getCPtr());
-					    		graphics.drawOval(x - EVENT_SELECTION_RADIUS, y - EVENT_SELECTION_RADIUS, EVENT_SELECTION_RADIUS * 2 + 1, EVENT_SELECTION_RADIUS * 2 + 1);
-							}
+							if (bookmarkedEvent != null)
+							    drawSelectionMarks(graphics, bookmarkedEvent);
 						}
 					}
 				}
@@ -2078,6 +2089,27 @@ public class SequenceChart
 			throw new RuntimeException(e);
 		}
 	}
+    
+    private void drawSelectionMarks(Graphics graphics, IEvent event) {
+        int x = getEventXViewportCoordinate(event.getCPtr());
+
+        if (isInitializationEvent(event)) {
+            long eventPtr = event.getCPtr();
+            for (int i = 0; i < sequenceChartFacade.Event_getNumConsequences(eventPtr); i++) {
+                long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(sequenceChartFacade.Event_getConsequence(eventPtr, i));
+                int y = getEventYViewportCoordinate(consequenceEventPtr);
+                drawSelectionMark(graphics, x, y);
+            }
+        }
+        else {
+            int y = getEventYViewportCoordinate(event.getCPtr());
+            drawSelectionMark(graphics, x, y);
+        }
+    }
+    
+    private void drawSelectionMark(Graphics graphics, int x, int y) {
+        graphics.drawOval(x - EVENT_SELECTION_RADIUS, y - EVENT_SELECTION_RADIUS, EVENT_SELECTION_RADIUS * 2 + 1, EVENT_SELECTION_RADIUS * 2 + 1);
+    }
 
 	/**
 	 * Draws axis labels if there's enough space between axes.
@@ -2125,7 +2157,7 @@ public class SequenceChart
 		int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 		int causeEventNumber = sequenceChartFacade.Event_getEventNumber(causeEventPtr);
 		int consequenceEventNumber = sequenceChartFacade.Event_getEventNumber(consequenceEventPtr);
-        int x1, y1 = getEventYViewportCoordinate(causeEventPtr);
+        int x1, y1 = isInitializationEvent(causeEventPtr) ? getModuleYViewportCoordinate(sequenceChartFacade.Event_getModuleId(consequenceEventPtr)) : getEventYViewportCoordinate(causeEventPtr);
         int x2, y2 = getEventYViewportCoordinate(consequenceEventPtr);
         int invalid = -Integer.MAX_VALUE;
         int fontHeight = font.getFontData()[0].getHeight();
@@ -2488,22 +2520,37 @@ public class SequenceChart
 		int extraWidth = (maximumWidth - width) / 2;
 		return getFirstLastEventForPixelRange(-extraWidth, extraWidth * 2);
 	}
+    
+    private int getModuleYViewportCoordinate(int moduleId) {
+        return getModuleYViewportCoordinateByModuleIndex(moduleIdToAxisModuleIndexMap.get(moduleId));
+    }
+
+    private int getModuleYViewportCoordinateByModuleIndex(int index) {
+        if (axisModuleYs == null)
+            calculateAxisYs();
+
+        return axisModuleYs[index] + axisRenderers[index].getHeight() / 2 - (int)getViewportTop();
+    }
+
+    private int getEventAxisModuleIndex(long eventPtr) {
+        return moduleIdToAxisModuleIndexMap.get(sequenceChartFacade.Event_getModuleId(eventPtr));
+    }
+    
+    private boolean isInitializationEvent(long eventPtr) {
+        return sequenceChartFacade.Event_getEventNumber(eventPtr) == 0;
+    }
+
+    private boolean isInitializationEvent(IEvent event) {
+        return event.getEventNumber() == 0;
+    }
 
 	public int getEventXViewportCoordinate(long eventPtr) {
 		return (int)(sequenceChartFacade.Event_getTimelineCoordinate(eventPtr) * pixelPerTimelineCoordinate + fixPointViewportCoordinate);
 	}
 
 	public int getEventYViewportCoordinate(long eventPtr) {
-		int index = getEventAxisModuleIndex(eventPtr);
-
-		if (axisModuleYs == null)
-			calculateAxisYs();
-
-		return axisModuleYs[index] + axisRenderers[index].getHeight() / 2 - (int)getViewportTop();
-	}
-
-	private int getEventAxisModuleIndex(long eventPtr) {
-		return moduleIdToAxisModuleIndexMap.get(sequenceChartFacade.Event_getModuleId(eventPtr));
+	    Assert.isTrue(!isInitializationEvent(eventPtr));
+	    return getModuleYViewportCoordinateByModuleIndex(getEventAxisModuleIndex(eventPtr));
 	}
 
 	/*************************************************************************************
@@ -3115,7 +3162,18 @@ public class SequenceChart
 						// check events
 			            if (events != null && startEventPtr != 0 && endEventPtr != 0) {
 			            	for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
-								if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, getEventXViewportCoordinate(eventPtr), getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
+			            	    int x = getEventXViewportCoordinate(eventPtr);
+
+			            	    if (isInitializationEvent(eventPtr)) {
+			                        for (int i = 0; i < sequenceChartFacade.Event_getNumConsequences(eventPtr); i++) {
+			                            long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(sequenceChartFacade.Event_getConsequence(eventPtr, i));
+			                            int y = getEventYViewportCoordinate(consequenceEventPtr);
+
+			                            if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, y, MOUSE_TOLERANCE))
+		                                    events.add(sequenceChartFacade.Event_getEvent(eventPtr));
+			                        }
+			            	    }
+			            	    else if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
 			   						events.add(sequenceChartFacade.Event_getEvent(eventPtr));
 
 			   					if (eventPtr == endEventPtr)
