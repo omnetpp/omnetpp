@@ -31,6 +31,8 @@ import org.omnetpp.scave.charting.dataset.IAveragedXYDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import static org.apache.commons.math.util.MathUtils.addAndCheck;
+import static org.apache.commons.math.util.MathUtils.mulAndCheck;
 
 /**
  * Displays crosshair mouse cursor for VectorChart.
@@ -353,30 +355,36 @@ class CrossHair {
 
 			// then search downwards and upwards for data points close to (x,y)
 			for (int i = mid; i >= 0; --i) {
-				double xx = chart.transformX(dataset.getX(series, i));
-				double yy = chart.transformY(dataset.getY(series, i));
-				int dx = coordsMapping.toCanvasX(xx) - x;
-				int dy = coordsMapping.toCanvasY(yy) - y;
-				if (dx * dx + dy * dy <= d * d) {
-					totalFound++;
-					if (result.size() < maxCount)  //XXX add at least one point for each series
-						result.add(new DataPoint(series, i));
+				try {
+					double xx = chart.transformX(dataset.getX(series, i));
+					double yy = chart.transformY(dataset.getY(series, i));
+					int dx = coordsMapping.toCanvasX(xx) - x;
+					int dy = coordsMapping.toCanvasY(yy) - y;
+					if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d) {
+						totalFound++;
+						if (result.size() < maxCount)  //XXX add at least one point for each series
+							result.add(new DataPoint(series, i));
+					}
+					if (Math.abs(dx) > d)
+						break;
 				}
-				if (Math.abs(dx) > d)
-					break;
+				catch (ArithmeticException e) {}
 			}
 			for (int i = mid + 1; i < dataset.getItemCount(series); ++i) {
-				double xx = chart.transformX(dataset.getX(series, i));
-				double yy = chart.transformY(dataset.getY(series, i));
-				int dx = coordsMapping.toCanvasX(xx) - x;
-				int dy = coordsMapping.toCanvasY(yy) - y;
-				if (dx * dx + dy * dy <= d * d) {
-					totalFound++;
-					if (result.size() < maxCount)
-						result.add(new DataPoint(series, i));
+				try {
+					double xx = chart.transformX(dataset.getX(series, i));
+					double yy = chart.transformY(dataset.getY(series, i));
+					int dx = coordsMapping.toCanvasX(xx) - x;
+					int dy = coordsMapping.toCanvasY(yy) - y;
+					if (addAndCheck(mulAndCheck(dx, dx), mulAndCheck(dy, dy)) <= d * d) {
+						totalFound++;
+						if (result.size() < maxCount)
+							result.add(new DataPoint(series, i));
+					}
+					if (Math.abs(dx) > d)
+						break;
 				}
-				if (Math.abs(dx) > d)
-					break;
+				catch (ArithmeticException e) {}
 			}
 		}
 		return totalFound;
