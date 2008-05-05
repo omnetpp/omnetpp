@@ -13,10 +13,12 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.BubbleEntry;
@@ -127,6 +129,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
 		EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
 		Event event = eventLogEntry.getEvent();
+		int eventNumber = event.getEventNumber();
+		BigDecimal simulationTime = event.getSimulationTime();
 		boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
 
 		try {
@@ -134,7 +138,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
 				boolean marked = false;
 				for (int i = 0; i < markers.length; i++)
-					if (markers[i].getAttribute("EventNumber", -1) == event.getEventNumber()) {
+					if (markers[i].getAttribute("EventNumber", -1) == eventNumber) {
 						marked = true;
 						break;
 					}
@@ -153,10 +157,10 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		
 		switch (index) {
 			case 0:
-				drawText("#" + event.getEventNumber(), isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_COLOR : EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR, false);
+				drawText("#" + eventNumber, isEventLogEntry ? EVENT_ENTRY_EVENT_NUMBER_COLOR : EVENT_LOG_ENTRY_EVENT_NUMBER_COLOR, false);
 				break;
 			case 1:
-				drawText(event.getSimulationTime() + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_COLOR : EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR, false); 
+				drawText(simulationTime + "s", isEventLogEntry ? EVENT_ENTRY_SIMULATION_TIME_COLOR : EVENT_LOG_ENTRY_SIMULATION_TIME_COLOR, false); 
 				break;
 			case 2:
 				x += eventLogEntry.getLevel() * INDENT_SPACING;
@@ -284,7 +288,12 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							else if (eventLogEntry instanceof CancelEventEntry) {
 								CancelEventEntry cancelEventEntry = (CancelEventEntry)eventLogEntry;
 								drawText("Cancelling self ", CONSTANT_TEXT_COLOR);
-								drawMessageDescription(findBeginSendEntry(cancelEventEntry.getPreviousEventNumber(), cancelEventEntry.getMessageId()));
+								BeginSendEntry beginSendEntry = findBeginSendEntry(cancelEventEntry.getPreviousEventNumber(), cancelEventEntry.getMessageId());
+
+								if (beginSendEntry == null)
+								    beginSendEntry = findBeginSendEntry(event.getEventEntry().getCauseEventNumber(), cancelEventEntry.getMessageId());
+
+								drawMessageDescription(beginSendEntry);
 							}
 							else if (eventLogEntry instanceof BeginSendEntry) {
 								BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
@@ -302,8 +311,11 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							}
 							else if (eventLogEntry instanceof EndSendEntry) {
 								EndSendEntry endSendEntry = (EndSendEntry)eventLogEntry;
+								BigDecimal arrivalTime = endSendEntry.getArrivalTime();
 								drawText("End sending at ", CONSTANT_TEXT_COLOR);
-								drawText(endSendEntry.getArrivalTime() + "s", DATA_COLOR);
+								drawText(arrivalTime + "s", DATA_COLOR);
+								drawText(", now + ", CONSTANT_TEXT_COLOR);
+                                drawText(TimeUtils.secondsToTimeString(arrivalTime.toBigDecimal().subtract(simulationTime.toBigDecimal())), DATA_COLOR);
 							}
 							else if (eventLogEntry instanceof SendHopEntry) {
 								SendHopEntry sendHopEntry = (SendHopEntry)eventLogEntry;
@@ -343,7 +355,12 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							else if (eventLogEntry instanceof DeleteMessageEntry) {
 								DeleteMessageEntry deleteMessageEntry = (DeleteMessageEntry)eventLogEntry;
 								drawText("Deleting ", CONSTANT_TEXT_COLOR);
-								drawMessageDescription(findBeginSendEntry(deleteMessageEntry.getPreviousEventNumber(), deleteMessageEntry.getMessageId()));
+                                BeginSendEntry beginSendEntry = findBeginSendEntry(deleteMessageEntry.getPreviousEventNumber(), deleteMessageEntry.getMessageId());
+
+                                if (beginSendEntry == null)
+                                    beginSendEntry = findBeginSendEntry(event.getEventEntry().getCauseEventNumber(), deleteMessageEntry.getMessageId());
+
+								drawMessageDescription(beginSendEntry);
 							}
                             else if (eventLogEntry instanceof SimulationBeginEntry) {
                                 SimulationBeginEntry simulationBeginEntry = (SimulationBeginEntry)eventLogEntry;

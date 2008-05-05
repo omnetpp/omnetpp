@@ -1933,7 +1933,7 @@ public class SequenceChart
 	 */
 	private void drawTickUnderMouse(Graphics graphics, int viewportHeigth) {
 		Point p = toControl(Display.getDefault().getCursorLocation());
-
+		
 		if (0 <= p.x && p.x < getViewportWidth() && 0 <= p.y && p.y < getViewportHeight() + GUTTER_HEIGHT * 2) {
 			BigDecimal tick = calculateTick(p.x, 1);
 			drawTick(graphics, viewportHeigth, MOUSE_TICK_LINE_COLOR, INFO_BACKGROUND_COLOR, tick, p.x, true);
