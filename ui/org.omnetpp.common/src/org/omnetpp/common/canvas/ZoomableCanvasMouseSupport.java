@@ -150,7 +150,11 @@ public class ZoomableCanvasMouseSupport {
 				}
 				else if (modifier==SWT.SHIFT) {
 					// if not zooming: shift+wheel does horizontal scroll
-					canvas.scrollHorizontalTo(canvas.getViewportLeft() - canvas.getViewportWidth() * event.count / 20);
+					// XXX on the gtk platform the vertical scroll bar
+					//     is scrolled even if the SHIFT button is pressed.
+					//     do not scroll horizontally to avoid diagonal scrolling
+					if (!"gtk".equals(SWT.getPlatform()))
+						canvas.scrollHorizontalTo(canvas.getViewportLeft() - canvas.getViewportWidth() * event.count / 20);
 				}
 			}
 		});
