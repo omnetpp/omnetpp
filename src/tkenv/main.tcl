@@ -27,7 +27,7 @@ set config(editor-case-sensitive) 0
 set config(editor-whole-words) 0
 set config(editor-regexp) 0
 set config(editor-backwards) 1
-set config(editor-wrap) 1
+set config(editor-wrap) none
 set config(display-treeview) 1
 set config(filtobjlist-class)  ""
 set config(filtobjlist-name)   ""

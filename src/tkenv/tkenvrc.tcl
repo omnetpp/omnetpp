@@ -140,6 +140,8 @@ proc reflectSettingsInGui {} {
    catch {wm state . $config(mainwin-state)}
    catch {wm geometry . $config(mainwin-geom)}
 
+   catch {.main.text config -wrap $config(editor-wrap)}
+
    toggle_treeview
    toggle_treeview
    toggle_timeline
