@@ -47,9 +47,10 @@ config timeline-msgclassnamepattern	{*}
 config timeline-msgnamepattern	{*}
 config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
-inspector "SendDirTest" "SendDirTest" "2" "443x306+96+124"
-inspector "SendDirTest.boxedGen" "BoxedGen" "2" "443x243+411+326"
+inspector "SendDirTest" "SendDirTest" "2" "443x306+317+-18"
 inspector "SendDirTest.boxedGen" "BoxedGen" "1" "460x312+24+31"
+inspector "SendDirTest.boxedGen" "BoxedGen" "2" "443x243+327+371"
+inspector "SendDirTest.boxedGen.boxedSink" "BoxedSink" "2" "443x213+598+217"
 inspector "sendDirTest" "SendDirTest" "2" "288x263+16+-1"
 inspector "sendDirTest" "sendDirTest" "2" "367x455+612+134"
 inspector "sendDirTest.boxedGen.boxedSink" "boxedSink" "2" "345x185+309+292"

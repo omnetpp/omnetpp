@@ -44,6 +44,7 @@ module BoxedGen
             parameters:
                 @display("p=161,37;i=block/sink");
         };
+    connections allowunconnected:
 }
 
 module Dummy
