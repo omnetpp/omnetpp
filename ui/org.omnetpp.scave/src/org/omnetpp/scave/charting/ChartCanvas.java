@@ -215,6 +215,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	/*-------------------------------------------------------------------------------------------
 	 *                                      Drawing
 	 *-------------------------------------------------------------------------------------------*/
+	private ICoordsMapping coordsMapping;
 	
 	@Override
 	protected void paintCachableLayer(GC gc) {
@@ -226,13 +227,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		if (getClientArea().isEmpty())
 			return;
 		
-		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
+		coordsMapping = getOptimizedCoordinateMapper();
 		resetDrawingStylesAndColors(gc);
-		
 		doPaintCachableLayer(gc, coordsMapping);
-		
-		if (coordsMapping.getNumCoordinateOverflows()>0)
-			displayCoordinatesOverflowMessage(gc);
 	}
 	
 	@Override
@@ -241,13 +238,16 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		if (getClientArea().isEmpty())
 			return;
 		
-		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
+		if (coordsMapping == null)
+			coordsMapping = getOptimizedCoordinateMapper();
 		resetDrawingStylesAndColors(gc);
 
 		doPaintNoncachableLayer(gc, coordsMapping);
 		
 		if (coordsMapping.getNumCoordinateOverflows() > 0)
 			displayCoordinatesOverflowMessage(gc);
+		
+		coordsMapping = null;
 	}
 	
 	abstract protected void doPaintCachableLayer(GC gc, ICoordsMapping coordsMapping);
