@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
@@ -59,8 +58,13 @@ public class ScalarDataset implements IAveragedScalarDataset {
     	this.rowKeys = computeRowKeys(this.data, rowFields);
     	this.columnKeys = computeColumnKeys(this.data, columnFields);
     }
+    
+    public String getTitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    /**
+	/**
      * Returns the row count.
      *
      * @return The row count.

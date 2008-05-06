@@ -1,10 +1,11 @@
 package org.omnetpp.scave.charting;
 
+import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.TextLayout;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 
 
@@ -48,10 +49,14 @@ public class Title {
 		if (text == null || text.length() == 0)
 			return parent;
 		
-		gc.setFont(font);
-		
-		Point size = gc.stringExtent(text);
-		bounds = new Rectangle(parent.x + (parent.width - size.x) / 2, parent.y, size.x, size.y);
+		TextLayout textLayout = new TextLayout(gc.getDevice());
+		textLayout.setFont(font);
+		textLayout.setText(text);
+		textLayout.setWidth(parent.width);
+		textLayout.setAlignment(SWT.CENTER);
+		org.eclipse.swt.graphics.Rectangle rect = textLayout.getBounds();
+		textLayout.dispose();
+		bounds = new Rectangle(parent.x + (parent.width - rect.width) / 2, parent.y, rect.width, rect.height);
 		
 		return new Rectangle(parent.x, Math.min(bounds.y + bounds.height, parent.y + parent.height),
 				parent.width, Math.max(parent.height - bounds.height, 0));
@@ -61,8 +66,13 @@ public class Title {
 		if (text == null || text.length() == 0 || bounds == null)
 			return;
 		
-		gc.setFont(font);
+		TextLayout textLayout = new TextLayout(gc.getDevice());
+		textLayout.setFont(font);
+		textLayout.setText(text);
+		textLayout.setWidth(bounds.width);
+		textLayout.setAlignment(SWT.CENTER);
 		gc.setForeground(color);
-		gc.drawString(text, bounds.x, bounds.y, true);
+		textLayout.draw(gc, bounds.x, bounds.y);
+		textLayout.dispose();
 	}
 }

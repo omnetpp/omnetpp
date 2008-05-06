@@ -25,6 +25,10 @@ public class CompoundXYDataset extends XYDatasetSupport implements IAveragedXYDa
 		}
 	}
 
+	public String getTitle() {
+		return null;
+	}
+
 	public int getSeriesCount() {
 		return seriesToDatasetMap.length;
 	}

@@ -28,6 +28,7 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 		XYArray xyarray;
 	}
 	
+	private String title;
 	private SeriesData[] data;
 
 	/**
@@ -44,11 +45,12 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	 * Intended for accessing the series keys only
 	 * (property sheet, edit dialog).
 	 */
-	public VectorDataset(IDList idlist, String lineNameFormat, ResultFileManager manager) {
+	public VectorDataset(String title, IDList idlist, String lineNameFormat, ResultFileManager manager) {
 		Assert.isLegal(idlist != null);
 		Assert.isLegal(manager != null);
 		String[] keys = DatasetManager.getResultItemNames(idlist, lineNameFormat, manager);
 		Assert.isTrue(idlist.size() == keys.length);
+		this.title = title;
 		this.data = new SeriesData[keys.length];
 		for (int i = 0; i < data.length; ++i) {
 			long id = idlist.get(i);
@@ -66,8 +68,8 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	 * The data of the vectors are loaded/computed.
 	 * Intended for displaying the dataset (e.g. charts).
 	 */
-	public VectorDataset(IDList idlist, XYArray[] seriesData, String lineNameFormat, ResultFileManager manager) {
-		this(idlist, lineNameFormat, manager);
+	public VectorDataset(String title, IDList idlist, XYArray[] seriesData, String lineNameFormat, ResultFileManager manager) {
+		this(title, idlist, lineNameFormat, manager);
 		Assert.isTrue(seriesData != null && data.length == seriesData.length);
 		for (int i = 0; i < data.length; ++i) {
 			SeriesData series = data[i];
@@ -76,7 +78,11 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 			series.xyarray = seriesData[i];
 		}
 	}
-	
+		
+	public String getTitle() {
+		return title;
+	}
+
 	public int getSeriesCount() {
 		return data.length;
 	}

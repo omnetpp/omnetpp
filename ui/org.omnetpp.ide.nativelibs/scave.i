@@ -484,6 +484,19 @@ class ReaderNodeType;
   public static final String RUN    = getRUN();
   public static final String MODULE = getMODULE();
   public static final String NAME   = getNAME();
+
+  public boolean equals(Object other) {
+    if (this == other)
+      return true;
+    if (other == null || this.getClass() != other.getClass())
+      return false;
+    ResultItemField otherField = (ResultItemField)other;
+    return this.getID() == otherField.getID() && this.getName().equals(otherField.getName());
+  }
+
+  public int hashCode() {
+    return 37 * getID() + getName().hashCode();
+  }
 %}
 
 %typemap(javacode) RunAttribute %{

@@ -30,7 +30,7 @@ import org.omnetpp.scave.engine.ResultItemFields;
  */
 public class ResultItemFormatter {
 	
-	private static final String fieldSpecifierRE = "(?<!\\\\)\\{([a-zA-Z]+)\\}";
+	private static final String fieldSpecifierRE = "(?<!\\\\)\\{([a-zA-Z-]+)\\}";
 	private static final Pattern fsPattern = Pattern.compile(fieldSpecifierRE);
 	
 	private static final Map<String,IResultItemFormatter> formatters;

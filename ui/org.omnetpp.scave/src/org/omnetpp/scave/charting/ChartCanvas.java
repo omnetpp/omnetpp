@@ -33,6 +33,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -57,6 +58,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.dataset.IDataset;
@@ -80,6 +82,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected boolean antialias = DEFAULT_ANTIALIAS;
 	protected Color backgroundColor = DEFAULT_BACKGROUND_COLOR;
 	protected Title title = new Title(DEFAULT_TITLE, DEFAULT_TITLE_FONT);
+	protected String titleText = null;
 	protected Legend legend = new Legend(DEFAULT_DISPLAY_LEGEND, DEFAULT_LEGEND_BORDER, DEFAULT_LEGEND_FONT, DEFAULT_LEGEND_POSITION, DEFAULT_LEGEND_ANCHOR);
 	protected LegendTooltip legendTooltip;
 	
@@ -149,6 +152,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		if (debug) System.out.println("setDataset()");
 		doSetDataset(dataset);
 		this.dataset = dataset;
+		updateTitle();
 		updateZoomedArea();
 	}
 	
@@ -372,10 +376,26 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 	
 	public void setTitle(String value) {
-		if (value == null)
-			value = DEFAULT_TITLE;
-		title.setText(value);
+		titleText = value;
+		title.setText(StringUtils.defaultString(value, defaultTitle()));
 		chartChanged();
+	}
+	
+	private String defaultTitle() {
+		String title = null;
+		if (dataset != null)
+			title = dataset.getTitle();
+		return StringUtils.defaultString(title, DEFAULT_TITLE);
+	}
+	
+	private void updateTitle() {
+		if (titleText == null) {
+			String newTitle = defaultTitle();
+			if (!ObjectUtils.equals(newTitle, title.getText())) {
+				title.setText(newTitle);
+				chartChanged();
+			}
+		}
 	}
 
 	public void setTitleFont(Font value) {

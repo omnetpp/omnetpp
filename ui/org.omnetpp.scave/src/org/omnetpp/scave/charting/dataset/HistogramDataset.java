@@ -42,6 +42,11 @@ public class HistogramDataset implements IHistogramDataset {
 			histograms[i] = new HistogramData(keys[i], isDiscrete, cellBreaks, cellValues);
 		}
 	}
+	
+	public String getTitle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public int getSeriesCount() {
 		return histograms.length;

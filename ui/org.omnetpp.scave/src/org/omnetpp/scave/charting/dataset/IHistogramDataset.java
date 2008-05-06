@@ -17,6 +17,10 @@ public interface IHistogramDataset extends IDataset {
 	double getCellValue(int series, int index);
 	
 	final IHistogramDataset EMPTY = new IHistogramDataset() {
+		public String getTitle() {
+			return null;
+		}
+
 		public int getSeriesCount() {
 			return 0;
 		}

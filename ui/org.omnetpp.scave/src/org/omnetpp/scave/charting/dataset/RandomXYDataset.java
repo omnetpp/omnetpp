@@ -31,6 +31,10 @@ public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 			}
 		}
 	}
+	
+	public String getTitle() {
+		return null;
+	}
 
 	public int getSeriesCount() {
 		return seriesKeys.length;

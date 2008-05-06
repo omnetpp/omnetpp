@@ -10,6 +10,7 @@ import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
 import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -280,9 +281,11 @@ public class DatasetManager {
 		if (progressMonitor != null && progressMonitor.isCanceled())
 			return null;
 		
+		String title = defaultTitle(ScaveModelUtil.getResultItems(idlist, manager));
+		
 		return dataValues != null ?
-				new VectorDataset(idlist, dataValues, lineNameFormat, manager) :
-				new VectorDataset(idlist, lineNameFormat, manager);
+				new VectorDataset(title, idlist, dataValues, lineNameFormat, manager) :
+				new VectorDataset(title, idlist, lineNameFormat, manager);
 	}
 	
 	public static Pair<IDList,XYArray[]> readAndComputeVectorData(Dataset dataset, DatasetItem target, ResultFileManager manager, IProgressMonitor monitor) {
@@ -428,17 +431,32 @@ public class DatasetManager {
 	
 	public static String[] getResultItemNames(IDList idlist, String nameFormat, ResultFileManager manager) {
 		ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
-		String format = StringUtils.isEmpty(nameFormat) ? getNameFormat(items) : nameFormat;
+		String format = StringUtils.defaultIfEmpty(nameFormat, defaultNameFormat(items));
 		return ResultItemFormatter.formatResultItems(format, items);
 	}
 	
+	private static final ResultItemField
+		FLD_FILE = new ResultItemField(FILE),
+		FLD_RUN = new ResultItemField(RUN),
+		FLD_RUNNUMBER = new ResultItemField(RUNNUMBER),
+		FLD_MODULE = new ResultItemField(MODULE),
+		FLD_NAME = new ResultItemField(NAME),
+		FLD_EXPERIMENT = new ResultItemField(EXPERIMENT),
+		FLD_MEASUREMENT = new ResultItemField(MEASUREMENT),
+		FLD_REPLICATION = new ResultItemField(REPLICATION);
+	
 	private static final ResultItemField[] FIELDS_OF_LINENAMES = new ResultItemField[] {
-		new ResultItemField(FILE), new ResultItemField(RUN),
-		new ResultItemField(RUNNUMBER), new ResultItemField(MODULE),
-		new ResultItemField(NAME), new ResultItemField(EXPERIMENT),
-		new ResultItemField(MEASUREMENT), new ResultItemField(REPLICATION)
+		FLD_FILE, FLD_RUN,
+		FLD_RUNNUMBER, FLD_MODULE,
+		FLD_NAME, FLD_EXPERIMENT,
+		FLD_MEASUREMENT, FLD_REPLICATION
 	};
-
+	
+	private static final List<ResultItemField> complement(List<ResultItemField> fields) {
+		List<ResultItemField> result = new ArrayList<ResultItemField>(Arrays.asList(FIELDS_OF_LINENAMES));
+		result.removeAll(fields);
+		return result;
+	}
 	
 	/**
 	 * Returns the default format string for names of the {@code items}.
@@ -447,30 +465,70 @@ public class DatasetManager {
 	 * If all the fields has the same value in {@code items}, then the "{index}" is used as 
 	 * the format string. 
 	 */
-	private static String getNameFormat(ResultItem[] items) {
+	private static String defaultNameFormat(ResultItem[] items) {
 
 		if (items.length <= 1)
 			return "{module} {name}";
 		
-		StringBuffer sbFormat = new StringBuffer();
-		char separator = ' ';
-		for (ResultItemField field : FIELDS_OF_LINENAMES) {
-			String firstValue = field.getFieldValue(items[0]);
-			
-			for (int i = 1; i < items.length; ++i) {
-				String value = field.getFieldValue(items[i]);
-				if (!ObjectUtils.equals(firstValue, value)) {
-					sbFormat.append('{').append(field.getName()).append('}').append(separator);
-					break;
+		List<ResultItemField> differentFields = complement(getCommonFields(items, FIELDS_OF_LINENAMES));
+		if (differentFields.isEmpty())
+			return "{module} {name} - {index}";
+		else
+			return nameFormatUsingFields(differentFields);
+	}
+	
+	private static String defaultTitle(ResultItem[] items) {
+		if (items.length <= 1)
+			return null;
+		List<ResultItemField> fields = getCommonFields(items, FIELDS_OF_LINENAMES);
+		// remove computed file name
+		if (items[0].isComputed())
+			fields.remove(FLD_FILE);
+		if (fields.contains(FLD_RUN))
+			fields.remove(FLD_RUNNUMBER);
+		return fields.isEmpty() ?
+				null :
+				ResultItemFormatter.formatResultItem(nameFormatUsingFields(fields), items[0]);
+	}
+	
+	/**
+	 * Returns the fields from {@code fields} that has the same value
+	 * in {@code items}.
+	 */
+	private static List<ResultItemField> getCommonFields(ResultItem[] items, ResultItemField[] fields) {
+		List<ResultItemField> commonFields = new ArrayList<ResultItemField>();
+		int itemCount = items.length;
+		
+		if (itemCount > 0) {
+			for (ResultItemField field : fields) {
+				String firstValue = field.getFieldValue(items[0]);
+				int i;
+				for (i = 1; i < itemCount; ++i) {
+					String value = field.getFieldValue(items[i]);
+					if (!ObjectUtils.equals(firstValue, value))
+						break;
 				}
+				if (i == itemCount)
+					commonFields.add(field);
 			}
 		}
 		
-		if (sbFormat.length() > 0)
-			sbFormat.deleteCharAt(sbFormat.length() - 1);
-		else
-			sbFormat.append("{module} {name} - {index}");
-		
+		return commonFields;
+	}
+	
+	/**
+	 * Generates a format string from the specified fields 
+	 * for formatting result items.
+	 */
+	private static String nameFormatUsingFields(List<ResultItemField> fields) {
+		StringBuilder sbFormat = new StringBuilder();
+		char separator = ' ';
+		int lastIndex = fields.size() - 1;
+		for (int i = 0; i < fields.size(); i++) {
+			sbFormat.append('{').append(fields.get(i).getName()).append('}');
+			if (i != lastIndex)
+				sbFormat.append(separator);
+		}
 		return sbFormat.toString();
 	}
 	
