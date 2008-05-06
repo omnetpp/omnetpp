@@ -5,7 +5,7 @@ sub testEventLog
    $resultFileName = $fileName;
    $resultFileName =~ s/^(.*)\//result\//;
 
-   if (system("eventlogtest $fileName forward > $resultFileName") == 0)
+   if (system("./eventlogtest $fileName forward > $resultFileName") == 0)
    {
       print("PASS: Forward read on $fileName\n\n");
    }
@@ -14,7 +14,7 @@ sub testEventLog
       print("FAIL: Forward read on $fileName\n\n");
    }
 
-   if (system("eventlogtest $fileName backward > $resultFileName") == 0)
+   if (system("./eventlogtest $fileName backward > $resultFileName") == 0)
    {
       print("PASS: Backward read on $fileName\n\n");
    }
@@ -23,7 +23,7 @@ sub testEventLog
       print("FAIL: Backward read on $fileName\n\n");
    }
 
-   if (system("eventlogtest $fileName $numberOfRandomReads $numberOfEventsToScan > $resultFileName") == 0)
+   if (system("./eventlogtest $fileName $numberOfRandomReads $numberOfEventsToScan > $resultFileName") == 0)
    {
       print("PASS: Random read on $fileName\n\n");
    }

@@ -3,7 +3,7 @@ BS id 1 tid 1 c cMessage n start
 ES t 0
 
 E # 0 t 0 m 1 msg 1
-BS id 2 tid 2 eid 2 etid 2 c cMessage n continue k 1 l 0
+BS id 2 tid 2 eid 2 etid 2 c cMessage n continue k 1
 SH sm 1 sg 0
 ES t 1
 

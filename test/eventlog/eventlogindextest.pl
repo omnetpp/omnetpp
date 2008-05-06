@@ -5,7 +5,7 @@ sub testEventLogIndex
    $resultFileName = $fileName;
    $resultFileName =~ s/^(.*)\//result\//;
 
-   if (system("eventlogindextest $fileName $numberOfOffsetLookups > $resultFileName") == 0)
+   if (system("./eventlogindextest $fileName $numberOfOffsetLookups > $resultFileName") == 0)
    {
       print("PASS: Indexing on $fileName\n\n");
    }
