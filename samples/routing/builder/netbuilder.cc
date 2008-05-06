@@ -118,8 +118,8 @@ void NetBuilder::readAndBuild(cModule *parentmod)
     }
 
     // read and create connections
-    std::fstream connectionsfile(par("connectionsFile").stringValue(), std::ios::in);
-    while(getline(connectionsfile, line, '\n'))
+    std::fstream connectionsFile(par("connectionsFile").stringValue(), std::ios::in);
+    while(getline(connectionsFile, line, '\n'))
     {
         if (line.empty() || line[0] == '#')
             continue;
