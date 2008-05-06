@@ -56,10 +56,10 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         SimulationBeginEntry *simulationBeginEntry;
 
         typedef std::map<int, ModuleCreatedEntry *> ModuleIdToModuleCreatedEntryMap;
-        ModuleIdToModuleCreatedEntryMap initializationModuleIdToModuleCreatedEntryMap;
+        ModuleIdToModuleCreatedEntryMap moduleIdToModuleCreatedEntryMap;
 
         typedef std::map<std::pair<int, int>, GateCreatedEntry *> ModuleIdAndGateIdToGateCreatedEntryMap;
-        ModuleIdAndGateIdToGateCreatedEntryMap initializationModuleIdAndGateIdToGateCreatedEntryMap;
+        ModuleIdAndGateIdToGateCreatedEntryMap moduleIdAndGateIdToGateCreatedEntryMap;
 
         std::set<const char *> messageClassNames; // message class names seen so far (see Event::parse)
         std::set<const char *> messageNames; // message names seen so far (see Event::parse)
@@ -99,10 +99,10 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual long getNumParsedEvents() { return numParsedEvents; }
         virtual std::set<const char *>& getMessageNames() { return messageNames; }
         virtual std::set<const char *>& getMessageClassNames() { return messageClassNames; }
-        virtual int getNumModuleCreatedEntries() { return initializationModuleIdToModuleCreatedEntryMap.size(); }
+        virtual int getNumModuleCreatedEntries() { return moduleIdToModuleCreatedEntryMap.size(); }
         virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries();
-        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return initializationModuleIdToModuleCreatedEntryMap[moduleId]; }
-        virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId) { std::pair<int, int> key(moduleId, gateId); return initializationModuleIdAndGateIdToGateCreatedEntryMap[key]; }
+        virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId) { return moduleIdToModuleCreatedEntryMap[moduleId]; }
+        virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId) { std::pair<int, int> key(moduleId, gateId); return moduleIdAndGateIdToGateCreatedEntryMap[key]; }
         virtual SimulationBeginEntry *getSimulationBeginEntry() { return simulationBeginEntry; }
 
         virtual Event *getFirstEvent();
@@ -121,7 +121,11 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual void printInitializationLogEntries(FILE *file = stdout);
 
     protected:
-        Event *cacheEvent(Event *event);
+        void cacheEvent(Event *event);
+        void cacheEventLogEntries(Event *event);
+        void uncacheEventLogEntries(Event *event);
+        void cacheEventLogEntry(EventLogEntry *eventLogEntry);
+        void uncacheEventLogEntry(EventLogEntry *eventLogEntry);
         void deleteAllocatedObjects();
         void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
 };

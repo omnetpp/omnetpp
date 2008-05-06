@@ -63,8 +63,8 @@ void EventLog::clearInternalState(FileReader::FileChangedState change)
         messageClassNames.clear();
 
         initializationLogEntries.clear();
-        initializationModuleIdToModuleCreatedEntryMap.clear();
-        initializationModuleIdAndGateIdToGateCreatedEntryMap.clear();
+        moduleIdToModuleCreatedEntryMap.clear();
+        moduleIdAndGateIdToGateCreatedEntryMap.clear();
 
         simulationBeginEntry = NULL;
 
@@ -94,6 +94,7 @@ void EventLog::synchronize(FileReader::FileChangedState change)
             if (lastEvent) {
                 lastEvent->parse(reader, lastEvent->getBeginOffset());
                 cacheEntry(lastEvent->getEventNumber(), lastEvent->getSimulationTime(), lastEvent->getBeginOffset(), lastEvent->getEndOffset());
+                cacheEventLogEntries(lastEvent);
             }
 
             for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
@@ -215,20 +216,7 @@ void EventLog::parseInitializationLogEntries()
         }
 
         initializationLogEntries.push_back(eventLogEntry);
-
-        // collect module created entries
-        ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
-
-        if (moduleCreatedEntry)
-            initializationModuleIdToModuleCreatedEntryMap[moduleCreatedEntry->moduleId] = moduleCreatedEntry;
-
-        // collect gate created entries
-        GateCreatedEntry *gateCreatedEntry = dynamic_cast<GateCreatedEntry *>(eventLogEntry);
-
-        if (gateCreatedEntry) {
-            std::pair<int, int> key(gateCreatedEntry->moduleId, gateCreatedEntry->gateId);
-            initializationModuleIdAndGateIdToGateCreatedEntryMap[key] = gateCreatedEntry;
-        }
+        cacheEventLogEntry(eventLogEntry);
     }
 }
 
@@ -242,7 +230,7 @@ std::vector<ModuleCreatedEntry *> EventLog::getModuleCreatedEntries()
 {
     std::vector<ModuleCreatedEntry *> moduleCreatedEntries;
 
-    for (ModuleIdToModuleCreatedEntryMap::iterator it = initializationModuleIdToModuleCreatedEntryMap.begin(); it != initializationModuleIdToModuleCreatedEntryMap.end(); it++)
+    for (ModuleIdToModuleCreatedEntryMap::iterator it = moduleIdToModuleCreatedEntryMap.begin(); it != moduleIdToModuleCreatedEntryMap.end(); it++)
         moduleCreatedEntries.push_back(it->second);
 
     return moduleCreatedEntries;
@@ -361,9 +349,11 @@ Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
     {
         Event *event = new Event(this);
         event->parse(reader, beginOffset);
-        cacheEntry(event->getEventNumber(), event->getSimulationTime(), event->getBeginOffset(), event->getEndOffset());
         numParsedEvents++;
-        return cacheEvent(event);
+        cacheEntry(event->getEventNumber(), event->getSimulationTime(), event->getBeginOffset(), event->getEndOffset());
+        cacheEventLogEntries(event);
+        cacheEvent(event);
+        return event;
     }
     else {
         beginOffsetToEventMap[beginOffset] = NULL;
@@ -390,7 +380,53 @@ Event *EventLog::getEventForEndOffset(file_offset_t endOffset)
     }
 }
 
-Event *EventLog::cacheEvent(Event *event)
+void EventLog::cacheEventLogEntries(Event *event)
+{
+    for (int i = 0; i < event->getNumBeginSendEntries(); i++)
+        cacheEventLogEntry(event->getEventLogEntry(i));
+}
+
+void EventLog::uncacheEventLogEntries(Event *event)
+{
+    for (int i = 0; i < event->getNumBeginSendEntries(); i++)
+        uncacheEventLogEntry(event->getEventLogEntry(i));
+}
+
+void EventLog::cacheEventLogEntry(EventLogEntry *eventLogEntry)
+{
+    // collect module created entries
+    ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
+
+    if (moduleCreatedEntry)
+        moduleIdToModuleCreatedEntryMap[moduleCreatedEntry->moduleId] = moduleCreatedEntry;
+
+    // collect gate created entries
+    GateCreatedEntry *gateCreatedEntry = dynamic_cast<GateCreatedEntry *>(eventLogEntry);
+
+    if (gateCreatedEntry) {
+        std::pair<int, int> key(gateCreatedEntry->moduleId, gateCreatedEntry->gateId);
+        moduleIdAndGateIdToGateCreatedEntryMap[key] = gateCreatedEntry;
+    }
+}
+
+void EventLog::uncacheEventLogEntry(EventLogEntry *eventLogEntry)
+{
+    // collect module created entries
+    ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
+
+    if (moduleCreatedEntry)
+        moduleIdToModuleCreatedEntryMap.erase(moduleCreatedEntry->moduleId);
+
+    // collect gate created entries
+    GateCreatedEntry *gateCreatedEntry = dynamic_cast<GateCreatedEntry *>(eventLogEntry);
+
+    if (gateCreatedEntry) {
+        std::pair<int, int> key(gateCreatedEntry->moduleId, gateCreatedEntry->gateId);
+        moduleIdAndGateIdToGateCreatedEntryMap.erase(key);
+    }
+}
+
+void EventLog::cacheEvent(Event *event)
 {
     int eventNumber = event->getEventNumber();
     Assert(!lastEvent || eventNumber <= lastEvent->getEventNumber());
@@ -399,8 +435,6 @@ Event *EventLog::cacheEvent(Event *event)
     eventNumberToEventMap[eventNumber] = event;
     beginOffsetToEventMap[event->getBeginOffset()] = event;
     endOffsetToEventMap[event->getEndOffset()] = event;
-
-    return event;
 }
 
 NAMESPACE_END
