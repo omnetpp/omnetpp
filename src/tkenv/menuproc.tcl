@@ -309,11 +309,12 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
     set w $modinspwin
     if {$w!="" && ![winfo exists $w]} {set w ""}
 
-    .toolbar.step config -relief raised
-    .toolbar.run config -relief raised
-    .toolbar.fastrun config -relief raised
-    .toolbar.exprrun config -relief raised
-    catch {$opp(sunken-run-button) config -relief raised}
+    set default_iconbutton_relief "flat"
+    .toolbar.step config -relief $default_iconbutton_relief
+    .toolbar.run config -relief $default_iconbutton_relief
+    .toolbar.fastrun config -relief $default_iconbutton_relief
+    .toolbar.exprrun config -relief $default_iconbutton_relief
+    catch {$opp(sunken-run-button) config -relief $default_iconbutton_relief}
     remove_stopdialog
 
     if {$w==""} {
@@ -329,7 +330,7 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
             .toolbar.exprrun config -relief sunken
             display_stopdialog
         } elseif {$mode=="notrunning"} {
-            .toolbar.until config -relief raised
+            .toolbar.until config -relief $default_iconbutton_relief
         } else {
             error "wrong mode parameter $mode"
         }
@@ -343,7 +344,7 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
         } elseif {$mode=="express"} {
             display_stopdialog
         } elseif {$mode=="notrunning"} {
-            .toolbar.until config -relief raised
+            .toolbar.until config -relief $default_iconbutton_relief
         } else {
             error "wrong mode parameter $mode with module inspector"
         }
@@ -352,7 +353,7 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
     if {$untilmode=="until_on"} {
         .toolbar.until config -relief sunken
     } elseif {$untilmode=="until_off"} {
-        .toolbar.until config -relief raised
+        .toolbar.until config -relief $default_iconbutton_relief
     } elseif {$untilmode!=""} {
         error "wrong untilmode parameter $mode"
     }
