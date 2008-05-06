@@ -271,10 +271,17 @@ proc iconbutton {w args} {
         # button
         #eval button $w -bd 1 $args
         eval button $w -bd 1 -relief flat $args
-        bind $w <Enter> [list $w config -relief raised]
-        bind $w <Leave> [list $w config -relief flat]
+        bind $w <Enter> [list _changerelief $w flat raised]
+        bind $w <Leave> [list _changerelief $w raised flat]
     }
     return $w
+}
+
+proc _changerelief {w from to} {
+    set current [$w cget -relief]
+    if {$current == $from} {
+        $w config -relief $to
+    }
 }
 
 proc pack_iconbutton {w args} {
