@@ -17,10 +17,10 @@
 
 
 /**
- * @mainpage \opp API Reference
- *
- * If you are new to \opp, a good starting point for browsing the
- * documentation is cSimpleModule.
+ * @mainpage  \opp API Reference
+ * <img src="http://omnetpp.org/doc/omnetpp/4.0/opp_logo.gif" border="0" width="24" height="24" alt="">
+ * If you are new to \opp, a good starting point for browsing 
+ * the documentation is cSimpleModule.
  *
  * Otherwise, pick one of the following categories, or choose from the
  * links at the top of this page:
