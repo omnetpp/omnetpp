@@ -477,15 +477,22 @@ public class DatasetManager {
 			return nameFormatUsingFields(differentFields);
 	}
 	
+	private static final ResultItemField[] titleFields = new ResultItemField[] {
+		FLD_NAME, FLD_MODULE, FLD_EXPERIMENT, FLD_MEASUREMENT, FLD_REPLICATION
+	};
+	
 	private static String defaultTitle(ResultItem[] items) {
 		if (items.length <= 1)
 			return null;
-		List<ResultItemField> fields = getCommonFields(items, FIELDS_OF_LINENAMES);
+		
+		List<ResultItemField> fields = getCommonFields(items, titleFields);
 		// remove computed file name
-		if (items[0].isComputed())
-			fields.remove(FLD_FILE);
-		if (fields.contains(FLD_RUN))
-			fields.remove(FLD_RUNNUMBER);
+		if (fields.contains(FLD_NAME) || fields.contains(FLD_MODULE)) {
+			fields.remove(FLD_EXPERIMENT);
+			fields.remove(FLD_MEASUREMENT);
+			fields.remove(FLD_REPLICATION);
+		}
+
 		return fields.isEmpty() ?
 				null :
 				ResultItemFormatter.formatResultItem(nameFormatUsingFields(fields), items[0]);

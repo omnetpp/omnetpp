@@ -9,6 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+import org.omnetpp.scave.engine.ResultItemFields;
 
 /**
  * Adds control decoration and content proposals to a text control.
@@ -16,6 +17,10 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
  * @author tomi
  */
 public class ResultItemNamePatternField {
+	
+	public ResultItemNamePatternField(Text text) {
+		this(text, ResultItemFields.getFieldNames().toArray());
+	}
 
 	public ResultItemNamePatternField(Text text, String[] fieldNames) {
 		FieldDecoration contentAssistDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);

@@ -59,7 +59,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
     	this.columnKeys = computeColumnKeys(this.data, columnFields);
     }
     
-    public String getTitle() {
+    public String getTitle(String format) {
 		// TODO Auto-generated method stub
 		return null;
 	}

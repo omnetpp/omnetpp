@@ -39,6 +39,7 @@ import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
+import org.omnetpp.scave.editors.ui.ResultItemNamePatternField;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
@@ -204,6 +205,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		else if (TAB_TITLES.equals(name)) {
 			group = createGroup("Graph title", panel);
 			graphTitleText = createTextField("Graph title:", group);
+			new ResultItemNamePatternField(graphTitleText);
 			graphTitleFontText = createFontField("Title font:", group);
 			axisTitlesGroup = createGroup("Axis titles", panel);
 			xAxisTitleText = createTextField("X axis title:", axisTitlesGroup);

@@ -26,10 +26,10 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class ChartUpdater {
 	private static final int CHART_UPDATE_DELAY_MS = 200;
 
-	private Chart chart;
-	private ChartCanvas view;
-	private ResultFileManager manager;
-	private DelayedJob startUpdateJob = new DelayedJob(CHART_UPDATE_DELAY_MS) {
+	private final Chart chart;
+	private final ChartCanvas view;
+	private final ResultFileManager manager;
+	private final DelayedJob startUpdateJob = new DelayedJob(CHART_UPDATE_DELAY_MS) {
 		public void run() {
 			updateDataset();
 		}

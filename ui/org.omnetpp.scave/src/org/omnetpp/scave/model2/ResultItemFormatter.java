@@ -11,9 +11,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.set.ListOrderedSet;
+import org.apache.commons.lang.text.StrBuilder;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.ResultItemFields;
 
@@ -72,16 +75,54 @@ public class ResultItemFormatter {
 	}
 	
 	private static String formatResultItem(Object[] format, ResultItem item) {
-		StringBuffer sb = new StringBuffer();
+		StrBuilder sb = new StrBuilder();
 		for (Object formatObj : format) {
-			if (formatObj instanceof String)
-				sb.append((String)formatObj);
-			else if (formatObj instanceof IResultItemFormatter)
-				sb.append(((IResultItemFormatter)formatObj).format(item));
+			format(formatObj, item, sb);
 		}
 		return sb.toString();
 	}
 	
+	public static String formatMultipleResultItem(String format, ResultItem[] items) {
+		return formatMultipleResultItem(parseFormatString(format), Arrays.asList(items));
+	}
+	
+	private static String formatMultipleResultItem(Object[] format, Collection<? extends ResultItem> items) {
+		StrBuilder sb = new StrBuilder();
+		for (Object formatObj : format) {
+			format(formatObj, items, sb);
+		}
+		return sb.toString();
+	}
+	
+	private static void format(Object formatObj, ResultItem item, StrBuilder sb) {
+		if (formatObj instanceof String)
+			sb.append(formatObj);
+		else if (formatObj instanceof IResultItemFormatter)
+			sb.append(((IResultItemFormatter)formatObj).format(item));
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static void format(Object formatObj, Collection<? extends ResultItem> items, StrBuilder sb) {
+		if (formatObj instanceof String)
+			sb.append(formatObj);
+		else if (formatObj instanceof IResultItemFormatter) {
+			Set<String> strings = (Set<String>)new ListOrderedSet();
+			IResultItemFormatter formatter = (IResultItemFormatter)formatObj;
+			for (ResultItem item : items) {
+				String str = formatter.format(item);
+				boolean added = strings.add(str);
+				if (added && strings.size() > 3) {
+					strings.remove(str);
+					strings.add("...");
+					break;
+				}
+			}
+			if (strings.size() > 1) sb.append('{');
+			sb.appendWithSeparators(strings, ",");
+			if (strings.size() > 1) sb.append('}');
+		}
+	}
+
 	private static Object[] parseFormatString(String format) {
 		List<Object> formatObjs = new ArrayList<Object>();
 		Matcher matcher = fsPattern.matcher(format);
@@ -108,6 +149,10 @@ public class ResultItemFormatter {
 		    }
 		}
 		return formatObjs.toArray();
+	}
+	
+	public static boolean isPlainFormat(String format) {
+		return !fsPattern.matcher(format).find();
 	}
 	
 	private static IResultItemFormatter getFormatter(String field) {

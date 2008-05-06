@@ -25,7 +25,7 @@ public class CompoundXYDataset extends XYDatasetSupport implements IAveragedXYDa
 		}
 	}
 
-	public String getTitle() {
+	public String getTitle(String format) {
 		return null;
 	}
 

@@ -228,7 +228,7 @@ public class ChartProperties extends PropertySource {
 	/*======================================================================
 	 *                             Titles
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE)
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE,descriptorClass=TitlePatternPropertyDescriptor.class)
 	public String getGraphTitle() { return getStringProperty(PROP_GRAPH_TITLE); }
 	public void setGraphTitle(String title) { setProperty(PROP_GRAPH_TITLE, title); }
 	public String defaultGraphTitle() { return ChartDefaults.DEFAULT_TITLE; }

@@ -43,7 +43,7 @@ public class HistogramDataset implements IHistogramDataset {
 		}
 	}
 	
-	public String getTitle() {
+	public String getTitle(String format) {
 		// TODO Auto-generated method stub
 		return null;
 	}

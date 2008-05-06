@@ -32,7 +32,7 @@ public class RandomXYDataset extends XYDatasetSupport implements IXYDataset {
 		}
 	}
 	
-	public String getTitle() {
+	public String getTitle(String format) {
 		return null;
 	}
 

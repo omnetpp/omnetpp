@@ -29,7 +29,7 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 		this.keys = computeKeys(this.scalars);
 	}
 		
-	public String getTitle() {
+	public String getTitle(String format) {
 		// TODO Auto-generated method stub
 		return null;
 	}

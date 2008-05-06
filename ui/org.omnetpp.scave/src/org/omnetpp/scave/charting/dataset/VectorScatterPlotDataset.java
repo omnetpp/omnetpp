@@ -16,7 +16,7 @@ public class VectorScatterPlotDataset extends XYDatasetSupport implements IXYDat
 		this.keys = DatasetManager.getResultItemNames(vectors, null /*nameFormat*/, manager); // XXX nameFormat
 	}
 	
-	public String getTitle() {
+	public String getTitle(String format) {
 		// TODO Auto-generated method stub
 		return null;
 	}

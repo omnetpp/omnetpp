@@ -2,13 +2,16 @@ package org.omnetpp.scave.charting.dataset;
 
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.model2.DatasetManager;
+import org.omnetpp.scave.model2.ResultItemFormatter;
 import org.omnetpp.scave.model2.ResultItemValueFormatter;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * IXYDataset implementation for output vectors.
@@ -29,7 +32,10 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 	}
 	
 	private String title;
+	private IDList idlist;
+	private ResultFileManager manager;
 	private SeriesData[] data;
+	
 
 	/**
 	 * Creates an empty dataset.
@@ -51,6 +57,8 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 		String[] keys = DatasetManager.getResultItemNames(idlist, lineNameFormat, manager);
 		Assert.isTrue(idlist.size() == keys.length);
 		this.title = title;
+		this.idlist = idlist;
+		this.manager = manager;
 		this.data = new SeriesData[keys.length];
 		for (int i = 0; i < data.length; ++i) {
 			long id = idlist.get(i);
@@ -79,8 +87,14 @@ public class VectorDataset extends XYDatasetSupport implements IStringValueXYDat
 		}
 	}
 		
-	public String getTitle() {
-		return title;
+	public String getTitle(String format) {
+		if (StringUtils.isEmpty(format))
+			return title;
+		else {
+			ResultItem[] items = manager == null || ResultItemFormatter.isPlainFormat(format) ?
+									new ResultItem[0] : ScaveModelUtil.getResultItems(idlist, manager);
+			return ResultItemFormatter.formatMultipleResultItem(format, items);
+		}
 	}
 
 	public int getSeriesCount() {

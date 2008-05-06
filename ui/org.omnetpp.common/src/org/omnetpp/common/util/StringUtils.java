@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.Assert;
-
 import org.omnetpp.common.engine.Common;
 
 public class StringUtils extends org.apache.commons.lang.StringUtils {
@@ -763,12 +762,14 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             throw new RuntimeException("template error: template parameter '" + key + "' was expected to be list, but it is " + object.getClass().toString());
     }
     
-    public static String formatList(List<? extends Object> list, String elementFormat, String separator) {
+    public static String formatList(Collection<? extends Object> list, String elementFormat, String separator) {
     	StringBuilder builder = new StringBuilder();
-    	for (int i = 0; i < list.size(); ++i) {
-    		if (i > 0)
+    	boolean firstIteration = true;
+    	for (Object object : list) {
+    		if (!firstIteration)
     			builder.append(separator);
-    		builder.append(String.format(elementFormat, list.get(i)));
+    		builder.append(String.format(elementFormat, object));
+    		firstIteration = false;
     	}
     	return builder.toString();
     }

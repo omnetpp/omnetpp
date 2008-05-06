@@ -377,27 +377,20 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	public void setTitle(String value) {
 		titleText = value;
-		title.setText(StringUtils.defaultString(value, defaultTitle()));
-		chartChanged();
-	}
-	
-	private String defaultTitle() {
-		String title = null;
-		if (dataset != null)
-			title = dataset.getTitle();
-		return StringUtils.defaultString(title, DEFAULT_TITLE);
+		updateTitle();
 	}
 	
 	private void updateTitle() {
-		if (titleText == null) {
-			String newTitle = defaultTitle();
-			if (!ObjectUtils.equals(newTitle, title.getText())) {
-				title.setText(newTitle);
-				chartChanged();
-			}
+		String newTitle = DEFAULT_TITLE;
+		if (dataset != null)
+			newTitle = StringUtils.defaultString(dataset.getTitle(titleText), DEFAULT_TITLE);
+			
+		if (!ObjectUtils.equals(newTitle, title.getText())) {
+			title.setText(newTitle);
+			chartChanged();
 		}
 	}
-
+	
 	public void setTitleFont(Font value) {
 		if (value == null)
 			value = DEFAULT_TITLE_FONT;
