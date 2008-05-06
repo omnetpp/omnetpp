@@ -15,6 +15,7 @@ LOGFILTER =
 
 #default: usman.dvi usman.pdf
 default: usman.pdf
+	cp usman.pdf ../../manual
 
 usman.dvi: $(TEXSRC) $(PSPICS)
 	latex usman.tex $(LOGFILTER)

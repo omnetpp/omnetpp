@@ -6,9 +6,9 @@ DOXYGEN=doxygen
 #
 # Targets
 #
-all: api nedxml-api parsim-api do-tictoc-tutorial do-queues-tutorial do-manual
+all: apis do-tictoc-tutorial do-manual
 
-apis: api nedxml-api parsim-api do-tictoc-tutorial
+apis: api nedxml-api parsim-api
 
 api:
 	$(DOXYGEN) api.doxyfile
@@ -27,3 +27,6 @@ do-tictoc-tutorial:
 
 do-queues-tutorial:
 	cd queues-tutorial && $(MAKE)
+
+clean:
+	rm -rf ../api ../nedxml-api ../parsim-api ../tictoc-tutorial

@@ -6,9 +6,9 @@
 #
 # Targets
 #
-all: api nedxml-api parsim-api do-tictoc-tutorial do-manual  # do-queues-tutorial 
+all: apis do-tictoc-tutorial do-manual  # do-queues-tutorial 
 
-apis: api nedxml-api parsim-api do-tictoc-tutorial
+apis: api nedxml-api parsim-api 
 
 api:
 	$(DOXYGEN:/=\) api.doxyfile
