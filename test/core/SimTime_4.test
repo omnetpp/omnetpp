@@ -1,6 +1,9 @@
 %description:
 SimTime: test math functions: ceil(), floor(), fabs(), fmod(), max(), min()
 
+%includes:
+#include <algorithm>
+
 %activity:
 SimTime t, t2;
 
@@ -47,12 +50,12 @@ P((t=2.6, t2=-0.5, fmod(t,t2)));
 P((t=-2.6, t2=-0.5, fmod(t,t2)));
 
 // min(t2,t2)
-P((t=1, t2=2, min(t,t2)));
-P((t=1, t2=-2, min(t,t2)));
+P((t=1, t2=2, std::min(t,t2)));
+P((t=1, t2=-2, std::min(t,t2)));
 
 // max(t2,t2)
-P((t=1, t2=2, max(t,t2)));
-P((t=1, t2=-2, max(t,t2)));
+P((t=1, t2=2, std::max(t,t2)));
+P((t=1, t2=-2, std::max(t,t2)));
 
 ev << ".\n";
 
