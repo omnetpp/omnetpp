@@ -28,17 +28,26 @@ class NetBuilder : public cSimpleModule
 {
   protected:
     void addLinkAttributes(cGate *src, double delay, double error, double datarate);
-    void readAndBuild(cModule *parent);
+    void buildNetwork(cModule *parent);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module(NetBuilder);
 
+
 void NetBuilder::initialize()
 {
-    cModule *mod = parentModule();
-    readAndBuild(mod);
+    scheduleAt(0, new cMessage());
+}
+
+void NetBuilder::handleMessage(cMessage *msg)
+{
+    if (!msg->isSelfMessage())
+        error("This modules does not process messages.");
+
+    delete msg;
+    buildNetwork(parentModule());
 }
 
 void NetBuilder::addLinkAttributes(cGate *src, double delay, double error, double datarate)
@@ -57,7 +66,7 @@ void NetBuilder::addLinkAttributes(cGate *src, double delay, double error, doubl
     }
 }
 
-void NetBuilder::readAndBuild(cModule *parentmod)
+void NetBuilder::buildNetwork(cModule *parent)
 {
     std::map<long,cModule *> nodeid2mod;
     std::string line;
@@ -69,8 +78,8 @@ void NetBuilder::readAndBuild(cModule *parentmod)
             continue;
 
         std::vector<std::string> tokens = cStringTokenizer(line.c_str()).asVector();
-        if (tokens.size() < 3)
-            throw cRuntimeError("wrong line in module file: less than 3 items in line: \"%s\"", line.c_str());
+        if (tokens.size() != 3)
+            throw cRuntimeError("wrong line in module file: 3 items required, line: \"%s\"", line.c_str());
 
         // get fields from tokens
         long nodeid = atol(tokens[0].c_str());
@@ -82,7 +91,7 @@ void NetBuilder::readAndBuild(cModule *parentmod)
         cModuleType *modtype = cModuleType::find(modtypename);
         if (!modtype)
             throw cRuntimeError("module type `%s' for node `%s' not found", modtypename, name);
-        cModule *mod = modtype->create(name, parentmod);
+        cModule *mod = modtype->create(name, parent);
         nodeid2mod[nodeid] = mod;
     }
 
@@ -93,8 +102,8 @@ void NetBuilder::readAndBuild(cModule *parentmod)
         if (line.empty() || line[0] == '#')
             continue;
         std::vector<std::string> tokens = cStringTokenizer(line.c_str()).asVector();
-        if (tokens.size() < 3)
-            throw cRuntimeError("wrong line in parameters file: less than 3 items in line: \"%s\"", line.c_str());
+        if (tokens.size() != 3)
+            throw cRuntimeError("wrong line in parameters file: 3 items required, line: \"%s\"", line.c_str());
 
         // get fields from tokens
         long nodeid = atol(tokens[0].c_str());
@@ -102,7 +111,7 @@ void NetBuilder::readAndBuild(cModule *parentmod)
         const char *value = tokens[2].c_str();
 
         if (nodeid2mod.find(nodeid) == nodeid2mod.end())
-            throw cRuntimeError("wrong line in parameters file: module id %ld not found", nodeid);
+            throw cRuntimeError("wrong line in parameters file: node with id=%ld not found", nodeid);
 
         // look up module and set its parameter
         cModule *mod = nodeid2mod[nodeid];
@@ -124,21 +133,20 @@ void NetBuilder::readAndBuild(cModule *parentmod)
         if (line.empty() || line[0] == '#')
             continue;
         std::vector<std::string> tokens = cStringTokenizer(line.c_str()).asVector();
-        if (tokens.size() < 6)
-            throw cRuntimeError("wrong line in parameters file: less than 6 items in line: \"%s\"", line.c_str());
+        if (tokens.size() != 5)
+            throw cRuntimeError("wrong line in parameters file: 5 items required, line: \"%s\"", line.c_str());
 
         // get fields from tokens
         long srcnodeid = atol(tokens[0].c_str());
         long destnodeid = atol(tokens[1].c_str());
-        bool duplex = strcmp(tokens[2].c_str(),"0")!=0;
-        double delay = tokens[3]!="-" ? atof(tokens[3].c_str()) : -1;
-        double error = tokens[4]!="-" ? atof(tokens[4].c_str()) : -1;
-        double datarate = tokens[5]!="-" ? atof(tokens[5].c_str()) : -1;
+        double delay = tokens[2]!="-" ? atof(tokens[2].c_str()) : -1;
+        double error = tokens[3]!="-" ? atof(tokens[3].c_str()) : -1;
+        double datarate = tokens[4]!="-" ? atof(tokens[4].c_str()) : -1;
 
         if (nodeid2mod.find(srcnodeid) == nodeid2mod.end())
-            throw cRuntimeError("wrong line in parameters file: module id %ld not found", srcnodeid);
+            throw cRuntimeError("wrong line in connections file: node with id=%ld not found", srcnodeid);
         if (nodeid2mod.find(destnodeid) == nodeid2mod.end())
-            throw cRuntimeError("wrong line in parameters file: module id %ld not found", destnodeid);
+            throw cRuntimeError("wrong line in connections file: node with id=%ld not found", destnodeid);
 
         cModule *srcmod = nodeid2mod[srcnodeid];
         cModule *destmod = nodeid2mod[destnodeid];
@@ -149,12 +157,9 @@ void NetBuilder::readAndBuild(cModule *parentmod)
 
         // connect
         srcOut->connectTo(destIn);
+        destOut->connectTo(srcIn);
         addLinkAttributes(srcOut, delay, error, datarate);
-        if (duplex)
-        {
-            destOut->connectTo(srcIn);
-            addLinkAttributes(destOut, delay, error, datarate);
-        }
+        addLinkAttributes(destOut, delay, error, datarate);
     }
 
     // final touches: buildinside, initialize()
@@ -172,8 +177,4 @@ void NetBuilder::readAndBuild(cModule *parentmod)
     }
 }
 
-void NetBuilder::handleMessage(cMessage *)
-{
-    error("This modules does not process messages.");
-}
 
