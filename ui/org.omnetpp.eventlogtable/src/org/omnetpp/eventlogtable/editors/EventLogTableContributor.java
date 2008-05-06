@@ -916,7 +916,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 									MenuItem menuItem = (MenuItem)e.widget;
 									
 									if (menuItem.getSelection()) {
-										InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as (BS and c(MyMessage))", null, null);
+										InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as: (BS and c(MyMessage))\nSee Event Log Table Raw Mode for other fields and entry types.", null, null);
 										if (dialog.open() == Window.OK) {
     										String pattern = dialog.getValue();
     										if (pattern == null || pattern.equals(""))

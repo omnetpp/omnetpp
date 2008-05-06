@@ -13,7 +13,7 @@ public class EventLogEntryReference {
 	public EventLogEntryReference(EventLogEntry eventLogEntry) {
 		IEvent event = eventLogEntry.getEvent();
 		eventNumber = event.getEventNumber();
-		eventEntryIndex = eventLogEntry.getIndex();
+		eventEntryIndex = eventLogEntry.getEntryIndex();
 		Assert.isTrue(eventNumber != -1 && eventEntryIndex != -1);
 	}
 

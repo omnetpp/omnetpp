@@ -34,6 +34,7 @@ import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;
 import org.omnetpp.eventlog.engine.EventLogTableNameMode;
 import org.omnetpp.eventlog.engine.GateCreatedEntry;
+import org.omnetpp.eventlog.engine.GateDeletedEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
@@ -219,7 +220,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								}
 
 								drawText(": ", CONSTANT_TEXT_COLOR);
-								drawText(bubbleEntry.getText(), BUBBLE_ENTRY_COLOR);
+								drawText(bubbleEntry.getText(), BUBBLE_ENTRY_COLOR, true);
 							}
 							else if (eventLogEntry instanceof ModuleMethodBeginEntry) {
 								ModuleMethodBeginEntry moduleMethodBeginEntry = (ModuleMethodBeginEntry)eventLogEntry;
@@ -255,6 +256,20 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawText(" under ", CONSTANT_TEXT_COLOR);
 								drawModuleDescription(moduleReparentedEntry.getNewParentModuleId());
 							}
+							else if (eventLogEntry instanceof GateCreatedEntry) {
+							    GateCreatedEntry gateCreatedEntry = (GateCreatedEntry)eventLogEntry;
+                                drawText("Creating ", CONSTANT_TEXT_COLOR);
+							    drawGateDescription(gateCreatedEntry);
+                                drawText(" in ", CONSTANT_TEXT_COLOR);
+                                drawModuleDescription(gateCreatedEntry.getModuleId());
+							}
+                            else if (eventLogEntry instanceof GateDeletedEntry) {
+                                GateDeletedEntry gateDeletedEntry = (GateDeletedEntry)eventLogEntry;
+                                drawText("Deleting ", CONSTANT_TEXT_COLOR);
+                                drawGateDescription(gateDeletedEntry.getModuleId(), gateDeletedEntry.getGateId());
+                                drawText(" in ", CONSTANT_TEXT_COLOR);
+                                drawModuleDescription(gateDeletedEntry.getModuleId());
+                            }
 							else if (eventLogEntry instanceof ConnectionCreatedEntry) {
 								ConnectionCreatedEntry connectionCreatedEntry = (ConnectionCreatedEntry)eventLogEntry;
 								drawText("Creating ", CONSTANT_TEXT_COLOR);
@@ -297,13 +312,21 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							}
 							else if (eventLogEntry instanceof BeginSendEntry) {
 								BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
-								
-								if (event.isSelfMessage(beginSendEntry))
-								    drawText("Scheduling self ", CONSTANT_TEXT_COLOR);
+								boolean isSelfMessage = event.isSelfMessage(beginSendEntry);
+
+								if (isSelfMessage)
+								    drawText("Scheduling ", CONSTANT_TEXT_COLOR);
 								else
-								    drawText("Begin sending ", CONSTANT_TEXT_COLOR);
+								    drawText("Sending ", CONSTANT_TEXT_COLOR);
 
 								drawMessageDescription(beginSendEntry);
+
+                                if (isSelfMessage)
+                                    drawText(" for ", CONSTANT_TEXT_COLOR);
+                                else
+                                    drawText(" arriving at ", CONSTANT_TEXT_COLOR);
+                                
+                                drawMessageArrivalTime(event.getEndSendEntry(beginSendEntry));
 								drawText(" kind = ", CONSTANT_TEXT_COLOR);
 								drawText(String.valueOf(beginSendEntry.getMessageKind()), DATA_COLOR);
 								drawText(" length = ", CONSTANT_TEXT_COLOR);
@@ -311,11 +334,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							}
 							else if (eventLogEntry instanceof EndSendEntry) {
 								EndSendEntry endSendEntry = (EndSendEntry)eventLogEntry;
-								BigDecimal arrivalTime = endSendEntry.getArrivalTime();
-								drawText("End sending at ", CONSTANT_TEXT_COLOR);
-								drawText(arrivalTime + "s", DATA_COLOR);
-								drawText(", now + ", CONSTANT_TEXT_COLOR);
-                                drawText(TimeUtils.secondsToTimeString(arrivalTime.toBigDecimal().subtract(simulationTime.toBigDecimal())), DATA_COLOR);
+								drawText("Arrival at ", CONSTANT_TEXT_COLOR);
+                                drawMessageArrivalTime(endSendEntry);
 							}
 							else if (eventLogEntry instanceof SendHopEntry) {
 								SendHopEntry sendHopEntry = (SendHopEntry)eventLogEntry;
@@ -488,6 +508,14 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 			drawText("<unknown>", NAME_COLOR, true);
 	}
 	
+	private void drawMessageArrivalTime(EndSendEntry endSendEntry) {
+        BigDecimal arrivalTime = endSendEntry.getArrivalTime();
+        BigDecimal simulationTime = endSendEntry.getEvent().getSimulationTime();
+        drawText(arrivalTime + "s", DATA_COLOR);
+        drawText(", now + ", CONSTANT_TEXT_COLOR);
+        drawText(TimeUtils.secondsToTimeString(arrivalTime.toBigDecimal().subtract(simulationTime.toBigDecimal())), DATA_COLOR);
+	}
+
 	private void drawRawEntry(EventLogEntry eventLogEntry) {
 
 		if (!(eventLogEntry instanceof EventLogMessageEntry)) {
@@ -530,7 +558,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		if (eventLogEntry instanceof EventEntry && event.isSelfMessageProcessingEvent())
 			return ImageFactory.getImage(ImageFactory.EVENLOG_IMAGE_SELF_EVENT);
 		else if (eventLogEntry instanceof BeginSendEntry) {
-			int index = eventLogEntry.getIndex();
+			int index = eventLogEntry.getEntryIndex();
 			int count = event.getNumEventLogEntries();
 			
 			if (count > index + 1) {

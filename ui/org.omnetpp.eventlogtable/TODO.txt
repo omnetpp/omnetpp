@@ -67,5 +67,7 @@ Features:
  - find reused message (infinite lookahead)
  - message reuse lookahead setting
  - display initialization entries
+ - dynamic module and connection creation
+ - simulation time format options (123.12345, 2m 3s 123ms 450us, 123s 123ms 450us, 123.123 450, rounding for deltas?)
 
 Known bugs:
