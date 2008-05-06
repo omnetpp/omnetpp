@@ -21,6 +21,7 @@
 #include "cparimpl.h"
 #include "cexception.h"
 #include "globals.h"
+#include "cbasicchannel.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -177,6 +178,9 @@ cModuleType *cModuleType::find(const char *qname)
 
 //----
 
+cChannelType *cChannelType::idealChannelType;
+cChannelType *cChannelType::basicChannelType;
+
 cChannelType::cChannelType(const char *name) : cComponentType(name)
 {
 }
@@ -224,6 +228,24 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
     // notify ev?
 
     return channel;
+}
+
+cIdealChannel *cChannelType::createIdealChannel(const char *name, cModule *parentmod)
+{
+    if (!idealChannelType) {
+        idealChannelType = find("ned.IdealChannel");
+        ASSERT(idealChannelType);
+    }
+    return (cIdealChannel *)idealChannelType->create(name, parentmod);
+}
+
+cBasicChannel *cChannelType::createBasicChannel(const char *name, cModule *parentmod)
+{
+    if (!basicChannelType) {
+        basicChannelType = find("ned.BasicChannel");
+        ASSERT(basicChannelType);
+    }
+    return (cBasicChannel *)basicChannelType->create(name, parentmod);
 }
 
 cChannelType *cChannelType::find(const char *qname)

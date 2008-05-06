@@ -339,4 +339,13 @@ bool cGate::isPathOK() const
            destinationGate()->ownerModule()->isSimple();
 }
 
+cDisplayString& cGate::displayString()
+{
+    if (!channel()) {
+        cChannel *channel = cChannelType::createIdealChannel("channel", ownerModule());
+        channel->finalizeParameters();
+        setChannel(channel);
+    }
+    return channel()->displayString();
+}
 

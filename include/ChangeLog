@@ -63,10 +63,10 @@
 	  (cComponent) with cModule, they participate in the initialize()/
 	  finish() protocol, and so on.
 	- removed delay(), setDelay(), error(), setError(), dataRate(),
-	  setDataRate() methods from cGate and cBasicChannel -- use generic
-	  component parameter access instead (par("delay"), par("error"),
-	  par("datarate"))
-	- added cNullChannel, which does nothing.
+	  setDataRate() methods from cGate; use methods from the gate's channel 
+	  instead: check_and_cast<cBasicChannel *>(gate->channel())->setDelay(0.1);
+	  or use generic component parameter access instead: gate->channel()->par("delay")=0.1.
+	- added cIdealChannel which lets messages through without any change or delay.
 	- breaking change in cBasicChannel behaviour: implicit queueing is no longer supported:
 	  sending on a busy gate (when simTime() < gate->transmissionFinishes()) results in an
 	  error. Thus, using a special transmitter module (with an internal queue) is now
@@ -115,9 +115,9 @@
 
 	Display strings:
 	- connection display string is now stored in the channel, not the source gate
-	- cGate::displayString(), setDisplayString() methods have been removed; 
-	  use channel()->displayString() instead (but you'll need to check that channel
-	  is not NULL)
+	- setDisplayString() methods removed
+	- displayString() delegates to channel()->displayString(); if there's 
+	  no channel, it creates a cIdealChannel
 	- module and channel display string access functions are now in the common 
 	  base class, cComponent
 	- display string objects are now only created (from @display) when first accessed

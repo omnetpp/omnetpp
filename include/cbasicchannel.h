@@ -53,11 +53,6 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
     void rereadPars();
 
     /**
-     * Called when parameters get set up. Redefined from cComponent.
-     */
-    virtual void finalizeParameters();
-
-    /**
      * Called back when a parameter changes. Redefined from cComponent.
      */
     virtual void handleParameterChange(const char *parname);
@@ -166,6 +161,10 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
 
     /** @name Internally used methods. */
     //@{
+    /**
+     * Called when parameters get set up. Redefined from cComponent.
+     */
+    virtual void finalizeParameters();
 
     /**
      * Performs bit error rate, delay and transmission time modelling.

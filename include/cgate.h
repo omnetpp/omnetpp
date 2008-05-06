@@ -27,12 +27,16 @@
 
 NAMESPACE_BEGIN
 
-class  cGate;
-class  cModule;
-class  cMessage;
-class  cChannelType;
-class  cChannel;
-class  cProperties;
+class cGate;
+class cModule;
+class cMessage;
+class cChannelType;
+class cChannel;
+class cProperties;
+class cDisplayString;
+class cIdealChannel;
+class cBasicChannel;
+
 
 //
 // internal: gateId bitfield macros.
@@ -363,6 +367,15 @@ class SIM_API cGate : public cObject, noncopyable
      */
     bool isPathOK() const;
     //@}
+
+    /**
+     * Returns the display string for the gate, which in practice affects the
+     * apprearance of the connection for which this gate is the source.
+     * XXX delegates to the channel; if there's no channel, it created a
+     * cIdealChannel.
+     */
+    cDisplayString& displayString();
+
 };
 
 NAMESPACE_END

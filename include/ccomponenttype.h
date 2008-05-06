@@ -18,9 +18,9 @@
 #include <string>
 #include <map>
 #include <set>
-#include "cownedobject.h"
 #include "cpar.h"
 #include "cgate.h"
+#include "cownedobject.h"
 
 NAMESPACE_BEGIN
 
@@ -226,6 +226,10 @@ class SIM_API cModuleType : public cComponentType
 class SIM_API cChannelType : public cComponentType
 {
   protected:
+    static cChannelType *idealChannelType;
+    static cChannelType *basicChannelType;
+
+  protected:
     /**
      * Creates the channel object. To be defined in subclasses.
      */
@@ -262,6 +266,18 @@ class SIM_API cChannelType : public cComponentType
      * and adds the parameters specified in the NED declaration.
      */
     virtual cChannel *create(const char *name, cModule *parentmod);
+
+    /**
+     * Equivalent to <tt>cChannelType::find("ned.IdealChannel").create(name, parentmod)</tt>,
+     * only faster because the type lookup is only done once in the program.
+     */
+    static cIdealChannel *createIdealChannel(const char *name, cModule *parentmod);
+
+    /**
+     * Equivalent to <tt>cChannelType::find("ned.BasicChannel").create(name, parentmod)</tt>,
+     * only faster because the type lookup is only done once in the program.
+     */
+    static cBasicChannel *createBasicChannel(const char *name, cModule *parentmod);
     //@}
 
     /**
