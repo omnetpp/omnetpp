@@ -817,14 +817,13 @@ proc create_graphicalmodwindow {name geom} {
 
     moduleinspector_add_run_buttons $w
 
-    pack_iconbutton $w.toolbar.redraw  -image $icons(redraw) -command "opp_inspectorcommand $w relayout"
-
     animcontrol $w.toolbar.animspeed
     pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
+    pack_iconbutton $w.toolbar.sep2    -separator
+    pack_iconbutton $w.toolbar.redraw  -image $icons(redraw) -command "opp_inspectorcommand $w relayout"
     pack_iconbutton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphmodwin_zoomby $w 1.25"
     pack_iconbutton $w.toolbar.zoomout -image $icons(zoomout) -command "graphmodwin_zoomby $w 0.8"
-    pack_iconbutton $w.toolbar.sep2    -separator
     pack_iconbutton $w.toolbar.showlabels -image $icons(modnames) -command "graphmodwin_togglelabels $w"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}

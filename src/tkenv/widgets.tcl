@@ -265,26 +265,26 @@ proc iconbutton {w args} {
 
     if {$args=="-separator"} {
         # space between two buttons
-        frame $w -height 1 -width 4
-        #W2K: frame $w -height 23 -width 2 -bd 1 -relief groove
+        #frame $w -height 1 -width 4
+        frame $w -height 23 -width 2 -bd 1 -relief groove
     } {
         # button
-        eval button $w -bd 1 $args
-        #W2K: eval button $w -bd 1 -relief flat $args
-        #W2K: bind $w <Enter> [list $w config -relief raised]
-        #W2K: bind $w <Leave> [list $w config -relief flat]
+        #eval button $w -bd 1 $args
+        eval button $w -bd 1 -relief flat $args
+        bind $w <Enter> [list $w config -relief raised]
+        bind $w <Leave> [list $w config -relief flat]
     }
     return $w
 }
 
 proc pack_iconbutton {w args} {
     eval iconbutton $w $args
-    pack $w -anchor n -side left -padx 0 -pady 2
+    pack $w -anchor n -side left -padx 1 -pady 2
 }
 
 proc rpack_iconbutton {w args} {
     eval iconbutton $w $args
-    pack $w -anchor n -side right -padx 0 -pady 2
+    pack $w -anchor n -side right -padx 1 -pady 2
 }
 
 proc config_iconbutton {w icon command tooltip} {

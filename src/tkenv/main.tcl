@@ -251,19 +251,15 @@ proc create_omnetpp_window {} {
       {save     -image $icons(save)    -command {savefile "."}}
       {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
-      {sep1     -separator}
       {run      -image $icons(run)     -command {run_normal}}
       {fastrun  -image $icons(fast)    -command {run_fast}}
       {exprrun  -image $icons(express) -command {run_express}}
-      {sep2     -separator}
       {until    -image $icons(until)   -command {run_until}}
-      {sep3     -separator}
       {stop     -image $icons(stop)    -command {stop_simulation}}
       {sep4     -separator}
       {finish   -image $icons(finish)  -command {call_finish}}
       {sep02     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
-      {sep01    -separator}
       {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
       {sep6     -separator}
       {tline    -image $icons(fes)     -command {toggle_timeline}}
