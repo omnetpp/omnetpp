@@ -1455,7 +1455,7 @@ public class SequenceChart
 	private void calculateStuff() {
 		if (pixelPerTimelineCoordinate == 0)
 			calculatePixelPerTimelineUnit(getViewportWidth());
-
+		
 		if (invalidVirtualSize)
 			calculateVirtualSize();
 
@@ -1977,7 +1977,7 @@ public class SequenceChart
 	            long startEventPtr = eventPtrRange[0];
 	            long endEventPtr = eventPtrRange[1];
 
-	            int i = moduleIdToAxisModuleIndexMap.get(axisModule.getModuleId());
+	            int i = getAxisModuleIndexByModuleId(axisModule.getModuleId());
 				
 	            drawAxisLabel(graphics, i, axisModule);
 				drawAxis(graphics, startEventPtr, endEventPtr, i, axisModule);
@@ -2520,9 +2520,33 @@ public class SequenceChart
 		int extraWidth = (maximumWidth - width) / 2;
 		return getFirstLastEventForPixelRange(-extraWidth, extraWidth * 2);
 	}
+	
+	private int getAxisModuleIndexByModuleId(int moduleId) {
+	    if (moduleIdToAxisModuleIndexMap.containsKey(moduleId))
+	        return moduleIdToAxisModuleIndexMap.get(moduleId);
+	    else {
+	        ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(moduleId);
+	        ModuleTreeItem moduleTreeRoot = eventLogInput.getModuleTreeRoot();
+	        ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(moduleId);
+	        if (moduleTreeItem == null) {
+	            if (entry != null)
+	                moduleTreeItem = moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
+	            else {
+	                // FIXME: this is not correct and will not be replaced automagically when the ModuleCreatedEntry is found later on
+	                moduleTreeItem = new ModuleTreeItem("<unknown>", moduleTreeRoot, false);
+	                moduleTreeItem.setModuleId(moduleId);
+	            }
+	        }
+            int index = axisModules.size();
+            moduleIdToAxisModuleIndexMap.put(moduleId, index);
+            axisModules.add(moduleTreeItem);
+            setAxisModules(axisModules);
+            return index;
+	    }
+	}
     
     private int getModuleYViewportCoordinate(int moduleId) {
-        return getModuleYViewportCoordinateByModuleIndex(moduleIdToAxisModuleIndexMap.get(moduleId));
+        return getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(moduleId));
     }
 
     private int getModuleYViewportCoordinateByModuleIndex(int index) {
@@ -2533,7 +2557,7 @@ public class SequenceChart
     }
 
     private int getEventAxisModuleIndex(long eventPtr) {
-        return moduleIdToAxisModuleIndexMap.get(sequenceChartFacade.Event_getModuleId(eventPtr));
+        return getAxisModuleIndexByModuleId(sequenceChartFacade.Event_getModuleId(eventPtr));
     }
     
     private boolean isInitializationEvent(long eventPtr) {

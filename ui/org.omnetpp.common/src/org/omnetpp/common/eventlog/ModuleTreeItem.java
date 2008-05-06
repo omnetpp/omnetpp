@@ -2,6 +2,8 @@ package org.omnetpp.common.eventlog;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.Assert;
+
 
 /**
  * Stores a submodule tree for ModuleTreeDialog etc.
@@ -54,6 +56,21 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	private void addSubmodule(ModuleTreeItem submodule) {
 		submodules.add(submodule);
 	}
+	
+	public void remove() {
+        parentModule.submodules.remove(this);
+	    parentModule = null;
+	}
+
+	public ModuleTreeItem addDescendantModule(int parentModuleId, int moduleId, String moduleClassName, String moduleFullName, boolean isCompoundModule) {
+	    Assert.isTrue(findDescendantModule(moduleId) == null);
+	    ModuleTreeItem parentModule = findDescendantModule(parentModuleId);
+	    ModuleTreeItem module = new ModuleTreeItem(moduleFullName, parentModule, isCompoundModule);
+	    module.setModuleId(moduleId);
+	    module.setModuleClassName(moduleClassName);
+
+	    return module;
+	}
 
 	public void visitLeaves(IModuleTreeItemVisitor visitor)
 	{
@@ -64,9 +81,8 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	{
 		visitor.visit(treeItem);
 
-		if (treeItem.getSubmodules().length != 0)
-			for (ModuleTreeItem childTreeItem : treeItem.getSubmodules())
-				visitLeaves(visitor, childTreeItem);
+		for (ModuleTreeItem childTreeItem : treeItem.getSubmodules())
+			visitLeaves(visitor, childTreeItem);
 	}
 
 	/**

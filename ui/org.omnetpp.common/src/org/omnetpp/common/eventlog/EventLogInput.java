@@ -60,7 +60,7 @@ public class EventLogInput
 	/**
 	 * Root of the module tree present in the event log file.
 	 */
-	protected ModuleTreeItem moduleTreeRoot;
+	protected ModuleTreeItem moduleTreeRoot = new ModuleTreeItem();
 
 	/**
 	 * A list of listeners to be notified when the contents of the event log changes.
@@ -198,28 +198,35 @@ public class EventLogInput
 	}
 
 	public ModuleTreeItem getModuleTreeRoot() {
-		if (moduleTreeRoot == null) {
-		    ModuleTreeBuilder treeBuilder = new ModuleTreeBuilder();
-            ModuleCreatedEntryList moduleCreatedEntryList = eventLog.getModuleCreatedEntries();
-            for (int i = 0; i < moduleCreatedEntryList.size(); i++) {
-                ModuleCreatedEntry entry = moduleCreatedEntryList.get(i);
-				
-				if (entry != null)
-					treeBuilder.addModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
-			}
-	
-			moduleTreeRoot = treeBuilder.getModuleTree();
-		}
-		
 		return moduleTreeRoot;
 	}
+	
+	public void synchronizeModuleTree() {
+        ModuleCreatedEntryList moduleCreatedEntryList = eventLog.getModuleCreatedEntries();
 
-	public ArrayList<ModuleTreeItem> getAllModules() {
+        for (int i = 0; i < moduleCreatedEntryList.size(); i++) {
+            ModuleCreatedEntry entry = moduleCreatedEntryList.get(i);
+            
+            if (entry != null) {
+                ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(entry.getModuleId());
+                
+                if (moduleTreeItem != null && moduleTreeItem.getModuleName().equals("<unknown>")) {
+                    moduleTreeItem.remove();
+                    moduleTreeItem = null;
+                }
+    
+                if (moduleTreeItem == null)
+                    moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
+            }
+        }
+	}
+
+	private ArrayList<ModuleTreeItem> getAllSimpleModules() {
 		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
 
-		getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+		moduleTreeRoot.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
 			public void visit(ModuleTreeItem treeItem) {
-				if (treeItem != getModuleTreeRoot() && treeItem.getSubmodules().length == 0)
+				if (treeItem != moduleTreeRoot && !treeItem.isCompoundModule())
 					modules.add(treeItem);
 			}
 		});
@@ -228,7 +235,9 @@ public class EventLogInput
 	}
 
 	public ArrayList<ModuleTreeItem> getSelectedModules() {
-		if (eventLog instanceof FilteredEventLog && eventLogFilterParameters.enableModuleFilter) {
+	    synchronizeModuleTree();
+
+	    if (eventLog instanceof FilteredEventLog && eventLogFilterParameters.enableModuleFilter) {
 			ArrayList<ModuleTreeItem> selectedModules = new ArrayList<ModuleTreeItem>();
 			IntVector moduleIds = ((FilteredEventLog)eventLog).getSelectedModuleIds();
 
@@ -238,7 +247,7 @@ public class EventLogInput
 			return selectedModules;
 		}
 		else
-			return getAllModules();
+			return getAllSimpleModules();
 	}
 
 	/*************************************************************************************

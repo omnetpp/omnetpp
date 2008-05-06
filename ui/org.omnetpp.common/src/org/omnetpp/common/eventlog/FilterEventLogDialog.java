@@ -598,7 +598,10 @@ public class FilterEventLogDialog
 	}
 
 	private FilterDialogTreeNode createModuleFilterTreeNode(Composite parent) {
-	    // module filter 
+	    // synchorinze tree state first
+        eventLogInput.synchronizeModuleTree();
+
+        // module filter 
         Label label = new Label(parent, SWT.NONE);
         label.setText("Filter for events occured in any of the selected modules");
         enableModuleFilter = new FilterDialogTreeNode("Module filter", label);
