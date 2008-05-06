@@ -1,3 +1,4 @@
+..\_scripts\base64  find.gif       find.64
 ..\_scripts\base64  step.gif       step.64
 ..\_scripts\base64  findobj.gif    findobj.64
 ..\_scripts\base64  modnames.gif   modnames.64

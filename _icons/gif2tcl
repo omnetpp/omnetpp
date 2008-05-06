@@ -6,7 +6,7 @@ for i in `sed '' <$1`; do
   # on Linux, base64 is called mimencode
   # WARNING!!!!! cygwin bash does not like input redirection!!!!!!!
   # data loss!!!!!
-  base64 -i $i | sed 's/^/    /'
+  ../scripts/base64 -i $i | sed 's/^/    /'
   echo "}]"
   echo
 done
