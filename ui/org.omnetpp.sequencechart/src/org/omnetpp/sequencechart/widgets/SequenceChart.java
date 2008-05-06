@@ -1860,8 +1860,11 @@ public class SequenceChart
         if (isInitializationEvent(eventPtr)) {
 	        for (int i = 0; i < sequenceChartFacade.Event_getNumConsequences(eventPtr); i++) {
 	            long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(sequenceChartFacade.Event_getConsequence(eventPtr, i));
-	            int y = getEventYViewportCoordinate(consequenceEventPtr);
-	            drawEvent(graphics, eventPtr, getEventAxisModuleIndex(consequenceEventPtr), x, y);
+
+                if (consequenceEventPtr != 0) {
+                    int y = getEventYViewportCoordinate(consequenceEventPtr);
+	                drawEvent(graphics, eventPtr, getEventAxisModuleIndex(consequenceEventPtr), x, y);
+                }
 	        }
 	    }
 	    else
@@ -2097,8 +2100,11 @@ public class SequenceChart
             long eventPtr = event.getCPtr();
             for (int i = 0; i < sequenceChartFacade.Event_getNumConsequences(eventPtr); i++) {
                 long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(sequenceChartFacade.Event_getConsequence(eventPtr, i));
-                int y = getEventYViewportCoordinate(consequenceEventPtr);
-                drawSelectionMark(graphics, x, y);
+
+                if (consequenceEventPtr != 0) {
+                    int y = getEventYViewportCoordinate(consequenceEventPtr);
+                    drawSelectionMark(graphics, x, y);
+                }
             }
         }
         else {
@@ -3191,10 +3197,13 @@ public class SequenceChart
 			            	    if (isInitializationEvent(eventPtr)) {
 			                        for (int i = 0; i < sequenceChartFacade.Event_getNumConsequences(eventPtr); i++) {
 			                            long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(sequenceChartFacade.Event_getConsequence(eventPtr, i));
-			                            int y = getEventYViewportCoordinate(consequenceEventPtr);
-
-			                            if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, y, MOUSE_TOLERANCE))
-		                                    events.add(sequenceChartFacade.Event_getEvent(eventPtr));
+			                            
+                                        if (consequenceEventPtr != 0) {
+    			                            int y = getEventYViewportCoordinate(consequenceEventPtr);
+    
+    			                            if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, y, MOUSE_TOLERANCE))
+    		                                    events.add(sequenceChartFacade.Event_getEvent(eventPtr));
+    		                            }
 			                        }
 			            	    }
 			            	    else if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
