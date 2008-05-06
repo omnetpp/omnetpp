@@ -122,6 +122,10 @@ class EVENTLOG_API IEvent
          * Returns true if the received message was a self message.
          */
         virtual bool isSelfMessageProcessingEvent() = 0;
+        /**
+         * Retuns the corresponding end send or NULL if the message got deleted.
+         */
+        virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry) = 0;
 
         /**
          * Used to maintain the double linked list.

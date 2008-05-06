@@ -72,6 +72,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
 
         virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) { return getEvent()->isSelfMessage(beginSendEntry); }
         virtual bool isSelfMessageProcessingEvent() { return getEvent()->isSelfMessageProcessingEvent(); }
+        virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry) { return getEvent()->getEndSendEntry(beginSendEntry); };
         virtual FilteredEvent *getPreviousEvent();
         virtual FilteredEvent *getNextEvent();
 

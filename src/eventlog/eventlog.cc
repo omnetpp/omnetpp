@@ -322,7 +322,7 @@ EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *sea
 {
     char *line;
     reader->seekTo(start->getEvent()->getBeginOffset());
-    int index = start->getIndex();
+    int index = start->getEntryIndex();
 
     for (int i = 0; i < index + forward ? 1 : 0; i++)
         reader->getNextLineBufferPointer();

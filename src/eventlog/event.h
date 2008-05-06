@@ -89,6 +89,7 @@ class EVENTLOG_API Event : public IEvent
 
         virtual bool isSelfMessage(BeginSendEntry *beginSendEntry);
         virtual bool isSelfMessageProcessingEvent();
+        virtual EndSendEntry *getEndSendEntry(BeginSendEntry *beginSendEntry);
         virtual Event *getPreviousEvent();
         virtual Event *getNextEvent();
 

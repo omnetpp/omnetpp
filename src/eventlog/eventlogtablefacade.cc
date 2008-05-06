@@ -172,7 +172,7 @@ EventLogEntry *EventLogTableFacade::getClosestEntryInEvent(EventLogEntry *eventL
     Assert(eventLogEntry);
     IEvent *event = eventLogEntry->getEvent();
 
-    for (int i = eventLogEntry->getIndex(); i >= 0; i--) {
+    for (int i = eventLogEntry->getEntryIndex(); i >= 0; i--) {
         eventLogEntry = event->getEventLogEntry(i);
 
         if (matchesFilter(eventLogEntry))

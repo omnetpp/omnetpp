@@ -553,7 +553,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     msg->setArrival(this, -1, t);
     EVCB.messageSent_OBSOLETE( msg ); //XXX obsolete but needed for Tkenv
     EVCB.messageScheduled(msg);
-    simulation.insertMsg(msg);  //XXX do we need beginSend before() this???
+    simulation.insertMsg(msg);
     return 0;
 }
 
@@ -570,9 +570,8 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
             throw cRuntimeError("cancelEvent(): message (%s)%s is not a self-message", msg->className(), msg->fullName());
         simulation.msgQueue.remove(msg);
         EVCB.messageCancelled(msg);
+        msg->setPreviousEventNumber(simulation.eventNumber());
     }
-
-    msg->setPreviousEventNumber(-1); //XXX why is this needed???
 
     return msg;
 }

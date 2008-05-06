@@ -213,7 +213,7 @@ EventLogMessageEntry *Event::getEventLogMessage(int index)
 bool Event::isSelfMessage(BeginSendEntry *beginSendEntry)
 {
     Assert(beginSendEntry && this == beginSendEntry->getEvent());
-    int index = beginSendEntry->getIndex();
+    int index = beginSendEntry->getEntryIndex();
 
     if (index + 1 < eventLogEntries.size())
         return dynamic_cast<EndSendEntry *>(eventLogEntries[index + 1]);
@@ -225,6 +225,26 @@ bool Event::isSelfMessageProcessingEvent()
 {
     BeginSendEntry *beginSendEntry = getCauseBeginSendEntry();
     return beginSendEntry && beginSendEntry->getEvent()->isSelfMessage(beginSendEntry);
+}
+
+EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
+{
+    for (int i = beginSendEntry->getEntryIndex(); i < eventLogEntries.size(); i++)
+    {
+        EventLogEntry *eventLogEntry = eventLogEntries[i];
+
+        EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(eventLogEntry);
+        if (endSendEntry)
+            return endSendEntry;
+
+        DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
+        if (deleteMessageEntry) {
+            Assert(deleteMessageEntry->messageId == beginSendEntry->messageId);
+            return NULL;
+        }
+    }
+
+    throw opp_runtime_error("Missing end message send or delete message entry");
 }
 
 Event *Event::getPreviousEvent()

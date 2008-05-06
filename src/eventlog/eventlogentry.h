@@ -36,7 +36,7 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
 
     protected:
         Event* event; // back pointer
-        int index;
+        int entryIndex;
         static char buffer[128];
         static LineTokenizer tokenizer; // not thread safe
 
@@ -49,14 +49,14 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
         virtual const char *getClassName() = 0;
 
         Event *getEvent() { return event; }
-        int getIndex() { return index; }
+        int getEntryIndex() { return entryIndex; }
         bool isMessageSend();
 
         virtual const std::vector<const char *> getAttributeNames() const = 0;
         virtual const char *getDefaultAttribute() const = 0;
         virtual const char *getAttribute(const char *name) const = 0;
 
-        static EventLogEntry *parseEntry(Event *event, int index, char *line, int length);
+        static EventLogEntry *parseEntry(Event *event, int entryIndex, char *line, int length);
 };
 
 /**
@@ -88,7 +88,7 @@ class EVENTLOG_API EventLogMessageEntry : public EventLogEntry
         const char *text;
 
     public:
-        EventLogMessageEntry(Event *event, int index);
+        EventLogMessageEntry(Event *event, int entryIndex);
         virtual void parse(char *line, int length);
         virtual void print(FILE *fout);
         virtual int getClassIndex() { return 0; }

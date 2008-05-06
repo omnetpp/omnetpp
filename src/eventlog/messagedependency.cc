@@ -190,26 +190,12 @@ simtime_t& MessageDependency::getConsequenceSimulationTime()
         // find the arrival time of the message
         IEvent *event = getCauseEvent();
         BeginSendEntry *beginSendEntry = (BeginSendEntry *)(event->getEventLogEntry(causeBeginSendEntryNumber));
+        EndSendEntry *endSendEntry = event->getEndSendEntry(beginSendEntry);
 
-        // arrival time is in the EndSendEntry ("ES" line), find it
-        int i = causeBeginSendEntryNumber + 1;
-
-        while (i < event->getNumEventLogEntries())
-        {
-            EventLogEntry *eventLogEntry = event->getEventLogEntry(i++);
-
-            EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(eventLogEntry);
-            if (endSendEntry)
-                return endSendEntry->arrivalTime;
-
-            DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
-            if (deleteMessageEntry) {
-                Assert(deleteMessageEntry->messageId == beginSendEntry->messageId);
-                return simtime_nil;
-            }
-        }
-
-        throw opp_runtime_error("Missing end message send entry");
+        if (endSendEntry)
+            return endSendEntry->arrivalTime;
+        else
+            return simtime_nil;
     }
 }
 

@@ -520,6 +520,7 @@ int main(int argc, char **argv)
             }
             catch (std::exception& e) {
                 fprintf(stderr, "Error: %s\n", e.what());
+                return -1;
             }
 
             if (options.outputFileName)

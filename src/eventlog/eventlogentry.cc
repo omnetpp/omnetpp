@@ -29,17 +29,17 @@ EventLogEntry::EventLogEntry()
     contextModuleId = -1;
     level = -1;
     event = NULL;
-    index = -1;
+    entryIndex = -1;
 }
 
-EventLogEntry *EventLogEntry::parseEntry(Event *event, int index, char *line, int length)
+EventLogEntry *EventLogEntry::parseEntry(Event *event, int entryIndex, char *line, int length)
 {
     currentLine = line;
     currentLineLength = length;
 
     if (*line == '-')
     {
-        EventLogMessageEntry *eventLogMessage = new EventLogMessageEntry(event, index);
+        EventLogMessageEntry *eventLogMessage = new EventLogMessageEntry(event, entryIndex);
         eventLogMessage->parse(line, length);
         return eventLogMessage;
     }
@@ -47,8 +47,8 @@ EventLogEntry *EventLogEntry::parseEntry(Event *event, int index, char *line, in
     {
         EventLogEntryFactory factory;
         tokenizer.tokenize(line, length);
-        Assert(index >= 0);
-        return factory.parseEntry(event, index, tokenizer.tokens(), tokenizer.numTokens());
+        Assert(entryIndex >= 0);
+        return factory.parseEntry(event, entryIndex, tokenizer.tokens(), tokenizer.numTokens());
     }
 }
 
@@ -142,10 +142,10 @@ void EventLogTokenBasedEntry::parse(char *line, int length)
 
 /***********************************************/
 
-EventLogMessageEntry::EventLogMessageEntry(Event *event, int index)
+EventLogMessageEntry::EventLogMessageEntry(Event *event, int entryIndex)
 {
     this->event = event;
-    this->index = index;
+    this->entryIndex = entryIndex;
     text = NULL;
 }
 

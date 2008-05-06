@@ -157,6 +157,7 @@ long EventLogIndex::getLastEventNumber()
     {
         file_offset_t lineEndOffset;
         readToEventLine(false, reader->getFileSize(), lastEventNumber, lastSimulationTime, lastEventOffset, lineEndOffset);
+        cacheEntry(lastEventNumber, lastSimulationTime, lastEventOffset, reader->getFileSize());
     }
 
     return lastEventNumber;
@@ -403,7 +404,7 @@ template <typename T> bool EventLogIndex::cacheSearchForOffset(std::map<T, Cache
                     break;
                 case FIRST_OR_PREVIOUS:
                 case LAST_OR_PREVIOUS:
-                    if (itLower == map.begin())
+                    if (itLower == map.end())
                         foundOffset = -1;
                     else
                         foundOffset = itLower->second.endEventBeginOffset;
