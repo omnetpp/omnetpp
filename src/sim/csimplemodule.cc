@@ -318,6 +318,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
     timeoutmsg->setArrival(this, -1, t);
 
     // use timeoutmsg as the activation message; insert it into the FES
+    EVCB.messageScheduled(timeoutmsg);
     simulation.insertMsg(timeoutmsg);
 }
 
@@ -602,7 +603,8 @@ void cSimpleModule::wait(simtime_t t)
         throw cRuntimeError(eNEGTIME);
 
     timeoutmsg->setArrivalTime(simTime()+t);
-    simulation.insertMsg( timeoutmsg );
+    EVCB.messageScheduled(timeoutmsg);
+    simulation.insertMsg(timeoutmsg);
 
     simulation.transferToMain();
     if (stack_cleanup_requested)
@@ -626,6 +628,7 @@ void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
         throw cRuntimeError("waitAndEnqueue(): queue pointer is NULL");
 
     timeoutmsg->setArrivalTime(simTime()+t);
+    EVCB.messageScheduled(timeoutmsg);
     simulation.insertMsg(timeoutmsg);
 
     for(;;)
@@ -666,6 +669,7 @@ cMessage *cSimpleModule::receive(simtime_t t)
         throw cRuntimeError(eNEGTOUT);
 
     timeoutmsg->setArrivalTime(simTime()+t);
+    EVCB.messageScheduled(timeoutmsg);
     simulation.insertMsg(timeoutmsg);
 
     simulation.transferToMain();
