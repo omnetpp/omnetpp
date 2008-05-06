@@ -55,7 +55,8 @@ DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(ECLIPSE_PLATFORM)
 #
 INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
 COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
-
+# the following is needed for building JNI lib with mingw
+LDFLAGS+=-Wl,--kill-at 
 
 #
 # Automatic rules
@@ -104,6 +105,7 @@ eventlog.cxx : eventlog.i
 
 $O/$(DLL): $(OBJS)
 	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
+	strip $O/$(DLL)
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)
