@@ -38,6 +38,9 @@ Define_Module(NetBuilder);
 
 void NetBuilder::initialize()
 {
+    // build the network in event 1, because it is undefined whether the simkernel 
+    // will implicitly initialize modules created *during* initialization, or this needs
+    // to be done manually. 
     scheduleAt(0, new cMessage());
 }
 
