@@ -32,9 +32,9 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 	private static Image IMAGE_COLLAPSE = InifileEditorPlugin.getCachedImage("icons/full/elcl16/collapse.png");
 	
 	protected String labelText;
-	private FieldEditor fieldEditor;
-	private boolean isExpanded;
-	private ToolItem toggleButton;
+	protected FieldEditor fieldEditor;
+	protected boolean isExpanded;
+	protected ToolItem toggleButton;
 	
 	private IInifileChangeListener inifileChangeListener = new IInifileChangeListener() {
 		public void modelChanged() {

@@ -207,6 +207,10 @@ s	 * before getting presented to the user.
 
 		// after "${", offer variable names
 		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
+		    //FIXME after "$", offer: ${start..end}  ${start..end step x} ${start..end step x}s ${var=start..end step x} ${var=val1,val2,val3} ${var=val1,val2,val3 ! something}
+            //p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG")); 
+	        //return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
+
 			p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
 			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
 		}
