@@ -280,7 +280,6 @@ RC=rc.exe
 MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
 
 # OMNeT++ tools
-NEDC=$(OMNETPP_BIN_DIR)/nedtool
 MSGC=$(OMNETPP_BIN_DIR)/opp_msgc
 REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
 WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
