@@ -30,7 +30,9 @@
 
 #ifdef USE_WIN32_FIBERS
 // Fiber API is not accessible without defining _WIN32_WINNT (hack?)
+#ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0400
+#endif
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
