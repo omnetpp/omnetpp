@@ -140,6 +140,7 @@ if ($mode eq '')
 }
 
 # are we on Windows?
+$isMINGW = defined $ENV{MSYSTEM} && $ENV{MSYSTEM} =~ /mingw/i;
 $isWindows = ($ENV{'OS'} =~ /windows/i) ? 1 : 0;
 
 if ($isWindows && $workdir ne 'work') {
@@ -193,9 +194,14 @@ if ($mode eq 'run')
     @unresolved_tests = ();
     @failed_tests = ();
 
-    if (! -x "$workdir/$testprogram")
+    if (! -f "$workdir/$testprogram")
     {
         print STDERR "$arg0: error: test program '$workdir/$testprogram' not found\n"; exit(1);
+    }
+
+    if (!$isWindows && ! -x "$workdir/$testprogram")
+    {
+        print STDERR "$arg0: error: test program '$workdir/$testprogram' is not executable\n"; exit(1);
     }
 
     foreach $testfilename (@filenames)
@@ -741,7 +747,11 @@ sub exec_program()
         }
         # On the next line, cmd.exe may fail to pass back program exit code.
         # When this happens, use the above (commented out) "system" line.
-        $status = system($shell, split(" ", "/c $cmd >$outfile 2>$errfile"));
+        if ($isMINGW) {
+            $status = system($shell, "/c","$cmd >$outfile 2>$errfile");
+        } else {
+            $status = system($shell, split(" ", "/c $cmd >$outfile 2>$errfile"));
+        }
         print "  returned status = $status\n" if ($debug);
         print "  restoring dir \"$savedir\"\n" if ($debug);
         if (!chdir("../.."))
