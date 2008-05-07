@@ -22,6 +22,7 @@ import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
@@ -263,9 +264,14 @@ public class InifileUtils {
 		if (key2.equals(CFGID_DESCRIPTION.getKey())) return false;
 		if (key1.equals(CFGID_NETWORK.getKey())) return true;
 		if (key2.equals(CFGID_NETWORK.getKey())) return false;
-		if (key1.contains(".")) return false;
-		if (key2.contains(".")) return true;
-		return key1.compareToIgnoreCase(key2) < 0;
+		KeyType keyType1 = InifileAnalyzer.getKeyType(key1);
+		KeyType keyType2 = InifileAnalyzer.getKeyType(key2);
+		if (keyType1 == keyType2) return key1.compareToIgnoreCase(key2) < 0;
+		if (keyType1 == KeyType.CONFIG) return true;
+		if (keyType2 == KeyType.CONFIG) return false;
+        if (keyType1 == KeyType.PER_OBJECT_CONFIG) return true;
+        if (keyType2 == KeyType.PER_OBJECT_CONFIG) return false;
+        return key1.compareToIgnoreCase(key2) < 0; // but cannot get here, actually
 	}
 
 	public static void addOrSetOrRemoveEntry(IInifileDocument doc, String section, String key, String value) {

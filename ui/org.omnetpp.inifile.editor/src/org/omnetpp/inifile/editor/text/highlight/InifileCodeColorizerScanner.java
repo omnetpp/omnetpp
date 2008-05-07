@@ -11,9 +11,8 @@ import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
 
 /**
- * Am inifile code scanner.
+ * An inifile code scanner.
  */
-//XXX revise
 public class InifileCodeColorizerScanner extends RuleBasedScanner {
 	public InifileCodeColorizerScanner() {
 
@@ -38,6 +37,8 @@ public class InifileCodeColorizerScanner extends RuleBasedScanner {
 			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
 		for (ConfigKey entry : ConfigRegistry.getEntries())
 			wordRule.addWord(entry.getKey(), InifileTextEditorHelper.codeConfigKeyToken);
+        for (ConfigKey entry : ConfigRegistry.getPerObjectEntries())
+            wordRule.addWord(entry.getKey(), InifileTextEditorHelper.codeConfigKeyToken);
 
 		rules.add(wordRule);
         

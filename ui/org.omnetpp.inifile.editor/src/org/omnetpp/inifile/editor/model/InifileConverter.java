@@ -15,7 +15,8 @@ public class InifileConverter {
 
     public static String[] TKENV_NAMES =  {"default-run", "image-path", "plugin-path"};
 
-    public static String[] REMOVE_NAMES = {"anim-methodcalls", "animation-enabled", "animation-msgclassnames",
+    public static String[] REMOVE_NAMES = {"preload-ned-files", 
+        "anim-methodcalls", "animation-enabled", "animation-msgclassnames",
         "animation-msgcolors", "animation-msgnames", "animation-speed",
         "expressmode-autoupdate", "methodcalls-delay", "next-event-markers",
         "penguin-mode", "print-banners", "senddirect-arrows", "show-bubbles",
@@ -62,13 +63,16 @@ public class InifileConverter {
 	    String allTkenvNames = StringUtils.join(TKENV_NAMES, "|");
 	    text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)("+allTkenvNames+")\\b", "$1tkenv-$2");
 
+	    // extra-stack-kb: we don't know whether it refers to Cmdenv or Tkenv, so we duplicate it
+	    text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)(extra-stack-kb\\s*=.*)$", "$1cmdenv-$2\n$1tkenv-$2");
+
 	    // remove obsolete keys
         String allRemoveNames = StringUtils.join(REMOVE_NAMES, "|");
-        text.replaceAll("^\\s*[;#]?\\s*("+allRemoveNames+")\\b.*$", "");
+        text = text.replaceAll("\n[ \t]*[;#]?[ \t]*("+allRemoveNames+")[ \t]*=[^\n]*", "");
 
 	    // comment out some keys
 	    String allCommentOutNames = StringUtils.join(COMMENT_OUT_NAMES, "|");
-	    text.replaceAll("^\\s*(("+allCommentOutNames+")\\b)", "# $1");
+	    text = text.replaceAll(MULTILINE+"^\\s*(("+allCommentOutNames+")\\s*=.*)", "# $1");
 	    
 	    // rename per-object keys
     	text = text.replaceAll(MULTILINE+"\\.use-default\\s*=", ".apply-default =");

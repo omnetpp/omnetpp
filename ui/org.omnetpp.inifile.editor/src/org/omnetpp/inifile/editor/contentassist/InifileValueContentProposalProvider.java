@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
@@ -77,7 +77,9 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		if (keyType == KeyType.CONFIG) {
 			// we call this for each edit field during form editor creation, so it should be reasonably fast
 			ConfigKey entry = ConfigRegistry.getEntry(key);
-			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_USER_INTERFACE)
+			if (entry==CFGID_EXTENDS || entry==CFGID_NETWORK || entry==CFGID_USER_INTERFACE ||
+			        entry==CFGID_CMDENV_CONFIG_NAME || entry==CFGID_TKENV_DEFAULT_CONFIG || 
+			        entry==CFGID_CONSTRAINT)
 				return true;
 			if (entry != null && entry.getDataType()==ConfigKey.DataType.CFG_BOOL)
 				return true;
@@ -106,14 +108,14 @@ s	 * before getting presented to the user.
 	}
 
 	/**
-	 * Generate proposals for a config entry
+	 * Generate proposals for a config entry.
+     * IMPORTANT: update isContentAssistAvailable() when this method gets extended!
 	 */
 	protected List<IContentProposal> getCandidatesForConfig(String prefix) {
 		ConfigKey entry = ConfigRegistry.getEntry(key);
 		if (entry == null)
 			return new ArrayList<IContentProposal>();  // nothing
 
-		// IMPORTANT: Remember to update isContentAssistAvailable() when this method gets extended!
 		if (entry==CFGID_EXTENDS) {
 			ArrayList<String> names = new ArrayList<String>();
 			// propose only sections that won't introduce section cycles
@@ -164,6 +166,12 @@ s	 * before getting presented to the user.
 		else if (entry==CFGID_USER_INTERFACE) {
 			p.addAll(toProposals(new String[] {"Cmdenv", "Tkenv"}));
 		}
+        else if (entry==CFGID_CMDENV_CONFIG_NAME || entry==CFGID_TKENV_DEFAULT_CONFIG) {
+            ArrayList<String> names = new ArrayList<String>();
+            for (String section : doc.getSectionNames())
+                names.add(InifileUtils.removeSectionNamePrefix(section));
+            return sort(toProposals(names.toArray(new String[]{})));
+        }
 		else if (entry==CFGID_CONSTRAINT) {
 			// offer variable names after "$"
 			if (prefix.matches(".*\\$[A-Za-z0-9_]*")) {

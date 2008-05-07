@@ -1,7 +1,5 @@
 package org.omnetpp.inifile.editor.model;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 
@@ -149,17 +147,6 @@ public class InifileHoverUtils {
 			text += ", unit: "+entry.getUnit();
 		text += "&gt;</b><br>\n<br>\n";
 		text += htmlizeDescription(entry.getDescription()) + "<br>\n";
-
-		if (doc != null && entry!=CFGID_DESCRIPTION && entry!=CFGID_EXTENDS) {
-			List<String> sectionList = new ArrayList<String>();
-			for (String sec : doc.getSectionNames())
-				if (doc.containsKey(sec, entry.getKey()))
-					sectionList.add(sec);
-			if (sectionList.size()==0)
-				text += "<br>\nCurrently not set in any sections.<br>\n";
-			else
-				text += "<br>\nSet in the following sections: <ul><li>"+StringUtils.join(sectionList.toArray(), "</li><li>")+"</li></ul><br>\n";
-		}
 
 		return HoverSupport.addHTMLStyleSheet(text);
 	}

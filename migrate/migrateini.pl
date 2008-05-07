@@ -41,7 +41,7 @@ while (<INFILE>) {
 
 @tkenvNames =  ("default-run", "image-path", "plugin-path");
 
-@removeNames = ("anim-methodcalls", "animation-enabled", "animation-msgclassnames",
+@removeNames = ("preload-ned-files", "anim-methodcalls", "animation-enabled", "animation-msgclassnames",
                "animation-msgcolors", "animation-msgnames", "animation-speed",
                "expressmode-autoupdate", "methodcalls-delay", "next-event-markers",
                "penguin-mode", "print-banners", "senddirect-arrows", "show-bubbles",
@@ -65,9 +65,12 @@ foreach $fname (@fnames)
     $e = join("|", @tkenvNames);
     $txt =~ s/^(\s*[;#]?\s*)($e)\b/$1tkenv-$2/mg;
 
+    # extra-stack-kb: we don't know whether it refers to Cmdenv or Tkenv, so we duplicate it
+    $txt =~ s/^(\s*[;#]?\s*)(extra-stack-kb\s*=.*)$/$1cmdenv-$2\n$1tkenv-$2/mg;
+
     # remove obsolete keys
     $e = join("|", @removeNames);
-    $txt =~ s/^\s*[;#]?\s*($e)\b.*$//mg;
+    $txt =~ s/\n[ \t]*[;#]?[ \t]*($e)[ \t]*=[^\n]*//sg;
 
     # comment out some keys
     $e = join("|", @commentOutNames);
