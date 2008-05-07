@@ -34,6 +34,15 @@
 	* **.record-event-numbers=
 	* **.recording-interval=
 	* **.record-scalar=  -- enable/disable recording scalars and/or their individual members (for cStatistic)
+	   ^^^ changed, see below:
+	      **.record-module-events = <bool>  ==> module-eventlog-recording
+	      **.record-event-numbers = <bool>  ==> vector-record-eventnumbers
+	      **.enable-recording = <bool>      ==> vector-recording
+	      **.recording-interval = <custom>  ==> vector-recording-interval
+	      **.max-buffered-samples = <int>   ==> vector-max-buffered-values
+	      **.save-as-scalar = <bool>        ==> param-record-as-scalar
+	      **.record-scalar = <bool>         ==> scalar-recording
+
 	* indexed outputvector file manager
 
 	* simtime-scale
