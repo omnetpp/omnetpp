@@ -1,6 +1,6 @@
 #!/bin/sh
 if [ -n "$1" ] ; then
-  echo Please change to the directory you want to convert and run the script there without any comnmand line argument!
+  echo Please change to the directory you want to convert and run the script there without any command line argument!
   exit 1
 fi
 
