@@ -78,7 +78,7 @@ foreach $fname (@fnames)
     $txt =~ s/\.ev-output\s*=/.cmdenv-ev-output =/mg;
     $txt =~ s/\.enabled\s*=/.vector-recording =/mg;
     $txt =~ s/\.interval\s*=/.vector-recording-interval =/mg;
-    $txt =~ s/\.pingApp\.vector-recording =/.pingApp.enabled =/mg;    #change back false hit
+    $txt =~ s/\.pingApp\.vector-recording =/.pingApp.enabled =/mg; #change back false hit
     $txt =~ s/\.pingApp\.vector-recording-interval =/.pingApp.interval =/mg; #change back false hit
     $txt =~ s/\.akaroa\s*=/.with-akaroa =/mg;
 
