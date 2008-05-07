@@ -1,28 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 
-<plugin
-    name = "OMNeT++ Scalar / Vector Chart Data Model"
-    id = "org.omnetpp.scave.model"
-    version = "4.0.0.qualifier"
-    provider-name = "OpenSim Ltd."
-    class = "org.omnetpp.scave.model.provider.ScaveEditPlugin$Implementation">
+<plugin>
 
-  <requires>
-    <import plugin="org.eclipse.core.runtime" />
-    <import plugin="org.eclipse.core.resources" export="true"/>
-    <import plugin="org.eclipse.emf.ecore.xmi" export="true"/>
-    <import plugin="org.eclipse.emf.edit.ui" export="true"/>
-    <import plugin="org.eclipse.ui.ide" export="true"/>
-  </requires>
-
-  <runtime>
-    <library name=".">
-      <export name="*"/>
-    </library>
-  </runtime>
-
-  <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
+    <extension point="org.eclipse.emf.edit.itemProviderAdapterFactories">
     <factory
        uri = "null"
        class = "org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory"
