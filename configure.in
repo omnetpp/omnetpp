@@ -595,15 +595,20 @@ if test $math_ok = no; then
 fi
 
 # -lstdc++
-OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
-if test $stdcpp_ok = no; then
-   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxx, stdcpp_ok, SYS_LIBS="-lcxx $SYS_LIBS")
+if test $mingw = yes; then
+   # check for shared version (on mingw)
+   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++_s, stdcpp_ok, SYS_LIBS="-lstdc++_s $SYS_LIBS")
+else
+   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
+   if test $stdcpp_ok = no; then
+      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxx, stdcpp_ok, SYS_LIBS="-lcxx $SYS_LIBS")
+   fi
+   if test $stdcpp_ok = no; then
+      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxa, stdcpp_ok, SYS_LIBS="-lcxa $SYS_LIBS")
+   fi
 fi
 if test $stdcpp_ok = no; then
-   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxa, stdcpp_ok, SYS_LIBS="-lcxa $SYS_LIBS")
-fi
-if test $stdcpp_ok = no; then
-   AC_MSG_ERROR([Standard C++ library -lstdc++ or -lcxx or -lcxa not found])
+   AC_MSG_ERROR([Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa not found])
 fi
 
 # dlopen()
@@ -897,9 +902,10 @@ if test "$cygwin" = yes; then
   LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
 fi
 
-# on MinGW dll auto importing is used
+# on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
+# otherwise exceptions cant be thrown across dll boundaries
 if test "$mingw" = yes; then
-  LDFLAGS="$LDFLAGS -enable-auto-import"
+  LDFLAGS="$LDFLAGS -enable-auto-import -shared-libgcc"
 fi
 
 #----------------------
