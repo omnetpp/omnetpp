@@ -43,11 +43,14 @@ OBJS = $O/nedxml.o $O/scave.o $O/layout.o $O/eventlog.o $O/common.o $O/jprogress
 LIBS=-L$L -lnedxml$D -lscave$D -llayout$D -leventlog$D -lcommon$D
 
 ifeq ("$(JNI_LIB_SUFFIX)",".dll")
-# on windows we dont need the lib prefix for a JNI library 
+# on mingw we dont need the lib prefix for a JNI library 
 DLL = opplibs$(JNI_LIB_SUFFIX)
+# the following is needed for building JNI lib with mingw (name mangling issue)
+LDFLAGS+=-Wl,--kill-at 
 else 
 DLL = $(LIB_PREFIX)opplibs$(JNI_LIB_SUFFIX)
 endif
+
 DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(ECLIPSE_PLATFORM)
 
 #
@@ -55,8 +58,6 @@ DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(ECLIPSE_PLATFORM)
 #
 INCLUDES=-I$(COMMON) -I$(NEDXML) -I$(SCAVE) -I$(LAYOUT) -I$(EVENTLOG) -I$(OMNETPP_INCL_DIR)/platdep
 COPTS=$(CFLAGS) $(JAVA_CFLAGS) $(INCLUDES)
-# the following is needed for building JNI lib with mingw
-LDFLAGS+=-Wl,--kill-at 
 
 #
 # Automatic rules
