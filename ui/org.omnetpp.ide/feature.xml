@@ -20,9 +20,7 @@
       <import feature="org.eclipse.emf.edit" version="2.3.2.v200802051830" match="compatible"/>
       <import feature="org.eclipse.emf.edit.ui" version="2.3.1.v200802051830" match="compatible"/>
       <import feature="org.eclipse.gef" version="3.3.2.v20080129" match="compatible"/>
-      <import feature="org.eclipse.gmf" version="1.0.101.v20080114-2222-7d-EVOEYjiMWaZ4YWeu3dCypkm71" match="compatible"/>
       <import feature="org.eclipse.platform" version="3.3.3.r33x_r20080129-_19UEl7Ezk_gXF1kouft" match="compatible"/>
-      <import feature="org.eclipse.gmf.runtime.thirdparty" version="1.0.0.v20070809-0000-7G8D-ED-z0UWCVxojl60L" match="compatible"/>
    </requires>
 
    <plugin
