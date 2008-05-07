@@ -76,10 +76,10 @@ foreach $fname (@fnames)
     # rename per-object keys
     $txt =~ s/\.use-default\s*=/.apply-default =/mg;
     $txt =~ s/\.ev-output\s*=/.cmdenv-ev-output =/mg;
-    $txt =~ s/\.enabled\s*=/.enable-recording =/mg;
-    $txt =~ s/\.interval\s*=/.recording-interval =/mg;
-    $txt =~ s/\.pingApp\.enable-recording =/.pingApp.enabled =/mg;    #change back false hit
-    $txt =~ s/\.pingApp\.recording-interval =/.pingApp.interval =/mg; #change back false hit
+    $txt =~ s/\.enabled\s*=/.vector-recording =/mg;
+    $txt =~ s/\.interval\s*=/.vector-recording-interval =/mg;
+    $txt =~ s/\.pingApp\.vector-recording =/.pingApp.enabled =/mg;    #change back false hit
+    $txt =~ s/\.pingApp\.vector-recording-interval =/.pingApp.interval =/mg; #change back false hit
     $txt =~ s/\.akaroa\s*=/.with-akaroa =/mg;
 
     # convert yes/no and on/off to true/false
