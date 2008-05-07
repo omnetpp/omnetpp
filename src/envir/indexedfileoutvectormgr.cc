@@ -46,7 +46,7 @@ using std::ofstream;
 using std::ios;
 
 Register_PerRunConfigEntryU(CFGID_OUTPUTVECTOR_MEMORY_LIMIT, "output-vectors-memory-limit", "B", DEFAULT_MEMORY_LIMIT, "Total memory that can be used for buffering output vectors. Larger values produce less fragmented vector files (i.e. cause vector data to be grouped into larger chunks), and therefore allow more efficient processing later.");
-Register_PerObjectConfigEntry(CFGID_OUTVECTOR_MAX_BUFFERED_SAMPLES, "max-buffered-samples", CFG_INT, NULL, "For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file.");
+Register_PerObjectConfigEntry(CFGID_VECTOR_MAX_BUFFERED_VALUES, "vector-max-buffered-values", CFG_INT, NULL, "For output vectors: the maximum number of values to buffer per vector, before writing out a block into the output vector file.");
 
 
 #ifdef CHECK
@@ -136,7 +136,7 @@ void cIndexedFileOutputVectorManager::endRun()
 void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
     sVector *vp = (sVector *)cFileOutputVectorManager::registerVector(modulename, vectorname);
-    vp->maxBufferedSamples = ev.config()->getAsInt(modulename, CFGID_OUTVECTOR_MAX_BUFFERED_SAMPLES);
+    vp->maxBufferedSamples = ev.config()->getAsInt(modulename, CFGID_VECTOR_MAX_BUFFERED_VALUES);
     if (vp->maxBufferedSamples > 0)
         vp->allocateBuffer(vp->maxBufferedSamples);
 

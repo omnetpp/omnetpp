@@ -51,11 +51,8 @@ Register_PerRunConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mess
         "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage recording the fields declared on the MyMessage class\n"
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not declaredOn(cObject))\": records user-defined fields from all messages");
 Register_PerRunConfigEntry(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, NULL, "Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
-Register_PerObjectConfigEntry(CFGID_RECORD_MODULE_EVENTS, "record-module-events", CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.record-module-events = true\n **.record-module-events = false");
+Register_PerObjectConfigEntry(CFGID_MODULE_EVENTLOG_RECORDING, "module-eventlog-recording", CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.module-eventlog-recording = true\n **.module-eventlog-recording = false");
 
-
-//TODO: autoflush for feventlog (after each event? after each line?)
-//TODO: bring flags into this class from EventLogWriter? isModuleEventLogRecordingEnabled, isIntervalEventLogRecordingEnabled, isEventLogRecordingEnabled;
 
 EventlogFileManager::EventlogFileManager()
 {
@@ -294,7 +291,7 @@ void EventlogFileManager::moduleCreated(cModule *newmodule)
     {
         cModule *m = newmodule;
 
-        bool recordModuleEvents = ev.config()->getAsBool(m->fullPath().c_str(), CFGID_RECORD_MODULE_EVENTS);
+        bool recordModuleEvents = ev.config()->getAsBool(m->fullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
         m->setRecordEvents(recordModuleEvents);
 
         bool isCompoundModule = dynamic_cast<cCompoundModule *>(m);
@@ -332,7 +329,7 @@ void EventlogFileManager::gateCreated(cGate *newgate)
 {
     if (isEventLogRecordingEnabled)
     {
-        EventLogWriter::recordGateCreatedEntry_m_g_n_i_o(feventlog, 
+        EventLogWriter::recordGateCreatedEntry_m_g_n_i_o(feventlog,
             newgate->ownerModule()->id(), newgate->id(), newgate->name(),
             newgate->isVector() ? newgate->index() : -1, newgate->type() == cGate::OUTPUT);
     }

@@ -29,7 +29,7 @@
 USING_NAMESPACE
 
 
-Register_PerObjectConfigEntry(CFGID_SAVE_AS_SCALAR, "save-as-scalar", CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
+Register_PerObjectConfigEntry(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you'll need for result analysis.");
 
 
 cComponent::cComponent(const char *name) : cDefaultList(name)
@@ -210,7 +210,7 @@ void cComponent::recordParametersAsScalars()
     int n = params();
     for (int i=0; i<n; i++)
     {
-        if (ev.config()->getAsBool(par(i).fullPath().c_str(), CFGID_SAVE_AS_SCALAR, false))
+        if (ev.config()->getAsBool(par(i).fullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false))
         {
             //XXX the following checks should probably produce a WARNING not an error
             if (!par(i).isNumeric())

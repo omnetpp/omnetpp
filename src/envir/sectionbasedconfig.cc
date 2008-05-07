@@ -606,7 +606,7 @@ void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
     {
         // key contains a dot: parameter or per-object configuration
         // Note: since the last part of they key might contain widcards, it is not really possible
-        // to distinguish the two. Cf "recording-interval", "recording-*" and "recording*"
+        // to distinguish the two. Cf "vector-recording", "vector-*" and "vector*"
 
         // analyze key and create appropriate entry
         std::string ownerName;

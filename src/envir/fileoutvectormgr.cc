@@ -39,9 +39,9 @@ Register_Class(cFileOutputVectorManager);
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.vec", "Name for the output vector file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output vector file. The maximum value is ~15 (IEEE double precision). This setting has no effect on the \"time\" column of output vectors, which are represented as fixed-point numbers and always get recorded precisely.");
 
-Register_PerObjectConfigEntry(CFGID_OUTVECTOR_ENABLED, "enable-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
-Register_PerObjectConfigEntry(CFGID_OUTVECTOR_EVENT_NUMBERS, "record-event-numbers", CFG_BOOL, "true", "Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.");
-Register_PerObjectConfigEntry(CFGID_OUTVECTOR_INTERVAL, "recording-interval", CFG_CUSTOM, NULL, "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
+Register_PerObjectConfigEntry(CFGID_VECTOR_RECORDING, "vector-recording", CFG_BOOL, "true", "Whether data written into an output vector should be recorded.");
+Register_PerObjectConfigEntry(CFGID_VECTOR_RECORD_EVENTNUMBERS, "vector-record-eventnumbers", CFG_BOOL, "true", "Whether to record event numbers for an output vector. Simulation time and value are always recorded. Event numbers are needed by the Sequence Chart Tool, for example.");
+Register_PerObjectConfigEntry(CFGID_VECTOR_RECORDING_INTERVAL, "vector-recording-interval", CFG_CUSTOM, NULL, "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
 
 #ifdef CHECK
 #undef CHECK
@@ -128,11 +128,11 @@ void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char
                                                   Intervals& outIntervals)
 {
     std::string vectorfullpath = std::string(modname) + "." + vecname;
-    outEnabled = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_OUTVECTOR_ENABLED);
-    outRecordEventNumbers = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_OUTVECTOR_EVENT_NUMBERS);
+    outEnabled = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
+    outRecordEventNumbers = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
 
     // get interval string
-    const char *text = ev.config()->getAsCustom(vectorfullpath.c_str(), CFGID_OUTVECTOR_INTERVAL);
+    const char *text = ev.config()->getAsCustom(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING_INTERVAL);
     if (text)
         outIntervals.parse(text);
 }

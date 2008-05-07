@@ -38,7 +38,7 @@ Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_F
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision).");
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE_APPEND, "output-scalar-file-append", CFG_BOOL, "false", "What to do when the output scalar file already exists: append to it (OMNeT++ 3.x behavior), or delete it and begin a new file (default).");
 
-Register_PerObjectConfigEntry(CFGID_RECORD_SCALAR, "record-scalar", CFG_BOOL, "true", "Whether the matching output scalars should be recorded. Syntax: <module-full-path>.<scalar-name>.record-scalar=true/false. Example: **.queue.packetsDropped.record-scalar=true");
+Register_PerObjectConfigEntry(CFGID_SCALAR_RECORDING, "scalar-recording", CFG_BOOL, "true", "Whether the matching output scalars should be recorded. Syntax: <module-full-path>.<scalar-name>.scalar-recording=true/false. Example: **.queue.packetsDropped.scalar-recording=true");
 
 Register_Class(cFileOutputScalarManager);
 
@@ -137,7 +137,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     if (!name || !name[0])
         name = "(unnamed)";
 
-    bool enabled = ev.config()->getAsBool((component->fullPath()+"."+name).c_str(), CFGID_RECORD_SCALAR);
+    bool enabled = ev.config()->getAsBool((component->fullPath()+"."+name).c_str(), CFGID_SCALAR_RECORDING);
     if (enabled)
     {
         CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->fullPath().c_str()), QUOTE(name), prec, value));
@@ -161,7 +161,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
 
     // check that recording this statistic is not disabled as a whole
     std::string objectFullPath = component->fullPath() + "." + name;
-    bool enabled = ev.config()->getAsBool(objectFullPath.c_str(), CFGID_RECORD_SCALAR);
+    bool enabled = ev.config()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
         return;
 
@@ -187,12 +187,12 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     writeStatisticField("max", statistic->max());
     if (statistic->isWeighted())
     {
-    	writeStatisticField("weights", statistic->weights());
-    	writeStatisticField("weightedSum", statistic->weightedSum());
-    	writeStatisticField("sqrSumWeights", statistic->sqrSumWeights());
-    	writeStatisticField("weightedSqrSum", statistic->weightedSqrSum());
+        writeStatisticField("weights", statistic->weights());
+        writeStatisticField("weightedSum", statistic->weightedSum());
+        writeStatisticField("sqrSumWeights", statistic->sqrSumWeights());
+        writeStatisticField("weightedSqrSum", statistic->weightedSqrSum());
     }
-    
+
     if (attributes)
         for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
             CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
@@ -200,7 +200,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     if (dynamic_cast<cDensityEstBase *>(statistic))
     {
         // check that recording the histogram is enabled
-        bool enabled = ev.config()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_RECORD_SCALAR);
+        bool enabled = ev.config()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_SCALAR_RECORDING);
         if (enabled)
         {
             cDensityEstBase *hist = (cDensityEstBase *)statistic;
