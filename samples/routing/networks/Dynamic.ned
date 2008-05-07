@@ -15,7 +15,10 @@ import builder.NetBuilder;
 network Dynamic
 {
     submodules:
-        builder: NetBuilder;
+        builder: NetBuilder {
+            nodesFile = "networks/nodes.txt";
+            connectionsFile = "networks/connections.txt";
+        };
 }
 
 
