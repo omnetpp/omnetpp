@@ -1,5 +1,5 @@
 %description:
-Test that the <moddule>.<scalar>.record-scalar = true/false option works.
+Test that the <module>.<scalar>.scalar-recording = true/false option works.
 
 %file: test.ned
 
@@ -55,14 +55,14 @@ output-scalar-precision = 10
 
 # Test.defaults: left at default
 
-Test.allEnabled.*.record-scalar = true
+Test.allEnabled.*.scalar-recording = true
 
-Test.allDisabled.*.record-scalar = false
+Test.allDisabled.*.scalar-recording = false
 
-Test.statsDisabled.stats.record-scalar = false
+Test.statsDisabled.stats.scalar-recording = false
 
-Test.fooAndFoobarOnly.foo*.record-scalar = true
-Test.fooAndFoobarOnly.*.record-scalar = false
+Test.fooAndFoobarOnly.foo*.scalar-recording = true
+Test.fooAndFoobarOnly.*.scalar-recording = false
 
 %contains: test.sca
 scalar Test.defaults 	foo 	5
