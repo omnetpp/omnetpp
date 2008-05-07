@@ -10,13 +10,12 @@
 package builder;
 
 //
-// Dynamically sets up a network, with the topology coming from a text file
+// Dynamically sets up a network, with the topology coming from text files
 //
 simple NetBuilder
 {
     parameters:
         @display("i=block/cogwheel_s");
-        string modulesFile;
-        string parametersFile;
+        string nodesFile;
         string connectionsFile;
 }

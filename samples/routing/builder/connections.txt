@@ -1,3 +1,4 @@
+# This file is part of the NetBuilder example
 # src  dest   delay    error datarate
    1    2      0.01       0     1e6
    1    4      0.01       0     1e6

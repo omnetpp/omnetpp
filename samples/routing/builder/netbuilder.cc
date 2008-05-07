@@ -38,9 +38,9 @@ Define_Module(NetBuilder);
 
 void NetBuilder::initialize()
 {
-    // build the network in event 1, because it is undefined whether the simkernel 
+    // build the network in event 1, because it is undefined whether the simkernel
     // will implicitly initialize modules created *during* initialization, or this needs
-    // to be done manually. 
+    // to be done manually.
     scheduleAt(0, new cMessage());
 }
 
@@ -74,8 +74,8 @@ void NetBuilder::buildNetwork(cModule *parent)
     std::map<long,cModule *> nodeid2mod;
     std::string line;
 
-    std::fstream modulesFile(par("modulesFile").stringValue(), std::ios::in);
-    while(getline(modulesFile, line, '\n'))
+    std::fstream nodesFile(par("nodesFile").stringValue(), std::ios::in);
+    while(getline(nodesFile, line, '\n'))
     {
         if (line.empty() || line[0] == '#')
             continue;
@@ -96,36 +96,8 @@ void NetBuilder::buildNetwork(cModule *parent)
             throw cRuntimeError("module type `%s' for node `%s' not found", modtypename, name);
         cModule *mod = modtype->create(name, parent);
         nodeid2mod[nodeid] = mod;
-    }
 
-    // set parameters
-    std::fstream paramsFile(par("parametersFile").stringValue(), std::ios::in);
-    while(getline(paramsFile, line, '\n'))
-    {
-        if (line.empty() || line[0] == '#')
-            continue;
-        std::vector<std::string> tokens = cStringTokenizer(line.c_str()).asVector();
-        if (tokens.size() != 3)
-            throw cRuntimeError("wrong line in parameters file: 3 items required, line: \"%s\"", line.c_str());
-
-        // get fields from tokens
-        long nodeid = atol(tokens[0].c_str());
-        const char *parname = tokens[1].c_str();
-        const char *value = tokens[2].c_str();
-
-        if (nodeid2mod.find(nodeid) == nodeid2mod.end())
-            throw cRuntimeError("wrong line in parameters file: node with id=%ld not found", nodeid);
-
-        // look up module and set its parameter
-        cModule *mod = nodeid2mod[nodeid];
-        cPar& par = mod->par(parname); // will throw an error if no such param
-        par.parse(value);
-    }
-
-    std::map<long,cModule *>::iterator it;
-    for (it=nodeid2mod.begin(); it!=nodeid2mod.end(); ++it)
-    {
-        cModule *mod = it->second;
+        // read params from the ini file, etc
         mod->finalizeParameters();
     }
 
@@ -164,6 +136,8 @@ void NetBuilder::buildNetwork(cModule *parent)
         addLinkAttributes(srcOut, delay, error, datarate);
         addLinkAttributes(destOut, delay, error, datarate);
     }
+
+    std::map<long,cModule *>::iterator it;
 
     // final touches: buildinside, initialize()
     for (it=nodeid2mod.begin(); it!=nodeid2mod.end(); ++it)
