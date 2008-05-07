@@ -71,13 +71,13 @@ public class InifileConverter {
 	    text.replaceAll("^\\s*(("+allCommentOutNames+")\\b)", "# $1");
 	    
 	    // rename per-object keys
-    	text = text.replaceAll(MULTILINE+"\\.use-default\\s*=", "$1.apply-default =");
-    	text = text.replaceAll(MULTILINE+"\\.ev-output\\s*=", "$1.cmdenv-ev-output =");
-    	text = text.replaceAll(MULTILINE+"\\.enabled\\s*=", "$1.vector-recording =");
-    	text = text.replaceAll(MULTILINE+"\\.interval\\s*=", "$1.vector-recording-interval =");
+    	text = text.replaceAll(MULTILINE+"\\.use-default\\s*=", ".apply-default =");
+    	text = text.replaceAll(MULTILINE+"\\.ev-output\\s*=", ".cmdenv-ev-output =");
+    	text = text.replaceAll(MULTILINE+"\\.enabled\\s*=", ".vector-recording =");
+    	text = text.replaceAll(MULTILINE+"\\.interval\\s*=", ".vector-recording-interval =");
     	text = text.replaceAll(MULTILINE+"\\.pingApp\\.vector-recording =", ".pingApp.enabled =");  // change back false hit
     	text = text.replaceAll(MULTILINE+"\\.pingApp\\.vector-recording-interval =", ".pingApp.interval =");  // change back false hit
-    	text = text.replaceAll(MULTILINE+"\\.akaroa\\s*=", "$1.with-akaroa =");
+    	text = text.replaceAll(MULTILINE+"\\.akaroa\\s*=", ".with-akaroa =");
     	
         // convert yes/no and on/off to true/false
     	text = text.replaceAll(MULTILINE+"=\\s*yes\\b", "= true");
