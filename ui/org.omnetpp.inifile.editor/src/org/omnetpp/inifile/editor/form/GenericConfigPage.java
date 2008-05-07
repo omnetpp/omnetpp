@@ -18,7 +18,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONFIGURATIO
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CPU_TIME_LIMIT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERRORS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_ENABLE_RECORDING;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_RECORDING_INTERVAL;
@@ -27,7 +27,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_INI_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOAD_LIBS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MAX_BUFFERED_SAMPLES;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_MAX_BUFFERED_VALUES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MAX_MODULE_NESTING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
@@ -57,16 +57,16 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARTITION_ID
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENTLOG;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENT_NUMBERS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_MODULE_EVENTS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_SCALAR;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORD_EVENTNUMBERS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MODULE_EVENTLOG_RECORDING;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCALAR_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_DIR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SAVE_AS_SCALAR;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARAM_RECORD_AS_SCALAR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
@@ -122,9 +122,9 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_PARSIM = "Parallel Simulation";
 
     public static final String[] SIMTIME_SCALE_CHOICES = new String[] {
-        "0", "-3", "-6", "-9", "-12", "-15", "-18",  //TODO add (s),(ms),(us),(ns),(ps),(fs),(as) once combo supports it 
+        "0", "-3", "-6", "-9", "-12", "-15", "-18",  //TODO add (s),(ms),(us),(ns),(ps),(fs),(as) once combo supports it
     };
-    
+
 	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png"); //XXX
 
     public static String[] getCategoryNames() {
@@ -198,8 +198,8 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addSpacer(form);
             Group group4 = createGroup(form, "Output vector recording");
 	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTOR_PRECISION, "Precision");
-	        addCheckboxFieldEditor(group4, CFGID_RECORD_EVENT_NUMBERS, "Record event numbers");
-	        addTextFieldEditor(group4, CFGID_MAX_BUFFERED_SAMPLES, "Buffered size for output vectors");
+	        addCheckboxFieldEditor(group4, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers");
+	        addTextFieldEditor(group4, CFGID_VECTOR_MAX_BUFFERED_VALUES, "Buffered size for output vectors");
 	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit");
             addSpacer(form);
             Group group5 = createGroup(form, "Output scalar recording");
@@ -239,18 +239,18 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group0, CFGID_EVENTLOG_FILE, "Eventlog file");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORDING_INTERVAL, "Recording interval");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record");
-			addCheckboxFieldEditor(group0, CFGID_RECORD_MODULE_EVENTS, "Record events");
+			addCheckboxFieldEditor(group0, CFGID_MODULE_EVENTLOG_RECORDING, "Record events");
 			addSpacer(form);
             Group group1 = createGroup(form, "Output vector recording");
 			addTextFieldEditor(group1, CFGID_OUTPUT_VECTOR_FILE, "Output vector file");
-            addCheckboxFieldEditor(group1, CFGID_ENABLE_RECORDING, "Enable recording");
-            addTextFieldEditor(group1, CFGID_RECORDING_INTERVAL, "Recording interval");
+            addCheckboxFieldEditor(group1, CFGID_VECTOR_RECORDING, "Enable recording");
+            addTextFieldEditor(group1, CFGID_VECTOR_RECORDING_INTERVAL, "Recording interval");
             addSpacer(form);
             Group group2 = createGroup(form, "Output scalar recording");
 			addTextFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file");
 			addCheckboxFieldEditor(group2, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing file");
-			addCheckboxFieldEditor(group2, CFGID_RECORD_SCALAR, "Enable recording");
-			addCheckboxFieldEditor(group2, CFGID_SAVE_AS_SCALAR, "Parameters to save as scalars");
+			addCheckboxFieldEditor(group2, CFGID_SCALAR_RECORDING, "Enable recording");
+			addCheckboxFieldEditor(group2, CFGID_PARAM_RECORD_AS_SCALAR, "Parameters to save as scalars");
 			addSpacer(form);
             Group group3 = createGroup(form, "Snapshots");
 			addTextFieldEditor(group3, CFGID_SNAPSHOT_FILE, "Snapshot file");

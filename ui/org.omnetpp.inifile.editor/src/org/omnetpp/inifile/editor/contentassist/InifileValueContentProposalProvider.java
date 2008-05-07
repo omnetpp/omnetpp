@@ -3,7 +3,7 @@ package org.omnetpp.inifile.editor.contentassist;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.PREDEFINED_CONFIGVARS;
@@ -46,7 +46,7 @@ import org.omnetpp.ned.model.pojo.ParamElement;
  * Generate proposals for config values, parameter values, per-object config values etc.
  *
  * Used for the text editor and field editors.
- * 
+ *
  * @author Andras
  */
 public class InifileValueContentProposalProvider extends ContentProposalProvider {
@@ -67,7 +67,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 		this.section = section;
 		this.key = key;
 	}
-	
+
 	/**
 	 * Returns whether content proposals are available for a given key. This can be
 	 * used to decide whether to install content assist support on a given edit field.
@@ -84,7 +84,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 			return false;
 		}
 		else {
-			// for parameters etc, we have time to just check if there are actually any proposals   
+			// for parameters etc, we have time to just check if there are actually any proposals
 			List<IContentProposal> proposals = getProposalCandidates("");
 			return proposals.size()>0;
 		}
@@ -134,7 +134,7 @@ s	 * before getting presented to the user.
 		if (entry==CFGID_NETWORK) {
 			IProject contextProject = doc.getDocumentFile().getProject();
 			NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
-			// first 
+			// first
 			List<IContentProposal> p1 = new ArrayList<IContentProposal>();
 			String iniFilePackage = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(doc.getDocumentFile());
 			if (StringUtils.isNotEmpty(iniFilePackage)) {
@@ -159,7 +159,7 @@ s	 * before getting presented to the user.
 			sort(p2);
 			p.addAll(p1);
 			p.addAll(p2);
-			
+
 		}
 		else if (entry==CFGID_USER_INTERFACE) {
 			p.addAll(toProposals(new String[] {"Cmdenv", "Tkenv"}));
@@ -177,7 +177,7 @@ s	 * before getting presented to the user.
 		return p;
 	}
 
-	/** 
+	/**
 	 * Generate proposals for a module parameter key
 	 */
 	protected List<IContentProposal> getCandidatesForParam(String prefix) {
@@ -208,7 +208,7 @@ s	 * before getting presented to the user.
 		// after "${", offer variable names
 		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
 		    //FIXME after "$", offer: ${start..end}  ${start..end step x} ${start..end step x}s ${var=start..end step x} ${var=val1,val2,val3} ${var=val1,val2,val3 ! something}
-            //p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG")); 
+            //p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG"));
 	        //return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
 
 			p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
@@ -216,40 +216,40 @@ s	 * before getting presented to the user.
 		}
 
 		switch (dataType) {
-		case NEDElementConstants.NED_PARTYPE_BOOL: 
-			p.addAll(toProposals(new String[] {"true", "false"})); 
+		case NEDElementConstants.NED_PARTYPE_BOOL:
+			p.addAll(toProposals(new String[] {"true", "false"}));
 			break;
-		case NEDElementConstants.NED_PARTYPE_INT: 
+		case NEDElementConstants.NED_PARTYPE_INT:
 			p.addAll(toProposals(new String[] {"0"}, "or any integer value"));
-			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.")); 
-			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG")); 
-			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.")); 
-			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG")); 
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr."));
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG"));
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr."));
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG"));
 			break;
 		case NEDElementConstants.NED_PARTYPE_DOUBLE:
-			p.addAll(toProposals(new String[] {"0.0"}, "or any double value")); 
-			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr.")); 
-			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG")); 
-			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr.")); 
-			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG")); 
+			p.addAll(toProposals(new String[] {"0.0"}, "or any double value"));
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTempl), "continuous distr."));
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG"));
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTempl), "discrete distr."));
+			p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG"));
 			break;
-		case NEDElementConstants.NED_PARTYPE_STRING: 
+		case NEDElementConstants.NED_PARTYPE_STRING:
 		    // if the param is used in a "<param> like IFoo", propose all modules that implement IFoo
 		    Collection<INEDTypeInfo> types = getProposedNedTypesFor(resList);
 		    if (types != null)
 	            for (INEDTypeInfo type : types)
 	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", "TODO")); //FIXME display package, docu!
-			p.addAll(toProposals(new String[] {"\"\""}, "or any string value")); 
+			p.addAll(toProposals(new String[] {"\"\""}, "or any string value"));
 			break;
-		case NEDElementConstants.NED_PARTYPE_XML: 
-			p.addAll(toProposals(new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"})); 
+		case NEDElementConstants.NED_PARTYPE_XML:
+			p.addAll(toProposals(new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"}));
 			break;
 		}
 		return p;
 	}
 
 	/**
-	 * If some of the matching parameters are used in a "&lt;param&gt; like IFoo" submodule, 
+	 * If some of the matching parameters are used in a "&lt;param&gt; like IFoo" submodule,
 	 * propose all modules that implement IFoo. If there's IFoo, IBar etc, propose modules
 	 * that implement both (all).
 	 */
@@ -261,7 +261,7 @@ s	 * before getting presented to the user.
         for (ParamResolution param : paramResList)
             likeInterfaces.addAll(extractParamLikeInterfaces(param, context));
 
-        // if different params require different interfaces, find the common subset 
+        // if different params require different interfaces, find the common subset
         // of modules that implement both/all, and return that.
 	    INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
         Set<INEDTypeInfo> result = new HashSet<INEDTypeInfo>();
@@ -273,14 +273,14 @@ s	 * before getting presented to the user.
 	            firstIter = false;
 	        }
 	        else {
-	            result.retainAll(types); // that is, result = intersect(result,types)   
+	            result.retainAll(types); // that is, result = intersect(result,types)
 	        }
 	        if (result.isEmpty())
 	            break; // common subset is empty, makes no sense to continue
 	    }
 	    return result;
     }
-	
+
 	/**
 	 * If the param is used in a "<param> like IFoo", return IFoo. If it's used
 	 * in several submodules (IFoo, IBar, etc), return all.
@@ -295,9 +295,9 @@ s	 * before getting presented to the user.
         INedTypeLookupContext paramContext = param.paramDeclNode.getEnclosingLookupContext();
         Assert.isTrue(paramContext instanceof CompoundModuleElementEx);
         CompoundModuleElementEx module = (CompoundModuleElementEx)paramContext;
-            
+
         // collect its "like" submodules that refer to our parameter.
-        // note: we only look to local submodules: inherited submodules wouldn't see 
+        // note: we only look to local submodules: inherited submodules wouldn't see
         // this parameter (since it's declared in a subclass)
         Set<INEDTypeInfo> result = new HashSet<INEDTypeInfo>();
         INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
@@ -344,7 +344,7 @@ s	 * before getting presented to the user.
 			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
 		}
 
-		if (entry==CFGID_RECORDING_INTERVAL) { 
+		if (entry==CFGID_VECTOR_RECORDING_INTERVAL) {
 			p.addAll(toProposals(new String[]{"$1..", "$1..$2, $3.."})); //XXX use templated proposals here!
 		}
 		if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {

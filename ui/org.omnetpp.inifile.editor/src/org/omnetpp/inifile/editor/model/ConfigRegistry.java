@@ -226,8 +226,8 @@ public class ConfigRegistry {
         "description", CFG_STRING, null,
         "Descriptive name for the given simulation configuration. Descriptions get " +
         "displayed in the run selection dialog.");
-    public static final ConfigKey CFGID_ENABLE_RECORDING = addPerObjectEntry(
-        "enable-recording", CFG_BOOL, "true",
+    public static final ConfigKey CFGID_VECTOR_RECORDING = addPerObjectEntry(
+        "vector-recording", CFG_BOOL, "true",
         "Whether data written into an output vector should be recorded.");
     public static final ConfigKey CFGID_EVENTLOG_FILE = addPerRunEntry(
         "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.log",
@@ -289,8 +289,8 @@ public class ConfigRegistry {
         "A space-separated list of dynamic libraries to be loaded on startup. The " +
         "libraries should be given without the `.dll' or `.so' suffix -- that will " +
         "be automatically appended.");
-    public static final ConfigKey CFGID_MAX_BUFFERED_SAMPLES = addPerObjectEntry(
-        "max-buffered-samples", CFG_INT, null,
+    public static final ConfigKey CFGID_VECTOR_MAX_BUFFERED_VALUES = addPerObjectEntry(
+        "vector-max-buffered-values", CFG_INT, null,
         "For output vectors: the maximum number of values to buffer per vector, " +
         "before writing out a block into the output vector file.");
     public static final ConfigKey CFGID_MAX_MODULE_NESTING = addPerRunEntry(
@@ -418,8 +418,8 @@ public class ConfigRegistry {
         "When cRealTimeScheduler is selected as scheduler class: ratio of simulation " +
         "time to real time. For example, scaling=2 will cause simulation time to " +
         "progress twice as fast as runtime.");
-    public static final ConfigKey CFGID_RECORD_EVENT_NUMBERS = addPerObjectEntry(
-        "record-event-numbers", CFG_BOOL, "true",
+    public static final ConfigKey CFGID_VECTOR_RECORD_EVENTNUMBERS = addPerObjectEntry(
+        "vector-record-eventnumbers", CFG_BOOL, "true",
         "Whether to record event numbers for an output vector. Simulation time and " +
         "value are always recorded. Event numbers are needed by the Sequence Chart " +
         "Tool, for example.");
@@ -427,20 +427,20 @@ public class ConfigRegistry {
         "record-eventlog", CFG_BOOL, "false",
         "Enables recording an eventlog file, which can be later visualized on a " +
         "sequence chart. See eventlog-file= option too.");
-    public static final ConfigKey CFGID_RECORD_MODULE_EVENTS = addPerObjectEntry(
-        "record-module-events", CFG_BOOL, "true",
+    public static final ConfigKey CFGID_MODULE_EVENTLOG_RECORDING = addPerObjectEntry(
+        "module-eventlog-recording", CFG_BOOL, "true",
         "Enables recording events on a per module basis. This is meaningful for " +
         "simple modules only. \n" +
         "Example:\n" +
-        " **.router[10..20].**.record-module-events = true\n" +
-        " **.record-module-events = false");
-    public static final ConfigKey CFGID_RECORD_SCALAR = addPerObjectEntry(
-        "record-scalar", CFG_BOOL, "true",
+        " **.router[10..20].**.module-eventlog-recording = true\n" +
+        " **.module-eventlog-recording = false");
+    public static final ConfigKey CFGID_SCALAR_RECORDING = addPerObjectEntry(
+        "scalar-recording", CFG_BOOL, "true",
         "Whether the matching output scalars should be recorded. Syntax: " +
-        "<module-full-path>.<scalar-name>.record-scalar=true/false. Example: " +
-        "**.queue.packetsDropped.record-scalar=true");
-    public static final ConfigKey CFGID_RECORDING_INTERVAL = addPerObjectEntry(
-        "recording-interval", CFG_CUSTOM, null,
+        "<module-full-path>.<scalar-name>.scalar-recording=true/false. Example: " +
+        "**.queue.packetsDropped.scalar-recording=true");
+    public static final ConfigKey CFGID_VECTOR_RECORDING_INTERVAL = addPerObjectEntry(
+        "vector-recording-interval", CFG_CUSTOM, null,
         "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... " +
         "That is, both start and end of an interval are optional, and intervals are " +
         "separated by comma. Example: ..100, 200..400, 900..");
@@ -470,8 +470,8 @@ public class ConfigRegistry {
         "The random number generator class to be used. It can be `cMersenneTwister', " +
         "`cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be " +
         "subclassed from cRNG).");
-    public static final ConfigKey CFGID_SAVE_AS_SCALAR = addPerObjectEntry(
-        "save-as-scalar", CFG_BOOL, "false",
+    public static final ConfigKey CFGID_PARAM_RECORD_AS_SCALAR = addPerObjectEntry(
+        "param-record-as-scalar", CFG_BOOL, "false",
         "Applicable to module parameters: specifies whether the module parameter " +
         "should be recorded into the output scalar file. Set it for parameters whose " +
         "value you'll need for result analysis.");

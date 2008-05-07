@@ -2,7 +2,7 @@ package org.omnetpp.inifile.editor.model;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
@@ -69,12 +69,12 @@ public class InifileAnalyzer {
 	private boolean changed = true;
 	private Set<String> sectionsCausingCycles;
 	private ProblemMarkerSynchronizer markerSynchronizer; // only used during analyze()
-	
+
 	// InifileDocument, InifileAnalyzer, and NEDResources are all accessed from
-	// background threads (must be synchronized), and the analyze procedure needs 
+	// background threads (must be synchronized), and the analyze procedure needs
 	// NEDResources -- so use NEDResources as lock to prevent deadlocks
 	private Object lock = NEDResourcesPlugin.getNEDResources();
-	
+
 	/**
 	 * Classifies inifile keys; see getKeyType().
 	 */
@@ -84,15 +84,15 @@ public class InifileAnalyzer {
 		PER_OBJECT_CONFIG; // dotted, and contains hyphen (like **.apply-default, rng mapping, vector configuration, etc)
 	};
 
-    /** 
+    /**
      * Used internally: an iteration variable "${...}", stored as part of SectionData
      */
 	static class IterationVariable {
         String varname; // printable variable name ("x"); null for an unnamed variable
         String value;   // "1,2,5..10"; never empty
         String parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
-        String section; // section where it was defined 
-        String key;     // key where it was defined 
+        String section; // section where it was defined
+        String key;     // key where it was defined
     };
 
     /**
@@ -110,11 +110,11 @@ public class InifileAnalyzer {
 	static class SectionData {
 		List<ParamResolution> unassignedParams = new ArrayList<ParamResolution>();
 		List<ParamResolution> allParamResolutions = new ArrayList<ParamResolution>(); // incl. unassigned
-		List<IterationVariable> iterations = new ArrayList<IterationVariable>(); 
-		Map<String,IterationVariable> namedIterations = new HashMap<String, IterationVariable>(); 
+		List<IterationVariable> iterations = new ArrayList<IterationVariable>();
+		Map<String,IterationVariable> namedIterations = new HashMap<String, IterationVariable>();
 	}
 
-   
+
 	/**
 	 * Constructor.
 	 */
@@ -206,7 +206,7 @@ public class InifileAnalyzer {
 							if (((SectionData) doc.getSectionData(ancestorSection)).namedIterations.containsKey(var))
 								addError(section, namedIterations.get(var).key, "Redeclaration of iteration variable $"+var+", originally defined in section ["+ancestorSection+"]");
 			}
-			
+
 			// warn for unused param keys; this must be done AFTER changed=false
 			for (String section : doc.getSectionNames())
 				for (String key : getUnusedParameterKeys(section))
@@ -272,7 +272,7 @@ public class InifileAnalyzer {
 				if (extendsName != null && !doc.containsSection(CONFIG_+extendsName))
 					addError(section, EXTENDS, "No such section: [Config "+extendsName+"]");
 			}
-		}			
+		}
 
 		// check fallback chain for every section
 		for (String section : doc.getSectionNames()) {
@@ -319,9 +319,9 @@ public class InifileAnalyzer {
 
 		// check value
 		String value = doc.getValue(section, key);
-		
+
 		// if it contains "${...}" variables, check that those variables exist. Any more
-		// validation would be significantly more complex, and not done at the moment 
+		// validation would be significantly more complex, and not done at the moment
 		if (value.indexOf('$') != -1) {
 			if (validateValueWithIterationVars(section, key))
 				return;
@@ -370,7 +370,7 @@ public class InifileAnalyzer {
 		}
 		if (network == null)
 			network = ned.getToplevelNedType(value, contextProject);
-		
+
 		return network;
 	}
 
@@ -465,7 +465,7 @@ public class InifileAnalyzer {
 		}
 
 		// if value contains "${...}" variables, check that those variables exist. Any more
-		// validation would be significantly more complex, and not done at the moment 
+		// validation would be significantly more complex, and not done at the moment
 		if (value.indexOf('$') != -1) {
 			if (validateValueWithIterationVars(section, key))
 				return;
@@ -504,12 +504,12 @@ public class InifileAnalyzer {
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
 			addError(section, key, "Per-object configuration \""+configName+"\" can only be specified globally, in the [General] section");
 		}
-		
+
 		// check value
 		String value = doc.getValue(section, key);
 
 		// if it contains "${...}" variables, check that those variables exist. Any more
-		// validation would be significantly more complex, and not done at the moment 
+		// validation would be significantly more complex, and not done at the moment
 		if (value.indexOf('$') != -1) {
 			if (validateValueWithIterationVars(section, key))
 				return;
@@ -526,7 +526,7 @@ public class InifileAnalyzer {
 			value =	Common.parseQuotedString(value); // cannot throw exception: value got validated above
 
 		// check validity of some settings, like record-interval=, etc
-		if (e==CFGID_RECORDING_INTERVAL) {
+		if (e==CFGID_VECTOR_RECORDING_INTERVAL) {
 			// validate syntax
 			StringTokenizer tokenizer = new StringTokenizer(value, ",");
 			while (tokenizer.hasMoreTokens()) {
@@ -537,11 +537,11 @@ public class InifileAnalyzer {
 					try {
 						String from = StringUtils.substringBefore(interval, "..").trim();
 						String to = StringUtils.substringAfter(interval, "..").trim();
-						if (!from.equals("") && !from.contains("${")) 
+						if (!from.equals("") && !from.contains("${"))
 							Double.parseDouble(from);  // check format
-						if (!to.equals("") && !to.contains("${")) 
+						if (!to.equals("") && !to.contains("${"))
 							Double.parseDouble(to);  // check format
-					} 
+					}
 					catch (NumberFormatException ex) {
 						addError(section, key, "Syntax error in output vector interval");
 					}
@@ -559,7 +559,7 @@ public class InifileAnalyzer {
 					parseIterationVariables(section, key);
 		}
 	}
-	
+
 	protected void parseIterationVariables(String section, String key) {
 		Pattern p = Pattern.compile(
 				"\\$\\{" +   // opening dollar+brace
@@ -586,12 +586,12 @@ public class InifileAnalyzer {
 				addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
 			else if (sectionData.namedIterations.containsKey(v.varname))
 				// Note: checking that it doesn't redefine a variable in a base section can only be done
-				// elsewhere, after all sections have been processed 
+				// elsewhere, after all sections have been processed
 				addError(section, key, "Redefinition of iteration variable ${"+v.varname+"}");
 			else {
 				sectionData.iterations.add(v);
 				if (v.varname != null)
-					sectionData.namedIterations.put(v.varname, v); 
+					sectionData.namedIterations.put(v.varname, v);
 			}
 		}
 	}
@@ -648,7 +648,7 @@ public class InifileAnalyzer {
 	}
 
 	/**
-	 * Collects parameters of a module type (recursively), *without* an inifile present.  
+	 * Collects parameters of a module type (recursively), *without* an inifile present.
 	 */
 	public static List<ParamResolution> collectParameters(INEDTypeInfo moduleType) {
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
@@ -657,9 +657,9 @@ public class InifileAnalyzer {
 		treeTraversal.traverse(moduleType);
 		return list;
 	}
-	
+
 	/**
-	 * Collects parameters of a submodule subtree, *without* an inifile present.  
+	 * Collects parameters of a submodule subtree, *without* an inifile present.
 	 */
 	public static List<ParamResolution> collectParameters(SubmoduleElementEx submodule) {
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
@@ -715,7 +715,7 @@ public class InifileAnalyzer {
 				} catch (RuntimeException e) {
 					return null; // something is wrong: value is not a string constant?
 				}
-				// note: value is likely a simple (unqualified) name, it'll be resolved 
+				// note: value is likely a simple (unqualified) name, it'll be resolved
 				// to fully qualified name in the caller (NEDTreeTraversal)
 				return value;
 			}
@@ -810,7 +810,7 @@ public class InifileAnalyzer {
 		}
 		return resultList.toArray(new ParamResolution[]{});
 	}
-	
+
 	public boolean containsSectionCycles() {
 		analyzeIfChanged();
 		return !sectionsCausingCycles.isEmpty();
@@ -945,9 +945,9 @@ public class InifileAnalyzer {
 	public static String getParamRemark(ParamResolution res, IInifileDocument doc) {
 		String remark;
 		switch (res.type) {
-			case UNASSIGNED: remark = "unassigned"; 
-				if (res.paramValueNode != null) 
-					remark += " (NED default: "+res.paramValueNode.getValue()+")"; 
+			case UNASSIGNED: remark = "unassigned";
+				if (res.paramValueNode != null)
+					remark += " (NED default: "+res.paramValueNode.getValue()+")";
 				else
 					; //remark += " (no NED default)";
 				break;
@@ -964,7 +964,7 @@ public class InifileAnalyzer {
 	}
 
 	/**
-	 * Returns names of declared iteration variables ("${variable=...}") from 
+	 * Returns names of declared iteration variables ("${variable=...}") from
 	 * the given section and all its fallback sections. Note: unnamed iterations
 	 * are not in the list.
 	 */
@@ -1000,8 +1000,8 @@ public class InifileAnalyzer {
 		}
 	}
 
-	/** 
-	 * Returns the value string (e.g. "1,2,6..10") for an iteration variable 
+	/**
+	 * Returns the value string (e.g. "1,2,6..10") for an iteration variable
 	 * from the given section and its fallback sections.
 	 */
 	public String getIterationVariableValueString(String activeSection, String variable) {
