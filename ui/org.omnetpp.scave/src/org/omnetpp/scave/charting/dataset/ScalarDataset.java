@@ -202,7 +202,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
     
     private static void applyDefaults(List<String> rowFields, List<String> columnFields, List<String> unusedFields) {
     	for (String field : unusedFields) {
-    		if (field.equals(FILE) || field.equals(MODULE))
+    		if (field.equals(MODULE))
     			rowFields.add(field);
     		else if (field.equals(NAME))
     			columnFields.add(field);
