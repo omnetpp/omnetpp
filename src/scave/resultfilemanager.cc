@@ -39,9 +39,6 @@
 USING_NAMESPACE
 
 
-static double zero = 0.0;
-static double NaN = zero / zero;
-
 static class SetPosixLocale
 {
   public:
@@ -792,7 +789,7 @@ int ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *
     vector.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
     vector.nameRef = stringSetFindOrInsert(names, std::string(vectorName));
     vector.columns = columns;
-    vector.stat = Statistics(-1, NaN, NaN, NaN, NaN);
+    vector.stat = Statistics(-1, dblNaN, dblNaN, dblNaN, dblNaN);
     VectorResults &vectors = fileRunRef->fileRef->vectorResults;
     vectors.push_back(vector);
     return vectors.size() - 1;
@@ -845,7 +842,7 @@ ID ResultFileManager::addComputedVector(int vectorId, const char *name, const ch
     return id;
 }
 
-ID ResultFileManager::getComputedVector(ComputationID computationID, ID input)
+ID ResultFileManager::getComputedID(ComputationID computationID, ID input)
 {
     std::pair<ComputationID, ID> key = std::make_pair(computationID, input);
     ComputedIDCache::iterator it = computedIDCache.find(key);

@@ -430,9 +430,9 @@ public class ResultFileManagerEx extends ResultFileManager {
 	}
 
 	@Override
-	public long getComputedVector(long computationID, long inputID) {
+	public long getComputedID(long computationID, long inputID) {
 		checkDeleted();
-		return super.getComputedVector(computationID, inputID);
+		return super.getComputedID(computationID, inputID);
 	}
 
 	@Override

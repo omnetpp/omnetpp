@@ -616,7 +616,7 @@ public class DatasetManager {
 	
 	static long ensureComputedResultItem(ProcessingOp operation, long inputID, int vectorId, ResultFileManager manager, /*out*/ List<IStatus> warnings) {
 		long computationID = getFilterNodeID(operation);
-		long id = manager.getComputedVector(computationID, inputID);
+		long id = manager.getComputedID(computationID, inputID);
 		if (id == -1) {
 			//System.out.format("Add computed vector: (%x,%x)%n", computationID, inputID);
 			VectorResult vector = manager.getVector(inputID);

@@ -380,8 +380,8 @@ class SCAVE_API ResultFileManager
     static void checkPattern(const char *pattern);
 
     // computed data
+    ID getComputedID(ComputationID computationID, ID inputID);
     ID addComputedVector(int vectorId, const char *name, const char *file, const StringMap &attributes, ComputationID computationID, ID inputID, ComputationNode node);
-    ID getComputedVector(ComputationID computationID, ID inputID);
 
     /**
      * loading files. fileName is the file path in the Eclipse workspace;

@@ -10,7 +10,6 @@ public interface IDataset {
 	/**
 	 * The short description of the dataset displayed as the 
 	 * default title of the chart.
-	 * @param format TODO
 	 * 
 	 * @return the title of the dataset, may be null
 	 */
