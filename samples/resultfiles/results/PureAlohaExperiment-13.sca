@@ -1,0 +1,103 @@
+run PureAlohaExperiment-13-20080508-17:33:58-2197
+attr config PureAlohaExperiment
+attr description "\"Channel utilization in the function of number of hosts and packet generation frequency\""
+attr experiment PureAlohaExperiment
+attr inifile omnetpp.ini
+attr measurement $mean=7
+attr network Aloha
+attr repeat 2
+attr replication "#1, seedset=13"
+attr run-number 13
+attr seed-set 13
+attr sim-time-limit 90min
+
+scalar . 	mean 	7
+scalar Aloha.server 	duration 	5400.2115961714
+scalar Aloha.server 	"total frames" 	15383
+scalar Aloha.server 	"collided frames" 	3605
+scalar Aloha.server 	"total receive time" 	892.69833332733
+scalar Aloha.server 	"total collision time" 	446.48902255621
+scalar Aloha.server 	"channel utilization" 	0.16535101339404
+statistic Aloha.server 	"collision multiplicity"
+field count 2776
+field mean 2.2986311239193
+field stddev 0.6202106001723
+field sum 6381
+field sqrsum 15735
+field min 2
+field max 7
+attr isDiscrete  1
+attr unit  packets
+bin	-INF	0
+bin	-0.5	0
+bin	0.5	0
+bin	1.5	2136
+bin	2.5	494
+bin	3.5	112
+bin	4.5	27
+bin	5.5	5
+bin	6.5	2
+bin	7.5	0
+bin	8.5	0
+bin	9.5	0
+statistic Aloha.server 	"collision length"
+field count 2776
+field mean 0.16083898507068
+field stddev 0.04429445784021
+field sum 446.48902255621
+field sqrsum 77.25738844526
+field min 0.099190539526
+field max 0.482695170035
+attr unit  s
+bin	-INF	0
+bin	0	0
+bin	0.0135028604278	0
+bin	0.0270057208556	0
+bin	0.0405085812834	0
+bin	0.0540114417112	0
+bin	0.067514302139	0
+bin	0.0810171625668	0
+bin	0.0945200229946	213
+bin	0.1080228834224	336
+bin	0.1215257438502	327
+bin	0.135028604278	344
+bin	0.1485314647058	303
+bin	0.1620343251336	353
+bin	0.1755371855614	347
+bin	0.1890400459892	235
+bin	0.202542906417	58
+bin	0.2160457668448	57
+bin	0.2295486272726	53
+bin	0.2430514877004	47
+bin	0.2565543481282	36
+bin	0.270057208556	17
+bin	0.2835600689838	13
+bin	0.2970629294116	11
+bin	0.3105657898394	6
+bin	0.3240686502672	4
+bin	0.337571510695	7
+bin	0.3510743711228	3
+bin	0.3645772315506	1
+bin	0.3780800919784	1
+bin	0.3915829524062	1
+bin	0.405085812834	2
+bin	0.4185886732618	0
+bin	0.4320915336896	0
+bin	0.4455943941174	0
+bin	0.4590972545452	0
+bin	0.472600114973	1
+bin	0.4861029754008	0
+bin	0.4996058358286	0
+bin	0.5131086962564	0
+bin	0.5266115566842	0
+bin	0.540114417112	0
+bin	0.5536172775398	0
+bin	0.5671201379676	0
+bin	0.5806229983954	0
+bin	0.5941258588232	0
+bin	0.607628719251	0
+bin	0.6211315796788	0
+bin	0.6346344401066	0
+bin	0.6481373005344	0
+bin	0.6616401609622	0
+bin	0.67514302139	0

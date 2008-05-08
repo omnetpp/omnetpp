@@ -1,0 +1,101 @@
+run PureAlohaExperiment-14-20080508-17:34:00-2203
+attr config PureAlohaExperiment
+attr description "\"Channel utilization in the function of number of hosts and packet generation frequency\""
+attr experiment PureAlohaExperiment
+attr inifile omnetpp.ini
+attr measurement $mean=9
+attr network Aloha
+attr repeat 2
+attr replication "#0, seedset=14"
+attr run-number 14
+attr seed-set 14
+attr sim-time-limit 90min
+
+scalar . 	mean 	9
+scalar Aloha.server 	duration 	5400.1263411367
+scalar Aloha.server 	"total frames" 	11958
+scalar Aloha.server 	"collided frames" 	2285
+scalar Aloha.server 	"total receive time" 	776.87166666144
+scalar Aloha.server 	"total collision time" 	288.3725309686
+scalar Aloha.server 	"channel utilization" 	0.14386584248533
+statistic Aloha.server 	"collision multiplicity"
+field count 1839
+field mean 2.2425231103861
+field stddev 0.5674498116791
+field sum 4124
+field sqrsum 9840
+field min 2
+field max 8
+attr isDiscrete  1
+attr unit  packets
+bin	-INF	0
+bin	-0.5	0
+bin	0.5	0
+bin	1.5	1488
+bin	2.5	277
+bin	3.5	60
+bin	4.5	10
+bin	5.5	2
+bin	6.5	1
+bin	7.5	1
+statistic Aloha.server 	"collision length"
+field count 1839
+field mean 0.15680942412648
+field stddev 0.04137389387539
+field sum 288.3725309686
+field sqrsum 48.365817250612
+field min 0.099218682654
+field max 0.42273085145
+attr unit  s
+bin	-INF	0
+bin	0	0
+bin	0.00907136682044	0
+bin	0.01814273364088	0
+bin	0.02721410046132	0
+bin	0.03628546728176	0
+bin	0.0453568341022	0
+bin	0.05442820092264	0
+bin	0.06349956774308	0
+bin	0.07257093456352	0
+bin	0.08164230138396	0
+bin	0.0907136682044	5
+bin	0.09978503502484	163
+bin	0.10885640184528	165
+bin	0.11792776866572	162
+bin	0.12699913548616	167
+bin	0.1360705023066	139
+bin	0.14514186912704	163
+bin	0.15421323594748	148
+bin	0.16328460276792	151
+bin	0.17235596958836	132
+bin	0.1814273364088	138
+bin	0.19049870322924	127
+bin	0.19957007004968	28
+bin	0.20864143687012	20
+bin	0.21771280369056	16
+bin	0.226784170511	22
+bin	0.23585553733144	20
+bin	0.24492690415188	20
+bin	0.25399827097232	12
+bin	0.26306963779276	9
+bin	0.2721410046132	12
+bin	0.28121237143364	2
+bin	0.29028373825408	2
+bin	0.29935510507452	5
+bin	0.30842647189496	2
+bin	0.3174978387154	1
+bin	0.32656920553584	0
+bin	0.33564057235628	2
+bin	0.34471193917672	2
+bin	0.35378330599716	2
+bin	0.3628546728176	0
+bin	0.37192603963804	0
+bin	0.38099740645848	0
+bin	0.39006877327892	0
+bin	0.39914014009936	0
+bin	0.4082115069198	1
+bin	0.41728287374024	1
+bin	0.42635424056068	0
+bin	0.43542560738112	0
+bin	0.44449697420156	0
+bin	0.453568341022	0

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="results/PureAlohaExperiment-*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="Utilization">
+      <items xsi:type="scave:Add" filterPattern="module(Aloha.server) AND name(&quot;channel utilization&quot;)"/>
+      <items xsi:type="scave:BarChart" name="Utilization">
+        <properties name="X.Axis.Title" value="Mean of exponential packet inter arrival time"/>
+        <properties name="Y.Axis.Title" value="Utilization"/>
+        <properties name="X.Label.Wrap" value="false"/>
+        <groupByFields>measurement</groupByFields>
+        <averagedFields>module</averagedFields>
+        <averagedFields>name</averagedFields>
+        <averagedFields>experiment</averagedFields>
+        <averagedFields>replication</averagedFields>
+        <averagedFields>run</averagedFields>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="name(mean) "/>
+      <items xsi:type="scave:ScatterChart" name="Load vs Utilization" xDataPattern="module(.) AND name(mean)">
+        <properties name="X.Axis.Title" value="Load"/>
+        <properties name="Y.Axis.Title" value="Utilization"/>
+      </items>
+    </datasets>
+    <datasets name="Collision multiplicity">
+      <items xsi:type="scave:Add" filterPattern="module(Aloha.server) AND name(&quot;collision multiplicity&quot;) AND run(PureAlohaExperiment-1-*)  " type="HISTOGRAM"/>
+      <items xsi:type="scave:HistogramChart" name="Collision multiplicity">
+        <properties name="X.Axis.Title" value="number of colliding packets"/>
+        <properties name="Y.Axis.Title" value="number of times occured"/>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="Default sheet" charts="//@datasets/@datasets.0/@items.3 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.0/@items.1"/>
+  </chartSheets>
+</scave:Analysis>
