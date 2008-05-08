@@ -58,6 +58,11 @@ void Server::initialize()
     channelUtilizationVector.setName("channel utilization");
     channelUtilizationVector.setType(cOutVector::TYPE_DOUBLE);
     channelUtilizationVector.setInterpolationMode(cOutVector::LINEAR);
+    
+    collisionMultiplicityHistogram.setName("collision multiplicity");
+    collisionMultiplicityHistogram.setRangeAutoUpper(0.0);
+    collisionLengthHistogram.setName("collision length");
+    collisionLengthHistogram.setRangeAutoUpper(0.0);
 
     if (ev.isGUI())
         displayString().setTagArg("i2",0,"x_off");
@@ -81,7 +86,9 @@ void Server::handleMessage(cMessage *msg)
         {
             totalCollisionTime += dt;
             collisionMultiplicityVector.record(currentCollisionNumFrames);
+            collisionMultiplicityHistogram.collect(currentCollisionNumFrames);
             collisionLengthVector.record(dt);
+            collisionLengthHistogram.collect(dt);
         }
         currentChannelUtilization = totalReceiveTime/simTime();
         channelUtilizationVector.record(currentChannelUtilization);
@@ -160,6 +167,8 @@ void Server::finish()
     recordScalar("total receive time", totalReceiveTime);
     recordScalar("total collision time", totalCollisionTime);
     recordScalar("channel utilization", currentChannelUtilization);
+    recordStatistic(&collisionMultiplicityHistogram, "packets");
+    recordStatistic(&collisionLengthHistogram, "s");
 }
 
 }; //namespace
