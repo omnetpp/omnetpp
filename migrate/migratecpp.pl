@@ -37,7 +37,7 @@ while (<LISTFILE>)
     #FIXME TODO: if it sees: m->setLength(par("msgLength")) then it should insert a cast to long! otherwise "cannot convert cPar to int64"!
 
     # cModule
-    $txt =~ s/\bgate\(([^,)]+)\)->size\(\)/gateSize(\1)/mg; # ???
+    $txt =~ s/\bgate\(([^,)]+)\)->size\(\)/gateSize(\1)/mg;
 
     # rename cQueue methods
     $txt =~ s/\bgetTail *\( *\)/pop()/mg;
@@ -46,6 +46,8 @@ while (<LISTFILE>)
     # cStatistic methods
     $txt =~ s/\bsamples *\( *\)/count()/mg;
     $txt =~ s/\btransformed *\( *\)/isTransformed()/mg;
+    $txt =~ s/\brecordScalar *\( *\)/record()/mg;
+    $txt =~ s/\. *recordScalar *\( *"/.recordAs("/mg;
 
     # display string
     $txt =~ s/\bgetString *\( *\)/str()/mg;

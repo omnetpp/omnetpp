@@ -158,9 +158,8 @@
 
 	recordScalar() methods (cSimpleModule, cStatistic):
 	- added optional "const char *unit" argument to all respective methods
-	- cStatistic::recordScalar() changed to record(), recordAs() and recordWithUnit()
-	- cSimpleModule::recordScalar() methods moved to cComponent, and those 
-	  that take cStatistic got renamed to recordStatistic()
+	- cStatistic::recordScalar() renamed and split to record(), recordAs() and recordWithUnit()
+	- cSimpleModule::recordScalar() methods moved to cComponent
 	- see also: **.param-record-as-scalar = true
 
 	cMessageHeap:
