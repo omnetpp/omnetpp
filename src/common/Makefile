@@ -67,16 +67,13 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 expression.tab.h expression.tab.cc : expression.y
-	$(YACC) -p expressionyy -b expression -d expression.y
-	mv expression.tab.c expression.tab.cc
+	$(YACC) -p expressionyy -b expression -d expression.y && mv expression.tab.c expression.tab.cc
 
 lex.expressionyy.cc: expression.lex expression.tab.h
-	$(LEX) -Pexpressionyy expression.lex
-	mv lex.expressionyy.c lex.expressionyy.cc
+	$(LEX) -Pexpressionyy expression.lex && mv lex.expressionyy.c lex.expressionyy.cc
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
-	$(YACC) --no-lines -p matchexpressionyy -b matchexpression -d matchexpression.y
-	mv matchexpression.tab.c matchexpression.tab.cc
+	$(YACC) --no-lines -p matchexpressionyy -b matchexpression -d matchexpression.y && mv matchexpression.tab.c matchexpression.tab.cc
 
 matchexpressionlexer.cc : matchexpression.tab.h
 
