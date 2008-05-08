@@ -129,11 +129,11 @@ void HistogramDemo::activity()
     ksplit.saveToFile(f);
     fclose(f);
 
-    longhist.recordScalar();
-    dblhist.recordScalar();
-    psquare.recordScalar();
-    ksplit.recordScalar();
-    varhist.recordScalar();
+    longhist.record();
+    dblhist.record();
+    psquare.record();
+    ksplit.record();
+    varhist.record();
 
     endSimulation();
 }

@@ -147,7 +147,7 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     }
 }
 
-void cFileOutputScalarManager::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
+void cFileOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     if (!run.initialized)
         init();

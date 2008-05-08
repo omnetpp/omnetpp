@@ -523,7 +523,7 @@ class SIM_API cEnvir
 
     /** @name Scalar statistics.
      *
-     * The method cSimpleModule::recordScalar() function internally relies on.
+     * The method cComponent::recordScalar() function internally relies on.
      *
      * The behavior of this function can be changed by plugging in a different
      * cOutputScalarManager object into the user interface library. (Or alternatively,
@@ -537,9 +537,9 @@ class SIM_API cEnvir
     virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL) = 0;
 
     /**
-     * Records histogram and statistics objects into the scalar result file.
+     * Records a statistic object (histogram, etc) into the scalar result file.
      */
-    virtual void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
     //@}
 
     /** @name Management of streams where snapshots can be written.

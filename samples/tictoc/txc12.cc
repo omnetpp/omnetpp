@@ -139,7 +139,8 @@ void Txc12::finish()
 
     recordScalar("#sent", numSent);
     recordScalar("#received", numReceived);
-    hopCountStats.recordScalar("hop count");
+
+    hopCountStats.recordAs("hop count");
 }
 
 

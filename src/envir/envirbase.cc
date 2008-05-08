@@ -1163,10 +1163,10 @@ void EnvirBase::recordScalar(cComponent *component, const char *name, double val
     outscalarmgr->recordScalar(component, name, value, attributes);
 }
 
-void EnvirBase::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
+void EnvirBase::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     assert(outscalarmgr);
-    outscalarmgr->recordScalar(component, name, statistic, attributes);
+    outscalarmgr->recordStatistic(component, name, statistic, attributes);
 }
 
 //-------------------------------------------------------------

@@ -47,16 +47,16 @@ using std::ostream;
 cStatistic::cStatistic(const cStatistic& r) : cOwnedObject()
 {
     setName(r.name());
-    td=NULL;
-    ra=NULL;
+    td = NULL;
+    ra = NULL;
     operator=(r);
 }
 
 cStatistic::cStatistic(const char *name) : cOwnedObject(name)
 {
-    td=NULL;
-    ra=NULL;
-    genk=0;
+    td = NULL;
+    ra = NULL;
+    genk = 0;
 }
 
 cStatistic::~cStatistic()
@@ -97,7 +97,7 @@ void cStatistic::netUnpack(cCommBuffer *buffer)
 #endif
 }
 
-cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
+cStatistic& cStatistic::operator=(const cStatistic& res)
 {
     if (this==&res) return *this;
 
@@ -107,10 +107,10 @@ cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
     dropAndDelete(ra);
     td = res.td;
     if (td)
-        take( td = (cTransientDetection *)td->dup() );
+        take(td = (cTransientDetection *)td->dup());
     ra = res.ra;
     if (ra)
-        take( ra = (cAccuracyDetection *)ra->dup() );
+        take(ra = (cAccuracyDetection *)ra->dup());
     return *this;
 }
 
@@ -119,7 +119,7 @@ void cStatistic::addTransientDetection(cTransientDetection *obj)  //NL
     if (td)
         throw cRuntimeError(this,"addTransientDetection(): object already has a transient detection algorithm");
     td = obj;                       // create pointer to td object
-    td->setHostObject( this );      // and create one back
+    td->setHostObject(this);        // and create one back
     take(td);
 }
 
@@ -128,7 +128,7 @@ void cStatistic::addAccuracyDetection(cAccuracyDetection *obj)  //NL
     if (ra)
         throw cRuntimeError(this,"addAccuracyDetection(): object already has an accuracy detection algorithm");
     ra = obj;                       // create pointer to ra object
-    ra->setHostObject( this );      // and create one back
+    ra->setHostObject(this);        // and create one back
     take(ra);
 }
 
@@ -137,11 +137,11 @@ void cStatistic::collect2(double, double)
     throw cRuntimeError(this, "collect2() not implemented");
 }
 
-void cStatistic::recordScalar(const char *scalarname, const char *unit)
+void cStatistic::recordAs(const char *scalarname, const char *unit)
 {
     cSimpleModule *mod = dynamic_cast<cSimpleModule *>(simulation.contextModule());
     if (!mod)
-        throw cRuntimeError(this,"recordScalar() may only be invoked from within a simple module");
+        throw cRuntimeError(this,"record() may only be invoked from within a simple module");
     if (!scalarname)
         scalarname = fullName();
 
@@ -149,7 +149,7 @@ void cStatistic::recordScalar(const char *scalarname, const char *unit)
     if (unit)
         attributes["unit"] = unit;
     getAttributesToRecord(attributes);
-    ev.recordScalar(mod, scalarname, this, &attributes);
+    ev.recordStatistic(mod, scalarname, this, &attributes);
 }
 
 void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)

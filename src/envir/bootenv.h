@@ -98,7 +98,7 @@ class ENVIR_API BootEnv : public cEnvir
 
     // output scalars
     virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL)  {UNSUPPORTED;}
-    virtual void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL)  {UNSUPPORTED;}
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL)  {UNSUPPORTED;}
 
     // snapshot file
     virtual std::ostream *getStreamForSnapshot()  {UNSUPPORTED;}

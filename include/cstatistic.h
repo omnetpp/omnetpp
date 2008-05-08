@@ -266,11 +266,25 @@ class SIM_API cStatistic : public cOwnedObject
     virtual void loadFromFile(FILE *) = 0;
 
     /**
-     * Records basic statistics (number of observations, mean, standard
-     * deviation, min, max, etc) into the scalar output file. If name is NULL
-     * or missing, the object name (name()) is used.
+     * Records the statistics into the scalar result file. (Recorded data
+     * includes the number of observations, mean, standard deviation, min,
+     * max, potential histogram data, etc.)  The name of the recorded
+     * statistic will be the object name (see fullName()).
      */
-    virtual void recordScalar(const char *name=NULL, const char *unit=NULL);
+    virtual void record()  {recordAs(NULL, NULL);}
+
+    /**
+     * Records the statistics into the scalar result file, with the given
+     * unit (e.g. "s", "m/s", etc). The name of the recorded statistic
+     * will be the object name (see name()).
+     */
+    virtual void recordWithUnit(const char *unit)  {recordAs(NULL, unit);}
+
+    /**
+     * Records the statistics into the scalar result file, with the given name,
+     * and optionally, the given unit (e.g. "s", "m/s", etc).
+     */
+    virtual void recordAs(const char *name, const char *unit=NULL);
     //@}
 };
 

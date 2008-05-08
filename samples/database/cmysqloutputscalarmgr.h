@@ -131,7 +131,7 @@ class cMySQLOutputScalarManager : public cOutputScalarManager
     /**
      * Records a histogram or statistic object into the scalar result file.
      */
-    virtual void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
 
     /**
      * Returns NULL, because this class doesn't use a file.

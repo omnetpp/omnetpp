@@ -131,7 +131,7 @@ class SIM_API cOutputVectorManager : public cObject
  * Abstract base class for handling recording of output scalar data.
  * cOutputScalarManagers are plugins into the Envir user interface
  * library (src/envir) that ultimately handle calls to the
- * cModule::recordScalar() family of functions.
+ * cComponent::recordScalar() family of functions.
  *
  * The default output scalar manager is cFileOutputScalarManager, defined
  * in the Envir library.
@@ -194,7 +194,7 @@ class SIM_API cOutputScalarManager : public cObject
     /**
      * Records a histogram or statistic object into the scalar result file.
      */
-    virtual void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL) = 0;
 
     /**
      * Returns the output scalar file name. Returns NULL if this object is not

@@ -83,7 +83,7 @@ class ENVIR_API cFileOutputScalarManager : public cOutputScalarManager
     /**
      * Records a histogram or statistic object into the scalar result file.
      */
-    void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+    void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
 
     /**
      * Returns the file name.
@@ -99,14 +99,14 @@ class ENVIR_API cFileOutputScalarManager : public cOutputScalarManager
 
 inline void cFileOutputScalarManager::writeStatisticField(const char *name, long value)
 {
-	if (fprintf(f, "field %s %ld\n", QUOTE(name), value) < 0)
-		throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
+    if (fprintf(f, "field %s %ld\n", QUOTE(name), value) < 0)
+        throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
 }
 
 inline void cFileOutputScalarManager::writeStatisticField(const char *name, double value)
 {
-	if (fprintf(f, "field %s %.*g\n", QUOTE(name), prec, value) < 0)
-		throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
+    if (fprintf(f, "field %s %.*g\n", QUOTE(name), prec, value) < 0)
+        throw cRuntimeError("Cannot write output scalar file `%s'", fname.c_str());
 }
 
 NAMESPACE_END

@@ -233,14 +233,14 @@ void cComponent::recordScalar(const char *name, double value, const char *unit)
     }
 }
 
-void cComponent::recordScalar(cStatistic *stats, const char *unit)
+void cComponent::recordStatistic(cStatistic *stats, const char *unit)
 {
-    stats->recordScalar(NULL, unit);
+    stats->record(NULL, unit);
 }
 
-void cComponent::recordScalar(const char *name, cStatistic *stats, const char *unit)
+void cComponent::recordStatistic(const char *name, cStatistic *stats, const char *unit)
 {
-    stats->recordScalar(name, unit);
+    stats->record(name, unit);
 }
 
 

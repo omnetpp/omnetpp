@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cQueue        : (optionally) sorted queue of cOwnedObjects
+//    cQueue : queue of cObject descendants
 //
 //==========================================================================
 

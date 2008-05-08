@@ -76,6 +76,6 @@ void Sink::handleMessage(cMessage *msg)
 
 void Sink::finish()
 {
-    endToEndDelayKS.recordScalar();
+    endToEndDelayKS.record();
 }
 

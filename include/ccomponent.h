@@ -338,14 +338,16 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 #endif
 
     /**
-     * Delegates to cStatistic::recordScalar().
+     * Records the given statistics into the scalar result file.
+     * Delegates to cStatistic::recordAs().
      */
-    void recordScalar(cStatistic *stats, const char *unit=NULL);
+    void recordStatistic(cStatistic *stats, const char *unit=NULL);
 
     /**
-     * Delegates to cStatistic::recordScalar().
+     * Records the given statistics into the scalar result file with the given name.
+     * Delegates to cStatistic::recordAs().
      */
-    void recordScalar(const char *name, cStatistic *stats, const char *unit=NULL);
+    void recordStatistic(const char *name, cStatistic *stats, const char *unit=NULL);
     //@}
 };
 

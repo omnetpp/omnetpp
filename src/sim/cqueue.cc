@@ -5,7 +5,7 @@
 //           Discrete System Simulation in C++
 //
 //   Member functions of
-//    cQueue : (priority) queue of cOwnedObject descendants
+//    cQueue : queue of cObject descendants
 //
 //  Author: Andras Varga
 //

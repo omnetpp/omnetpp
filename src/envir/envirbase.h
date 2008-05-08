@@ -186,7 +186,7 @@ class ENVIR_API EnvirBase : public cEnvir
 
     // output scalars
     virtual void recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes=NULL);
-    virtual void recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
+    virtual void recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes=NULL);
 
     // snapshot file
     virtual std::ostream *getStreamForSnapshot();

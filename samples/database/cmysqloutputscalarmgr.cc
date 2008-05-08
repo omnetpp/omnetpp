@@ -148,7 +148,7 @@ void cMySQLOutputScalarManager::recordScalar(cComponent *component, const char *
     }
 }
 
-void cMySQLOutputScalarManager::recordScalar(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
+void cMySQLOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     throw cRuntimeError("cMySQLOutputScalarManager: recording cStatistics objects not supported yet");
 }
