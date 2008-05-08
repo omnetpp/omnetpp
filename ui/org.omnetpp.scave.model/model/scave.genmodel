@@ -23,7 +23,7 @@
     <genClasses ecoreClass="scave.ecore#//Chart">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//Chart/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Chart/filters"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Chart/properties"/>
+      <genFeatures property="None" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//Chart/properties"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//Add">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//Add/excepts"/>
@@ -34,7 +34,7 @@
     <genClasses image="false" ecoreClass="scave.ecore#//ProcessingOp">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/operation"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/filters"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
+      <genFeatures property="None" createChild="false" ecoreFeature="ecore:EReference scave.ecore#//ProcessingOp/params"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/computedFile"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//ProcessingOp/computationHash"/>
     </genClasses>
@@ -92,10 +92,11 @@
     <genClasses ecoreClass="scave.ecore#//Apply"/>
     <genClasses ecoreClass="scave.ecore#//Compute"/>
     <genClasses ecoreClass="scave.ecore#//BarChart">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/groupBy"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/groupByFields"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/groupNameFormat"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/barNameFormat"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/barFields"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//BarChart/averagedFields"/>
     </genClasses>
     <genClasses ecoreClass="scave.ecore#//LineChart">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute scave.ecore#//LineChart/lineNameFormat"/>

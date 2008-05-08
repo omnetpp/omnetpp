@@ -106,7 +106,6 @@ public class ProcessingOpItemProvider
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
 			childrenFeatures.add(ScaveModelPackage.Literals.PROCESSING_OP__FILTERS);
-			childrenFeatures.add(ScaveModelPackage.Literals.PROCESSING_OP__PARAMS);
 		}
 		return childrenFeatures;
 	}
@@ -185,11 +184,6 @@ public class ProcessingOpItemProvider
 			(createChildParameter
 				(ScaveModelPackage.Literals.PROCESSING_OP__FILTERS,
 				 ScaveModelFactory.eINSTANCE.createDeselect()));
-
-		newChildDescriptors.add
-			(createChildParameter
-				(ScaveModelPackage.Literals.PROCESSING_OP__PARAMS,
-				 ScaveModelFactory.eINSTANCE.createParam()));
 	}
 
 	/**

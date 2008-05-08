@@ -106,7 +106,6 @@ public class ChartItemProvider
 		if (childrenFeatures == null) {
 			super.getChildrenFeatures(object);
 			childrenFeatures.add(ScaveModelPackage.Literals.CHART__FILTERS);
-			childrenFeatures.add(ScaveModelPackage.Literals.CHART__PROPERTIES);
 		}
 		return childrenFeatures;
 	}
@@ -162,10 +161,10 @@ public class ChartItemProvider
 
 		switch (notification.getFeatureID(Chart.class)) {
 			case ScaveModelPackage.CHART__NAME:
+			case ScaveModelPackage.CHART__PROPERTIES:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 			case ScaveModelPackage.CHART__FILTERS:
-			case ScaveModelPackage.CHART__PROPERTIES:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), true, false));
 				return;
 		}
@@ -192,11 +191,6 @@ public class ChartItemProvider
 			(createChildParameter
 				(ScaveModelPackage.Literals.CHART__FILTERS,
 				 ScaveModelFactory.eINSTANCE.createDeselect()));
-
-		newChildDescriptors.add
-			(createChildParameter
-				(ScaveModelPackage.Literals.CHART__PROPERTIES,
-				 ScaveModelFactory.eINSTANCE.createProperty()));
 	}
 
 	/**
