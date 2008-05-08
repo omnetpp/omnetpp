@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
@@ -46,7 +45,6 @@ import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.scave.engine.XYDatasetVector;
 import org.omnetpp.scave.model.Add;
-import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
@@ -56,7 +54,6 @@ import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
 import org.omnetpp.scave.model.Except;
-import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.HistogramChart;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
@@ -66,7 +63,6 @@ import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SelectDeselectOp;
 import org.omnetpp.scave.model.SetOperation;
-import org.omnetpp.scave.model.util.ScaveModelSwitch;
 
 /**
  * This class calculates the content of a dataset
@@ -83,7 +79,7 @@ public class DatasetManager {
 	}
 
 	public static IDList getIDListFromDataset(ResultFileManager manager, Dataset dataset, DatasetItem target, boolean stopBefore, ResultType type) {
-		ProcessDatasetSwitch processor = new ProcessDatasetSwitch(manager, target, stopBefore, type);
+		IDListCollector processor = new IDListCollector(manager, target, stopBefore, type);
 		processor.doSwitch(dataset);
 		return processor.getIDList();
 	}
@@ -92,21 +88,15 @@ public class DatasetManager {
 	 * Visitor-like thingy, where doSwitch() traverses the dataset (or whatever model item was 
 	 * passed into it), and calculates an IDList of the given type. It stops at the "target" item. 
 	 */
-	static class ProcessDatasetSwitch extends ScaveModelSwitch<Object> {
+	static class IDListCollector extends ProcessDatasetSwitch {
 
-		private ResultFileManager manager;
 		private ResultType type;
 		private IDList idlist;
-		private EObject target;
-		private boolean stopBefore;
-		private boolean finished;
 		private List<IStatus> warnings;
 
-		public ProcessDatasetSwitch(ResultFileManager manager, EObject target, boolean stopBefore, ResultType type) {
-			this.manager = manager;
+		public IDListCollector(ResultFileManager manager, EObject target, boolean stopBefore, ResultType type) {
+			super(target, stopBefore, manager);
 			this.type = type;
-			this.target = target;
-			this.stopBefore = stopBefore;
 			this.idlist = new IDList();
 			this.warnings = new ArrayList<IStatus>();
 		}
@@ -114,32 +104,7 @@ public class DatasetManager {
 		public IDList getIDList() {
 			return idlist != null ? idlist : new IDList();
 		}
-
-		@Override
-		protected Object doSwitch(int classifierID, EObject object) {
-			Object result = this;
-			if (!finished) {
-				if (object == target && stopBefore)
-					finished = true;
-				else {
-					result = super.doSwitch(classifierID, object);
-					if (object == target)
-						finished = true;
-				}
-			}
-			return result;
-		}
-
-		public Object caseDataset(Dataset dataset) {
-			if (dataset.getBasedOn() != null)
-				idlist = getIDListFromDataset(manager, dataset.getBasedOn(), null, type);
-
-			for (Object item : dataset.getItems())
-				doSwitch((EObject)item);
-
-			return this;
-		}
-
+		
 		public Object caseAdd(Add add) {
 			if (type == null || add.getType() == type) {
 				idlist.merge(select(null, add));
@@ -153,16 +118,9 @@ public class DatasetManager {
 			return this;
 		}
 
-		public Object caseGroup(Group group) {
-			if (EcoreUtil.isAncestor(group, target))
-				for (Object item : group.getItems())
-					doSwitch((EObject)item);
-			return this;
-		}
-
 		public Object caseApply(Apply apply) {
 			if (apply.getOperation() != null) {
-				IDList selected = select(idlist, apply.getFilters());
+				IDList selected = select(idlist, apply.getFilters(), type);
 				idlist.substract(selected);
 				for (int i = 0; i < selected.size(); ++i) {
 					long id = selected.get(i);
@@ -177,7 +135,7 @@ public class DatasetManager {
 
 		public Object caseCompute(Compute compute) {
 			if (compute.getOperation() != null) {
-				IDList selected = select(idlist, compute.getFilters());
+				IDList selected = select(idlist, compute.getFilters(), type);
 				int size = selected.size();
 				for (int i = 0; i < size; ++i) {
 					long id = selected.get(i);
@@ -190,16 +148,8 @@ public class DatasetManager {
 
 		public Object caseChart(Chart chart) {
 			if (chart == target)
-				idlist = select(idlist, chart.getFilters());
+				idlist = select(idlist, chart.getFilters(), type);
 			return this;
-		}
-
-		private IDList select(IDList source, List<SelectDeselectOp> filters) {
-			return DatasetManager.select(source, filters, manager, type);
-		}
-
-		private IDList select(IDList source, AddDiscardOp op) {
-			return DatasetManager.select(source, op, manager);
 		}
 	}
 

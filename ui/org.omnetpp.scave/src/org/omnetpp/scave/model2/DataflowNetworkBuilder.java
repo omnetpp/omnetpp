@@ -12,7 +12,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.FileRunList;
@@ -29,20 +28,16 @@ import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engineext.IndexFile;
 import org.omnetpp.scave.model.Add;
-import org.omnetpp.scave.model.AddDiscardOp;
 import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Compute;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.Discard;
-import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.Param;
 import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.ResultType;
 import org.omnetpp.scave.model.ScatterChart;
-import org.omnetpp.scave.model.SelectDeselectOp;
-import org.omnetpp.scave.model.util.ScaveModelSwitch;
 
 /**
  * Builds a dataflow network for a dataset.
@@ -564,159 +559,115 @@ public class DataflowNetworkBuilder {
 
 	private void buildInternal(Dataset dataset, final DatasetItem target) {
 
-		ScaveModelSwitch<Object> modelSwitch = new ScaveModelSwitch<Object>() {
-			private boolean finished;
+		new NetworkBuilder(target).doSwitch(dataset);
 
-			/**
-			 * Adds "vectorfilereader" nodes for ids in the base dataset.
-			 */
-			public Object caseDataset(Dataset dataset) {
-				// build network for the base dataset first
-				Dataset baseDataset = dataset.getBasedOn();
-				if (baseDataset != null) {
-					buildInternal(baseDataset, null);
+		if (debug) {
+			System.out.println("Dataflow network");
+			dumpNetwork();
+		}
+	}
+	
+	private class NetworkBuilder extends ProcessDatasetSwitch {
+		
+		public NetworkBuilder(EObject target) {
+			super(target, false, resultfileManager);
+		}
+
+		/**
+		 * Adds "vectorfilereader" nodes for ids selected by the add operation.
+		 */
+		public Object caseAdd(Add add) {
+			if (add.getType()==ResultType.VECTOR_LITERAL) {
+				addReaderNodes(select(null, add));
+			}
+			return this;
+		}
+
+		/**
+		 * Removes "vectorfilereader" ports (and filter nodes connected to it)
+		 * of the ids selected by the discard operation.
+		 */
+		public Object caseDiscard(Discard discard) {
+			if (discard.getType()==ResultType.VECTOR_LITERAL)
+				removeOutputPorts(select(getIDs(), discard));
+			return this;
+		}
+
+		/**
+		 * Adds a filter node for each port selected by the apply operation.
+		 */
+		public Object caseApply(Apply apply) {
+			if (apply.getOperation() != null) {
+				IDList idlist = select(getIDs(), apply.getFilters(), ResultType.VECTOR_LITERAL);
+				for (int i = 0; i < idlist.size(); ++i) {
+					addApplyNode(idlist.get(i), apply, i);
 				}
-				// process items
-				for (Object item : dataset.getItems())
-					doSwitch((EObject)item);
-				return this;
 			}
+			return this;
+		}
 
-			/**
-			 * Adds "vectorfilereader" nodes for ids selected by the add operation.
-			 */
-			public Object caseAdd(Add add) {
-				if (add.getType()==ResultType.VECTOR_LITERAL) {
-					addReaderNodes(select(null, add));
+		public Object caseCompute(Compute compute) {
+			if (compute.getOperation() != null) {
+				IDList idlist = select(getIDs(), compute.getFilters(), ResultType.VECTOR_LITERAL);
+				for (int i = 0; i < idlist.size(); ++i) {
+					addComputeNode(idlist.get(i), compute, i);
 				}
-				return this;
 			}
+			return this;
+		}
 
-			/**
-			 * Removes "vectorfilereader" ports (and filter nodes connected to it)
-			 * of the ids selected by the discard operation.
-			 */
-			public Object caseDiscard(Discard discard) {
-				if (discard.getType()==ResultType.VECTOR_LITERAL)
-					removeOutputPorts(select(getIDs(), discard));
-				return this;
+		/**
+		 * Filters the output according to the chart's filters when the chart is
+		 * the target of the dataflow network.
+		 */
+		public Object caseChart(Chart chart) {
+			if (chart == target) {
+				// discard everything not on the chart
+				IDList idlist = getIDs();
+				idlist.substract(select(idlist, chart.getFilters(), ResultType.VECTOR_LITERAL));
+				removeOutputPorts(idlist);
 			}
+			return this;
+		}
+		
+		/**
+		 * Filters the output according to the chart's filters when the chart is
+		 * the target of the dataflow network.
+		 * Select x data and add xyplotnodes for them.
+		 * Associated y data differ only by module/name.
+		 */
+		public Object caseScatterChart(ScatterChart chart) {
+			if (chart == target) {
+				// discard everything not on the chart
+				IDList idlist = getIDs();
+				IDList displayedIds = select(idlist, chart.getFilters(), ResultType.VECTOR_LITERAL);
+				idlist.substract(displayedIds);
+				removeOutputPorts(idlist);
 
-			/**
-			 * Adds a filter node for each port selected by the apply operation.
-			 */
-			public Object caseApply(Apply apply) {
-				if (apply.getOperation() != null) {
-					IDList idlist = select(getIDs(), apply.getFilters());
-					for (int i = 0; i < idlist.size(); ++i) {
-						addApplyNode(idlist.get(i), apply, i);
-					}
-				}
-				return this;
-			}
-
-			public Object caseCompute(Compute compute) {
-				if (compute.getOperation() != null) {
-					IDList idlist = select(getIDs(), compute.getFilters());
-					for (int i = 0; i < idlist.size(); ++i) {
-						addComputeNode(idlist.get(i), compute, i);
-					}
-				}
-				return this;
-			}
-
-			/**
-			 * Filters the output according to the chart's filters when the chart is
-			 * the target of the dataflow network.
-			 */
-			public Object caseChart(Chart chart) {
-				if (chart == target) {
-					// discard everything not on the chart
-					IDList idlist = getIDs();
-					idlist.substract(select(idlist, chart.getFilters()));
-					removeOutputPorts(idlist);
-				}
-				return this;
-			}
-			
-			/**
-			 * Filters the output according to the chart's filters when the chart is
-			 * the target of the dataflow network.
-			 * Select x data and add xyplotnodes for them.
-			 * Associated y data differ only by module/name.
-			 */
-			public Object caseScatterChart(ScatterChart chart) {
-				if (chart == target) {
-					// discard everything not on the chart
-					IDList idlist = getIDs();
-					IDList displayedIds = select(idlist, chart.getFilters());
-					idlist.substract(displayedIds);
-					removeOutputPorts(idlist);
-
-					// select x data
-					String xDataPattern = chart.getXDataPattern();
-					if (!StringUtils.isEmpty(xDataPattern)) {
-						
-						IDList xData = resultfileManager.filterIDList(displayedIds, xDataPattern);
-						for (int i = 0; i < xData.size(); ++i) {
-							long id = xData.get(i);
-							ResultItem item = resultfileManager.getItem(id);
-							FileRunList fileruns = new FileRunList();
-							fileruns.add(item.getFileRun());
-							IDList yData = resultfileManager.filterIDList(displayedIds, fileruns, "", "");
-							yData.substract(id);
-							
-							addXYPlotNode(id, yData);
-						}
-					}
-				}
-				return this;
-			}
-
-			/**
-			 * If the target is in the group, then process its items,
-			 * otherwise ignore it. (Operations in a group have no
-			 * effects outside the group.)
-			 */
-			public Object caseGroup(Group group) {
-				if (EcoreUtil.isAncestor(group, target)) {
-					for (Object item : group.getItems())
-						doSwitch((EObject)item);
-				}
-				return this;
-			}
-
-			public Object defaultCase(EObject object) {
-				return this; // do nothing
-			}
-
-
-			@Override
-			protected Object doSwitch(int classifierID, EObject object) {
-				Object result = this;
-				if (!finished) {
-					result = super.doSwitch(classifierID, object);
-					if (object == target)
-						finished = true;
+				// select x data
+				String xDataPattern = chart.getXDataPattern();
+				if (!StringUtils.isEmpty(xDataPattern)) {
 					
-					if (debug) {
-						System.out.format("Network after %s%n", object);
-						dumpNetwork();
+					IDList xData = manager.filterIDList(displayedIds, xDataPattern);
+					for (int i = 0; i < xData.size(); ++i) {
+						long id = xData.get(i);
+						ResultItem item = manager.getItem(id);
+						FileRunList fileruns = new FileRunList();
+						fileruns.add(item.getFileRun());
+						IDList yData = manager.filterIDList(displayedIds, fileruns, "", "");
+						yData.substract(id);
+						
+						addXYPlotNode(id, yData);
 					}
 				}
-				return result;
 			}
+			return this;
+		}
 
-			private IDList select(IDList source, List<SelectDeselectOp> filters) {
-				return DatasetManager.select(source, filters, resultfileManager, ResultType.VECTOR_LITERAL);
-			}
-
-			private IDList select(IDList source, AddDiscardOp op) {
-				return DatasetManager.select(source, op, resultfileManager);
-			}
-		};
-
-		modelSwitch.doSwitch(dataset);
+		public Object defaultCase(EObject object) {
+			return this; // do nothing
+		}
+		
 	}
 	
 	private IDList getIDs() {
