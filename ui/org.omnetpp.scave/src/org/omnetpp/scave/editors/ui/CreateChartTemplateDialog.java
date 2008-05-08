@@ -97,7 +97,6 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		createFilterFieldItem(group, "Replication", REPLICATION);
 		TableItem moduleNameItem = createFilterFieldItem(group, "Module name", MODULE);
 		TableItem dataNameItem = createFilterFieldItem(group, "Data name", NAME);
-		filenameItem.setChecked(true);
 		moduleNameItem.setChecked(true);
 		dataNameItem.setChecked(true);
 
