@@ -157,9 +157,11 @@
 	  - removed support for storing expressions
 
 	recordScalar() methods (cSimpleModule, cStatistic):
-	- added optional "const char *unit" argument
-	- moved to cComponent!
-	- see also: **.save-as-scalar = true
+	- added optional "const char *unit" argument to all respective methods
+	- cStatistic::recordScalar() changed to record(), recordAs() and recordWithUnit()
+	- cSimpleModule::recordScalar() methods moved to cComponent, and those 
+	  that take cStatistic got renamed to recordStatistic()
+	- see also: **.param-record-as-scalar = true
 
 	cMessageHeap:
 	- renamed getFirst() to removeFirst(), and get(cMessage*) to remove(cMessage*)
