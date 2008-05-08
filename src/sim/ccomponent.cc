@@ -235,12 +235,12 @@ void cComponent::recordScalar(const char *name, double value, const char *unit)
 
 void cComponent::recordStatistic(cStatistic *stats, const char *unit)
 {
-    stats->record(NULL, unit);
+    stats->recordAs(NULL, unit);
 }
 
 void cComponent::recordStatistic(const char *name, cStatistic *stats, const char *unit)
 {
-    stats->record(name, unit);
+    stats->recordAs(name, unit);
 }
 
 
