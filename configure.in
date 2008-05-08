@@ -595,7 +595,7 @@ if test $math_ok = no; then
 fi
 
 # -lstdc++
-if test $mingw = yes; then
+if test "$mingw" = "yes"; then
    # check for shared version (on mingw)
    OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++_s, stdcpp_ok, SYS_LIBS="-lstdc++_s $SYS_LIBS")
 else
@@ -789,7 +789,7 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 
 if test "$JAVA_CFLAGS" = ""; then
    if test "$JDK" = ""; then
-     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-1.6.0-sun /usr/lib/jvm/java-5-sun /usr/lib/jvm/java-1.5.0-sun /usr/java/jdk /Library/Java/Home"
+     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-6-openjdk /usr/lib/jvm/java-1.6.0-sun /usr/lib/jvm/java-5-sun /usr/lib/jvm/java-1.5.0-sun /usr/java/jdk /Library/Java/Home"
      for dir in $javahome_candidates; do
          if test "$JAVA_HOME" = "" -a -d "$dir"; then
              JAVA_HOME=$dir

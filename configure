@@ -664,7 +664,6 @@ WHOLE_ARCHIVE_ON
 WHOLE_ARCHIVE_OFF
 TOOLCHAIN_NAME
 MYPWD
-NEDC
 MSGC
 NEDTOOL
 AS
@@ -1905,7 +1904,6 @@ OMNETPP_OUT_DIR="$OMNETPP_ROOT/out"
 OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
 OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
-OMNETPP_NEDC_DIR="$OMNETPP_SRC_DIR/nedc"
 
 if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
@@ -2022,7 +2020,6 @@ CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
 
-NEDC=${NEDC:-nedtool}
 MSGC=${MSGC:-opp_msgc}
 NEDTOOL=${NEDTOOL:-nedtool}
 MAKEDEPEND=${MAKEDEPEND:-opp_makedep -Y --objdirtree}
@@ -4262,6 +4259,68 @@ echo "$as_me: error: Standard C math library -lm not found" >&2;}
 fi
 
 # -lstdc++
+if test "$mingw" = "yes"; then
+   # check for shared version (on mingw)
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS=""
+   LIBS="-lstdc++_s"
+
+   { echo "$as_me:$LINENO: checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lstdc++_s\"" >&5
+echo $ECHO_N "checking for standard C++ lib with CFLAGS=\"\" LIBS=\"-lstdc++_s\"... $ECHO_C" >&6; }
+
+   cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <iostream>
+int
+main ()
+{
+/**/;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }; stdcpp_ok=yes; SYS_LIBS="-lstdc++_s $SYS_LIBS"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	{ echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }; stdcpp_ok=no;
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+else
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4321,7 +4380,7 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-if test $stdcpp_ok = no; then
+   if test $stdcpp_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4381,8 +4440,8 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
-fi
-if test $stdcpp_ok = no; then
+   fi
+   if test $stdcpp_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -4442,10 +4501,11 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+   fi
 fi
 if test $stdcpp_ok = no; then
-   { { echo "$as_me:$LINENO: error: Standard C++ library -lstdc++ or -lcxx or -lcxa not found" >&5
-echo "$as_me: error: Standard C++ library -lstdc++ or -lcxx or -lcxa not found" >&2;}
+   { { echo "$as_me:$LINENO: error: Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa not found" >&5
+echo "$as_me: error: Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa not found" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
@@ -6359,7 +6419,7 @@ fi # end of Tcl tests ($NO_TCL=="" branch)
 
 if test "$JAVA_CFLAGS" = ""; then
    if test "$JDK" = ""; then
-     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-1.6.0-sun /usr/lib/jvm/java-5-sun /usr/lib/jvm/java-1.5.0-sun /usr/java/jdk /Library/Java/Home"
+     javahome_candidates="/usr/lib/jvm/java /usr/lib/jvm/java-6-sun /usr/lib/jvm/java-6-openjdk /usr/lib/jvm/java-1.6.0-sun /usr/lib/jvm/java-5-sun /usr/lib/jvm/java-1.5.0-sun /usr/java/jdk /Library/Java/Home"
      for dir in $javahome_candidates; do
          if test "$JAVA_HOME" = "" -a -d "$dir"; then
              JAVA_HOME=$dir
@@ -7167,9 +7227,10 @@ if test "$cygwin" = yes; then
   LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
 fi
 
-# on MinGW dll auto importing is used
+# on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
+# otherwise exceptions cant be thrown across dll boundaries
 if test "$mingw" = yes; then
-  LDFLAGS="$LDFLAGS -enable-auto-import"
+  LDFLAGS="$LDFLAGS -enable-auto-import -shared-libgcc"
 fi
 
 #----------------------
@@ -7195,7 +7256,6 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
-
 
 
 
@@ -8000,7 +8060,6 @@ WHOLE_ARCHIVE_ON!$WHOLE_ARCHIVE_ON$ac_delim
 WHOLE_ARCHIVE_OFF!$WHOLE_ARCHIVE_OFF$ac_delim
 TOOLCHAIN_NAME!$TOOLCHAIN_NAME$ac_delim
 MYPWD!$MYPWD$ac_delim
-NEDC!$NEDC$ac_delim
 MSGC!$MSGC$ac_delim
 NEDTOOL!$NEDTOOL$ac_delim
 AS!$AS$ac_delim
@@ -8010,6 +8069,7 @@ DLLTOOL!$DLLTOOL$ac_delim
 MAKEDEPEND!$MAKEDEPEND$ac_delim
 BUILD_SHARED_LIBS!$BUILD_SHARED_LIBS$ac_delim
 A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
+SHARED_LIB_SUFFIX!$SHARED_LIB_SUFFIX$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -8051,7 +8111,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-SHARED_LIB_SUFFIX!$SHARED_LIB_SUFFIX$ac_delim
 JNI_LIB_SUFFIX!$JNI_LIB_SUFFIX$ac_delim
 SO_LIB_SUFFIX!$SO_LIB_SUFFIX$ac_delim
 DLL_LIB_SUFFIX!$DLL_LIB_SUFFIX$ac_delim
@@ -8087,7 +8146,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 34; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 33; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
