@@ -3,6 +3,8 @@ package org.omnetpp.scave.editors.treeproviders;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
+import java.util.List;
+
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -26,6 +28,7 @@ import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.Param;
+import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.Select;
@@ -113,13 +116,33 @@ public class ScaveModelLabelProvider extends LabelProvider {
 			Except o = (Except) element;
 			return "except " + defaultIfEmpty(o.getFilterPattern(), "all");
 		}
-		else if (element instanceof Apply) {
-			Apply o = (Apply) element;
-			return "apply "+defaultIfEmpty(o.getOperation(), "<undefined>");
-		}
-		else if (element instanceof Compute) {
-			Compute o = (Compute) element;
-			return "compute "+defaultIfEmpty(o.getOperation(), "<undefined>");
+		else if (element instanceof ProcessingOp) {
+			ProcessingOp o = (ProcessingOp) element;
+			StringBuilder sb = new StringBuilder();
+			
+			if (element instanceof Apply)
+				sb.append("apply");
+			else if (element instanceof Compute)
+				sb.append("compute");
+			else
+				sb.append("<unknown operation>");
+			
+			sb.append(' ').append(defaultIfEmpty(o.getOperation(), "<undefined>"));
+			
+			List<Param> params = o.getParams();
+			if (!params.isEmpty()) sb.append('(');
+			boolean firstIteration = true;
+			for (Param param : params) {
+				if (!firstIteration)
+					sb.append(',');
+				else
+					firstIteration = false;
+				sb.append(defaultIfEmpty(param.getName(), "<undefined>")).append('=').append(defaultIfEmpty(param.getValue(), ""));
+			}
+			if (!params.isEmpty()) sb.append(')');
+			
+			
+			return sb.toString();
 		}
 		else if (element instanceof Group) {
 			Group o = (Group) element;
