@@ -196,7 +196,7 @@ void FilteredEvent::getCauses(IEvent *event, IMessageDependency *endMessageDepen
         if (causeEvent && (filteredEventLog->getCollectMessageReuses() || !messageDependency->getIsReuse())) {
             //printf("*** Checking at level %d for cause event number %ld\n", level, causeEvent->getEventNumber());
             // TODO: take care about maximum number of dependencies
-            bool effectiveIsReuse = isReuse | messageDependency->getIsReuse();
+            bool effectiveIsReuse = isReuse || messageDependency->getIsReuse();
             if (filteredEventLog->matchesFilter(causeEvent) &&
                 (level == 0 || IMessageDependency::corresponds(messageDependency, endMessageDependency)))
             {
@@ -276,3 +276,5 @@ void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *mes
 
     messageDependencies->push_back(newMessageDependency);
 }
+
+

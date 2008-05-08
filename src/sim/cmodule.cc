@@ -407,7 +407,7 @@ cGate *cModule::gate(int id)
     unsigned int h = id & GATEID_HMASK;
     if (h==0) {
         unsigned int descIndex = id>>1;
-        if (descIndex >= descvSize)
+        if (descIndex >= (unsigned int) descvSize)
             return NULL; //XXX as assert?
         cGate::Desc *desc = descv + descIndex;
         ASSERT(desc->namep); // not deleted
@@ -420,7 +420,7 @@ cGate *cModule::gate(int id)
     }
     else {
         unsigned int descIndex = (h>>GATEID_LBITS)-1;
-        if (descIndex >= descvSize)
+        if (descIndex >= (unsigned int) descvSize)
             return NULL;  //FIXME error/assert instead
         cGate::Desc *desc = descv + descIndex;
         ASSERT(desc->namep); // not deleted
