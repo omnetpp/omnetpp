@@ -8,7 +8,6 @@ import org.eclipse.emf.edit.command.RemoveCommand;
 import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
@@ -484,8 +483,8 @@ public class ChartProperties extends PropertySource {
 	
 	public FontData getDefaultFontProperty(String propertyName) {
 		Object defaultValue = ChartDefaults.getDefaultPropertyValue(propertyName);
-		if (defaultValue instanceof Font)
-			return Converter.swtfontToFontdata((Font)defaultValue);
+		if (defaultValue instanceof FontData)
+			return (FontData)defaultValue;
 		else
 			return null;
 	}

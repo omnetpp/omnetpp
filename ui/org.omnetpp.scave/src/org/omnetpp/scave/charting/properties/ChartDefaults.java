@@ -8,6 +8,7 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.scave.charting.properties.ChartProperties.BarPlacement;
@@ -30,7 +31,8 @@ public class ChartDefaults {
 
 	// title
 	public static final String DEFAULT_TITLE = "";
-	public static final Font DEFAULT_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
+	public static final FontData DEFAULT_TITLE_FONTDATA = new FontData("Arial", 10, SWT.NORMAL);
+	public static final Font DEFAULT_TITLE_FONT = new Font(null, DEFAULT_TITLE_FONTDATA);
 	public static final Color DEFAULT_TITLE_COLOR = ColorFactory.BLACK;
 
 	// colors
@@ -44,14 +46,17 @@ public class ChartDefaults {
 	public static final boolean DEFAULT_LEGEND_BORDER = false;
 	public static final LegendPosition DEFAULT_LEGEND_POSITION = LegendPosition.Above;
 	public static final LegendAnchor DEFAULT_LEGEND_ANCHOR = LegendAnchor.North;
-	public static final Font DEFAULT_LEGEND_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
+	public static final FontData DEFAULT_LEGEND_FONTDATA = new FontData("Arial", 8, SWT.NORMAL);
+	public static final Font DEFAULT_LEGEND_FONT = new Font(null, DEFAULT_LEGEND_FONTDATA);
 	
 	// axes
 	public static final String DEFAULT_X_AXIS_TITLE = "";
 	public static final String DEFAULT_Y_AXIS_TITLE = "";
-	public static final Font DEFAULT_AXIS_TITLE_FONT = new Font(null, "Arial", 10, SWT.NORMAL);
+	public static final FontData DEFAULT_AXIS_TITLE_FONTDATA = new FontData("Arial", 10, SWT.NORMAL);
+	public static final Font DEFAULT_AXIS_TITLE_FONT = new Font(null, DEFAULT_AXIS_TITLE_FONTDATA);
 	public static final Color DEFAULT_AXIS_COLOR = ColorFactory.BLACK;
-	public static final Font DEFAULT_LABELS_FONT = new Font(null, "Arial", 8, SWT.NORMAL);
+	public static final FontData DEFAULT_LABELS_FONTDATA = new FontData("Arial", 8, SWT.NORMAL);
+	public static final Font DEFAULT_LABELS_FONT = new Font(null, DEFAULT_LABELS_FONTDATA);
 	public static final double DEFAULT_X_LABELS_ROTATED_BY = 0.0;
 	public static final boolean DEFAULT_Y_AXIS_LOGARITHMIC = false;
 
@@ -85,7 +90,7 @@ public class ChartDefaults {
 		defaults.put(PROP_BACKGROUND_COLOR, DEFAULT_BACKGROUND_COLOR.getRGB());
 		
 		defaults.put(PROP_GRAPH_TITLE, DEFAULT_TITLE);
-		defaults.put(PROP_GRAPH_TITLE_FONT, DEFAULT_TITLE_FONT);
+		defaults.put(PROP_GRAPH_TITLE_FONT, DEFAULT_TITLE_FONTDATA);
 		
 		// TODO: INSETS_BACKGROUND_COLOR
 		// TODO: INSETS_LINE_COLOR
@@ -94,13 +99,13 @@ public class ChartDefaults {
 		defaults.put(PROP_LEGEND_BORDER, DEFAULT_LEGEND_BORDER);
 		defaults.put(PROP_LEGEND_POSITION, DEFAULT_LEGEND_POSITION);
 		defaults.put(PROP_LEGEND_ANCHORING, DEFAULT_LEGEND_ANCHOR);
-		defaults.put(PROP_LEGEND_FONT, DEFAULT_LEGEND_FONT);
+		defaults.put(PROP_LEGEND_FONT, DEFAULT_LEGEND_FONTDATA);
 		
 		defaults.put(PROP_X_AXIS_TITLE, DEFAULT_X_AXIS_TITLE);
 		defaults.put(PROP_Y_AXIS_TITLE, DEFAULT_Y_AXIS_TITLE);
-		defaults.put(PROP_AXIS_TITLE_FONT, DEFAULT_AXIS_TITLE_FONT);
+		defaults.put(PROP_AXIS_TITLE_FONT, DEFAULT_AXIS_TITLE_FONTDATA);
 		// TODO: AXIS_COLOR
-		defaults.put(PROP_LABEL_FONT, DEFAULT_LABELS_FONT);
+		defaults.put(PROP_LABEL_FONT, DEFAULT_LABELS_FONTDATA);
 		defaults.put(PROP_X_LABELS_ROTATE_BY, DEFAULT_X_LABELS_ROTATED_BY);
 		defaults.put(PROP_WRAP_LABELS, DEFAULT_WRAP_LABELS);
 		
