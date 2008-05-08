@@ -16,6 +16,8 @@ sudo apt-get install \
 	graphviz \
 	libxml2-dev \
 	zlib1g-dev \
-	libx11-dev
+	libx11-dev \
+	texlive \
+	texlive-latex-extra
 
 
