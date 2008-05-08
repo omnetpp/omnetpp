@@ -170,7 +170,7 @@ public class InifileHoverUtils {
 		text += "<b>[" + section + "] / " + key + "</b><br>\n";
 		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
 		if (resList.length==0) {
-			text += "Does not match any module parameters.";
+			text += "<br>Does not match any module parameters.";
 			return HoverSupport.addHTMLStyleSheet(text);
 		}
 
@@ -179,19 +179,26 @@ public class InifileHoverUtils {
 		for (ParamResolution res : resList)
 			paramDeclNodes.add(res.paramDeclNode);
 
-		text += "Applies to the following module parameters: <br>\n";
+		text += "<br>Applies to:\n";
 		for (ParamElement paramDeclNode : paramDeclNodes) {
 			String paramName = paramDeclNode.getName();
+			String paramValue = paramDeclNode.getValue();
+			if (paramDeclNode.getIsDefault())
+			    paramValue = "default("+paramValue+")";
+			String optParamValue = StringUtils.isEmpty(paramValue) ? "" : " = " + paramValue;
 			String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
+			if (paramDeclNode.getIsVolatile())
+			    paramType = "volatile " + paramType;
 			String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
 			String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
-			String optComment = comment==null ? "" : (" -- \"" + comment + "\"");
+			String optComment = comment==null ? "" : (" -- <i>\"" + comment + "\"</i>");
 
-			text += "<br>"+paramDeclaredOn + "." + paramName + " : "+ paramType + optComment + "\n<ul>\n";
+			text += "<br>- "+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + optComment + "\n";
 
+			text += "<ul>\n";
 			for (ParamResolution res : resList)
 				if (res.paramDeclNode == paramDeclNode)
-					text +=	" <li>" + res.moduleFullPath + (section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "</li>\n";
+					text +=	" <li><i>" + res.moduleFullPath + "." + paramName + "</i>" + (section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "</li>\n";
 			text += "</ul>";
 		}
 		return HoverSupport.addHTMLStyleSheet(text);
