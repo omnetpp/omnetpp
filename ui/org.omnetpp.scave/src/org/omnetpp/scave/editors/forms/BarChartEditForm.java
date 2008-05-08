@@ -18,6 +18,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
@@ -25,10 +26,10 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TableDropTargetEffect;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
@@ -36,6 +37,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
+import org.omnetpp.common.ui.CustomSashForm;
 import org.omnetpp.common.ui.ListContentProvider;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
@@ -44,7 +46,8 @@ import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ScalarChartProperties;
 import org.omnetpp.scave.charting.properties.ChartProperties.BarPlacement;
 import org.omnetpp.scave.engine.ResultFileManager;
-import org.omnetpp.scave.engine.ResultItemFields;
+import org.omnetpp.scave.engine.ResultItemField;
+import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ScaveModelPackage;
@@ -69,7 +72,11 @@ public class BarChartEditForm extends ChartEditForm {
 		pkg.getChart_Properties(),
 	};
 	
-	private static final String[] fieldNames = ResultItemFields.getFieldNames().toArray();
+	private static final String[] fieldNames = new String[] {
+		ResultItemField.MODULE, ResultItemField.NAME,
+		RunAttribute.EXPERIMENT, RunAttribute.MEASUREMENT, RunAttribute.REPLICATION,
+		ResultItemField.RUN
+	};
 
 	// Main
 	private Viewer unusedFieldsList;
@@ -103,19 +110,22 @@ public class BarChartEditForm extends ChartEditForm {
 			wrapLabelsCheckbox.setSelection(ChartDefaults.DEFAULT_WRAP_LABELS);
 		}
 		else if (TAB_CONTENT.equals(name)) {
-			Group group = createGroup("Content", panel, 1, 3, true);
-			Label label = new Label(group, SWT.WRAP);
-			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+			Label label = new Label(panel, SWT.WRAP);
+			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 			label.setText("You can move fields by dragging.");
-			unusedFieldsList = createFieldsList(group, true);
-			unusedFieldsList.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+			
+			CustomSashForm sashForm = new CustomSashForm(panel, SWT.VERTICAL);
+			sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+			
+			unusedFieldsList = createFieldsList(sashForm, null, true);
 			unusedFieldsList.setInput(Arrays.asList(fieldNames));
-			createLabel("Groups", group);
-			createLabel("Bars", group);
-			createLabel("Averaged", group);
-			groupFieldsList = createFieldsList(group, false);
-			barFieldsList = createFieldsList(group, false);
-			averagedFieldsList = createFieldsList(group, true);
+
+			SashForm sashForm2 = new SashForm(sashForm, SWT.HORIZONTAL);
+			groupFieldsList = createFieldsList(sashForm2, "Groups", false);
+			barFieldsList = createFieldsList(sashForm2, "Bars", false);
+			averagedFieldsList = createFieldsList(sashForm2, "Averaged", true);
+
+			sashForm.setWeights(new int[] {1,2});
 		}
 		else if (TAB_BARS.equals(name)) {
 			if (chart instanceof BarChart) {
@@ -125,14 +135,19 @@ public class BarChartEditForm extends ChartEditForm {
 		}
 	}
 	
-	private TableViewer createFieldsList(Composite parent, final boolean sorted) {
-		final TableViewer viewer = new TableViewer(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+	private TableViewer createFieldsList(Composite parent, String label, final boolean sorted) {
+		Composite panel = new Composite(parent, SWT.NONE);
+		panel.setLayout(new GridLayout());
+		if (label != null)
+			createLabel(label, panel);
+
+		final TableViewer viewer = new TableViewer(panel, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		viewer.setLabelProvider(new LabelProvider());
 		viewer.setContentProvider(new ListContentProvider());
 		viewer.setInput(EMPTY_STRING_LIST);
 		final Table control = viewer.getTable();  
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gridData.minimumHeight = control.getItemHeight() * fieldNames.length; 
+		//gridData.minimumHeight = control.getItemHeight() * fieldNames.length; 
 		control.setLayoutData(gridData);
 		control.setLinesVisible(false);
 		control.setHeaderVisible(false);
