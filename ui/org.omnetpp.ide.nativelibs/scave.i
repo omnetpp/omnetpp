@@ -1,5 +1,8 @@
 %module ScaveEngine
 
+// covariant return type warning disabled
+#pragma SWIG nowarn=822
+
 %include "loadlib.i"
 
 %{

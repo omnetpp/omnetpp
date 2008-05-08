@@ -7,6 +7,9 @@
 #include "xyarray.h"
 %}
 
+// covariant return type warning disabled
+#pragma SWIG nowarn=822
+
 //XXX need %exception?
 
 %include "std_common.i"

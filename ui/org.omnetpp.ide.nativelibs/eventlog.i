@@ -1,5 +1,8 @@
 %module EventLogEngine
 
+// covariant return type warning disabled
+#pragma SWIG nowarn=822
+
 %include "loadlib.i"
 %include "enumtypeunsafe.swg"
 %include "commondefs.i"
