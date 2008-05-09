@@ -76,9 +76,11 @@ public class ChartMenuManager extends MenuManager {
 			add(new Separator());
 			add(editorContributor.getCopyChartToClipboardAction());
 			add(new Separator());
-			add(createProcessingSubmenu(true));  // "Apply" submenu
-			add(createProcessingSubmenu(false)); // "Compute" submenu
-			add(createRemoveProcessingSubmenu()); // "Remove" submenu
+			if (chart instanceof LineChart || chart instanceof ScatterChart) {
+				add(createProcessingSubmenu(true));  // "Apply" submenu
+				add(createProcessingSubmenu(false)); // "Compute" submenu
+				add(createRemoveProcessingSubmenu()); // "Remove" submenu
+			}
 			add(editorContributor.getGotoChartDefinitionAction());
 			add(new Separator());
 			add(editorContributor.getUndoRetargetAction());

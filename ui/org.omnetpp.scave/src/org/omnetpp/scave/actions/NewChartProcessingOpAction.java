@@ -16,6 +16,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Group;
 import org.omnetpp.scave.model.LineChart;
 import org.omnetpp.scave.model.ProcessingOp;
+import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model2.NonnotifyingReparentCommand;
 import org.omnetpp.scave.wizard.NewScaveObjectWizard;
@@ -103,6 +104,6 @@ public class NewChartProcessingOpAction extends AbstractScaveAction {
 	@Override
 	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
 		Chart chart = getChart(editor, selection);
-		return chart != null && chart instanceof LineChart;
+		return chart instanceof LineChart || chart instanceof ScatterChart;
 	}
 }
