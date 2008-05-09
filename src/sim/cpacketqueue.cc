@@ -56,7 +56,7 @@ std::string cPacketQueue::info() const
     if (empty())
         return std::string("empty");
     std::stringstream out;
-    out << length() << "pks " << "  " << byteLength() << "bytes (" << bitlength << " bits)";
+    out << "len=" << length() << ", " << bitLength() << " bits (" << byteLength() << " bytes)";
     return out.str();
 }
 
@@ -93,19 +93,19 @@ void cPacketQueue::msgAdd(cOwnedObject *obj)
 void cPacketQueue::insert(cOwnedObject *msg)
 {
     msgAdd(msg);
-    insert(msg);
+    cQueue::insert(msg);
 }
 
 void cPacketQueue::insertBefore(cOwnedObject *where, cOwnedObject *msg)
 {
     msgAdd(msg);
-    insertBefore(where, msg);
+    cQueue::insertBefore(where, msg);
 }
 
 void cPacketQueue::insertAfter(cOwnedObject *where, cOwnedObject *msg)
 {
     msgAdd(msg);
-    insertAfter(where, msg);
+    cQueue::insertAfter(where, msg);
 }
 
 cMessage *cPacketQueue::remove(cOwnedObject *msg)
