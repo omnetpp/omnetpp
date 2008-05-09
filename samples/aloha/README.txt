@@ -18,13 +18,17 @@ The internal state of the server and all statistics are visible in the GUI
 The most important statistics is channel utilization. It is also recorded into
 omnetpp.vec, and can be plotted using Plove.
 
-The supplied omnetpp.ini file contains six predefined scenarios (six runs):
-- run 1 simulates pure Aloha at high load
-- run 2 simulates pure Aloha at moderate load (utilization =~ max)
-- run 3 simulates pure Aloha at low load
-- run 4 simulates slotted Aloha at high load
-- run 5 simulates slotted Aloha at moderate load (utilization =~ max)
-- run 6 simulates slotted Aloha at low load
+The supplied omnetpp.ini file contains six predefined 6 predefined configurations:
+- pure Aloha at high load
+- pure Aloha at moderate load (utilization =~ max)
+- pure Aloha at low load
+- slotted Aloha at high load
+- slotted Aloha at moderate load (utilization =~ max)
+- slotted Aloha at low load
+
+- In addition it contains a predefined experiment scenario called 
+  PureAlohaExperiment where it explores the channel utilization in the 
+  function of number of hosts and packet generation frequency.
 
 According to some descriptions of the Aloha protocol, hosts have to listen
 on the channel before they start to tranmit anything. This "listen before

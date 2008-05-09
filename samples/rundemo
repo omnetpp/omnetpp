@@ -60,12 +60,10 @@ foreach line {
    {color5  "TokenRing"        "tokenring"        "./tokenring"     "tokenring.cmd"}
    {color5  "Hypercube"        "hypercube"        "./hypercube"     "hypercube.cmd"}
    {color5  "Routing"          "routing"          "./routing"       "routing.cmd"}
-   {color5  "Routing/Networks" "routing/networks" "../routing"      "..\\routing.cmd"}
-   {color7  "Database"         "database/README"}
    {color6  "Parallel CQN"     "cqn/parsim"       "./runparsim"     "runparsim.bat"}
-   {color6  "Dyna/RealTime"    "dyna/realtime"    "../dyna"         "..\\dyna.cmd"}
-   {color6  "Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.cmd -r 1"}
-   {color6  "Sockets/Telnet"   "sockets"          "./sockets -r 2"  "sockets.cmd -r 2"}
+   {color6  "Dyna/RealTime"    "dyna/realtime"    "./run"         "run.cmd"}
+   {color6  "Sockets/HTTP"     "sockets"          "./sockets -c HTTPExample"  "sockets.cmd -c HTTPExample"}
+   {color6  "Sockets/Telnet"   "sockets"          "./sockets -c TelnetExample"  "sockets.cmd -c TelnetExample"}
 } {
    lappend samples $i
    if {[llength $line]==0} {
