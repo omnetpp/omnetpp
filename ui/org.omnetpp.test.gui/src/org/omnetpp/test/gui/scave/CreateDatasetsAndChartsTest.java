@@ -10,7 +10,7 @@ public class CreateDatasetsAndChartsTest extends ScaveFileTestCase {
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
-		createFiles();
+		createFiles(2);
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		datasetsPage = editor.ensureDatasetsPageActive();
 	}
@@ -65,37 +65,5 @@ public class CreateDatasetsAndChartsTest extends ScaveFileTestCase {
 						n("histogram chart test-histogramchart"),
 						n("scatter chart test-scatterchart")),
 					n("chart sheet test-chartsheet (0 charts)")));
-	}
-	
-	protected void createFiles() throws Exception {
-		createFile(
-				fileName,
-
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-				"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">" +
-				"<inputs>" +
-				"<inputs name=\"test-*.vec\"/>" +
-				"<inputs name=\"test-*.sca\"/>" +
-				"</inputs>" +
-				"<datasets/>" +
-				"<chartSheets/>" +
-				"</scave:Analysis>");
-		
-		for (int runNumber = 1; runNumber <= 2; ++runNumber) {
-			createScalarFile(runNumber);
-			createVectorFile(runNumber);
-		}
-	}
-	
-	protected void createScalarFile(int runNumber) throws Exception {
-		createFile(
-				String.format("test-%d.sca", runNumber),
-				createScalarFileContent(runNumber));
-	}
-	
-	protected void createVectorFile(int runNumber) throws Exception {
-		createFile(
-				String.format("test-%d.vec", runNumber),
-				createVectorFileContent(runNumber));
 	}
 }

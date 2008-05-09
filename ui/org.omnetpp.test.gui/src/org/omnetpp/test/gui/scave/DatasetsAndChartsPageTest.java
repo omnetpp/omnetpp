@@ -15,7 +15,7 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
-		createFiles();
+		createFiles(2);
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		datasetsPage = editor.ensureDatasetsPageActive();
 	}
@@ -83,44 +83,34 @@ public class DatasetsAndChartsPageTest extends ScaveFileTestCase {
     }
 	
 	
-	protected void createFiles() throws Exception {
-		createFile(
-				fileName,
-
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-				"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">\n" +
-				"  <inputs>\n" +
-				"    <inputs name=\"test-*.vec\"/>\n" +
-				"    <inputs name=\"test-*.sca\"/>\n" +
-				"  </inputs>\n" +
-				"  <datasets>\n" +
-				"    <datasets name=\"test-dataset\">\n" +
-				"      <items xsi:type=\"scave:Add\" filterPattern=\"\" type=\"VECTOR\"/>\n" +
-				"      <items xsi:type=\"scave:Discard\" filterPattern=\"\"/>\n" +
-				"      <items xsi:type=\"scave:Group\">\n" +
-				"        <items xsi:type=\"scave:Apply\" operation=\"mean\"/>\n" +
-				"        <items xsi:type=\"scave:Compute\"/>\n" +
-				"        <items xsi:type=\"scave:LineChart\" name=\"test-linechart\" lineNameFormat=\"\"/>\n" +
-				"      </items>\n" +
-				"      <items xsi:type=\"scave:BarChart\" name=\"test-barchart\"/>\n" +
-				"      <items xsi:type=\"scave:HistogramChart\" name=\"test-histogramchart\"/>\n" +
-				"      <items xsi:type=\"scave:ScatterChart\" name=\"test-scatterchart\" xDataPattern=\"module(module-1) AND name(&quot;mean(vector-1)&quot;)\"/>\n" +
-				"    </datasets>\n" +
-				"  </datasets>\n" +
-				"  <chartSheets>\n" +
-				"    <chartSheets name=\"default\" charts=\"//@datasets/@datasets.0/@items.3 //@datasets/@datasets.0/@items.2/@items.2 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.5\"/>\n" +
-				"    <chartSheets name=\"test-chartsheet\"/>\n" +
-				"  </chartSheets>\n" +
-				"</scave:Analysis>\n");
-		
-		for (int runNumber = 1; runNumber <= 2; ++runNumber) {
-			createFile(
-					String.format("test-%d.sca", runNumber),
-					createScalarFileContent(runNumber));
-			createFile(
-					String.format("test-%d.vec", runNumber),
-					createVectorFileContent(runNumber));
-		}
+	@Override
+	protected String createAnalysisFileContent() {
+		return
+			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+			"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">\n" +
+			"  <inputs>\n" +
+			"    <inputs name=\"test-*.vec\"/>\n" +
+			"    <inputs name=\"test-*.sca\"/>\n" +
+			"  </inputs>\n" +
+			"  <datasets>\n" +
+			"    <datasets name=\"test-dataset\">\n" +
+			"      <items xsi:type=\"scave:Add\" filterPattern=\"\" type=\"VECTOR\"/>\n" +
+			"      <items xsi:type=\"scave:Discard\" filterPattern=\"\"/>\n" +
+			"      <items xsi:type=\"scave:Group\">\n" +
+			"        <items xsi:type=\"scave:Apply\" operation=\"mean\"/>\n" +
+			"        <items xsi:type=\"scave:Compute\"/>\n" +
+			"        <items xsi:type=\"scave:LineChart\" name=\"test-linechart\" lineNameFormat=\"\"/>\n" +
+			"      </items>\n" +
+			"      <items xsi:type=\"scave:BarChart\" name=\"test-barchart\"/>\n" +
+			"      <items xsi:type=\"scave:HistogramChart\" name=\"test-histogramchart\"/>\n" +
+			"      <items xsi:type=\"scave:ScatterChart\" name=\"test-scatterchart\" xDataPattern=\"module(module-1) AND name(&quot;mean(vector-1)&quot;)\"/>\n" +
+			"    </datasets>\n" +
+			"  </datasets>\n" +
+			"  <chartSheets>\n" +
+			"    <chartSheets name=\"default\" charts=\"//@datasets/@datasets.0/@items.3 //@datasets/@datasets.0/@items.2/@items.2 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.5\"/>\n" +
+			"    <chartSheets name=\"test-chartsheet\"/>\n" +
+			"  </chartSheets>\n" +
+			"</scave:Analysis>\n";
 	}
 	
 	protected GenericTreeNode buildDatasetsTreeContent() {

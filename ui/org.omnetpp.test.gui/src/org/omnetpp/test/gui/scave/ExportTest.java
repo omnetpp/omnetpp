@@ -19,7 +19,7 @@ public class ExportTest extends ScaveFileTestCase {
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
-		createFiles();
+		createFiles(2);
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		datasetsPage = editor.ensureDatasetsPageActive();
 	}
@@ -202,35 +202,25 @@ public class ExportTest extends ScaveFileTestCase {
         }
     }
     
-	protected void createFiles() throws Exception {
-		createFile(
-				fileName,
-
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-				"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">" +
-				"<inputs>" +
-				"<inputs name=\"test-*.vec\"/>" +
-				"<inputs name=\"test-*.sca\"/>" +
-				"</inputs>" +
-				"<datasets>" +
-			    "  <datasets name=\"scalar-dataset\">" +
-			    "    <items xsi:type=\"scave:Add\" filterPattern=\"\"/>" +
-			    "  </datasets>" +
-			    "  <datasets name=\"vector-dataset\">" +
-			    "    <items xsi:type=\"scave:Add\" filterPattern=\"\" type=\"VECTOR\"/>" +
-			    "  </datasets>" +
-			    "</datasets>" +
-				"<chartSheets/>" +
-				"</scave:Analysis>");
-		
-		for (int runNumber = 1; runNumber <= 2; ++runNumber) {
-			createFile(
-					String.format("test-%d.sca", runNumber),
-					createScalarFileContent(runNumber));
-			createFile(
-					String.format("test-%d.vec", runNumber),
-					createVectorFileContent(runNumber));
-		}
+	@Override
+    protected String createAnalysisFileContent() {
+		return
+			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+			"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">" +
+			"<inputs>" +
+			"<inputs name=\"test-*.vec\"/>" +
+			"<inputs name=\"test-*.sca\"/>" +
+			"</inputs>" +
+			"<datasets>" +
+		    "  <datasets name=\"scalar-dataset\">" +
+		    "    <items xsi:type=\"scave:Add\" filterPattern=\"\"/>" +
+		    "  </datasets>" +
+		    "  <datasets name=\"vector-dataset\">" +
+		    "    <items xsi:type=\"scave:Add\" filterPattern=\"\" type=\"VECTOR\"/>" +
+		    "  </datasets>" +
+		    "</datasets>" +
+			"<chartSheets/>" +
+			"</scave:Analysis>";
 	}
 	
 	public String getAbsolutePathForWorkspaceFile(String path) {

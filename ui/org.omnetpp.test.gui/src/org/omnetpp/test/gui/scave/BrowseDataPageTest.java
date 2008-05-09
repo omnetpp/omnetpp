@@ -24,7 +24,7 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 	@Override
 	protected void setUpInternal() throws Exception {
 		super.setUpInternal();
-		createFiles();
+		createFiles(2);
 		editor = ScaveEditorUtils.openAnalysisFile(projectName, fileName);
 		browseDataPage = editor.ensureBrowseDataPageActive();
 	}
@@ -218,27 +218,6 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		return content;
 	}
 	
-	protected String[] buildVectorsTableRow(int rowIndex) {
-		String[] row = new String[15];
-		int i = 0;
-		row[i++] = "/project/";
-		row[i++] = String.format("test-%d.vec", rowIndex);
-		row[i++] = String.format("config-%d", rowIndex); // config name
-		row[i++] = String.format("%d", rowIndex); // run number
-		row[i++] = String.format("run-%d", rowIndex);
-		row[i++] = String.format("module-%s", rowIndex);
-		row[i++] = String.format("vector-%d", rowIndex);
-		row[i++] = String.format("%d", rowIndex); // experiment
-		row[i++] = String.format("%d", rowIndex); // measurement
-		row[i++] = String.format("%d", rowIndex); // replication
-		row[i++] = "1"; // count
-		row[i++] = String.format("%s", (double)rowIndex); // mean
-		row[i++] = "n.a."; // stddev
-		row[i++] = String.format("%s", (double)rowIndex); // min
-		row[i++] = String.format("%s", (double)rowIndex); // max
-		return row;
-	}
-	
 	protected String[][] buildScalarsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
@@ -250,73 +229,5 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		String[][] content = new String[1][];
 		content[0] = buildScalarsTableRow(1);
 		return content;
-	}
-	
-	protected String[] buildScalarsTableRow(int rowIndex) {
-		String[] row = new String[11];
-		int i = 0;
-		row[i++] = "/project/";
-		row[i++] = String.format("test-%d.sca", rowIndex);
-		row[i++] = String.format("config-%d", rowIndex); // config name
-		row[i++] = String.format("%d", rowIndex); // run number
-		row[i++] = String.format("run-%d", rowIndex);
-		row[i++] = String.format("module-%s", rowIndex);
-		row[i++] = String.format("scalar-%d", rowIndex);
-		row[i++] = String.format("%d", rowIndex); // experiment
-		row[i++] = String.format("%d", rowIndex); // measurement
-		row[i++] = String.format("%d", rowIndex); // replication
-		row[i++] = String.format("%s", (double)rowIndex); // value
-		return row;
-	}
-	
-	protected void createFiles() throws Exception {
-		createFile(
-				fileName,
-
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-				"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">" +
-				"<inputs>" +
-				"<inputs name=\"test-*.vec\"/>" +
-				"<inputs name=\"test-*.sca\"/>" +
-				"</inputs>" +
-				"<datasets/>" +
-				"<chartSheets/>" +
-				"</scave:Analysis>");
-		
-		for (int runNumber = 1; runNumber <= 2; ++runNumber) {
-			createScalarFile(runNumber);
-			createVectorFile(runNumber);
-		}
-	}
-	
-	protected void createScalarFile(int runNumber) throws Exception {
-		createFile(
-				String.format("test-%d.sca", runNumber),
-				
-				String.format(
-					"run run-%1$d\n" +
-					"attr run-number %1$d\n" +
-					"attr config config-%1$d\n" +
-					"attr experiment %1$d\n" +
-					"attr measurement %1$d\n" +
-					"attr replication %1$d\n" +
-					"scalar module-%1$d scalar-%1$d %1$d\n",
-					runNumber));
-	}
-	
-	protected void createVectorFile(int runNumber) throws Exception {
-		createFile(
-				String.format("test-%d.vec", runNumber),
-				
-				String.format(
-					"run run-%1$d\n" +
-					"attr run-number %1$d\n" +
-					"attr config config-%1$d\n" +
-					"attr experiment %1$d\n" +
-					"attr measurement %1$d\n" +
-					"attr replication %1$d\n" +
-					"vector 1 module-%1$d vector-%1$d TV\n" +
-					"1	0.0	%2$f\n",
-					runNumber, (double)runNumber));
 	}
 }

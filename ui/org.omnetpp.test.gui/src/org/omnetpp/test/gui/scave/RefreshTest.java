@@ -1,6 +1,5 @@
 package org.omnetpp.test.gui.scave;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.swt.SWT;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.test.gui.access.BrowseDataPageAccess;
@@ -87,45 +86,45 @@ public class RefreshTest extends ScaveFileTestCase {
 		assertDatasetViewVectorsTableContent(buildVectorsTableContent(1, 2, 4));
     }
     
+    
+	@Override
+	protected String createAnalysisFileContent() {
+		return 
+			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+			"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">\n" +
+			"  <inputs>\n" +
+			"    <inputs name=\"/project/test-1.vec\"/>\n" +
+			"    <inputs name=\"/project/test-1.sca\"/>\n" +
+			"    <inputs name=\"/project/test-2.vec\"/>\n" +
+			"    <inputs name=\"/project/test-2.sca\"/>\n" +
+			"    <inputs name=\"/project/test-3.vec\"/>\n" +
+			"    <inputs name=\"/project/test-3.sca\"/>\n" +
+			"  </inputs>\n" +
+			"  <datasets>\n" +
+			"    <datasets name=\"test-dataset\">\n" +
+			"      <items xsi:type=\"scave:Add\" filterPattern=\"\" type=\"VECTOR\"/>\n" +
+			"      <items xsi:type=\"scave:Add\" filterPattern=\"\" type=\"SCALAR\"/>\n" +
+			"      <items xsi:type=\"scave:LineChart\" name=\"test-linechart\" lineNameFormat=\"\"/>\n" +
+			"      <items xsi:type=\"scave:BarChart\" name=\"test-barchart\"/>\n" +
+			"      <items xsi:type=\"scave:HistogramChart\" name=\"test-histogramchart\"/>\n" +
+			"      <items xsi:type=\"scave:ScatterChart\" name=\"test-scatterchart\" xDataPattern=\"module(module-1) AND name(&quot;mean(vector-1)&quot;)\"/>\n" +
+			"    </datasets>\n" +
+			"  </datasets>\n" +
+			"  <chartSheets>\n" +
+			"    <chartSheets name=\"default\" charts=\"//@datasets/@datasets.0/@items.3 //@datasets/@datasets.0/@items.2 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.5\"/>\n" +
+			"    <chartSheets name=\"test-chartsheet\"/>\n" +
+			"  </chartSheets>\n" +
+			"</scave:Analysis>\n";
+	}
+
 	protected void createFiles() throws Exception {
-		createFile(
-				fileName,
-				
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-				"<scave:Analysis xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:scave=\"http://www.omnetpp.org/omnetpp/scave\">\n" +
-				"  <inputs>\n" +
-				"    <inputs name=\"/project/test-1.vec\"/>\n" +
-				"    <inputs name=\"/project/test-1.sca\"/>\n" +
-				"    <inputs name=\"/project/test-2.vec\"/>\n" +
-				"    <inputs name=\"/project/test-2.sca\"/>\n" +
-				"    <inputs name=\"/project/test-3.vec\"/>\n" +
-				"    <inputs name=\"/project/test-3.sca\"/>\n" +
-				"  </inputs>\n" +
-				"  <datasets>\n" +
-				"    <datasets name=\"test-dataset\">\n" +
-				"      <items xsi:type=\"scave:Add\" filterPattern=\"\" type=\"VECTOR\"/>\n" +
-				"      <items xsi:type=\"scave:Add\" filterPattern=\"\" type=\"SCALAR\"/>\n" +
-				"      <items xsi:type=\"scave:LineChart\" name=\"test-linechart\" lineNameFormat=\"\"/>\n" +
-				"      <items xsi:type=\"scave:BarChart\" name=\"test-barchart\"/>\n" +
-				"      <items xsi:type=\"scave:HistogramChart\" name=\"test-histogramchart\"/>\n" +
-				"      <items xsi:type=\"scave:ScatterChart\" name=\"test-scatterchart\" xDataPattern=\"module(module-1) AND name(&quot;mean(vector-1)&quot;)\"/>\n" +
-				"    </datasets>\n" +
-				"  </datasets>\n" +
-				"  <chartSheets>\n" +
-				"    <chartSheets name=\"default\" charts=\"//@datasets/@datasets.0/@items.3 //@datasets/@datasets.0/@items.2 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.5\"/>\n" +
-				"    <chartSheets name=\"test-chartsheet\"/>\n" +
-				"  </chartSheets>\n" +
-				"</scave:Analysis>\n");
+		createAnalysisFile();
 		
 		for (int runNumber = 1; runNumber <= 4; ++runNumber) {
 			if (runNumber == 3)
 				continue;
-			createFile(
-					String.format("test-%d.sca", runNumber),
-					createScalarFileContent(runNumber));
-			createFile(
-					String.format("test-%d.vec", runNumber),
-					createVectorFileContent(runNumber));
+			createScalarFile(runNumber);
+			createVectorFile(runNumber);
 		}
 	}
 	
@@ -166,18 +165,7 @@ public class RefreshTest extends ScaveFileTestCase {
 	protected String[][] buildScalarsTableContent(int... runNumbers) {
 		String[][] table = new String[runNumbers.length][];
 		for (int i = 0; i < runNumbers.length; ++i) {
-			table[i] = row(
-							"/project/",
-							String.format("test-%d.sca", runNumbers[i]),
-							String.format("config-%d", runNumbers[i]),
-							String.format("%d", runNumbers[i]),
-							String.format("run-%d", runNumbers[i]),
-							String.format("module-%d", runNumbers[i]),
-							String.format("scalar-%d", runNumbers[i]),
-							String.format("%d", runNumbers[i]),
-							String.format("%d", runNumbers[i]),
-							String.format("%d", runNumbers[i]),
-							String.format("%.1f", (double)runNumbers[i]));
+			table[i] = buildScalarsTableRow(runNumbers[i]);
 		}
 		return table;
 	}
@@ -185,22 +173,7 @@ public class RefreshTest extends ScaveFileTestCase {
 	protected String[][] buildVectorsTableContent(int... runNumbers) {
 		String[][] table = new String[runNumbers.length][];
 		for (int i = 0; i < runNumbers.length; ++i) {
-			table[i] = row(
-							"/project/",
-							String.format("test-%d.vec", runNumbers[i]),
-							String.format("config-%d", runNumbers[i]),
-							String.format("%d", runNumbers[i]),
-							String.format("run-%d", runNumbers[i]),
-							String.format("module-%d", runNumbers[i]),
-							String.format("vector-%d", runNumbers[i]),
-							String.format("%d", runNumbers[i]),
-							String.format("%d", runNumbers[i]),
-							String.format("%d", runNumbers[i]),
-							"1",
-							String.format("%.1f", (double)runNumbers[i]),
-							"n.a.",
-							String.format("%.1f", (double)runNumbers[i]),
-							String.format("%.1f", (double)runNumbers[i]));
+			table[i] = buildVectorsTableRow(runNumbers[i]);
 		}
 		return table;
 	}
@@ -261,28 +234,5 @@ public class RefreshTest extends ScaveFileTestCase {
 		datasetView.ensureVectorsPanelActivated();
 		datasetView.sortByTableColumn(DatasetViewAccess.FILE_NAME, SWT.UP);
 		datasetView.getVectorsTable().assertContent(content);
-	}
-	
-	protected String[][] table(String[]... rows) {
-		return rows;
-	}
-	
-	protected String[] row(String... row) {
-		return row;
-	}
-	
-	protected GenericTreeNode[] remove(GenericTreeNode[] array, int index) {
-		return (GenericTreeNode[])ArrayUtils.remove(array, index);
-	}
-
-	protected String[][] remove(String[][] array, int index) {
-		return (String[][])ArrayUtils.remove(array, index);
-	}
-	
-	protected GenericTreeNode[] add(GenericTreeNode[] array, GenericTreeNode... elements) {
-		GenericTreeNode[] result = array;
-		for (GenericTreeNode element : elements)
-			result = (GenericTreeNode[])ArrayUtils.add(result, element); 
-		return result;
 	}
 }
