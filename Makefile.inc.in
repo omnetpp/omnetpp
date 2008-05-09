@@ -3,6 +3,7 @@
 # Your changes will be lost the next time ./configure is run.
 #
 OMNETPP_VERSION = @OMNETPP_VERSION@
+OMNETPP_BUILDID = @OMNETPP_BUILDID@
 OMNETPP_EDITION = @OMNETPP_EDITION@
 
 #

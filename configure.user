@@ -30,7 +30,7 @@
 # self-contained standalone executables which do not rely on external
 # Tcl scripts. This option is available for Tkenv.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # Set to "yes" to enable simulation executables to load NED files dynamically.

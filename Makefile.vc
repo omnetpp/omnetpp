@@ -7,6 +7,11 @@
 #
 #=====================================================================
 
+# Version. Should ideally come from the 'Version' file but nmake doesn't support that
+OMNETPP_VERSION=omnetpp-4.0b1
+OMNETPP_BUILDID=internal
+OMNETPP_EDITION=Academic Public License -- NOT FOR COMMERCIAL USE
+
 !if "$(MODE)"==""
 all: allmodes
 !endif
@@ -141,7 +146,7 @@ check-env:
 	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
 
 ver_h:
-	@cd /d $(OMNETPP_SRC_DIR:/=\)\utils && copy ver.h.base ver.h.tmp && echo #define OMNETPP_RELEASE "$(OMNETPP_VERSION)" >>ver.h.tmp && echo #define OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h.tmp
+	@cd /d $(OMNETPP_SRC_DIR:/=\)\utils && copy ver.h.base ver.h.tmp && echo #define OMNETPP_RELEASE "$(OMNETPP_VERSION)" >>ver.h.tmp && echo #define OMNETPP_BUILDID "$(OMNETPP_BUILDID)" >>ver.h.tmp && echo #define OMNETPP_EDITION "$(OMNETPP_EDITION)" >>ver.h.tmp
 	-@cd /d $(OMNETPP_SRC_DIR:/=\)\utils && diff ver.h.tmp ver.h || copy ver.h.tmp ver.h
 	-@cd /d $(OMNETPP_SRC_DIR:/=\)\utils && rm ver.h.tmp
 

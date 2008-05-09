@@ -15,9 +15,6 @@
 #
 OMNETPP_ROOT=$(OMNETPP_ROOT:\=/)
 
-# Version. Should ideally come from the 'Version' file but nmake doesn't support that
-OMNETPP_VERSION=omnetpp-4.0b1
-
 #
 # Choose build mode. The default is "debug" for models.
 #
@@ -117,7 +114,7 @@ JNILIBS_IF_POSSIBLE=jnilibs
 # This option is available at present for Tkenv.
 # Set the following variable to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # It is possible to compile Tkenv as a Windows GUI app (as opposed to
@@ -133,7 +130,7 @@ WITH_NETBUILDER=yes
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
 #
-WITH_PARSIM=yes
+WITH_PARSIM=no
 
 #==============================================================================
 #======!!!         Try not to change anything below this line       !!!======
@@ -189,7 +186,6 @@ OMNETPP_OUT_DIR=$(OMNETPP_ROOT)/out
 OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
 OMNETPP_IMAGE_PATH=./images;./bitmaps;$(OMNETPP_ROOT)/images
 
-OMNETPP_EDITION=Academic Public License -- NOT FOR COMMERCIAL USE
 
 #
 # Libraries
