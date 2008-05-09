@@ -1,1 +1,2 @@
-../dyna realtime.ini
+cd ..
+./dyna realtime.ini
