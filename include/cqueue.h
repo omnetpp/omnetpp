@@ -255,7 +255,7 @@ class SIM_API cQueue : public cOwnedObject
     cOwnedObject *get(int i) const;
 
     /**
-     * Returns true if the queue contains the passed object.
+     * Returns true if the queue contains the given object.
      */
     virtual bool contains(cOwnedObject *obj) const;
     //@}
