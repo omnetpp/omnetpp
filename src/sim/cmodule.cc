@@ -582,49 +582,25 @@ cGate *cModule::gate(const char *gatename, int index)
     char suffix;
     const cGate::Desc *desc = gateDesc(gatename, suffix);
     if (desc->type()==cGate::INOUT && !suffix)
-        throw cRuntimeError("FIXME");  //XXX inout gate cannot be referenced without "$i" or "$o" suffix
+        throw cRuntimeError(this, "Inout gate `%s' cannot be referenced without $i/$o suffix", gatename);
     bool isInput = (suffix=='i' || desc->type()==cGate::INPUT);
 
     if (!desc->isVector())
     {
         // gate is scalar
         if (index!=-1)
-            throw cRuntimeError("FIXME");  // wrong: scalar gate referenced with index
+            throw cRuntimeError(this, "Scalar gate `%s' referenced with index", gatename);
         return isInput ? desc->inputgate : desc->outputgate;
     }
     else
     {
         // gate is vector
-        if (index<0 || index>=desc->size)
-            throw cRuntimeError("FIXME");  // index not specified (-1) or out of range
+        if (index<0)
+            throw cRuntimeError(this, "%s when accessing vector gate `%s", (index==-1?"No gate index specified":"Negative gate index specified"), gatename);
+        if (index>=desc->size)
+            throw cRuntimeError(this, "Gate index %d out of range when accessing vector gate `%s[]' (size %d)", index, gatename, desc->size);
         return isInput ? desc->inputgatev[index] : desc->outputgatev[index];
     }
-/*XXX TODO FIXME
-        // no such gate -- make some extra effort to issue a helpful error message
-        std::string fullgatename = index<0 ? gatename : opp_stringf("%s[%d]", gatename, index);
-        char suffix;
-        int descId = findGateDesc(gatename, suffix);
-        if (descId<0)
-            throw cRuntimeError(this, "has no gate named `%s'", fullgatename.c_str());
-        const cGate::Desc& desc = gatedescv[descId];
-        if (index==-1 && desc.isVector())
-            throw cRuntimeError(this, "has no gate named `%s' -- "   //FIXME say "attempt to access a vector gate as a scalar gate"
-                "use gate(\"%s\", 0) to refer to first gate of gate vector `%s[]', and "
-                "occurrences of gate(\"%s\")->size() should be replaced with gateSize(\"%s\")",
-                gatename, gatename, gatename, gatename, gatename);
-        if (index!=-1 && desc.isScalar())
-            throw cRuntimeError(this, "has no gate named `%s' -- use gate(\"%s\") to refer to scalar gate `%s'",
-                                fullgatename.c_str(), gatename, gatename);
-        if (!suffix && desc.isInout())
-            throw cRuntimeError(this, "has no gate named `%s' -- "   //FIXME say "attempt to access a scalar gate as a vector gate"
-                "one cannot reference an inout gate as a whole, only its input or output "
-                "component, by appending \"$i\" or \"$o\" to the gate name",
-                fullgatename.c_str());
-        if (desc.isVector() && (index<0 || index>=desc.size))
-            throw cRuntimeError(this, "has no gate named `%s' -- vector index out of bounds", fullgatename.c_str());
-        // whatever else -- we should never get here
-        throw cRuntimeError(this, "has no gate named `%s'", fullgatename.c_str());
-*/
 }
 
 int cModule::findGate(const char *gatename, int index) const
