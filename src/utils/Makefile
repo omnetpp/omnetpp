@@ -31,6 +31,7 @@ all: $O/seedtool$(EXE_SUFFIX)
 	if [ "$$OS" = "Windows_NT" ] ; then \
 	  echo "@echo $(OMNETPP_ROOT)/Makefile.inc" >opp_configfilepath.cmd && \
 	  cp opp_configfilepath.cmd $(OMNETPP_BIN_DIR); \
+	  cp omnetpp.cmd $(OMNETPP_BIN_DIR)
 	fi
 	cp opp_configfilepath $(OMNETPP_BIN_DIR)
 	cp opp_makemake $(OMNETPP_BIN_DIR)
