@@ -1,7 +1,7 @@
 package org.omnetpp.test.gui.scave;
 
-import static org.omnetpp.test.gui.access.BrowseDataPageAccess.FILE_NAME;
-import static org.omnetpp.test.gui.access.BrowseDataPageAccess.RUN_ID;
+import static org.omnetpp.test.gui.access.BrowseDataPageAccess.HISTOGRAMS;
+import static org.omnetpp.test.gui.access.BrowseDataPageAccess.NAME;
 import static org.omnetpp.test.gui.access.BrowseDataPageAccess.SCALARS;
 import static org.omnetpp.test.gui.access.BrowseDataPageAccess.VECTORS;
 import junit.framework.Assert;
@@ -14,6 +14,7 @@ import com.simulcraft.test.gui.access.ComboAccess;
 import com.simulcraft.test.gui.access.MenuAccess;
 import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.TableAccess;
+import com.simulcraft.test.gui.access.TableItemAccess;
 import com.simulcraft.test.gui.access.TextAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
 
@@ -36,35 +37,31 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 	
 	public void testTableContent() throws Exception {
 		Assert.assertNotNull(browseDataPage);
-		browseDataPage.ensureScalarsSelected();
+		testTableContent(VECTORS);
+		testTableContent(SCALARS);
+		testTableContent(HISTOGRAMS);
+	}
+	
+	private void testTableContent(String tab) {
+		browseDataPage.ensureTabSelected(tab);
 		browseDataPage.showAllTableColumns();
-		browseDataPage.sortByTableColumn(FILE_NAME, SWT.UP);
-		browseDataPage.getScalarsTable().assertContent(buildScalarsTableContent());
-		
-		browseDataPage.ensureVectorsSelected();
-		browseDataPage.showAllTableColumns();
-		browseDataPage.sortByTableColumn(FILE_NAME, SWT.UP);
-		browseDataPage.getVectorsTable().assertContent(buildVectorsTableContent());
-
-		browseDataPage.ensureHistogramsSelected();
-		browseDataPage.showAllTableColumns();
-		browseDataPage.getHistogramsTable().assertEmpty();
+		browseDataPage.sortByTableColumn(NAME, SWT.UP);
+		browseDataPage.getTable(tab).assertContent(buildTableContent(tab));
 	}
 	
 	public void testBasicFilter() throws Exception {
-		browseDataPage.ensureScalarsSelected();
+		testFilterCombos(VECTORS, "vector-1", "vector-1");
+		testFilterCombos(SCALARS, "scalar-1", "scalar-1");
+		testFilterCombos(HISTOGRAMS, "histogram-1", "histogram-1");
+	}
+	
+	private void testFilterCombos(String tab, String nameFilter, String nameValue) {
+		browseDataPage.ensureTabSelected(tab);
 		browseDataPage.showAllTableColumns();
 		browseDataPage.ensureBasicFilterSelected();
 		testFilterCombo(browseDataPage.getRunNameFilter(), "run-1", "Run id", "run-1");
 		testFilterCombo(browseDataPage.getModuleNameFilter(), "module-1", "Module", "module-1");
-		testFilterCombo(browseDataPage.getDataNameFilter(), "scalar-1", "Name", "scalar-1");
-
-		browseDataPage.ensureVectorsSelected();
-		browseDataPage.showAllTableColumns();
-		browseDataPage.ensureBasicFilterSelected();
-		testFilterCombo(browseDataPage.getRunNameFilter(), "run-1", "Run id", "run-1");
-		testFilterCombo(browseDataPage.getModuleNameFilter(), "module-1", "Module", "module-1");
-		testFilterCombo(browseDataPage.getDataNameFilter(), "vector-1", "Name", "vector-1");
+		testFilterCombo(browseDataPage.getDataNameFilter(), nameFilter, "Name", nameValue);
 	}
 	
 	private void testFilterCombo(ComboAccess filterCombo, String filter, String columnName, String columnValue) {
@@ -89,7 +86,6 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		filterText.pressEnter();
 		
 		TableAccess table = browseDataPage.getSelectedTable();
-		table.assertItemCount(rowCount);
 		table.assertColumnContentMatches(columnName, columnPattern);
 	}
 	
@@ -100,12 +96,12 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 			TableAccess table = browseDataPage.getSelectedTable();
 			table.click();
 			table.pressKey('a', SWT.CTRL);
-			table.assertSelectionCount(2);
+			table.assertAllSelected();
 		}
 	}
 	
 	public void testOpenTempChart() {
-		String[] tabs = new String[] { SCALARS, VECTORS };
+		String[] tabs = new String[] { VECTORS, SCALARS, HISTOGRAMS };
 		for (String tab : tabs) {
 			browseDataPage.ensureTabSelected(tab);
 			TableAccess table = browseDataPage.getSelectedTable();
@@ -118,12 +114,16 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		}
 	}
 	
+	public void testAddVectorsToDatasetByFilter() {
+		testAddToDatasetByFilter(VECTORS, "vector");
+	}
+	
 	public void testAddScalarsToDatasetByFilter() {
 		testAddToDatasetByFilter(SCALARS, "scalar");
 	}
 	
-	public void testAddVectorsToDatasetByFilter() {
-		testAddToDatasetByFilter(VECTORS, "vector");
+	public void testAddHistogramsToDatasetByFilter() {
+		testAddToDatasetByFilter(HISTOGRAMS, "histogram");
 	}
 	
 	private void testAddToDatasetByFilter(String tab, String resultItemType) {
@@ -141,19 +141,23 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 					n("add " + resultItemType + "s: run(run-1)")));
 	}
 	
+	public void testAddVectorsToDatasetBySelection() {
+		testAddToDatasetBySelection(VECTORS, "vector");
+	}
+	
 	public void testAddScalarsToDatasetBySelection() {
 		testAddToDatasetBySelection(SCALARS, "scalar");
 	}
 	
-	public void testAddVectorsToDatasetBySelection() {
-		testAddToDatasetBySelection(VECTORS, "vector");
+	public void testAddHistogramsToDatasetBySelection() {
+		testAddToDatasetBySelection(HISTOGRAMS, "histogram");
 	}
-
+	
 	private void testAddToDatasetBySelection(String tab, String resultItemType) {
 		browseDataPage.ensureTabSelected(tab);
 		TableAccess table = browseDataPage.getSelectedTable();
-		table.findTableItemByContent(RUN_ID, "run-1").click();
-		MenuAccess menu = table.activateContextMenuWithMouseClick();
+		TableItemAccess item = table.findTableItemByContent(NAME, resultItemType + "-1");
+		MenuAccess menu = item.activateContextMenuWithMouseClick();
 		menu.activateMenuItemWithMouse("Add [sS]elected.*");
 		fillSelectDatasetDialog();
 		
@@ -205,6 +209,17 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		filterText.assertTextContent("file\\(/project/test-1\\.vec\\) AND NOT module\\(module-2\\) ");
 	}
 	
+	protected String[][] buildTableContent(String tab) {
+		if (tab.equals(VECTORS))
+			return buildVectorsTableContent();
+		else if (tab.equals(SCALARS))
+			return buildScalarsTableContent();
+		else if (tab.equals(HISTOGRAMS))
+			return buildHistogramsTableContent();
+		else
+			throw new IllegalArgumentException("Unknown BrowseDataPage tab: " + tab);
+	}
+	
 	protected String[][] buildVectorsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
@@ -212,22 +227,19 @@ public class BrowseDataPageTest extends ScaveFileTestCase {
 		return content;
 	}
 	
-	protected String[][] buildFilteredVectorsTableContent() {
-		String[][] content = new String[1][];
-		content[0] = buildScalarsTableRow(1);
+	protected String[][] buildScalarsTableContent() {
+		String[][] content = new String[2*7+2][];
+		for (int i = 0; i < 2; ++i)
+			System.arraycopy(buildStatisticScalarRows(i+1), 0, content, i*7, 7);
+		for (int i = 0; i < 2; ++i)
+			content[2*7+i] = buildScalarsTableRow(i+1);
 		return content;
 	}
 	
-	protected String[][] buildScalarsTableContent() {
+	protected String[][] buildHistogramsTableContent() {
 		String[][] content = new String[2][];
 		for (int i = 0; i < content.length; ++i)
-			content[i] = buildScalarsTableRow(i+1);
-		return content;
-	}
-	
-	protected String[][] buildFilteredScalarsTableContent() {
-		String[][] content = new String[1][];
-		content[0] = buildScalarsTableRow(1);
+			content[i] = buildHistogramsTableRow(i+1);
 		return content;
 	}
 }
