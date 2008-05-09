@@ -91,7 +91,7 @@ public class CreateChartTemplateDialog extends TitleAreaDialog {
 		filterFieldsTable = new Table(group, SWT.CHECK | SWT.BORDER | SWT.HIDE_SELECTION);
 		filterFieldsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		createFilterFieldItem(group, "By Run Id", RUN);
-		TableItem filenameItem = createFilterFieldItem(group, "By File Name", FILE);
+		createFilterFieldItem(group, "By File Name", FILE);
 		createFilterFieldItem(group, "Experiment", EXPERIMENT);
 		createFilterFieldItem(group, "Measurement", MEASUREMENT);
 		createFilterFieldItem(group, "Replication", REPLICATION);
