@@ -114,7 +114,12 @@ public class TableAccess extends ControlAccess
     	Assert.assertEquals("Selection count does not match,", count, getControl().getSelectionCount());
     }
     
-	public TableItemAccess findTableItemByContent(String content) {
+    @UIStep
+    public void assertAllSelected() {
+    	Assert.assertEquals("Not all item selected,", getControl().getSelectionCount(), getControl().getItemCount());
+    }
+
+    public TableItemAccess findTableItemByContent(String content) {
 		return findTableItemByContent(0, content);
 	}
 	
