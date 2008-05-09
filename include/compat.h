@@ -35,7 +35,7 @@ typedef _OPPDEPRECATED  OPP::cTopology::Node        sTopoNode;
 // renamed classes:
 typedef _OPPDEPRECATED  OPP::cDisplayString   cDisplayStringParser;
 typedef _OPPDEPRECATED  OPP::cBasicChannel    cSimpleChannel;
-typedef _OPPDEPRECATED  OPP::cObject          cPolymorphic;
+typedef /*TBD:_OPPDEPRECATED*/  OPP::cObject  cPolymorphic;
 
 #endif
 
