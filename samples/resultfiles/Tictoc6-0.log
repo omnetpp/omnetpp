@@ -1,0 +1,99 @@
+MC id 1 c Tictoc6 n Tictoc6 cm 1
+MC id 2 c Txc6 pid 1 n tic
+GC m 2 g 0 n in o 0
+GC m 2 g 3 n out o 1
+MC id 3 c Txc6 pid 1 n toc
+GC m 3 g 0 n in o 0
+GC m 3 g 3 n out o 1
+CC sm 2 sg 3 dm 3 dg 0
+CC sm 3 sg 3 dm 2 dg 0
+
+E # 0 t 0 m 1 msg -1
+SB v 1024 rid Tictoc6-0-20080509-10:06:09-2228
+- Initializing channel Tictoc6.tic.out.channel, stage 0
+- Initializing channel Tictoc6.toc.out.channel, stage 0
+- Initializing module Tictoc6, stage 0
+- Initializing module Tictoc6.tic, stage 0
+- Scheduling first send to t=5.0s
+BS id 0 tid 0 c cMessage n event
+ES t 5
+- Initializing module Tictoc6.toc, stage 0
+MS id 2 d i=block/process,cyan
+MS id 3 d i=block/process,gold
+
+E # 1 t 5 m 2 ce 0 msg 0
+- Wait period is over, sending back message
+BS id 1 tid 1 c cMessage n tictocMsg
+SH sm 2 sg 3 td 0.1
+ES t 5.1
+
+E # 2 t 5.1 m 3 ce 1 msg 1
+- Message arrived, starting to wait 2.778121164384 secs...
+BS id 2 tid 2 c cMessage n event
+ES t 7.878121164384
+
+E # 3 t 7.878121164384 m 3 ce 2 msg 2
+- Wait period is over, sending back message
+BS id 1 tid 1 c cMessage n tictocMsg pe 2
+SH sm 3 sg 3 td 0.1
+ES t 7.978121164384
+
+E # 4 t 7.978121164384 m 2 ce 3 msg 1
+- Message arrived, starting to wait 1.518691739617 secs...
+BS id 0 tid 0 c cMessage n event pe 1
+ES t 9.496812904001
+
+E # 5 t 9.496812904001 m 2 ce 4 msg 0
+- Wait period is over, sending back message
+BS id 1 tid 1 c cMessage n tictocMsg pe 4
+SH sm 2 sg 3 td 0.1
+ES t 9.596812904001
+
+E # 6 t 9.596812904001 m 3 ce 5 msg 1
+- Message arrived, starting to wait 3.632239183496 secs...
+BS id 2 tid 2 c cMessage n event pe 3
+ES t 13.229052087497
+
+E # 7 t 13.229052087497 m 3 ce 6 msg 2
+- Wait period is over, sending back message
+BS id 1 tid 1 c cMessage n tictocMsg pe 6
+SH sm 3 sg 3 td 0.1
+ES t 13.329052087497
+
+E # 8 t 13.329052087497 m 2 ce 7 msg 1
+- Message arrived, starting to wait 1.416913078984 secs...
+BS id 0 tid 0 c cMessage n event pe 5
+ES t 14.745965166481
+
+E # 9 t 14.745965166481 m 2 ce 8 msg 0
+- Wait period is over, sending back message
+BS id 1 tid 1 c cMessage n tictocMsg pe 8
+SH sm 2 sg 3 td 0.1
+ES t 14.845965166481
+
+E # 10 t 14.845965166481 m 3 ce 9 msg 1
+- Message arrived, starting to wait 1.722135348795 secs...
+BS id 2 tid 2 c cMessage n event pe 7
+ES t 16.568100515276
+
+E # 11 t 16.568100515276 m 3 ce 10 msg 2
+- Wait period is over, sending back message
+BS id 1 tid 1 c cMessage n tictocMsg pe 10
+SH sm 3 sg 3 td 0.1
+ES t 16.668100515276
+
+E # 12 t 16.668100515276 m 2 ce 11 msg 1
+- Message arrived, starting to wait 0.343630983371 secs...
+BS id 0 tid 0 c cMessage n event pe 9
+ES t 17.011731498647
+
+E # 13 t 17.011731498647 m 2 ce 12 msg 0
+- Wait period is over, sending back message
+BS id 1 tid 1 c cMessage n tictocMsg pe 12
+SH sm 2 sg 3 td 0.1
+ES t 17.111731498647
+
+E # 14 t 17.111731498647 m 3 ce 13 msg 1
+- "Losing" message
+DM id 1 pe 14
+SE
