@@ -66,6 +66,7 @@
 #include "cproperty.h"
 #include "cpsquare.h"
 #include "cqueue.h"
+#include "cpacketqueue.h"
 #include "crng.h"
 #include "cscheduler.h"
 #include "csimplemodule.h"

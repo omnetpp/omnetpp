@@ -411,6 +411,14 @@ class cQueue extends cOwnedObject
         cOwnedObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
 }
 
+class cPacketQueue extends cQueue
+{
+        @omitGetVerb(true);
+        //FIXME the next two fields should be really int64, but opp_msgc doesn't support int64 yet
+        long bitLength @hint(total size of messages in the queue);
+        long byteLength @hint(total size of messages in the queue, in bytes);
+}
+
 class noncobject cHasher; //FIXME should be nonpoymorphic or what???
 
 class cHasher

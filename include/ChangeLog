@@ -110,6 +110,8 @@
 	  has changed
 	- compat.h typedef cQueueIterator removed, as iterator semantic was changed in a non-compatible way anyway
 
+	New class: cPacketQueue
+
 	cArray:
 	- items() became size()
 

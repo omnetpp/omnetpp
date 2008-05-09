@@ -35,7 +35,7 @@ OBJS_STD=\
     $O/cmessage.obj $O/cmsgpar.obj $O/cmodule.obj $O/cmessageheap.obj $O/chasher.obj \
     $O/cnedfunction.obj $O/cobject.obj $O/coutvector.obj $O/cnamedobject.obj \
     $O/cpar.obj $O/cparimpl.obj $O/cownedobject.obj $O/cproperties.obj $O/cproperty.obj \
-    $O/cpsquare.obj $O/cqueue.obj $O/cscheduler.obj $O/csimplemodule.obj \
+    $O/cpsquare.obj $O/cqueue.obj $O/cpacketqueue.obj $O/cscheduler.obj $O/csimplemodule.obj \
     $O/csimulation.obj $O/cstatistic.obj $O/cstddev.obj $O/cstlwatch.obj $O/cstringparimpl.obj \
     $O/cstringpool.obj $O/cstringtokenizer.obj $O/cclassdescriptor.obj $O/ctopology.obj $O/cvarhist.obj \
     $O/cvisitor.obj $O/cwatch.obj $O/cxmlelement.obj $O/cxmlparimpl.obj $O/distrib.obj $O/nedfunctions.obj \
