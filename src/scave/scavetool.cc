@@ -36,8 +36,8 @@ USING_NAMESPACE
 void printUsage()
 {
     printf(
-       "scavetool -- part of OMNeT++/OMNEST, (C) 2006 Andras Varga\n"
-       "Release: " OMNETPP_RELEASE ", edition: " OMNETPP_EDITION "\n"
+       "scavetool -- part of OMNeT++/OMNEST, (C) 2008 Andras Varga\n"
+       "Release: " OMNETPP_RELEASE ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
        "\n"
        "Usage: scavetool <command> [options] <files>...\n"
        "\n"

@@ -203,6 +203,7 @@ void Tkenv::setup()
 
         Tcl_SetVar(interp, "OMNETPP_RELEASE", OMNETPP_RELEASE, TCL_GLOBAL_ONLY);
         Tcl_SetVar(interp, "OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
+        Tcl_SetVar(interp, "OMNETPP_BUILDID", OMNETPP_BUILDID, TCL_GLOBAL_ONLY);
 
         // eval Tcl sources: either from .tcl files or from compiled-in string
         // literal (tclcode.cc)...

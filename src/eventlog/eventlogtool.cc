@@ -345,8 +345,8 @@ void usage(const char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"eventlogtool -- part of OMNeT++/OMNEST, (C) 2006 Andras Varga\n"
-"Release: " OMNETPP_RELEASE ", edition: " OMNETPP_EDITION "\n"
+"eventlogtool -- part of OMNeT++/OMNEST, (C) 2006-2008 Andras Varga\n"
+"Release: " OMNETPP_RELEASE ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
 "\n"
 "Usage:\n"
 "   eventlogtool <command> [options]* <input-file-name>\n"
