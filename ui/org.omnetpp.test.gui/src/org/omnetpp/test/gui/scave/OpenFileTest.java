@@ -12,7 +12,7 @@ public class OpenFileTest
 {
 	public void testNewScaveFile() {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*"); // so that we have "New|Inifile" in the menu
+		WorkbenchUtils.ensurePerspectiveActivated(".*Simul.*"); // so that we have "New|Inifile" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Analysis.*");
 		fillNewScaveFileWizard(projectName, fileName); // fill in wizard
 		WorkspaceUtils.assertFileExists(projectName + "/" + fileName); // make sure file got created

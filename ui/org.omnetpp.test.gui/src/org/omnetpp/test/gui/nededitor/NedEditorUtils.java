@@ -16,7 +16,6 @@ import com.simulcraft.test.gui.access.ShellAccess;
 import com.simulcraft.test.gui.access.StyledTextAccess;
 import com.simulcraft.test.gui.access.TextEditorAccess;
 import com.simulcraft.test.gui.access.TreeAccess;
-import com.simulcraft.test.gui.access.TreeItemAccess;
 import com.simulcraft.test.gui.access.WorkbenchWindowAccess;
 import com.simulcraft.test.gui.util.WorkbenchUtils;
 import com.simulcraft.test.gui.util.WorkspaceUtils;
@@ -25,7 +24,7 @@ public class NedEditorUtils
 {
 	public static void createNewNedFileByWizard(String parentFolder, String fileName, String template) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*"); // so that we have "New|NED file" in the menu
+		WorkbenchUtils.ensurePerspectiveActivated(".*Simul.*"); // so that we have "New|NED file" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Network Description.*");
 		ShellAccess shell = Access.findShellWithTitle("New NED File");
 		shell.findTextAfterLabel(".*parent folder.*").clickAndTypeOver(parentFolder);

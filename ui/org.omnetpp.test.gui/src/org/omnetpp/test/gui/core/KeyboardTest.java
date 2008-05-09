@@ -15,7 +15,7 @@ import org.eclipse.swt.SWT;
 public class KeyboardTest extends GUITestCase
 {
 	public void testKeyboard() throws Throwable {
-	    WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*");
+	    WorkbenchUtils.ensurePerspectiveActivated(".*Simul.*");
 	    WorkbenchWindowAccess.getWorkbenchWindow().chooseFromMainMenu("File|New.*|.*Other.*");
 	    TextAccess text = Access.findShellWithTitle("New").findTextAfterLabel("Wizards:");
 	    for (char c=32; c<128; ++c) {

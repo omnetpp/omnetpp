@@ -32,7 +32,7 @@ public class InifileEditorUtils
 
 	public static void createNewIniFileByWizard2(String parentFolder, String fileName, String networkName) {
 		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		WorkbenchUtils.ensurePerspectiveActivated(".*OMN.*"); // so that we have "New|Inifile" in the menu
+		WorkbenchUtils.ensurePerspectiveActivated(".*Simul.*"); // so that we have "New|Inifile" in the menu
 		workbenchWindow.chooseFromMainMenu("File|New.*|Ini.*");
 		fillNewInifileWizard(parentFolder, fileName, networkName); // fill in wizard
 		WorkspaceUtils.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
