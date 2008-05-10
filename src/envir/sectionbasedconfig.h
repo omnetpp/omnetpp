@@ -230,6 +230,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfiguration
     virtual const char *getVariable(const char *varname) const;
     virtual std::vector<const char *> getIterationVariableNames() const;
     virtual std::vector<const char *> getPredefinedVariableNames() const;
+    virtual const char *getVariableDescription(const char *varname) const;
     virtual void dump() const;
     //@}
 };

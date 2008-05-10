@@ -49,6 +49,7 @@ bool ResultItemAttribute::isAttributeName(const string name)
  *              RunAttribute
  *----------------------------------------*/
 
+//TODO: table to be kept consistent with ConfigVarDescription table in sectionbasedconfig.cc; use common source?
 const char * const RunAttribute::INIFILE     = "inifile";
 const char * const RunAttribute::CONFIGNAME  = "configname";
 const char * const RunAttribute::RUNNUMBER   = "runnumber";

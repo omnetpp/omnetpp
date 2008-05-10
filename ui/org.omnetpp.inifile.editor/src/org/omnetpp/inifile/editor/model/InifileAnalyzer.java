@@ -6,7 +6,6 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECOR
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.PREDEFINED_CONFIGVARS;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_BOOL;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_DOUBLE;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_INT;
@@ -390,7 +389,7 @@ public class InifileAnalyzer {
 		while (m.find()) {
 			foundAny = true;
 			String varname = m.group(1);
-			if (!sectionData.namedIterations.containsKey(varname) && !Arrays.asList(PREDEFINED_CONFIGVARS).contains(varname))
+			if (!sectionData.namedIterations.containsKey(varname) && !Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(varname))
 				addError(section, key, "${"+varname+"} is undefined");
 		}
 		return foundAny;
@@ -582,7 +581,7 @@ public class InifileAnalyzer {
 			v.section = section;
 			v.key = key;
 			System.out.println("found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
-			if (Arrays.asList(PREDEFINED_CONFIGVARS).contains(v.varname))
+			if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(v.varname))
 				addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
 			else if (sectionData.namedIterations.containsKey(v.varname))
 				// Note: checking that it doesn't redefine a variable in a base section can only be done

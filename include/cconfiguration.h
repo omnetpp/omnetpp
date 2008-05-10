@@ -224,6 +224,12 @@ class SIM_API cConfiguration : public cObject
     virtual std::vector<const char *> getPredefinedVariableNames() const = 0;
 
     /**
+     * Returns the description of the given variable in the activated configuration.
+     * Returns NULL if the variable does not exist or no description is available.
+     */
+    virtual const char *getVariableDescription(const char *varname) const = 0;
+
+    /**
      * For debugging.
      */
     virtual void dump() const = 0;

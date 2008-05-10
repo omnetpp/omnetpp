@@ -428,6 +428,17 @@ void EnvirBase::dumpComponentList(const char *category)
             ev << opp_indentlines(desc.c_str(), "        ") << ");\n";
         }
         ev << "\n";
+
+        std::vector<const char *> vars = config()->getPredefinedVariableNames();
+        for (int i=0; i<vars.size(); i++)
+        {
+            opp_string id = vars[i];
+            strupr(id.buffer());
+            const char *desc = config()->getVariableDescription(vars[i]);
+            ev << "    public static final String CFGVAR_" << id << " = addConfigVariable(";
+            ev << "\"" << vars[i] << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
+        }
+        ev << "\n";
     }
     if (wantAll || !strcmp(category, "classes"))
     {

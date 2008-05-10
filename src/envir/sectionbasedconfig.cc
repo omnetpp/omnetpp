@@ -50,13 +50,24 @@ extern cConfigKey *CFGID_NETWORK;
 extern cConfigKey *CFGID_RESULT_DIR;
 extern cConfigKey *CFGID_SEED_SET;
 
-
-static const char *PREDEFINED_CONFIGVARS[] = {
-  CFGVAR_RUNID, CFGVAR_INIFILE, CFGVAR_CONFIGNAME, CFGVAR_RUNNUMBER, CFGVAR_NETWORK,
-  CFGVAR_EXPERIMENT, CFGVAR_MEASUREMENT, CFGVAR_REPLICATION,
-  CFGVAR_PROCESSID, CFGVAR_DATETIME, CFGVAR_RESULTDIR,
-  CFGVAR_REPETITION, CFGVAR_SEEDSET, CFGVAR_ITERATIONVARS,
-  CFGVAR_ITERATIONVARS2, NULL
+// table to be kept consistent with scave/fields.cc
+static struct ConfigVarDescription { const char *name, *description; } configVarDescriptions[] = {
+    { CFGVAR_RUNID,            "A reasonably globally unique identifier for the run, produced by concatenating the configuration name, run number, date/time, etc." },
+    { CFGVAR_INIFILE,          "Name of the (primary) inifile" },
+    { CFGVAR_CONFIGNAME,       "Name of the active configuration" },
+    { CFGVAR_RUNNUMBER,        "Sequence number of the current run within all runs in the active configuration" },
+    { CFGVAR_NETWORK,          "Value of the \"network\" configuration option" },
+    { CFGVAR_EXPERIMENT,       "Value of the \"experiment-label\" configuration option" },
+    { CFGVAR_MEASUREMENT,      "Value of the \"measurement-label\" configuration option" },
+    { CFGVAR_REPLICATION,      "Value of the \"replication-label\" configuration option" },
+    { CFGVAR_PROCESSID,        "PID of the simulation process" },
+    { CFGVAR_DATETIME,         "Date and time the simulation run was started" },
+    { CFGVAR_RESULTDIR,        "Value of the \"result-dir\" configuration option" },
+    { CFGVAR_REPETITION,       "The iteration number in 0..N-1, where N is the value of the \"repeat\" configuration option" },
+    { CFGVAR_SEEDSET,          "Value of the \"seed-set\" configuration option" },
+    { CFGVAR_ITERATIONVARS,    "Concatenation of all user-defined iteration variables in name=value form" },
+    { CFGVAR_ITERATIONVARS2,   "Concatenation of all user-defined iteration variables in name=value form, plus ${repetition}" },
+    { NULL,                    NULL }
 };
 
 #define VARPOS_PREFIX  std::string("&")
@@ -560,15 +571,25 @@ std::vector<const char *> SectionBasedConfiguration::getIterationVariableNames()
 std::vector<const char *> SectionBasedConfiguration::getPredefinedVariableNames() const
 {
     std::vector<const char *> result;
-    for (const char **pvar = PREDEFINED_CONFIGVARS; *pvar; pvar++)
-        result.push_back(*pvar);
+    for (int i=0; configVarDescriptions[i].name; i++)
+        result.push_back(configVarDescriptions[i].name);
     return result;
+}
+
+const char *SectionBasedConfiguration::getVariableDescription(const char *varname) const
+{
+    for (int i=0; configVarDescriptions[i].name; i++)
+        if (strcmp(varname, configVarDescriptions[i].name)==0)
+            return configVarDescriptions[i].description;
+    if (!opp_isempty(getVariable(varname)))
+        return "User-defined iteration variable";
+    return NULL;
 }
 
 bool SectionBasedConfiguration::isPredefinedVariable(const char *varname) const
 {
-    for (const char **pvar = PREDEFINED_CONFIGVARS; *pvar; pvar++)
-        if (strcmp(varname, *pvar)==0)
+    for (int i=0; configVarDescriptions[i].name; i++)
+        if (strcmp(varname, configVarDescriptions[i].name)==0)
             return true;
     return false;
 }

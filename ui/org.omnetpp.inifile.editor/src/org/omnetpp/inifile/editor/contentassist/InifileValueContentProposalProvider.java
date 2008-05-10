@@ -1,12 +1,13 @@
 package org.omnetpp.inifile.editor.contentassist;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.*;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_CONFIG;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.PREDEFINED_CONFIGVARS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,8 +130,7 @@ s	 * before getting presented to the user.
 
 		// after "${", offer variable names
 		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
-			p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
-			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
+		    addConfigVariableProposals(p);
 		}
 
 		if (entry==CFGID_NETWORK) {
@@ -174,16 +174,38 @@ s	 * before getting presented to the user.
         }
 		else if (entry==CFGID_CONSTRAINT) {
 			// offer variable names after "$"
-			if (prefix.matches(".*\\$[A-Za-z0-9_]*")) {
-				p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
-				p.addAll(toProposals(PREDEFINED_CONFIGVARS));
-			}
+			if (prefix.matches(".*\\$[A-Za-z0-9_]*"))
+	            addConfigVariableProposals(p);
 		}
 		else if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
 			p.addAll(toProposals(new String[] {"true", "false"}));
 		}
 		return p;
 	}
+
+    /**
+     * Generate proposals for per-object configuration keys
+     */
+    protected List<IContentProposal> getCandidatesForPerObjectConfig(String prefix) {
+        String keySuffix = key.replaceFirst(".*\\.", ""); // only keep substring after last dot
+        ConfigKey entry = ConfigRegistry.getPerObjectEntry(keySuffix);
+        if (entry == null)
+            return new ArrayList<IContentProposal>();  // nothing
+
+        List<IContentProposal> p = new ArrayList<IContentProposal>();
+
+        // after "${", offer variable names
+        if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*"))
+            addConfigVariableProposals(p);
+
+        if (entry==CFGID_VECTOR_RECORDING_INTERVAL) {
+            p.addAll(toProposals(new String[]{"$1..", "$1..$2, $3.."})); //XXX use templated proposals here!
+        }
+        if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
+            p.addAll(toProposals(new String[] {"true", "false"}));
+        }
+        return p;
+    }
 
 	/**
 	 * Generate proposals for a module parameter key
@@ -214,14 +236,8 @@ s	 * before getting presented to the user.
 		List<IContentProposal> p = new ArrayList<IContentProposal>();
 
 		// after "${", offer variable names
-		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
-		    //FIXME after "$", offer: ${start..end}  ${start..end step x} ${start..end step x}s ${var=start..end step x} ${var=val1,val2,val3} ${var=val1,val2,val3 ! something}
-            //p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG"));
-	        //return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
-
-			p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
-			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
-		}
+		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*"))
+			addConfigVariableProposals(p);
 
 		switch (dataType) {
 		case NEDElementConstants.NED_PARTYPE_BOOL:
@@ -254,6 +270,18 @@ s	 * before getting presented to the user.
 			break;
 		}
 		return p;
+	}
+
+	protected void addConfigVariableProposals(List<IContentProposal> p) {
+	    //FIXME after "$", offer: ${start..end}  ${start..end step x} ${start..end step x}s ${var=start..end step x} ${var=val1,val2,val3} ${var=val1,val2,val3 ! something
+	    //p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedContinuousDistributionsTemplExt), "using a given RNG"));
+	    //return new Template(name, description, DEFAULT_NED_CONTEXT_TYPE, pattern, false);
+	    //XXX long descriptions do not get wrapped somehow -- do it manually?
+	    //XXX also: offer vars inside string constants too
+
+	    p.addAll(toProposals(analyzer.getIterationVariableNames(section), "Iteration variable"));
+	    for (String variable : ConfigRegistry.getConfigVariableNames())
+	        p.add(new ContentProposal(variable, variable, ConfigRegistry.getConfigVariableDescription(variable)));
 	}
 
 	/**
@@ -333,32 +361,6 @@ s	 * before getting presented to the user.
 		}
 		Arrays.sort(s);
 		return s;
-	}
-
-	/**
-	 * Generate proposals for per-object configuration keys
-	 */
-	protected List<IContentProposal> getCandidatesForPerObjectConfig(String prefix) {
-		String keySuffix = key.replaceFirst(".*\\.", ""); // only keep substring after last dot
-		ConfigKey entry = ConfigRegistry.getPerObjectEntry(keySuffix);
-		if (entry == null)
-			return new ArrayList<IContentProposal>();  // nothing
-
-		List<IContentProposal> p = new ArrayList<IContentProposal>();
-
-		// after "${", offer variable names
-		if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*")) {
-			p.addAll(toProposals(analyzer.getIterationVariableNames(section)));
-			p.addAll(toProposals(PREDEFINED_CONFIGVARS));
-		}
-
-		if (entry==CFGID_VECTOR_RECORDING_INTERVAL) {
-			p.addAll(toProposals(new String[]{"$1..", "$1..$2, $3.."})); //XXX use templated proposals here!
-		}
-		if (entry.getDataType()==ConfigKey.DataType.CFG_BOOL) {
-			p.addAll(toProposals(new String[] {"true", "false"}));
-		}
-		return p;
 	}
 
 }
