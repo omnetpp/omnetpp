@@ -274,3 +274,4 @@ sizeof
 allowunconnected
 mersenne
 deconfigure
+autobuild

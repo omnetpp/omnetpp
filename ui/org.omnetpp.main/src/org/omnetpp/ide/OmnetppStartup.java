@@ -56,7 +56,8 @@ public class OmnetppStartup implements IStartup {
         try {
             IRunnableWithProgress op = new IRunnableWithProgress() {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    ProjectUtils.importAllProjectsFromWorkspaceDirectory(monitor);
+                    // note: we don't open them, because CDT's autobuild would immediately start and the whole process would last forever...
+                    ProjectUtils.importAllProjectsFromWorkspaceDirectory(false, monitor);
                 }
             };
             new ProgressMonitorDialog(shell).run(true, true, op);
