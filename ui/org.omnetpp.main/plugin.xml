@@ -212,4 +212,10 @@
             supportsArgument="true">
       </variable>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.omnetpp.ide.OmnetppStartup">
+      </startup>
+   </extension>
 </plugin>

@@ -273,3 +273,4 @@ inline
 sizeof
 allowunconnected
 mersenne
+deconfigure

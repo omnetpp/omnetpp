@@ -1,9 +1,12 @@
 package org.omnetpp.common.project;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -13,8 +16,15 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
+import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
+import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage.ProjectRecord;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.FileUtils;
@@ -194,6 +204,58 @@ public class ProjectUtils {
         catch (CoreException e) {
             CommonPlugin.logError(e);
         }
+    }
+
+    public static void importAllProjectsFromWorkspaceDirectory(IProgressMonitor monitor) throws InvocationTargetException {
+        // note: code based on WizardProjectsImportPage.updateProjectsList()
+        IPath workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+        File directory = workspaceLocation.toFile();
+        if (directory.isDirectory()) {
+            // we'll need the names of the currently existing projects
+            IProject[] wsProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+            Set<String> wsProjectNames = new HashSet<String>();
+            for (IProject p : wsProjects)
+                wsProjectNames.add(p.getName());
+            
+            // iterate through all dirs in the workspace directory and check them
+            File[] contents = directory.listFiles();
+            final String dotProject = IProjectDescription.DESCRIPTION_FILE_NAME;
+            for (int i = 0; i < contents.length; i++) {
+                File subdirFile = contents[i];
+                if (subdirFile.isDirectory() && !wsProjectNames.contains(subdirFile.getName())) {
+                    File dotProjectFile = new File(subdirFile.getPath()+ File.separator + dotProject);
+                    if (dotProjectFile.isFile()) {
+                        importProjectFromWorkspaceDirectory(subdirFile.getName(), monitor);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Imports a project from the workspace directory.
+     */
+    public static IProject importProjectFromWorkspaceDirectory(String projectName, IProgressMonitor monitor) throws InvocationTargetException {
+        //
+        // Note: code based on WizardProjectsImportPage.createExistingProject().
+        // Note2: description.setLocation() would only be needed when linking to a project 
+        // outside the workspace directory
+        //
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IProject project = workspace.getRoot().getProject(projectName);
+        IProjectDescription description = workspace.newProjectDescription(projectName);
+        
+        try {
+            monitor.beginTask("Importing project", 100);
+            project.create(description, new SubProgressMonitor(monitor, 30));
+            project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 70));
+        } catch (CoreException e) {
+            throw new InvocationTargetException(e);
+        } finally {
+            monitor.done();
+        }
+        
+        return project;
     }
 
 }
