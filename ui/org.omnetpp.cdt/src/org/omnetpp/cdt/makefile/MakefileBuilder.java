@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
+import org.eclipse.cdt.managedbuilder.core.IToolChain;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -14,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
@@ -40,6 +45,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (kind == CLEAN_BUILD)
                 Activator.getDependencyCache().clean(getProject());
 
+            checkActiveCDTConfiguration();
+            
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
             buildSpec = BuildSpecUtils.readBuildSpecFile(getProject());
             if (buildSpec == null)
@@ -70,6 +77,37 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         return Activator.getDependencyCache().getProjectGroup(getProject());
     }
 
+    /**
+     * This is an attempt to advise the user to switch to the correct CDT configuration, 
+     * if a wrong one is selected.
+     */
+    protected void checkActiveCDTConfiguration() {
+        IProject project = getProject();
+        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
+        IConfiguration activeConfig = buildInfo.getDefaultConfiguration();
+        final IToolChain toolChain = activeConfig.getToolChain();
+        
+        //XXX the following does not work: returns true for "Linux GCC" on Windows, 
+        // because it cannot find the isSupported extension element and falls back 
+        // to default "true"  --- how could it be gotten to work???
+        boolean supported = toolChain.isSupported();
+        
+        if (!supported) {
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    String message = 
+                        "Toolchain \"" + toolChain.getName() + "\" is not supported on this platform " +
+                        "or installation. Please go to the Project menu, and activate a different " +
+                        "build configuration.";
+                    MessageDialog.openWarning(Display.getCurrent().getActiveShell(), "Warning", message);
+                }
+            });
+        }
+    }
+
+    /**
+     * Generates all makefiles in this project.
+     */
     protected void generateMakefiles(IProgressMonitor monitor) throws CoreException  {
         monitor.subTask("Analyzing dependencies and updating makefiles...");
 
