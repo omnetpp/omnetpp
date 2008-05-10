@@ -3,8 +3,11 @@ package org.omnetpp.ide;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -13,6 +16,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.project.ProjectUtils;
 
@@ -25,25 +29,31 @@ public class OmnetppStartup implements IStartup {
 
     public static final String SAMPLES_DIR = "samples";
 
+    /*
+     * Method declared on IStartup.
+     */
     public void earlyStartup() {
-        // call importSampleProjects() in the UI thread
         final IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
-                if (workbench.getActiveWorkbenchWindow() != null && shouldImportSampleProjects())
-                    importSampleProjects();
+                if (isInitialDefaultStartup()) {
+                    // We need to turn off "build automatically", otherwise it'll start 
+                    // building during the import process and will take forever.
+                    // Also, CDT is a pain with autobuild on.
+                    disableAutoBuild();
+                    importSampleProjects(true);
+                }
             }
         });
     }
 
     /**
-     * Determines whether we want to import sample projects into the workspace.
-     * Typically we only want to do that on the very first, "fresh" IDE startup.
-     * We use the following condition: " if the workspace location points to the 
-     * OMNeT++ "samples" directory, and there are no projects in the workspace yet 
-     * (none have been created or imported yet). 
+     * Determines whether this is the first IDE startup after the installation, with the 
+     * default workspace (the "samples" directory). We check two things:
+     * - the workspace location points to the OMNeT++ "samples" directory
+     * - there are no projects in the workspace yet (none have been created or imported) 
      */
-    protected boolean shouldImportSampleProjects() {
+    protected boolean isInitialDefaultStartup() {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         return root.getLocation().lastSegment().equals(SAMPLES_DIR) && root.getProjects().length == 0;
     }
@@ -51,13 +61,15 @@ public class OmnetppStartup implements IStartup {
     /**
      * Import sample projects.
      */
-    protected void importSampleProjects() {
-        Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+    protected void importSampleProjects(final boolean open) {
+        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (workbenchWindow == null)
+            return;
+        Shell shell = workbenchWindow.getShell();
         try {
             IRunnableWithProgress op = new IRunnableWithProgress() {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    // note: we don't open them, because CDT's autobuild would immediately start and the whole process would last forever...
-                    ProjectUtils.importAllProjectsFromWorkspaceDirectory(false, monitor);
+                    ProjectUtils.importAllProjectsFromWorkspaceDirectory(open, monitor);
                 }
             };
             new ProgressMonitorDialog(shell).run(true, true, op);
@@ -67,6 +79,21 @@ public class OmnetppStartup implements IStartup {
             ErrorDialog.openError(shell, "Error", "Error during importing sample projects into the workspace", new Status(IMarker.SEVERITY_ERROR, OmnetppMainPlugin.PLUGIN_ID, e.getMessage(), e));
         } catch (InterruptedException e) { 
             // nothing to do 
+        }
+    }
+    
+    /**
+     * Turns off the "Build automatically" option.
+     */
+    protected void disableAutoBuild() {
+        try {
+            IWorkspace ws = ResourcesPlugin.getWorkspace();
+            IWorkspaceDescription desc = ws.getDescription();
+            desc.setAutoBuilding(false);
+            ws.setDescription(desc);
+        }
+        catch (CoreException e) {
+            OmnetppMainPlugin.logError("Could not turn off 'Build automatically' option", e);
         }
     }
 }
