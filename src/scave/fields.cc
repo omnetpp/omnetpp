@@ -48,32 +48,49 @@ bool ResultItemAttribute::isAttributeName(const string name)
 /*----------------------------------------
  *              RunAttribute
  *----------------------------------------*/
+
+const char * const RunAttribute::INIFILE     = "inifile";
+const char * const RunAttribute::CONFIGNAME  = "configname";
+const char * const RunAttribute::RUNNUMBER   = "runnumber";
+const char * const RunAttribute::NETWORK     = "network";
 const char * const RunAttribute::EXPERIMENT  = "experiment";
 const char * const RunAttribute::MEASUREMENT = "measurement";
 const char * const RunAttribute::REPLICATION = "replication";
-const char * const RunAttribute::CONFIG      = "config";
-const char * const RunAttribute::RUNNUMBER   = "run-number";
-const char * const RunAttribute::NETWORKNAME = "network";
-const char * const RunAttribute::DATETIME    = "dateTime";
+const char * const RunAttribute::DATETIME    = "datetime";
+const char * const RunAttribute::PROCESSID   = "processid";
+const char * const RunAttribute::RESULTDIR   = "resultdir";
+const char * const RunAttribute::REPETITION  = "repetition";
+const char * const RunAttribute::SEEDSET     = "seedset";
+const char * const RunAttribute::ITERATIONVARS = "iterationvars";
+const char * const RunAttribute::ITERATIONVARS2 = "iterationvars2";
 
 StringVector RunAttribute::getAttributeNames()
 {
     StringVector names = StringVector();
+    names.push_back(INIFILE);
+    names.push_back(CONFIGNAME);
+    names.push_back(RUNNUMBER);
+    names.push_back(NETWORK);
     names.push_back(EXPERIMENT);
     names.push_back(MEASUREMENT);
     names.push_back(REPLICATION);
-    names.push_back(CONFIG);
-    names.push_back(RUNNUMBER);
-    names.push_back(NETWORKNAME);
     names.push_back(DATETIME);
+    names.push_back(PROCESSID);
+    names.push_back(RESULTDIR);
+    names.push_back(REPETITION);
+    names.push_back(SEEDSET);
+    names.push_back(ITERATIONVARS);
+    names.push_back(ITERATIONVARS2);
     return names;
 }
 
 bool RunAttribute::isAttributeName(const string name)
 {
-    return name == EXPERIMENT || name == MEASUREMENT || name == REPLICATION ||
-            name == CONFIG || name == RUNNUMBER || name == NETWORKNAME ||
-            name == DATETIME;
+    return name == INIFILE || name == CONFIGNAME || name == RUNNUMBER || name == NETWORK ||
+           name == EXPERIMENT || name == MEASUREMENT || name == REPLICATION ||
+           name == DATETIME || name == PROCESSID || name == RESULTDIR ||
+           name == REPETITION || name == SEEDSET || name == ITERATIONVARS ||
+           name == ITERATIONVARS2;
 }
 
 /*----------------------------------------

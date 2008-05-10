@@ -41,16 +41,22 @@ Register_PerRunConfigEntry(CFGID_DESCRIPTION, "description", CFG_STRING, NULL, "
 Register_PerRunConfigEntry(CFGID_EXTENDS, "extends", CFG_STRING, NULL, "Name of the configuration this section is based on. Entries from that section will be inherited and can be overridden. In other words, configuration lookups will fall back to the base section.");
 Register_PerRunConfigEntry(CFGID_CONSTRAINT, "constraint", CFG_STRING, NULL, "For scenarios. Contains an expression that iteration variables (${} syntax) must satisfy for that simulation to run. Example: $i < $j+1.");
 Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios. Specifies how many replications should be done with the same parameters (iteration variables). This is typically used to perform multiple runs with different random number seeds. The loop variable is available as ${repetition}. See also: seed-set= key.");
+Register_PerRunConfigEntry(CFGID_EXPERIMENT_LABEL, "experiment-label", CFG_STRING, "${configname}", "Identifies the simulation experiment (which consists of several, potentially repeated measurements). This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STRING, "${iterationvars}", "Identifies the measurement within the experiment. This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_REPLICATION_LABEL, "replication-label", CFG_STRING, "#${repetition}, seedset=${seedset}", "Identifies one replication of a measurement (see repeat= and measurement-label= as well). This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerObjectConfigEntry(CFGID_APPLY_DEFAULT, "apply-default", CFG_BOOL, "false", "Applies to module parameters: whether NED default values should be assigned if present.");
 
 extern cConfigKey *CFGID_NETWORK;
 extern cConfigKey *CFGID_RESULT_DIR;
+extern cConfigKey *CFGID_SEED_SET;
 
 
 static const char *PREDEFINED_CONFIGVARS[] = {
-  CFGVAR_CONFIGNAME, CFGVAR_RUNNUMBER, CFGVAR_NETWORK, CFGVAR_PROCESSID,
-  CFGVAR_DATETIME, CFGVAR_RESULTDIR, CFGVAR_RUNID, CFGVAR_REPETITION,
-  CFGVAR_ITERATIONVARS, CFGVAR_ITERATIONVARS2, NULL
+  CFGVAR_RUNID, CFGVAR_INIFILE, CFGVAR_CONFIGNAME, CFGVAR_RUNNUMBER, CFGVAR_NETWORK,
+  CFGVAR_EXPERIMENT, CFGVAR_MEASUREMENT, CFGVAR_REPLICATION,
+  CFGVAR_PROCESSID, CFGVAR_DATETIME, CFGVAR_RESULTDIR,
+  CFGVAR_REPETITION, CFGVAR_SEEDSET, CFGVAR_ITERATIONVARS,
+  CFGVAR_ITERATIONVARS2, NULL
 };
 
 #define VARPOS_PREFIX  std::string("&")
@@ -227,6 +233,7 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
 void SectionBasedConfiguration::setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain)
 {
     // create variables
+    variables[CFGVAR_INIFILE] = opp_nulltoempty(getFileName());
     variables[CFGVAR_CONFIGNAME] = configName;
     variables[CFGVAR_RUNNUMBER] = opp_stringf("%d", runNumber);
     variables[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_NETWORK->name()));
@@ -255,6 +262,12 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     }
     variables[CFGVAR_ITERATIONVARS] = iterationvars;
     variables[CFGVAR_ITERATIONVARS2] = iterationvars2;
+
+    // experiment/measurement/replication must be done as last, because they may depend on the above vars
+    variables[CFGVAR_SEEDSET] = substituteVariables(internalGetValue(sectionChain, CFGID_SEED_SET->name(), CFGID_SEED_SET->defaultValue()), -1, -1);
+    variables[CFGVAR_EXPERIMENT] = substituteVariables(internalGetValue(sectionChain, CFGID_EXPERIMENT_LABEL->name(), CFGID_EXPERIMENT_LABEL->defaultValue()), -1, -1);
+    variables[CFGVAR_MEASUREMENT] = substituteVariables(internalGetValue(sectionChain, CFGID_MEASUREMENT_LABEL->name(), CFGID_MEASUREMENT_LABEL->defaultValue()), -1, -1);
+    variables[CFGVAR_REPLICATION] = substituteVariables(internalGetValue(sectionChain, CFGID_REPLICATION_LABEL->name(), CFGID_REPLICATION_LABEL->defaultValue()), -1, -1);
 }
 
 int SectionBasedConfiguration::getNumRunsInScenario(const char *configName) const
@@ -486,7 +499,7 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
 
 std::string SectionBasedConfiguration::substituteVariables(const char *text, int sectionId, int entryId) const
 {
-    std::string result = text;
+    std::string result = opp_nulltoempty(text);
     int k = 0;  // counts "${" occurrences
     const char *pos, *endPos;
     while ((pos = strstr(result.c_str(), "${")) != NULL)
@@ -1016,6 +1029,13 @@ bool SectionBasedConfiguration::entryMatches(const KeyValue2& entry, const char 
         std::string paramFullPath = std::string(moduleFullPath) + "." + paramName;
         return entry.fullPathPattern->matches(paramFullPath.c_str());
     }
+}
+
+std::vector<const char *> SectionBasedConfiguration::getParameterKeyValuePairs() const
+{
+    std::vector<const char *> result;
+    //FIXME TBD
+    return result;
 }
 
 const char *SectionBasedConfiguration::getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const

@@ -24,12 +24,6 @@
 
 USING_NAMESPACE
 
-Register_PerRunConfigEntry(CFGID_EXPERIMENT_LABEL, "experiment-label", CFG_STRING, "${configname}", "Identifies the simulation experiment (which consists of several, potentially repeated measurements). This string gets recorded into result files, and may be referred to during result analysis.");
-Register_PerRunConfigEntry(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STRING, "${iterationvars}", "Identifies the measurement within the experiment. This string gets recorded into result files, and may be referred to during result analysis.");
-Register_PerRunConfigEntry(CFGID_REPLICATION_LABEL, "replication-label", CFG_STRING, "#${repetition}, seedset=@", "Identifies one replication of a measurement (see repeat= and measurement-label= as well). This string gets recorded into result files, and may be referred to during result analysis.");
-
-extern cConfigKey *CFGID_SEED_SET;
-
 
 #ifdef CHECK
 #undef CHECK
@@ -45,37 +39,32 @@ void sRunData::initRun()
         // from the configuration.
         //
         runId = ev.getRunId();
+
         cConfiguration *cfg = ev.config();
-        attributes["config"] = cfg->getActiveConfigName();
-        attributes["run-number"] = opp_stringf("%d", cfg->getActiveRunNumber());
-        const char *inifile = cfg->getFileName();
-        if (inifile)
-            attributes["inifile"] = inifile;
 
-        // fill in attributes[]
-        std::vector<const char *> keys = cfg->getMatchingConfigKeys("*");
-        for (int i=0; i<(int)keys.size(); i++)
-        {
-            const char *key = keys[i];
-            attributes[key] = cfg->getConfigValue(key);
-        }
+        std::vector<const char *> keys1 = cfg->getPredefinedVariableNames();
+        for (int i=0; i<(int)keys1.size(); i++)
+            if (opp_strcmp(keys1[i], CFGVAR_RUNID)!=0) // skip runId
+                attributes[keys1[i]] = cfg->getVariable(keys1[i]);
 
-        std::string seedset = opp_stringf("%ld", cfg->getAsInt(CFGID_SEED_SET));
-        attributes["experiment"] = cfg->getAsString(CFGID_EXPERIMENT_LABEL); //TODO if not already in there
-        attributes["measurement"] = cfg->getAsString(CFGID_MEASUREMENT_LABEL);
-        attributes["replication"] = opp_replacesubstring(cfg->getAsString(CFGID_REPLICATION_LABEL).c_str(), "@", seedset.c_str(), true);
-        attributes["seed-set"] = seedset;
+        std::vector<const char *> keys2 = cfg->getIterationVariableNames();
+        for (int i=0; i<(int)keys2.size(); i++)
+            attributes[keys2[i]] = cfg->getVariable(keys2[i]);
 
-        //FIXME todo: fill in moduleParams[]
+        // fill in moduleParams[]
+        std::vector<const char *> params = cfg->getParameterKeyValuePairs();
+        for (int i=0; i<params.size(); i+=2)
+            moduleParams[params[i]] = params[i+1];
+
         initialized = true;
     }
 }
 
 void sRunData::reset()
 {
-	initialized = false;
-	attributes.clear();
-	moduleParams.clear();
+    initialized = false;
+    attributes.clear();
+    moduleParams.clear();
 }
 
 

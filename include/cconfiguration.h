@@ -39,14 +39,19 @@ class cConfigKey;
  * syntax in the configuration.
  */
 //@{
+#define CFGVAR_RUNID            "runid"
+#define CFGVAR_INIFILE          "inifile"
 #define CFGVAR_CONFIGNAME       "configname"
 #define CFGVAR_RUNNUMBER        "runnumber"
 #define CFGVAR_NETWORK          "network"
+#define CFGVAR_EXPERIMENT       "experiment"
+#define CFGVAR_MEASUREMENT      "measurement"
+#define CFGVAR_REPLICATION      "replication"
 #define CFGVAR_PROCESSID        "processid"
 #define CFGVAR_DATETIME         "datetime"
 #define CFGVAR_RESULTDIR        "resultdir"
-#define CFGVAR_RUNID            "runid"
 #define CFGVAR_REPETITION       "repetition"
+#define CFGVAR_SEEDSET          "seedset"
 #define CFGVAR_ITERATIONVARS    "iterationvars"   // without $repetition
 #define CFGVAR_ITERATIONVARS2   "iterationvars2"  // with $repetition
 //@}
@@ -277,7 +282,7 @@ class SIM_API cConfiguration : public cObject
      * assignments in the configuration. This method should not be used
      * for anything else than writing the header of result files.
      */
-//XXX is this needed?    virtual std::vector<const char *> getParameterKeyValuePairs() const = 0;
+    virtual std::vector<const char *> getParameterKeyValuePairs() const = 0;
 
     /**
      * TODO
