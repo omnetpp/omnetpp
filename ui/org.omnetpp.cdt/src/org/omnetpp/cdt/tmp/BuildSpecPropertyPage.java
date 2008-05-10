@@ -337,11 +337,8 @@ public class BuildSpecPropertyPage extends PropertyPage {
 		    if (buildSpec == null)
 		        buildSpec = new BuildSpecification();
 		    treeViewer.refresh();
-		}
-		catch (IOException e) {
-			errorDialog("Cannot read build specification: ", e);
 		} catch (CoreException e) {
-			errorDialog("Cannot read build specification: ", e);
+			errorDialog("Cannot read build specification ", e);
 		}
 
 	}
@@ -352,7 +349,7 @@ public class BuildSpecPropertyPage extends PropertyPage {
             BuildSpecUtils.saveBuildSpecFile(project, buildSpec);
 		}
 		catch (CoreException e) {
-			errorDialog("Cannot store build specification: ", e);
+			errorDialog("Cannot store build specification ", e);
 		}
 	}
 

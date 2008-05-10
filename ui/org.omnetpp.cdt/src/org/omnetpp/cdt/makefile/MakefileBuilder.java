@@ -1,6 +1,5 @@
 package org.omnetpp.cdt.makefile;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -34,7 +35,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      * Method declared on IncrementalProjectBuilder. Main entry point.
      */
     @Override @SuppressWarnings("unchecked")
-    protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+    protected IProject[] build(int kind, Map args, IProgressMonitor monitor) {
         try {
             if (kind == CLEAN_BUILD)
                 Activator.getDependencyCache().clean(getProject());
@@ -46,23 +47,30 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             
             // refresh makefiles
             generateMakefiles(monitor);
-            return Activator.getDependencyCache().getProjectGroup(getProject());
         }
-        catch (Exception e) {
-            //FIXME catch CoreEx, IOEx, etc individually!!! or use our own exception type for makefile exceptions??
-            // This is expected to catch mostly IOExceptions. Other (non-fatal) errors 
-            // are already converted to markers inside the build methods.
+        catch (final CoreException e) {
+            // A serious error occurred during Makefile generation. Add it as marker, 
+            // and also pop up a dialog so that the error is obvious to the user.
+            // Note: we cannot let the CoreException propagate, because Eclipse would 
+            // disable the builder completely! (for the duration of the session)
+            Activator.logError(e);
             addMarker(getProject(), IMarker.SEVERITY_ERROR, "Error refreshing Makefiles: " + e.getMessage());
-            return null;
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Error refreshing Makefiles", e.getStatus());
+                }
+            });
         }
         finally {
             markerSynchronizer.runAsWorkspaceJob();
             markerSynchronizer = null;
             buildSpec = null;
         }
+
+        return Activator.getDependencyCache().getProjectGroup(getProject());
     }
 
-    protected void generateMakefiles(IProgressMonitor monitor) throws CoreException, IOException {
+    protected void generateMakefiles(IProgressMonitor monitor) throws CoreException  {
         monitor.subTask("Analyzing dependencies and updating makefiles...");
 
         // collect folders
@@ -82,7 +90,8 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     /**
      * Generate makefile in the given folder.
      */
-    protected void generateMakefileFor(IContainer folder) {
+    protected void generateMakefileFor(IContainer folder) throws CoreException {
+        boolean ok = false;
         try {
             //System.out.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()));
@@ -90,12 +99,17 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (options == null)
                 options = MakemakeOptions.createInitial();
             MetaMakemake.generateMakefile(folder, options);
+            ok = true;
         }
-        catch (CoreException e) { //FIXME handle IllegalArgumentException, IllegalStateException etc, coming from Makemake too!!!
-            addMarker(folder, IMarker.SEVERITY_ERROR, "Makefile generator: " + e.getMessage());
-            // remove stale/incomplete makefile, so that build won't continue with CDT
-            //XXX makefile.vc ???
-            try { folder.getFile(new Path("Makefile")).delete(true, null); } catch (CoreException e1) {}
+        catch (MakemakeException e) {
+            throw Activator.wrapIntoCoreException(e);
+        }
+        finally {
+            if (!ok) {
+                // remove stale/incomplete makefile, so that build won't continue with CDT
+                try { folder.getFile(new Path("Makefile")).delete(true, null); } catch (CoreException e1) {}
+                try { folder.getFile(new Path("Makefile.vc")).delete(true, null); } catch (CoreException e1) {}
+            }
         }
     }
 

@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.variables.VariablesPlugin;
-import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -379,9 +378,10 @@ public class MakemakeOptions implements Cloneable {
     }
     
     /**
-     * carry out a eclipse variable substitution on all args in the list
+     * Carry out a eclipse variable substitution on all args in the list
+     * @throws CoreException for unresolved variables  
      */
-    private static List<String> makeVariableSubstitution(List<String> args, IProject project) {
+    private static List<String> makeVariableSubstitution(List<String> args, IProject project) throws CoreException {
 		if (args == null)
 			return null;
 		
@@ -393,34 +393,29 @@ public class MakemakeOptions implements Cloneable {
     }
 
     /**
-     * carry out a eclipse variable substitution on arg
+     * Carry out Eclipse variable substitution on the argument.
+     * @throws CoreException for unresolved variables  
      */
-	private static String makeVariableSubstitution(String arg, IProject project) {
+	private static String makeVariableSubstitution(String arg, IProject project) throws CoreException {
 		if (arg == null)
 			return null;
 		
 		// resolve macros for this configuration
-		try {
-			IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
-			arg = provider.resolveValue(arg, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration());
-		} catch (CoreException e) {
-			Activator.logError("Cannot resolve variable in: "+arg, e);
-		}
+		IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
+		arg = provider.resolveValue(arg, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration());
+
 		// resolve global eclipse variables
-		try {
-			arg = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(arg);
-		} catch (CoreException e) {
-			Activator.logError("Cannot resolve variable in: "+arg, e);
-		}
+		arg = VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(arg);
 
 		return arg;
 	}
     
     /**
-     * Substitutes all ${XXX} eclipse variables in all String options.
+     * Substitutes all ${} eclipse variables in all String options.
      * project is used for context information to evaluate BuildMacros
+     * @throws CoreException for unresolved variables  
      */
-    public void substituteVariables(IProject project) {
+    public void substituteVariables(IProject project) throws CoreException {
         projectDir = makeVariableSubstitution(projectDir, project);
         target = makeVariableSubstitution(target, project);
         outRoot = makeVariableSubstitution(outRoot, project);

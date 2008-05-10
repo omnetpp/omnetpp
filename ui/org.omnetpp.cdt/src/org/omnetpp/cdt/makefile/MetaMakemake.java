@@ -1,6 +1,5 @@
 package org.omnetpp.cdt.makefile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,10 +44,9 @@ import org.omnetpp.common.util.StringUtils;
 //XXX handle  translatedOptions.metaLinkWithAllObjectsInProject
 public class MetaMakemake {
     /**
-     * Generates Makefile in the given folder. Note: underlying Makemake may throw 
-     * IllegalArgumentException, IllegalStateException etc.
+     * Generates Makefile in the given folder.
      */
-    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options) throws CoreException {
+    public static void generateMakefile(IContainer makefileFolder, MakemakeOptions options) throws CoreException, MakemakeException {
         MakemakeOptions translatedOptions = translateOptions(makefileFolder, options);
         IProject project = makefileFolder.getProject();
 
@@ -103,13 +101,7 @@ public class MetaMakemake {
         // add libraries from other projects, if requested
         if (options.metaUseExportedLibs) {
             for (IProject referencedProject : referencedProjects) {
-                BuildSpecification buildSpec = null;
-                try {
-                    buildSpec = BuildSpecUtils.readBuildSpecFile(referencedProject);
-                }
-                catch (IOException e) { 
-                    //XXX ?
-                } 
+                BuildSpecification buildSpec = BuildSpecUtils.readBuildSpecFile(referencedProject);
                 if (buildSpec != null) {
                     for (IContainer f : buildSpec.getMakemakeFolders()) {
                         MakemakeOptions opt = buildSpec.getMakemakeOptions(f);
@@ -234,7 +226,7 @@ public class MetaMakemake {
                     value = location == null ? null : location.toString();
                 }
                 if (value != null) {
-						result.add(value);
+                    result.add(value);
                 }
             }
         }

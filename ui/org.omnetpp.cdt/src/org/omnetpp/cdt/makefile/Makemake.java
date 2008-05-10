@@ -55,27 +55,27 @@ public class Makemake {
     /**
      * Generates Makefile in the given folder.
      */
-    public void generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+    public void generateMakefile(IContainer folder, String args, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException, MakemakeException {
         MakemakeOptions options = new MakemakeOptions(args);
-        generateMakefile(folder, options, perFileDeps);
         if (!options.getParseErrors().isEmpty())
-            throw new IllegalArgumentException(options.getParseErrors().get(0));
+            throw new MakemakeException(options.getParseErrors().get(0));
+        generateMakefile(folder, options, perFileDeps);
     }
 
     /**
      * Generates Makefile in the given folder.
      */
-    public void generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws IOException, CoreException {
+    public void generateMakefile(IContainer folder, String[] argv, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException, MakemakeException {
         MakemakeOptions options = new MakemakeOptions(argv);
         generateMakefile(folder, options, perFileDeps);
         if (!options.getParseErrors().isEmpty())
-            throw new IllegalArgumentException(options.getParseErrors().get(0));
+            throw new MakemakeException(options.getParseErrors().get(0));
     }
 
     /**
      * Generates Makefile in the given folder.
      */
-    public void generateMakefile(IContainer folder, final MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException {
+    public void generateMakefile(IContainer folder, final MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException, MakemakeException {
         this.folder = folder;
         
         File directory = folder.getLocation().toFile();
@@ -88,7 +88,7 @@ public class Makemake {
 
         String makefileName = isNMake ? "Makefile.vc" : "Makefile";
         if (file(makefileName).isFile() && !options.force)
-            throw new IllegalStateException("use -f to force overwriting existing " + makefileName);
+            throw new MakemakeException("use -f to force overwriting existing " + makefileName);
 
         String target = options.target == null ? folder.getName() : options.target;
         List<String> objs = new ArrayList<String>();
@@ -107,7 +107,7 @@ public class Makemake {
 
         // target should only be a name, cannot contain relative path
         if (target.contains("/") || target.contains("\\"))
-            throw new IllegalStateException("target (-o option) should only be a name, it cannot contain relative path");
+            throw new MakemakeException("target (-o option) should only be a name, it cannot contain relative path");
 
         // isRecursive and deep do not mix
         if (isDeep) 
@@ -116,11 +116,11 @@ public class Makemake {
         String makecommand = isNMake ? "nmake /nologo /f Makefile.vc" : "make";
 
         if (options.projectDir != null)
-            throw new IllegalArgumentException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
+            throw new MakemakeException("-P (--projectdir) option not supported, it is always the Eclipse project directory");
 
         String omnetppRoot = OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT);
         if (StringUtils.isEmpty(omnetppRoot))
-            throw new IllegalStateException("OMNeT++ root must be set in Window|Preferences");
+            throw new MakemakeException("OMNeT++ root must be set in Window|Preferences");
         String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc"); 
 
         // collect source files
@@ -162,7 +162,7 @@ public class Makemake {
             else if (!ccfiles.isEmpty() && cppfiles.isEmpty())
                 ccExt = "cc";
             else if (!ccfiles.isEmpty() && !cppfiles.isEmpty())
-                throw new RuntimeException("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
+                throw new MakemakeException("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
             else
                 ccExt = "cc";  // if no files, use .cc extension
         }
@@ -193,7 +193,7 @@ public class Makemake {
 
         for (String subdir : submakeDirs)
             if (!file(subdir).isDirectory())
-                throw new IllegalArgumentException("subdirectory '" + subdir + "' does not exist");
+                throw new MakemakeException("subdirectory '" + subdir + "' does not exist");
 
         if (isRecursive) {
             File[] list = directory.listFiles(new FileFilter() {

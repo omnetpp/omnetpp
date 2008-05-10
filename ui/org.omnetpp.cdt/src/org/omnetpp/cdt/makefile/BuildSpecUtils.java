@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -23,22 +24,30 @@ public class BuildSpecUtils {
     private static final String BUILDSPEC_FILENAME = ".oppbuildspec";
 
     /**
-     * Reads the build spec file from the given OMNeT++ project. 
-     * Returns null if there is no build spec file in the project.
+     * Reads the build spec file from the given OMNeT++ project. Returns null 
+     * if there is no build spec file in the project.
+     * 
+     * @throws CoreException on I/O errors and build spec file errors (syntax, invalid option etc) 
      */
-    public static BuildSpecification readBuildSpecFile(IProject project) throws IOException, CoreException {
+    public static BuildSpecification readBuildSpecFile(IProject project) throws CoreException {
         BuildSpecification buildSpec = new BuildSpecification();
         IFile buildSpecFile = project.getFile(BUILDSPEC_FILENAME);
         if (!buildSpecFile.exists()) {
             return null;
         }
         else {
-            String contents = FileUtils.readTextFile(buildSpecFile.getContents());
+            String contents;
+            try {
+                contents = FileUtils.readTextFile(buildSpecFile.getContents());
+            } 
+            catch (IOException e) {
+                throw Activator.wrapIntoCoreException(e);
+            }
             for (String line : StringUtils.splitToLines(contents)) {
                 line = line.trim();
-                if (line.equals("") || line.startsWith("#")) {
-                    // ignore line
-                }
+                if (line.equals("") || line.startsWith("#"))
+                    continue;
+
                 if (line.startsWith("version ")) {
                     //TODO version check
                 }
@@ -51,13 +60,14 @@ public class BuildSpecUtils {
                         IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
                         if (!StringUtils.isEmpty(args)) {
                             MakemakeOptions makemakeOptions = new MakemakeOptions(args);
-                            //XXX check makemakeOptions.getParseErrors() !!! log and ignore?
+                            if (!makemakeOptions.getParseErrors().isEmpty())
+                                throw Activator.wrapIntoCoreException(new MakemakeException(buildSpecFile.getFullPath() + ": " + makemakeOptions.getParseErrors().get(0)));
                             buildSpec.setMakemakeOptions(folder, makemakeOptions);
                         }
                     }
                     else {
-                        //XXX log: wrong line format
-                        System.out.println("error reading " + buildSpecFile.getFullPath() + ": unrecognized line format: " + line);
+                        String message = buildSpecFile.getFullPath() + ": invalid line syntax: " + line;
+                        throw Activator.wrapIntoCoreException(new RuntimeException(message));
                     }
                 }
             }

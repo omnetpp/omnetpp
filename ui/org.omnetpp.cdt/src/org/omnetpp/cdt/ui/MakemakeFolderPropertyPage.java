@@ -394,15 +394,13 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         try {
             IProject project = getFolder().getProject();
             buildSpec = BuildSpecUtils.readBuildSpecFile(project);
-            if (buildSpec == null)
-                buildSpec = new BuildSpecification();
         } 
-        catch (IOException e) {
-            errorDialog("Cannot read build specification: ", e);
-        } catch (CoreException e) {
-            errorDialog("Cannot read build specification: ", e);
+        catch (CoreException e) {
+            errorDialog("Cannot read build specification, reverting page content to the default settings.", e);
         }
 
+        if (buildSpec == null)
+            buildSpec = new BuildSpecification();
     }
 
     protected void saveBuildSpecFile() {
@@ -411,7 +409,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             BuildSpecUtils.saveBuildSpecFile(project, buildSpec);
         } 
         catch (CoreException e) {
-            errorDialog("Cannot store build specification: ", e);
+            errorDialog("Cannot store build specification", e);
         }
     } 
 
