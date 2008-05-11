@@ -59,5 +59,18 @@
             parentId="org.eclipse.ui.textEditorScope">
       </context>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.omnetpp.wizards"
+            class="org.omnetpp.msg.editor.wizard.NewMsgFileWizard"
+            icon="icons/newmsgfile.gif"
+            id="org.omnetpp.msg.editor.wizard.new.file"
+            name="Message Definition (msg)">
+         <description>
+            Create a file that contains network elements, like simple or compound modules, channels etc.
+         </description>
+      </wizard>
+   </extension>
 
 </plugin>
