@@ -1,5 +1,8 @@
 package org.omnetpp.inifile.editor.model;
 
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.core.resources.IFile;
 
 /**
@@ -155,7 +158,7 @@ public interface IInifileDocument {
 	 * Returns null if section does not exist, and zero-length array if it 
 	 * does not contain entries.
 	 */
-	String[] getKeys(String section);
+	Set<String> getKeys(String section);
 
 	/** 
 	 * Returns keys in the given section that match the given regex. Keys are 
@@ -163,7 +166,7 @@ public interface IInifileDocument {
 	 * and zero-length array if it does not contain entries or no entries matched
 	 * the regex.
 	 */
-	String[] getMatchingKeys(String section, String regex);
+	List<String> getMatchingKeys(String section, String regex);
 
 	/** 
 	 * Returns list of unique section names. 

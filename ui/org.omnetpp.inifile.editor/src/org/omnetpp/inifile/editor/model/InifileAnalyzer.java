@@ -628,6 +628,7 @@ public class InifileAnalyzer {
 	}
 
 	protected List<ParamResolution> collectParameters(final String activeSection) {
+	    // resolve section chain and network
 		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 		final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getKey(), doc);
@@ -639,6 +640,7 @@ public class InifileAnalyzer {
 		if (network == null )
 			return new ArrayList<ParamResolution>();
 
+		// traverse the network and collect resolutions meanwhile
 		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
 		IProject contextProject = doc.getDocumentFile().getProject();
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, sectionChain, doc));

@@ -77,6 +77,7 @@ public class InifileUtils {
 		// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
 		// lookupParameter() should actually return multiple matches.
 		//
+	    //XXX this is to optimize, probably.. new patternmatcher, getkeys(), etc
 		String paramApplyDefault = paramFullPath + ".apply-default";
 		boolean considerApplyDefault = hasNedDefault;
 		for (String section : sectionChain) {
@@ -247,8 +248,7 @@ public class InifileUtils {
 		if (!doc.containsSection(section))
 			addSection(doc, section);
 		Assert.isTrue(!doc.containsKey(section, newKey));
-		String keys[] = doc.getKeys(section);
-		for (String key : keys) {
+		for (String key : doc.getKeys(section)) {
 			if (precedesKey(newKey, key)) {
 				doc.addEntry(section, newKey, value, rawComment, key);
 				return;

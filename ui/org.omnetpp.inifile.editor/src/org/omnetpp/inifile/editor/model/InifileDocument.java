@@ -6,7 +6,9 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -612,13 +614,13 @@ public class InifileDocument implements IInifileDocument {
         addEntry(section, key, line.value, line.rawComment, beforeKey);
     }
 
-    public String[] getKeys(String sectionName) {
+    public Set<String> getKeys(String sectionName) {
         parseIfChanged();
         Section section = sections.get(sectionName);
-        return section == null ? null : section.entries.keySet().toArray(new String[0]);
+        return section == null ? null : section.entries.keySet();
     }
 
-    public String[] getMatchingKeys(String sectionName, String regex) {
+    public List<String> getMatchingKeys(String sectionName, String regex) {
         parseIfChanged();
         Section section = sections.get(sectionName);
         if (section == null)
@@ -627,7 +629,7 @@ public class InifileDocument implements IInifileDocument {
         for (String key : section.entries.keySet())
             if (regex.matches(key))
                 list.add(key);
-        return list.toArray(new String[list.size()]);
+        return list;
     }
 
     public String[] getSectionNames() {

@@ -19,7 +19,7 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             name="Initialization File (ini)"
-            icon="icons/inifile.png"
+            icon="icons/newinifile.png"
             category="org.omnetpp.wizards"
             class="org.omnetpp.inifile.editor.wizards.NewInifileWizard"
             id="org.omnetpp.inifile.editor.wizards.NewInifileWizard">

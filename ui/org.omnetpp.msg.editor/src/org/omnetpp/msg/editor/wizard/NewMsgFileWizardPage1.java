@@ -9,7 +9,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -77,17 +76,24 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
         "    @omitGetVerb(true);\n" + 
         "    SomeType field1;\n" + 
         "    OtherType field2;\n" + 
-        "}\n"
+        "}\n",
+
+        "//\n" +
+        "// TODO comment\n" +
+        "//\n" +
+        "message #NAME# {\n" +
+        "    @omitGetVerb(true);\n" +
+        "    @customize(true);  // see the generated C++ header for more info\n" +
+        "    int someField;\n" +
+        "    abstract int anotherField;\n" +
+        "}\n",
+        
     };
     
 	private IWorkbench workbench;
 	private static int exampleCount = 1;
 
-	private Button emptyButton = null;
-    private Button simpleButton = null;
-    private Button subclassedButton = null;
-    private Button withCppButton = null;
-	private int modelSelected = 0;
+	private int templateSelected = 0;
 
 	public NewMsgFileWizardPage1(IWorkbench aWorkbench, IStructuredSelection selection) {
 		super("page1", selection);
@@ -112,40 +118,26 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
 		group.setText("Content");
 		group.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 
-		SelectionListener listener = new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (e.getSource() == emptyButton)
-					modelSelected = 0;
-				else if (e.getSource() == simpleButton)
-					modelSelected = 1;
-				else if (e.getSource() == subclassedButton)
-				    modelSelected = 2;
-				else if (e.getSource() == withCppButton)
-                    modelSelected = 3;
-			}
-		};
+		Button emptyButton = createRadioButton(group, "Empty file", 0);
+		createRadioButton(group, "A basic example message class", 1);
+		createRadioButton(group, "An example message that subclasses from a message defined in another .msg file", 2);
+		createRadioButton(group, "An example message class that uses data types defined in C++", 3);
+		createRadioButton(group, "An example message class that can be customized in C++", 4);
 
-		// sample section generation checkboxes
-		emptyButton = new Button(group, SWT.RADIO);
-		emptyButton.setText("Empty file");
-		emptyButton.addSelectionListener(listener);
-		emptyButton.setSelection(true);
-
-		simpleButton = new Button(group, SWT.RADIO);
-		simpleButton.setText("A basic example message class");
-		simpleButton.addSelectionListener(listener);
-
-		subclassedButton = new Button(group, SWT.RADIO);
-		subclassedButton.setText("An example message that subclasses from a message defined in another .msg file");
-		subclassedButton.addSelectionListener(listener);
-
-        withCppButton = new Button(group, SWT.RADIO);
-        withCppButton.setText("An example message class that uses data types defined in C++");
-        withCppButton.addSelectionListener(listener);
+        emptyButton.setSelection(true);
 
 		setPageComplete(validatePage());
 	}
+
+	protected Button createRadioButton(Composite parent, String text, final int templateToSelect) {
+        Button button = new Button(parent, SWT.RADIO);
+		button.setText(text);
+		button.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                    templateSelected = templateToSelect;
+            }});
+		return button;
+    }
 
 	@Override
     protected InputStream getInitialContents() {
@@ -158,7 +150,7 @@ public class NewMsgFileWizardPage1 extends WizardNewFileCreationPage {
         name = StringUtils.capitalize(StringUtils.makeValidIdentifier(name));
 
         // substitute name into the template
-        String contents = MSGFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", name);
+        String contents = MSGFILE_TEMPLATES[templateSelected].replaceAll("#NAME#", name);
 		return new ByteArrayInputStream(contents.getBytes());
 	}
     
