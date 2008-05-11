@@ -117,12 +117,16 @@ public class NewNEDFileWizardPage1 extends WizardNewFileCreationPage {
         if (name == null || "".equals(name))
             return null;
         
+        // make a valid identifier
         name = name.substring(0, name.lastIndexOf('.'));
+        name = StringUtils.capitalize(StringUtils.makeValidIdentifier(name));
         
+        // determine package
         IFile newFile = createFileHandle(getContainerFullPath().append(getFileName()));
         String packagedecl = NEDResourcesPlugin.getNEDResources().getExpectedPackageFor(newFile);
         packagedecl = StringUtils.isNotEmpty(packagedecl) ? "package "+packagedecl+";\n" : "";
 
+        // substitute name and package into the template
         String contents = NEDFILE_TEMPLATES[modelSelected].replaceAll("#NAME#", name);
 		contents = contents.replaceAll("#PACKAGEDECL#", packagedecl);
 		return new ByteArrayInputStream(contents.getBytes());

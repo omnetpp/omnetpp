@@ -72,8 +72,20 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	    Assert.isTrue(toInstanceName("_TCP").equals("_tcp"));
 	}
 
+	/** 
+	 * Tweaks the given string so that it becomes a valid C++ or Java identifier.
+	 * Removes spaces, assures it begins with letter or underscore, etc.
+	 */
+	public static String makeValidIdentifier(String name) {
+        name = name.replaceAll("[^A-Za-z0-9_]", "_");
+        name = name.replaceAll("__+", "_");
+        if (!name.matches("[a-zA-Z_].*")) 
+            name = "_" + name;
+        return name;
+	}
+	
 	/**
-	 * Make the first noOfCahrs lower-case
+	 * Make the first noOfChars lower-case
 	 */
 	public static String uncapitalize(String value, int noOfChars) {
 	    return value.substring(0,noOfChars).toLowerCase()+value.substring(noOfChars);
@@ -281,7 +293,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     /**
      * Converts documentation string to HTML format, and returns it.
      */
-    // TODO <pre> and <nohtml> is not supported
+    // TODO <pre> and <nohtml> are not supported
     public static String makeHtmlDocu(String comment) {
         if (comment==null)
             return null;

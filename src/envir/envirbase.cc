@@ -361,7 +361,7 @@ void EnvirBase::dumpComponentList(const char *category)
                 ev << ", default:" << obj->defaultValue() << "";
             ev << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting";
             ev << "\n";
-            if (printDescriptions && obj->description() && obj->description()[0])
+            if (printDescriptions && !opp_isempty(obj->description()))
                 ev << opp_indentlines(opp_breaklines(obj->description(),75).c_str(), "    ") << "\n";
             if (printDescriptions) ev << "\n";
         }
@@ -370,7 +370,13 @@ void EnvirBase::dumpComponentList(const char *category)
         ev << "Predefined variables that can be used in config values:\n";
         std::vector<const char *> v = config()->getPredefinedVariableNames();
         for (int i=0; i<(int)v.size(); i++)
-            ev << "    ${" << v[i] << "}\n";
+        {
+            if (!printDescriptions) ev << "  ";
+            ev << "${" << v[i] << "}\n";
+            const char *desc = config()->getVariableDescription(v[i]);
+            if (printDescriptions && !opp_isempty(desc))
+                ev << opp_indentlines(opp_breaklines(desc,75).c_str(), "    ") << "\n";
+        }
         ev << "\n";
     }
     if (!strcmp(category, "jconfig")) // internal undocumented option, for maintenance purposes

@@ -51,6 +51,14 @@ void sRunData::initRun()
         for (int i=0; i<(int)keys2.size(); i++)
             attributes[keys2[i]] = cfg->getVariable(keys2[i]);
 
+/*XXX
+        std::vector<const char *> keys = cfg->getMatchingConfigKeys("*");
+        for (int i=0; i<(int)keys.size(); i++)
+        {
+            const char *key = keys[i];
+            config[key] = cfg->getConfigValue(key);
+        }
+*/
         // fill in moduleParams[]
         std::vector<const char *> params = cfg->getParameterKeyValuePairs();
         for (int i=0; i<params.size(); i+=2)

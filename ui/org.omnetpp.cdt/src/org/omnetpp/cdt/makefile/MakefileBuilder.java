@@ -84,8 +84,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected void checkActiveCDTConfiguration() {
         IProject project = getProject();
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-        IConfiguration activeConfig = buildInfo.getDefaultConfiguration();
-        final IToolChain toolChain = activeConfig.getToolChain();
+        IConfiguration activeConfig = buildInfo!=null ? buildInfo.getDefaultConfiguration() : null;
+        final IToolChain toolChain = activeConfig!=null ? activeConfig.getToolChain() : null;
+        if (toolChain==null)
+            return;
         
         //XXX the following does not work: returns true for "Linux GCC" on Windows, 
         // because it cannot find the isSupported extension element and falls back 

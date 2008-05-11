@@ -4,7 +4,7 @@ import static org.omnetpp.scave.engine.ResultItemField.FILE;
 import static org.omnetpp.scave.engine.ResultItemField.MODULE;
 import static org.omnetpp.scave.engine.ResultItemField.NAME;
 import static org.omnetpp.scave.engine.ResultItemField.RUN;
-import static org.omnetpp.scave.engine.RunAttribute.CONFIG;
+import static org.omnetpp.scave.engine.RunAttribute.CONFIGNAME;
 import static org.omnetpp.scave.engine.RunAttribute.EXPERIMENT;
 import static org.omnetpp.scave.engine.RunAttribute.MEASUREMENT;
 import static org.omnetpp.scave.engine.RunAttribute.REPLICATION;
@@ -98,7 +98,7 @@ public class DataTable extends Table {
 	private static final Column
 		COL_DIRECTORY = new Column("Directory", null, 60, true),
 		COL_FILE = new Column("File name", FILE,100, true),
-		COL_CONFIG = new Column("Config name", CONFIG, 100, true),
+		COL_CONFIG = new Column("Config name", CONFIGNAME, 100, true),
 		COL_RUNNUMBER = new Column("Run number", RUNNUMBER, 20, true),
 		COL_RUN_ID = new Column("Run id", RUN, 100, true),
 		COL_MODULE = new Column("Module", MODULE, 160, true),
@@ -339,7 +339,7 @@ public class DataTable extends Table {
 		else if (COL_FILE.equals(column))
 			idlist.sortByFileName(manager, ascending);
 		else if (COL_CONFIG.equals(column))
-			idlist.sortByRunAttribute(manager, CONFIG, ascending);
+			idlist.sortByRunAttribute(manager, CONFIGNAME, ascending);
 		else if (COL_RUNNUMBER.equals(column))
 			idlist.sortByRunAttribute(manager, RUNNUMBER, ascending);
 		else if (COL_RUN_ID.equals(column))
@@ -433,7 +433,7 @@ public class DataTable extends Table {
 			return fileName;
 		}
 		else if (COL_CONFIG.equals(column)) {
-			String config = result.getFileRun().getRun().getAttribute(CONFIG);
+			String config = result.getFileRun().getRun().getAttribute(CONFIGNAME);
 			return config != null ? config : "n.a.";
 		}
 		else if (COL_RUNNUMBER.equals(column)) {
