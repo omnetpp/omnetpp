@@ -37,6 +37,9 @@ public class ConfigRegistry {
 
 	/** Name of the "extends=" config key */
 	public static final String EXTENDS; // initialized at the bottom of this file
+	
+    /** ".apply-default": dot plus the name of CFGID_APPLY_DEFAULT */
+	public static final String dot_APPLY_DEFAULT; // initialized at the bottom of this file
 
 	private static Map<String, ConfigKey> entries = new HashMap<String, ConfigKey>();
 	private static Map<String, ConfigKey> perObjectEntries = new HashMap<String, ConfigKey>();
@@ -581,5 +584,6 @@ public class ConfigRegistry {
 
     static {
     	 EXTENDS = CFGID_EXTENDS.getKey();
+    	 dot_APPLY_DEFAULT = "." + CFGID_APPLY_DEFAULT.getKey();
     }
 }

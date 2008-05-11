@@ -6,6 +6,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECOR
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.dot_APPLY_DEFAULT;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_BOOL;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_DOUBLE;
 import static org.omnetpp.ned.model.NEDElementConstants.NED_PARTYPE_INT;
@@ -663,14 +664,14 @@ public class InifileAnalyzer {
 	 * Collects parameters of a submodule subtree, *without* an inifile present.
 	 */
 	public static List<ParamResolution> collectParameters(SubmoduleElementEx submodule) {
-		ArrayList<ParamResolution> list = new ArrayList<ParamResolution>();
+		List<ParamResolution> list = new ArrayList<ParamResolution>();
 		INEDTypeResolver res = NEDResourcesPlugin.getNEDResources();
 		NEDTreeTraversal treeTraversal = new NEDTreeTraversal(res, createParamCollectingNedTreeVisitor(list, res, null, null));
 		treeTraversal.traverse(submodule);
 		return list;
 	}
 
-	protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final ArrayList<ParamResolution> list, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
+	protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final List<ParamResolution> list, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
 		return new IModuleTreeVisitor() {
 			Stack<SubmoduleElementEx> pathModules = new Stack<SubmoduleElementEx>();
 			Stack<String> fullPathStack = new Stack<String>();
@@ -723,16 +724,21 @@ public class InifileAnalyzer {
 		};
 	}
 
-	protected static void resolveModuleParameters(ArrayList<ParamResolution> resultList, String moduleFullPath, SubmoduleElementEx[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
+	protected static void resolveModuleParameters(List<ParamResolution> resultList, String moduleFullPath, SubmoduleElementEx[] pathModules, INEDTypeInfo moduleType, String[] sectionChain, IInifileDocument doc) {
 		SubmoduleElementEx submodule = (SubmoduleElementEx) pathModules[pathModules.length-1];
+		
+		// loop through all parameters of the module
 		for (String paramName : moduleType.getParamDeclarations().keySet()) {
+		    // find declaration and value ParamElements
 			ParamElement paramDeclNode = moduleType.getParamDeclarations().get(paramName);
 			ParamElement paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
 					submodule.getParamAssignments().get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
 				paramValueNode = null;
-			resultList.add(resolveParameter(moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc));
+			
+			// then figure out how the parameter gets its value (find matching ini entries etc)
+			resolveParameter(resultList, moduleFullPath, pathModules, paramDeclNode, paramValueNode, sectionChain, doc);
 		}
 	}
 
@@ -741,62 +747,70 @@ public class InifileAnalyzer {
 	 * The sectionChain and doc parameters may be null, which means that only parameter
 	 * assignments given in NED will be taken into account.
 	 *
-	 * XXX probably not good (does not handle all cases): what if parameter is assigned in a submodule decl?
-	 * what if it's assigned using a /pattern/? this info cannot be expressed in the arg list!
+     * This method adds one or more ParamResolution objects to resultList. For example,
+     * if the inifile contains lines like:
+     *     Network.node[0].address = value1
+     *     Network.node[1].address = value2
+     *     Network.node[*].address = valueX
+     * then this method will add three ParamResolutions. 
+     *  
+	 * XXX what if parameter is assigned in a submodule decl?
+	 * XXX what if it's assigned using a /pattern/? this info cannot be expressed in the arg list!
 	 */
-	protected static ParamResolution resolveParameter(String moduleFullPath, SubmoduleElementEx[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode, String[] sectionChain, IInifileDocument doc) {
-		// value in the NED file
-		String nedValue = paramValueNode==null ? null : paramValueNode.getValue();
-		if (StringUtils.isEmpty(nedValue)) nedValue = null;
-		boolean isNedDefault = paramValueNode==null ? false : paramValueNode.getIsDefault();
+	protected static void resolveParameter(List<ParamResolution> resultList, String moduleFullPath, SubmoduleElementEx[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode, String[] sectionChain, IInifileDocument doc) {
+	    // value in the NED file
+	    String nedValue = paramValueNode==null ? null : paramValueNode.getValue();
+	    if (StringUtils.isEmpty(nedValue)) nedValue = null;
+	    boolean isNedDefault = paramValueNode==null ? false : paramValueNode.getIsDefault();
 
-		// look up its value in the ini file
-		String activeSection = doc==null ? null : sectionChain[0];
-		String iniSection = null;
-		String iniKey = null;
-		String iniValue = null;
-		boolean iniApplyDefault = false;
-		if (doc!=null && (nedValue==null || isNedDefault)) {
-			String paramFullPath = moduleFullPath + "." + paramDeclNode.getName();
-			SectionKey sectionKey = InifileUtils.lookupParameter(paramFullPath, isNedDefault, sectionChain, doc);
-			if (sectionKey!=null) {
-				iniSection = sectionKey.section;
-				iniKey = sectionKey.key;
-				if (isNedDefault && iniKey.endsWith(".apply-default")) {
-					Assert.isTrue("true".equals(doc.getValue(iniSection, iniKey)));
-					iniApplyDefault = true;
-				}
-				else {
-					iniValue = doc.getValue(iniSection, iniKey);
-				}
-			}
-		}
+	    String activeSection = doc==null ? null : sectionChain[0];
 
-		// so, find out how the parameter's going to be assigned...
-		ParamResolutionType type;
-		if (nedValue==null) {
-			if (iniValue!=null)
-				type = ParamResolutionType.INI;
-			else
-				type = ParamResolutionType.UNASSIGNED;
-		}
-		else {
-			if (!isNedDefault)
-				type = ParamResolutionType.NED; // value assigned in NED (unchangeable from ini files)
-			else if (iniApplyDefault)
-				type = ParamResolutionType.NED_DEFAULT; // **.apply-default=true
-			else if (iniValue==null)
-				type = ParamResolutionType.UNASSIGNED;
-			else if (nedValue.equals(iniValue))
-				type = ParamResolutionType.INI_NEDDEFAULT;
-			else
-				type = ParamResolutionType.INI_OVERRIDE;
-		}
-		return new ParamResolution(moduleFullPath, pathModules, paramDeclNode, paramValueNode, type, activeSection, iniSection, iniKey);
+	    if (doc==null || (nedValue!=null && !isNedDefault)) {
+	        // value hardcoded in NED (unchangeable from ini files), or there's no inifile
+	        ParamResolutionType type = nedValue!=null ? ParamResolutionType.NED : ParamResolutionType.UNASSIGNED;
+	        resultList.add(new ParamResolution(moduleFullPath, pathModules, paramDeclNode, paramValueNode, type, activeSection, null, null));
+	        return;
+	    }
+
+	    // look up its value in the inifile
+	    String paramFullPath = moduleFullPath + "." + paramDeclNode.getName();
+	    List<SectionKey> sectionKeys = InifileUtils.lookupParameter(paramFullPath, isNedDefault, sectionChain, doc);
+
+	    if (sectionKeys.isEmpty()) {
+	        // inifile contains nothing useful
+	        ParamResolutionType type = ParamResolutionType.UNASSIGNED;
+	        resultList.add(new ParamResolution(moduleFullPath, pathModules, paramDeclNode, paramValueNode, type, activeSection, null, null));
+	        return;
+	    }
+
+	    // add a ParamResolution for each matching line in the inifile
+	    for (SectionKey sectionKey : sectionKeys) {
+	        String iniSection = sectionKey.section;
+	        String iniKey = sectionKey.key;
+	        String iniValue = null;
+	        boolean iniApplyDefault = iniKey.endsWith(dot_APPLY_DEFAULT);
+	        if (iniApplyDefault)
+	            Assert.isTrue(nedValue!=null && isNedDefault && "true".equals(doc.getValue(iniSection, iniKey))); // assert lookupParameter() sanity
+	        if (!iniApplyDefault)
+	            iniValue = doc.getValue(iniSection, iniKey);
+
+	        // so, find out how the parameter's going to be assigned...
+	        ParamResolutionType type;
+            if (iniApplyDefault)
+                type = ParamResolutionType.NED_DEFAULT; // **.apply-default=true
+            else if (nedValue==null)
+	            type = ParamResolutionType.INI;
+	        else if (nedValue.equals(iniValue))
+	            type = ParamResolutionType.INI_NEDDEFAULT;
+	        else
+	            type = ParamResolutionType.INI_OVERRIDE;
+	        resultList.add(new ParamResolution(moduleFullPath, pathModules, paramDeclNode, paramValueNode, type, activeSection, iniSection, iniKey));
+	    }
 	}
 
 	/**
-	 * Resolve parameters of a module type or submodule, based solely on NED information.
+	 * Resolve parameters of a module type or submodule, based solely on NED information, 
+	 * without inifile. This is useful for views when a NED editor is active. 
 	 */
 	public static ParamResolution[] resolveModuleParameters(String moduleFullPath, SubmoduleElementEx submodule, INEDTypeInfo moduleType) {
 		ArrayList<ParamResolution> resultList = new ArrayList<ParamResolution>();
@@ -807,7 +821,7 @@ public class InifileAnalyzer {
 					submodule.getParamAssignments().get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
 				paramValueNode = null;
-			resultList.add(resolveParameter(moduleFullPath, null, paramDeclNode, paramValueNode, null, null));
+			resolveParameter(resultList, moduleFullPath, null, paramDeclNode, paramValueNode, null, null);
 		}
 		return resultList.toArray(new ParamResolution[]{});
 	}

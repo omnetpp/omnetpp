@@ -7,8 +7,10 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.dot_APPLY_DEFAULT;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -69,29 +71,36 @@ public class InifileUtils {
 	 * inifile entry, or null the parameter matches nothing. If hasDefault
 	 * is set, ".apply-default" entries are also considered.
 	 */
-	public static SectionKey lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
+	public static List<SectionKey> lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
 		//
-		//XXX this issue is much more complicated, as there may be multiple possibly matching
-		// inifile entries. For example, we have "net.node[*].power", and inifile contains
-		// "*.node[0..4].power=...", "*.node[5..9].power=...", and "net.node[10..].power=...".
-		// Current code would not match any (!!!), only "net.node[*].power=..." if it existed.
-		// lookupParameter() should actually return multiple matches.
-		//
-	    //XXX this is to optimize, probably.. new patternmatcher, getkeys(), etc
-		String paramApplyDefault = paramFullPath + ".apply-default";
+		// note: we need to return multiple matches because of keys like "*.node[0].power=...", 
+	    // "*.node[1..5].power=...", and "net.node[6..].power=..." etc. Scanning stops at
+	    // "*.node[*].power=" because that eats all matching params (anything after that cannot match)
+	    //
+	    //XXX this is to optimize, probably.. replaceAll(), new PatternMatcher each time, etc ==> cache the patmatcher in a hashtable!!! 
+	    List<SectionKey> result = new ArrayList<SectionKey>();  //XXX choose more optimal data structure, like plain List<String> which contains pairs...
+		String paramApplyDefault = paramFullPath + dot_APPLY_DEFAULT;
 		boolean considerApplyDefault = hasNedDefault;
 		for (String section : sectionChain) {
-			for (String key : doc.getKeys(section)) {
-				if (new PatternMatcher(key, true, true, true).matches(paramFullPath))
-					return new SectionKey(section, key);
-				if (considerApplyDefault && new PatternMatcher(key, true, true, true).matches(paramApplyDefault))
-					if (doc.getValue(section, key).equals("true"))
-						return new SectionKey(section, key);
-					else
+			for (String key : doc.getKeys(section)) { 
+			    String generalizedKey = key.replaceAll("\\[[^]]+\\]", "[*]");  // replace "[anything]" with "[*]" 
+				if (new PatternMatcher(generalizedKey, true, true, true).matches(paramFullPath)) { //XXX may throw exception! unmatched "{" etc
+					result.add(new SectionKey(section, key));
+					if (key.equals(generalizedKey))
+					    return result;
+				}
+				else if (considerApplyDefault && new PatternMatcher(generalizedKey, true, true, true).matches(paramApplyDefault))
+					if (doc.getValue(section, key).equals("true")) {
+					    result.add(new SectionKey(section, key));
+	                    if (key.equals(generalizedKey))
+	                        return result;
+					}
+					else {
 						considerApplyDefault = false;
+					}
 			}
 		}
-		return null;
+		return result;
 	}
 
 	/**
