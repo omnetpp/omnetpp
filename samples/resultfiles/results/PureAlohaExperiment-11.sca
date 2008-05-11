@@ -1,15 +1,19 @@
-run PureAlohaExperiment-11-20080508-17:33:56-2181
-attr config PureAlohaExperiment
-attr description "\"Channel utilization in the function of number of hosts and packet generation frequency\""
+run PureAlohaExperiment-11-20080511-10:06:06-4300
+attr configname PureAlohaExperiment
+attr datetime 20080511-10:06:06
 attr experiment PureAlohaExperiment
 attr inifile omnetpp.ini
+attr iterationvars $mean=5
+attr iterationvars2 "$mean=5, $repetition=1"
+attr mean 5
 attr measurement $mean=5
 attr network Aloha
-attr repeat 2
+attr processid 4300
+attr repetition 1
 attr replication "#1, seedset=11"
-attr run-number 11
-attr seed-set 11
-attr sim-time-limit 90min
+attr resultdir results
+attr runnumber 11
+attr seedset 11
 
 scalar . 	mean 	5
 scalar Aloha.server 	duration 	5400.2405321593

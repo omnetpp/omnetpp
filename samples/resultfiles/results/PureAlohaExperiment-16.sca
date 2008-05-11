@@ -1,22 +1,26 @@
-run PureAlohaExperiment-16-20080508-17:34:02-2215
-attr config PureAlohaExperiment
-attr description "\"Channel utilization in the function of number of hosts and packet generation frequency\""
+run PureAlohaExperiment-16-20080511-10:06:09-4300
+attr configname PureAlohaExperiment
+attr datetime 20080511-10:06:09
 attr experiment PureAlohaExperiment
 attr inifile omnetpp.ini
+attr iterationvars $mean=11
+attr iterationvars2 "$mean=11, $repetition=0"
+attr mean 11
 attr measurement $mean=11
 attr network Aloha
-attr repeat 2
+attr processid 4300
+attr repetition 0
 attr replication "#0, seedset=16"
-attr run-number 16
-attr seed-set 16
-attr sim-time-limit 90min
+attr resultdir results
+attr runnumber 16
+attr seedset 16
 
 scalar . 	mean 	11
 scalar Aloha.server 	duration 	5400.0002891294
 scalar Aloha.server 	"total frames" 	9789
 scalar Aloha.server 	"collided frames" 	1529
 scalar Aloha.server 	"total receive time" 	691.68749999535
-scalar Aloha.server 	"total collision time" 	200.30901820787
+scalar Aloha.server 	"total collision time" 	200.30901820788
 scalar Aloha.server 	"channel utilization" 	0.12809027091865
 statistic Aloha.server 	"collision multiplicity"
 field count 1285
