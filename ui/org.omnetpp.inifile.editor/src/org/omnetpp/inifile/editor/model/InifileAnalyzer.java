@@ -490,6 +490,7 @@ public class InifileAnalyzer {
 
 		// check value is consistent with the data type
 		if (paramType != -1) {
+		    // determine value's data type
 			int valueType = -1;
 			String valueUnit = null;
 			if (value.equals("true") || value.equals("false"))
@@ -503,20 +504,26 @@ public class InifileAnalyzer {
                     valueUnit = UnitConversion.parseQuantityForUnit(value); // throws exception if not a quantity
                     Assert.isNotNull(valueUnit);
                 } catch (RuntimeException e) {}
+                
                 if (valueUnit != null)
                     valueType = NED_PARTYPE_DOUBLE;
             }
 
+			// provided we could figure out the value's data type, check it's the same as parameter's data type
 			int tmpParamType = paramType==NED_PARTYPE_INT ? NED_PARTYPE_DOUBLE : paramType; // replace "int" with "double"
 			if (valueType != -1 && valueType != tmpParamType) {
-				String typeName = resList[0].paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
-				addError(section, key, "Wrong data type: "+typeName+" expected");
+			    String typeName = resList[0].paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
+			    addError(section, key, "Wrong data type: "+typeName+" expected");
 			}
-			
-			if (valueUnit!=null && !paramUnit.equals(valueUnit)) {
-			    //FIXME special cases: "0" doesn't need unit; convertible units
-                addError(section, key, "Wrong unit: expected " +
-                (paramUnit.equals("") ? "none" : paramUnit) + ", got " + (valueUnit.equals("") ? "none" : valueUnit));
+
+            // if value is numeric, check units
+			if (valueUnit!=null) {
+			    try {
+			        UnitConversion.parseQuantity(value, paramUnit); // throws exception on incompatible units
+			    } 
+			    catch (RuntimeException e) {
+			        addError(section, key, e.getMessage());
+			    }
 			}
 		}
 	}
