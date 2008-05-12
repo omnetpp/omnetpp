@@ -1,6 +1,6 @@
 package org.omnetpp.inifile.editor.model;
 
-import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
@@ -26,8 +26,8 @@ public class ParamResolution {
 	// pathModules[0] may be null.
 	public String moduleFullPath;
 	public SubmoduleElement[] pathModules;
-	public ParamElement paramDeclNode;  // node where param was declared; not null
-	public ParamElement paramValueNode;  // node where param gets assigned (may be a module or submodule param, or may be null)
+	public ParamElementEx paramDeclNode;  // node where param was declared; not null
+	public ParamElementEx paramValueNode;  // node where param gets assigned (may be a module or submodule param, or may be null)
 
 	// how the parameter value gets resolved: from NED, from inifile, unassigned, etc
 	public ParamResolutionType type;
@@ -43,7 +43,7 @@ public class ParamResolution {
 	
 	// for convenience
 	public ParamResolution(String moduleFullPath, SubmoduleElement[] pathModules, 
-			               ParamElement paramDeclNode, ParamElement paramValueNode, ParamResolutionType type, 
+			               ParamElementEx paramDeclNode, ParamElementEx paramValueNode, ParamResolutionType type, 
 			               String activeSection, String section, String key) {
 		this.moduleFullPath = moduleFullPath;
 		this.pathModules = pathModules;

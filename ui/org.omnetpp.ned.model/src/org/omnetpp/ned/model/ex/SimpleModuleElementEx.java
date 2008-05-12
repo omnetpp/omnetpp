@@ -14,8 +14,6 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
-import org.omnetpp.ned.model.pojo.LiteralElement;
-import org.omnetpp.ned.model.pojo.PropertyKeyElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
 /**

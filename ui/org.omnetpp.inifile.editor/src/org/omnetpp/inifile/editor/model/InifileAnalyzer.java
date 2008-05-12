@@ -37,6 +37,8 @@ import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
@@ -453,16 +455,30 @@ public class InifileAnalyzer {
 			return;
 		}
 
-		// check parameter types are consistent with each other
+		// check parameter data types are consistent with each other
 		ParamResolution[] resList = getParamResolutionsForKey(section, key);
-		int dataType = -1;
+		int paramType = -1;
 		for (ParamResolution res : resList) {
-			if (dataType == -1)
-				dataType = res.paramDeclNode.getType();
-			else if (dataType != res.paramDeclNode.getType()) {
-				addError(section, key, "Entry matches parameters of different data types");
-				return;
-			}
+		    if (paramType == -1)
+		        paramType = res.paramDeclNode.getType();
+		    else if (paramType != res.paramDeclNode.getType()) {
+		        addError(section, key, "Entry matches parameters of different data types");
+		        return;
+		    }
+		}
+
+		// check units are consistent with each other
+		String paramUnit = null;
+		for (ParamResolution res : resList) {
+		    PropertyElementEx unitProperty = res.paramDeclNode.getLocalProperties().get("unit");
+		    String unit = unitProperty==null ? "" : StringUtils.nullToEmpty(unitProperty.getSimpleValue());
+		    if (paramUnit == null)
+		        paramUnit = unit;
+		    else if (!paramUnit.equals(unit)) {
+		        addError(section, key, "Entry matches parameters with different units: " + 
+		                (paramUnit.equals("") ? "none" : paramUnit) + ", " + (unit.equals("") ? "none" : unit));
+		        return;
+		    }
 		}
 
 		// if value contains "${...}" variables, check that those variables exist. Any more
@@ -473,27 +489,39 @@ public class InifileAnalyzer {
 		}
 
 		// check value is consistent with the data type
-		if (dataType != -1) {
+		if (paramType != -1) {
 			int valueType = -1;
+			String valueUnit = null;
 			if (value.equals("true") || value.equals("false"))
 				valueType = NED_PARTYPE_BOOL;
 			else if (value.startsWith("\""))
 				valueType = NED_PARTYPE_STRING;
-			else if (value.matches("[-+0-9.eE]+"))
-				valueType = NED_PARTYPE_DOUBLE;
 			else if (value.startsWith("xmldoc"))
-				valueType = NED_PARTYPE_XML;
+			    valueType = NED_PARTYPE_XML;
+            else {
+                try { 
+                    valueUnit = UnitConversion.parseQuantityForUnit(value); // throws exception if not a quantity
+                    Assert.isNotNull(valueUnit);
+                } catch (RuntimeException e) {}
+                if (valueUnit != null)
+                    valueType = NED_PARTYPE_DOUBLE;
+            }
 
-			if (dataType == NED_PARTYPE_INT)
-				dataType = NED_PARTYPE_DOUBLE;
-
-			if (valueType!=-1 && valueType!=dataType) {
+			int tmpParamType = paramType==NED_PARTYPE_INT ? NED_PARTYPE_DOUBLE : paramType; // replace "int" with "double"
+			if (valueType != -1 && valueType != tmpParamType) {
 				String typeName = resList[0].paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
 				addError(section, key, "Wrong data type: "+typeName+" expected");
+			}
+			
+			if (valueUnit!=null && !paramUnit.equals(valueUnit)) {
+			    //FIXME special cases: "0" doesn't need unit; convertible units
+                addError(section, key, "Wrong unit: expected " +
+                (paramUnit.equals("") ? "none" : paramUnit) + ", got " + (valueUnit.equals("") ? "none" : valueUnit));
 			}
 		}
 	}
 
+	
 	protected void validatePerObjectConfig(String section, String key, INEDTypeResolver ned) {
 		Assert.isTrue(key.lastIndexOf('.') > 0);
 		String configName = key.substring(key.lastIndexOf('.')+1);
@@ -731,8 +759,8 @@ public class InifileAnalyzer {
 		// loop through all parameters of the module
 		for (String paramName : moduleType.getParamDeclarations().keySet()) {
 		    // find declaration and value ParamElements
-			ParamElement paramDeclNode = moduleType.getParamDeclarations().get(paramName);
-			ParamElement paramValueNode = submodule==null ?
+			ParamElementEx paramDeclNode = moduleType.getParamDeclarations().get(paramName);
+			ParamElementEx paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
 					submodule.getParamAssignments().get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
@@ -758,7 +786,7 @@ public class InifileAnalyzer {
 	 * XXX what if parameter is assigned in a submodule decl?
 	 * XXX what if it's assigned using a /pattern/? this info cannot be expressed in the arg list!
 	 */
-	protected static void resolveParameter(List<ParamResolution> resultList, String moduleFullPath, SubmoduleElementEx[] pathModules, ParamElement paramDeclNode, ParamElement paramValueNode, String[] sectionChain, IInifileDocument doc) {
+	protected static void resolveParameter(List<ParamResolution> resultList, String moduleFullPath, SubmoduleElementEx[] pathModules, ParamElementEx paramDeclNode, ParamElementEx paramValueNode, String[] sectionChain, IInifileDocument doc) {
 	    // value in the NED file
 	    String nedValue = paramValueNode==null ? null : paramValueNode.getValue();
 	    if (StringUtils.isEmpty(nedValue)) nedValue = null;
@@ -816,8 +844,8 @@ public class InifileAnalyzer {
 	public static ParamResolution[] resolveModuleParameters(String moduleFullPath, SubmoduleElementEx submodule, INEDTypeInfo moduleType) {
 		ArrayList<ParamResolution> resultList = new ArrayList<ParamResolution>();
 		for (String paramName : moduleType.getParamDeclarations().keySet()) {
-			ParamElement paramDeclNode = moduleType.getParamDeclarations().get(paramName);
-			ParamElement paramValueNode = submodule==null ?
+			ParamElementEx paramDeclNode = moduleType.getParamDeclarations().get(paramName);
+			ParamElementEx paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
 					submodule.getParamAssignments().get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))

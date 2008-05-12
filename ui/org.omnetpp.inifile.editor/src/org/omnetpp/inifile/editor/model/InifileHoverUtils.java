@@ -160,11 +160,11 @@ public class InifileHoverUtils {
 	    text = text.replace("\n", "<p>");
 	    return text;
 	}
+	
 	/**
 	 * Generate tooltip for a param key entry
 	 */
 	public static String getParamKeyHoverText(String section, String key, InifileAnalyzer analyzer) {
-		//XXX somehow merge similar entries? (i.e. where pathModules[] and paramValueNode/paramDeclNode are the same)
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, analyzer.getDocument());
 		String text = getProblemsHoverText(markers, false);
 		text += "<b>[" + section + "] / " + key + "</b><br>\n";
@@ -174,35 +174,56 @@ public class InifileHoverUtils {
 			return HoverSupport.addHTMLStyleSheet(text);
 		}
 
-		// merge similar entries
-		Set<ParamElement> paramDeclNodes = new LinkedHashSet<ParamElement>();
-		for (ParamResolution res : resList)
-			paramDeclNodes.add(res.paramDeclNode);
-
-		text += "<br>Applies to:\n";
-		for (ParamElement paramDeclNode : paramDeclNodes) {
-			String paramName = paramDeclNode.getName();
-			String paramValue = paramDeclNode.getValue();
-			if (paramDeclNode.getIsDefault())
-			    paramValue = "default("+paramValue+")";
-			String optParamValue = StringUtils.isEmpty(paramValue) ? "" : " = " + paramValue;
-			String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
-			if (paramDeclNode.getIsVolatile())
-			    paramType = "volatile " + paramType;
-			String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
-			String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
-			String optComment = comment==null ? "" : (" -- <i>\"" + comment + "\"</i>");
-
-			text += "<br>- "+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + optComment + "\n";
-
-			text += "<ul>\n";
-			for (ParamResolution res : resList)
-				if (res.paramDeclNode == paramDeclNode)
-					text +=	" <li><i>" + res.moduleFullPath + "." + paramName + "</i>" + (section.equals(res.activeSection) ? "" : ", for sub-config ["+res.activeSection+"]") + "</li>\n";
-			text += "</ul>";
-		}
+		text += "<br><b>Applies to:</b><br>\n";
+		text += formatParamResolutions(resList, false);
+        text += "<br><b>Details:</b><br>\n";
+        text += formatParamResolutions(resList, true);
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
+
+    private static String formatParamResolutions(ParamResolution[] resList, boolean details) {
+        String text = "";
+        // collect unique section names
+        Set<String> sectionNames = new LinkedHashSet<String>();
+        for (ParamResolution res : resList)
+            sectionNames.add(res.activeSection);
+
+        for (String sectionName : sectionNames) {
+            Set<ParamElement> paramDeclNodes = new LinkedHashSet<ParamElement>();
+            for (ParamResolution res : resList)
+                if (res.activeSection.equals(sectionName))
+                    paramDeclNodes.add(res.paramDeclNode);
+
+            if (sectionNames.size()>1)
+                text += "&nbsp;[" + sectionName + "]\n";
+            text += "<ul>";
+            for (ParamElement paramDeclNode : paramDeclNodes) {
+                String paramName = paramDeclNode.getName();
+                String paramValue = paramDeclNode.getValue();
+                if (paramDeclNode.getIsDefault())
+                    paramValue = "default("+paramValue+")";
+                String optParamValue = StringUtils.isEmpty(paramValue) ? "" : " = " + paramValue;
+                String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
+                if (paramDeclNode.getIsVolatile())
+                    paramType = "volatile " + paramType;
+                String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
+                String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
+                String optComment = comment==null ? "" : (" -- <i>\"" + comment + "\"</i>");
+
+                text += "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + optComment + "\n";
+                if (details) {
+                    text += "<ul>\n";
+                    for (ParamResolution res : resList)
+                        if (res.paramDeclNode == paramDeclNode && res.activeSection.equals(sectionName))
+                            text += " <li><i>" + res.moduleFullPath + "." + paramName + "</i></li>\n";
+                    text += "</ul>";
+                }
+                text += "</li>\n";
+            }
+            text += "</ul>";
+        }
+        return text;
+    }
 
 	public static String getProblemsHoverText(IMarker[] markers, boolean lineNumbers) {
 		if (markers.length==0) 

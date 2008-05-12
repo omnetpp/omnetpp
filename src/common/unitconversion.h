@@ -60,6 +60,13 @@ class COMMON_API UnitConversion
     static double parseQuantity(const char *str, std::string& outActualUnit);
 
     /**
+     * Parse a quantity and return its unit. This method simply delegates to
+     * parseQuantity(), and it only exists to make it possible to get the unit
+     * from Java code.
+     */
+    static std::string parseQuantityForUnit(const char *str) {std::string u; parseQuantity(str, u); return u;}
+
+    /**
      * Returns a concatenation of the number and the unit.
      */
     static std::string formatQuantity(double d, const char *unit=NULL);

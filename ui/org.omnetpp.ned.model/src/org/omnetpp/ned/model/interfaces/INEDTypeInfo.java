@@ -137,7 +137,8 @@ public interface INEDTypeInfo extends INEDChangeListener {
     /** Gate declarations (i.e. where gate type is not empty), including inherited ones */
     public Map<String, GateElementEx> getGateDeclarations();
 
-    /** Gate nodes where the "vector size" attribute is filled in, including inherited ones;
+    /** 
+     * Gate nodes where the "vector size" attribute is filled in, including inherited ones;
      * the most recent one for each gate
      */
     public Map<String, GateElementEx> getGateSizes();
@@ -152,4 +153,5 @@ public interface INEDTypeInfo extends INEDChangeListener {
 	public List<ParamElementEx> getParameterInheritanceChain(String parameterName);
 	public List<GateElementEx> getGateInheritanceChain(String gateName);
 	public List<PropertyElement> getPropertyInheritanceChain(String propertyName);
+
 }
