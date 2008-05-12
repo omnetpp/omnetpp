@@ -174,6 +174,7 @@ public class InifileAnalyzer {
 			//XXX catch all exceptions during analyzing, and set changed=false in finally{} ?
 
 			// calculate parameter resolutions for each section
+			// note: almost all time analyze() takes is spent in this method -- optimize here if slow
 			calculateParamResolutions(ned);
 
 			// collect iteration variables

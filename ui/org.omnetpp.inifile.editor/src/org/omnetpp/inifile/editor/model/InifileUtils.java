@@ -10,7 +10,9 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.dot_APPLY_DEFAULT;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -48,6 +50,17 @@ public class InifileUtils {
 	public static final Image ICON_OVR_INFO = InifileEditorPlugin.getCachedImage("icons/full/ovr16/info.gif");
 	
 	/**
+	 * Stores a cached pattern matcher created from an inifile key; used during inifile analysis
+	 */
+	private static class KeyMatcher {
+        String key;
+	    String generalizedKey; // key, with indices ("[0]", "[5..]" etc) replaced with "[*]" 
+        boolean keyEqualsGeneralizedKey;  // if key.equals(generalizedKey) 
+	    PatternMatcher matcher;  // pattern is generalizedKey
+	}
+    private static Map<String,KeyMatcher> keyMatcherCache = new HashMap<String, KeyMatcher>();
+	
+	/**
 	 * Looks up a configuration value in the given section or its fallback sections.
 	 * Returns null if not found.
 	 */
@@ -68,7 +81,7 @@ public class InifileUtils {
 
 	/**
 	 * Given a parameter's fullPath, returns the key of the matching
-	 * inifile entry, or null the parameter matches nothing. If hasDefault
+	 * inifile entry, or null the parameter matches nothing. If hasNedDefault
 	 * is set, ".apply-default" entries are also considered.
 	 */
 	public static List<SectionKey> lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
@@ -77,22 +90,21 @@ public class InifileUtils {
 	    // "*.node[1..5].power=...", and "net.node[6..].power=..." etc. Scanning stops at
 	    // "*.node[*].power=" because that eats all matching params (anything after that cannot match)
 	    //
-	    //XXX this is to optimize, probably.. replaceAll(), new PatternMatcher each time, etc ==> cache the patmatcher in a hashtable!!! 
-	    List<SectionKey> result = new ArrayList<SectionKey>();  //XXX choose more optimal data structure, like plain List<String> which contains pairs...
+	    List<SectionKey> result = new ArrayList<SectionKey>();
 		String paramApplyDefault = paramFullPath + dot_APPLY_DEFAULT;
 		boolean considerApplyDefault = hasNedDefault;
 		for (String section : sectionChain) {
-			for (String key : doc.getKeys(section)) { 
-			    String generalizedKey = key.replaceAll("\\[[^]]+\\]", "[*]");  // replace "[anything]" with "[*]" 
-				if (new PatternMatcher(generalizedKey, true, true, true).matches(paramFullPath)) { //XXX may throw exception! unmatched "{" etc
+			for (String key : doc.getKeys(section)) {
+			    KeyMatcher keyMatcher = getOrCreateKeyMatcher(key);
+				if (keyMatcher.matcher.matches(paramFullPath)) { 
 					result.add(new SectionKey(section, key));
-					if (key.equals(generalizedKey))
+					if (keyMatcher.keyEqualsGeneralizedKey)
 					    return result;
 				}
-				else if (considerApplyDefault && new PatternMatcher(generalizedKey, true, true, true).matches(paramApplyDefault))
+				else if (considerApplyDefault && keyMatcher.matcher.matches(paramApplyDefault))
 					if (doc.getValue(section, key).equals("true")) {
 					    result.add(new SectionKey(section, key));
-	                    if (key.equals(generalizedKey))
+	                    if (keyMatcher.keyEqualsGeneralizedKey)
 	                        return result;
 					}
 					else {
@@ -103,13 +115,31 @@ public class InifileUtils {
 		return result;
 	}
 
+    private static KeyMatcher getOrCreateKeyMatcher(String key) {
+        KeyMatcher keyMatcher = keyMatcherCache.get(key);
+        if (keyMatcher == null) {
+            keyMatcher = new KeyMatcher();
+            keyMatcher.key = key;
+            keyMatcher.generalizedKey = key.replaceAll("\\[[^]]+\\]", "[*]");  // replace "[anything]" with "[*]"
+            keyMatcher.keyEqualsGeneralizedKey = key.equals(keyMatcher.generalizedKey);
+            try {
+                keyMatcher.matcher = new PatternMatcher(keyMatcher.generalizedKey, true, true, true); 
+            } catch (RuntimeException e) {
+                // bogus key (contains unmatched "{" or something); create matcher that does not match anything
+                keyMatcher.matcher = new PatternMatcher("", true, true, true); 
+            }
+            keyMatcherCache.put(key, keyMatcher);
+        }
+        return keyMatcher;
+    }
+	
 	/**
 	 * Returns the submodule name. If vector, appends [*].
 	 */
 	public static String getSubmoduleFullName(SubmoduleElement submodule) {
 		String submoduleName = submodule.getName();
-		if (!StringUtils.isEmpty(submodule.getVectorSize())) //XXX what if parsed expressions are in use?
-			submoduleName += "[*]"; //XXX
+		if (!StringUtils.isEmpty(submodule.getVectorSize()))
+			submoduleName += "[*]";
 		return submoduleName;
 	}
 
