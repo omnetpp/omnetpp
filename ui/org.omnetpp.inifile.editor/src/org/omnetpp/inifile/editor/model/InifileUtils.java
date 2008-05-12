@@ -60,6 +60,7 @@ public class InifileUtils {
     public static final Image ICON_INIPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ini.png");
     public static final Image ICON_INIOVERRIDEPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inioverride.png");
     public static final Image ICON_ININEDDEFAULTPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inineddefault.png");
+    public static final Image ICON_INIPARMISC = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inineddefault.png");
     public static final Image ICON_APPLYDEFAULT_TRUE = InifileEditorPlugin.getCachedImage("icons/full/obj16/applydefault_true.png");
     public static final Image ICON_APPLYDEFAULT_FALSE = InifileEditorPlugin.getCachedImage("icons/full/obj16/applydefault_false.png");
 	
@@ -457,7 +458,7 @@ public class InifileUtils {
 	        types.add(p.type);
         if (types.size() == 1)
             return suggestImage(paramResolutions[0].type);
-        return ICON_ININEDDEFAULTPAR; //XXX some "misc" icon
+        return ICON_INIPARMISC;
 	}
 
 	/**
