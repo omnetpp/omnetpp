@@ -61,7 +61,6 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.SectionKey;
-import org.omnetpp.inifile.editor.views.AbstractModuleView;
 
 /**
  * For editing module parameters, apply-default and type-name lines.
@@ -177,7 +176,8 @@ public class ParametersPage extends FormPage {
 				element = ((GenericTreeNode)element).getPayload();
 				if (element instanceof SectionKey) {
 					if (columnIndex == 0) {
-						return AbstractModuleView.ICON_INIPAR;
+                        SectionKey item = (SectionKey) element;
+                        return InifileUtils.getKeyImage(item.section, item.key, getInifileAnalyzer());
 					}
 					else if (columnIndex == 1) {
 						SectionKey item = (SectionKey) element;

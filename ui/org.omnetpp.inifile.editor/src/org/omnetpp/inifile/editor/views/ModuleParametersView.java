@@ -45,6 +45,7 @@ import org.omnetpp.inifile.editor.actions.ActionExt;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
@@ -120,7 +121,7 @@ public class ModuleParametersView extends AbstractModuleView {
 				if (columnIndex!=0)
 					return null;
 				if (element instanceof ParamResolution)
-					return suggestImage(((ParamResolution) element).type);
+					return InifileUtils.suggestImage(((ParamResolution) element).type);
 				else
 					return null;
 			}

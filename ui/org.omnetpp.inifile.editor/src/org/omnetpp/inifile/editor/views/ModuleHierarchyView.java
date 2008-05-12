@@ -166,9 +166,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 					return image!=null ? image : NEDTreeUtil.getNedModelLabelProvider().getImage(mn.submoduleNode);
 				}
 				else if (element instanceof ParamResolution)
-					return suggestImage(((ParamResolution) element).type);
+					return InifileUtils.suggestImage(((ParamResolution) element).type);
 				else if (element instanceof ErrorNode)
-					return ICON_ERROR;
+					return InifileUtils.ICON_ERROR;
 				else
 					return null;
 			}

@@ -43,7 +43,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * @author Andras
  */
 public abstract class AbstractModuleView extends ViewWithMessagePart implements IShowInTarget {
-	private IEditorPart pinnedToEditor = null;
+    private IEditorPart pinnedToEditor = null;
 	private ISelection pinnedToEditorSelection = null;
 	private IAction pinAction;
 	
@@ -327,39 +327,6 @@ public abstract class AbstractModuleView extends ViewWithMessagePart implements 
 	 * @param section selected key
 	 */
 	protected abstract void buildContent(INEDElement module, InifileAnalyzer ana, String section, String key);
-
-
-	/* stuff for subclasses: icons */
-	public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
-
-//	public static final Image ICON_UNASSIGNEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/UnassignedPar.png");
-//	public static final Image ICON_NEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/NedPar.png");
-//	public static final Image ICON_NEDDEFAULTPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/IniPar.png"); //XXX
-//	public static final Image ICON_INIPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/IniPar.png");
-//	public static final Image ICON_INIPARREDUNDANT = InifileEditorPlugin.getCachedImage("icons/full/obj16/IniParRedundant.png");
-
-	public static final Image ICON_UNASSIGNEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_unassigned.png");
-    public static final Image ICON_NEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ned.png");
-    public static final Image ICON_NEDDEFAULTPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_neddefault.png");
-    public static final Image ICON_INIPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ini.png");
-    public static final Image ICON_INIOVERRIDEPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inioverride.png");
-    public static final Image ICON_INIPARREDUNDANT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inineddefault.png");
-
-	/**
-	 * Helper function: suggests an icon for a table or tree entry.
-	 */
-	protected static Image suggestImage(ParamResolutionType type) {
-		switch (type) {
-			case UNASSIGNED: return ICON_UNASSIGNEDPAR;
-			case NED: return ICON_NEDPAR;
-			case NED_DEFAULT: return ICON_NEDDEFAULTPAR;
-			case INI: return ICON_INIPAR;
-			case INI_OVERRIDE:  return ICON_INIOVERRIDEPAR;
-			case INI_NEDDEFAULT: return ICON_INIPARREDUNDANT;
-		}
-		return null;
-	}
-
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.IShowInTarget#show(org.eclipse.ui.part.ShowInContext)

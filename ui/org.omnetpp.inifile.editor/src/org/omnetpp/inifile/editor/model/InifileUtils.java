@@ -11,8 +11,10 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.dot_APPLY_DEFAULT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -27,6 +29,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
@@ -48,6 +51,17 @@ public class InifileUtils {
 	public static final Image ICON_OVR_ERROR = InifileEditorPlugin.getCachedImage("icons/full/ovr16/error.gif");
 	public static final Image ICON_OVR_WARNING = InifileEditorPlugin.getCachedImage("icons/full/ovr16/warning.gif");
 	public static final Image ICON_OVR_INFO = InifileEditorPlugin.getCachedImage("icons/full/ovr16/info.gif");
+
+	// for getKeyImage()
+    public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
+    public static final Image ICON_UNASSIGNEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_unassigned.png");
+    public static final Image ICON_NEDPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ned.png");
+    public static final Image ICON_NEDDEFAULTPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_neddefault.png");
+    public static final Image ICON_INIPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ini.png");
+    public static final Image ICON_INIOVERRIDEPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inioverride.png");
+    public static final Image ICON_ININEDDEFAULTPAR = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inineddefault.png");
+    public static final Image ICON_APPLYDEFAULT_TRUE = InifileEditorPlugin.getCachedImage("icons/full/obj16/applydefault_true.png");
+    public static final Image ICON_APPLYDEFAULT_FALSE = InifileEditorPlugin.getCachedImage("icons/full/obj16/applydefault_false.png");
 	
 	/**
 	 * Stores a cached pattern matcher created from an inifile key; used during inifile analysis
@@ -420,5 +434,45 @@ public class InifileUtils {
 		String key = "section:"+exists+":"+containsIteration+":"+containsRepeat+":"+maxProblemSeverity;
 		return InifileEditorPlugin.getDecoratedImage(sectionImage, overlayImage, SWT.BEGINNING|SWT.BOTTOM, key);
 	}
-	
+
+	/**
+	 * Returns an image for a given inifile key, suitable for displaying in a table or tree.
+	 */
+	public static Image getKeyImage(String section, String key, InifileAnalyzer analyzer) {
+	    if (key.endsWith(dot_APPLY_DEFAULT)) {
+	        String value = analyzer.getDocument().getValue(section, key);
+            return "true".equals(value) ? ICON_APPLYDEFAULT_TRUE : "false".equals(value) ? ICON_APPLYDEFAULT_FALSE : ICON_ERROR;
+	    }
+
+	    // return an icon based on ParamResolutions
+	    ParamResolution[] paramResolutions = analyzer.getParamResolutionsForKey(section, key);
+	    if (paramResolutions == null || paramResolutions.length == 0)
+	        return ICON_INIPAR;
+        if (paramResolutions.length == 1)
+            return suggestImage(paramResolutions[0].type);
+        
+        // there are more than one ParamResolutions -- collect their types
+	    Set<ParamResolutionType> types = new HashSet<ParamResolutionType>();
+	    for (ParamResolution p : paramResolutions)
+	        types.add(p.type);
+        if (types.size() == 1)
+            return suggestImage(paramResolutions[0].type);
+        return ICON_ININEDDEFAULTPAR; //XXX some "misc" icon
+	}
+
+	/**
+     * Helper function: suggests an icon for a table or tree entry.
+     */
+    public static Image suggestImage(ParamResolutionType type) {
+        switch (type) {
+            case UNASSIGNED: return ICON_UNASSIGNEDPAR;
+            case NED: return ICON_NEDPAR;
+            case NED_DEFAULT: return ICON_NEDDEFAULTPAR;
+            case INI: return ICON_INIPAR;
+            case INI_OVERRIDE:  return ICON_INIOVERRIDEPAR;
+            case INI_NEDDEFAULT: return ICON_ININEDDEFAULTPAR;
+        }
+        return null;
+    }
+
 }
