@@ -183,6 +183,16 @@ COMMON_API bool opp_stringendswith(const char *s, const char *ending);
 COMMON_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
 
 /**
+ * Converts the string to uppercase. Returns a pointer to  the argument.
+ */
+COMMON_API char *opp_strupr(char *s);
+
+/**
+ * Converts the string to lowercase. Returns a pointer to  the argument.
+ */
+COMMON_API char *opp_strlwr(char *s);
+
+/**
  * If either s1 or s2 is empty, returns the other one, otherwise returns
  * s1 + separator + s2.
  */

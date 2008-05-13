@@ -330,6 +330,26 @@ char *opp_concat(const char *s1,
     return buf;
 }
 
+char *opp_strupr(char *s)
+{
+    char *txt = s;
+	while(*s) {
+		*s = opp_toupper(*s); 
+        s++;
+    }
+	return txt; 
+}
+
+char *opp_strlwr(char *s)
+{
+    char *txt = s;
+	while(*s) {
+		*s = opp_tolower(*s); 
+        s++;
+    }
+	return txt; 
+}
+
 std::string opp_join(const char *separator, const char *s1, const char *s2)
 {
     if (opp_isempty(s1))
