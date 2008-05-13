@@ -7,7 +7,7 @@
       <toolChain
             id="org.eclipse.cdt.msvc.toolchain.base"
             isAbstract="true"
-            isToolChainSupported="org.omnetpp.cdt.academic.MSVcToolchainIsSupported"
+            isToolChainSupported="org.omnetpp.cdt.academic.MsvcToolchainIsSupported"
             name="Microsoft Visual C++ is not supported in Academic version"
             osList="win32">
       </toolChain>
