@@ -48,7 +48,6 @@ class HistogramPlot {
 		IHistogramDataset dataset = canvas.getDataset();
 		double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
 		double minY = 0.0, maxY = 0.0;
-		boolean underflowCell = false, overflowCell = false;
 		
 		int histCount = dataset.getSeriesCount();
 		bars = new RectangularArea[histCount][];
@@ -58,28 +57,27 @@ class HistogramPlot {
 		for (int series = 0; series < histCount; ++series) {
 			int count = dataset.getCellsCount(series);
 			bars[series] = new RectangularArea[count];
+			double minValue = dataset.getMinValue(series);
+			double maxValue = dataset.getMaxValue(series);
 			for (int index = 0; index < count; ++index) {
-				double xLeft = dataset.getCellMin(series, index);
-				double xRight = dataset.getCellMax(series, index);
-				double value = transformValue(dataset.getCellValue(series, index));
-				double yTop = Math.max(value, transformedBaseline);
-				double yBottom = Math.min(value, transformedBaseline);
-				bars[series][index] = new RectangularArea(xLeft,yBottom,xRight,yTop);
+				double lowerBound = dataset.getCellLowerBound(series, index);
+				if (index == 0 && Double.isInfinite(lowerBound))
+					lowerBound = minValue;
+				double upperBound = dataset.getCellUpperBound(series, index);
+				if (index == count - 1 && Double.isInfinite(upperBound))
+					upperBound = maxValue;
+				double value = dataset.getCellValue(series, index);
+				double transformedValue = transformValue(value);
+				double yTop = Math.max(transformedValue, transformedBaseline);
+				double yBottom = Math.min(transformedValue, transformedBaseline);
+				double xLeft = Math.min(lowerBound, upperBound);
+				double xRight = Math.max(upperBound, lowerBound);
 				
+				bars[series][index] = new RectangularArea(xLeft, yBottom, xRight, yTop);
+				minX = Math.min(minX, xLeft);
+				maxX = Math.max(maxX, xRight);
 				if (!Double.isNaN(yTop)) {
 					maxY = Math.max(maxY, yTop);
-				}
-				if (index <= 1) {
-					if (Double.isInfinite(xLeft))
-						underflowCell = true;
-					else
-						minX = Math.min(minX, xLeft);
-				}
-				else if (index >= count - 2) {
-					if (Double.isInfinite(xRight))
-						overflowCell = true;
-					else
-						maxX = Math.max(maxX, xRight);
 				}
 			}
 		}
@@ -89,11 +87,10 @@ class HistogramPlot {
 		
 		double width = maxX - minX;
 		double height = maxY - minY;
-		if (underflowCell)
-			minX -= width / 10;
-		if (overflowCell)
-			maxX += width / 10;
-		maxY += height / 4;
+        minX = (minX>=0 ? 0 : minX-width/80);
+		maxX = (maxX<=0 ? 0 : maxX+width/80);
+		minY = (minY>=0 ? 0 : minY-height/3);
+		maxY = (maxY<=0 ? 0 : maxY+height/3);
 		
 		return new RectangularArea(minX, minY, maxX, maxY);
 	}
@@ -126,7 +123,7 @@ class HistogramPlot {
 
 	Rectangle layout(GC gc, Rectangle area) {
 		Assert.isNotNull(area);
-		this.area = area;
+		this.area = area.getCopy();
 		return area;
 	}
 	
@@ -143,8 +140,8 @@ class HistogramPlot {
 					double yb = bars[series][index].minY;
 					
 					if (yt != yb) {
-						int left = Double.isInfinite(xl) ? area.x : coordsMapping.toCanvasX(xl);
-						int right = Double.isInfinite(xr) ? area.right() : coordsMapping.toCanvasX(xr);
+						int left = coordsMapping.toCanvasX(xl);
+						int right = coordsMapping.toCanvasX(xr);
 						int bottom = Double.isInfinite(yb) ? (yb<0?area.bottom():area.y) : coordsMapping.toCanvasY(yb);
 						int top = Double.isInfinite(yt) ? (yt<0?area.bottom():area.y) : coordsMapping.toCanvasY(yt);
 						gc.fillRectangle(left, top, right-left, bottom-top);
@@ -162,29 +159,24 @@ class HistogramPlot {
 				gc.setForeground(getHistogramColor(series));
 				int prevY = area.bottom();
 				int cellCount = bars[series].length;
-				int firstIndex = (Double.isInfinite(bars[series][0].minX) && bars[series][0].minY == bars[series][0].maxY ?
-									1 : 0);
-				int lastIndex = (Double.isInfinite(bars[series][cellCount-1].maxX) &&
-									bars[series][cellCount-1].minY == bars[series][cellCount-1].maxY ?
-									cellCount - 2 : cellCount - 1);
-				int[] points = new int[6*(lastIndex-firstIndex+1) + 2]; // coordinates of 3*n+1 points
+				int[] points = new int[6*cellCount + 2]; // coordinates of 3*n+1 points
 				int i = 0;
-				for (int index = firstIndex ; index <= lastIndex; ++index) {
+				for (int index = 0 ; index < cellCount; ++index) {
 					double xl = bars[series][index].minX;
 					double xr = bars[series][index].maxX;
 					double yt = bars[series][index].maxY;
 					double yb = bars[series][index].minY;
 					double y = yt > transformedBaseline ? yt : yb;
 
-					int left = Double.isInfinite(xl) ? area.x : coordsMapping.toCanvasX(xl);
-					int right = Double.isInfinite(xr) ? area.right() : coordsMapping.toCanvasX(xr);
+					int left = coordsMapping.toCanvasX(xl);
+					int right = coordsMapping.toCanvasX(xr);
 					int yy = Double.isInfinite(y) ? (y<0?area.bottom():area.y): coordsMapping.toCanvasY(y);
 					
 					points[i++] = left; points[i++] = prevY;
 					points[i++] = left; points[i++] = yy;
 					points[i++] = right; points[i++] = yy;
 					
-					if (index == lastIndex) {
+					if (index == cellCount - 1) {
 						points[i++] = right; points[i++] = area.bottom();
 					}
 
@@ -215,13 +207,32 @@ class HistogramPlot {
 			int series = seriesAndIndeces[i];
 			int index = seriesAndIndeces[i+1];
 			String key = dataset.getSeriesKey(series);
-			double min = dataset.getCellMin(series, index);
-			double max = dataset.getCellMax(series, index);
+			double lowerBound = dataset.getCellLowerBound(series, index);
+			double upperBound = dataset.getCellUpperBound(series, index);
 			double value = dataset.getCellValue(series, index);
-			if (dataset.isDiscrete(series))
-				result.append(String.format("%s [%s]=%.0f", key, Math.round((max+min)/2), value));
+			double min,max;
+			String numberFormat;
+			if (dataset.isDiscrete(series)) {
+				// transform to integer bounds, both inclusive
+				min = Math.round(lowerBound + 0.5);
+				max = Math.round(upperBound - 0.5);
+				numberFormat = "%.0f";
+			}
+			else {
+				min = lowerBound;
+				max = upperBound;
+				numberFormat = "%.3g";
+			}
+
+			if (Double.isInfinite(lowerBound))
+				result.append(String.format("%s [<="+numberFormat+"]=%.0f", key, max, value));
+			else if (Double.isInfinite(upperBound))
+				result.append(String.format("%s [>="+numberFormat+"]=%.0f", key, min, value));
+			else if (min == max)
+				result.append(String.format("%s ["+numberFormat+"]=%.0f", key, max, value));
 			else
-				result.append(String.format("%s [%.3g,%.3g]=%.3g", key, min, max, value));
+				result.append(String.format("%s [<"+numberFormat+","+numberFormat+"]=%.0f",
+													key, min, max, value));
 			if (i != seriesAndIndeces.length - 1)
 				result.append("<br>");
 		}
@@ -265,7 +276,7 @@ class HistogramPlot {
 		if (index >= 0)
 			return index;
 		index = -index-1;
-		if (0 < index && index < bars.length && x <= bars[index-1].maxX)
+		if (0 < index && index <= bars.length && x <= bars[index-1].maxX)
 			return index-1;
 		else	
 			return -1;

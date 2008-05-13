@@ -12,12 +12,20 @@ public class HistogramDataset implements IHistogramDataset {
 	private class HistogramData {
 		String key;
 		boolean isDiscrete;
+		int count;
+		double minValue;
+		double maxValue;
 		double[] cellBreaks;
 		double[] cellValues;
 
-		public HistogramData(String key, boolean isDiscrete, double[] cellBreaks, double[] cellValues) {
+		public HistogramData(String key, boolean isDiscrete,
+								int count, double minValue, double maxValue,
+								double[] cellBreaks, double[] cellValues) {
 			this.key = key;
 			this.isDiscrete = isDiscrete;
+			this.count = count;
+			this.minValue = minValue;
+			this.maxValue = maxValue;
 			this.cellBreaks = cellBreaks;
 			this.cellValues = cellValues;
 		}
@@ -39,7 +47,9 @@ public class HistogramDataset implements IHistogramDataset {
 			System.arraycopy(bins.toArray(), 0, cellBreaks, 0, size);
 			cellBreaks[size] = Double.POSITIVE_INFINITY;
 			double[] cellValues = histogram.getValues().toArray();
-			histograms[i] = new HistogramData(keys[i], isDiscrete, cellBreaks, cellValues);
+			histograms[i] = new HistogramData(keys[i], isDiscrete,
+									histogram.count(), histogram.min(), histogram.max(),
+									cellBreaks, cellValues);
 		}
 	}
 	
@@ -60,15 +70,27 @@ public class HistogramDataset implements IHistogramDataset {
 		return histograms[series].isDiscrete;
 	}
 
+	public int getValueCount(int series) {
+		return histograms[series].count;
+	}
+
+	public double getMinValue(int series) {
+		return histograms[series].minValue;
+	}
+
+	public double getMaxValue(int series) {
+		return histograms[series].maxValue;
+	}
+
 	public int getCellsCount(int series) {
 		return histograms[series].cellValues.length;
 	}
 
-	public double getCellMin(int series, int index) {
+	public double getCellLowerBound(int series, int index) {
 		return histograms[series].cellBreaks[index];
 	}
 
-	public double getCellMax(int series, int index) {
+	public double getCellUpperBound(int series, int index) {
 		return histograms[series].cellBreaks[index+1];
 	}
 
