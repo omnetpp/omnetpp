@@ -89,6 +89,7 @@ public class ImageFactory {
     public final static String MODEL_IMAGE_CHANNEL = MODEL_IMAGE_DIR + "Channel";
     public final static String MODEL_IMAGE_CHANNELINTERFACE = MODEL_IMAGE_DIR + "ChannelInterface";
     public final static String MODEL_IMAGE_COMPOUNDMODULE = MODEL_IMAGE_DIR + "CompoundModule";
+    public final static String MODEL_IMAGE_NETWORK = MODEL_IMAGE_DIR + "Network";
     public final static String MODEL_IMAGE_INTERFACE = MODEL_IMAGE_DIR + "Interface";
     public final static String MODEL_IMAGE_CONNECTION = MODEL_IMAGE_DIR + "Connection";
     public final static String MODEL_IMAGE_GATE = MODEL_IMAGE_DIR + "Gate";
