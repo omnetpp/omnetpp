@@ -12,7 +12,7 @@ import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model2.Filter;
 import org.omnetpp.scave.model2.FilterUtil;
-import org.omnetpp.scave.model2.RunAttribute;
+import org.omnetpp.scave.model2.RunAttributePayload;
 
 /**
  * Sets the filters on the "Browse data" page with the attributes of the
@@ -76,8 +76,8 @@ public class SetFilterAction extends AbstractScaveAction {
 				Run run = (Run)payload;
 				filterUtil.setField(RUN, run.getRunName());
 			}
-			else if (payload instanceof RunAttribute) {
-				RunAttribute attr = (RunAttribute)payload;
+			else if (payload instanceof RunAttributePayload) {
+				RunAttributePayload attr = (RunAttributePayload)payload;
 				String name = attr.getName();
 				String value = attr.getValue();
 				filterUtil.setField(name, value);

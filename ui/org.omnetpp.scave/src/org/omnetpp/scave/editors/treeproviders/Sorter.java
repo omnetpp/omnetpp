@@ -9,13 +9,13 @@ import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileList;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunList;
-import org.omnetpp.scave.model2.RunAttribute;
+import org.omnetpp.scave.model2.RunAttributePayload;
 
 public class Sorter {
 	
 	public static final Comparator<ResultFile> resultFileComparator = new ResultFileComparator();
 	public static final Comparator<Run> runComparator = new RunComparator();
-	public static final Comparator<RunAttribute> runAttributeComparator = new RunAttributeComparator();
+	public static final Comparator<RunAttributePayload> runAttributeComparator = new RunAttributeComparator();
 	
 	private static class ResultFileComparator implements Comparator<ResultFile>, Serializable
 	{
@@ -35,11 +35,11 @@ public class Sorter {
 		}
 	}
 	
-	private static class RunAttributeComparator implements Comparator<RunAttribute>, Serializable
+	private static class RunAttributeComparator implements Comparator<RunAttributePayload>, Serializable
 	{
 		private static final long serialVersionUID = 1L;
 
-		public int compare(RunAttribute left, RunAttribute right) {
+		public int compare(RunAttributePayload left, RunAttributePayload right) {
 			return StringUtils.dictionaryCompare(left.getValue(), right.getValue());
 		}
 	}
