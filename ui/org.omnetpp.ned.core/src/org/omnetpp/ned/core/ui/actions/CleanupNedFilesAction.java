@@ -36,17 +36,37 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
  *  
  * @author Andras
  */
+//FIXME tell user: "Please save all files and close all editors" etc.
+//FIXME tell user if some files has syntax error
 public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
+    // used internally
+    interface INEDRefactoring {
+        void process(NedFileElementEx nedFileElement);
+    }
+
+    INEDRefactoring pass1 = new INEDRefactoring() {
+        public void process(NedFileElementEx nedFileElement) {
+            RefactoringTools.cleanupTree(nedFileElement);
+            RefactoringTools.fixupPackageDeclaration(nedFileElement);
+        }
+    };
+
+    INEDRefactoring pass2 = new INEDRefactoring() {
+        public void process(NedFileElementEx nedFileElement) {
+            RefactoringTools.organizeImports(nedFileElement);
+        }
+    };
+    
     public void init(IWorkbenchWindow window) {
     }
 
     public void dispose() {
     }
     
+    public void selectionChanged(IAction action, ISelection selection) {
+    }
+
     public void run(IAction action) {
-        //FIXME tell user: "Please save all files and close all editors" etc.
-    	// FIXME tell user if some files has syntax error
-    	// FIXME fix package declarations and imports in two separate passes
         IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
 
@@ -78,20 +98,10 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
         	NEDResourcesPlugin.getNEDResources().setRefactoringInProgress(true);
             NEDResourcesPlugin.getNEDResources().fireBeginChangeEvent();
 
-            container.accept(new IResourceVisitor() {
-                public boolean visit(IResource resource) throws CoreException {
-                    if (NEDResourcesPlugin.getNEDResources().isNedFile(resource)) {
-                        monitor.subTask(resource.getFullPath().toString());
-                        cleanupNedFile((IFile)resource);
-                        // we are running in the UI thread. process to events to make the UI responsive
-                        Display.getCurrent().readAndDispatch();
-                        monitor.worked(1);
-                    }
-                    if (monitor.isCanceled())
-                        return false;
-                    return true;
-                }
-            });
+            // we need to fix package declarations and imports in two separate passes
+            container.accept(createVisitor(pass1, monitor)); // fix all package declarations
+            container.accept(createVisitor(pass2, monitor)); // organize imports
+
             monitor.done();
         }
         catch (CoreException e) {
@@ -106,26 +116,40 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
         }
     }
 
-    protected void cleanupNedFile(IFile file) throws CoreException {
+    protected IResourceVisitor createVisitor(final INEDRefactoring refactoring, final IProgressMonitor monitor) {
+        return new IResourceVisitor() {
+            public boolean visit(IResource resource) throws CoreException {
+                if (NEDResourcesPlugin.getNEDResources().isNedFile(resource)) {
+                    monitor.subTask(resource.getFullPath().toString());
+                    
+                    processNedFile((IFile)resource, refactoring);
+                    
+                    // we are running in the UI thread. process to events to make the UI responsive
+                    Display.getCurrent().readAndDispatch();
+                    monitor.worked(1);
+                }
+                if (monitor.isCanceled())
+                    return false;
+                return true;
+            }
+        };
+    }
+
+    protected void processNedFile(IFile file, INEDRefactoring refactoring) throws CoreException {
         NEDResources res = NEDResourcesPlugin.getNEDResources();
         NedFileElementEx nedFileElement = res.getNedFileElement(file);
 
         if (!nedFileElement.hasSyntaxError()) {
             String originalSource = nedFileElement.getNEDSource();
             
-        	// clean up
-        	RefactoringTools.cleanupTree(nedFileElement);
-        	RefactoringTools.fixupPackageDeclaration(nedFileElement);
-        	RefactoringTools.organizeImports(nedFileElement);
+        	// do the actual work
+            refactoring.process(nedFileElement);
 
         	// save the file if changed
         	String source = nedFileElement.getNEDSource();
         	if (!source.equals(originalSource))
         	    file.setContents(new ByteArrayInputStream(source.getBytes()), IFile.FORCE, null);
         }
-    }
-
-    public void selectionChanged(IAction action, ISelection selection) {
     }
 
 }
