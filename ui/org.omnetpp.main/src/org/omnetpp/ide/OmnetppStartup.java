@@ -41,7 +41,7 @@ public class OmnetppStartup implements IStartup {
                     // building during the import process and will take forever.
                     // Also, CDT is a pain with autobuild on.
                     disableAutoBuild();
-                    importSampleProjects(true);
+                    importSampleProjects(false);
                 }
             }
         });
