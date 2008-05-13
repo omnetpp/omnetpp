@@ -402,7 +402,7 @@ public class ChartProperties extends PropertySource {
 				properties.remove(property);
 			else
 				domain.getCommandStack().execute(
-					RemoveCommand.create(domain, property));
+					RemoveCommand.create(domain, chart, model.getChart_Properties(), property));
 		}
 	}
 	
