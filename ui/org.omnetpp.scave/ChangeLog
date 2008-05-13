@@ -1,3 +1,47 @@
+2008-05-13
+----------
+
+Additions:
+
+   + Generate default title for vector charts from the dataset by concatenating the 
+     common fields.
+
+Fixes:
+
+   + Layout is refreshed after changing the operation in the Edit dialog of Apply/Compute, so
+     the description is always visible.
+
+   + Coordinate overflow message was drawn twice on vector chart and two message was
+     visible after dragging the chart.
+
+   + When hovering over a fully zoomed in vector chart extra points was shown on the tooltip.
+
+   + Legend items are sorted.
+
+   + Gtk: Dataset page/Dragging items into the dataset -> new item added and the "New" wizard
+     opened. Press 'Finish' -> two items were added.
+
+   + Gtk: shift+wheel scrolled diagonally. Now shift+wheel scrolls vertically only.
+     On Windows it is still scrolling horizontally.
+
+   + Title of charts is wrapped if needed.
+
+   + Reorganize Edit dialog of Bar charts: show only module/name/experiment/measurement/replication/run
+     using sash forms.
+
+   + Font properties was saved even if they were not changed from default.
+
+   + Chart properties and operation parameters are not shown in dataset trees.
+
+   + Processing submenus are removed from bar/histogram chart menus
+
+   + Reseting default values of chart properties did not work.
+
+   + Add seedset to labels of replications.
+
+   + fix width and tooltip of histogram charts when underflow/overflow cell is used.
+
+
 2008-04-25
 ----------
 
