@@ -18,6 +18,8 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
@@ -51,6 +53,13 @@ public class HistogramChartCanvas extends ChartCanvas {
 		super(parent, style);
 		plot = new HistogramPlot(this);
 		new Tooltip(this);
+		
+		this.addMouseListener(new MouseAdapter() {
+			public void mouseDown(MouseEvent e) {
+				setSelection(new IChartSelection() {
+				});
+			}
+		});
 	}
 	
 	public void setProperty(String name, String value) {
