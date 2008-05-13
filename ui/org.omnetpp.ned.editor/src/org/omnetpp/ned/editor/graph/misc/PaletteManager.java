@@ -11,6 +11,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.palette.*;
+import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -23,6 +24,7 @@ import org.omnetpp.ned.core.NEDResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.model.INEDElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.NEDElementFactoryEx;
 import org.omnetpp.ned.model.ex.NEDElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
@@ -422,6 +424,28 @@ public class PaletteManager {
                 ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_COMPOUNDMODULE)
         );
         entries.put(TYPES_GROUP+GROUP_DELIMITER+"compound", entry);
+
+        // network tool
+        CreationFactory networkFactory = new CreationFactory() {
+			public Object getNewObject() {
+				CompoundModuleElementEx network = (CompoundModuleElementEx)NEDElementFactoryEx.getInstance().createElement(NEDElementTags.NED_COMPOUND_MODULE);
+				network.setName("Network");
+				network.setIsNetwork(true);
+				return network;
+			}
+			public Object getObjectType() {
+				return "Network";
+			}
+        };
+        
+        entry = new CombinedTemplateCreationEntry(
+                "Network",
+                "Create a network type",
+                networkFactory,
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_NETWORK),
+                ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_NETWORK)
+        );
+        entries.put(TYPES_GROUP+GROUP_DELIMITER+"network", entry);
 
         entry = new CombinedTemplateCreationEntry(
                 "Channel",
