@@ -1,5 +1,6 @@
 package org.omnetpp.cdt.makefile;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -92,7 +94,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         //XXX the following does not work: returns true for "Linux GCC" on Windows, 
         // because it cannot find the isSupported extension element and falls back 
         // to default "true"  --- how could it be gotten to work???
-        boolean supported = toolChain.isSupported();
+        boolean supported = isToolChainSupported(toolChain);
         
         if (!supported) {
             Display.getDefault().asyncExec(new Runnable() {
@@ -105,6 +107,23 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 }
             });
         }
+    }
+    
+    /*
+     * Returns true if the toolchain is supported currently. Checks all super classes of the toolchain too.
+     */
+    private static boolean isToolChainSupported(IToolChain toolchain) {
+    	while (toolchain != null) {
+    		if (!toolchain.isSupported() || !isToolchainSupportedOnCurrentPlatform(toolchain))
+    			return false;
+    		toolchain = toolchain.getSuperClass();
+    	}
+    	return true;
+    }
+    
+    private static boolean isToolchainSupportedOnCurrentPlatform(IToolChain toolchain) {
+    	List<String> osList = Arrays.asList(toolchain.getOSList());
+    	return osList.isEmpty() || osList.contains("all") || osList.contains(Platform.getOS());
     }
 
     /**
