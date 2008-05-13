@@ -158,6 +158,16 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
     }
 
     /**
+     * To be used when the actual type for a "like" channel is known. 
+     */
+    public DisplayString getDisplayString(IChannelKindTypeElement channelType) {
+        if (displayString == null)
+            displayString = new DisplayString(this, NEDElementUtilEx.getDisplayStringLiteral(this));
+        displayString.setFallbackDisplayString(channelType.getDisplayString());
+        return displayString;
+    }
+
+    /**
      * Returns the compound module containing this connection, or null if the
      * connection is not part of the model (i.e. has no compound module parent).
      */
@@ -253,25 +263,57 @@ public class ConnectionElementEx extends ConnectionElement implements IHasType, 
         return result;
     }
 
-    // parameter query support
+    // Parameter query support. Note: code is similar to SubmoduleElementEx
     
+    /**
+     * Returns parameter assignments of this channel, including those in the NED
+     * type it instantiates. For "like" channels the actual channel type is unknown,
+     * so the interface NED type is used.  
+     */
     public Map<String, ParamElementEx> getParamAssignments() {
-    	Map<String, ParamElementEx> result = new HashMap<String, ParamElementEx>();
+        return getParamAssignments(getNEDTypeInfo());
+    }
+    
+    /**
+     * Returns parameter assignments of this channel, including those in the NED
+     * type it instantiates, assuming that the channel's actual type is the 
+     * compound or simple module type passed in the <code>channelType</code> 
+     * parameter. This is useful when the channel is a "like" channel, and the
+     * caller knows the actual channel type (e.g. from an inifile).
+     */
+    public Map<String, ParamElementEx> getParamAssignments(INEDTypeInfo channelType) {
+        Map<String, ParamElementEx> result = new HashMap<String, ParamElementEx>();
 
-    	INEDTypeInfo info = getNEDTypeInfo();
-    	if (info != null) 
-    		result.putAll(info.getParamAssignments());
-
-        // add our own assigned parameters
+        if (channelType != null)
+            result.putAll(channelType.getParamAssignments());
+        
+        // add local parameter assignments
         for (ParamElementEx ownParam : getOwnParams())
             result.put(ownParam.getName(), ownParam);
 
         return result;
     }
 
+    /**
+     * Returns parameter declarations of this channel, including those in the NED
+     * type it instantiates. For "like" channels the actual channel type is unknown,
+     * so the interface NED type is used.  
+     */
     public Map<String, ParamElementEx> getParamDeclarations() {
-        INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, ParamElementEx>() : info.getParamDeclarations();
+        return getParamDeclarations(getNEDTypeInfo());
     }
 
+    /**
+     * Returns parameter declarations of this channel, assuming that the channel's 
+     * actual type is the compound or simple module type passed in the 
+     * <code>channelType</code> parameter. This is useful when the channel is 
+     * a "like" channel, and the caller knows the actual channel type 
+     * (e.g. from an inifile).
+     */
+    public Map<String, ParamElementEx> getParamDeclarations(INEDTypeInfo channelType) {
+        return channelType == null ? new HashMap<String, ParamElementEx>() : channelType.getParamDeclarations();
+    }
+    
+    
+    
 }

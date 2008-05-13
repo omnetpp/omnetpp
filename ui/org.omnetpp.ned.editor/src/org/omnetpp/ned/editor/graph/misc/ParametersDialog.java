@@ -242,11 +242,6 @@ public class ParametersDialog extends TitleAreaDialog {
         return params;
     }
 
-    /**
-     * @param paramDecl
-     * @param paramValue
-     * @return
-     */
     private ParamLine createParamLine(ParamElementEx paramDecl, ParamElementEx paramValue) {
         if (paramValue == null )
             paramValue = paramDecl;

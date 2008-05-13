@@ -59,12 +59,6 @@ import org.omnetpp.ned.model.pojo.ParamElement;
  *
  * @author Andras
  */
-//XXX consider this:
-//Net.host[0].p = ...
-//Net.host[*].p = ...
-//Then host[0] should NOT be warned about being unused!!!
-//This affects all keys containing an index which is not "*", that is, where key.matches(".*\\[([^*]|(\\*[^]]+))\\].*")
-
 public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;
@@ -769,7 +763,7 @@ public class InifileAnalyzer {
 			ParamElementEx paramDeclNode = moduleType.getParamDeclarations().get(paramName);
 			ParamElementEx paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
-					submodule.getParamAssignments().get(paramName);
+					submodule.getParamAssignments(moduleType).get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
 				paramValueNode = null;
 			
@@ -854,7 +848,7 @@ public class InifileAnalyzer {
 			ParamElementEx paramDeclNode = moduleType.getParamDeclarations().get(paramName);
 			ParamElementEx paramValueNode = submodule==null ?
 					moduleType.getParamAssignments().get(paramName) :
-					submodule.getParamAssignments().get(paramName);
+					submodule.getParamAssignments(moduleType).get(paramName);
 			if (paramValueNode != null && StringUtils.isEmpty(paramValueNode.getValue()))
 				paramValueNode = null;
 			resolveParameter(resultList, moduleFullPath, null, paramDeclNode, paramValueNode, null, null);

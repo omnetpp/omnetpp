@@ -25,7 +25,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
 /**
  * TODO add documentation
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class SubmoduleElementEx extends SubmoduleElement
                             implements IConnectableElement, IHasIndex, IHasType,
@@ -156,13 +156,28 @@ public class SubmoduleElementEx extends SubmoduleElement
     }
 
     // parameter query support
-    
+
+    /**
+     * Returns parameter assignments of this submodule, including those in the NED
+     * type it instantiates. For "like" submodules the actual submodule type is unknown,
+     * so the interface NED type is used.  
+     */
     public Map<String, ParamElementEx> getParamAssignments() {
+        return getParamAssignments(getNEDTypeInfo());
+    }
+    
+    /**
+     * Returns parameter assignments of this submodule, including those in the NED
+     * type it instantiates, assuming that the submodule's actual type is the 
+     * compound or simple module type passed in the <code>submoduleType</code> 
+     * parameter. This is useful when the submodule is a "like" submodule, and the
+     * caller knows the actual submodule type (e.g. from an inifile).
+     */
+    public Map<String, ParamElementEx> getParamAssignments(INEDTypeInfo submoduleType) {
         Map<String, ParamElementEx> result = new HashMap<String, ParamElementEx>();
 
-        INEDTypeInfo info = getNEDTypeInfo();
-        if (info != null)
-        	result.putAll(info.getParamAssignments());
+        if (submoduleType != null)
+        	result.putAll(submoduleType.getParamAssignments());
     	
         // add local parameter assignments
         for (ParamElementEx ownParam : getOwnParams())
@@ -171,9 +186,24 @@ public class SubmoduleElementEx extends SubmoduleElement
         return result;
     }
 
+    /**
+     * Returns parameter declarations of this submodule, including those in the NED
+     * type it instantiates. For "like" submodules the actual submodule type is unknown,
+     * so the interface NED type is used.  
+     */
     public Map<String, ParamElementEx> getParamDeclarations() {
-        INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, ParamElementEx>() : info.getParamDeclarations();
+        return getParamDeclarations(getNEDTypeInfo());
+    }
+
+    /**
+     * Returns parameter declarations of this submodule, assuming that the submodule's 
+     * actual type is the compound or simple module type passed in the 
+     * <code>submoduleType</code> parameter. This is useful when the submodule is 
+     * a "like" submodule, and the caller knows the actual submodule type 
+     * (e.g. from an inifile).
+     */
+    public Map<String, ParamElementEx> getParamDeclarations(INEDTypeInfo submoduleType) {
+        return submoduleType == null ? new HashMap<String, ParamElementEx>() : submoduleType.getParamDeclarations();
     }
 
     // gate support
@@ -193,12 +223,27 @@ public class SubmoduleElementEx extends SubmoduleElement
         return result;
     }
 
+    /**
+     * Returns the gate size assignments for this submodule, including those in the NED
+     * type it instantiates. For "like" submodules the actual submodule type is unknown,
+     * so the interface NED type is used.  
+     */
     public Map<String, GateElementEx> getGateSizes() {
+        return getGateSizes(getNEDTypeInfo());
+    }
+    
+    /**
+     * Returns gate size assignments of this submodule, including those in the NED
+     * type it instantiates, assuming that the submodule's actual type is the 
+     * compound or simple module type passed in the <code>submoduleType</code> 
+     * parameter. This is useful when the submodule is a "like" submodule, and the
+     * caller knows the actual submodule type (e.g. from an inifile).
+     */
+    public Map<String, GateElementEx> getGateSizes(INEDTypeInfo moduleType) {
         Map<String, GateElementEx> result = new HashMap<String, GateElementEx>();
 
-        INEDTypeInfo info = getNEDTypeInfo();
-        if (info != null)
-        	result.putAll(info.getGateSizes());
+        if (moduleType != null)
+        	result.putAll(moduleType.getGateSizes());
 
         // add local gatesizes
         for (GateElementEx ownGate : getOwnGates())
@@ -207,9 +252,24 @@ public class SubmoduleElementEx extends SubmoduleElement
         return result;
     }
 
+    /**
+     * Returns the gate declarations for this submodule, including those in the NED
+     * type it instantiates. For "like" submodules the actual submodule type is unknown,
+     * so the interface NED type is used.  
+     */
     public Map<String, GateElementEx> getGateDeclarations() {
-        INEDTypeInfo info = getNEDTypeInfo();
-        return info == null ? new HashMap<String, GateElementEx>() : info.getGateDeclarations();
+        return getGateDeclarations(getNEDTypeInfo());
+    }
+
+    /**
+     * Returns gate declarations of this submodule, assuming that the submodule's 
+     * actual type is the compound or simple module type passed in the 
+     * <code>submoduleType</code> parameter. This is useful when the submodule is 
+     * a "like" submodule, and the caller knows the actual submodule type 
+     * (e.g. from an inifile).
+     */
+    public Map<String, GateElementEx> getGateDeclarations(INEDTypeInfo submoduleType) {
+        return submoduleType == null ? new HashMap<String, GateElementEx>() : submoduleType.getGateDeclarations();
     }
 
 }
