@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-
 import org.omnetpp.cdt.cdtpatches.CDTMainWizardPage_Patched;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.ReflectionUtils;
@@ -128,7 +127,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         private Button supportCppButton;
 
         public NewOmnetppCppProjectCreationPage() {
-            setDescription("Creates a Project that can handle OMNeT++ specific files and supports C++ development using CDT.");
+            setDescription("Creates an OMNeT++ project, optionally with support for C++ development using CDT.");
         }
 
         @Override
@@ -138,7 +137,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             Composite comp = new Composite((Composite)getControl(), SWT.NONE);
             comp.setLayout(new GridLayout(1,false));
             comp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-            supportCppButton = new Button(comp ,SWT.CHECK);
+            supportCppButton = new Button(comp, SWT.CHECK);
             supportCppButton.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
             supportCppButton.setText("Support C++ Development");
             supportCppButton.setSelection(true);

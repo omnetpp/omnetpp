@@ -111,16 +111,17 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
         NedFileElementEx nedFileElement = res.getNedFileElement(file);
 
         if (!nedFileElement.hasSyntaxError()) {
+            String originalSource = nedFileElement.getNEDSource();
+            
         	// clean up
         	RefactoringTools.cleanupTree(nedFileElement);
         	RefactoringTools.fixupPackageDeclaration(nedFileElement);
         	RefactoringTools.organizeImports(nedFileElement);
 
-        	// save the file
+        	// save the file if changed
         	String source = nedFileElement.getNEDSource();
-
-        	// save it
-        	file.setContents(new ByteArrayInputStream(source.getBytes()), IFile.FORCE, null);
+        	if (!source.equals(originalSource))
+        	    file.setContents(new ByteArrayInputStream(source.getBytes()), IFile.FORCE, null);
         }
     }
 
