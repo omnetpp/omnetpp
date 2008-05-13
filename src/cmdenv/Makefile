@@ -88,6 +88,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/inttypes.h \
   ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
@@ -104,7 +105,12 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/carray.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
+  ../envir/eventlogfilemgr.h \
   ../../include/cconfiguration.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
   ../../include/cmodule.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \

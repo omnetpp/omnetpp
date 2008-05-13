@@ -271,14 +271,14 @@ $O/idlist.o: idlist.cc \
   idlist.h \
   resultfilemanager.h \
   ../common/stringutil.h \
+  scaveutils.h \
   scavedefs.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
   ../common/exception.h \
   enumtype.h \
   ../common/commonutil.h \
-  statistics.h \
-  scaveutils.h
+  statistics.h
 $O/indexedvectorfile.o: indexedvectorfile.cc \
   ../common/exception.h \
   ../common/linetokenizer.h \
@@ -446,6 +446,7 @@ $O/resultfilemanager.o: resultfilemanager.cc \
   resultfilemanager.h \
   ../common/fileutil.h \
   ../common/commonutil.h \
+  ../common/stringutil.h \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \

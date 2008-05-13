@@ -106,7 +106,25 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/arrow.o: arrow.cc \
-  arrow.h
+  arrow.h \
+  tkutil.h \
+  tkdefs.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/simkerneldefs.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h
 $O/inspector.o: inspector.cc \
   ../../include/omnetpp.h \
   tkenv.h \
@@ -161,6 +179,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cproperty.h \
   ../../include/cpsquare.h \
   ../../include/cqueue.h \
+  ../../include/cpacketqueue.h \
   ../../include/crng.h \
   ../../include/cscheduler.h \
   ../../include/csimplemodule.h \
@@ -196,11 +215,17 @@ $O/inspector.o: inspector.cc \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
+  ../../include/platdep/platmisc.h \
   tkdefs.h \
   ../envir/envirbase.h \
   ../envir/bootenv.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
+  ../envir/eventlogfilemgr.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
   tkutil.h
 $O/inspfactory.o: inspfactory.cc \
   ../../include/omnetpp.h \
@@ -257,6 +282,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cproperty.h \
   ../../include/cpsquare.h \
   ../../include/cqueue.h \
+  ../../include/cpacketqueue.h \
   ../../include/crng.h \
   ../../include/cscheduler.h \
   ../../include/csimplemodule.h \
@@ -292,11 +318,17 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
+  ../../include/platdep/platmisc.h \
   tkdefs.h \
   ../envir/envirbase.h \
   ../envir/bootenv.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
+  ../envir/eventlogfilemgr.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
   tkutil.h
 $O/layouterenv.o: layouterenv.cc \
   layouterenv.h \
@@ -331,6 +363,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -352,7 +385,12 @@ $O/layouterenv.o: layouterenv.cc \
   ../envir/args.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfiguration.h
+  ../envir/eventlogfilemgr.h \
+  ../../include/cconfiguration.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h
 $O/modinsp.o: modinsp.cc \
   modinsp.h \
   ../../include/cchannel.h \
@@ -390,6 +428,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -409,7 +448,12 @@ $O/modinsp.o: modinsp.cc \
   ../envir/args.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
+  ../envir/eventlogfilemgr.h \
   ../../include/cconfiguration.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
   ../../include/ccomponenttype.h \
   ../envir/bootenv.h
 $O/objinsp.o: objinsp.cc \
@@ -467,6 +511,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cproperty.h \
   ../../include/cpsquare.h \
   ../../include/cqueue.h \
+  ../../include/cpacketqueue.h \
   ../../include/crng.h \
   ../../include/cscheduler.h \
   ../../include/csimplemodule.h \
@@ -502,11 +547,17 @@ $O/objinsp.o: objinsp.cc \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
+  ../../include/platdep/platmisc.h \
   tkdefs.h \
   ../envir/envirbase.h \
   ../envir/bootenv.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
+  ../envir/eventlogfilemgr.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
   inspector.h \
   tkutil.h
 $O/osxproctype.o: osxproctype.cc
@@ -537,6 +588,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -558,7 +610,12 @@ $O/statinsp.o: statinsp.cc \
   ../envir/args.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
+  ../envir/eventlogfilemgr.h \
   ../../include/cconfiguration.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
   ../../include/ccomponenttype.h \
   inspector.h \
   tkutil.h
@@ -591,6 +648,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/platdep/inttypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -618,9 +676,13 @@ $O/tkcmd.o: tkcmd.cc \
   ../envir/args.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
+  ../envir/eventlogfilemgr.h \
   ../../include/cconfiguration.h \
-  tkutil.h \
-  ../envir/matchableobject.h
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
+  tkutil.h
 $O/tkenv.o: tkenv.cc \
   ../envir/appreg.h \
   ../envir/bootenv.h \
@@ -653,6 +715,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cobject.h \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/opp_string.h \
@@ -674,7 +737,12 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cchannel.h \
   ../envir/args.h \
   ../../include/envirext.h \
+  ../envir/eventlogfilemgr.h \
   ../../include/cconfiguration.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
   tkutil.h \
   ../../include/coutvector.h \
   ../../include/cstatistic.h \
@@ -686,36 +754,43 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cstddev.h
 $O/tklib.o: tklib.cc \
   tklib.h \
+  tkutil.h \
   tkenv.h \
   tkdefs.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/simkerneldefs.h \
+  ../../include/util.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
   ../envir/envirbase.h \
   ../envir/bootenv.h \
   ../../include/cchannel.h \
   ../../include/cmodule.h \
   ../../include/carray.h \
   ../../include/globals.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
+  ../envir/eventlogfilemgr.h \
   ../../include/cconfiguration.h \
-  ../../include/cownedobject.h \
-  ../../include/simkerneldefs.h \
-  ../../include/util.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
-  ../../include/simtime.h \
-  ../../include/errmsg.h \
-  ../../include/cobject.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/regmacros.h \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
-  ../../include/opp_string.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
   ../../include/ccomponent.h \
   ../../include/ccomponenttype.h \
   ../../include/cpar.h \
@@ -741,6 +816,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/inttypes.h \
   ../../include/simtime.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
@@ -765,9 +841,13 @@ $O/tkutil.o: tkutil.cc \
   ../envir/args.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
+  ../envir/eventlogfilemgr.h \
   ../../include/cconfiguration.h \
-  ../../include/ccomponenttype.h \
-  ../envir/matchableobject.h
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h \
+  ../envir/matchableobject.h \
+  ../../include/ccomponenttype.h
 $O/visitor.o: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
@@ -788,6 +868,7 @@ $O/visitor.o: visitor.cc \
   ../../include/platdep/inttypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
+  ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
@@ -817,6 +898,10 @@ $O/visitor.o: visitor.cc \
   ../envir/args.h \
   ../envir/envirdefs.h \
   ../../include/envirext.h \
-  ../../include/cconfiguration.h
+  ../envir/eventlogfilemgr.h \
+  ../../include/cconfiguration.h \
+  ../envir/objectprinter.h \
+  ../envir/intervals.h \
+  ../envir/matchablefield.h
 $O/tkImgPNG.o: tkImgPNG.c
 $O/tkImgPNGInit.o: tkImgPNGInit.c

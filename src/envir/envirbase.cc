@@ -439,7 +439,7 @@ void EnvirBase::dumpComponentList(const char *category)
         for (int i=0; i<vars.size(); i++)
         {
             opp_string id = vars[i];
-            strupr(id.buffer());
+            opp_strupr(id.buffer());
             const char *desc = config()->getVariableDescription(vars[i]);
             ev << "    public static final String CFGVAR_" << id << " = addConfigVariable(";
             ev << "\"" << vars[i] << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
