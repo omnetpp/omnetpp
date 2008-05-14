@@ -23,6 +23,7 @@
 NAMESPACE_BEGIN
 
 enum EventLogTableNameMode {
+    SMART_NAME,
     FULL_NAME,
     FULL_PATH
 };
