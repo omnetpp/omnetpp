@@ -8,10 +8,11 @@ Bundle-Vendor: OpenSim Ltd.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.ui.views,
+ org.eclipse.ui.navigator,
+ org.eclipse.ui.editors,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.jface.text,
- org.eclipse.ui.editors,
  org.omnetpp.common,
  org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true

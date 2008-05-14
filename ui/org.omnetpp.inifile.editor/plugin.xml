@@ -29,6 +29,23 @@
          </description>
       </wizard>
    </extension>
+  <extension
+        id="test"
+        point="org.eclipse.ui.navigator.navigatorContent">
+           <commonWizard 
+                 associatedExtensionId="org.eclipse.ui.navigator.resourceContent" 
+                 menuGroupId="org.eclipse.cdt.ui" 
+                 type="new" 
+                 wizardId="org.omnetpp.inifile.editor.wizards.NewInifileWizard">
+                 <enablement>
+                    <adapt type="org.eclipse.core.resources.IProject">
+                       <test 
+                             property="org.eclipse.core.resources.projectNature" 
+                             value="org.omnetpp.main.omnetppnature"/>
+                    </adapt>
+                 </enablement>
+           </commonWizard>
+  </extension>
 
    <extension
          id="IniDocumentSetupParticipant"

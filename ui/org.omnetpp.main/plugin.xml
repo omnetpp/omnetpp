@@ -107,24 +107,27 @@
          </perspectiveShortcut>
       </perspectiveExtension>
       <perspectiveExtension
-            targetID="org.eclipse.ui.resourcePerspective">
+            targetID="org.omnetpp.main.OmnetppPerspective">
          <perspectiveShortcut
                id="org.eclipse.ui.resourcePerspective">
          </perspectiveShortcut>
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="org.omnetpp.main.OmnetppPerspective">
          <perspectiveShortcut
                id="org.omnetpp.main.OmnetppPerspective">
          </perspectiveShortcut>
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="org.omnetpp.main.OmnetppPerspective">
          <perspectiveShortcut
-               id="org.eclipse.ui.resourcePerspective">
+               id="org.eclipse.cdt.ui.CPerspective">
          </perspectiveShortcut>
       </perspectiveExtension>
    </extension>
+  <extension
+        point="org.eclipse.ui.navigator.viewer">
+     <viewerContentBinding viewerId="org.eclipse.ui.navigator.ProjectExplorer">
+        <includes>
+           <contentExtension pattern="org.omnetpp.*"/>
+        </includes>
+     </viewerContentBinding>
+  </extension>
+ 
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution

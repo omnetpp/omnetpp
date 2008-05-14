@@ -16,6 +16,9 @@ public interface IConstants {
 	
     public static final String VECTORFILEINDEXER_BUILDER_ID = "org.omnetpp.scave.builder.vectorfileindexer";
     public static final String MAKEFILEBUILDER_BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
+
+    // ID missing from the eclipse API
+    public static final String PROJECT_EXPOLRER_ID = "org.eclipse.ui.navigator.ProjectExplorer";
     /**
      * ID of this project nature
      */

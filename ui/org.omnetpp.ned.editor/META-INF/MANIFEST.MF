@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.ned.model,
  org.omnetpp.ned.core,
  org.omnetpp.figures,
- org.eclipse.search
+ org.eclipse.search,
+ org.eclipse.ui.navigator
 Eclipse-LazyStart: true
 Bundle-Activator: org.omnetpp.ned.editor.NedEditorPlugin
 Export-Package: org.omnetpp.ned.editor,

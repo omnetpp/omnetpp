@@ -24,7 +24,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
  		String editorArea = layout.getEditorArea();
 
  		IFolderLayout folder = layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$
-		folder.addView(IPageLayout.ID_RES_NAV);
+		folder.addView(IConstants.PROJECT_EXPOLRER_ID);
         IFolderLayout blfolder = layout.createFolder("leftbottom", IPageLayout.BOTTOM, (float)0.50, "left"); //$NON-NLS-1$
         blfolder.addView(IPageLayout.ID_PROP_SHEET);
         blfolder.addView(IPageLayout.ID_OUTLINE);
@@ -50,6 +50,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_PROBLEM_VIEW);
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
+		layout.addShowViewShortcut(IConstants.PROJECT_EXPOLRER_ID);
 		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);
 		layout.addShowViewShortcut(IProgressConstants.PROGRESS_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.MODULEPARAMETERS_VIEW_ID);

@@ -177,15 +177,26 @@
       <wizard
             category="org.omnetpp.wizards"
             class="org.omnetpp.cdt.wizard.OmnetppCCProjectWizard"
+            finalPerspective="org.omnetpp.main.OmnetppPerspective"
             icon="icons/full/obj16/newoproject.gif"
             id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard"
             name="OMNeT++ Project for C++"
+            preferredPerspectives="org.eclipse.cdt.ui.CPerspective, org.omnetpp.main.OmnetppPerspective"
             project="true">
          <description>
             Create a Project that can handle OMNeT++ specific files and supports C++ development using CDT.
          </description>
       </wizard>
    </extension>
+  <extension
+        point="org.eclipse.ui.navigator.navigatorContent">
+     <commonWizard
+           menuGroupId="org.eclipse.cdt.ui.newProject"
+           type="new"
+           wizardId="org.omnetpp.cdt.wizard.omnetppCCProjectWizard">
+        <enablement></enablement>
+     </commonWizard>
+  </extension>
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
@@ -283,6 +294,24 @@
             location="templates/make/empty/template.xml"
             projectType="DISABLEDFORNOW.org.omnetpp.cdt.omnetppProjectType">
       </template>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.cdt.ui.CPerspective">
+         <perspectiveShortcut
+               id="org.omnetpp.main.OmnetppPerspective">
+         </perspectiveShortcut>
+         <newWizardShortcut
+               id="org.omnetpp.cdt.wizard.omnetppCCProjectWizard">
+         </newWizardShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipse.debug.ui.DebugPerspective">
+         <perspectiveShortcut
+               id="org.omnetpp.main.OmnetppPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
    </extension>
 
 </plugin>
