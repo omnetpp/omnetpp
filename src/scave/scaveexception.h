@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -55,7 +57,7 @@ class SCAVE_API ResultFileFormatException : public opp_runtime_error
      * Returns the line number at which the error occured.
      */
     int64 getLine() const { return line; }
-    
+
     /**
      * Returns the file offset at which the error occured.
      */

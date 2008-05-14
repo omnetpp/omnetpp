@@ -7,7 +7,8 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -22,10 +23,10 @@
 // or even creating Contents directory next to the executable would do,
 // but its not an elegant solution.
 //
-void OSXTransformProcess() 
-{ 
+void OSXTransformProcess()
+{
     ProcessSerialNumber psn;
     GetCurrentProcess( &psn );
     TransformProcessType( &psn, kProcessTransformToForegroundApplication);
-} 
+}
 

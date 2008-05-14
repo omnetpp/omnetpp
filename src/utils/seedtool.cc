@@ -4,14 +4,18 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//   seedtool utility
+//  seedtool utility
 //
-//   To compile under Unix: gcc seedtool -o seedtool
+//  To compile under Unix: gcc seedtool -o seedtool
+//
+//  Author: Andras Varga
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga and Gyorgy Pongor,
+  Copyright (C) 1992 Andras Varga, Gyorgy Pongor
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -152,7 +156,7 @@ int main(int argc, char *argv[])
     if (argc==1)
     {
          fprintf(stderr,
-               "seedtool - part of OMNeT++/OMNEST, (C) 1992-2005 Andras Varga\n"
+               "seedtool - part of OMNeT++/OMNEST, (C) 1992-2008 Andras Varga, OpenSim Ltd.\n"
                "See the license for distribution terms and warranty disclaimer.\n"
                "\n"
                "Generates seeds for the LCG32 random number generator. This RNG has a\n"

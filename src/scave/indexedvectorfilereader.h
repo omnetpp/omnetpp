@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -40,29 +42,29 @@ class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
 
     struct PortData
     {
-		VectorData *vector;
-		PortVector ports;
-		
-		PortData() : vector(NULL) {}
-	};
-	
-	struct BlockAndPortData
-	{
-		Block *blockPtr;
-		PortData *portDataPtr;
-		
-		BlockAndPortData(Block *blockPtr, PortData *portDataPtr)
-			: blockPtr(blockPtr), portDataPtr(portDataPtr) {}
-		
-		bool operator<(const BlockAndPortData& other) const
-		{
-			return this->blockPtr->startOffset < other.blockPtr->startOffset;
-		}
-	};
+        VectorData *vector;
+        PortVector ports;
+
+        PortData() : vector(NULL) {}
+    };
+
+    struct BlockAndPortData
+    {
+        Block *blockPtr;
+        PortData *portDataPtr;
+
+        BlockAndPortData(Block *blockPtr, PortData *portDataPtr)
+            : blockPtr(blockPtr), portDataPtr(portDataPtr) {}
+
+        bool operator<(const BlockAndPortData& other) const
+        {
+            return this->blockPtr->startOffset < other.blockPtr->startOffset;
+        }
+    };
 
     typedef std::map<int,PortData> VectorIdToPortMap;
 
-	private:
+    private:
         VectorIdToPortMap ports;
         VectorFileIndex *index;
         std::vector<BlockAndPortData> blocksToRead;

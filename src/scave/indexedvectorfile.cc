@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -268,7 +270,7 @@ Port *IndexedVectorFileWriterNode::addVector(int vectorId, const char *module, c
 Port *IndexedVectorFileWriterNode::addVector(const VectorResult &vector)
 {
     VectorInputPort *inputport = new VectorInputPort(vector.vectorId, vector.moduleNameRef->c_str(), vector.nameRef->c_str(),
-    										vector.columns.c_str(), blockSize, this);
+                                            vector.columns.c_str(), blockSize, this);
     inputport->vector.attributes = vector.attributes;
     ports.push_back(inputport);
     return inputport;
@@ -296,13 +298,13 @@ void IndexedVectorFileWriterNode::process()
 
         // print run attributes
         run.writeToFile(f, fileName.c_str());
-        
+
         // print vector declarations and attributes
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
         {
             const VectorData &vector = (*it)->vector;
-            CHECK(fprintf(f, "vector %d  %s  %s  %s\n", 
-            		vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
+            CHECK(fprintf(f, "vector %d  %s  %s  %s\n",
+                    vector.vectorId, QUOTE(vector.moduleName.c_str()), QUOTE(vector.name.c_str()), vector.columns.c_str()));
             for (StringMap::const_iterator attr=vector.attributes.begin(); attr!=vector.attributes.end(); attr++)
                 CHECK(fprintf(f,"attr %s  %s\n", QUOTE(attr->first.c_str()), QUOTE(attr->second.c_str())));
         }

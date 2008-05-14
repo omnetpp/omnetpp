@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Andras Varga, Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -49,7 +51,7 @@ void IDList::add(ID x)
         v->push_back(x);
 }
 
-/* XXX it is not used, and bogus anyway 
+/* XXX it is not used, and bogus anyway
 void IDList::set(int i, ID x)
 {
     checkV();
@@ -70,12 +72,12 @@ void IDList::erase(int i)
 
 int IDList::indexOf(ID x) const
 {
-	checkV();
-	V::iterator it = std::find(v->begin(), v->end(), x);
-	if (it != v->end())
-		return (int)(it - v->begin());
-	else
-		return -1;
+    checkV();
+    V::iterator it = std::find(v->begin(), v->end(), x);
+    if (it != v->end())
+        return (int)(it - v->begin());
+    else
+        return -1;
 }
 
 void IDList::substract(ID x)

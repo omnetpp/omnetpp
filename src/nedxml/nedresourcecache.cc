@@ -7,7 +7,8 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2005 Andras Varga
+  Copyright (C) 2002-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -384,15 +385,15 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
         // inner type?
         if (context.element->getTagCode() == NED_COMPOUND_MODULE) {
             std::string qname = context.qname;
-	    	NEDElement *topLevelCompoundModule = context.element->getParent()->getParentWithTag(NED_COMPOUND_MODULE);
-	    	if (topLevelCompoundModule) {
-	    		int index = qname.rfind('.');
-	    		Assert(index != -1);
-	    		qname.replace(index, qname.length() - index, "");
-	    	}
+            NEDElement *topLevelCompoundModule = context.element->getParent()->getParentWithTag(NED_COMPOUND_MODULE);
+            if (topLevelCompoundModule) {
+                int index = qname.rfind('.');
+                Assert(index != -1);
+                qname.replace(index, qname.length() - index, "");
+            }
             qname = qname + "." + nedtypename;
-	        if (qnames->contains(qname.c_str()))
-	            return qname;
+            if (qnames->contains(qname.c_str()))
+                return qname;
         }
 
         NedFileElement *nedfileNode = dynamic_cast<NedFileElement *>(context.element->getParentWithTag(NED_NED_FILE));
@@ -418,23 +419,23 @@ std::string NEDResourceCache::resolveNedType(const NEDLookupContext& context, co
 
         // try harder, using wildcards
         for (int i=0; i<(int)imports.size(); i++) {
-        	if (PatternMatcher::containsWildcards(imports[i])) {
-	            PatternMatcher importpattern(imports[i], true, true, true);
-	            for (int j=0; j<qnames->size(); j++) {
-	                const char *qname = qnames->get(j);
-	                if ((opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0))
-	                    if (importpattern.matches(qname))
-	                        return qname;
-	            }
-        	}
+            if (PatternMatcher::containsWildcards(imports[i])) {
+                PatternMatcher importpattern(imports[i], true, true, true);
+                for (int j=0; j<qnames->size(); j++) {
+                    const char *qname = qnames->get(j);
+                    if ((opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0))
+                        if (importpattern.matches(qname))
+                            return qname;
+                }
+            }
         }
     }
     else {
-	    // fully qualified name?
-	    if (qnames->contains(nedtypename))
-	        return nedtypename;
+        // fully qualified name?
+        if (qnames->contains(nedtypename))
+            return nedtypename;
     }
-    
+
     return "";
 }
 

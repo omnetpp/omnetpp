@@ -6,7 +6,8 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2004 Andras Varga
+  Copyright (C) 2002-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -28,7 +29,7 @@ NAMESPACE_BEGIN
 
 /**
  * GENERATED CLASS. Abtract base class for NED validators.
- * 
+ *
  * @ingroup Validation
  */
 class NEDXML_API NEDValidatorBase

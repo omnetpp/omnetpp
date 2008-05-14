@@ -3,10 +3,13 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Andras Varga
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -70,14 +73,14 @@ class SCAVE_API FilterNode : public Node
  */
 class SCAVE_API ReaderNode : public Node
 {
-	protected:
-		std::string filename;
-		FileReader reader;
-	public:
-		ReaderNode(const char* filename, size_t bufferSize)
-			: filename(filename), reader(filename, bufferSize) {}
-		int64 getFileSize() { return reader.getFileSize(); }
-		int64 getNumReadBytes() { return reader.getNumReadBytes(); }
+    protected:
+        std::string filename;
+        FileReader reader;
+    public:
+        ReaderNode(const char* filename, size_t bufferSize)
+            : filename(filename), reader(filename, bufferSize) {}
+        int64 getFileSize() { return reader.getFileSize(); }
+        int64 getNumReadBytes() { return reader.getNumReadBytes(); }
 };
 
 /**

@@ -3,7 +3,16 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //=========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
 
 #include <algorithm>
 #include <sys/stat.h>
@@ -259,7 +268,7 @@ bool IndexFile::isIndexFileUpToDate(const char *filename)
     // when the fingerprint not found assume the index file is being written therefore it is up to date
     if (!index)
         return true;
-    
+
     bool uptodate = index->fingerprint.check(vectorFileName.c_str());
     delete index;
     return uptodate;

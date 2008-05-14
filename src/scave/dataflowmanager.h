@@ -3,10 +3,13 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Andras Varga
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -46,11 +49,11 @@ class SCAVE_API DataflowManager
         // returns true of a node has finished; if so, also closes
         // its input an output channels.
         bool updateNodeFinished(Node *node);
-        
+
         // returns true if the node is a reader node
         // (i.e. the category of its type is "reader-node")
         bool isReaderNode(Node *node);
-        
+
         // helper to estimate the total amount of work
         int64 totalBytesToBeRead();
 

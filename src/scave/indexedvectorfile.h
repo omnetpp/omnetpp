@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -148,7 +150,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
         void setPrecision(int prec) {this->prec = prec;}
         void setHeader(const std::string &header) { fileHeader = header; }
         void setRun(const char *runName, const StringMap &attributes, const StringMap &parameters)
-        	{ run.runName = runName; run.attributes = attributes; run.moduleParams = parameters; };
+            { run.runName = runName; run.attributes = attributes; run.moduleParams = parameters; };
         std::string filename() const {return fileName;}
 
         virtual bool isReady() const;
@@ -162,7 +164,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
 #ifndef SWIG
         // FIXME swig 1.3.33 cannot parse this (even tough this class is ignored in scave.i)
         void bufferPrintf(VectorInputPort *port, const char *format...);
-#endif	
+#endif
 };
 
 class SCAVE_API IndexedVectorFileWriterNodeType : public NodeType

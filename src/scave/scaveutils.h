@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -41,34 +43,34 @@ SCAVE_API std::string unquoteString(const char *str);
 // simple profiling macro
 // var is a long variable collecting the exexution time of stmt in usec
 #define TIME(var,stmt) { timeval start,end; \
-	                     gettimeofday(&start,NULL); \
-	                     stmt; \
-	                     gettimeofday(&end,NULL); \
-	                     var += timeval_diff_usec(end,start); }
+                         gettimeofday(&start,NULL); \
+                         stmt; \
+                         gettimeofday(&end,NULL); \
+                         var += timeval_diff_usec(end,start); }
 
 template <class Operation>
 class FlipArgs
-	: public std::binary_function<typename Operation::second_argument_type,
-					        		typename Operation::first_argument_type,
-					        		typename Operation::result_type> 
+    : public std::binary_function<typename Operation::second_argument_type,
+                                    typename Operation::first_argument_type,
+                                    typename Operation::result_type>
 {
-	public:
-		typedef typename Operation::second_argument_type first_argument_type;
-		typedef typename Operation::first_argument_type second_argument_type;
-		typedef typename Operation::result_type result_type;
+    public:
+        typedef typename Operation::second_argument_type first_argument_type;
+        typedef typename Operation::first_argument_type second_argument_type;
+        typedef typename Operation::result_type result_type;
         FlipArgs(const Operation & _Func) : op(_Func) {};
         result_type operator()(const first_argument_type& _Left, const second_argument_type& _Right)
         {
-        	return op(_Right, _Left);
+            return op(_Right, _Left);
         }
-	protected:
-		Operation op;
+    protected:
+        Operation op;
 };
 
 template<class Operation>
 inline FlipArgs<Operation> flipArgs(const Operation& op)
 {
-	return FlipArgs<Operation>(op);
+    return FlipArgs<Operation>(op);
 }
 
 NAMESPACE_END

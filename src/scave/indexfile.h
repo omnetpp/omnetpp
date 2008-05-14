@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -202,17 +204,17 @@ private:
 
 public:
 
-    int getNumberOfVectors() const 
+    int getNumberOfVectors() const
     {
-        return vectors.size(); 
+        return vectors.size();
     }
-    
+
     void addVector(const VectorData &vector)
     {
         map[vector.vectorId] = vectors.size();
         vectors.push_back(vector);
     }
-    
+
     const VectorData *getVectorAt(int index) const
     {
         Assert(0 <= index && index < (int)vectors.size());
@@ -224,7 +226,7 @@ public:
         Assert(0 <= index && index < (int)vectors.size());
         return &vectors[index];
     }
-    
+
     VectorData *getVectorById(int vectorId)
     {
         VectorIdToIndexMap::const_iterator entry = map.find(vectorId);

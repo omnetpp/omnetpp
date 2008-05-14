@@ -3,10 +3,13 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Andras Varga, Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -62,7 +65,7 @@ struct SCAVE_API ResultItem
         StringMap::const_iterator it = attributes.find(attrName);
         return it==attributes.end() ? NULL : it->second.c_str();
     }
-    
+
     /**
      * Returns the type of this result item (INT,DOUBLE,ENUM).
      * If neither "type" nor "enum" attribute is given it returns DOUBLE.
@@ -73,7 +76,7 @@ struct SCAVE_API ResultItem
      * or NULL if no "enum" attribute.
      */
     EnumType* getEnum() const;
-    
+
     bool isComputed() const { return computation != NULL; }
 };
 
@@ -96,7 +99,7 @@ struct SCAVE_API VectorResult : public ResultItem
     long startEventNum, endEventNum;
     simultime_t startTime, endTime;
     Statistics stat;
-    
+
     VectorResult() : vectorId(-1), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
     long count()      const { return stat.count(); }
@@ -118,23 +121,23 @@ struct SCAVE_API VectorResult : public ResultItem
  */
 struct SCAVE_API HistogramResult : public ResultItem
 {
-	Statistics stat;
-	std::vector<double> bins;
-	std::vector<double> values;
-	
+    Statistics stat;
+    std::vector<double> bins;
+    std::vector<double> values;
+
     long count()      const { return stat.count(); }
     double min()      const { return stat.min(); }
     double max()      const { return stat.max(); }
     double mean()     const { return stat.mean(); }
     double variance() const { return stat.variance(); }
     double stddev()   const { return stat.stddev(); }
-	
-	void addBin(double lower_bound, double value)
-	{
-		assert(bins.empty() || bins.back() < lower_bound);
-		bins.push_back(lower_bound);
-		values.push_back(value);
-	}
+
+    void addBin(double lower_bound, double value)
+    {
+        assert(bins.empty() || bins.back() < lower_bound);
+        bins.push_back(lower_bound);
+        values.push_back(value);
+    }
 };
 
 typedef std::vector<ScalarResult> ScalarResults;
@@ -249,38 +252,38 @@ class SCAVE_API ResultFileManager
     StringSet classNames; // currently not used
 
     ComputedIDCache computedIDCache;
-    
+
     struct sParseContext
     {
-    	ResultFile *fileRef; /*in*/
-    	const char *fileName; /*in*/
-    	int64 lineNo; /*inout*/
-    	FileRun *fileRunRef; /*inout*/
-    	// references to the result items which attributes should be added to
-    	int lastResultItemType; /*inout*/
-    	int lastResultItemIndex; /*inout*/
-    	// collected fields of the histogram to be created when the
-    	// first 'bin' is parsed
-    	std::string moduleName;
-    	std::string statisticName;
-    	long count;
-    	double min, max, sum, sumSqr;
-    	
-    	sParseContext(ResultFile *fileRef)
-    		: fileRef(fileRef), fileName(fileRef->filePath.c_str()), lineNo(0),
-    		  fileRunRef(NULL), lastResultItemType(0), lastResultItemIndex(-1),
-    		  count(0), min(dblPositiveInfinity), max(dblNegativeInfinity), sum(0.0), sumSqr(0.0) {}
-    	
-    	void clearHistogram()
-    	{
-    		moduleName.clear();
-    		statisticName.clear();
-    		count = 0;
-    		min = dblPositiveInfinity;
-    		max = dblNegativeInfinity;
-    		sum = 0.0;
-    		sumSqr = 0.0;
-    	}
+        ResultFile *fileRef; /*in*/
+        const char *fileName; /*in*/
+        int64 lineNo; /*inout*/
+        FileRun *fileRunRef; /*inout*/
+        // references to the result items which attributes should be added to
+        int lastResultItemType; /*inout*/
+        int lastResultItemIndex; /*inout*/
+        // collected fields of the histogram to be created when the
+        // first 'bin' is parsed
+        std::string moduleName;
+        std::string statisticName;
+        long count;
+        double min, max, sum, sumSqr;
+
+        sParseContext(ResultFile *fileRef)
+            : fileRef(fileRef), fileName(fileRef->filePath.c_str()), lineNo(0),
+              fileRunRef(NULL), lastResultItemType(0), lastResultItemIndex(-1),
+              count(0), min(dblPositiveInfinity), max(dblNegativeInfinity), sum(0.0), sumSqr(0.0) {}
+
+        void clearHistogram()
+        {
+            moduleName.clear();
+            statisticName.clear();
+            count = 0;
+            min = dblPositiveInfinity;
+            max = dblNegativeInfinity;
+            sum = 0.0;
+            sumSqr = 0.0;
+        }
     };
 
   public:
@@ -308,7 +311,7 @@ class SCAVE_API ResultFileManager
     int addScalar(FileRun *fileRunRef, const char *moduleName, const char *scalarName, double value);
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const char *columns);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, Statistics stat, const StringMap &attrs);
-    
+
     ResultFile *getFileForID(ID id) const; // checks for NULL
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
 
@@ -327,7 +330,7 @@ class SCAVE_API ResultFileManager
     const VectorResult& getVector(ID id) const;
     const HistogramResult& getHistogram(ID id) const;
     static int getTypeOf(ID id) {return _type(id);} // SCALAR/VECTOR/HISTOGRAM
-    
+
     bool isStaleID(ID id) const;
     bool hasStaleID(const IDList& ids) const;
 
@@ -412,9 +415,9 @@ class SCAVE_API ResultFileManager
     StringVector *getRunNameFilterHints(const RunList &runList) const;
     StringVector *getModuleFilterHints(const IDList& idlist) const;
     StringVector *getNameFilterHints(const IDList& idlist)const;
-	StringVector *getResultItemAttributeFilterHints(const IDList &idlist, const char *attrName) const;
-	StringVector *getRunAttributeFilterHints(const RunList &runList, const char *attrName) const;
-	StringVector *getModuleParamFilterHints(const RunList &runList, const char * paramName) const;
+    StringVector *getResultItemAttributeFilterHints(const IDList &idlist, const char *attrName) const;
+    StringVector *getRunAttributeFilterHints(const RunList &runList, const char *attrName) const;
+    StringVector *getModuleParamFilterHints(const RunList &runList, const char * paramName) const;
 };
 
 inline const ResultItem& ResultFileManager::uncheckedGetItem(ID id) const
@@ -453,7 +456,7 @@ inline ResultFile *ResultFileManager::getFileForID(ID id) const
 
 inline bool ResultFileManager::isStaleID(ID id) const
 {
-	return fileList.at(_fileid(id)) == NULL;
+    return fileList.at(_fileid(id)) == NULL;
 }
 
 NAMESPACE_END

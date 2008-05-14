@@ -4,7 +4,7 @@
 #                     OMNeT++/OMNEST
 #            Discrete System Simulation in C++
 #
-#   Loosely based on:
+#   Losely based on:
 #      tree.tcl, Copyright (C) 1997,1998 D. Richard Hipp
 #      Author contact information:
 #        drh@acm.org
@@ -14,7 +14,7 @@
 #=================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2005 Andras Varga
+#  Copyright (C) 1992-2008 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.

@@ -3,10 +3,13 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -109,23 +112,23 @@ class SCAVE_API ScalarDataTable : public DataTable
 class SCAVE_API ScaveExport
 {
     protected:
-    	std::string baseFileName;
+        std::string baseFileName;
         std::string fileName;
         std::ofstream out;
         int prec;
-        
+
     protected:
         void open();
-    	void close();
+        void close();
         virtual std::string makeFileName(const std::string name) = 0;
-    	
+
     public:
         ScaveExport() : prec(DEFAULT_PRECISION) {}
         virtual ~ScaveExport();
 
         void setPrecision(int prec) { this->prec = prec; }
         void setBaseFileName(const std::string baseFileName) { this->baseFileName = baseFileName; }
-        
+
         virtual void saveVector(const std::string name, const std::string description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
                         int startIndex=0, int endIndex=-1);
@@ -233,7 +236,7 @@ class SCAVE_API CsvExport : public ScaveExport
         int fileNameSuffix; // zero = do not add suffix, otherwise incremented when writing a new table
     public:
         CsvExport() : separator(','), quoteChar('"'), eol("\r\n"), quoteMethod(DOUBLE),
-        				columnNames(true), fileNameSuffix(0) {}
+                        columnNames(true), fileNameSuffix(0) {}
         virtual void saveVector(const std::string name, const std::string description,
                         ID vectorID, bool computed, const XYArray *vec, ResultFileManager &manager,
                         int startIndex=0, int endIndex=-1);

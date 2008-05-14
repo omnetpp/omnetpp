@@ -1,12 +1,15 @@
 //=========================================================================
-//  INDEXFILE.H - part of
+//  STATISTICS.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
+//
+//  Author: Tamas Borbely
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -25,7 +28,7 @@ NAMESPACE_BEGIN
  * Class for collecting statistical data of the result
  * used in several places in Scave.
  */
-class SCAVE_API Statistics 
+class SCAVE_API Statistics
 {
     private:
         long _count;
@@ -45,7 +48,7 @@ class SCAVE_API Statistics
         double sum() const { return _sum; }
         double sumSqr() const { return _sumSqr; }
         double mean() const { return _count == 0 ? dblNaN : _sum / _count; }
-        double stddev() const { return sqrt(variance()); } 
+        double stddev() const { return sqrt(variance()); }
         double variance() const;
 
         void collect(double value);

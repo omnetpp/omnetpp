@@ -1,12 +1,14 @@
 //=========================================================================
-//  INDEXEDVECTORFILEREADER.H - part of
+//  INDEXEDVECTORFILEREADER2.H - part of
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
+//
+//  Author: Tamas Borbely
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -39,16 +41,16 @@ class SCAVE_API IndexedVectorFileReaderNode2 : public ReaderNode
     typedef std::vector<Port> PortVector;
 
     struct PortData {
-		VectorData *vector;
-		int currentBlockIndex;
-		PortVector ports;
-		
-		PortData() : vector(NULL), currentBlockIndex(0) {}
-	};
+        VectorData *vector;
+        int currentBlockIndex;
+        PortVector ports;
+
+        PortData() : vector(NULL), currentBlockIndex(0) {}
+    };
 
     typedef std::map<int,PortData> PortMap;
 
-	private:
+    private:
         PortMap ports;
         VectorFileIndex *index;
         LineTokenizer tokenizer;

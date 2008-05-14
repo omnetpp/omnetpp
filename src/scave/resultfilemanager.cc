@@ -3,10 +3,13 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Andras Varga, Tamas Borbely
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -775,7 +778,7 @@ int ResultFileManager::addScalar(FileRun *fileRunRef, const char *moduleName,
     scalar.moduleNameRef = stringSetFindOrInsert(moduleNames, std::string(moduleName));
     scalar.nameRef = stringSetFindOrInsert(names, std::string(scalarName));
     scalar.value = value;
-    
+
     ScalarResults &scalars = fileRunRef->fileRef->scalarResults;
     scalars.push_back(scalar);
     return scalars.size() - 1;
@@ -796,7 +799,7 @@ int ResultFileManager::addVector(FileRun *fileRunRef, int vectorId, const char *
 }
 
 int ResultFileManager::addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName,
-		Statistics stat, const StringMap &attrs)
+        Statistics stat, const StringMap &attrs)
 {
     HistogramResult histogram;
     histogram.attributes = attrs;
@@ -882,8 +885,8 @@ void ResultFileManager::dump(ResultFile *fileRef, std::ostream& out) const
 
 void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ctx)
 {
-	++ctx.lineNo;
-	
+    ++ctx.lineNo;
+
     // ignore empty lines
     if (numTokens==0 || vec[0][0]=='#')
         return;
@@ -968,92 +971,92 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     }
     else if (vec[0][0]=='v' && !strcmp(vec[0],"vector"))
     {
-    	// syntax: "vector <id> <module> <vectorname> [<columns>]"
+        // syntax: "vector <id> <module> <vectorname> [<columns>]"
         CHECK(numTokens>=4, "invalid vector file syntax: too few items on 'vector' line");
         int vectorId;
         CHECK(parseInt(vec[1], vectorId), "invalid vector file syntax: invalid vector id in vector definition");
         const char *columns = (numTokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
-        
+
         ctx.lastResultItemType = VECTOR;
         ctx.lastResultItemIndex = addVector(ctx.fileRunRef, vectorId, vec[2], vec[3], columns);
         ctx.clearHistogram();
     }
     else if (vec[0][0]=='s' && !strcmp(vec[0],"statistic"))
     {
-    	// syntax: "statistic <module> <statisticname>"
-    	CHECK(numTokens>=3, "invalid scalar file: too few items on `statistic' line");
+        // syntax: "statistic <module> <statisticname>"
+        CHECK(numTokens>=3, "invalid scalar file: too few items on `statistic' line");
 
-    	ctx.clearHistogram();
-    	ctx.moduleName = vec[1];
-    	ctx.statisticName = vec[2];
-    	ctx.lastResultItemType = SCALAR; // add scalars first
-    	ctx.lastResultItemIndex = ctx.fileRef->scalarResults.size();
-    	
-    	CHECK(!ctx.moduleName.empty(), "invalid scalar file: missing module name");
-    	CHECK(!ctx.statisticName.empty(), "invalid scalar file: missing statistics name");
+        ctx.clearHistogram();
+        ctx.moduleName = vec[1];
+        ctx.statisticName = vec[2];
+        ctx.lastResultItemType = SCALAR; // add scalars first
+        ctx.lastResultItemIndex = ctx.fileRef->scalarResults.size();
+
+        CHECK(!ctx.moduleName.empty(), "invalid scalar file: missing module name");
+        CHECK(!ctx.statisticName.empty(), "invalid scalar file: missing statistics name");
     }
     else if (vec[0][0]=='f' && !strcmp(vec[0],"field"))
     {
-    	// syntax: "field <name> <value>"
-    	CHECK(numTokens>=3, "invalid scalar file: too few items on `field' line");
-    	
-    	std::string fieldName = vec[1];
-    	double value;
-    	CHECK(parseDouble(vec[2], value), "invalid scalar file: invalid field value");
-    	
-    	CHECK(!ctx.moduleName.empty() && !ctx.statisticName.empty(),
-    			"invalid scalar file: missing statistics declaration");
-    	std::string scalarName = ctx.statisticName + ":" + fieldName;
-    	addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), scalarName.c_str(), value);
-    	
-    	// set statistics field in the current histogram
-		if (fieldName == "count")
-			ctx.count = (long)value;
-		else if (fieldName == "min")
-			ctx.min = value;
-		else if (fieldName == "max")
-			ctx.max = value;
-		else if (fieldName == "sum")
-			ctx.sum = value;
-		else if (fieldName == "sqrsum")
-			ctx.sumSqr = value;
+        // syntax: "field <name> <value>"
+        CHECK(numTokens>=3, "invalid scalar file: too few items on `field' line");
+
+        std::string fieldName = vec[1];
+        double value;
+        CHECK(parseDouble(vec[2], value), "invalid scalar file: invalid field value");
+
+        CHECK(!ctx.moduleName.empty() && !ctx.statisticName.empty(),
+                "invalid scalar file: missing statistics declaration");
+        std::string scalarName = ctx.statisticName + ":" + fieldName;
+        addScalar(ctx.fileRunRef, ctx.moduleName.c_str(), scalarName.c_str(), value);
+
+        // set statistics field in the current histogram
+        if (fieldName == "count")
+            ctx.count = (long)value;
+        else if (fieldName == "min")
+            ctx.min = value;
+        else if (fieldName == "max")
+            ctx.max = value;
+        else if (fieldName == "sum")
+            ctx.sum = value;
+        else if (fieldName == "sqrsum")
+            ctx.sumSqr = value;
     }
     else if (vec[0][0]=='b' && !strcmp(vec[0],"bin"))
     {
-    	// syntax: "bin <lower_bound> <value>"
-    	CHECK(numTokens>=3, "");
-    	double lower_bound, value;
-    	CHECK(parseDouble(vec[1], lower_bound), "");
-    	CHECK(parseDouble(vec[2], value), "");
-    	
-    	if (ctx.lastResultItemType != HISTOGRAM)
-    	{
-        	CHECK(ctx.lastResultItemType == SCALAR && !ctx.moduleName.empty() && !ctx.statisticName.empty(),
-        			"invalid scalar file: missing statistics declaration");
-        	Statistics stat(ctx.count, ctx.min, ctx.max, ctx.sum, ctx.sumSqr);
-        	const ScalarResults &scalars = ctx.fileRef->scalarResults;
-        	const StringMap &attrs = ctx.lastResultItemIndex < (int)scalars.size() ?
-        								scalars[ctx.lastResultItemIndex].attributes : StringMap();
-    		ctx.lastResultItemType = HISTOGRAM;
-    		ctx.lastResultItemIndex = addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.statisticName.c_str(), stat, attrs);
-    	}
-    	HistogramResult &histogram = ctx.fileRef->histogramResults[ctx.lastResultItemIndex];
-    	histogram.addBin(lower_bound, value);
+        // syntax: "bin <lower_bound> <value>"
+        CHECK(numTokens>=3, "");
+        double lower_bound, value;
+        CHECK(parseDouble(vec[1], lower_bound), "");
+        CHECK(parseDouble(vec[2], value), "");
+
+        if (ctx.lastResultItemType != HISTOGRAM)
+        {
+            CHECK(ctx.lastResultItemType == SCALAR && !ctx.moduleName.empty() && !ctx.statisticName.empty(),
+                    "invalid scalar file: missing statistics declaration");
+            Statistics stat(ctx.count, ctx.min, ctx.max, ctx.sum, ctx.sumSqr);
+            const ScalarResults &scalars = ctx.fileRef->scalarResults;
+            const StringMap &attrs = ctx.lastResultItemIndex < (int)scalars.size() ?
+                                        scalars[ctx.lastResultItemIndex].attributes : StringMap();
+            ctx.lastResultItemType = HISTOGRAM;
+            ctx.lastResultItemIndex = addHistogram(ctx.fileRunRef, ctx.moduleName.c_str(), ctx.statisticName.c_str(), stat, attrs);
+        }
+        HistogramResult &histogram = ctx.fileRef->histogramResults[ctx.lastResultItemIndex];
+        histogram.addBin(lower_bound, value);
     }
     if (vec[0][0]=='a' && !strcmp(vec[0],"attr"))
     {
         CHECK(numTokens>=3, "invalid result file: 'attr <name> <value>' expected");
 
-    	std::string attrName = vec[1];
-    	std::string attrValue = vec[2];
+        std::string attrName = vec[1];
+        std::string attrValue = vec[2];
 
-    	if (ctx.lastResultItemType == 0) // run attribute
+        if (ctx.lastResultItemType == 0) // run attribute
         {
             // store attribute
-    		StringMap &attributes = ctx.fileRunRef->runRef->attributes;
-    		StringMap::iterator oldPairRef = attributes.find(attrName);
-    		CHECK(oldPairRef == attributes.end() || oldPairRef->second == attrValue,
-    			  "Value of run attribute conflicts with previously loaded value");
+            StringMap &attributes = ctx.fileRunRef->runRef->attributes;
+            StringMap::iterator oldPairRef = attributes.find(attrName);
+            CHECK(oldPairRef == attributes.end() || oldPairRef->second == attrValue,
+                  "Value of run attribute conflicts with previously loaded value");
             attributes[attrName] = attrValue;
 
             // the "runNumber" attribute is also stored separately
@@ -1062,21 +1065,21 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         }
         else if (ctx.lastResultItemIndex >= 0) // resultItem attribute
         {
-        	if (ctx.lastResultItemType == SCALAR)
-        		for (int i=ctx.lastResultItemIndex; i < (int)ctx.fileRef->scalarResults.size() ;++i)
-        		{
-        			ctx.fileRef->scalarResults[i].attributes[attrName] = attrValue;
-        		}
-        	else if (ctx.lastResultItemType == VECTOR)
-        		for (int i=ctx.lastResultItemIndex; i < (int)ctx.fileRef->vectorResults.size() ;++i)
-        		{
-        			ctx.fileRef->vectorResults[i].attributes[attrName] = attrValue;
-        		}
-        	else if (ctx.lastResultItemType == HISTOGRAM)
-        		for (int i=ctx.lastResultItemIndex; i < (int)ctx.fileRef->histogramResults.size() ;++i)
-        		{
-        			ctx.fileRef->histogramResults[i].attributes[attrName] = attrValue;
-        		}
+            if (ctx.lastResultItemType == SCALAR)
+                for (int i=ctx.lastResultItemIndex; i < (int)ctx.fileRef->scalarResults.size() ;++i)
+                {
+                    ctx.fileRef->scalarResults[i].attributes[attrName] = attrValue;
+                }
+            else if (ctx.lastResultItemType == VECTOR)
+                for (int i=ctx.lastResultItemIndex; i < (int)ctx.fileRef->vectorResults.size() ;++i)
+                {
+                    ctx.fileRef->vectorResults[i].attributes[attrName] = attrValue;
+                }
+            else if (ctx.lastResultItemType == HISTOGRAM)
+                for (int i=ctx.lastResultItemIndex; i < (int)ctx.fileRef->histogramResults.size() ;++i)
+                {
+                    ctx.fileRef->histogramResults[i].attributes[attrName] = attrValue;
+                }
         }
     }
     else if (vec[0][0]=='p' && !strcmp(vec[0],"param"))
@@ -1089,14 +1092,14 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         StringMap &params = ctx.fileRunRef->runRef->moduleParams;
         StringMap::iterator oldPairRef = params.find(paramName);
         CHECK(oldPairRef == params.end() || oldPairRef->second == paramValue,
-			  "Value of module parameter conflicts with previously loaded value");
+              "Value of module parameter conflicts with previously loaded value");
         params[paramName] = paramValue;
     }
     else if (opp_isdigit(vec[0][0]) && numTokens>=3)
     {
         // this looks like a vector data line, skip it this time
-    	
-    	// TODO collect statistics
+
+        // TODO collect statistics
     }
     else
     {
@@ -1300,27 +1303,27 @@ class DuplicateStringCollector
 
 inline bool strdictLess(const std::string &first, const std::string &second)
 {
-	return strdictcmp(first.c_str(), second.c_str()) < 0;
+    return strdictcmp(first.c_str(), second.c_str()) < 0;
 }
 
 struct StrDictCompare
 {
-	bool operator()(const std::string &first, const std::string &second)
-	{ 
-		return strdictLess(first, second);
-	}
+    bool operator()(const std::string &first, const std::string &second)
+    {
+        return strdictLess(first, second);
+    }
 };
 
 typedef std::set<std::string, StrDictCompare> SortedStringSet;
 
 static void replaceDigitsWithWildcard(std::string &str)
 {
-	std::string::iterator start;
-	while ((start=std::find_if(str.begin(), str.end(), opp_isdigit))!=str.end())
-	{
-		std::string::iterator end = std::find_if(start, str.end(), std::not1(std::ptr_fun(opp_isdigit)));
-		str.replace(start, end, 1, '*');
-	}
+    std::string::iterator start;
+    while ((start=std::find_if(str.begin(), str.end(), opp_isdigit))!=str.end())
+    {
+        std::string::iterator end = std::find_if(start, str.end(), std::not1(std::ptr_fun(opp_isdigit)));
+        str.replace(start, end, 1, '*');
+    }
 }
 
 StringVector *ResultFileManager::getFileAndRunNumberFilterHints(const IDList& idlist) const
@@ -1386,12 +1389,12 @@ StringVector *ResultFileManager::getModuleFilterHints(const IDList& idlist) cons
     for (StringSet::iterator i=names.begin(); i!=names.end(); i++)
     {
         std::string a = (*i);
-        
+
         // replace embedded numbers with "*"
         if (names.size() > 100)
-        	replaceDigitsWithWildcard(a);
+            replaceDigitsWithWildcard(a);
         nameHints.insert(a);
-        
+
         // break it up along dots, and...
         StringTokenizer tokenizer(a.c_str(), ".");
         const char *prefix = "";

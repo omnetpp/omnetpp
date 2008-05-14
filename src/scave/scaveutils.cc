@@ -3,7 +3,16 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //=========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
 
 #include <stdlib.h>
 #include <string.h>
@@ -55,10 +64,10 @@ bool parseDouble(const char *s, double& dest)
     }
     if (strstr(s, "IND") || strcmp(s,"nan")==0)
     {
-    	dest = dblNaN;
-    	return true;
+        dest = dblNaN;
+        return true;
     }
-    
+
     return false;
 }
 
