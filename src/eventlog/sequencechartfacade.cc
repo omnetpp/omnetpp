@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -161,7 +163,7 @@ double SequenceChartFacade::getTimelineCoordinate(IEvent *event, double lowerTim
                     bool forward = event->getEventNumber() > timelineCoordinateRangeEndEventNumber;
                     IEvent *currentEvent = eventLog->getEventForEventNumber(forward ? timelineCoordinateRangeEndEventNumber : timelineCoordinateRangeStartEventNumber);
 
-                    Assert(event->getEventNumber() < timelineCoordinateRangeStartEventNumber || timelineCoordinateRangeEndEventNumber < event->getEventNumber()); 
+                    Assert(event->getEventNumber() < timelineCoordinateRangeStartEventNumber || timelineCoordinateRangeEndEventNumber < event->getEventNumber());
 
                     // TODO: LONG RUNNING OPERATION
                     // does a linear search towards the event to calculate the non linear timeline coordinate
@@ -379,11 +381,11 @@ double SequenceChartFacade::getSimulationTimeForTimelineCoordinate(double timeli
                 double simulationTimeDelta, timelineCoordinateDelta;
 
                 IEvent *event = getLastEventNotAfterTimelineCoordinate(timelineCoordinate);
-                extractSimulationTimesAndTimelineCoordinates(event, nextEvent, 
+                extractSimulationTimesAndTimelineCoordinates(event, nextEvent,
                                                              eventSimulationTime, eventTimelineCoordinate,
                                                              nextEventSimulationTime, nextEventTimelineCoordinate,
                                                              simulationTimeDelta, timelineCoordinateDelta);
- 
+
                 if (nextEvent) {
                     if (timelineCoordinateDelta == 0) {
                         // IMPORTANT NOTE: this is just an approximation
@@ -439,7 +441,7 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
                 double simulationTimeDelta, timelineCoordinateDelta;
 
                 IEvent *event = eventLog->getLastEventNotAfterSimulationTime(simulationTime);
-                extractSimulationTimesAndTimelineCoordinates(event, nextEvent, 
+                extractSimulationTimesAndTimelineCoordinates(event, nextEvent,
                                                              eventSimulationTime, eventTimelineCoordinate,
                                                              nextEventSimulationTime, nextEventTimelineCoordinate,
                                                              simulationTimeDelta, timelineCoordinateDelta);

@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.

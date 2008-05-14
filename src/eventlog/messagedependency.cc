@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -41,7 +43,7 @@ bool IMessageDependency::corresponds(IMessageDependency *dependency1, IMessageDe
         return false;
 
     return
-        (entry1->messageId != -1 && entry1->messageId == entry2->messageId) || 
+        (entry1->messageId != -1 && entry1->messageId == entry2->messageId) ||
         (entry1->messageTreeId != -1 && entry1->messageTreeId == entry2->messageTreeId) ||
         (entry1->messageEncapsulationId != -1 && entry1->messageEncapsulationId == entry2->messageEncapsulationId) ||
         (entry1->messageEncapsulationTreeId != -1 && entry1->messageEncapsulationTreeId == entry2->messageEncapsulationTreeId);
@@ -202,7 +204,7 @@ simtime_t& MessageDependency::getConsequenceSimulationTime()
 bool MessageDependency::equals(IMessageDependency *other)
 {
     MessageDependency *otherMessageDependency = dynamic_cast<MessageDependency *>(other);
-    return otherMessageDependency && 
+    return otherMessageDependency &&
         getCauseEventNumber() == otherMessageDependency->getCauseEventNumber() &&
         getCauseBeginSendEntryNumber() == otherMessageDependency->getCauseBeginSendEntryNumber() &&
         getConsequenceEventNumber() == otherMessageDependency->getConsequenceEventNumber() &&
@@ -286,7 +288,7 @@ BeginSendEntry *FilteredMessageDependency::getConsequenceBeginSendEntry()
 bool FilteredMessageDependency::equals(IMessageDependency *other)
 {
     FilteredMessageDependency *otherFiltered = dynamic_cast<FilteredMessageDependency *>(other);
-    return otherFiltered && 
+    return otherFiltered &&
         beginMessageDependency->equals(otherFiltered->beginMessageDependency) &&
         endMessageDependency->equals(otherFiltered->endMessageDependency);
 }

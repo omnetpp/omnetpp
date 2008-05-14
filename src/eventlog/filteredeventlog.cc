@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -240,7 +242,7 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
         }
 
         // no match
-        return false; 
+        return false;
         // match found
         MATCHES:;
     }
@@ -566,7 +568,7 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
         IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
         if (consequenceEvent &&
-            (traceSelfMessages || !consequenceEvent->isSelfMessageProcessingEvent()) && 
+            (traceSelfMessages || !consequenceEvent->isSelfMessageProcessingEvent()) &&
             (traceMessageReuses || !messageDependency->getIsReuse()))
         {
             // if we reached the consequence event, we're done

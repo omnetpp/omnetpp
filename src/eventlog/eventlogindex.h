@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -102,14 +104,14 @@ class EVENTLOG_API EventLogIndex
         template <typename T> bool cacheSearchForOffset(std::map<T, CacheEntry> &map, T key, MatchKind matchKind, T& lowerKey, T& upperKey, file_offset_t& foundOffset, file_offset_t& lowerOffset, file_offset_t& upperOffset);
         /**
          * Binary search through the event log file finding the file offset for the given key with the given match kind.
-         * Sets the closest lower and upper keys and offsets around the key found in the event log file. 
+         * Sets the closest lower and upper keys and offsets around the key found in the event log file.
          * Returns -1 if the offset cannot be determined.
          */
         template <typename T> file_offset_t  binarySearchForOffset(T key, MatchKind matchKind, T& lowerKey, T& upperKey, file_offset_t& lowerOffset, file_offset_t& upperOffset);
         /**
          * Linear search through the event log file finding the file offset for the given key.
          * The search starts from begin offset and continues in the direction specified by the forward flag.
-         * Returns -1 if no such event found otherwise the last exact match or the first non exact match depending 
+         * Returns -1 if no such event found otherwise the last exact match or the first non exact match depending
          * on the exact match required flag.
          */
         template <typename T> file_offset_t linearSearchForOffset(T key, file_offset_t beginOffset, bool forward, bool exactMatchRequired);

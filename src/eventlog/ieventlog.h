@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -73,7 +75,7 @@ class EVENTLOG_API IEventLog
         virtual void setProgressCallInterval(double seconds) = 0;
 
         /**
-         * Synchorizes state when the underlying log file has been changed. 
+         * Synchorizes state when the underlying log file has been changed.
          * Either new events were appended or the whole file has been overwritten.
          */
         virtual void synchronize(FileReader::FileChangedState change);

@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -345,7 +347,7 @@ void usage(const char *message)
         fprintf(stderr, "Error: %s\n\n", message);
 
     fprintf(stderr, ""
-"eventlogtool -- part of OMNeT++/OMNEST, (C) 2006-2008 Andras Varga\n"
+"eventlogtool -- part of OMNeT++/OMNEST, (C) 2006-2008 Andras Varga, OpenSim Ltd.\n"
 "Release: " OMNETPP_RELEASE ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n"
 "\n"
 "Usage:\n"

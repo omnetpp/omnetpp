@@ -3,10 +3,13 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
+//  Author: Andras Varga
+//
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -140,7 +143,7 @@ std::string ValueIterator::get(int index) const
 void ValueIterator::restart()
 {
     pos = itemIndex = k = 0;
-    while (itemIndex < (int)items.size() && items[itemIndex].n == 0) 
+    while (itemIndex < (int)items.size() && items[itemIndex].n == 0)
         itemIndex++;
 }
 

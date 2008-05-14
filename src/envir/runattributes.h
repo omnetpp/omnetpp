@@ -3,10 +3,13 @@
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -22,7 +25,7 @@ NAMESPACE_BEGIN
 
 /**
  * Collects and writes the run attributes and parameters.
- * 
+ *
  * @ingroup Envir
  */
 struct sRunData {
