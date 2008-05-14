@@ -88,7 +88,7 @@
       <image
             icon="icons/o_ovr.gif"
             id="omnetppNatureImage"
-            natureId="omnetppnature"/>
+            natureId="org.omnetpp.main.omnetppnature"/>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
