@@ -250,7 +250,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
         // contents of the "Show In..." context menu
         return new String[] {
                 IConstants.EVENTLOG_VIEW_ID, 
-                IConstants.MODULEHIERARCHY_VIEW_ID,
+                //TODO IConstants.MODULEHIERARCHY_VIEW_ID,
                 };
     }
 
