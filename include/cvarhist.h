@@ -72,7 +72,7 @@ enum {
  *
  * @ingroup Statistics
  */
-class SIM_API cVarHistogram : public cHistogramBase //--LG
+class SIM_API cVarHistogram : public cHistogramBase
 {
   protected:
     int transform_type;     // one of the HIST_TR_xxx constants
@@ -174,17 +174,17 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x) const; // --LG
+    virtual double pdf(double x) const;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x) const; // --LG
+    virtual double cdf(double x) const;
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k) const; // --LG
+    virtual double basepoint(int k) const;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
@@ -194,12 +194,12 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) const; //--LG
+    virtual void saveToFile(FILE *) const;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
      */
-    virtual void loadFromFile(FILE *);  //--LG
+    virtual void loadFromFile(FILE *);
     //@}
 
     /** @name Setting up the histogram. */
