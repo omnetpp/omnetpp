@@ -99,7 +99,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	}
 
 	/**
-	 * Return the path as a dot-separared string.
+	 * Return the path as a dot-separated string.
 	 */
 	public String getModuleFullPath() {
 	    String path = getModuleName();

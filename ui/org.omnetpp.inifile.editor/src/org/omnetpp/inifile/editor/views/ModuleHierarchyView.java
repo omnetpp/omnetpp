@@ -63,7 +63,6 @@ import org.omnetpp.ned.model.pojo.ParamElement;
  *
  * @author Andras
  */
-//XXX "like" submodule with unresolved type does not appear as such!!!
 public class ModuleHierarchyView extends AbstractModuleView {
 	private TreeViewer treeViewer;
 	private IInifileDocument inifileDocument; // corresponds to the current selection; needed by the label provider
