@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
@@ -152,12 +153,12 @@ public class ModuleParametersView extends AbstractModuleView {
 				IEditorPart editor = getAssociatedEditor();
 				if (!event.getSelection().isEmpty() && editor!=null) {
 					// remember selection (we'll try to restore it after table rebuild)
-					selectedElements.put(getAssociatedEditor().getEditorInput(), event.getSelection());
-
+					selectedElements.put(editor.getEditorInput(), event.getSelection());
+					System.out.println("*** bubu");
 					// try to highlight the given element in the inifile editor
 					SectionKey sel = getSectionKeyFromSelection();
 					//XXX make sure "res" and inifile editor refer to the same IFile!!!
-					if (sel != null && editor instanceof IGotoInifile)
+					if (sel != null && editor instanceof IGotoInifile && editor != getActivePart())
 						((IGotoInifile)editor).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
 				}
 			}

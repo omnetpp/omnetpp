@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.part.ViewPart;
 
@@ -107,6 +108,15 @@ public abstract class ViewWithMessagePart extends ViewPart {
 		return activePage==null ? null : activePage.getActiveEditor();
 	}
 	
+	/**
+	 * Utility method: Returns the active part, or null.
+	 */
+	protected IWorkbenchPart getActivePart() {
+		IWorkbenchPartSite site = getSite();
+		IWorkbenchPage activePage = site==null ? null : site.getWorkbenchWindow().getActivePage();
+		return activePage==null ? null : activePage.getActivePart();
+	}
+
 	/**
 	 * Utility method: Return the active editor's selection, or null.
 	 */

@@ -212,7 +212,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 					// try to highlight the given element in the inifile editor
 					SectionKey sel = getSectionKeyFromSelection();
 					//XXX make sure "res" and inifile editor refer to the same IFile!!!
-					if (sel != null && editor instanceof IGotoInifile)
+					if (sel != null && editor instanceof IGotoInifile && editor != getActivePart())
 						((IGotoInifile)editor).gotoEntry(sel.section, sel.key, IGotoInifile.Mode.AUTO);
 				}
 			}
