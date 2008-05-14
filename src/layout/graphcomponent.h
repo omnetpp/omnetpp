@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -50,13 +52,13 @@ class Vertex {
          * Used to look up the vertex. Not used by any graph algorithm.
          */
         void *identity;
-        
+
         /**
          * The parent of this vertex in the spanning tree. Filled by calculateSpanningTree in
          * the owner graphComponent.
          */
         Vertex *spanningTreeParent;
-        
+
         /**
          * Children vertices of this vertex in the spanning tree. Filled by calculateSpanningTree in
          * the owner graphComponent.
@@ -78,12 +80,12 @@ class Vertex {
          * Center coordinate relative to parent.
          */
         Pt starTreeCenter;
-        
+
         /**
          * Subtree enclosing circle center.
          */
         Pt starTreeCircleCenter;
-        
+
         /**
          * Subtree enclosing circle radius.
          */
@@ -107,7 +109,7 @@ class Edge {
          * One of the vertices where the edge ends.
          */
         Vertex *target;
-    
+
         /**
          * Used to look up the edge. Not used by any graph algorithm.
          */
@@ -148,7 +150,7 @@ class GraphComponent {
          * A list of edges present in this component.
          */
         std::vector<Edge *> edges;
-    
+
     public:
         /**
          * The root of the spanning tree. Filled by calculateSpanningTree.
@@ -168,7 +170,7 @@ class GraphComponent {
 
     public:
         GraphComponent();
-        ~GraphComponent();        
+        ~GraphComponent();
 
         int addVertex(Vertex *vertex);
         int addEdge(Edge *edge);

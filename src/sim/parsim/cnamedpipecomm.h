@@ -4,12 +4,15 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//   Written by:  Andras Varga, 2003
+//  Author: Andras Varga, 2003
+//          Dept. of Electrical and Computer Systems Engineering,
+//          Monash University, Melbourne, Australia
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2003-2005 Andras Varga
+  Copyright (C) 2003-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
   Monash University, Dept. of Electrical and Computer Systems Eng.
   Melbourne, Australia
 

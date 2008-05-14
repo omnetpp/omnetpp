@@ -4,27 +4,27 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//   Written by:  Andras Varga, 2003
+//  Author: Andras Varga, 2003
+//          Dept. of Electrical and Computer Systems Engineering,
+//          Monash University, Melbourne, Australia
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2003-2005 Andras Varga
-  Monash University, Dept. of Electrical and Computer Systems Eng.
-  Melbourne, Australia
+  Copyright (C) 2003-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifndef __CFILECOMM_H__
+#define __CFILECOMM_H__
 
 #include "cparsimcomm.h"
 #include "util.h"
 
 NAMESPACE_BEGIN
-
-#ifndef __CFILECOMM_H__
-#define __CFILECOMM_H__
 
 
 /**

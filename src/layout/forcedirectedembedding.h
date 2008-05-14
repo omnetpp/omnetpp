@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -278,7 +280,7 @@ class LAYOUT_API ForceDirectedEmbedding
 
         /**
          * Calculate the average relative error of any corresponding pair between a1, a2, a3 and a4
-         * relative to the absolute a values. 
+         * relative to the absolute a values.
          */
         double averageRelativeError(const std::vector<Pt>& a1, const std::vector<Pt>& a2,
                                  const std::vector<Pt>& a3, const std::vector<Pt>& a4)

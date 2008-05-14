@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -149,7 +151,7 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
 
             if (!neighbour->color) {
                 addToSpanningTreeParent(vertex, neighbour);
-                
+
                 // breadth search
                 vertices.push_back(neighbour);
                 spanningTreeVertices.push_back(neighbour);
@@ -161,7 +163,7 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
 void GraphComponent::addToSpanningTreeParent(Vertex *parentVertex, Vertex *vertex) {
     vertex->color = 1;
     vertex->spanningTreeParent = parentVertex;
-    
+
     if (parentVertex)
         parentVertex->spanningTreeChildren.push_back(vertex);
 }
