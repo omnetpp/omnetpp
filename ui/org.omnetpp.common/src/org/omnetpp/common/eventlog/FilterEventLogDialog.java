@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.ui.EditableList;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
@@ -643,7 +645,7 @@ public class FilterEventLogDialog
 		}
 
 		String[] moduleClassNamesAsStrings = (String[])moduleClassNameSet.toArray(new String[0]);
-		Arrays.sort(moduleClassNamesAsStrings);
+		Collections.sort(Arrays.asList(moduleClassNamesAsStrings), StringUtils.dictionaryComparator);
 		moduleClassNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		moduleClassNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		moduleClassNames.add(moduleClassNamesAsStrings);
@@ -733,7 +735,7 @@ public class FilterEventLogDialog
         String[] messageClassNamesAsStrings = new String[(int)names.size()];
         for (int i = 0; i < names.size(); i++)
             messageClassNamesAsStrings[i] = names.get(i);
-        Arrays.sort(messageClassNamesAsStrings);
+        Collections.sort(Arrays.asList(messageClassNamesAsStrings), StringUtils.dictionaryComparator);
 
         messageClassNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		messageClassNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -757,7 +759,7 @@ public class FilterEventLogDialog
 		String[] messageNamesAsStrings = new String[(int)names.size()];
         for (int i = 0; i < names.size(); i++)
             messageNamesAsStrings[i] = names.get(i);
-        Arrays.sort(messageNamesAsStrings);
+        Collections.sort(Arrays.asList(messageNamesAsStrings), StringUtils.dictionaryComparator);
 
         messageNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		messageNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));

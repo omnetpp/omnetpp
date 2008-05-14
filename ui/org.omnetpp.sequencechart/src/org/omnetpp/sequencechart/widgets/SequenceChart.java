@@ -206,6 +206,7 @@ public class SequenceChart
 	private ArrayList<ModuleTreeItem> axisModules; // the modules which should have an axis (they must be part of a module tree!)
 	private IAxisRenderer[] axisRenderers; // used to draw the axis (parallel to axisModules)
 	private HashMap<Integer, IAxisRenderer> moduleIdToAxisRendererMap = new HashMap<Integer, IAxisRenderer>();
+	private ManualAxisOrder manualAxisOrder = new ManualAxisOrder();
 	private int[] axisModulePositions; // y order of the axis modules (in the same order as axisModules); this is a permutation of the 0..axisModule.size()-1 numbers
 	private int[] axisModuleYs; // top y coordinates of axis bounding boxes
 	private HashMap<Integer, Integer> moduleIdToAxisModuleIndexMap = new HashMap<Integer, Integer>();
@@ -603,6 +604,10 @@ public class SequenceChart
 		// manual reordering calls paint so this must be later than setting the positions
 		axisModuleYs = null;
 		clearCanvasCacheAndRedraw();
+	}
+	
+	public void showManualOrderingDialog() {
+        manualAxisOrder.showManualOrderDialog(axisModules.toArray(new ModuleTreeItem[0]));
 	}
 
 	/**
@@ -1356,21 +1361,23 @@ public class SequenceChart
 				if (axisModulePositions == null)
 					axisModulePositions = new int[axisModules.size()];
 
+				ModuleTreeItem[] axisModulesArray = axisModules.toArray(new ModuleTreeItem[0]);
+
 				switch (axisOrderingMode) {
 					case MANUAL:
-						new ManualAxisOrder().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						manualAxisOrder.calculateOrdering(axisModulesArray, axisModulePositions);
 						break;
 					case MODULE_ID:
-						new AxisOrderByModuleId().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						new AxisOrderByModuleId().calculateOrdering(axisModulesArray, axisModulePositions);
 						break;
 					case MODULE_NAME:
-						new AxisOrderByModuleName().calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						new AxisOrderByModuleName().calculateOrdering(axisModulesArray, axisModulePositions);
 						break;
 					case MINIMIZE_CROSSINGS:
-						new FlatAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						new FlatAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModulesArray, axisModulePositions);
 						break;
 					case MINIMIZE_CROSSINGS_HIERARCHICALLY:
-						new HierarchicalAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModules.toArray(new ModuleTreeItem[0]), axisModulePositions);
+						new HierarchicalAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModulesArray, axisModulePositions);
 						break;
 					default:
 						throw new RuntimeException("Unknown axis ordering mode");

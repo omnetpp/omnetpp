@@ -8,19 +8,52 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 
 public class ManualAxisOrder implements IAxisOrder {
-	public void calculateOrdering(ModuleTreeItem[] axisModules, int[] axisPositions) {
-		final ArrayList<ModuleTreeItem> orderedAxisModules = new ArrayList<ModuleTreeItem>();
+    // this is a total ordering among all modules seen so far
+    private ArrayList<ModuleTreeItem> lastAxisModuleOrder = new ArrayList<ModuleTreeItem>();
 
-		for (int i = 0; i < axisModules.length; i++)
-			orderedAxisModules.add(axisModules[ArrayUtils.indexOf(axisPositions, i)]);
+    private ArrayList<ModuleTreeItem> getCurrentAxisModuleOrder(ModuleTreeItem[] selectedAxisModules) {
+        // ensure all modules are known in the stored ordering
+        for (ModuleTreeItem axisModule : selectedAxisModules)
+            if (!lastAxisModuleOrder.contains(axisModule))
+                lastAxisModuleOrder.add(axisModule);
+
+        // add selected modules in the last known order
+        ArrayList<ModuleTreeItem> currentAxisModuleOrder = new ArrayList<ModuleTreeItem>();
+        for (ModuleTreeItem axisModule : lastAxisModuleOrder)
+            if (ArrayUtils.contains(selectedAxisModules, axisModule))
+                currentAxisModuleOrder.add(axisModule);
+        return currentAxisModuleOrder;
+    }
+
+    private void updateLastAxisModuleOrder(ArrayList<ModuleTreeItem> currentAxisModuleOrder, ArrayList<ModuleTreeItem> updatedCurrentAxisModuleOrder) {
+        ArrayList<ModuleTreeItem> updatedLastAxisModuleOrder = new ArrayList<ModuleTreeItem>(lastAxisModuleOrder);
+
+        for (ModuleTreeItem axisModule : currentAxisModuleOrder) {
+            ModuleTreeItem targetAxisModule = currentAxisModuleOrder.get(updatedCurrentAxisModuleOrder.indexOf(axisModule));
+            updatedLastAxisModuleOrder.set(lastAxisModuleOrder.indexOf(targetAxisModule), axisModule);
+        }
+        
+        lastAxisModuleOrder = updatedLastAxisModuleOrder;
+    }
+
+	public void calculateOrdering(ModuleTreeItem[] selectedAxisModules, int[] axisPositions) {
+	    ArrayList<ModuleTreeItem> currentAxisModuleOrder = getCurrentAxisModuleOrder(selectedAxisModules);
 		
-		// TODO: show dialog with current positions and let the user to update it
-		ListDialog dialog = new ListDialog(null) {
+        for (int i = 0; i < selectedAxisModules.length; i++)
+            axisPositions[i] = currentAxisModuleOrder.indexOf(selectedAxisModules[i]);
+	}
+    
+    public void showManualOrderDialog(ModuleTreeItem[] selectedAxisModules) {
+        ArrayList<ModuleTreeItem> currentAxisModuleOrder = getCurrentAxisModuleOrder(selectedAxisModules);
+        final ArrayList<ModuleTreeItem> updatedCurrentAxisModuleOrder = new ArrayList<ModuleTreeItem>(currentAxisModuleOrder);
+
+        ListDialog dialog = new ListDialog(null) {
 			@Override
 		    protected void createButtonsForButtonBar(Composite parent) {
 				createButton(parent, IDialogConstants.CLIENT_ID, "Up", false);
@@ -36,15 +69,15 @@ public class ManualAxisOrder implements IAxisOrder {
 
 				if (buttonId >= IDialogConstants.CLIENT_ID) {
 					moduleTreeItem = (ModuleTreeItem)selection.getFirstElement();
-					index = orderedAxisModules.indexOf(moduleTreeItem);
+					index = updatedCurrentAxisModuleOrder.indexOf(moduleTreeItem);
 				}
 
 				switch (buttonId) {
 					case IDialogConstants.CLIENT_ID:
-						swap(orderedAxisModules, index - 1, index);
+						swap(updatedCurrentAxisModuleOrder, index - 1, index);
 						break;
 					case IDialogConstants.CLIENT_ID + 1:
-						swap(orderedAxisModules, index, index + 1);
+						swap(updatedCurrentAxisModuleOrder, index, index + 1);
 						break;
 					default:
 						super.buttonPressed(buttonId);
@@ -53,6 +86,16 @@ public class ManualAxisOrder implements IAxisOrder {
 
 				if (buttonId >= IDialogConstants.CLIENT_ID)
 					getTableViewer().refresh();
+			}
+			
+			@Override
+			public boolean isHelpAvailable() {
+			    return false;
+			}
+			
+			@Override
+			protected int getShellStyle() {
+			    return super.getShellStyle() | SWT.RESIZE;
 			}
 		};
 
@@ -65,14 +108,13 @@ public class ManualAxisOrder implements IAxisOrder {
 			}
 		});
 
-		dialog.setInput(orderedAxisModules);
+		dialog.setInput(updatedCurrentAxisModuleOrder);
 		dialog.setTitle("Manual axis reordering");
 		dialog.open();
-		
+
 		if (dialog.getReturnCode() == Window.OK)
-			for (int i = 0; i < axisModules.length; i++)
-				axisPositions[i] = orderedAxisModules.indexOf(axisModules[i]);
-	}
+            updateLastAxisModuleOrder(currentAxisModuleOrder, updatedCurrentAxisModuleOrder);
+    }
 	
 	private void swap(ArrayList<ModuleTreeItem> list, int index1, int index2) {
 		if (index1 >= 0 && index2 < list.size())

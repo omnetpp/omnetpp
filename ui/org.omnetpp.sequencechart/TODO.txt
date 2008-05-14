@@ -90,11 +90,12 @@ Features:
  - use eventlog input module tree in module hierarchy view
  - filter for causes/consequence from popup menu should disable other filter options
  - use breadth search instead of depth search when collecting filtered message dependencies
-
+ - add a flag to control whether filter only collects corresponding message dependencies
+ - store manual ordering
  - seqchart: into context menu: "Show In > Eventlog View" ; similarly in the Eventlog editor, by implementing ShowIn interface
+ - use dictionaryCompare in filter options name sorting
 
 Known bugs:
- - seqchart: OneFifo.log -> Axis ordering:Manual,reorder axes -> filter causes/consequences ==> BUG: all axes will be drawn on top of each other 
  - 7-es compiler? seqchart: "Filter by message ID" OneFifo, filter to one msg like id=16: yields only event #53 and #120, and #120 has nothing to do with msg id=16
  - 7-es compiler? seqchart: OneFifo example: "Filter by message names", check a job ("job12") ==> result is only one event in the queue, and nothing else
  - filtering for "job12" causes zero simulation time bug, gutter displays simulation time 0, events 44 and 49 are not connected

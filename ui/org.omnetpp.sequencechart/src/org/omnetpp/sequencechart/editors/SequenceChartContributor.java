@@ -664,6 +664,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 								MenuItem menuItem = (MenuItem)e.widget;
 								
 								if (menuItem.getSelection()) {
+								    if (axisOrderingMode == SequenceChart.AxisOrderingMode.MANUAL)
+								        sequenceChart.showManualOrderingDialog();
 									sequenceChart.setAxisOrderingMode(axisOrderingMode);
 									update();
 								}
