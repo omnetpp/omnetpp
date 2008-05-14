@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -24,6 +25,7 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -40,8 +42,12 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ListDialog;
+import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
@@ -72,9 +78,8 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
 public class SequenceChartContributor extends EditorActionBarContributor implements IEventLogChangeListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
-
     public final static String IMAGE_TIMELINE_MODE = TOOL_IMAGE_DIR + "timelinemode.png";
-    
+   
     public final static String IMAGE_AXIS_ORDERING_MODE = TOOL_IMAGE_DIR + "axisordering.gif";
     
     public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOL_IMAGE_DIR + "eventnumbers.png";
@@ -152,7 +157,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	protected StatusLineContributionItem timelineModeStatus;
 
 	protected StatusLineContributionItem filterStatus;
-
+	
 	/*************************************************************************************
 	 * CONSTRUCTION
 	 */
@@ -300,8 +305,16 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				menuManager.add(refreshAction);
                 menuManager.add(releaseMemoryAction);
 				menuManager.add(separatorAction);
-				// TODO factor out to org.omnetpp.imageexport
+				
+		        MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
+		        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+		        IContributionItem showInViewItem = ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow);
+                showInSubmenu.add(showInViewItem);
+		        menuManager.add(showInSubmenu);
+
+		        // TODO factor out to org.omnetpp.imageexport
 //				menuManager.add(exportToSVGAction);
+				
 			}
 		});
 	}
@@ -383,7 +396,20 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		}
 	}
 
-	/*************************************************************************************
+    private String getShowInMenuLabel() {
+        String keyBinding = null;
+
+        IBindingService bindingService = (IBindingService)PlatformUI.getWorkbench().getAdapter(IBindingService.class);
+        if (bindingService != null)
+            keyBinding = bindingService.getBestActiveBindingFormattedFor("org.eclipse.ui.navigate.showInQuickMenu");
+
+        if (keyBinding == null)
+            keyBinding = "";
+
+        return NLS.bind("Show In \t{0}", keyBinding);
+    }
+
+    /*************************************************************************************
 	 * NOTIFICATIONS
 	 */
 

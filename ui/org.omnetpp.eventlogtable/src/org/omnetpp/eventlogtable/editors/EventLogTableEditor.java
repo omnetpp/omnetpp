@@ -21,6 +21,10 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
+import org.eclipse.ui.part.IShowInSource;
+import org.eclipse.ui.part.IShowInTargetList;
+import org.eclipse.ui.part.ShowInContext;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.IEventLogSelection;
@@ -35,7 +39,7 @@ import org.omnetpp.eventlogtable.widgets.EventLogTable;
  * 
  * @author levy
  */
-public class EventLogTableEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker {
+public class EventLogTableEditor extends EventLogEditor implements INavigationLocationProvider, IGotoMarker, IShowInSource, IShowInTargetList {
 	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 
 	private EventLogTable eventLogTable;
@@ -234,4 +238,22 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
             return true;
         }	
 	}
+
+	/* (non-Javadoc)
+     * Method declared on IShowInSource
+     */
+    public ShowInContext getShowInContext() {
+        return new ShowInContext(getEditorInput(), getSite().getSelectionProvider().getSelection());
+    }
+
+    /* (non-Javadoc)
+     * Method declared on IShowInTargetList
+     */
+    public String[] getShowInTargetIds() {
+        // contents of the "Show In..." context menu
+        return new String[] {
+                IConstants.SEQUENCECHART_VIEW_ID, 
+                IConstants.MODULEHIERARCHY_VIEW_ID,
+                };
+    }
 }
