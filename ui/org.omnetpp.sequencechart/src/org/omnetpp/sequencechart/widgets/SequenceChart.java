@@ -3009,7 +3009,7 @@ public class SequenceChart
 				if (res.length() != 0)
 					res += "<br/>";
 
-				res += getEventText(event, true);
+				res += getEventText(event, true, outSizeConstraint);
 
 				if (events.size() == 1) {
 					IEvent selectionEvent = getSelectionEvent();
@@ -3046,7 +3046,7 @@ public class SequenceChart
 		// 3) no events or message arrows: show axis info
 		ModuleTreeItem axisModule = findAxisAt(y);
 		if (axisModule != null) {
-			String res = getAxisText(axisModule) + "<br/>";
+			String res = getAxisText(axisModule, true) + "<br/>";
 			res += "t = " + calculateTick(x, 1).toPlainString();
 
 			if (!eventLog.isEmpty()) {
@@ -3066,71 +3066,134 @@ public class SequenceChart
 	/**
 	 * Returns a descriptive message for the ModuleTreeItem to be presented to the user.
 	 */
-	public String getAxisText(ModuleTreeItem axisModule) {
-		return "Axis "+axisModule.getModuleFullPath();
+	public String getAxisText(ModuleTreeItem axisModule, boolean formatted) {
+        String boldStart = formatted ? "<b>" : "";
+        String boldEnd = formatted ? "</b>" : "";
+        String moduleName = (formatted ? axisModule.getModuleFullPath() : axisModule.getModuleName());
+        String moduleId = " (id = " + axisModule.getModuleId() + ")";
+
+        return "Axis (" + axisModule.getModuleClassName() + ") " + boldStart + moduleName + boldEnd + moduleId;
 	}
 
 	/**
 	 * Returns a descriptive message for the IMessageDependency to be presented to the user.
 	 */
 	public String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted, SizeConstraint outSizeConstraint) {
-		String boldStart = formatted ? "<b>" : "";
-		String boldEnd = formatted ? "</b>" : "";
-		String newLine = formatted ? "<br/>" : "\n";
-
 		if (sequenceChartFacade.MessageDependency_isFilteredMessageDependency(messageDependency.getCPtr())) {
 			FilteredMessageDependency filteredMessageDependency = (FilteredMessageDependency)messageDependency;
 			BeginSendEntry beginBeginSendEntry = filteredMessageDependency.getBeginMessageDependency().getBeginSendEntry();
 			BeginSendEntry endBeginSendEntry = filteredMessageDependency.getEndMessageDependency().getBeginSendEntry();
+			boolean sameMessage = beginBeginSendEntry.getMessageId() == endBeginSendEntry.getMessageId();
 
-			String result = "Filtered " + boldStart + beginBeginSendEntry.getMessageFullName() + boldEnd + " -> " +
-				boldStart + endBeginSendEntry.getMessageFullName() + boldEnd;
-			result += " (#" + messageDependency.getCauseEventNumber() + " -> #" + messageDependency.getConsequenceEventNumber() + ")";
+			String result = "Filtered " + getMessageNameText(beginBeginSendEntry, formatted);
+            if (!sameMessage)
+                result += " -> " + getMessageNameText(endBeginSendEntry, formatted);
 
-			BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime().toBigDecimal();
-			BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime().toBigDecimal();
-			result += " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
+			if (formatted)
+			    result += getMessageDependencyEventNumbersText(messageDependency) + getSimulationTimeDeltaText(messageDependency);
 
-			return result;
+			result += getMessageIdText(beginBeginSendEntry, formatted);
+			if (!sameMessage)
+			    result += " -> " + getMessageIdText(endBeginSendEntry, formatted);
+			
+            if (formatted) {
+                if (!sameMessage)
+                    result += "First: ";
+
+                result += getMessageDetailText(beginBeginSendEntry, outSizeConstraint);
+
+                if (!sameMessage) {
+                    result += "Last: ";
+                    result += getMessageDetailText(endBeginSendEntry, outSizeConstraint);
+                }
+            }
+
+            return result;
 		}
 		else {
 			BeginSendEntry beginSendEntry = messageDependency.getBeginSendEntry();
-			String result = (messageDependency.getIsReuse() ? "Reusing " : "Sending ");
+			String result = (messageDependency.getIsReuse() ? "Reusing " : "Sending ") + getMessageNameText(beginSendEntry, formatted);
 
-			String detail = beginSendEntry.getDetail();
-			if (detail == null)
-				result += "(" + beginSendEntry.getMessageClassName() + ") ";
+            if (formatted)
+	            result += getMessageDependencyEventNumbersText(messageDependency) + getSimulationTimeDeltaText(messageDependency);
+	            
+		    result += getMessageIdText(beginSendEntry, formatted);
 
-			result += boldStart + beginSendEntry.getMessageFullName() + boldEnd + " (#" + messageDependency.getCauseEventNumber() + " -> #" + messageDependency.getConsequenceEventNumber() + ")";
-
-			BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime().toBigDecimal();
-			BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime().toBigDecimal();
-			result += " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
-
-			if (formatted && detail != null) {
-				int longestLineLength = 0;
-				for (String line : detail.split("\n"))
-					longestLineLength = Math.max(longestLineLength, line.length());
-				// TODO: correct solution would be to get pre font width (monospace, 8) and consider margins too
-				outSizeConstraint.minimumWidth = longestLineLength * 8;
-				result += newLine + "<pre>" + detail + "</pre>";
-			}
+		    if (formatted)
+		        result += getMessageDetailText(beginSendEntry, outSizeConstraint);
 
 			return result;
 		}
 	}
 
+    private String getMessageDetailText(BeginSendEntry beginSendEntry, SizeConstraint outSizeConstraint) {
+        String detail = beginSendEntry.getDetail();
+
+        if (detail != null) {
+        	int longestLineLength = 0;
+        	for (String line : detail.split("\n"))
+        		longestLineLength = Math.max(longestLineLength, line.length());
+        	// TODO: correct solution would be to get pre font width (monospace, 8) and consider margins too
+        	outSizeConstraint.minimumWidth = longestLineLength * 8;
+        	return "<br/><pre>" + detail + "</pre>";
+        }
+        else
+            return "";
+    }
+
+    private String getMessageDependencyEventNumbersText(IMessageDependency messageDependency) {
+        return " (#" + messageDependency.getCauseEventNumber() + " -> #" + messageDependency.getConsequenceEventNumber() + ")";
+    }
+
+    private String getMessageNameText(BeginSendEntry beginSendEntry, boolean formatted) {
+        String boldStart = formatted ? "<b>" : "";
+        String boldEnd = formatted ? "</b>" : "";
+        return "(" + beginSendEntry.getMessageClassName() + ") " + boldStart + beginSendEntry.getMessageFullName() + boldEnd;
+    }
+
+    private String getSimulationTimeDeltaText(IMessageDependency messageDependency) {
+        BigDecimal causeSimulationTime = messageDependency.getCauseSimulationTime().toBigDecimal();
+        BigDecimal consequenceSimulationTime = messageDependency.getConsequenceSimulationTime().toBigDecimal();
+        return " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
+    }
+
+    private String getMessageIdText(BeginSendEntry beginSendEntry, boolean formatted) {
+        int messageId = beginSendEntry.getMessageId();
+        String result = " (id = " + messageId;
+
+        if (formatted) {
+            int messageTreeId = beginSendEntry.getMessageTreeId();
+            if (messageTreeId != -1 && messageTreeId != messageId)
+                result += ", tree id = " + messageTreeId;
+            
+            int messageEncapsulationId = beginSendEntry.getMessageEncapsulationId();
+            if (messageEncapsulationId != -1 && messageEncapsulationId != messageId)
+                result += ", encapsulation id = " + messageEncapsulationId;
+
+            int messageEncapsulationTreeId = beginSendEntry.getMessageEncapsulationTreeId();
+            if (messageEncapsulationTreeId != -1 && messageEncapsulationTreeId != messageEncapsulationId)
+                result += ", encapsulation tree id = " + messageEncapsulationTreeId;
+        }
+
+        result += ")";
+        return result;
+    }
+
 	/**
 	 * Returns a descriptive message for the IEvent to be presented to the user.
 	 */
-	public String getEventText(IEvent event, boolean formatted) {
+	public String getEventText(IEvent event, boolean formatted, SizeConstraint outSizeConstraint) {
 		String boldStart = formatted ? "<b>" : "";
 		String boldEnd = formatted ? "</b>" : "";
 
 		ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(event.getModuleId());
-		String result = "Event #" + event.getEventNumber() + " at t = " + event.getSimulationTime() +
-			" in module (" + moduleCreatedEntry.getModuleClassName() + ") " + boldStart + moduleCreatedEntry.getFullName() + boldEnd +
-			" (id = " + event.getModuleId() + ")";
+		String result = "Event #" + event.getEventNumber();
+
+		if (formatted)
+		    result += " at t = " + event.getSimulationTime();
+
+		String moduleName = (formatted ? eventLogInput.getEventLogTableFacade().EventLogEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()) : moduleCreatedEntry.getFullName());
+		result += " in module (" + moduleCreatedEntry.getModuleClassName() + ") " +  boldStart + moduleName + boldEnd + " (id = " + event.getModuleId() + ")";
 
 		IMessageDependency messageDependency = event.getCause();
 		BeginSendEntry beginSendEntry = null;
@@ -3139,10 +3202,12 @@ public class SequenceChart
 			messageDependency = ((FilteredMessageDependency)messageDependency).getEndMessageDependency();
 
 		if (messageDependency != null)
-			messageDependency.getBeginSendEntry();
+		    beginSendEntry = messageDependency.getBeginSendEntry();
 
-		if (beginSendEntry != null)
-			result += "  message (" + beginSendEntry.getMessageClassName() + ") " + beginSendEntry.getMessageFullName();
+		if (formatted && beginSendEntry != null) {
+			result += " message (" + beginSendEntry.getMessageClassName() + ") " + boldStart + beginSendEntry.getMessageFullName() + boldEnd;
+			result += getMessageIdText(beginSendEntry, formatted);
+		}
 
 		return result;
 	}

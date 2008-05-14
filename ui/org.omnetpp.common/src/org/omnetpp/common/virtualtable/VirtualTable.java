@@ -200,11 +200,13 @@ public class VirtualTable<T>
 
 	private void createComposite(Composite parent) {
 		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+		scrolledComposite.getHorizontalBar().setIncrement(10);
 		scrolledComposite.addControlListener(new ControlAdapter() {
 			public void controlResized(ControlEvent e) {
 				composite.layout();
 		        composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 				scrolledComposite.getVerticalBar().setVisible(false);
+		        scrolledComposite.getHorizontalBar().setPageIncrement(scrolledComposite.getSize().x);
 			}
 		});
 

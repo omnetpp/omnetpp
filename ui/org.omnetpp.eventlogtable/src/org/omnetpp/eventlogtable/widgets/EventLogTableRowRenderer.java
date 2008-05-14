@@ -99,12 +99,14 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	/**
 	 * The current GC we are drawing to.
 	 */
-	protected GC gc;
+	private GC gc;
 	
 	/**
 	 * The next x position where drawing continues.
 	 */
-	protected int x;
+	private int x;
+	
+	private IEvent contextEvent;
 
 	public void setInput(Object eventLogInput) {
 		this.eventLogInput = (EventLogInput)eventLogInput;
@@ -129,9 +131,9 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		gc.setAntialias(SWT.OFF);
 
 		EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
-		Event event = eventLogEntry.getEvent();
-		int eventNumber = event.getEventNumber();
-		BigDecimal simulationTime = event.getSimulationTime();
+		contextEvent = eventLogEntry.getEvent();
+		int eventNumber = contextEvent.getEventNumber();
+		BigDecimal simulationTime = contextEvent.getSimulationTime();
 		boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
 
 		try {
@@ -179,21 +181,21 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				switch (eventLogInput.getEventLogTableFacade().getDisplayMode()) {
 					case 0:
 						if (eventLogEntry instanceof EventEntry) {
-							IMessageDependency cause = event.getCause();
+							IMessageDependency cause = contextEvent.getCause();
 				
 							drawText("Event in ", CONSTANT_TEXT_COLOR);
-							drawModuleDescription(event.getModuleId());
+							drawModuleDescription(contextEvent.getModuleId(), EventLogTableNameMode.FULL_PATH);
 							
 							BeginSendEntry beginSendEntry = cause != null ? cause.getBeginSendEntry() : null;
 							if (beginSendEntry != null) {
 								drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
 								
-								if (event.isSelfMessageProcessingEvent())
+								if (contextEvent.isSelfMessageProcessingEvent())
 									drawText("self ", CONSTANT_TEXT_COLOR);
 
 								drawMessageDescription(beginSendEntry);
 
-								if (!event.isSelfMessageProcessingEvent()) {
+								if (!contextEvent.isSelfMessageProcessingEvent()) {
 									drawText(" from ", CONSTANT_TEXT_COLOR);
 									drawModuleDescription(beginSendEntry.getContextModuleId());
 								}
@@ -214,7 +216,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								BubbleEntry bubbleEntry = (BubbleEntry)eventLogEntry;
 								drawText("Bubble", CONSTANT_TEXT_COLOR);
 
-								if (event.getModuleId() != bubbleEntry.getContextModuleId()) {
+								if (contextEvent.getModuleId() != bubbleEntry.getContextModuleId()) {
 									drawText(" in ", CONSTANT_TEXT_COLOR);
 									drawModuleDescription(bubbleEntry.getContextModuleId());
 								}
@@ -229,7 +231,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawText(" in ", CONSTANT_TEXT_COLOR);
 								drawModuleDescription(moduleMethodBeginEntry.getToModuleId());
 
-								if (event.getModuleId() != moduleMethodBeginEntry.getContextModuleId()) {
+								if (contextEvent.getModuleId() != moduleMethodBeginEntry.getContextModuleId()) {
 									drawText(" from ", CONSTANT_TEXT_COLOR);
 									drawModuleDescription(moduleMethodBeginEntry.getFromModuleId());
 								}
@@ -292,7 +294,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								ModuleDisplayStringChangedEntry moduleDisplayStringChangedEntry = (ModuleDisplayStringChangedEntry)eventLogEntry;
 								drawText("Display string changed", CONSTANT_TEXT_COLOR);
 
-								if (event.getModuleId() != moduleDisplayStringChangedEntry.getModuleId())	{
+								if (contextEvent.getModuleId() != moduleDisplayStringChangedEntry.getModuleId())	{
 									drawText(" for ", CONSTANT_TEXT_COLOR);
 									drawModuleDescription(moduleDisplayStringChangedEntry.getModuleId());
 								}
@@ -306,13 +308,13 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								BeginSendEntry beginSendEntry = findBeginSendEntry(cancelEventEntry.getPreviousEventNumber(), cancelEventEntry.getMessageId());
 
 								if (beginSendEntry == null)
-								    beginSendEntry = findBeginSendEntry(event.getEventEntry().getCauseEventNumber(), cancelEventEntry.getMessageId());
+								    beginSendEntry = findBeginSendEntry(contextEvent.getEventEntry().getCauseEventNumber(), cancelEventEntry.getMessageId());
 
 								drawMessageDescription(beginSendEntry);
 							}
 							else if (eventLogEntry instanceof BeginSendEntry) {
 								BeginSendEntry beginSendEntry = (BeginSendEntry)eventLogEntry;
-								boolean isSelfMessage = event.isSelfMessage(beginSendEntry);
+								boolean isSelfMessage = contextEvent.isSelfMessage(beginSendEntry);
 
 								if (isSelfMessage)
 								    drawText("Scheduling ", CONSTANT_TEXT_COLOR);
@@ -326,7 +328,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                                 else
                                     drawText(" arriving at ", CONSTANT_TEXT_COLOR);
                                 
-                                drawMessageArrivalTime(event.getEndSendEntry(beginSendEntry));
+                                drawMessageArrivalTime(contextEvent.getEndSendEntry(beginSendEntry));
 								drawText(" kind = ", CONSTANT_TEXT_COLOR);
 								drawText(String.valueOf(beginSendEntry.getMessageKind()), DATA_COLOR);
 								drawText(" length = ", CONSTANT_TEXT_COLOR);
@@ -358,7 +360,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								SendDirectEntry sendDirectEntry = (SendDirectEntry)eventLogEntry;
 								drawText("Sending direct message ", CONSTANT_TEXT_COLOR);
 
-								if (event.getModuleId() != sendDirectEntry.getContextModuleId())	{
+								if (contextEvent.getModuleId() != sendDirectEntry.getContextModuleId())	{
 									drawText("from ", CONSTANT_TEXT_COLOR);
 									drawModuleDescription(sendDirectEntry.getSenderModuleId());
 								}
@@ -378,7 +380,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                                 BeginSendEntry beginSendEntry = findBeginSendEntry(deleteMessageEntry.getPreviousEventNumber(), deleteMessageEntry.getMessageId());
 
                                 if (beginSendEntry == null)
-                                    beginSendEntry = findBeginSendEntry(event.getEventEntry().getCauseEventNumber(), deleteMessageEntry.getMessageId());
+                                    beginSendEntry = findBeginSendEntry(contextEvent.getEventEntry().getCauseEventNumber(), deleteMessageEntry.getMessageId());
 
 								drawMessageDescription(beginSendEntry);
 							}
@@ -442,20 +444,46 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		drawModuleDescription(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId));
 	}
 
-	private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry) {
+    private void drawModuleDescription(int moduleId, int nameMode) {
+        drawModuleDescription(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId), nameMode);
+    }
+
+    private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry) {
+        drawModuleDescription(moduleCreatedEntry, eventLogInput.getEventLogTableFacade().getNameMode());
+    }
+
+    private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry, int nameMode) {
 		drawText("module ", CONSTANT_TEXT_COLOR);
 
 		if (moduleCreatedEntry != null) {
 			drawText("(" + moduleCreatedEntry.getModuleClassName() + ") ", TYPE_COLOR);
 			
-			if (eventLogInput.getEventLogTableFacade().getNameMode() == EventLogTableNameMode.FULL_NAME)
-			    drawText(moduleCreatedEntry.getFullName(), NAME_COLOR, true);
-			else
-			    drawText(eventLogInput.getEventLogTableFacade().EventLogEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()), NAME_COLOR, true);
+			switch (nameMode) {
+                case EventLogTableNameMode.SMART_NAME:
+                    if (contextEvent.getModuleId() == moduleCreatedEntry.getModuleId())
+                        drawModuleFullName(moduleCreatedEntry);
+                    else
+                        drawModuleFullPath(moduleCreatedEntry);
+                    break;
+			    case EventLogTableNameMode.FULL_NAME:
+			        drawModuleFullName(moduleCreatedEntry);
+			        break;
+			    case  EventLogTableNameMode.FULL_PATH:
+			        drawModuleFullPath(moduleCreatedEntry);
+			        break;
+			}
 		}
 		else
 			drawText("<unknown>", NAME_COLOR, true);
 	}
+
+    private void drawModuleFullPath(ModuleCreatedEntry moduleCreatedEntry) {
+        drawText(eventLogInput.getEventLogTableFacade().EventLogEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()), NAME_COLOR, true);
+    }
+
+    private void drawModuleFullName(ModuleCreatedEntry moduleCreatedEntry) {
+        drawText(moduleCreatedEntry.getFullName(), NAME_COLOR, true);
+    }
 
 	private void drawGateDescription(int moduleId, int gateId) {
         drawGateDescription(eventLogInput.getEventLog().getGateCreatedEntry(moduleId, gateId));

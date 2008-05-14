@@ -232,7 +232,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 				// events submenu
 				for (final IEvent event : events) {
-					IMenuManager subMenuManager = new MenuManager(sequenceChart.getEventText(event, false));
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getEventText(event, false, null));
 					menuManager.add(subMenuManager);
 
 					subMenuManager.add(createCenterEventAction(event));
@@ -259,7 +259,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				// axis submenu
 				final ModuleTreeItem axisModule = sequenceChart.findAxisAt(p.y);
 				if (axisModule != null) {
-					IMenuManager subMenuManager = new MenuManager(sequenceChart.getAxisText(axisModule));
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getAxisText(axisModule, false));
 					menuManager.add(subMenuManager);
 
 					subMenuManager.add(createCenterAxisAction(axisModule));

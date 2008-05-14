@@ -646,8 +646,7 @@ public class FilterEventLogDialog
 		Arrays.sort(moduleClassNamesAsStrings);
 		moduleClassNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		moduleClassNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		for (String moduleClassName : moduleClassNamesAsStrings)
-			moduleClassNames.add(moduleClassName);
+		moduleClassNames.add(moduleClassNamesAsStrings);
 
 		// module name filter
 		panel = new Composite(parent, SWT.NONE);
@@ -729,11 +728,16 @@ public class FilterEventLogDialog
 		label = new Label(panel, SWT.NONE);
 		label.setText("The following message class names have been encountered so far:");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-		messageClassNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+
+        PStringVector names = eventLog.getMessageClassNames().keys();
+        String[] messageClassNamesAsStrings = new String[(int)names.size()];
+        for (int i = 0; i < names.size(); i++)
+            messageClassNamesAsStrings[i] = names.get(i);
+        Arrays.sort(messageClassNamesAsStrings);
+
+        messageClassNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		messageClassNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		PStringVector names = eventLog.getMessageClassNames().keys();
-		for (int i = 0; i < names.size(); i++)
-			messageClassNames.add(names.get(i));
+		messageClassNames.add(messageClassNamesAsStrings);
 
 		// message name filter
         panel = new Composite(parent, SWT.NONE);
@@ -748,11 +752,16 @@ public class FilterEventLogDialog
         label = new Label(panel, SWT.NONE);
 		label.setText("The following message names have been encountered so far:");
 		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
-		messageNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
-		messageNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        
 		names = eventLog.getMessageNames().keys();
-		for (int i = 0; i < names.size(); i++)
-			messageNames.add(names.get(i));
+		String[] messageNamesAsStrings = new String[(int)names.size()];
+        for (int i = 0; i < names.size(); i++)
+            messageNamesAsStrings[i] = names.get(i);
+        Arrays.sort(messageNamesAsStrings);
+
+        messageNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		messageNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		messageNames.add(messageNamesAsStrings);
 
 		// message id filter
 		Object[] values = createEditableList(parent, "by id");

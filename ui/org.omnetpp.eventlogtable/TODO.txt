@@ -7,6 +7,10 @@ Features:
    + log messages
    + message sends
    + other lines
+ + name mode
+   + smart name (full name if the module is not the corresponding event's module)
+   + full name
+   + full path
  + one log viewer displays the log files for multiple sequence charts according to the current selection
  + lazy single/multiple selections
    + single left click selects a single line

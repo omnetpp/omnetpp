@@ -817,7 +817,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             @Override
             public void run() {
-                eventLogTable.setNameMode((eventLogTable.getNameMode() + 1) % 2);
+                eventLogTable.setNameMode((eventLogTable.getNameMode() + 1) % 3);
                 eventLogTable.configureVerticalScrollBar();
                 update();
             }
@@ -833,8 +833,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                     menuCreator = new AbstractMenuCreator() {
                         @Override
                         protected void createMenu(Menu menu) {
-                            addSubMenuItem(menu, "Short", 0);
-                            addSubMenuItem(menu, "Full Path", 1);
+                            addSubMenuItem(menu, "Smart Name", 0);
+                            addSubMenuItem(menu, "Full Name", 1);
+                            addSubMenuItem(menu, "Full Path", 2);
                         }
     
                         private void addSubMenuItem(final Menu menu, String text, final int nameMode) {
@@ -913,7 +914,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 	
 	private EventLogTableMenuAction createFilterModeAction() {
-		return new EventLogTableMenuAction("Filter Mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
+		return new EventLogTableMenuAction("Line Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
 			private AbstractMenuCreator menuCreator;
 
 			@Override
