@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Levente Meszaros
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2006 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -27,7 +29,7 @@ NAMESPACE_BEGIN
  * Reads a file line by line. It has to be very efficient since
  * it may be used up to several gigabyte-sized files (output vector files
  * and event logs). File reading is done in large chunks, and
- * the code avoids string copying and duplicating. The in memory
+ * the code avoids string copying and duplicating. The in-memory
  * buffer must be able to contain at least two lines, therefore
  * the maximum line length is limited to buffer size divided by 2.
  *

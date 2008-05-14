@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Andras Varga
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -333,21 +335,21 @@ char *opp_concat(const char *s1,
 char *opp_strupr(char *s)
 {
     char *txt = s;
-	while(*s) {
-		*s = opp_toupper(*s); 
+    while(*s) {
+        *s = opp_toupper(*s);
         s++;
     }
-	return txt; 
+    return txt;
 }
 
 char *opp_strlwr(char *s)
 {
     char *txt = s;
-	while(*s) {
-		*s = opp_tolower(*s); 
+    while(*s) {
+        *s = opp_tolower(*s);
         s++;
     }
-	return txt; 
+    return txt;
 }
 
 std::string opp_join(const char *separator, const char *s1, const char *s2)

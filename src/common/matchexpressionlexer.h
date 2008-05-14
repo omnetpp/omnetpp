@@ -3,10 +3,12 @@
 //                 OMNeT++/OMNEST
 //              Discrete System Simulation in C++
 //
+//  Author: Tamas Borbely
+//
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -19,13 +21,17 @@
 
 NAMESPACE_BEGIN
 
-class MatchExpressionLexer {
-	private:
-		const char *input;
-		const char *ptr;
-	public:
-		MatchExpressionLexer(const char *input);
-		int getNextToken(char **valuep);
+/**
+ * Handcoded lexer, because Flex-generated one was not reentrant.
+ */
+class MatchExpressionLexer
+{
+    private:
+        const char *input;
+        const char *ptr;
+    public:
+        MatchExpressionLexer(const char *input);
+        int getNextToken(char **valuep);
 };
 
 NAMESPACE_END

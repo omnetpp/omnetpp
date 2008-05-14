@@ -3,10 +3,12 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
+//  Author: Andras Varga
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -21,7 +23,7 @@
 NAMESPACE_BEGIN
 
 /**
- * Unit conversion utilities. This class has built-in knowledge of some 
+ * Unit conversion utilities. This class has built-in knowledge of some
  * physical units (seconds, watts, etc); see internal unitTable[].
  */
 class COMMON_API UnitConversion
@@ -49,12 +51,12 @@ class COMMON_API UnitConversion
 
     /**
      * Converts a quantity given as string to a double, and returns it, together
-     * with the unit it was given in. If there are several numbers and units 
+     * with the unit it was given in. If there are several numbers and units
      * (see syntax), everything is converted into the last unit.
-     * 
-     * Syntax: <number> | (<number> <unit>)+ 
-     * 
-     * If there's a syntax error, or if unit mismatch is found (i.e. distance 
+     *
+     * Syntax: <number> | (<number> <unit>)+
+     *
+     * If there's a syntax error, or if unit mismatch is found (i.e. distance
      * is given instead of time), the method throws an exception.
      */
     static double parseQuantity(const char *str, std::string& outActualUnit);
@@ -84,7 +86,7 @@ class COMMON_API UnitConversion
 
     /**
      * Converts the given value with unit into the given target unit.
-     * Throws an error if the conversion is not possible. 
+     * Throws an error if the conversion is not possible.
      */
     static double convertUnit(double d, const char *unit, const char *targetUnit);
 };
