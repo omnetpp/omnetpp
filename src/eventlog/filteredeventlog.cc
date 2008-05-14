@@ -468,16 +468,24 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
 {
     Assert(event);
 
+    // optimization
     if (forward) {
-        if (firstMatchingEvent && event->getEventNumber() < firstMatchingEvent->getEventNumber())
-            return firstMatchingEvent;
+        if (firstMatchingEvent && event->getEventNumber() < firstMatchingEvent->getEventNumber()) {
+            if (stopEventNumber != -1 || stopEventNumber < firstMatchingEvent->getEventNumber())
+                return NULL;
+            else
+                return firstMatchingEvent;
+        }
 
         if (firstEventNumber != -1 && event->getEventNumber() < firstEventNumber)
             event = eventLog->getEventForEventNumber(firstEventNumber, LAST_OR_NEXT);
     }
     else {
         if (lastMatchingEvent && lastMatchingEvent->getEventNumber() < event->getEventNumber())
-            return lastMatchingEvent;
+            if (stopEventNumber != -1 || lastMatchingEvent->getEventNumber() < stopEventNumber)
+                return NULL;
+            else
+                return lastMatchingEvent;
 
         if (lastEventNumber != -1 && lastEventNumber < event->getEventNumber())
             event = eventLog->getEventForEventNumber(lastEventNumber, FIRST_OR_PREVIOUS);
