@@ -9,7 +9,8 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -19,7 +20,7 @@
 /**
  * @mainpage  \opp API Reference
  * <img src="http://omnetpp.org/doc/omnetpp/4.0/opp_logo.gif" border="0" width="24" height="24" alt="">
- * If you are new to \opp, a good starting point for browsing 
+ * If you are new to \opp, a good starting point for browsing
  * the documentation is cSimpleModule.
  *
  * Otherwise, pick one of the following categories, or choose from the
@@ -81,7 +82,7 @@
  *    - cPacketQueue: a queue specialized for message objects (cMessage)
  *    - cArray: a dynamic array
  *
- * In addition, one can also use standard C++ container classes like 
+ * In addition, one can also use standard C++ container classes like
  * std::vector or std::map. Note that these containers won't show up
  * in Tkenv's inspectors unless you use the WATCH_VECTOR(), WATCH_MAP()
  * macros.

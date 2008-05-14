@@ -6,7 +6,8 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -39,12 +40,12 @@ SIM_API extern cGlobalRegistrationList classDescriptors;///< List of all class d
 SIM_API extern cGlobalRegistrationList configKeys;      ///< List of supported configuration keys (cConfigKey)
 
 
-/** 
- * 
- * @addtogroup Functions 
+/**
+ *
+ * @addtogroup Functions
  */
 //@{
-   
+
 /**
  * DEPRECATED. Use cComponentType::find() instead.
  */

@@ -9,7 +9,8 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2005 Andras Varga
+  Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -110,17 +111,17 @@ class SIM_API opp_string
      * Comparison.
      */
     bool operator<(const opp_string& s) const  {return opp_strcmp(str,s.str) < 0;}
-    
+
     /**
      * Concatenation
      */
     opp_string& operator+=(const char *s) {return operator=(std::string(str).append(s));}
-    
+
     /**
      * Concatenation
      */
     opp_string& operator+=(const opp_string& s) {operator+=(s.str); return *this;}
-    
+
     /**
      * Concatenation
      */

@@ -4,12 +4,15 @@
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
-//   Written by:  Andras Varga, 2005
+//  Author: Andras Varga, 2005
+//          Dept. of Electrical and Computer Systems Engineering,
+//          Monash University, Melbourne, Australia
 //
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2005 Andras Varga
+  Copyright (C) 2005-2008 Andras Varga
+  Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -43,7 +46,7 @@
 #define SOCKETERR(x)  WS#x
 inline int sock_errno()  {return WSAGetLastError();}
 
-// Shutdown mode constants are named differently (and only in winsock2.h 
+// Shutdown mode constants are named differently (and only in winsock2.h
 // which we don't want to pull in)
 #define SHUT_RD   0x00  // as SD_RECEIVE in winsock2.h
 #define SHUT_WR   0x01  // as SD_SEND in winsock2.h
