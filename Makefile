@@ -115,17 +115,14 @@ check-env:
 	if (echo '#!/bin/sh' >$(OMNETPP_BIN_DIR)/$$probefile && \
 	    chmod +x $(OMNETPP_BIN_DIR)/$$probefile) 2>/dev/null; then \
 	  if $$probefile >/dev/null 2>/dev/null; then :; else \
-	    echo '  *** Warning: $(OMNETPP_BIN_DIR) is not in the path, some components may not build!'; \
+	    echo '  *** ERROR: $(OMNETPP_BIN_DIR) is not in the path! You can add it by entering: export PATH=$PATH:$(OMNETPP_BIN_DIR)'; \
+	    exit 1; \
 	  fi; \
 	else \
-	  echo '  *** Warning: Cannot write to $(OMNETPP_BIN_DIR), does it exist?'; \
+	  echo '  *** ERROR: Cannot write to $(OMNETPP_BIN_DIR)! Please make sure it exists, and has write permission.'; \
+	  exit 1; \
 	fi; \
 	rm -f $(OMNETPP_BIN_DIR)/$$probefile; \
-	if uname | grep "CYGWIN" >/dev/null; then :; else \
-	  if echo $$LD_LIBRARY_PATH | grep "$(OMNETPP_LIB_DIR)" >/dev/null; then :; else \
-	    echo '  *** Warning: Looks like $(OMNETPP_LIB_DIR) is not in LD_LIBRARY_PATH, shared libs may not work!'; \
-	  fi; \
-	fi
 
 clean:
 	-rm -f $(OMNETPP_LIB_DIR)/*.*
