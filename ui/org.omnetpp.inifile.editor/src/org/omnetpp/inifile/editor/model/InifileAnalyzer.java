@@ -706,12 +706,28 @@ public class InifileAnalyzer {
 			Stack<SubmoduleElementEx> pathModules = new Stack<SubmoduleElementEx>();
 			Stack<String> fullPathStack = new Stack<String>();
 
-			public void enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
+			public boolean enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
 				pathModules.push(submodule);
 				fullPathStack.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
-				String submoduleFullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
-				SubmoduleElementEx[] pathModulesArray = pathModules.toArray(new SubmoduleElementEx[]{});
-				resolveModuleParameters(list, submoduleFullPath, pathModulesArray, submoduleType, sectionChain, doc);
+
+				// skip this and submodules if vector size is known to be zero
+				String vectorSize = submodule.getVectorSize();
+                boolean isZeroSizedVector = false;
+                if (!StringUtils.isEmpty(vectorSize)) {
+                    if (vectorSize.equals("0"))
+                        isZeroSizedVector = true;
+                    else if (vectorSize.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {  //XXX performance (precompile regex!)
+                        //TODO look up parameter, and check if it's zero
+                    }
+                }
+
+                // resolve parameters
+                if (!isZeroSizedVector) {
+                    String submoduleFullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
+                    SubmoduleElementEx[] pathModulesArray = pathModules.toArray(new SubmoduleElementEx[]{}); //XXX performance: toArray needed?
+                    resolveModuleParameters(list, submoduleFullPath, pathModulesArray, submoduleType, sectionChain, doc);
+                }
+				return !isZeroSizedVector;
 			}
 			public void leave() {
 				fullPathStack.pop();

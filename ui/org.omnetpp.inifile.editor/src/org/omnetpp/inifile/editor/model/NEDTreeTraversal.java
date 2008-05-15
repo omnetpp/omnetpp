@@ -62,10 +62,10 @@ public class NEDTreeTraversal {
 	protected void doTraverse(SubmoduleElementEx module, INEDTypeInfo moduleEffectiveType) {
 		// enter module
 		visitedTypes.push(moduleEffectiveType);
-		visitor.enter(module, moduleEffectiveType);
+		boolean recurse = visitor.enter(module, moduleEffectiveType);
 
 		// traverse submodules
-		if (moduleEffectiveType.getNEDElement() instanceof CompoundModuleElementEx) {
+		if (recurse && moduleEffectiveType.getNEDElement() instanceof CompoundModuleElementEx) {
 			for (SubmoduleElementEx submodule : moduleEffectiveType.getSubmodules().values()) {
 				// dig out type info (NED declaration)
 				String submoduleTypeName = resolveEffectiveTypeName(submodule);
