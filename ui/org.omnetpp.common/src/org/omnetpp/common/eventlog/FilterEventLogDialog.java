@@ -535,19 +535,13 @@ public class FilterEventLogDialog
         collectMessageReuses.setToolTipText("Message reuses will be followed when collecting dependencies between events far away on the consequence chain");
         collectMessageReuses.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
-        Label label = new Label(panel, SWT.NONE);
-        label.setText("Maximum number of message dependencies:");
-        label.setToolTipText("Collecting message dependencies will stop at this limit for each event");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        Label label = createLabel(panel, "Maximum number of message dependencies:", "Collecting message dependencies will stop at this limit for each event", 1);
         
         maximumNumberOfMessageDependencies = new Text(panel, SWT.BORDER);
         maximumNumberOfMessageDependencies.setToolTipText(label.getToolTipText());
         maximumNumberOfMessageDependencies.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-        label = new Label(panel, SWT.NONE);
-        label.setText("Maximum depth of message dependencies:");
-        label.setToolTipText("Collecting message dependencies will not look deeper into the cause/consequence chain than this limit");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        label = createLabel(panel, "Maximum depth of message dependencies:", "Collecting message dependencies will not look deeper into the cause/consequence chain than this limit", 1);
 
         maximumDepthOfMessageDependencies = new Text(panel, SWT.BORDER);
         maximumDepthOfMessageDependencies.setToolTipText(label.getToolTipText());
@@ -558,8 +552,7 @@ public class FilterEventLogDialog
 	
 	private GenericTreeNode createGeneralFilterTreeNode(Composite parent) {
 	    // generic filter
-	    Label label = new Label(parent, SWT.NONE);
-        label.setText("Filter for a range of events");
+	    Label label = createLabel(parent, "Filter for a range of events", null, 1);
 	    FilterDialogTreeNode generalFilter = new FilterDialogTreeNode("General filter", label);
 
 		// event number filter
@@ -574,19 +567,13 @@ public class FilterEventLogDialog
             }
         });
 
-		label = new Label(panel, SWT.NONE);
-		label.setText("Lower event number limit:");
-		label.setToolTipText("Events with event number less than the provided will be filtered out");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		label = createLabel(panel, "Lower event number limit:", "Events with event number less than the provided will be filtered out", 1);
 		
 		lowerEventNumberLimit = new Text(panel, SWT.BORDER);
 		lowerEventNumberLimit.setToolTipText(label.getToolTipText());
 		lowerEventNumberLimit.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		label = new Label(panel, SWT.NONE);
-		label.setText("Upper event number limit:");
-		label.setToolTipText("Events with event number greater than the provided will be filtered out");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		label = createLabel(panel, "Upper event number limit:", "Events with event number greater than the provided will be filtered out", 1);
 
 		upperEventNumberLimit = new Text(panel, SWT.BORDER);
 		upperEventNumberLimit.setToolTipText(label.getToolTipText());
@@ -603,19 +590,13 @@ public class FilterEventLogDialog
             }
         });
 		
-		label = new Label(panel, SWT.NONE);
-		label.setText("Lower simulation time limit in seconds:");
-		label.setToolTipText("Events occured before this simulation time will be filtered out from the result");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		label = createLabel(panel, "Lower simulation time limit in seconds:", "Events occured before this simulation time will be filtered out from the result", 1);
 		
 		lowerSimulationTimeLimit = new Text(panel, SWT.BORDER);
 		lowerSimulationTimeLimit.setToolTipText(label.getToolTipText());
 		lowerSimulationTimeLimit.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		label = new Label(panel, SWT.NONE);
-		label.setText("Upper simulation time limit in seconds:");
-		label.setToolTipText("Events occured after this simulation time will be filtered out from the result");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		label = createLabel(panel, "Upper simulation time limit in seconds:", "Events occured after this simulation time will be filtered out from the result", 1);
 
 		upperSimulationTimeLimit = new Text(panel, SWT.BORDER);
 		upperSimulationTimeLimit.setToolTipText(label.getToolTipText());
@@ -625,7 +606,7 @@ public class FilterEventLogDialog
 	}
 
 	private FilterDialogTreeNode createModuleFilterTreeNode(Composite parent) {
-	    // synchorinze tree state first
+	    // synchronize tree state first
         eventLogInput.synchronizeModuleTree();
 
         // module filter 
@@ -734,9 +715,7 @@ public class FilterEventLogDialog
             }
         });
 
-        label = new Label(panel, SWT.NONE);
-		label.setText("Message filter expression:");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+        label = createLabel(panel, "Message filter expression:", null, 1);
 
 		messageFilterExpression = new Text(panel, SWT.BORDER);
 		messageFilterExpression.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -752,9 +731,7 @@ public class FilterEventLogDialog
             }
         });
 
-		label = new Label(panel, SWT.NONE);
-		label.setText("The following message class names have been encountered so far:");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+		label = createLabel(panel, "The following message class names have been encountered so far:", null, 2);
 
         PStringVector names = eventLog.getMessageClassNames().keys();
         String[] messageClassNamesAsStrings = new String[(int)names.size()];
@@ -776,9 +753,7 @@ public class FilterEventLogDialog
             }            
         });
 
-        label = new Label(panel, SWT.NONE);
-		label.setText("The following message names have been encountered so far:");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 2, 1));
+        label = createLabel(panel, "The following message names have been encountered so far:", null, 2);
         
 		names = eventLog.getMessageNames().keys();
 		String[] messageNamesAsStrings = new String[(int)names.size()];
@@ -848,14 +823,9 @@ public class FilterEventLogDialog
         };
 
 
-        Label label = new Label(panel, SWT.NONE);
-        label.setText("Trace causes and/or consequences for a particular event");
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, true, false, 2, 1));
+        Label label = createLabel(panel, "Trace causes and/or consequences for a particular event", null, 2);
 
-		label = new Label(panel, SWT.NONE);
-		label.setText("Event number to be traced:");
-		label.setToolTipText("An event which is neither cause nor consequence of this event will be filtered out from the result");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		label = createLabel(panel, "Event number to be traced:", "An event which is neither cause nor consequence of this event will be filtered out from the result", 1);
 		
 		tracedEventNumber = new Text(panel, SWT.BORDER);
 		tracedEventNumber.setToolTipText(label.getToolTipText());
@@ -883,20 +853,14 @@ public class FilterEventLogDialog
 		group.setLayout(new GridLayout(2, false));
 		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
-		label = new Label(group, SWT.NONE);
-		label.setText("Cause event number delta limit:");
-		label.setToolTipText("Cause events with event number delta greater than this will be filtered out from the result");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		label = createLabel(group, "Cause event number delta limit:", "Cause events with event number delta greater than this will be filtered out from the result", 1);
 		
 		causeEventNumberDelta = new Text(group, SWT.BORDER);
 		causeEventNumberDelta.setText("1000");
 		causeEventNumberDelta.setToolTipText(label.getToolTipText());
 		causeEventNumberDelta.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		label = new Label(group, SWT.NONE);
-		label.setText("Consequence event number delta limit:");
-		label.setToolTipText("Consequence events with event number delta greater than this will be filtered out from the result");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		label = createLabel(group, "Consequence event number delta limit:", "Consequence events with event number delta greater than this will be filtered out from the result", 1);
 
 		consequenceEventNumberDelta = new Text(group, SWT.BORDER);
 		consequenceEventNumberDelta.setText("1000");
@@ -909,25 +873,27 @@ public class FilterEventLogDialog
 		group.setLayout(new GridLayout(2, false));
 		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 
-		label = new Label(group, SWT.NONE);
-		label.setText("Cause simulation time delta limit in seconds:");
-		label.setToolTipText("Cause events occured before this simulation time delta will be filtered out from the result");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		label = createLabel(group, "Cause simulation time delta limit in seconds:", "Cause events occured before this simulation time delta will be filtered out from the result", 1);
 		
 		causeSimulationTimeDelta = new Text(group, SWT.BORDER);
 		causeSimulationTimeDelta.setToolTipText(label.getToolTipText());
 		causeSimulationTimeDelta.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		label = new Label(group, SWT.NONE);
-		label.setText("Consequence simulation time delta limit in seconds:");
-		label.setToolTipText("Consequence events occured after this simulation time delta will be filtered out from the result");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
-
+		label = createLabel(group, "Consequence simulation time delta limit in seconds:", "Consequence events occured after this simulation time delta will be filtered out from the result", 1);
+		
 		consequenceSimulationTimeDelta = new Text(group, SWT.BORDER);
 		consequenceSimulationTimeDelta.setToolTipText(label.getToolTipText());
 		consequenceSimulationTimeDelta.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		
 		return enableTraceFilter;
+	}
+
+	protected Label createLabel(Composite parent, String text, String tooltip, int hspan) {
+        Label label = new Label(parent, SWT.NONE);
+        label.setText(text);
+        label.setToolTipText(tooltip);
+        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, hspan, 1));
+        return label;
 	}
 	
 	private class FilterDialogTreeNode extends GenericTreeNode {
