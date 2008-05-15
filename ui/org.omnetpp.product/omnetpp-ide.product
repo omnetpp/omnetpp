@@ -13,8 +13,9 @@
    <configIni use="custom" path="/org.omnetpp.main/config.ini"/>
 
    <launcherArgs>
-      <vmArgs>-Xms40m 
--Xmx256m</vmArgs>
+      <vmArgs>-Xms64m 
+-Xmx368m
+-XX:MaxPermSize=128m</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.omnetpp.main/icons/omnest16.gif" i32="/org.omnetpp.main/icons/omnest32.gif" i48="/org.omnetpp.main/icons/omnest48.gif" i64="/org.omnetpp.main/icons/omnest64.gif" i128="/org.omnetpp.main/icons/omnest128.gif"/>
