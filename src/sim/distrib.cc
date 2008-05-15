@@ -300,7 +300,7 @@ double pareto_shifted(double a, double b, double c, int rng)
         throw cRuntimeError("pareto_shifted(): parameter a cannot be zero)");
 
     double u_pow = pow(1.0 - genk_dblrand(rng), 1.0 / a);
-    return (b - c * u_pow) / u_pow;
+    return b / u_pow - c;
 }
 
 //----------------------------------------------------------------------------
