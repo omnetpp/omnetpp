@@ -370,6 +370,19 @@ import java.lang.reflect.Constructor;
 %ignore *::printConsequence(FILE *);
 %ignore *::printMiddle(FILE *);
 
+FIX_CHARPTR_MEMBER(EventLogMessageEntry, text, Text);
+FIX_CHARPTR_MEMBER(SimulationBeginEntry, runId, RunId);
+FIX_CHARPTR_MEMBER(BubbleEntry, text, Text);
+FIX_CHARPTR_MEMBER(ModuleMethodBeginEntry, method, Method);
+FIX_CHARPTR_MEMBER(ModuleCreatedEntry, moduleClassName, ModuleClassName);
+FIX_CHARPTR_MEMBER(ModuleCreatedEntry, fullName, FullName);
+FIX_CHARPTR_MEMBER(GateCreatedEntry, name, Name);
+FIX_CHARPTR_MEMBER(ConnectionDisplayStringChangedEntry, displayString, DisplayString);
+FIX_CHARPTR_MEMBER(ModuleDisplayStringChangedEntry, displayString, DisplayString);
+FIX_CHARPTR_MEMBER(BeginSendEntry, messageClassName, MessageClassName);
+FIX_CHARPTR_MEMBER(BeginSendEntry, messageFullName, MessageFullName);
+FIX_CHARPTR_MEMBER(BeginSendEntry, detail, Detail);
+
 %include "ievent.h"
 %include "ieventlog.h"
 %include "event.h"
