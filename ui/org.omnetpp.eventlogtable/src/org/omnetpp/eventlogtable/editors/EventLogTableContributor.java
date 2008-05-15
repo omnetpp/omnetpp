@@ -94,6 +94,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	protected EventLogTableAction gotoMessageReuseAction;
 
+    protected EventLogTableAction gotoPreviousEventAction;
+
+    protected EventLogTableAction gotoNextEventAction;
+
     protected EventLogTableAction gotoPreviousModuleEventAction;
 
     protected EventLogTableAction gotoNextModuleEventAction;
@@ -124,6 +128,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		this.gotoMessageArrivalAction = createGotoMessageArrivalAction();
 		this.gotoMessageOriginAction = createGotoMessageOriginAction();
 		this.gotoMessageReuseAction = createGotoMessageReuseAction();
+        this.gotoPreviousEventAction = createGotoPreviousEventAction();
+        this.gotoNextEventAction = createGotoNextEventAction();
         this.gotoPreviousModuleEventAction = createGotoPreviousModuleEventAction();
         this.gotoNextModuleEventAction = createGotoNextModuleEventAction();
         this.toggleBookmarkAction = createToggleBookmarkAction();
@@ -178,6 +184,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		menuManager.add(gotoMessageOriginAction);
 		menuManager.add(gotoMessageReuseAction);
 		menuManager.add(separatorAction);
+        menuManager.add(gotoPreviousEventAction);
+        menuManager.add(gotoNextEventAction);
         menuManager.add(gotoPreviousModuleEventAction);
         menuManager.add(gotoNextModuleEventAction);
         menuManager.add(separatorAction);
@@ -608,6 +616,66 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 		};
 	}
+
+    private EventLogTableAction createGotoPreviousEventAction() {
+        return new EventLogTableAction("Goto Previous Event") {
+            @Override
+            public void run() {
+                gotoEventLogEntry(getPreviousEventEntry(), this, false);
+            }
+
+            @Override
+            public void update() {
+            }
+            
+            private EventLogEntry getPreviousEventEntry() {
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+
+                if (eventLogEntryReference != null) {
+                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    
+                    if (event != null) {
+                        event = event.getPreviousEvent();
+                            
+                        if (event != null)
+                            return event.getEventEntry();
+                    }
+                }
+                
+                return null;
+            }
+        };
+    }
+
+    private EventLogTableAction createGotoNextEventAction() {
+        return new EventLogTableAction("Goto Next Event") {
+            @Override
+            public void run() {
+                gotoEventLogEntry(getNextEventEntry(), this, false);
+            }
+
+            @Override
+            public void update() {
+            }
+            
+            private EventLogEntry getNextEventEntry() {
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+
+                if (eventLogEntryReference != null) {
+                    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+                    
+                    if (event != null) {
+                        event = event.getNextEvent();
+
+                        if (event != null)
+                            return event.getEventEntry();
+                    }
+                }
+                
+                return null;
+            }
+        };
+    }
 
     private EventLogTableAction createGotoPreviousModuleEventAction() {
         return new EventLogTableAction("Goto Previous Module Event") {

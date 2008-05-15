@@ -42,7 +42,9 @@ Features:
      + backward
      + continue find
      + remember find settings
-   - go to next/previous selected/marked line
+   + go to previous/next event
+   + go to previous/next event in same module
+   - go to previous/next selected/marked line
  + filter lines
    + events
    + events and messages
@@ -53,7 +55,7 @@ Features:
    - goto line puts line to a predefined position in the visible area (maybe 1/3)
  + navigation history
  + toolbar
- - property view for event log lines
+ - property view for event log lines (like raw mode)
  + viewer/editor mode
  + remember event log table position for the corresponding sequence chart,
    so when activating the sequence chart again then the event log viewer can show the last visited position
@@ -70,8 +72,8 @@ Features:
  - timeout support for long running operation
  - find reused message (infinite lookahead)
  - message reuse lookahead setting
- - display initialization entries
- - dynamic module and connection creation
+ - display initialization entries (before the very first event)
+ + dynamic module and connection creation
  - simulation time format options (123.12345, 2m 3s 123ms 450us, 123s 123ms 450us, 123.123 450, rounding for deltas?)
 
 Known bugs:

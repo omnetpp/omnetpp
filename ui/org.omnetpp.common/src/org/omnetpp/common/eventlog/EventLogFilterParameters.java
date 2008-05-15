@@ -109,6 +109,29 @@ public class EventLogFilterParameters implements Serializable {
 	public void setEventLogInput(EventLogInput eventLogInput) {
 		this.eventLogInput = eventLogInput;
 	}
+	
+    public boolean isAnyEventFilterEnabled() {
+        return enableEventNumberFilter || enableSimulationTimeFilter;
+    }
+
+    public boolean isAnyMessageFilterEnabled() {
+        return enableMessageFilter &&
+            (enableMessageExpressionFilter ||
+             enableMessageClassNameFilter ||
+             enableMessageNameFilter ||
+             enableMessageIdFilter ||
+             enableMessageTreeIdFilter ||
+             enableMessageEncapsulationIdFilter ||
+             enableMessageEncapsulationTreeIdFilter);
+    }
+
+    public boolean isAnyModuleFilterEnabled() {
+        return enableModuleFilter &&
+            (enableModuleExpressionFilter ||
+             enableModuleClassNameFilter ||
+             enableModuleNameFilter ||
+             enableModuleIdFilter);
+    }
 
 	public int getFirstEventNumber() {
 		IEventLog eventLog = eventLogInput.getEventLog();

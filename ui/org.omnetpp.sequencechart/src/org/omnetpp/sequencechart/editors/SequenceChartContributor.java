@@ -732,62 +732,67 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					}
 				};
 			}
-
-			private void removeFilter() {
-				final EventLogInput eventLogInput = sequenceChart.getInput();
-				final boolean wasCanceled = eventLogInput.isCanceled();
-
-				eventLogInput.runWithProgressMonitor(new Runnable() {
-					public void run() {
-						double[] leftRightSimulationTimes = null;
-
-						if (!wasCanceled)
-							leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
-
-						eventLogInput.removeFilter();
-						sequenceChart.setInput(eventLogInput);
-
-						if (leftRightSimulationTimes != null)
-							sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
-						else
-							sequenceChart.scrollToBegin();
-
-						update();
-					}					
-				});
-			}
-
+			
 			private void filter() {
-				final EventLogInput eventLogInput = sequenceChart.getInput();
-				final boolean wasCanceled = eventLogInput.isCanceled();
-				EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
-				FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
+                EventLogInput eventLogInput = sequenceChart.getInput();
+                EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
+                FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
 
-				if (dialog.open() == Window.OK) {
-					eventLogInput.runWithProgressMonitor(new Runnable() {
-						public void run() {
-							double[] leftRightSimulationTimes = null;
-							
-							if (!wasCanceled)
-								leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
-		
-							eventLogInput.filter();
-							sequenceChart.setInput(eventLogInput);
-		
-							if (leftRightSimulationTimes != null)
-								sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
-							else
-								sequenceChart.scrollToBegin();
-		
-							update();
-						}
-					});
-				}
+                if (dialog.open() == Window.OK)
+                    SequenceChartContributor.this.filter();
 			}
 		};
 	}
 
-	private StatusLineContributionItem createFilterStatus() {
+    private void removeFilter() {
+        final EventLogInput eventLogInput = sequenceChart.getInput();
+        final boolean wasCanceled = eventLogInput.isCanceled();
+
+        eventLogInput.runWithProgressMonitor(new Runnable() {
+            public void run() {
+                double[] leftRightSimulationTimes = null;
+
+                if (!wasCanceled)
+                    leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
+
+                eventLogInput.removeFilter();
+                sequenceChart.setInput(eventLogInput);
+
+                if (leftRightSimulationTimes != null)
+                    sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+                else
+                    sequenceChart.scrollToBegin();
+
+                update();
+            }                   
+        });
+    }
+    
+    private void filter() {
+        final EventLogInput eventLogInput = sequenceChart.getInput();
+        final boolean wasCanceled = eventLogInput.isCanceled();
+
+        eventLogInput.runWithProgressMonitor(new Runnable() {
+            public void run() {
+                double[] leftRightSimulationTimes = null;
+                
+                if (!wasCanceled)
+                    leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
+
+                eventLogInput.filter();
+                sequenceChart.setInput(eventLogInput);
+
+                if (leftRightSimulationTimes != null)
+                    sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+                else
+                    sequenceChart.scrollToBegin();
+
+                update();
+            }
+        });
+    }
+
+    private StatusLineContributionItem createFilterStatus() {
 		return new StatusLineContributionItem("Filter") {
 			@Override
 		    public void update() {
@@ -990,20 +995,25 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	}
 
 	private SequenceChartAction createFilterEventCausesConsequencesAction(final IEvent event) {
-		return new SequenceChartAction("Filter Causes/Consequences", Action.AS_PUSH_BUTTON) {
+		return new SequenceChartAction("Filter Causes/Consequences...", Action.AS_PUSH_BUTTON) {
 			@Override
 			public void run() {
-				double[] leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
-
 				EventLogInput eventLogInput = sequenceChart.getInput();
 				EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
-				filterParameters.enableTraceFilter = true;
-				filterParameters.tracedEventNumber = event.getEventNumber();
 
-				eventLogInput.filter();
+                filterParameters.enableTraceFilter = true;
+                filterParameters.tracedEventNumber = event.getEventNumber();
+				
+				if (!(eventLogInput.getEventLog() instanceof FilteredEventLog) && 
+    				(filterParameters.isAnyEventFilterEnabled() || filterParameters.isAnyMessageFilterEnabled() || filterParameters.isAnyModuleFilterEnabled())) 
+				{
+			        FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
 
-				sequenceChart.setInput(eventLogInput);
-				sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+			        if (dialog.open("Cause/consequence filter") == Window.OK)
+			            filter();
+			    }
+				else
+				    filter();
 			}
 		};
 	}

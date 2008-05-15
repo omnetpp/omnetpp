@@ -18,6 +18,8 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreePath;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.GridData;
@@ -135,6 +137,8 @@ public class FilterEventLogDialog
     private Text maximumNumberOfMessageDependencies;
 
     private Text maximumDepthOfMessageDependencies;
+
+    private String initialTreeNodeName;
 
 	public FilterEventLogDialog(Shell parentShell, EventLogInput eventLogInput, EventLogFilterParameters filterParameters) {
 		super(parentShell);
@@ -395,6 +399,11 @@ public class FilterEventLogDialog
 		
 		return moduleClassNames;
 	}
+	
+	public int open(String initialTreeNodeName) {
+	    this.initialTreeNodeName = initialTreeNodeName;
+	    return super.open();
+	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
@@ -432,7 +441,7 @@ public class FilterEventLogDialog
         panelCheckboxTree.setInput(treeRoot);
         panelCheckboxTree.expandAll();
         panelCheckboxTree.getTree().setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true));
-
+        
         panelCheckboxTree.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                 Object firstSelection = ((ITreeSelection)event.getSelection()).getFirstElement();
@@ -474,6 +483,12 @@ public class FilterEventLogDialog
                 }
             }
         });
+
+        if (initialTreeNodeName != null) {
+            for (GenericTreeNode treeNode : treeRoot.getChildren())
+                if (treeNode.getPayload().equals(initialTreeNodeName))
+                    panelCheckboxTree.setSelection(new TreeSelection(new TreePath(new Object[] {treeRoot, treeNode})));
+        }
 
 		unparseFilterParameters();
 
