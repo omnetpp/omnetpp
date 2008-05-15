@@ -15,8 +15,8 @@
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="main"/>
 <booleanAttribute key="org.eclipse.cdt.launch.ENABLE_REGISTER_BOOKKEEPING" value="false"/>
 <booleanAttribute key="org.eclipse.cdt.launch.ENABLE_VARIABLE_BOOKKEEPING" value="false"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-n ${ned_path:/queuenet} -u Tkenv "/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="out/mingw-debug/queueinglib.exe"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-n ${ned_path:/queuenet} "/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="queueinglib"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="queueinglib"/>
 <stringAttribute key="org.eclipse.cdt.launch.WORKING_DIRECTORY" value="${workspace_loc:/queuenet}"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>

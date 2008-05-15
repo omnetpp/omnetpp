@@ -18,13 +18,13 @@
 <booleanAttribute key="org.eclipse.cdt.launch.ENABLE_VARIABLE_BOOKKEEPING" value="false"/>
 <stringAttribute key="org.eclipse.cdt.launch.GLOBAL_VARIABLES" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;globalVariableList/&gt;&#10;"/>
 <stringAttribute key="org.eclipse.cdt.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;memoryBlockExpressionList/&gt;&#10;"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-c PureAlohaExperiment -n ${ned_path:/aloha} -u Cmdenv "/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-c PureAloha1 -n ${ned_path:/aloha} "/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="aloha"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="aloha"/>
 <stringAttribute key="org.eclipse.cdt.launch.WORKING_DIRECTORY" value="${workspace_loc:/aloha}"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
 <intAttribute key="org.omnetpp.launch.NUM_CONCURRENT_PROCESSES" value="1"/>
-<stringAttribute key="org.omnetpp.launch.RUN" value="*"/>
+<stringAttribute key="org.omnetpp.launch.RUN" value=""/>
 <stringAttribute key="org.omnetpp.launch.RUN.FOR_DEBUG" value="*"/>
 <booleanAttribute key="org.omnetpp.launch.SHOW_DEBUG_VIEW" value="false"/>
 </launchConfiguration>
