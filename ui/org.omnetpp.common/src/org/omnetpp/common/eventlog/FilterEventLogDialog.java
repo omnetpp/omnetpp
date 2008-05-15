@@ -610,8 +610,7 @@ public class FilterEventLogDialog
         eventLogInput.synchronizeModuleTree();
 
         // module filter 
-        Label label = new Label(parent, SWT.NONE);
-        label.setText("Filter for events occured in any of the selected modules");
+        Label label = createLabel(parent, "Filter for events occured in any of the selected modules", null, 1);
         enableModuleFilter = new FilterDialogTreeNode("Module filter", label);
 
         // expression filter
@@ -624,9 +623,7 @@ public class FilterEventLogDialog
             }
         });
 
-		label = new Label(panel, SWT.NONE);
-		label.setText("Module filter expression:");
-		label.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false));
+		label = createLabel(panel, "Module filter expression:", null, 1);
 		
 		moduleFilterExpression = new Text(panel, SWT.BORDER);
 		moduleFilterExpression.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
@@ -701,8 +698,7 @@ public class FilterEventLogDialog
 
 	private FilterDialogTreeNode createMessageFilterTreeNode(Composite parent) {
         // message filter 
-        Label label = new Label(parent, SWT.NONE);
-        label.setText("Filter for events processing a message where any of the following criteria holds");
+        Label label = createLabel(parent, "Filter for events processing a message where any of the following criteria holds", null, 1);
         enableMessageFilter = new FilterDialogTreeNode("Message filter", label);
 
 		// expression filter
