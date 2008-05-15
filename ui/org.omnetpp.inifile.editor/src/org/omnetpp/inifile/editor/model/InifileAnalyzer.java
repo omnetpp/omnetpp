@@ -704,7 +704,7 @@ public class InifileAnalyzer {
 	protected static IModuleTreeVisitor createParamCollectingNedTreeVisitor(final List<ParamResolution> list, INEDTypeResolver res, final String[] sectionChain, final IInifileDocument doc) {
 		return new IModuleTreeVisitor() {
 			Stack<SubmoduleElementEx> pathModules = new Stack<SubmoduleElementEx>();
-			Stack<String> fullPathStack = new Stack<String>();
+			Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc) 
 
 			public boolean enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
 				pathModules.push(submodule);

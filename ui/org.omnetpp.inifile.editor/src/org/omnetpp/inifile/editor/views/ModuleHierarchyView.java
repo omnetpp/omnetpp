@@ -390,11 +390,12 @@ public class ModuleHierarchyView extends AbstractModuleView {
     		private GenericTreeNode current = root;
 			private Stack<String> fullPathStack = new Stack<String>();
 
-    		public void enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
+    		public boolean enter(SubmoduleElementEx submodule, INEDTypeInfo submoduleType) {
     			String fullName = submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule);
 				fullPathStack.push(fullName);
 				String fullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow
     			current = addTreeNode(current, fullName, fullPath, submoduleType, submodule, section, analyzer);
+    			return true;
     		}
     		public void leave() {
     			current = current.getParent();

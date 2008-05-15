@@ -461,9 +461,10 @@ public class FilterEventLogDialog
         
         panelCheckboxTree.addCheckStateListener(new ICheckStateListener() {
             public void checkStateChanged(CheckStateChangedEvent event) {
-                GenericTreeNode treeNode = (GenericTreeNode)event.getElement();
+                GenericTreeNode clickedTreeNode = (GenericTreeNode)event.getElement();
 
                 if (event.getChecked()) {
+                    GenericTreeNode treeNode = clickedTreeNode; 
                     if (treeNode.getChildCount() != 0)
                         panelCheckboxTree.setChecked(treeNode, false);
                     else {
@@ -476,7 +477,12 @@ public class FilterEventLogDialog
                     }
                 }
                 else
-                    treeNodeDeselected(new GenericTreeNode[] {treeNode});
+                    treeNodeDeselected(new GenericTreeNode[] {clickedTreeNode});
+
+                if (clickedTreeNode instanceof FilterDialogTreeNode && ((FilterDialogTreeNode)clickedTreeNode).getPanel() != null) {
+                    stackLayout.topControl = ((FilterDialogTreeNode)clickedTreeNode).getPanel();
+                    panelContainer.layout();
+                }
             }
             
             private void treeNodeDeselected(GenericTreeNode[] treeNodes) {
