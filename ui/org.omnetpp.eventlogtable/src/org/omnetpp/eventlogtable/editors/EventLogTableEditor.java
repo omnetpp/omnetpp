@@ -1,6 +1,7 @@
 package org.omnetpp.eventlogtable.editors;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
@@ -12,6 +13,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IMemento;
@@ -21,6 +23,7 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IGotoMarker;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.ShowInContext;
@@ -215,6 +218,19 @@ public class EventLogTableEditor extends EventLogEditor implements INavigationLo
 	private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {
 		public void resourceChanged(IResourceChangeEvent event) {
             try {
+                // close editor on project close
+                if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
+                    final IEditorPart thisEditor = EventLogTableEditor.this;
+                    final IResource resource = event.getResource();
+                    Display.getDefault().asyncExec(new Runnable(){
+                        public void run(){
+                            if (((FileEditorInput)thisEditor.getEditorInput()).getFile().getProject().equals(resource)) {
+                                thisEditor.getSite().getPage().closeEditor(thisEditor, true);
+                            }
+                        }            
+                    });
+                }
+
                 IResourceDelta delta = event.getDelta();
 
                 if (delta != null)

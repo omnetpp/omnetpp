@@ -464,11 +464,15 @@ public class FilterEventLogDialog
                 GenericTreeNode treeNode = (GenericTreeNode)event.getElement();
 
                 if (event.getChecked()) {
-                    while (treeNode != null) {
-                        if (treeNode instanceof FilterDialogTreeNode)
-                            ((FilterDialogTreeNode)treeNode).checkStateChanged(true);
-                        panelCheckboxTree.setChecked(treeNode, true);
-                        treeNode = treeNode.getParent();
+                    if (treeNode.getChildCount() != 0)
+                        panelCheckboxTree.setChecked(treeNode, false);
+                    else {
+                        while (treeNode != null) {
+                            if (treeNode instanceof FilterDialogTreeNode)
+                                ((FilterDialogTreeNode)treeNode).checkStateChanged(true);
+                            panelCheckboxTree.setChecked(treeNode, true);
+                            treeNode = treeNode.getParent();
+                        }
                     }
                 }
                 else

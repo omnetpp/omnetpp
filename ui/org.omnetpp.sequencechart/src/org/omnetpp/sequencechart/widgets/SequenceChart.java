@@ -1757,7 +1757,7 @@ public class SequenceChart
 			// draw rectangle before the very beginning of the simulation
 			int x = Rectangle.SINGLETON.x;
 			if (getSimulationTimeForViewportCoordinate(x) == 0) {
-				int startX = getViewportCoordinateForSimulationTime(0);
+				int startX = getViewportCoordinateForSimulationTime(0, true);
 
 				if (x != startX)
 					graphics.fillRectangle(x, Rectangle.SINGLETON.y, startX - x, Rectangle.SINGLETON.height);
@@ -2795,26 +2795,47 @@ public class SequenceChart
 	 * COORDINATE TRANSFORMATIONS
 	 */
 
-	/**
-	 * Translates viewport pixel x coordinate to simulation time.
-	 */
-	public double getSimulationTimeForViewportCoordinate(int x) {
-		return sequenceChartFacade.getSimulationTimeForTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x));
-	}
+    /**
+     * Translates viewport pixel x coordinate to simulation time lower limit.
+     */
+    public double getSimulationTimeForViewportCoordinate(int x) {
+        return getSimulationTimeForViewportCoordinate(x, false);
+    }
 
 	/**
 	 * Translates viewport pixel x coordinate to simulation time.
 	 */
-	public double getSimulationTimeForViewportCoordinate(double x) {
-		return sequenceChartFacade.getSimulationTimeForTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x));
+	public double getSimulationTimeForViewportCoordinate(int x, boolean upperLimit) {
+		return sequenceChartFacade.getSimulationTimeForTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x), upperLimit);
 	}
 
-	/**
+    /**
+     * Translates viewport pixel x coordinate to simulation time lower limit.
+     */
+    public double getSimulationTimeForViewportCoordinate(double x) {
+        return getSimulationTimeForViewportCoordinate(x, false);
+    }
+
+    /**
+	 * Translates viewport pixel x coordinate to simulation time.
+	 */
+	public double getSimulationTimeForViewportCoordinate(double x, boolean upperLimit) {
+		return sequenceChartFacade.getSimulationTimeForTimelineCoordinate(getTimelineCoordinateForViewportCoordinate(x), upperLimit);
+	}
+
+    /**
+     * Translates simulation time to viewport pixel x coordinate lower limit.
+     */
+    public int getViewportCoordinateForSimulationTime(double t) {
+        return getViewportCoordinateForSimulationTime(t, false);
+    }
+
+    /**
 	 * Translates simulation time to viewport pixel x coordinate.
 	 */
-	public int getViewportCoordinateForSimulationTime(double t) {
+	public int getViewportCoordinateForSimulationTime(double t, boolean upperLimit) {
 		Assert.isTrue(t >= 0);
-		return (int)(Math.round(sequenceChartFacade.getTimelineCoordinateForSimulationTime(t) * pixelPerTimelineCoordinate) + fixPointViewportCoordinate);
+		return (int)(Math.round(sequenceChartFacade.getTimelineCoordinateForSimulationTime(t, upperLimit) * pixelPerTimelineCoordinate) + fixPointViewportCoordinate);
 	}
 
 	/**
