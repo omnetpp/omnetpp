@@ -4,4 +4,4 @@ explicitly stated otherwise, it's safe to assume it's under GPL.
 
 emacs/         NED syntax highlight for GNU Emacs
 octave/        using Octave with OMNeT++
-
+gtk/           gtkrc file to make eclipse more compact (and usable) on GTK
