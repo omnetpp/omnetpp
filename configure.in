@@ -596,10 +596,12 @@ if test $math_ok = no; then
 fi
 
 # -lstdc++
-if test "$mingw" = "yes"; then
-   # check for shared version (on mingw)
-   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++_s, stdcpp_ok, SYS_LIBS="-lstdc++_s $SYS_LIBS")
-else
+# currently we have a modified version of mingw which has a shared stdc++ by default so the below
+# check is not needed
+#if test "$mingw" = "yes"; then
+#   # check for shared version (on mingw)
+#   OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++_s, stdcpp_ok, SYS_LIBS="-lstdc++_s $SYS_LIBS")
+#else
    OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
    if test $stdcpp_ok = no; then
       OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxx, stdcpp_ok, SYS_LIBS="-lcxx $SYS_LIBS")
@@ -607,7 +609,7 @@ else
    if test $stdcpp_ok = no; then
       OPP_CHECK_LIB(standard C++ lib, iostream, /**/, , -lcxa, stdcpp_ok, SYS_LIBS="-lcxa $SYS_LIBS")
    fi
-fi
+#fi
 if test $stdcpp_ok = no; then
    AC_MSG_ERROR([Standard C++ library -lstdc++_s or -lstdc++ or -lcxx or -lcxa not found])
 fi
