@@ -24,8 +24,13 @@ on the computer. We recommend the Sun JRE.
 
 The IDE does not need to be built by the user, it is ready to run right after
 unpacking the tarball. Native (C++) parts of the IDE have been pre-compiled 
-for the supported platforms: Linux, Win32 and OS/X. The source for these
-libraries can also be found under src/.
+for the supported platforms. The source for these libraries can also be found 
+under src/.
+
+The IDE is supported on the following platforms:
+ - Windows 32bit
+ - Linux 32/64bit (i386)
+ - Mac OS X 10.4/5 (i386/ppc)
 
 
 Starting the IDE

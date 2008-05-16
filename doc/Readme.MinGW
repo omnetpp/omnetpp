@@ -53,7 +53,7 @@ OMNeT++ 4.0 comes with a brand new IDE (based on Eclipse). You will need at leas
 Java Runtime Environment 5.0 installed on your machine.  After building the 
 libraries (see previous step) you should be able to start the IDE by typing:
 
-omnetpp
+    omnetpp
 
 NOTE: The IDE is supported ONLY on the following platforms:
  - Windows 32bit
@@ -92,8 +92,9 @@ to the lib/ and bin/ subdirs.
 
 4. Portability issues
 
-OMNeT++ has been tested with the MINGW gcc compiler. The current distribution
-contains gcc 4.2.1 version. If you get it to work with other compilers 
-(e.g. cygwin), please send a mail to the mailing list!
+OMNeT++ has been tested with the MinW gcc compiler. The current distribution
+contains gcc 4.2.1 version.
 
-5. NOTE: Microsoft Viusal C compiler is NOT supported in the free Academic Version
+Microsoft Visual C++ is not supported in the free Academic Version.
+
+
