@@ -576,7 +576,7 @@ AC_CHECK_PROG(SWIG, swig, swig, not found)
 
 if test "$SWIG" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig (optional)"
-   AC_MSG_WARN(swig not found -- it is needed only to create the OMNeT++/OMNEST IDE support library.)
+   AC_MSG_WARN(swig not found -- it is only needed to rebuild the OMNeT++/OMNEST IDE support library.)
    AC_MSG_WARN(It is available from http://www.swig.org/)
 fi
 
