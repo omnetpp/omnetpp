@@ -1,6 +1,11 @@
 What's New
 ==========
 
+OMNeT++ 4.0 beta 1
+------------------
+Nearly everything changed :) For now, see include/ChangeLog. TBD expand.
+
+
 OMNeT++ 3.4b1/b2 (Nov 2006)
 ---------------------------
 This release significantly improves Tkenv:

@@ -20,6 +20,14 @@ Legend:
 (i)     information
 
 
+OMNeT++ 4.0
+~~~~~~~~~~~
+	TBD. For now, see include/ChangeLog.
+
+OMNeT++ 3.3
+~~~~~~~~~~~
+	no changes in public APIs
+
 OMNeT++ 3.2 (Oct 2005)
 ~~~~~~~~~~~~~~~~~~~~~~
 (!)     user-written module classes: expected signature of module constructors
