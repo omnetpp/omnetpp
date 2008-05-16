@@ -1,24 +1,12 @@
 OMNeT++ Discrete Event Simulation System
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Copyright (c) 1998-2004 Andras Varga.
-
-OMNeT++ is subject to the license described in the "License" file.
-
-OMNeT++ software distribution may contain bundled 3rd party software packages
-which are subject to their own respective licenses. 3rdparty.txt lists
-such software packages.
-
-Important
-~~~~~~~~~
-If you use OMNeT++ for your research and happen to publish the results in some
-form, please include a reference to OMNeT++ and let me know.
-
-In any case, if you find OMNeT++ useful for your work, I'd be more than happy
-learn about that.
-
-What you'll find in the OMNeT++ directory
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+OMNeT++ is a public-source, component-based, modular and open-architecture
+simulation environment with strong GUI support and an embeddable simulation
+kernel. Its primary application area is the simulation of communication
+networks, but it has been successfully used in other areas like the simulation
+of IT systems, queueing networks, hardware architectures and business processes
+as well.
 
 If you installed the source distribution, the omnetpp directory on your system
 should contain the following subdirectories. (If you installed a precompiled
@@ -31,7 +19,7 @@ The simulation system itself:
     bin/           OMNeT++ executables (GNED, nedtool, etc.)
     include/       header files for simulation models
     lib/           library files
-    bitmaps/       icons that can be used in network graphics
+    images/        icons that can be used in network graphics
     doc/           manual (PDF), readme, license, etc.
       manual/      manual in HTML
       tictoc-tutorial/  introduction into using OMNeT++
@@ -39,18 +27,18 @@ The simulation system itself:
       nedxml-api/  API reference for the NEDXML library
       src/         sources of the documentation
     src/           OMNeT++ sources
-      nedc/        NED compiler, message compiler
+      nedxml/      nedtool, message compiler, NED infrastructure
       sim/         simulation kernel
         parsim/    files for distributed execution
         netbuilder/files for dynamically reading NED files
       envir/       common code for user interfaces
       cmdenv/      command-line user interface
       tkenv/       Tcl/Tk-based user interface
-      gned/        graphical NED editor
-      plove/       output vector analyzer and plotting tool
-      scalars      output scalar analyzer and plotting tool
-      nedxml/      NEDXML library
-      utils/       makefile-creator, documentation tool, etc.
+      layout/      graph layouting library
+      scave/       library for processing result files
+      eventlog/    library for processing event log files
+      common/      common utility classes
+      utils/       makefile generator and various utilities
     test/          regression test suite
       core/        regression test suite for the simulation library
       distrib/     regression test suite for built-in distributions
@@ -69,88 +57,24 @@ The contrib directory contains material from the OMNeT++ community.
       octave/    Octave scripts for result processing
       emacs/     NED syntax highlight for Emacs
 
-You may also find additional directories like msvc/, which contain
-integration components for Microsoft Visual C++, etc.
-
 
 The example programs
 ~~~~~~~~~~~~~~~~~~~~
 
-The example programs are designed to demonstrate as many of the features of
-OMNeT++ as possible. (See README file in samples/ for more info.)
-We recommend the following order to try them out:
-      nim - fifo1 - token - hist - hcube - dyna - fifo2 - fddi
-It's best to begin by running Demo, which is a tour of the other sample
-simulations.
+The example programs are designed to demonstrate many of the features of
+OMNeT++. We recommend that you try tictoc first, which also has an
+accompanying tutorial under doc/.
 
 
 Installation
 ~~~~~~~~~~~~
 If you're installing from a source distribution, please read one of the
 following files for instructions, depending on your OS and compiler:
+   Readme.MinGW   -- Windows + MinGW
    Readme.Unix    -- generic Unix/Linux
-   Readme.Cygwin  -- Cygwin on Windows
-   Readme.MSVC    -- Microsoft Visual C++ 6.0 on NT (or W2K or XP)
-For the first two, the process is not much different from the normal GNU build
-and install procedure, except that you may need to edit the configure.user file
-manually.
+   Readme.OSX     -- Mac OS/X
 
 
-Authors and contributors
-~~~~~~~~~~~~~~~~~~~~~~~~
+Enjoy.
 
-OMNeT++ has originally been developed at the Technical University of Budapest
-(BME), Department of Telecommunications (BME-HIT). The primary author is
-currently not affiliated with the University.
-
-Here's a list of the people who have or had anything to do with OMNeT++:
-
-Principal author:
-        Andras Varga            andras@omnetpp.org
-
-Advisor:
-        Gyorgy Pongor           BME-HIT, pongor@hit.bme.hu
-GNED contributions, 1998-99:
-        Istvan Pataki           BME
-        Gabor Vincze            BME
-Old NED compiler, until 1993:
-        Akos Kun                BME
-Initial revision of JAR compiler, sample simulations; summer 1995:
-        Jan Heijmans            TU Delft
-        Alex Paalvast           TU Delft
-        Robert van der Leij     TU Delft
-New feaures, testing, new examples; fall 1995:
-        Maurits Andre           TU Delft, M.J.A.Andre@twi.tudelft.nl
-        George van Montfort     TU Delft, G.P.R.vanMontfort@twi.tudelft.nl
-        Gerard van de Weerd     TU Delft, G.vandeweerd@twi.tudelft.nl
-JAR support for distributed execution:
-        Gabor Lencse            BME-HIT
-Initial revision of PVM support (as final project), spring 1996:
-        Zoltan Vass             BME-HIT
-
-I'm indebted to György Pongor for supporting my OMNeT++-related work at the
-university in many different ways, from organizing students to work on parts of
-OMNeT++ to providing web and ftp space at the university (although I'm no longer
-affiliated). Also, the original (1992) design of OMNeT++ was largely based on
-his Pascal-based simulation package called OMNeT. (The ideas of message passing,
-simple and compound modules, topology description language and coroutine-based
-programming were all taken over from the original OMNeT.)
-
-I'd like to acknowledge the help and support of several people who contributed
-(with providing their opinions, sending bug reports/fixes, etc.) to making
-OMNeT++ better and more useful for the Internet community: Richard Lyon,
-Joel Sherrill, Nimrod Mesika, Dan Talayco, Y. Ahmet Sekercioglu, Brent Weech,
-Ulrich Kaage, Balazs Kelemen, Alan Kennington, Niko De Bruyne, Mark Rahner,
-Robert Boxall, Kontogiannis Theophanis, Dario Mariani and many others.
-
-Thanks for Eric Wu (team of Y. Ahmet Sekercioglu, Monash University, Au.)
-for creating and contributing the MPI-based parallel simulation support!
-
-I'd also like to thank John Ousterhout and other developers for Tcl and Tk
-which proved to be an extemely productive environment to build user interfaces;
-to D. Richard Hipp for tree.tcl that served as a base for the tree widget in
-GNED, and to Victor Wagner for balloon.tcl.
-
-Thanks to Justin Frankel at Nullsoft for creating NSIS, the Nullsoft Installer,
-which is extremely handy for creating installers on Windows. NSIS is small,
-fast, flexible, and does its job very well.
+Andras Varga and the OMNeT++ Team.
