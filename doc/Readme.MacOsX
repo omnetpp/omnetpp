@@ -21,22 +21,23 @@ sh-like shell):
 You will need to restart the shell before proceeding (logout and login again).
 
 You should check configure.user to make sure it contains the settings
-you need however in most cases you don't need to change anything.
+you need. (In most cases you don't need to change anything.)
 
-for Mac OS X 10.5:
+For Mac OS X 10.5:
  
-1. Install XCode 3 on your machine 
-2. ./configure 
-3. make 
+    1. Install XCode 3 on your machine 
+    2. ./configure 
+    3. make 
  
-for Mac OS X 10.4:
-1. Install XCode 2.5 on your machine 
-2. Install fink on your machine (install required packages: at least  
-   bison 2.x must be present on your system) (XCode 2.x comes with bison 1.x) 
-3. The default gcc 4.0.1 compiler will not work, either upgrade to 4.2 or switch back to the 3.3 version 
-      (sudo gcc_select 3.3) 
-4. ./configure 
-5. make
+For Mac OS X 10.4:
+
+    1. Install XCode 2.5 on your machine 
+    2. Install fink on your machine (install required packages: at least  
+       bison 2.x must be present on your system) (XCode 2.x comes with bison 1.x) 
+    3. The default gcc 4.0.1 compiler will not work. Either upgrade to 4.2, or 
+       switch back to the 3.3 version (sudo gcc_select 3.3)
+    4. ./configure 
+    5. make
       
 This will create both debug and release binaries.
 
@@ -49,18 +50,22 @@ the dyna example is started by entering the following commands:
 By default the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
 
+
+
 2. Starting the IDE
 
 OMNeT++ 4.0 comes with a brand new IDE (based on Eclipse). Mac OS X already has Java 5
 installed so you should be ok. After building the libraries (see previous step) 
 you should be able to start the IDE by typing:
 
-omnetpp
+    omnetpp
 
 NOTE: The IDE is supported ONLY on the following platforms:
  - Windows 32bit
  - Linux 32/64bit (i386)
  - Mac OS X 10.4/5 (i386/ppc)
+
+
 
 3. Reconfiguring the libraries
 
@@ -91,7 +96,12 @@ If you want to create static libraries use:
 NOTE: The built libraries and programs are immediately copied 
 to the lib/ and bin/ subdirs.
 
-4. NOTE: The Tcl/Tk environment is using the native Aqua version of Tcl/Tk
-so you should see native widgets, however you may see focus problems related
-to this version. 
+
+
+4. Notes
+
+The Tcl/Tk environment is using the native Aqua version of Tcl/Tk, so you 
+will see native widgets. However, due to problems in the Tk/Aqua port,
+you may experience focus problems and other other UI quirks. We are aware
+of these problems, but have not found a workaround yet.
 
