@@ -63,6 +63,7 @@ class EVENTLOG_API EventLogFacade
         bool Event_isSelfMessageProcessingEvent(ptr_t ptr);
 
         bool EventLogEntry_isSelfMessage(ptr_t ptr);
+        int EventLogEntry_getMessageId(ptr_t ptr);
         const char *EventLogEntry_getModuleFullPath(ptr_t ptr);
 
         IMessageDependency *MessageDependency_getMessageDependency(ptr_t ptr);
@@ -73,6 +74,7 @@ class EVENTLOG_API EventLogFacade
         bool MessageDependency_isFilteredMessageDependency(ptr_t ptr);
         ptr_t MessageDependency_getCauseEvent(ptr_t ptr);
         ptr_t MessageDependency_getConsequenceEvent(ptr_t ptr);
+        ptr_t MessageDependency_getBeginSendEntry(ptr_t ptr);
         simtime_t& MessageDependency_getCauseSimulationTime(ptr_t ptr);
         simtime_t& MessageDependency_getConsequenceSimulationTime(ptr_t ptr);
 };

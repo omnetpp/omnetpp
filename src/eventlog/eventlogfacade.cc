@@ -142,6 +142,13 @@ bool EventLogFacade::EventLogEntry_isSelfMessage(ptr_t ptr)
     return beginSendEntry->getEvent()->isSelfMessage(beginSendEntry);
 }
 
+int EventLogFacade::EventLogEntry_getMessageId(ptr_t ptr)
+{
+    EVENTLOGENTRY_PTR(ptr);
+    BeginSendEntry *beginSendEntry = (BeginSendEntry *)ptr;
+    return beginSendEntry->messageId;
+}
+
 const char *EventLogFacade::EventLogEntry_getModuleFullPath(ptr_t ptr)
 {
     std::string fullPath;
@@ -204,6 +211,12 @@ ptr_t EventLogFacade::MessageDependency_getConsequenceEvent(ptr_t ptr)
 {
     MESSAGE_DEPENDENCY_PTR(ptr);
     return (ptr_t)((IMessageDependency*)ptr)->getConsequenceEvent();
+}
+
+ptr_t EventLogFacade::MessageDependency_getBeginSendEntry(ptr_t ptr)
+{
+    MESSAGE_DEPENDENCY_PTR(ptr);
+    return (ptr_t)((IMessageDependency*)ptr)->getBeginSendEntry();
 }
 
 simtime_t& EventLogFacade::MessageDependency_getCauseSimulationTime(ptr_t ptr)
