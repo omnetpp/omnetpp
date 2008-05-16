@@ -37,7 +37,7 @@ It is distributed in two packages:
   MSYS: A Minimal SYStem to allow the typical POSIX/Bourne configure script
   to execute to create a Makefile so that you can execute make.
 
-MinGW is integrates better with Windows than Cygwin: the libraries you
+MinGW integrates better with Windows than Cygwin: the libraries you
 link with and the programs it produces are ordinary Windows libraries and
 programs, there is no "emulation layer" needed. On the other hand, MSYS
 does not provide such a complete Unix environment as Cygwin. OMNeT++ supports

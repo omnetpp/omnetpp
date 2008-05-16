@@ -1,0 +1,70 @@
+The OMNeT++ IDE
+~~~~~~~~~~~~~~~
+
+
+Overview
+--------
+OMNeT++ 4.0 comes with a powerful integrated environment, based on Eclipse.
+To get a quick introduction into IDE features, watch the screencast at:
+
+    http://www.omnest.com/webdemo/ide
+
+or read 
+
+    doc/misc/omnet_4_feature_list.pdf
+
+in your OMNeT++ 4.0 installation.
+
+
+
+Requirements and Compiling
+--------------------------
+The IDE is Java-based, it requires the Java 5 or Java 6 JRE to be installed
+on the computer. We recommend the Sun JRE. 
+
+The IDE does not need to be built by the user, it is ready to run right after
+unpacking the tarball. Native (C++) parts of the IDE have been pre-compiled 
+for the supported platforms: Linux, Win32 and OS/X. The source for these
+libraries can also be found under src/.
+
+
+Starting the IDE
+----------------
+The IDE can be started with the following command:
+
+    omnetpp
+
+on all platforms.
+
+
+Feedback and error reporting
+----------------------------
+The IDE logs errors and other information to the log file at:
+
+    <your-workspace>/.metadata/.log
+
+The workspace directory is by default the samples/ subdirectory of your
+OMNeT++ installation.
+
+In addition to exception stack traces, IDE also writes into the log:
+    - user actions (menu selection, dialog navigation, etc)
+    - activation of views and editors
+    - (partial) contents of saved files
+
+This information is written into the log to help us reproduce errors, and
+also to help improve usability of the IDE by understanding how you use it.
+
+If you'd like to give us feedback about the IDE, please send us your log file.
+However:
+
+    IMPORTANT: DO NOT SEND ANY .LOG FILE THAT CONTAINS SENSITIVE DATA!
+    The log is a readable plain text file, and you can edit it to remove
+    parts that you don't want us to see.
+
+We hope to be able use the logs to fix bugs much faster, and to improve 
+the IDE.
+
+
+Best regards,
+The OMNeT++ team
+
