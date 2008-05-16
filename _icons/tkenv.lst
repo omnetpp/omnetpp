@@ -1,7 +1,6 @@
 apply.png
 revert.png
 loadned.png
-open.png
 save.png
 undo.png
 redo.png
@@ -17,8 +16,6 @@ as.png
 asgraphics.png
 asobject.png
 asoutput.png
-gates.png
-params.png
 parent.png
 redraw.png
 fes.png
@@ -27,7 +24,6 @@ find.png
 config.png
 newnet.png
 newrun.png
-rearrange.png
 restart.png
 finish.png
 findobj.png
@@ -35,7 +31,6 @@ chan_vs.png
 cogwheel_vs.png
 compound_vs.png
 placeholder_vs.png
-net_vs.png
 simple_vs.png
 message_vs.png
 queue_vs.png
