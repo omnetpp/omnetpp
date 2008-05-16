@@ -2170,14 +2170,15 @@ public class SequenceChart
 		int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 		int causeEventNumber = sequenceChartFacade.Event_getEventNumber(causeEventPtr);
 		int consequenceEventNumber = sequenceChartFacade.Event_getEventNumber(consequenceEventPtr);
-        int x1, y1 = isInitializationEvent(causeEventPtr) ? getModuleYViewportCoordinate(sequenceChartFacade.Event_getModuleId(consequenceEventPtr)) : getEventYViewportCoordinate(causeEventPtr);
-        int x2, y2 = getEventYViewportCoordinate(consequenceEventPtr);
         int invalid = -Integer.MAX_VALUE;
+        int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? getModuleYViewportCoordinate(sequenceChartFacade.Event_getModuleId(consequenceEventPtr)) : getEventYViewportCoordinate(causeEventPtr);
+        int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
         int fontHeight = font.getFontData()[0].getHeight();
 
-        // calculate horizontal coordinates based on the maximum width
+        // calculate horizontal coordinates based on timeline coordinate limit
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / pixelPerTimelineCoordinate;
-        if (startEventNumber <= causeEventNumber && causeEventNumber <= endEventNumber) {
+        if (consequenceEventNumber < startEventNumber || endEventNumber < consequenceEventNumber) {
+            // consequence event is out of drawn message dependency range 
         	x1 = getEventXViewportCoordinate(causeEventPtr);
         	double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr);
         	double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr, -Double.MAX_VALUE, causeTimelineCoordinate + timelineCoordinateLimit);
@@ -2187,8 +2188,8 @@ public class SequenceChart
   		  	else
   	        	x2 = getEventXViewportCoordinate(consequenceEventPtr);
         }
-        else {
-        	Assert.isTrue(startEventNumber <= consequenceEventNumber && consequenceEventNumber <= endEventNumber);
+        else if (causeEventNumber < startEventNumber || endEventNumber < causeEventNumber) {
+            // cause event is out of drawn message dependency range 
         	x2 = getEventXViewportCoordinate(consequenceEventPtr);
         	double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr);
         	double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr, consequenceTimelineCoordinate - timelineCoordinateLimit, Double.MAX_VALUE);
@@ -2197,6 +2198,23 @@ public class SequenceChart
   		  		x1 = invalid;
   		  	else
   	        	x1 = getEventXViewportCoordinate(causeEventPtr);
+        }
+        else {
+            // both events are inside
+            x1 = getEventXViewportCoordinate(causeEventPtr);
+            x2 = getEventXViewportCoordinate(consequenceEventPtr);
+
+            double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(causeEventPtr);
+            double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(consequenceEventPtr);
+
+            if (consequenceTimelineCoordinate - causeTimelineCoordinate > timelineCoordinateLimit) {
+                int viewportCenter = getViewportWidth() / 2;
+                
+                if (Math.abs(viewportCenter - x1) < Math.abs(viewportCenter - x2))
+                    x2 = invalid;
+                else
+                    x1 = invalid;
+            }
         }
 
         // at least one of the events must be in range
@@ -3113,7 +3131,7 @@ public class SequenceChart
 			BeginSendEntry endBeginSendEntry = filteredMessageDependency.getEndMessageDependency().getBeginSendEntry();
 			boolean sameMessage = beginBeginSendEntry.getMessageId() == endBeginSendEntry.getMessageId();
 
-			String result = "Filtered " + getMessageNameText(beginBeginSendEntry, formatted);
+			String result = "Filtered " + (messageDependency.getIsReuse() ? "reusing " : "sending ") + getMessageNameText(beginBeginSendEntry, formatted);
             if (!sameMessage)
                 result += " -> " + getMessageNameText(endBeginSendEntry, formatted);
 
