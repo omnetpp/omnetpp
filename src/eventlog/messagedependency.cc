@@ -49,6 +49,13 @@ bool IMessageDependency::corresponds(IMessageDependency *dependency1, IMessageDe
         (entry1->messageEncapsulationTreeId != -1 && entry1->messageEncapsulationTreeId == entry2->messageEncapsulationTreeId);
 }
 
+bool IMessageDependency::equals(IMessageDependency *other)
+{
+    Assert(eventLog == other->eventLog);
+
+    return other->isReuse == isReuse;
+}
+
 /**************************************************/
 
 MessageDependency::MessageDependency(IEventLog *eventLog, bool isReuse, long eventNumber, int beginSendEntryNumber)
@@ -204,7 +211,7 @@ simtime_t& MessageDependency::getConsequenceSimulationTime()
 bool MessageDependency::equals(IMessageDependency *other)
 {
     MessageDependency *otherMessageDependency = dynamic_cast<MessageDependency *>(other);
-    return otherMessageDependency &&
+    return IMessageDependency::equals(other) && otherMessageDependency &&
         getCauseEventNumber() == otherMessageDependency->getCauseEventNumber() &&
         getCauseBeginSendEntryNumber() == otherMessageDependency->getCauseBeginSendEntryNumber() &&
         getConsequenceEventNumber() == otherMessageDependency->getConsequenceEventNumber() &&
@@ -288,7 +295,7 @@ BeginSendEntry *FilteredMessageDependency::getConsequenceBeginSendEntry()
 bool FilteredMessageDependency::equals(IMessageDependency *other)
 {
     FilteredMessageDependency *otherFiltered = dynamic_cast<FilteredMessageDependency *>(other);
-    return otherFiltered &&
+    return IMessageDependency::equals(other) && otherFiltered &&
         beginMessageDependency->equals(otherFiltered->beginMessageDependency) &&
         endMessageDependency->equals(otherFiltered->endMessageDependency);
 }

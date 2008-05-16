@@ -55,7 +55,7 @@ class EVENTLOG_API IMessageDependency
         virtual BeginSendEntry *getCauseBeginSendEntry() = 0;
         virtual BeginSendEntry *getConsequenceBeginSendEntry() = 0;
 
-        virtual bool equals(IMessageDependency *other) = 0;
+        virtual bool equals(IMessageDependency *other);
 
         virtual void print(FILE *file = stdout) = 0;
         virtual const char *getClassName() = 0;
