@@ -261,12 +261,12 @@ proc waitforfocus w {
 #===================================================================
 
 proc iconbutton {w args} {
-    global fonts
+    global fonts icons
 
     if {$args=="-separator"} {
         # space between two buttons
         #frame $w -height 1 -width 4
-        frame $w -height 23 -width 2 -bd 1 -relief groove
+        button $w -image $icons(toolbarsep) -bd 0
     } {
         # button
         #eval button $w -bd 1 $args

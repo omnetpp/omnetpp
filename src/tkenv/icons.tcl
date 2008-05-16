@@ -762,3 +762,10 @@ set icons(zoomout) [image create photo -data {
     OnUTKwbM8ORgFsYRyADbo3SgHWkVkQAAAABJRU5ErkJggg==
 }]
 
+set icons(toolbarsep) [image create photo -data {
+    iVBORw0KGgoAAAANSUhEUgAAAAkAAAATCAYAAABC3CftAAAABGdBTUEAALGPC/xh
+    BQAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjA39c2BcAAAAEBJREFUKFNj
+    YKAJuHb+2P/NG1b/f//6+X+cFmzesPh/b0fVfxDAqej58+dgBf9/41FElB9G3URU
+    MDEMxnDC5XIAtLR9uTyVSNcAAAAASUVORK5CYII=
+}]
+
