@@ -179,6 +179,8 @@ Event *EventLog::getApproximateEventAt(double percentage)
         simtime_t simulationTime;
         readToEventLine(true, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
 
+        Event *event = NULL;
+
         if (lineStartOffset == -1)
             return getLastEvent();
         else

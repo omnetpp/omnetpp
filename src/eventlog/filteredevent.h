@@ -43,6 +43,21 @@ class EVENTLOG_API FilteredEvent : public IEvent
         IMessageDependencyList *causes; // the arrival message sends of messages which we send in this even and are in the filtered set
         IMessageDependencyList *consequences; // the message sends and arrivals from this event to another in the filtered set
 
+        struct BreadthSearchItem {
+            IEvent *event;
+            IMessageDependency *firstSeenMessageDependency;
+            bool effectiveIsReuse;
+            int level;
+
+            BreadthSearchItem(IEvent *event, IMessageDependency *firstSeenMessageDependency, bool effectiveIsReuse, int level)
+            {
+                this->event = event;
+                this->firstSeenMessageDependency = firstSeenMessageDependency;
+                this->effectiveIsReuse = effectiveIsReuse;
+                this->level = level;
+            }
+        };
+
     public:
         FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumber);
         ~FilteredEvent();
@@ -96,5 +111,3 @@ NAMESPACE_END
 
 
 #endif
-
-

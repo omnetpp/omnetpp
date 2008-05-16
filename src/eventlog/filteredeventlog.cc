@@ -24,7 +24,7 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     this->eventLog = eventLog;
 
     // collection limits
-    collectMessageReuses = false;
+    collectMessageReuses = true;
     maximumNumberOfCauses = maximumNumberOfConsequences = 5;
     maximumCauseDepth = maximumConsequenceDepth = 15;
 
@@ -34,7 +34,7 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     lastEventNumber = -1;
     traceCauses = true;
     traceConsequences = true;
-    traceMessageReuses = false;
+    traceMessageReuses = true;
     traceSelfMessages = true;
 
     // other filter parameters
@@ -175,7 +175,15 @@ FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
 {
     IEvent *event = eventLog->getApproximateEventAt(percentage);
 
-    return this->getMatchingEventInDirection(event, true);
+    FilteredEvent *filteredEvent = this->getMatchingEventInDirection(event, true);
+    if (filteredEvent)
+        return filteredEvent;
+
+    filteredEvent = this->getMatchingEventInDirection(event, false);
+    if (filteredEvent)
+        return filteredEvent;
+
+    return NULL;
 }
 
 FilteredEvent *FilteredEventLog::getNeighbourEvent(IEvent *event, long distance)
