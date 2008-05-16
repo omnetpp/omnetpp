@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.omnetpp.common.eventlog.EventLogFilterParameters.EnabledInt;
 import org.omnetpp.common.ui.AbstractEditableList;
 import org.omnetpp.common.ui.EditableCheckboxList;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
@@ -54,6 +56,8 @@ public class FilterEventLogDialog
 	private CheckboxTreeViewer panelCheckboxTree;
 
     private FilterDialogTreeNode enableCollectionLimits;
+
+    private FilterDialogTreeNode enableRangeFilter;
 
     private FilterDialogTreeNode enableEventNumberFilter;
 
@@ -153,12 +157,12 @@ public class FilterEventLogDialog
 	private void unparseFilterParameters() {
 		try {
 			Class<EventLogFilterParameters> clazz = EventLogFilterParameters.class;
-			
+
 			for (Field parameterField : clazz.getDeclaredFields()) {
 				if ((parameterField.getModifiers() & Modifier.PUBLIC) != 0) {
 					Class<?> parameterFieldType = parameterField.getType();
 					Field guiField = getClass().getDeclaredField(parameterField.getName());
-	
+
 					if (parameterFieldType == boolean.class) {
 					    Object guiFieldValue = guiField.get(this);
 					    boolean value = parameterField.getBoolean(filterParameters);
@@ -177,7 +181,7 @@ public class FilterEventLogDialog
 						unparseString((Text)guiField.get(this), (String)parameterField.get(filterParameters));
 					else if (parameterFieldType == int[].class) {
 						Object guiControl = guiField.get(this);
-						
+
 						if (guiControl instanceof AbstractEditableList)
 							unparseIntArray((AbstractEditableList)guiControl, (int[])parameterField.get(filterParameters));
 						else if (guiControl instanceof CheckboxTableViewer)
@@ -189,7 +193,7 @@ public class FilterEventLogDialog
 					}
 					else if (parameterFieldType == String[].class) {
 						Object guiControl = guiField.get(this);
-						
+
 						if (guiControl instanceof AbstractEditableList)
 							unparseStringArray((AbstractEditableList)guiField.get(this), (String[])parameterField.get(filterParameters));
 						else if (guiControl instanceof CheckboxTableViewer)
@@ -197,6 +201,9 @@ public class FilterEventLogDialog
 						else
 							throw new RuntimeException("Unknown gui field type");
 					}
+                    else if (parameterFieldType == EnabledInt[].class) {
+                        unparseEnabledIntArray((EditableCheckboxList)guiField.get(this), (EnabledInt[])parameterField.get(filterParameters));
+                    }
 					else
 						throw new RuntimeException("Unknown parameter field type");
 				}
@@ -207,7 +214,7 @@ public class FilterEventLogDialog
 		}
 	}
 
-	private void unparseBoolean(Button button, boolean value) {
+    private void unparseBoolean(Button button, boolean value) {
 	    button.setSelection(value);
 	}
 	
@@ -234,8 +241,10 @@ public class FilterEventLogDialog
 	private void unparseIntArray(AbstractEditableList editableList, int[] values) {
 		if (values != null) {
 			String[] stringValues = new String[values.length];
+
 			for (int i = 0; i < values.length; i++)
 				stringValues[i] = String.valueOf(values[i]);
+			
 			editableList.setItems(stringValues);
 		}
 	}
@@ -250,6 +259,16 @@ public class FilterEventLogDialog
 			checkboxTableViewer.setCheckedElements(integerValues);
 		}
 	}
+
+    private void unparseEnabledIntArray(EditableCheckboxList editableCheckboxList, EnabledInt[] enabledInts) {
+        if (enabledInts != null) {
+            for (EnabledInt enabledInt : enabledInts) {
+                String value = String.valueOf(enabledInt.value);
+                editableCheckboxList.add(value);
+                editableCheckboxList.setChecked(value, enabledInt.enabled);
+            }
+        }
+    }
 
 	private void unparseStringArray(AbstractEditableList editableList, String[] values) {
 		if (values != null)
@@ -284,7 +303,7 @@ public class FilterEventLogDialog
 				if ((parameterField.getModifiers() & Modifier.PUBLIC) != 0) {
 					Class<?> parameterFieldType = parameterField.getType();
 					Field guiField = getClass().getDeclaredField(parameterField.getName());
-	
+
 					if (parameterFieldType == boolean.class) {
 					    Object guiFieldValue = guiField.get(this);
 					    
@@ -323,6 +342,9 @@ public class FilterEventLogDialog
 						else
 							throw new RuntimeException("Unknown gui field type");
 					}
+                    else if (parameterFieldType == EnabledInt[].class) {
+                        parameterField.set(filterParameters, parseEnabledIntArray((EditableCheckboxList)guiField.get(this)));
+                    }
 					else
 						throw new RuntimeException("Unknown parameter field type");
 				}
@@ -333,7 +355,7 @@ public class FilterEventLogDialog
 		}
 	}
 
-	private boolean parseBoolean(Button button) {
+    private boolean parseBoolean(Button button) {
 		return button.getSelection();
 	}
 	
@@ -361,7 +383,7 @@ public class FilterEventLogDialog
 	
 	private int[] parseIntArray(AbstractEditableList editableList) {
 		String[] stringValues = editableList.getItems();
-		int[] intValues = new int[editableList.getItems().length];
+		int[] intValues = new int[stringValues.length];
 
 		for (int i = 0; i < stringValues.length; i++)
 			intValues[i] = Integer.parseInt(stringValues[i]);
@@ -378,6 +400,21 @@ public class FilterEventLogDialog
 		
 		return values;
 	}
+
+    private EnabledInt[] parseEnabledIntArray(EditableCheckboxList editableCheckboxList) {
+        String[] stringValues = editableCheckboxList.getItems();
+        Arrays.sort(stringValues);
+        EnabledInt[] enabledInts = new EnabledInt[stringValues.length];
+
+        for (int i = 0; i < stringValues.length; i++) {
+            String stringValue = stringValues[i];
+            enabledInts[i] = new EnabledInt();
+            enabledInts[i].value = Integer.parseInt(stringValue);
+            enabledInts[i].enabled = editableCheckboxList.getChecked(stringValue);
+        }
+
+        return enabledInts;
+    }
 
 	private String[] parseStringArray(AbstractEditableList editableList) {
 		return editableList.getItems();
@@ -435,7 +472,7 @@ public class FilterEventLogDialog
         // create tree
         GenericTreeNode treeRoot = new GenericTreeNode("root");
         treeRoot.addChild(createCollectionLimitsTreeNode(panelContainer));
-        treeRoot.addChild(createGeneralFilterTreeNode(panelContainer));
+        treeRoot.addChild(createRangeFilterTreeNode(panelContainer));
         treeRoot.addChild(createModuleFilterTreeNode(panelContainer));
         treeRoot.addChild(createMessageFilterTreeNode(panelContainer));
         treeRoot.addChild(createEventTraceFilterTreeNode(panelContainer));
@@ -566,15 +603,15 @@ public class FilterEventLogDialog
         return enableCollectionLimits;
 	}
 	
-	private GenericTreeNode createGeneralFilterTreeNode(Composite parent) {
+	private GenericTreeNode createRangeFilterTreeNode(Composite parent) {
 	    // generic filter
 	    Composite panel0 = createPanel(parent, "Range", "Choose subcategories to limit the eventlog to a range of event numbers or simulation times.", 1);
-	    FilterDialogTreeNode generalFilter = new FilterDialogTreeNode("Range", panel0);
+	    enableRangeFilter = new FilterDialogTreeNode("Range", panel0);
 
 		// event number filter
         Composite panel = createPanel(parent, "Event Number Range", "When enabled, events within the given event number range will be considered.", 2);
 
-        generalFilter.addChild(enableEventNumberFilter = new FilterDialogTreeNode("by event numbers", panel) {
+        enableRangeFilter.addChild(enableEventNumberFilter = new FilterDialogTreeNode("by event numbers", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
                 lowerEventNumberLimit.setEnabled(checked);
@@ -590,7 +627,7 @@ public class FilterEventLogDialog
 
 		// simulation time filter
 		panel = createPanel(parent, "Simulation Time Range", "When enabled, events within the given simulation time range will be considered.", 2);
-        generalFilter.addChild(enableSimulationTimeFilter = new FilterDialogTreeNode("by simulation time", panel) {
+		enableRangeFilter.addChild(enableSimulationTimeFilter = new FilterDialogTreeNode("by simulation time", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
                 lowerSimulationTimeLimit.setEnabled(checked);
@@ -604,7 +641,7 @@ public class FilterEventLogDialog
 		label = createLabel(panel, "Upper simulation time limit in seconds:", "Events occured after this simulation time will be filtered out from the result", 1);
 		upperSimulationTimeLimit = createText(panel, label.getToolTipText(), 1);
 		
-		return generalFilter;
+		return enableRangeFilter;
 	}
 
 	private FilterDialogTreeNode createModuleFilterTreeNode(Composite parent) {
@@ -779,6 +816,18 @@ public class FilterEventLogDialog
 
         final EditableCheckboxList editableList = new EditableCheckboxList(panel, SWT.NONE);
         editableList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        editableList.setAddDialogMessage("Please enter the ID");
+        editableList.setInputValidator(new IInputValidator() {
+            public String isValid(String newText) {
+                try {
+                    Integer.parseInt(newText);
+                    return null;
+                }
+                catch (NumberFormatException e) {
+                    return "Not a valid integer";
+                }
+            }
+        });
 
         FilterDialogTreeNode treeNode = new FilterDialogTreeNode("by " + label, panel) {
             @Override

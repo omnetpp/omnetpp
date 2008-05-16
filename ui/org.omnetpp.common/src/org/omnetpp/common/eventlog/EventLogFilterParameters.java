@@ -15,7 +15,9 @@ public class EventLogFilterParameters implements Serializable {
 	private transient EventLogInput eventLogInput;
     
     public boolean enableCollectionLimits;
-	
+
+    public boolean enableRangeFilter;
+
 	public boolean enableEventNumberFilter;
 
 	public boolean enableSimulationTimeFilter;
@@ -62,7 +64,7 @@ public class EventLogFilterParameters implements Serializable {
 
 	public boolean traceConsequences = true;
 
-	public boolean traceMessageReuses = false;
+	public boolean traceMessageReuses = true;
 
 	public boolean traceSelfMessages = true;
 
@@ -87,20 +89,28 @@ public class EventLogFilterParameters implements Serializable {
 	public String[] messageNames;
 
 	public String messageFilterExpression;
+	
+	public EnabledInt[] messageIds;
 
-	public int[] messageIds;
+    public EnabledInt[] messageTreeIds;
 
-	public int[] messageTreeIds;
+    public EnabledInt[] messageEncapsulationIds;
 
-	public int[] messageEncapsulationIds;
+    public EnabledInt[] messageEncapsulationTreeIds;
 
-	public int[] messageEncapsulationTreeIds;
-
-	public boolean collectMessageReuses = false;
+    public boolean collectMessageReuses = true;
     
     public int maximumNumberOfMessageDependencies = 5;
 	
 	public int maximumDepthOfMessageDependencies = 15;
+	
+	public static class EnabledInt implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public boolean enabled;
+
+	    public int value;
+	}
 
 	public EventLogFilterParameters(EventLogInput eventLogInput) {
 		this.eventLogInput = eventLogInput;
@@ -228,28 +238,28 @@ public class EventLogFilterParameters implements Serializable {
 		return createStringVector(messageNames);
 	}
 
-	public LongVector getMessageIds() {
+	public LongVector getSelectedMessageIds() {
 		if (enableMessageIdFilter)
 			return createLongVector(messageIds);
 		else
 			return new LongVector();
 	}
 
-	public LongVector getMessageTreeIds() {
+	public LongVector getSelectedMessageTreeIds() {
 		if (enableMessageTreeIdFilter)
 			return createLongVector(messageTreeIds);
 		else
 			return new LongVector();
 	}
 
-	public LongVector getMessageEncapsulationIds() {
+	public LongVector getSelectedMessageEncapsulationIds() {
 		if (enableMessageEncapsulationIdFilter)
 			return createLongVector(messageEncapsulationIds);
 		else
 			return new LongVector();
 	}
 
-	public LongVector getMessageEcapsulationTreeIds() {
+	public LongVector getSelectedMessageEcapsulationTreeIds() {
 		if (enableMessageEncapsulationTreeIdFilter)
 			return createLongVector(messageEncapsulationTreeIds);
 		else
@@ -265,11 +275,12 @@ public class EventLogFilterParameters implements Serializable {
 		return vector;
 	}
 
-	public LongVector createLongVector(int[] ids) {
+	public LongVector createLongVector(EnabledInt[] ids) {
 		LongVector vector = new LongVector();
 		
-		for (int id : ids)
-			vector.add(id);
+		for (EnabledInt id : ids)
+		    if (id.enabled)
+		        vector.add(id.value);
 
 		return vector;
 	}

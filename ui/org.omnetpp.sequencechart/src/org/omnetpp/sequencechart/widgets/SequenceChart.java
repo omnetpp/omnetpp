@@ -979,7 +979,8 @@ public class SequenceChart
 		eventLogInput.runWithProgressMonitor(new Runnable() {
 			public void run() {
 				if (!Double.isNaN(endSimulationTime) && startSimulationTime != endSimulationTime) {
-					double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(endSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
+				    double safeEndSimulationTime = Math.min(endSimulationTime, eventLog.getLastEvent().getSimulationTime().doubleValue());
+					double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(safeEndSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
 
 					if (timelineUnitDelta > 0)
 						setPixelPerTimelineCoordinate(getViewportWidth() / timelineUnitDelta);

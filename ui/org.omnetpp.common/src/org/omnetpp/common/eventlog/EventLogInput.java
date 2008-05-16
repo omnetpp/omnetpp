@@ -325,16 +325,16 @@ public class EventLogInput
                 filteredEventLog.setMessageNames(eventLogFilterParameters.getMessageNames());
 
             if (eventLogFilterParameters.enableMessageIdFilter)
-                filteredEventLog.setMessageIds(eventLogFilterParameters.getMessageIds());
+                filteredEventLog.setMessageIds(eventLogFilterParameters.getSelectedMessageIds());
             
             if (eventLogFilterParameters.enableMessageTreeIdFilter)
-                filteredEventLog.setMessageTreeIds(eventLogFilterParameters.getMessageTreeIds());
+                filteredEventLog.setMessageTreeIds(eventLogFilterParameters.getSelectedMessageTreeIds());
 
             if (eventLogFilterParameters.enableMessageEncapsulationIdFilter)
-                filteredEventLog.setMessageEncapsulationIds(eventLogFilterParameters.getMessageEncapsulationIds());
+                filteredEventLog.setMessageEncapsulationIds(eventLogFilterParameters.getSelectedMessageEncapsulationIds());
 
             if (eventLogFilterParameters.enableMessageEncapsulationTreeIdFilter)
-                filteredEventLog.setMessageEncapsulationTreeIds(eventLogFilterParameters.getMessageEcapsulationTreeIds());
+                filteredEventLog.setMessageEncapsulationTreeIds(eventLogFilterParameters.getSelectedMessageEcapsulationTreeIds());
 		}
 
 		// store event log
@@ -358,9 +358,6 @@ public class EventLogInput
 			if (manager.hasProperty(file, STATE_PROPERTY)) {
 				eventLogFilterParameters = (EventLogFilterParameters)manager.getProperty(file, STATE_PROPERTY);
 				eventLogFilterParameters.setEventLogInput(this);
-				// TODO: we should not filter unconditionally
-				// TODO: what if filter is broken? (e.g. timeout) rather let the user decide
-				// filter();
 			}
 		}
 		catch (Exception e) {

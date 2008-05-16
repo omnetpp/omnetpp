@@ -36,29 +36,47 @@ public class PersistentResourcePropertyManager {
 		throws FileNotFoundException, IOException, ClassNotFoundException
 	{
 		String fileName = getPropertyFileName(resource, key);
-		FileInputStream fileStream = new FileInputStream(fileName);
-		ObjectInputStream stream = classLoader == null ? new ObjectInputStream(fileStream) : new ObjectInputStreamWithClassLoader(fileStream, classLoader);
-		Object object = stream.readObject();
-		stream.close();
-		
-		return object;
+		FileInputStream fileStream = null;
+		ObjectInputStream stream = null;
+
+		try {
+    		fileStream = new FileInputStream(fileName);
+    		stream = classLoader == null ? new ObjectInputStream(fileStream) : new ObjectInputStreamWithClassLoader(fileStream, classLoader);
+    		Object object = stream.readObject();
+            
+            return object;
+		}
+		finally {
+		    if (stream != null)
+		        stream.close();
+
+            if (fileStream != null)
+                fileStream.close();
+		}
 	}
 
 	public void setProperty(IResource resource, String key, Object value)
 		throws FileNotFoundException, IOException
 	{
 		String fileName = getPropertyFileName(resource, key);
-		ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(fileName));
-		stream.writeObject(value);
-		stream.close();
+		ObjectOutputStream stream = null;
+
+		try {
+    		stream = new ObjectOutputStream(new FileOutputStream(fileName));
+    		stream.writeObject(value);
+		}
+		finally {
+		    if (stream != null)
+		        stream.close();
+		}
 	}
 
 	public void removeProperty(IResource resource, String key) {
 		String fileName = getPropertyFileName(resource, key);
 		File file = new File(fileName);
 
-		if (file.exists())
-			file.delete();
+		if (file.exists() && !file.delete())
+			throw new RuntimeException("Unable to delete file: " + fileName);
 	}
 	
 	private String getPropertyFileName(IResource resource, String key) {

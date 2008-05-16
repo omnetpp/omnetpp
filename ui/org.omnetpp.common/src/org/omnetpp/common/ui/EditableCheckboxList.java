@@ -68,4 +68,12 @@ public class EditableCheckboxList extends AbstractEditableList {
     public void remove(int[] selectionIndices) {
         viewer.getTable().remove(selectionIndices);
     }
+
+    public boolean getChecked(String item) {
+        return viewer.getChecked(item);
+    }
+
+    public void setChecked(String item, boolean flag) {
+        viewer.setChecked(item, flag);
+    }
 }
