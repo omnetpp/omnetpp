@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -23,6 +24,8 @@ import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -45,7 +48,7 @@ import org.omnetpp.eventlog.engine.PStringVector;
 public class FilterEventLogDialog
     extends TitleAreaDialog
 {
-	private EventLogInput eventLogInput;
+    private EventLogInput eventLogInput;
 
 	private EventLogFilterParameters filterParameters;
 	
@@ -521,8 +524,7 @@ public class FilterEventLogDialog
 
 	private GenericTreeNode createCollectionLimitsTreeNode(Composite parent) {
         // depth and number limits
-        Composite panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        Composite panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
         enableCollectionLimits = new FilterDialogTreeNode("Collection limits", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -549,8 +551,7 @@ public class FilterEventLogDialog
 	    FilterDialogTreeNode generalFilter = new FilterDialogTreeNode("General filter", label);
 
 		// event number filter
-        Composite panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        Composite panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
 
         generalFilter.addChild(enableEventNumberFilter = new FilterDialogTreeNode("by event numbers", panel) {
             @Override
@@ -567,8 +568,7 @@ public class FilterEventLogDialog
 		upperEventNumberLimit = createText(panel, label.getToolTipText(), 1);
 
 		// simulation time filter
-		panel = new Composite(parent, SWT.NONE);
-		panel.setLayout(new GridLayout(2, false));
+		panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
         generalFilter.addChild(enableSimulationTimeFilter = new FilterDialogTreeNode("by simulation time", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -595,8 +595,7 @@ public class FilterEventLogDialog
         enableModuleFilter = new FilterDialogTreeNode("Module filter", label);
 
         // expression filter
-        Composite panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        Composite panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
         enableModuleFilter.addChild(enableModuleExpressionFilter = new FilterDialogTreeNode("by expression", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -611,8 +610,7 @@ public class FilterEventLogDialog
 
 		// module class name filter
         IEventLog eventLog = eventLogInput.getEventLog();
-        panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
         enableModuleFilter.addChild(enableModuleClassNameFilter = new FilterDialogTreeNode("by class name", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -635,8 +633,7 @@ public class FilterEventLogDialog
 		moduleClassNames.add(moduleClassNamesAsStrings);
 
 		// module name filter
-		panel = new Composite(parent, SWT.NONE);
-		panel.setLayout(new GridLayout(2, false));
+		panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
         enableModuleFilter.addChild(enableModuleNameFilter = new FilterDialogTreeNode("by name", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -648,8 +645,7 @@ public class FilterEventLogDialog
         moduleNameIds.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         
         // module id filter
-        panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
         enableModuleFilter.addChild(enableModuleIdFilter = new FilterDialogTreeNode("by id", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -683,8 +679,7 @@ public class FilterEventLogDialog
         enableMessageFilter = new FilterDialogTreeNode("Message filter", label);
 
 		// expression filter
-        Composite panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        Composite panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
         enableMessageFilter.addChild(enableMessageExpressionFilter = new FilterDialogTreeNode("by expression", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -697,8 +692,7 @@ public class FilterEventLogDialog
 
 		// message class name filter
         IEventLog eventLog = eventLogInput.getEventLog();
-        panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
         enableMessageFilter.addChild(enableMessageClassNameFilter = new FilterDialogTreeNode("by class name", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -719,8 +713,7 @@ public class FilterEventLogDialog
 		messageClassNames.add(messageClassNamesAsStrings);
 
 		// message name filter
-        panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
         enableMessageFilter.addChild(enableMessageNameFilter = new FilterDialogTreeNode("by name", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -761,8 +754,7 @@ public class FilterEventLogDialog
 	}
 
 	private Object[] createEditableList(Composite parent, String label) {
-        Composite panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        Composite panel = createPanel(parent, "Filter by BLAH", "Check message IDs which are BLAH BLAH.", 2);
 
         final EditableList editableList = new EditableList(panel, SWT.NONE);
         editableList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -780,8 +772,7 @@ public class FilterEventLogDialog
 
 	private FilterDialogTreeNode createEventTraceFilterTreeNode(Composite parent) {
         // trace filter 
-        Composite panel = new Composite(parent, SWT.NONE);
-        panel.setLayout(new GridLayout(2, false));
+        Composite panel = createPanel(parent, "Filter to causes/consequences of an event", "Choose event and select filtering options", 2);
         enableTraceFilter = new FilterDialogTreeNode("Cause/consequence filter", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
@@ -798,9 +789,7 @@ public class FilterEventLogDialog
         };
 
 
-        Label label = createLabel(panel, "Trace causes and/or consequences for a particular event", null, 2);
-
-		label = createLabel(panel, "Event number to be traced:", "An event which is neither cause nor consequence of this event will be filtered out from the result", 1);
+		Label label = createLabel(panel, "Event number to be traced:", "An event which is neither cause nor consequence of this event will be filtered out from the result", 1);
 		tracedEventNumber = createText(panel, label.getToolTipText(), 1);
 		traceCauses = createCheckbox(panel, "Include cause events", null, 2);
 		traceConsequences = createCheckbox(panel, "Include consequence events", null, 2);
@@ -835,6 +824,28 @@ public class FilterEventLogDialog
 		
 		return enableTraceFilter;
 	}
+
+    protected Composite createPanel(Composite parent, String title, String description, int numColumns) {
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayout(new GridLayout(numColumns, false));
+        
+        Label titleLabel = new Label(panel, SWT.NONE);
+        titleLabel.setFont(JFaceResources.getBannerFont());
+        titleLabel.setText(title);
+        titleLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, numColumns, 1));
+
+        Label descriptionLabel = new Label(panel, SWT.WRAP);
+        descriptionLabel.setText(description);
+        descriptionLabel.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, numColumns, 1));
+
+        //Label spacer = new Label(panel, SWT.NONE);
+        //spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, columns, 1));
+
+        Label separator = new Label(panel, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, numColumns, 1));
+
+        return panel;
+    }
 
 	protected Label createLabel(Composite parent, String text, String tooltip, int hspan) {
         Label label = new Label(parent, SWT.NONE);
