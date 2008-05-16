@@ -1,0 +1,165 @@
+Packages in OMNeT++ 4.0
+=======================
+
+
+To address increasingly common name collisions in NED files,
+OMNeT++ 4.0 introduces a package feature for NED. The solution
+is roughly modelled after Java's packages, with minor enhancements.
+
+
+Packages, imports
+-----------------
+
+A NED file may contain a package declaration:
+
+  package inet.protocols.transport.tcp;
+
+If there is no package declaration, the file is said to be in the
+"default package".
+
+Names from other NED files can be referred to either by fully qualified
+name ("inet.protocols.network.ip.RoutingTable"), or by short name
+("RoutingTable") if the name is visible.
+
+Visible names are:
+  - anything from the same package;
+  - imported names.
+
+Import directives also have a similar syntax to Java, but they
+are more flexible with wildcards. All of the following are legal:
+
+  import  inet.protocols.network.ip.RoutingTable;
+  import  inet.protocols.network.ip.*;
+  import  inet.protocols.network.ip.Ro*Ta*;
+  import  inet.protocols.*.ip.*;
+  import  inet.**.RoutingTable;
+
+One asterisk "*" stands for "any character sequence not containing
+period"; two asterisks mean "any character sequence which may
+contain period". No other wildcards are recognized.
+
+An import not containing wildcard MUST match an existing NED type.
+However, it is legal for an import that does contain wildcards
+not to match any NED type (although that might generate a warning.)
+
+Inner types may not be referred to outside their enclosing types.
+
+
+Directory Structure, package.ned
+--------------------------------
+
+Like in Java, the directory of a NED file MUST match the package declaration.
+However, it is possible to omit directories at the top which don't
+contain any NED files (like the "/org/projectname/" directories in Java).
+
+There is a notion of "NED source folders". If a NED Source Folder is
+named "src", then a NED file containing the package declaration
+"inet.protocols.transport.tcp" must be in the following folder:
+
+   src/inet/protocols/transport/tcp/
+
+If the "inet" and "protocols" directories don't contain any NED files,
+they can be omitted:
+
+   src/transport/tcp
+
+and the "src" directory must contain a "package.ned" file which declares
+what package it corresponds to:
+
+  src/package.ned:
+  package inet.protocols;
+
+All NED files under the "src" directory tree must have package
+declarations consistent with that.
+
+"package.ned" files are allowed in other folders as well (as long as
+their package declarations are consistent with the NED source
+directory's "package.ned"), and any file-level comment in them
+will be treated as the package's documentation (similar to Java's
+package.html).
+
+
+Name lookups
+------------
+Base types and submodules.
+
+Fully qualified names and simple names are accepted. Simple names
+are looked up among the inner types of the enclosing type (compound 
+module), then using imports, then in the same package.
+
+
+Parametric module types ("like" submodules).
+
+Lookup of the actual module type for "like" submodules differs for normal
+lookups. This lookup ignores the imports in the file altogether.
+Instead, it collects all modules that support the given interface
+and match the given type name string (i.e. end in the same simple name,
+or have the same fully qualified name). The result must be exactly
+one module type. 
+
+The algorithm for parametric channel types works in the same way.
+
+
+Network name in the ini file.
+
+Simple (unqualified) names are tried with the same package as the 
+ini file is in (provided it's in a NED directory).
+
+
+
+The NEDPATH environment variable
+--------------------------------
+
+A simulation may need NED files from several "NED source folders".
+When a simulation is launched as a separate application, it will expect
+to receive the list of NED source folders to scan in the NEDPATH
+environment variable (similar to Java's CLASSPATH). NEDPATH should
+contain the source folder names separated by a semicolon (";").
+On Unix-like systems, colon (":") will also be accepted as separator.
+
+In the future, zip files may become supported in NEDPATH as well;
+then the root folder of the zip file will be treated as a NED source
+folder.
+
+
+OMNeT++ Projects in Eclipse
+---------------------------
+
+OMNeT++ projects within Eclipse are marked with the "OMNEST/OMNeT++ Nature",
+that is, those projects marked with that nature will be recognized as
+OMNeT++ projects.
+
+NED source folders can only be located within OMNeT++ projects. (That is,
+NED files within non-OMNeT++ projects will be always ignored.)
+
+Which folders in a project are NED source folders is determined by
+the ".nedfolders" file in the project root directory. This is a plain
+text file, which contains directory names (as relative to the
+project root directory), one per line. If the ".nedfolders" file is
+missing, then the project root directory will be treated as the (only)
+NED source folder.
+
+
+Cross-Project Dependencies
+--------------------------
+
+OMNeT++ projects in Eclipse may refer to NED files in other projects.
+This feature is supported by making use of the Eclipse Platform's
+support for project dependencies. (In the Eclipse Platform, for any
+project one can define the list other projects it depends on.)
+
+In one project, one may only refer to NED files in the same project
+or dependent projects.
+
+   Implementation note: NEDResources always loads all NED files from
+   all OMNeT++ projects, and makes all names available to all projects.
+   It is the job of the validator (NEDValidator) to issue errors for
+   references into non-dependent projects; also, it is the reponsibility
+   of the NED editor to offer (on the palette, content assist, etc)
+   only types from dependent projects. NEDResources will provide
+   appropriate utility methods for that.
+
+DONE.
+
+--Andras
+

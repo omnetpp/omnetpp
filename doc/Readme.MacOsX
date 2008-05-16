@@ -1,19 +1,97 @@
-Using OMNeT++ on Mac OS X
-=========================
+Installing OMNeT++ on Mac Os X
+==========================
 
-QUICKSTART (for 10.5)
+1. Installing OMNeT++
 
-1. Install XCode 3 on your machine
-2. Extract the OMNeT++ archive
-3. ./configure
-4. make
+Download the omnetpp source code and documentation from the omnetpp site.
+Make sure you select to download the generic archive omnetpp-version-src.tgz.
 
-QUICKSTART (for 10.4)
-1. Install XCode 2.5 on your machine
-2. Install fink on your machine (install required packages: at least 
-   bison 2.x must be present on your system) (XCode 2.x comes with bison 1.x)
-3. Extract the OMNeT++ archive
-4. The default gcc 4.0.1 compiler will not work, either upgrade to 4.2 or switch back to the 3.3 version
-   (sudo gcc_select 3.3)
-5. ./configure
-6. make
+Copy the omnetpp archive to the directory where you want to install it
+(usually your home directory). Extract the archive using the command:
+
+    tar zxvf omnetpp-version-src.tgz
+
+A sub-directory called omnetpp-version will be created which will contain the simulator
+files. You should now add the following lines to your startup file (.bashrc
+or .bash_profile if you're using bash; .profile if you're using some other
+sh-like shell):
+
+    export PATH=$PATH:~/omnetpp/bin
+
+You will need to restart the shell before proceeding (logout and login again).
+
+You should check configure.user to make sure it contains the settings
+you need however in most cases you don't need to change anything.
+
+for Mac OS X 10.5:
+ 
+1. Install XCode 3 on your machine 
+2. ./configure 
+3. make 
+ 
+for Mac OS X 10.4:
+1. Install XCode 2.5 on your machine 
+2. Install fink on your machine (install required packages: at least  
+   bison 2.x must be present on your system) (XCode 2.x comes with bison 1.x) 
+3. The default gcc 4.0.1 compiler will not work, either upgrade to 4.2 or switch back to the 3.3 version 
+      (sudo gcc_select 3.3) 
+4. ./configure 
+5. make
+      
+This will create both debug and release binaries.
+
+You should now test all samples and check they run correctly. As an example,
+the dyna example is started by entering the following commands:
+
+    cd samples/dyna
+    ./dyna
+
+By default the samples will run using the Tcl/Tk environment. You should see
+nice gui windows and dialogs.
+
+2. Starting the IDE
+
+OMNeT++ 4.0 comes with a brand new IDE (based on Eclipse). Mac OS X already has Java 5
+installed so you should be ok. After building the libraries (see previous step) 
+you should be able to start the IDE by typing:
+
+omnetpp
+
+NOTE: The IDE is supported ONLY on the following platforms:
+ - Windows 32bit
+ - Linux 32/64bit (i386)
+ - Mac OS X 10.4/5 (i386/ppc)
+
+3. Reconfiguring the libraries
+
+If you need to recompile the OMNeT++ components with different flags (e.g.
+different optimization), then cd to the top-level omnetpp
+directory, edit configure.user accordingly, then say:
+
+    ./configure
+    make clean
+    make
+
+If you want to recompile just a single library, then cd to the directory
+of the library and type:
+
+    make clean
+    make
+
+If you want to build ONLY release or debug builds use: 
+(if MODE is not specified both debug and release will be created)
+   
+    make MODE=release
+    
+If you want to create static libraries use: 
+(by default shared libraries will be created)
+    
+    make BUILD_SHARED_LIBS=no    
+
+NOTE: The built libraries and programs are immediately copied 
+to the lib/ and bin/ subdirs.
+
+4. NOTE: The Tcl/Tk environment is using the native Aqua version of Tcl/Tk
+so you should see native widgets, however you may see focus problems related
+to this version. 
+
