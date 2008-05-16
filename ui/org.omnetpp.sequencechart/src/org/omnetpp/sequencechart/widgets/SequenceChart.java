@@ -2167,6 +2167,8 @@ public class SequenceChart
 			return false;
 
 		// calculate pixel coordinates for message arrow endings
+		long beginSendEntryPtr = sequenceChartFacade.MessageDependency_getBeginSendEntry(messageDependencyPtr);
+		int messageId = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.EventLogEntry_getMessageId(beginSendEntryPtr);
 		int startEventNumber = sequenceChartFacade.Event_getEventNumber(startEventPtr);
 		int endEventNumber = sequenceChartFacade.Event_getEventNumber(endEventPtr);
 		int causeEventNumber = sequenceChartFacade.Event_getEventNumber(causeEventPtr);
@@ -2238,7 +2240,7 @@ public class SequenceChart
 		    if (!showSelfMessages)
 		        return false;
 
-			int eventNumberDelta = sequenceChartFacade.Event_getEventNumber(consequenceEventPtr) - sequenceChartFacade.Event_getEventNumber(causeEventPtr);
+			int eventNumberDelta = messageId + sequenceChartFacade.Event_getEventNumber(consequenceEventPtr) - sequenceChartFacade.Event_getEventNumber(causeEventPtr);
 			int numberOfPossibleEllipseHeights = Math.max(1, (int)Math.round((axisSpacing - fontHeight) / (fontHeight + 10)));
 			int halfEllipseHeight = (int)Math.max(axisSpacing * (eventNumberDelta % numberOfPossibleEllipseHeights + 1) / (numberOfPossibleEllipseHeights + 1), MINIMUM_HALF_ELLIPSE_HEIGHT);
 
@@ -2404,7 +2406,7 @@ public class SequenceChart
 			    int mx = (x1 + x2) / 2;
 			    int my = (y1 + y2) / 2;
 			    int rowCount = Math.min(7, Math.max(1, Math.abs(y2 - y1) / fontHeight - 8));
-			    int rowIndex = ((causeEventNumber + consequenceEventNumber) % rowCount) - rowCount / 2;
+			    int rowIndex = ((messageId + causeEventNumber + consequenceEventNumber) % rowCount) - rowCount / 2;
 			    int dy = rowIndex * fontHeight;
 			    int dx = y2 == y1 ? 0 : (int)((double)(x2 - x1) / (y2 - y1) * dy);
                 mx += dx;

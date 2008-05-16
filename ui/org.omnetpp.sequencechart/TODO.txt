@@ -89,10 +89,10 @@ Features:
  + close project causes internal error during painting (should close the editors and set null into view inputs)
  - use eventlog input module tree in module hierarchy view
  + filter for causes/consequence from popup menu brings up filter dialog when other options are turned on
- - use breadth search instead of depth search when collecting filtered message dependencies
+ + use breadth search instead of depth search when collecting filtered message dependencies
  - add a flag to control whether filter only collects corresponding message dependencies
- - store manual ordering
- - use checkbox list and remember what the user typed in event log filter id lists to allow turning on and off each id
+ + store manual ordering when turning filtering on and off
+ + use checkbox list and remember what the user typed in event log filter id lists to allow turning on and off each id
 
 Known bugs:
  - 7-es compiler? seqchart: "Filter by message ID" OneFifo, filter to one msg like id=16: yields only event #53 and #120, and #120 has nothing to do with msg id=16
