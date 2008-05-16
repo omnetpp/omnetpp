@@ -33,6 +33,10 @@ The IDE is supported on the following platforms:
  - Mac OS X 10.4/5 (i386/ppc)
 
 
+Note: while the IDE does not need to be built, you'll still need "./configure" 
+and "make" to build the simulation kernel and runtime user interfaces (Cmdenv, 
+Tkenv).
+
 Starting the IDE
 ----------------
 The IDE can be started with the following command:
