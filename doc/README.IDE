@@ -16,9 +16,8 @@ or read
 in your OMNeT++ 4.0 installation.
 
 
-
-Requirements and Compiling
---------------------------
+Requirements and compilation
+----------------------------
 The IDE is Java-based, it requires the Java 5 or Java 6 JRE to be installed
 on the computer. We recommend the Sun JRE. 
 
@@ -37,6 +36,7 @@ Note: while the IDE does not need to be built, you'll still need "./configure"
 and "make" to build the simulation kernel and runtime user interfaces (Cmdenv, 
 Tkenv).
 
+
 Starting the IDE
 ----------------
 The IDE can be started with the following command:
@@ -49,7 +49,7 @@ on all platforms.
 Components and features of the IDE
 ----------------------------------
 The IDE presently contains:
-    Eclipse Platform 3.3, with additional plug-ins like EMF and GEF
+    Eclipse Platform 3.3
     Eclipse CDT (C/C++ Development Environment) version 4.0.3
     OMNeT++ IDE plug-ins
 
@@ -62,6 +62,10 @@ The OMNeT++ IDE plug-ins provide the following components:
     Result analyzer
     Sequence chart and event log visualizer
 plus several associated views, wizards and other goodies.
+
+If you wish, you can install further plug-ins (for example Subversion support)
+from www.eclipse.org, or plug-in sites like eclipseplugincentral.com or 
+eclipse-plugins.info.
 
 
 Feedback and error reporting
