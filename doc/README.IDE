@@ -37,6 +37,24 @@ The IDE can be started with the following command:
 on all platforms.
 
 
+Components and features of the IDE
+----------------------------------
+The IDE presently contains:
+    Eclipse Platform 3.3, with additional plug-ins like EMF and GEF
+    Eclipse CDT (C/C++ Development Environment) version 4.0.3
+    OMNeT++ IDE plug-ins
+
+The OMNeT++ IDE plug-ins provide the following components:
+    NED editor
+    MSG file editor
+    Ini file editor
+    Makefile generator
+    Simulation launcher
+    Result analyzer
+    Sequence chart and event log visualizer
+plus several associated views, wizards and other goodies.
+
+
 Feedback and error reporting
 ----------------------------
 The IDE logs errors and other information to the log file at:
