@@ -49,6 +49,6 @@ config timeline-wantnonselfmsgs	{1}
 config timeline-wantselfmsgs	{1}
 inspector "TokenRing" "TokenRing" "2" "443x432+482+215"
 inspector "token" "token" "2" "367x416+87+174"
-inspector "TokenRing.comp[0]" "Computer" "2" "367x303+120+155"
 inspector "token.comp[4]" "Computer" "2" "367x303+503+147"
+inspector "TokenRing.comp[0]" "Computer" "2" "367x303+120+155"
 

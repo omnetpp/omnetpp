@@ -70,6 +70,16 @@ set icons(imagetoobig) [image create photo -data {
     AA2oQAdK0IIa9KAITahCF8rQhjr0oRCNqEQLJ0rRilr0omCIAAAAOw==
 }]
 
+set icons(arrowhead) [image create photo -data {
+    iVBORw0KGgoAAAANSUhEUgAAABQAAAATCAYAAACQjC21AAAAAXNSR0IArs4c6QAA
+    AARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAA
+    OpgAABdwnLpRPAAAABh0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjA39c2BcAAA
+    AKlJREFUOE9j/P//PwNVAchAamK4YZS6EuaoYWBgQOGx/yC8+8QdvLFHtJddUzb9
+    B2HLqLVgjMtgog2EudCr5dp/EMZlMFYD/Rtv/gfhgMbb/4Na7qFgrx6ggUAcVA3B
+    MINhqQOrgZpBPf9BWCu4779F1Gow9uy8DDaYLAOxpcXYngf/QRjmsiCgt0EYPSxJ
+    DkOqRQoslqmWbIjNkkR7edRAnCGAEYbUKmQBP7/KXHRAXrYAAAAASUVORK5CYII=
+}]
+
 set icons(apply) [image create photo -data {
     iVBORw0KGgoAAAANSUhEUgAAABQAAAATBAMAAABiojCGAAAAMFBMVEUAjAAAbgDs
     JRPvPy7qRjbcVknYZFjlWErnaVzteGrlhXnqpJnkw7vs1Mzp4tzx8OqVHN65AAAA

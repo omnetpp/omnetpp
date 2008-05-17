@@ -2,7 +2,9 @@
 
 	* better toolbar icons
 	* implemented show/hide arrowheads
+	* implemented increase/decrease icon size
 	* expanded context menu in graphical module inspectors
+	* added corresponding keyboards shortcuts
 
 2008-04-19  Andras Varga
 

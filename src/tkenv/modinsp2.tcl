@@ -72,8 +72,10 @@ proc lookup_image {imgname {imgsize ""}} {
 #
 # helper function
 #
-proc dispstr_getimage {tags_i tags_is zoomfactor} {
+proc dispstr_getimage {tags_i tags_is zoomfactor imagesizefactor} {
     global icons bitmaps imagecache
+
+    set zoomfactor [expr $zoomfactor * $imagesizefactor]
 
     set key "[join $tags_i ,]:[join $tags_is ,]:$zoomfactor"
     if {![info exist imagecache($key)]} {
@@ -168,6 +170,8 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
        set scaling [expr $scaling*$zoomfactor]
    }
 
+   set imagesizefactor $inspectordata($c:imagesizefactor)
+
    if [catch {
        get_parsed_display_string $dispstr tags [winfo toplevel $c] $submodptr 1
 
@@ -186,7 +190,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            set tags(is) {}
        }
        if [info exists tags(i)] {
-           set img [dispstr_getimage $tags(i) $tags(is) $zoomfactor]
+           set img [dispstr_getimage $tags(i) $tags(is) $zoomfactor $imagesizefactor]
            set isx [image width $img]
            set isy [image height $img]
        }
@@ -269,7 +273,7 @@ proc draw_submod {c submodptr x y name dispstr scaling} {
            set r [get_submod_coords $c $submodptr]
            set mx [expr [lindex $r 2]+2]
            set my [expr [lindex $r 1]-2]
-           set img2 [dispstr_getimage $tags(i2) $tags(is2) $zoomfactor]
+           set img2 [dispstr_getimage $tags(i2) $tags(is2) $zoomfactor $imagesizefactor]
            $c create image $mx $my -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
        }
 
@@ -692,6 +696,7 @@ proc draw_message {c msgptr x y} {
     global fonts inspectordata
 
     set zoomfactor $inspectordata($c:zoomfactor)
+    set imagesizefactor $inspectordata($c:imagesizefactor)
 
     set dispstr [opp_getobjectfield $msgptr displayString]
     set msgkind [opp_getobjectfield $msgptr kind]
@@ -733,7 +738,7 @@ proc draw_message {c msgptr x y} {
             set tags(is) {}
         }
         if [info exists tags(i)] {
-            set img [dispstr_getimage $tags(i) $tags(is) $zoomfactor]
+            set img [dispstr_getimage $tags(i) $tags(is) $zoomfactor $imagesizefactor]
             set sx [image width $img]
             set sy [image height $img]
         } elseif [info exists tags(b)] {
@@ -832,20 +837,24 @@ proc create_graphicalmodwindow {name geom} {
     pack_iconbutton $w.toolbar.zoomin  -image $icons(zoomin)  -command "graphmodwin_zoomby $w 1.25"
     pack_iconbutton $w.toolbar.zoomout -image $icons(zoomout) -command "graphmodwin_zoomby $w 0.8"
     pack_iconbutton $w.toolbar.showlabels -image $icons(modnames) -command "graphmodwin_togglelabels $w"
+    pack_iconbutton $w.toolbar.showarrowheads -image $icons(arrowhead) -command "graphmodwin_togglearrowheads $w"
 
     set help_tips($w.toolbar.owner)   {Inspect parent module}
     set help_tips($w.toolbar.ascont)  {Inspect as object}
     set help_tips($w.toolbar.win)     {See module output}
-    set help_tips($w.toolbar.redraw)  {Re-layout}
+    set help_tips($w.toolbar.redraw)  {Re-layout (Ctrl+R)}
     set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
     set help_tips($w.toolbar.zoomin)  {Zoom in}
     set help_tips($w.toolbar.zoomout) {Zoom out}
+    set help_tips($w.toolbar.showlabels) {Show module names (Ctrl+N)}
+    set help_tips($w.toolbar.showarrowheads) {Show arrowheads (Ctrl+A)}
 
     # create canvas
     set c $w.c
 
     # init some state vars
     set inspectordata($c:zoomfactor) 1
+    set inspectordata($c:imagesizefactor) 1
     set inspectordata($c:showlabels) 1
     set inspectordata($c:showarrowheads) 1
 
@@ -878,8 +887,18 @@ proc create_graphicalmodwindow {name geom} {
     $c bind modname <$B3> "graphmodwin_rightclick $w %X %Y"
     $c bind qlen <$B3> "graphmodwin_qlen_rightclick $w %X %Y"
 
+    # keyboard shortcuts
+    bind $w <Control-i> "graphmodwin_zoomiconsby $w 1.25"
+    bind $w <Control-o> "graphmodwin_zoomiconsby $w 0.8"
+    bind $w <Control-r> "opp_inspectorcommand $w relayout"
+    bind $w <Control-n> "graphmodwin_togglelabels $w"
+    bind $w <Control-a> "graphmodwin_togglearrowheads $w"
+
     if {$inspectordata($c:showlabels)} {
         $w.toolbar.showlabels config -relief sunken
+    }
+    if {$inspectordata($c:showarrowheads)} {
+        $w.toolbar.showarrowheads config -relief sunken
     }
 
     #update idletasks
@@ -914,6 +933,17 @@ proc graphmodwin_zoomby {w mult} {
     #puts "zoom: $inspectordata($c:zoomfactor)"
 }
 
+proc graphmodwin_zoomiconsby {w mult} {
+    global inspectordata
+    set c $w.c
+    if {($mult<1 && $inspectordata($c:imagesizefactor)>0.1) || ($mult>1 && $inspectordata($c:imagesizefactor)<10)} {
+        set inspectordata($c:imagesizefactor) [expr $inspectordata($c:imagesizefactor) * $mult]
+        if {abs($inspectordata($c:imagesizefactor)-1.0) < 0.1} {set inspectordata($c:imagesizefactor) 1}
+        opp_inspectorcommand $w redraw
+    }
+    #puts "icon size factor: $inspectordata($c:imagesizefactor)"
+}
+
 proc graphmodwin_togglelabels {w} {
     global inspectordata
     set c $w.c
@@ -931,7 +961,7 @@ proc graphmodwin_togglearrowheads {w} {
     opp_inspectorcommand $w redraw
 
     if {$inspectordata($c:showarrowheads)} {set relief "sunken"} else {set relief "flat"}
-    #TBD $w.toolbar.showarrowheads config -relief $relief
+    $w.toolbar.showarrowheads config -relief $relief
 }
 
 proc graphmodwin_dblclick w {
@@ -968,13 +998,17 @@ proc graphmodwin_rightclick {w X Y} {
       set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
 
       $popup add separator
-      $popup add checkbutton -label "Show module names" -command "graphmodwin_togglelabels $w" -variable tmp($c:showlabels)
-      $popup add checkbutton -label "Show arrowheads" -command "graphmodwin_togglearrowheads $w" -variable tmp($c:showarrowheads)
+      $popup add checkbutton -label "Show module names" -command "graphmodwin_togglelabels $w" -accel "Ctrl+N" -variable tmp($c:showlabels)
+      $popup add checkbutton -label "Show arrowheads" -command "graphmodwin_togglearrowheads $w" -accel "Ctrl+A" -variable tmp($c:showarrowheads)
+
+      $popup add separator
+      $popup add command -label "Increase icon size" -accel "Ctrl+I" -command "graphmodwin_zoomiconsby $w 1.25"
+      $popup add command -label "Decrease icon size" -accel "Ctrl+O" -command "graphmodwin_zoomiconsby $w 0.8"
 
       $popup add separator
       $popup add command -label "Zoom in" -command "graphmodwin_zoomby $w 1.25"
       $popup add command -label "Zoom out" -command "graphmodwin_zoomby $w 0.8"
-      $popup add command -label "Re-layout" -command "opp_inspectorcommand $w relayout"
+      $popup add command -label "Re-layout" -accel "Ctrl+R" -command "opp_inspectorcommand $w relayout"
 
       $popup add separator
       $popup add command -label "Animation options..." -command "options_dialog a"
