@@ -177,17 +177,68 @@ public class InifileHoverUtils {
 			return HoverSupport.addHTMLStyleSheet(text);
 		}
 
-		text += "<br><b>Applies to:</b><br>\n";
-		String[] allSectionNames = analyzer.getDocument().getSectionNames();
-        text += formatParamResolutions(resList, allSectionNames, false);
-        text += "<br><b>Details:</b><br>\n";
-        text += formatParamResolutions(resList, allSectionNames, true);
+		// Maps NED parameters ==> section names. "In the following sections, the inifile key
+		// matches exactly the following NED parameter declarations".
+		// Example:
+        //   {EtherMac.address, Ieee80211Mac.address} => {[General], [Config Foo]}
+        //   {Ieee80211Mac.address} => {[Config Bar]}
+        Map<Set<ParamElement>, Set<String>> sectionsGroupedByParamDeclSet = organizeParamResolutions(resList);
+
+        boolean isVerySimpleCase = sectionsGroupedByParamDeclSet.size()==1 && sectionsGroupedByParamDeclSet.keySet().toArray(new Set[]{})[0].size()==1; 
+           
+        String[] allSectionNames = analyzer.getDocument().getSectionNames();
+        if (isVerySimpleCase) {
+            text += "<br><b>Applies to:</b><br>\n";
+            text += formatParamResolutions(sectionsGroupedByParamDeclSet, resList, allSectionNames, true, true);
+        }
+        else {
+            text += "<br><b>Applies to:</b><br>\n";
+            text += formatParamResolutions(sectionsGroupedByParamDeclSet, resList, allSectionNames, true, false);
+            text += "<br><b>Details:</b><br>\n";
+            text += formatParamResolutions(sectionsGroupedByParamDeclSet, resList, allSectionNames, false, true);
+        }
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 
-    private static String formatParamResolutions(ParamResolution[] resList, String[] allSectionNames, boolean details) {
+    private static String formatParamResolutions(Map<Set<ParamElement>,Set<String>> sectionsGroupedByParamDeclSet,
+            ParamResolution[] resList, String[] allSectionNames, boolean printComment, boolean printDetails) {
         String text = "";
         
+        // Now we turn this into HTML
+        for (Set<ParamElement> paramDecls : sectionsGroupedByParamDeclSet.keySet()) {
+            Set<String> sectionNames = sectionsGroupedByParamDeclSet.get(paramDecls);
+
+            // print section name(s), unless there'a only one section or we can say "All"
+            if (sectionNames.size() != allSectionNames.length)
+                text += "&nbsp;[" + StringUtils.join(sectionNames, "], [") + "]\n";
+            else if (allSectionNames.length > 1)
+                text += "&nbsp;All sections";
+            
+            // and the param declarations
+            text += "<ul>";
+            for (ParamElement paramDeclNode : paramDecls) {
+                text += formatParamDecl(paramDeclNode, printComment);
+                if (printDetails) {
+                    String paramName = paramDeclNode.getName();
+                    text += "<ul>\n";
+                    for (String sectionName : sectionNames)
+                        for (ParamResolution res : resList)
+                            if (res.paramDeclNode == paramDeclNode && res.activeSection.equals(sectionName))
+                                text += " <li><i>" + res.moduleFullPath + "." + paramName + "</i>" +
+                                		(sectionNames.size()==1 ? "" : " [" + sectionName + "]") + "</li>\n";
+                    text += "</ul>";
+                }
+                text += "</li>\n";
+            }
+            text += "</ul>";
+        }
+        return text;
+    }
+
+    /**
+     * Groups parameter resolutions so that we can print them in a meaningful way
+     */
+    private static Map<Set<ParamElement>, Set<String>> organizeParamResolutions(ParamResolution[] resList) {
         // Build a map about sections and parameter declarations:
         // - key: section name
         // - value: the parameter declarations that this config key matches in the given section
@@ -211,48 +262,17 @@ public class InifileHoverUtils {
         //   {EtherMac.address, Ieee80211Mac.address} => {[General], [Config Foo]}
         //   {Ieee80211Mac.address} => {[Config Bar]}
         //
-        Map<Set<ParamElement>, Set<String>> map2 = new LinkedHashMap<Set<ParamElement>, Set<String>>();
+        Map<Set<ParamElement>, Set<String>> grouping = new LinkedHashMap<Set<ParamElement>, Set<String>>();
         for (String sectionName : sectionParamDecls.keySet()) {
             Set<ParamElement> declSet = sectionParamDecls.get(sectionName);
-            if (!map2.containsKey(declSet)) 
-                map2.put(declSet, new LinkedHashSet<String>());
-            map2.get(declSet).add(sectionName);
+            if (!grouping.containsKey(declSet)) 
+                grouping.put(declSet, new LinkedHashSet<String>());
+            grouping.get(declSet).add(sectionName);
         }
-                
-        // Now we turn this into HTML
-        for (Set<ParamElement> paramDecls : map2.keySet()) {
-            Set<String> sectionNames = map2.get(paramDecls);
-
-            // print section name(s), unless there'a only one section
-            if (sectionNames.size() == allSectionNames.length) {
-                if (allSectionNames.length > 1)
-                    text += "&nbsp;All sections";
-            }
-            else
-                text += "&nbsp;[" + StringUtils.join(sectionNames, "], [") + "]\n";
-            
-            // and the param declarations
-            text += "<ul>";
-            for (ParamElement paramDeclNode : paramDecls) {
-                text += formatParamDecl(paramDeclNode, !details);
-                if (details) {
-                    String paramName = paramDeclNode.getName();
-                    text += "<ul>\n";
-                    for (String sectionName : sectionNames)
-                        for (ParamResolution res : resList)
-                            if (res.paramDeclNode == paramDeclNode && res.activeSection.equals(sectionName))
-                                text += " <li><i>" + res.moduleFullPath + "." + paramName + "</i>" +
-                                		(sectionNames.size()==1 ? "" : " [" + sectionName + "]") + "</li>\n";
-                    text += "</ul>";
-                }
-                text += "</li>\n";
-            }
-            text += "</ul>";
-        }
-        return text;
+        return grouping;
     }
 
-	private static String formatParamDecl(ParamElement paramDeclNode, boolean addComment) {
+	private static String formatParamDecl(ParamElement paramDeclNode, boolean printComment) {
         String paramName = paramDeclNode.getName();
         String paramValue = paramDeclNode.getValue();
         if (paramDeclNode.getIsDefault())
@@ -266,7 +286,7 @@ public class InifileHoverUtils {
         String optComment = comment==null ? "" : ("<br><i>\"" + comment + "\"</i>");
 
         // print parameter declaration 
-        return "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + (addComment ? optComment : "") + "\n";
+        return "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + (printComment ? optComment : "") + "\n";
     }
 
     public static String getProblemsHoverText(IMarker[] markers, boolean lineNumbers) {
