@@ -710,17 +710,19 @@ public class InifileAnalyzer {
 				pathModules.push(submodule);
 				fullPathStack.push(submodule==null ? submoduleType.getName() : InifileUtils.getSubmoduleFullName(submodule));
 
-				// skip this and submodules if vector size is known to be zero
-				String vectorSize = submodule.getVectorSize();
-                boolean isZeroSizedVector = false;
-                if (!StringUtils.isEmpty(vectorSize)) {
-                    if (vectorSize.equals("0"))
-                        isZeroSizedVector = true;
-                    else if (vectorSize.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {  //XXX performance (precompile regex!)
-                        //TODO look up parameter, and check if it's zero
-                    }
-                }
-
+				// skip if this is a zero-size submodule vector
+				boolean isZeroSizedVector = false;
+				if (submodule != null) {
+				    String vectorSize = submodule.getVectorSize();
+				    if (!StringUtils.isEmpty(vectorSize)) {
+				        if (vectorSize.equals("0"))
+				            isZeroSizedVector = true;
+				        else if (vectorSize.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {  //XXX performance (precompile regex!)
+				            //TODO look up parameter, and check if it's zero
+				        }
+				    }
+				}
+				
                 // resolve parameters
                 if (!isZeroSizedVector) {
                     String submoduleFullPath = StringUtils.join(fullPathStack.toArray(), "."); //XXX optimize here if slow

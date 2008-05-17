@@ -91,9 +91,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         if (toolChain==null)
             return;
         
-        //XXX the following does not work: returns true for "Linux GCC" on Windows, 
-        // because it cannot find the isSupported extension element and falls back 
-        // to default "true"  --- how could it be gotten to work???
         boolean supported = isToolChainSupported(toolChain);
         
         if (!supported) {
@@ -102,17 +99,20 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                     String message = 
                         "Toolchain \"" + toolChain.getName() + "\" is not supported on this platform " +
                         "or installation. Please go to the Project menu, and activate a different " +
-                        "build configuration.";
+                        "build configuration. (You may need to switch to the C/C++ perspective first, " +
+                        "so that the required menu items appear in the Project menu.)";
                     MessageDialog.openWarning(Display.getCurrent().getActiveShell(), "Warning", message);
                 }
             });
         }
     }
     
-    /*
-     * Returns true if the toolchain is supported currently. Checks all super classes of the toolchain too.
+    /**
+     * Returns true if the toolchain is supported currently. Note: toolChain().isSupported() is 
+     * not good enough, as it doesn't check the toolchain's super classes and platform filters. 
+     * Here we do both.
      */
-    private static boolean isToolChainSupported(IToolChain toolchain) {
+    protected static boolean isToolChainSupported(IToolChain toolchain) {
     	while (toolchain != null) {
     		if (!toolchain.isSupported() || !isToolchainSupportedOnCurrentPlatform(toolchain))
     			return false;
@@ -121,7 +121,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     	return true;
     }
     
-    private static boolean isToolchainSupportedOnCurrentPlatform(IToolChain toolchain) {
+    protected static boolean isToolchainSupportedOnCurrentPlatform(IToolChain toolchain) {
     	List<String> osList = Arrays.asList(toolchain.getOSList());
     	return osList.isEmpty() || osList.contains("all") || osList.contains(Platform.getOS());
     }

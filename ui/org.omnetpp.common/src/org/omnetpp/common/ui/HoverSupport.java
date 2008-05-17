@@ -113,12 +113,10 @@ public class HoverSupport {
 	 */
 	protected Listener eventFilter = new Listener() {
 		public void handleEvent(Event e) {
-			if (hoverControl != null) {
-				if (e.type == SWT.KeyDown && e.keyCode == SWT.F2)
-					makeHoverSticky();
-				else
-					removeHover();
-			}
+		    if (e.type == SWT.KeyDown && e.keyCode == SWT.F2)
+		        makeHoverSticky();
+		    else if (hoverControl != null)
+		        removeHover();
 		}
 	};
 

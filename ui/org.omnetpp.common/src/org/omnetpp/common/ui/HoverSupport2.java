@@ -26,25 +26,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Provides hover for a widget. SWT's Control.setTooltipText() has several
- * limitations which makes it unsuitable for presenting large multi-line
- * tooltips:
- *   - tends to wrap long lines (SWT's Tooltip class does that too)
- *   - tooltip disappears after about 5s (Windows), which is not enough time to
- *     read long texts
- *   - lazy generation of tooltip text is not possible (there's no such thing 
- *     as TooltipAboutToShowListener)
- * This class overcomes these limitations.
- * 
- * One instance can adapt several controls (i.e. controls may share the same 
- * hover).
+ * NOT IN USE.  Please use HoverSupport!
  *
- * NOTE: 
- *   This class uses keyboard/mouse listeners added to the widget ONLY. It has limitations,
- *   e.g. tooltips that appear during cell editing/content assist don't go away
- *   on user typing etc. Another flavour of this class, HoverSupport, uses global 
- *   event filters  to circumvent this problem, which however might a bit too strong 
- *   and potentially dangerous.
+ * This class uses keyboard/mouse listeners added to the widget ONLY. It has limitations,
+ * e.g. tooltips that appear during cell editing/content assist don't go away
+ * on user typing etc. Another flavor of this class, HoverSupport, uses global 
+ * event filters  to circumvent this problem, which however might a bit too strong 
+ * and potentially dangerous.
  * 
  * @author Andras
  */
