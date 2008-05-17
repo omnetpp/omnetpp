@@ -5,8 +5,11 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
@@ -175,29 +178,62 @@ public class InifileHoverUtils {
 		}
 
 		text += "<br><b>Applies to:</b><br>\n";
-		text += formatParamResolutions(resList, false);
+		String[] allSectionNames = analyzer.getDocument().getSectionNames();
+        text += formatParamResolutions(resList, allSectionNames, false);
         text += "<br><b>Details:</b><br>\n";
-        text += formatParamResolutions(resList, true);
+        text += formatParamResolutions(resList, allSectionNames, true);
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 
-    private static String formatParamResolutions(ParamResolution[] resList, boolean details) {
+    private static String formatParamResolutions(ParamResolution[] resList, String[] allSectionNames, boolean details) {
         String text = "";
-        // collect unique section names
-        Set<String> sectionNames = new LinkedHashSet<String>();
-        for (ParamResolution res : resList)
-            sectionNames.add(res.activeSection);
+        
+        // Build a map about sections and parameter declarations:
+        // - key: section name
+        // - value: the parameter declarations that this config key matches in the given section
+        //
+        // Example: we're processing the param resolutions of **.mac.address; 
+        // the resulting map will contain:
+        //   [General] => {EtherMac.address, Ieee80211Mac.address}
+        //   [Config Foo] => {EtherMac.address, Ieee80211Mac.address}
+        //   [Config Bar] => {Ieee80211Mac.address}
+        //
+        Map<String,Set<ParamElement>> sectionParamDecls = new LinkedHashMap<String, Set<ParamElement>>();
+        for (ParamResolution res : resList) {
+            String sectionName = res.activeSection;
+            if (!sectionParamDecls.containsKey(sectionName))
+                sectionParamDecls.put(sectionName, new HashSet<ParamElement>());
+            sectionParamDecls.get(sectionName).add(res.paramDeclNode);
+        }
 
-        for (String sectionName : sectionNames) {
-            Set<ParamElement> paramDeclNodes = new LinkedHashSet<ParamElement>();
-            for (ParamResolution res : resList)
-                if (res.activeSection.equals(sectionName))
-                    paramDeclNodes.add(res.paramDeclNode);
+        // Now: it is typical that the config key matches the same parameter declarations 
+        // in all sections, so we want to group them. This is what we want to see:
+        //   {EtherMac.address, Ieee80211Mac.address} => {[General], [Config Foo]}
+        //   {Ieee80211Mac.address} => {[Config Bar]}
+        //
+        Map<Set<ParamElement>, Set<String>> map2 = new LinkedHashMap<Set<ParamElement>, Set<String>>();
+        for (String sectionName : sectionParamDecls.keySet()) {
+            Set<ParamElement> declSet = sectionParamDecls.get(sectionName);
+            if (!map2.containsKey(declSet)) 
+                map2.put(declSet, new LinkedHashSet<String>());
+            map2.get(declSet).add(sectionName);
+        }
+                
+        // Now we turn this into HTML
+        for (Set<ParamElement> paramDecls : map2.keySet()) {
+            Set<String> sectionNames = map2.get(paramDecls);
 
-            if (sectionNames.size()>1)
-                text += "&nbsp;[" + sectionName + "]\n";
+            // print section name(s), unless there'a only one section
+            if (sectionNames.size() == allSectionNames.length) {
+                if (allSectionNames.length > 1)
+                    text += "&nbsp;All sections";
+            }
+            else
+                text += "&nbsp;[" + StringUtils.join(sectionNames, "], [") + "]\n";
+            
+            // and the param declarations
             text += "<ul>";
-            for (ParamElement paramDeclNode : paramDeclNodes) {
+            for (ParamElement paramDeclNode : paramDecls) {
                 String paramName = paramDeclNode.getName();
                 String paramValue = paramDeclNode.getValue();
                 if (paramDeclNode.getIsDefault())
@@ -207,15 +243,18 @@ public class InifileHoverUtils {
                 if (paramDeclNode.getIsVolatile())
                     paramType = "volatile " + paramType;
                 String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
-                String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 60);
-                String optComment = comment==null ? "" : (" -- <i>\"" + comment + "\"</i>");
+                String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 250);
+                String optComment = comment==null ? "" : ("<br><i>\"" + comment + "\"</i>");
 
-                text += "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + optComment + "\n";
+                // print parameter declaration 
+                text += "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + (details ? "" : optComment) + "\n";
                 if (details) {
                     text += "<ul>\n";
-                    for (ParamResolution res : resList)
-                        if (res.paramDeclNode == paramDeclNode && res.activeSection.equals(sectionName))
-                            text += " <li><i>" + res.moduleFullPath + "." + paramName + "</i></li>\n";
+                    for (String sectionName : sectionNames)
+                        for (ParamResolution res : resList)
+                            if (res.paramDeclNode == paramDeclNode && res.activeSection.equals(sectionName))
+                                text += " <li><i>" + res.moduleFullPath + "." + paramName + "</i>" +
+                                		(sectionNames.size()==1 ? "" : " [" + sectionName + "]") + "</li>\n";
                     text += "</ul>";
                 }
                 text += "</li>\n";

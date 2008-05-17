@@ -273,7 +273,7 @@ public class HoverSupport {
 	protected void configureControl(IInformationControl informationControl, String hoverText, Point mouseLocation, SizeConstraint preferredSize) {
 		informationControl.setSizeConstraints(hoverSizeConstraints.x, hoverSizeConstraints.y);
 		informationControl.setInformation(hoverText);
-		Point size = informationControl.computeSizeHint(); //XXX issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
+		Point size = informationControl.computeSizeHint(); //issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
 		size.x = calculateSize(hoverSizeConstraints.x, size.x, preferredSize.minimumWidth, preferredSize.preferredWidth);
 		size.y = calculateSize(hoverSizeConstraints.y, size.y, preferredSize.minimumHeight, preferredSize.preferredHeight); 
 		informationControl.setSize(size.x, size.y);
@@ -369,7 +369,16 @@ public class HoverSupport {
 				int style = SWT.NONE;
 				String tooltipAffordanceString = "Press 'F2' for focus."; //TODO use EditorsUI.getTooltipAffordanceString();
 				if (BrowserInformationControl.isAvailable(parent))
-					return new BrowserInformationControl(parent, shellStyle, style, tooltipAffordanceString);
+				    return (new BrowserInformationControl(parent, shellStyle, style, tooltipAffordanceString) {
+				        // note: this subclassing is sort of a hack, because the required width got
+				        // consistently underestimated by a few pixels on XP, resulting in an extra line wrap.
+				        // configureControl() is not a good place for extending the width, because
+				        // text editor hovers (inifile text editor) bypasses it.
+				        @Override
+				        public void setSize(int width, int height) {
+				            super.setSize(width + 20, height);
+				        }	    
+				    });
 				else
 					return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false), tooltipAffordanceString);
 			}
