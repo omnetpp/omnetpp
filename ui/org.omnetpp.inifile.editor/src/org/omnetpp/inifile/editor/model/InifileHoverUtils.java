@@ -234,21 +234,9 @@ public class InifileHoverUtils {
             // and the param declarations
             text += "<ul>";
             for (ParamElement paramDeclNode : paramDecls) {
-                String paramName = paramDeclNode.getName();
-                String paramValue = paramDeclNode.getValue();
-                if (paramDeclNode.getIsDefault())
-                    paramValue = "default("+paramValue+")";
-                String optParamValue = StringUtils.isEmpty(paramValue) ? "" : " = " + paramValue;
-                String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
-                if (paramDeclNode.getIsVolatile())
-                    paramType = "volatile " + paramType;
-                String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
-                String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 250);
-                String optComment = comment==null ? "" : ("<br><i>\"" + comment + "\"</i>");
-
-                // print parameter declaration 
-                text += "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + (details ? "" : optComment) + "\n";
+                text += formatParamDecl(paramDeclNode, !details);
                 if (details) {
+                    String paramName = paramDeclNode.getName();
                     text += "<ul>\n";
                     for (String sectionName : sectionNames)
                         for (ParamResolution res : resList)
@@ -264,7 +252,24 @@ public class InifileHoverUtils {
         return text;
     }
 
-	public static String getProblemsHoverText(IMarker[] markers, boolean lineNumbers) {
+	private static String formatParamDecl(ParamElement paramDeclNode, boolean addComment) {
+        String paramName = paramDeclNode.getName();
+        String paramValue = paramDeclNode.getValue();
+        if (paramDeclNode.getIsDefault())
+            paramValue = "default("+paramValue+")";
+        String optParamValue = StringUtils.isEmpty(paramValue) ? "" : " = " + paramValue;
+        String paramType = paramDeclNode.getAttribute(ParamElement.ATT_TYPE);
+        if (paramDeclNode.getIsVolatile())
+            paramType = "volatile " + paramType;
+        String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
+        String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 250);
+        String optComment = comment==null ? "" : ("<br><i>\"" + comment + "\"</i>");
+
+        // print parameter declaration 
+        return "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + (addComment ? optComment : "") + "\n";
+    }
+
+    public static String getProblemsHoverText(IMarker[] markers, boolean lineNumbers) {
 		if (markers.length==0) 
 			return "";
 		
