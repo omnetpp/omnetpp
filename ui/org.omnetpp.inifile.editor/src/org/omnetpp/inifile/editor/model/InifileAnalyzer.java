@@ -59,6 +59,14 @@ import org.omnetpp.ned.model.pojo.ParamElement;
  *
  * @author Andras
  */
+//XXX Issue. Consider the following:
+//  **.ppp[1].queueType = "Foo"
+//  **.ppp[*].queueType = "DropTailQueue"
+//  **.ppp[*].queue.frameCapacity = 10     ===> "unused entry", although DropTailQueue has that parameter
+// because the queue type resolves to "Foo", and "DropTailQueue" is not considered.
+// How to fix this? Maybe: resolveLikeType() returns a set of potential types
+// (ie both "Foo" and "DropTailQueue", and NEDTreeTraversal should recurse with **all** of them?
+//
 public class InifileAnalyzer {
 	public static final String INIFILEANALYZERPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileanalyzerproblem";
 	private IInifileDocument doc;

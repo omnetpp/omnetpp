@@ -936,7 +936,7 @@ proc graphmodwin_zoomby {w mult} {
 proc graphmodwin_zoomiconsby {w mult} {
     global inspectordata
     set c $w.c
-    if {($mult<1 && $inspectordata($c:imagesizefactor)>0.1) || ($mult>1 && $inspectordata($c:imagesizefactor)<10)} {
+    if {($mult<1 && $inspectordata($c:imagesizefactor)>0.1) || ($mult>1 && $inspectordata($c:imagesizefactor)<5)} {
         set inspectordata($c:imagesizefactor) [expr $inspectordata($c:imagesizefactor) * $mult]
         if {abs($inspectordata($c:imagesizefactor)-1.0) < 0.1} {set inspectordata($c:imagesizefactor) 1}
         opp_inspectorcommand $w redraw

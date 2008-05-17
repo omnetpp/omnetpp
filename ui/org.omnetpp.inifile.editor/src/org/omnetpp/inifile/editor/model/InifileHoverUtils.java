@@ -217,15 +217,30 @@ public class InifileHoverUtils {
             // and the param declarations
             text += "<ul>";
             for (ParamElement paramDeclNode : paramDecls) {
+                // print the parameter declaration itself
                 text += formatParamDecl(paramDeclNode, printComment);
+                
                 if (printDetails) {
-                    String paramName = paramDeclNode.getName();
+                    // here we want to print the moduleFullPaths where this parameter matches;
+                    // and for each moduleFullPath, the list of sections. So we collect it first:
+                    Map<String,Set<String>> fullpathToSections = new LinkedHashMap<String, Set<String>>();
+                    for (ParamResolution res : resList) {
+                        if (res.paramDeclNode == paramDeclNode) {
+                            if (!fullpathToSections.containsKey(res.moduleFullPath))
+                                fullpathToSections.put(res.moduleFullPath, new HashSet<String>());
+                            fullpathToSections.get(res.moduleFullPath).add(res.activeSection);
+                        }
+                    }
+
+                    // then print
                     text += "<ul>\n";
-                    for (String sectionName : sectionNames)
-                        for (ParamResolution res : resList)
-                            if (res.paramDeclNode == paramDeclNode && res.activeSection.equals(sectionName))
-                                text += " <li><i>" + res.moduleFullPath + "." + paramName + "</i>" +
-                                		(sectionNames.size()==1 ? "" : " [" + sectionName + "]") + "</li>\n";
+                    for (String fullPath : fullpathToSections.keySet()) {
+                        text += " <li>in <i>" + fullPath + "</i> ";
+                        // leave out sections list if it's the same as printed above
+                        if (!sectionNames.equals(fullpathToSections.get(fullPath)))
+                            text += "[" + StringUtils.join(fullpathToSections.get(fullPath), "], [") + "]";
+                        text += "</li>\n";
+                    }
                     text += "</ul>";
                 }
                 text += "</li>\n";
@@ -283,7 +298,7 @@ public class InifileHoverUtils {
             paramType = "volatile " + paramType;
         String paramDeclaredOn = paramDeclNode.getEnclosingTypeElement().getName();
         String comment = StringUtils.makeBriefDocu(paramDeclNode.getComment(), 250);
-        String optComment = comment==null ? "" : ("<br><i>\"" + comment + "\"</i>");
+        String optComment = comment==null ? "" : ("<br>&nbsp;&nbsp;&nbsp;<i>\"" + comment + "\"</i>");
 
         // print parameter declaration 
         return "<li>"+paramDeclaredOn + ": " + paramType + " " + paramName + optParamValue + (printComment ? optComment : "") + "\n";

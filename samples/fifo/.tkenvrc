@@ -50,6 +50,7 @@ config timeline-wantselfmsgs	{1}
 inspector "FifoNet.gen.out" "cGate" "1" "486x389+337+218"
 inspector "FifoNet.fifo.in" "cGate" "2" "196x181+48+62"
 inspector "FifoNet.fifo" "BitFifo" "1" "460x312+24+31"
+inspector "FifoNet" "FifoNet" "2" "539x299+24+31"
 inspector "component types.Sink" "cDynamicModuleType" "1" "460x312+120+155"
 inspector "Cn" "Cn" "2" "367x206+120+155"
 inspector "DD2.n1" "DD2::Node" "2" "367x287+48+62"

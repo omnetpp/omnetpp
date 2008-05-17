@@ -74,9 +74,12 @@ proc create_graphicalgatewindow {name geom} {
     # create canvas
     set c $w.c
 
-    # init some state vars (zoomfactor is needed by some modinsp2.tcl procs we call from here)
+    # init some state vars (not all of them fully used, e.g. zoomfactor is only
+    # needed by some modinsp2.tcl procs we call from here)
     set inspectordata($c:zoomfactor) 1
+    set inspectordata($c:imagesizefactor) 1
     set inspectordata($c:showlabels) 1
+    set inspectordata($c:showarrowheads) 1
 
     frame $w.grid
     scrollbar $w.hsb -orient horiz -command "$c xview"
