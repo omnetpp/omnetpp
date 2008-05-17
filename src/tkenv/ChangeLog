@@ -1,3 +1,9 @@
+2008-05-17  Andras Varga
+
+	* better toolbar icons
+	* implemented show/hide arrowheads
+	* expanded context menu in graphical module inspectors
+
 2008-04-19  Andras Varga
 
 	* layouting process can now be stopped if it takes too long
