@@ -52,6 +52,8 @@ foreach $fname (@fnames)
 
 writefile("icons.tcl", $tclcode);
 
+unlink($tmpfile);
+
 
 sub readfile ()
 {
