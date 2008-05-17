@@ -699,15 +699,13 @@ proc filteredobjectlist_window {{ptr ""}} {
     frame $w.toolbar -relief raised -borderwidth 1
     pack $w.toolbar -anchor center -expand 0 -fill x -side top -before $w.f
     foreach i {
-      {sep01    -separator}
-      {step     -image $icons(step)    -command {one_step}}
       {sep1     -separator}
+      {step     -image $icons(step)    -command {one_step}}
       {run      -image $icons(run)     -command {run_normal}}
       {fastrun  -image $icons(fast)    -command {run_fast}}
       {exprrun  -image $icons(express) -command {run_express}}
-      {sep2     -separator}
       {until    -image $icons(until)   -command {run_until}}
-      {sep3     -separator}
+      {sep2     -separator}
       {stop     -image $icons(stop)    -command {stop_simulation}}
     } {
       set b [eval iconbutton $w.toolbar.$i]

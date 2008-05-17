@@ -146,3 +146,33 @@ proc timeline_popup {cx cy x y} {
     }
 }
 
+proc timeline_dblclick c {
+   set item [$c find withtag current]
+   set tags [$c gettags $item]
+
+   set ptr ""
+   if {[lsearch $tags "ptr*"] != -1} {
+      regexp "ptr.*" $tags ptr
+   }
+
+   if {$ptr!=""} {
+      opp_inspect $ptr "(default)"
+   }
+}
+
+proc timeline_rightclick {c X Y} {
+   set item [$c find withtag current]
+   set tags [$c gettags $item]
+
+   set ptr ""
+   if {[lsearch $tags "ptr*"] != -1} {
+      regexp "ptr.*" $tags ptr
+   }
+   set ptr [lindex $ptr 0]
+
+   if {$ptr!=""} {
+      set popup [create_inspector_contextmenu $ptr]
+      $popup post $X $Y
+   }
+}
+

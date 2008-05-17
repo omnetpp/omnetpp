@@ -288,10 +288,16 @@ proc create_inspector_listbox {w} {
     grid columnconfig $w.main 0 -weight 1 -minsize 0
 
     bind $w.main.list <Double-Button-1> "inspect_item_in $w.main.list"
-    bind $w.main.list <Button-$B3> "popup_insp_menu \[lindex \[multicolumnlistbox_curselection $w.main.list\] 0\] %X %Y"
+    bind $w.main.list <Button-$B3> "inspector_rightclick $w.main.list %X %Y"
     bind $w.main.list <Key-Return> "inspect_item_in $w.main.list"
 
     focus $w.main.list
+}
+
+proc inspector_rightclick {lb X Y} {
+    set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
+    set popup [create_inspector_contextmenu $ptr]
+    $popup post $X $Y
 }
 
 #
@@ -334,7 +340,7 @@ proc extendContextMenu {rules} {
     }
 }
 
-proc popup_insp_menu {ptr X Y {wantanimoptions 0}} {
+proc create_inspector_contextmenu {ptr} {
     global contextmenurules
 
     if {$ptr=="" || $ptr==[opp_null]} return
@@ -379,13 +385,7 @@ proc popup_insp_menu {ptr X Y {wantanimoptions 0}} {
            .popup add command -label "$contextmenurules($key,label)..." -command "inspect_contextmenurules $ptr $key"
        }
     }
-
-    if {$wantanimoptions} {
-       .popup add separator
-       .popup add command -label "Animation options..." -command "options_dialog a"
-    }
-
-    .popup post $X $Y
+    return .popup
 }
 
 proc inspect_contextmenurules {ptr key} {

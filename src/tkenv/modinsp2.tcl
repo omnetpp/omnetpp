@@ -598,6 +598,7 @@ proc resizeimage {img sx sy} {
 # This function is invoked from the module inspector C++ code.
 #
 proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n} {
+    global inspectordata
 
     # puts "DEBUG: draw_connection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n"
 
@@ -647,7 +648,13 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
            set pattern ""
        }
 
-       $c create line $arrow_coords -arrow last -fill $fill -dash $pattern -width $width -tags "dx tooltip conn $gateptr"
+       if {$inspectordata($c:showarrowheads)} {
+           set arrow last
+       } else {
+           set arrow none
+       }
+
+       $c create line $arrow_coords -arrow $arrow -fill $fill -dash $pattern -width $width -tags "dx tooltip conn $gateptr"
 
        if {[info exists tags(t)]} {
            set txt [lindex $tags(t) 0]
@@ -840,6 +847,7 @@ proc create_graphicalmodwindow {name geom} {
     # init some state vars
     set inspectordata($c:zoomfactor) 1
     set inspectordata($c:showlabels) 1
+    set inspectordata($c:showarrowheads) 1
 
     frame $w.grid
     scrollbar $w.hsb -orient horiz -command "$c xview"
@@ -856,19 +864,19 @@ proc create_graphicalmodwindow {name geom} {
     grid $w.hsb -in $w.grid -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
 
     # mouse bindings
-    $c bind submod <Double-1> "graphmodwin_dblclick $c"
-    $c bind conn <Double-1> "graphmodwin_dblclick $c"
-    $c bind msg <Double-1> "graphmodwin_dblclick $c"
-    $c bind msgname <Double-1> "graphmodwin_dblclick $c"
-    $c bind qlen <Double-1> "graphmodwin_qlen_dblclick $c"
+    $c bind submod <Double-1> "graphmodwin_dblclick $w"
+    $c bind conn <Double-1> "graphmodwin_dblclick $w"
+    $c bind msg <Double-1> "graphmodwin_dblclick $w"
+    $c bind msgname <Double-1> "graphmodwin_dblclick $w"
+    $c bind qlen <Double-1> "graphmodwin_qlen_dblclick $w"
 
-    $c bind submod <$B3> "graphmodwin_rightclick $c %X %Y"
-    $c bind conn <$B3> "graphmodwin_rightclick $c %X %Y"
-    $c bind msg <$B3> "graphmodwin_rightclick $c %X %Y"
-    $c bind msgname <$B3> "graphmodwin_rightclick $c %X %Y"
-    $c bind mod <$B3> "graphmodwin_rightclick $c %X %Y"
-    $c bind modname <$B3> "graphmodwin_rightclick $c %X %Y"
-    $c bind qlen <$B3> "graphmodwin_qlen_rightclick $c %X %Y"
+    $c bind submod <$B3> "graphmodwin_rightclick $w %X %Y"
+    $c bind conn <$B3> "graphmodwin_rightclick $w %X %Y"
+    $c bind msg <$B3> "graphmodwin_rightclick $w %X %Y"
+    $c bind msgname <$B3> "graphmodwin_rightclick $w %X %Y"
+    $c bind mod <$B3> "graphmodwin_rightclick $w %X %Y"
+    $c bind modname <$B3> "graphmodwin_rightclick $w %X %Y"
+    $c bind qlen <$B3> "graphmodwin_qlen_rightclick $w %X %Y"
 
     if {$inspectordata($c:showlabels)} {
         $w.toolbar.showlabels config -relief sunken
@@ -912,12 +920,22 @@ proc graphmodwin_togglelabels {w} {
     set inspectordata($c:showlabels) [expr !$inspectordata($c:showlabels)]
     opp_inspectorcommand $w redraw
 
-    if {$inspectordata($c:showlabels)} {set relief "sunken"} else {set relief "raised"}
+    if {$inspectordata($c:showlabels)} {set relief "sunken"} else {set relief "flat"}
     $w.toolbar.showlabels config -relief $relief
 }
 
-proc graphmodwin_dblclick c {
+proc graphmodwin_togglearrowheads {w} {
+    global inspectordata
+    set c $w.c
+    set inspectordata($c:showarrowheads) [expr !$inspectordata($c:showarrowheads)]
+    opp_inspectorcommand $w redraw
 
+    if {$inspectordata($c:showarrowheads)} {set relief "sunken"} else {set relief "flat"}
+    #TBD $w.toolbar.showarrowheads config -relief $relief
+}
+
+proc graphmodwin_dblclick w {
+   set c $w.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -931,7 +949,9 @@ proc graphmodwin_dblclick c {
    }
 }
 
-proc graphmodwin_rightclick {c X Y} {
+proc graphmodwin_rightclick {w X Y} {
+   global inspectordata tmp
+   set c $w.c
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -942,7 +962,24 @@ proc graphmodwin_rightclick {c X Y} {
    set ptr [lindex $ptr 0]
 
    if {$ptr!=""} {
-      popup_insp_menu $ptr $X $Y 1
+      set popup [create_inspector_contextmenu $ptr]
+
+      set tmp($c:showlabels) $inspectordata($c:showlabels)
+      set tmp($c:showarrowheads) $inspectordata($c:showarrowheads)
+
+      $popup add separator
+      $popup add checkbutton -label "Show module names" -command "graphmodwin_togglelabels $w" -variable tmp($c:showlabels)
+      $popup add checkbutton -label "Show arrowheads" -command "graphmodwin_togglearrowheads $w" -variable tmp($c:showarrowheads)
+
+      $popup add separator
+      $popup add command -label "Zoom in" -command "graphmodwin_zoomby $w 1.25"
+      $popup add command -label "Zoom out" -command "graphmodwin_zoomby $w 0.8"
+      $popup add command -label "Re-layout" -command "opp_inspectorcommand $w relayout"
+
+      $popup add separator
+      $popup add command -label "Animation options..." -command "options_dialog a"
+
+      $popup post $X $Y
    }
 }
 
@@ -1078,17 +1115,20 @@ proc graphmodwin_qlen_getqptr {c modptr} {
    return ""
 }
 
-proc graphmodwin_qlen_dblclick c {
+proc graphmodwin_qlen_dblclick w {
+   set c $w.c
    set qptr [graphmodwin_qlen_getqptr_current $c]
    if {$qptr!="" && $qptr!=[opp_null]} {
        opp_inspect $qptr "(default)"
    }
 }
 
-proc graphmodwin_qlen_rightclick {c X Y} {
+proc graphmodwin_qlen_rightclick {w X Y} {
+   set c $w.c
    set qptr [graphmodwin_qlen_getqptr_current $c]
    if {$qptr!="" && $qptr!=[opp_null]} {
-       popup_insp_menu $qptr $X $Y
+       set popup [create_inspector_contextmenu $qptr]
+       $popup post $X $Y
    }
 }
 

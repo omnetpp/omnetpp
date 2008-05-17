@@ -301,10 +301,10 @@ proc create_omnetpp_window {} {
 
     canvas .timeline -borderwidth 2 -relief groove -height 40
     bind .timeline <Configure> "redraw_timeline"
-    .timeline bind msg <Double-1> "graphmodwin_dblclick .timeline"
-    .timeline bind msgname <Double-1> "graphmodwin_dblclick .timeline"
-    .timeline bind msg <$B3> "graphmodwin_rightclick .timeline %X %Y"
-    .timeline bind msgname <$B3> "graphmodwin_rightclick .timeline %X %Y"
+    .timeline bind msg <Double-1> "timeline_dblclick .timeline"
+    .timeline bind msgname <Double-1> "timeline_dblclick .timeline"
+    .timeline bind msg <$B3> "timeline_rightclick .timeline %X %Y"
+    .timeline bind msgname <$B3> "timeline_rightclick .timeline %X %Y"
     bind .timeline <Button-$B3> {timeline_popup %x %y %X %Y}
 
     set widgets(timeline) .timeline
