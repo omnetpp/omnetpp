@@ -217,7 +217,8 @@ proc display_stopdialog {} {
     wm protocol $w WM_DELETE_WINDOW {opp_stopsimulation}
     # bind $w <Visibility> "raise $w"  ;# Keep modal window on top -- not good! (obscures error dialogs)
 
-    button $w.stopbutton  -text "STOP!" -background red -activebackground red \
+    set red #f83030
+    button $w.stopbutton  -text "STOP!" -background $red -activebackground $red \
           -borderwidth 6 -font $fonts(big) -command {opp_stopsimulation}
     checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopdialog_autoupdate $w"
     button $w.updatebutton  -text "  Update now  " -borderwidth 1 -command {opp_updateinspectors}
