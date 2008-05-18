@@ -153,7 +153,7 @@ public class MakemakeOptionsPanel extends Composite {
 
         // "Scope" page
         scopePage.setLayout(new GridLayout(1,false));
-        Group group1 = createGroup(scopePage, "Select one:", 1);
+        Group group1 = createGroup(scopePage, "Select makefile type:", 1);
         deepMakefileRadioButton = createRadioButton(group1, "Deep (recommended)", "Process all source files from this subdirectory tree");
         recursiveMakefileRadioButton = createRadioButton(group1, "Recursive", "Process source files in this directory only, and invoke \"make\" in all subdirectories; Makefiles must exist");
         localMakefileRadioButton = createRadioButton(group1, "Local", "Process source files in this directory only; ignore subdirectories");

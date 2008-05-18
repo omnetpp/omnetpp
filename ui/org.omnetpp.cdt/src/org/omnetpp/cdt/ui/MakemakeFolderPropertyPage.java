@@ -94,13 +94,23 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         Group group = new Group(parent, SWT.NONE);
         group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         group.setLayout(new GridLayout(2,false));
-        createLabel(group, "Source folder:");
+        
+        Label label0 = createLabel(group, "Source folder to configure:");
+        label0.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false,2,1));
+        createLabel(group, " ");
         sourceFolderCombo = new Combo(group, SWT.READ_ONLY | SWT.BORDER);
         sourceFolderCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
+        String text = "To add/remove source folders, ";
+        if (getFolder() instanceof IProject)
+            text += "go to the <A>Paths and symbols</A> page.";
+        else
+            text += "open Project Properties and go to the Paths and symbols page.";
+        Link pathsAndSymbolsLink = createLink(group, text);
+        pathsAndSymbolsLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+        
         errorMessageText = new Text(group, SWT.MULTI);
-        errorMessageText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        ((GridData)errorMessageText.getLayoutData()).horizontalSpan = 2;
+        errorMessageText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
         errorMessageText.setEditable(false);
         errorMessageText.setForeground(ColorFactory.RED2);
         errorMessageText.setBackground(errorMessageText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -114,29 +124,28 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
                 comboSelectionChanged();
             } 
         });
+        pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
+            public void widgetSelected(SelectionEvent e) {
+                gotoPathsAndSymbolsPage();
+            }
+            public void widgetDefaultSelected(SelectionEvent e) {
+                gotoPathsAndSymbolsPage();
+            }
+        });
 
         optionsPanel.setOwner(this);
         
         nonSourceFolderComposite = new Composite(parent, SWT.NONE);
         nonSourceFolderComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         nonSourceFolderComposite.setLayout(new GridLayout(1,false));
-        Link link = createLink(nonSourceFolderComposite, "This is not a source folder. Source folders can be specified in the <A>Paths and symbols</A> page.");
-        createLabel(nonSourceFolderComposite, "To generate a Makefile, you need to make this folder a source folder.");
-        Button button = createButton(nonSourceFolderComposite, SWT.PUSH, "Make source folder", null);
+        createLabel(nonSourceFolderComposite, "This is not a source folder. Makefiles can only be generated in source folders.");
+        Button button = createButton(nonSourceFolderComposite, SWT.PUSH, "Mark as Source Folder", null);
         button.addSelectionListener(new SelectionListener() {
             public void widgetDefaultSelected(SelectionEvent e) {
                 makeSourceFolder();
             }
             public void widgetSelected(SelectionEvent e) {
                 makeSourceFolder();
-            }
-        });
-        link.addSelectionListener(new SelectionListener(){
-            public void widgetSelected(SelectionEvent e) {
-                gotoPathsAndSymbolsPage();
-            }
-            public void widgetDefaultSelected(SelectionEvent e) {
-                gotoPathsAndSymbolsPage();
             }
         });
         
@@ -285,7 +294,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             if (message == null)
                 errorMessageText.setText("");
             else
-                errorMessageText.setText(message);
+                errorMessageText.setText(StringUtils.breakLines(message,80)); //XXX until we learn how to make it wrap...
         }
     }
 
@@ -329,47 +338,37 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         // Check CDT settings
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(getFolder().getProject());
         if (buildInfo == null)
-            return "Cannot access CDT build information for this project. Is this a CDT project?";
+            return "Cannot access CDT build information for this project. Is this a C/C++ project?";
         IConfiguration configuration = buildInfo.getDefaultConfiguration();
         if (configuration == null)
-            return "No active CDT configuration -- please create one.";
+            return "No active build configuration -- please create one.";
         if (configuration.isManagedBuildOn())
-            return "CDT Managed Build is on! Please turn off CDT's Makefile generation on the \"C/C++ Build\" page.";
-      //XXX "Out" dir should not overlap with source folders (check!!!)
+            return "CDT Managed Build is on! Please turn off CDT's Makefile generation on the C/C++ Build page.";
+        String builderId = configuration.getBuilder()!=null ? configuration.getBuilder().getId() : null; 
+        if (builderId==null)
+            return "Cannot determine CDT builder Id. Is the project properly configured for C/C++?";
+        if (!builderId.startsWith("org.omnetpp.cdt."))
+            return "C/C++ configuration of this project is not suitable for OMNeT++. To fix that, " +
+            		"delete the project from the workspace (keeping the files), and re-create it " +
+            		"with the New OMNeT++ Project wizard, overwriting existing project settings.";
         
-//FIXME revise/remove or something...        
-//        ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
-//        if (CDataUtil.isExcluded(getResource().getProjectRelativePath(), sourceEntries)) 
-//            return "This folder is excluded from build (or not marked as source folder).";  //XXX clear & disable checkbox too?
-//        //FIXME does not work: macro resolver returns "" so buildLocation becomes empty path. why???
-//        //IPath buildLocation = configuration.getBuilder().getBuildLocation();
-//        //IPath projectLocation = getResource().getProject().getLocation();
-//        //if (!projectLocation.isPrefixOf(buildLocation))
-//        //    return "Build directory is outside the project! Please adjust it on the \"C/C++ Build\" page.";
-//
-//        // check build command; check builder type
-//
-//        IContainer ancestorMakemakeFolder = ancestorMakemakeFolder();
-//        if (ancestorMakemakeFolder != null) {
-//            MakemakeOptions ancestorMakemakeOptions = buildSpec.getMakemakeOptions(ancestorMakemakeFolder);
-//            if (ancestorMakemakeOptions.isDeep /*FIXME and this folder is not excluded manually from it*/)
-//                return "This folder is already covered by Makefile in: " + ancestorMakemakeFolder.getFullPath(); //XXX clean and disable checkbox too?
-//        }
-
+        //XXX "Out" dir should not overlap with source folders (check!!!)
+        
         //XXX return some message to be displayed to the user, if:
         //  - CDT make folder is not the project root (or: if a makefile is unreachable)
         //  - makefile consistency error (i.e. a subdir doesn't contain a makefile)
         //  - something else is wrong?
+        
+        //FIXME revise/remove or something...        
+        // IContainer ancestorMakemakeFolder = ancestorMakemakeFolder();
+        // if (ancestorMakemakeFolder != null) {
+        //     MakemakeOptions ancestorMakemakeOptions = buildSpec.getMakemakeOptions(ancestorMakemakeFolder);
+        //     if (ancestorMakemakeOptions.isDeep /*FIXME and this folder is not excluded manually from it*/)
+        //     return "This folder is already covered by Makefile in: " + ancestorMakemakeFolder.getFullPath(); //XXX clean and disable checkbox too?
+        // }
+
         return null;
     }
-
-    //XXX needed??
-//    protected IContainer ancestorMakemakeFolder() {
-//        IContainer folder = getFolder().getParent();
-//        while (!(folder instanceof IWorkspaceRoot) && buildSpec.getMakemakeOptions(folder)==null)
-//            folder = folder.getParent();
-//        return buildSpec.getMakemakeOptions(folder)==null ? null : folder;
-//    }
 
     /**
      * The resource for which the Properties dialog was brought up.
