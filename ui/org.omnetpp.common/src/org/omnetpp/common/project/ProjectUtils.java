@@ -233,6 +233,7 @@ public class ProjectUtils {
 
     /**
      * Imports a project from the workspace directory, and optionally opens it.
+     * This is basically a convenience wrapper around IProject.create().
      */
     public static IProject importProjectFromWorkspaceDirectory(String projectName, boolean open, IProgressMonitor monitor) throws InvocationTargetException {
         //
@@ -249,7 +250,8 @@ public class ProjectUtils {
             project.create(description, new SubProgressMonitor(monitor, 30));
             if (open)
                 project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 70));
-        } catch (CoreException e) {
+        } 
+        catch (CoreException e) {
             throw new InvocationTargetException(e);
         } finally {
             monitor.done();

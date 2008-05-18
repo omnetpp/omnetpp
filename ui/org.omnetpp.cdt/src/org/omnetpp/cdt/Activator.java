@@ -53,6 +53,10 @@ public class Activator extends AbstractUIPlugin {
         return plugin;
     }
 
+    public static void log(int severity, String message) {
+        getDefault().getLog().log(new Status(severity, PLUGIN_ID, message));
+    }
+    
     public static void logError(Throwable exception) {
         logError(exception.toString(), exception);
     }

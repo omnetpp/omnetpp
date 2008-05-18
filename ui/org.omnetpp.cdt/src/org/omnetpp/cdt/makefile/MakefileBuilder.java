@@ -9,6 +9,7 @@ import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -25,6 +26,7 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Keeps makefiles up to date.
@@ -47,6 +49,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             if (kind == CLEAN_BUILD)
                 Activator.getDependencyCache().clean(getProject());
 
+            checkOrderOfProjectBuilders();
             checkActiveCDTConfiguration();
             
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
@@ -77,6 +80,52 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         }
 
         return Activator.getDependencyCache().getProjectGroup(getProject());
+    }
+
+    /**
+     * This builder should precede CDT's builder; check it and warn the user if it's not the case.
+     */
+    protected void checkOrderOfProjectBuilders() {
+        final IProject project = getProject();
+        try {
+            // find this builder and CDT's builder in the project description
+            ICommand[] builders = project.getDescription().getBuildSpec();
+            int thisBuilderPos = -1;
+            int cdtBuilderPos = -1;
+            for (int i=0; i<builders.length; i++) {
+                ICommand builder = builders[i];
+                String builderId = StringUtils.nullToEmpty(builder.getBuilderName());
+                System.out.println("BUILDER: " + builderId);
+                if (thisBuilderPos == -1 && builderId.equals(BUILDER_ID))
+                    thisBuilderPos = i;
+                if (cdtBuilderPos == -1 && builderId.startsWith("org.eclipse.cdt."))
+                    cdtBuilderPos = i;
+            }
+            
+            // log a warning if something looks fishy
+            if (thisBuilderPos == -1)
+                Activator.log(IMarker.SEVERITY_WARNING, "Builder " + BUILDER_ID + " is not on project " + project + " and still gets called?");
+            if (cdtBuilderPos == -1)
+                Activator.log(IMarker.SEVERITY_WARNING, "CDT's builder is missing from project " + project + " when " + BUILDER_ID + " is running! Not configured, or perhaps a custom builder is in use?");
+
+            // warn the user if builders are in reverse order
+            if (thisBuilderPos != -1 && cdtBuilderPos != -1 && cdtBuilderPos < thisBuilderPos) {
+                Display.getDefault().asyncExec(new Runnable() {
+                    public void run() {
+                        String message = 
+                            "The C/C++ Project Builder seems to precede the OMNeT++ Makefile Builder " +
+                            "in project \"" + project.getName() + "\", which is incorrect. You can fix " +
+                            "this problem by removing and adding back the OMNeT++ Nature, using the " +
+                            "project's context menu.";
+                        MessageDialog.openWarning(Display.getCurrent().getActiveShell(), "Warning", message);
+                    }
+                });
+            }
+        }
+        catch (CoreException e) {
+            Activator.logError(e);
+        }
+        
     }
 
     /**
