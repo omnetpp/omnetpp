@@ -36,11 +36,9 @@
 
 USING_NAMESPACE
 
-#define CMDENV_EXTRASTACK_KB  "8"
-
 Register_GlobalConfigEntry(CFGID_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, NULL, "Specifies the name of the configuration to be run (for a value `Foo', section [Config Foo] will be used from the ini file). See also cmdenv-runs-to-execute=. The -c command line option overrides this setting.")
 Register_GlobalConfigEntry(CFGID_RUNS_TO_EXECUTE, "cmdenv-runs-to-execute", CFG_STRING, NULL, "Specifies which runs to execute from the selected configuration (see cmdenv-config-name=). It accepts a comma-separated list of run numbers or run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv executes all runs in the selected configuration. The -r command line option overrides this setting.")
-Register_GlobalConfigEntry(CFGID_CMDENV_EXTRA_STACK_KB, "cmdenv-extra-stack-kb", CFG_INT,  CMDENV_EXTRASTACK_KB, "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
+Register_GlobalConfigEntryU(CFGID_CMDENV_EXTRA_STACK, "cmdenv-extra-stack", "B",  "8KB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Cmdenv.")
 Register_GlobalConfigEntry(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_BOOL,  "false", "Defines what Cmdenv should do when the model contains unassigned parameters. In interactive mode, it asks the user. In non-interactive mode (which is more suitable for batch execution), Cmdenv stops with an error.")
 Register_GlobalConfigEntry(CFGID_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, NULL, "When a filename is specified, Cmdenv redirects standard output into the given file. This is especially useful with parallel simulation. See the `fname-append-host' option as well.")
 Register_PerRunConfigEntry(CFGID_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects ``normal'' (debug/trace) or ``express'' mode.")
@@ -110,7 +108,7 @@ void Cmdenv::readOptions()
     opt_configname = cfg->getAsString(CFGID_CONFIG_NAME);
     opt_runstoexec = cfg->getAsString(CFGID_RUNS_TO_EXECUTE);
 
-    opt_extrastack_kb = cfg->getAsInt(CFGID_CMDENV_EXTRA_STACK_KB);
+    opt_extrastack = (size_t) cfg->getAsDouble(CFGID_CMDENV_EXTRA_STACK);
     opt_outputfile = cfg->getAsFilename(CFGID_OUTPUT_FILE).c_str();
 
     if (!opt_outputfile.empty())
@@ -631,7 +629,7 @@ void Cmdenv::printUISpecificHelp()
 
 unsigned Cmdenv::extraStackForEnvir()
 {
-    return 1024*opt_extrastack_kb;
+    return opt_extrastack;
 }
 
 

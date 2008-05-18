@@ -34,7 +34,6 @@ class SIM_API cConfigKey : public cNoncopyableOwnedObject
     enum Type {
       CFG_BOOL,
       CFG_INT,
-      CFG_TIME, // note: input only: maps to CFG_DOUBLE with unit="s"
       CFG_DOUBLE,
       CFG_STRING,
       CFG_FILENAME,

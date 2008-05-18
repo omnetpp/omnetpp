@@ -93,7 +93,7 @@ class TKENV_API Tkenv : public EnvirBase
       long opt_stepdelay;          // Delay between steps in ms
       int  opt_updatefreq_fast;    // FastRun updates display every N events
       int  opt_updatefreq_express; // RunExpress updates display every N events
-      unsigned opt_extrastack_kb;  // per-module extra stack for activity() modules
+      size_t opt_extrastack;       // per-module extra stack for activity() modules
       bool opt_expressmode_autoupdate;// update inspectors at every display refresh in EXPRESS mode or not
       opp_string opt_image_path;   // directory of module icon files
       opp_string opt_plugin_path;  // path for loading Tcl and binary plugins

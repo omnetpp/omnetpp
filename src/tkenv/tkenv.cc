@@ -89,7 +89,7 @@ extern "C" TKENV_API void tkenv_lib() {}
 #define SPEEDOMETER_UPDATEMILLISECS 1000
 
 
-Register_GlobalConfigEntry(CFGID_TKENV_EXTRA_STACK_KB, "tkenv-extra-stack-kb", CFG_INT, "48", "Specifies the extra amount of stack (in kilobytes) that is reserved for each activity() simple module when the simulation is run under Tkenv.");
+Register_GlobalConfigEntryU(CFGID_TKENV_EXTRA_STACK, "tkenv-extra-stack", "B", "48KB", "Specifies the extra amount of stack that is reserved for each activity() simple module when the simulation is run under Tkenv.");
 Register_GlobalConfigEntry(CFGID_DEFAULT_CONFIG, "tkenv-default-config", CFG_STRING, NULL, "Specifies which config Tkenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigEntry(CFGID_DEFAULT_RUN, "tkenv-default-run", CFG_INT, "0", "Specifies which run (of the default config, see tkenv-default-config) Tkenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigEntry(CFGID_IMAGE_PATH, "tkenv-image-path", CFG_FILENAME, "", "Specifies the path for loading module icons.");
@@ -1000,7 +1000,7 @@ void Tkenv::readOptions()
 
     cConfiguration *cfg = config();
 
-    opt_extrastack_kb = cfg->getAsInt(CFGID_TKENV_EXTRA_STACK_KB);
+    opt_extrastack = (size_t) cfg->getAsDouble(CFGID_TKENV_EXTRA_STACK);
 
     const char *s = args->optionValue('c');
     opt_default_config = s ? s : cfg->getAsString(CFGID_DEFAULT_CONFIG);
@@ -1785,7 +1785,7 @@ bool Tkenv::askyesno(const char *question)
 
 unsigned Tkenv::extraStackForEnvir()
 {
-     return 1024*opt_extrastack_kb;
+     return opt_extrastack;
 }
 
 //======================================================================

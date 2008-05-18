@@ -60,7 +60,7 @@ class ENVIR_API EnvirBase : public cEnvir
     //
     // Configuration options
     //
-    int opt_total_stack_kb;
+    size_t opt_total_stack;
     bool opt_ini_warnings;
     opp_string opt_scheduler_class;
     bool opt_parsim;

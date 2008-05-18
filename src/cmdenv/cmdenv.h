@@ -37,7 +37,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      opp_string opt_runstoexec;
      bool opt_printconfigdetails;
      bool opt_printconfigdetails2;
-     unsigned opt_extrastack_kb;
+     size_t opt_extrastack;
      opp_string opt_outputfile;
 
      bool opt_expressmode;

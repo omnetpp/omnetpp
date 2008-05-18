@@ -61,13 +61,13 @@
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
-# define TOTAL_STACK_KB     2048
-# define MAIN_STACK_KB       128  // for MSVC+Tkenv, 64K is not enough
+# define TOTAL_STACK_SIZE   (2*1024*1024)
+# define MAIN_STACK_SIZE       (128*1024)  // Tkenv needs more than 64K
 
 #else /* nonportable coroutines, stacks are allocated on heap */
 
-# define TOTAL_STACK_KB        0  // dummy value
-# define MAIN_STACK_KB         0  // dummy value
+# define TOTAL_STACK_SIZE        0  // dummy value
+# define MAIN_STACK_SIZE         0  // dummy value
 
 #endif
 
@@ -90,7 +90,7 @@ using std::ostream;
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings", CFG_BOOL, "false", "Currently ignored. Accepted for backward compatibility.");
-Register_GlobalConfigEntry(CFGID_TOTAL_STACK_KB, "total-stack-kb", CFG_INT, NULL, "Specifies the maximum memory for activity() simple module stacks in kilobytes. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
+Register_GlobalConfigEntryU(CFGID_TOTAL_STACK, "total-stack", "B", NULL, "Specifies the maximum memory for activity() simple module stacks. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
 Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
 Register_GlobalConfigEntry(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, "cFileCommunications", "If parallel-simulation=true, it selects the class that implements communication between partitions. The class must implement the cParsimCommunications interface.");
@@ -107,8 +107,8 @@ Register_GlobalConfigEntry(CFGID_NED_PATH, "ned-path", CFG_STRING, "", "A semico
 
 Register_PerRunConfigEntry(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name of the network to be simulated.");
 Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
-Register_PerRunConfigEntry(CFGID_SIM_TIME_LIMIT, "sim-time-limit", CFG_TIME, NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
-Register_PerRunConfigEntry(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", CFG_TIME, NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
+Register_PerRunConfigEntryU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
+Register_PerRunConfigEntryU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
 Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "The expected fingerprint, suitable for crude regression tests. If present, the actual fingerprint is calculated during simulation, and compared against the expected one.");
 Register_PerRunConfigEntry(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigEntry(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
@@ -197,12 +197,12 @@ void EnvirBase::setup()
         readOptions();
 
         // initialize coroutine library
-        if (TOTAL_STACK_KB!=0 && opt_total_stack_kb<=MAIN_STACK_KB+4)
+        if (TOTAL_STACK_SIZE!=0 && opt_total_stack<=MAIN_STACK_SIZE+4096)
         {
-           ev.printf("Total stack size %dK increased to %dK\n", opt_total_stack_kb, MAIN_STACK_KB+4);
-           opt_total_stack_kb = MAIN_STACK_KB+4;
+            ev.printf("Total stack size %d increased to %d\n", opt_total_stack, MAIN_STACK_SIZE);
+            opt_total_stack = MAIN_STACK_SIZE+4096;
         }
-        cCoroutine::init(1024*opt_total_stack_kb, 1024*MAIN_STACK_KB);
+        cCoroutine::init(opt_total_stack, MAIN_STACK_SIZE);
 
         // install XML document cache
         xmlcache = new cXMLDocCache();
@@ -919,7 +919,7 @@ void EnvirBase::readOptions()
 
     opt_ini_warnings = cfg->getAsBool(CFGID_INI_WARNINGS); //XXX ignored
 
-    opt_total_stack_kb = cfg->getAsInt(CFGID_TOTAL_STACK_KB, TOTAL_STACK_KB);
+    opt_total_stack = (size_t) cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
     opt_parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
     if (!opt_parsim)
     {

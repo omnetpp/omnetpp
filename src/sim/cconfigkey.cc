@@ -28,13 +28,8 @@ cConfigKey::cConfigKey(const char *name, bool isPerObject, bool isGlobal, Type t
 {
     isPerObject_ = isPerObject;
     isGlobal_ = isGlobal;
-    if (type==CFG_TIME) {
-        type_ = CFG_DOUBLE;
-        unit_ = "s";
-    } else {
-        type_ = type;
-        unit_ = unit ? unit : "";
-    }
+    type_ = type;
+    unit_ = unit ? unit : "";
     if (type_==CFG_BOOL && defaultValue)
         defaultValue = (defaultValue[0]=='0' || defaultValue[0]=='f') ? "false" : "true";
     defaultValue_ = defaultValue ? defaultValue : "";
