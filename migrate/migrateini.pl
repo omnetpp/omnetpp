@@ -85,6 +85,11 @@ foreach $fname (@fnames)
     $txt =~ s/\.pingApp\.vector-recording-interval =/.pingApp.interval =/mg; #change back false hit
     $txt =~ s/\.akaroa\s*=/.with-akaroa =/mg;
 
+    # convert total-stack-kb, cmdenv-extra-stack-kb, tkenv-extra-stack-kb:
+    # remove -kb from key, add KB to value
+    $e = "total-stack|cmdenv-extra-stack|tkenv-extra-stack";
+    $txt =~ s/^(\s*[;#]?\s*)($e)-kb\s*=\s*([0-9]+)/$1$2 = $3KB/mg;
+
     # convert yes/no and on/off to true/false
     $txt =~ s/=\s*yes\b/= true/mg;
     $txt =~ s/=\s*no\b/= false/mg;

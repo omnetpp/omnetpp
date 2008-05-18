@@ -82,6 +82,11 @@ public class InifileConverter {
     	text = text.replaceAll(MULTILINE+"\\.pingApp\\.vector-recording =", ".pingApp.enabled =");  // change back false hit
     	text = text.replaceAll(MULTILINE+"\\.pingApp\\.vector-recording-interval =", ".pingApp.interval =");  // change back false hit
     	text = text.replaceAll(MULTILINE+"\\.akaroa\\s*=", ".with-akaroa =");
+
+        // convert total-stack-kb, cmdenv-extra-stack-kb, tkenv-extra-stack-kb:
+        // remove -kb from key, add KB to value
+        String allKbNames = "total-stack|cmdenv-extra-stack|tkenv-extra-stack";
+        text = text.replaceAll(MULTILINE+"^(\\s*[;#]?\\s*)("+allKbNames+")-kb\\s*=\\s*([0-9]+)", "$1$2 = $3KB");
     	
         // convert yes/no and on/off to true/false
     	text = text.replaceAll(MULTILINE+"=\\s*yes\\b", "= true");
