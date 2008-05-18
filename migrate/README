@@ -1,7 +1,5 @@
-You will find these tools and scripts handyiIf you want to 
-migrate your project from OMNeT++ 3.x. Please check the
 
-doc/misc/Migraion.pdf 
+The tools in this directory are for migrating simulation models from OMNeT++ 3.x.
 
-to get detailed information about migration issues.
-
+Before you use them, please read the following document:
+	doc/misc/Migration.pdf 
