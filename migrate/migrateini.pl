@@ -143,7 +143,7 @@ the converted ini files:
 
  2. If you had lots of runs which iterate over a parameter range, consider
     replacing those runs with a single named configuration that contains
-    an iteration. For example: **.par = ${1..5,10,20,50,100}
+    an iteration. For example: **.par = \${1..5,10,20,50,100}
 
  3. The meaning of the cmdenv-runs-to-execute= and tkenv-default-run= options
     have changed. (In 3.x they referred to [Run] sections, in 4.x they mean
