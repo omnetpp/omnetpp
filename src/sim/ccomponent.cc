@@ -195,8 +195,7 @@ cDisplayString& cComponent::displayString()
     return *dispstr;
 }
 
-// DEPRECATED
-void cComponent::setDisplayString(const char *s, bool)
+void cComponent::setDisplayString(const char *s)
 {
     displayString().parse(s);
 }

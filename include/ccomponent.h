@@ -312,9 +312,9 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     cDisplayString& displayString();
 
     /**
-     * DEPRECATED. Use displayString() and cDisplayString methods instead.
+     * Shortcut to <tt>displayString().set(dispstr)</tt>.
      */
-    _OPPDEPRECATED void setDisplayString(const char *dispstr, bool immediate=true);
+    void setDisplayString(const char *dispstr);
 
     /**
      * When the models is running under Tkenv, it displays the given text

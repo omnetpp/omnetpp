@@ -369,6 +369,8 @@ class SIM_API cGate : public cObject, noncopyable
     bool isPathOK() const;
     //@}
 
+    /** @name Display string. */
+    //@{
     /**
      * Returns the display string for the gate, which in practice affects the
      * apprearance of the connection for which this gate is the source.
@@ -377,6 +379,11 @@ class SIM_API cGate : public cObject, noncopyable
      */
     cDisplayString& displayString();
 
+    /**
+     * Shortcut to <tt>displayString().set(dispstr)</tt>.
+     */
+    void setDisplayString(const char *dispstr);
+    //@}
 };
 
 NAMESPACE_END

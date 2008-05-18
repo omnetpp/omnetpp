@@ -302,7 +302,7 @@ void EventlogFileManager::moduleCreated(cModule *newmodule)
         if (m->parentModule())
         {
             EventLogWriter::recordModuleCreatedEntry_id_c_pid_n_cm(feventlog,
-                m->id(), m->className(), m->parentModule()->id(), m->fullName(), isCompoundModule); //FIXME size() is missing
+                m->id(), m->nedTypeName(), m->parentModule()->id(), m->fullName(), isCompoundModule); //FIXME size() is missing
         }
         else
         {

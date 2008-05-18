@@ -350,3 +350,8 @@ cDisplayString& cGate::displayString()
     return channel()->displayString();
 }
 
+void cGate::setDisplayString(const char *dispstr)
+{
+    displayString().set(dispstr);
+}
+
