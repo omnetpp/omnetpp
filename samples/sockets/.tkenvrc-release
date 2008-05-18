@@ -1,0 +1,2 @@
+# set maximum animation speed, so that the model can keep up with real time
+option animation_speed	{3}

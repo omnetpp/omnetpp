@@ -1,0 +1,7 @@
+# let Tkenv start with the following windows open
+inspector "HistogramDemo.DoubleHistogram" "cDoubleHistogram" "2" "321x207+7+231"
+inspector "HistogramDemo.VarHistogram" "cVarHistogram" "2" "322x185+8+472"
+inspector "HistogramDemo.PSquare" "cPSquare" "2" "334x194+347+2"
+inspector "HistogramDemo.K-Split" "cKSplit" "2" "386x322+347+230"
+inspector "HistogramDemo.LongHistogram" "cLongHistogram" "2" "320x195+9+2"
+

@@ -23,7 +23,7 @@ network TokenRing
         double dataRate @unit(bps) = 4 Mbps; // Token Ring data rate
         double cableDelay @unit(s) = 1us; // Delay of the cable connecting adjacent stations
     submodules:
-        comp[numStations]: Station {
+        station[numStations]: Station {
             parameters:
                 address = index;
                 THT = THT;
@@ -32,10 +32,10 @@ network TokenRing
                 @display("p=80,80,ring");
         }
     connections:
-        comp[numStations-1].out --> {  delay = cableDelay; } --> comp[0].in;
+        station[numStations-1].out --> {  delay = cableDelay; } --> station[0].in;
 
         for i=0..numStations-2 {
-            comp[i].out --> {  delay = cableDelay; } --> comp[i+1].in;
+            station[i].out --> { delay = cableDelay; } --> station[i+1].in;
         }
 }
 

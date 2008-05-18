@@ -1,0 +1,5 @@
+# let Tkenv start with the following windows open
+inspector "FifoNet" "FifoNet" "2" "464x307+6+12"
+inspector "FifoNet.sink" "Sink" "1" "460x312+485+7"
+inspector "FifoNet.fifo" "BitFifo" "1" "460x312+15+363"
+

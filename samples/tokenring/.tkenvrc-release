@@ -1,0 +1,4 @@
+# let Tkenv start with the following windows open
+inspector "TokenRing" "TokenRing" "2" "401x432+-3+0"
+inspector "TokenRing.station[4]" "Station" "2" "367x351+418+1"
+
