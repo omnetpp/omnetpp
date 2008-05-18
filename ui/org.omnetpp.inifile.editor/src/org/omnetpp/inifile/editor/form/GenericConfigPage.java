@@ -6,7 +6,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EVENT_BANNER_DETAILS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EV_OUTPUT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXPRESS_MODE;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXTRA_STACK_KB;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_EXTRA_STACK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_INTERACTIVE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_MESSAGE_TRACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CMDENV_MODULE_MESSAGES;
@@ -21,7 +21,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERR
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
@@ -75,10 +75,10 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SNAPSHOTMANA
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SNAPSHOT_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_CONFIG;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_DEFAULT_RUN;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_EXTRA_STACK_KB;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_EXTRA_STACK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_IMAGE_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_PLUGIN_PATH;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TOTAL_STACK_KB;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TOTAL_STACK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
@@ -185,7 +185,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 		    Group group1 = createGroup(form, "Setup");
             addTextFieldEditor(group1, CFGID_NED_PATH, "NED file path");
             addTextFieldEditor(group1, CFGID_USER_INTERFACE, "User interface");
-            addTextFieldEditor(group1, CFGID_TOTAL_STACK_KB, "Total activity stack (KB)");
+            addTextFieldEditor(group1, CFGID_TOTAL_STACK, "Total activity stack");
             addTextFieldEditor(group1, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting");
             addSpacer(form);
 			Group group2 = createGroup(form, "Debugging");
@@ -237,7 +237,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			Group group0 = createGroup(form, "Event log");
 			addCheckboxFieldEditor(group0, CFGID_RECORD_EVENTLOG, "Enable recording");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_FILE, "Eventlog file");
-			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORDING_INTERVAL, "Recording interval");
+			addTextFieldEditor(group0, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals");
 			addTextFieldEditor(group0, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record");
 			addCheckboxFieldEditor(group0, CFGID_MODULE_EVENTLOG_RECORDING, "Record events");
 			addSpacer(form);
@@ -290,7 +290,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group3, CFGID_CMDENV_INTERACTIVE, "Interactive mode");
             addCheckboxFieldEditor(group3, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
 			addTextFieldEditor(group3, CFGID_CMDENV_OUTPUT_FILE, "Redirect stdout to file");
-			addTextFieldEditor(group3, CFGID_CMDENV_EXTRA_STACK_KB, "Cmdenv extra stack (KB)");
+			addTextFieldEditor(group3, CFGID_CMDENV_EXTRA_STACK, "Cmdenv extra stack");
 		}
 		else if (category.equals(CAT_TKENV)) {
 			Group group0 = createGroup(form, "On startup, set up the following simulation:");
@@ -301,7 +301,7 @@ public class GenericConfigPage extends ScrolledFormPage {
 			addTextFieldEditor(group4, CFGID_TKENV_IMAGE_PATH, "Image path");
 			addTextFieldEditor(group4, CFGID_TKENV_PLUGIN_PATH, "Plugin path");
 			addSpacer(form);
-			addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK_KB, "Tkenv extra stack (KB)");
+			addTextFieldEditor(form, CFGID_TKENV_EXTRA_STACK, "Tkenv extra stack");
             addSpacer(form);
 		}
 		else if (category.equals(CAT_PARSIM)) {

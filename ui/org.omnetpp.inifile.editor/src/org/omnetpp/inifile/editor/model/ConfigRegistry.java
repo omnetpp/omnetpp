@@ -170,10 +170,10 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_CMDENV_EXPRESS_MODE = addPerRunEntry(
         "cmdenv-express-mode", CFG_BOOL, "true",
         "Selects ``normal'' (debug/trace) or ``express'' mode.");
-    public static final ConfigKey CFGID_CMDENV_EXTRA_STACK_KB = addGlobalEntry(
-        "cmdenv-extra-stack-kb", CFG_INT, "8",
-        "Specifies the extra amount of stack (in kilobytes) that is reserved for " +
-        "each activity() simple module when the simulation is run under Cmdenv.");
+    public static final ConfigKey CFGID_CMDENV_EXTRA_STACK = addGlobalEntryU(
+        "cmdenv-extra-stack", "B", "8KB",
+        "Specifies the extra amount of stack that is reserved for each activity() " +
+        "simple module when the simulation is run under Cmdenv.");
     public static final ConfigKey CFGID_CMDENV_INTERACTIVE = addGlobalEntry(
         "cmdenv-interactive", CFG_BOOL, "false",
         "Defines what Cmdenv should do when the model contains unassigned " +
@@ -234,9 +234,6 @@ public class ConfigRegistry {
         "description", CFG_STRING, null,
         "Descriptive name for the given simulation configuration. Descriptions get " +
         "displayed in the run selection dialog.");
-    public static final ConfigKey CFGID_VECTOR_RECORDING = addPerObjectEntry(
-        "vector-recording", CFG_BOOL, "true",
-        "Whether data written into an output vector should be recorded.");
     public static final ConfigKey CFGID_EVENTLOG_FILE = addPerRunEntry(
         "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.log",
         "Name of the event log file to generate.");
@@ -264,8 +261,8 @@ public class ConfigRegistry {
         "recording the fields declared on the MyMessage class\n" +
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not " +
         "declaredOn(cObject))\": records user-defined fields from all messages");
-    public static final ConfigKey CFGID_EVENTLOG_RECORDING_INTERVAL = addPerRunEntry(
-        "eventlog-recording-interval", CFG_CUSTOM, null,
+    public static final ConfigKey CFGID_EVENTLOG_RECORDING_INTERVALS = addPerRunEntry(
+        "eventlog-recording-intervals", CFG_CUSTOM, null,
         "Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... " +
         "That is, both start and end of an interval are optional, and intervals are " +
         "separated by comma. Example: ..100, 200..400, 900..");
@@ -297,10 +294,6 @@ public class ConfigRegistry {
         "A space-separated list of dynamic libraries to be loaded on startup. The " +
         "libraries should be given without the `.dll' or `.so' suffix -- that will " +
         "be automatically appended.");
-    public static final ConfigKey CFGID_VECTOR_MAX_BUFFERED_VALUES = addPerObjectEntry(
-        "vector-max-buffered-values", CFG_INT, null,
-        "For output vectors: the maximum number of values to buffer per vector, " +
-        "before writing out a block into the output vector file.");
     public static final ConfigKey CFGID_MAX_MODULE_NESTING = addPerRunEntry(
         "max-module-nesting", CFG_INT, "50",
         "The maximum allowed depth of submodule nesting. This is used to catch " +
@@ -309,6 +302,13 @@ public class ConfigRegistry {
         "measurement-label", CFG_STRING, "${iterationvars}",
         "Identifies the measurement within the experiment. This string gets recorded " +
         "into result files, and may be referred to during result analysis.");
+    public static final ConfigKey CFGID_MODULE_EVENTLOG_RECORDING = addPerObjectEntry(
+        "module-eventlog-recording", CFG_BOOL, "true",
+        "Enables recording events on a per module basis. This is meaningful for " +
+        "simple modules only. \n" +
+        "Example:\n" +
+        " **.router[10..20].**.module-eventlog-recording = true\n" +
+        " **.module-eventlog-recording = false");
     public static final ConfigKey CFGID_NED_PATH = addGlobalEntry(
         "ned-path", CFG_STRING, null,
         "A semicolon-separated list of directories which will be appended to the " +
@@ -359,6 +359,11 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_PARALLEL_SIMULATION = addGlobalEntry(
         "parallel-simulation", CFG_BOOL, "false",
         "Enables parallel distributed simulation.");
+    public static final ConfigKey CFGID_PARAM_RECORD_AS_SCALAR = addPerObjectEntry(
+        "param-record-as-scalar", CFG_BOOL, "false",
+        "Applicable to module parameters: specifies whether the module parameter " +
+        "should be recorded into the output scalar file. Set it for parameters whose " +
+        "value you'll need for result analysis.");
     public static final ConfigKey CFGID_PARSIM_COMMUNICATIONS_CLASS = addGlobalEntry(
         "parsim-communications-class", CFG_STRING, "cFileCommunications",
         "If parallel-simulation=true, it selects the class that implements " +
@@ -426,32 +431,10 @@ public class ConfigRegistry {
         "When cRealTimeScheduler is selected as scheduler class: ratio of simulation " +
         "time to real time. For example, scaling=2 will cause simulation time to " +
         "progress twice as fast as runtime.");
-    public static final ConfigKey CFGID_VECTOR_RECORD_EVENTNUMBERS = addPerObjectEntry(
-        "vector-record-eventnumbers", CFG_BOOL, "true",
-        "Whether to record event numbers for an output vector. Simulation time and " +
-        "value are always recorded. Event numbers are needed by the Sequence Chart " +
-        "Tool, for example.");
     public static final ConfigKey CFGID_RECORD_EVENTLOG = addPerRunEntry(
         "record-eventlog", CFG_BOOL, "false",
         "Enables recording an eventlog file, which can be later visualized on a " +
         "sequence chart. See eventlog-file= option too.");
-    public static final ConfigKey CFGID_MODULE_EVENTLOG_RECORDING = addPerObjectEntry(
-        "module-eventlog-recording", CFG_BOOL, "true",
-        "Enables recording events on a per module basis. This is meaningful for " +
-        "simple modules only. \n" +
-        "Example:\n" +
-        " **.router[10..20].**.module-eventlog-recording = true\n" +
-        " **.module-eventlog-recording = false");
-    public static final ConfigKey CFGID_SCALAR_RECORDING = addPerObjectEntry(
-        "scalar-recording", CFG_BOOL, "true",
-        "Whether the matching output scalars should be recorded. Syntax: " +
-        "<module-full-path>.<scalar-name>.scalar-recording=true/false. Example: " +
-        "**.queue.packetsDropped.scalar-recording=true");
-    public static final ConfigKey CFGID_VECTOR_RECORDING_INTERVAL = addPerObjectEntry(
-        "vector-recording-interval", CFG_CUSTOM, null,
-        "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... " +
-        "That is, both start and end of an interval are optional, and intervals are " +
-        "separated by comma. Example: ..100, 200..400, 900..");
     public static final ConfigKey CFGID_REPEAT = addPerRunEntry(
         "repeat", CFG_INT, "1",
         "For scenarios. Specifies how many replications should be done with the same " +
@@ -459,7 +442,7 @@ public class ConfigRegistry {
         "multiple runs with different random number seeds. The loop variable is " +
         "available as ${repetition}. See also: seed-set= key.");
     public static final ConfigKey CFGID_REPLICATION_LABEL = addPerRunEntry(
-        "replication-label", CFG_STRING, "#${repetition}, seedset=@",
+        "replication-label", CFG_STRING, "#${repetition}",
         "Identifies one replication of a measurement (see repeat= and " +
         "measurement-label= as well). This string gets recorded into result files, " +
         "and may be referred to during result analysis.");
@@ -478,11 +461,11 @@ public class ConfigRegistry {
         "The random number generator class to be used. It can be `cMersenneTwister', " +
         "`cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be " +
         "subclassed from cRNG).");
-    public static final ConfigKey CFGID_PARAM_RECORD_AS_SCALAR = addPerObjectEntry(
-        "param-record-as-scalar", CFG_BOOL, "false",
-        "Applicable to module parameters: specifies whether the module parameter " +
-        "should be recorded into the output scalar file. Set it for parameters whose " +
-        "value you'll need for result analysis.");
+    public static final ConfigKey CFGID_SCALAR_RECORDING = addPerObjectEntry(
+        "scalar-recording", CFG_BOOL, "true",
+        "Whether the matching output scalars should be recorded. Syntax: " +
+        "<module-full-path>.<scalar-name>.scalar-recording=true/false. Example: " +
+        "**.queue.packetsDropped.scalar-recording=true");
     public static final ConfigKey CFGID_SCHEDULER_CLASS = addGlobalEntry(
         "scheduler-class", CFG_STRING, "cSequentialScheduler",
         "Part of the Envir plugin mechanism: selects the scheduler class. This " +
@@ -533,10 +516,10 @@ public class ConfigRegistry {
         "tkenv-default-run", CFG_INT, "0",
         "Specifies which run (of the default config, see tkenv-default-config) Tkenv " +
         "should set up automatically on startup. The default is to ask the user.");
-    public static final ConfigKey CFGID_TKENV_EXTRA_STACK_KB = addGlobalEntry(
-        "tkenv-extra-stack-kb", CFG_INT, "48",
-        "Specifies the extra amount of stack (in kilobytes) that is reserved for " +
-        "each activity() simple module when the simulation is run under Tkenv.");
+    public static final ConfigKey CFGID_TKENV_EXTRA_STACK = addGlobalEntryU(
+        "tkenv-extra-stack", "B", "48KB",
+        "Specifies the extra amount of stack that is reserved for each activity() " +
+        "simple module when the simulation is run under Tkenv.");
     public static final ConfigKey CFGID_TKENV_IMAGE_PATH = addGlobalEntry(
         "tkenv-image-path", CFG_FILENAME, null,
         "Specifies the path for loading module icons.");
@@ -544,11 +527,11 @@ public class ConfigRegistry {
         "tkenv-plugin-path", CFG_FILENAME, null,
         "Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files " +
         "that get evaluated on startup.");
-    public static final ConfigKey CFGID_TOTAL_STACK_KB = addGlobalEntry(
-        "total-stack-kb", CFG_INT, null,
-        "Specifies the maximum memory for activity() simple module stacks in " +
-        "kilobytes. You need to increase this value if you get a ``Cannot allocate " +
-        "coroutine stack'' error.");
+    public static final ConfigKey CFGID_TOTAL_STACK = addGlobalEntryU(
+        "total-stack", "B", null,
+        "Specifies the maximum memory for activity() simple module stacks. You need " +
+        "to increase this value if you get a ``Cannot allocate coroutine stack'' " +
+        "error.");
     public static final ConfigKey CFGID_TYPE_NAME = addPerObjectEntry(
         "type-name", CFG_STRING, null,
         "Specifies type for submodules and channels declared with 'like <>'.");
@@ -557,6 +540,24 @@ public class ConfigRegistry {
         "Selects the user interface to be started. Possible values are Cmdenv and " +
         "Tkenv, provided the simulation executable contains the respective libraries " +
         "or loads them dynamically.");
+    public static final ConfigKey CFGID_VECTOR_MAX_BUFFERED_VALUES = addPerObjectEntry(
+        "vector-max-buffered-values", CFG_INT, null,
+        "For output vectors: the maximum number of values to buffer per vector, " +
+        "before writing out a block into the output vector file. The default is no " +
+        "per-vector limit (i.e. only the total memory limit is in effect)");
+    public static final ConfigKey CFGID_VECTOR_RECORD_EVENTNUMBERS = addPerObjectEntry(
+        "vector-record-eventnumbers", CFG_BOOL, "true",
+        "Whether to record event numbers for an output vector. Simulation time and " +
+        "value are always recorded. Event numbers are needed by the Sequence Chart " +
+        "Tool, for example.");
+    public static final ConfigKey CFGID_VECTOR_RECORDING = addPerObjectEntry(
+        "vector-recording", CFG_BOOL, "true",
+        "Whether data written into an output vector should be recorded.");
+    public static final ConfigKey CFGID_VECTOR_RECORDING_INTERVAL = addPerObjectEntry(
+        "vector-recording-interval", CFG_CUSTOM, null,
+        "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... " +
+        "That is, both start and end of an interval are optional, and intervals are " +
+        "separated by comma. Example: ..100, 200..400, 900..");
     public static final ConfigKey CFGID_WARNINGS = addPerRunEntry(
         "warnings", CFG_BOOL, "true",
         "Enables warnings.");
