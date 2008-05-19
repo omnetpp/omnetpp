@@ -30,6 +30,7 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Keeps makefiles up to date.
