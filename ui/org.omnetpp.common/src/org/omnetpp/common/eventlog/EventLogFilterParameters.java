@@ -106,6 +106,11 @@ public class EventLogFilterParameters implements Serializable {
 	
 	public static class EnabledInt implements Serializable {
         private static final long serialVersionUID = 1L;
+        
+        public EnabledInt(boolean enabled, int value) {
+            this.enabled = enabled;
+            this.value = value;
+        }
 
         public boolean enabled;
 

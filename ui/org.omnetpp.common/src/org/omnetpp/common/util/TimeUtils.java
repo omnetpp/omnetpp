@@ -18,10 +18,6 @@ public class TimeUtils {
 		return time.subtract(new BigDecimal(value)).movePointRight(3);
 	}
 
-	public static String secondsToTimeString(double time) {
-		return secondsToTimeString(new BigDecimal(time));
-	}
-
 	public static String secondsToTimeString(BigDecimal time) {
 		StringBuffer timeString = new StringBuffer();
 		

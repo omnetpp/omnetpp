@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.RecurringJob;
@@ -20,17 +21,12 @@ import org.omnetpp.eventlog.engine.SequenceChartFacade;
 /**
  * Input object for event log file editors and viewers.
  */
-public class EventLogInput
+public class EventLogInput extends FileEditorInput
 	implements IEventLogProgressMonitor
 {
 	private static final boolean debug = false;
 
 	public static final String STATE_PROPERTY = "EventLogInputState";
-
-	/**
-	 * The event log file.
-	 */
-	protected IFile file;
 	
 	/**
 	 * The C++ wrapper around the event log reader.
@@ -90,7 +86,7 @@ public class EventLogInput
 	 */
 	
 	public EventLogInput(IFile file, IEventLog eventLog) {
-		this.file = file;
+		super(file);
 		this.eventLogProgressManager = new EventLogProgressManager();
 		this.eventLogWatcher = new RecurringJob(3000) {
 			public void run() {
@@ -122,7 +118,7 @@ public class EventLogInput
 
     public void synchronize(int change) {
         if (debug)
-            System.out.println("Synchronizing event log file content: " + file.getName());
+            System.out.println("Synchronizing event log file content: " + getFile().getName());
 
         getEventLogTableFacade().synchronize(change);
         getSequenceChartFacade().synchronize(change);
@@ -158,10 +154,6 @@ public class EventLogInput
 	/*************************************************************************************
 	 * GETTERS
 	 */
-
-	public IFile getFile() {
-		return file;
-	}
 	
 	private void setEventLog(IEventLog eventLog) {
 		this.eventLog = eventLog;
@@ -355,13 +347,13 @@ public class EventLogInput
 		PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(CommonPlugin.PLUGIN_ID, getClass().getClassLoader());
 
 		try {
-			if (manager.hasProperty(file, STATE_PROPERTY)) {
-				eventLogFilterParameters = (EventLogFilterParameters)manager.getProperty(file, STATE_PROPERTY);
+			if (manager.hasProperty(getFile(), STATE_PROPERTY)) {
+				eventLogFilterParameters = (EventLogFilterParameters)manager.getProperty(getFile(), STATE_PROPERTY);
 				eventLogFilterParameters.setEventLogInput(this);
 			}
 		}
 		catch (Exception e) {
-			manager.removeProperty(file, STATE_PROPERTY);
+			manager.removeProperty(getFile(), STATE_PROPERTY);
 
 			throw new RuntimeException(e);
 		}
@@ -372,9 +364,9 @@ public class EventLogInput
 			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(CommonPlugin.PLUGIN_ID);
 
 			if (eventLogFilterParameters == null)
-				manager.removeProperty(file, STATE_PROPERTY);
+				manager.removeProperty(getFile(), STATE_PROPERTY);
 			else {
-				manager.setProperty(file, STATE_PROPERTY, eventLogFilterParameters);
+				manager.setProperty(getFile(), STATE_PROPERTY, eventLogFilterParameters);
 			}
 		}
 		catch (Exception e) {

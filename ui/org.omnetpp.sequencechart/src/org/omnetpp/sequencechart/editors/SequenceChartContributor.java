@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
@@ -39,6 +40,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -57,6 +59,7 @@ import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.TimeUtils;
+import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
@@ -67,6 +70,8 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.Run;
+import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
@@ -248,9 +253,10 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageDependencyText(msg, false, null));
 					menuManager.add(subMenuManager);
 
-					subMenuManager.add(createZoomToMessageAction(msg));
+					subMenuManager.add(createFilterMessageAction(msg.getBeginSendEntry()));
 					subMenuManager.add(createGotoCauseAction(msg));
 					subMenuManager.add(createGotoConsequenceAction(msg));
+                    subMenuManager.add(createZoomToMessageAction(msg));
 				}
 				
 				if (msgs.size() != 0)
@@ -696,7 +702,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 			}
 
 			private boolean isFilteredEventLog() {
-				return sequenceChart.getInput().getEventLog() instanceof FilteredEventLog;
+				return getEventLog() instanceof FilteredEventLog;
 			}
 			
 			@Override
@@ -750,16 +756,17 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
-                double[] leftRightSimulationTimes = null;
+                double centerSimulationTime = -1.0;
 
                 if (!wasCanceled)
-                    leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
+                    // do not use simulation time range because the user might zoomed out too much while using the filter
+                    centerSimulationTime = sequenceChart.getViewportCenterSimulationTime();
 
                 eventLogInput.removeFilter();
                 sequenceChart.setInput(eventLogInput);
 
-                if (leftRightSimulationTimes != null)
-                    sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+                if (!wasCanceled)
+                    sequenceChart.scrollToSimulationTimeWithCenter(centerSimulationTime);
                 else
                     sequenceChart.scrollToBegin();
 
@@ -775,8 +782,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
                 double[] leftRightSimulationTimes = null;
-                
+
                 if (!wasCanceled)
+                    // TODO: better approximation where to go to, maybe revert to the unfiltered range or zoom level?
                     leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
 
                 eventLogInput.filter();
@@ -800,7 +808,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		    }
 
 			private boolean isFilteredEventLog() {
-				return sequenceChart.getInput().getEventLog() instanceof FilteredEventLog;
+				return getEventLog() instanceof FilteredEventLog;
 			}
 		};
 	}
@@ -1004,7 +1012,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 filterParameters.enableTraceFilter = true;
                 filterParameters.tracedEventNumber = event.getEventNumber();
 				
-				if (!(eventLogInput.getEventLog() instanceof FilteredEventLog) && 
+				if (!(getEventLog() instanceof FilteredEventLog) && 
     				(filterParameters.isAnyEventFilterEnabled() || filterParameters.isAnyMessageFilterEnabled() || filterParameters.isAnyModuleFilterEnabled())) 
 				{
 			        FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
@@ -1018,6 +1026,52 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		};
 	}
 
+    private SequenceChartAction createFilterMessageAction(final BeginSendEntry beginSendEntry) {
+        return new SequenceChartAction("Filter Message...", Action.AS_PUSH_BUTTON) {
+            @Override
+            public void run() {
+                EventLogInput eventLogInput = sequenceChart.getInput();
+                EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
+
+                // message filter
+                filterParameters.enableMessageFilter = true;
+                filterParameters.enableMessageIdFilter = true;
+
+                EventLogFilterParameters.EnabledInt enabledInt = null; 
+                for (EventLogFilterParameters.EnabledInt messageId : filterParameters.messageIds) {
+                    if (messageId.value == beginSendEntry.getMessageId()) {
+                        enabledInt = messageId;
+                        messageId.enabled = true;
+                    }
+                    else
+                        messageId.enabled = false;
+                }
+                
+                if (enabledInt == null) {
+                    enabledInt = new EventLogFilterParameters.EnabledInt(true, beginSendEntry.getMessageId());
+                    filterParameters.messageIds = (EventLogFilterParameters.EnabledInt[])ArrayUtils.add(filterParameters.messageIds, enabledInt);
+                }
+
+                // range filter
+                filterParameters.enableRangeFilter = true;
+                filterParameters.enableEventNumberFilter = true;
+                filterParameters.lowerEventNumberLimit = Math.max(0, beginSendEntry.getEvent().getEventNumber() - 1000);
+                filterParameters.upperEventNumberLimit = Math.min(getEventLog().getLastEvent().getEventNumber(), beginSendEntry.getEvent().getEventNumber() + 1000);
+
+                if (!(getEventLog() instanceof FilteredEventLog) && 
+                    (filterParameters.isAnyEventFilterEnabled() || filterParameters.isAnyMessageFilterEnabled() || filterParameters.isAnyModuleFilterEnabled())) 
+                {
+                    FilterEventLogDialog dialog = new FilterEventLogDialog(Display.getCurrent().getActiveShell(), eventLogInput, filterParameters);
+
+                    if (dialog.open("Range") == Window.OK)
+                        filter();
+                }
+                else
+                    filter();
+            }
+        };
+    }
+	
 	private SequenceChartAction createZoomToMessageAction(final IMessageDependency messageDependency) {
 		return new SequenceChartAction("Zoom to Message", Action.AS_PUSH_BUTTON) {
 			@Override
@@ -1099,8 +1153,19 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 						return;
 				}
 
-				// TODO: compare it against log file's run
-				resultFileManager.getRunsInFile(resultFile).get(0);
+				// compare eventlog run id against vector file's
+				RunList runList = resultFileManager.getRunsInFile(resultFile);
+				Run run = runList.get(0);
+				String eventlogRunId = getEventLog().getSimulationBeginEntry().getRunId();
+				String vectorFileRunId = run.getRunName();
+				if (!eventlogRunId.equals(vectorFileRunId)) {
+                    MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
+                    messageBox.setText("Run ID mismatch");
+                    messageBox.setMessage("The eventlog run ID: " + eventlogRunId + " and the vector file run ID: " + vectorFileRunId + " does not match. Do you want to continue?");
+                    
+                    if (messageBox.open() == SWT.CANCEL)
+                        return;
+				}
 
 				// select a vector from the loaded file
 				IDList idList = resultFileManager.getAllVectors();

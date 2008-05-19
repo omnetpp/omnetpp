@@ -403,14 +403,12 @@ public class FilterEventLogDialog
 
     private EnabledInt[] parseEnabledIntArray(EditableCheckboxList editableCheckboxList) {
         String[] stringValues = editableCheckboxList.getItems();
-        Arrays.sort(stringValues);
+        Collections.sort(Arrays.asList(stringValues), StringUtils.dictionaryComparator);
         EnabledInt[] enabledInts = new EnabledInt[stringValues.length];
 
         for (int i = 0; i < stringValues.length; i++) {
             String stringValue = stringValues[i];
-            enabledInts[i] = new EnabledInt();
-            enabledInts[i].value = Integer.parseInt(stringValue);
-            enabledInts[i].enabled = editableCheckboxList.getChecked(stringValue);
+            enabledInts[i] = new EnabledInt(editableCheckboxList.getChecked(stringValue), Integer.parseInt(stringValue));
         }
 
         return enabledInts;
