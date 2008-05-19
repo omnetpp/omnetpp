@@ -98,7 +98,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             for (int i=0; i<builders.length; i++) {
                 ICommand builder = builders[i];
                 String builderId = StringUtils.nullToEmpty(builder.getBuilderName());
-                System.out.println("BUILDER: " + builderId);
                 if (thisBuilderPos == -1 && builderId.equals(BUILDER_ID))
                     thisBuilderPos = i;
                 if (cdtBuilderPos == -1 && builderId.startsWith("org.eclipse.cdt."))
