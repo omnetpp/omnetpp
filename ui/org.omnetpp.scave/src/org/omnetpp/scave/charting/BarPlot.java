@@ -23,11 +23,6 @@ import org.omnetpp.scave.charting.properties.ChartProperties.BarPlacement;
  */
 class BarPlot {
 	private Rectangle rect = new Rectangle(0,0,1,1);
-	private int widthBar = 10;
-	private int hgapMinor = 5;
-	private int hgapMajor = 20;
-	private double horizontalInset = 1.0;   // left/right inset relative to the bars' width 
-	private double verticalInset = 0.1; 	// top inset relative to the height of the highest bar
 	
 	double barBaseline = DEFAULT_BAR_BASELINE;
 	BarPlacement barPlacement = DEFAULT_BAR_PLACEMENT;
@@ -155,6 +150,12 @@ class BarPlot {
 	}
 	
 	protected RectangularArea calculatePlotArea() {
+		final double widthBar = 1.0;
+		final double hgapMinor = 0.5;
+		final double hgapMajor = 0.25;
+		final double horizontalInset = 1.0;   // left/right inset relative to the bars' width 
+		final double verticalInset = 0.1; 	// top inset relative to the height of the highest bar
+		
 		IScalarDataset dataset = chart.getDataset();
 		bars = null;
 		if (dataset == null)
@@ -202,20 +203,20 @@ class BarPlot {
 					if (column < cColumns - 1)
 						x += hgapMinor;
 					else if (row < cRows - 1)
-						x += hgapMajor;
+						x += hgapMajor * (widthBar * cColumns + (hgapMinor * (cColumns - 1)));
 					break;
 				case Overlap:
 					bar.minX = x + widthBar * column / 2.0;
 					bar.maxX = bar.minX + widthBar * cColumns / 2.0;
 					if (column == cColumns - 1 && row < cRows - 1)
-						x += widthBar * cColumns + hgapMajor;
+						x += widthBar * cColumns + hgapMajor * widthBar * cColumns;
 					break;
 				case InFront:
 				case Stacked:
 					bar.minX = x;
 					bar.maxX = x + widthBar * cColumns;
 					if (column == cColumns - 1 && row < cRows - 1)
-						x += widthBar * cColumns + hgapMajor;
+						x += widthBar * cColumns + hgapMajor * widthBar * cColumns;
 					break;
 				}
 				
