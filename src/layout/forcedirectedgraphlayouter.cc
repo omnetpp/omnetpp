@@ -466,17 +466,15 @@ void ForceDirectedGraphLayouter::execute()
                 setBorderPositions();
 
             //embedding.debug = 3;
-            embedding.inspected = environment->inspected();
+            embedding.inspected = true;
             embedding.reinitialize();
 
-            if (embedding.inspected) {
-                while (!embedding.getFinished()) {
-                    embedding.embed();
-                    debugDraw();
-                }
-            }
-            else
+            while (!embedding.getFinished() && environment->okToProceed()) {
                 embedding.embed();
+
+                if (environment->inspected())
+                    debugDraw();
+            }
         }
 
         // set random positions if no embedding was used
