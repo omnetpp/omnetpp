@@ -10,8 +10,10 @@ import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.VectorChartProperties;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ProcessingOp;
 import org.omnetpp.scave.model.SetOperation;
 import org.omnetpp.scave.model2.ChartLine;
+import org.omnetpp.scave.model2.ProcessingOpPropertySource;
 import org.omnetpp.scave.model2.SetOperationPropertySource;
 
 /**
@@ -39,6 +41,8 @@ public class ScavePropertySourceProvider implements IPropertySourceProvider {
 				(IItemPropertySource) adapterFactory.adapt(object, IItemPropertySource.class);
 			return new SetOperationPropertySource((SetOperation)object, itemPropertySource, manager);
 		}
+		else if (object instanceof ProcessingOp)
+			return new ProcessingOpPropertySource((ProcessingOp)object);
 		else if (object instanceof PropertySource)
 			return (PropertySource)object;
 		else if (object instanceof ChartLine) {
