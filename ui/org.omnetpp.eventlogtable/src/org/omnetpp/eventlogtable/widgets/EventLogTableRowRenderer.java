@@ -32,7 +32,6 @@ import org.omnetpp.eventlog.engine.Event;
 import org.omnetpp.eventlog.engine.EventEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;
-import org.omnetpp.eventlog.engine.EventLogTableNameMode;
 import org.omnetpp.eventlog.engine.GateCreatedEntry;
 import org.omnetpp.eventlog.engine.GateDeletedEntry;
 import org.omnetpp.eventlog.engine.IEvent;
@@ -48,6 +47,7 @@ import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
 import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 import org.omnetpp.eventlog.engine.SimulationEndEntry;
+import org.omnetpp.eventlogtable.widgets.EventLogTable.NameMode;
 
 public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventLogEntryReference> {
 	private static final Color DARKBLUE = new Color(null, 0, 0, 192);
@@ -89,8 +89,10 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	private static final int INDENT_SPACING = HORIZONTAL_SPACING * 4;
 
 	private static final int VERTICAL_SPACING = 3;
-
+	
 	protected EventLogInput eventLogInput;
+
+	protected EventLogTable eventLogTable;
 
 	protected Font font = JFaceResources.getDefaultFont();
 
@@ -107,6 +109,10 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 	private int x;
 	
 	private IEvent contextEvent;
+	
+	public EventLogTableRowRenderer(EventLogTable eventLogTable) {
+	    this.eventLogTable = eventLogTable;
+	}
 
 	public void setInput(Object eventLogInput) {
 		this.eventLogInput = (EventLogInput)eventLogInput;
@@ -178,13 +184,13 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				gc.drawImage(image, x, 0);
 				x += image.getBounds().width + HORIZONTAL_SPACING;
 				
-				switch (eventLogInput.getEventLogTableFacade().getDisplayMode()) {
-					case 0:
+				switch (eventLogTable.getDisplayMode()) {
+					case DESCRIPTIVE:
 						if (eventLogEntry instanceof EventEntry) {
 							IMessageDependency cause = contextEvent.getCause();
 				
 							drawText("Event in ", CONSTANT_TEXT_COLOR);
-							drawModuleDescription(contextEvent.getModuleId(), EventLogTableNameMode.FULL_PATH);
+							drawModuleDescription(contextEvent.getModuleId(), EventLogTable.NameMode.FULL_PATH);
 							
 							BeginSendEntry beginSendEntry = cause != null ? cause.getBeginSendEntry() : null;
 							if (beginSendEntry != null) {
@@ -396,7 +402,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								throw new RuntimeException("Unknown event log entry: " + eventLogEntry.getClassName());
 						}
 						break;
-					case 1:
+					case RAW:
 						drawRawEntry(eventLogEntry);
 						break;
 					default:
@@ -444,31 +450,42 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		drawModuleDescription(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId));
 	}
 
-    private void drawModuleDescription(int moduleId, int nameMode) {
+    private void drawModuleDescription(int moduleId, NameMode nameMode) {
         drawModuleDescription(eventLogInput.getEventLog().getModuleCreatedEntry(moduleId), nameMode);
     }
 
     private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry) {
-        drawModuleDescription(moduleCreatedEntry, eventLogInput.getEventLogTableFacade().getNameMode());
+        drawModuleDescription(moduleCreatedEntry, eventLogTable.getNameMode());
     }
 
-    private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry, int nameMode) {
+    private void drawModuleDescription(ModuleCreatedEntry moduleCreatedEntry, NameMode nameMode) {
 		drawText("module ", CONSTANT_TEXT_COLOR);
 
 		if (moduleCreatedEntry != null) {
-			drawText("(" + moduleCreatedEntry.getModuleClassName() + ") ", TYPE_COLOR);
+		    String typeName = null;
+
+		    switch (eventLogTable.getTypeMode()) {
+		        case NED:
+		            typeName = moduleCreatedEntry.getNedTypeName();
+		            break;
+                case CPP:
+                    typeName = moduleCreatedEntry.getModuleClassName();
+                    break;
+		    }
+			
+		    drawText("(" + typeName + ") ", TYPE_COLOR);
 			
 			switch (nameMode) {
-                case EventLogTableNameMode.SMART_NAME:
+                case SMART_NAME:
                     if (contextEvent.getModuleId() == moduleCreatedEntry.getModuleId())
                         drawModuleFullName(moduleCreatedEntry);
                     else
                         drawModuleFullPath(moduleCreatedEntry);
                     break;
-			    case EventLogTableNameMode.FULL_NAME:
+			    case FULL_NAME:
 			        drawModuleFullName(moduleCreatedEntry);
 			        break;
-			    case  EventLogTableNameMode.FULL_PATH:
+			    case FULL_PATH:
 			        drawModuleFullPath(moduleCreatedEntry);
 			        break;
 			}

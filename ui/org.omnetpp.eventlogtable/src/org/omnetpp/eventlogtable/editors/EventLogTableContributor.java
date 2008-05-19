@@ -104,6 +104,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
     protected EventLogTableAction toggleBookmarkAction;
 
+    protected EventLogTableMenuAction typeModeAction;
+
     protected EventLogTableMenuAction nameModeAction;
 
     protected EventLogTableMenuAction filterModeAction;
@@ -133,6 +135,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         this.gotoPreviousModuleEventAction = createGotoPreviousModuleEventAction();
         this.gotoNextModuleEventAction = createGotoNextModuleEventAction();
         this.toggleBookmarkAction = createToggleBookmarkAction();
+        this.typeModeAction = createTypeModeAction();
         this.nameModeAction = createNameModeAction();
 		this.filterModeAction = createFilterModeAction();
 		this.displayModeAction = createDisplayModeAction();
@@ -191,9 +194,11 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         menuManager.add(separatorAction);
 		menuManager.add(toggleBookmarkAction);
 		menuManager.add(separatorAction);
+        menuManager.add(typeModeAction);
         menuManager.add(nameModeAction);
 		menuManager.add(filterModeAction);
 		menuManager.add(displayModeAction);
+        menuManager.add(separatorAction);
 
         MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -879,20 +884,21 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 		};
 	}
-    private EventLogTableMenuAction createNameModeAction() {
-        return new EventLogTableMenuAction("Name Mode", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_NAME_MODE)) {
+
+    private EventLogTableMenuAction createTypeModeAction() {
+        return new EventLogTableMenuAction("Type Mode", Action.AS_DROP_DOWN_MENU) {
             private AbstractMenuCreator menuCreator;
 
             @Override
             public void run() {
-                eventLogTable.setNameMode((eventLogTable.getNameMode() + 1) % 3);
-                eventLogTable.configureVerticalScrollBar();
+                EventLogTable.TypeMode[] values = EventLogTable.TypeMode.values();
+                eventLogTable.setTypeMode(values[(getMenuIndex() + 1) % values.length]);
                 update();
             }
 
             @Override
             protected int getMenuIndex() {
-                return eventLogTable.getNameMode();
+                return eventLogTable.getTypeMode().ordinal();
             }
             
             @Override
@@ -901,12 +907,65 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                     menuCreator = new AbstractMenuCreator() {
                         @Override
                         protected void createMenu(Menu menu) {
-                            addSubMenuItem(menu, "Smart Name", 0);
-                            addSubMenuItem(menu, "Full Name", 1);
-                            addSubMenuItem(menu, "Full Path", 2);
+                            addSubMenuItem(menu, "C++", EventLogTable.TypeMode.CPP);
+                            addSubMenuItem(menu, "NED", EventLogTable.TypeMode.NED);
                         }
     
-                        private void addSubMenuItem(final Menu menu, String text, final int nameMode) {
+                        private void addSubMenuItem(final Menu menu, String text, final EventLogTable.TypeMode typeMode) {
+                            addSubMenuItem(menu, text, new SelectionAdapter() {
+                                public void widgetSelected(SelectionEvent e) {
+                                    MenuItem menuItem = (MenuItem)e.widget;
+                                    
+                                    if (menuItem.getSelection()) {
+                                        eventLogTable.setTypeMode(typeMode);
+                                        update();
+                                    }
+                                }
+                            });
+                        }
+    
+                        private void addSubMenuItem(Menu menu, String text, SelectionListener adapter) {
+                            MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+                            subMenuItem.setText(text);
+                            subMenuItem.addSelectionListener(adapter);
+                        }
+                    };
+                }
+                
+                return menuCreator;
+            }
+        };
+    }
+
+	private EventLogTableMenuAction createNameModeAction() {
+        return new EventLogTableMenuAction("Name Mode", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_NAME_MODE)) {
+            private AbstractMenuCreator menuCreator;
+
+            @Override
+            public void run() {
+                EventLogTable.NameMode[] values = EventLogTable.NameMode.values();
+                eventLogTable.setNameMode(values[(getMenuIndex() + 1) % values.length]);
+                eventLogTable.configureVerticalScrollBar();
+                update();
+            }
+
+            @Override
+            protected int getMenuIndex() {
+                return eventLogTable.getNameMode().ordinal();
+            }
+            
+            @Override
+            public IMenuCreator getMenuCreator() {
+                if (menuCreator == null) {
+                    menuCreator = new AbstractMenuCreator() {
+                        @Override
+                        protected void createMenu(Menu menu) {
+                            addSubMenuItem(menu, "Smart Name", EventLogTable.NameMode.SMART_NAME);
+                            addSubMenuItem(menu, "Full Name", EventLogTable.NameMode.FULL_NAME);
+                            addSubMenuItem(menu, "Full Path", EventLogTable.NameMode.FULL_PATH);
+                        }
+    
+                        private void addSubMenuItem(final Menu menu, String text, final EventLogTable.NameMode nameMode) {
                             addSubMenuItem(menu, text, new SelectionAdapter() {
                                 public void widgetSelected(SelectionEvent e) {
                                     MenuItem menuItem = (MenuItem)e.widget;
@@ -938,14 +997,15 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 			@Override
 			public void run() {
-				eventLogTable.setDisplayMode((getMenuIndex() + 1) % 2);
+			    EventLogTable.DisplayMode[] values = EventLogTable.DisplayMode.values();
+				eventLogTable.setDisplayMode(values[(getMenuIndex() + 1) % values.length]);
 				eventLogTable.redraw();
 				update();
 			}
 
 			@Override
 			protected int getMenuIndex() {
-				return eventLogTable.getDisplayMode();
+				return eventLogTable.getDisplayMode().ordinal();
 			}
 
 			@Override
@@ -954,11 +1014,11 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					menuCreator = new AbstractMenuCreator() {
 						@Override
 						protected void createMenu(Menu menu) {
-							addSubMenuItem(menu, "Descriptive", 0);
-							addSubMenuItem(menu, "Raw", 1);
+							addSubMenuItem(menu, "Descriptive", EventLogTable.DisplayMode.DESCRIPTIVE);
+							addSubMenuItem(menu, "Raw", EventLogTable.DisplayMode.RAW);
 						}
 	
-						private void addSubMenuItem(Menu menu, String text, final int displayMode) {
+						private void addSubMenuItem(Menu menu, String text, final EventLogTable.DisplayMode displayMode) {
 							MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 							subMenuItem.setText(text);
 							subMenuItem.addSelectionListener( new SelectionAdapter() {
@@ -988,7 +1048,6 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			@Override
 			public void run() {
 				eventLogTable.setFilterMode((eventLogTable.getFilterMode() + 1) % 5);
-				eventLogTable.configureVerticalScrollBar();
 				update();
 			}
 

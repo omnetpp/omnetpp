@@ -55,6 +55,28 @@ public class EventLogTable
 	
 	private EventLogTableContributor eventLogTableContributor;
 
+    public enum TypeMode {
+        CPP,
+        NED
+    }
+
+	public enum NameMode {
+	    SMART_NAME,
+	    FULL_NAME,
+	    FULL_PATH
+	}
+
+	public enum DisplayMode {
+	    DESCRIPTIVE,
+	    RAW
+	}
+	
+	private TypeMode typeMode = TypeMode.CPP;
+	
+	private NameMode nameMode = NameMode.SMART_NAME;
+	
+	private DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
+
 	/*************************************************************************************
 	 * CONSTRUCTION
 	 */
@@ -63,7 +85,7 @@ public class EventLogTable
 		super(parent, style);
 
 		setContentProvider(new EventLogTableContentProvider());
-		setRowRenderer(new EventLogTableRowRenderer());
+		setRowRenderer(new EventLogTableRowRenderer(this));
 
 		TableColumn tableColumn = createColumn();
 		tableColumn.setWidth(60);
@@ -279,14 +301,6 @@ public class EventLogTable
 		return (EventLogTableContentProvider)getContentProvider();
 	}
 
-	public int getDisplayMode() {
-		return eventLogTableFacade.getDisplayMode();
-	}
-
-	public void setDisplayMode(int i) {
-		eventLogTableFacade.setDisplayMode(i);
-	}
-
 	public int getFilterMode() {
 		return eventLogTableFacade.getFilterMode();
 	}
@@ -296,22 +310,46 @@ public class EventLogTable
 		stayNear();
 	}
 	
-    public int getNameMode() {
-        return eventLogTableFacade.getNameMode();
+    public String getCustomFilter() {
+        return eventLogTableFacade.getCustomFilter();
     }
 
-    public void setNameMode(int i) {
-        eventLogTableFacade.setNameMode(i);
-        stayNear();
+    public void setCustomFilter(String pattern) {
+        eventLogTableFacade.setCustomFilter(pattern);
+    }
+
+    public TypeMode getTypeMode() {
+        return typeMode;
+    }
+
+    public void setTypeMode(TypeMode typeMode) {
+        if (typeMode == null)
+            throw new IllegalArgumentException();
+        this.typeMode = typeMode;
+        redraw();
     }
     
-	public String getCustomFilter() {
-		return eventLogTableFacade.getCustomFilter();
-	}
+    public NameMode getNameMode() {
+        return nameMode;
+    }
 
-	public void setCustomFilter(String pattern) {
-		eventLogTableFacade.setCustomFilter(pattern);
-	}
+    public void setNameMode(NameMode nameMode) {
+        if (nameMode == null)
+            throw new IllegalArgumentException();
+        this.nameMode = nameMode;
+        redraw();
+    }
+    
+    public DisplayMode getDisplayMode() {
+        return displayMode;
+    }
+
+    public void setDisplayMode(DisplayMode displayMode) {
+        if (displayMode == null)
+            throw new IllegalArgumentException();
+        this.displayMode = displayMode;
+        redraw();
+    }
 
 	/*************************************************************************************
 	 * EVENT LOG NOTIFICATIONS
@@ -404,6 +442,8 @@ public class EventLogTable
 				if (event != null) {
 					setFilterMode(eventLogTableState.filterMode);
 					setCustomFilter(eventLogTableState.customFilter);
+                    setTypeMode(eventLogTableState.typeMode);
+                    setNameMode(eventLogTableState.nameMode);
 					setDisplayMode(eventLogTableState.displayMode);
 
 					gotoElement(new EventLogEntryReference(event.getEventEntry()));
@@ -433,6 +473,8 @@ public class EventLogTable
 				eventLogTableState.topVisibleEventNumber = eventLogEntryReference.getEventLogEntry(eventLogInput).getEvent().getEventNumber();
 				eventLogTableState.filterMode = getFilterMode();
 				eventLogTableState.customFilter = getCustomFilter();
+                eventLogTableState.typeMode = getTypeMode();
+                eventLogTableState.nameMode = getNameMode();
 				eventLogTableState.displayMode = getDisplayMode();
 				
 				manager.setProperty(resource, STATE_PROPERTY, eventLogTableState);
@@ -449,5 +491,7 @@ class EventLogTableState implements Serializable {
 	public int topVisibleEventNumber;
 	public int filterMode;
 	public String customFilter;
-	public int displayMode;
+    public EventLogTable.TypeMode typeMode;
+    public EventLogTable.NameMode nameMode;
+	public EventLogTable.DisplayMode displayMode;
 }
