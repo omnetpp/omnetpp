@@ -438,8 +438,6 @@ cObject *cMessage::removeControlInfo()
 long cMessage::encapsulationId() const
 {
     // find innermost msg. Note: don't use encapsulatedMsg() because it does copy-on-touch of shared msgs
-    if (!encapmsg)
-        return -1;
     const cMessage *msg = this;
     while (msg->encapmsg)
         msg = msg->encapmsg;
@@ -449,8 +447,6 @@ long cMessage::encapsulationId() const
 long cMessage::encapsulationTreeId() const
 {
     // find innermost msg. Note: don't use encapsulatedMsg() because it does copy-on-touch of shared msgs
-    if (!encapmsg)
-        return -1;
     const cMessage *msg = this;
     while (msg->encapmsg)
         msg = msg->encapmsg;

@@ -165,11 +165,11 @@ class SIM_API cMessage : public cOwnedObject
     void setPreviousEventNumber(long num) {prev_event_num = num;}
 
     // internal convenience method: returns the id() of the innermost encapsulated message,
-    // or -1 if there is no encapsulated message.
+    // or itself if there's no encapsulated message
     long encapsulationId() const;
 
     // internal convenience method: returns treeId() of the innermost encapsulated message,
-    // or -1 if there is no encapsulated message.
+    // or itself if there's no encapsulated message
     long encapsulationTreeId() const;
 
     // internal: only to be used by test cases
