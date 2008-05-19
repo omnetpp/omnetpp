@@ -29,6 +29,7 @@ MC ModuleCreatedEntry // creating a module
 {
    id int moduleId              // id of the new module
    c string moduleClassName     // C++ class name of the module
+   t string nedTypeName         // fully qualified NED type name
    pid int parentModuleId  -1   // id of the parent module
    n string fullName            // full dotted hierarchic module name
    cm bool compoundModule false // simple or compound module

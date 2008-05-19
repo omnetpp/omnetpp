@@ -299,16 +299,8 @@ void EventlogFileManager::moduleCreated(cModule *newmodule)
 
         bool isCompoundModule = dynamic_cast<cCompoundModule *>(m);
 
-        if (m->parentModule())
-        {
-            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n_cm(feventlog,
-                m->id(), m->nedTypeName(), m->parentModule()->id(), m->fullName(), isCompoundModule); //FIXME size() is missing
-        }
-        else
-        {
-            EventLogWriter::recordModuleCreatedEntry_id_c_pid_n_cm(feventlog,
-                m->id(), m->className(), -1, m->fullName(), isCompoundModule); //FIXME size() is missing; omit parentModuleId
-        }
+        EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog,
+            m->id(), m->className(), m->nedTypeName(), m->parentModule() ? m->parentModule()->id() : -1, m->fullName(), isCompoundModule); //FIXME size() is missing
     }
 }
 

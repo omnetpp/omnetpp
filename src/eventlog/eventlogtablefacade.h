@@ -24,23 +24,12 @@
 
 NAMESPACE_BEGIN
 
-enum EventLogTableNameMode {
-    SMART_NAME,
-    FULL_NAME,
-    FULL_PATH
-};
-
 enum EventLogTableFilterMode {
     ALL_ENTRIES,
     EVENT_AND_SEND_AND_MESSAGE_ENTRIES,
     EVENT_AND_MESSAGE_ENTRIES,
     EVENT_ENTRIES,
     CUSTOM_ENTRIES
-};
-
-enum EventLogTableDisplayMode {
-    DESCRIPTIVE,
-    RAW
 };
 
 /**
@@ -56,8 +45,6 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         long approximateNumberOfEntries;
         long lastMatchedEventNumber;
         int lastNumMatchingEventLogEntries;
-        EventLogTableNameMode nameMode;
-        EventLogTableDisplayMode displayMode;
         EventLogTableFilterMode filterMode;
         std::string customFilter;
         MatchExpression matchExpression;
@@ -68,10 +55,6 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
 
         virtual void synchronize(FileReader::FileChangedState change);
 
-        EventLogTableNameMode getNameMode() { return nameMode; }
-        void setNameMode(EventLogTableNameMode nameMode) { this->nameMode = nameMode; }
-        EventLogTableDisplayMode getDisplayMode() { return displayMode; }
-        void setDisplayMode(EventLogTableDisplayMode displayMode) { this->displayMode = displayMode; }
         EventLogTableFilterMode getFilterMode() { return filterMode; }
         void setFilterMode(EventLogTableFilterMode filterMode);
         bool matchesFilter(EventLogEntry *eventLogEntry);
