@@ -27,11 +27,13 @@ NAMESPACE_BEGIN
 
 
 /**
- * Internal class, used as a base class for cModule. cDefaultList acts
- * as a "soft owner" (see object ownership discussion in cOwnedObject documentation).
- * Do not subclass your own classes from cDefaultList.
+ * Internal class, used as a base class for modules and channels. It is not
+ * intended for subclassing outside the simulation kernel. 
  *
- * @ingroup Containers
+ * cDefaultList acts as a "soft owner" (see object ownership discussion 
+ * in cOwnedObject documentation).
+ *
+ * @ingroup Internals
  */
 class SIM_API cDefaultList : public cNoncopyableOwnedObject
 {
