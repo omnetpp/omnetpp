@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
@@ -53,18 +54,21 @@ public class EventLogTableView extends EventLogView {
 			}
 
 			public void partBroughtToTop(IWorkbenchPart part) {
-				updateSelectionFromActiveEditor();
+                if (part instanceof IEditorPart)
+                    updateSelectionFromActiveEditor();
 			}
 
 			public void partClosed(IWorkbenchPart part) {
-				updateSelectionFromActiveEditor();
+                if (part instanceof IEditorPart)
+                    updateSelectionFromActiveEditor();
 			}
 
 			public void partDeactivated(IWorkbenchPart part) {
 			}
 
 			public void partOpened(IWorkbenchPart part) {
-				updateSelectionFromActiveEditor();
+                if (part instanceof IEditorPart)
+                    updateSelectionFromActiveEditor();
 			}
 		};
 		viewSite.getPage().addPartListener(partListener);
