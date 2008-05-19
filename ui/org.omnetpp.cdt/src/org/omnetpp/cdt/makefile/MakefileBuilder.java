@@ -23,6 +23,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
@@ -117,7 +120,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                             "in project \"" + project.getName() + "\", which is incorrect. You can fix " +
                             "this problem by removing and adding back the OMNeT++ Nature, using the " +
                             "project's context menu.";
-                        MessageDialog.openWarning(Display.getCurrent().getActiveShell(), "Warning", message);
+                        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                        Shell parent = activeWorkbenchWindow==null ? null : activeWorkbenchWindow.getShell();
+                        // note: Display.getCurrent().getActiveShell() is not good as parent (ProgressDialog would pull down our dialog too when it disappears)
+                        MessageDialog.openWarning(parent, "Warning", message);
                     }
                 });
             }
@@ -150,7 +156,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                         "or installation. Please go to the Project menu, and activate a different " +
                         "build configuration. (You may need to switch to the C/C++ perspective first, " +
                         "so that the required menu items appear in the Project menu.)";
-                    MessageDialog.openWarning(Display.getCurrent().getActiveShell(), "Warning", message);
+                    IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                    Shell parent = activeWorkbenchWindow==null ? null : activeWorkbenchWindow.getShell();
+                    // note: Display.getCurrent().getActiveShell() is not good as parent (ProgressDialog would pull down our dialog too when it disappears)
+                    MessageDialog.openWarning(parent, "Warning", message);
                 }
             });
         }
