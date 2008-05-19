@@ -9,7 +9,7 @@ import org.omnetpp.scave.model2.DatasetManager;
 
 public class HistogramDataset implements IHistogramDataset {
 	
-	private class HistogramData {
+	private static class HistogramData {
 		String key;
 		boolean isDiscrete;
 		int count;

@@ -75,7 +75,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 
 	static final Line[] NO_LINES = new Line[0];
 
-	class Line implements Comparable<Line> {
+	static class Line implements Comparable<Line> {
 		
 		String key;
 		InterpolationMode interpolationMode;
