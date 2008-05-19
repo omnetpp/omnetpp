@@ -1,15 +1,15 @@
-MC id 1 c Tictoc6 n Tictoc6 cm 1
-MC id 2 c Txc6 pid 1 n tic
+MC id 1 c Tictoc6 t Tictoc6 n Tictoc6 cm 1
+MC id 2 c Txc6 t Txc6 pid 1 n tic
 GC m 2 g 0 n in o 0
 GC m 2 g 3 n out o 1
-MC id 3 c Txc6 pid 1 n toc
+MC id 3 c Txc6 t Txc6 pid 1 n toc
 GC m 3 g 0 n in o 0
 GC m 3 g 3 n out o 1
 CC sm 2 sg 3 dm 3 dg 0
 CC sm 3 sg 3 dm 2 dg 0
 
 E # 0 t 0 m 1 msg -1
-SB v 1024 rid Tictoc6-0-20080509-10:06:09-2228
+SB v 1024 rid Tictoc6-0-20080519-15:36:58-808
 - Initializing channel Tictoc6.tic.out.channel, stage 0
 - Initializing channel Tictoc6.toc.out.channel, stage 0
 - Initializing module Tictoc6, stage 0

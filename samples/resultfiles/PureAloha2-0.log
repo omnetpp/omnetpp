@@ -1,29 +1,29 @@
-MC id 1 c Aloha n Aloha cm 1
-MC id 2 c Server pid 1 n server
+MC id 1 c Aloha t Aloha n Aloha cm 1
+MC id 2 c Server t Server pid 1 n server
 GC m 2 g 0 n in o 0
-MC id 3 c Host pid 1 n host[0]
-MC id 4 c Host pid 1 n host[1]
-MC id 5 c Host pid 1 n host[2]
-MC id 6 c Host pid 1 n host[3]
-MC id 7 c Host pid 1 n host[4]
-MC id 8 c Host pid 1 n host[5]
-MC id 9 c Host pid 1 n host[6]
-MC id 10 c Host pid 1 n host[7]
-MC id 11 c Host pid 1 n host[8]
-MC id 12 c Host pid 1 n host[9]
-MC id 13 c Host pid 1 n host[10]
-MC id 14 c Host pid 1 n host[11]
-MC id 15 c Host pid 1 n host[12]
-MC id 16 c Host pid 1 n host[13]
-MC id 17 c Host pid 1 n host[14]
-MC id 18 c Host pid 1 n host[15]
-MC id 19 c Host pid 1 n host[16]
-MC id 20 c Host pid 1 n host[17]
-MC id 21 c Host pid 1 n host[18]
-MC id 22 c Host pid 1 n host[19]
+MC id 3 c Host t Host pid 1 n host[0]
+MC id 4 c Host t Host pid 1 n host[1]
+MC id 5 c Host t Host pid 1 n host[2]
+MC id 6 c Host t Host pid 1 n host[3]
+MC id 7 c Host t Host pid 1 n host[4]
+MC id 8 c Host t Host pid 1 n host[5]
+MC id 9 c Host t Host pid 1 n host[6]
+MC id 10 c Host t Host pid 1 n host[7]
+MC id 11 c Host t Host pid 1 n host[8]
+MC id 12 c Host t Host pid 1 n host[9]
+MC id 13 c Host t Host pid 1 n host[10]
+MC id 14 c Host t Host pid 1 n host[11]
+MC id 15 c Host t Host pid 1 n host[12]
+MC id 16 c Host t Host pid 1 n host[13]
+MC id 17 c Host t Host pid 1 n host[14]
+MC id 18 c Host t Host pid 1 n host[15]
+MC id 19 c Host t Host pid 1 n host[16]
+MC id 20 c Host t Host pid 1 n host[17]
+MC id 21 c Host t Host pid 1 n host[18]
+MC id 22 c Host t Host pid 1 n host[19]
 
 E # 0 t 0 m 1 msg -1
-SB v 1024 rid PureAloha2-0-20080509-10:40:11-848
+SB v 1024 rid PureAloha2-0-20080519-15:35:26-3328
 - Initializing module Aloha, stage 0
 - Initializing module Aloha.server, stage 0
 MS id 2 d i=device/antennatower_l
@@ -3982,10 +3982,67 @@ E # 499 t 36.663809161917 m 2 ce 497 msg 0
 - reception finished
 MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
 MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
-- duration: 36.663809161917
-- total frames: 135
-- collided frames: 41
-- total receive time: 6.346666666624
-- total collision time: 4.872880773766
-- channel utilization: 0.173104
-SE
+MD id 1
+DM id 0 pe 499
+MD id 2
+GD m 2 g 0
+CE id 1 pe 473
+DM id 1 pe 500
+MD id 3
+CE id 2 pe 479
+DM id 2 pe 500
+MD id 4
+CE id 3 pe 460
+DM id 3 pe 500
+MD id 5
+CE id 4 pe 493
+DM id 4 pe 500
+MD id 6
+CE id 5 pe 442
+DM id 5 pe 500
+MD id 7
+CE id 6 pe 425
+DM id 6 pe 500
+MD id 8
+CE id 7 pe 426
+DM id 7 pe 500
+MD id 9
+CE id 8 pe 476
+DM id 8 pe 500
+MD id 10
+CE id 9 pe 380
+DM id 9 pe 500
+MD id 11
+CE id 10 pe 487
+DM id 10 pe 500
+MD id 12
+CE id 11 pe 475
+DM id 11 pe 500
+MD id 13
+CE id 12 pe 498
+DM id 12 pe 500
+MD id 14
+CE id 13 pe 483
+DM id 13 pe 500
+MD id 15
+CE id 14 pe 404
+DM id 14 pe 500
+MD id 16
+CE id 15 pe 372
+DM id 15 pe 500
+MD id 17
+CE id 16 pe 396
+DM id 16 pe 500
+MD id 18
+CE id 17 pe 412
+DM id 17 pe 500
+MD id 19
+CE id 18 pe 301
+DM id 18 pe 500
+MD id 20
+CE id 19 pe 482
+DM id 19 pe 500
+MD id 21
+CE id 20 pe 456
+DM id 20 pe 500
+MD id 22
