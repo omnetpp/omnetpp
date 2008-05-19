@@ -19,6 +19,7 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.internal.ui.views.launch.LaunchView;
 import org.eclipse.debug.ui.IDebugUIConstants;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -63,7 +64,7 @@ public class SimulationLauncherJob extends Job {
         	launchSimulation(configuration, launch, smon.newChild(1), runNo);
         }
         catch (CoreException e) {
-            return Status.CANCEL_STATUS;
+            return e.getStatus();
         } finally {
             monitor.done();
         }
