@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <sys/stat.h>
+#include "inttypes.h"
 #include "exception.h"
 #include "filereader.h"
 #include "linetokenizer.h"
@@ -24,8 +25,9 @@
 #include "scaveexception.h"
 #include "indexfile.h"
 
-USING_NAMESPACE
+#define LL INT64_PRINTF_FORMAT
 
+USING_NAMESPACE
 
 static bool serialLess(const Block &first, const Block &second)
 {
@@ -485,7 +487,7 @@ void IndexFileWriter::writeFingerprint(std::string vectorFileName)
 
     file_offset_t saveOffset = opp_ftell(file);
     opp_fseek(file, 0, SEEK_SET);
-    CHECK(fprintf(file, "file %lld %lld", fingerprint.fileSize, fingerprint.lastModified));
+    CHECK(fprintf(file, "file %"LL"d %"LL"d", fingerprint.fileSize, fingerprint.lastModified));
     opp_fseek(file, saveOffset, SEEK_SET);
 }
 
@@ -536,7 +538,7 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
 
     if (block.count() > 0)
     {
-        CHECK(fprintf(file, "%d\t%lld %lld", vector.vectorId, (int64)block.startOffset, (int64)block.size));
+        CHECK(fprintf(file, "%d\t%"LL"d %"LL"d", vector.vectorId, (int64)block.startOffset, (int64)block.size));
         if (vector.hasColumn('E')) { CHECK(fprintf(file, " %ld %ld", block.startEventNum, block.endEventNum)); }
         if (vector.hasColumn('T')) { CHECK(fprintf(file, " %s %s",
                                                         BigDecimal::ttoa(buff1, block.startTime, e),
