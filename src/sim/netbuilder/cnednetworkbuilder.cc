@@ -134,11 +134,10 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 {
     const char *paramName = paramNode->getName();
 
-    // isSubComponent==true: we are called from cModuleType::addParametersTo();
-    // isSubComponent==false: we are called from assignSubcomponentParams().
+    // isSubComponent==false: we are called from cModuleType::addParametersTo();
+    // isSubComponent==true: we are called from assignSubcomponentParams().
     // if type==NONE, this is an inherited parameter (must have been added already)
     bool isNewParam = !isSubcomponent && paramNode->getType()!=NED_PARTYPE_NONE;
-    ASSERT(component->hasPar(paramName) != isNewParam);
 
     cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
     if (impl)
