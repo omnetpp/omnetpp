@@ -178,6 +178,7 @@ public class EventLogTable
 	
 	@Override
 	public void refresh() {
+        internalErrorHappenedDuringPaint = false;
 		eventLogInput.resetCanceled();
 		super.refresh();
 	}

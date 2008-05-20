@@ -298,4 +298,10 @@ public class EventLogFilterParameters implements Serializable {
 
 		return vector;
 	}
+	
+	@Override
+	public String toString() {
+	    // TODO Auto-generated method stub
+	    return super.toString();
+	}
 }
