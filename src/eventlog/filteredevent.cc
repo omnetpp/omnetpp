@@ -208,7 +208,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
                         else
                             pushNewFilteredMessageDependency(causes, effectiveIsReuse, messageDependency, endMessageDependency);
 
-                        if (causes->size() == filteredEventLog->getMaximumNumberOfCauses())
+                        if (countFilteredMessageDependencies(causes) == filteredEventLog->getMaximumNumberOfCauses())
                             return causes;
                     }
                     else if (level < filteredEventLog->getMaximumCauseDepth())
@@ -262,7 +262,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
                         else
                             pushNewFilteredMessageDependency(consequences, effectiveIsReuse, beginMessageDependency, messageDependency);
 
-                        if (consequences->size() == filteredEventLog->getMaximumNumberOfConsequences())
+                        if (countFilteredMessageDependencies(consequences) == filteredEventLog->getMaximumNumberOfConsequences())
                             return consequences;
                     }
                     else if (level < filteredEventLog->getMaximumConsequenceDepth())
@@ -275,6 +275,16 @@ IMessageDependencyList *FilteredEvent::getConsequences()
     }
 
     return consequences;
+}
+
+int FilteredEvent::countFilteredMessageDependencies(IMessageDependencyList *messageDependencies)
+{
+    int count = 0;
+    for (IMessageDependencyList::iterator it = messageDependencies->begin(); it != messageDependencies->end(); it++) 
+        if (dynamic_cast<FilteredMessageDependency *>(*it))
+            count++;
+
+    return count;
 }
 
 void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *messageDependencies, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)

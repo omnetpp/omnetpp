@@ -104,6 +104,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
     protected:
         void getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool isReuse, int level);
         void getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool isReuse, int level);
+        int countFilteredMessageDependencies(IMessageDependencyList *messageDependencies);
         void pushNewFilteredMessageDependency(IMessageDependencyList *messageDependencies, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency);
 };
 
