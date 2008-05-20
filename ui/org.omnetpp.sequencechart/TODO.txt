@@ -94,7 +94,7 @@ Features:
  + store manual ordering when turning filtering on and off
  + use checkbox list and remember what the user typed in event log filter id lists to allow turning on and off each id
  + don't count non filtered message dependencies when checking the maximum message dependency count per event
- - avoid displaying to much events at once (due to being slow) when turning filtering on and off
+ - avoid displaying too much events at once (due to being slow) when turning filtering on and off (maybe remember position and zoom level?)
  - don't display an axis until there is an event to be displayed on it (when filtering among a lot of axes this helps not displaying useless axes)
 
 Known bugs:

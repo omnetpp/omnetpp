@@ -40,10 +40,8 @@ public class EventLogTableView extends EventLogView {
 		// follow selection
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != EventLogTableView.this && selection instanceof IEventLogSelection) {
-					eventLogTable.setSelection(selection);
-					updateTitleToolTip();
-				}
+				if (part != EventLogTableView.this && selection instanceof IEventLogSelection)
+					updateSelection(selection);
 			}
 		};
 		viewSite.getPage().addSelectionListener(selectionListener);
