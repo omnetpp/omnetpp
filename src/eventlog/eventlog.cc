@@ -179,9 +179,13 @@ Event *EventLog::getApproximateEventAt(double percentage)
         Event *event = NULL;
 
         if (lineStartOffset == -1)
-            return getLastEvent();
+            event = getLastEvent();
         else
-            return getEventForBeginOffset(lineStartOffset);
+            event = getEventForBeginOffset(lineStartOffset);
+
+        Assert(event);
+
+        return event;
     }
 }
 

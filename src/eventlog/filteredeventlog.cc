@@ -175,13 +175,15 @@ FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
 {
     IEvent *event = eventLog->getApproximateEventAt(percentage);
 
-    FilteredEvent *filteredEvent = this->getMatchingEventInDirection(event, true);
+    FilteredEvent *filteredEvent = getMatchingEventInDirection(event, true);
     if (filteredEvent)
         return filteredEvent;
 
-    filteredEvent = this->getMatchingEventInDirection(event, false);
+    filteredEvent = getMatchingEventInDirection(event, false);
     if (filteredEvent)
         return filteredEvent;
+
+    Assert(isEmpty());
 
     return NULL;
 }
@@ -482,7 +484,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
     // optimization
     if (forward) {
         if (firstMatchingEvent && event->getEventNumber() < firstMatchingEvent->getEventNumber()) {
-            if (stopEventNumber != -1 || stopEventNumber < firstMatchingEvent->getEventNumber())
+            if (stopEventNumber != -1 && stopEventNumber < firstMatchingEvent->getEventNumber())
                 return NULL;
             else
                 return firstMatchingEvent;
@@ -493,7 +495,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
     }
     else {
         if (lastMatchingEvent && lastMatchingEvent->getEventNumber() < event->getEventNumber())
-            if (stopEventNumber != -1 || lastMatchingEvent->getEventNumber() < stopEventNumber)
+            if (stopEventNumber != -1 && lastMatchingEvent->getEventNumber() < stopEventNumber)
                 return NULL;
             else
                 return lastMatchingEvent;
