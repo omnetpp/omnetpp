@@ -1178,7 +1178,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                     dialog.setMessage("Select a run to browse for vectors:");
                     if (dialog.open() == ListDialog.CANCEL)
                         return;
-                    run = (Run)dialog.getResult()[0];
+                    run = (Run)dialog.getFirstResult();
 				}
 
                 // compare eventlog run id against vector file's run id
@@ -1193,28 +1193,41 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				}
 
 				// select a vector from the loaded file and run
+				long id;
                 IDList idList = resultFileManager.getVectorsInFileRun(resultFileManager.getFileRun(resultFile, run));
-                ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
-					@Override
-					public String getText(Object element) {
-						long id = (Long)element;
-						ResultItem resultItem = resultFileManager.getItem(id);
-						
-						return resultItem.getModuleName() + ":" + resultItem.getName();
-					}
-				});
-				dialog.setFilter(axisModule.getModuleFullPath());
-				dialog.setElements(idList.toArray());
-                dialog.setTitle("Vector selection");
-				dialog.setMessage("Select a vector to attach:");
+				
+				if (idList.size() == 0) {
+                    MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
+                    messageBox.setText("No vectors in run");
+                    messageBox.setMessage("The run " + run.getRunName() + " in the vector file " + vectorFileName + " does not contain any vectors");
+                    messageBox.open();
+                    return;
+				}
+				else if (idList.size() == 1)
+				    id = idList.get(0);
+				else {
+                    ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
+    					@Override
+    					public String getText(Object element) {
+    						long id = (Long)element;
+    						ResultItem resultItem = resultFileManager.getItem(id);
+    						
+    						return resultItem.getModuleName() + ":" + resultItem.getName();
+    					}
+    				});
+    				dialog.setFilter(axisModule.getModuleFullPath());
+    				dialog.setElements(idList.toArray());
+                    dialog.setTitle("Vector selection");
+    				dialog.setMessage("Select a vector to attach:");
+    				if (dialog.open() == ListDialog.CANCEL)
+    				    return;
+                    id = (Long)dialog.getFirstResult();
+				}
 
 				// attach vector data
-				if (dialog.open() == ListDialog.OK) {
-					long id = (Long)dialog.getFirstResult();
-					ResultItem resultItem = resultFileManager.getItem(id);
-					XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
-					sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, vectorFileName, resultItem, data));
-				}
+				ResultItem resultItem = resultFileManager.getItem(id);
+				XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
+				sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, vectorFileName, resultItem, data));
 			}
 		};
 	}
