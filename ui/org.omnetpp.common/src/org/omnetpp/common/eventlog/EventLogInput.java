@@ -291,8 +291,8 @@ public class EventLogInput extends FileEditorInput
 			if (eventLogFilterParameters.enableModuleIdFilter || eventLogFilterParameters.enableModuleNameFilter)
                 filteredEventLog.setModuleIds(eventLogFilterParameters.getModuleIds());
 
-			if (eventLogFilterParameters.enableModuleClassNameFilter)
-			    filteredEventLog.setModuleClassNames(eventLogFilterParameters.getModuleClassNames());
+			if (eventLogFilterParameters.enableModuleNEDTypeNameFilter)
+			    filteredEventLog.setModuleNEDTypeNames(eventLogFilterParameters.getModuleNEDTypeNames());
 		}
 
 		if (eventLogFilterParameters.enableTraceFilter) {

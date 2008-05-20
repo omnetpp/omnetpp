@@ -26,7 +26,7 @@ public class EventLogFilterParameters implements Serializable {
 
 	public boolean enableModuleExpressionFilter;
 
-	public boolean enableModuleClassNameFilter;
+	public boolean enableModuleNEDTypeNameFilter;
 
 	public boolean enableModuleNameFilter;
 
@@ -78,7 +78,7 @@ public class EventLogFilterParameters implements Serializable {
 
 	public String moduleFilterExpression;
 
-	public String[] moduleClassNames;
+	public String[] moduleNEDTypeNames;
 
 	public int[] moduleIds;
 	
@@ -143,7 +143,7 @@ public class EventLogFilterParameters implements Serializable {
     public boolean isAnyModuleFilterEnabled() {
         return enableModuleFilter &&
             (enableModuleExpressionFilter ||
-             enableModuleClassNameFilter ||
+             enableModuleNEDTypeNameFilter ||
              enableModuleNameFilter ||
              enableModuleIdFilter);
     }
@@ -231,8 +231,8 @@ public class EventLogFilterParameters implements Serializable {
 		return vector;
 	}
 
-	public StringVector getModuleClassNames() {
-		return createStringVector(moduleClassNames);
+	public StringVector getModuleNEDTypeNames() {
+		return createStringVector(moduleNEDTypeNames);
 	}
 
 	public StringVector getMessageClassNames() {

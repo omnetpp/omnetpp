@@ -67,7 +67,7 @@ public class FilterEventLogDialog
 
     private FilterDialogTreeNode enableModuleExpressionFilter;
 
-    private FilterDialogTreeNode enableModuleClassNameFilter;
+    private FilterDialogTreeNode enableModuleNEDTypeNameFilter;
 
     private FilterDialogTreeNode enableModuleNameFilter;
 
@@ -119,7 +119,7 @@ public class FilterEventLogDialog
 
 	private Text moduleFilterExpression;
 
-	private CheckboxTableViewer moduleClassNames;
+	private CheckboxTableViewer moduleNEDTypeNames;
 
 	private ModuleTreeViewer moduleNameIds;
 
@@ -338,7 +338,7 @@ public class FilterEventLogDialog
 						if (guiControl instanceof AbstractEditableList)
 							parameterField.set(filterParameters, parseStringArray((AbstractEditableList)guiField.get(this)));
 						else if (guiControl instanceof CheckboxTableViewer)
-							parameterField.set(filterParameters, parseModuleClassNameArray((CheckboxTableViewer)guiField.get(this)));
+							parameterField.set(filterParameters, parseModuleNEDTypeNameArray((CheckboxTableViewer)guiField.get(this)));
 						else
 							throw new RuntimeException("Unknown gui field type");
 					}
@@ -428,14 +428,14 @@ public class FilterEventLogDialog
 		return values;
 	}
 
-	private String[] parseModuleClassNameArray(CheckboxTableViewer checkBoxTableViewer) {
+	private String[] parseModuleNEDTypeNameArray(CheckboxTableViewer checkBoxTableViewer) {
 		Object[] elements = checkBoxTableViewer.getCheckedElements();
-		String[] moduleClassNames = new String[elements.length];
+		String[] moduleNEDTypeNames = new String[elements.length];
 		
 		for (int i = 0; i < elements.length; i++)
-			moduleClassNames[i] = (String)elements[i];
+			moduleNEDTypeNames[i] = (String)elements[i];
 		
-		return moduleClassNames;
+		return moduleNEDTypeNames;
 	}
 	
 	public int open(String initialTreeNodeName) {
@@ -667,26 +667,26 @@ public class FilterEventLogDialog
 		// module class name filter
         IEventLog eventLog = eventLogInput.getEventLog();
         panel = createPanel(parent, "Filter by Module Type", "When enabled, modules with the selected NED types will be considered.", 2);
-        enableModuleFilter.addChild(enableModuleClassNameFilter = new FilterDialogTreeNode("by NED type", panel) {
+        enableModuleFilter.addChild(enableModuleNEDTypeNameFilter = new FilterDialogTreeNode("by NED type", panel) {
             @Override
             public void checkStateChanged(boolean checked) {
-                moduleClassNames.getTable().setEnabled(checked);
+                moduleNEDTypeNames.getTable().setEnabled(checked);
             }
         });
 
         ModuleCreatedEntryList moduleCreatedEntryList = eventLog.getModuleCreatedEntries();
-		Set<String> moduleClassNameSet = new HashSet<String>();
+		Set<String> moduleNEDTypeNameSet = new HashSet<String>();
 		for (int i = 0; i < moduleCreatedEntryList.size(); i++) {
 			ModuleCreatedEntry moduleCreatedEntry = moduleCreatedEntryList.get(i);
 			if (moduleCreatedEntry != null)
-				moduleClassNameSet.add(moduleCreatedEntry.getModuleClassName());
+				moduleNEDTypeNameSet.add(moduleCreatedEntry.getNedTypeName());
 		}
 
-		String[] moduleClassNamesAsStrings = (String[])moduleClassNameSet.toArray(new String[0]);
-		Collections.sort(Arrays.asList(moduleClassNamesAsStrings), StringUtils.dictionaryComparator);
-		moduleClassNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
-		moduleClassNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		moduleClassNames.add(moduleClassNamesAsStrings);
+		String[] moduleNEDTypeNamesAsStrings = (String[])moduleNEDTypeNameSet.toArray(new String[0]);
+		Collections.sort(Arrays.asList(moduleNEDTypeNamesAsStrings), StringUtils.dictionaryComparator);
+		moduleNEDTypeNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		moduleNEDTypeNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		moduleNEDTypeNames.add(moduleNEDTypeNamesAsStrings);
 
 		// module name filter
 		panel = createPanel(parent, "Filter by Module Name", "When enabled, modules with the selected names will be considered.", 2);

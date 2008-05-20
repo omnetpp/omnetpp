@@ -3242,7 +3242,7 @@ public class SequenceChart
 		    result += " at t = " + event.getSimulationTime();
 
 		String moduleName = (formatted ? eventLogInput.getEventLogTableFacade().EventLogEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()) : moduleCreatedEntry.getFullName());
-		result += " in module (" + moduleCreatedEntry.getModuleClassName() + ") " +  boldStart + moduleName + boldEnd + " (id = " + event.getModuleId() + ")";
+		result += " in module (" + moduleCreatedEntry.getNedTypeName() + ") " +  boldStart + moduleName + boldEnd + " (id = " + event.getModuleId() + ")";
 
 		IMessageDependency messageDependency = event.getCause();
 		BeginSendEntry beginSendEntry = null;
