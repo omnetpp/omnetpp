@@ -63,6 +63,7 @@ import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -742,7 +743,7 @@ public class SequenceChart
 		if (e.detail == SWT.ARROW_UP)
 		    scrollHorizontal(-10);
 		else if (e.detail == SWT.ARROW_DOWN)
-			scroll(10);
+		    scrollHorizontal(10);
 		else if (e.detail == SWT.PAGE_UP)
 		    scrollHorizontal(-getViewportWidth());
 		else if (e.detail == SWT.PAGE_DOWN)
@@ -1206,6 +1207,7 @@ public class SequenceChart
     }
 
     private void eventLogChanged() {
+        // TODO: what if the axes modules also change, revert all state to the new log file
         if (!eventLog.isEmpty() && 
             (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1 ||
              sequenceChartFacade.getTimelineCoordinateSystemOriginEvent() == null))
@@ -3248,7 +3250,16 @@ public class SequenceChart
 		    result += " at t = " + event.getSimulationTime();
 
 		String moduleName = (formatted ? eventLogInput.getEventLogTableFacade().EventLogEntry_getModuleFullPath(moduleCreatedEntry.getCPtr()) : moduleCreatedEntry.getFullName());
-		result += " in module (" + moduleCreatedEntry.getNedTypeName() + ") " +  boldStart + moduleName + boldEnd + " (id = " + event.getModuleId() + ")";
+		String typeName = moduleCreatedEntry.getNedTypeName();
+		if (!formatted && typeName.contains("."))
+		    typeName = StringUtils.substringAfterLast(typeName, ".");
+
+        result += " in ";
+
+        if (formatted)
+            result += "module";
+        
+        result += "(" + typeName + ") " +  boldStart + moduleName + boldEnd + " (id = " + event.getModuleId() + ")";
 
 		IMessageDependency messageDependency = event.getCause();
 		BeginSendEntry beginSendEntry = null;

@@ -269,14 +269,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					IMenuManager subMenuManager = new MenuManager(sequenceChart.getAxisText(axisModule, false));
 					menuManager.add(subMenuManager);
 
-					subMenuManager.add(createCenterAxisAction(axisModule));
-					subMenuManager.add(createZoomToAxisValueAction(axisModule, p.x));
-					
 					if (sequenceChart.getAxisRenderer(axisModule) instanceof AxisLineRenderer)
 						subMenuManager.add(createAttachVectorToAxisAction(axisModule));
 					else
 						subMenuManager.add(createDetachVectorFromAxisAction(axisModule));
 
+                    subMenuManager.add(createZoomToAxisValueAction(axisModule, p.x));
+                    subMenuManager.add(createCenterAxisAction(axisModule));
+                    
 					menuManager.add(separatorAction);
 				}
 

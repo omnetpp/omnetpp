@@ -332,14 +332,14 @@ cContextSwitcher::~cContextSwitcher()
 cMethodCallContextSwitcher::cMethodCallContextSwitcher(cComponent *newContext, bool notifyEnvir) :
   cContextSwitcher(newContext)
 {
-    if (notifyEnvir)
+    if (notifyEnvir && newContext!=callerContext)
         EVCB.componentMethodBegin(callerContext, newContext, "");
 }
 
 void cMethodCallContextSwitcher::methodCall(const char *fmt,...)
 {
-    cComponent *methodContext = simulation.context();
-    if (methodContext!=callerContext)
+    cComponent *newContext = simulation.context();
+    if (newContext!=callerContext)
     {
         //FIXME move vsprintf into componentMethodBegin()! so that it can be skipped when ev.disabled() AND not logging into a file!!! this speeds up simulations a lot! [from Ingmar Baumgart, Dec 15 2006]
         static char buf[MAX_METHODCALL];
@@ -348,7 +348,7 @@ void cMethodCallContextSwitcher::methodCall(const char *fmt,...)
         vsprintf(buf,fmt,va);
         va_end(va);
 
-        EVCB.componentMethodBegin(callerContext, methodContext, buf);
+        EVCB.componentMethodBegin(callerContext, newContext, buf);
     }
 }
 

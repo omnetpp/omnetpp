@@ -260,11 +260,7 @@ bool FilteredEventLog::matchesEvent(IEvent *event)
     // event's message
     if (enableMessageFilter) {
         BeginSendEntry *beginSendEntry = event->getCauseBeginSendEntry();
-
-        if (!beginSendEntry)
-            return false;
-
-        bool matches = matchesBeginSendEntry(beginSendEntry);
+        bool matches = beginSendEntry ? matchesBeginSendEntry(beginSendEntry) : false;
 
         for (int i = 0; i < event->getNumEventLogEntries(); i++) {
             beginSendEntry = dynamic_cast<BeginSendEntry *>(event->getEventLogEntry(i));

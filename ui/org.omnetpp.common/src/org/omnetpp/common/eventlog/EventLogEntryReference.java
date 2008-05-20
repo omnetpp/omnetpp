@@ -24,8 +24,16 @@ public class EventLogEntryReference {
 	public int getEventEntryIndex() {
 		return eventEntryIndex;
 	}
-	
-	public EventLogEntry getEventLogEntry(EventLogInput eventLogInput) {
+
+    public IEvent getEvent(EventLogInput eventLogInput) {
+        return getEvent(eventLogInput.getEventLog());
+    }
+
+	public IEvent getEvent(IEventLog eventLog) {
+	    return eventLog.getEventForEventNumber(eventNumber);
+    }
+
+    public EventLogEntry getEventLogEntry(EventLogInput eventLogInput) {
 		return getEventLogEntry(eventLogInput.getEventLog());
 	}
 

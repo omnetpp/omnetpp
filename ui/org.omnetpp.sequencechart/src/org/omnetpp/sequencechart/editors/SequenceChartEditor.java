@@ -200,7 +200,7 @@ public class SequenceChartEditor extends EventLogEditor implements INavigationLo
 	}
 
 	public INavigationLocation createNavigationLocation() {
-		if (canCreateNavigationLocation())
+		if (!canCreateNavigationLocation())
 			return null;
 		else
 			return new SequenceChartLocation(sequenceChart.getViewportLeftSimulationTime(), sequenceChart.getViewportRightSimulationTime());
