@@ -113,12 +113,12 @@ public class ResourceChangeTracker implements IResourceChangeListener {
      * Some heuristics to determine whether file is text. 
      */
     protected static boolean isProbablyText(byte[] content) {
-        int n = Math.min(200, content.length);
+        int n = Math.min(500, content.length);
         int numAscii = 0;
         for (int i=0; i<n; i++)
             if (content[i] >= '\t')  // byte is signed, so >=128 ones are negative
                 numAscii++;
-        return n<=5 || numAscii > n/4;
+        return n<=60 || numAscii >= 0.75*n;
     }
 
 }
