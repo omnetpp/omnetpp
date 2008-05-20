@@ -1,5 +1,6 @@
 package org.omnetpp.sequencechart.editors;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -1121,42 +1122,61 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		return new SequenceChartAction("Attach Vector to Axis", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_ATTACH_VECTOR_TO_AXIS)) {
 			@Override
 			public void run() {
-				// open a vector file with the same name as the sequence chart's input file name with .vec extension
+				// open a vector file with the same name as the sequence chart's input file name with .vec extension by default
 				EventLogInput eventLogInput = (EventLogInput)sequenceChart.getInput();
 				IPath vectorFilePath = eventLogInput.getFile().getLocation().removeFileExtension().addFileExtension("vec");
 				String vectorFileName = vectorFilePath.toOSString();
-				final ResultFileManager resultFileManager = new ResultFileManager();
-				ResultFile resultFile = null;
+				File vectorFile = new File(vectorFileName);
 
+				// select a vector file
+				FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell());
+				fileDialog.setText("Select a vector file to browse for runs:");
+				if (vectorFile.exists())
+				    fileDialog.setFileName(vectorFileName);
+				fileDialog.setFilterExtensions(new String[] {"*.vec"});
+				fileDialog.setFilterPath(eventLogInput.getFile().getRawLocation().toString());
+				vectorFileName = fileDialog.open();
+				if (vectorFileName == null)
+				    return;
+
+				// load vector file
+                ResultFile resultFile = null;
+                final ResultFileManager resultFileManager = new ResultFileManager();
 				try {
 					resultFile = resultFileManager.loadFile(vectorFileName);
 				}
-				catch (Throwable t) {
-					// ask for a file if not found a valid one
-					FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell());
-
-					fileDialog.setText("Select a vector file");
-					fileDialog.setFilterExtensions(new String[] {"*.vec"});
-					fileDialog.setFilterPath(eventLogInput.getFile().getRawLocation().toString());
-					vectorFileName = fileDialog.open();
-
-					if (vectorFileName != null) {
-						try {
-							resultFile = resultFileManager.loadFile(vectorFileName);
-						}
-						catch (Throwable te) {
-							MessageDialog.openError(null, "Error", "Could not open vector file " + vectorFileName);
-							return;
-						}
-					}
-					else
-						return;
+				catch (Throwable te) {
+					MessageDialog.openError(null, "Error", "Could not load vector file " + vectorFileName);
+					return;
 				}
 
-				// compare eventlog run id against vector file's
+				// select a run
+				Run run = null;
 				RunList runList = resultFileManager.getRunsInFile(resultFile);
-				Run run = runList.get(0);
-				String eventlogRunId = getEventLog().getSimulationBeginEntry().getRunId();
+                String eventlogRunId = getEventLog().getSimulationBeginEntry().getRunId();
+				if (runList.size() == 0) {
+				}
+				else if (runList.size() == 1)
+				    run = runList.get(0);
+				else if (runList.size() > 1) {
+                    ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
+                        @Override
+                        public String getText(Object element) {
+                            Run run = (Run)element;
+                            
+                            return run.getRunName();
+                        }
+                    });
+                    dialog.setFilter(eventlogRunId);
+                    dialog.setElements(runList.toArray());
+                    dialog.setTitle("Run selection");
+                    dialog.setMessage("Select a run to browse for vectors:");
+                    if (dialog.open() == ListDialog.CANCEL)
+                        return;
+                    run = (Run)dialog.getResult()[0];
+				}
+
+                // compare eventlog run id against vector file's run id
 				String vectorFileRunId = run.getRunName();
 				if (!eventlogRunId.equals(vectorFileRunId)) {
                     MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
@@ -1167,10 +1187,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                         return;
 				}
 
-				// select a vector from the loaded file
-				IDList idList = resultFileManager.getAllVectors();
-
-				ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
+				// select a vector from the loaded file and run
+                IDList idList = resultFileManager.getVectorsInFileRun(resultFileManager.getFileRun(resultFile, run));
+                ElementListSelectionDialog dialog = new ElementListSelectionDialog(null, new LabelProvider() {
 					@Override
 					public String getText(Object element) {
 						long id = (Long)element;
@@ -1178,13 +1197,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 						
 						return resultItem.getModuleName() + ":" + resultItem.getName();
 					}
-					
 				});
 				dialog.setFilter(axisModule.getModuleFullPath());
 				dialog.setElements(idList.toArray());
+                dialog.setTitle("Vector selection");
 				dialog.setMessage("Select a vector to attach:");
-				dialog.setTitle("Vector selection");
-				
+
+				// attach vector data
 				if (dialog.open() == ListDialog.OK) {
 					long id = (Long)dialog.getFirstResult();
 					ResultItem resultItem = resultFileManager.getItem(id);
