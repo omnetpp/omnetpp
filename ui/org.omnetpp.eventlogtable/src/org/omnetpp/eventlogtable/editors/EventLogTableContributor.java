@@ -67,11 +67,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	private static EventLogTableContributor singleton;
 
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
+    
+    public final static String IMAGE_NAME_MODE = TOOL_IMAGE_DIR + "NameMode.gif";
 
     public final static String IMAGE_FILTER = TOOL_IMAGE_DIR + "filter.png";
 
-    public final static String IMAGE_NAME_MODE = TOOL_IMAGE_DIR + "NameMode.gif";
-
+    public final static String IMAGE_REFRESH = TOOL_IMAGE_DIR + "refresh.gif";
+    
 	protected EventLogTable eventLogTable;
 
     protected FindTextDialog findDialog;
@@ -114,7 +116,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	protected EventLogTableAction filterAction;
 	
-	protected StatusLineContributionItem filterStatus;
+    protected EventLogTableAction refreshAction;
+
+    protected StatusLineContributionItem filterStatus;
 
 	/*************************************************************************************
 	 * CONSTRUCTION
@@ -140,6 +144,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		this.filterModeAction = createFilterModeAction();
 		this.displayModeAction = createDisplayModeAction();
 		this.filterAction = createFilterAction();
+        this.refreshAction = createRefreshAction();
 
 		this.filterStatus = createFilterStatus();
 
@@ -192,12 +197,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         menuManager.add(gotoPreviousModuleEventAction);
         menuManager.add(gotoNextModuleEventAction);
         menuManager.add(separatorAction);
-		menuManager.add(toggleBookmarkAction);
-		menuManager.add(separatorAction);
         menuManager.add(typeModeAction);
         menuManager.add(nameModeAction);
 		menuManager.add(filterModeAction);
 		menuManager.add(displayModeAction);
+        menuManager.add(separatorAction);
+        menuManager.add(toggleBookmarkAction);
+        menuManager.add(refreshAction);
         menuManager.add(separatorAction);
 
         MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
@@ -231,6 +237,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(displayModeAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(filterAction);
+        toolBarManager.add(refreshAction);
 	}
 
 	public void contributeToStatusLine(IStatusLineManager statusLineManager) {
@@ -1200,6 +1207,15 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			}
 		};
 	}
+
+    private EventLogTableAction createRefreshAction() {
+        return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, EventLogTablePlugin.getImageDescriptor(IMAGE_REFRESH)) {
+            @Override
+            public void run() {
+                eventLogTable.refresh();
+            }
+        };
+    }
 
 	private StatusLineContributionItem createFilterStatus() {
 		return new StatusLineContributionItem("Filter") {

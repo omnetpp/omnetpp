@@ -1038,21 +1038,21 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 // message filter
                 filterParameters.enableMessageFilter = true;
-                filterParameters.enableMessageIdFilter = true;
+                filterParameters.enableMessageEncapsulationTreeIdFilter = true;
 
                 EventLogFilterParameters.EnabledInt enabledInt = null; 
-                for (EventLogFilterParameters.EnabledInt messageId : filterParameters.messageIds) {
-                    if (messageId.value == beginSendEntry.getMessageId()) {
-                        enabledInt = messageId;
-                        messageId.enabled = true;
+                for (EventLogFilterParameters.EnabledInt messageEncapsulationTreeId : filterParameters.messageEncapsulationTreeIds) {
+                    if (messageEncapsulationTreeId.value == beginSendEntry.getMessageEncapsulationId()) {
+                        enabledInt = messageEncapsulationTreeId;
+                        messageEncapsulationTreeId.enabled = true;
                     }
                     else
-                        messageId.enabled = false;
+                        messageEncapsulationTreeId.enabled = false;
                 }
                 
                 if (enabledInt == null) {
-                    enabledInt = new EventLogFilterParameters.EnabledInt(true, beginSendEntry.getMessageId());
-                    filterParameters.messageIds = (EventLogFilterParameters.EnabledInt[])ArrayUtils.add(filterParameters.messageIds, enabledInt);
+                    enabledInt = new EventLogFilterParameters.EnabledInt(true, beginSendEntry.getMessageEncapsulationTreeId());
+                    filterParameters.messageEncapsulationTreeIds = (EventLogFilterParameters.EnabledInt[])ArrayUtils.add(filterParameters.messageEncapsulationTreeIds, enabledInt);
                 }
 
                 // range filter
