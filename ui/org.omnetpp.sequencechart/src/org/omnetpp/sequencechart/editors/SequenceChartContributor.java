@@ -1155,6 +1155,10 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				RunList runList = resultFileManager.getRunsInFile(resultFile);
                 String eventlogRunId = getEventLog().getSimulationBeginEntry().getRunId();
 				if (runList.size() == 0) {
+                    MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
+                    messageBox.setText("No runs in result file");
+                    messageBox.setMessage("The result file " + vectorFileName + " does not contain any runs");
+                    return;
 				}
 				else if (runList.size() == 1)
 				    run = runList.get(0);
