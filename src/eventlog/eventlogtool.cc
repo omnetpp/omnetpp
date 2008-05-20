@@ -53,6 +53,7 @@ class Options
         const char *moduleExpression;
         std::vector<std::string> moduleNames;
         std::vector<std::string> moduleClassNames;
+        std::vector<std::string> moduleNEDTypeNames;
         std::vector<int> moduleIds;
 
         const char *messageExpression;
@@ -103,7 +104,7 @@ Options::Options()
 IEventLog *Options::createEventLog(FileReader *fileReader)
 {
     if (eventNumbers.empty() &&
-        !moduleExpression && moduleNames.empty() && moduleClassNames.empty() && moduleIds.empty() &&
+        !moduleExpression && moduleNames.empty() && moduleClassNames.empty() && moduleNEDTypeNames.empty() &&  moduleIds.empty() &&
         !messageExpression && messageNames.empty() && messageClassNames.empty() &&
         messageIds.empty() && messageTreeIds.empty() && messageEncapsulationIds.empty() && messageEncapsulationTreeIds.empty())
     {
@@ -116,10 +117,11 @@ IEventLog *Options::createEventLog(FileReader *fileReader)
         if (!eventNumbers.empty())
             filteredEventLog->setTracedEventNumber(eventNumbers.at(0));
 
-        filteredEventLog->setEnableModuleFilter(moduleExpression || !moduleNames.empty() || !moduleClassNames.empty() || !moduleIds.empty());
+        filteredEventLog->setEnableModuleFilter(moduleExpression || !moduleNames.empty() || !moduleClassNames.empty() || !moduleNEDTypeNames.empty() || !moduleIds.empty());
         filteredEventLog->setModuleExpression(moduleExpression);
         filteredEventLog->setModuleNames(moduleNames);
         filteredEventLog->setModuleClassNames(moduleClassNames);
+        filteredEventLog->setModuleNEDTypeNames(moduleNEDTypeNames);
         filteredEventLog->setModuleIds(moduleIds);
 
         filteredEventLog->setEnableMessageFilter(messageExpression || !messageNames.empty() || !messageClassNames.empty() || !messageIds.empty() || !messageTreeIds.empty() || !messageEncapsulationIds.empty() || !messageEncapsulationTreeIds.empty());
@@ -468,6 +470,8 @@ int main(int argc, char **argv)
                 parseStringTokens(options.moduleNames, argv[++i]);
             else if (!strcmp(argv[i], "-mt") || !strcmp(argv[i], "--module-class-names"))
                 parseStringTokens(options.moduleClassNames, argv[++i]);
+            else if (!strcmp(argv[i], "-md") || !strcmp(argv[i], "--module-ned-type-names"))
+                parseStringTokens(options.moduleNEDTypeNames, argv[++i]);
             else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-ids"))
                 parseIntTokens(options.moduleIds, argv[++i]);
             else if (!strcmp(argv[i], "-se") || !strcmp(argv[i], "--message-expression"))

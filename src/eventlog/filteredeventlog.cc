@@ -307,6 +307,7 @@ bool FilteredEventLog::matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreat
         matchesExpression(moduleExpression, moduleCreatedEntry) ||
         matchesPatterns(moduleNames, moduleCreatedEntry->fullName) ||
         matchesPatterns(moduleClassNames, moduleCreatedEntry->moduleClassName) ||
+        matchesPatterns(moduleNEDTypeNames, moduleCreatedEntry->nedTypeName) ||
         matchesList(moduleIds, moduleCreatedEntry->moduleId);
 }
 
