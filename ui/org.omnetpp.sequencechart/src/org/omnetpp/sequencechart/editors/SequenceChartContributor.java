@@ -1158,6 +1158,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                     MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
                     messageBox.setText("No runs in result file");
                     messageBox.setMessage("The result file " + vectorFileName + " does not contain any runs");
+                    messageBox.open();
                     return;
 				}
 				else if (runList.size() == 1)
