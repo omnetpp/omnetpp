@@ -80,7 +80,7 @@ OMNeT++ installation.
 In addition to exception stack traces, IDE also writes into the log:
     - user actions (menu selection, dialog navigation, etc)
     - activation of views and editors
-    - (partial) contents of saved files
+    - (partial) CONTENTS OF FILES SAVED / CHANGED DURING THE SESSION
 
 This information is written into the log to help us reproduce errors, and
 also to help improve usability of the IDE by understanding how you use it.
@@ -90,7 +90,8 @@ However:
 
     IMPORTANT: DO NOT SEND ANY .LOG FILE THAT CONTAINS SENSITIVE DATA!
     The log is a readable plain text file, and you can edit it to remove
-    parts that you don't want us to see.
+    parts that you don't want us to see. To remove logged file contents,
+    delete lines that begin with "  |".
 
 We hope to be able use the logs to fix bugs much faster, and to improve 
 the IDE.
