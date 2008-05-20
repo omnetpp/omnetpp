@@ -156,113 +156,113 @@ public class Legend implements ILegend {
 	/**
 	 * Calculates the position and size of the legend and its items.
 	 * Returns the remaining space.
+	 * @param pass TODO
 	 */
-	public Rectangle layout(GC gc, Rectangle parent) {
-		if (!visible)
+	public Rectangle layout(GC gc, Rectangle parent, int pass) {
+		if (pass == 1) {
+			if (!visible)
+				return parent;
+
+			//System.out.println("Parent rect: " + parent);
+
+			gc.setFont(font);
+
+			// measure items
+			for (int i = 0; i < items.size(); ++i)
+				items.get(i).calculateSize(gc);
+
+			// position items and calculate size
+			boolean horizontal = position == LegendPosition.Above || position == LegendPosition.Below ||
+			position == LegendPosition.Inside && (anchor == LegendAnchor.North || anchor == LegendAnchor.South);
+			Point maxSize = new Point(parent.width, parent.height);
+			if (horizontal)
+				maxSize.y = parent.height / 2;
+			else
+				maxSize.x = parent.width / 2;
+			positionItems(maxSize, horizontal);
+
+			//System.out.println("Bounds: "+bounds+", Max: "+maxSize);
+
+			bounds.width = Math.min(bounds.width, maxSize.x);
+			bounds.height = Math.min(bounds.height, maxSize.y);
+
+			// calculate legend position
+			int dx, dy;
+			switch (anchor) {
+			case North:		dx = 0; dy = -1; break;
+			case NorthEast:	dx = 1; dy = -1; break; 
+			case East:		dx = 1; dy = 0; break;
+			case SouthEast:	dx = 1; dy = 1; break;
+			case South:		dx = 0; dy = 1; break;
+			case SouthWest:	dx = -1; dy = 1; break;
+			case West:		dx = -1; dy = 0; break;
+			case NorthWest:	dx = -1; dy = -1; break;
+			default: throw new IllegalStateException();
+			}
+
+			int top = parent.y;
+			int left = parent.x;
+			int bottom = parent.y + parent.height;
+			int right = parent.x + parent.width;
+
+			switch (position) {
+			case Above:
+				bounds.x = left + (parent.width - bounds.width) * (dx + 1) / 2;
+				bounds.y = top + verticalMargin;
+				top = Math.min(top + bounds.height + 2 * verticalMargin, bottom);
+				break;
+			case Below:
+				bounds.x = left + (parent.width - bounds.width) * (dx + 1) / 2;
+				bounds.y = bottom - verticalMargin - bounds.height;
+				bottom = Math.max(bottom - bounds.height - 2 * verticalMargin, top);
+				break;
+			case Left:
+				bounds.x = left + horizontalMargin;
+				bounds.y = top + (parent.height - bounds.height) * (dy + 1) / 2;
+				left = Math.min(left + bounds.width + 2 * horizontalMargin, right);
+				break;
+			case Right:
+				bounds.x = right - bounds.width - horizontalMargin;
+				bounds.y = top + (parent.height - bounds.height) * (dy + 1) / 2;
+				right = Math.max(right - bounds.width - 2 * horizontalMargin, left);
+				break;
+			case Inside:
+				bounds.x = left + (parent.width - bounds.width) * (dx + 1) / 2;
+				bounds.y = top + (parent.height - bounds.height) * (dy + 1) / 2;
+				break;
+			default:
+				throw new IllegalStateException();
+			}
+
+			return new Rectangle(left, top, right - left, bottom - top);
+		}
+		else {
+			if (!visible || position != LegendPosition.Inside)
+				return parent;
+			
+			int dx, dy;
+			switch (anchor) {
+			case North:		dx = 0; dy = -1; break;
+			case NorthEast:	dx = 1; dy = -1; break; 
+			case East:		dx = 1; dy = 0; break;
+			case SouthEast:	dx = 1; dy = 1; break;
+			case South:		dx = 0; dy = 1; break;
+			case SouthWest:	dx = -1; dy = 1; break;
+			case West:		dx = -1; dy = 0; break;
+			case NorthWest:	dx = -1; dy = -1; break;
+			default: throw new IllegalStateException();
+			}
+			
+			bounds.width = Math.min(bounds.width, Math.max(0, parent.width - 2 * horizontalMargin));
+			bounds.height = Math.min(bounds.height, Math.max(0, parent.height - 2 * verticalMargin));
+			bounds.x = parent.x + horizontalMargin + (parent.width - bounds.width - 2 * horizontalMargin) * (dx + 1) / 2;
+			bounds.y = parent.y + verticalMargin + (parent.height - bounds.height - 2 * verticalMargin) * (dy + 1) / 2;
+			updateVisibleItemCount();
+			
 			return parent;
-		
-		//System.out.println("Parent rect: " + parent);
-		
-		gc.setFont(font);
-		
-		// measure items
-		for (int i = 0; i < items.size(); ++i)
-			items.get(i).calculateSize(gc);
-		
-		// position items and calculate size
-		boolean horizontal = position == LegendPosition.Above || position == LegendPosition.Below ||
-					position == LegendPosition.Inside && (anchor == LegendAnchor.North || anchor == LegendAnchor.South);
-		Point maxSize = new Point(parent.width, parent.height);
-		if (horizontal)
-			maxSize.y = parent.height / 2;
-		else
-			maxSize.x = parent.width / 2;
-		positionItems(maxSize, horizontal);
-		
-		//System.out.println("Bounds: "+bounds+", Max: "+maxSize);
-		
-		bounds.width = Math.min(bounds.width, maxSize.x);
-		bounds.height = Math.min(bounds.height, maxSize.y);
-		
-		// calculate legend position
-		int dx, dy;
-		switch (anchor) {
-		case North:		dx = 0; dy = -1; break;
-		case NorthEast:	dx = 1; dy = -1; break; 
-		case East:		dx = 1; dy = 0; break;
-		case SouthEast:	dx = 1; dy = 1; break;
-		case South:		dx = 0; dy = 1; break;
-		case SouthWest:	dx = -1; dy = 1; break;
-		case West:		dx = -1; dy = 0; break;
-		case NorthWest:	dx = -1; dy = -1; break;
-		default: throw new IllegalStateException();
 		}
-		
-		int top = parent.y;
-		int left = parent.x;
-		int bottom = parent.y + parent.height;
-		int right = parent.x + parent.width;
-		
-		switch (position) {
-		case Above:
-			bounds.x = left + (parent.width - bounds.width) * (dx + 1) / 2;
-			bounds.y = top + verticalMargin;
-			top = Math.min(top + bounds.height + 2 * verticalMargin, bottom);
-			break;
-		case Below:
-			bounds.x = left + (parent.width - bounds.width) * (dx + 1) / 2;
-			bounds.y = bottom - verticalMargin - bounds.height;
-			bottom = Math.max(bottom - bounds.height - 2 * verticalMargin, top);
-			break;
-		case Left:
-			bounds.x = left + horizontalMargin;
-			bounds.y = top + (parent.height - bounds.height) * (dy + 1) / 2;
-			left = Math.min(left + bounds.width + 2 * horizontalMargin, right);
-			break;
-		case Right:
-			bounds.x = right - bounds.width - horizontalMargin;
-			bounds.y = top + (parent.height - bounds.height) * (dy + 1) / 2;
-			right = Math.max(right - bounds.width - 2 * horizontalMargin, left);
-			break;
-		case Inside:
-			bounds.x = left + (parent.width - bounds.width) * (dx + 1) / 2;
-			bounds.y = top + (parent.height - bounds.height) * (dy + 1) / 2;
-			break;
-		default:
-			throw new IllegalStateException();
-		}
-		
-		return new Rectangle(left, top, right - left, bottom - top);
 	}
 	
-	/**
-	 * Second pass of the layout, which is called when the final position/size of the 
-	 * plotArea is known.
-	 */
-	public void layoutSecondPass(Rectangle plotArea) {
-		if (!visible || position != LegendPosition.Inside)
-			return;
-		
-		int dx, dy;
-		switch (anchor) {
-		case North:		dx = 0; dy = -1; break;
-		case NorthEast:	dx = 1; dy = -1; break; 
-		case East:		dx = 1; dy = 0; break;
-		case SouthEast:	dx = 1; dy = 1; break;
-		case South:		dx = 0; dy = 1; break;
-		case SouthWest:	dx = -1; dy = 1; break;
-		case West:		dx = -1; dy = 0; break;
-		case NorthWest:	dx = -1; dy = -1; break;
-		default: throw new IllegalStateException();
-		}
-		
-		bounds.width = Math.min(bounds.width, Math.max(0, plotArea.width - 2 * horizontalMargin));
-		bounds.height = Math.min(bounds.height, Math.max(0, plotArea.height - 2 * verticalMargin));
-		bounds.x = plotArea.x + horizontalMargin + (plotArea.width - bounds.width - 2 * horizontalMargin) * (dx + 1) / 2;
-		bounds.y = plotArea.y + verticalMargin + (plotArea.height - bounds.height - 2 * verticalMargin) * (dy + 1) / 2;
-		updateVisibleItemCount();
-	}
-
 	private void positionItems(Point maxSize, boolean horizontal) {
 		if (horizontal) {
 			// calculate initial number of columns

@@ -187,56 +187,40 @@ public class HistogramChartCanvas extends ChartCanvas {
 	protected RectangularArea calculatePlotArea() {
 		return plot.calculatePlotArea();
 	}
+	
+	Rectangle mainArea; // containing plots and axes
+	Insets axesInsets; // space occupied by axes
 
 	@Override
-	protected void doLayoutChart(GC gc) {
-		Rectangle area = new Rectangle(getClientArea());
-
-		// preserve zoomed-out state while resizing
-		boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
-		boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
-
-		// Calculate space occupied by title and legend and set insets accordingly
+	protected Rectangle doLayoutChart(GC gc, int pass) {
 		ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();
-		Rectangle remaining = legendTooltip.layout(gc, area);
-		remaining = title.layout(gc, area);
-		remaining = legend.layout(gc, remaining);
-
-		Rectangle mainArea = remaining.getCopy();
-		Insets insetsToMainArea = new Insets();
-		xAxis.layoutHint(gc, mainArea, insetsToMainArea, coordsMapping);
-		// postpone yAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
-		insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
-
-		// tentative plotArea calculation (y axis ticks width missing from the picture yet)
-		Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
-		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
-
-		if (shouldZoomOutX)
-			zoomToFitX();
-		if (shouldZoomOutY)
-			zoomToFitY();
-		validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
-
-		// now the coordinate mapping is set up, so the y axis knows what tick labels
-		// will appear, and can calculate the occupied space from the longest tick label.
-		coordsMapping = getOptimizedCoordinateMapper();
-		yAxis.layoutHint(gc, mainArea, insetsToMainArea, coordsMapping);
-
-		// now we have the final insets, set it everywhere again 
-		xAxis.setLayout(mainArea, insetsToMainArea);
-		yAxis.setLayout(mainArea, insetsToMainArea);
-		plotArea = plot.layout(gc, mainArea.getCopy().crop(insetsToMainArea));
-		//crosshair.layout(gc, plotArea);
-		legend.layoutSecondPass(plotArea);
-		//FIXME how to handle it when plotArea.height/width comes out negative??
-		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
-
-		if (shouldZoomOutX)
-			zoomToFitX();
-		if (shouldZoomOutY)
-			zoomToFitY();
-		validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+		if (pass == 1) {
+			// Calculate space occupied by title and legend and set insets accordingly
+			Rectangle area = new Rectangle(getClientArea());
+			Rectangle remaining = legendTooltip.layout(gc, area);
+			remaining = title.layout(gc, area);
+			remaining = legend.layout(gc, remaining, pass);
+	
+			mainArea = remaining.getCopy();
+			axesInsets = xAxis.layout(gc, mainArea, new Insets(), coordsMapping, pass);
+			axesInsets = yAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
+	
+			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
+			Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
+			return plotArea;
+		}
+		else if (pass == 2) {
+			// now the coordinate mapping is set up, so the y axis knows what tick labels
+			// will appear, and can calculate the occupied space from the longest tick label.
+			yAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
+			xAxis.layout(gc, mainArea, axesInsets, coordsMapping, pass);
+			Rectangle remaining = mainArea.getCopy().crop(axesInsets);
+			Rectangle plotArea = plot.layout(gc, remaining);
+			legend.layout(gc, plotArea, pass);
+			//FIXME how to handle it when plotArea.height/width comes out negative??
+			return plotArea;
+		}
+		return null;
 	}
 
 	@Override

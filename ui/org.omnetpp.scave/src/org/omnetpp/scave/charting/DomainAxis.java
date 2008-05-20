@@ -88,66 +88,76 @@ class DomainAxis {
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience. 
 	 */
-	public Insets layoutHint(GC gc, Rectangle rect, Insets insets, ICoordsMapping coordsMapping) {
-
-		// measure title height and labels height
-		gc.setFont(titleFont);
-		int titleHeight = title.equals("") ? 0 : gc.textExtent(title).y;
-		gc.setFont(labelsFont);
-		lines.add(new LineData());
-		IScalarDataset dataset = chart.getDataset();
-		BarPlot plot = chart.getPlot();
-		Dimension maxSize = new Dimension(-1, Math.max(rect.height / 2, 10));
-		if (dataset != null) {
-			// dispose previous TextLayouts
-			for (LineData line : lines)
-				for (LabelData label : line.labels)
-					label.dispose();
-			lines.clear();
+	public Insets layout(GC gc, Rectangle bounds, Insets insets, ICoordsMapping coordsMapping, int pass) {
+		if (pass == 1) {
+			// measure title height and labels height
+			gc.setFont(titleFont);
+			int titleHeight = title.equals("") ? 0 : gc.textExtent(title).y;
+			gc.setFont(labelsFont);
 			lines.add(new LineData());
+			IScalarDataset dataset = chart.getDataset();
+			BarPlot plot = chart.getPlot();
+			Dimension maxSize = new Dimension(-1, Math.max(bounds.height / 2, 10));
+			if (dataset != null) {
+				// dispose previous TextLayouts
+				for (LineData line : lines)
+					for (LabelData label : line.labels)
+						label.dispose();
+				lines.clear();
+				lines.add(new LineData());
 
-			int cColumns = dataset.getColumnCount();
-			int cRows = dataset.getRowCount();
-			for (int row = 0; row < cRows; ++row) {
-				int left = plot.getBarRectangle(row, 0, coordsMapping).x;
-				int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
-				
-				LineData line = Collections.min(lines, lineDataRightEdgeComparator);
-				LabelData label;
-				
-				if (wrapLabels) {
-					maxSize.width = rotation == 0.0 ? Math.max(right - left, 10) : -1;
-					label = layoutGroupLabel(row, labelsFont, rotation, gc, maxSize);
-				}
-				else {
-					label = layoutGroupLabel(row, labelsFont, rotation, gc, maxSize);
-					
-					if ((left + right) / 2 - label.rotatedSize.width / 2 < line.right) {
-						line = new LineData();
-						lines.add(line);
+				int cColumns = dataset.getColumnCount();
+				int cRows = dataset.getRowCount();
+				for (int row = 0; row < cRows; ++row) {
+					int left = plot.getBarRectangle(row, 0, coordsMapping).x;
+					int right = plot.getBarRectangle(row, cColumns - 1, coordsMapping).right();
+
+					LineData line = Collections.min(lines, lineDataRightEdgeComparator);
+					LabelData label;
+
+					if (wrapLabels) {
+						maxSize.width = rotation == 0.0 ? Math.max(right - left, 10) : -1;
+						label = layoutGroupLabel(row, labelsFont, rotation, gc, maxSize);
 					}
-				}
-				
-				line.labels.add(label);
-				line.height = Math.max(line.height, label.rotatedSize.height);
-				line.right = (left + right) / 2 + label.rotatedSize.width / 2;
-			}
-		}
-		
-		// position labels vertically
-		int labelsHeight = 0;
-		for (LineData line : lines) {
-			for (LabelData label : line.labels)
-				label.centerY = labelsHeight + line.height / 2;
-			labelsHeight += line.height;
-		}
-		labelsHeight = Math.min(labelsHeight, maxSize.height);
+					else {
+						label = layoutGroupLabel(row, labelsFont, rotation, gc, maxSize);
 
-		// modify insets with space required
-		insets.top = Math.max(insets.top, 10); // leave a few pixels at the top
-		insets.bottom = Math.max(insets.bottom, gap + labelsHeight + titleHeight + 8);
-		
-		return insets;
+						if ((left + right) / 2 - label.rotatedSize.width / 2 < line.right) {
+							line = new LineData();
+							lines.add(line);
+						}
+					}
+
+					line.labels.add(label);
+					line.height = Math.max(line.height, label.rotatedSize.height);
+					line.right = (left + right) / 2 + label.rotatedSize.width / 2;
+				}
+			}
+
+			// position labels vertically
+			int labelsHeight = 0;
+			for (LineData line : lines) {
+				for (LabelData label : line.labels)
+					label.centerY = labelsHeight + line.height / 2;
+				labelsHeight += line.height;
+			}
+			labelsHeight = Math.min(labelsHeight, maxSize.height);
+
+			// modify insets with space required
+			insets.top = Math.max(insets.top, 10); // leave a few pixels at the top
+			insets.bottom = Math.max(insets.bottom, gap + labelsHeight + titleHeight + 8);
+
+			return insets;
+		}
+		else {
+			rect = bounds.getCopy();
+			int bottom = rect.bottom();
+			rect.height = insets.bottom;
+			rect.y = bottom - rect.height;
+			rect.x += insets.left;
+			rect.width -= insets.getWidth();
+			return insets;
+		}
 	}
 	
 	private LabelData layoutGroupLabel(int row, Font font, double rotation , GC gc, Dimension maxSize) {
@@ -167,18 +177,6 @@ class DomainAxis {
 		return data;
 	}
 
-	/**
-	 * Sets geometry info used for drawing. Plot area = bounds minus insets.
-	 */
-	public void setLayout(Rectangle bounds, Insets insets) {
-		rect = bounds.getCopy();
-		int bottom = rect.bottom();
-		rect.height = insets.bottom;
-		rect.y = bottom - rect.height;
-		rect.x += insets.left;
-		rect.width -= insets.getWidth();
-	}
-	
 	public void draw(GC gc, ICoordsMapping coordsMapping) {
 		org.eclipse.swt.graphics.Rectangle oldClip = gc.getClipping(); // graphics.popState() doesn't restore it!
 		Graphics graphics = new SWTGraphics(gc);

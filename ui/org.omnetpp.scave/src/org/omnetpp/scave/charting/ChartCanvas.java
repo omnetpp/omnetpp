@@ -173,7 +173,20 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		if (debug) System.out.println("layoutChart(), level "+layoutDepth);
 		GC gc = new GC(Display.getCurrent());
 		try {
-			doLayoutChart(gc);
+			// preserve zoomed-out state while resizing
+			boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
+			boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
+			
+			for (int pass = 1; pass <= 2; ++pass) {
+				Rectangle plotArea = doLayoutChart(gc, pass);
+				setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
+				
+				if (shouldZoomOutX)
+					zoomToFitX();
+				if (shouldZoomOutY)
+					zoomToFitY();
+				validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+			}
 		}
 		catch (Throwable e) {
 			ScavePlugin.logError(e);
@@ -213,8 +226,9 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	
 	/**
 	 * Calculate positions of chart elements such as title, legend, axis labels, plot area. 
+	 * @param pass TODO
 	 */
-	abstract protected void doLayoutChart(GC gc);
+	abstract protected Rectangle doLayoutChart(GC gc, int pass);
 	
 	/*-------------------------------------------------------------------------------------------
 	 *                                      Drawing

@@ -289,57 +289,41 @@ public class ScalarChart extends ChartCanvas {
 	/*=============================================
 	 *               Drawing
 	 *=============================================*/
+	Rectangle mainArea; // containing plots and axes
+	Insets axesInsets; // space occupied by axes
 
 	@Override
-	protected void doLayoutChart(GC gc) {
+	protected Rectangle doLayoutChart(GC gc, int pass) {
 		ICoordsMapping mapping = getOptimizedCoordinateMapper();
 
-		// preserve zoomed-out state while resizing
-		boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
-		boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
+		if (pass == 1) {
+			// Calculate space occupied by title and legend and set insets accordingly
+			Rectangle area = new Rectangle(getClientArea());
+			Rectangle remaining = legendTooltip.layout(gc, area);
+			remaining = title.layout(gc, area);
+			remaining = legend.layout(gc, remaining, 1);
+	
+			mainArea = remaining.getCopy();
+			axesInsets = domainAxis.layout(gc, mainArea, new Insets(), mapping, pass);
+			axesInsets = valueAxis.layout(gc, mainArea, axesInsets, mapping, pass);
 
-		// Calculate space occupied by title and legend and set insets accordingly
-		Rectangle area = new Rectangle(getClientArea());
-		Rectangle remaining = legendTooltip.layout(gc, area);
-		remaining = title.layout(gc, area);
-		remaining = legend.layout(gc, remaining);
-
-		Rectangle mainArea = remaining.getCopy();
-		Insets insetsToMainArea = new Insets();
-		domainAxis.layoutHint(gc, mainArea, insetsToMainArea, mapping);
-		// postpone valueAxis.layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
-		insetsToMainArea.left = 50; insetsToMainArea.right = 30; // initial estimate for y axis
-
-		// tentative plotArea calculation (y axis ticks width missing from the picture yet)
-		Rectangle plotArea = mainArea.getCopy().crop(insetsToMainArea);
-		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
-
-		if (shouldZoomOutX)
-			zoomToFitX();
-		if (shouldZoomOutY)
-			zoomToFitY();
-		validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
-
-		mapping = getOptimizedCoordinateMapper();
-
-		// now the coordinate mapping is set up, so the y axis knows what tick labels
-		// will appear, and can calculate the occupied space from the longest tick label.
-		valueAxis.layoutHint(gc, mainArea, insetsToMainArea, mapping);
-
-		// now we have the final insets, set it everywhere again 
-		domainAxis.setLayout(mainArea, insetsToMainArea);
-		valueAxis.setLayout(mainArea, insetsToMainArea);
-		plotArea = mainArea.getCopy().crop(insetsToMainArea);
-		legend.layoutSecondPass(plotArea);
-		//FIXME how to handle it when plotArea.height/width comes out negative??
-		plot.layout(gc, plotArea);
-		setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height));
-
-		if (shouldZoomOutX)
-			zoomToFitX();
-		if (shouldZoomOutY)
-			zoomToFitY();
-		validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+			// tentative plotArea calculation (y axis ticks width missing from the picture yet)
+			Rectangle plotArea = mainArea.getCopy().crop(axesInsets);
+			return plotArea;
+		}
+		else if (pass == 2) {
+			// now the coordinate mapping is set up, so the y axis knows what tick labels
+			// will appear, and can calculate the occupied space from the longest tick label.
+			valueAxis.layout(gc, mainArea, axesInsets, mapping, pass);
+			domainAxis.layout(gc, mainArea, axesInsets, mapping, pass);
+			Rectangle remaining = mainArea.getCopy().crop(axesInsets);
+			remaining = legend.layout(gc, remaining, pass);
+			//FIXME how to handle it when plotArea.height/width comes out negative??
+			Rectangle plotArea = plot.layout(gc, remaining);
+			return plotArea;
+		}
+		else
+			return null;
 	}
 	
 	@Override

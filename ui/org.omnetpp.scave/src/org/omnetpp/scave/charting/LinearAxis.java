@@ -58,24 +58,34 @@ public class LinearAxis {
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience. 
 	 */
-	public Insets layoutHint(GC gc, Rectangle bounds, Insets insets, ICoordsMapping mapping) {
-		// invalidate: they will have to be set via setLayout()
-		this.bounds = null;
-		this.insets = null;
-		
-		gc.setFont(tickFont);
-		if (vertical) {
-			int labelWidth = calculateTickLabelLength(gc, bounds, mapping);
-			int titleHeight = calculateTitleSize(gc).y;  // but will be drawn 90 deg rotated
-			insets.left = Math.max(insets.left, gap + majorTickLength + labelWidth + titleHeight + 4);
-			insets.right = Math.max(insets.right, gap + majorTickLength + labelWidth + 4);
+	public Insets layout(GC gc, Rectangle bounds, Insets insets, ICoordsMapping mapping, int pass) {
+		if (pass == 1) {
+			if (vertical) {
+				// postpone layoutHint() as it wants to use coordinate mapping which is not yet set up (to calculate ticks)
+				insets.left = 50;
+				insets.right = 30;
+			}
+			else {
+				gc.setFont(tickFont);
+				int labelHeight = calculateTickLabelHeight(gc);
+				int titleHeight = calculateTitleSize(gc).y;
+				insets.top = Math.max(insets.top, gap + majorTickLength + labelHeight + 4);
+				insets.bottom = Math.max(insets.bottom, gap + majorTickLength + labelHeight + titleHeight + 4);
+			}
 		}
-		else {
-			int labelHeight = calculateTickLabelHeight(gc);
-			int titleHeight = calculateTitleSize(gc).y;
-			insets.top = Math.max(insets.top, gap + majorTickLength + labelHeight + 4);
-			insets.bottom = Math.max(insets.bottom, gap + majorTickLength + labelHeight + titleHeight + 4);
+		else if (pass == 2) {
+			if (vertical) {
+				gc.setFont(tickFont);
+				int labelWidth = calculateTickLabelLength(gc, bounds, mapping);
+				int titleHeight = calculateTitleSize(gc).y;  // but will be drawn 90 deg rotated
+				insets.left = Math.max(insets.left, gap + majorTickLength + labelWidth + titleHeight + 4);
+				insets.right = Math.max(insets.right, gap + majorTickLength + labelWidth + 4);
+			}
 		}
+
+		this.bounds = bounds.getCopy();
+		this.insets = new Insets(insets);
+
 		return insets;
 	}
 
@@ -109,14 +119,6 @@ public class LinearAxis {
 		return labelWidth;
 	}
 
-	/**
-	 * Sets geometry info used for drawing. Plot area = bounds minus insets.
-	 */
-	public void setLayout(Rectangle bounds, Insets insets) {
-		this.bounds = bounds.getCopy();
-		this.insets = new Insets(insets);  
-	}
-	
 	public void drawGrid(GC gc, ICoordsMapping mapping) {
 		if (showGrid == ShowGrid.None)
 			return;
