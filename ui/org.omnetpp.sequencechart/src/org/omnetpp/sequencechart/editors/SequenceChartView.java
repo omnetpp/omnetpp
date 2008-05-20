@@ -54,12 +54,12 @@ public class SequenceChartView extends EventLogView {
 			}
 
 			public void partBroughtToTop(IWorkbenchPart part) {
-			    if (part instanceof IEditorPart)
+			    if (part instanceof IEditorPart && !sequenceChart.isDisposed())
 			        updateSelectionFromActiveEditor();
 			}
 
 			public void partClosed(IWorkbenchPart part) {
-                if (part instanceof IEditorPart)
+                if (part instanceof IEditorPart && !sequenceChart.isDisposed())
                     updateSelectionFromActiveEditor();
 			}
 
@@ -67,7 +67,7 @@ public class SequenceChartView extends EventLogView {
 			}
 
 			public void partOpened(IWorkbenchPart part) {
-                if (part instanceof IEditorPart)
+                if (part instanceof IEditorPart && !sequenceChart.isDisposed())
                     updateSelectionFromActiveEditor();
 			}
 		};

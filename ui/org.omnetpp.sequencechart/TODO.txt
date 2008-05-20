@@ -85,7 +85,7 @@ Features:
  + filtering for module events during writing eventlog
  + per run eventlog-message-detail-pattern configuration key
  + support dynamic module and connection creation
-!- simulation time format options (123.12345, 2m 3s 123ms 450us, 123s 123ms 450us, 123.123 450, rounding for deltas?)
+ - simulation time format options (123.12345, 2m 3s 123ms 450us, 123s 123ms 450us, 123.123 450, rounding for deltas?)
  + close project causes internal error during painting (should close the editors and set null into view inputs)
  - use eventlog input module tree in module hierarchy view
  + filter for causes/consequence from popup menu brings up filter dialog when other options are turned on
@@ -93,7 +93,9 @@ Features:
  - add a flag to control whether filter only collects corresponding message dependencies
  + store manual ordering when turning filtering on and off
  + use checkbox list and remember what the user typed in event log filter id lists to allow turning on and off each id
- - don't count non filtered message dependencies when checking the maximum message dependency count per event
+ + don't count non filtered message dependencies when checking the maximum message dependency count per event
+ - avoid displaying to much events at once (due to being slow) when turning filtering on and off
+ - don't display an axis until there is an event to be displayed on it (when filtering among a lot of axes this helps not displaying useless axes)
 
 Known bugs:
  - 7-es compiler? seqchart: "Filter by message ID" OneFifo, filter to one msg like id=16: yields only event #53 and #120, and #120 has nothing to do with msg id=16

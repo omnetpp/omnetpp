@@ -309,7 +309,7 @@ public class SequenceChart
 					org.eclipse.swt.graphics.Rectangle r = getClientArea();
 
 					if (pixelPerTimelineCoordinate == 0)
-			            calculatePixelPerTimelineUnit(r.width);
+			            calculateDefaultPixelPerTimelineUnit(r.width);
 					
 					setViewportRectangle(new org.eclipse.swt.graphics.Rectangle(r.x, r.y + GUTTER_HEIGHT, r.width, r.height - GUTTER_HEIGHT * 2));
 					calculateAxisSpacing();
@@ -740,13 +740,13 @@ public class SequenceChart
 		followEnd = false;
 
 		if (e.detail == SWT.ARROW_UP)
-			scroll(-1);
+		    scrollHorizontal(-10);
 		else if (e.detail == SWT.ARROW_DOWN)
-			scroll(1);
-		else if (e.detail == SWT.PAGE_UP)
-			scroll(-10);
-		else if (e.detail == SWT.PAGE_DOWN)
 			scroll(10);
+		else if (e.detail == SWT.PAGE_UP)
+		    scrollHorizontal(-getViewportWidth());
+		else if (e.detail == SWT.PAGE_DOWN)
+            scrollHorizontal(getViewportWidth());
 		else if (percentage == 0)
 			scrollToBegin();
 		else if (percentage == 1)
@@ -920,7 +920,7 @@ public class SequenceChart
 	public void defaultZoom() {
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
-                calculatePixelPerTimelineUnit(getViewportWidth());
+                calculateDefaultPixelPerTimelineUnit(getViewportWidth());
                 calculateVirtualSize();
             }
         });
@@ -979,8 +979,7 @@ public class SequenceChart
 		eventLogInput.runWithProgressMonitor(new Runnable() {
 			public void run() {
 				if (!Double.isNaN(endSimulationTime) && startSimulationTime != endSimulationTime) {
-				    double safeEndSimulationTime = Math.min(endSimulationTime, eventLog.getLastEvent().getSimulationTime().doubleValue());
-					double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(safeEndSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
+					double timelineUnitDelta = sequenceChartFacade.getTimelineCoordinateForSimulationTime(endSimulationTime) - sequenceChartFacade.getTimelineCoordinateForSimulationTime(startSimulationTime);
 
 					if (timelineUnitDelta > 0)
 						setPixelPerTimelineCoordinate(getViewportWidth() / timelineUnitDelta);
@@ -1248,6 +1247,8 @@ public class SequenceChart
 
 				if (closestEvent != null)
 					sequenceChartFacade.relocateTimelineCoordinateSystem(closestEvent);
+				else
+				    sequenceChartFacade.undefineTimelineCoordinateSystem();
 			}
 
 			setAxisModules(eventLogInput.getSelectedModules());
@@ -1420,9 +1421,9 @@ public class SequenceChart
 	}
 
 	/**
-	 * Calculates initial pixelPerTimelineUnit.
+	 * Calculates default pixelPerTimelineUnit.
 	 */
-	private void calculatePixelPerTimelineUnit(int viewportWidth) {
+	private void calculateDefaultPixelPerTimelineUnit(int viewportWidth) {
 	    if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1) {
     	    IEvent referenceEvent = sequenceChartFacade.getTimelineCoordinateSystemOriginEvent();
     		int distance = Math.min(20, eventLog.getApproximateNumberOfEvents());
@@ -1462,7 +1463,7 @@ public class SequenceChart
 
 	private void calculateStuff() {
 		if (pixelPerTimelineCoordinate == 0)
-			calculatePixelPerTimelineUnit(getViewportWidth());
+			calculateDefaultPixelPerTimelineUnit(getViewportWidth());
 		
 		if (invalidVirtualSize)
 			calculateVirtualSize();
@@ -3072,6 +3073,11 @@ public class SequenceChart
 						EventLogMessageEntry eventLogMessageEntry = event.getEventLogMessage(i);
 
 						res += "<br/><span style=\"color:rgb(127, 0, 85)\"> - " + eventLogMessageEntry.getText() + "</span>";
+						
+						if (i == 100) {
+						    res += "<br/><br/>Content stripped after 100 lines. See Event Log Table for more details.";
+						    break;
+						}
 					}
 				}
 			}

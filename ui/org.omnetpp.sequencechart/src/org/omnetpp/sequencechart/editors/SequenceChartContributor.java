@@ -760,14 +760,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 double centerSimulationTime = -1.0;
 
                 if (!wasCanceled)
-                    // do not use simulation time range because the user might zoomed out too much while using the filter
                     centerSimulationTime = sequenceChart.getViewportCenterSimulationTime();
 
                 eventLogInput.removeFilter();
                 sequenceChart.setInput(eventLogInput);
 
-                if (!wasCanceled)
+                if (!wasCanceled) {
                     sequenceChart.scrollToSimulationTimeWithCenter(centerSimulationTime);
+                    sequenceChart.defaultZoom();
+                }
                 else
                     sequenceChart.scrollToBegin();
 
@@ -782,17 +783,18 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
         eventLogInput.runWithProgressMonitor(new Runnable() {
             public void run() {
-                double[] leftRightSimulationTimes = null;
+                double centerSimulationTime = -1.0;
 
                 if (!wasCanceled)
-                    // TODO: better approximation where to go to, maybe revert to the unfiltered range or zoom level?
-                    leftRightSimulationTimes = sequenceChart.getViewportSimulationTimeRange();
+                    centerSimulationTime = sequenceChart.getViewportCenterSimulationTime();
 
                 eventLogInput.filter();
                 sequenceChart.setInput(eventLogInput);
 
-                if (leftRightSimulationTimes != null)
-                    sequenceChart.setViewportSimulationTimeRange(leftRightSimulationTimes);
+                if (!wasCanceled) {
+                    sequenceChart.scrollToSimulationTimeWithCenter(centerSimulationTime);
+                    sequenceChart.defaultZoom();
+                }
                 else
                     sequenceChart.scrollToBegin();
 
