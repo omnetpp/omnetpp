@@ -171,12 +171,8 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             numEventLogMessages++;
 
         // count begin send entry
-        BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
-        if (beginSendEntry) {
-            eventLog->putMessageName(beginSendEntry->messageFullName);
-            eventLog->putMessageClassName(beginSendEntry->messageClassName);
+        if (dynamic_cast<BeginSendEntry *>(eventLogEntry))
             numBeginSendEntries++;
-        }
     }
 
     return endOffset = reader->getCurrentLineStartOffset();

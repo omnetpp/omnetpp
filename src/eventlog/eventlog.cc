@@ -93,11 +93,8 @@ void EventLog::synchronize(FileReader::FileChangedState change)
             clearInternalState(change);
 
             // always update the old last event because it might have been incomplete
-            if (lastEvent) {
-                lastEvent->parse(reader, lastEvent->getBeginOffset());
-                cacheEntry(lastEvent->getEventNumber(), lastEvent->getSimulationTime(), lastEvent->getBeginOffset(), lastEvent->getEndOffset());
-                cacheEventLogEntries(lastEvent);
-            }
+            if (lastEvent)
+                parseEvent(lastEvent, lastEvent->getBeginOffset());
 
             for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
                 it->second->synchronize();
@@ -208,11 +205,6 @@ void EventLog::parseInitializationLogEntries()
             continue;
         else
             index++;
-
-        if (dynamic_cast<SimulationBeginEntry *>(eventLogEntry)) {
-            Assert(!simulationBeginEntry);
-            simulationBeginEntry = (SimulationBeginEntry *)eventLogEntry;
-        }
 
         if (dynamic_cast<EventEntry *>(eventLogEntry)) {
             delete eventLogEntry;
@@ -352,10 +344,7 @@ Event *EventLog::getEventForBeginOffset(file_offset_t beginOffset)
     else if (reader->getFileSize() != beginOffset)
     {
         Event *event = new Event(this);
-        event->parse(reader, beginOffset);
-        numParsedEvents++;
-        cacheEntry(event->getEventNumber(), event->getSimulationTime(), event->getBeginOffset(), event->getEndOffset());
-        cacheEventLogEntries(event);
+        parseEvent(event, beginOffset);
         cacheEvent(event);
         return event;
     }
@@ -384,20 +373,34 @@ Event *EventLog::getEventForEndOffset(file_offset_t endOffset)
     }
 }
 
+void EventLog::parseEvent(Event *event, file_offset_t beginOffset)
+{
+    event->parse(reader, beginOffset);
+    cacheEntry(event->getEventNumber(), event->getSimulationTime(), event->getBeginOffset(), event->getEndOffset());
+    cacheEventLogEntries(event);
+    numParsedEvents++;
+}
+
 void EventLog::cacheEventLogEntries(Event *event)
 {
-    for (int i = 0; i < event->getNumBeginSendEntries(); i++)
+    for (int i = 0; i < event->getNumEventLogEntries(); i++)
         cacheEventLogEntry(event->getEventLogEntry(i));
 }
 
 void EventLog::uncacheEventLogEntries(Event *event)
 {
-    for (int i = 0; i < event->getNumBeginSendEntries(); i++)
+    for (int i = 0; i < event->getNumEventLogEntries(); i++)
         uncacheEventLogEntry(event->getEventLogEntry(i));
 }
 
 void EventLog::cacheEventLogEntry(EventLogEntry *eventLogEntry)
 {
+    // simulation begin entry
+    SimulationBeginEntry *simulationBeginEntry = dynamic_cast<SimulationBeginEntry *>(eventLogEntry);
+
+    if (simulationBeginEntry)
+        this->simulationBeginEntry = simulationBeginEntry;
+
     // collect module created entries
     ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
 
@@ -410,6 +413,13 @@ void EventLog::cacheEventLogEntry(EventLogEntry *eventLogEntry)
     if (gateCreatedEntry) {
         std::pair<int, int> key(gateCreatedEntry->moduleId, gateCreatedEntry->gateId);
         moduleIdAndGateIdToGateCreatedEntryMap[key] = gateCreatedEntry;
+    }
+
+    // colllect begin send entry
+    BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
+    if (beginSendEntry) {
+        messageNames.insert(beginSendEntry->messageFullName);
+        messageClassNames.insert(beginSendEntry->messageClassName);
     }
 }
 
@@ -442,4 +452,3 @@ void EventLog::cacheEvent(Event *event)
 }
 
 NAMESPACE_END
-

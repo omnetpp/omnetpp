@@ -92,9 +92,6 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
          */
         Event *getEventForEndOffset(file_offset_t offset);
 
-        void putMessageName(const char *messageName) { messageNames.insert(messageName); }
-        void putMessageClassName(const char *messageClassName) { messageClassNames.insert(messageClassName); }
-
         // IEventLog interface
         virtual void synchronize(FileReader::FileChangedState change);
         virtual FileReader *getFileReader() { return reader; }
@@ -123,6 +120,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual void printInitializationLogEntries(FILE *file = stdout);
 
     protected:
+        void parseEvent(Event *event, file_offset_t beginOffset);
         void cacheEvent(Event *event);
         void cacheEventLogEntries(Event *event);
         void uncacheEventLogEntries(Event *event);
