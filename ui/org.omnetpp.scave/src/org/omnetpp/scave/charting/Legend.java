@@ -173,7 +173,8 @@ public class Legend implements ILegend {
 
 			// position items and calculate size
 			boolean horizontal = position == LegendPosition.Above || position == LegendPosition.Below ||
-			position == LegendPosition.Inside && (anchor == LegendAnchor.North || anchor == LegendAnchor.South);
+									position == LegendPosition.Inside &&
+									(anchor == LegendAnchor.North || anchor == LegendAnchor.South);
 			Point maxSize = new Point(parent.width, parent.height);
 			if (horizontal)
 				maxSize.y = parent.height / 2;

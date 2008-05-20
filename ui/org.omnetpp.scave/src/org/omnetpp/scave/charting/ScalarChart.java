@@ -1,5 +1,6 @@
 package org.omnetpp.scave.charting;
 
+import static org.omnetpp.scave.charting.properties.BarProperties.PROP_BAR_COLOR;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_BASELINE;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LABELS_FONT;
@@ -10,16 +11,15 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_LABE
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BAR_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BAR_PLACEMENT;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_WRAP_LABELS;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_XY_GRID;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_BAR_BASELINE;
+import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_BAR_PLACEMENT;
+import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_WRAP_LABELS;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.geometry.Insets;
@@ -42,8 +42,8 @@ import org.omnetpp.scave.charting.dataset.IScalarDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueScalarDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
-import org.omnetpp.scave.charting.properties.ChartProperties.BarPlacement;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
+import org.omnetpp.scave.charting.properties.ScalarChartProperties.BarPlacement;
 
 /**
  * Bar chart.

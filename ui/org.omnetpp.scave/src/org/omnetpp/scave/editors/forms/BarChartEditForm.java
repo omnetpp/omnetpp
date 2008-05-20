@@ -44,7 +44,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ScalarChartProperties;
-import org.omnetpp.scave.charting.properties.ChartProperties.BarPlacement;
+import org.omnetpp.scave.charting.properties.ScalarChartProperties.BarPlacement;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.RunAttribute;

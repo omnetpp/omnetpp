@@ -46,26 +46,11 @@ public class ChartProperties extends PropertySource {
 		PROP_AXIS_TITLE_FONT	= "Axis.Title.Font",
 		PROP_LABEL_FONT			= "Label.Font",
 		PROP_X_LABELS_ROTATE_BY	= "X.Label.RotateBy",
-		PROP_WRAP_LABELS		= "X.Label.Wrap",
 		// Axes
-		PROP_X_AXIS_MIN			= "X.Axis.Min",
-		PROP_X_AXIS_MAX			= "X.Axis.Max",
 		PROP_Y_AXIS_MIN			= "Y.Axis.Min",
 		PROP_Y_AXIS_MAX			= "Y.Axis.Max",
 		PROP_Y_AXIS_LOGARITHMIC	= "Y.Axis.Log",
 		PROP_XY_GRID			= "Axes.Grid",
-		// Bars
-		PROP_BAR_BASELINE		= "Bars.Baseline",
-		PROP_BAR_PLACEMENT		= "Bar.Placement",
-		PROP_BAR_COLOR			= "Bar.Color",
-		// Lines
-		PROP_DISPLAY_LINE		= "Line.Display",
-		PROP_SYMBOL_TYPE		= "Symbols.Type",
-		PROP_SYMBOL_SIZE		= "Symbols.Size",
-		PROP_LINE_TYPE			= "Line.Type",
-		PROP_LINE_COLOR			= "Line.Color",
-		// Histograms
-		PROP_HIST_BAR			= "Hist.Bar",
 		// Legend
 		PROP_DISPLAY_LEGEND		= "Legend.Display",
 		PROP_LEGEND_BORDER		= "Legend.Border",
@@ -75,69 +60,7 @@ public class ChartProperties extends PropertySource {
 		// Plot
 		PROP_ANTIALIAS			= "Plot.Antialias",
 		PROP_CACHING			= "Plot.Caching",
-		PROP_BACKGROUND_COLOR	= "Plot.BackgroundColor",
-		// Histograms
-		PROP_HIST_COLOR			= "Hist.Color";
-
-	public enum SymbolType {
-		None("None", "none"), //XXX allowed?
-		Cross("Cross", "cross"),
-		Diamond("Diamond", "diamond"),
-		Dot("Dot", "dot"),
-		Plus("Plus", "plus"),
-		Square("Square", "square"),
-		Triangle("Triangle", "triangle");
-
-		private String name;
-		private String imageId;
-
-		private SymbolType(String name, String img) {
-			this.name = name;
-			imageId = "icons/full/obj16/sym_"+img+".png";
-		}
-
-		@Override
-		public String toString() {
-			return name;
-		}
-
-		public String getImageId() {
-			return imageId;
-		}
-	}
-
-	public enum LineType {
-		Linear("Linear", "linear"),
-		Pins("Pins", "pins"), 
-		Dots("Dots", "dots"),
-		Points("Points", "points"), 
-		SampleHold("Sample-Hold", "samplehold"),
-		BackwardSampleHold("Backward Sample-Hold", "bksamplehold");
-
-		private String name;
-		private String imageId;
-
-		private LineType(String name, String img) {
-			this.name = name;
-			this.imageId = "icons/full/obj16/line_"+img+".png";
-		}
-
-		@Override
-		public String toString() {
-			return name;
-		}
-
-		public String getImageId() {
-			return imageId;
-		}
-	}
-
-	public enum BarPlacement {
-		Aligned,
-		Overlap,
-		InFront,
-		Stacked,
-	}
+		PROP_BACKGROUND_COLOR	= "Plot.BackgroundColor";
 
 	public enum LegendPosition {
 		Inside,
@@ -164,13 +87,6 @@ public class ChartProperties extends PropertySource {
 		All,
 	}
 	
-	public enum HistogramBar {
-		Solid,
-		Outline,
-	}
-
-	
-	@SuppressWarnings("unchecked")
 	public static ChartProperties createPropertySource(Chart chart, ResultFileManager manager) {
 		return createPropertySource(chart, chart.getProperties(), manager);
 	}
@@ -194,7 +110,6 @@ public class ChartProperties extends PropertySource {
 	protected ResultFileManager manager; // result file manager to access chart content (for line properties)
 	protected EditingDomain domain;		 // editing domain to execute changes, if null the property list changed directly
 
-	@SuppressWarnings("unchecked")
 	public ChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
 		this.properties = properties;
 		this.chart = chart;

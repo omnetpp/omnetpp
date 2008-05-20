@@ -16,18 +16,27 @@ public class HistogramChartProperties extends ChartProperties
 {
 	private static final String DEFAULT_HIST_PROPERTIES_ID = "default";
 	
+	public static final String
+		PROP_HIST_BAR			= "Hist.Bar",
+		PROP_BAR_BASELINE		= "Bars.Baseline";
+	
+	public enum HistogramBar {
+		Solid,
+		Outline,
+	}
+	
 	public HistogramChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
 		super(chart, properties, manager);
 	}
 
-	@org.omnetpp.common.properties.Property(category="Plot",id=ChartProperties.PROP_HIST_BAR)
-	public HistogramBar getBarType() { return getEnumProperty(ChartProperties.PROP_HIST_BAR, HistogramBar.class); }
-	public void setBarType(HistogramBar placement) { setProperty(ChartProperties.PROP_HIST_BAR, placement); }
+	@org.omnetpp.common.properties.Property(category="Plot",id=PROP_HIST_BAR)
+	public HistogramBar getBarType() { return getEnumProperty(PROP_HIST_BAR, HistogramBar.class); }
+	public void setBarType(HistogramBar placement) { setProperty(PROP_HIST_BAR, placement); }
 	public HistogramBar defaultBarType() { return ChartDefaults.DEFAULT_HIST_BAR; }
 	
-	@org.omnetpp.common.properties.Property(category="Plot",id=ChartProperties.PROP_BAR_BASELINE)
-	public Double getBarBaseline() { return getDoubleProperty(ChartProperties.PROP_BAR_BASELINE); }
-	public void setBarBaseline(Double baseline) { setProperty(ChartProperties.PROP_BAR_BASELINE, baseline); }
+	@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_BASELINE)
+	public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
+	public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
 	public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
 
 	/*======================================================================

@@ -1,10 +1,10 @@
 package org.omnetpp.scave.editors.forms;
 
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_DISPLAY_LINE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LINE_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LINE_TYPE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_SYMBOL_SIZE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_COLOR;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_SIZE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_TYPE;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,8 +58,8 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.LineProperties;
 import org.omnetpp.scave.charting.properties.VectorChartProperties;
-import org.omnetpp.scave.charting.properties.ChartProperties.LineType;
-import org.omnetpp.scave.charting.properties.ChartProperties.SymbolType;
+import org.omnetpp.scave.charting.properties.LineProperties.LineType;
+import org.omnetpp.scave.charting.properties.LineProperties.SymbolType;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;

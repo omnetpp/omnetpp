@@ -9,19 +9,19 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_DISPLAY_LINE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LABEL_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LINE_COLOR;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LINE_TYPE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_SYMBOL_SIZE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_SYMBOL_TYPE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_XY_GRID;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_AXIS_MAX;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_AXIS_MIN;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_DISPLAY_LINE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_COLOR;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_TYPE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_SIZE;
+import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave.charting.properties.VectorChartProperties.PROP_X_AXIS_MAX;
+import static org.omnetpp.scave.charting.properties.VectorChartProperties.PROP_X_AXIS_MIN;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,9 +52,9 @@ import org.omnetpp.scave.charting.plotter.ChartSymbolFactory;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.IVectorPlotter;
 import org.omnetpp.scave.charting.plotter.VectorPlotterFactory;
-import org.omnetpp.scave.charting.properties.ChartProperties.LineType;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
-import org.omnetpp.scave.charting.properties.ChartProperties.SymbolType;
+import org.omnetpp.scave.charting.properties.LineProperties.LineType;
+import org.omnetpp.scave.charting.properties.LineProperties.SymbolType;
 
 
 /**

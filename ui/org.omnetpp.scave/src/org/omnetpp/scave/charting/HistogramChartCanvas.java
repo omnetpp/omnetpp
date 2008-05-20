@@ -6,14 +6,14 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_AXIS_TITLE_FONT;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_BAR_BASELINE;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_HIST_BAR;
-import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_HIST_COLOR;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LABEL_FONT;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABELS_ROTATE_BY;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.HistogramChartProperties.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.HistogramProperties.PROP_HIST_COLOR;
+import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_BAR_BASELINE;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Insets;
@@ -32,7 +32,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
-import org.omnetpp.scave.charting.properties.ChartProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramBar;
 
 public class HistogramChartCanvas extends ChartCanvas {
 	

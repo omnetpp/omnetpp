@@ -1,6 +1,6 @@
 package org.omnetpp.scave.charting.plotter;
 
-import org.omnetpp.scave.charting.properties.ChartProperties.SymbolType;
+import org.omnetpp.scave.charting.properties.LineProperties.SymbolType;
 
 public class ChartSymbolFactory {
 

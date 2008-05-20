@@ -1,6 +1,6 @@
 package org.omnetpp.scave.charting.plotter;
 
-import org.omnetpp.scave.charting.properties.ChartProperties.LineType;
+import org.omnetpp.scave.charting.properties.LineProperties.LineType;
 
 public class VectorPlotterFactory {
 

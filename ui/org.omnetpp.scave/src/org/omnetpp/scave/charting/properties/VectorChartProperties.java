@@ -15,19 +15,24 @@ public class VectorChartProperties extends ChartProperties
 {
 	private static final String DEFAULT_LINE_PROPERTIES_ID = "default";
 	
+	public static final String
+		PROP_X_AXIS_MIN			= "X.Axis.Min",
+		PROP_X_AXIS_MAX			= "X.Axis.Max";
+	
+	
 	public VectorChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
 		super(chart, properties, manager);
 	}
 	/*======================================================================
 	 *                             Axes
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Axes",id=ChartProperties.PROP_X_AXIS_MIN)
-	public Double getXAxisMin() { return getDoubleProperty(ChartProperties.PROP_X_AXIS_MIN); }
-	public void setXAxisMin(Double min) { setProperty(ChartProperties.PROP_X_AXIS_MIN, min); }
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MIN)
+	public Double getXAxisMin() { return getDoubleProperty(PROP_X_AXIS_MIN); }
+	public void setXAxisMin(Double min) { setProperty(PROP_X_AXIS_MIN, min); }
 
-	@org.omnetpp.common.properties.Property(category="Axes",id=ChartProperties.PROP_X_AXIS_MAX)
-	public Double getXAxisMax() { return getDoubleProperty(ChartProperties.PROP_X_AXIS_MAX); }
-	public void setXAxisMax(Double max) { setProperty(ChartProperties.PROP_X_AXIS_MAX, max); }
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MAX)
+	public Double getXAxisMax() { return getDoubleProperty(PROP_X_AXIS_MAX); }
+	public void setXAxisMax(Double max) { setProperty(PROP_X_AXIS_MAX, max); }
 
 	/*======================================================================
 	 *                             Lines

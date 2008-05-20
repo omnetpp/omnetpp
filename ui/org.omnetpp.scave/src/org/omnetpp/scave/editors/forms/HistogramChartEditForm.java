@@ -12,7 +12,7 @@ import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.HistogramChartProperties;
-import org.omnetpp.scave.charting.properties.ChartProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramBar;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.HistogramChart;
 

@@ -4,6 +4,10 @@ import org.omnetpp.common.properties.ColorPropertyDescriptor;
 import org.omnetpp.common.properties.PropertySource;
 
 public class HistogramProperties extends PropertySource {
+	
+	public static final String
+		PROP_HIST_COLOR			= "Hist.Color";
+
 	private final ChartProperties chartProps;
 	private String histogramId;
 
@@ -16,8 +20,8 @@ public class HistogramProperties extends PropertySource {
 		return chartProps.propertyName(baseName, histogramId);
 	}
 	
-	@org.omnetpp.common.properties.Property(category="Histograms",id=ChartProperties.PROP_HIST_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
-	public String getHistColor() { return chartProps.getStringProperty(propertyName(ChartProperties.PROP_HIST_COLOR)); } // FIXME use RGB
-	public void setHistColor(String color) { chartProps.setProperty(propertyName(ChartProperties.PROP_HIST_COLOR), color); }
+	@org.omnetpp.common.properties.Property(category="Histograms",id=PROP_HIST_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
+	public String getHistColor() { return chartProps.getStringProperty(propertyName(PROP_HIST_COLOR)); } // FIXME use RGB
+	public void setHistColor(String color) { chartProps.setProperty(propertyName(PROP_HIST_COLOR), color); }
 	public String defaultHistColor() { return null; }
 }
