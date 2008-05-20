@@ -3,6 +3,7 @@ package org.omnetpp.inifile.editor.form;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
@@ -32,7 +33,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
  */
 public abstract class FormPage extends Composite {
 	public static final int RIGHT_MARGIN = 20; // >= scrollbar width  
-	private static Font titleFont = new Font(null, "Arial", 10, SWT.BOLD);
+	private static Font titleFont = JFaceResources.getBannerFont();
 	private InifileEditor inifileEditor;
 	private HoverSupport hoverSupport = new HoverSupport();
 	

@@ -171,16 +171,24 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      * Here we do both.
      */
     protected static boolean isToolChainSupported(IToolChain toolchain) {
+    	if (!isToolchainSupportedOnCurrentPlatform(toolchain))
+    		return false;
     	while (toolchain != null) {
-    		if (!toolchain.isSupported() || !isToolchainSupportedOnCurrentPlatform(toolchain))
+    		if (!toolchain.isSupported())
     			return false;
     		toolchain = toolchain.getSuperClass();
     	}
     	return true;
     }
     
+    protected static String[] getEffectiveOSList(IToolChain toolchain) {
+    	while(toolchain != null && toolchain.getOSList().length == 0) 
+    		toolchain = toolchain.getSuperClass();
+    	return toolchain == null ? new String[0] : toolchain.getOSList();
+    }
+    
     protected static boolean isToolchainSupportedOnCurrentPlatform(IToolChain toolchain) {
-    	List<String> osList = Arrays.asList(toolchain.getOSList());
+    	List<String> osList = Arrays.asList(getEffectiveOSList(toolchain));
     	return osList.isEmpty() || osList.contains("all") || osList.contains(Platform.getOS());
     }
 
