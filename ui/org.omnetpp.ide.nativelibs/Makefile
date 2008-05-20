@@ -106,7 +106,7 @@ eventlog.cxx : eventlog.i
 
 $O/$(DLL): $(OBJS)
 	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
-	strip $O/$(DLL)
+	strip -x $O/$(DLL)
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)
