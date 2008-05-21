@@ -173,21 +173,24 @@ double FilteredEventLog::getApproximatePercentageForEventNumber(long eventNumber
 
 FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
 {
-    // TODO: use first and last event convert them to percentage
-    // normalize the input in that range and use the result
-    IEvent *event = eventLog->getApproximateEventAt(percentage);
+    if (isEmpty())
+        return NULL;
+    else {
+        double firstEventPercentage = eventLog->getApproximatePercentageForEventNumber(getFirstEvent()->getEventNumber());
+        double lastEventPercentage = eventLog->getApproximatePercentageForEventNumber(getLastEvent()->getEventNumber());
+        percentage = firstEventPercentage + percentage * (lastEventPercentage - firstEventPercentage);
+        IEvent *event = eventLog->getApproximateEventAt(percentage);
 
-    FilteredEvent *filteredEvent = getMatchingEventInDirection(event, true);
-    if (filteredEvent)
-        return filteredEvent;
+        FilteredEvent *filteredEvent = getMatchingEventInDirection(event, true);
+        if (filteredEvent)
+            return filteredEvent;
 
-    filteredEvent = getMatchingEventInDirection(event, false);
-    if (filteredEvent)
-        return filteredEvent;
+        filteredEvent = getMatchingEventInDirection(event, false);
+        if (filteredEvent)
+            return filteredEvent;
 
-    Assert(isEmpty());
-
-    return NULL;
+        Assert(false);
+    }
 }
 
 FilteredEvent *FilteredEventLog::getNeighbourEvent(IEvent *event, long distance)
