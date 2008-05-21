@@ -31,6 +31,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferencePageContainer;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -44,7 +46,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.internal.dialogs.PropertyDialog;
 import org.omnetpp.cdt.Activator;
@@ -76,7 +77,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
 
     // controls
     protected Combo sourceFolderCombo;
-    protected Text errorMessageText;
+    protected Label errorMessageLabel;
     protected MakemakeOptionsPanel optionsPanel;
     protected Composite nonSourceFolderComposite;
 
@@ -91,7 +92,7 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
      * @see PreferencePage#createContents(Composite)
      */
     protected Control createContents(Composite parent) {
-        Group group = new Group(parent, SWT.NONE);
+        final Group group = new Group(parent, SWT.NONE);
         group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         group.setLayout(new GridLayout(2,false));
         
@@ -109,11 +110,10 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
         Link pathsAndSymbolsLink = createLink(group, text);
         pathsAndSymbolsLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         
-        errorMessageText = new Text(group, SWT.MULTI);
-        errorMessageText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
-        errorMessageText.setEditable(false);
-        errorMessageText.setForeground(ColorFactory.RED2);
-        errorMessageText.setBackground(errorMessageText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+        errorMessageLabel = new Label(group, SWT.WRAP);
+        errorMessageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
+        errorMessageLabel.setForeground(ColorFactory.RED2);
+        //errorMessageLabel.setBackground(errorMessageLabel.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
         optionsPanel = new MakemakeOptionsPanel(parent, SWT.NONE); 
         optionsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -146,6 +146,16 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             }
             public void widgetSelected(SelectionEvent e) {
                 makeSourceFolder();
+            }
+        });
+        
+        // make the error text label wrap properly; see https://bugs.eclipse.org/bugs/show_bug.cgi?id=9866
+        group.addControlListener(new ControlAdapter(){
+            public void controlResized(ControlEvent e){
+                GridData data = (GridData)errorMessageLabel.getLayoutData();
+                GridLayout layout = (GridLayout)group.getLayout();
+                data.widthHint = group.getClientArea().width - 2*layout.marginWidth;
+                group.layout(true);
             }
         });
         
@@ -292,9 +302,10 @@ public class MakemakeFolderPropertyPage extends PropertyPage {
             //setErrorMessage(getInformationalMessage());
             String message = getInformationalMessage();
             if (message == null)
-                errorMessageText.setText("");
+                errorMessageLabel.setText("");
             else
-                errorMessageText.setText(StringUtils.breakLines(message,80)); //XXX until we learn how to make it wrap...
+                //errorMessageText.setText(StringUtils.breakLines(message,80)); //XXX until we learn how to make it wrap...
+                errorMessageLabel.setText(message);
         }
     }
 
