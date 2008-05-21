@@ -274,7 +274,7 @@ public class VirtualTable<T>
 
 					if (element != null && 
 						(e.button == 1 || selectionElements == null || !selectionElements.contains(element))) {
-						if ((e.stateMask & SWT.CONTROL) != 0) {
+						if ((e.stateMask & SWT.MOD1) != 0) {
 							if (selectionElements.contains(element))
 								selectionElements.remove(element);
 							else

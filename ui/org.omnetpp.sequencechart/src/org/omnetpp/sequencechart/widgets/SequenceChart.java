@@ -287,7 +287,7 @@ public class SequenceChart
 			}
     	});
 
-		new RubberbandSupport(this, SWT.CTRL) {
+		new RubberbandSupport(this, SWT.MOD1) {
 			@Override
 			public void rubberBandSelectionMade(org.eclipse.swt.graphics.Rectangle r) {
 				zoomToRectangle(new org.eclipse.draw2d.geometry.Rectangle(r));
@@ -326,7 +326,7 @@ public class SequenceChart
 				else if (e.keyCode == SWT.ARROW_LEFT) {
 				    if (e.stateMask == 0)
 				        moveSelection(-1);
-				    else if (e.stateMask == SWT.CTRL) {
+				    else if (e.stateMask == SWT.MOD1) {
 				        IEvent event = getSelectionEvent();
 				        
 				        if (event != null) {
@@ -353,7 +353,7 @@ public class SequenceChart
 				else if (e.keyCode == SWT.ARROW_RIGHT) {
                     if (e.stateMask == 0)
                         moveSelection(1);
-                    else if (e.stateMask == SWT.CTRL) {
+                    else if (e.stateMask == SWT.MOD1) {
                         IEvent event = getSelectionEvent();
                         
                         if (event != null) {
@@ -2898,7 +2898,7 @@ public class SequenceChart
 		addListener(SWT.MouseWheel, new Listener() {
 			public void handleEvent(Event event) {
 				if (!eventLogInput.isCanceled()) {
-					if ((event.stateMask & SWT.CTRL)!=0) {
+					if ((event.stateMask & SWT.MOD1)!=0) {
 						for (int i = 0; i < event.count; i++)
 							zoomBy(1.1);
 
@@ -2997,7 +2997,7 @@ public class SequenceChart
 						if (!isDragging) {
 							ArrayList<IEvent> events = new ArrayList<IEvent>();
 
-							if ((me.stateMask & SWT.CTRL)!=0) // CTRL key extends selection
+							if ((me.stateMask & SWT.MOD1)!=0) // CTRL key extends selection
 								for (Integer eventNumber : selectionEventNumbers)
 									events.add(eventLog.getEventForEventNumber(eventNumber));
 

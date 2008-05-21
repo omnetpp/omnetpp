@@ -89,7 +89,7 @@ public class ZoomableCanvasMouseSupport {
 		this.mouseMode = mouseMode;
 		updateCursor(mouseMode, activeMouseButton, 0); // XXX should store pressed modifiers
 		canvas.setCursor(mouseMode == ZOOM_MODE ? ZOOMIN_CURSOR : null);
-		rubberBand.setModifierKeys(mouseMode==ZOOM_MODE ? SWT.NONE : SWT.CTRL);
+		rubberBand.setModifierKeys(mouseMode==ZOOM_MODE ? SWT.NONE : SWT.MOD1);
 	}
 	
 	/**
@@ -98,7 +98,7 @@ public class ZoomableCanvasMouseSupport {
 	 * a modifier key pressed/released. 
 	 */
 	private void updateCursor(int mouseMode, int mouseButton, int modifierKeys) {
-		boolean ctrl = (modifierKeys & SWT.CTRL) != 0;
+		boolean ctrl = (modifierKeys & SWT.MOD1) != 0;
 		boolean shift = (modifierKeys & SWT.SHIFT) != 0;
 //		System.out.format("updateCursor(%s,%s,%s)%n",
 //				(mouseMode == PAN_MODE ? "pan" : "zoom"),
@@ -122,7 +122,7 @@ public class ZoomableCanvasMouseSupport {
 		// ctrl/shift key
 		canvas.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
-				if ((e.keyCode & (SWT.CTRL | SWT.SHIFT)) != 0) {
+				if ((e.keyCode & (SWT.MOD1 | SWT.SHIFT)) != 0) {
 					// e.stateMask contains the state of the modifier keys before shift/ctrl pressed
 					int stateMask = e.stateMask | e.keyCode;
 					updateCursor(mouseMode, activeMouseButton, stateMask);
@@ -130,7 +130,7 @@ public class ZoomableCanvasMouseSupport {
 			}
 
 			public void keyReleased(KeyEvent e) {
-				if ((e.keyCode & (SWT.CTRL | SWT.SHIFT)) != 0) {
+				if ((e.keyCode & (SWT.MOD1 | SWT.SHIFT)) != 0) {
 					// e.stateMask contains the state of the modifier keys before shift/ctrl released
 					int stateMask = e.stateMask & (~e.keyCode);
 					updateCursor(mouseMode, activeMouseButton, stateMask);
@@ -141,7 +141,7 @@ public class ZoomableCanvasMouseSupport {
 		canvas.addListener(SWT.MouseWheel, new Listener() {
 			public void handleEvent(Event event) {
 				int modifier = event.stateMask & SWT.MODIFIER_MASK;
-				if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.CTRL)) {
+				if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.MOD1)) {
 					// zoom in/out
 					for (int i = 0; i < event.count; i++)
 						canvas.zoomBy(1.1);
@@ -180,9 +180,9 @@ public class ZoomableCanvasMouseSupport {
 				updateCursor(mouseMode, activeMouseButton, modifier);
 				if (!mousedMoved) {  // just a click
 					if (event.button==1) {
-						if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.CTRL))
+						if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.MOD1))
 							canvas.zoomBy(2.0, event.x, event.y); // zoom in around mouse
-						if ((mouseMode==ZOOM_MODE && modifier==SWT.SHIFT) || (mouseMode==PAN_MODE && modifier==(SWT.CTRL|SWT.SHIFT)))
+						if ((mouseMode==ZOOM_MODE && modifier==SWT.SHIFT) || (mouseMode==PAN_MODE && modifier==(SWT.MOD1|SWT.SHIFT)))
 							canvas.zoomBy(1/2.0, event.x, event.y); // zoom out around mouse
 					}
 				}
@@ -194,7 +194,7 @@ public class ZoomableCanvasMouseSupport {
 			public void mouseMove(MouseEvent event) {
 				int modifier = event.stateMask & SWT.MODIFIER_MASK;
 				if (activeMouseButton==1) { // drag with left mouse button being held down
-					if ((mouseMode==PAN_MODE && modifier==SWT.NONE) || (mouseMode==ZOOM_MODE && modifier==SWT.CTRL)) {
+					if ((mouseMode==PAN_MODE && modifier==SWT.NONE) || (mouseMode==ZOOM_MODE && modifier==SWT.MOD1)) {
 						doPanning(event);
 					}
 					mousedMoved = true;

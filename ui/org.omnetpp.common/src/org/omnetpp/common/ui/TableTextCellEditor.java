@@ -478,7 +478,7 @@ public class TableTextCellEditor extends CellEditor {
             // a default selection event is not sent in this case.
             if (text != null && !text.isDisposed()
                     && (text.getStyle() & SWT.MULTI) != 0) {
-                if ((keyEvent.stateMask & SWT.CTRL) != 0) {
+                if ((keyEvent.stateMask & SWT.MOD1) != 0) {
                     super.keyReleaseOccured(keyEvent);
                 }
             }

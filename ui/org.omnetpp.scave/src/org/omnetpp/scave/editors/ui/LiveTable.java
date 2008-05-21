@@ -94,7 +94,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 		control.addMouseListener(new MouseListener() {
 			public void mouseDoubleClick(MouseEvent e) {}
 			public void mouseDown(MouseEvent e) {
-				if (selection.size()<=1 && (e.stateMask & SWT.CTRL)==0)
+				if (selection.size()<=1 && (e.stateMask & SWT.MOD1)==0)
 					setSelection((Control)e.widget);
 			}
 			public void mouseUp(MouseEvent e) {
@@ -109,7 +109,7 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 				}
 				if (sender==target) {
 					// this is a selection
-					if ((e.stateMask & SWT.CTRL)!=0) {
+					if ((e.stateMask & SWT.MOD1)!=0) {
 						if (!selection.contains(e.widget))
 							select((Control)e.widget);
 						else

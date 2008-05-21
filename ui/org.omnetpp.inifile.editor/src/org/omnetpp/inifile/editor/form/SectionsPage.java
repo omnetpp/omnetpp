@@ -177,7 +177,7 @@ public class SectionsPage extends FormPage {
 			public void keyPressed(KeyEvent e) {
 				if (e.character == SWT.DEL)
 					removeSelectedSections();
-				if (e.keyCode == 'A' && (e.stateMask&SWT.CTRL) != 0)
+				if (e.keyCode == 'A' && (e.stateMask & SWT.MOD1) != 0)
 					treeViewer.getTree().selectAll(); //XXX this does not work, because text editor hotkey masks it
 			}
 		});
