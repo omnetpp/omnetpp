@@ -18,18 +18,16 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONFIGURATIO
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_CPU_TIME_LIMIT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DEBUG_ON_ERRORS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EVENTLOG_RECORDING_INTERVALS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXPERIMENT_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FINGERPRINT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_FNAME_APPEND_HOST;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_INI_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_LOAD_LIBS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_MAX_BUFFERED_VALUES;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MAX_MODULE_NESTING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MEASUREMENT_LABEL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MODULE_EVENTLOG_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NUM_RNGS;
@@ -42,6 +40,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTO
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTOR_FILE;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_VECTOR_PRECISION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARALLEL_SIMULATION;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARAM_RECORD_AS_SCALAR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_COMMUNICATIONS_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_DEBUG;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARSIM_FILECOMMUNICATIONS_PREFIX;
@@ -57,16 +56,12 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARTITION_ID
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PERFORM_GC;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PRINT_UNDISPOSED;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REALTIMESCHEDULER_SCALING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RECORD_EVENTLOG;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORD_EVENTNUMBERS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MODULE_EVENTLOG_RECORDING;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCALAR_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPEAT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_REPLICATION_LABEL;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RESULT_DIR;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RNG_CLASS;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_PARAM_RECORD_AS_SCALAR;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCALAR_RECORDING;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SCHEDULER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SEED_SET;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
@@ -80,6 +75,10 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_IMAGE_
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TKENV_PLUGIN_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TOTAL_STACK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_USER_INTERFACE;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_MAX_BUFFERED_VALUES;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVAL;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_VECTOR_RECORD_EVENTNUMBERS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_WARNINGS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
@@ -182,19 +181,10 @@ public class GenericConfigPage extends ScrolledFormPage {
 		    Group group0 = createGroup(form, "Regression");
 		    addTextFieldEditor(group0, CFGID_FINGERPRINT, "Fingerprint to verify");
             addSpacer(form);
-		    Group group1 = createGroup(form, "Setup");
-            addTextFieldEditor(group1, CFGID_NED_PATH, "NED file path");
-            addTextFieldEditor(group1, CFGID_USER_INTERFACE, "User interface");
-            addTextFieldEditor(group1, CFGID_TOTAL_STACK, "Total activity stack");
-            addTextFieldEditor(group1, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting");
-            addSpacer(form);
 			Group group2 = createGroup(form, "Debugging");
 			addCheckboxFieldEditor(group2, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
 			addCheckboxFieldEditor(group2, CFGID_PERFORM_GC, "Delete leaked objects on network cleanup");
-			addSpacer(form);
-			Group group3 = createGroup(form, "Warnings");
-			addCheckboxFieldEditor(group3, CFGID_WARNINGS, "Warnings"); //XXX
-			addCheckboxFieldEditor(group3, CFGID_INI_WARNINGS, "Ini warnings"); //XXX
+			addCheckboxFieldEditor(group2, CFGID_WARNINGS, "Warnings"); //XXX
 			addSpacer(form);
             Group group4 = createGroup(form, "Output vector recording");
 	        addTextFieldEditor(group4, CFGID_OUTPUT_VECTOR_PRECISION, "Precision");
@@ -204,6 +194,14 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             Group group5 = createGroup(form, "Output scalar recording");
             addTextFieldEditor(group5, CFGID_OUTPUT_SCALAR_PRECISION, "Precision");
+            addSpacer(form);
+            Group group1 = createGroup(form, "Limits");
+            addTextFieldEditor(group1, CFGID_TOTAL_STACK, "Total activity stack");
+            addTextFieldEditor(group1, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting");
+            addSpacer(form);
+            Group group6 = createGroup(form, "Other");
+            addTextFieldEditor(group6, CFGID_NED_PATH, "NED file path");
+            addTextFieldEditor(group6, CFGID_USER_INTERFACE, "User interface");
 		}
 		else if (category.equals(CAT_RANDOMNUMBERS)) {
 			Group group1 = createGroup(form, "Random Number Generators");
@@ -336,15 +334,6 @@ public class GenericConfigPage extends ScrolledFormPage {
         if (simtimeScaleEditor != null)
             simtimeScaleEditor.setComboContents(Arrays.asList(SIMTIME_SCALE_CHOICES));
 	}
-
-//	private void addMessage(Composite parent, Image image, String text) {
-//		Composite warnPanel = new Composite(parent, SWT.NONE);
-//		warnPanel.setLayout(new GridLayout(2,false));
-//		Label warnImageLabel = new Label(warnPanel, SWT.NONE);
-//		warnImageLabel.setImage(image); //XXX
-//		Label warnLabel = new Label(warnPanel, SWT.NONE);
-//		warnLabel.setText(text);
-//	}
 
 	private Label addSpacer(Composite parent) {
 		return new Label(parent, SWT.NONE);

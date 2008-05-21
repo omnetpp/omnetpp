@@ -286,9 +286,6 @@ public class ConfigRegistry {
         "Turning it on will cause the host name and process Id to be appended to the " +
         "names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially " +
         "useful with distributed simulation.");
-    public static final ConfigKey CFGID_INI_WARNINGS = addGlobalEntry(
-        "ini-warnings", CFG_BOOL, "false",
-        "Currently ignored. Accepted for backward compatibility.");
     public static final ConfigKey CFGID_LOAD_LIBS = addGlobalEntry(
         "load-libs", CFG_FILENAMES, null,
         "A space-separated list of dynamic libraries to be loaded on startup. The " +
@@ -311,13 +308,17 @@ public class ConfigRegistry {
         " **.module-eventlog-recording = false");
     public static final ConfigKey CFGID_NED_PATH = addGlobalEntry(
         "ned-path", CFG_STRING, null,
-        "A semicolon-separated list of directories which will be appended to the " +
-        "NEDPATH environment variable. The directories will be regarded as roots of " +
-        "the NED package hierarchy, and all NED files will be loaded from the " +
-        "subdirectories under them.");
+        "A semicolon-separated list of directories. The directories will be regarded " +
+        "as roots of the NED package hierarchy, and all NED files will be loaded from " +
+        "their subdirectory trees. This option is normally left empty, as the OMNeT++ " +
+        "IDE sets the NED path automatically, and for simulations started outside the " +
+        "IDE it is more convenient to specify it via a command-line option or the " +
+        "NEDPATH environment variable.");
     public static final ConfigKey CFGID_NETWORK = addPerRunEntry(
         "network", CFG_STRING, null,
-        "The name of the network to be simulated.");
+        "The name of the network to be simulated. The package name can be omitted " +
+        "if the ini file is in the same directory as the NED file that contains the " +
+        "network.");
     public static final ConfigKey CFGID_NUM_RNGS = addPerRunEntry(
         "num-rngs", CFG_INT, "1",
         "The number of random number generators.");
@@ -538,8 +539,9 @@ public class ConfigRegistry {
     public static final ConfigKey CFGID_USER_INTERFACE = addGlobalEntry(
         "user-interface", CFG_STRING, null,
         "Selects the user interface to be started. Possible values are Cmdenv and " +
-        "Tkenv, provided the simulation executable contains the respective libraries " +
-        "or loads them dynamically.");
+        "Tkenv. This option is normally left empty, as it is more convenient to " +
+        "specify the user interface via a command-line option or the IDE's Run and " +
+        "Debug dialogs.");
     public static final ConfigKey CFGID_VECTOR_MAX_BUFFERED_VALUES = addPerObjectEntry(
         "vector-max-buffered-values", CFG_INT, null,
         "For output vectors: the maximum number of values to buffer per vector, " +

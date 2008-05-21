@@ -46,7 +46,7 @@ while (<INFILE>) {
                "expressmode-autoupdate", "methodcalls-delay", "next-event-markers",
                "penguin-mode", "print-banners", "senddirect-arrows", "show-bubbles",
                "show-layouting", "slowexec-delay", "update-freq-express",
-               "update-freq-fast", "use-mainwindow", "use-new-layouter");
+               "update-freq-fast", "use-mainwindow", "use-new-layouter", "ini-warnings");
 
 #note: these should be the NEW option names!
 @commentOutNames = ("tkenv-default-run", "cmdenv-runs-to-execute");

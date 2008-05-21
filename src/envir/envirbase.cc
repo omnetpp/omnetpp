@@ -89,7 +89,6 @@ using std::ostream;
      if (!var) \
          throw cRuntimeError("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
-Register_GlobalConfigEntry(CFGID_INI_WARNINGS, "ini-warnings", CFG_BOOL, "false", "Currently ignored. Accepted for backward compatibility.");
 Register_GlobalConfigEntryU(CFGID_TOTAL_STACK, "total-stack", "B", NULL, "Specifies the maximum memory for activity() simple module stacks. You need to increase this value if you get a ``Cannot allocate coroutine stack'' error.");
 Register_GlobalConfigEntry(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
 Register_GlobalConfigEntry(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the cScheduler interface.");
@@ -103,9 +102,9 @@ Register_GlobalConfigEntry(CFGID_DEBUG_ON_ERRORS, "debug-on-errors", CFG_BOOL, "
 Register_GlobalConfigEntry(CFGID_PERFORM_GC, "perform-gc", CFG_BOOL, "false", "Whether the simulation kernel should delete on network cleanup the simulation objects not deleted by simple module destructors. Not recommended.");
 Register_GlobalConfigEntry(CFGID_PRINT_UNDISPOSED, "print-undisposed", CFG_BOOL, "true", "Whether to report objects left (that is, not deallocated by simple module destructors) after network cleanup.");
 Register_GlobalConfigEntry(CFGID_SIMTIME_SCALE, "simtime-scale", CFG_INT, "-12", "Sets the scale exponent, and thus the resolution of time for the 64-bit fixed-point simulation time representation. Accepted values are -18..0; for example, -6 selects microsecond resolution. -12 means picosecond resolution, with a maximum simtime of ~110 days.");
-Register_GlobalConfigEntry(CFGID_NED_PATH, "ned-path", CFG_STRING, "", "A semicolon-separated list of directories which will be appended to the NEDPATH environment variable. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from the subdirectories under them.");
+Register_GlobalConfigEntry(CFGID_NED_PATH, "ned-path", CFG_STRING, "", "A semicolon-separated list of directories. The directories will be regarded as roots of the NED package hierarchy, and all NED files will be loaded from their subdirectory trees. This option is normally left empty, as the OMNeT++ IDE sets the NED path automatically, and for simulations started outside the IDE it is more convenient to specify it via a command-line option or the NEDPATH environment variable.");
 
-Register_PerRunConfigEntry(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name of the network to be simulated.");
+Register_PerRunConfigEntry(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name of the network to be simulated.  The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
 Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
 Register_PerRunConfigEntryU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
 Register_PerRunConfigEntryU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
@@ -916,8 +915,6 @@ void EnvirBase::processFileName(opp_string& fname)
 void EnvirBase::readOptions()
 {
     cConfiguration *cfg = config();
-
-    opt_ini_warnings = cfg->getAsBool(CFGID_INI_WARNINGS); //XXX ignored
 
     opt_total_stack = (size_t) cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
     opt_parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);

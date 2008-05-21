@@ -61,7 +61,6 @@ class ENVIR_API EnvirBase : public cEnvir
     // Configuration options
     //
     size_t opt_total_stack;
-    bool opt_ini_warnings;
     opp_string opt_scheduler_class;
     bool opt_parsim;
 // WITH_PARSIM (note: no #ifdef to preserve class layout!)
