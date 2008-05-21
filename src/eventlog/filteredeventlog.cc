@@ -173,6 +173,8 @@ double FilteredEventLog::getApproximatePercentageForEventNumber(long eventNumber
 
 FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
 {
+    // TODO: use first and last event convert them to percentage
+    // normalize the input in that range and use the result
     IEvent *event = eventLog->getApproximateEventAt(percentage);
 
     FilteredEvent *filteredEvent = getMatchingEventInDirection(event, true);
@@ -211,10 +213,6 @@ bool FilteredEventLog::matchesFilter(IEvent *event)
 
 bool FilteredEventLog::matchesEvent(IEvent *event)
 {
-    // the traced event
-    if (tracedEventNumber != -1 && event->getEventNumber() == tracedEventNumber)
-        return true;
-
     // event outside of considered range
     if ((firstEventNumber != -1 && event->getEventNumber() < firstEventNumber) ||
         (lastEventNumber != -1 && event->getEventNumber() > lastEventNumber))
@@ -348,10 +346,14 @@ template <typename T> bool FilteredEventLog::matchesList(std::vector<T> &element
 
 bool FilteredEventLog::isEmpty()
 {
-    if (tracedEventNumber != -1)
-        return !eventLog->getEventForEventNumber(tracedEventNumber);
-    else
-        return IEventLog::isEmpty();
+    if (tracedEventNumber != -1) {
+        IEvent *event = eventLog->getEventForEventNumber(tracedEventNumber);
+
+        if (event && matchesFilter(event))
+            return true;
+    }
+
+    return IEventLog::isEmpty();
 }
 
 FilteredEvent *FilteredEventLog::getFirstEvent()
