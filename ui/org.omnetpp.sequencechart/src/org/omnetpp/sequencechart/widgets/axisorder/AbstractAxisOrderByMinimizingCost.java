@@ -7,7 +7,7 @@ import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.eventlog.engine.IntIntMap;
 import org.omnetpp.eventlog.engine.IntVector;
 
-
+// TODO: this algorithm is kind of random and slow, so what about using the C++ ForceDirectedEmbedding algorithm?
 public abstract class AbstractAxisOrderByMinimizingCost  implements IAxisOrder { 
 	protected EventLogInput eventLogInput;
 
@@ -44,8 +44,8 @@ public abstract class AbstractAxisOrderByMinimizingCost  implements IAxisOrder {
 
 	protected int[] sortTimelinesByMinimizingCost(ModuleTreeItem[] modules, IAxisOrderCostCalculator axisOrderCostCalculator) {
 		int cycleCount = 0;
-		int noMoveCount = 0;
-		int noRandomMoveCount = 0;
+		int moveCount = 0;
+		int randomMoveCount = 0;
 		int numberOfAxis = modules.length;
 		int[] axisPositions = new int[numberOfAxis]; // actual positions of axis to be returned
 		int[] candidateAxisPositions = new int[numberOfAxis]; // new positions of axis to be set (if better)
@@ -56,7 +56,7 @@ public abstract class AbstractAxisOrderByMinimizingCost  implements IAxisOrder {
 		// set initial axis positions
 		new AxisOrderByModuleName().calculateOrdering(modules, axisPositions);
 		
-		while (cycleCount < 100 && (noMoveCount < numberOfAxis || noRandomMoveCount < numberOfAxis))
+		while (cycleCount < 100 && (moveCount < numberOfAxis || randomMoveCount < numberOfAxis))
 		{
 			cycleCount++;
 			
@@ -64,14 +64,14 @@ public abstract class AbstractAxisOrderByMinimizingCost  implements IAxisOrder {
 			
 			// randomly swap axis based on temperature
 			double t = temperature;
-			noRandomMoveCount++;
+			randomMoveCount++;
 			while (false && r.nextDouble() < t) {
 				int i1 = r.nextInt(numberOfAxis);
 				int i2 = r.nextInt(numberOfAxis);
 				int i = axisPositions[i1];
 				axisPositions[i1] = axisPositions[i2];
 				axisPositions[i2] = i;
-				noRandomMoveCount = 0;
+				randomMoveCount = 0;
 				t--;
 			}
 
@@ -80,6 +80,7 @@ public abstract class AbstractAxisOrderByMinimizingCost  implements IAxisOrder {
 			int bestPositionOfSelectedAxis = -1;
 			int costOfBestPositions = Integer.MAX_VALUE;
 
+			// TODO: this is O(N^2) where N is the number of axis
 			// assume moving axis at index to position i while keeping the order of others and calculate cost
 			for (int newPositionOfSelectedAxis = 0; newPositionOfSelectedAxis < numberOfAxis; newPositionOfSelectedAxis++) {
 				if (newPositionOfSelectedAxis == -1)
@@ -109,10 +110,10 @@ public abstract class AbstractAxisOrderByMinimizingCost  implements IAxisOrder {
 			// move selected axis into best position if applicable
 			if (bestPositionOfSelectedAxis != -1) {
 				System.arraycopy(bestAxisPositions, 0, axisPositions, 0, numberOfAxis);
-				noMoveCount = 0;
+				moveCount = 0;
 			}
 			else
-				noMoveCount++;
+				moveCount++;
 
 			// decrease temperature
 			temperature *= 0.9;

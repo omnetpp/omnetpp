@@ -1428,12 +1428,26 @@ public class SequenceChart
 	private void calculateDefaultPixelPerTimelineUnit(int viewportWidth) {
 	    if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1) {
     	    IEvent referenceEvent = sequenceChartFacade.getTimelineCoordinateSystemOriginEvent();
-    		int distance = Math.min(20, eventLog.getApproximateNumberOfEvents());
-    
-    		if (distance > 1) {
-    			double referenceEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(referenceEvent);
-    			double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(eventLog.getNeighbourEvent(referenceEvent, distance - 1));
-    			double timelineCoordinateDelta = otherEventTimelineCoordinate - referenceEventTimelineCoordinate;
+    	    IEvent neighbourEvent = referenceEvent; 
+
+    	    int distance = 20;
+            while (--distance > 0) {
+                IEvent newNeighbourEvent = neighbourEvent.getNextEvent();
+
+                if (newNeighbourEvent != null)
+                    neighbourEvent = newNeighbourEvent;
+                else {
+                    IEvent newReferenceEvent = referenceEvent.getPreviousEvent();
+                    
+                    if (newReferenceEvent != null)
+                        referenceEvent = newReferenceEvent;
+                }
+            }
+    	    
+    		if (referenceEvent.getEventNumber() != neighbourEvent.getEventNumber()) {
+                double referenceEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(referenceEvent);
+    			double otherEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinate(neighbourEvent);
+    			double timelineCoordinateDelta = Math.abs(otherEventTimelineCoordinate - referenceEventTimelineCoordinate);
     			setPixelPerTimelineCoordinate(viewportWidth / timelineCoordinateDelta);
     		}
     		else
@@ -3154,13 +3168,15 @@ public class SequenceChart
 			    result += " -> " + getMessageIdText(endBeginSendEntry, formatted);
 			
             if (formatted) {
-                if (!sameMessage)
-                    result += "First: ";
+                if (beginBeginSendEntry.getDetail() != null) {
+                    if (!sameMessage)
+                        result += "<br/>First: ";
+    
+                    result += getMessageDetailText(beginBeginSendEntry, outSizeConstraint);
+                }
 
-                result += getMessageDetailText(beginBeginSendEntry, outSizeConstraint);
-
-                if (!sameMessage) {
-                    result += "Last: ";
+                if (!sameMessage && endBeginSendEntry.getDetail() != null) {
+                    result += "<br/>Last: ";
                     result += getMessageDetailText(endBeginSendEntry, outSizeConstraint);
                 }
             }
@@ -3176,7 +3192,7 @@ public class SequenceChart
 	            
 		    result += getMessageIdText(beginSendEntry, formatted);
 
-		    if (formatted)
+		    if (formatted && beginSendEntry.getDetail() != null)
 		        result += getMessageDetailText(beginSendEntry, outSizeConstraint);
 
 			return result;
@@ -3185,17 +3201,12 @@ public class SequenceChart
 
     private String getMessageDetailText(BeginSendEntry beginSendEntry, SizeConstraint outSizeConstraint) {
         String detail = beginSendEntry.getDetail();
-
-        if (detail != null) {
-        	int longestLineLength = 0;
-        	for (String line : detail.split("\n"))
-        		longestLineLength = Math.max(longestLineLength, line.length());
-        	// TODO: correct solution would be to get pre font width (monospace, 8) and consider margins too
-        	outSizeConstraint.minimumWidth = longestLineLength * 8;
-        	return "<br/><pre>" + detail + "</pre>";
-        }
-        else
-            return "";
+    	int longestLineLength = 0;
+    	for (String line : detail.split("\n"))
+    		longestLineLength = Math.max(longestLineLength, line.length());
+    	// TODO: correct solution would be to get pre font width (monospace, 8) and consider margins too
+    	outSizeConstraint.minimumWidth = longestLineLength * 8;
+    	return "<br/><pre>" + detail + "</pre>";
     }
 
     private String getMessageDependencyEventNumbersText(IMessageDependency messageDependency) {

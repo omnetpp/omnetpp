@@ -1040,14 +1040,17 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 filterParameters.enableMessageFilter = true;
                 filterParameters.enableMessageEncapsulationTreeIdFilter = true;
 
-                EventLogFilterParameters.EnabledInt enabledInt = null; 
-                for (EventLogFilterParameters.EnabledInt messageEncapsulationTreeId : filterParameters.messageEncapsulationTreeIds) {
-                    if (messageEncapsulationTreeId.value == beginSendEntry.getMessageEncapsulationId()) {
-                        enabledInt = messageEncapsulationTreeId;
-                        messageEncapsulationTreeId.enabled = true;
+                EventLogFilterParameters.EnabledInt enabledInt = null;
+                
+                if (filterParameters.messageEncapsulationTreeIds != null) {
+                    for (EventLogFilterParameters.EnabledInt messageEncapsulationTreeId : filterParameters.messageEncapsulationTreeIds) {
+                        if (messageEncapsulationTreeId.value == beginSendEntry.getMessageEncapsulationId()) {
+                            enabledInt = messageEncapsulationTreeId;
+                            messageEncapsulationTreeId.enabled = true;
+                        }
+                        else
+                            messageEncapsulationTreeId.enabled = false;
                     }
-                    else
-                        messageEncapsulationTreeId.enabled = false;
                 }
                 
                 if (enabledInt == null) {

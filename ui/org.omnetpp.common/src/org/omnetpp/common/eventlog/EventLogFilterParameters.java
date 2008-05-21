@@ -329,7 +329,7 @@ public class EventLogFilterParameters implements Serializable {
                     rangeFilters.add("simulation time of event <= " + upperSimulationTimeLimit);
             }
             
-            filters.add(combineDesriptions("or", rangeFilters));
+            filters.add(combineDesriptions("OR", rangeFilters));
 	    }
 
 	    if (enableModuleFilter) {
@@ -358,7 +358,7 @@ public class EventLogFilterParameters implements Serializable {
 	        if (enableModuleIdFilter)
                 addMemberDescription(moduleFilters, "module ID", moduleIds);
 
-	        filters.add(combineDesriptions("or", moduleFilters));
+	        filters.add(combineDesriptions("OR", moduleFilters));
 	    }
 
 	    if (enableMessageFilter) {
@@ -385,7 +385,7 @@ public class EventLogFilterParameters implements Serializable {
     	    if (enableMessageEncapsulationTreeIdFilter)
                 addMemberDescription(messageFilters, "message encapsulation tree ID", messageEncapsulationTreeIds);
 
-    	    filters.add(combineDesriptions("or", messageFilters));
+    	    filters.add(combineDesriptions("OR", messageFilters));
 	    }
 
 	    if (enableTraceFilter) {
@@ -410,7 +410,7 @@ public class EventLogFilterParameters implements Serializable {
 	        // consequenceSimulationTimeDelta;
         }
 	    
-	    return combineDesriptions("and", filters, "Filter for all events", "Filter for events where ");
+	    return combineDesriptions("AND", filters, "Filter for all events", "Filter for events where ");
 	}
 
     private String combineDesriptions(String operator, ArrayList<String> descriptions) {
@@ -435,29 +435,35 @@ public class EventLogFilterParameters implements Serializable {
     }
     
     private void addMemberDescription(ArrayList<String> descriptions, String prefix, int[] elements) {
-        addMemberDescription(descriptions, prefix, Arrays.asList(ArrayUtils.toObject(elements)));
+        if (elements != null)
+            addMemberDescription(descriptions, prefix, Arrays.asList(ArrayUtils.toObject(elements)));
     }
 
     private void addMemberDescription(ArrayList<String> descriptions, String prefix, EnabledInt[] elements) {
-        ArrayList<Integer> enabledElements = new ArrayList<Integer>();
-        
-        for (EnabledInt element : elements)
-            if (element.enabled)
-                enabledElements.add(element.value);
-
-        addMemberDescription(descriptions, prefix, enabledElements);
+        if (elements != null) {
+            ArrayList<Integer> enabledElements = new ArrayList<Integer>();
+    
+            for (EnabledInt element : elements)
+                if (element.enabled)
+                    enabledElements.add(element.value);
+    
+            addMemberDescription(descriptions, prefix, enabledElements);
+        }
     }
 
     private void addMemberDescription(ArrayList<String> descriptions, String prefix, String[] elements) {
-        addMemberDescription(descriptions, prefix, Arrays.asList(elements));
+        if (elements != null)
+            addMemberDescription(descriptions, prefix, Arrays.asList(elements));
     }
 
     private void addMemberDescription(ArrayList<String> descriptions, String prefix, List<?> elements) {
-        if (elements.size() == 0)
+        if (elements == null || elements.size() == 0)
             return;
         else if (elements.size() == 1)
             descriptions.add(prefix + " = " + elements.get(0));
-        else
+        else if (elements.size() <= 3)
             descriptions.add(prefix + " is in (" + StringUtils.join(elements, ", ") + ")");
+        else
+            descriptions.add(prefix + " is in (" + StringUtils.join(elements.subList(0, 3), ", ") + ", ...)");
     }
 }

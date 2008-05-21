@@ -741,8 +741,8 @@ public class FilterEventLogDialog
 
 		moduleNameIds = new ModuleTreeViewer(panel, eventLogInput.getModuleTreeRoot());
         moduleNameIds.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-        moduleNameIds.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
+        moduleNameIds.addCheckStateListener(new ICheckStateListener() {
+            public void checkStateChanged(CheckStateChangedEvent event) {
                 updateFilterDescription();
             }
         });
