@@ -37,9 +37,8 @@ $tclcode = '#=================================================================
 foreach $fname (@fnames)
 {
     print "processing $fname...\n" if ($verbose);
-    system("cmd", "/c", "base64 <$fname >$tmpfile");
 
-    my $txt = readfile($tmpfile);
+    my $txt = `base64  $fname `;
     $txt =~ s/^/    /mg;  # indent
 
     my $name = $fname;
