@@ -12,6 +12,7 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_X_LABEL
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.HistogramChartProperties.PROP_HIST_BAR;
+import static org.omnetpp.scave.charting.properties.HistogramChartProperties.PROP_HIST_DATA;
 import static org.omnetpp.scave.charting.properties.HistogramProperties.PROP_HIST_COLOR;
 import static org.omnetpp.scave.charting.properties.ScalarChartProperties.PROP_BAR_BASELINE;
 
@@ -33,6 +34,7 @@ import org.omnetpp.scave.charting.dataset.IDataset;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramDataType;
 
 public class HistogramChartCanvas extends ChartCanvas {
 	
@@ -78,6 +80,8 @@ public class HistogramChartCanvas extends ChartCanvas {
 			; //TODO PROP_X_LABELS_ROTATE_BY
 		else if (PROP_HIST_BAR.equals(name))
 			setBarType(Converter.stringToEnum(value, HistogramBar.class));
+		else if (PROP_HIST_DATA.equals(name))
+			setHistogramDataTransform(Converter.stringToEnum(value, HistogramDataType.class));
 		else if (PROP_BAR_BASELINE.equals(name))
 			setBarBaseline(Converter.stringToDouble(value));
 		else if (name.startsWith(PROP_HIST_COLOR))
@@ -122,6 +126,16 @@ public class HistogramChartCanvas extends ChartCanvas {
 		plot.setBarType(barType);
 		chartChanged();
 	}
+	
+	public void setHistogramDataTransform(HistogramDataType dataTransform) {
+		if (dataTransform == null)
+			dataTransform = ChartDefaults.DEFAULT_HIST_DATA;
+		plot.setHistogramData(dataTransform);
+		chartArea = calculatePlotArea();
+		updateArea();
+		chartChanged();
+	}
+	
 	
 	public void setBarBaseline(Double value) {
 		if (value == null)

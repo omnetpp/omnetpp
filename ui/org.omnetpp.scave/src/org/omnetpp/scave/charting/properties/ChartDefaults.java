@@ -37,6 +37,7 @@ import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramDataType;
 import org.omnetpp.scave.charting.properties.LineProperties.LineType;
 import org.omnetpp.scave.charting.properties.ScalarChartProperties.BarPlacement;
 
@@ -100,6 +101,7 @@ public class ChartDefaults {
 	
 	// histogram chart
 	public static final HistogramBar DEFAULT_HIST_BAR = HistogramBar.Solid;
+	public static final HistogramDataType DEFAULT_HIST_DATA = HistogramDataType.Count;
 	
 	// Maps property names to default values
 	static Map<String,Object> defaults;

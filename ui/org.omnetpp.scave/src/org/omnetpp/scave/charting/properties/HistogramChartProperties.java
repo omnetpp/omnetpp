@@ -5,11 +5,11 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.omnetpp.common.properties.BasePropertySource;
+import org.omnetpp.common.properties.Property;
 import org.omnetpp.scave.charting.dataset.IHistogramDataset;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.HistogramChart;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model2.DatasetManager;
 
 public class HistogramChartProperties extends ChartProperties
@@ -18,6 +18,7 @@ public class HistogramChartProperties extends ChartProperties
 	
 	public static final String
 		PROP_HIST_BAR			= "Hist.Bar",
+		PROP_HIST_DATA			= "Hist.Data",
 		PROP_BAR_BASELINE		= "Bars.Baseline";
 	
 	public enum HistogramBar {
@@ -25,24 +26,45 @@ public class HistogramChartProperties extends ChartProperties
 		Outline,
 	}
 	
-	public HistogramChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
+	public enum HistogramDataType {
+		Count("count"),
+		Pdf("probability density"),
+		Cdf("cumulative density");
+		
+		private String displayName;
+		
+		private HistogramDataType(String displayName) {
+			this.displayName = displayName;
+		}
+		
+		@Override public String toString() {
+			return displayName;
+		}
+	}
+	
+	public HistogramChartProperties(Chart chart, List<org.omnetpp.scave.model.Property> properties, ResultFileManager manager) {
 		super(chart, properties, manager);
 	}
 
-	@org.omnetpp.common.properties.Property(category="Plot",id=PROP_HIST_BAR)
+	@Property(category="Plot",id=PROP_HIST_BAR)
 	public HistogramBar getBarType() { return getEnumProperty(PROP_HIST_BAR, HistogramBar.class); }
 	public void setBarType(HistogramBar placement) { setProperty(PROP_HIST_BAR, placement); }
 	public HistogramBar defaultBarType() { return ChartDefaults.DEFAULT_HIST_BAR; }
 	
-	@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_BASELINE)
+	@Property(category="Plot",id=PROP_BAR_BASELINE)
 	public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
 	public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
 	public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
+	
+	@Property(category="Plot",id=PROP_HIST_DATA)
+	public HistogramDataType getHistogramDataType() { return getEnumProperty(PROP_HIST_DATA, HistogramDataType.class); }
+	public void setHistogramDataType(HistogramDataType data) { setProperty(PROP_HIST_DATA, data); }
+	public HistogramDataType defaultHistogramData() { return ChartDefaults.DEFAULT_HIST_DATA; }
 
 	/*======================================================================
 	 *                             Histograms
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Plot",id="Histograms",displayName="Histograms")
+	@Property(category="Plot",id="Histograms",displayName="Histograms")
 	public IPropertySource getHistogramProperties()
 	{
 		IHistogramDataset dataset = DatasetManager.createHistogramDataset((HistogramChart)chart, manager, null);

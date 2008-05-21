@@ -38,7 +38,7 @@ public class LogarithmicTicks implements ITicks {
 		if (rounding == RoundingMode.FLOOR) {
 			switch (unscaledValue.intValue()) {
 			case 0:
-				Assert.isTrue(false); break;
+				//Assert.isTrue(false); break;
 			case 1:
 				unscaledValue = ONE; break;
 			case 2: case 3: case 4:

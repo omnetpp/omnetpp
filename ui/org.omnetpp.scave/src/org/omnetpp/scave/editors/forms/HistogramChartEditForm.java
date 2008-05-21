@@ -13,6 +13,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.HistogramChartProperties;
 import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramBar;
+import org.omnetpp.scave.charting.properties.HistogramChartProperties.HistogramDataType;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.HistogramChart;
 
@@ -23,6 +24,7 @@ public class HistogramChartEditForm extends ChartEditForm {
 	// Bars
 	private Text baselineText;
 	private Combo barTypeCombo;
+	private Combo dataTypeCombo;
 	
 	public HistogramChartEditForm(HistogramChart chart, EObject parent,
 			Map<String, Object> formParameters, ResultFileManager manager) {
@@ -43,6 +45,7 @@ public class HistogramChartEditForm extends ChartEditForm {
 		if (TAB_PLOT.equals(name)) {
 			baselineText = createTextField("Baseline", panel);
 			barTypeCombo = createComboField("Bar type", panel, HistogramBar.class, false);
+			dataTypeCombo = createComboField("Data type", panel, HistogramDataType.class, false);
 		}
 	}
 	
@@ -52,13 +55,15 @@ public class HistogramChartEditForm extends ChartEditForm {
 		HistogramChartProperties props = (HistogramChartProperties)newProps;
 		props.setBarBaseline(Converter.stringToDouble(baselineText.getText()));
 		props.setBarType(resolveEnum(barTypeCombo.getText(), HistogramBar.class));
+		props.setHistogramDataType(resolveEnum(dataTypeCombo.getText(), HistogramDataType.class));
 	}
 
 	@Override
 	protected void setProperties(ChartProperties props) {
 		super.setProperties(props);
-		HistogramChartProperties scalarProps = (HistogramChartProperties)props;
-		baselineText.setText(StringUtils.defaultString(Converter.doubleToString(scalarProps.getBarBaseline())));
-		barTypeCombo.setText(scalarProps.getBarType()==null ? NO_CHANGE : scalarProps.getBarType().toString());
+		HistogramChartProperties histogramProps = (HistogramChartProperties)props;
+		baselineText.setText(StringUtils.defaultString(Converter.doubleToString(histogramProps.getBarBaseline())));
+		barTypeCombo.setText(histogramProps.getBarType()==null ? NO_CHANGE : histogramProps.getBarType().toString());
+		dataTypeCombo.setText(histogramProps.getHistogramDataType()==null ? NO_CHANGE : histogramProps.getHistogramDataType().toString());
 	}
 }

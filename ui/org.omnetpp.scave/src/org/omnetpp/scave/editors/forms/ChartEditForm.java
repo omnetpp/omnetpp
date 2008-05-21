@@ -340,7 +340,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		Enum<?>[] values = type.getEnumConstants();
 		String[] items = new String[values.length];
 		for (int i = 0; i < values.length; ++i)
-			items[i] = values[i].name();
+			items[i] = values[i].toString();
 		return createComboField(labelText, parent, items, optional);
 	}
 
@@ -589,7 +589,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		yAxisMinText.setText(StringUtils.defaultString(Converter.doubleToString(props.getYAxisMin())));
 		yAxisMaxText.setText(StringUtils.defaultString(Converter.doubleToString(props.getYAxisMax())));
 		yAxisLogCheckbox.setSelection(props.getYAxisLogarithmic());
-		showGridCombo.setText(props.getXYGrid().name());
+		showGridCombo.setText(props.getXYGrid().toString());
 		// Legend
 		displayLegendCheckbox.setSelection(props.getDisplayLegend());
 		displayBorderCheckbox.setSelection(props.getLegendBorder());
