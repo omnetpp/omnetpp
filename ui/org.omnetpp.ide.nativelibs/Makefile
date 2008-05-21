@@ -51,6 +51,11 @@ else
 DLL = $(LIB_PREFIX)opplibs$(JNI_LIB_SUFFIX)
 endif
 
+# on MAC OS X we should strip only the non public symbols
+ifeq ("$(JNI_LIB_SUFFIX)",".jnilib")
+STRIP_FLAGS=-x
+endif
+
 DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(ECLIPSE_PLATFORM)
 
 #
@@ -106,7 +111,7 @@ eventlog.cxx : eventlog.i
 
 $O/$(DLL): $(OBJS)
 	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
-	strip -x $O/$(DLL)
+	strip $(STRIP_FLAGS) $O/$(DLL)
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)
