@@ -1136,7 +1136,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				if (vectorFile.exists())
 				    fileDialog.setFileName(vectorFileName);
 				fileDialog.setFilterExtensions(new String[] {"*.vec"});
-				fileDialog.setFilterPath(eventLogInput.getFile().getRawLocation().toString());
+				fileDialog.setFilterPath(eventLogInput.getFile().getLocation().toOSString());
 				vectorFileName = fileDialog.open();
 				if (vectorFileName == null)
 				    return;
@@ -1329,7 +1329,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 //				FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SAVE);
 //				IPath location = sequenceChart.getInput().getFile().getLocation().makeAbsolute();
 //				fileDialog.setFileName(location.removeFileExtension().addFileExtension("svg").lastSegment());
-//				fileDialog.setFilterPath(location.removeLastSegments(1).toPortableString());
+//				fileDialog.setFilterPath(location.removeLastSegments(1).toOSString());
 //				String fileName = fileDialog.open();
 //
 //				if (fileName != null) {

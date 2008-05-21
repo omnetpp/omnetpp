@@ -2,7 +2,12 @@ package org.omnetpp.common.eventlog;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IntVector;
@@ -298,10 +303,161 @@ public class EventLogFilterParameters implements Serializable {
 
 		return vector;
 	}
-	
+
 	@Override
 	public String toString() {
-	    // TODO Auto-generated method stub
-	    return super.toString();
+	    ArrayList<String> filters = new ArrayList<String>();
+
+	    if (enableRangeFilter) {
+	        ArrayList<String> rangeFilters = new ArrayList<String>();
+
+	        if (enableEventNumberFilter) {
+    	        if (lowerEventNumberLimit != -1 && upperEventNumberLimit != -1)
+    	            rangeFilters.add(lowerEventNumberLimit + " <= event number <= " + upperEventNumberLimit);
+                else if (lowerEventNumberLimit != -1)
+                    rangeFilters.add("event number >= " + lowerEventNumberLimit);
+    	        else if (upperEventNumberLimit != -1)
+    	            rangeFilters.add("event number <= " + upperEventNumberLimit);
+	        }
+
+            if (enableSimulationTimeFilter) {
+                if (lowerSimulationTimeLimit != null && upperSimulationTimeLimit != null)
+                    rangeFilters.add(lowerSimulationTimeLimit + " <= simulation time of event <= " + upperSimulationTimeLimit);
+    	        else if (lowerSimulationTimeLimit != null)
+    	            rangeFilters.add("simulation time of event >= " + lowerSimulationTimeLimit);
+                else if (upperSimulationTimeLimit != null)
+                    rangeFilters.add("simulation time of event <= " + upperSimulationTimeLimit);
+            }
+            
+            filters.add(combineDesriptions("or", rangeFilters));
+	    }
+
+	    if (enableModuleFilter) {
+            ArrayList<String> moduleFilters = new ArrayList<String>();
+
+            if (enableModuleExpressionFilter)
+                moduleFilters.add("module matches the expression " + moduleFilterExpression);
+
+	        if (enableModuleNEDTypeNameFilter)
+	            addMemberDescription(moduleFilters, "module NED type", moduleNEDTypeNames);
+
+	        if (enableModuleNameFilter) {
+	            ModuleTreeItem root = eventLogInput.getModuleTreeRoot();
+	            String[] moduleNames = new String[moduleNameIds.length];
+	            
+	            for (int i = 0; i< moduleNames.length; i++) {
+	                ModuleTreeItem item = root.findDescendantModule(moduleNameIds[i]);
+
+	                if (item != null)
+	                    moduleNames[i] = item.getModuleFullPath();
+	            }
+	            // TODO: use names instead of IDs
+                addMemberDescription(moduleFilters, "module name", moduleNames);
+	        }
+
+	        if (enableModuleIdFilter)
+                addMemberDescription(moduleFilters, "module ID", moduleIds);
+
+	        filters.add(combineDesriptions("or", moduleFilters));
+	    }
+
+	    if (enableMessageFilter) {
+            ArrayList<String> messageFilters = new ArrayList<String>();
+
+            if (enableMessageExpressionFilter)
+                messageFilters.add("message matches the expression " + messageFilterExpression);
+    
+    	    if (enableMessageClassNameFilter)
+                addMemberDescription(messageFilters, "message C++ class name", messageClassNames);
+
+    	    if (enableMessageNameFilter)
+                addMemberDescription(messageFilters, "message name", messageNames);
+
+    	    if (enableMessageIdFilter)
+                addMemberDescription(messageFilters, "message ID", messageIds);
+    
+    	    if (enableMessageTreeIdFilter)
+                addMemberDescription(messageFilters, "message tree ID", messageTreeIds);
+    
+    	    if (enableMessageEncapsulationIdFilter)
+    	        addMemberDescription(messageFilters, "message encapsulation ID", messageEncapsulationIds);
+    
+    	    if (enableMessageEncapsulationTreeIdFilter)
+                addMemberDescription(messageFilters, "message encapsulation tree ID", messageEncapsulationTreeIds);
+
+    	    filters.add(combineDesriptions("or", messageFilters));
+	    }
+
+	    if (enableTraceFilter) {
+            ArrayList<String> traceFilters = new ArrayList<String>();
+
+	        if (traceCauses)
+                traceFilters.add("cause");
+
+	        if (traceConsequences)
+	            traceFilters.add("consequence");
+
+            filters.add("it is the " + StringUtils.join(traceFilters, " or ") + " of the event with event number " + tracedEventNumber);
+
+            // TODO: should these included in the filter
+	        // if (traceMessageReuses) {
+	        // }
+	        // if (traceSelfMessages) {
+	        // }
+	        // causeEventNumberDelta;
+	        // consequenceEventNumberDelta;
+	        // causeSimulationTimeDelta;
+	        // consequenceSimulationTimeDelta;
+        }
+	    
+	    return combineDesriptions("and", filters, "Filter for all events", "Filter for events where ");
 	}
+
+    private String combineDesriptions(String operator, ArrayList<String> descriptions) {
+        return combineDesriptions(operator, descriptions, "", "");
+    }
+
+    private String combineDesriptions(String operator, ArrayList<String> descriptions, String zeroDescriptionCountValue, String nonZeroDescriptionCountPrefix) {
+        String result = null;
+
+        if (descriptions.size() == 0)
+            result = zeroDescriptionCountValue;
+        else {
+            result = nonZeroDescriptionCountPrefix;
+
+            if (descriptions.size() == 1)
+                result += descriptions.get(0);
+            else
+                result += "(" + StringUtils.join(descriptions, ") " + operator + " (") + ")";
+        }
+        
+        return result;
+    }
+    
+    private void addMemberDescription(ArrayList<String> descriptions, String prefix, int[] elements) {
+        addMemberDescription(descriptions, prefix, Arrays.asList(ArrayUtils.toObject(elements)));
+    }
+
+    private void addMemberDescription(ArrayList<String> descriptions, String prefix, EnabledInt[] elements) {
+        ArrayList<Integer> enabledElements = new ArrayList<Integer>();
+        
+        for (EnabledInt element : elements)
+            if (element.enabled)
+                enabledElements.add(element.value);
+
+        addMemberDescription(descriptions, prefix, enabledElements);
+    }
+
+    private void addMemberDescription(ArrayList<String> descriptions, String prefix, String[] elements) {
+        addMemberDescription(descriptions, prefix, Arrays.asList(elements));
+    }
+
+    private void addMemberDescription(ArrayList<String> descriptions, String prefix, List<?> elements) {
+        if (elements.size() == 0)
+            return;
+        else if (elements.size() == 1)
+            descriptions.add(prefix + " = " + elements.get(0));
+        else
+            descriptions.add(prefix + " is in (" + StringUtils.join(elements, ", ") + ")");
+    }
 }

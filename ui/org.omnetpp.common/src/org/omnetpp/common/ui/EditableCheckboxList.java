@@ -1,6 +1,7 @@
 package org.omnetpp.common.ui;
 
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -75,5 +76,9 @@ public class EditableCheckboxList extends AbstractEditableList {
 
     public void setChecked(String item, boolean flag) {
         viewer.setChecked(item, flag);
+    }
+
+    public void addSelectionChangedListener(ISelectionChangedListener selectionChangedListener) {
+        viewer.addSelectionChangedListener(selectionChangedListener);
     }
 }

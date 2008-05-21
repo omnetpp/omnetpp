@@ -95,7 +95,9 @@ Features:
  + use checkbox list and remember what the user typed in event log filter id lists to allow turning on and off each id
  + don't count non filtered message dependencies when checking the maximum message dependency count per event
  - avoid displaying too much events at once (due to being slow) when turning filtering on and off (maybe remember position and zoom level?)
- - don't display an axis until there is an event to be displayed on it (when filtering among a lot of axes this helps not displaying useless axes)
+! - don't display an axis until there is an event to be displayed on it (when filtering among a lot of axes this helps not displaying useless axes)
+! - navigation history
+ + automatically updated textual representation of current filter in filter configuration dialog
 
 Known bugs:
  - 7-es compiler? seqchart: "Filter by message ID" OneFifo, filter to one msg like id=16: yields only event #53 and #120, and #120 has nothing to do with msg id=16
