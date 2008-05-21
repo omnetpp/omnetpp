@@ -311,21 +311,26 @@ public class InifileUtils {
 		doc.addEntry(section, newKey, value, rawComment, null);
 	}
 
+	/**
+	 * Returns true if key1 should precede key2 when new keys are added 
+	 * in the inifile (preferred order)
+	 */
 	private static boolean precedesKey(String key1, String key2) {
-		if (key1.equals(CFGID_EXTENDS.getKey())) return true;
-		if (key2.equals(CFGID_EXTENDS.getKey())) return false;
-		if (key1.equals(CFGID_DESCRIPTION.getKey())) return true;
-		if (key2.equals(CFGID_DESCRIPTION.getKey())) return false;
-		if (key1.equals(CFGID_NETWORK.getKey())) return true;
-		if (key2.equals(CFGID_NETWORK.getKey())) return false;
-		KeyType keyType1 = InifileAnalyzer.getKeyType(key1);
-		KeyType keyType2 = InifileAnalyzer.getKeyType(key2);
-		if (keyType1 == keyType2) return key1.compareToIgnoreCase(key2) < 0;
-		if (keyType1 == KeyType.CONFIG) return true;
-		if (keyType2 == KeyType.CONFIG) return false;
-        if (keyType1 == KeyType.PER_OBJECT_CONFIG) return true;
-        if (keyType2 == KeyType.PER_OBJECT_CONFIG) return false;
-        return key1.compareToIgnoreCase(key2) < 0; // but cannot get here, actually
+	    int rank1 = getKeyRank(key1);
+        int rank2 = getKeyRank(key2);
+        return rank1 == rank2 ? key1.compareToIgnoreCase(key2) < 0 : rank1 < rank2;
+	}
+	
+	private static int getKeyRank(String key) {
+		if (key.equals(CFGID_EXTENDS.getKey())) return 1;
+		if (key.equals(CFGID_DESCRIPTION.getKey())) return 2;
+		if (key.equals(CFGID_NETWORK.getKey())) return 3;
+		KeyType type = InifileAnalyzer.getKeyType(key);
+		if (type == KeyType.CONFIG) return 4;
+		if (key.endsWith(dot_APPLY_DEFAULT)) return 7; // (!!!) 
+        if (type == KeyType.PER_OBJECT_CONFIG) return 5;
+        if (type == KeyType.PARAM) return 6;
+        return 100; // cannot get here
 	}
 
 	public static void addOrSetOrRemoveEntry(IInifileDocument doc, String section, String key, String value) {
