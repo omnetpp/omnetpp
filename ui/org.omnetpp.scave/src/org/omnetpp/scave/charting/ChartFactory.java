@@ -49,7 +49,7 @@ public class ChartFactory {
 		else if (chart instanceof LineChart)
 			populateVectorChart((LineChart)chart, manager, (VectorChart)chartCanvas);
 		else if (chart instanceof HistogramChart)
-			;//TODO histogram chart
+			populateHistogramChart((HistogramChart)chart, manager, (HistogramChartCanvas)chartCanvas);
 		else if (chart instanceof ScatterChart)
 			populateScatterChart((ScatterChart)chart, manager, (VectorChart)chartCanvas);
 		else
