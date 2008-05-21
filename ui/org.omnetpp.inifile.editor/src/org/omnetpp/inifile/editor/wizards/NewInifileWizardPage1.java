@@ -2,13 +2,16 @@ package org.omnetpp.inifile.editor.wizards;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -26,9 +29,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
-
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.ned.core.NEDResources;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -74,17 +79,34 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		networkCombo.addFocusListener(new FocusListener() {
             public void focusGained(FocusEvent e) {
-                IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(getContainerFullPath());
-                if (container == null) {
+                IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(getContainerFullPath());
+                if (resource == null || !(resource instanceof IContainer)) {
                     networkCombo.removeAll();
                 }
                 else {
                     // fill network combo
+                    IContainer container = (IContainer)resource;
                     IProject project = container.getProject();
-                    Set<String> networkNameSet = NEDResourcesPlugin.getNEDResources().getNetworkQNames(project);
-                    String[] networkNames = networkNameSet.toArray(new String[]{});
-                    Arrays.sort(networkNames);
-                    networkCombo.setItems(networkNames);
+                    NEDResources nedResources = NEDResourcesPlugin.getNEDResources();
+
+                    // collect networks: separately those in the local package, and others
+                    List<String> networkNames = new ArrayList<String>(); 
+                    List<String> networkQNames = new ArrayList<String>(); 
+                    String iniFilePackage = nedResources.getExpectedPackageFor(container.getFile(new Path("anything.ini")));
+                    if (StringUtils.isNotEmpty(iniFilePackage)) {
+                        for (String networkQName : nedResources.getNetworkQNames(project)) {
+                            INEDTypeInfo network = nedResources.getToplevelNedType(networkQName, project);
+                            if ((iniFilePackage+".").equals(network.getNamePrefix()))
+                                networkNames.add(network.getName());
+                            if (!network.getNamePrefix().equals(""))
+                                networkQNames.add(network.getFullyQualifiedName());
+                        }
+                    }
+                    Collections.sort(networkNames);
+                    Collections.sort(networkQNames);
+                    networkNames.addAll(networkQNames);
+                    
+                    networkCombo.setItems(networkNames.toArray(new String[]{}));
                     networkCombo.setVisibleItemCount(Math.min(20, networkCombo.getItemCount()));
                 }
             }
@@ -92,48 +114,6 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
             public void focusLost(FocusEvent e) {
             }
 		});
-
-		//XXX set combo to a NED network in the current directory
-
-// ADDITIONAL STUFF: probably not needed, would just confuse a novice user
-//
-//		final Button addParamsCheckbox = new Button(group, SWT.CHECK);
-//		addParamsCheckbox.setText("Add entries to set module parameters");
-//		addParamsCheckbox.setSelection(true);
-//
-//		final Composite group2 = new Composite(group, SWT.NONE);
-//		group2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-//		group2.setLayout(new GridLayout(1,false));
-//
-//		final Button addApplyCheckbox = new Button(group2, SWT.CHECK);
-//		addApplyCheckbox.setText("Set parameters to their default values");
-//		addApplyCheckbox.setSelection(true);
-//
-//		// radiobuttons
-//		createLabel(group2, "Style of entries to insert:", parent.getFont());
-//		final Composite group3 = new Composite(group2, SWT.NONE);
-//		group3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-//		group3.setLayout(new GridLayout(1,false));
-//		final Button b1 = createRadioButton(group3, "Parameter name only (**.queueSize)", KeyType.PARAM_ONLY);
-//		final Button b2 = createRadioButton(group3, "Module and parameter only (**.mac.queueSize)", KeyType.MODULE_AND_PARAM);
-//		final Button b3 = createRadioButton(group3, "Full path except network name (*.host[*].mac.queueSize)", KeyType.ANYNETWORK_FULLPATH);
-//		final Button b4 = createRadioButton(group3, "Full path (Network.host[*].mac.queueSize)", KeyType.FULLPATH);
-//		b2.setSelection(true);
-//		keyType = KeyType.MODULE_AND_PARAM; // must agree with selected radiobutton
-//
-//		// checkboxes
-//		addParamsCheckbox.addSelectionListener(new SelectionAdapter() {
-//			public void widgetSelected(SelectionEvent e) {
-//				boolean ok = addParamsCheckbox.getSelection();
-//				addApplyCheckbox.setEnabled(ok);
-//				b1.setEnabled(ok);
-//				b2.setEnabled(ok);
-//				b3.setEnabled(ok);
-//				b4.setEnabled(ok);
-//			}
-//		});
-
-		//new Label(composite, SWT.NONE);
 
 		setPageComplete(validatePage());
 	}
@@ -145,18 +125,6 @@ public class NewInifileWizardPage1 extends WizardNewFileCreationPage {
 		label.setFont(font);
 		return label;
 	}
-
-//XXX not needed
-//    protected Button createRadioButton(Composite parent, String label, final KeyType value) {
-//		Button rb = new Button(parent, SWT.RADIO);
-//		rb.setText(label);
-//		rb.addSelectionListener(new SelectionAdapter() {
-//			public void widgetSelected(SelectionEvent e) {
-//					keyType = value;
-//			}
-//		});
-//		return rb;
-//	}
 
 	@Override
 	protected InputStream getInitialContents() {
