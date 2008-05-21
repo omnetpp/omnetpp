@@ -91,6 +91,12 @@ proc setupTkOptions {} {
    if {[string equal [tk windowingsystem] aqua]}  {
        set B2 3
        set B3 2
+       icons_workaround_for_osx
+   }
+
+   # also, work around bug in Tk/Aqua image handling
+   if {[string equal [tk windowingsystem] aqua]}  {
+       icons_workaround_for_osx
    }
 
    # set up wheel support for a few extra widget types
@@ -195,6 +201,27 @@ proc setupTkOptions {} {
        option add *menubar.activeBackground $activebg
        option add *menubar.activeForeground $activefg
    }
+}
+
+#
+# Work around bug in image handling in Aqua/Tk on Mac OS/X.
+#
+# Aqua/Tk crashes when one uses image buttons (toolbar!) where the image has 
+# partial transparency (ie alpha channel ia not just 0 or 1.) Workaround is 
+# to process the images with opp_resizeimage which somehow converts
+# partial transparency to opaque (even though it should keep alpha, and 
+# indeed does it on all platforms *except* OS/X -- another funny point.)
+#
+proc icons_workaround_for_osx {} {
+    global icons
+    foreach i [array names icons] {
+        set img $icons($i)
+        set w [image width $img]
+        set h [image height $img]
+        set destimg [image create photo -width $w -height $h]
+        opp_resizeimage $destimg $img
+        set icons($i) $destimg
+    }
 }
 
 
