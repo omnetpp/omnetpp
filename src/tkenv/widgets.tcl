@@ -292,8 +292,12 @@ proc iconbutton {w args} {
 
     if {$args=="-separator"} {
         # space between two buttons
-        #frame $w -height 1 -width 4
-        button $w -image $icons(toolbarsep) -bd 0
+        if {[string equal [tk windowingsystem] aqua]}  {
+            # in Aqua/Tk, image button cannot be used because it has a border regardless -bd 0
+            frame $w -height 1 -width 6
+        } else {
+            button $w -image $icons(toolbarsep) -bd 0
+        }
     } {
         # button
         #eval button $w -bd 1 $args
