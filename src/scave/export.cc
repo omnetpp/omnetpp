@@ -596,17 +596,17 @@ bool CsvExport::needsQuote(const string &value)
     case ESCAPE:
         for (string::const_iterator it = value.begin(); it != value.end(); ++it)
         {
-            if (*it == separator || *it == quoteChar || *it == '\\' || strchr(eol, *it))
+            if (*it == separator || *it == quoteChar || *it == '\\')
                 return true;
         }
-        return false;
+        return value.find(eol) != string::npos;
     case DOUBLE:
         for (string::const_iterator it = value.begin(); it != value.end(); ++it)
         {
-            if (*it == separator || *it == quoteChar || strchr(eol, *it))
+            if (*it == separator || *it == quoteChar || eol.find(*it) != string::npos)
                 return true;
         }
-        return false;
+        return value.find(eol) != string::npos;
     default:
         throw opp_runtime_error("Unknown quote method.");
     }

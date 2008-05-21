@@ -15,6 +15,7 @@
 #include "datasorter.h"
 #include "stringutil.h"   // strdictcmp
 #include "indexfile.h"
+#include "commonnodes.h"
 #include "indexedvectorfile.h"
 #include "vectorfileindexer.h"
 #include "vectorfilereader.h"
@@ -454,16 +455,22 @@ namespace std {
 %include "indexedvectorfile.h"
 
 /* ------------- vectorfilereader.h  ----------------- */
+%ignore SingleSourceNode;
+%ignore SingleSinkNode;
+%ignore FilterNode;
+%ignore ReaderNode;
+%ignore SingleSourceNodeType;
+%ignore SingleSinkNodeType;
+%ignore FilterNodeType;
+%ignore ReaderNodeType;
+%include "commonnodes.h"
+
 %extend VectorFileReaderNode {
     static VectorFileReaderNode *cast(Node* node) { return dynamic_cast<VectorFileReaderNode*>(node); }
 };
 
 %ignore VectorFileReaderNodeType;
 %ignore parseColumns;
-class ReaderNode;
-class ReaderNodeType;
-%ignore ReaderNode;
-%ignore ReaderNodeType;
 %include "vectorfilereader.h"
 
 /* ------------- indexedvectorfilereader.h  ----------------- */
@@ -534,8 +541,8 @@ class ReaderNodeType;
 %include "datasorter.h"
 
 /* ------------------ export.h ----------------------- */
+%ignore Column;
 %ignore DataTable;
-%ignore DataTable::Column;
 %ignore XYDataTable;
 %ignore ScalarDataTable;
 %ignore MatlabStructExport;

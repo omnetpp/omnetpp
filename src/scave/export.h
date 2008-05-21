@@ -229,7 +229,7 @@ class SCAVE_API CsvExport : public ScaveExport
         typedef enum {DOUBLE, ESCAPE} QuoteMethod;
         char separator;
         char quoteChar;
-        const char *eol;
+        std::string eol;
         QuoteMethod quoteMethod;
         bool columnNames;
         // state

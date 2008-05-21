@@ -54,7 +54,6 @@ abstract class ProcessDatasetSwitch extends ScaveModelSwitch<Object> {
 	}
 
 	public Object caseDataset(Dataset dataset) {
-		// TODO recurse on dataset.getBasedOn()
 		Dataset baseDataset = dataset.getBasedOn();
 		if (baseDataset != null) {
 			processBaseDataset(baseDataset);
