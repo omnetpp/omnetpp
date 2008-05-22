@@ -133,9 +133,9 @@ class SIM_API cMessage : public cOwnedObject
 
     long prev_event_num;       // event number of the sending, scheduling this message
 
-    long msg_seq_id;           // a unique message identifier assigned upon message creation
-    long msg_tree_id;          // a message identifier that is inherited by dup, if non dupped it is msg_seq_id
-    static long next_msg_id;   // the next unique message identifier to be assigned upon message creation
+    long msgid;                // a unique message identifier assigned upon message creation
+    long msgtreeid;            // a message identifier that is inherited by dup, if non dupped it is msgid
+    static long next_id;       // the next unique message identifier to be assigned upon message creation
 
     // global variables for statistics
     static long total_msgs;
@@ -684,13 +684,13 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns a unique message identifier assigned upon message creation.
      */
-    long id() const {return msg_seq_id;}
+    long id() const {return msgid;}
 
     /**
      * Returns an identifier which is shared among a message object and all messages
      * created by copying it (i.e. by dup() or the copy constructor).
      */
-    long treeId() const {return msg_tree_id;}
+    long treeId() const {return msgtreeid;}
     //@}
 
     /** @name Internally used methods. */

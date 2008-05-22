@@ -41,7 +41,7 @@ using std::ostream;
 Register_Class(cMessage);
 
 // static members of cMessage
-long cMessage::next_msg_id = 0;
+long cMessage::next_id = 0;
 long cMessage::total_msgs = 0;
 long cMessage::live_msgs = 0;
 
@@ -56,8 +56,7 @@ cMessage::cMessage(const cMessage& msg) : cOwnedObject(msg)
     prev_event_num = -1;
     operator=(msg);
 
-    msg_tree_id = msg.msg_tree_id;
-    msg_seq_id = next_msg_id++;
+    msgid = next_id++;
     total_msgs++;
     live_msgs++;
 }
@@ -80,7 +79,7 @@ cMessage::cMessage(const char *name, short k, int64 ln, short pri, bool err) : c
     heapindex = -1;
     prev_event_num = -1;
 
-    msg_tree_id = msg_seq_id = next_msg_id++;
+    msgtreeid = msgid = next_id++;
     total_msgs++;
     live_msgs++;
 }
@@ -198,6 +197,9 @@ void cMessage::netPack(cCommBuffer *buffer)
     buffer->pack(heapindex);
     buffer->pack(insertordr);
 
+    // note: do not pack msgid and treeid, because they'd conflict
+    // with ids assigned at the destination partition
+
     if (buffer->packFlag(parlistp!=NULL))
         buffer->packObject(parlistp);
 
@@ -292,7 +294,7 @@ cMessage& cMessage::operator=(const cMessage& msg)
     sent = msg.sent;
     delivd = msg.delivd;
 
-    // NOTE: do not copy msg_tree_id, msg_seq_id, and prev_event_num!
+    msgtreeid = msg.msgtreeid;
 
     return *this;
 }
@@ -345,7 +347,7 @@ void cMessage::setLength(int64 l)
 {
     if (l<0)
         throw cRuntimeError(this,"setLength(): negative length %"INT64_PRINTF_FORMAT"d", l);
-    len=l;
+    len = l;
 }
 
 void cMessage::addLength(int64 l)
