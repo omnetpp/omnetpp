@@ -2,6 +2,7 @@ package org.omnetpp.common.eventlog;
 
 import java.util.Arrays;
 
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -74,30 +75,6 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         	
         });
 
-        // configure checkbox behaviour
-        // TODO: popup menu?
-//        addCheckStateListener(new ICheckStateListener() {
-//			public void checkStateChanged(CheckStateChangedEvent event) {
-//				if (event.getChecked()) {
-//			        // when a compound module is checked, uncheck its subtree and all parents up to the root  
-//					ModuleTreeItem e = (ModuleTreeItem)event.getElement();
-//					setSubtreeChecked(e, false);
-//					setChecked(e, true);
-//					// all parents should be unchecked
-//				    for (ModuleTreeItem current=e.getParentModule(); current!=null; current=current.getParentModule())
-//				    	setChecked(current, false);
-//				}
-//				else {
-//					// when unchecked, expand and check all submodules
-//					ModuleTreeItem e = (ModuleTreeItem)event.getElement();
-//					setSubtreeChecked(e, false);
-//					setExpandedState(e, true);
-//					for (ModuleTreeItem i : e.getSubmodules())
-//						setChecked(i, true);
-//				}
-//			}
-//        });
-        
         setInput(root);
         expandAll();
 
@@ -128,40 +105,70 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         menuItem = new MenuItem(menu, SWT.SEPARATOR);
 
         menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Check Leaves");
+        menuItem.setText("Check Children");
         menuItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                for (Object element : getSelectionFromWidget())
-                    setLeafChecked((ModuleTreeItem)element, true);
+                for (Object element : getSelectionFromWidget()) {
+                    setChildrenChecked((ModuleTreeItem)element, true);
+                    fireCheckStateChanged(element);
+                }
             }
         });
 
         menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Check Nodes");
+        menuItem.setText("Check Leaves");
         menuItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                for (Object element : getSelectionFromWidget())
+                for (Object element : getSelectionFromWidget()) {
+                    setLeafChecked((ModuleTreeItem)element, true);
+                    fireCheckStateChanged(element);
+                }
+            }
+        });
+
+        menuItem = new MenuItem(menu, SWT.NONE);
+        menuItem.setText("Check Tree");
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                for (Object element : getSelectionFromWidget()) {
                     setSubtreeChecked(element, true);
+                    fireCheckStateChanged(element);
+                }
             }
         });
 
         menuItem = new MenuItem(menu, SWT.SEPARATOR);
 
         menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Uncheck Leaves");
+        menuItem.setText("Uncheck Children");
         menuItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                for (Object element : getSelectionFromWidget())
-                    setLeafChecked((ModuleTreeItem)element, false);
+                for (Object element : getSelectionFromWidget()) {
+                    setChildrenChecked((ModuleTreeItem)element, false);
+                    fireCheckStateChanged(element);
+                }
             }
         });
 
         menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Uncheck Nodes");
+        menuItem.setText("Uncheck Leaves");
         menuItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                for (Object element : getSelectionFromWidget())
+                for (Object element : getSelectionFromWidget()) {
+                    setLeafChecked((ModuleTreeItem)element, false);
+                    fireCheckStateChanged(element);
+                }
+            }
+        });
+
+        menuItem = new MenuItem(menu, SWT.NONE);
+        menuItem.setText("Uncheck Tree");
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                for (Object element : getSelectionFromWidget()) {
                     setSubtreeChecked(element, false);
+                    fireCheckStateChanged(element);
+                }
             }
         });
 
@@ -176,5 +183,14 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         else
             for (ModuleTreeItem child : submodules)
                 setLeafChecked(child, checked);
+    }
+
+    private void setChildrenChecked(ModuleTreeItem element, boolean checked) {
+        for (ModuleTreeItem child : element.getSubmodules())
+            setChecked(child, checked);
+    }
+    
+    private void fireCheckStateChanged(Object element) {
+        fireCheckStateChanged(new CheckStateChangedEvent(this, element, getChecked(element)));
     }
 }
