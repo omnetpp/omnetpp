@@ -54,9 +54,6 @@ class CrossHair {
 
 	private boolean detailedTooltip = false; // turned on while hovering 
 
-	//XXX experimental
-//	private Canvas hoverCanvas; // displayed in its own shell, the tooltip window
-
 	Rectangle plotArea;
 
 	// to transfer the coordinates from mouseMoved() to paint()
@@ -76,35 +73,6 @@ class CrossHair {
 
 	public CrossHair(VectorChart chart) {
 		this.chart = chart;
-
-//		//XXX experimental		
-//		Shell shell = new Shell(chart.getShell(), SWT.NO_FOCUS | SWT.ON_TOP | SWT.NO_TRIM);
-//		shell.setLayout(new FillLayout());
-//		shell.setSize(50,10);
-//		hoverCanvas = new Canvas(shell, SWT.DOUBLE_BUFFERED);
-//		shell.layout();
-//		shell.setVisible(true);
-//
-//		chart.addMouseTrackListener(new MouseTrackListener() {
-//		public void mouseEnter(MouseEvent e) {
-//		CrossHair.this.chart.redraw();
-//		}
-//		public void mouseExit(MouseEvent e) {
-//		CrossHair.this.chart.redraw();
-//		}
-//		public void mouseHover(MouseEvent e) {
-//		if ((e.stateMask & SWT.BUTTON_MASK) == 0) {
-//		hoverCanvas.getShell().setVisible(true);
-//		hoverCanvas.getShell().setLocation(CrossHair.this.chart.toDisplay(e.x+5,e.y+5));
-//		//XXX and paint
-//		}
-//		}
-//		});
-//		chart.addMouseMoveListener(new MouseMoveListener() {
-//		public void mouseMove(MouseEvent e) {
-//		hoverCanvas.getShell().setVisible(false);
-//		}
-//		});			
 
 		final VectorChart finalChart = chart;
 		// add key listener to restore the cross cursor, after other cursor is turned off
@@ -221,12 +189,6 @@ class CrossHair {
 			gc.setForeground(ColorFactory.RED);
 			gc.drawLine(plotArea.x, canvasY, plotArea.x + plotArea.width, canvasY);
 			gc.drawLine(canvasX, plotArea.y, canvasX, plotArea.y + plotArea.height);
-
-//			hoverCanvas.getShell().setVisible(true);
-//			hoverCanvas.getShell().setLocation(chart.toDisplay(x+5, y+5));
-//			hoverCanvas.getShell().setSize(x%50+10, y%20+10);
-//			GC tempGC = new GC(hoverCanvas);
-//			tempGC.drawRoundRectangle(0, 0, 50, 20, 5, 5);
 
 			// draw tooltip
 			drawTooltip(gc, dataPoints, totalFound, coordsMapping);
