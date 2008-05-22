@@ -43,6 +43,7 @@ import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
 import org.omnetpp.scave.engine.XYArray;
+import org.omnetpp.scave.engine.XYDataset;
 import org.omnetpp.scave.engine.XYDatasetVector;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Apply;
@@ -300,20 +301,7 @@ public class DatasetManager {
 								xModuleName, xScalarName, rowFields, columnFields,
 								isoModuleNames, isoScalarNames);
 				
-				// check ordered
-//				for(int i = 0; i < xyScalars.size(); ++i) {
-//					XYDataset ds = xyScalars.get(i);
-//					double prevX = Double.NEGATIVE_INFINITY;
-//					for (int j = 0; j < ds.getColumnCount(); ++j) {
-//						double x = ds.getValue(0, j).mean();
-//						if (!Double.isNaN(x)) {
-//							if (x < prevX)
-//								Assert.isTrue(false, "Not ordered");
-//							prevX = x;
-//						}
-//					}
-//				}
-				
+				// assertOrdered(xyScalars);
 			}
 			
 			// process vectors
@@ -353,6 +341,21 @@ public class DatasetManager {
 			
 		}
 		return null;
+	}
+	
+	public static void assertOrdered(XYDatasetVector xyDatasets) {
+		for(int i = 0; i < xyDatasets.size(); ++i) {
+			XYDataset ds = xyDatasets.get(i);
+			double prevX = Double.NEGATIVE_INFINITY;
+			for (int j = 0; j < ds.getColumnCount(); ++j) {
+				double x = ds.getValue(0, j).mean();
+				if (!Double.isNaN(x)) {
+					if (x < prevX)
+						Assert.isTrue(false, "Not ordered");
+					prevX = x;
+				}
+			}
+		}
 	}
 	
 	public static IXYDataset createScatterPlotDataset(XYDatasetVector xydatasets) {
