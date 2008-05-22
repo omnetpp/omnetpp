@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionListener;
@@ -115,7 +116,16 @@ class NedOutlinePage extends ContentOutlinePage implements INEDChangeListener, I
     }
 
 	public void modelChanged(NEDModelEvent event) {
-		refresh();
+	    if (Display.getCurrent() != null) {
+	        refresh();
+	    }
+	    else {
+	        Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    refresh();
+                }
+	        });
+	    }
 	}
 
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {

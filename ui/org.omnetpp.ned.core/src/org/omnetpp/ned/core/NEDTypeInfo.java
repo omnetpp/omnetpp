@@ -362,6 +362,10 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         return getNEDElement().getParentLookupContext().getQNameAsPrefix();
     }
 
+    public String getPackageName() {
+        return componentNode.getContainingNedFileElement().getPackage();
+    }
+    
 	public INedTypeElement getNEDElement() {
 		return componentNode;
 	}

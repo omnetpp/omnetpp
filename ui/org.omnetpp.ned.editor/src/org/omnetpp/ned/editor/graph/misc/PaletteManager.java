@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -49,6 +51,7 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
 //   - all types imported into the current NED type
 // Plus needed:
 //   - filter by package (checkboxlist or checkboxtree dialog, from palette context menu)
+//     see PaletteContextMenuProvider.buildContextMenu()
 // --Andras
 public class PaletteManager {
 	private static final String NBSP = "\u00A0";
@@ -90,10 +93,12 @@ public class PaletteManager {
 
     protected Map<String, PaletteEntry> currentEntries = new HashMap<String, PaletteEntry>();
     protected Map<String, PaletteDrawer> currentContainers = new HashMap<String, PaletteDrawer>();
+    
+    // NED packages whose contents should be excluded from the palette
+    // (exclude list is preferred to include list, because then newly created packages
+    // will be automatically included without explicit maintenance)
+    protected Set<String> excludedPackages = new HashSet<String>();
 
-    /**
-     *
-     */
     public PaletteManager(GraphicalNedEditor hostingEditor) {
         super();
         this.hostingEditor = hostingEditor;
@@ -117,7 +122,16 @@ public class PaletteManager {
         return nedPalette;
     }
 
-    private Map<String, PaletteEntry> createPaletteModel() {
+    public Set<String> getExcludedPackages() {
+        return excludedPackages;
+    }
+
+    public void setExcludedPackages(Set<String> excludedPackages) {
+        this.excludedPackages = excludedPackages;
+        refresh();
+    }
+
+    protected Map<String, PaletteEntry> createPaletteModel() {
         Map<String, PaletteEntry> result = new LinkedHashMap<String, PaletteEntry>();
 
         IEditorInput input = hostingEditor.getEditorInput();
@@ -150,7 +164,6 @@ public class PaletteManager {
 
         return result;
     }
-
 
     /**
      * Builds the palette (all drawers)
@@ -285,7 +298,7 @@ public class PaletteManager {
      * Creates several submodule drawers using currently parsed types,
      * and using the GROUP property as the drawer name.
      */
-    private static Map<String, ToolEntry> createSubmodules(IProject contextProject) {
+    protected Map<String, ToolEntry> createSubmodules(IProject contextProject) {
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
         // get all the possible type names in alphabetical order
@@ -301,11 +314,16 @@ public class PaletteManager {
             if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
                 continue;
 
-            // determine which palette group it belongs to or put it into the default
-            PropertyElement property = typeElement.getNEDTypeInfo().getProperties().get(GROUP_PROPERTY);
-            String group = (property == null) ? "" : NEDElementUtilEx.getPropertyValue(property);
+            // add it if package filter matches
+            String packageName = typeElement.getContainingNedFileElement().getPackage();
+            if (!excludedPackages.contains(packageName)) {
 
-            addToolEntry(typeElement, group, entries);
+                // determine which palette group it belongs to or put it into the default
+                PropertyElement property = typeElement.getNEDTypeInfo().getProperties().get(GROUP_PROPERTY);
+                String group = (property == null) ? "" : NEDElementUtilEx.getPropertyValue(property);
+
+                addToolEntry(typeElement, group, entries);
+            }
         }
 
         return entries;
@@ -342,7 +360,7 @@ public class PaletteManager {
         entries.put(key, toolEntry);
     }
     
-    private static Map<String, ToolEntry> createChannelsStackEntries(IProject contextProject) {
+    private Map<String, ToolEntry> createChannelsStackEntries(IProject contextProject) {
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
         ConnectionCreationToolEntry defaultConnectionTool = new ConnectionCreationToolEntry(
@@ -372,17 +390,21 @@ public class PaletteManager {
         for (String fullyQualifiedName : channelNames) {
             INEDTypeInfo typeInfo = NEDResourcesPlugin.getNEDResources().getToplevelNedType(fullyQualifiedName, contextProject);
             INedTypeElement modelElement = typeInfo.getNEDElement();
-            
-            ConnectionCreationToolEntry tool = new ConnectionCreationToolEntry(
-                    getLabelFor(typeInfo),
-                    StringUtils.makeBriefDocu(modelElement.getComment(), 300),
-                    new ModelFactory(NEDElementTags.NED_CONNECTION, "n/a", fullyQualifiedName, modelElement instanceof ChannelInterfaceElement),
-                    ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
-                    ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
-            );
-            // sets the required connection tool
-            tool.setToolClass(NedConnectionCreationTool.class);
-            entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+fullyQualifiedName, tool);
+
+            // add it if package filter matches
+            String packageName = modelElement.getContainingNedFileElement().getPackage();
+            if (!excludedPackages.contains(packageName)) {
+                ConnectionCreationToolEntry tool = new ConnectionCreationToolEntry(
+                        getLabelFor(typeInfo),
+                        StringUtils.makeBriefDocu(modelElement.getComment(), 300),
+                        new ModelFactory(NEDElementTags.NED_CONNECTION, "n/a", fullyQualifiedName, modelElement instanceof ChannelInterfaceElement),
+                        ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION),
+                        ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_CONNECTION)
+                );
+                // sets the required connection tool
+                tool.setToolClass(NedConnectionCreationTool.class);
+                entries.put(CONNECTIONS_GROUP+GROUP_DELIMITER+fullyQualifiedName, tool);
+            }
         }
         return entries;
     }

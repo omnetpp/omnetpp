@@ -35,12 +35,16 @@ import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.gef.ui.palette.PaletteContextMenuProvider;
+import org.eclipse.gef.ui.palette.PaletteViewer;
+import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -76,6 +80,7 @@ import org.omnetpp.ned.editor.graph.actions.GNEDContextMenuProvider;
 import org.omnetpp.ned.editor.graph.actions.GNEDSelectAllAction;
 import org.omnetpp.ned.editor.graph.actions.GNEDToggleSnapToGeometryAction;
 import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
+import org.omnetpp.ned.editor.graph.actions.PaletteFilterAction;
 import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
 import org.omnetpp.ned.editor.graph.actions.PasteAction;
 import org.omnetpp.ned.editor.graph.actions.ReLayoutAction;
@@ -113,6 +118,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  *
  * @author rhornig
  */
+//TODO save/restore palette state
 public class GraphicalNedEditor
 	extends GraphicalEditorWithFlyoutPalette
 	implements INEDChangeListener
@@ -182,6 +188,27 @@ public class GraphicalNedEditor
         return paletteManager.getRootPalette();
     }
 
+    public PaletteManager getPaletteManager() {
+        return paletteManager;
+    }
+    
+    @Override
+    protected PaletteViewerProvider createPaletteViewerProvider() {
+        // overridden to add an extra item to the palette's context menu (Andras)
+        return new PaletteViewerProvider(getEditDomain()) {
+            @Override
+            protected void configurePaletteViewer(PaletteViewer viewer) {
+                viewer.setContextMenu(new PaletteContextMenuProvider(viewer) {
+                    @Override
+                    public void buildContextMenu(IMenuManager menu) {
+                        super.buildContextMenu(menu);
+                        menu.appendToGroup(GEFActionConstants.MB_ADDITIONS, new PaletteFilterAction(GraphicalNedEditor.this));
+                    }
+                });
+            }   
+        };
+    }
+    
     @Override
     public void commandStackChanged(EventObject event) {
     	firePropertyChange(IEditorPart.PROP_DIRTY);
