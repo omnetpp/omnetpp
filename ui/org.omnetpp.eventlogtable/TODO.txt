@@ -55,25 +55,26 @@ Features:
    - goto line puts line to a predefined position in the visible area (maybe 1/3)
  + navigation history
  + toolbar
- - property view for event log lines (like raw mode)
  + viewer/editor mode
  + remember event log table position for the corresponding sequence chart,
    so when activating the sequence chart again then the event log viewer can show the last visited position
+ + single click goes in the corresponding sequence chart to the selected event
+ + follow log file changes when pressing end
+ + store and restore last known settings and position per file
+ + catch all exceptions in paint and switch to error mode if unable to draw and wait for explicit refresh
+ + support dynamic module and connection creation
+ + timeout support for long running operation
+
+ - property view for event log lines (like raw mode)
  - display a separator (in case of an in memory filter) where subsequent lines are not
    subsequent in the simulation log file
  - double click on events switches to filter mode and traces the selected event
- + single click goes in the corresponding sequence chart to the selected event
  - export current in memory filter as a log file
  - hot keys for popup menu actions
  - expand/collapse events (isExpandedInEventLogTable)
- + follow log file changes
- + store and restore last known settings and position per file
- + catch all exceptions in paint and switch to error mode if unable to draw and wait for explicit refresh
- - timeout support for long running operation
- - find reused message (infinite lookahead)
+ - explicit find reused message (with infinite lookahead)
  - message reuse lookahead setting
  - display initialization entries (before the very first event)
- + dynamic module and connection creation
  - simulation time format options (123.12345, 2m 3s 123ms 450us, 123s 123ms 450us, 123.123 450, rounding for deltas?)
 
 Known bugs:

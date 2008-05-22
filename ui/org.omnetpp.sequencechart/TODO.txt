@@ -51,9 +51,10 @@ Features:
      + center axis
      + fit axis state value to window
    + event
+     + trace causes/consequences
      + center on window
-     + trace
-   + message send 
+   + message send
+     + filter for message
      + fit to window
      + go to source
      + go to target
@@ -63,43 +64,46 @@ Features:
  + toggle bookmark on selected event
  + switch back to unfiltered view
  + support attaching and detaching a vector from a vector file to be displayed on the axis
- - display a separator where the timeline is filtered (timeline is not linear to pixel coordinates not even on the small scale)
  + make sequence chart horizontal scrollbar virtual (can't tell the exact size of the canvas)
  + scrolling with the horizontal scroll bar arrows and click near the thumb
- - write key frames during simulation to avoid linear search for reusing messages
  + toolbar icons
  + viewer/editor mode
  + setup mouse gestures for easy navigation along the message dependencies
- + follow log file changes
+ + follow log file changes when pressing end
  + event numbers on the bottom axis are not visible when axes are balanced
- + SVG export
+ + SVG export 
+   + whole eventlog
+   + visible area
+   + range specified by two events
  + store and restore last known settings and position per file
  + timeout support for long running operation
  + catch all exceptions in paint and switch to error mode if unable to draw and wait for explicit refresh
- - message reuse lookahead setting
- - minimize crossings for modules having events in visible area
- - filter for modules present in visible area
- - hide individual events and messages
  + display compound module axes differently
  + case sensitive full string search in message detail pattern
  + filtering for module events during writing eventlog
  + per run eventlog-message-detail-pattern configuration key
  + support dynamic module and connection creation
- - simulation time format options (123.12345, 2m 3s 123ms 450us, 123s 123ms 450us, 123.123 450, rounding for deltas?)
  + close project causes internal error during painting (should close the editors and set null into view inputs)
- - use eventlog input module tree in module hierarchy view
  + filter for causes/consequence from popup menu brings up filter dialog when other options are turned on
  + use breadth search instead of depth search when collecting filtered message dependencies
- - add a flag to control whether filter only collects corresponding message dependencies
  + store manual ordering when turning filtering on and off
  + use checkbox list and remember what the user typed in event log filter id lists to allow turning on and off each id
  + don't count non filtered message dependencies when checking the maximum message dependency count per event
- - avoid displaying too much events at once (due to being slow) when turning filtering on and off (maybe remember position and zoom level?)
-! - don't display an axis until there is an event to be displayed on it (when filtering among a lot of axes this helps not displaying useless axes)
-! - navigation history
  + automatically updated textual representation of current filter in filter configuration dialog
 
+ - hot keys for popup menu actions
+ - use eventlog input module tree in module hierarchy view
+ - add a flag to control whether filter only collects corresponding message dependencies
+ - display a separator where the timeline is filtered (timeline is not linear to pixel coordinates not even on the small scale)
+ - write key frames during simulation to avoid linear search for reusing messages
+ - message reuse lookahead setting
+ - minimize crossings for modules having events in visible area
+ - filter for modules present in visible area
+ - hide individual events and messages
+ - simulation time format options (123.12345, 2m 3s 123ms 450us, 123s 123ms 450us, 123.123 450, rounding for deltas?)
+ - avoid displaying too much events at once (due to being slow) when turning filtering on and off (maybe remember position and zoom level?)
+! - don't display an axis until there is an event to be displayed on it (when filtering among a lot of axes this helps not displaying useless axes)
+
 Known bugs:
- - 7-es compiler? seqchart: "Filter by message ID" OneFifo, filter to one msg like id=16: yields only event #53 and #120, and #120 has nothing to do with msg id=16
- - 7-es compiler? seqchart: OneFifo example: "Filter by message names", check a job ("job12") ==> result is only one event in the queue, and nothing else
- 
+! - navigation history
+ - 7-es compiler bug? seqchart: "Filter by message ID" OneFifo, filter to one msg like id=16: yields only event #53 and #120, and #120 has nothing to do with msg id=16
