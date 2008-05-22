@@ -41,7 +41,7 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  * Responsible for managing palette entries and keeping them in sync with
  * the components in NEDResources plugin
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class PaletteManager {
 	private static final String NBSP = "\u00A0";
@@ -290,11 +290,9 @@ public class PaletteManager {
         for (String name : typeNames) {
             INedTypeElement typeElement = NEDResourcesPlugin.getNEDResources().getToplevelNedType(name, contextProject).getNEDElement();
 
-            // skip this type if it is a top level network
-            if (typeElement instanceof CompoundModuleElementEx &&
-                    ((CompoundModuleElementEx)typeElement).isNetwork()) {
+            // skip this type if it is a network
+            if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
                 continue;
-            }
 
             // determine which palette group it belongs to or put it into the default
             PropertyElement property = typeElement.getNEDTypeInfo().getProperties().get(GROUP_PROPERTY);
@@ -388,16 +386,17 @@ public class PaletteManager {
      */
     private static String getLabelFor(INEDTypeInfo typeInfo) {
         INedTypeElement modelElement = typeInfo.getNEDElement();
-        String fullyQualifiedName = typeInfo.getFullyQualifiedName();
+        String packageName = typeInfo.getNEDElement().getContainingNedFileElement().getPackage();
         boolean isInterface = modelElement instanceof ChannelInterfaceElement || modelElement instanceof ModuleInterfaceElement;
+        
         String label = modelElement.getName();
+        
         if (modelElement.getEnclosingTypeElement() != null)
             label += NBSP+"in"+NBSP+modelElement.getEnclosingTypeElement().getName();
-        String details = isInterface ? "interface" : "";
-        if (!label.equals(fullyQualifiedName))      // display fully qualified name only if not in default package
-            details += (StringUtils.isNotEmpty(details) ? NBSP : "") + fullyQualifiedName;
-        if (StringUtils.isNotEmpty(details))
-            label += NBSP + "("+details+")";
+        if (isInterface)
+            label += NBSP+"(I)";
+        if (packageName != null)
+            label += NBSP + "(" + packageName + ")";
         return label;
     }
     

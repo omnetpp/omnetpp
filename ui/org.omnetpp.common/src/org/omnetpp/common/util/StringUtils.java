@@ -264,7 +264,7 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
         comment = comment.replaceAll("(?m)^\\s*//#.*$", "");      // remove '//#' lines
         comment = comment.replaceAll("(?m)^\\s*//", "");          // remove "//"'s
         comment = comment.replaceFirst("(?s)\n[ \t]*\n.*", "");   // keep only first paragraph, or:
-        comment = comment.replaceFirst("(?s)\\..*", "");          // extract the first sentence only (up to the first period)
+        comment = comment.replaceFirst("(?s)\\.\\s.*", ".");      // extract the first sentence only (up to the first period)
         comment = comment.replaceAll("<.*?>","");                 // throw out tags (including end tags)
         comment = comment.replaceAll("(?s)\\s+", " ");            // make it one line, and normalize whitespace
         if (comment.length() > maxlen)
@@ -282,11 +282,11 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 
         // BEWARE: Java's multiline mode "(?m)" seems to be broken, see above!
 
-        comment = comment.replaceAll("(?m)^[ \t]*//#.*$", "");  // remove '//#' lines
-        comment = comment.replaceAll("(?m)^[ \t]*//+ ?", "");   // remove "//"'s
-        comment = comment.replaceAll("<.*?>","");             // throw out tags (including end tags)
-        comment = comment.replaceAll("(?s)[ \t]+\n","\n");    // remove whitespace from end of lines
-        comment = comment.replaceAll("(?s)\n\n\n+","\n\n");   // remove multiple blank lines
+        comment = comment.replaceAll("(?m)^[ \t]*//#.*$", ""); // remove '//#' lines
+        comment = comment.replaceAll("(?m)^[ \t]*//+ ?", "");  // remove "//"'s
+        comment = comment.replaceAll("<.*?>","");              // throw out tags (including end tags)
+        comment = comment.replaceAll("(?s)[ \t]+\n","\n");     // remove whitespace from end of lines
+        comment = comment.replaceAll("(?s)\n\n\n+","\n\n");    // remove multiple blank lines
         return comment.trim();
     }
 
