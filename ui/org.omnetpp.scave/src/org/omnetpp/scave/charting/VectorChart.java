@@ -188,7 +188,6 @@ public class VectorChart extends ChartCanvas {
 			Assert.isTrue(this != defaultProperties);
 			LineType type = getLineType();
 			IVectorPlotter plotter = VectorPlotterFactory.createVectorPlotter(type);
-			plotter.setDatasetTransformation(transform);
 			return plotter; 
 		}
 		
@@ -249,6 +248,26 @@ public class VectorChart extends ChartCanvas {
 		return (VectorChartSelection)selection;
 	}
 	
+	@Override
+	protected double transformX(double x) {
+		return xAxis.transform(x);
+	}
+
+	@Override
+	protected double transformY(double y) {
+		return yAxis.transform(y);
+	}
+
+	@Override
+	protected double inverseTransformX(double x) {
+		return xAxis.inverseTransform(x);
+	}
+
+	@Override
+	protected double inverseTransformY(double y) {
+		return yAxis.inverseTransform(y);
+	}
+
 	public LineProperties getLineProperties(int series) {
 		Assert.isTrue(series >= 0 && dataset != null && series < dataset.getSeriesCount(),
 				String.format("Received series=%d, series count=%d", series, dataset!=null?dataset.getSeriesCount():0));
@@ -444,7 +463,6 @@ public class VectorChart extends ChartCanvas {
 	public void setLogarithmicY(Boolean value) {
 		boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
 		yAxis.setLogarithmic(logarithmic);
-		transform = logarithmic ? new LogarithmicYTransform() : null;
 		chartArea = calculatePlotArea();
 		updateArea();
 		chartChanged();

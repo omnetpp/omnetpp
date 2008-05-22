@@ -26,8 +26,21 @@ public class RectangularArea {
 		this.maxY = maxY;
 	}
 	
+	public double width() {
+		return maxX - minX;
+	}
+	
+	public double height() {
+		return maxY - minY;
+	}
+	
 	public boolean contains(double x, double y) {
 		return minX <= x && x <= maxX && minY <= y && y <= maxY;
+	}
+	
+	public boolean isFinite() {
+		return !Double.isInfinite(minX) && !Double.isInfinite(minY) &&
+				!Double.isInfinite(maxX) && !Double.isInfinite(maxY);
 	}
 	
 	public RectangularArea unionWith(RectangularArea other) {

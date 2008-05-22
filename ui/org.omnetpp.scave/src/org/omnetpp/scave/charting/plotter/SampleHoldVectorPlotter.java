@@ -3,6 +3,7 @@ package org.omnetpp.scave.charting.plotter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
@@ -18,13 +19,14 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		this.backward = backward;
 	}
 
-	public void plot(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+		IXYDataset dataset = plot.getDataset();
 		int n = dataset.getItemCount(series);
 		if (n==0)
 			return;
 		
 		// dataset index range to iterate over 
-		int[] range = indexRange(dataset, series, gc, mapping);
+		int[] range = indexRange(plot, series, gc, mapping);
 		int first = range[0], last = range[1];
 
 		//
@@ -35,9 +37,9 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		// (instead of calling drawSymbols()), but since "pin" mode doesn't make much
 		// sense (doesn't show much) for huge amounts of data points, we don't bother.
 		//
-		int prevX = mapping.toCanvasX(transformX(dataset.getX(series, first)));
-		int prevY = mapping.toCanvasY(transformY(dataset.getY(series, first)));
-		boolean prevIsNaN = Double.isNaN(transformY(dataset.getY(series, first)));
+		int prevX = mapping.toCanvasX(plot.transformX(dataset.getX(series, first)));
+		int prevY = mapping.toCanvasY(plot.transformY(dataset.getY(series, first)));
+		boolean prevIsNaN = Double.isNaN(plot.transformY(dataset.getY(series, first)));
 		int maxY = prevY;
 		int minY = prevY;
 
@@ -52,14 +54,14 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 			gc.drawPoint(prevX, prevY);
 		
 		for (int i = first+1; i <= last; i++) {
-			double value = transformY(dataset.getY(series, i));
+			double value = plot.transformY(dataset.getY(series, i));
 
 			// for testing: 
 			//if (i%5==0) value = 0.0/0.0; //NaN
 			
 			boolean isNaN = Double.isNaN(value); // see isNaN handling later
 
-			int x = mapping.toCanvasX(transformX(dataset.getX(series, i)));
+			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
 			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			// for testing:
@@ -112,6 +114,6 @@ public class SampleHoldVectorPlotter extends VectorPlotter {
 		// draw symbols
 		gc.setAntialias(origAntialias);
 		gc.setLineStyle(SWT.LINE_SOLID);
-		plotSymbols(dataset, series, gc, mapping, symbol);
+		plotSymbols(plot, series, gc, mapping, symbol);
 	}
 }

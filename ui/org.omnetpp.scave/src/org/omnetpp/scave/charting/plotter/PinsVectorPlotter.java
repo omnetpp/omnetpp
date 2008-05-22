@@ -3,6 +3,7 @@ package org.omnetpp.scave.charting.plotter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
@@ -22,9 +23,9 @@ public class PinsVectorPlotter extends VectorPlotter {
 		this.referenceLevel = referenceLevel;
 	}
 
-	public void plot(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
 		// dataset index range to iterate over 
-		int[] range = indexRange(dataset, series, gc, mapping);
+		int[] range = indexRange(plot, series, gc, mapping);
 		int first = range[0], last = range[1];
 
 		// value range on the chart
@@ -44,7 +45,10 @@ public class PinsVectorPlotter extends VectorPlotter {
 		// (instead of calling drawSymbols()), but since "pin" mode doesn't make much
 		// sense (doesn't show much) for huge amounts of data points, we don't bother.
 		//
-		int refY = mapping.toCanvasY(referenceLevel);
+		Double transformedReferenceLevel = plot.transformY(referenceLevel);
+		int refY = Double.isInfinite(transformedReferenceLevel) || Double.isNaN(transformedReferenceLevel) ?
+					plot.getPlotRectangle().bottom() :
+					mapping.toCanvasY(referenceLevel);
 		
 		int prevX = -1;
 		int maxY = refY;
@@ -56,12 +60,13 @@ public class PinsVectorPlotter extends VectorPlotter {
 		gc.setAntialias(SWT.OFF);
 		
 		// draw pins
+		IXYDataset dataset = plot.getDataset();
 		for (int i = first; i <= last; i++) {
-			double value = transformY(dataset.getY(series, i));
-			if (transform == null && ((referenceLevel < lo && value < lo) || (referenceLevel > hi && value > hi) || Double.isNaN(value))) 
+			double value = plot.transformY(dataset.getY(series, i));
+			if ((transformedReferenceLevel < lo && value < lo) || (transformedReferenceLevel > hi && value > hi) || Double.isNaN(value) ) 
 				continue; // pin is off-screen
 
-			int x = mapping.toCanvasX(transformX(dataset.getX(series, i)));
+			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
 			int y = mapping.toCanvasY(value); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			if (prevX != x) {
@@ -84,6 +89,6 @@ public class PinsVectorPlotter extends VectorPlotter {
 		gc.setAntialias(origAntialias);
 
 		// and draw symbols
-		plotSymbols(dataset, series, gc, mapping, symbol);
+		plotSymbols(plot, series, gc, mapping, symbol);
 	}
 }

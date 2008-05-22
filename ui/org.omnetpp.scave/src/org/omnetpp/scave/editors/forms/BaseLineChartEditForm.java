@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -46,6 +47,7 @@ import org.omnetpp.common.ui.TristateButton;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.VectorChart;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.dataset.RandomXYDataset;
@@ -79,6 +81,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		
 		String key;
 		InterpolationMode interpolationMode;
+		int series;
 		
 		public Line(String key) {
 			this(key, InterpolationMode.Unspecified);
@@ -88,6 +91,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			Assert.isNotNull(key);
 			this.key = key;
 			this.interpolationMode = interpolationMode;
+			this.series = -1;
 		}
 
 		public int compareTo(Line other) {
@@ -110,13 +114,13 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	}
 	
 	
-	protected Line[] lines = NO_LINES;
+	private Line[] lines = NO_LINES;
 	
 	// "Axes" page controls
 	private Text xAxisMinText;
 	private Text xAxisMaxText;
 	// "Lines" page controls
-	protected TableViewer linesTableViewer;
+	private TableViewer linesTableViewer;
 	private TristateButton displayLineCheckbox;
 	private ColorEdit colorEdit;
 	private ImageCombo symbolTypeCombo;
@@ -126,6 +130,16 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	
 	public BaseLineChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
+	}
+	
+	protected void setLines(Line[] lines) {
+		if (lines == null)
+			lines = NO_LINES;
+		this.lines = lines;
+		if (linesTableViewer != null)
+			linesTableViewer.setInput(lines);
+		if (previewCanvas != null)
+			previewCanvas.setLines(lines);
 	}
 
 	@Override
@@ -149,10 +163,13 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			Label label = new Label(panel, SWT.NONE);
 			label.setText("Select line(s) to apply changes to:");
 			Button selectAllButton = new Button(panel, SWT.PUSH);
+			selectAllButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 			selectAllButton.setText("Select all");
 			selectAllButton.addSelectionListener(new SelectionAdapter() {
 				@Override public void widgetSelected(SelectionEvent e) {
 					linesTableViewer.getTable().selectAll();
+					updateLinePropertyEditFields((VectorChartProperties)properties);
+					updatePreview();
 				}
 			});
 
@@ -235,6 +252,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			previewPanel.setText("Preview");
 			previewCanvas = new PreviewCanvas(previewPanel);
 			previewCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			previewCanvas.setLines(lines);
 			
 			selectLine(getSelectedLineKey());
 			updateLinePropertyEditFields((VectorChartProperties)properties);
@@ -385,7 +403,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		previewCanvas.redraw();
 	}
 	
-	private class PreviewCanvas extends Canvas implements PaintListener
+	private class PreviewCanvas extends Canvas implements PaintListener, ILinePlot
 	{
 		VectorChartProperties props;
 		IXYDataset dataset;
@@ -394,21 +412,34 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 		public PreviewCanvas(Composite parent) {
 			super(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED);
 			setBackground(ColorFactory.WHITE);
+			setLines(lines);
+			coordsMapping = createCoordsMapping();
+			addPaintListener(this);
+		}
+		
+		public void setLines(Line[] lines) {
 			String[] lineNames = new String[lines.length];
 			InterpolationMode[] interpolationModes = new InterpolationMode[lines.length];
 			for (int i = 0; i < lines.length; ++i) {
 				lineNames[i] = lines[i].key;
 				interpolationModes[i] = lines[i].interpolationMode;
+				lines[i].series = i;
 			}
 			dataset = new RandomXYDataset(0, lineNames, interpolationModes, 4);
-			coordsMapping = createCoordsMapping();
-			addPaintListener(this);
 		}
 		
-		private boolean getDisplayLine(String lineId) {
+		// ILinePlot interface
+		public IXYDataset getDataset() { return dataset; }
+		public Rectangle getPlotRectangle() { return new Rectangle(0, 0, getSize().x, getSize().y); }
+		public double inverseTransformX(double x) { return x; }
+		public double inverseTransformY(double y) {	return y; }
+		public double transformX(double x) { return x; }
+		public double transformY(double y) { return y; }
+		
+		private boolean getDisplayLine(Line line) {
 			if (displayLineCheckbox.getGrayed()) {
 				if (props != null)
-					return props.getLineProperties(lineId).getDisplayLine();
+					return props.getLineProperties(line.key).getDisplayLine();
 				else
 					return ChartDefaults.DEFAULT_DISPLAY_LINE;
 			}
@@ -416,42 +447,47 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 				return displayLineCheckbox.getSelection();
 		}
 		
-		private IVectorPlotter getVectorPlotter(String lineId, InterpolationMode mode) {
+		private IVectorPlotter getVectorPlotter(Line line) {
 			LineType lineType = null;
 			if (props != null)
 				lineType = getEnumProperty(lineTypeCombo,
-								props.getLineProperties(lineId).getLineType(),
+								props.getLineProperties(line.key).getLineType(),
 								ChartDefaults.DEFAULT_LINE_STYLE,
 								LineType.class);
 			if (lineType == null) {
-				lineType = mode != null ? VectorChart.getLineTypeForInterpolationMode(mode) : LineType.Linear;
+				lineType = line.interpolationMode != null ?
+							VectorChart.getLineTypeForInterpolationMode(line.interpolationMode) :
+							LineType.Linear;
 			}
 			
 			return VectorPlotterFactory.createVectorPlotter(lineType);
 		}
 		
-		private IChartSymbol getChartSymbol(String lineId) {
+		private IChartSymbol getChartSymbol(Line line) {
 			SymbolType type = null;
 			if (props != null)
 				type = getEnumProperty(symbolTypeCombo,
-								props.getLineProperties(lineId).getSymbolType(),
+								props.getLineProperties(line.key).getSymbolType(),
 								null,
 								SymbolType.class);
 			
 			if (type == null) {
-				int series = Arrays.binarySearch(lines, new Line(lineId));
-				switch (series % 6) {
-				case 0: type = SymbolType.Square; break;
-				case 1: type = SymbolType.Dot; break;
-				case 2: type = SymbolType.Triangle; break;
-				case 3: type = SymbolType.Diamond; break;
-				case 4: type = SymbolType.Cross; break;
-				case 5: type = SymbolType.Plus; break;
-				default: type = null; break;
+				if (line.series >= 0) {
+					switch (line.series % 6) {
+					case 0: type = SymbolType.Square; break;
+					case 1: type = SymbolType.Dot; break;
+					case 2: type = SymbolType.Triangle; break;
+					case 3: type = SymbolType.Diamond; break;
+					case 4: type = SymbolType.Cross; break;
+					case 5: type = SymbolType.Plus; break;
+					default: type = null; break;
+					}
 				}
+				else
+					type = SymbolType.Dot;
 			}
 
-			int size = getSymbolSize(lineId);
+			int size = getSymbolSize(line);
 			
 			return ChartSymbolFactory.createChartSymbol(type, size);
 		}
@@ -466,29 +502,28 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			return property != null ? property : defaultValue;
 		}
 		
-		private int getSymbolSize(String lineId) {
+		private int getSymbolSize(Line line) {
 			String sizeStr = symbolSizeCombo.getText();
 			Integer size = null;
 			
 			if ((sizeStr == null || sizeStr.equals(NO_CHANGE)) && props != null)
-				size = props.getLineProperties(lineId).getSymbolSize();
+				size = props.getLineProperties(line.key).getSymbolSize();
 			else
 				size = Converter.stringToInteger(sizeStr);
 			
 			return size != null ? size : ChartDefaults.DEFAULT_SYMBOL_SIZE;
 		}
 		
-		public Color getLineColor(String lineId) {
+		public Color getLineColor(Line line) {
 			String colorStr = colorEdit.getText();
 			if (colorStr == null && props != null)
-				colorStr = props.getLineProperties(lineId).getLineColor();
+				colorStr = props.getLineProperties(line.key).getLineColor();
 			RGB rgb = ColorFactory.asRGB(colorStr);
 			if (rgb != null)
 				return new Color(null, rgb);
 			else {
-				for (int series = 0; series < dataset.getSeriesCount(); ++series)
-					if (dataset.getSeriesKey(series).equals(lineId))
-						return ColorFactory.getGoodDarkColor(series);
+				if (line.series >= 0)
+					return ColorFactory.getGoodDarkColor(line.series);
 				return ColorFactory.getGoodDarkColor(0);
 			}
 		}
@@ -499,20 +534,18 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 			drawBackground(gc, e.x, e.y, e.width, e.height);
 			
 			IStructuredSelection selection = (IStructuredSelection)linesTableViewer.getSelection();
-			List selectedIds = selection.toList();
-			
-			for (int series = 0; series < dataset.getSeriesCount(); ++series) {
-				String lineId = dataset.getSeriesKey(series);
-				InterpolationMode interpolationMode = dataset.getSeriesInterpolationMode(series);
-				if (selectedIds.contains(lineId) && getDisplayLine(lineId)) {
-					IVectorPlotter plotter = getVectorPlotter(lineId, interpolationMode);
-					IChartSymbol symbol = getChartSymbol(lineId);
-					Color color = getLineColor(lineId);
+			List<Line> selectedLines = selection.toList();
+			for (Line line : selectedLines) {
+				if (getDisplayLine(line)) {
+					IVectorPlotter plotter = getVectorPlotter(line);
+					IChartSymbol symbol = getChartSymbol(line);
+					Color color = getLineColor(line);
 					gc.setAntialias(SWT.ON);
 					gc.setForeground(color);
 					gc.setBackground(color);
-
-					plotter.plot(dataset, series, gc, coordsMapping, symbol);
+					
+					if (line.series >= 0);
+						plotter.plot(this, line.series, gc, coordsMapping, symbol);
 				}
 			}
 		}

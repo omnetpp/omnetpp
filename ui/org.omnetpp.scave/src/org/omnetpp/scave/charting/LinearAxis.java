@@ -54,6 +54,14 @@ public class LinearAxis {
 		this.title = vertical ? DEFAULT_Y_AXIS_TITLE : DEFAULT_X_AXIS_TITLE;
 	}
 
+	public double transform(double coord) {
+		return logarithmic ? Math.log10(coord) : coord;
+	}
+	
+	public double inverseTransform(double coord) {
+		return logarithmic ? Math.pow(10.0, coord) : coord;
+	}
+	
 	/**
 	 * Modifies insets to accomodate room for axis title, ticks, tick labels etc.
 	 * Also returns insets for convenience. 
@@ -310,9 +318,5 @@ public class LinearAxis {
 
 	public void setDrawTitle(boolean drawTitle) {
 		this.drawTitle = drawTitle;
-	}
-	
-	private double transform(double coord) {
-		return logarithmic ? Math.log10(coord) : coord;
 	}
 }

@@ -63,7 +63,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 	}
 	
 	protected void updateLineNames(String formatString) {
-		lines = NO_LINES;
+		Line[] lines = NO_LINES;
 		IXYDataset xydataset;
 		
 		try {
@@ -80,9 +80,8 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 				lines[i] = new Line(xydataset.getSeriesKey(i));
 			Arrays.sort(lines);
 		}
-
-		if (linesTableViewer != null)
-			linesTableViewer.setInput(lines);
+		
+		setLines(lines);
 	}
 	
 	

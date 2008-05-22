@@ -38,6 +38,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 	public LineChartEditForm(LineChart chart, EObject parent,
 			Map<String, Object> formParameters, ResultFileManager manager) {
 		super(chart, parent, formParameters, manager);
+		updateLineNames(getChart().getLineNameFormat());
 	}
 	
 	private LineChart getChart() {
@@ -47,7 +48,6 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 
 	@Override
 	protected void populateTabItem(final TabItem item) {
-		updateLineNames(getChart().getLineNameFormat());
 		super.populateTabItem(item);
 		String name = item.getText();
 		if (TAB_MAIN.equals(name)) {
@@ -64,8 +64,10 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 			});
 			tabfolder.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					if (e.item == item && updateLineNames[0])
+					if (e.item == item && updateLineNames[0]) {
 						updateLineNames(lineNamePattern.getText());
+						updateLineNames[0] = false;
+					}
 				}
 			});
 		}
@@ -74,7 +76,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 	protected void updateLineNames(String formatString) {
 		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
 		IXYDataset xydataset = DatasetManager.createVectorDataset((LineChart)chart, dataset, formatString, false, manager, null);
-		lines = NO_LINES;
+		Line[] lines = NO_LINES;
 		if (xydataset != null) {
 			int count = xydataset.getSeriesCount();
 			lines = new Line[count];
@@ -84,8 +86,7 @@ public class LineChartEditForm extends BaseLineChartEditForm {
 			Arrays.sort(lines);
 		}
 
-		if (linesTableViewer != null)
-			linesTableViewer.setInput(lines);
+		setLines(lines);
 	}
 
 	@Override

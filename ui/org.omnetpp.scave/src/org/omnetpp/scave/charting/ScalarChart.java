@@ -83,6 +83,16 @@ public class ScalarChart extends ChartCanvas {
 		domainAxis.dispose();
 		super.dispose();
 	}
+	
+	@Override
+	protected double transformY(double y) {
+		return valueAxis.transform(y);
+	}
+
+	@Override
+	protected double inverseTransformY(double y) {
+		return valueAxis.inverseTransform(y);
+	}
 
 	@Override
 	public void doSetDataset(IDataset dataset) {
@@ -250,7 +260,6 @@ public class ScalarChart extends ChartCanvas {
 
 	public void setLogarithmicY(Boolean value) {
 		boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
-		transform = logarithmic ? new LogarithmicYTransform() : null;
 		valueAxis.setLogarithmic(logarithmic);
 		chartArea = calculatePlotArea();
 		updateArea();

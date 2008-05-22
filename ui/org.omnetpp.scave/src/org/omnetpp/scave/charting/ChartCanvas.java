@@ -62,7 +62,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.charting.dataset.IDataset;
-import org.omnetpp.scave.charting.dataset.IDatasetTransform;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendPosition;
 import org.omnetpp.scave.editors.ScaveEditorContributor;
@@ -96,8 +95,6 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected RectangularArea chartArea;
 	/* area to be displayed */
 	private RectangularArea zoomedArea;
-	/* transforms dataset coordinates (when logarithmic y) */
-	protected IDatasetTransform transform;
 
 	private ZoomableCanvasMouseSupport mouseSupport;
 	private Color insetsBackgroundColor = DEFAULT_INSETS_BACKGROUND_COLOR;
@@ -492,37 +489,33 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	}
 	
 	protected RectangularArea transformArea(RectangularArea area) {
-		if (transform == null)
-			return area;
-		else {
-			double minX = transform.transformX(area.minX);
-			double minY = transform.transformY(area.minY);
-			double maxX = transform.transformX(area.maxX);
-			double maxY = transform.transformY(area.maxY);
-			
-			return new RectangularArea(
-				Double.isNaN(minX) || Double.isInfinite(minX) ? Double.NEGATIVE_INFINITY : minX,
-				Double.isNaN(minY) || Double.isInfinite(minY)? Double.NEGATIVE_INFINITY : minY,
-				Double.isNaN(maxX) || Double.isInfinite(maxX)? Double.POSITIVE_INFINITY : maxX,
-				Double.isNaN(maxY) || Double.isInfinite(maxY) ? Double.POSITIVE_INFINITY : maxY
-			);
-		}
+		double minX = transformX(area.minX);
+		double minY = transformY(area.minY);
+		double maxX = transformX(area.maxX);
+		double maxY = transformY(area.maxY);
+		
+		return new RectangularArea(
+			Double.isNaN(minX) || Double.isInfinite(minX) ? Double.NEGATIVE_INFINITY : minX,
+			Double.isNaN(minY) || Double.isInfinite(minY)? Double.NEGATIVE_INFINITY : minY,
+			Double.isNaN(maxX) || Double.isInfinite(maxX)? Double.POSITIVE_INFINITY : maxX,
+			Double.isNaN(maxY) || Double.isInfinite(maxY) ? Double.POSITIVE_INFINITY : maxY
+		);
 	}
 	
 	protected double transformX(double x) {
-		return (transform == null ? x : transform.transformX(x));
+		return x;
 	}
 	
 	protected double transformY(double y) {
-		return (transform == null ? y : transform.transformY(y));
+		return y;
 	}
 	
 	protected double inverseTransformX(double x) {
-		return (transform == null ? x : transform.inverseTransformX(x));
+		return x;
 	}
 	
 	protected double inverseTransformY(double y) {
-		return (transform == null ? y : transform.inverseTransformY(y));
+		return y;
 	}
 	
 	
@@ -640,26 +633,5 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 		return !Double.isNaN(halfInterval) && halfInterval > 0.0 ?
 				String.format("%.3g\u00b1%.3g", value, halfInterval) :
 				String.format("%g", value);
-	}
-	
-	static class LogarithmicYTransform implements IDatasetTransform {
-
-		public double transformX(double x) {
-			return x;
-		}
-
-		public double transformY(double y) {
-			if (Double.isNaN(y) || y < 0)
-				return Double.NaN;
-			return Math.log10(y);
-		}
-
-		public double inverseTransformX(double x) {
-			return x;
-		}
-
-		public double inverseTransformY(double y) {
-			return Math.pow(10.0, y);
-		}
 	}
 }

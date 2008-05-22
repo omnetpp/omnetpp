@@ -280,10 +280,7 @@ class BarPlot {
 	}
 	
 	protected double transformValue(double y) {
-		if (chart.transform != null)
-			return chart.transform.transformY(y);
-		else
-			return y;
+		return chart.transformY(y);
 	}
 	
 	protected double getTransformedBaseline() {

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.canvas.ICoordsMapping;
+import org.omnetpp.scave.charting.ILinePlot;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 
 /**
@@ -16,7 +17,8 @@ import org.omnetpp.scave.charting.dataset.IXYDataset;
  */
 public class LinesVectorPlotter extends VectorPlotter {
 
-	public void plot(IXYDataset dataset, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+	public void plot(ILinePlot plot, int series, GC gc, ICoordsMapping mapping, IChartSymbol symbol) {
+		IXYDataset dataset = plot.getDataset();
 		int n = dataset.getItemCount(series);
 		if (n==0)
 			return;
@@ -25,7 +27,7 @@ public class LinesVectorPlotter extends VectorPlotter {
 		// from the base class, but draw lines and symbols in a single loop instead
 		
 		// dataset index range to iterate over 
-		int[] range = indexRange(dataset, series, gc, mapping);
+		int[] range = indexRange(plot, series, gc, mapping);
 		int first = range[0], last = range[1];
 
 		// chart y range in canvas coordinates 
@@ -50,8 +52,8 @@ public class LinesVectorPlotter extends VectorPlotter {
 		int prevSymbolX = Integer.MIN_VALUE;
 		
 		for (int i = first; i <= last; i++) {
-			int x = mapping.toCanvasX(transformX(dataset.getX(series, i)));
-			int y = mapping.toCanvasY(transformY(dataset.getY(series, i))); // note: this maps +-INF to +-MAXPIX, which works out just fine here
+			int x = mapping.toCanvasX(plot.transformX(dataset.getX(series, i)));
+			int y = mapping.toCanvasY(plot.transformY(dataset.getY(series, i))); // note: this maps +-INF to +-MAXPIX, which works out just fine here
 
 			// for testing: 
 			// if (i%5==0) y = NANPIX;

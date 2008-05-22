@@ -64,6 +64,26 @@ public class HistogramChartCanvas extends ChartCanvas {
 		});
 	}
 	
+	@Override
+	protected double transformX(double x) {
+		return xAxis.transform(x);
+	}
+
+	@Override
+	protected double transformY(double y) {
+		return yAxis.transform(y);
+	}
+
+	@Override
+	protected double inverseTransformX(double x) {
+		return xAxis.inverseTransform(x);
+	}
+
+	@Override
+	protected double inverseTransformY(double y) {
+		return yAxis.inverseTransform(y);
+	}
+	
 	public void setProperty(String name, String value) {
 		Assert.isLegal(name != null);
 		if (debug) System.out.println("HistogramChartCanvas.setProperty: "+name+"='"+value+"'");
@@ -149,7 +169,6 @@ public class HistogramChartCanvas extends ChartCanvas {
 
 	public void setLogarithmicY(Boolean value) {
 		boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;
-		transform = logarithmic ? new LogarithmicYTransform() : null;
 		yAxis.setLogarithmic(logarithmic);
 		chartArea = calculatePlotArea();
 		updateArea();

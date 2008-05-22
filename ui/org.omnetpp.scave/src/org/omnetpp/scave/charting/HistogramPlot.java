@@ -300,10 +300,7 @@ class HistogramPlot {
 	}
 	
 	protected double transformValue(double y) {
-		if (canvas.transform != null)
-			return canvas.transform.transformY(y);
-		else
-			return y;
+		return canvas.transformY(y);
 	}
 	
 	protected double getTransformedBaseline() {
