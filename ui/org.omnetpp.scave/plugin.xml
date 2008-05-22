@@ -77,11 +77,13 @@
                  type="new" 
                  wizardId="org.omnetpp.scave.wizard.ScaveModelModelWizardID">
                  <enablement>
-                    <adapt type="org.eclipse.core.resources.IProject">
-                       <test 
-                             property="org.eclipse.core.resources.projectNature" 
-                             value="org.omnetpp.main.omnetppnature"/>
-                    </adapt>
+		               <adapt
+		                     type="org.eclipse.core.resources.IResource">
+		                 <test
+		                     property="org.eclipse.core.resources.projectNature"
+		                     value="org.omnetpp.main.omnetppnature">
+		                 </test>
+		               </adapt>
                  </enablement>
            </commonWizard>
   </extension>
