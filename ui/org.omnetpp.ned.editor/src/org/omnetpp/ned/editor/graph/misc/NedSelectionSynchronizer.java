@@ -1,11 +1,15 @@
 package org.omnetpp.ned.editor.graph.misc;
 
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
+import org.omnetpp.ned.editor.graph.edit.CompoundModuleEditPart;
 import org.omnetpp.ned.model.INEDElement;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.IModelProvider;
 
 /**
@@ -31,13 +35,7 @@ public class NedSelectionSynchronizer extends SelectionSynchronizer {
     protected EditPart convert(EditPartViewer viewer, EditPart part) {
         if (part instanceof IModelProvider) {
             INEDElement model = ((IModelProvider)part).getNedModel();
-            while (model != null) {
-                EditPart ep = (EditPart)viewer.getEditPartRegistry().get(model);
-                if (ep != null)
-                    return ep;
-                // not matching, check the parent too
-                model = model.getParent();
-            }
+            return GraphicalNedEditor.getNearestEditPartForModel(viewer, model);
         }
         return null;
     }

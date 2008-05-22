@@ -12,9 +12,11 @@ import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
@@ -570,8 +572,6 @@ public class GraphicalNedEditor
     public void refresh() {
         getGraphicalViewer().getContents().refresh();
         paletteRefreshJob.restartTimer();
-//        if (outlinePage != null)
-//            outlinePage.refresh();
     }
 
     /**
@@ -579,10 +579,7 @@ public class GraphicalNedEditor
      * has an associated editPart)
      */
     public void reveal(INEDElement model) {
-        EditPart editPart = null;
-         while( model != null &&
-                (editPart = (EditPart)getGraphicalViewer().getEditPartRegistry().get(model)) == null)
-             model = model.getParent();
+        EditPart editPart = getNearestEditPartForModel(getGraphicalViewer(), model);
 
          if (editPart == null) {
              getGraphicalViewer().deselectAll();
@@ -591,6 +588,34 @@ public class GraphicalNedEditor
              getGraphicalViewer().reveal(editPart);
              getGraphicalViewer().select(editPart);
          }
+    }
+    
+    /**
+     * Tries to get the EditPart associated with the given model element. If not found 
+     * returns the first one among ancestors that has a corresponding editpart.
+     * Can return NULL no editpart has been found 
+     */
+    public static EditPart getNearestEditPartForModel(EditPartViewer viewer, INEDElement model) {
+            INEDElement originalModel = model;
+            while (model != null) {
+            	// get the part directly from the main registry
+                EditPart ep = (EditPart)viewer.getEditPartRegistry().get(model);
+                // if we reached the compound module level, try to look in the registered connections too
+                // maybe the originalModel was one of our connections. This is needed because
+                // ConnectionEditParts are not registered in the main registry rather in the compoundmodule
+                // editparts local registry
+                if (ep instanceof CompoundModuleEditPart) {
+                	ConnectionEditPart connEP = ((CompoundModuleEditPart)ep).getModelToConnectionPartsRegistry().get(originalModel);
+                	if (connEP != null)
+                		return connEP;
+                }
+                // if it was not a connection return that editpart
+                if (ep != null)
+                    return ep;
+                // not matching, check the parent too
+                model = model.getParent();
+            }
+        return null;
     }
 
     /**
