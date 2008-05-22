@@ -42,6 +42,7 @@
                  type="new" 
                  wizardId="org.omnetpp.ned.editor.wizard.new.file">
                  <enablement>
+                 	<and>
 			               <adapt
 			                     type="org.eclipse.core.resources.IResource">
 			                 <test
@@ -49,6 +50,11 @@
 			                     value="org.omnetpp.main.omnetppnature">
 			                 </test>
 			               </adapt>
+                  			<not>
+                     			<instanceof value="org.eclipse.core.resources.IFile">
+                     			</instanceof>
+                  			</not>
+	             	</and>
                  </enablement>
            </commonWizard>
    </extension>
