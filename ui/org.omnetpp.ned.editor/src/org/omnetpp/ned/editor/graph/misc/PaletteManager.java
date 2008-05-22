@@ -43,6 +43,13 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  *
  * @author rhornig, andras
  */
+//TODO: palette entries: LRU list + all types 
+// LRU list contains:
+//   - all types from the local package (including inner types)
+//   - all types imported into the current NED type
+// Plus needed:
+//   - filter by package (checkboxlist or checkboxtree dialog, from palette context menu)
+// --Andras
 public class PaletteManager {
 	private static final String NBSP = "\u00A0";
     private static final String GROUP_PROPERTY = "group";
