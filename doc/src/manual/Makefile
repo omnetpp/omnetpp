@@ -1,3 +1,7 @@
+#PERL=$(TOOLS_DIR)\perl\bin\perl.exe
+PERL=perl
+
+INKSCAPE=inkscape
 
 # --- generating pdf ---
 
@@ -31,8 +35,6 @@ usman.pdf: $(TEXSRC) $(PDFPICS)
 	pdflatex usman.tex $(LOGFILTER)
 
 # --- generating html ---
-
-PERL=perl
 
 HTM_FILES = history.htm \
             ch-introduction.htm \

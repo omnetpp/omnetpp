@@ -1,6 +1,11 @@
 # the default target
 all: usman.html
 
+#PERL=$(TOOLS_DIR)\perl\bin\perl.exe
+PERL=c:\Perl\bin\Perl.exe
+
+INKSCAPE="C:\Program Files\inkscape\inkscape.exe"
+
 # --- generating pdf ---
 
 TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex \
@@ -33,9 +38,6 @@ usman.pdf: $(TEXSRC) $(PDFPICS)
 	pdflatex usman.tex $(LOGFILTER)
 
 # --- generating html ---
-
-#PERL=$(TOOLS_DIR)\perl\bin\perl.exe
-PERL=c:\Perl\bin\Perl.exe
 
 HTM_FILES = history.htm \
             ch-introduction.htm \
