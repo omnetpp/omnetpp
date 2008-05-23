@@ -1,0 +1,48 @@
+How to build the manual on Windows (on Linux it's easier)
+=========================================================
+
+Prerequisites
+-------------
+1. Install MiKTex from miktex.org. The "basic" package is enough.
+   (pdflatex will download needed extra packages automatically when you
+   first build the document).
+
+2. Install Inkscape. It will be used for SVG editing as well as for
+   SVG-to-PNG and SVG-to-PDF conversion.
+
+
+Making HTML output
+------------------
+Type "make usman.html". It uses local perl scripts for the conversion.
+
+
+
+Making PDF output
+-----------------
+Make sure that MiKTeX/miktext/bin is in the path, the type "make usman.pdf". 
+
+
+Graphics
+--------
+See http://amath.colorado.edu/documentation/LaTeX/reference/figures.html
+
+Screenshots and other raster images should be checked in as PNG, and included
+in the LaTeX sources like this:
+
+  \includegraphics[width=60mm]{myfig.png}
+  \includegraphics[height=60mm]{myfig.jpg}
+  \includegraphics[scale=0.75]{myfig.pdf}
+  \includegraphics[angle=45,width=52mm]{myfig.jpg}
+
+Vector graphics should be drawn and checked in in SVG format. This will be
+rasterized to PNG and exported as vector PDF using Inkscape command-line
+options:
+
+  inkscape -e FILENAME  (or --export-png=FILENAME)
+  inkscape -A FILENAME  (or --export-pdf=FILENAME)
+
+See http://inkscape.modevia.com/inkscape-man.html for other options (e.g.
+-w/-h for specifying bitmap dimensions in pixels).
+
+
+/Andras
