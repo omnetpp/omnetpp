@@ -1,15 +1,21 @@
 package org.omnetpp.ned.editor.graph.actions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -56,9 +62,12 @@ public class PaletteFilterAction extends WorkbenchPartAction {
         // collect the list of (non-empty) packages, and how many NED types they contain 
         IProject project = ((FileEditorInput)editor.getEditorInput()).getFile().getProject();
         NEDResources res = NEDResourcesPlugin.getNEDResources();
-        final Map<String,Integer> packages = new HashMap<String,Integer>();  // (package,count)
-        for (INEDTypeInfo type : res.getNedTypes(project)) {
-            String packageName = type.getPackageName();
+        final Map<String,Integer> packages = new LinkedHashMap<String,Integer>();  // (package,count)
+        List<String> orderedQNames = new ArrayList<String>(res.getNedTypeQNames(project));
+        Collections.sort(orderedQNames);
+        for (String qname : orderedQNames) {
+            INEDTypeInfo nedType = res.getToplevelNedType(qname, project);
+            String packageName = nedType.getPackageName();
             if (!packages.containsKey(packageName))
                 packages.put(packageName, 1);
             else 
@@ -107,6 +116,20 @@ public class PaletteFilterAction extends WorkbenchPartAction {
             protected Control createDialogArea(Composite parent) {
                 Control composite = super.createDialogArea(parent);
                 getTreeViewer().expandToLevel(2);
+                getTreeViewer().addCheckStateListener(new ICheckStateListener() {
+                    public void checkStateChanged(CheckStateChangedEvent event) {
+                        getTreeViewer().setSelection(new StructuredSelection(event.getElement()));
+                        getTreeViewer().setExpandedState(event.getElement(), true);
+                    }
+                });
+                getTreeViewer().getTree().addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                        Object element = e.item.getData();
+                        //getTreeViewer().expandToLevel(element, 10);
+                        getTreeViewer().setSubtreeChecked(element, !getTreeViewer().getChecked(element));
+                    }
+                });
                 return composite;
             }  
             @Override

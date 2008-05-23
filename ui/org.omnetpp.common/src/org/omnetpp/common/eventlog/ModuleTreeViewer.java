@@ -83,26 +83,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         
         Control control = getControl();
         Menu menu = new Menu(control);
-
-        MenuItem menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Collapse");
-        menuItem.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                for (Object element : getSelectionFromWidget())
-                    collapseToLevel(element, ALL_LEVELS);
-            }
-        });
-
-        menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Expand");
-        menuItem.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                for (Object element : getSelectionFromWidget())
-                    expandToLevel(element, ALL_LEVELS);
-            }
-        });
-
-        menuItem = new MenuItem(menu, SWT.SEPARATOR);
+        MenuItem menuItem;
 
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Check Children");
@@ -127,7 +108,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         });
 
         menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Check Tree");
+        menuItem.setText("Check Subtree");
         menuItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget()) {
@@ -162,13 +143,33 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         });
 
         menuItem = new MenuItem(menu, SWT.NONE);
-        menuItem.setText("Uncheck Tree");
+        menuItem.setText("Uncheck Subtree");
         menuItem.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget()) {
                     setSubtreeChecked(element, false);
                     fireCheckStateChanged(element);
                 }
+            }
+        });
+
+        menuItem = new MenuItem(menu, SWT.SEPARATOR);
+
+        menuItem = new MenuItem(menu, SWT.NONE);
+        menuItem.setText("Collapse Subtree");
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                for (Object element : getSelectionFromWidget())
+                    collapseToLevel(element, ALL_LEVELS);
+            }
+        });
+
+        menuItem = new MenuItem(menu, SWT.NONE);
+        menuItem.setText("Expand Subtree");
+        menuItem.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                for (Object element : getSelectionFromWidget())
+                    expandToLevel(element, ALL_LEVELS);
             }
         });
 

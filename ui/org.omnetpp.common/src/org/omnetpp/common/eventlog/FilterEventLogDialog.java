@@ -548,6 +548,7 @@ public class FilterEventLogDialog
                     }
                 }
 
+                // also, select the clicked node and display its page
                 panelCheckboxTree.setSelection(new StructuredSelection(event.getElement()));
                 if (clickedTreeNode instanceof FilterDialogTreeNode && ((FilterDialogTreeNode)clickedTreeNode).getPanel() != null) {
                     stackLayout.topControl = ((FilterDialogTreeNode)clickedTreeNode).getPanel();
