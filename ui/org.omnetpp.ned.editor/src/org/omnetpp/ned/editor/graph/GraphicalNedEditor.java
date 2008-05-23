@@ -3,6 +3,7 @@ package org.omnetpp.ned.editor.graph;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IFile;
@@ -70,8 +71,10 @@ import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NEDResourcesPlugin;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.CopyAction;
@@ -123,6 +126,7 @@ public class GraphicalNedEditor
 	extends GraphicalEditorWithFlyoutPalette
 	implements INEDChangeListener
 {
+    private static final String PROP_PALETTE_FILTER = "paletteFilter";
     public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
     public final static Color LOWLIGHT_COLOR = new Color(null, 128, 0, 0);
 
@@ -162,17 +166,39 @@ public class GraphicalNedEditor
         setEditDomain(editDomain);
     }
 
-    @Override
+    @Override @SuppressWarnings("unchecked")
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         super.init(site, input);
+        
         // we listen on changes too
         NEDResourcesPlugin.getNEDResources().addNEDModelChangeListener(this);
+        
+        // restore palette filter from a persistent property
+        PersistentResourcePropertyManager propertyManager = new PersistentResourcePropertyManager(NedEditorPlugin.PLUGIN_ID);
+        try {
+            Set<String> excludedPackages = (Set<String>)propertyManager.getProperty(getFile(), PROP_PALETTE_FILTER);
+            getPaletteManager().setExcludedPackages(excludedPackages);
+        }
+        catch (Exception e) {
+            propertyManager.removeProperty(getFile(), PROP_PALETTE_FILTER);
+            NedEditorPlugin.logError("cannot restore palette filter",  e);
+        }
     }
 
     @Override
     public void dispose() {
         NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(this);
         paletteRefreshJob.cancel();
+
+        // save palette filter to a persistent property
+        PersistentResourcePropertyManager propertyManager = new PersistentResourcePropertyManager(NedEditorPlugin.PLUGIN_ID);
+        try {
+            propertyManager.setProperty(getFile(), PROP_PALETTE_FILTER, getPaletteManager().getExcludedPackages());
+        }
+        catch (Exception e) {
+            NedEditorPlugin.logError("cannot save palette filter",  e);
+        }
+
         super.dispose();
     }
 

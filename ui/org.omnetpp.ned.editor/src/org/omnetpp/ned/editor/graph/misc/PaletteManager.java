@@ -49,9 +49,6 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
 // LRU list contains:
 //   - all types from the local package (including inner types)
 //   - all types imported into the current NED type
-// Plus needed:
-//   - filter by package (checkboxlist or checkboxtree dialog, from palette context menu)
-//     see PaletteContextMenuProvider.buildContextMenu()
 // --Andras
 public class PaletteManager {
 	private static final String NBSP = "\u00A0";
@@ -113,7 +110,8 @@ public class PaletteManager {
         toolsContainer = createTools();
         typesContainer = new PaletteDrawer("Types", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
         typesContainer.setInitialState(PaletteDrawer.INITIAL_STATE_PINNED_OPEN);
-        defaultContainer = new PaletteDrawer("Submodules", ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
+        String txtFiltered = excludedPackages.isEmpty() ? "" : NBSP+"(filtered)";
+        defaultContainer = new PaletteDrawer("Submodules"+txtFiltered, ImageFactory.getDescriptor(ImageFactory.MODEL_IMAGE_FOLDER));
 
         refresh();
     }

@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -132,15 +133,16 @@ public class PaletteFilterAction extends WorkbenchPartAction {
         dlg.setInput(root);
         dlg.setStatusLineAboveButtons(false);
         dlg.setInitialSelections(initialSelectedNodes.toArray(new Object[]{}));
-        dlg.open();
 
-        // extract the result, and set it back on the paletteManager
-        Object[] selectedNodes = dlg.getResult();
-        Set<String> result = new HashSet<String>();
-        allNodes.removeAll(Arrays.asList(selectedNodes)); // abuse allNodes as unselectedNodes
-        for (GenericTreeNode node : allNodes)
-            result.add((String)node.getPayload());
-        paletteManager.setExcludedPackages(result);
+        if (dlg.open() == Window.OK) {
+            // extract the result, and set it back on the paletteManager
+            Object[] selectedNodes = dlg.getResult();
+            Set<String> result = new HashSet<String>();
+            allNodes.removeAll(Arrays.asList(selectedNodes)); // abuse allNodes as unselectedNodes
+            for (GenericTreeNode node : allNodes)
+                result.add((String)node.getPayload());
+            paletteManager.setExcludedPackages(result);
+        }
     }
 
     private GenericTreeNode getOrCreateChild(GenericTreeNode node, String segment) {
