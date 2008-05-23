@@ -902,7 +902,7 @@ fi
 
 # on NT, set total stack size
 if test "$cygwin" = yes; then
-  LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
+  LDFLAGS="$LDFLAGS -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
 fi
 
 # on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
