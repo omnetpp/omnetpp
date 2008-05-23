@@ -45,4 +45,11 @@ See http://inkscape.modevia.com/inkscape-man.html for other options (e.g.
 -w/-h for specifying bitmap dimensions in pixels).
 
 
+How it was in 3.x releases
+--------------------------
+Figures were maintained in figures.ppt, one per slide, with filenames stored
+as a one-line "Notes" text. They were exported from PowerPoint as GIF, then
+used like that. (As I could not find a good way to convert WMF to EPS/PDF.)
+See old svn for info and scripts.
+
 /Andras
