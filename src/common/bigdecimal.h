@@ -87,7 +87,7 @@ class COMMON_API BigDecimal
     /** @name Constructors. */
     //@{
     BigDecimal() {intVal=INT64_MAX; scale=INT_MAX;} // == Nil
-    BigDecimal(int64 intVal, int scale) : intVal(intVal), scale(scale) { normalize(); }
+    BigDecimal(int64 intVal, int scale=0) : intVal(intVal), scale(scale) { normalize(); }
     BigDecimal(const BigDecimal &x) {operator=(x);}
     BigDecimal(double d) {operator=(d);}
     //@}

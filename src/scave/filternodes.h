@@ -516,6 +516,31 @@ class SCAVE_API DivideByTimeNodeType : public FilterNodeType
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
 };
 
+/**
+ * Processing node that replaces t values with their serial.
+ */
+class SCAVE_API TimeToSerialNode : public FilterNode
+{
+	protected:
+		int64 serial;
+    public:
+    	TimeToSerialNode() : serial(0) {}
+        virtual ~TimeToSerialNode() {}
+
+        virtual bool isReady() const;
+        virtual void process();
+};
+
+class SCAVE_API TimeToSerialNodeType : public FilterNodeType
+{
+    public:
+        virtual const char *name() const {return "timetoserial";}
+        virtual const char *description() const;
+        virtual void getAttributes(StringMap& attrs) const;
+        virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
+        virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
+};
+
 NAMESPACE_END
 
 #endif

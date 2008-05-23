@@ -92,6 +92,7 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new IntegrateNodeType());
     add(new TimeAverageNodeType());
     add(new DivideByTimeNodeType());
+    add(new TimeToSerialNodeType());
 
     add(new ExpressionFilterNodeType());
 

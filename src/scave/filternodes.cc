@@ -1033,4 +1033,49 @@ void DivideByTimeNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*
     attrs["type"] = "double";
 }
 
+// ---
+
+bool TimeToSerialNode::isReady() const
+{
+    return in()->length()>0;
+}
+
+void TimeToSerialNode::process()
+{
+    int n = in()->length();
+    for (int i=0; i<n; i++)
+    {
+        Datum d;
+        in()->read(&d,1);
+        d.x = serial;
+        d.xp = BigDecimal(serial);
+        serial++;
+        out()->write(&d,1);
+    }
+}
+
+//--
+
+const char *TimeToSerialNodeType::description() const
+{
+    return "Replaces time values with their index: t -> k";
+}
+
+void TimeToSerialNodeType::getAttributes(StringMap& attrs) const
+{
+}
+
+Node *TimeToSerialNodeType::create(DataflowManager *mgr, StringMap& attrs) const
+{
+    checkAttrNames(attrs);
+
+    Node *node = new TimeToSerialNode();
+    node->setNodeType(this);
+    mgr->addNode(node);
+    return node;
+}
+
+void TimeToSerialNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
+{
+}
 
