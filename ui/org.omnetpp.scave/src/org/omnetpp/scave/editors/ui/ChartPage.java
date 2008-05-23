@@ -161,6 +161,16 @@ public class ChartPage extends ScaveEditorPage {
 		}
 	}
 	
+	
+	
+	@Override
+	public boolean setFocus() {
+		if (chartView != null)
+			return chartView.setFocus();
+		else
+			return super.setFocus();
+	}
+
 	@Override
 	public void pageActivated() {
 		if (chartSelectionListener != null)

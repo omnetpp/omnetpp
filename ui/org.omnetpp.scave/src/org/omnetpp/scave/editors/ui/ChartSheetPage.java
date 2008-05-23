@@ -108,6 +108,14 @@ public class ChartSheetPage extends ScaveEditorPage {
 		getContent().setSize(getContent().computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 	
+	@Override
+	public boolean setFocus() {
+		if (chartsArea != null)
+			return chartsArea.setFocus();
+		else
+			return super.setFocus();
+	}
+
 	public void configureChartView(ChartCanvas view, final Chart chart) {
 		// hide legend
 		view.setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");

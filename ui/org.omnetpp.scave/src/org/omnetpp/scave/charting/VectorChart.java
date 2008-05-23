@@ -70,7 +70,7 @@ public class VectorChart extends ChartCanvas {
 
 	private LinearAxis xAxis = new LinearAxis(false, false, true);
 	private LinearAxis yAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, true);
-	private CrossHair crosshair = new CrossHair(this);
+	private CrossHair crosshair;
 	private LinePlot plot;
 	
 	/**
@@ -227,6 +227,8 @@ public class VectorChart extends ChartCanvas {
 	
 	public VectorChart(Composite parent, int style) {
 		super(parent, style);
+		// important: add the CrossHair to the chart AFTER the ZoomableCanvasMouseSupport added
+		crosshair = new CrossHair(this);
 		lineProperties = new ArrayList<LineProperties>();
 		defaultProperties = new LineProperties();
 		plot = new LinePlot(this);

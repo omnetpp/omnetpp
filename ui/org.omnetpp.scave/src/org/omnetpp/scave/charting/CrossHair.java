@@ -40,6 +40,8 @@ import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
 /**
  * Displays crosshair mouse cursor for VectorChart.
+ * 
+ * Note: add the CrossHair to the chart AFTER the {@link ZoomableCanvasMouseSupport}.
  */
 class CrossHair {
 	public static final Cursor CROSS_CURSOR = new Cursor(null, SWT.CURSOR_CROSS);
