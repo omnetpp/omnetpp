@@ -10,7 +10,7 @@ h1,h2,h3,h4,h5,h6,.subheading,.toc {font-family: "Trebuchet MS", Geneva, Arial, 
 h1 {color: #006f00;}
 h2 {color: #006f00;}
 h3 {color: #006f00;}
-pre { margin-left:8pt; font-size:8pt; background:#fffff4; padding:5pt; border:1px solid; border-color:#a0a0a0 }
+pre { margin-left:8pt; background:#fffff4; padding:5pt; border:1px solid; border-color:#a0a0a0 }
 table {background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid}
 td,th {text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000}
 .subheading {color: black; font-weight: bold;}
@@ -22,13 +22,13 @@ a:visited {text-decoration: none;}
 <BODY TEXT="#000000" BGCOLOR="#FFFFE8" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
 
 <br>
-<img src="omnetpp.gif" border="0">
+<img src="omnetpp.png" border="0">
 <!--
 <h1><FONT COLOR="#FF0000"><B><FONT SIZE=+4>OMNeT++ </FONT></B>
 <I><FONT SIZE=+1>Discrete Event Simulation System</FONT></I></FONT></h1>
 -->
 
-<H1><B>User Manual</B></H1><H3>OMNeT++ version 3.2</H3><H1>Chapters</H1>
+<H1><B>User Manual</B></H1><H3>OMNeT++ version 4.0</H3><H1>Chapters</H1>
 <p>
 <B><A HREF="#toc_1" class="toc">1 Introduction</A></B><BR>
 <B><A HREF="#toc_2" class="toc">2 Overview</A></B><BR>
@@ -44,7 +44,6 @@ a:visited {text-decoration: none;}
 <B><A HREF="#toc_12" class="toc">12 Parallel Distributed Simulation</A></B><BR>
 <B><A HREF="#toc_13" class="toc">13 Customization and Embedding</A></B><BR>
 <B><A HREF="#toc_14" class="toc">14 NED Language Grammar</A></B><BR>
-<B><A HREF="#toc_15" class="toc">15 References</A></B><BR>
 </p><HR><H1>Table of Contents</H1>
 <p>
 <BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_1"/><A HREF="#sec100" class="toc">1 Introduction</A></B></FONT><BR>
@@ -217,8 +216,8 @@ a:visited {text-decoration: none;}
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.10.6"/><A HREF="#sec267" class="toc">6.10.6 Breakpoints</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.10.7"/><A HREF="#sec268" class="toc">6.10.7 Getting coroutine stack usage</A><BR>
 <B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.11"/><A HREF="#sec269" class="toc">6.11 Deriving new classes</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.11.1"/><A HREF="#sec270" class="toc">6.11.1 cObject or not?</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.11.2"/><A HREF="#sec271" class="toc">6.11.2 cObject virtual methods</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.11.1"/><A HREF="#sec270" class="toc">6.11.1 cOwnedObject or not?</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.11.2"/><A HREF="#sec271" class="toc">6.11.2 cOwnedObject virtual methods</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.11.3"/><A HREF="#sec272" class="toc">6.11.3 Class registration</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.11.4"/><A HREF="#sec273" class="toc">6.11.4 Details</A><BR>
 <B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.12"/><A HREF="#sec274" class="toc">6.12 Object ownership management</A></B><BR>
@@ -289,7 +288,7 @@ a:visited {text-decoration: none;}
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.1"/><A HREF="#sec339" class="toc">9.2.1 Color names</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.2"/><A HREF="#sec340" class="toc">9.2.2 Icon colorization</A><BR>
 <B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3"/><A HREF="#sec341" class="toc">9.3 The icons</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3.1"/><A HREF="#sec342" class="toc">9.3.1 The bitmap path</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3.1"/><A HREF="#sec342" class="toc">9.3.1 The image path</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3.2"/><A HREF="#sec343" class="toc">9.3.2 Categorized icons</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3.3"/><A HREF="#sec344" class="toc">9.3.3 Icon size</A><BR>
 <B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.4"/><A HREF="#sec345" class="toc">9.4 Layouting</A></B><BR>
@@ -347,7 +346,6 @@ a:visited {text-decoration: none;}
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5.3"/><A HREF="#sec397" class="toc">13.5.3 Customizing Envir</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5.4"/><A HREF="#sec398" class="toc">13.5.4 Implementation of the user interface: simulation applications</A><BR>
 <BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_14"/><A HREF="#sec399" class="toc">14 NED Language Grammar</A></B></FONT><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_15"/><A HREF="#sec400" class="toc">15 References</A></B></FONT><BR>
 </p> 
 <hr><b>Document History</b>
 
@@ -380,7 +378,7 @@ a:visited {text-decoration: none;}
                sending/receiving and other simple module related functions
                moved to chapter "Simple Modules"; <a href="../api/classcMessage.html">cMessage</a> treatment from
                "Simulation Library" merged with message subclassing chapter
-               into new chapter "Messages". Deprecated <a href="../api/classcPacket.html">cPacket</a>.
+               into new chapter "Messages". Deprecated cPacket.
                Removed sections "Simulation techniques" and
                "Coding conventions", and their useful fragments were incorporated
                elsewhere. Added/created sections about message transmission
@@ -602,7 +600,7 @@ structure of the actual system in the model structure.
 
 <p>
 <div align=center>
-<img src="usmanFig2.gif">
+<img src="usmanFig2.png">
 <center><i>Figure: Simple and compound modules</i></center>
 <a name="fig:ch-overview:modules"></a>
 </div>
@@ -673,7 +671,7 @@ a gate of the compound module (Fig.
 
 <p>
 <div align=center>
-<img src="usmanFig3.gif">
+<img src="usmanFig3.png">
 <center><i>Figure: Connections</i></center>
 <a name="fig:ch-overview:connections"></a>
 </div>
@@ -1835,7 +1833,7 @@ depicted in Fig. <a href="#fig:ch-ned-lang:loop-connection">below</a>.
 
 <p>
 <div align=center>
-<img src="usmanFig7.gif">
+<img src="usmanFig7.png">
 <center><i>Figure: Loop connection</i></center>
 <a name="fig:ch-ned-lang:loop-connection"></a>
 </div>
@@ -1917,7 +1915,7 @@ that are not connected.
 <a name="sec:ch-ned-lang:network"></a>
 <!--ned!network definition-->
 
-<p>Module module declarations (compound and simple module declarations)
+<p>Module declarations (compound and simple module declarations)
 just define module types. To actually get a simulation model that
 can be run, you need to write a <i>network definition</i>.
 
@@ -2678,7 +2676,7 @@ only in one bit of the binary representations of the node indices
 
 <p>
   <div align=center>
-    <img src="usmanFig8.gif">
+    <img src="usmanFig8.png">
     <center><i>Figure: Hypercube topology</i></center>
     <a name="fig:ch-ned-lang:hypercube-topology"></a>
   </div>
@@ -3136,7 +3134,7 @@ of the last bit (Fig. <a href="#fig:ch-overview:message-transm">below</a>).
 
 <p>
 <div align=center>
-<img src="usmanFig4.gif">
+<img src="usmanFig4.png">
 <center><i>Figure: Message transmission</i></center>
 <a name="fig:ch-overview:message-transm"></a>
 </div>
@@ -3155,7 +3153,7 @@ afterwards.
 
 <p>
 <div align=center>
-<img src="usmanFig5.gif">
+<img src="usmanFig5.png">
 <center><i>Figure: Message sending over multiple channels</i></center>
 <a name="fig:ch-overview:msg-multiple-ch"></a>
 </div>
@@ -3178,7 +3176,7 @@ for a given period (``it is being transmitted'').
 
 <p>
   <div align=center>
-    <img src="usmanFig9.gif">
+    <img src="usmanFig9.png">
     <center><i>Figure: Connection with a data rate</i></center>
     <a name="fig:ch-simple-modules:conn-w-data-rate"></a>
   </div>
@@ -6132,7 +6130,7 @@ of the simulation programmer. A more-or-less complete list:
     which can be freely used by the simulation programmer. The message
     name appears in many places in Tkenv (for example, in animations),
     and it is generally very useful to choose a descriptive name.
-    This attribute is inherited from <tt><a href="../api/classcObject.html">cObject</a></tt> (see section
+    This attribute is inherited from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> (see section
     <a href="#sec225">[6.1.1]</a>).
   <li>The <i>message kind</i> attribute is supposed to carry some message
     type information. Zero and positive values can be freely used
@@ -6376,15 +6374,15 @@ at least the source IP address.
 
 <p>This additional information is represented by <i>control info</i>
 objects in OMNeT++. Control info objects have to be subclassed from
-<tt><a href="../api/classcPolymorphic.html">cPolymorphic</a></tt> (a small footprint base class with
+<tt><a href="../api/classcObject.html">cObject</a></tt> (a small footprint base class with
 no data members), and attached to the messages representing
 packets. <tt><a href="../api/classcMessage.html">cMessage</a></tt> has the following methods for this
 purpose:
 
 <p><pre>
-void <tt>setControlInfo(<a href="../api/classcPolymorphic.html">cPolymorphic</a> *controlInfo)</tt>;
-<a href="../api/classcPolymorphic.html">cPolymorphic</a> *<tt>controlInfo()</tt>;
-<a href="../api/classcPolymorphic.html">cPolymorphic</a> *<tt>removeControlInfo()</tt>;
+void <tt>setControlInfo(<a href="../api/classcObject.html">cObject</a> *controlInfo)</tt>;
+<a href="../api/classcObject.html">cObject</a> *<tt>controlInfo()</tt>;
+<a href="../api/classcObject.html">cObject</a> *<tt>removeControlInfo()</tt>;
 </pre>
 
 <p>When a "command" is associated with the message sending (such as
@@ -6541,7 +6539,7 @@ way to do that is via message definitions, described in chapter
 
 <p>The <tt><a href="../api/classcMessage.html">cMessage</a></tt> class has an internal <tt><a href="../api/classcArray.html">cArray</a></tt> object which can
 carry objects<!--message!attaching objects-->. Only objects
-that are derived from <tt><a href="../api/classcObject.html">cObject</a></tt> (most OMNeT++ classes are so) can be attached.
+that are derived from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> (most OMNeT++ classes are so) can be attached.
 The <tt>addObject()</tt>, <tt>getObject()</tt>, <tt>hasObject()</tt>,
 <tt>removeObject()</tt> methods use the object name
 as the key to the array. An example:
@@ -6566,7 +6564,7 @@ If you do not attach anything to the message and do not call the
 will not be created.
 This saves both storage and execution time.
 
-<p>You can attach non-object types (or non-<tt><a href="../api/classcObject.html">cObject</a></tt> objects) to
+<p>You can attach non-object types (or non-<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> objects) to
 the message<!--message!attaching non-object types--> by using
 <tt><a href="../api/classcPar.html">cPar</a></tt>'s <tt>void*</tt> pointer 'P') type (see later in the description
 of <tt><a href="../api/classcPar.html">cPar</a></tt>). An example:
@@ -7039,7 +7037,7 @@ for details).
 implies that the base class is <tt><a href="../api/classcMessage.html">cMessage</a></tt>, either directly or indirectly.
 
 <p>But as part of complex messages, you'll need structs and other classes
-(rooted or not rooted in <tt><a href="../api/classcObject.html">cObject</a></tt>) as building blocks.
+(rooted or not rooted in <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>) as building blocks.
 Classes can be created with the <tt>class</tt> class keyword;
 structs we'll cover in the next section.
 
@@ -7047,15 +7045,15 @@ structs we'll cover in the next section.
 only the <tt>class</tt> keyword is used instead of <tt>message</tt>.
 
 <p>Slightly different code is generated for classes that are rooted in
-<tt><a href="../api/classcObject.html">cObject</a></tt> than for those which are not.
+<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> than for those which are not.
 If there is no <tt>extends</tt>, the generated class will not be
-derived from <tt><a href="../api/classcObject.html">cObject</a></tt>, thus it will not have <tt>name()</tt>,
+derived from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>, thus it will not have <tt>name()</tt>,
 <tt>className()</tt>, etc. methods.
 To create a class with those methods, you have to explicitly write
-<tt>extends <a href="../api/classcObject.html">cObject</a></tt>.
+<tt>extends <a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>.
 
 <p><pre>
-<b>class</b> MyClass <b>extends</b> <a href="../api/classcObject.html">cObject</a>
+<b>class</b> MyClass <b>extends</b> <a href="../api/classcOwnedObject.html">cOwnedObject</a>
 {
     <b>fields</b>:
         ...
@@ -7206,7 +7204,7 @@ affect the generated code.
 <b>class</b> cSubQueue;
 </pre>
 
-<p>The above syntax assumes that the class is derived from <tt><a href="../api/classcObject.html">cObject</a></tt>
+<p>The above syntax assumes that the class is derived from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>
 either directly or indirectly. If it is not, the <tt>noncobject</tt>
 keyword should be used:
 
@@ -7214,12 +7212,12 @@ keyword should be used:
 <b>class</b> <b>noncobject</b> IPAddress;
 </pre>
 
-<p>The distinction between classes derived and not derived from <tt><a href="../api/classcObject.html">cObject</a></tt>
+<p>The distinction between classes derived and not derived from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>
 is important because the generated code differs at places.
 The generated code is set up so that if you incidentally
 forget the <tt>noncobject</tt> keyword (and thereby mislead the
 message compiler into thinking that your class is rooted in
-<tt><a href="../api/classcObject.html">cObject</a></tt> when in fact it is not), you'll get a C++ compiler
+<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> when in fact it is not), you'll get a C++ compiler
 error in the generated header file.
 
 <p>
@@ -7320,7 +7318,7 @@ class FooPacket : public FooPacket_Base
     FooPacket(const FooPacket& other) : FooPacket_Base(other) {}
     FooPacket& operator=(const FooPacket& other)
         {FooPacket_Base::operator=(other); return *this;}
-    virtual <a href="../api/classcPolymorphic.html">cPolymorphic</a> *dup() {return new FooPacket(*this);}
+    virtual <a href="../api/classcObject.html">cObject</a> *dup() {return new FooPacket(*this);}
 };
 
 Register_Class(FooPacket);
@@ -7396,7 +7394,13 @@ supply your implementation.
 
 <p><H3><A NAME="sec220"/>5.2.7 Using STL in message classes</H3>
 
-<p>You may want to use STL <tt>vector</tt> or <tt>stack</tt> classes in your message classes.
+<p>
+
+
+<p>
+
+<p>
+You may want to use STL <tt>vector</tt> or <tt>stack</tt> classes in your message classes.
 This is possible using abstract fields. After all, <tt>vector</tt> and <tt>stack</tt>
 are representations of a <i>sequence</i> -- same abstraction as dynamic-size vectors.
 That is, you can declare the field as <tt>abstract T fld[]</tt>, and provide
@@ -7451,7 +7455,7 @@ class STLMessage : public STLMessage_Base
         bar = other.bar;
         return *this;
     }
-    virtual <a href="../api/classcPolymorphic.html">cPolymorphic</a> *dup() {return new STLMessage(*this);}
+    virtual <a href="../api/classcObject.html">cObject</a> *dup() {return new STLMessage(*this);}
 
     // foo methods
     virtual void setFooArraySize(unsigned int size) {}
@@ -7503,9 +7507,9 @@ for internal representation of data.
 <p>You can generate:
 
 <p><ul>
-  <li>  classes rooted in <tt><a href="../api/classcObject.html">cObject</a></tt>
+  <li>  classes rooted in <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>
   <li>  messages (default base class is <tt><a href="../api/classcMessage.html">cMessage</a></tt>)
-  <li>  classes not rooted in <tt><a href="../api/classcObject.html">cObject</a></tt>
+  <li>  classes not rooted in <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>
   <li>  plain C structs
 </ul>
 
@@ -7517,7 +7521,7 @@ for internal representation of data.
     <tt>unsigned long</tt>, <tt>double</tt>
   <li>  <tt>string</tt>, a dynamically allocated string, presented as <tt>const char *</tt>
   <li>  fixed-size arrays of the above types
-  <li>  structs, classes (both rooted and not rooted in <tt><a href="../api/classcObject.html">cObject</a></tt>),
+  <li>  structs, classes (both rooted and not rooted in <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>),
     declared with the message syntax or externally in C++ code
   <li>  variable-sized arrays of the above types (stored as a dynamically
     allocated array plus an integer for the array size)
@@ -7769,20 +7773,20 @@ previous chapters:
 <a name="sec:ch-sim-lib:cobject"></a>
 
 <p>
-Classes in the OMNeT++ simulation library are derived from <tt><a href="../api/classcObject.html">cObject</a></tt>.
-Functionality and conventions that come from <tt><a href="../api/classcObject.html">cObject</a></tt>:
+Classes in the OMNeT++ simulation library are derived from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>.
+Functionality and conventions that come from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>:
 <ul>
   <li>name attribute
   <li><tt>className()</tt> member and other member functions giving textual
     information about the object
   <li>conventions for assignment, copying, duplicating the object
-  <li>ownership<!--ownership--> control for containers derived from <tt><a href="../api/classcObject.html">cObject</a></tt>
+  <li>ownership<!--ownership--> control for containers derived from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>
   <li>support for traversing the object tree
   <li>support for inspecting the object in graphical user interfaces (Tkenv)
 </ul>
 
 <p>
-Classes inherit and redefine several <tt><a href="../api/classcObject.html">cObject</a></tt> member functions;
+Classes inherit and redefine several <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> member functions;
 in the following we'll discuss some of the practically important
 ones.
 
@@ -7898,7 +7902,7 @@ The <tt>dup()</tt> member function creates an exact copy of the
 object<!--object!copy-->, duplicating<!--object!duplication-->
 contained objects also if necessary. This is especially useful in the
 case of message objects. <tt>dup()</tt> returns a pointer of type
-<tt><a href="../api/classcObject.html">cObject</a>*</tt>, so it needs to be cast to the proper type:
+<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a>*</tt>, so it needs to be cast to the proper type:
 
 <pre>
 <a href="../api/classcMessage.html">cMessage</a> *copyMsg = (<a href="../api/classcMessage.html">cMessage</a> *) msg-&gt;dup();
@@ -7930,7 +7934,7 @@ the container.
 //..
 for (<a href="../api/classcQueue.html">cQueue</a>::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 {
-    <a href="../api/classcObject.html">cObject</a> *containedObject = queueIter();
+    <a href="../api/classcOwnedObject.html">cOwnedObject</a> *containedObject = queueIter();
 }
 </pre>
 <p>
@@ -8280,7 +8284,7 @@ the statistical classes.
 
 <p>
 <tt><a href="../api/classcQueue.html">cQueue</a></tt> is a container class that acts as a queue.
-<tt><a href="../api/classcQueue.html">cQueue</a></tt> can hold objects of type derived from <tt><a href="../api/classcObject.html">cObject</a></tt>
+<tt><a href="../api/classcQueue.html">cQueue</a></tt> can hold objects of type derived from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>
 (almost all classes from the OMNeT++ library), such as
 <tt><a href="../api/classcMessage.html">cMessage</a></tt>, <tt><a href="../api/classcPar.html">cPar</a></tt>, etc. Internally, <tt><a href="../api/classcQueue.html">cQueue</a></tt>
 uses a double-linked list to store the elements.
@@ -8291,7 +8295,7 @@ are inserted at its head and elements are removed at its tail.
 <p>
 
 <p>  <div align=center>
-    <img src="usmanFig10.gif">
+    <img src="usmanFig10.png">
     <center><i>Figure: <a href="../api/classcQueue.html">cQueue</a>: insertion and removal</i></center>
     <a name="fig:ch-sim-lib:cqueue"></a>
   </div>
@@ -8348,13 +8352,13 @@ queue.remove( msg );
 By default, <tt><a href="../api/classcQueue.html">cQueue</a></tt> implements a FIFO, but it can also act as
 a priority queue, that is, it can keep the inserted objects
 ordered<!--queue!order-->.  If you want to use this feature, you have
-to provide a function that takes two <tt><a href="../api/classcObject.html">cObject</a></tt> pointers,
+to provide a function that takes two <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> pointers,
 compares the two objects and returns -1, 0 or 1 as the result (see the
 reference for details).  An example of setting up an ordered
 <tt><a href="../api/classcQueue.html">cQueue</a></tt>:
 
 <pre>
-<a href="../api/classcQueue.html">cQueue</a> sortedqueue("sortedqueue", <a href="../api/classcObject.html">cObject</a>::cmpbyname, true );
+<a href="../api/classcQueue.html">cQueue</a> sortedqueue("sortedqueue", <a href="../api/classcOwnedObject.html">cOwnedObject</a>::cmpbyname, true );
                         // sorted by object name, ascending
 </pre>
 <p>
@@ -8400,7 +8404,7 @@ for( <a href="../api/classcQueue.html">cQueue</a>::Iterator iter(queue,1); !iter
 
 <p>
 <tt><a href="../api/classcArray.html">cArray</a></tt> is a container class that holds objects derived from
-<tt><a href="../api/classcObject.html">cObject</a></tt>. <tt><a href="../api/classcArray.html">cArray</a></tt> stores the pointers of the objects
+<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>. <tt><a href="../api/classcArray.html">cArray</a></tt> stores the pointers of the objects
 inserted instead of making copies. <tt><a href="../api/classcArray.html">cArray</a></tt> works as an array,
 but it grows automatically when it gets full. Internally,
 <tt><a href="../api/classcArray.html">cArray</a></tt> is implemented with an array of pointers; when the array
@@ -8485,7 +8489,7 @@ for (int i=0; i&lt;array.items(); i++)
 {
   if (array[i]) // is this position used?
   {
-    <a href="../api/classcObject.html">cObject</a> *obj = array[i];
+    <a href="../api/classcOwnedObject.html">cOwnedObject</a> *obj = array[i];
     ev &lt;&lt; obj-&gt;name() &lt;&lt; endl;
   }
 }
@@ -8530,7 +8534,7 @@ double doubleValue();
 There are also overloaded type cast operators for C/C++ primitive types
 including <tt>bool</tt>, <tt>int</tt>, <tt>long</tt>, <tt>double</tt>, <tt>const char *</tt>,
 and also for <tt><a href="../api/classcXMLElement.html">cXMLElement</a> *</tt>.
-    <br><ul><font size=-1>[<tt><a href="../api/classcPar.html">cPar</a></tt> also supports the <tt>void *</tt> and <tt><a href="../api/classcObject.html">cObject</a> *</tt> types,
+    <br><ul><font size=-1>[<tt><a href="../api/classcPar.html">cPar</a></tt> also supports the <tt>void *</tt> and <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a> *</tt> types,
     but these types were used primarily for message parameters before
     message definitions (section <a href="#sec213">[5.2]</a>)
     got supported, and you cannot create such module parameters from NED.]</font></ul>
@@ -8607,8 +8611,8 @@ double d = (double)foo; // the user will be prompted HERE
 Further <tt>set..()</tt> functions to assign other storage types,
 e.g. double function with constant args (MathFuncNoArgs, MathFunc1Args, etc),
 reverse Polish expression, compiled expressions based on
-<tt><a href="../api/classcDoubleExpression.html">cDoubleExpression</a></tt>, random distribution based on a
-<tt><a href="../api/classcStatistic.html">cStatistic</a></tt>'s <tt>random()</tt> method, pointer to <tt><a href="../api/classcObject.html">cObject</a></tt>,
+<tt>cDoubleExpression</tt>, random distribution based on a
+<tt><a href="../api/classcStatistic.html">cStatistic</a></tt>'s <tt>random()</tt> method, pointer to <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>,
 etc. are listed in the next section; however, they are rarely useful
 for programming simulation models.
 
@@ -8697,12 +8701,12 @@ can use math operators (+-*/^% etc), function calls
 The expression must be given in an array of <tt><a href="../api/classcPar.html">cPar</a>::ExprElem</tt> structs.</TD></TR>
 <TR> <TD align=left> C </TD> <TD align=left> compiled<br> expr. </TD> <TD align=left>
 <tt>setDoubleValue( <br>
- <a href="../api/classcDoubleExpression.html">cDoubleExpression</a> *expr); <br>
+ cDoubleExpression *expr); <br>
 double <tt>doubleValue()</tt>; <br>
 op <tt>double()</tt>;</tt>
 </TD> <TD align=left>
 Runtime-evaluated compiled expression. The expression should be
-supplied in a method of an object subclassed from <tt><a href="../api/classcDoubleExpression.html">cDoubleExpression</a></tt>.
+supplied in a method of an object subclassed from <tt>cDoubleExpression</tt>.
 </TD></TR>
 <TR> <TD align=left> T </TD> <TD align=left> distrib. </TD> <TD align=left>
 <tt>setDoubleValue( <br>
@@ -8725,16 +8729,16 @@ Reference to an XML element, found in an XML config file.
 void *<tt>pointerValue()</tt>; <br>
 op void *(); <br>
 op=(void *);</tt> </TD> <TD align=left>
-pointer to a non-<tt><a href="../api/classcObject.html">cObject</a></tt> item (C struct, non-<tt><a href="../api/classcObject.html">cObject</a></tt> object
+pointer to a non-<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> item (C struct, non-<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> object
 etc.) Memory management can be controlled through the <tt>configPointer()</tt>
 member function.</TD></TR>
 <TR> <TD align=left> O </TD> <TD align=left> object pointer </TD> <TD align=left>
-<tt>setObjectValue(<a href="../api/classcObject.html">cObject</a>*); <br>
-<a href="../api/classcObject.html">cObject</a> *<tt>objectValue()</tt>; <br>
-op <a href="../api/classcObject.html">cObject</a> *(); <br>
-op=(<a href="../api/classcObject.html">cObject</a> *);</tt>
+<tt>setObjectValue(<a href="../api/classcOwnedObject.html">cOwnedObject</a>*); <br>
+<a href="../api/classcOwnedObject.html">cOwnedObject</a> *<tt>objectValue()</tt>; <br>
+op <a href="../api/classcOwnedObject.html">cOwnedObject</a> *(); <br>
+op=(<a href="../api/classcOwnedObject.html">cOwnedObject</a> *);</tt>
 </TD> <TD align=left>
- pointer to an object derived from <tt><a href="../api/classcObject.html">cObject</a></tt>.
+ pointer to an object derived from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>.
 Ownership management is done through <tt>takeOwnership()</tt>.</TD></TR>
 <TR> <TD align=left> I </TD> <TD align=left> indirect value </TD> <TD align=left>
 <tt>setRedirection(<a href="../api/classcPar.html">cPar</a>*); <br>
@@ -9149,7 +9153,7 @@ range.
 
 <p>
   <div align=center>
-    <img src="usmanFig12.gif">
+    <img src="usmanFig12.png">
     <center><i>Figure: Setting up a histogram's range</i></center>
   </div>
 
@@ -9167,7 +9171,7 @@ member functions.
 
 <p>
 <div align=center>
-  <img src="usmanFig13.gif">
+  <img src="usmanFig13.png">
   <center><i>Figure: Histogram structure after setting up the cells</i></center>
 </div>
 
@@ -9197,7 +9201,7 @@ histogram types, plus <tt><a href="../api/classcPSquare.html">cPSquare</a></tt> 
 
 <p>
   <div align=center>
-    <img src="usmanFig14.gif">
+    <img src="usmanFig14.png">
     <center><i>Figure: base points and cells</i></center>
   </div>
 
@@ -9363,7 +9367,7 @@ algorithm is the split factor <i>k</i>. Experience shows that <i>k=2</i> worked 
 
 <p>
   <div align=center>
-    <img src="usmanFig15.gif">
+    <img src="usmanFig15.png">
     <center><i>Figure: Illustration of the k-split algorithm, <i>k=2</i>. The
       numbers in boxes represent the observation count values</i></center>
   </div>
@@ -9408,7 +9412,7 @@ where <i>&lambda; is in [0,1]</i>
 
 <p>
   <div align=center>
-    <img src="usmanFig16.gif">
+    <img src="usmanFig16.png">
     <center><i>Figure: Density estimation from the k-split cell tree. We
       assume <i>&lambda;=0</i>, i.e. we distribute mother observations
       evenly.</i></center>
@@ -9869,7 +9873,7 @@ which makes it possible to display the contents on field level.
 
 <p>The <tt>WATCH</tt> macros to be used for this purpose are <tt>WATCH_OBJ()</tt>
 and <tt>WATCH_PTR()</tt>. Both expect the object to be subclassed from
-<tt><a href="../api/classcPolymorphic.html">cPolymorphic</a></tt>; <tt>WATCH_OBJ()</tt> expects a reference to such class,
+<tt><a href="../api/classcObject.html">cObject</a></tt>; <tt>WATCH_OBJ()</tt> expects a reference to such class,
 and <tt>WATCH_PTR()</tt> expects a pointer variable.
 
 <pre>
@@ -9931,7 +9935,7 @@ or selected objects of the simulation (including the objects created
 in module functions by the user) into the snapshot file<!--snapshot file-->.
 
 <pre>
-bool snapshot(<a href="../api/classcObject.html">cObject</a> *obj = &simulation, const char *label = NULL);
+bool snapshot(<a href="../api/classcOwnedObject.html">cOwnedObject</a> *obj = &simulation, const char *label = NULL);
 </pre>
 <p>
 
@@ -9991,12 +9995,12 @@ end
 end
 
 (<a href="../api/classcArray.html">cArray</a>) `token.parameters' begin
-  num_stations (<a href="../api/classcModulePar.html">cModulePar</a>) 3 (L)
-  num_messages (<a href="../api/classcModulePar.html">cModulePar</a>) 10000 (L)
-  ia_time      (<a href="../api/classcModulePar.html">cModulePar</a>) truncnormal(0.005,0.003) (F)
-  THT          (<a href="../api/classcModulePar.html">cModulePar</a>) 0.01 (D)
-  data_rate    (<a href="../api/classcModulePar.html">cModulePar</a>) 4000000 (L)
-  cable_delay  (<a href="../api/classcModulePar.html">cModulePar</a>) 1e-06 (D)
+  num_stations (cModulePar) 3 (L)
+  num_messages (cModulePar) 10000 (L)
+  ia_time      (cModulePar) truncnormal(0.005,0.003) (F)
+  THT          (cModulePar) 0.01 (D)
+  data_rate    (cModulePar) 4000000 (L)
+  cable_delay  (cModulePar) 1e-06 (D)
 end
 
 [...]
@@ -10115,31 +10119,31 @@ effect with local variables.
 <p><H2><A NAME="sec269"/>6.11 Deriving new classes</H2>
 <a name="sec:ch-sim-lib:deriving-new-classes"></a>
 
-<p><H3><A NAME="sec270"/>6.11.1 <a href="../api/classcObject.html">cObject</a> or not?</H3>
+<p><H3><A NAME="sec270"/>6.11.1 <a href="../api/classcOwnedObject.html">cOwnedObject</a> or not?</H3>
 
 <p>If you plan to implement a completely new class (as opposed to
 subclassing something already present in OMNeT++), you have
 to ask yourself whether you want the new class to be based
-on <tt><a href="../api/classcObject.html">cObject</a></tt> or not.
+on <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> or not.
 Note that we are <i>not</i> saying you should always
-subclass from <tt><a href="../api/classcObject.html">cObject</a></tt>.
+subclass from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>.
 Both solutions have advantages and disadvantages, which you
 have to consider individually for each class.
 
-<p><tt><a href="../api/classcObject.html">cObject</a></tt> already carries (or provides a framework for)
+<p><tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> already carries (or provides a framework for)
 significant functionality that is either relevant to
-your particular purpose or not. Subclassing <tt><a href="../api/classcObject.html">cObject</a></tt>
+your particular purpose or not. Subclassing <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>
 generally means you have more code to write (as you <i>have to</i>
 redefine certain virtual functions and adhere to conventions)
 and your class will be a bit more heavy-weight.
 However, if you need to store your objects in OMNeT++ objects like <tt><a href="../api/classcQueue.html">cQueue</a></tt>,
 or you'll want to store OMNeT++ classes in your object,
-then you <i>must</i> subclass from <tt><a href="../api/classcObject.html">cObject</a></tt>.
+then you <i>must</i> subclass from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>.
   <br><ul><font size=-1>[For simplicity, in the these sections ``OMNeT++ object''
   should be understood as ``object of a class subclassed from
-  <tt><a href="../api/classcObject.html">cObject</a></tt>'']</font></ul>
+  <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>'']</font></ul>
 
-<p>The most significant features <tt><a href="../api/classcObject.html">cObject</a></tt> has is
+<p>The most significant features <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> has is
 the name string (which has to be stored somewhere, so it has
 its overhead) and ownership management (see section
 <a href="#sec274">[6.12]</a>) which
@@ -10147,18 +10151,18 @@ also has the advantages but also some costs.
 
 <p>As a general rule, small <tt>struct</tt>-like classes like <tt>IPAddress</tt>,
 <tt>MACAddress</tt>, <tt>RoutingTableEntry</tt>, <tt>TCPConnectionDescriptor</tt>, etc.
-are better <i>not</i> sublassed from <tt><a href="../api/classcObject.html">cObject</a></tt>.
+are better <i>not</i> sublassed from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>.
 If your class has at least one virtual member function, consider
-subclassing from <tt><a href="../api/classcPolymorphic.html">cPolymorphic</a></tt>, which does not impose any
+subclassing from <tt><a href="../api/classcObject.html">cObject</a></tt>, which does not impose any
 extra cost because it doesn't have data members at all, only
 virtual functions.
 
 <p>
-<H3><A NAME="sec271"/>6.11.2 <a href="../api/classcObject.html">cObject</a> virtual methods</H3>
+<H3><A NAME="sec271"/>6.11.2 <a href="../api/classcOwnedObject.html">cOwnedObject</a> virtual methods</H3>
 
 <p>Most classes in the simulation class library are descendants of
-<tt><a href="../api/classcObject.html">cObject</a></tt>. If you want to derive a new class from
-<tt><a href="../api/classcObject.html">cObject</a></tt> or a <tt><a href="../api/classcObject.html">cObject</a></tt> descendant, you must redefine
+<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>. If you want to derive a new class from
+<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> or a <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> descendant, you must redefine
 some member functions so that objects of the new type can fully
 co-operate with other parts of the simulation system. A more or less
 complete list of these functions is presented here. You do not need to
@@ -10181,7 +10185,7 @@ redefine <tt>forEachChild()</tt> unless your class is a container class.
         name (<tt>name()</tt>) of the other object it receives, then call the
         assignment operator (see below).
   <li><i>Destructor</i>.
-  <li><i>Duplication function,</i> <tt><a href="../api/classcPolymorphic.html">cPolymorphic</a> *dup() const</tt>.
+  <li><i>Duplication function,</i> <tt><a href="../api/classcObject.html">cObject</a> *dup() const</tt>.
         It should create and return an exact duplicate of the object.
         It is usually a one-line function, implemented with the help
         of the <tt>new</tt> operator and the copy constructor.
@@ -10191,7 +10195,7 @@ redefine <tt>forEachChild()</tt> unless your class is a container class.
         if the object contains pointers to other objects.
 </ul>
 
-<p>If your class contains other objects subclassed from <tt><a href="../api/classcObject.html">cObject</a></tt>,
+<p>If your class contains other objects subclassed from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>,
 either via pointers or as data member, the following function <b>should</b>
 be implemented:
 
@@ -10199,7 +10203,7 @@ be implemented:
   <li><i>Iteration function,</i> <tt>void forEachChild(<a href="../api/classcVisitor.html">cVisitor</a> * v)</tt>.
         The implementation should call the function passed
         for each object it contains via pointer or as data member;
-        see the API Reference on <tt><a href="../api/classcObject.html">cObject</a></tt> on how to implement
+        see the API Reference on <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> on how to implement
         <tt>forEachChild()</tt>. <tt>forEachChild()</tt> makes it possible
         for Tkenv to display the object tree to you, to perform searches on it, etc.
         It is also used by <tt>snapshot()</tt> and some other library functions.
@@ -10233,20 +10237,20 @@ such as <tt>rng-class="..."</tt> or <tt>scheduler-class="..."</tt>.
 <p>For example, an omnetpp.ini entry such as
 
 <pre>
-rng-class="cMersenneTwister"
+rng-class="<a href="../api/classcMersenneTwister.html">cMersenneTwister</a>"
 </pre>
 <p>
 would result in something like the following code to be executed
 for creating the RNG objects:
 
 <pre>
-<a href="../api/classcRNG.html">cRNG</a> *rng = check_and_cast&lt;<a href="../api/classcRNG.html">cRNG</a>*&gt;(createOne("cMersenneTwister"));
+<a href="../api/classcRNG.html">cRNG</a> *rng = check_and_cast&lt;<a href="../api/classcRNG.html">cRNG</a>*&gt;(createOne("<a href="../api/classcMersenneTwister.html">cMersenneTwister</a>"));
 </pre>
 <p>
 But for that to work, we needed to have the following line somewhere in the code:
 
 <pre>
-Register_Class(cMersenneTwister);
+Register_Class(<a href="../api/classcMersenneTwister.html">cMersenneTwister</a>);
 </pre>
 <p>
 <tt>createOne()</tt> is also needed by the parallel distributed simulation feature
@@ -10257,11 +10261,11 @@ on the receiving side.
 <H3><A NAME="sec273"/>6.11.4 Details</H3>
 
 <p>We'll go through the details using an example. We create a new
-class <tt>NewClass</tt>, redefine all above mentioned <tt><a href="../api/classcObject.html">cObject</a></tt>
+class <tt>NewClass</tt>, redefine all above mentioned <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>
 member functions, and explain the conventions, rules and tips
 associated with them.
 To demonstrate as much as possible, the class will contain
-an <tt>int</tt> data member, dynamically allocated non-<tt><a href="../api/classcObject.html">cObject</a></tt> data
+an <tt>int</tt> data member, dynamically allocated non-<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt> data
 (an array of <tt>double</tt>s),
 an OMNeT++ object as data member (a <tt><a href="../api/classcQueue.html">cQueue</a></tt>), and
 a dynamically allocated OMNeT++ object (a <tt><a href="../api/classcMessage.html">cMessage</a></tt>).
@@ -10275,7 +10279,7 @@ of all methods discussed in the previous section.
 //
 #include &lt;omnetpp.h&gt;
 
-class NewClass : public <a href="../api/classcObject.html">cObject</a>
+class NewClass : public <a href="../api/classcOwnedObject.html">cOwnedObject</a>
 {
   protected:
     int data;
@@ -10287,7 +10291,7 @@ class NewClass : public <a href="../api/classcObject.html">cObject</a>
     NewClass(const char *name=NULL, int d=0);
     NewClass(const NewClass& other);
     virtual ~NewClass();
-    virtual <a href="../api/classcPolymorphic.html">cPolymorphic</a> *dup() const;
+    virtual <a href="../api/classcObject.html">cObject</a> *dup() const;
     NewClass& operator=(const NewClass& other);
 
     virtual void forEachChild(<a href="../api/classcVisitor.html">cVisitor</a> *v);
@@ -10310,7 +10314,7 @@ Here's the top of the <tt>.cc</tt> file:
 Register_Class( NewClass );
 
 
-NewClass::NewClass(const char *name, int d) : <a href="../api/classcObject.html">cObject</a>(name)
+NewClass::NewClass(const char *name, int d) : <a href="../api/classcOwnedObject.html">cOwnedObject</a>(name)
 {
     data = d;
     array = new double[10];
@@ -10321,11 +10325,11 @@ NewClass::NewClass(const char *name, int d) : <a href="../api/classcObject.html"
 <p>
 The constructor (above) calls the base class constructor with
 the name of the object, then initializes its own data members.
-You need to call <tt>take()</tt> for <tt><a href="../api/classcObject.html">cObject</a></tt>-based data members.
+You need to call <tt>take()</tt> for <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>-based data members.
 
 <p>
 <pre>
-NewClass::NewClass(const NewClass& other) : <a href="../api/classcObject.html">cObject</a>(other.name())
+NewClass::NewClass(const NewClass& other) : <a href="../api/classcOwnedObject.html">cOwnedObject</a>(other.name())
 {
     array = new double[10];
     msg = NULL;
@@ -10344,7 +10348,7 @@ into the function body.)
 allocated object/memory) before calling the assignment operator,
 to avoid crashes.
 
-<p>You need to call <tt>take()</tt> for <tt><a href="../api/classcObject.html">cObject</a></tt>-based data members.
+<p>You need to call <tt>take()</tt> for <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>-based data members.
 
 <pre>
 NewClass::~NewClass()
@@ -10356,12 +10360,12 @@ NewClass::~NewClass()
 </pre>
 <p>
 The destructor should delete all data structures the object allocated.
-<tt><a href="../api/classcObject.html">cObject</a></tt>-based objects should <i>only</i> be deleted if they
+<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>-based objects should <i>only</i> be deleted if they
 are owned by the object -- details will be covered in section
 <a href="#sec274">[6.12]</a>.
 
 <pre>
-<a href="../api/classcPolymorphic.html">cPolymorphic</a> *NewClass::dup() const
+<a href="../api/classcObject.html">cObject</a> *NewClass::dup() const
 {
     return new NewClass(*this);
 }
@@ -10374,7 +10378,7 @@ NewClass& NewClass::operator=(const NewClass& other)
 {
     if (&other==this)
         return *this;
-    <a href="../api/classcObject.html">cObject</a>::operator=(other);
+    <a href="../api/classcOwnedObject.html">cOwnedObject</a>::operator=(other);
 
     data = other.data;
 
@@ -10397,7 +10401,7 @@ NewClass& NewClass::operator=(const NewClass& other)
 Complexity associated with copying and duplicating the object
 is concentrated in the assignment operator, so it is usually
 the one that requires the most work from you of all methods
-required by <tt><a href="../api/classcObject.html">cObject</a></tt>.
+required by <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>.
 
 <p>If you do not want to implement object copying and duplication,
 you should implement the assigment operator to call
@@ -10455,7 +10459,7 @@ The <tt>info()</tt> method should produce a concise, one-line string
 about the object. You should try not to exceed 40-80 characters, since the
 string will be shown in tooltips and listboxes.
 
-<p>See the virtual functions of <tt><a href="../api/classcPolymorphic.html">cPolymorphic</a></tt> and <tt><a href="../api/classcObject.html">cObject</a></tt>
+<p>See the virtual functions of <tt><a href="../api/classcObject.html">cObject</a></tt> and <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>
 in the class library reference for more information. The sources of the
 Sim library (<tt>include/</tt>, <tt>src/sim/</tt>) can serve as further examples.
 
@@ -10472,7 +10476,7 @@ supporting Tkenv inspectors.
 
 <p>Container classes like <tt><a href="../api/classcQueue.html">cQueue</a></tt> own the objects inserted
 into them. But this is not limited to objects inserted into a container:
-<i>every <tt><a href="../api/classcObject.html">cObject</a></tt>-based object has an owner all the time</i>.
+<i>every <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>-based object has an owner all the time</i>.
 From the user's point of view, ownership is managed transparently.
 For example, when you create a new <tt><a href="../api/classcMessage.html">cMessage</a></tt>,
 it will be owned by the simple module. When you send it, it will
@@ -10482,11 +10486,11 @@ the message in another one, the encapsulating message will become
 the owner. When you decapsulate it again, the currently active
 simple module becomes the owner.
 
-<p>The <tt>owner()</tt> method, defined in <tt><a href="../api/classcObject.html">cObject</a></tt>, returns the
+<p>The <tt>owner()</tt> method, defined in <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>, returns the
 owner of the object:
 
 <pre>
-<a href="../api/classcObject.html">cObject</a> *o = msg-&gt;owner();
+<a href="../api/classcOwnedObject.html">cOwnedObject</a> *o = msg-&gt;owner();
 ev &lt;&lt; "Owner of " &lt;&lt; msg-&gt;name() &lt;&lt; " is: " &lt;&lt;
    &lt;&lt; "(" &lt;&lt; o-&gt;className() &lt;&lt; ") " &lt;&lt; o-&gt;fullPath() &lt;&lt; endl;
 </pre>
@@ -10553,7 +10557,7 @@ has to be supported by the participating classes themselves.
 It will be useful to look inside <tt><a href="../api/classcQueue.html">cQueue</a></tt> and <tt><a href="../api/classcArray.html">cArray</a></tt>,
 because they might give you a hint what behavior you need
 to implement when you want to use non-OMNeT++ container classes
-to store messages or other <tt><a href="../api/classcObject.html">cObject</a></tt>-based objects.
+to store messages or other <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>-based objects.
 
 <p>
 <p class="subheading">Insertion</p>
@@ -10579,7 +10583,7 @@ This behavior can be changed via the <i>takeOwnership</i> flag.
 <p>The corresponding source code:
 
 <pre>
-void <a href="../api/classcQueue.html">cQueue</a>::insert(<a href="../api/classcObject.html">cObject</a> *obj)
+void <a href="../api/classcQueue.html">cQueue</a>::insert(<a href="../api/classcOwnedObject.html">cOwnedObject</a> *obj)
 {
     // insert into queue data structure
     ...
@@ -10613,8 +10617,8 @@ When you remove an object from a queue or array, the ownership
 is expected to be transferred to the simple module's local objects list.
 This is acomplished by the <tt>drop()</tt> function, which transfers the
 ownership to the object's default owner.
-<tt>defaultOwner()</tt> is a virtual method returning <tt><a href="../api/classcObject.html">cObject</a>*</tt>
-defined in <tt><a href="../api/classcObject.html">cObject</a></tt>, and its implementation returns
+<tt>defaultOwner()</tt> is a virtual method returning <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a>*</tt>
+defined in <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>, and its implementation returns
 the currently executing simple module's local object list.
 
 <p>As an example, the <tt>remove()</tt> method of <tt><a href="../api/classcQueue.html">cQueue</a></tt> is
@@ -10623,7 +10627,7 @@ implemented like this:
   differently, but the meaning is the same.]</font></ul>
 
 <pre>
-<a href="../api/classcObject.html">cObject</a> *<a href="../api/classcQueue.html">cQueue</a>::remove(<a href="../api/classcObject.html">cObject</a> *obj)
+<a href="../api/classcOwnedObject.html">cOwnedObject</a> *<a href="../api/classcQueue.html">cQueue</a>::remove(<a href="../api/classcOwnedObject.html">cOwnedObject</a> *obj)
 {
     // remove object from queue data structure
     ...
@@ -10739,7 +10743,7 @@ and running simulation programs.
 
 <p>
   <div align=center>
-    <img src="usmanFig17.gif">
+    <img src="usmanFig17.png">
     <center><i>Figure: Building and running simulation</i></center>
   </div>
 
@@ -11345,11 +11349,11 @@ If enabled, OMNeT++ will split <tt>send()</tt> calls to two steps.</TD></TR>
 <TR> <TD align=left> <tt>sim-time-limit</tt> = </TD> <TD align=left> Duration of the simulation in simulation time.</TD></TR>
 <TR> <TD align=left> <tt>cpu-time-limit</tt> = </TD> <TD align=left> Duration of the simulation in real time.</TD></TR>
 <TR> <TD align=left> <tt>num-rngs</tt> = 1 </TD> <TD align=left> Number of random number generators.</TD></TR>
-<TR> <TD align=left> <tt>rng-class</tt> = <tt>"cMersenneTwister"</tt> </TD> <TD align=left> The RNG class to be used. It can be
-<tt>"cMersenneTwister"</tt>, <tt>"cLCG32"</tt>, or <tt>"cAkaroaRNG"</tt>,
+<TR> <TD align=left> <tt>rng-class</tt> = <tt>"<a href="../api/classcMersenneTwister.html">cMersenneTwister</a>"</tt> </TD> <TD align=left> The RNG class to be used. It can be
+<tt>"<a href="../api/classcMersenneTwister.html">cMersenneTwister</a>"</tt>, <tt>"<a href="../api/classcLCG32.html">cLCG32</a>"</tt>, or <tt>"cAkaroaRNG"</tt>,
 or you can use your own RNG class (it must be subclassed from <tt><a href="../api/classcRNG.html">cRNG</a></tt>).</TD></TR>
 <TR> <TD align=left> <tt>seed-N-mt</tt> =, <tt>seed-N-lcg32</tt> = </TD> <TD align=left> Specifies seeds for the
-cMersenneTwister and the cLCG32 RNGs (substitute N with the RNG number: 0, 1, 2...);
+<a href="../api/classcMersenneTwister.html">cMersenneTwister</a> and the <a href="../api/classcLCG32.html">cLCG32</a> RNGs (substitute N with the RNG number: 0, 1, 2...);
 default is auto seed selection. This obsoletes the <i>random-seed=</i> and
 <i>gen0-seed=</i>, <i>gen1-seed=</i>, etc. entries which are no longer in use.</TD></TR>
 <TR> <TD align=left> <tt>total-stack-kb</tt> = </TD> <TD align=left> Specifies the total stack size (sum of all coroutine stacks)
@@ -11786,8 +11790,8 @@ Referencing an RNG number greater or equal to this number
 <H3><A NAME="sec305"/>8.6.2 RNG choice</H3>
 
 <p>The <tt>rng-class=</tt> configuration entry sets the random number
-generator class to be used. It defaults to <tt>"cMersenneTwister"</tt>,
-the Mersenne Twister RNG. Other available classes are <tt>"cLCG32"</tt>
+generator class to be used. It defaults to <tt>"<a href="../api/classcMersenneTwister.html">cMersenneTwister</a>"</tt>,
+the Mersenne Twister RNG. Other available classes are <tt>"<a href="../api/classcLCG32.html">cLCG32</a>"</tt>
 (the "legacy" RNG of OMNeT++ 2.3 and earlier versions, with a cycle length
 of <i>2<sup>31</sup>-2</i>), and <tt>"cAkaroaRNG"</tt> (Akaroa's random number generator,
 see section <a href="#sec323">[8.10]</a>).
@@ -11847,7 +11851,7 @@ so that the generated sequences don't overlap.
 ./mysim -r 3
 </pre>
 <p>
-For the <tt>cMersenneTwister</tt> random number generator, selecting seeds
+For the <tt><a href="../api/classcMersenneTwister.html">cMersenneTwister</a></tt> random number generator, selecting seeds
 so that the generated sequences don't overlap is easy,
 due to the extremely long sequence of the RNG.
 The RNG is initialized from the 32-bit seed value <i>seed = runNumber*numRngs + rngNumber</i>.
@@ -11858,14 +11862,14 @@ the same number of RNGs set).
     long sequence of MT. The author would however be interested in papers
     published about seed selection for MT.]</font></ul>
 
-<p>For the <tt>cLCG32</tt> random number generator, the situation is more difficult,
+<p>For the <tt><a href="../api/classcLCG32.html">cLCG32</a></tt> random number generator, the situation is more difficult,
 because the range of this RNG is rather short (<i>2<sup>31</sup>-1</i>, about 2 billion).
 For this RNG, OMNeT++ uses a table of 256 pre-generated seeds, equally spaced
 in the RNG's sequence. Index into the table is calculated with the
 <i>runNumber*numRngs + rngNumber</i> formula. Care should be taken that
 one doesn't exceed 256 with the index, or it will wrap and the
-same seeds will be used again. It is best not to use the <tt>cLCG32</tt>
-at all -- <tt>cMersenneTwister</tt> is superior in every respect.
+same seeds will be used again. It is best not to use the <tt><a href="../api/classcLCG32.html">cLCG32</a></tt>
+at all -- <tt><a href="../api/classcMersenneTwister.html">cMersenneTwister</a></tt> is superior in every respect.
 
 <p>
 <H3><A NAME="sec308"/>8.6.5 Manual seed configuration</H3>
@@ -11875,7 +11879,7 @@ Reasons for doing that may be that you want to use variance reduction
 techniques, or you may want to use the same seeds for several simulation
 runs.
 
-<p>For the cLCG32 RNG, OMNeT++ provides a standalone program to generate
+<p>For the <a href="../api/classcLCG32.html">cLCG32</a> RNG, OMNeT++ provides a standalone program to generate
 seed values (<tt>seedtool</tt> is discussed in section
 <a href="#sec309">[8.6.6]</a>), and you can specify those seeds explicitly
 in the ini file.
@@ -11885,7 +11889,7 @@ number generators, and uses different seed values for each run:
 
 <pre>
 [General]
-rng-class=cLCG32  # needed because the default is cMersenneTwister
+rng-class=<a href="../api/classcLCG32.html">cLCG32</a>  # needed because the default is <a href="../api/classcMersenneTwister.html">cMersenneTwister</a>
 num-rngs = 2
 
 [Run 1]
@@ -11922,7 +11926,7 @@ into the <tt>[General]</tt> section.
 <a name="sec:ch-run-sim:seedtool"></a>
 
 <p>The <tt>seedtool</tt> program can be used for selecting
-seeds for the cLCG32 RNG. When started without command-line
+seeds for the <a href="../api/classcLCG32.html">cLCG32</a> RNG. When started without command-line
 arguments, the program prints out the following help:
 
 <pre>
@@ -12989,11 +12993,11 @@ the Tkenv menu, and reviewing the list in the dialog that pops up.
 (If the model is large, it may take a while for the dialog to appear.)
 
 <p>If the number of messages is stable, it is still possible
-you're leaking other <tt><a href="../api/classcObject.html">cObject</a></tt>-based objects. You can
+you're leaking other <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>-based objects. You can
 also find them using Tkenv's <i>Inspect|From list of all objects...</i>
 function.
 
-<p>If you're leaking non-<tt><a href="../api/classcObject.html">cObject</a></tt>-based objects or just
+<p>If you're leaking non-<tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>-based objects or just
 memory blocks (<tt>struct</tt>s, <tt>int</tt>/<tt>double</tt>/<tt>struct</tt> arrays,
 etc, allocated by <tt>new</tt>), you cannot find them via Tkenv.
 You'll probably need a specialized memory debugging tool like
@@ -13468,40 +13472,40 @@ specify a color with about 50% brightness (e.g. #808080 mid-grey,
 <H2><A NAME="sec341"/>9.3 The icons</H2>
 <a name="sec:ch-graphics:icon-library"></a>
 
-<p><H3><A NAME="sec342"/>9.3.1 The bitmap path</H3>
+<p><H3><A NAME="sec342"/>9.3.1 The image path</H3>
 
 <p>In the current OMNeT++ version, module icons are GIF files. The icons shipped
-with OMNeT++ are in the <tt>bitmaps/</tt> subdirectory. Both the GNED editor
+with OMNeT++ are in the <tt>images/</tt> subdirectory. Both the GNED editor
 and Tkenv need the exact location of this directory to load the icons.
 
-<p>Icons are loaded from all directories in the <i>bitmap path</i>,
+<p>Icons are loaded from all directories in the <i>image path</i>,
 a semicolon-separated list of directories.
-The default bitmap path is compiled into GNED and Tkenv with the value
-<tt>"<i>omnetpp-dir</i>/bitmaps;./bitmaps"</tt> -- which will work fine
+The default image path is compiled into GNED and Tkenv with the value
+<tt>"<i>omnetpp-dir</i>/images;./images;./bitmaps"</tt> -- which will work fine
 as long as you don't move the directory, and you'll also be able to
-load more icons from the <tt>bitmaps/</tt> subdirectory of the current
+load more icons from the <tt>images/</tt> subdirectory of the current
 directory. As people usually run simulation models from the model's
 directory, this practically means that custom icons placed in the
-<tt>bitmaps/</tt> subdirectory of the model's directory are automatically
+<tt>images/</tt> subdirectory of the model's directory are automatically
 loaded.
 
-<p>The compiled-in bitmap path can be overridden with the <tt>OMNETPP_BITMAP_PATH</tt>
+<p>The compiled-in image path can be overridden with the <tt>OMNETPP_IMAGE_PATH</tt>
 environment variable. The way of setting environment variables is system
 specific: in Unix, if you're using the bash shell, adding a line
 
 <pre>
-export OMNETPP_BITMAP_PATH="/home/you/bitmaps;./bitmaps"
+export OMNETPP_IMAGE_PATH="/home/you/images;./images"
 </pre>
 <p>
 to <tt>~/.bashrc</tt> or <tt>~/.bash_profile</tt> will do; on Windows, environment variables
 can be set via the <i>My Computer --&gt; Properties</i> dialog.
 
-<p>You can also add to the bitmap path from <tt>omnetpp.ini</tt>, with
-the <tt>bitmap-path</tt> setting:
+<p>You can also add to the image path from <tt>omnetpp.ini</tt>, with
+the <tt>image-path</tt> setting:
 
 <pre>
 [Tkenv]
-bitmap-path = "/home/you/model-framework/bitmaps;/home/you/extra-bitmaps"
+image-path = "/home/you/model-framework/images;/home/you/extra-images"
 </pre>
 <p>
 The value should be quoted, otherwise the first semicolon separator will be
@@ -13525,7 +13529,7 @@ by folders. These categories include:
 <p>Old (pre-3.0) icons are in the <tt>old/</tt> folder.
 
 <p>Tkenv and GNED now load icons from subdirectories of all directories
-of the bitmap path, and these icons can be referenced from display strings
+of the image path, and these icons can be referenced from display strings
 by naming the subdirectory (subdirectories) as well:
 <tt>"subdir/icon"</tt>, <tt>"subdir/subdir2/icon"</tt>, etc.
 
@@ -14755,7 +14759,7 @@ to display these values.
 
 <p>
   <div align=center>
-    <img src="perfbar-screenshot.gif">
+    <img src="perfbar-screenshot.png">
     <center><i>Figure: Performance bar in OMNeT++ showing <i>P</i>, <i>R</i> and <i>E</i></i></center>
     <a name="fig:perfbar-screenshot"></a>
   </div>
@@ -14880,7 +14884,7 @@ Our OMNeT++ model for CQN wraps tandems into compound modules.
 <p>
 
 <p>  <div align=center>
-    <img src="cqn-model.gif">
+    <img src="cqn-model.png">
     <center><i>Figure: The Closed Queueing Network (CQN) model</i></center>
     <a name="fig:cqn-model"></a>
   </div>
@@ -14892,7 +14896,7 @@ by delays on the marked links.
 
 <p>
   <div align=center>
-    <img src="cqn-partitioning.gif">
+    <img src="cqn-partitioning.png">
     <center><i>Figure: Partitioning the CQN model</i></center>
     <a name="fig:cqn-partitioning"></a>
   </div>
@@ -14954,7 +14958,7 @@ EITs and EOTs can be inspected, etc.
 
 <p>
   <div align=center>
-    <img src="parsim-screenshot.gif">
+    <img src="parsim-screenshot.png">
     <center><i>Figure: Screenshot of CQN running in three LPs</i></center>
     <a name="fig:parsim-screenshot"></a>
   </div>
@@ -14997,7 +15001,7 @@ everywhere else (Figure <a href="#fig:inst">below</a>).
 <p>
 
 <p>  <div align=center>
-    <img src="placeholders.gif">
+    <img src="placeholders.png">
     <center><i>Figure: Placeholder modules and proxy gates</i></center>
     <a name="fig:plach"></a>
   </div>
@@ -15005,7 +15009,7 @@ everywhere else (Figure <a href="#fig:inst">below</a>).
 <p>
 
 <p>  <div align=center>
-    <img src="placeholders2.gif">
+    <img src="placeholders2.png">
     <center><i>Figure: Instantiating compound modules</i></center>
     <a name="fig:inst"></a>
   </div>
@@ -15134,7 +15138,7 @@ architecture is depicted in Figure <a href="#fig:parsim-arch">below</a>.
 
 <p>
   <div align=center>
-    <img src="parsim-arch.gif">
+    <img src="parsim-arch.png">
     <center><i>Figure: Architecture of OMNeT++ PDES implementation</i></center>
     <a name="fig:parsim-arch"></a>
   </div>
@@ -15238,7 +15242,7 @@ high-level architecture of OMNeT++ simulations:
 
 <p>
   <div align=center>
-    <img src="usmanFig18.gif">
+    <img src="usmanFig18.png">
     <center><i>Figure: Architecture of OMNeT++ simulation programs</i></center>
   </div>
 
@@ -15505,11 +15509,11 @@ as global objects.
 </TD> <TD align=left>
 <tt><tt>Define_Network()</tt></tt> <br>
 <br>
-<tt><tt><a href="../api/classcNetworkType.html">cNetworkType</a></tt></tt>
+<tt><tt>cNetworkType</tt></tt>
 </TD> <TD align=left>
  List of available networks<!--network!list of-->.
-Every <tt><a href="../api/classcNetworkType.html">cNetworkType</a></tt> object is a factory for a specific
-network type. That is, a <tt><a href="../api/classcNetworkType.html">cNetworkType</a></tt> object has methods
+Every <tt>cNetworkType</tt> object is a factory for a specific
+network type. That is, a <tt>cNetworkType</tt> object has methods
 for setting up a specific network.
 <tt>Define_Network()</tt> macros occur in the code generated by the NED
 compiler.</TD></TR>
@@ -15538,11 +15542,11 @@ a class derived from <tt><a href="../api/classcChannel.html">cChannel</a></tt>. 
 </TD> <TD align=left>
 <tt>Register_Class()</tt> <br>
 <br>
-<tt><a href="../api/classcClassRegister.html">cClassRegister</a></tt>
+<tt>cClassRegister</tt>
 </TD> <TD align=left>
  List of available classes of which one can create
 an instance.
-Every <tt><a href="../api/classcClassRegister.html">cClassRegister</a></tt> object is a factory for objects
+Every <tt>cClassRegister</tt> object is a factory for objects
 of a specific class. The list is used by the <tt>createOne()</tt> function:
 it can create an object of any class, given the class name as a string.
 (E.g. the statement <tt>ptr = createOne("<a href="../api/classcArray.html">cArray</a>")</tt> creates a <tt><a href="../api/classcArray.html">cArray</a></tt> object.)
@@ -15552,11 +15556,11 @@ To enable a class to work with <tt>createOne()</tt>, one has to register it usin
 </TD> <TD align=left>
 <tt><tt>Define_Function()</tt></tt> <br>
 <br>
-<tt><tt><a href="../api/classcFunctionType.html">cFunctionType</a></tt></tt>
+<tt><tt>cFunctionType</tt></tt>
 </TD> <TD align=left>
  List of functions taking <tt>double</tt>s and returning a <tt>double</tt>
 (see type <tt>MathFuncNoArg</tt>...<tt>MathFunc3Args</tt>).
-A <tt><a href="../api/classcFunctionType.html">cFunctionType</a></tt> object holds a pointer to the function and knows
+A <tt>cFunctionType</tt> object holds a pointer to the function and knows
 how many arguments it takes.</TD></TR>
 </table>
 
@@ -15568,7 +15572,7 @@ how many arguments it takes.</TD></TR>
 <tt>src/envir/</tt> directory (common part) and in the <tt>src/cmdenv/</tt>,
 <tt>src/tkenv/</tt> directories.
 
-<p>The classes in the user interface are <i>not</i> derived from <tt><a href="../api/classcObject.html">cObject</a></tt>,
+<p>The classes in the user interface are <i>not</i> derived from <tt><a href="../api/classcOwnedObject.html">cOwnedObject</a></tt>,
 they are completely separated from the simulation kernel.
 
 <p>
@@ -15937,227 +15941,333 @@ default ::=
 <p>
 </BODY>
 </HTML>
-<H1><A NAME="sec400"/>15 References</H1>
 
-<p><a name="bib-bagrodia00"></a>[BT00]&nbsp;&nbsp;
-R. L. Bagrodia and M. Takai.
- Performance Evaluation of Conservative Algorithms in Parallel
-  Simulation Languages.
- 11(4):395--414, 2000.
 
-<p><a name="bib-chandymisra79"></a>[CM79]&nbsp;&nbsp;
-M. Chandy and J. Misra.
- Distributed Simulation: A Case Study in Design and Verification of
-  Distributed Programs.
-  IEEE Transactions on Software Engineering, (5):440--452, 1979.
+@BookJain91,
+  author = "Jain, Raj",
+  title = The Art of Computer Systems Performance Analysis,
+  publisher = "Wiley, New York",
+  year = 1991,
 
-<p><a name="bib-Entacher02"></a>[EHW02]&nbsp;&nbsp;
-K. Entacher, B. Hechenleitner, and S. Wegenkittl.
- A Simple OMNeT++ Queuing Experiment Using Parallel Streams.
-  PARALLEL NUMERICS'02 - Theory and Applications, pages 89--105,
-  2002.
- Editors: R. Trobec, P. Zinterhof, M. Vajtersic and A. Uhl.
 
-<p><a name="bib-Akaroa99"></a>[EPM99]&nbsp;&nbsp;
-G. Ewing, K. Pawlikowski, and D. McNickle.
- Akaroa2: Exploiting Network Computing by Distributing Stochastic
-  Simulation.
- In  Proceedings of the European Simulation Multiconference
-  ESM'99, Warsaw, June 1999, pages 175--181. International Society for
-  Computer Simulation, 1999.
+<p>@BookBFS86,
+  author = "Bratley P. and Fox, B. L. and Schrage, L. E.",
+  title = A Guide to Simulation,
+  publisher = "Springer-Verlag, New York",
+  year = 1986
 
-<p><a name="bib-mpiforum94"></a>[For94]&nbsp;&nbsp;
-Message Passing~Interface Forum.
- MPI: A Message-Passing Interface Standard.
- 8(3/4):165--414, 1994.
 
-<p><a name="bib-Goldberg91what"></a>[Gol91]&nbsp;&nbsp;
-David Goldberg.
- What Every Computer Scientist Should Know About Floating-Point
-  Arithmetic.
-  ACM Computing Surveys, 23(1):5--48, 1991.
+<p>@ArticleJCh85,
+  author = "Jain, Raj and Chlamtac, Imrich",
+  title = The <i>P<sup>2</sup></i> Algorithm for Dynamic Calculation of Quantiles
+           and Histograms without Storing Observations,
+  journal = "Communications of the ACM",
+  volume = 28,
+  number = 10,
+  pages = "1076-1085",
+  year = 1985
 
-<p><a name="bib-Hellekalek98"></a>[Hel98]&nbsp;&nbsp;
-P. Hellekalek.
- Don't Trust Parallel Monte Carlo.
-  ACM SIGSIM Simulation Digest, 28(1):82--89, jul 1998.
- Author's page is a great source of information, see
-  <a href="http://random.mat.sbg.ac.at/">http://random.mat.sbg.ac.at/</a>.
-
-<p><a name="bib-JAR"></a>[HPvdL95]&nbsp;&nbsp;
-Jan Heijmans, Alex Paalvast, and Robert van~der Leij.
- Network Simulation Using the JAR Compiler for the OMNeT++
-  Simulation System.
- Technical report, Technical University of Budapest, Dept. of
-  Telecommunications, 1995.
-
-<p><a name="bib-Jain91"></a>[Jai91]&nbsp;&nbsp;
-Raj Jain.
-  The Art of Computer Systems Performance Analysis.
- Wiley, New York, 1991.
-
-<p><a name="bib-JCh85"></a>[JC85]&nbsp;&nbsp;
-Raj Jain and Imrich Chlamtac.
- The <i>P<sup>2</sup></i> Algorithm for Dynamic Calculation of Quantiles and
-  Histograms without Storing Observations.
-  Communications of the ACM, 28(10):1076--1085, 1985.
-
-<p><a name="bib-Kofoed95"></a>[Kof95]&nbsp;&nbsp;
-Stig Kofoed.
- Portable Multitasking in C++.
-  Dr. Dobb's Journal, November 1995.
- Download source from
-  <a href="http://www.ddj.com/ftp/1995/1995.11/mtask.zip/">http://www.ddj.com/ftp/1995/1995.11/mtask.zip/</a>.
-
-<p><a name="bib-lammpi"></a>[LAM]&nbsp;&nbsp;
-LAM-MPI home page.
- <a href="http://www.lam-mpi.org/">http://www.lam-mpi.org/</a>.
-
-<p><a name="bib-LGThesis"></a>[Len94]&nbsp;&nbsp;
-G&aacute;bor Lencse.
- Graphical Network Editor for OMNeT++.
- Master's thesis, Technical University of Budapest, 1994.
- In Hungarian.
-
-<p><a name="bib-LEcuyer02"></a>[LSCK02]&nbsp;&nbsp;
-P. L'Ecuyer, R. Simard, E. J. Chen, and W. D. Kelton.
- An Objected-Oriented Random-Number Package with Many Long Streams
-  and Substreams.
-  Operations Research, 50(6):1073--1075, 2002.
- Source code can be downloaded from
-  <a href="http://www.iro.umontreal.ca/~lecuyer/papers.html">http://www.iro.umontreal.ca/~lecuyer/papers.html</a>.
-
-<p><a name="bib-Matsumoto98"></a>[MN98]&nbsp;&nbsp;
-M. Matsumoto and T. Nishimura.
- Mersenne Twister: A 623-dimensionally Equidistributed Uniform
-  Pseudorandom Number Generator.
-  ACM Trans. on Modeling and Computer Simulation, 8(1):3--30,
-  1998.
- Source code can be downloaded from
-  <a href="http://www.math.keio.ac.jp/~matumoto/emt.html">http://www.math.keio.ac.jp/~matumoto/emt.html</a>.
-
-<p><a name="bib-OMNeTExamples"></a>[MvMvdW95]&nbsp;&nbsp;
-Andr&eacute; Maurits, George van Montfort, and Gerard van~de Weerd.
- OMNeT++ Extensions and Examples.
- Technical report, Technical University of Budapest, Dept. of
-  Telecommunications, 1995.
-
-<p><a name="bib-ongfarrell2000"></a>[OF00]&nbsp;&nbsp;
-Hong Ong and Paul~A. Farrell.
- Performance Comparison of LAM/MPI, MPICH and MVICH on a
-  Linux Cluster Connected by a Gigabit Ethernet Network.
- In  Proceedings of the 4th Annual Linux Showcase &amp; Conference,
-  Atlanta, October 10-14, 2000. The USENIX Association, 2000.
-
-<p><a name="bib-BFS86"></a>[PFS86]&nbsp;&nbsp;
-Bratley P., B. L. Fox, and L. E. Schrage.
-  A Guide to Simulation.
- Springer-Verlag, New York, 1986.
-
-<p><a name="bib-Pawlikowsky02"></a>[PJL02]&nbsp;&nbsp;
-K. Pawlikowski, H. Jeong, and J. Lee.
- On Credibility of Simulation Studies of Telecommunication Networks.
-  IEEE Communications Magazine, pages 132--139, jan 2002.
-
-<p><a name="bib-PongorOmnet"></a>[Pon91]&nbsp;&nbsp;
-Gy&ouml;rgy Pongor.
- OMNET: An Object-Oriented Network Simulator.
- Technical report, Technical University of Budapest, Dept. of
-  Telecommunications, 1991.
-
-<p><a name="bib-PongorSSM92"></a>[Pon92]&nbsp;&nbsp;
-Gy&ouml;rgy Pongor.
- Statistical Synchronization: A Different Approach of Parallel
-  Discrete Event Simulation.
- Technical report, University of Technology, Data Communications
-  Laboratory, Lappeenranta, Finland, 1992.
-
-<p><a name="bib-PongorSSM93"></a>[Pon93]&nbsp;&nbsp;
-Gy&ouml;rgy Pongor.
- On the Efficiency of the Statistical Synchronization Method.
- In  Proceedings of the European Simulation Symposium (ESS'93),
-  Delft, The Netherlands, Oct. 25-28, 1993. International Society for Computer
-  Simulation, 1993.
-
-<p><a name="bib-quadrics"></a>[Qua]&nbsp;&nbsp;
-Quadrics home page.
- <a href="http://www.quadrics.com/">http://www.quadrics.com/</a>.
-
-<p><a name="bib-OppParsim03"></a>[SVE03]&nbsp;&nbsp;
-Y. Ahmet Sekercioglu, Andr&aacute;s Varga, and Gregory~K. Egan.
- Parallel Simulation Made Easy with OMNeT++.
- In  Proceedings of the European Simulation Symposium (ESS 2003),
-  26-29 Oct, 2003, Delft, The Netherlands. International Society for Computer
-  Simulation, 2003.
-
-<p><a name="bib-AVTDK"></a>[Var92]&nbsp;&nbsp;
-Andr&aacute;s Varga.
- OMNeT++ - Portable Simulation Environment in C++.
- In  Proceedings of the Annual Students' Scientific Conference
-  (TDK), 1992. Technical University of Budapest, 1992.
- In Hungarian.
-
-<p><a name="bib-AVThesis"></a>[Var94]&nbsp;&nbsp;
-Andr&aacute;s Varga.
- Portable User Interface for the OMNeT++ Simulation System.
- Master's thesis, Technical University of Budapest, 1994.
- In Hungarian.
-
-<p><a name="bib-KSplit98"></a>[Var98a]&nbsp;&nbsp;
-Andr&aacute;s Varga.
- K-split -- On-Line Density Estimation for Simulation Result
-  Collection.
- In  Proceedings of the European Simulation Symposium (ESS'98),
-  Nottingham, UK, October 26-28. International Society for Computer
-  Simulation, 1998.
-
-<p><a name="bib-Paramtop98"></a>[Var98b]&nbsp;&nbsp;
-Andr&aacute;s Varga.
- Parameterized Topologies for Simulation Programs.
- In  Proceedings of the Western Multiconference on Simulation
-  (WMC'98) Communication Networks and Distributed Systems (CNDS'98), San Diego,
-  CA, January 11-14. International Society for Computer Simulation, 1998.
-
-<p><a name="bib-Edu99"></a>[Var99]&nbsp;&nbsp;
-Andr&aacute;s Varga.
- Using the OMNeT++ Discrete Event Simulation System in Education.
-  IEEE Transactions on Education, 42(4):372, November 1999.
- (on CD-ROM issue; journal contains abstract).
-
-<p><a name="bib-VZThesis"></a>[Vas96]&nbsp;&nbsp;
-Zolt&aacute;n Vass.
- PVM Extension of OMNeT++ to Support Statistical
-  Synchronization.
- Master's thesis, Technical University of Budapest, 1996.
- In Hungarian.
-
-<p><a name="bib-KSplit97"></a>[VF97]&nbsp;&nbsp;
-Andr&aacute;s Varga and Babak Fakhamzadeh.
- The K-Split Algorithm for the PDF Approximation of
-  Multi-Dimensional Empirical Distributions without Storing Observations.
- In  Proceedings of the 9th European Simulation Symposium
-  (ESS'97), Passau, Germany, October 19-22, 1997, pages 94--98. International
-  Society for Computer Simulation, 1997.
-
-<p><a name="bib-Flex97"></a>[VP97]&nbsp;&nbsp;
-Andr&aacute;s Varga and Gy&ouml;rgy Pongor.
- Flexible Topology Description Language for Simulation Programs.
- In  Proceedings of the 9th European Simulation Symposium
-  (ESS'97), Passau, Germany, October 19-22, 1997, pages 225--229, 1997.
-
-<p><a name="bib-ParsimCrit03"></a>[VSE03]&nbsp;&nbsp;
-Andr&aacute;s Varga, Y. Ahmet Sekercioglu, and Gregory~K. Egan.
- A practical efficiency criterion for the null message algorithm.
- In  Proceedings of the European Simulation Symposium (ESS 2003),
-  26-29 Oct, 2003, Delft, The Netherlands. International Society for Computer
-  Simulation, 2003.
-
-<p><a name="bib-WelchBook"></a>[Wel95]&nbsp;&nbsp;
-Brent Welch.
-  Practical Programming in Tcl and Tk.
- Prentice-Hall, 1995.
 
 <p>
+
+@techreportPongorOmnet,
+  author = Pongor, Gy&ouml;rgy,
+  title = OMNET: An Object-Oriented Network Simulator,
+  institution = "Technical University of Budapest, Dept. of Telecommunications",
+  year = 1991
+
+
+<p>
+@techreportPongorSSM92,
+  author = Pongor, Gy&ouml;rgy,
+  title = Statistical Synchronization: A Different Approach of
+           Parallel Discrete Event Simulation,
+  institution = "University of Technology, Data Communications Laboratory",
+  address = "Lappeenranta, Finland",
+  year = 1992
+
+
+<p>@InproceedingsPongorSSM93,
+  author = Pongor, Gy&ouml;rgy,
+  title = On the Efficiency of the Statistical Synchronization Method,
+  booktitle = "Proceedings of the European Simulation Symposium (ESS'93),
+               Delft, The Netherlands, Oct. 25-28, 1993",
+  organization = "International Society for Computer Simulation",
+  year = 1993
+
+
+
+@InproceedingsOppParsim03,
+  title = Parallel Simulation Made Easy with OMNeT++,
+  author = "Y. Ahmet Sekercioglu and  Andr&aacute;s Varga and Gregory K. Egan",
+  booktitle = "Proceedings of the European Simulation Symposium (ESS 2003),
+               26-29 Oct, 2003, Delft, The Netherlands",
+  organization = "International Society for Computer Simulation",
+  year = 2003
+
+
+<p>@InproceedingsParsimCrit03,
+  title = "A Practical Efficiency Criterion for the Null Message Algorithm",
+  author = "Andr&aacute;s Varga and Y. Ahmet Sekercioglu and Gregory K. Egan",
+  booktitle = "Proceedings of the European Simulation Symposium (ESS 2003),
+               26-29 Oct, 2003, Delft, The Netherlands",
+  organization = "International Society for Computer Simulation",
+  year = 2003
+
+
+<p>@ArticleEdu99,
+  author = "Andr&aacute;s Varga",
+  title = Using the OMNeT++ Discrete Event Simulation System in Education,
+  journal = "IEEE Transactions on Education",
+  month = nov,
+  volume = 42,
+  number = 4,
+  pages = 372,
+  year = 1999,
+  note = "(on CD-ROM issue; journal contains abstract)"
+
+
+<p>@InproceedingsKSplit98,
+  title = K-split -- On-Line Density Estimation for Simulation Result Collection,
+  author = "Andr&aacute;s Varga",
+  booktitle = "Proceedings of the European Simulation Symposium (ESS'98),
+               Nottingham, UK, October 26-28",
+  organization = "International Society for Computer Simulation",
+  year = 1998
+
+
+<p>@InproceedingsParamtop98,
+  title = Parameterized Topologies for Simulation Programs,
+  author = "Andr&aacute;s Varga",
+  booktitle = "Proceedings of the Western Multiconference on Simulation
+               (WMC'98)
+               Communication Networks and Distributed Systems (CNDS'98),
+               San Diego, CA, January 11-14",
+  organization = "International Society for Computer Simulation",
+  year = 1998
+
+
+<p>@InproceedingsKSplit97,
+  author = "Andr&aacute;s Varga and Babak Fakhamzadeh",
+  title = The K-Split Algorithm for the PDF Approximation of
+            Multi-Dimensional
+           Empirical Distributions without Storing Observations,
+  booktitle = "Proceedings of the 9th European Simulation Symposium (ESS'97),
+               Passau, Germany, October 19-22, 1997",
+  organization = "International Society for Computer Simulation",
+  pages = "94--98",
+  year = 1997
+
+
+<p>@InproceedingsFlex97,
+  author = Andr&aacute;s Varga and Gy&ouml;rgy Pongor,
+  title = Flexible Topology Description Language for Simulation Programs,
+  booktitle = "Proceedings of the 9th European Simulation Symposium (ESS'97),
+               Passau, Germany, October 19-22, 1997",
+  pages = "225-229",
+  year = 1997
+
+
+
+@mastersthesisVZThesis,
+  author = "Vass, Zolt&aacute;n",
+  title = PVM Extension of OMNeT++ to Support Statistical Synchronization,
+  school = "Technical University of Budapest",
+  year = 1996,
+  note = "In Hungarian"
+
+
+<p>@techreportOMNeTExamples,
+  author = "Andr&eacute; Maurits and George van Montfort and Gerard van de Weerd",
+  title = "OMNeT++ Extensions and Examples",
+  institution = "Technical University of Budapest, Dept. of Telecommunications",
+  year = 1995
+
+
+<p>@techreportJAR,
+  author = "Jan Heijmans and Alex Paalvast and Robert van der Leij",
+  title = Network Simulation Using the JAR Compiler for the OMNeT++ Simulation System,
+  institution = "Technical University of Budapest, Dept. of Telecommunications",
+  year = 1995
+
+
+<p>@mastersthesisAVThesis,
+  author = "Varga, Andr&aacute;s",
+  title = Portable User Interface for the OMNeT++ Simulation System,
+  school = "Technical University of Budapest",
+  year = 1994,
+  note = "In Hungarian"
+
+
+<p>@mastersthesisLGThesis,
+  author = "Lencse, G&aacute;bor",
+  title = Graphical Network Editor for OMNeT++,
+  school = "Technical University of Budapest",
+  year = 1994,
+  note = "In Hungarian"
+
+
+<p>@InproceedingsAVTDK,
+  author = "Varga, Andr&aacute;s",
+  title = OMNeT++ - Portable Simulation Environment in C++,
+  booktitle = "Proceedings of the Annual Students' Scientific Conference (TDK), 1992",
+  organization = "Technical University of Budapest",
+  year = 1992,
+  note = "In Hungarian"
+
+
+
+@ArticleKofoed95,
+  author = "Kofoed, Stig",
+  title = Portable Multitasking in C++,
+  journal = "Dr. Dobb's Journal",
+  month = nov,
+  year = 1995,
+  note = "Download source from <a href="http://www.ddj.com/ftp/1995/1995.11/mtask.zip/">http://www.ddj.com/ftp/1995/1995.11/mtask.zip/</a>"
+
+
+<p>@BookWelchBook,
+  author = "Welch, Brent",
+  title = "Practical Programming in Tcl and Tk",
+  publisher = "Prentice-Hall",
+  year = 1995
+
+
+<p>@InproceedingsAkaroa99,
+  author = "G. Ewing and K. Pawlikowski and D. McNickle",
+  title = Akaroa2: Exploiting Network Computing by Distributing Stochastic Simulation,
+  booktitle = "Proceedings of the European Simulation Multiconference ESM'99,
+               Warsaw, June 1999",
+  organization = "International Society for Computer Simulation",
+  pages = "175-181",
+  year = "1999"
+
+
+<p>@articleGoldberg91what,
+    author = "David Goldberg",
+    title = What Every Computer Scientist Should Know About Floating-Point Arithmetic,
+    journal = "ACM Computing Surveys",
+    volume = "23",
+    number = "1",
+    pages = "5--48",
+    year = "1991",
+    url = "citeseer.nj.nec.com/goldberg91what.html"
+
+
+<p>@articlePawlikowsky02,
+    author = "K. Pawlikowski and H. Jeong and J. Lee",
+    title = On Credibility of Simulation Studies of Telecommunication
+              Networks,
+    journal = "IEEE Communications Magazine",
+    pages = "132--139",
+    year = "2002",
+    month = "jan"
+
+
+
+@articleEntacher02,
+    author = "K. Entacher and B. Hechenleitner and S. Wegenkittl",
+    title = A Simple OMNeT++ Queuing Experiment Using Parallel Streams,
+    journal = "PARALLEL NUMERICS'02 - Theory and Applications",
+    pages = "89-105",
+    year = "2002",
+    note = "Editors: R. Trobec, P. Zinterhof, M. Vajtersic and A. Uhl"
+
+
+<p>@articleMatsumoto98,
+    author = "M. Matsumoto and T. Nishimura",
+    title = Mersenne Twister: A 623-dimensionally Equidistributed Uniform Pseudorandom Number Generator,
+    journal = "ACM Trans. on Modeling and Computer Simulation",
+    volume = 8,
+    number = 1,
+    pages = "3-30",
+    year = "1998",
+    note = "Source code can be downloaded from <a href="http://www.math.keio.ac.jp/~matumoto/emt.html">http://www.math.keio.ac.jp/~matumoto/emt.html</a>"
+
+
+<p>@articleLEcuyer02,
+    author = "P. L'Ecuyer and R. Simard and E. J. Chen and W. D. Kelton",
+    title = An Objected-Oriented Random-Number Package with Many Long Streams and Substreams,
+    journal = "Operations Research",
+    volume = 50,
+    number = 6,
+    pages = "1073--1075",
+    year = "2002",
+    note = "Source code can be downloaded from <a href="http://www.iro.umontreal.ca/~lecuyer/papers.html">http://www.iro.umontreal.ca/~lecuyer/papers.html</a>"
+
+
+<p>
+@articleHellekalek98,
+    author = "P. Hellekalek",
+    title = Don't Trust Parallel Monte Carlo,
+    journal = "ACM SIGSIM Simulation Digest",
+    volume = 28,
+    number = 1,
+    pages = "82--89",
+    year = "1998",
+    month = "jul",
+    note = "Author's page is a great source of information, see <a href="http://random.mat.sbg.ac.at/">http://random.mat.sbg.ac.at/</a>"
+
+
+
+@articlechandymisra79,
+    author = "M. Chandy and J. Misra",
+    title = Distributed Simulation: A Case Study in Design and Verification of Distributed Programs,
+    journal = "IEEE Transactions on Software Engineering",
+    number = "5",
+    pages = "440-452",
+    year = "1979",
+    url = "http://citeseer.nj.nec.com/context/58222/0"
+
+
+<p>@Misclammpi,
+  key = LAM-MPI,
+  title =       LAM-MPI home page,
+  howpublished = <a href="http://www.lam-mpi.org/">http://www.lam-mpi.org/</a>,
+
+
+<p>@Miscquadrics,
+  key = Quadrics,
+  title =       Quadrics home page,
+  howpublished = <a href="http://www.quadrics.com/">http://www.quadrics.com/</a>,
+
+
+<p>@articlebagrodia00,
+  author =       R. L. Bagrodia and M. Takai,
+  title =        Performance Evaluation of Conservative Algorithms in
+                  Parallel Simulation Languages,
+  year =         2000,
+  journal =      ITPDS,
+  pages =        395--414,
+  number =       4,
+  url =          citeseer.nj.nec.com/bagrodia98performance.html,
+  volume =       11
+
+
+<p>
+@articlempiforum94,
+  key = MPI,
+  author = Message Passing Interface Forum,
+  pages = 165-414,
+  volume = 8,
+  number = 3/4,
+  title = MPI: A Message-Passing Interface Standard,
+  year = 1994,
+  journal = IJSA,
+
+
+<p>
+@InProceedingsongfarrell2000,
+  author =       Hong Ong and Paul A. Farrell,
+  title =        Performance Comparison of LAM/MPI, MPICH and MVICH
+                  on a Linux Cluster Connected by a Gigabit Ethernet Network,
+  year =         2000,
+  booktitle =    Proceedings of the 4th Annual Linux Showcase &amp; Conference, Atlanta, October 10-14, 2000,
+  organization = The USENIX Association,
+
+
+<p>
+
 </BODY>
 </HTML>
 

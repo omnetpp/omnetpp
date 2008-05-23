@@ -75,7 +75,7 @@ usman.html : $(HTM_FILES) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.p
 	$(PERL) prephtml2 usman.tmp
 	del usman.tmp
 	copy usman.html ..\..\manual
-	copy *.gif ..\..\manual
+	copy *.png ..\..\manual
 	copy figures\*.png ..\..\manual
 
 clean:

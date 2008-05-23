@@ -22,7 +22,7 @@ a:visited {text-decoration: none;}
 <BODY TEXT="#000000" BGCOLOR="#FFFFE8" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
 
 <br>
-<img src="omnetpp.gif" border="0">
+<img src="omnetpp.png" border="0">
 <!--
 <h1><FONT COLOR="#FF0000"><B><FONT SIZE=+4>OMNeT++ </FONT></B>
 <I><FONT SIZE=+1>Discrete Event Simulation System</FONT></I></FONT></h1>

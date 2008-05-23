@@ -72,7 +72,7 @@ usman.html : $(HTM_FILES) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.p
 	$(PERL) prephtml2 usman.tmp
 	rm usman.tmp
 	cp usman.html .../../manual
-	cp *.gif ../../manual
+	cp *.png ../../manual
 	cp figures/*.png ../../manual
 
 clean:
