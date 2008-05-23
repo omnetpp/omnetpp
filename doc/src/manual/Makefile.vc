@@ -8,8 +8,7 @@ TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex 
          ch-opp-design.tex ch-simple-modules.tex title.tex \
          ch-ned-lang.tex ch-overview.tex ch-run-sim.tex history.tex usman.tex
 
-PSPICS = figures/*.eps
-PDFPICS = figures/*.pdf
+PICS = figures/*
 
 # an imperfect attempt to filter out less important warnings...
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
@@ -19,7 +18,7 @@ LOGFILTER =
 default: usman.pdf
 	cp usman.pdf ../../manual
 
-usman.dvi: $(TEXSRC) $(PSPICS)
+usman.dvi: $(TEXSRC) $(PICS)
 	latex usman.tex $(LOGFILTER)
 	bibtex usman usman-bibl
 	makeindex usman
