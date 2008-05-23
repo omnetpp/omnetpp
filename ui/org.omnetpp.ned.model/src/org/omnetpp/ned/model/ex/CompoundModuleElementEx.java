@@ -50,7 +50,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     @Override
     public String getReadableTagName() {
         if (isNetwork())
-            return "Network";
+            return "network";
         else
             return super.getReadableTagName();
     }
