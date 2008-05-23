@@ -35,15 +35,6 @@ usman.pdf: $(TEXSRC) $(PDFPICS)
 
 PERL=perl
 
-.SUFFIXES : .tex .bbl .htm
-
-.bbl.htm:
-	cp $< `echo $< | sed 's|\.bbl|.tex|'`
-	$(PERL) ltoh.pl `echo $< | sed 's|\.bbl|.tex|'`
-	mv $@l $@
-	rm  `echo $< | sed 's|\.bbl|.tex|'`
-
-
 HTM_FILES = history.htm \
             ch-introduction.htm \
             ch-overview.htm \
@@ -52,22 +43,36 @@ HTM_FILES = history.htm \
             ch-messages.htm \
             ch-sim-lib.htm \
             ch-build-sim-progs.htm \
-            ch-neddoc.htm \
             ch-run-sim.htm \
+            ch-graphics.htm \
             ch-ana-sim.htm \
+            ch-neddoc.htm \
             ch-parallel-exec.htm \
             ch-opp-design.htm \
             ch-ned-grammar.htm \
             usman-bibl.htm
 
+.SUFFIXES : .tex .bbl .htm
+
+#usman-bibl.bbl : usman.bbl
+#	copy usman.bbl usman-bibl.bbl
+
+.bbl.htm:
+	cp $< `echo $< | sed 's|\.bbl|.tex|'`
+	$(PERL) ltoh.pl `echo $< | sed 's|\.bbl|.tex|'`
+	mv $@l $@
+	rm  `echo $< | sed 's|\.bbl|.tex|'`
+
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-usman.html : $(HTM_FILES)
+usman.html : $(HTM_FILES) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTM_FILES) > usman.tmp
 	$(PERL) prephtml2 usman.tmp
 	rm usman.tmp
-	mv $@ ../html
+	cp usman.html .../../manual
+	cp *.gif ../../manual
+	cp figures/*.gif ../../manual
 
 clean:
 	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
