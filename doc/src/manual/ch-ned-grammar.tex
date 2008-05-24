@@ -23,173 +23,691 @@ The \textit{networkdescription} symbol is the sentence symbol of the
 grammar.
 
 
+%
+% Note: the following has been extracted directly from ned2.y,
+% using tools/stripgrammar. 
+%
+% REMEMBER to remove the startsymbol + EXPRESSION_SELECTOR stuff from the beginning!
+%
+% TBD explain notation
+% FIXME latex rendering is bogus (should modify stripgrammar.pl)
+%
+
 \begin{Verbatim}[commandchars=\\\{\}]
-        \textbf{notation    meaning}
-        [a]         0 or 1 time a
-        \{a\}         a
-        \{a,,,\}      1 or more times a, separated by commas
-        \{a...\}      1 or more times a, separated by spaces
-        a|b         a or b
-        `a'         the character a
-        \textbf{bold}        keyword
-        \textit{italic}      identifier
+nedfile
+        : definitions
+        |
+        ;
 
+definitions
+        : definitions definition
+        | definition
+        ;
 
-networkdescription ::=
-    \{ definition... \}
+definition
+        : packagedeclaration
+        | import
+        | propertydecl
+        | fileproperty
+        | channeldefinition
+        | channelinterfacedefinition
+        | simplemoduledefinition
+        | compoundmoduledefinition
+        | networkdefinition
+        | moduleinterfacedefinition
+        | ';'
+        ;
 
-definition    ::=
-      include
-    | channeldefinition
-    | simpledefinition
-    | moduledefinition
-    | networkdefinition
+packagedeclaration
+        : PACKAGE dottedname ';'
+        ; 
 
-include ::=
-    \textbf{include} \{ fileName ,,, \} ;
+dottedname
+        : dottedname '.' NAME
+        | NAME
+        ;
 
-channeldefinition ::=
-    \textbf{channel} \textit{channeltype}
-     [ \textbf{delay} numericvalue ]
-     [ \textbf{error} numericvalue ]
-     [ \textbf{datarate} numericvalue ]
-    \textbf{endchannel}
+import
+        : IMPORT importspec ';'
+        ; 
 
-simpledefinition ::=
-    \textbf{simple} \textit{simplemoduletype}\index{module!simple}
-     [ paramblock ]
-     [ gateblock ]
-    \textbf{endsimple} [ \textit{simplemoduletype} ]
+importspec
+        : importspec '.' importname
+        | importname
+        ;
 
-moduledefinition ::=
-    \textbf{module} \textit{compoundmoduletype}\index{module!compound}
-     [ paramblock ]
-     [ gateblock ]
-     [ submodblock ]
-     [ connblock ]
-    \textbf{endmodule} [ \textit{compoundmoduletype} ]
+importname
+        : importname NAME
+        | importname '*'
+        | importname '**'
+        | NAME
+        | '*'
+        | '**'
+        ;
 
-moduletype ::=
-    \textit{simplemoduletype} | \textit{compoundmoduletype}
+propertydecl
+        : propertydecl_header opt_inline_properties ';'
+        | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
+        ; 
 
-paramblock ::=
-    \textbf{parameters:} \{ parameter ,,, \} ;
+propertydecl_header
+        : PROPERTY '@' NAME
+        | PROPERTY '@' NAME '[' ']'
+        ;
 
-parameter ::=
-    \textit{parametername}
-    | \textit{parametername} : \textbf{const} [ \textbf{numeric} ]
-    | \textit{parametername} \textbf{: string}
-    | \textit{parametername} \textbf{: bool}
-    | \textit{parametername} \textbf{: char}
-    | \textit{parametername} \textbf{: anytype}
+opt_propertydecl_keys
+        : propertydecl_keys
+        |
+        ;
 
-gateblock ::=
-    \textbf{gates:}
-     [ \textbf{in:} \{ gate ,,, \} ; ]
-     [ \textbf{out:} \{ gate ,,, \} ; ]
-gate ::=
-    \textit{gatename} [ '[]' ]
+propertydecl_keys
+        : propertydecl_keys ';' propertydecl_key
+        | propertydecl_key
+        ;
 
-submodblock ::=
-    \textbf{submodules:} \{ submodule... \}
+propertydecl_key
+        : NAME
+        ;
 
-submodule ::=
-    \{ \textit{submodulename} : \textit{moduletype} [ vector ]
-     [ substparamblock... ]
-     [ gatesizeblock... ] \}
-  | \{ \textit{submodulename} : \textit{parametername} [ vector ] \textbf{like} \textit{moduletype}
-     [ substparamblock... ]
-     [ gatesizeblock... ] \}
+fileproperty
+        : property_namevalue ';'
+        ;
 
-substparamblock    ::=
-    \textbf{parameters} [ \textbf{if} expression ]\textbf{:}
-      \{ \textit{substparamname} = substparamvalue,,, \} ;
+channeldefinition
+        : channelheader '{'
+            opt_paramblock
+          '}'
+        ;
 
-substparamvalue ::=
-    ( [ \textbf{ancestor} ] [ \textbf{ref} ] \textit{name} )
-    | parexpression
+channelheader
+        : CHANNEL NAME
+           opt_inheritance
+        ;
 
-gatesizeblock ::=
-    \textbf{gatesizes} [ \textbf{if} expression ]\textbf{:}
-      \{ \textit{gatename} vector ,,, \} ;
+opt_inheritance
+        :
+        | EXTENDS extendsname
+        | LIKE likenames
+        | EXTENDS extendsname LIKE likenames
+        ;
 
-connblock ::=
-    \textbf{connections} [ \textbf{nocheck} ]\textbf{:} \{ connection ,,, \} ;
+extendsname
+        : dottedname
+        ;
 
-connection ::=
-     normalconnection | loopconnection
+likenames
+        : likenames ',' likename
+        | likename
+        ;
 
-loopconnection ::=
-    \textbf{for} \{ index... \} \textbf{do}
-      \{ normalconnection ,,, \} ;
-    \textbf{endfor}
+likename
+        : dottedname
+        ;
 
-index ::=
-    \textit{indexvariable} '=' expression ``...'' expression
+channelinterfacedefinition
+        : channelinterfaceheader '{'
+            opt_paramblock
+          '}'
+        ;
 
-normalconnection ::=
-     \{ gate \{ --> | <-- \} gate [ \textbf{if} expression ]\}
-   | \{gate --> channel --> gate [ \textbf{if} expression ]\}
-   | \{gate <-- channel <-- gate [ \textbf{if} expression ]\}
+channelinterfaceheader
+        : CHANNELINTERFACE NAME
+           opt_interfaceinheritance
+        ;
 
-channel ::=
-     \textit{channeltype}
-    | [ \textbf{delay} expression ] [ \textbf{error} expression ] [ \textbf{datarate} expression ]
+opt_interfaceinheritance
+        : EXTENDS extendsnames
+        |
+        ;
 
+extendsnames
+        : extendsnames ',' extendsname
+        | extendsname
+        ;
 
-gate ::=
-    [ \textit{modulename} [vector]. ] \textit{gatename} [vector]
+simplemoduledefinition
+        : simplemoduleheader '{'
+            opt_paramblock
+            opt_gateblock
+          '}'
+        ;
 
-networkdefinition ::=
-    \textbf{network} \textit{networkname} : \textit{moduletype}
-     [ substparamblock ]
-    \textbf{endnetwork}
+simplemoduleheader
+        : SIMPLE NAME
+          opt_inheritance
+        ;
 
-vector ::=    '[' expression ']'
+compoundmoduledefinition
+        : compoundmoduleheader '{'
+            opt_paramblock
+            opt_gateblock
+            opt_typeblock
+            opt_submodblock
+            opt_connblock
+          '}'
+        ;
 
-parexpression ::=
-    expression | otherconstvalue
+compoundmoduleheader
+        : MODULE NAME
+          opt_inheritance
+        ;
 
-expression    ::=
-      expression + expression
-    | expression - expression
-    | expression * expression
-    | expression / expression
-    | expression \% expression
-    | expression {\textasciicircum} expression
-    | expression == expression
-    | expression != expression
-    | expression \texttt{<} expression
-    | expression \texttt{<}= expression
-    | expression \texttt{>} expression
-    | expression \texttt{>}= expression
-    | expression ? expression : expression
-    | expression \textbf{and} expression
-    | expression \textbf{or} expression
-    | \textbf{not} expression
-    | '(' expression ')'
-    | \textit{functionname} '(' [ expression ,,, ] ')'
-    | - expression
-    | numconstvalue
-    | inputvalue
-    | [ \textbf{ancestor} ] [ \textbf{ref} ] \textit{parametername}
-    | \textbf{sizeof} '(' \textit{gatename} ')'
-    | \textbf{index}
+networkdefinition
+        : networkheader '{'
+            opt_paramblock
+            opt_gateblock
+            opt_typeblock
+            opt_submodblock
+            opt_connblock
+          '}'
+        ;
 
-numconstvalue ::=
-    \textit{integerconstant} | \textit{realconstant} | \textit{timeconstant}
+networkheader
+        : NETWORK NAME
+          opt_inheritance
+        ;
 
-otherconstvalue ::=
-      '\textit{characterconstant'}
-    | "\textit{stringconstant}"
-    | \textbf{true}
-    | \textbf{false}
+moduleinterfacedefinition
+        : moduleinterfaceheader '{'
+            opt_paramblock
+            opt_gateblock
+          '}'
+        ;
 
-inputvalue ::=
-    \textbf{input} '(' default , "\textit{prompt-string}" ')'
+moduleinterfaceheader
+        : MODULEINTERFACE NAME
+           opt_interfaceinheritance
+        ;
 
-default ::=
-    expression | otherconstvalue
+opt_paramblock
+        : opt_params   
+        | PARAMETERS ':'
+          opt_params
+        ;
+
+opt_params
+        : params
+        |
+        ;
+
+params
+        : params paramsitem
+        | paramsitem
+        ;
+
+paramsitem
+        : param
+        | property
+        ;
+
+param
+        : param_typenamevalue
+        | pattern_value
+        ; 
+
+param_typenamevalue
+        : param_typename opt_inline_properties ';'
+        | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
+        ;
+
+param_typename
+        : opt_volatile paramtype NAME
+        | NAME
+        ;
+
+pattern_value
+        : '/' pattern '/' '=' paramvalue
+        ;
+
+paramtype
+        : DOUBLE
+        | INT
+        | STRING
+        | BOOL
+        | XML
+        ;
+
+opt_volatile
+        : VOLATILE
+        |
+        ;
+
+paramvalue
+        : expression
+        | DEFAULT '(' expression ')'
+        ;
+
+opt_inline_properties
+        : inline_properties
+        |
+        ;
+
+inline_properties
+        : inline_properties property_namevalue
+        | property_namevalue
+        ;
+
+pattern 
+        : pattern pattern_elem
+        | pattern_elem
+        ;
+
+pattern_elem
+        : '.'
+        | '*'
+        | '?'
+        | '**'
+        | NAME
+        | INTCONSTANT
+        | '..'
+        | '[' pattern ']'
+        | '{' pattern '}'
+        | IMPORT | PACKAGE | PROPERTY
+        | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
+        | EXTENDS | LIKE
+        | DOUBLE | INT | STRING | BOOL | XML | VOLATILE
+        | INPUT | OUTPUT | INOUT | IF | FOR
+        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
+        | TRUE | FALSE | THIS | DEFAULT | CONST | SIZEOF | INDEX | XMLDOC
+        ;
+
+property
+        : property_namevalue ';'
+        ; 
+
+property_namevalue
+        : property_name
+        | property_name '(' opt_property_keys ')'
+        ;
+
+property_name
+        : '@' NAME
+        | '@' NAME '[' NAME ']'
+        ;
+
+opt_property_keys
+        : property_keys  
+        ;
+
+property_keys
+        : property_keys ';' property_key
+        | property_key
+        ;
+
+property_key
+        : NAME '=' property_values
+        | property_values
+        ;
+
+property_values
+        : property_values ',' property_value
+        | property_value
+        ;
+
+property_value
+        : NAME
+        | '$' NAME
+        | STRINGCONSTANT
+        | TRUE
+        | FALSE
+        | INTCONSTANT
+        | REALCONSTANT
+        | quantity
+        | '-'  
+        |  
+        ;
+
+opt_gateblock
+        : gateblock
+        |
+        ;
+
+gateblock
+        : GATES ':'
+          opt_gates
+        ;
+
+opt_gates
+        : gates
+        |
+        ;
+
+gates
+        : gates gate
+        | gate
+        ;
+
+gate
+        : gate_typenamesize
+          opt_inline_properties ';'
+        ; 
+
+gate_typenamesize
+        : gatetype NAME
+        | gatetype NAME '[' ']'
+        | gatetype NAME vector
+        | NAME
+        | NAME '[' ']'
+        | NAME vector
+        ;
+
+gatetype
+        : INPUT
+        | OUTPUT
+        | INOUT
+        ;
+
+opt_typeblock
+        : typeblock
+        |
+        ;
+
+typeblock
+        : TYPES ':'
+           opt_localtypes
+        ;
+
+opt_localtypes
+        : localtypes
+        |
+        ;
+
+localtypes
+        : localtypes localtype
+        | localtype
+        ;
+
+localtype
+        : propertydecl
+        | channeldefinition
+        | channelinterfacedefinition
+        | simplemoduledefinition
+        | compoundmoduledefinition
+        | networkdefinition
+        | moduleinterfacedefinition
+        | ';'
+        ;
+
+opt_submodblock
+        : submodblock
+        |
+        ;
+
+submodblock
+        : SUBMODULES ':'
+          opt_submodules
+        ;
+
+opt_submodules
+        : submodules
+        |
+        ;
+
+submodules
+        : submodules submodule
+        | submodule
+        ;
+
+submodule
+        : submoduleheader ';'
+        | submoduleheader '{'
+          opt_paramblock
+          opt_gateblock
+          '}' opt_semicolon
+        ; 
+
+submoduleheader
+        : submodulename ':' dottedname
+        | submodulename ':' likeparam LIKE dottedname
+        ;
+
+submodulename
+        : NAME
+        |  NAME vector
+        ;
+
+likeparam
+        : '<' '>'
+        | '<' expression '>' 
+        ;
+
+opt_connblock
+        : connblock
+        |
+        ;
+
+connblock
+        : CONNECTIONS ALLOWUNCONNECTED ':'
+          opt_connections
+        | CONNECTIONS ':'
+          opt_connections
+        ;
+
+opt_connections
+        : connections
+        |
+        ;
+
+connections
+        : connections connectionsitem
+        | connectionsitem
+        ;
+
+connectionsitem
+        : connectiongroup
+        | connection opt_loops_and_conditions ';'
+        ; 
+
+connectiongroup
+        : opt_loops_and_conditions '{'
+          connections '}' opt_semicolon
+        ;
+
+opt_loops_and_conditions
+        : loops_and_conditions
+        |
+        ;
+
+loops_and_conditions
+        : loops_and_conditions ',' loop_or_condition
+        | loop_or_condition
+        ;
+
+loop_or_condition
+        : loop
+        | condition
+        ;
+
+loop
+        : FOR NAME '=' expression '..' expression
+        ;
+
+connection
+        : leftgatespec '-->' rightgatespec
+        | leftgatespec '-->' channelspec '-->' rightgatespec
+        | leftgatespec '<--' rightgatespec
+        | leftgatespec '<--' channelspec '<--' rightgatespec
+        | leftgatespec '<-->' rightgatespec
+        | leftgatespec '<-->' channelspec '<-->' rightgatespec
+        ;
+
+leftgatespec
+        : leftmod '.' leftgate
+        | parentleftgate
+        ;
+
+leftmod
+        : NAME vector
+        | NAME
+        ;
+
+leftgate
+        : NAME opt_subgate
+        | NAME opt_subgate vector
+        | NAME opt_subgate '++'
+        ;
+
+parentleftgate
+        : NAME opt_subgate
+        | NAME opt_subgate vector
+        | NAME opt_subgate '++'
+        ;
+
+rightgatespec
+        : rightmod '.' rightgate
+        | parentrightgate
+        ;
+
+rightmod
+        : NAME
+        | NAME vector
+        ;
+
+rightgate
+        : NAME opt_subgate
+        | NAME opt_subgate vector
+        | NAME opt_subgate '++'
+        ;
+
+parentrightgate
+        : NAME opt_subgate
+        | NAME opt_subgate vector
+        | NAME opt_subgate '++'
+        ;
+
+opt_subgate
+        : '$' NAME
+        |
+        ;
+
+channelspec
+        : channelspec_header
+        | channelspec_header '{'
+            opt_paramblock
+          '}'
+        ;
+
+channelspec_header
+        :
+        | dottedname
+        | likeparam LIKE dottedname
+        ;
+
+condition
+        : IF expression
+        ;
+
+vector
+        : '[' expression ']'
+        ;
+
+expression
+        :
+          expr
+        | xmldocvalue
+        ;
+
+xmldocvalue
+        : XMLDOC '(' stringliteral ',' stringliteral ')'
+        | XMLDOC '(' stringliteral ')'
+        ;
+
+expr
+        : simple_expr
+        | '(' expr ')'
+        | CONST '(' expr ')'
+        | expr '+' expr
+        | expr '-' expr
+        | expr '*' expr
+        | expr '/' expr
+        | expr '%' expr
+        | expr '^' expr
+        | '-' expr
+        | expr '==' expr
+        | expr '!=' expr
+        | expr '>' expr
+        | expr '>=' expr
+        | expr '<' expr
+        | expr '<=' expr
+        | expr '&&' expr
+        | expr '||' expr
+        | expr '##' expr
+        | '!' expr
+        | expr '&' expr
+        | expr '|' expr
+        | expr '#' expr
+        | '~' expr
+        | expr '<<' expr
+        | expr '>>' expr
+        | expr '?' expr ':' expr
+        | INT '(' expr ')'
+        | DOUBLE '(' expr ')'
+        | STRING '(' expr ')'
+        | NAME '(' ')'
+        | NAME '(' expr ')'
+        | NAME '(' expr ',' expr ')'
+        | NAME '(' expr ',' expr ',' expr ')'
+        | NAME '(' expr ',' expr ',' expr ',' expr ')'
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        ;
+
+simple_expr
+        : identifier
+        | special_expr
+        | literal
+        ;
+
+identifier
+        : NAME
+        | THIS '.' NAME
+        | NAME '.' NAME
+        | NAME '[' expr ']' '.' NAME
+        ;
+
+special_expr
+        : INDEX
+        | INDEX '(' ')'
+        | SIZEOF '(' identifier ')'
+        ;
+
+literal
+        : stringliteral
+        | boolliteral
+        | numliteral
+        ;
+
+stringliteral
+        : STRINGCONSTANT
+        ;
+
+boolliteral
+        : TRUE
+        | FALSE
+        ;
+
+numliteral
+        : INTCONSTANT
+        | REALCONSTANT
+        | quantity
+        ;
+
+quantity
+        : quantity INTCONSTANT NAME
+        | quantity REALCONSTANT NAME
+        | INTCONSTANT NAME
+        | REALCONSTANT NAME
+        ;
+
+opt_semicolon
+        : ';'
+        |
+        ;
+
 \end{Verbatim}
 
 

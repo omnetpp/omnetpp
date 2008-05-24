@@ -15,13 +15,13 @@ $txt =~ s/^.*%%(.*)%%.*$/$1/s;
 
 
 # remove curly brace blocks
-$txt =~ s/'{'/'<<<'/s;
-$txt =~ s/'}'/'>>>'/s;
+$txt =~ s/'{'/'<<<'/gs;
+$txt =~ s/'}'/'>>>'/gs;
 for ($i=0; $i<10; $i++) {
     $txt =~ s/{[^{}]*}//gs;
 }
-$txt =~ s/'<<<'/'{'/s;
-$txt =~ s/'>>>'/'}'/s;
+$txt =~ s/'<<<'/'{'/gs;
+$txt =~ s/'>>>'/'}'/gs;
 
 # remove comments
 $txt =~ s|/\*.*?\*/||gs;
@@ -29,9 +29,52 @@ $txt =~ s|/\*.*?\*/||gs;
 # remove error recovery rules
 $txt =~ s/^.*\berror\b.*$//mg;
 
+# remove '%prec' stuff
+$txt =~ s/\%prec\s+[a-zA-Z]+//mg;
+
 # remove mid-rule blank lines
 for ($i=0; $i<10; $i++) {
     $txt =~ s/\n\s*(\n\s+)/$1/gs;
+}
+
+# remove trailing "_" from some names
+$txt =~ s/([A-Z]+)_\b/$1/gs;
+
+# make terminals/nonterminals bold/italic
+#$txt =~ s/\b([a-z_][a-z0-9_]*)\b/\\textit{$1}/gs;
+#$txt =~ s/\b([A-Z_][A-Z0-9_]*)\b/\\textbf{$1}/gs;
+
+# substitute some terminals
+%terminals = (
+   "RIGHTARROW"  =>     "'-->'",
+   "LEFTARROW"  =>      "'<--'",
+   "DBLARROW"  =>       "'<-->'",
+   "TO"  =>             "'..'",
+   "DOUBLEASTERISK"  => "'**'",
+   "PLUSPLUS"  =>       "'++'",
+   "OR"  =>             "'||'",
+   "AND"  =>            "'&&'",
+   "XOR"  =>            "'##'",
+   "NOT"  =>            "'!'",
+   "BIN_OR"  =>         "'|'",
+   "BIN_AND"  =>        "'&'",
+   "BIN_XOR"  =>        "'#'",
+   "BIN_COMPL"  =>      "'~'",
+   "SHIFT_LEFT"  =>     "'<<'",
+   "SHIFT_RIGHT"  =>    "'>>'",
+   "EQ"  =>             "'=='",
+   "NE"  =>             "'!='",
+   "LE"  =>             "'<='",
+   "GE"  =>             "'>='",
+   "DOUBLETYPE" =>      "DOUBLE",
+   "INTTYPE" =>         "INT",
+   "STRINGTYPE" =>      "STRING",
+   "BOOLTYPE" =>        "BOOL",
+   "XMLTYPE" =>         "XML",
+);
+
+while (($key, $value) = each(%terminals)){
+    $txt =~ s/\b$key\b/$value/gs;
 }
 
 print $txt;
