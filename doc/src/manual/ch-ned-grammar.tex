@@ -25,12 +25,16 @@ grammar.
 
 %
 % Note: the following has been extracted directly from ned2.y,
-% using tools/stripgrammar. 
+% using tools/stripgrammar.
 %
 % REMEMBER to remove the startsymbol + EXPRESSION_SELECTOR stuff from the beginning!
 %
 % TBD explain notation
-% FIXME latex rendering is bogus (should modify stripgrammar.pl)
+%
+% TBD careful readers will note that the rules of the grammar are
+% at places not as straightforward as they could be (like leftgate/rightgate)
+% -- that's because this grammar has been automatically generated from the
+% source code (bison input file), which contains some artifacts.
 %
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -60,7 +64,7 @@ definition
 
 packagedeclaration
         : PACKAGE dottedname ';'
-        ; 
+        ;
 
 dottedname
         : dottedname '.' NAME
@@ -69,7 +73,7 @@ dottedname
 
 import
         : IMPORT importspec ';'
-        ; 
+        ;
 
 importspec
         : importspec '.' importname
@@ -88,7 +92,7 @@ importname
 propertydecl
         : propertydecl_header opt_inline_properties ';'
         | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
-        ; 
+        ;
 
 propertydecl_header
         : PROPERTY '@' NAME
@@ -114,9 +118,9 @@ fileproperty
         ;
 
 channeldefinition
-        : channelheader '{'
+        : channelheader '\{'
             opt_paramblock
-          '}'
+          '\}'
         ;
 
 channelheader
@@ -145,9 +149,9 @@ likename
         ;
 
 channelinterfacedefinition
-        : channelinterfaceheader '{'
+        : channelinterfaceheader '\{'
             opt_paramblock
-          '}'
+          '\}'
         ;
 
 channelinterfaceheader
@@ -166,10 +170,10 @@ extendsnames
         ;
 
 simplemoduledefinition
-        : simplemoduleheader '{'
+        : simplemoduleheader '\{'
             opt_paramblock
             opt_gateblock
-          '}'
+          '\}'
         ;
 
 simplemoduleheader
@@ -178,13 +182,13 @@ simplemoduleheader
         ;
 
 compoundmoduledefinition
-        : compoundmoduleheader '{'
+        : compoundmoduleheader '\{'
             opt_paramblock
             opt_gateblock
             opt_typeblock
             opt_submodblock
             opt_connblock
-          '}'
+          '\}'
         ;
 
 compoundmoduleheader
@@ -193,13 +197,13 @@ compoundmoduleheader
         ;
 
 networkdefinition
-        : networkheader '{'
+        : networkheader '\{'
             opt_paramblock
             opt_gateblock
             opt_typeblock
             opt_submodblock
             opt_connblock
-          '}'
+          '\}'
         ;
 
 networkheader
@@ -208,10 +212,10 @@ networkheader
         ;
 
 moduleinterfacedefinition
-        : moduleinterfaceheader '{'
+        : moduleinterfaceheader '\{'
             opt_paramblock
             opt_gateblock
-          '}'
+          '\}'
         ;
 
 moduleinterfaceheader
@@ -220,7 +224,7 @@ moduleinterfaceheader
         ;
 
 opt_paramblock
-        : opt_params   
+        : opt_params
         | PARAMETERS ':'
           opt_params
         ;
@@ -243,7 +247,7 @@ paramsitem
 param
         : param_typenamevalue
         | pattern_value
-        ; 
+        ;
 
 param_typenamevalue
         : param_typename opt_inline_properties ';'
@@ -287,7 +291,7 @@ inline_properties
         | property_namevalue
         ;
 
-pattern 
+pattern
         : pattern pattern_elem
         | pattern_elem
         ;
@@ -301,7 +305,7 @@ pattern_elem
         | INTCONSTANT
         | '..'
         | '[' pattern ']'
-        | '{' pattern '}'
+        | '\{' pattern '\}'
         | IMPORT | PACKAGE | PROPERTY
         | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
         | EXTENDS | LIKE
@@ -313,7 +317,7 @@ pattern_elem
 
 property
         : property_namevalue ';'
-        ; 
+        ;
 
 property_namevalue
         : property_name
@@ -326,7 +330,7 @@ property_name
         ;
 
 opt_property_keys
-        : property_keys  
+        : property_keys
         ;
 
 property_keys
@@ -353,8 +357,8 @@ property_value
         | INTCONSTANT
         | REALCONSTANT
         | quantity
-        | '-'  
-        |  
+        | '-'
+        |
         ;
 
 opt_gateblock
@@ -380,7 +384,7 @@ gates
 gate
         : gate_typenamesize
           opt_inline_properties ';'
-        ; 
+        ;
 
 gate_typenamesize
         : gatetype NAME
@@ -450,11 +454,11 @@ submodules
 
 submodule
         : submoduleheader ';'
-        | submoduleheader '{'
+        | submoduleheader '\{'
           opt_paramblock
           opt_gateblock
-          '}' opt_semicolon
-        ; 
+          '\}' opt_semicolon
+        ;
 
 submoduleheader
         : submodulename ':' dottedname
@@ -468,7 +472,7 @@ submodulename
 
 likeparam
         : '<' '>'
-        | '<' expression '>' 
+        | '<' expression '>'
         ;
 
 opt_connblock
@@ -496,11 +500,11 @@ connections
 connectionsitem
         : connectiongroup
         | connection opt_loops_and_conditions ';'
-        ; 
+        ;
 
 connectiongroup
-        : opt_loops_and_conditions '{'
-          connections '}' opt_semicolon
+        : opt_loops_and_conditions '\{'
+          connections '\}' opt_semicolon
         ;
 
 opt_loops_and_conditions
@@ -582,9 +586,9 @@ opt_subgate
 
 channelspec
         : channelspec_header
-        | channelspec_header '{'
+        | channelspec_header '\{'
             opt_paramblock
-          '}'
+          '\}'
         ;
 
 channelspec_header

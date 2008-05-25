@@ -4,6 +4,7 @@
 \usepackage{newcent}
 \usepackage[T1]{fontenc}
 \usepackage{setspace}
+\usepackage{ifpdf}
 \usepackage{makeidx}
 \usepackage{longtable}  %% page wrapping table environment
 \usepackage{colortbl}   %% colors for tables
@@ -37,13 +38,14 @@
 %%
 %% PDF Header
 %%
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-  \pdffalse
-\else
-  \pdfoutput=1
-  \pdftrue
-\fi
+% note: \ifpdf now comes from the ifpdf package
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%  \pdffalse
+%\else
+%  \pdfoutput=1
+%  \pdftrue
+%\fi
 %% PDF-Info
 \ifpdf
   \usepackage[pdftex]{graphicx}

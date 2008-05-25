@@ -40,10 +40,6 @@ for ($i=0; $i<10; $i++) {
 # remove trailing "_" from some names
 $txt =~ s/([A-Z]+)_\b/$1/gs;
 
-# make terminals/nonterminals bold/italic
-#$txt =~ s/\b([a-z_][a-z0-9_]*)\b/\\textit{$1}/gs;
-#$txt =~ s/\b([A-Z_][A-Z0-9_]*)\b/\\textbf{$1}/gs;
-
 # substitute some terminals
 %terminals = (
    "RIGHTARROW"  =>     "'-->'",
@@ -76,6 +72,19 @@ $txt =~ s/([A-Z]+)_\b/$1/gs;
 while (($key, $value) = each(%terminals)){
     $txt =~ s/\b$key\b/$value/gs;
 }
+
+#
+# LaTeX escaping and formatting follows
+#
+$txt =~ s/{/\\{/gs;
+$txt =~ s/}/\\}/gs;
+$txt =~ s/_/\\_/gs;
+
+
+# make terminals/nonterminals bold/italic
+#$txt =~ s/\b([a-z_][a-z0-9_]*)\b/\\textit{$1}/gs;
+#$txt =~ s/\b([A-Z_][A-Z0-9_]*)\b/\\textbf{$1}/gs;
+
 
 print $txt;
 
