@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-                 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="msg-editor">
 <title>Editing Message Files</title>
 <sect1>
-  <title>Creaing Message Files</title>
-  <para>TBD</para>
+<title>Creaing Message Files</title>
+<para>TBD</para>
 </sect1>
-
 <sect1>
-  <title>The Message File Editor</title>
-  <para>TBD</para>
+<title>The Message File Editor</title>
+<para>TBD</para>
 </sect1>
-
 </chapter>
