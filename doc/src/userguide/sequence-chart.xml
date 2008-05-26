@@ -14,23 +14,33 @@ name would indicate, this application relies on a log file. This
 log file is created during a simulation run, and can become quite
 large, since it contains a lot of information about the
 simulation.</para>
+
 <para>To prepare a log file to be processed by the log viewer,
 simply insert the eventlog-file = &lt;filename&gt;.log statement
 into the corresponding omnetpp.ini file, or use the Inifile
 Editor's Output Files section to specify a file name.</para>
+
 <picture file="pictures/7.1_Generate_log_omnetpp_ini.png">
 TODO</picture>
+
 </sect1>
+
 <sect1>
 <title>Creating an Event Log</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>Sequece Chart</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>Event Log View</title>
 <para>TBD</para>
+
 </sect1>
+
 </chapter>

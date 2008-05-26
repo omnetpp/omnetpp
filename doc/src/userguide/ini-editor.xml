@@ -6,7 +6,9 @@
 <sect1>
 <title>Creating INI files</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>The INI file Editor</title>
 <para>In OMNeT++, simulation models are parameterized and
@@ -18,6 +20,7 @@ is part of the OMNeT++ IDE, and it can very efficiently assist the
 user in authoring ini files, because it has detailed knowledge of
 the simulation model, the ini file syntax, and the available
 configuration options.</para>
+
 <para>The Inifile Editor is a dual-mode editor: the configuration
 can be edited using forms and dialogs, or as plain text. Forms are
 organized around topics like general setup, Cmdenv (the
@@ -26,6 +29,7 @@ execution environment), output files, extensions and so on.
 Connected with the NED editor, it is capable of assisting the
 creation of new configurations in a smart way, making the process
 both faster, and less prone to errors.</para>
+
 <para>In OMNeT++ 4.0, we re-thought and improved the concept of ini
 files and configuring simulations. Major enhancements include the
 introduction of named configurations which can build on one
@@ -36,6 +40,7 @@ runs with the same parameters but different random number seeds,
 and with scenario meta-information saved into the result files one
 will get a much more organized view in the result analysis phase
 about the simulations performed and their results.</para>
+
 <para>With the above goals in mind, configuration reading and
 handling was re-implemented from scratch. Additional benefits from
 this re-implementation are greatly improved performance (we use
@@ -43,17 +48,20 @@ maps instead of linear searches), the ability to catch and report
 mistyped configuration keys in the ini files, and to be able to
 print a list of all supported configuration keys, complete with
 descriptions.</para>
+
 <para>To begin with, the [Cmdenv], [Tkenv], [Parameters],
 [OutVectors] and [Partitioning] sections are no more -- only
 [General] is left. The organizing principle of sections is no
 longer the duality of topics (Cmdenv, Tkenv, output vectors, etc.)
 and runs (run 1, run 2, etc.), but named configurations -- only,
 and always.</para>
+
 <para>Named configurations are sections of the form [Config
 &lt;configname&gt;], where &lt;configname&gt; is by convention a
 camel-case string that starts with a capital letter: "Config1",
 "WirelessPing", "OverloadedFifo", etc. For example, omnetpp.ini for
 an Aloha simulation might have the following skeleton:</para>
+
 <programlisting>[General] ... [Config PureAloha] ... [Config
 SlottedAloha1] ... [Config SlottedAloha2] ...</programlisting>
 <para>Keys formerly in the [Cmdenv] section simply got a "cmdenv-"
@@ -64,26 +72,33 @@ contents of the rest of the disappearing sections ([Parameters],
 This way, ini files actually became simpler and less error-prone:
 it cannot a happen any more that a configuration key gets ignored
 just because it was mistakenly added to the wrong section.</para>
+
 <para>There are also no [Run X] sections any more: when converting
 a 3.x ini file, change them to named configurations. Automatic
 conversion tools will just generate names like [Config One],
 [Config Two], etc, and it is up to you to change them to better
 names afterwards.</para>
+
 <para>Some configuration keys (such as user interface selection)
 are only accepted in the [General] section, but most of them can go
 into Config sections as well.</para>
+
 <para>The description= configuration key still exists (you can
 provide a string there, with an explanation about the purpose or
 content of the section), but it has less significance now that
 configurations can be given descriptive names instead of just being
 called [Run 1], [Run 2], etc.</para>
+
 <para>When you run a simulation, you need to select one of the
 configurations to be activated. In Cmdenv, this is done with the
 '-c' command-line option:</para>
+
 <para>&#194;&#160; % aloha -c PureAloha</para>
+
 <para>The simulation will then use the contents of the [Config
 PureAloha] section to set up the simulation. (Tkenv, of course,
 lets you select the configuration from a dialog.)</para>
+
 <para>Actually, when you activate the PureAloha configuration, the
 contents of the [General] section will also be taken into account:
 if some configuration key or parameter value is not found in
@@ -91,10 +106,12 @@ if some configuration key or parameter value is not found in
 section. In other words, lookups in [Config PureAloha] will fall
 back to [General]. The [General] section itself is optional; when
 it is absent, it is treated like an empty [General] section.</para>
+
 <para>All named configurations fall back to [General] by default.
 However, for each configuration it is possible to specify a
 fall-back section explicitly, using the extends= key. Consider the
 following ini file skeleton:</para>
+
 <programlisting>[General] ... [Config SlottedAlohaBase] ... [Config
 SlottedAloha1] extends = SlottedAlohaBase ... [Config
 SlottedAloha2] extends = SlottedAlohaBase ... [Config
@@ -104,12 +121,14 @@ extends = SlottedAloha2 ...</programlisting>
 will consider sections in the following order (this is also called
 the "section fallback chain"): SlottedAloha2b, SlottedAloha2,
 SlottedAlohaBase, General.</para>
+
 <para>The effect is the same as if the contents of the sections
 SlottedAloha2b, SlottedAloha2, SlottedAlohaBase and General were
 copied together into one section, one after another, [Config
 SlottedAloha2b] being at the top, and [General] at the bottom.
 Lookups always start at the top, and stop at the first matching
 entry.</para>
+
 <para>The concept is similar to inheritance in object-oriented
 languages, and benefits are similar too: you can to factor out the
 common parts of several configurations into a "base" configuration,
@@ -118,9 +137,11 @@ opposed to copying them) by using them as a base. In practice you
 will often have "abstract" configurations too (in the C++/Java
 sense), which assign only a subset of parameters and leave the
 others open, to be assigned in derived configurations.</para>
+
 <para>If you are experimenting a lot with different parameter
 settings of a simulation model, these techniques will make it a lot
 easier to manage ini files.</para>
+
 <para>It is quite common in simulation studies that the simulation
 model is run several times with different parameter settings, and
 the results are analyzed in relation to the input parameters.
@@ -129,28 +150,40 @@ resort to writing shell (or Python, Ruby, etc.) scripts that
 iterated over the required parameter space, and generated a
 (partial) ini file and run the simulation program in each
 iteration.</para>
+
 <para>OMNeT++ 4.0 largely automates this process, and eliminates
 the need for writing batch execution scripts. It is the ini file
 where the user can specify iterations over various parameter
 settings. Here's an example:</para>
+
 <para>&#194;&#160; [Config AlohaScenario]</para>
+
 <para>&#194;&#160; *.numHosts = ${1, 2, 5, 10..50 step 10}</para>
+
 <para>&#194;&#160; **.host[*].generationInterval = exponential(
 ${0.2, 0.4, 0.6} )</para>
+
 <para>This scenario expands to 8*3 = 24 simulation runs, where the
 number of hosts iterates over the numbers 1, 2, 5, 10, 20, 30, 40,
 50, and for each host count three simulation runs will be done,
 with the generation interval being exponential(0.2),
 exponential(0.4), and exponential(0.6).</para>
+
 <para>How does it get run? First of all, Cmdenv with the '-n'
 option will tell you how many simulation runs a given section
 expands to. (You'll of course use Cmdenv for batch runs, not
 Tkenv.)</para>
+
 <para>&#194;&#160; % aloha -u Cmdenv -c AlohaScenario --n</para>
+
 <para>&#194;&#160; OMNeT++/OMNEST Discrete Event Simulation</para>
+
 <para>&#194;&#160; ...</para>
+
 <para>&#194;&#160; Config: AlohaScenario</para>
+
 <para>&#194;&#160; Number of runs: 24</para>
+
 <para>If you add the '-g' option, the program will also print out
 the values of the iteration variables for each run. Note that the
 scenario description actually maps to nested loops, with the last
@@ -160,60 +193,101 @@ scenario description actually maps to nested loops, with the last
 iteration variables are just named $0 and $1 -- we'll see that it
 is possible to give meaningful names to them. Please ignore the
 "$repetition=0" part in the printout for now.</para>
+
 <para>&#194;&#160; % aloha -u Cmdenv -c AlohaScenario -n -g</para>
+
 <para>&#194;&#160; OMNeT++/OMNEST Discrete Event Simulation</para>
+
 <para>&#194;&#160; ...</para>
+
 <para>&#194;&#160; Config: AlohaScenario</para>
+
 <para>&#194;&#160; Number of runs: 24</para>
+
 <para>&#194;&#160; Run 0: $0=1, $1=0.2, $repetition=0</para>
+
 <para>&#194;&#160; Run 1: $0=1, $1=0.4, $repetition=0</para>
+
 <para>&#194;&#160; Run 2: $0=1, $1=0.6, $repetition=0</para>
+
 <para>&#194;&#160; Run 3: $0=2, $1=0.2, $repetition=0</para>
+
 <para>&#194;&#160; Run 4: $0=2, $1=0.4, $repetition=0</para>
+
 <para>&#194;&#160; Run 5: $0=2, $1=0.6, $repetition=0</para>
+
 <para>&#194;&#160; Run 6: $0=5, $1=0.2, $repetition=0</para>
+
 <para>&#194;&#160; Run 7: $0=5, $1=0.4, $repetition=0</para>
+
 <para>&#194;&#160; ...</para>
+
 <para>&#194;&#160; Run 19: $0=40, $1=0.4, $repetition=0</para>
+
 <para>&#194;&#160; Run 20: $0=40, $1=0.6, $repetition=0</para>
+
 <para>&#194;&#160; Run 21: $0=50, $1=0.2, $repetition=0</para>
+
 <para>&#194;&#160; Run 22: $0=50, $1=0.4, $repetition=0</para>
+
 <para>&#194;&#160; Run 23: $0=50, $1=0.6, $repetition=0</para>
+
 <para>Any of these runs can be executed by passing the '-r
 &lt;runnumber&gt;' option to Cmdenv. So, the task is now to run the
 simulation program 24 times, with '-r' running from 0 through
 23:</para>
+
 <para>&#194;&#160; % aloha -u Cmdenv -c AlohaScenario -r 0</para>
+
 <para>&#194;&#160; % aloha -u Cmdenv -c AlohaScenario -r 1</para>
+
 <para>&#194;&#160; % aloha -u Cmdenv -c AlohaScenario -r 2</para>
+
 <para>&#194;&#160; ...</para>
+
 <para>&#194;&#160; % aloha -u Cmdenv -c AlohaScenario -r 23</para>
+
 <para>This batch can be executed either from the OMNeT++ IDE (where
 you are prompted to pick an executable and an ini file, choose the
 scenario from a list, and just click Run), or using a little
 command-line batch execution tool supplied with OMNeT++.</para>
+
 <para>Actually, it is also possible to get Cmdenv execute all runs
 in one go, by simply omitting the '-r' option.</para>
+
 <para>&#194;&#160; % aloha -u Cmdenv -c AlohaScenario</para>
+
 <para>&#194;&#160; OMNeT++/OMNEST Discrete Event Simulation</para>
+
 <para>&#194;&#160; Preparing for running configuration
 AlohaScenario, run #0...</para>
+
 <para>&#194;&#160; ...</para>
+
 <para>&#194;&#160; Preparing for running configuration
 AlohaScenario, run #1...</para>
+
 <para>&#194;&#160; ...</para>
+
 <para>&#194;&#160; ...</para>
+
 <para>&#194;&#160; Preparing for running configuration
 AlohaScenario, run #23...</para>
+
 <para>However, this approach is not recommended, because it is more
 susceptible to C++ programming errors in the model. (For example,
 if any of the runs crashes, the whole batch is terminated -- which
 may not be what the user wants).</para>
+
 <para>Let us get back to the ini file. We had:</para>
+
 <para>&#194;&#160; [Config AlohaScenario]</para>
+
 <para>&#194;&#160; *.numHosts = ${1, 2, 5, 10..50 step 10}</para>
+
 <para>&#194;&#160; **.host[*].generationInterval = exponential(
 ${0.2, 0.4, 0.6} )</para>
+
 <para>The ${...} syntax specifies an iteration. It is sort of a
 macro: at each run, the whole ${...} string gets textually replaced
 with the current iteration value. The values to iterate over do not
@@ -221,42 +295,59 @@ need to be numbers (unless you want to use the "a..b" or "a..b step
 c" syntax), and the substitution takes place even inside string
 constants. So, the following examples are all valid (note that
 textual substitution is used):</para>
+
 <para>&#194;&#160; *.param = 1 + ${1e-6, 1/3, sin(0.5)}</para>
+
 <para>&#194;&#160; &#194;&#160; &#194;&#160; ==&gt; *.param = 1 +
 1e-6</para>
+
 <para>&#194;&#160; &#194;&#160; &#194;&#160; &#194;&#160;
 &#194;&#160; *.param = 1 + 1/3</para>
+
 <para>&#194;&#160; &#194;&#160; &#194;&#160; &#194;&#160;
 &#194;&#160; *.param = 1 + sin(0.5)</para>
+
 <para>&#194;&#160; *.greeting = "We will simulate ${1,2,5}
 host(s)."</para>
+
 <para>&#194;&#160; &#194;&#160; &#194;&#160; ==&gt; *.greeting =
 "We will simulate 1 host(s)."</para>
+
 <para>&#194;&#160; &#194;&#160; &#194;&#160; &#194;&#160;
 &#194;&#160; *.greeting = "We will simulate 2 host(s)."</para>
+
 <para>&#194;&#160; &#194;&#160; &#194;&#160; &#194;&#160;
 &#194;&#160; *.greeting = "We will simulate 5 host(s)."</para>
+
 <para>To write a literal ${..} inside a string constant, quote "{"
 with a backslash, and write "$\{..}".</para>
+
 <para>You can assign names to iteration variables, which has the
 advantage that you'll see meaningful names instead of $0 and $1 in
 the Cmdenv output, and also lets you refer to the variables at more
 than one place in the ini file. The syntax is
 ${&lt;varname&gt;=&lt;iteration&gt;}, and variables can be referred
 to simply as ${&lt;varname&gt;}:</para>
+
 <para>&#194;&#160; [Config Aloha]</para>
+
 <para>&#194;&#160; *.numHosts = ${N=1, 2, 5, 10..50 step 10}</para>
+
 <para>&#194;&#160; **.host[*].generationInterval = exponential(
 ${mean=0.2, 0.4, 0.6} )</para>
+
 <para>&#194;&#160; **.greeting = "There are ${N} hosts"</para>
+
 <para>The scope of the variable name is the section that defines
 it, plus sections based on that section (via extends=).</para>
+
 <para>There are also a number of predefined variables:
 ${configname} and ${runnumber} with the obvious meanings;
 ${network} is the name of the network that is simulated;
 ${processid} and ${datetime} expand to the OS process id of the
 simulation and the time it was started; and there are some more:
 ${runid}, ${iterationvars} and ${repetition}.</para>
+
 <para>${runid} holds the Run ID. When a simulation is run, it gets
 assigned a Run ID, which uniquely identifies that instance of
 running the simulation: if you run the same thing again, it will
@@ -267,6 +358,7 @@ all practical purposes, yet it is meaningful for humans. The Run ID
 is recorded into result files written during the simulation, and
 can be used to match vectors and scalars written by the same
 simulation run.</para>
+
 <para>In cases when not all combinations of the iteration variables
 make sense or need to be simulated, it is possible to specify an
 additional constraint expression. This expression is interpreted as
@@ -274,24 +366,32 @@ a conditional (an "if" statement) within the innermost loop, and it
 must evaluate to "true" for the variable combination to generate a
 run. The expression should be given with the constraint=
 configuration key. An example:</para>
+
 <para>&#194;&#160; *.numNodes = ${n=10..100 step 10}</para>
+
 <para>&#194;&#160; **.numNeighbors = ${m=2..10 step 2}</para>
+
 <para>&#194;&#160; constraint = $m &lt;= sqrt($n)</para>
+
 <para>The expression syntax supports most C language operators
 (including boolean, conditional and binary shift operations) and
 most &lt;math.h&gt; functions; data types are boolean, double and
 string. The expression must evaluate to a boolean.</para>
+
 <para>It is directly supported to perform several runs with the
 same parameters but different random number seeds. There are two
 configuration keys related to this: repeat= and seed-set=. The
 first one simple specifies how many times a run needs to be
 repeated. For example,</para>
+
 <para>&#194;&#160; repeat = 10</para>
+
 <para>causes every combination of iteration variables to be
 repeated 10 times, and the ${repetition} predefined variable holds
 the loop counter. Indeed, repeat=10 is equivalent of adding
 ${repetition=0..9} to the ini file. The ${repetition} loop always
 becomes the innermost loop.</para>
+
 <para>The seed-set= configuration key affects seed selection. Every
 simulation uses one or more random number generators (as configured
 by the num-rngs= key), for which the simulation kernel can
@@ -301,51 +401,71 @@ set of seeds (seed set 0), the second run may use a second set
 are RNGs configured. All automatic seeds generate random number
 sequences that are far apart in the RNG's cycle, so they will never
 overlap during simulations.</para>
+
 <para>The seed-set= key tells the simulation kernel which seed set
 to use. It can be set to a concrete number (such as seed-set=0),
 but it usually does not make sense as it would cause every
 simulation to run with exactly the same seeds. It is more practical
 to set it to either ${runnumber} or to ${repetition}. The default
 setting is ${runnumber}:</para>
+
 <para>&#194;&#160; seed-set = ${runnumber} &#194;&#160; # this is
 the default</para>
+
 <para>This makes every simulation run to execute with a unique seed
 set. The second option is:</para>
+
 <para>&#194;&#160; seed-set = ${repetition}</para>
+
 <para>where all $repetition=0 runs will use the same seeds (seed
 set 0), all $repetition=1 runs use another seed set, $repetition=2
 a third seed set, etc.</para>
+
 <para>To perform runs with manually selected seed sets, you can
 just define an iteration for the seed-set= key:</para>
+
 <para>&#194;&#160; seed-set = ${5,6,8..11}</para>
+
 <para>In this case, the repeat= key should be left out, as
 seed-set= already defines an iteration and there's no need for an
 extra loop.</para>
+
 <para>It is of course also possible to manually specify individual
 seeds for simulations. This is rarely necessary, but we can use it
 here to demonstrate another feature, parallel iterators:</para>
+
 <para>&#194;&#160; repeat = 4</para>
+
 <para>&#194;&#160; seed-1-mt = ${53542, 45732, 47853, 33434 !
 repetition}</para>
+
 <para>&#194;&#160; seed-2-mt = ${75335, 35463, 24674, 56673 !
 repetition}</para>
+
 <para>&#194;&#160; seed-3-mt = ${34542, 67563, 96433, 23567 !
 repetition}</para>
+
 <para>The meaning of the above is this: in the first repetition,
 the first column of seeds is chosen, for the second repetition, the
 second column, etc. The "!" syntax chooses the kth value from the
 iteration, where k is the position (iteration count) of the
 iteration variable after the "!". Thus, the above example is
 equivalent to the following:</para>
+
 <para>&#194;&#160; # no repeat= !</para>
+
 <para>&#194;&#160; seed-1-mt = ${seed1 = 53542, 45732, 47853,
 33434}</para>
+
 <para>&#194;&#160; seed-2-mt = ${ &#194;&#160; &#194;&#160;
 &#194;&#160; &#194;&#160;75335, 35463, 24674, 56673 ! seed1}</para>
+
 <para>&#194;&#160; seed-3-mt = ${ &#194;&#160; &#194;&#160;
 &#194;&#160; &#194;&#160;34542, 67563, 96433, 23567 ! seed1}</para>
+
 <para>That is, the iterators of seed-2-mt and seed-3-mt are
 advanced in lockstep with the seed1 iteration.</para>
+
 <para>Ok, the above might have been a little frightening at first,
 to those of you who are not yet familiar with OMNEST/OMNeT++. Don't
 worry; the INI File Editor has many comfort features that help you
@@ -353,52 +473,72 @@ gain the upper hand, and easily manage your experiments. The
 ability to manage ini files as text files adds lots of power to the
 system, but from version 4.0 you also have this more comfortable
 alternative to use.</para>
+
 <para>Let us use our previous example, tictoctest.ned to explore
 the INI File Editor.</para>
+
 <para>To start off, just double-click the omnetpp.ini file in the
 Navigator pane. Make sure, that this is the omnetpp.ini file that
 is inside the tictoc example, as other examples also have their own
 omnetpp.ini, not to be confused with the one we want.</para>
+
 <picture file="pictures/4.1.11_doubleclick_on_omnetppdotini.png">
 TODO</picture>
+
 <para>Also note, that the INI File editor is also a dual mode
 editor, meaning that you can take advantage of "both worlds". You
 can use it to edit ini files as text, using advanced functions, or
 use the forms-based editor to quickly place the elements needed to
 start an experiment.</para>
+
 <para>You may have noticed, that the sections of the ini file
 bellow the General section all correspond to a .ned file, but our
 tictoctest.ned file is lacking its own. Press the
 New&#226;&#8364;&#166; button to add another section to the ini
 file.</para>
+
 <picture file="pictures/4.1.12_new_inifile_section.png">
 TODO</picture>
+
 <para>Add a name, say "TictocTest" to keep naming consistent with
 what's already there, a description if you like, leave the General
 section as fallback, and select tictoctest as the .ned network that
 these settings will relate to.</para>
+
 <para>You will notice, that a line has been added to the sections
 list:</para>
+
 <picture file="pictures/4.1.13_added_section_to_inifile.png">
 TODO</picture>
+
 <para>For this simple example, this might be sufficient to start
 the experiment. Just save the .ini file, and the simulation is
 already ready to run.</para>
+
 </sect1>
+
 <sect1>
 <title>Outline View</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>Problems View</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>Module Paramesters View</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>Module Hierarchy View</title>
 <para>TBD</para>
+
 </sect1>
+
 </chapter>

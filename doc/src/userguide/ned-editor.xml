@@ -6,11 +6,15 @@
 <sect1>
 <title>Creating NED Files</title>
 <para>TBD, (wizards, ned path, ned source folder)</para>
+
 </sect1>
+
 <sect1>
 <title>Setting NED Source Folders</title>
 <para>TBD: Project Properties dialog</para>
+
 </sect1>
+
 <sect1>
 <title>The NED Editor</title>
 <para>When you double-click a .ned file in the IDE, it will open in
@@ -18,11 +22,15 @@ the NED editor. Like its predecessor gned from OMNeT++ 2.x and 3.x,
 the new NED editor is a dual-mode editor: in the graphical mode you
 can edit the network using the mouse, and the textual mode allows
 you to work directly on the NED source.</para>
+
 <picture file="pictures/3.0_GNED_graphics_view.png">TODO</picture>
+
 <para>This is a dual mode editor, you can edit in both graphical,
 or source mode. Pressing the little tabs on the bottom of the
 editor window will change editing modes appropriately.</para>
+
 <picture file="pictures/3.1_GNED_text_view.png">TODO</picture>
+
 <para>The syntax of NED files has changed from the 3.x version. The
 new syntax accommodates many more languages features such as
 inheritance and properties, and it is also more consistent, making
@@ -33,6 +41,7 @@ however, (syntax highlighting, content assistance etc.) will not
 work. There is automatic conversion from the old syntax to the new,
 available both from the NED editor and as an external utility
 program (nedtool).</para>
+
 <para>The gned program from OMNeT++ 3.x and 2.x viewed NED files in
 isolation. In contrast, the OMNeT++ IDE gathers information from
 all .ned files in all open OMNeT++ projects, and makes this
@@ -41,63 +50,86 @@ in OMNeT++ 4.0, modules may inherit parameters, visual appearance
 or even submodules and connections from other modules, so it is
 only possible to display a compound module correctly if all related
 NED definitions are available.</para>
+
 <para>If you position your mouse over the Aserver submodule in the
 source above, or its parameter txRate, you will see a tool tip
 appearing in the NED Editor describing them, even though these are
 described in a different NED file within the project, in this case,
 Aserver.ned contains the information.</para>
+
 <picture file="pictures/3.2_GNED_txRate_tooltip.png">TODO</picture>
+
 <para>The same is of course true of the graphical editor. It too,
 is capable of handling network elements in context, even if they
 are defined elsewhere in the project.</para>
+
 <picture file="pictures/3.3_GNED_graphical_mode_tooltip.png">
 TODO</picture>
+
 <para>Lets review the Palette. This is only visible in graphical
 mode, and is used to create or modify elements of a network. Let us
 follow this in an example. Opening the simple tictoc project, let
 us create a new Network Description File (.ned). Just right click
 in the Navigator,</para>
+
 <picture file="pictures/3.4_Newfile_context_navigator.png">
 TODO</picture>
+
 <para>Or use the New command from the File menu, or the tool
 bar.</para>
+
 <para>Select tictoc as the parent folder, name the file
 tictoctest.ned and select "A new top level network" radio
 button.</para>
+
 <picture file="pictures/3.5_Newfile_dialog.png">TODO</picture>
+
 <para>Lets quickly edit the new file in Graphical mode, using the
 Palette. It should look like this:</para>
+
 <picture file="pictures/3.6_Palette_with_tictoc_elements.png">
 TODO</picture>
+
 <para>From top to bottom:</para>
+
 <para>Selector is used to select elements, this is
 straight-forward.</para>
+
 <para>Connection is a drop-down, it is used to create and
 manipulate connections between modules in the network. It already
 contains two pre-defined Channels (connections with their own set
 of attributes), which are already defined and imported into the
 project.</para>
+
 <para>Types is used to create module types in the .ned file. Just
 clicking the Simple Module tool and clicking on the canvas will
 create the element.</para>
+
 <para>Submodules references all the submodules available as
 building blocks for the network. Just click the desired submodule's
 icon, and click inside the network to place an instance of the
 submodule there.</para>
+
 <para>To create a simple example, click on Txc1 in the Palette, and
 click inside the grey area in the tictoctest network (the larger
 grey box). The network will auto-resize, and you will get something
 like this:</para>
+
 <picture file="pictures/3.7.1_Tictoctest_txc1_create.png">
 TODO</picture>
+
 <para>click the name "txc1" and rename it to "tic". You can also
 click on the border, and resize the rectangle so that it can
 accommodate one more instance of "Txc1".</para>
+
 <picture file="pictures/3.7.2_Tictoctest_tic_resize.png">
 TODO</picture>
+
 <para>Create one more instance of "Txc1" and name it "toc".</para>
+
 <picture file="pictures/3.7.3_Tictoctest_toc_create.png">
 TODO</picture>
+
 <para>Now let's use the Connection tool to join these two together.
 They both have an .in and .out gate in their original definition
 (this is in tictoc1.ned by the way), so we can make use of those
@@ -108,34 +140,45 @@ that you are now in connection mode. Click on "tic" and connect it
 to "toc" by clicking on their icons in this order. A small shows
 the available gates. In this simple example, just one is available.
 Select it to make the connection in one direction.</para>
+
 <picture file="pictures/3.7.4_Tictoctest_connection.png">
 TODO</picture>
+
 <para>You need to make the connection in the opposite direction
 too, so click on "toc" first, and connect it to "tic". Press ESC to
 escape from connection mode.</para>
+
 <para>Did you notice the little green pins on the top right side of
 the icons of "tic" and "toc"? These indicate that the elements are
 "pinned". In other words, they have a definite position defined in
 the NED file. If you right-click on "toc", you can unpin it by
 deactivating "pinned" in the context menu.</para>
+
 <picture file="pictures/3.7.5_Unpin.png">TODO</picture>
+
 <para>Let's check out the NED script. Click on the "Text" tab on
 the bottom of the editor.</para>
+
 <picture file="pictures/3.7.6_Scriptview.png">TODO</picture>
+
 <para>Both "tic" and "toc" can be seen under submodules, but only
 one of them has a display string that specifies an exact location.
 In "p=152,58", 152 is the X co-ordinate, and 58 is the Y
 co-ordinate of the middle of the icon or symbol to be placed. You
 can open and close various sections of the code using the little
 (-) icons on the left side of the script.</para>
+
 <para>Go back to Graphical mode, lets add some icons. Select "tic"
 and take a look at the properties view on the left bottom side of
 your screen.</para>
+
 <para>Let us see what is contained here: Within the Base
 properties, we can see an absolute position (display = x,y), the
 fact that the module inherited two gates from its parent module
 Txc1, but no parameters.</para>
+
 <picture file="pictures/3.8_Properties.png">TODO</picture>
+
 <para>Click on the value of icon, you will notice that content
 assist is available, you can chose from icons in the system. To use
 content assist, press CTRL+SPACE, and select "device" using the
@@ -143,34 +186,46 @@ arrow keys from the options that pop up, and press enter. Now you
 can press CTRL-SPACE again, to choose between the various devices.
 Select "device/cellphone". Notice, that the appearance of the node
 "tic" has been updated.</para>
+
 <picture file="pictures/3.8.1_Content_assist_available.png">
 TODO</picture>
+
 <para>&#194;&#160;If you click the "..." icon in the value row, you
 can select the icon from a graphical picker, making finding the
 right icon to use easier. There is a quick search function
 available in it as well. Just type "ce" in the box in top, and see
 how quickly the available choices are reduced to a manageable
 level.</para>
+
 <picture file="pictures/3.8.2_Iconpicker.png">TODO</picture>
+
 <para>Now select "toc" and let's fill out the Polygon section. This
 will not be as graphically pleasing as an icon, but it has its own
 merits, and is configurable in appearance. Experiment with content
 assist and the graphical color picker as you will. Lets produce
 something like this:</para>
+
 <picture file="pictures/3.8.3_Polygon.png">TODO</picture>
+
 <para>These properties will result in a network that looks
 something like this in Graphics mode.</para>
+
 <picture file="pictures/3.8.3.1_Polygon_graphics.png">
 TODO</picture>
+
 <para>Also, notice the information that is now added to the display
 string of these nodes in Text mode.</para>
+
 <picture file="pictures/3.8.4_Display_string.png">TODO</picture>
+
 <para>The next set of parameters, Position, are meant for use with
 module vectors. It is possible to manage these nodes as a group,
 and arrange them into one of the following formations
 automatically:</para>
+
 <picture file="pictures/3.8.5_Positon_parameters.png">
 TODO</picture>
+
 <para>Of the six parameters, Vector Layout refers to the type of
 layouting to be performed on the group. Valid choices are: row or
 r; column or c, matrix or m, ring or ri, and exact or e or x. in
@@ -182,41 +237,52 @@ with the origin being the top left corner of the containing module.
 Please note, that larger X values cause a displacement from left to
 right, while larger Y values cause a displacement from top to
 bottom.</para>
+
 <para>It is best to summarize these tags in a table:</para>
+
 <informaltable frame="all">
 <tgroup cols="2">
 <tbody>
 <row>
 <entry>
 <para>p=xpos,ypos,row,deltax</para>
+
 </entry>
 <entry>
 <para>Used for module vectors. Arranges submodules in a row
 starting at (xpos,ypos), keeping deltax distances. In the graphical
 editor, deltax is contained in the vector layout par1
 parameter.</para>
+
 <para>Defaults: deltax is chosen so that submodules do not
 overlap.</para>
+
 <para>row may be abbreviated as r.</para>
+
 </entry>
 </row>
 <row>
 <entry>
 <para>p=xpos,ypos,column,deltay</para>
+
 </entry>
 <entry>
 <para>Used for module vectors. Arranges submodules in a column
 starting at (xpos,ypos), keeping deltay distances. In the graphical
 editor, deltay is contained in the vector layout par1
 parameter.</para>
+
 <para>Defaults: deltay is chosen so that submodules do not
 overlap.</para>
+
 <para>column may be abbreviated as col or c.</para>
+
 </entry>
 </row>
 <row>
 <entry>
 <para>p=xpos,ypos,matrix, itemsperrow,deltax,deltay</para>
+
 </entry>
 <entry>
 <para>Used for module vectors. Arranges submodules in a matrix
@@ -225,14 +291,18 @@ keeping deltax and deltay distances. In the graphical editor,
 intemsperrow is contained in the vector layout par1 parameter,
 deltax is in vector layout par2 and deltay is contained in vector
 layout par3.</para>
+
 <para>Defaults: itemsperrow=5, deltax,deltay are chosen so that
 submodules do not overlap.</para>
+
 <para>matrix may be abbreviated as m.</para>
+
 </entry>
 </row>
 <row>
 <entry>
 <para>p=xpos,ypos,ring,width,height</para>
+
 </entry>
 <entry>
 <para>Used for module vectors. Arranges submodules in an ellipse,
@@ -240,14 +310,18 @@ with the top-left corner of the ellipse's bounding box at
 (xpos,ypos), with the width and height. In the graphical editor,
 width is contained in the vector layout par1 parameter, height is
 in vector layout par2.</para>
+
 <para>Defaults: width,height are chosen so that submodules do not
 overlap.</para>
+
 <para>ring may be abbreviated as ri.</para>
+
 </entry>
 </row>
 <row>
 <entry>
 <para>p=xpos,ypos,exact,deltax,deltay</para>
+
 </entry>
 <entry>
 <para>Used for module vectors. Each submodule is placed at
@@ -256,8 +330,11 @@ parameters (e.g.:"p=100,100,exact,$x,$y") which take different
 values for each module in the vector. In the graphical editor,
 deltax is contained in the vector layout par1 parameter, deltay is
 in vector layout par2.</para>
+
 <para>Defaults: none</para>
+
 <para>exact may be abbreviated as e or x.</para>
+
 </entry>
 </row>
 </tbody>
@@ -267,23 +344,30 @@ in vector layout par2.</para>
 Range section. This can be used to graphically represent a circular
 area around the node, possibly representing it's signal
 range.</para>
+
 <picture file="pictures/3.8.6_Range_parameters.png">TODO</picture>
+
 <para>Going through them quicky: you can set the radius of the
 circle in the first parameter: range, the range border color and
 range fill color values will set the appropriate colors of the
 circle. Code assist and graphical picker options are available here
 too. Range border width is a pixel value for the line width of the
 range circle to be drawn around the node.</para>
+
 <para>If you set up your parameters to the values shown above, your
 graphical view of toc will look like this:</para>
+
 <picture file="pictures/3.8.6.1_TOC_view_after_range.png">
 TODO</picture>
+
 <para>The text group of parameters contain some peculiar items.
 Queue object is mainly provided to support a special case for
 backward compatibility. The most frequent case when this is when a
 queue length is displayed during the simulation at runtime, right
 beside the node itself.</para>
+
 <picture file="pictures/3.8.7_Text_parameters.png">TODO</picture>
+
 <para>The queue object should contain the name of the object that
 contains the queue length in the particular simulation. Formatting
 for this output is not available. Text contains some additional
@@ -292,102 +376,144 @@ and position define where, and how these are displayed, whereas
 tooltip is just some text that will be displayed if the mouse is
 moved over the node. Setting things up as above will result in the
 following:</para>
+
 <picture file="pictures/3.8.8.1_Text_parameters_result.png">
 TODO</picture>
+
 <para>The content assist feature has a template advisor feature,
 which can save a lot of time for creating commonly used scenarios.
 To look at a few examples of these, we can use the tictoctest.ned
 file we created in the above tutorial.</para>
+
 <para>Positioning the cursor in the submodules section, let's add a
 submodule vector -- a series of similar submodules. Press
 CTRL+SPACE to access the code assist feature, and chose submodule2
 -- sumbodule vector</para>
+
 <picture file="pictures/3.9.1_Module_Vector_content_assist.png">
 TODO</picture>
+
 <para>Notice, that besides the description on the left, you will
 also get a hint in a tooltip at how the code is going to look
 like.</para>
+
 <para>After pressing ENTER, you will be left with a template where
 you can define the parameters, with no risk of a syntax
 error.</para>
+
 <picture file="pictures/3.9.2_Module_Vector_content_assist_toedit.png">
 TODO</picture>
+
 <para>Let's call it "toto", and let's create a batch of 10.</para>
+
 <picture file="pictures/3.9.3_Module_Vector_content_assist_edited.png">
 TODO</picture>
+
 <para>Now skip to the connections section, and ask for some content
 assist there.</para>
+
 <picture file="pictures/3.9.4_Connections_content_assist.png">
 TODO</picture>
+
 <para>Besides the nodes that we have defined in the submodules
 section (tic, toc and toto), the IDE will offer you templates to
 handle connecting these modules together in the most common ways.
 Let's quickly examine two of these. Chose "forring -connect modules
 in a ring topology".</para>
+
 <picture file="pictures/3.9.4_Connections_content_assist_forring_toedit.png">
 TODO</picture>
+
 <para>For this to work well with out toto submodule, we need to
 edit the template as such:</para>
+
 <picture file="pictures/3.9.4_Connections_content_assist_forring_edited.png">
 TODO</picture>
+
 <para>This will neatly arrange and the submodules in this vector
 into a ring topology at runtime.</para>
+
 <para>Now let's suppose that instead of the ring, you wanted to
 connect these nodes in a random graph. All you have to do, is chose
 "forrandomgraph -- connect modules in a random graph topology" from
 the content assist, and you are ready to go.</para>
+
 <picture file="pictures/3.9.4.1_Connections_content_assist_randomgraph_toedit.png">
 TODO</picture>
+
 <para>Change "n" to 10, "node" to "toto" and "connectedness" to a
 number between 0 and 1, representing the percentage of connections
 you wish to make from a full graph. 0.4 will make 40% of all
 connections.</para>
+
 <para>TBD</para>
+
 <para>You can also add entire networks using the content assist
 template advisor. In an empty .ned file, the content assist will
 look like this:</para>
+
 <picture file="pictures/3.9.5_empty_content_assist.png">
 TODO</picture>
+
 <para>Chosing "moduletree -- module with binary tree topology" will
 generate a template, and all you need to do is to customize it to
 your implementation. Just changing a couple of simple things, you
 end up with a functional module:</para>
+
 <picture file="pictures/3.9.5_empty_content_assist_BTM_edited.png">
 TODO</picture>
+
 <para>If you click on a parameter, gate, submodule, channel or
 variable name while pressing the CTRL key in text mode, the editor
 will jump to the definition of that item. If the definition resides
 in a different file, that file will be opened, and the cursor will
 be positioned to the definition.</para>
+
 <para>For example, Control-Clicking .toc.in in our little
 tictoctest.ned file,</para>
+
 <picture file="pictures/3.9.6_CTRL_Click_on_toc.png">TODO</picture>
+
 <para>Results in the relevant section in the code being
 highlighted:</para>
+
 <picture file="pictures/3.9.6_CTRL_Click_on_toc_result.png">
 TODO</picture>
+
 <para>&#194;&#160;This feature helps in quickly understanding what
 that particular item's intended function is, and where it is
 defined, potentially saving a lot of time.</para>
+
 </sect1>
+
 <sect1>
 <title>Outline View</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>Properties View</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>Problems View</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>Module Hierarchy View</title>
 <para>TBD</para>
+
 </sect1>
+
 <sect1>
 <title>NED Inheritance View</title>
 <para>TBD</para>
+
 </sect1>
+
 </chapter>
