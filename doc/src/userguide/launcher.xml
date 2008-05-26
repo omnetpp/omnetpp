@@ -2,8 +2,9 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
                  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="launcher">
-<title>Simulation Launcher</title>
-<sect1><title>Simulation Launcher</title>
+<title>Launching Simulations</title>
+
+<sect1><title>Launching or Debugging the Simulation</title>
 <para>To quickly launch the simulation, just select tictoc.exe and open the run dialog as shown in the screen shot.</para>
 <picture file="pictures/4.1.14_open_run_dialog.png" width="3.3228inch" depth="2.2189inch">
 TODO
@@ -31,4 +32,20 @@ TODO
 </picture>
 <para> This feature helps in quickly understanding what that particular item’s intended function is, and where it is defined, potentially saving a lot of time.</para>
 </sect1>
+
+<sect1>
+  <title>Batch Execution</title>
+  <para>TBD</para>
+</sect1>
+
+<sect1>
+  <title>Progress View</title>
+  <para>TBD</para>
+</sect1>
+
+<sect1>
+  <title>Console View</title>
+  <para>TBD</para>
+</sect1>
+
 </chapter>

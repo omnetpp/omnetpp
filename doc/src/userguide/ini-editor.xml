@@ -2,7 +2,13 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
                  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="ini-editor">
-<title>INI File Editor</title>
+<title>Editing INI Files</title>
+
+<sect1>
+  <title>Creating INI files</title>
+  <para>TBD</para>
+</sect1>
+
 <sect1><title>The INI file Editor</title>
 
 <para>In OMNeT++, simulation models are parameterized and configured for execution using configuration files with the .ini extension, called ini files. Ini files are text files which can be edited using any text editor. However, OMNeT++ 4.0 introduces a tool expressly designed for editing ini files. The Inifile Editor is part of the OMNeT++ IDE, and it can very efficiently assist the user in authoring ini files, because it has detailed knowledge of the simulation model, the ini file syntax, and the available configuration options.</para>
@@ -11,14 +17,17 @@
 <para>With the above goals in mind, configuration reading and handling was re-implemented from scratch. Additional benefits from this re-implementation are greatly improved performance (we use maps instead of linear searches), the ability to catch and report mistyped configuration keys in the ini files, and to be able to print a list of all supported configuration keys, complete with descriptions.</para>
 <para>To begin with, the [Cmdenv], [Tkenv], [Parameters], [OutVectors] and [Partitioning] sections are no more -- only [General] is left. The organizing principle of sections is no longer the duality of topics (Cmdenv, Tkenv, output vectors, etc.) and runs (run 1, run 2, etc.), but named configurations -- only, and always.</para>
 <para>Named configurations are sections of the form [Config &lt;configname&gt;], where &lt;configname&gt; is by convention a camel-case string that starts with a capital letter: "Config1", "WirelessPing", "OverloadedFifo", etc. For example, omnetpp.ini for an Aloha simulation might have the following skeleton:</para>
-<para>  [General]</para>
-<para>  ...</para>
-<para>  [Config PureAloha]</para>
-<para>  ...</para>
-<para>  [Config SlottedAloha1]</para>
-<para>  ...</para>
-<para>  [Config SlottedAloha2]</para>
-<para>  ...</para>
+
+<programlisting>
+[General]
+...
+[Config PureAloha]
+...
+[Config SlottedAloha1]
+...
+[Config SlottedAloha2]
+...
+</programlisting>
 
 <para>Keys formerly in the [Cmdenv] section simply got a "cmdenv-" prefix, and were moved to the [General] section. Similarly, [Tkenv] keys got a "tkenv-" prefix, and were moved to [General]. The contents of the rest of the disappearing sections ([Parameters], [OutVectors] and [Partitioning]) just got merged into [General]. This way, ini files actually became simpler and less error-prone: it cannot a happen any more that a configuration key gets ignored just because it was mistakenly added to the wrong section.</para>
 <para>There are also no [Run X] sections any more: when converting a 3.x ini file, change them to named configurations. Automatic conversion tools will just generate names like [Config One], [Config Two], etc, and it is up to you to change them to better names afterwards.</para>
@@ -31,22 +40,25 @@
 
 <para>Actually, when you activate the PureAloha configuration, the contents of the [General] section will also be taken into account: if some configuration key or parameter value is not found in [Config PureAloha], then the search will continue in the [General] section. In other words, lookups in [Config PureAloha] will fall back to [General]. The [General] section itself is optional; when it is absent, it is treated like an empty [General] section.</para>
 <para>All named configurations fall back to [General] by default. However, for each configuration it is possible to specify a fall-back section explicitly, using the extends= key. Consider the following ini file skeleton:</para>
-<para>  [General]</para>
-<para>  ...</para>
-<para>  [Config SlottedAlohaBase]</para>
-<para>  ...</para>
-<para>  [Config SlottedAloha1]</para>
-<para>  extends = SlottedAlohaBase</para>
-<para>  ...</para>
-<para>  [Config SlottedAloha2]</para>
-<para>  extends = SlottedAlohaBase</para>
-<para>  ...</para>
-<para>  [Config SlottedAloha2a]</para>
-<para>  extends = SlottedAloha2</para>
-<para>  ...</para>
-<para>  [Config SlottedAloha2b]</para>
-<para>  extends = SlottedAloha2</para>
-<para>  ...</para>
+
+<programlisting>
+[General]
+...
+[Config SlottedAlohaBase]
+...
+[Config SlottedAloha1]
+extends = SlottedAlohaBase
+...
+[Config SlottedAloha2]
+extends = SlottedAlohaBase
+...
+[Config SlottedAloha2a]
+extends = SlottedAloha2
+...
+[Config SlottedAloha2b]
+extends = SlottedAloha2
+...
+</programlisting>
 
 <para>If you activate the SlottedAloha2b configuration, lookups will consider sections in the following order (this is also called the "section fallback chain"): SlottedAloha2b, SlottedAloha2, SlottedAlohaBase, General.</para>
 <para>The effect is the same as if the contents of the sections SlottedAloha2b, SlottedAloha2, SlottedAlohaBase and General were copied together into one section, one after another, [Config SlottedAloha2b] being at the top, and [General] at the bottom. Lookups always start at the top, and stop at the first matching entry.</para>
@@ -55,6 +67,7 @@
 
 <para>It is quite common in simulation studies that the simulation model is run several times with different parameter settings, and the results are analyzed in relation to the input parameters. OMNeT++ 3.x had no direct support for batch runs, and users had to resort to writing shell (or Python, Ruby, etc.) scripts that iterated over the required parameter space, and generated a (partial) ini file and run the simulation program in each iteration.</para>
 <para>OMNeT++ 4.0 largely automates this process, and eliminates the need for writing batch execution scripts. It is the ini file where the user can specify iterations over various parameter settings. Here's an example:</para>
+
 <para>  [Config AlohaScenario]</para>
 <para>  *.numHosts = ${1, 2, 5, 10..50 step 10}</para>
 <para>  **.host[*].generationInterval = exponential( ${0.2, 0.4, 0.6} )</para>
@@ -192,4 +205,25 @@ TODO
 </picture>
 <para>For this simple example, this might be sufficient to start the experiment. Just save the .ini file, and the simulation is already ready to run.</para>
 </sect1>
+
+<sect1>
+  <title>Outline View</title>
+  <para>TBD</para>
+</sect1>
+
+<sect1>
+  <title>Problems View</title>
+  <para>TBD</para>
+</sect1>
+
+<sect1>
+  <title>Module  Paramesters View</title>
+  <para>TBD</para>
+</sect1>
+
+<sect1>
+  <title>Module Hierarchy View</title>
+  <para>TBD</para>
+</sect1>
+
 </chapter>
