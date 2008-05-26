@@ -7,6 +7,12 @@
    </xsl:copy>
 </xsl:template>
 
+<xsl:template match="p">
+   <para>
+      <xsl:apply-templates select="@*|node()"/>
+   </para>
+</xsl:template>
+
 <xsl:template match="picture">
 <figure float="0">
    <title><xsl:apply-templates select="node()"/></title>

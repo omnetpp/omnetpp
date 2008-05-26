@@ -5,7 +5,7 @@
 <title>Sequence Charts</title>
 <sect1>
 <title>Overview</title>
-<para>This feature is completely new in OMNEST/OMNeT++ 4.0 and will
+<p>This feature is completely new in OMNEST/OMNeT++ 4.0 and will
 empower you to easily examine every minute detail of the simulation
 forwards, backward, in real time or step-by-step. You can filter
 the data to show you only what you are looking for. Examine
@@ -13,12 +13,12 @@ causality relationships, and filter for them automatically. As the
 name would indicate, this application relies on a log file. This
 log file is created during a simulation run, and can become quite
 large, since it contains a lot of information about the
-simulation.</para>
+simulation.</p>
 
-<para>To prepare a log file to be processed by the log viewer,
+<p>To prepare a log file to be processed by the log viewer,
 simply insert the eventlog-file = &lt;filename&gt;.log statement
 into the corresponding omnetpp.ini file, or use the Inifile
-Editor's Output Files section to specify a file name.</para>
+Editor's Output Files section to specify a file name.</p>
 
 <picture file="pictures/7.1_Generate_log_omnetpp_ini.png">
 TODO</picture>
@@ -27,19 +27,19 @@ TODO</picture>
 
 <sect1>
 <title>Creating an Event Log</title>
-<para>TBD</para>
+<p>TBD</p>
 
 </sect1>
 
 <sect1>
 <title>Sequece Chart</title>
-<para>TBD</para>
+<p>TBD</p>
 
 </sect1>
 
 <sect1>
 <title>Event Log View</title>
-<para>TBD</para>
+<p>TBD</p>
 
 </sect1>
 
