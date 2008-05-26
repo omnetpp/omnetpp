@@ -1,0 +1,4 @@
+NEEDS:
+apt-get install docbook-xml docbook-xsl 
+
++ FOP package from apache. xml.apache.org
