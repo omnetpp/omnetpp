@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+                 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="seq-chart">
+<title>Sequence Chart</title>
+<sect1><title>Overview</title>
+<para>This feature is completely new in OMNEST/OMNeT++ 4.0 and will empower you to easily examine every minute detail of the simulation forwards, backward, in real time or step-by-step. You can filter the data to show you only what you are looking for. Examine causality relationships, and filter for them automatically. As the name would indicate, this application relies on a log file. This log file is created during a simulation run, and can become quite large, since it contains a lot of information about the simulation.</para>
+<para>To prepare a log file to be processed by the log viewer, simply insert the eventlog-file = &lt;filename&gt;.log statement into the corresponding omnetpp.ini file, or use the Inifile Editor’s Output Files section to specify a file name.</para>
+<picture file="pictures/7.1_Generate_log_omnetpp_ini.png" width="5.972inch" depth="2.5972inch">
+TODO
+</picture>
+</sect1>
+
+</chapter>
