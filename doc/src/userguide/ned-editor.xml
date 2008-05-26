@@ -42,7 +42,7 @@ TODO
 TODO
 </picture>
 <para>Or use the New command from the File menu, or the tool bar. </para>
-<para>Select tictoc as the parent folder, name the file tictoctest.ned and select “A new top level network” radio button.</para>
+<para>Select tictoc as the parent folder, name the file tictoctest.ned and select "A new top level network" radio button.</para>
 <picture file="pictures/3.5_Newfile_dialog.png" width="5.2189inch" depth="7.1874inch">
 TODO
 </picture>
@@ -59,42 +59,42 @@ TODO
 <picture file="pictures/3.7.1_Tictoctest_txc1_create.png" width="1.1563inch" depth="1.9791inch">
 TODO
 </picture>
-<para>click the name “txc1” and rename it to “tic”. You can also click on the border, and resize the rectangle so that it can accommodate one more instance of “Txc1”.</para>
+<para>click the name "txc1" and rename it to "tic". You can also click on the border, and resize the rectangle so that it can accommodate one more instance of "Txc1".</para>
 <picture file="pictures/3.7.2_Tictoctest_tic_resize.png" width="2.4583inch" depth="2.0311inch">
 TODO
 </picture>
-<para>Create one more instance of “Txc1” and name it “toc”.</para>
+<para>Create one more instance of "Txc1" and name it "toc".</para>
 <picture file="pictures/3.7.3_Tictoctest_toc_create.png" width="2.3437inch" depth="1.948inch">
 TODO
 </picture>
-<para>Now let's use the Connection tool to join these two together. They both have an .in and .out gate in their original definition (this is in tictoc1.ned by the way), so we can make use of those gates. Click on the little triangle on the right side of the Connection tool to open the drop-down menu, and select cIdealChannel from it. Notice, how the cursor changes to indicate that you are now in connection mode. Click on “tic” and connect it to “toc” by clicking on their icons in this order. A small shows the available gates. In this simple example, just one is available. Select it to make the connection in one direction.</para>
+<para>Now let's use the Connection tool to join these two together. They both have an .in and .out gate in their original definition (this is in tictoc1.ned by the way), so we can make use of those gates. Click on the little triangle on the right side of the Connection tool to open the drop-down menu, and select cIdealChannel from it. Notice, how the cursor changes to indicate that you are now in connection mode. Click on "tic" and connect it to "toc" by clicking on their icons in this order. A small shows the available gates. In this simple example, just one is available. Select it to make the connection in one direction.</para>
 <picture file="pictures/3.7.4_Tictoctest_connection.png" width="3.1772inch" depth="2.0311inch">
 TODO
 </picture>
-<para>You need to make the connection in the opposite direction too, so click on “toc” first, and connect it to “tic”. Press ESC to escape from connection mode.</para>
-<para>Did you notice the little green pins on the top right side of the icons of “tic” and “toc”? These indicate that the elements are “pinned”. In other words, they have a definite position defined in the NED file. If you right-click on “toc”, you can unpin it by deactivating “pinned” in the context menu.</para>
+<para>You need to make the connection in the opposite direction too, so click on "toc" first, and connect it to "tic". Press ESC to escape from connection mode.</para>
+<para>Did you notice the little green pins on the top right side of the icons of "tic" and "toc"? These indicate that the elements are "pinned". In other words, they have a definite position defined in the NED file. If you right-click on "toc", you can unpin it by deactivating "pinned" in the context menu.</para>
 <picture file="pictures/3.7.5_Unpin.png" width="3inch" depth="4.7291inch">
 TODO
 </picture>
-<para>Let's check out the NED script. Click on the “Text” tab on the bottom of the editor.</para>
+<para>Let's check out the NED script. Click on the "Text" tab on the bottom of the editor.</para>
 <picture file="pictures/3.7.6_Scriptview.png" width="4.052inch" depth="3.6354inch">
 TODO
 </picture>
-<para>Both “tic” and “toc” can be seen under submodules, but only one of them has a display string that specifies an exact location. In “p=152,58”, 152 is the X co-ordinate, and 58 is the Y co-ordinate of the middle of the icon or symbol to be placed. You can open and close various sections of the code using the little (-) icons on the left side of the script.</para>
-<para>Go back to Graphical mode, lets add some icons. Select “tic” and take a look at the properties view on the left bottom side of your screen. </para>
+<para>Both "tic" and "toc" can be seen under submodules, but only one of them has a display string that specifies an exact location. In "p=152,58", 152 is the X co-ordinate, and 58 is the Y co-ordinate of the middle of the icon or symbol to be placed. You can open and close various sections of the code using the little (-) icons on the left side of the script.</para>
+<para>Go back to Graphical mode, lets add some icons. Select "tic" and take a look at the properties view on the left bottom side of your screen. </para>
 <para>Let us see what is contained here: Within the Base properties, we can see an absolute position (display = x,y), the fact that the module inherited two gates from its parent module Txc1, but no parameters.</para>
 <picture file="pictures/3.8_Properties.png" width="3.0311inch" depth="4.2709inch">
 TODO
 </picture>
-<para>Click on the value of icon, you will notice that content assist is available, you can chose from icons in the system. To use content assist, press CTRL+SPACE, and select “device” using the arrow keys from the options that pop up, and press enter. Now you can press CTRL-SPACE again, to choose between the various devices. Select “device/cellphone”. Notice, that the appearance of the node “tic” has been updated.</para>
+<para>Click on the value of icon, you will notice that content assist is available, you can chose from icons in the system. To use content assist, press CTRL+SPACE, and select "device" using the arrow keys from the options that pop up, and press enter. Now you can press CTRL-SPACE again, to choose between the various devices. Select "device/cellphone". Notice, that the appearance of the node "tic" has been updated.</para>
 <picture file="pictures/3.8.1_Content_assist_available.png" width="4.1563inch" depth="0.75inch">
 TODO
 </picture>
-<para> If you click the “...” icon in the value row, you can select the icon from a graphical picker, making finding the right icon to use easier. There is a quick search function available in it as well. Just type “ce” in the box in top, and see how quickly the available choices are reduced to a manageable level.</para>
+<para> If you click the "..." icon in the value row, you can select the icon from a graphical picker, making finding the right icon to use easier. There is a quick search function available in it as well. Just type "ce" in the box in top, and see how quickly the available choices are reduced to a manageable level.</para>
 <picture file="pictures/3.8.2_Iconpicker.png" width="5.802inch" depth="5.8543inch">
 TODO
 </picture>
-<para>Now select “toc” and let's fill out the Polygon section. This will not be as graphically pleasing as an icon, but it has its own merits, and is configurable in appearance. Experiment with content assist and the graphical color picker as you will. Lets produce something like this:</para>
+<para>Now select "toc" and let's fill out the Polygon section. This will not be as graphically pleasing as an icon, but it has its own merits, and is configurable in appearance. Experiment with content assist and the graphical color picker as you will. Lets produce something like this:</para>
 <picture file="pictures/3.8.3_Polygon.png" width="2.4583inch" depth="1.198inch">
 TODO
 </picture>
@@ -159,14 +159,14 @@ TODO
 <para>p=xpos,ypos,exact,deltax,deltay</para>
 </entry>
 <entry>
-<para>Used for module vectors. Each submodule is placed at (xpos+deltax, ypos+deltay). This is useful if deltax and deltay are parameters (e.g.:''p=100,100,exact,$x,$y'') which take different values for each module in the vector. In the graphical editor, deltax is contained in the vector layout par1 parameter, deltay is in vector layout par2.</para>
+<para>Used for module vectors. Each submodule is placed at (xpos+deltax, ypos+deltay). This is useful if deltax and deltay are parameters (e.g.:"p=100,100,exact,$x,$y") which take different values for each module in the vector. In the graphical editor, deltax is contained in the vector layout par1 parameter, deltay is in vector layout par2.</para>
 <para>Defaults: none </para>
 <para>exact may be abbreviated as e or x.</para>
 </entry>
 </row></tbody></tgroup>
 </informaltable>
 
-<para>Continuing down the list of parameters, for toc, we see the Range section. This can be used to graphically represent a circular area around the node, possibly representing it’s signal range.</para>
+<para>Continuing down the list of parameters, for toc, we see the Range section. This can be used to graphically represent a circular area around the node, possibly representing it's signal range.</para>
 <picture file="pictures/3.8.6_Range_parameters.png" width="2.3957inch" depth="0.8437inch">
 TODO
 </picture>
@@ -188,7 +188,7 @@ TODO
 
 
 <para>The content assist feature has a template advisor feature, which can save a lot of time for creating commonly used scenarios. To look at a few examples of these, we can use the tictoctest.ned file we created in the above tutorial.</para>
-<para>Positioning the cursor in the submodules section, let’s add a submodule vector – a series of similar submodules. Press CTRL+SPACE to access the code assist feature, and chose submodule2 – sumbodule vector</para>
+<para>Positioning the cursor in the submodules section, let's add a submodule vector -- a series of similar submodules. Press CTRL+SPACE to access the code assist feature, and chose submodule2 -- sumbodule vector</para>
 <picture file="pictures/3.9.1_Module_Vector_content_assist.png" width="5.5937inch" depth="1.9374inch">
 TODO
 </picture>
@@ -197,7 +197,7 @@ TODO
 <picture file="pictures/3.9.2_Module_Vector_content_assist_toedit.png" width="3.7398inch" depth="0.2291inch">
 TODO
 </picture>
-<para>Let’s call it “toto”, and let’s create a batch of 10.</para>
+<para>Let's call it "toto", and let's create a batch of 10.</para>
 <picture file="pictures/3.9.3_Module_Vector_content_assist_edited.png" width="2.1457inch" depth="0.2291inch">
 TODO
 </picture>
@@ -205,7 +205,7 @@ TODO
 <picture file="pictures/3.9.4_Connections_content_assist.png" width="4.7398inch" depth="3.9689inch">
 TODO
 </picture>
-<para>Besides the nodes that we have defined in the submodules section (tic, toc and toto), the IDE will offer you templates to handle connecting these modules together in the most common ways. Let’s quickly examine two of these. Chose “forring -connect modules in a ring topology”.</para>
+<para>Besides the nodes that we have defined in the submodules section (tic, toc and toto), the IDE will offer you templates to handle connecting these modules together in the most common ways. Let's quickly examine two of these. Chose "forring -connect modules in a ring topology".</para>
 <picture file="pictures/3.9.4_Connections_content_assist_forring_toedit.png" width="4.2917inch" depth="0.5728inch">
 TODO
 </picture>
@@ -214,11 +214,11 @@ TODO
 TODO
 </picture>
 <para>This will neatly arrange and the submodules in this vector into a ring topology at runtime. </para>
-<para>Now let’s suppose that instead of the ring, you wanted to connect these nodes in a random graph. All you have to do, is chose “forrandomgraph – connect modules in a random graph topology” from the content assist, and you are ready to go.</para>
+<para>Now let's suppose that instead of the ring, you wanted to connect these nodes in a random graph. All you have to do, is chose "forrandomgraph -- connect modules in a random graph topology" from the content assist, and you are ready to go.</para>
 <picture file="pictures/3.9.4.1_Connections_content_assist_randomgraph_toedit.png" width="5.9972inch" depth="0.5937inch">
 TODO
 </picture>
-<para>Change “n” to 10, “node” to “toto” and “connectedness” to a number between 0 and 1, representing the percentage of connections you wish to make from a full graph. 0.4 will make 40% of all connections.</para>
+<para>Change "n" to 10, "node" to "toto" and "connectedness" to a number between 0 and 1, representing the percentage of connections you wish to make from a full graph. 0.4 will make 40% of all connections.</para>
 <para>
 TBD
 </para>
@@ -228,7 +228,7 @@ TBD
 <picture file="pictures/3.9.5_empty_content_assist.png" width="4.1665inch" depth="5.7189inch">
 TODO
 </picture>
-<para>Chosing “moduletree – module with binary tree topology” will generate a template, and all you need to do is to customize it to your implementation. Just changing a couple of simple things, you end up with a functional module:</para>
+<para>Chosing "moduletree -- module with binary tree topology" will generate a template, and all you need to do is to customize it to your implementation. Just changing a couple of simple things, you end up with a functional module:</para>
 <picture file="pictures/3.9.5_empty_content_assist_BTM_edited.png" width="5.5626inch" depth="4.8228inch">
 TODO
 </picture>
@@ -243,7 +243,7 @@ TODO
 <picture file="pictures/3.9.6_CTRL_Click_on_toc_result.png" width="5.3437inch" depth="1.2709inch">
 TODO
 </picture>
-<para> This feature helps in quickly understanding what that particular item’s intended function is, and where it is defined, potentially saving a lot of time.</para>
+<para> This feature helps in quickly understanding what that particular item's intended function is, and where it is defined, potentially saving a lot of time.</para>
 </sect1>
 
 <sect1>

@@ -7,7 +7,7 @@
 <sect1>
 <title>Overview</title>
 <para>While it might be powerful in facilitating quick debugging to view how simulations work in the Tkenv environment, in most cases the result of the final simulations will be recorded as scalar values (e.g. average load: 75%), or vector values (e.g. queue length over time) or histograms. These values will be recorded at the end of the simulation as well as during runtime and provide real insight into the scenario you are looking at.</para>
-<para>In OMNEST/OMNeT++ 4.0, statistical analysis becomes a lot more powerful. Not only is the statistical analysis tool integrated into the Eclipse environment, your settings – your recipe for finding results from the raw data – will be recorded in analysis files (.anf) and become instantly reproducible. Even if you need to replace some of the underlying data in your experiments, you do not need to re-develop the recipe (filters, operations, graphs) to squeeze the results you want out of the system.</para>
+<para>In OMNEST/OMNeT++ 4.0, statistical analysis becomes a lot more powerful. Not only is the statistical analysis tool integrated into the Eclipse environment, your settings -- your recipe for finding results from the raw data -- will be recorded in analysis files (.anf) and become instantly reproducible. Even if you need to replace some of the underlying data in your experiments, you do not need to re-develop the recipe (filters, operations, graphs) to squeeze the results you want out of the system.</para>
 </sect1>
 
 <sect1>

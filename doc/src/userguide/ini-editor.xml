@@ -74,7 +74,7 @@ extends = SlottedAloha2
 
 <para>This scenario expands to 8*3 = 24 simulation runs, where the number of hosts iterates over the numbers 1, 2, 5, 10, 20, 30, 40, 50, and for each host count three simulation runs will be done, with the generation interval being exponential(0.2), exponential(0.4), and exponential(0.6).</para>
 <para>How does it get run? First of all, Cmdenv with the '-n' option will tell you how many simulation runs a given section expands to. (You'll of course use Cmdenv for batch runs, not Tkenv.)</para>
-<para>  % aloha -u Cmdenv -c AlohaScenario –n</para>
+<para>  % aloha -u Cmdenv -c AlohaScenario --n</para>
 
 <para>  OMNeT++/OMNEST Discrete Event Simulation</para>
 <para>  ...</para>
@@ -187,18 +187,18 @@ extends = SlottedAloha2
 
 <para>That is, the iterators of seed-2-mt and seed-3-mt are advanced in lockstep with the seed1 iteration.</para>
 
-<para>Ok, the above might have been a little frightening at first, to those of you who are not yet familiar with OMNEST/OMNeT++. Don’t worry; the INI File Editor has many comfort features that help you gain the upper hand, and easily manage your experiments. The ability to manage ini files as text files adds lots of power to the system, but from version 4.0 you also have this more comfortable alternative to use.</para>
+<para>Ok, the above might have been a little frightening at first, to those of you who are not yet familiar with OMNEST/OMNeT++. Don't worry; the INI File Editor has many comfort features that help you gain the upper hand, and easily manage your experiments. The ability to manage ini files as text files adds lots of power to the system, but from version 4.0 you also have this more comfortable alternative to use.</para>
 <para>Let us use our previous example, tictoctest.ned to explore the INI File Editor.</para>
 <para>To start off, just double-click the omnetpp.ini file in the Navigator pane. Make sure, that this is the omnetpp.ini file that is inside the tictoc example, as other examples also have their own omnetpp.ini, not to be confused with the one we want.</para>
 <picture file="pictures/4.1.11_doubleclick_on_omnetppdotini.png" width="5.9992inch" depth="2.8634inch">
 TODO
 </picture>
-<para>Also note, that the INI File editor is also a dual mode editor, meaning that you can take advantage of “both worlds”. You can use it to edit ini files as text, using advanced functions, or use the forms-based editor to quickly place the elements needed to start an experiment.</para>
+<para>Also note, that the INI File editor is also a dual mode editor, meaning that you can take advantage of "both worlds". You can use it to edit ini files as text, using advanced functions, or use the forms-based editor to quickly place the elements needed to start an experiment.</para>
 <para>You may have noticed, that the sections of the ini file bellow the General section all correspond to a .ned file, but our tictoctest.ned file is lacking its own. Press the New… button to add another section to the ini file.</para>
 <picture file="pictures/4.1.12_new_inifile_section.png" width="4.5835inch" depth="4.3957inch">
 TODO
 </picture>
-<para>Add a name, say “TictocTest” to keep naming consistent with what’s already there, a description if you like, leave the General section as fallback, and select tictoctest as the .ned network that these settings will relate to.</para>
+<para>Add a name, say "TictocTest" to keep naming consistent with what's already there, a description if you like, leave the General section as fallback, and select tictoctest as the .ned network that these settings will relate to.</para>
 <para>You will notice, that a line has been added to the sections list:</para>
 <picture file="pictures/4.1.13_added_section_to_inifile.png" width="4.2189inch" depth="1.0102inch">
 TODO
