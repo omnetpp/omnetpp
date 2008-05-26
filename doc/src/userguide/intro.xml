@@ -14,12 +14,12 @@
 <para>Eclipse is a very flexible system. You can move, resize, hide and show various panels, editors and navigators. This allows you to customize the IDE to your liking, but it also makes it more difficult to describe. First, we need to make sure that we are looking at the same thing.</para>
 <para>TODO: Ensure there is a default view available to load, and describe it here.</para>
 
-<picture file="pictures/1.0_Select_Perspective.png" width="5.448inch" depth="3.3126inch">
+<picture file="pictures/1.0_Select_Perspective.png" >
 Selecting the OMNeT++ perspective in Eclipse
 </picture>
 
 <para>Most interface elements within Eclipse are movable, can be docked to various palettes or sections. The whole workspace is configurable, so you can construct your own workspace, but we will use the following layout throughout this manual, to get familiar with the various sections:</para>
-<picture file="pictures/2.0_IDE_default_layout_view.png" width="6inch" depth="4.8inch">
+<picture file="pictures/2.0_IDE_default_layout_view.png" >
 OMNeT++ IDE with README.txt selected in the Navigator
 </picture>
 
