@@ -1555,6 +1555,3 @@ has been replaced by the [Cmdenv]/runs-to-execute option and the
 Check the version.log files for the numerous other changes. Many bugfixes
 and code cleanups were made.
 
-----------
-Copyright (C) 2002 Andras Varga
-

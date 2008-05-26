@@ -12,11 +12,18 @@ these packages available. OMNeT++/OMNEST would not have been possible
 without them.
 
 
+Eclipse
+
+The OMNeT++/OMNEST IDE is based on the Eclipse Platform and additional
+platform features and plug-ins, distributed under the EPL (Eclipse Public 
+License). http://www.eclipse.org.
+
 Tcl/Tk
 
-OMNeT++/OMNEST GUIs are based on Tcl/Tk, an open-source script language and
-GUI toolkit, written by James Ousterhout and many others. Tcl/Tk is currently
-available from http://tcltk.sourceforge.net, under a BSD-like license.
+The Tkenv simulation execution environment is based on Tcl/Tk, an open-source
+script language and GUI toolkit, written by James Ousterhout and many others. 
+Tcl/Tk is currently available from http://tcltk.sourceforge.net, under a 
+BSD-like license.
 
 BLT
 
@@ -42,19 +49,8 @@ OMNeT++/OMNEST is bundled with files from the ActiveState Perl distribution
 (http://www.activestate.com). Perl is distributed under its own Artistic
 License.
 
-GraphViz
+MinGW and MSYS
 
-The model documentation tool opp_neddoc relies on the dot tool from
-Graphviz, developed at AT&T to generate usage and inheritance diagrams. The
-GraphViz home page is http://www.graphviz.org. The package is distributed
-under the AT&T Graphviz Source Code Agreement which permits redistribution
-of binaries.
+A Windows port of gcc, and a minimal Unix-like environment in which typical
+makefiles can execute. License: GNU General Public License. 
 
-UnxUtils
-
-Several GNU Unix tools have been included: grep, gawk, pwd, sed, gzip,
-gunzip, zcat. These programs fall under the GNU General Public License, and
-the source is available from http://www.gnu.org. OMNeT++/OMNEST is bundled
-with binaries from UnxUtils, a package which contains Win32 binary ports of
-these tools. UnxUtils is hosted at sourceforge.net:
-http://unxutils.sourceforge.net.

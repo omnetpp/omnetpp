@@ -6,7 +6,10 @@
 </HEAD>
 
 <style type="text/css">
-h1,h2,h3,h4,h5,h6,.subheading,.toc {font-family: "Trebuchet MS", Geneva, Arial, Helvetica, sans-serif;}
+body,th,td,p,ul,ol,li,h1,h2,h3,h4 {font-family:arial,sans-serif }
+body,td,p,ul,ol,li { font-size:11pt }
+th,td { font-size:10pt; }
+
 h1 {color: #006f00;}
 h2 {color: #006f00;}
 h3 {color: #006f00;}

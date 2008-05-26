@@ -1,8 +1,18 @@
+2008-05-26  Andras Varga
+
+	* removed history.tex; earlier contents merged into this ChangeLog.
+
 2005-10-19  ------ omnetpp-3.2 released ------
+
+	* updated for the 3.2 release
 
 2005-03-31  ------ omnetpp-3.1 released ------
 
+	* updated for the 3.1 release
+
 2004-12-29  ------ omnetpp-3.0 released ------
+
+	* updated for the 3.0 release
 
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
@@ -44,18 +54,51 @@
 
 2003-06-16  ------ omnetpp-2.3 released ------
 
+
 2003-06-15  Andras Varga
 
-	* major revision -- see history.tex for details. Changes we made 
+	* major revision -- see history.tex for details. Changes we made
 	on a local copy of files, then checked in at once.
 
+	* see relevant parts of history.tex below, copied here on 2008-05-26:
+            Mentioned Grace and ROOT in section "Visualizing...".
+            Added section "Using STL in message classes".
+            "Design of OMNeT++" chapter revised, extended, and renamed to
+            "Customization and Embedding".
+            Added "Interpreting Cmdenv output" section to the
+            "Running the Simulation" chapter. Added section about Akaroa
+            in "Running the Simulation" chapter. Expanded section about
+            writing shell scripts to control the simulation.
+            Added background info about RNGs and warning about old RNG
+            in "Class Library" chapter;
+            revised/extended "Deriving new classes" section in same chapter.
+            Bibliography converted to Bibtex, expanded and cleaned up;
+            citations added to text.
+            "Parallel Simulation" chapter: contents removed until new PDES
+            implementation gets released.
+            Revised and reorganized NED chapter. Section about message
+            sending/receiving and other simple module related functions
+            moved to chapter "Simple Modules"; cMessage treatment from
+            "Simulation Library" merged with message subclassing chapter
+            into new chapter "Messages". Deprecated cPacket.
+            Removed sections "Simulation techniques" and
+            "Coding conventions", and their useful fragments were incorporated
+            elsewhere. Added/created sections about message transmission
+            modeling, and using global variables. Added sections explaining
+            how to implement broadcasts and retransmissions. Revised section
+            about dynamic module creation. Deprecated putaside-queue,
+            receiveNew(), receiveOn().
+            Added section "Object ownership management"; removed section
+            on "Using shared objects".
+
 2003-04-30  Andras Varga
-	
+
 	* ch-sim-lib.tex: added section "Object ownership management";
 	removed section "Using shared objects"
 
 	* usman.tex: removed OPNET and Parsec comparisons (ch-parsec.tex,
 	 ch-opnet.tex) from the manual
+
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
 
@@ -66,6 +109,12 @@
 	* checked in the changes for 2.3b1, the most significant being
 	the new chapter about message subclassing.
 
+2003-01-xx  Andras Varga
+
+	* Added chapter about message subclassing; revised chapter about
+	running the simulation, and incorporated new Cmdenv options; added new
+	distributions and clarified many details in NED expr. handling section
+
 2002-06-12  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* ch-build-sim-progs.tex (subsection{Producing a Makefile with the
@@ -75,4 +124,19 @@
 2002-06-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* Makefile (default usman.dvi usman.pdf clean): new targets
+
+Summer 2002
+	* Ulrich Kaage converted the Manual from Microsoft Word to LaTeX
+
+2002-03-18  Andras Varga
+
+	* Documented new ini file options about Envir plugins
+
+2002-01-24  Andras Varga
+
+	* Refinements on the Parsec chapter
+
+2001-10-23  Andras Varga
+
+	* Updated to reflect changes since 2.1 release (see include/ChangeLog)
 

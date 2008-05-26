@@ -4,49 +4,51 @@
 
 \section{What is {\opp}?}
 
-{\opp} is an object-oriented modular discrete event network simulator.
-The simulator can be used for:
+{\opp} is an object-oriented modular discrete event network simulation
+framework. It has a generic architecture, so it can be (and has been)
+used in various problem domains:
 
 \begin{itemize}
-  \item{traffic modeling of telecommunication networks}
+  \item{modeling of wired and wireless communication networks}
   \item{protocol modeling}
-  \item{modeling queueing networks}
-  \item{modeling multiprocessors and other distributed hardware systems}
-  \item{validating hardware architectures}
+  \item{modeling of queueing networks}
+  \item{modeling of multiprocessors and other distributed hardware systems}
+  \item{validating of hardware architectures}
   \item{evaluating performance aspects of complex software systems}
-  \item{\dots modeling any other system where the discrete event approach is
-    suitable.}
+  \item{and in general, it can be used for the modeling and simulation of
+        any system where the discrete event approach is suitable, and which
+        can be conveniently mapped into entities communicating by exchanging
+        messages.}
 \end{itemize}
 
+{\opp} itself is not a simulator of anything concrete, but it rather
+provides infrastructure and tools for \textit{writing} simulations. One of
+the fundamental ingredients of this infrastructure is a component
+architecture for simulation models. Models are assembled from reusable
+components termed \textit{modules}. Well-written modules are truly reusable,
+and can be combined in various ways like LEGO blocks.
 
-An {\opp} model consists of hierarchically nested modules. The
-depth of module nesting is not limited, which allows the user
-to reflect the logical structure of the actual system in the
-model structure. Modules communicate through message passing. Messages
-can contain arbitrarily complex data structures. Modules can
-send messages either directly to their destination or along a
-predefined path, through gates and connections.
+Modules can be connected with each other via gates (other systems would
+call them ports), and combined to form compound modules. The depth of
+module nesting is not limited. Modules communicate through message passing,
+where messages may carry arbitrary data structures. Modules can may
+messages along predefined paths via gates and connections, or directly to
+their destination; the latter is useful for wireless simulations, for
+example. Modules may have parameters, which can be used to customize module
+behaviour, and/or to parameterize the model's topology.
+Modules at the lowest level of the module hierarchy are called
+simple modules, and they encapsulate behaviour. Simple modules
+are programmed in C++, and make use of the simulation library.
 
+{\opp} simulations can be run under various user interfaces.
+Graphical, animating user interfaces are highly useful for
+demonstration and debugging purposes, and command-line user
+interfaces are best for batch execution.
 
-Modules can have their own parameters. Parameters can be used to customize
-module behaviour and to parameterize the model's topology.
-
-Modules at the lowest level of the module hierarchy encapsulate
-behaviour. These modules are termed simple modules, and they are
-programmed in C++ using the simulation library.
-
-{\opp} simulations can feature varying user interfaces for
-different purposes: debugging, demonstration and batch execution.
-Advanced user interfaces make the inside of the model visible
-to the user, allow control over simulation execution
-and to intervene by changing variables/objects inside the model.
-This is very useful in the development/debugging phase
-of the simulation project. User interfaces also facilitate demonstration
-of how a model works.
-
-The simulator as well as user interfaces and tools are portable:
-they are known to work on Windows and on several Unix flavours,
-using various C++ compilers.
+The simulator as well as user interfaces and tools are highly portable.
+They are tested on the most common operating systems (Linux, Mac OS/X,
+Windows), and they can be compiled out of the box or after trivial
+modifications on most Unix-like operating systems.
 
 {\opp} also supports parallel distributed simulation. {\opp} can
 use several mechanisms for communication between partitions of
@@ -61,7 +63,7 @@ even under the GUI which provides detailed feedback on what is going on.
 {\omnest} is the commercially supported version of {\omnetpp}.
 {\omnetpp} is only free for academic and non-profit use --
 for commercial purposes one needs to obtain {\omnest} licenses
-from Omnest Global, Inc.
+from Simulcraft Inc.
 
 
 % \section{Where does {\opp} stand in the world of simulation tools?}
@@ -402,3 +404,4 @@ and great help.
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
+

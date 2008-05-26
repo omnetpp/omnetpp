@@ -110,3 +110,4 @@ If you get it to work, please send a mail to the mailing list!
   list and treelist controls (this is a general GTK issue). To make the IDE a little 
   more compact and usable look into the 'contrib' directory. We have created a .gtkrc
   file which tweaks the GTK environment a little bit more compact.
+

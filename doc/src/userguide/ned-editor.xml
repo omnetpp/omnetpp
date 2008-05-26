@@ -347,7 +347,7 @@ range.</p>
 
 <picture file="pictures/3.8.6_Range_parameters.png">TODO</picture>
 
-<p>Going through them quicky: you can set the radius of the
+<p>Going through them quickly: you can set the radius of the
 circle in the first parameter: range, the range border color and
 range fill color values will set the appropriate colors of the
 circle. Code assist and graphical picker options are available here
@@ -371,7 +371,7 @@ beside the node itself.</p>
 <p>The queue object should contain the name of the object that
 contains the queue length in the particular simulation. Formatting
 for this output is not available. Text contains some additional
-text to be displayed beside, on top, or bellow the node, text color
+text to be displayed beside, on top, or below the node, text color
 and position define where, and how these are displayed, whereas
 tooltip is just some text that will be displayed if the mouse is
 moved over the node. Setting things up as above will result in the

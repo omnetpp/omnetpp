@@ -20,7 +20,7 @@ functions interconnected this way brings more power and flexibility
 to the system.</p>
 
 <p>The OMNeT++ 4.0 Integrated Development Environment extends
-Eclipse with new Editors, Views, Wizards and other functionality.
+Eclipse with new editors, views, wizards, and other functionality.
 OMNeT++ adds functionality for creating and configuring models (NED
 and .ini files), performing batch executions and analyzing the
 simulation results, while Eclipse provides C++ editing, CVS/SVN
@@ -29,7 +29,7 @@ bug-tracker integration, database access, etc) via various
 open-source and commercial plug-ins.</p>
 
 <sect1>
-<title>General Layout</title>
+<title>The Workbench</title>
 <p>The Eclipse Editor layout consists of various Views and
 Editors. These are collected into Perspectives that define which
 Views and Editors are visible, and how they are sized and

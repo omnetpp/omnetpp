@@ -1,5 +1,5 @@
 Installing OMNeT++ on Windows/MinGW
-==========================
+===================================
 
 1. Installing OMNeT++
 
@@ -95,6 +95,6 @@ to the lib/ and bin/ subdirs.
 OMNeT++ has been tested with the MinW gcc compiler. The current distribution
 contains gcc 4.2.1 version.
 
-Microsoft Visual C++ is not supported in the free Academic Version.
+Microsoft Visual C++ is not supported in the Academic Edition.
 
 
