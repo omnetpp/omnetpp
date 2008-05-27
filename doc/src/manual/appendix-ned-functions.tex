@@ -1,9 +1,85 @@
 \chapter{NED Functions}
 \label{cha:ned-functions}
 
-This appendix lists the functions available in the NED language.
+This appendix lists the functions that can be used in NED
+expressions and ini files:
 
-...
+%TBD docu
+
+\begin{verbatim}
+acos : (double) -> double
+ancestorIndex : (long) -> long
+asin : (double) -> double
+atan : (double) -> double
+atan2 : (double,double) -> double
+bernoulli : (double[,long]) -> long
+beta : (double,double[,long]) -> double
+binomial : (long,double[,long]) -> long
+cauchy : (quantity,quantity[,long]) -> quantity
+ceil : (double) -> double
+chi_square : (long[,long]) -> double
+choose : (long,string) -> string
+contains : (string,string) -> bool
+convertUnit : (quantity,string) -> quantity
+cos : (double) -> double
+double : (any) -> double
+dropUnit : (quantity) -> double
+endsWith : (string,string) -> bool
+erlang_k : (long,quantity[,long]) -> quantity
+exp : (double) -> double
+exponential : (quantity[,long]) -> quantity
+fabs : (quantity) -> quantity
+floor : (double) -> double
+fmod : (quantity,quantity) -> quantity
+fullName : () -> string
+fullPath : () -> string
+gamma_d : (double,quantity[,long]) -> quantity
+genk_exponential : (double,double) -> double
+genk_intuniform : (double,double,double) -> double
+genk_normal : (double,double,double) -> double
+genk_truncnormal : (double,double,double) -> double
+genk_uniform : (double,double,double) -> double
+geometric : (double[,long]) -> long
+hypot : (double,double) -> double
+indexOf : (string,string) -> long
+int : (any) -> long
+intuniform : (long,long[,long]) -> long
+length : (string) -> long
+log : (double) -> double
+log10 : (double) -> double
+lognormal : (double,double[,long]) -> double
+max : (quantity,quantity) -> quantity
+min : (quantity,quantity) -> quantity
+negbinomial : (long,double[,long]) -> long
+normal : (quantity,quantity[,long]) -> quantity
+parentIndex : () -> long
+pareto_shifted : (double,quantity,quantity[,long]) -> quantity
+poisson : (double[,long]) -> long
+pow : (double,double) -> double
+replace : (string,string,string[,long]) -> string
+replaceFirst : (string,string,string[,long]) -> string
+replaceUnit : (quantity,string) -> quantity
+sin : (double) -> double
+sqrt : (double) -> double
+startsWith : (string,string) -> bool
+string : (any) -> string
+student_t : (long[,long]) -> double
+substring : (string,long[,long]) -> string
+substringAfter : (string,string) -> string
+substringAfterLast : (string,string) -> string
+substringBefore : (string,string) -> string
+substringBeforeLast : (string,string) -> string
+tail : (string,long) -> string
+tan : (double) -> double
+toLower : (string) -> string
+toUpper : (string) -> string
+triang : (quantity,quantity,quantity[,long]) -> quantity
+trim : (string) -> string
+truncnormal : (quantity,quantity[,long]) -> quantity
+uniform : (quantity,quantity[,long]) -> quantity
+unitOf : (quantity) -> string
+weibull : (quantity,quantity[,long]) -> quantity
+\end{verbatim}
 
 %%% Local Variables:
 %%% mode: latex
