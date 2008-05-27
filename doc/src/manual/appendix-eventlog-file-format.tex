@@ -1,0 +1,215 @@
+\chapter{Eventlog File Format}
+\label{cha:eventlog-file-format}
+
+This appendix documents the format of the eventlog file. Eventlog
+files are written by the simulation (when enabled). Everything
+that happens during the simulation gets recorded into the file,
+  \footnote{With certain granularity of course, and subject to
+  filters that were active during simulation}
+so the file can later be used to reproduce the history of the
+simulation on a sequence chart, or in some other form.
+
+The file is line-oriented text file. Blank lines and lines beginning
+with "\#" (comments) will get ignored. Other lines begin with an
+\textit{entry identifier} like \ttt{E} for \textit{Event} or
+\ttt{BS} for \textit{BeginSend}, followed by \textit{attribute-identifier}
+and \textit{value} pairs. One exception is debug output
+(recorded from \ttt{ev<<...} statements), which are represented
+by lines that begin with a hypen, and continue with the actual text.
+
+\begin{verbatim}
+<file> ::= <line>*
+<line> ::= <empty-line> | <user-log-message> | <event-log-entry>
+<empty-line> ::= CR LF
+<user-log-message> ::= - SPACE <text> CR LF
+<event-log-entry> ::= <event-log-entry-type> SPACE <parameters> CR LF
+<event-log-entry-type> ::= BU | MB | ME | MC | MD | MR | CC | CD | CS |
+                           MS | CE | BS | ES | SD | SH | DM | E
+<parameters> ::= (<name> SPACE <value>)*
+<name> ::= <text>
+<value> ::= <integer> | <text> | <quoted-text>
+\end{verbatim}
+
+Here is a fragment of an existing eventlog file as an example:
+
+\begin{verbatim}
+E # 14 t 1.018454036455 m 8 ce 9 msg 6
+BS id 6 tid 6 c cMessage n send/endTx pe 14
+ES t 4.840247053855
+MS id 8 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 8 d t=,,#808000;i=device/pc_s
+
+E # 15 t 1.025727827674 m 2 ce 13 msg 25
+- another frame arrived while receiving -- collision!
+CE id 0 pe 12
+BS id 0 tid 0 c cMessage n end-reception pe 15
+ES t 1.12489449434
+BU id 2 txt "Collision! (3 frames)"
+DM id 25 pe 15
+\end{verbatim}
+
+A correct eventlog also fulfills the following requirements:
+\begin{itemize}
+   \item simulation events are in increasing event number and simulation time order
+   \item FIXME anything more?
+\end{itemize}
+
+The various entry types and their supported attributes are as follows:
+
+\begin{verbatim}
+SB SimulationBeginEntry // recorded at the first event
+{
+   v int version       // OMNeT++ version, e.g. 0x401 (=1025) is release 4.1
+   rid string runId    // identifies the simulation run
+}
+
+SE SimulationEndEntry // optional last line of an event log file
+{
+}
+
+BU BubbleEntry // display a bubble message
+{
+   id int moduleId // id of the module which printed the bubble message
+   txt string text // displayed message text
+}
+
+MB ModuleMethodBeginEntry // beginning of a call to another module
+{
+   sm int fromModuleId // id of the caller module
+   tm int toModuleId   // id of the module being called
+   m string method     // C++ method name
+}
+
+ME ModuleMethodEndEntry // end of a call to another module
+{
+}
+
+MC ModuleCreatedEntry // creating a module
+{
+   id int moduleId              // id of the new module
+   c string moduleClassName     // C++ class name of the module
+   t string nedTypeName         // fully qualified NED type name
+   pid int parentModuleId  -1   // id of the parent module
+   n string fullName            // full dotted hierarchic module name
+   cm bool compoundModule false // simple or compound module
+}
+
+MD ModuleDeletedEntry // deleting a module
+{
+   id int moduleId // id of the module being deleted
+}
+
+MR ModuleReparentedEntry // reparenting a module
+{
+   id int moduleId         // id of the module being reparented
+   p int newParentModuleId // id of the new parent module
+}
+
+GC GateCreatedEntry     // gate created
+{
+   m int moduleId       // module in which the gate was create
+   g int gateId         // id of the new gate
+   n string name        // gate name
+   i int index -1       // gate index if vector, -1 otherwise
+   o bool isOutput      // input or output gate
+}
+
+GD GateDeletedEntry     // gate deleted
+{
+   m int moduleId       // module in which the gate was created
+   g int gateId         // id of the deleted gate
+}
+
+CC ConnectionCreatedEntry // creating a connection
+{
+   sm int sourceModuleId  // id of the source module identifying the connection
+   sg int sourceGateId    // id of the gate at the source module identifying the connection
+   dm int destModuleId    // id of the destination module
+   dg int destGateId      // id of the gate at the destination module
+}
+
+CD ConnectionDeletedEntry // deleting a connection
+{
+   sm int sourceModuleId // id of the source module identifying the connection
+   sg int sourceGateId   // id of the gate at the source module identifying the connection
+}
+
+CS ConnectionDisplayStringChangedEntry // a connection display string change
+{
+   sm int sourceModuleId  // id of the source module identifying the connection
+   sg int sourceGateId    // id of the gate at the source module identifying the connection
+   d string displayString // the new display string
+}
+
+MS ModuleDisplayStringChangedEntry // a module display string change
+{
+   id int moduleId        // id of the module
+   d string displayString // the new display string
+}
+
+E EventEntry // an event that is processing of a message
+{
+   # long eventNumber          // unique event number
+   t simtime_t simulationTime  // simulation time when the event occurred
+   m int moduleId              // id of the processing module
+   ce long causeEventNumber -1 // event number from which the message being processed was sent or -1 if the message was sent from initialize
+   msg long messageId          // life time unique id of the message being processed
+}
+
+CE CancelEventEntry // canceling an event caused by self message
+{
+   id long messageId              // id of the message being removed from the FES
+   pe long previousEventNumber -1 // event number from which the message being cancelled was sent or -1 if the message was sent from initialize
+}
+
+BS BeginSendEntry // beginning to send a message
+{
+   id long messageId                       // life time unique id of the message being sent
+   //XXX what about writing dup, encapsulate/decapsulate as separate lines?
+   tid long messageTreeId                  // id of the message inherited by dup
+   eid long messageEncapsulationId   -1    // id of the message inherited by encapsulation
+   etid long messageEncapsulationTreeId -1 // id of the message inherited by both dup and encapsulation
+   c string messageClassName               // C++ class name of the message
+   n string messageFullName                // message name
+   pe long previousEventNumber -1          // event number from which the message being sent was processed or -1 if the message has not yet been processed before
+   k short messageKind     0               // message kind
+   p short messagePriority 0               // message priority
+   l int64 messageLength   0               // message length in bits
+   er bool hasBitError   false             // true indicates the message has bit errors
+   d string detail       NULL              // detailed information of message content when recording message data is turned on
+   //XXX and many other fields, including message contents
+}
+
+ES EndSendEntry // prediction of the arrival of a message
+{
+   t simtime_t arrivalTime // when the message will arrive to its destination module
+}
+
+SD SendDirectEntry // sending a message directly to a destination gate
+{
+   sm int senderModuleId            // id of the source module from which the message is being sent
+   dm int destModuleId              // id of the destination module to which the message is being sent
+   dg int destGateId                // id of the gate at the destination module to which the message is being sent
+   pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
+   td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
+}
+
+SH SendHopEntry // sending a message through a connection identified by its source module and gate id
+{
+   sm int senderModuleId            // id of the source module from which the message is being sent
+   sg int senderGateId              // id of the gate at the source module from which the message is being sent
+   pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
+   td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
+}
+
+DM DeleteMessageEntry // deleting a message
+{
+   id int messageId               // id of the message being deleted
+   pe long previousEventNumber -1 // event number from which the message being deleted was sent or -1 if the message was sent from initialize
+}
+\end{verbatim}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "usman"
+%%% End:
