@@ -6,9 +6,11 @@ INKSCAPE=inkscape
 # --- generating pdf ---
 
 TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex \
-         ch-build-sim-progs.tex ch-ned-grammar.tex ch-neddoc.tex \
+         ch-build-sim-progs.tex ch-neddoc.tex \
          ch-opp-design.tex ch-simple-modules.tex title.tex \
-         ch-ned-lang.tex ch-overview.tex ch-run-sim.tex usman.tex
+         ch-ned-lang.tex ch-overview.tex ch-run-sim.tex usman.tex \
+         appendix-ned-grammar.tex appendix-config-options.tex \
+         appendix-msg-grammar.tex appendix-ned-functions.tex
 
 PICS = figures/*
 
@@ -50,7 +52,11 @@ HTM_FILES = ch-introduction.htm \
             ch-parallel-exec.htm \
             ch-opp-design.htm \
             ch-ned-grammar.htm \
-            usman-bibl.htm
+            usman-bibl.htm \
+            appendix-ned-grammar.htm \
+            appendix-config-options.htm \
+            appendix-msg-grammar.htm \
+            appendix-ned-functions.htm
 
 .SUFFIXES : .tex .bbl .htm
 

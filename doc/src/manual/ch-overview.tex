@@ -4,6 +4,72 @@
 
 \section{Modeling concepts}
 
+An {\opp} model consists of modules that communicate with message passing.
+The active modules are termed \textit{simple modules}; they are written in C++,
+using the simulation class library. Simple modules can be grouped into
+\textit{compound modules} and so forth; the number of hierarchy levels is not
+limited. Messages can be sent either via connections that span between
+modules or directly to their destination modules. The concept of simple and
+compound modules is similar to DEVS atomic and coupled models.
+%TODO add ref to DEVS papers
+
+Both simple and compound modules are instances of \textit{module types}.
+When describing the model, the user defines module types; instances of these
+module types serve as components for more complex module types. Finally,
+the user creates the system module as a network module which is a special
+compound module type without gates to the external world. When a module
+type is used as a building block, there is no distinction whether it is a
+simple or a compound module. This allows the user to transparently split a
+module into several simple modules within a compound module, or do the
+opposite, re-implement the functionality of a compound module in one simple
+module, without affecting existing users of the module type.
+
+In Fig. \ref{fig:ch-overview:modules}, boxes represent simple modules
+(thick border) and compound modules (thin border).
+Arrows connecting small boxes represent connections and gates.
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=3.772in, height=1.292in]{figures/usmanFig2}
+\caption{Simple and compound modules}
+\label{fig:ch-overview:modules}
+\end{center}
+\end{figure}
+
+
+Modules communicate with messages which -- in addition to
+usual attributes such as timestamp -- may contain arbitrary
+data. Simple modules typically send messages via gates, but it is also
+possible to send them directly to their destination modules. Gates are the
+input and output interfaces of modules: messages are sent out through
+output gates and arrive through input gates. An input and an output gate
+can be linked with a connection. Connections are created within a single
+level of module hierarchy: within a compound module, corresponding gates of
+two submodules, or a gate of one submodule and a gate of the compound
+module can be connected. Connections spanning across hierarchy levels are
+not permitted, as it would hinder model reuse. Due to the hierarchical
+structure of the model, messages typically travel through a chain of
+connections, to start and arrive in simple modules. Compound modules act as
+'cardboard boxes' in the model, transparently relaying messages between
+their inside and the outside world. Properties such as propagation delay,
+data rate and bit error rate, can be assigned to connections. One can also
+define connection types with specific properties (termed channels) and
+reuse them in several places. Modules can have parameters. Parameters are
+mainly used to pass configuration data to simple modules, and to help
+define model topology. Parameters may take string, numeric or boolean
+values. Because parameters are represented as objects in the program,
+parameters -- in addition to holding constants -- may transparently act as
+sources of random numbers with the actual distributions provided with the
+model configuration, they may interactively prompt the user for the value,
+and they might also hold expressions referencing other parameters. Compound
+modules may pass parameters or expressions of parameters to their
+submodules.
+
+
+
+
+
+
 {\opp} provides efficient tools for the user to describe the
 structure of the actual system. Some of the main features are:
 \begin{itemize}
