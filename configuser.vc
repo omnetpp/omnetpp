@@ -83,6 +83,7 @@ ZLIB_DIR=$(OPT_DIR:\=/)
 
 # Perl: needed by opp_makedep, opp_msgc, opp_neddoc, opp_test etc.
 PERL=perl.exe
+DOXYGEN_DIR=$(TOOLS_DIR)/doxygen
 
 #
 # GNU Bison and Flex. Bison 2.0+ is required, 1.x versions will not work!

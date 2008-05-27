@@ -41,7 +41,7 @@
 %right '^'
 %left UMIN NOT BIN_COMPL
 
-%start networkdescription
+%start msgfile
 
 /*FIXME accept namespace prefix in fwd decls, base classes etc!!! */
 
@@ -126,12 +126,12 @@ static void resetParserState()
 /*
  * Top-level components
  */
-networkdescription
-        : somedefinitions
+msgfile
+        : definitions
         ;
 
-somedefinitions
-        : somedefinitions definition
+definitions
+        : definitions definition
         |
         ;
 
@@ -152,6 +152,7 @@ definition
         | struct
                 { if (np->getStoreSourceFlag()) ps.structp->setSourceCode(toString(@1)); }
         ;
+
 /*
  * namespace declaration
  */
@@ -345,7 +346,10 @@ struct_header
         ;
 
 body
-        : opt_fields_and_properties opt_propertiesblock_old opt_fieldsblock_old '}' opt_semicolon
+        : opt_fields_and_properties
+          opt_propertiesblock_old
+          opt_fieldsblock_old
+          '}' opt_semicolon
         ;
 
 opt_fields_and_properties
@@ -467,7 +471,6 @@ fieldvalueitem
         | CHARCONSTANT
         | INTCONSTANT
         | REALCONSTANT
-        | quantity
         | TRUE_
         | FALSE_
         | NAME
