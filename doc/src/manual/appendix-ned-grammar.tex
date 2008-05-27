@@ -1,26 +1,25 @@
 \chapter{NED Language Grammar}
 \label{cha:ned-language-grammar}
 
-The NED language\index{ned!language}, the network topology description language of
-{\opp} will be given using the extended BNF notation.
+This appendix contains the grammar for the NED language\index{ned!language}.
 
-Space, horizontal tab and new line characters counts as delimiters,
-so one or more of them is required between two elements of the
-description which would otherwise be unseparable. '//' (two slashes)
-may be used to write comments that last to the end of the line.
-The language only distinguishes between lower and upper case
-letters in names, but not in keywords.
+In the NED language, space, horizontal tab and new line characters count
+as delimiters, so one or more of them is required between two elements of the
+description which would otherwise be unseparable.
 
+'//' (two slashes) may be used to write comments that last to the end of the line.
 
-In this description, the \{xxx...\} notation stands for one or
-more xxx's separated with spaces, tabs or new line characters,
-and \{xxx,,,\} stands for one or more xxx's, separated with a
-comma and (optionally) spaces, tabs or new line characters.
+The language is fully case sensitive.
 
-
-For ease of reading, in some cases we use textual definitions.
-The \textit{networkdescription} symbol is the sentence symbol of the
-grammar.
+Notation:
+\begin{itemize}
+  \item{rule syntax is that of \textit{bison}/\textit{yacc}}
+  \item{uppercase words are terminals, lowercase words are nonterminals}
+  \item{\ttt{NAME}, \ttt{STRINGCONSTANT}, \ttt{INTCONSTANT},
+        \ttt{REALCONSTANT} represent identifier names and string,
+        integer and real number literals (defined as in the C language)}
+  \item{other terminals represent keywords in all lowercase}
+\end{itemize}
 
 
 %

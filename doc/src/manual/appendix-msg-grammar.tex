@@ -1,354 +1,273 @@
-\chapter{NED Language Grammar}
-\label{cha:ned-language-grammar}
+\chapter{Message Definitions Grammar}
+\label{cha:msg-language-grammar}
 
-The NED language\index{ned!language}, the network topology description language of
-{\opp} will be given using the extended BNF notation.
+This appendix contains the grammar for the message definitions
+language.
 
-Space, horizontal tab and new line characters counts as delimiters,
-so one or more of them is required between two elements of the
-description which would otherwise be unseparable. '//' (two slashes)
-may be used to write comments that last to the end of the line.
-The language only distinguishes between lower and upper case
-letters in names, but not in keywords.
+In the language, space, horizontal tab and new line characters count
+as delimiters, so one or more of them is required between two elements of the
+description which would otherwise be unseparable.
 
+'//' (two slashes) may be used to write comments that last to the end of the line.
 
-In this description, the \{xxx...\} notation stands for one or
-more xxx's separated with spaces, tabs or new line characters,
-and \{xxx,,,\} stands for one or more xxx's, separated with a
-comma and (optionally) spaces, tabs or new line characters.
+The language is fully case sensitive.
 
+Notation:
+\begin{itemize}
+  \item{rule syntax is that of \textit{bison}/\textit{yacc}}
+  \item{uppercase words are terminals, lowercase words are nonterminals}
+  \item{\ttt{NAME}, \ttt{CHARCONSTANT}, \ttt{STRINGCONSTANT}, \ttt{INTCONSTANT},
+        \ttt{REALCONSTANT} represent identifier names and string, character,
+        integer and real number literals (defined as in the C language)}
+  \item{other terminals represent keywords in all lowercase}
+\end{itemize}
 
-For ease of reading, in some cases we use textual definitions.
-The \textit{networkdescription} symbol is the sentence symbol of the
-grammar.
-
+Nonterminals ending in \ttt{\_old} are present so that message files
+from the previous versions of {\opp} (3.x) can be parsed.
 
 %
-% Note: the following has been extracted directly from ned2.y,
+% Note: the following has been extracted directly from msg2.y,
 % using tools/stripgrammar.
-%
-% REMEMBER to remove the startsymbol + EXPRESSION_SELECTOR stuff from the beginning!
 %
 % TBD explain notation
 %
-% TBD careful readers will note that the rules of the grammar are
-% at places not as straightforward as they could be (like leftgate/rightgate)
-% -- that's because this grammar has been automatically generated from the
-% source code (bison input file), which contains some artifacts.
-%
 
 \begin{Verbatim}[commandchars=\\\{\}]
-nedfile
+
+
+msgfile
         : definitions
-        |
         ;
 
 definitions
         : definitions definition
-        | definition
+        |
         ;
 
 definition
-        : packagedeclaration
-        | import
-        | propertydecl
-        | fileproperty
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
+        : namespace\_decl
+        | cplusplus
+        | struct\_decl
+        | class\_decl
+        | message\_decl
+        | enum\_decl
+        | enum
+        | message
+        | class
+        | struct
         ;
 
-packagedeclaration
-        : PACKAGE dottedname ';'
-        ;
+namespace\_decl
+        : NAMESPACE namespacename ';'
 
-dottedname
-        : dottedname '.' NAME
+namespacename
+        : namespacename ':' ':' NAME
         | NAME
         ;
 
-import
-        : IMPORT importspec ';'
+cplusplus
+        : CPLUSPLUS '\{\{' ... '\}\}' opt\_semicolon
         ;
 
-importspec
-        : importspec '.' importname
-        | importname
+struct\_decl
+        : STRUCT NAME ';'
         ;
 
-importname
-        : importname NAME
-        | importname '*'
-        | importname '**'
-        | NAME
-        | '*'
-        | '**'
+class\_decl
+        : CLASS NAME ';'
+        | CLASS NONCOBJECT NAME ';'
         ;
 
-propertydecl
-        : propertydecl_header opt_inline_properties ';'
-        | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
+message\_decl
+        : MESSAGE NAME ';'
         ;
 
-propertydecl_header
-        : PROPERTY '@' NAME
-        | PROPERTY '@' NAME '[' ']'
+enum\_decl
+        : ENUM NAME ';'
         ;
 
-opt_propertydecl_keys
-        : propertydecl_keys
+enum
+        : ENUM NAME '\{'
+          opt\_enumfields '\}' opt\_semicolon
+        | ENUM NAME EXTENDS NAME '\{'
+          opt\_enumfields '\}' opt\_semicolon
+        ;
+
+opt\_enumfields
+        : enumfields
         |
         ;
 
-propertydecl_keys
-        : propertydecl_keys ';' propertydecl_key
-        | propertydecl_key
+enumfields
+        : enumfields enumfield
+        | enumfield
         ;
 
-propertydecl_key
-        : NAME
+enumfield
+        : NAME ';'
+        | NAME '=' enumvalue ';'
         ;
 
-fileproperty
-        : property_namevalue ';'
+message
+        : message\_header body
         ;
 
-channeldefinition
-        : channelheader '\{'
-            opt_paramblock
-          '\}'
+class
+        : class\_header body
         ;
 
-channelheader
-        : CHANNEL NAME
-           opt_inheritance
+struct
+        : struct\_header body
         ;
 
-opt_inheritance
-        :
-        | EXTENDS extendsname
-        | LIKE likenames
-        | EXTENDS extendsname LIKE likenames
+message\_header
+        : MESSAGE NAME '\{'
+        | MESSAGE NAME EXTENDS NAME '\{'
         ;
 
-extendsname
-        : dottedname
+class\_header
+        : CLASS NAME '\{'
+        | CLASS NAME EXTENDS NAME '\{'
         ;
 
-likenames
-        : likenames ',' likename
-        | likename
+struct\_header
+        : STRUCT NAME '\{'
+        | STRUCT NAME EXTENDS NAME '\{'
         ;
 
-likename
-        : dottedname
+body
+        : opt\_fields\_and\_properties
+          opt\_propertiesblock\_old
+          opt\_fieldsblock\_old
+          '\}' opt\_semicolon
         ;
 
-channelinterfacedefinition
-        : channelinterfaceheader '\{'
-            opt_paramblock
-          '\}'
-        ;
-
-channelinterfaceheader
-        : CHANNELINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_interfaceinheritance
-        : EXTENDS extendsnames
+opt\_fields\_and\_properties
+        : fields\_and\_properties
         |
         ;
 
-extendsnames
-        : extendsnames ',' extendsname
-        | extendsname
-        ;
-
-simplemoduledefinition
-        : simplemoduleheader '\{'
-            opt_paramblock
-            opt_gateblock
-          '\}'
-        ;
-
-simplemoduleheader
-        : SIMPLE NAME
-          opt_inheritance
-        ;
-
-compoundmoduledefinition
-        : compoundmoduleheader '\{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '\}'
-        ;
-
-compoundmoduleheader
-        : MODULE NAME
-          opt_inheritance
-        ;
-
-networkdefinition
-        : networkheader '\{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '\}'
-        ;
-
-networkheader
-        : NETWORK NAME
-          opt_inheritance
-        ;
-
-moduleinterfacedefinition
-        : moduleinterfaceheader '\{'
-            opt_paramblock
-            opt_gateblock
-          '\}'
-        ;
-
-moduleinterfaceheader
-        : MODULEINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_paramblock
-        : opt_params
-        | PARAMETERS ':'
-          opt_params
-        ;
-
-opt_params
-        : params
-        |
-        ;
-
-params
-        : params paramsitem
-        | paramsitem
-        ;
-
-paramsitem
-        : param
+fields\_and\_properties
+        : fields\_and\_properties field
+        | fields\_and\_properties property
+        | field
         | property
         ;
 
-param
-        : param_typenamevalue
-        | pattern_value
+field
+        : fieldmodifiers fielddatatype NAME
+           opt\_fieldvector opt\_fieldenum opt\_fieldvalue ';'
+        | fieldmodifiers NAME
+           opt\_fieldvector opt\_fieldenum opt\_fieldvalue ';'
         ;
 
-param_typenamevalue
-        : param_typename opt_inline_properties ';'
-        | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
+fieldmodifiers
+        : ABSTRACT
+        | READONLY
+        | ABSTRACT READONLY
+        | READONLY ABSTRACT
+        |
         ;
 
-param_typename
-        : opt_volatile paramtype NAME
-        | NAME
-        ;
-
-pattern_value
-        : '/' pattern '/' '=' paramvalue
-        ;
-
-paramtype
-        : DOUBLE
+fielddatatype
+        : NAME
+        | NAME '*'
+        | CHAR
+        | SHORT
         | INT
+        | LONG
+        | UNSIGNED CHAR
+        | UNSIGNED SHORT
+        | UNSIGNED INT
+        | UNSIGNED LONG
+        | DOUBLE
         | STRING
         | BOOL
-        | XML
         ;
 
-opt_volatile
-        : VOLATILE
+opt\_fieldvector
+        : '[' INTCONSTANT ']'
+        | '[' NAME ']'
+        | '[' ']'
         |
         ;
 
-paramvalue
-        : expression
-        | DEFAULT '(' expression ')'
-        ;
-
-opt_inline_properties
-        : inline_properties
+opt\_fieldenum
+        : ENUM '(' NAME ')'
         |
         ;
 
-inline_properties
-        : inline_properties property_namevalue
-        | property_namevalue
+opt\_fieldvalue
+        : '=' fieldvalue
+        |
         ;
 
-pattern
-        : pattern pattern_elem
-        | pattern_elem
+fieldvalue
+        : fieldvalue fieldvalueitem
+        | fieldvalueitem
         ;
 
-pattern_elem
-        : '.'
-        | '*'
-        | '?'
-        | '**'
-        | NAME
+fieldvalueitem
+        : STRINGCONSTANT
+        | CHARCONSTANT
         | INTCONSTANT
-        | '..'
-        | '[' pattern ']'
-        | '\{' pattern '\}'
-        | IMPORT | PACKAGE | PROPERTY
-        | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
-        | EXTENDS | LIKE
-        | DOUBLE | INT | STRING | BOOL | XML | VOLATILE
-        | INPUT | OUTPUT | INOUT | IF | FOR
-        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
-        | TRUE | FALSE | THIS | DEFAULT | CONST | SIZEOF | INDEX | XMLDOC
+        | REALCONSTANT
+        | TRUE
+        | FALSE
+        | NAME
+        | '?' | ':' | '&&' | '||' | '##' | '==' | '!=' | '>' | '>=' | '<' | '<='
+        | '&' | '|' | '#' | '<<' | '>>'
+        | '+' | '-' | '*' | '/' | '%' | '^' | '&' | UMIN | '!' | '~'
+        | '.' | ',' | '(' | ')' | '[' | ']'
+        ;
+
+enumvalue
+        : INTCONSTANT
+        | '-' INTCONSTANT
+        | NAME
+        ;
+
+quantity
+        : quantity INTCONSTANT NAME
+        | quantity REALCONSTANT NAME
+        | INTCONSTANT NAME
+        | REALCONSTANT NAME
         ;
 
 property
-        : property_namevalue ';'
+        : property\_namevalue ';'
         ;
 
-property_namevalue
-        : property_name
-        | property_name '(' opt_property_keys ')'
+property\_namevalue
+        : property\_name
+        | property\_name '(' opt\_property\_keys ')'
         ;
 
-property_name
+property\_name
         : '@' NAME
         | '@' NAME '[' NAME ']'
         ;
 
-opt_property_keys
-        : property_keys
+opt\_property\_keys
+        : property\_keys
         ;
 
-property_keys
-        : property_keys ';' property_key
-        | property_key
+property\_keys
+        : property\_keys ';' property\_key
+        | property\_key
         ;
 
-property_key
-        : NAME '=' property_values
-        | property_values
+property\_key
+        : NAME '=' property\_values
+        | property\_values
         ;
 
-property_values
-        : property_values ',' property_value
-        | property_value
+property\_values
+        : property\_values ',' property\_value
+        | property\_value
         ;
 
-property_value
+property\_value
         : NAME
         | '$' NAME
         | STRINGCONSTANT
@@ -361,356 +280,43 @@ property_value
         |
         ;
 
-opt_gateblock
-        : gateblock
+opt\_fieldsblock\_old
+        : FIELDS ':'
+          opt\_fields\_old
         |
         ;
 
-gateblock
-        : GATES ':'
-          opt_gates
-        ;
-
-opt_gates
-        : gates
+opt\_fields\_old
+        : fields\_old
         |
         ;
 
-gates
-        : gates gate
-        | gate
+fields\_old
+        : fields\_old field
+        | field
         ;
 
-gate
-        : gate_typenamesize
-          opt_inline_properties ';'
-        ;
-
-gate_typenamesize
-        : gatetype NAME
-        | gatetype NAME '[' ']'
-        | gatetype NAME vector
-        | NAME
-        | NAME '[' ']'
-        | NAME vector
-        ;
-
-gatetype
-        : INPUT
-        | OUTPUT
-        | INOUT
-        ;
-
-opt_typeblock
-        : typeblock
+opt\_propertiesblock\_old
+        : PROPERTIES ':'
+          opt\_properties\_old
         |
         ;
 
-typeblock
-        : TYPES ':'
-           opt_localtypes
-        ;
-
-opt_localtypes
-        : localtypes
+opt\_properties\_old
+        : properties\_old
         |
         ;
 
-localtypes
-        : localtypes localtype
-        | localtype
+properties\_old
+        : properties\_old property\_old
+        | property\_old
         ;
 
-localtype
-        : propertydecl
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
+property\_old
+        : NAME '=' property\_value ';'
         ;
 
-opt_submodblock
-        : submodblock
-        |
-        ;
-
-submodblock
-        : SUBMODULES ':'
-          opt_submodules
-        ;
-
-opt_submodules
-        : submodules
-        |
-        ;
-
-submodules
-        : submodules submodule
-        | submodule
-        ;
-
-submodule
-        : submoduleheader ';'
-        | submoduleheader '\{'
-          opt_paramblock
-          opt_gateblock
-          '\}' opt_semicolon
-        ;
-
-submoduleheader
-        : submodulename ':' dottedname
-        | submodulename ':' likeparam LIKE dottedname
-        ;
-
-submodulename
-        : NAME
-        |  NAME vector
-        ;
-
-likeparam
-        : '<' '>'
-        | '<' expression '>'
-        ;
-
-opt_connblock
-        : connblock
-        |
-        ;
-
-connblock
-        : CONNECTIONS ALLOWUNCONNECTED ':'
-          opt_connections
-        | CONNECTIONS ':'
-          opt_connections
-        ;
-
-opt_connections
-        : connections
-        |
-        ;
-
-connections
-        : connections connectionsitem
-        | connectionsitem
-        ;
-
-connectionsitem
-        : connectiongroup
-        | connection opt_loops_and_conditions ';'
-        ;
-
-connectiongroup
-        : opt_loops_and_conditions '\{'
-          connections '\}' opt_semicolon
-        ;
-
-opt_loops_and_conditions
-        : loops_and_conditions
-        |
-        ;
-
-loops_and_conditions
-        : loops_and_conditions ',' loop_or_condition
-        | loop_or_condition
-        ;
-
-loop_or_condition
-        : loop
-        | condition
-        ;
-
-loop
-        : FOR NAME '=' expression '..' expression
-        ;
-
-connection
-        : leftgatespec '-->' rightgatespec
-        | leftgatespec '-->' channelspec '-->' rightgatespec
-        | leftgatespec '<--' rightgatespec
-        | leftgatespec '<--' channelspec '<--' rightgatespec
-        | leftgatespec '<-->' rightgatespec
-        | leftgatespec '<-->' channelspec '<-->' rightgatespec
-        ;
-
-leftgatespec
-        : leftmod '.' leftgate
-        | parentleftgate
-        ;
-
-leftmod
-        : NAME vector
-        | NAME
-        ;
-
-leftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentleftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-rightgatespec
-        : rightmod '.' rightgate
-        | parentrightgate
-        ;
-
-rightmod
-        : NAME
-        | NAME vector
-        ;
-
-rightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentrightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-opt_subgate
-        : '$' NAME
-        |
-        ;
-
-channelspec
-        : channelspec_header
-        | channelspec_header '\{'
-            opt_paramblock
-          '\}'
-        ;
-
-channelspec_header
-        :
-        | dottedname
-        | likeparam LIKE dottedname
-        ;
-
-condition
-        : IF expression
-        ;
-
-vector
-        : '[' expression ']'
-        ;
-
-expression
-        :
-          expr
-        | xmldocvalue
-        ;
-
-xmldocvalue
-        : XMLDOC '(' stringliteral ',' stringliteral ')'
-        | XMLDOC '(' stringliteral ')'
-        ;
-
-expr
-        : simple_expr
-        | '(' expr ')'
-        | CONST '(' expr ')'
-        | expr '+' expr
-        | expr '-' expr
-        | expr '*' expr
-        | expr '/' expr
-        | expr '%' expr
-        | expr '^' expr
-        | '-' expr
-        | expr '==' expr
-        | expr '!=' expr
-        | expr '>' expr
-        | expr '>=' expr
-        | expr '<' expr
-        | expr '<=' expr
-        | expr '&&' expr
-        | expr '||' expr
-        | expr '##' expr
-        | '!' expr
-        | expr '&' expr
-        | expr '|' expr
-        | expr '#' expr
-        | '~' expr
-        | expr '<<' expr
-        | expr '>>' expr
-        | expr '?' expr ':' expr
-        | INT '(' expr ')'
-        | DOUBLE '(' expr ')'
-        | STRING '(' expr ')'
-        | NAME '(' ')'
-        | NAME '(' expr ')'
-        | NAME '(' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        ;
-
-simple_expr
-        : identifier
-        | special_expr
-        | literal
-        ;
-
-identifier
-        : NAME
-        | THIS '.' NAME
-        | NAME '.' NAME
-        | NAME '[' expr ']' '.' NAME
-        ;
-
-special_expr
-        : INDEX
-        | INDEX '(' ')'
-        | SIZEOF '(' identifier ')'
-        ;
-
-literal
-        : stringliteral
-        | boolliteral
-        | numliteral
-        ;
-
-stringliteral
-        : STRINGCONSTANT
-        ;
-
-boolliteral
-        : TRUE
-        | FALSE
-        ;
-
-numliteral
-        : INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        ;
-
-quantity
-        : quantity INTCONSTANT NAME
-        | quantity REALCONSTANT NAME
-        | INTCONSTANT NAME
-        | REALCONSTANT NAME
-        ;
-
-opt_semicolon
-        : ';'
-        |
-        ;
+opt\_semicolon : ';' | ;
 
 \end{Verbatim}
 
