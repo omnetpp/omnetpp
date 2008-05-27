@@ -1,7 +1,7 @@
-SB SimulationBeginEntry // first line of an event log file
+SB SimulationBeginEntry // recorded at the first event
 {
-   v int version
-   rid string runId
+   v int version       // OMNeT++ version, e.g. 0x401 (=1025) is release 4.1
+   rid string runId    // identifies the simulation run
 }
 
 SE SimulationEndEntry // optional last line of an event log file
@@ -46,19 +46,19 @@ MR ModuleReparentedEntry // reparenting a module
    p int newParentModuleId // id of the new parent module
 }
 
-GC GateCreatedEntry
+GC GateCreatedEntry     // gate created
 {
-   m int moduleId
-   g int gateId
-   n string name
-   i int index -1
-   o bool isOutput
+   m int moduleId       // module in which the gate was create
+   g int gateId         // id of the new gate
+   n string name        // gate name
+   i int index -1       // gate index if vector, -1 otherwise
+   o bool isOutput      // input or output gate
 }
 
-GD GateDeletedEntry
+GD GateDeletedEntry     // gate deleted
 {
-   m int moduleId
-   g int gateId
+   m int moduleId       // module in which the gate was created
+   g int gateId         // id of the deleted gate
 }
 
 CC ConnectionCreatedEntry // creating a connection
