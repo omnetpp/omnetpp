@@ -29,7 +29,7 @@ while (<FILE>)
    {
       # comment
    }
-   elsif ($_ =~ /^([\w]+) +([\w]+) *(\/\/ *([\w ]+))?$/)
+   elsif ($_ =~ /^([\w]+) +([\w]+) *(\/\/.*)?$/)
    {
       $classCode = $1;
       $className = $2;
@@ -48,11 +48,12 @@ while (<FILE>)
    {
       print "{\n" if ($verbose);
    }
-   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +([^ ]+))? *(\/\/ *([\w-+ ]+))?$/)
+   elsif ($_ =~ /^ +([\w#]+) +([\w]+) +([\w]+)( +([^ ]+))? *(\/\/.*)?$/)
    {
       $fieldCode = $1;
       $fieldType = $2;
       $fieldName = $3;
+      print "$fieldCode $fieldType $fieldName" if ($verbose);
 
       if ($fieldType eq "string")
       {
