@@ -191,7 +191,9 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
         nestedWizard = new CCProjectWizard();
         nestedWizard.init(workbench, selection);
         nestedWizard.setContainer(getContainer());
+        setForcePreviousAndNextButtons(true);
     }
+    
 }
 
 
