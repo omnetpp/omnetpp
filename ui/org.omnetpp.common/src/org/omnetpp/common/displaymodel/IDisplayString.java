@@ -244,8 +244,8 @@ public interface IDisplayString {
         private final int pos;
         private final PropType type;
         private final PropGroup group;
-        private final String visibleName;
-        private final String visibleDesc;
+        private final String name;
+        private final String description;
         private final EnumSpec enumSpec;
 
         Prop(Tag tag, int tagPos, PropType argType, PropGroup tagGroup,
@@ -255,8 +255,8 @@ public interface IDisplayString {
             this.pos = tagPos;
             this.type = argType;
             this.group = tagGroup;
-            this.visibleName = visibleName;
-            this.visibleDesc = visibleDesc;
+            this.name = visibleName;
+            this.description = visibleDesc;
             this.enumSpec = enumSpecString == null ? null : new EnumSpec(enumSpecString);
         }
 
@@ -284,20 +284,49 @@ public interface IDisplayString {
 			return enumSpec;
 		}
         
-        public String getVisibleName() {
-            return visibleName;
+        public String getName() {
+            return name;
         }
 
-        public String getVisibleDesc() {
-        	String enumDesc = "";
-        	if (getEnumSpec() != null)
-        		for (String name : getEnumSpec().getNames())
-        			enumDesc += (enumDesc.equals("") ? "" : ", ") + name + " (" + getEnumSpec().getShorthandForName(name) + ")"; 
-            String defaultValue = getTag()==null ? null : getTagArgDefault(getTagName(), getPos());
-            return visibleDesc + 
-            (enumDesc.equals("") ? "" : ". Values: " + enumDesc) + 
+        public String getDesc() {
+            return description;
+        }
+        
+        /**
+         * Returns the first sentence of the description
+         */
+        public String getShortDesc() {
+        	return description == null ? null : StringUtils.substringBefore(description, ".");
+        }
+
+        /**
+         * Returns detailed description including defaults and possible values
+         */
+        public String getFullDesc() {
+        	String enumDesc = getEnumDesc(); 
+            String defaultValue = getDefaultDesc();
+            return getShortDesc() + 
+            (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : "") + 
             (StringUtils.isNotEmpty(defaultValue) ? ". Default: "+defaultValue : "");
         }
+
+		/**
+		 * The description of the default value
+		 */
+		public String getDefaultDesc() {
+			return getTag()==null ? null : getTagArgDefault(getTagName(), getPos());
+		}
+
+		/**
+		 * The possible values of the enums in this tag
+		 */
+		public String getEnumDesc() {
+			String enumDesc = "";
+        	if (getEnumSpec() != null)
+        		for (String name : getEnumSpec().getNames())
+        			enumDesc += (enumDesc.equals("") ? "" : ", ") + name + " (" + getEnumSpec().getShorthandForName(name) + ")";
+			return enumDesc;
+		}
         
         private String getTagArgDefault(String tagName, int tagIndex) {
         	String displayString = IDisplayString.EMPTY_DEFAULTS_STR;

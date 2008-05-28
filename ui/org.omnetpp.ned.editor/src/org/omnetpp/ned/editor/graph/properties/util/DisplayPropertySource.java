@@ -38,23 +38,23 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
     public static IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
         PropertyDescriptor pdesc;
         if (prop.getEnumSpec() != null)
-        	pdesc = new EnumComboboxPropertyDescriptor(prop, prop.getVisibleName(), prop.getEnumSpec());
+        	pdesc = new EnumComboboxPropertyDescriptor(prop, prop.getName(), prop.getEnumSpec());
         else if (prop.getType() == DisplayString.PropType.STRING)
-            pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
+            pdesc = new TextPropertyDescriptor(prop, prop.getName());
         else if (prop.getType() == DisplayString.PropType.UNIT)
-            pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
+            pdesc = new TextPropertyDescriptor(prop, prop.getName());
         else if (prop.getType() == DisplayString.PropType.INTEGER)
-            pdesc = new TextPropertyDescriptor(prop, prop.getVisibleName());
+            pdesc = new TextPropertyDescriptor(prop, prop.getName());
         else if (prop.getType() == DisplayString.PropType.IMAGE)
-            pdesc = new ImagePropertyDescriptor(prop, prop.getVisibleName());
+            pdesc = new ImagePropertyDescriptor(prop, prop.getName());
         else if (prop.getType() == DisplayString.PropType.COLOR)
-            pdesc = new ColorPropertyDescriptor(prop, prop.getVisibleName());
+            pdesc = new ColorPropertyDescriptor(prop, prop.getName());
         else
-            pdesc = new PropertyDescriptor(prop, prop.getVisibleName());  // read-only editor
+            pdesc = new PropertyDescriptor(prop, prop.getName());  // read-only editor
 
         // set the other parameters
         pdesc.setCategory(prop.getGroup().name());
-        pdesc.setDescription(prop.getTag()+"["+prop.getPos()+"]: "+prop.getVisibleDesc());
+        pdesc.setDescription(prop.getTag()+"["+prop.getPos()+"]: "+prop.getFullDesc());
         // the one line display string descriptor should be always incompatible, so selecting
         // two or more items will automatically hide this composite property
         if (prop == DisplayString.Prop.DISPLAY)

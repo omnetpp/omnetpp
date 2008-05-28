@@ -506,8 +506,8 @@ public class DisplayString implements IDisplayString {
      */
     public static void dumpSupportedTags() {
         for (Prop p : Prop.values()) {
-            System.out.println(p.getTag()+" "+p.getPos()+" "+p.getGroup()+" - "+p.getVisibleName()
-                    +": "+p.getVisibleDesc());
+            System.out.println(p.getTag()+"\t "+p.getPos()+"\t "+p.getGroup()+"\t "+p.getName()
+                    +"\t "+p.getDefaultDesc()+"\t "+p.getEnumDesc()+"\t "+p.getDesc());
         }
     }
 }
