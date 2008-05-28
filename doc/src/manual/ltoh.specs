@@ -90,6 +90,12 @@ htmlfile_spec := $BASE.htm
 :comm	:\pagestyle{.*}:::
 :comm	:\newpage:::
 :comm	:\vfill:::
+:comm	:\bigskip:<br><br>::
+:comm	:\textquotedbl:"::
+#TODO \bfseries
+#TODO \ttfamily
+#TODO \itshape
+
 
 #
 # End specifications for standard Latex command

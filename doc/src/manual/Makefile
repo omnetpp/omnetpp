@@ -11,7 +11,9 @@ TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex 
          ch-ned-lang.tex ch-overview.tex ch-run-sim.tex usman.tex \
          appendix-ned-grammar.tex appendix-config-options.tex \
          appendix-msg-grammar.tex appendix-ned-functions.tex \
-         appendix-eventlog-file-format.tex appendix-result-file-formats.tex
+         appendix-eventlog-file-format.tex appendix-result-file-formats.tex \
+         appendix-display-strings.tex
+
 
 PICS = figures/*
 
@@ -52,14 +54,14 @@ HTM_FILES = ch-introduction.htm \
             ch-neddoc.htm \
             ch-parallel-exec.htm \
             ch-opp-design.htm \
-            ch-ned-grammar.htm \
-            usman-bibl.htm \
             appendix-ned-grammar.htm \
-            appendix-config-options.htm \
-            appendix-msg-grammar.htm \
             appendix-ned-functions.htm \
+            appendix-msg-grammar.htm \
+            appendix-display-strings.htm \
+            appendix-config-options.htm \
             appendix-eventlog-file-format.htm \
-            appendix-result-file-formats.htm
+            appendix-result-file-formats.htm \
+            usman-bibl.htm
 
 .SUFFIXES : .tex .bbl .htm
 
