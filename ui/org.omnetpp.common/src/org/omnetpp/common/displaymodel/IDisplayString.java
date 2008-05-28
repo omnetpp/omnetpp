@@ -150,12 +150,12 @@ public interface IDisplayString {
     	DISPLAY(null, 0, PropType.STRING, PropGroup.Base, "display", "Display properties of the object", null),
         // SUBMODULE / SIMPLEMODULE properties
         // do not change the first and last element of the property group
-        X(Tag.p, 0, PropType.UNIT , PropGroup.Position , "x", "X position of the module", null),
-        Y(Tag.p, 1, PropType.UNIT, PropGroup.Position, "y", "Y position of the module", null),
-        LAYOUT(Tag.p, 2, PropType.STRING, PropGroup.Position, "vector layout", "Arrangement of submodule vectors", "row=r.*,r; column=c.*,c; matrix=m.*,m; ring=ri.*,ri; exact=e.*|x.*,x"),
-        LAYOUT_PAR1(Tag.p, 3, PropType.STRING, PropGroup.Position, "vector layout par1", "1st layout parameter", null),
-        LAYOUT_PAR2(Tag.p, 4, PropType.STRING, PropGroup.Position, "vector layout par2", "2nd layout parameter", null),
-        LAYOUT_PAR3(Tag.p, 5, PropType.STRING, PropGroup.Position, "vector layout par3", "3rd layout parameter", null),
+        X(Tag.p, 0, PropType.UNIT , PropGroup.Position , "x", "X position of the center of the icon/shape; defaults to automatic graph layouting", null),
+        Y(Tag.p, 1, PropType.UNIT, PropGroup.Position, "y", "Y position of the center of the icon/shape; defaults to automatic graph layouting", null),
+        LAYOUT(Tag.p, 2, PropType.STRING, PropGroup.Position, "arrangement", "Arrangement of submodule vectors. Defaults to row or ring. (X,Y) coordinates correspond to the upper left corner of the bounding rectangle", "row=r.*,r; column=c.*,c; matrix=m.*,m; ring=ri.*,ri; exact=e.*|x.*,x"),
+        LAYOUT_PAR1(Tag.p, 3, PropType.STRING, PropGroup.Position, "arr. par1", "Depends on arrangement: matrix => ncols, ring => rx, exact => dx, row => dx, column => dy", null),
+        LAYOUT_PAR2(Tag.p, 4, PropType.STRING, PropGroup.Position, "arr. par2", "Depends on arrangement: matrix => dx, ring => ry, exact => dy", null),
+        LAYOUT_PAR3(Tag.p, 5, PropType.STRING, PropGroup.Position, "arr. par3", "Depends on arrangement: matrix => dy", null),
         // B tag
         WIDTH(Tag.b, 0, PropType.UNIT, PropGroup.Polygon, "width", "Width of object. Default: match the object height, or the icon width", null),
         HEIGHT(Tag.b, 1, PropType.UNIT, PropGroup.Polygon, "height", "Height of object. Default: match the object width, or the icon height", null),
@@ -249,14 +249,14 @@ public interface IDisplayString {
         private final EnumSpec enumSpec;
 
         Prop(Tag tag, int tagPos, PropType argType, PropGroup tagGroup,
-                String visibleName, String visibleDesc, String enumSpecString) {
-        	Assert.isTrue(!visibleDesc.trim().endsWith("."));  // dot will be added by this class where needed
+                String name, String description, String enumSpecString) {
+        	Assert.isTrue(!description.trim().endsWith("."));  // dot will be added by this class where needed
             this.tag = tag;
             this.pos = tagPos;
             this.type = argType;
             this.group = tagGroup;
-            this.name = visibleName;
-            this.description = visibleDesc;
+            this.name = name;
+            this.description = description;
             this.enumSpec = enumSpecString == null ? null : new EnumSpec(enumSpecString);
         }
 
@@ -297,17 +297,6 @@ public interface IDisplayString {
          */
         public String getShortDesc() {
         	return description == null ? null : StringUtils.substringBefore(description, ".");
-        }
-
-        /**
-         * Returns detailed description including defaults and possible values
-         */
-        public String getFullDesc() {
-        	String enumDesc = getEnumDesc(); 
-            String defaultValue = getDefaultDesc();
-            return getShortDesc() + 
-            (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : "") + 
-            (StringUtils.isNotEmpty(defaultValue) ? ". Default: "+defaultValue : "");
         }
 
 		/**

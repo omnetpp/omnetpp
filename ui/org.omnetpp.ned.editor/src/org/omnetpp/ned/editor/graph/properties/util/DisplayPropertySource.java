@@ -54,7 +54,12 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
 
         // set the other parameters
         pdesc.setCategory(prop.getGroup().name());
-        pdesc.setDescription(prop.getTag()+"["+prop.getPos()+"]: "+prop.getFullDesc());
+        String enumDesc = prop.getEnumDesc(); 
+        String defaultValue = prop.getDefaultDesc();
+        String desc = prop.getTag()+"["+prop.getPos()+"] - "+prop.getName()+": "; 
+        desc += prop.getShortDesc() + (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : ""); 
+        desc += (StringUtils.isNotEmpty(defaultValue) ? ". Default: "+defaultValue : "");
+        pdesc.setDescription(desc);
         // the one line display string descriptor should be always incompatible, so selecting
         // two or more items will automatically hide this composite property
         if (prop == DisplayString.Prop.DISPLAY)

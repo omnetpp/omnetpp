@@ -510,5 +510,33 @@ public class DisplayString implements IDisplayString {
                     +"\t "+p.getDefaultDesc()+"\t "+p.getEnumDesc()+"\t "+p.getDesc());
         }
     }
+
+    /**
+     * Dump all supported tags in laTex
+     */
+    public static void dumpSupportedTagsInTex() {
+    	System.out.println("\\begin{longtable}{|p{6cm}|p{8cm}|}");
+    	System.out.println("\\hline");
+        for (Prop prop : Prop.values()) {
+        	if (prop.getTag() == null)
+        		continue;
+            System.out.println("\\tbf{"+prop.getTag()+"}["+prop.getPos()+"] - "+prop.getName());
+            System.out.println("&");
+
+            String enumDesc = prop.getEnumDesc(); 
+            String defaultValue = prop.getDefaultDesc();
+            String desc = prop.getShortDesc().replace("#","\\#"); 
+            desc += (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : ""); 
+            desc += (StringUtils.isNotEmpty(defaultValue) ? ". Default: "+defaultValue : "");
+            System.out.println(desc);
+            System.out.println("\\\\ \n \\hline");
+        }
+        System.out.println("\\end{longtable}");
+    }
+    
+    static {
+      dumpSupportedTagsInTex();	
+    };
 }
+
 
