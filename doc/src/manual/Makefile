@@ -16,6 +16,8 @@ TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex 
 
 
 PICS = figures/*
+SVGPICS = $(wildcard figures/*.svg)
+PDFPICS = $(SVGPICS:.svg=.pdf)
 
 # an imperfect attempt to filter out less important warnings...
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
@@ -63,10 +65,13 @@ HTM_FILES = ch-introduction.htm \
             appendix-result-file-formats.htm \
             usman-bibl.htm
 
-.SUFFIXES : .tex .bbl .htm
+.SUFFIXES : .tex .bbl .htm .svg
 
 #usman-bibl.bbl : usman.bbl
 #	copy usman.bbl usman-bibl.bbl
+
+%.pdf: %.svg
+	inkscape $< -A $@
 
 .bbl.htm:
 	cp $< `echo $< | sed 's|\.bbl|.tex|'`
@@ -87,5 +92,4 @@ usman.html : $(HTM_FILES) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.p
 
 clean:
 	rm -f usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
-
 
