@@ -85,9 +85,11 @@ $txt =~ s/}/\\}/gs;
 $txt =~ s/_/\\_/gs;
 
 
-# make terminals/nonterminals bold/italic
-#$txt =~ s/\b([a-z_][a-z0-9_]*)\b/\\textit{$1}/gs;
-#$txt =~ s/\b([A-Z_][A-Z0-9_]*)\b/\\textbf{$1}/gs;
+# make terminals/nonterminals bold/italic (does not look good)
+#$txt =~ s/\b([a-z_][a-z0-9_\\]*)\b/\\textit{$1}/gs;
+#$txt =~ s/\b([A-Z_][A-Z0-9_\\]*)\b/"\\textbf{".lc($1)."}"/gse;
+#$txt =~ s/^  +/\\hspace{1in}/gm;
+#$txt =~ s/^(.+)$/$1 \\\\/gm;
 
 
 print $txt;
