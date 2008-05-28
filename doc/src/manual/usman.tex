@@ -1,7 +1,17 @@
 \documentclass{book}
 \usepackage{a4wide}
+
+%% possible fonts -- in order of preference
+\usepackage{palatino}
+%%\usepackage{charter}
+%%\usepackage{newcent}
 %%\usepackage{times}
-\usepackage{newcent}
+%%\usepackage{bookman}
+%%\usepackage{avant}
+%%\usepackage{helvet}
+%%\usepackage{sans}
+%%\usepackage{chancery}
+
 \usepackage[T1]{fontenc}
 \usepackage{setspace}
 \usepackage{ifpdf}
@@ -10,11 +20,12 @@
 \usepackage{colortbl}   %% colors for tables
 \usepackage{fancyvrb}   %% source code listings
 \usepackage{fancyhdr}   %% custom headers and footers
+\usepackage{multicol}
 
 \usepackage{tocbibind}  %% makes Bibliography and Index show up in TOC
 \settocbibname{References}
 
-\setlength{\textwidth}{170mm}
+\setlength{\textwidth}{160mm}
 %\setlength{\oddsidemargin}{12.5mm}
 %\setlength{\evensidemargin}{12.5mm}
 %\setlength{\topmargin}{0mm}
@@ -69,7 +80,8 @@
 %% OMNeT++ logo, use as {\opp}
 %%
 \makeatletter
-\DeclareRobustCommand{\omnetpp}{OM\-NeT\kern-.18em++\@}
+%%\DeclareRobustCommand{\omnetpp}{OM\-NeT\kern-.18em++\@}
+\DeclareRobustCommand{\omnetpp}{OMNeT++\@}
 \makeatother
 
 \newcommand{\omnest}{OMNEST}
@@ -79,7 +91,7 @@
 %%
 %\newcommand{\opp}{\omnest}
 \newcommand{\opp}{\omnetpp}
-\newcommand{\oppversion}{3.2}
+\newcommand{\oppversion}{4.0}
 
 %%
 %% Heading and Footer
@@ -96,6 +108,16 @@
 \fancypagestyle{plain}{
     \rfoot{\thepage}
 }
+
+%%
+%% Use \begin{graybox}...\end{graybox} for notes
+%%
+\definecolor{MyGray}{rgb}{0.93,0.93,0.95}
+\makeatletter\newenvironment{graybox}{%
+   \bigskip\begin{flushright}\begin{lrbox}{\@tempboxa}\begin{minipage}[r]{0.95\textwidth}}%
+   {\end{minipage}\end{lrbox}%
+   \colorbox{MyGray}{\usebox{\@tempboxa}}\end{flushright}\bigskip
+}\makeatother
 
 
 %%
