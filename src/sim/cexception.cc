@@ -104,7 +104,8 @@ void cException::exitIfStartupError()
 {
     if (!cStaticFlag::isSet())
     {
-        ev.printfmsg("Error during startup/shutdown: %s. Aborting.", what());
+        // note: ev may not be available at this time
+        fprintf(stderr, "<!> Error during startup/shutdown: %s. Aborting.", what());
         abort();
     }
 }
