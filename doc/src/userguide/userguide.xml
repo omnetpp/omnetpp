@@ -5,6 +5,7 @@
 <book xmlns:xi="http://www.w3.org/2001/XInclude">
 <title>OMNeT++ User Guide</title>
 <xi:include href="intro.xml" />
+<xi:include href="tutorial.xml" />
 <xi:include href="ned-editor.xml" />
 <xi:include href="ini-editor.xml" />
 <xi:include href="msg-editor.xml" />
@@ -12,4 +13,5 @@
 <xi:include href="launcher.xml" />
 <xi:include href="sequence-chart.xml" />
 <xi:include href="result-analysis.xml" />
+<xi:include href="tkenv.xml" />
 </book>

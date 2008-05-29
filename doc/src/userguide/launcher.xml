@@ -2,71 +2,226 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
     "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="launcher">
-<title>Launching Simulations</title>
-<sect1>
-<title>Launching or Debugging the Simulation</title>
-<p>To quickly launch the simulation, just select tictoc.exe and
-open the run dialog as shown in the screen shot.</p>
 
-<picture file="pictures/4.1.14_open_run_dialog.png">TODO</picture>
+  <sect1>
+    <title>Running a Simulation</title>
+    <para>
+      In previous versions of OMNeT++, executing a simulation or carrying out experiments
+      was done by manually launching the executable file from the windowing environment or
+      from a command line shell. Experiments that needed several runs with different
+      parameters required external scripts to be written and executed. The new version of
+      the OMNeT++ IDE allows for running simulations and simulation batches directly from
+      the IDE.
+    </para>
+    <sect2>
+      <title> Creating launch configuration</title>
+      <para>
+        OMNeT++ IDE adds a new Eclipse launch configuration type that supports launching
+        simulation executables. This launch type, OMNeT++ Simulation, is available from
+        the Run dialog. To create a new run configuration, select Open Run Dialog... from
+        the Run menu. A dialog appears, with the possible launch types on the left.
+         Select OMNeT++ Simulation, click the New launch configuration icon, then enter a
+        configuration name at the top of the dialog form that appears.
+      </para>
+      <para>
+        The main tab of the configuration dialog was designed to make the launching of
+        simulation as easy as possible. The only required field is the simulation program,
+        all others have defaults. If you only select the simulation program, it will run
+        Run 1 of the first configuration from the omnetpp.ini file in the working
+        directory.
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+            Simulation program: you must set the name of the simulation executable here.
+            This path is relative to the workspace root. You may use the Browse...button
+            to select the executable directly.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Dynamically loaded libraries: A simulation may load additional DLLs or shared
+            libraries before execution. The browse button is available to select one or
+            more files (use CTRL click for multiple selection). This option can be used to
+            load simulation code (i.e. simple modules), user interface libraries, or other
+            extension libraries (scheduler, output file managers, etc)
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Initialization file(s): You should specify an INI file(s) that will be used to
+            launch the simulation. If no filename is specified here, omnetpp.ini will be
+            assumed in the current working directory. Specifying more than one file simply
+            loads all those files in the specified order.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Configuration name: Once you specified a legal INI file, the box will present
+            all of the Config and Scenario sections in that file. In addition it will
+            display the description of that section and the info that which Config section
+            is extended by this section). You may select which Configuration should be
+            launched.
+            <note>
+              The working directory and the INI file must contain valid entries before
+              trying to set this option
+            </note>
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Run number: It is possible to specify which run number(s) must be executed for
+            the simulation. If the executable name and the INI file was already selected
+            and a Scenario was specified for the configuration name, it is possible to
+            hover above the field to get more info about the possible run numbers. You can
+            use comma and hyphen to separate the run numbers; for example, 1,2,5-9,20
+            corresponds to run numbers 1,2,5,6,7,8,9,20. Entering a single asterisk (*)
+            corresponds to all run numbers. Running several simulations in this manner is
+            called batch execution.
+          </para>
+          <para>
+            Batch execution is possible only if the User interface is command line
+            (simulation was built to support command line environment (Cmdenv) and the
+            User interface. (see User interface selection)
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Processes to run in parallel: with batch execution, it is possible to tell the
+            launcher to keep two or more simulations running at a time. This way you can
+            take advantage of multiple CPUs or CPU cores. Use this option carefully, only
+            if your simulation is CPU-limited, and you have enough physical RAM to support
+            all of them at the same time. Do not set it higher than the number of physical
+            processors you have in your machine.
+          </para>
+          <note>
+            This is usually an easier and more efficient way to exploit multiprocessing
+            power than parallel simulation (PDES).
+          </note>
+        </listitem>
+        <listitem>
+          <para>
+            User interface: You can specify which UI environment should be used during
+            execution, currently command line (Cmdenv) and Tcl/Tk (Tkenv) is supported.
+            The executable must be linked with the correct UI library or the UI should be
+            loaded dynamically.
+          </para>
+          <note>
+            Batch execution and progress feedback during execution is supported only for
+            command line environment.
+          </note>
+        </listitem>
+        <listitem>
+          <para>
+            Additional arguments: any other command line argument can be specified here
+            and will be passed to the simulation process.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Working directory: you can change the default working directory for the
+            process. You can specify a workspace relative or absolute file system path, or
+            even a path relative to predefined system variables.
+          </para>
+          <note>
+            All paths (except for the Simulation Program) are relative to the
+            working directory. Changing the working directory invalidates all previously
+            selected entries.
+          </note>
+        </listitem>
+        <listitem>
+          <para>
+            Show Debug View on Launch: convenience function to open the debug view on
+            simulation execution. Debug View allows you to see and terminate the processes
+            you have launched and allows to switch between their output in the console
+            view.
+          </para>
+        </listitem>
+      </itemizedlist>
+      <para>
+        Most settings in the dialog simply translate to command-line options to the
+        simulation executable. This is summarized in the following list:
+      </para>
+      <itemizedlist>
+        <listitem>
+          <para>
+            Dynamically loaded libraries: maps to multiple “-l &lt;library&gt;” options
+          </para>
+        </listitem>
+        <listitem>
+          <para>Initialization files: maps to multiple “-f &lt;inifile&gt;” options</para>
+        </listitem>
+        <listitem>
+          <para>Configuration name: adds a “-c &lt;configname&gt;” option</para>
+        </listitem>
+        <listitem>
+          <para>Run number:adds a “-r &lt;runnumber&gt;” option</para>
+        </listitem>
+        <listitem>
+          <para>User interface: adds a “-u &lt;userinterface&gt;” option</para>
+        </listitem>
+      </itemizedlist>
+    </sect2>
+    <sect2>
+      <title>Controlling the execution and progress reporting</title>
+      <para>
+        After starting a simulation process or simulation batch we can keep track of the
+        started processes in the Debug View. To open the Debug View check the Show Debug
+        View on Launch in the run configuration dialog, or select Window / Show View... /
+        Other... / Debug / Debug. Clicking on the process allows terminating the process
+        or switching to the output of that process in the Console view. Use the context
+        menu for more options to control the process execution.  
+      </para>
+      <tip>
+        Place the debug view to a different tab group than the console so you will be able
+        to switch between the process outputs and see the process list at the same time.
+      </tip>
+      <para>
+        If you have executed the simulation in the command line environment, you can
+        monitor the progress of the simulation in the progress view. See the status line
+        for the overall progress indicator and click on it to open the detailed progress
+        view. It is possible to terminate the whole batch by clicking on the cancel button
+        in the progress view. 
+      </para>
+      <note>
+        When progress view displays "Waiting for user input" the simulation is waiting for
+        the user. Switch to the appropriate console and provide the requested input for
+        the simulation.
+      </note>
+    </sect2>
+  </sect1>
 
-<p>In the Run Dialog that appears, just select tictoc and select
-TictocTest configuration to be launched. Then simply press Run to
-see your experiment in action.</p>
+  <sect1>
+    <title>Debugging a Simulation</title>
+    <para>
+      The OMNeT++ IDE integrates with the CDT (C/C++ Development Tooling). If you want to
+      debug your application you have to launch/debug your application by starting it as a
+      C/C++ Local Application. OMNeT++ contributes an additional tab to the CDT launch
+      dialog for your convenience. You will be able to specify simulation related command
+      line options on this tab and CDT will launch your simulation with these arguments.
+      The executable name must be specified on the Main tab. The rest of the fields have
+      similar meaning like in the OMNeT++ Simulation launch type. You can add additional
+      arguments on the default Arguments tab.
+    </para>
+    <note>
+      Batch (and parallel) execution is not possible in this launch type, so you may
+      specify only a single run number.
+    </note>
+  </sect1>
 
-<picture file="pictures/4.1.15_run_dialog_4_tictoctest.png">
-TODO</picture>
+  <sect1>
+    <title>Batch Execution</title>
+    <p>TBD</p>
+  </sect1>
 
-<p>Your experiment will be launched in the Tkenv environment,
-and you should see information being exchanged between the two
-nodes, if you press "play" to start the experiment.</p>
+  <sect1>
+    <title>Progress View</title>
+    <p>TBD</p>
+  </sect1>
 
-<picture file="pictures/4.1.16_running_tictoctest_in_tkenv.png">
-TODO</picture>
-
-<p>This section was meant to give you a glimpse of how quickly
-you can put together a working experiment, despite the power and
-complexity of the system. Now let us examine the editor's features
-in more detail.</p>
-
-<p>Detail detail detail&gt; TODO</p>
-
-<p>Just as in the NED Editor, the Ini File Editor is also
-capable of quickly jumping to the definition of parameters.</p>
-
-<p>For example, Control-Clicking Tictoc6.toc.delayTime in the
-omnetpp.ini of the tictoc samples,</p>
-
-<picture file="pictures/4.1.17_CTRL_Click2def.png">TODO</picture>
-
-<p>Results in tictocned6.ned being opened, and the cursor
-positioned to the line where delayTime is defined.</p>
-
-<picture file="pictures/4.1.17_CTRL_Click2def_result.png">
-TODO</picture>
-
-<p>&#194;&#160;This feature helps in quickly understanding what
-that particular item's intended function is, and where it is
-defined, potentially saving a lot of time.</p>
-
-</sect1>
-
-<sect1>
-<title>Batch Execution</title>
-<p>TBD</p>
-
-</sect1>
-
-<sect1>
-<title>Progress View</title>
-<p>TBD</p>
-
-</sect1>
-
-<sect1>
-<title>Console View</title>
-<p>TBD</p>
-
-</sect1>
+  <sect1>
+    <title>Console View</title>
+    <p>TBD</p>
+  </sect1>
 
 </chapter>

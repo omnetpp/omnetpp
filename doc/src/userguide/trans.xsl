@@ -19,7 +19,7 @@
    <screenshot>
      <mediaobject>
        <imageobject>
-          <imagedata fileref="{@file}" format=""/>
+          <imagedata fileref="{@file}" />
        </imageobject>
        <textobject>
           <phrase></phrase>

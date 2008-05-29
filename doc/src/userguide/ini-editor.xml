@@ -12,56 +12,15 @@
 
 </sect1>
 
-
-
 <sect1>
-<title>The INI file Editor</title>
-
-<p>Let us use our previous example, tictoctest.ned to explore
-the INI File Editor.</p>
-
-<p>To start off, just double-click the omnetpp.ini file in the
-Navigator pane. Make sure, that this is the omnetpp.ini file that
-is inside the tictoc example, as other examples also have their own
-omnetpp.ini, not to be confused with the one we want.</p>
-
-<picture file="pictures/4.1.11_doubleclick_on_omnetppdotini.png">
-TODO</picture>
-
-<p>Note that the INI File editor is also a dual mode
-editor.</p>
-
-
-<p>You may have noticed, that the sections of the ini file
-below the General section all correspond to a .ned file, but our
-tictoctest.ned file is lacking its own. Press the
-New&#226;&#8364;&#166; button to add another section to the ini
-file.</p>
-
-<picture file="pictures/4.1.12_new_inifile_section.png">
-TODO</picture>
-
-<p>Add a name, say "TictocTest" to keep naming consistent with
-what's already there, a description if you like, leave the General
-section as fallback, and select tictoctest as the .ned network that
-these settings will relate to.</p>
-
-<p>You will notice, that a line has been added to the sections
-list:</p>
-
-<picture file="pictures/4.1.13_added_section_to_inifile.png">
-TODO</picture>
-
-<p>For this simple example, this might be sufficient to start
-the experiment. Just save the .ini file, and the simulation is
-already ready to run.</p>
-
+<title>The INI File Editor</title>
+<p>TBD</p>
 </sect1>
+
 
 <sect1>
 <title>Outline View</title>
 <p>TBD</p>
-
 </sect1>
 
 <sect1>
