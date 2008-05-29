@@ -54,7 +54,11 @@ foreach $arg (@ARGV) {
         while (<INPUT>) {
             chomp;
             s/\r$//;  # cygwin/mingw perl does not do CR/LF translation
-            push(@ARGV2, $_);
+            # usually each arg is on a separate line, but sometimes nmake puts everything on the same line (???)
+            my @list = split(' ', $_);
+            foreach my $i (@list) {
+                push(@ARGV2, $i);
+            }
         }
         close(INPUT);
     }
