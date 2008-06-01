@@ -4,50 +4,98 @@
 
 \section{NED overview}
 
-The structure of simulation models is described in the NED language.
+The user describes the structure of a simulation model in the NED language.
+NED stands for Network Description. NED lets the user declare simple modules,
+and connect and assemble them into compound modules. The user can label
+some compound modules as \textit{networks}, self-contained simulation
+models. Channels are another component type, whose instances can also be used
+in compound modules.
 
-The NED language facilitates the modular description of a network.
-This means that a network description\index{network!description} may consist
-of a number of component descriptions (channels\index{channel},
-simple\index{module!simple}/compound\index{module!compound} module
-types). The channels, simple modules and compound
-modules of one network description can be reused in another network
-description.
+The NED languge has several features which let it scale well to large projects:
 
-Files containing network descriptions generally have a \texttt{.ned}
-suffix. NED files can be loaded dynamically into simulation programs,
-or translated into C++ by the NED compiler and linked into
-the simulation executable.
+\begin{description}
+\item[Hierarchical] The traditional way to deal with complexity is via introducing hierarchies.
+In \opp, any module which would be too complex as a single entity can be broken down into
+smaller modules, and used as a compound module.
+
+\item[Component-Based] Simple modules and compound modules are inherently reusable, which not only
+reduces code copying, but more importantly, allows component libraries (like the INET Framework,
+MiXiM, Castalia, etc.) to exist.
+
+\item[Interfaces] Module and channel interfaces can be used as a placeholder where normally a module or channel type would be used, and the concrete module or channel type is determined at network setup time by a parameter. Concrete module types have to ``implement'' the interface they can substitute. For example,
+given a compound module type named \ttt{MobileHost} contains a \ttt{mobility} submodule of the type \ttt{IMobility} (where \ttt{IMobility} is a module interface), the actual type of \ttt{mobility} may be chosen from the module types that implemented \ttt{IMobility} (\ttt{RandomWalkMobility}, \ttt{TurtleMobility}, etc.)
+
+\item[Inheritance] Modules and channels can be subclassed. Derived modules and channels may add new parameters, gates, and (in the case of compound modules) new submodules and connections. They may set existing parameters to a specific value, and also set the gate size of a gate vector. This makes it possible, for example, to take a \ttt{GenericTCPClientApp} module and derive an \ttt{FTPApp} from it by setting certain parameters to a fixed value; or derive a \ttt{WebClientHost} compound module from a \ttt{BaseHost} compound module by adding a \ttt{WebClientApp} submodule and connecting it to the inherited \ttt{TCP} submodule.
+
+\item[Packages] To address name clashes between different models and to simplify specifying which NED files are needed by a specific simulation model, the NED language features a Java-like package structure.
+
+\item[Inner types] Channel types and module types used locally by a compound module can be defined within the compound module, in order to reduce namespace pollution.
+
+\item[Metadata annotations] It is possible to annotate module or channel types, parameters, gates and submodules by adding properties. Metadata are not used by the simulation kernel directly, but they can carry extra information for various tools, the runtime environment, or even for other modules in the model. For example, a module's graphical representation (icon, etc)  or the prompt string and physical unit (milliwatt, etc) of a parameter are already specified as metadata annotations.
+
+\end{description}
+
+\begin{note}
+    The NED language has changed significantly in the 4.0 version. Inheritance, interfaces, packages,
+    inner types, metadata annotations, inout gates were all added in the 4.0 release, together with
+    many other features. Since the basic syntax has changed as well, old NED files need to be converted
+    to the new syntax. There are automated tools for this purpose, so manual editing is only needed
+    to take advantage of new NED features.
+\end{note}
+
+The NED language has an equivalent tree representation which can be serialized to XML; that is, NED files can be converted to XML and back without loss of data, including comments. This lowers the barrier for programmatic manipulation of NED files, for example extracting information, refactoring and transforming NED, generating NED from information stored in other system like SQL databases, and so on.
 
 The formal language grammar can be found in Appendix
 \ref{cha:ned-language-grammar}.
 
+\subsection{NED files}
 
-\subsection{Components of a NED description}
-\index{ned!components}
-
-A NED description can contain the following components, in arbitrary
-number or order:
-\begin{itemize}
-  \item{import directives\index{import directives}}
-  \item{channel definitions\index{channel!definitions}}
-  \item{simple\index{module!simple} and compound\index{module!compound} module definitions}
-  \item{network definitions\index{network!definitions}}
-\end{itemize}
+NED files have the \texttt{.ned} file name suffix. This is mandatory, and cannot be changed.
 
 
 \subsection{Reserved words}
 \index{ned!keywords}
 
-The writer of the network description has to take care that no
-reserved words are used for names. The reserved words of the
+Authors have to take care that no reserved words are used for names. The reserved words of the
 NED language are:
 
 \ttt{
-import channel endchannel simple endsimple module endmodule
-error delay datarate const parameters gates submodules connections
-gatesizes if for do endfor network endnetwork nocheck
-ref ancestor true false like input numeric string bool char xml xmldoc
+allowunconnected
+bool
+channel
+channelinterface
+connections
+const
+default
+double
+extends
+false
+for
+gates
+if
+import
+index
+inout
+input
+int
+like
+module
+moduleinterface
+network
+output
+package
+parameters
+property
+simple
+sizeof
+string
+submodules
+this
+true
+types
+volatile
+xml
+xmldoc
 }
 
 
@@ -60,8 +108,6 @@ submodules, parameters, gates, channel attributes and functions.
 Identifiers must be composed of letters of the English alphabet (a-z, A-Z),
 numbers (0-9) and the underscore ``\_''.
 Identifiers may only begin with a letter or the underscore.
-If you want to begin an identifier with a digit, prefix the name
-you'd like to have with an underscore, e.g. \ttt{\_3Com}.
 
 If you have identifiers that are composed of several words, the convention
 is to capitalize the beginning of every word. Also, it is recommended
@@ -82,7 +128,7 @@ For example, \ttt{TCP} and \ttt{Tcp} are two different names.
 
 Comments can be placed anywhere in the NED file, with the usual C++
 syntax: comments begin with a double slash `//', and last until
-the end of the line. Comments are ignored by the NED compiler.
+the end of the line.
 
 NED comments can be used for documentation generation,
 much like JavaDoc or Doxygen. This feature is described in
