@@ -19,7 +19,14 @@
    <screenshot>
      <mediaobject>
        <imageobject>
-          <imagedata fileref="{@file}" />
+          <xsl:choose>
+	     <xsl:when test="@width">
+                <imagedata fileref="{@file}" width="{@width}" align="center"/>
+	     </xsl:when>	
+	     <xsl:otherwise>	
+                <imagedata fileref="{@file}" scale="50" align="center"/>
+	     </xsl:otherwise>	
+	  </xsl:choose>     
        </imageobject>
        <textobject>
           <phrase></phrase>

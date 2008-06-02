@@ -8,9 +8,11 @@
     <title>Overview</title>
     <para>
       When you double-click a .ned file in the IDE, it will open in the NED editor. Like
-      its predecessor gned from OMNeT++ 2.x and 3.x, the new NED editor is a dual-mode
-      editor: in the graphical mode you can edit the network using the mouse, and the
-      textual mode allows you to work directly on the NED source.
+      its predecessor
+      <command>gned</command>
+      from OMNeT++ 2.x and 3.x, the new NED editor is a dual-mode editor: in the graphical
+      mode you can edit the network using the mouse, and the textual mode allows you to
+      work directly on the NED source.
     </para>
     <para>
       The syntax of NED files has changed from the 3.x version. The new syntax
@@ -20,29 +22,34 @@
       NED files with the old syntax, many of the advanced features, however, (syntax
       highlighting, content assistance etc.) will not work. There is automatic conversion
       from the old syntax to the new, available both from the NED editor and as an
-      external utility program (nedtool).
+      external utility program (
+      <command>nedtool</command>
+      ).
     </para>
     <para>
-      The gned program from OMNeT++ 3.x and 2.x viewed NED files in isolation. In
-      contrast, the OMNeT++ IDE gathers information from all .ned files in all open
-      OMNeT++ projects, and makes this information available to the NED editor. This is
-      necessary because in OMNeT++ 4.0, modules may inherit parameters, visual appearance
-      or even submodules and connections from other modules, so it is only possible to
-      display a compound module correctly if all related NED definitions are available.
+      The
+      <command>gned</command>
+      program from OMNeT++ 3.x and 2.x viewed NED files in isolation. In contrast, the
+      OMNeT++ IDE gathers information from all .ned files in all open OMNeT++ projects,
+      and makes this information available to the NED editor. This is necessary because in
+      OMNeT++ 4.0, modules may inherit parameters, visual appearance or even submodules
+      and connections from other modules, so it is only possible to display a compound
+      module correctly if all related NED definitions are available.
     </para>
-    <para>
-      NOTE: As a side effect, currently if there are two modules with the same name
-      anywhere in the workspace, they will collide, and both will be marked with an error.
+    <note>
+      As a side effect, currently if there are two modules with the same name anywhere in
+      the workspace, they will collide, and both will be marked with an error.
       Furthermore, the name will be treated as undefined, and any other modules depending
       on it will also generate an error. (Thus, a “no such module type” error may mean
-      that actually there are more than one definitions which nullify each other.) This
-      issue will be addressed before the final 4.0 release by introducing packages or
-      namespaces into the NED language.
-    </para>
+      that actually there are more than one definitions which nullify each other.)
+    </note>
     <para>
       When the IDE detects errors in a NED file, the problem will be flagged with an error
-      marker in the Navigation View, and the Problems View will be updated to show the
-      description and location of the problem.
+      marker in the Project Explorer, and the Problems View will be updated to show the
+      description and location of the problem. Also error markers will appear in the text
+      window or on the graphical representation of the problematic component. Opening a
+      NED file which contains an error will open the file in text mode. Switching to
+      graphical mode is possible only if the NED file is syntactically correct.
     </para>
   </sect1>
   <sect1>
@@ -51,15 +58,24 @@
       In Eclipse, all files are within projects, so first you need a suitable project. The
       project needs to be one designated as an OMNeT++ Project. (In Eclipse lingo, it
       should have the “OMNeT++ Nature”.) The easiest way to create such a project is to
-      use a wizard: just choose File|New|OMNeT++ Project... from the menu, specify a
-      project name, and click the Finish button.
+      use a wizard: just choose
+      <guimenuitem>File|New|OMNeT++ Project...</guimenuitem>
+      from the menu, specify a project name, and click the
+      <guibutton>Finish</guibutton>
+      button.
+      <picture file="pictures/Intro-NewProjectWizard.png">
+        Creating a new OMNeT++ Project
+      </picture>
     </para>
     <para>
       Once you have an empty OMNeT++ project, you can create new NED files. Choosing
-      File|New|Network Description File… from the menu will bring up a wizard where you
-      can specify the target directory and the file/module name. You may choose to create
-      an empty NED file, or a simple/compound module, or a network. Once you press the
-      Finish button, a new NED file will be created with the requested content.
+      <guimenuitem>File|New|Network Description File…</guimenuitem>
+      from the menu will bring up a wizard where you can specify the target directory and
+      the file/module name. You may choose to create an empty NED file, or a
+      simple/compound module, or a network. Once you press the
+      <guibutton>Finish</guibutton>
+      button, a new NED file will be created with the requested content.
+      <picture file="pictures/NED-NewWizard.png">Creating a new NED file</picture>
     </para>
     <tip>
       It is a good practice that the NED file and the contained module have the same name.
@@ -68,7 +84,18 @@
     </tip>
     <sect2>
       <title>NED Source Folders</title>
-      <p>TBD: Project Properties dialog</p>
+      <para>
+        It is possible to specify which folders the IDE should scan for NED files and will
+        use as the base directory for your NED package hierarchy. The IDE will not use any
+        NED files outside the specified NED Source Folders and those files will be opened
+        in a standard text editor. To specify the directory where the NED files will be
+        stored right click on the project in the Project Explorer and choose Properties.
+        Select the OMNeT++/Ned Source Folders page and click on the folders where you
+        store your NED files. The default value is the project root.
+      </para>
+      <picture file="pictures/NED-SourceFolders.png">
+        Specifying which folder will hold our NED files
+      </picture>
     </sect2>
   </sect1>
 
@@ -79,12 +106,12 @@
       If the NED file can be parsed without an error, the graphical representation of the
       file will be opened, otherwise (errors in the file) the text view will be opened,
       and annotated with error markers.
-      <warning>
-        Only files contained in NED Source Folders will be opened with the graphical
-        editor. If a NED file is not in the NED Source Folders it will be opened by a
-        standard text editor.
-      </warning>
     </para>
+    <warning>
+      Only files contained in NED Source Folders will be opened with the graphical editor.
+      If a NED file is not in the NED Source Folders it will be opened by a standard text
+      editor.
+    </warning>
     <para>
       You can switch between graphical and source editing mode using the tabs at the
       bottom of the editor or using the
@@ -99,23 +126,38 @@
     <sect2>
       <title>Editing in graphical mode</title>
       <para>
-        The graphical editor is based on the Eclipse Graphical Editing Framework (GEF),
-        and offers all functionality normally available in GEF editors (plus more).
+        The graphical editor represents the visible parts of the loaded NED file. Simple
+        modules, compound modules and networks are represented by figures or icons. Each
+        NED file can contain more than one module or network. In this case the
+        corresponding figures will appear in the same order as they are found in the NED
+        file.
       </para>
+      <tip>
+        It is a good practice to place only a single module or network into a NED files
+        and name the file according to the type name.
+      </tip>
+      <para>
+        Simple modules and submodules are represented as icons while compound modules and
+        networks are rectangles where other submodules can be dropped. Connections between
+        submodules are represented either by lines or arrows depending whether the
+        connection was one-directional or bi-directions. Submodules can be dragged or
+        resized by the mouse and connected by using the Connection Tool in the palette.
+      </para>
+      <picture file="pictures/NED-GraphEditor.png">Graphical NED Editor</picture>
       <para>
         The palette is normally at the right of the editor area. The upper part of the
         palette contains the basic tools: selector, connection selector, and the
         connection creator tool. Click a palette item and then just click into the module
         where you want to place/activate it. The mouse pointer will give you feedback
-        whether the requested operation is allowed. The lower part of the toolbox contains
-        the basic elements that can be placed at the top level in a NED file (simple
-        module, compound module, interface, channel etc.) and a "generic" submodule. Click
-        on any of these and then click into the editor area to create an instance. The
-        lower part of the palette contains all module types that can be instantiated as a
-        submodule. They are shortcuts for creating a generic submodule and then modifying
-        its type. They will display the default icon (if any) and a short documentation if
-        you hover the mouse over them. You may configure the Palette by right clicking on
-        a button and selecting
+        whether the requested operation is allowed. The middle part of the toolbox
+        contains the basic elements that can be placed at the top level in a NED file
+        (simple module, compound module, interface, channel etc.) and a "generic"
+        submodule. Click on any of these and then click into the editor area to create an
+        instance. The bottom part of the palette contains all module types that can be
+        instantiated as a submodule. They are shortcuts for creating a generic submodule
+        and then modifying its type. They will display the default icon (if any) and a
+        short documentation if you hover the mouse over them. You may configure the
+        Palette by right clicking on a button and selecting
         <guimenuitem>Settings...</guimenuitem>
         or filter its content by selecting
         <guimenuitem>Select Packages...</guimenuitem>
@@ -181,8 +223,8 @@
       </para>
       <para>Copying elements</para>
       <para>
-        Holding down CTRL while dragging will clone the module(s). Copy/Paste does not
-        work yet, but it will be implemented until the 4.0 release.
+        Holding down CTRL while dragging will clone the module(s). Copy/Paste can be also used
+        both on single modules and with group selection.
       </para>
       <para>Zoom</para>
       <para>
@@ -208,7 +250,7 @@
       <para>Navigation</para>
       <para>
         Double-clicking a submodule will open the corresponding module type in a NED
-        editor. Bookmarks and navigation history do not work (yet).
+        editor.
       </para>
       <para>Opening a NED type</para>
       <para>
@@ -220,10 +262,12 @@
         dialog is available from anywhere in the IDE.
       </para>
       <para>
-        Elements of the display string can be edited in the Properties View. Main display
-        string improvements are
+        Elements of the display string and other properties associated with the selected
+        elements can be edited in the Properties View.  
       </para>
+      <picture file="pictures/NED-PropertiesView.png">Property Editor</picture>
     </sect2>
+    
     <sect2>
       <title>Editing in text mode</title>
       <para>
@@ -307,9 +351,10 @@
       </para>
       <para>Navigation</para>
       <para>
- Holding the
- <keycap>CTRL</keycap>
- key and clicking on an HTTP link or on a module type will jump to the type definition.
+        Holding the
+        <keycap>CTRL</keycap>
+        key and clicking on an HTTP link or on a module type will jump to the type
+        definition.
       </para>
       <para>
         If you switch to graphical mode from text mode, the editor will try to locate the
