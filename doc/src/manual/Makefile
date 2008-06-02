@@ -38,16 +38,15 @@ PDFPICS = $(SVGPICS:.svg=.pdf)
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
 LOGFILTER =
 
-#default: usman.dvi usman.pdf
-default: usman.pdf
-	cp usman.pdf ../../manual
+default: pdf html
 
-usman.pdf: $(ALLTEX) $(PDFPICS) figures/*.png
-	pdflatex usman.tex $(LOGFILTER)
-	bibtex usman
-	makeindex usman
-	pdflatex usman.tex $(LOGFILTER)
-	pdflatex usman.tex $(LOGFILTER)
+pdf: $(ALLTEX) $(PDFPICS) figures/*.png
+	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
+	bibtex tmp/usman
+	makeindex tmp/usman
+	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
+	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
+	cp usman.pdf ../../manual
 
 # --- generating html ---
 
@@ -68,7 +67,7 @@ usman.pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-usman.html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 usman.tmp
 	rm usman.tmp

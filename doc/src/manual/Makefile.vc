@@ -1,6 +1,3 @@
-# the default target
-all: usman.html
-
 #PERL=$(TOOLS_DIR)\perl\bin\perl.exe
 PERL=c:\Perl\bin\Perl.exe
 
@@ -50,16 +47,15 @@ PDFPICS = $(SVGPICS:.svg=.pdf)
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
 LOGFILTER =
 
-#default: usman.dvi usman.pdf
-default: usman.pdf
-	cp usman.pdf ../../manual
+default: pdf html
 
-usman.pdf: $(ALLTEX) $(PDFPICS) figures/*.png
-	pdflatex usman.tex $(LOGFILTER)
-	bibtex usman
-	makeindex usman
-	pdflatex usman.tex $(LOGFILTER)
-	pdflatex usman.tex $(LOGFILTER)
+pdf: $(ALLTEX) $(PDFPICS) figures/*.png
+	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
+	bibtex tmp/usman
+	makeindex tmp/usman
+	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
+	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
+	copy usman.pdf ..\..\manual
 
 # --- generating html ---
 
@@ -79,7 +75,8 @@ usman.pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-usman.html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+	#FIXME use tmp dir
 	@echo. > usman.tmp
 	for %%i in ($(HTMCHAPTERS)) do type %i >> usman.tmp
 	$(PERL) prephtml2 usman.tmp
