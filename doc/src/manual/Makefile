@@ -5,15 +5,29 @@ INKSCAPE=inkscape
 
 # --- generating pdf ---
 
+# FIXME
 TEXCHAPTERS = \
-         ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex \
-         ch-build-sim-progs.tex ch-neddoc.tex \
-         ch-opp-design.tex ch-simple-modules.tex \
-         ch-ned-lang.tex ch-overview.tex ch-run-sim.tex \
-         appendix-ned-grammar.tex appendix-config-options.tex \
-         appendix-msg-grammar.tex appendix-ned-functions.tex \
-         appendix-eventlog-file-format.tex appendix-result-file-formats.tex \
-         appendix-display-strings.tex
+         ch-introduction.tex \
+         ch-overview.tex \
+         ch-ned-lang.tex \
+         ch-simple-modules.tex \
+         ch-messages.tex \
+         ch-sim-lib.tex \
+         ch-build-sim-progs.tex \
+         ch-run-sim.tex \
+         ch-graphics.tex \
+         ch-ana-sim.tex \
+         ch-neddoc.tex \
+         ch-parallel-exec.tex \
+         ch-opp-design.tex \
+         appendix-ned-grammar.tex \
+         appendix-ned-dtd.tex \
+         appendix-ned-functions.tex \
+         appendix-msg-grammar.tex \
+         appendix-display-strings.tex \
+         appendix-config-options.tex \
+         appendix-result-file-formats.tex \
+         appendix-eventlog-file-format.tex
 ALLTEX = usman.tex title.tex $(TEXCHAPTERS)
 HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 
