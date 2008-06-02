@@ -96,10 +96,10 @@ cannot be changed.
 Authors have to take care that no reserved words are used for names.
 The reserved words of the NED language are:
 
-\ttt{ allowunconnected bool channel channelinterface connections const
+\ttt{allowunconnected bool channel channelinterface connections const
 default double extends false for gates if import index inout input int like
 module moduleinterface network output package parameters property simple
-sizeof string submodules this true types volatile xml xmldoc }
+sizeof string submodules this true types volatile xml xmldoc}
 
 
 \subsection{Identifiers}
@@ -138,82 +138,7 @@ much like JavaDoc or Doxygen. This feature is described in
 Chapter \ref{cha:neddoc}.
 
 
-\section{The import directive}
-
-\index{ned!import files}
-\index{ned!keywords!include}
-
-The \fpar[ned!keywords!import]{import} directive
-is used to import declarations from another network description file.
-After importing a network description, one can use the components
-(channels\index{channel}, simple/compound module types) defined in it.
-
-When a file is imported, only the declaration information is used.
-Also, importing a \ttt{.ned} file does not cause that file to be compiled
-with the NED compiler when the parent file is NED compiled, i.e.,
-one must compile and link all network description files --
-not only the top-level ones.
-
-You can specify the name of the files with or without the
-\texttt{.ned} extension. You can also include a path in the
-filenames\index{ned!include files}, or better, use the NED compiler's
-\ttt{-I <path>} command-line option to name the directories where the
-imported files reside.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{import} "ethernet";   // imports ethernet.ned
-\end{Verbatim}
-
-
-
-
-\section{Channel definitions}
-
-\index{channel}
-\index{channel!definition}
-\index{channel!delay}
-\index{channel!error}
-\index{channel!datarate}
-
-A channel definition specifies a connection type of given characteristics.
-The channel name can be used later in the NED description to
-create connections with these parameters.
-
-The syntax:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{channel} ChannelName
-    //...
-\tbf{endchannel}
-\end{Verbatim}
-
-Three attributes can be assigned values in the body of the channel declaration,
-all of them are optional: \ttt{delay}, \ttt{error} and \ttt{datarate}.
-\ttt{delay} is the propagation delay in (simulated) seconds;
-\ttt{error} is the bit error rate that speficifies the probability
-that a bit is incorrectly transmitted; and \ttt{datarate}
-is the channel bandwidth in bits/second, used for calculating
-transmission time of a packet. The attributes can appear
-in any order.
-
-The values should be constants.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{channel} LeasedLine
-    \tbf{delay} 0.0018  // sec
-    \tbf{error} 1e-8
-    \tbf{datarate} 128000  // bit/sec
-\tbf{endchannel}
-\end{Verbatim}
-
-
-
 \section{Simple module definitions}
-
 
 Simple modules are the basic building blocks for other (compound)
 modules. Simple module types are identified by names.
@@ -233,7 +158,6 @@ Simple modules are declared with the following syntax:
         //...
 \tbf{endsimple}
 \end{Verbatim}
-
 
 
 \subsection{Simple module parameters}
@@ -371,6 +295,47 @@ The sizes of gate vectors are given later, when the module is used as
 a building block of a compound module type. Thus, every instance of
 the module can have gate vectors of different sizes.
 
+
+\section{Channel definitions}
+
+\index{channel}
+\index{channel!definition}
+\index{channel!delay}
+\index{channel!error}
+\index{channel!datarate}
+
+A channel definition specifies a connection type of given characteristics.
+The channel name can be used later in the NED description to
+create connections with these parameters.
+
+The syntax:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{channel} ChannelName
+    //...
+\tbf{endchannel}
+\end{Verbatim}
+
+Three attributes can be assigned values in the body of the channel declaration,
+all of them are optional: \ttt{delay}, \ttt{error} and \ttt{datarate}.
+\ttt{delay} is the propagation delay in (simulated) seconds;
+\ttt{error} is the bit error rate that speficifies the probability
+that a bit is incorrectly transmitted; and \ttt{datarate}
+is the channel bandwidth in bits/second, used for calculating
+transmission time of a packet. The attributes can appear
+in any order.
+
+The values should be constants.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{channel} LeasedLine
+    \tbf{delay} 0.0018  // sec
+    \tbf{error} 1e-8
+    \tbf{datarate} 128000  // bit/sec
+\tbf{endchannel}
+\end{Verbatim}
 
 
 
