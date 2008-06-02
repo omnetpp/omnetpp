@@ -113,11 +113,10 @@
 %% Use \begin{graybox}...\end{graybox} for notes
 %%
 \definecolor{MyGray}{rgb}{0.93,0.93,0.95}
-\makeatletter\newenvironment{graybox}{%
-   \bigskip\begin{flushright}\begin{lrbox}{\@tempboxa}\begin{minipage}[r]{0.95\textwidth}}%
-   {\end{minipage}\end{lrbox}%
-   \colorbox{MyGray}{\usebox{\@tempboxa}}\end{flushright}\bigskip
-}\makeatother
+\makeatletter\newenvironment{graybox}%
+   {\begin{flushright}\begin{lrbox}{\@tempboxa}\begin{minipage}[r]{0.95\textwidth}}%
+   {\end{minipage}\end{lrbox}\colorbox{MyGray}{\usebox{\@tempboxa}}\end{flushright}}%
+\makeatother
 
 
 \newenvironment{note}{\begin{graybox}\textbf{NOTE: }}{\end{graybox}}

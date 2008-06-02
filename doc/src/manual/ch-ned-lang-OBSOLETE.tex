@@ -79,13 +79,8 @@ programmatic manipulation of NED files, for example extracting information,
 refactoring and transforming NED, generating NED from information stored in
 other system like SQL databases, and so on.
 
-\begin{note}
-    This chapter is going to explain the NED language gradually, via examples.
-    Users looking for a more formal treatment might want to read to the
-    language grammar in Appendix \ref{cha:ned-language-grammar} in addition to
-    the more reference-style sections in this chapter.
-\end{note}
-
+The formal language grammar can be found in Appendix
+\ref{cha:ned-language-grammar}.
 
 \section{Elements of the language}
 
@@ -118,10 +113,10 @@ numbers (0-9) and the underscore ``\_''.
 Identifiers may only begin with a letter or the underscore.
 
 If you have identifiers that are composed of several words, the convention
-is to capitalize the beginning of every word (``camel case''). Also, it is
-recommended that you begin the names of types (modules, channels, networks,
-etc.) with a capital letter, and the names of parameters, gates and submodules
-with a lower-case letter.
+is to capitalize the beginning of every word. Also, it is recommended
+that you begin the names of modules, channels and networks with
+a capital letter, and the names of parameters, gates and submodules
+with a lower-case letter. Underscores are rarely used.
 
 
 \subsection{Case sensitivity}
@@ -138,121 +133,171 @@ Comments can be placed anywhere in the NED file, with the usual C++
 syntax: comments begin with a double slash `//', and last until
 the end of the line.
 
+NED comments can be used for documentation generation,
+much like JavaDoc or Doxygen. This feature is described in
+Chapter \ref{cha:neddoc}.
 
-\section{Simple modules}
+
+\section{Simple module definitions}
 
 Simple modules are the basic building blocks for other (compound)
-modules. By convention, module names begin with upper-case letters.
+modules. Simple module types are identified by names.
+By convention, module names begin with upper-case letters.
 
-An example simple module declaration:
+A simple\index{module!simple!definition} module is defined by
+declaring its parameters\index{module!parameters} and
+gates\index{gate}.
 
-%% FIXME TODO syntax highlight here and everywhere
+Simple modules are declared with the following syntax:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-//
-// A queue with a built-in server
-//
-simple Queue
-\{
-    parameters:
-        @display("i=block/queue;q=queue");
-        int capacity = default(-1);  // use -1 for unlimited
-        volatile double serviceTime @unit(s);
-    gates:
-        input in[];
-        output out;
-\}
+\tbf{simple} SimpleModuleName
+    \tbf{parameters}:
+        //...
+    \tbf{gates}:
+        //...
+\tbf{endsimple}
 \end{Verbatim}
 
-This declares a simple module named \ttt{Queue}, which has two parameters
-\ttt{capacity} and \ttt{serviceTime}, and two gates \ttt{in} and \ttt{out}.
 
-Notice that this declaration doesn't contain any code to define the operation
-of the queue itself: that part is expressed in C++. By default, \opp looks for a
-C++ class of the same name (so here, \ttt{Queue}), although this gets slightly
-more complicated if C++ namespaces or NED packages are present, and the user
-can also explicitly specify which C++ class to use.
-
-The \ttt{capacity} parameter is created with the type \ttt{int}, and
-\ttt{serviceTime} with \ttt{double}. Other NED parameter types include
-\ttt{bool}, \ttt{string} and \ttt{xml}. Parameters can be read from C++ code,
-and they can get values from NED code, from the configuration (ini files, see
-FIXME), or interactively from the user. It is also possible to give them a default value (see
-\ttt{default(-1)} in the example), which gets assigned to the parameter if a
-matching \ttt{apply-default=true} line is found in the configuration.
-
-%% FIXME maybe not here but in with compound modules?
-\begin{note}
-    How do you decide whether to assign a parameter from NED or from and ini
-    file? The point of ini files is a cleaner separation of the \textit{model}
-    and \textit{experiments}. NED files (together with C++ code) are considered
-    to be part of the model, and to be more or less constant. Ini files, on
-    the other hand, are for experimenting with the model, by running it
-    several times with different parameters. Thus, parameters that are expected
-    to change (or make sense to be changed) during experimentation should be
-    put into ini files.
-\end{note}
-
-The \ttt{serviceTime} parameter is decorated with \ttt{@unit(s)}. This means
-that the value must be specified in either seconds, or in a physical unit \opp
-can convert to seconds, like milliseconds or hours; dimensionless numbers
-will not be accepted. The \opp runtime does a full and rigorous unit check on
-parameters to ensure ``unit safety'' of models.
-
-\ttt{serviceTime} is also declared \ttt{volatile}: this indicates that the
-underlying C++ code is going to re-read the parameter at runtime for every
-use of it; for example, this queue would re-read the parameter for every job
-serviced. Thus, it makes sense to assign \ttt{serviceTime} a random value like
-\ttt{uniform(0.5s, 1.5s)}, which would result in every job to have a different,
-random service time. Non-volatile parameters, however, are evaluated and
-replaced with a constant at the start of the simulation.
-
-\begin{note}
-    This does not mean that a non-volatile parameter cannot be assigned a value
-    like \ttt{uniform(0.5s, 1.5s)}. It can, but that has a totally different
-    effect. Had we omitted the \ttt{volatile} keyword from the
-    \ttt{serviceTime} parameter, for example, the effect would be that every
-    job had the \textit{same} constant service time, say \ttt{1.2975367s},
-    chosen randomly at the beginning of the simulation.
-\end{note}
-
-So far we have neglected the \ttt{@display} line in the above code. It is called
-\textit{display string}, and specifies how the module appears in the animation.
-This particular display string specifies a default icon
-(\ttt{block/queue}), and requests that the length of an internal C++ queue
-object named \ttt{queue} be displayed next to the module icon. Other display
-strings may specify position, color, arrangement, etc. of modules. The
-syntactical similarity of \ttt{@display} to \ttt{@unit} is not accidental; they
-are both metadata annotations (\textit{properties} in \opp), recognized and
-treated specially by the runtime.
-
-Gates are the connection points of modules. \opp has three types of gates:
-\textit{input}, \textit{output} and \textit{inout}, the latter being essentially
-an input and an output gate glued together. The C++ code that implements the
-simple module may send and receive messages via gates. Gates allow one-to-one
-connections, but in this example the \ttt{in} gate is declared as a \textit{gate
-vector} (or \textit{vector gate}) in order to allow several sources to send jobs
-into the queue. The size of the gate vector (the number of gates in it) is left
-undefined here, letting actual users (compound modules or networks that
-instantiate this module type) create as many gates as they want.
-
-\begin{note}
-    In many other systems, the equivalent of \opp gates are called
-    \textit{ports}. We have retained the term \textit{gate} to reduce
-    collisions with other uses of the otherwise overloaded word
-    \textit{port}: router port, TCP port, I/O port, etc.
-\end{note}
-
-Parameters and gates will be discussed in detail in section FIXME.
-
-Comments in the NED source also serve a purpose in addition to making the
-NED source more readable: in the \opp IDE they get displayed at various places (tooltips,
-content assist, etc), and become part of the documentation extracted from the
-NED files. The NED documentation system, not completely unlike \textit{JavaDoc}
-or \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
+\subsection{Simple module parameters}
+\label{sec:ch-ned-lang:simple-module-param}
+\index{module!parameters}
+\index{ned!keywords!numeric}
+\index{ned!keywords!const}
+\index{ned!keywords!bool}
+\index{ned!keywords!string}
+\index{ned!keywords!xml}
 
 
-\section{Channels}
+Parameters are variables that belong to a module. Simple module
+parameters can be queried and used by simple module algorithms.
+For example, a module called \texttt{TrafficGen} may have a parameter
+called \ttt{numOfMessages} that determines how many messages it
+should generate.
+
+Parameters are identified by names.
+By convention, parameter names begin with lower-case letters.
+
+Parameters are declared by listing their names in the
+\ttt{parameters:} section of a module description.
+The parameter type can optionally be specified as \ttt{numeric},
+\ttt{numeric const} (or simply \ttt{const}), \ttt{bool}, \ttt{string},
+or \ttt{xml}. If the parameter type is omitted, \ttt{numeric} is assumed.
+
+Example:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} TrafficGen
+    \tbf{parameters}:
+        interarrivalTime,
+        numOfMessages : \tbf{const},
+        address : \tbf{string};
+    \tbf{gates}: //...
+\tbf{endsimple}
+\end{Verbatim}
+
+Parameters are assigned from NED (when the module is used as a building block
+of a larger compound module) or from the config file \ttt{omnetpp.ini}.
+\ttt{omnetpp.ini} is described in Chapter \ref{cha:run-sim}.
+
+
+\subsubsection{Random parameters and const}
+\label{sec:ch-ned-lang:const}
+\index{const}
+\index{module!parameters!const}
+
+Numeric parameters can be set to return random numbers, uniformly
+distributed or from various distributions. For example, setting a
+parameter to \ttt{truncnormal(2,0.8)} would return a new random number
+from the truncated normal distribution with mean 2.0 and standard deviation 0.8
+every time the parameter is read from the simple module (from C++ code).
+For example, this is useful for specifying interarrival times for generated
+packets or jobs.
+
+You may want the initial parameter value to be chosen randomly, but not
+to change it afterwards. This can be achieved with declaring the parameter
+to be \ttt{const}. \ttt{const} parameters will be evaluated only once
+at the beginning of the simulation then set to a constant value.
+
+It is recommended to mark every parameter with \ttt{const} unless
+you really want to make use of the random numbers feature.
+
+
+\subsubsection{XML parameters}
+\index{xml}
+\index{module!parameters!xml}
+
+Sometimes modules need more complex input than simple module parameters
+can describe. Then you'd put these parameters into an external config file,
+and let the modules read and process the file. You'd pass the file name
+to the modules in a string parameter.
+
+These days, XML is increasingly becoming a standard format for configuration
+files as well, so you might as well describe your configuration in XML.
+From the 3.0 version, {\opp} contains built-in support for XML config files.
+
+{\opp} wraps the XML parser (LibXML, Expat, etc.), reads and DTD-validates
+the file (if the XML document contains a DOCTYPE), caches the file
+(so that if you refer to it from several modules, it'll still be loaded
+only once), lets you pick parts of the document via an XPath-subset notation,
+and presents the contents to you in a DOM-like object tree.
+
+This machinery can be accessed via the NED parameter type \ttt{xml}, and the
+\ttt{xmldoc()} operator. You can point \ttt{xml}-type module parameters
+to a specific XML file (or to an element inside an XML file) via the
+\ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
+and from \ttt{omnetpp.ini}.
+
+
+\subsection{Simple module gates}
+\label{sec:ch-ned-lang:simple-module-gates}
+
+\index{gate}
+\index{module!simple!gates}
+
+Gates are the connection points of modules. The starting and
+ending points of the connections between modules are gates. {\opp}
+supports simplex (one-directional) connections, so there are
+input and output gates. Messages are sent through
+output gates and received through input gates.
+
+Gates are identified by their names.
+By convention, gate names begin with lower-case letters.
+
+Gate vectors are supported: a gate vector\index{gate!vector}
+contains a number of single gates.
+
+Gates are declared by listing their names in the
+\fpar[ned!keywords!gates]{gates:} section of a module description. An
+empty bracket pair [] denotes a gate vector\index{gate!vector}.
+Elements of the vector are numbered from zero.
+
+Examples:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} NetworkInterface
+    \tbf{parameters}: //...
+    \tbf{gates}:
+        \tbf{in}:  fromPort, fromHigherLayer;
+        \tbf{out}: toPort, toHigherLayer;
+\tbf{endsimple}
+
+\tbf{simple} RoutingUnit
+    \tbf{parameters}: //...
+    \tbf{gates}:
+        \tbf{in}:  output[];
+        \tbf{out}: input[];
+\tbf{endsimple}
+\end{Verbatim}
+
+The sizes of gate vectors are given later, when the module is used as
+a building block of a compound module type. Thus, every instance of
+the module can have gate vectors of different sizes.
+
+
+\section{Channel definitions}
+
 \index{channel}
 \index{channel!definition}
 \index{channel!delay}
@@ -295,7 +340,7 @@ Example:
 
 
 
-\section{Compound modules}
+\section{Compound module definitions}
 
 
 Compound modules are modules composed of one or more submodules.
@@ -425,7 +470,7 @@ Example:
 \end{Verbatim}
 
 
-\subsubsection{Submodule vectors}
+\subsubsection{Module vectors}
 
 
 It is possible to create an array\index{module!array} of
@@ -958,139 +1003,6 @@ parameters. Unassigned parameters can get their values from the
 config file (\ttt{omnetpp.ini}) or will be interactively prompted for.
 
 
-\section{Parameters}
-\label{sec:ch-ned-lang:simple-module-param}
-\index{module!parameters}
-
-
-Parameters are variables that belong to a module. Simple module
-parameters can be queried and used by simple module algorithms.
-For example, a module called \texttt{TrafficGen} may have a parameter
-called \ttt{numOfMessages} that determines how many messages it
-should generate.
-
-Parameters are identified by names.
-By convention, parameter names begin with lower-case letters.
-
-Parameters are declared by listing their names in the
-\ttt{parameters:} section of a module description.
-The parameter type can optionally be specified as \ttt{numeric},
-\ttt{numeric const} (or simply \ttt{const}), \ttt{bool}, \ttt{string},
-or \ttt{xml}. If the parameter type is omitted, \ttt{numeric} is assumed.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} TrafficGen
-    \tbf{parameters}:
-        interarrivalTime,
-        numOfMessages : \tbf{const},
-        address : \tbf{string};
-    \tbf{gates}: //...
-\tbf{endsimple}
-\end{Verbatim}
-
-Parameters are assigned from NED (when the module is used as a building block
-of a larger compound module) or from the config file \ttt{omnetpp.ini}.
-\ttt{omnetpp.ini} is described in Chapter \ref{cha:run-sim}.
-
-
-\subsection{Random parameters and const}
-\label{sec:ch-ned-lang:const}
-\index{const}
-\index{module!parameters!const}
-
-Numeric parameters can be set to return random numbers, uniformly
-distributed or from various distributions. For example, setting a
-parameter to \ttt{truncnormal(2,0.8)} would return a new random number
-from the truncated normal distribution with mean 2.0 and standard deviation 0.8
-every time the parameter is read from the simple module (from C++ code).
-For example, this is useful for specifying interarrival times for generated
-packets or jobs.
-
-You may want the initial parameter value to be chosen randomly, but not
-to change it afterwards. This can be achieved with declaring the parameter
-to be \ttt{const}. \ttt{const} parameters will be evaluated only once
-at the beginning of the simulation then set to a constant value.
-
-It is recommended to mark every parameter with \ttt{const} unless
-you really want to make use of the random numbers feature.
-
-
-\subsection{XML parameters}
-\index{xml}
-\index{module!parameters!xml}
-
-Sometimes modules need more complex input than simple module parameters
-can describe. Then you'd put these parameters into an external config file,
-and let the modules read and process the file. You'd pass the file name
-to the modules in a string parameter.
-
-These days, XML is increasingly becoming a standard format for configuration
-files as well, so you might as well describe your configuration in XML.
-From the 3.0 version, {\opp} contains built-in support for XML config files.
-
-{\opp} wraps the XML parser (LibXML, Expat, etc.), reads and DTD-validates
-the file (if the XML document contains a DOCTYPE), caches the file
-(so that if you refer to it from several modules, it'll still be loaded
-only once), lets you pick parts of the document via an XPath-subset notation,
-and presents the contents to you in a DOM-like object tree.
-
-This machinery can be accessed via the NED parameter type \ttt{xml}, and the
-\ttt{xmldoc()} operator. You can point \ttt{xml}-type module parameters
-to a specific XML file (or to an element inside an XML file) via the
-\ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
-and from \ttt{omnetpp.ini}.
-
-
-
-
-\section{Gates}
-\label{sec:ch-ned-lang:simple-module-gates}
-
-\index{gate}
-\index{module!simple!gates}
-
-Gates are the connection points of modules. The starting and
-ending points of the connections between modules are gates. {\opp}
-supports simplex (one-directional) connections, so there are
-input and output gates. Messages are sent through
-output gates and received through input gates.
-
-Gates are identified by their names.
-By convention, gate names begin with lower-case letters.
-
-Gate vectors are supported: a gate vector\index{gate!vector}
-contains a number of single gates.
-
-Gates are declared by listing their names in the
-\fpar[ned!keywords!gates]{gates:} section of a module description. An
-empty bracket pair [] denotes a gate vector\index{gate!vector}.
-Elements of the vector are numbered from zero.
-
-Examples:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} NetworkInterface
-    \tbf{parameters}: //...
-    \tbf{gates}:
-        \tbf{in}:  fromPort, fromHigherLayer;
-        \tbf{out}: toPort, toHigherLayer;
-\tbf{endsimple}
-
-\tbf{simple} RoutingUnit
-    \tbf{parameters}: //...
-    \tbf{gates}:
-        \tbf{in}:  output[];
-        \tbf{out}: input[];
-\tbf{endsimple}
-\end{Verbatim}
-
-The sizes of gate vectors are given later, when the module is used as
-a building block of a compound module type. Thus, every instance of
-the module can have gate vectors of different sizes.
-
-
 
 \section{Expressions}
 \label{ch-ned-lang:sec:expressions}
@@ -1551,20 +1463,6 @@ Define_Function2(factorial, _wrap_factorial, 1);
 \end{verbatim}
 
 
-\section{Interfaces}
-FIXME TODO
-
-\section{Inheritance}
-FIXME TODO
-
-\section{Packages}
-FIXME TODO
-
-\section{Inner types}
-FIXME TODO
-
-\section{Metadata annotations}
-FIXME TODO
 
 
 \section{Parameterized compound modules}
@@ -2018,10 +1916,12 @@ You can generate C++ code from the XML format as well:
 nedtool wireless.xml
 \end{verbatim}
 
+
+
+
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
-
-
-
