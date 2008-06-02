@@ -71,7 +71,7 @@ HTM_FILES = ch-introduction.htm \
 #	copy usman.bbl usman-bibl.bbl
 
 %.pdf: %.svg
-	inkscape $< -A $@
+	$(INKSCAPE) $< -A $@
 
 .bbl.htm:
 	cp $< `echo $< | sed 's|\.bbl|.tex|'`

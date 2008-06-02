@@ -6,6 +6,8 @@ PERL=c:\Perl\bin\Perl.exe
 
 INKSCAPE="C:\Program Files\inkscape\inkscape.exe"
 
+CWD=C:\home\omnetpp40\omnetpp\doc\src\manual  # because Inkscape is broken and needs full paths; and nmake is also broken as there's no way to produce the current dir programmatically
+
 # --- generating pdf ---
 
 TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex \
@@ -19,6 +21,16 @@ TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex 
 
 
 PICS = figures/*
+# must list all SVGs because nmake is broken and has no wildcard functionality
+SVGPICS = figures\cqn-model.svg figures\cqn-partitioning.svg figures\nonblocking-crit.svg \
+         figures\pairwise.svg figures\parsim-arch.svg figures\partitioning.svg \
+         figures\placeholders.svg figures\placeholders2.svg figures\usmanFig10.svg \
+         figures\usmanFig12.svg figures\usmanFig13.svg figures\usmanFig14.svg \
+         figures\usmanFig15.svg figures\usmanFig16.svg figures\usmanFig17.svg \
+         figures\usmanFig18.svg figures\usmanFig2.svg figures\usmanFig3.svg \
+         figures\usmanFig4.svg figures\usmanFig5.svg figures\usmanFig7.svg \
+         figures\usmanFig8.svg figures\usmanFig9.svg
+PDFPICS = $(SVGPICS:.svg=.pdf)
 
 # an imperfect attempt to filter out less important warnings...
 # LOGFILTER = | sed '/Underfull/{N;N;d;};/Overfull/{N;N;d;};/Token not allowed/{N;N;d;}'
@@ -66,10 +78,13 @@ HTM_FILES = ch-introduction.htm \
             appendix-result-file-formats.htm \
             usman-bibl.htm
 
-.SUFFIXES : .tex .bbl .htm
+.SUFFIXES : .tex .bbl .htm .svg
 
 #usman-bibl.bbl : usman.bbl
 #	copy usman.bbl usman-bibl.bbl
+
+.svg.pdf:
+	$(INKSCAPE) $(CWD)\$< -A $(CWD)\$@
 
 .bbl.htm:
 	copy $< $(<:.bbl=.tex)
