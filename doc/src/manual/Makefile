@@ -5,17 +5,18 @@ INKSCAPE=inkscape
 
 # --- generating pdf ---
 
-TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex \
+TEXCHAPTERS = \
+         ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex \
          ch-build-sim-progs.tex ch-neddoc.tex \
-         ch-opp-design.tex ch-simple-modules.tex title.tex \
-         ch-ned-lang.tex ch-overview.tex ch-run-sim.tex usman.tex \
+         ch-opp-design.tex ch-simple-modules.tex \
+         ch-ned-lang.tex ch-overview.tex ch-run-sim.tex \
          appendix-ned-grammar.tex appendix-config-options.tex \
          appendix-msg-grammar.tex appendix-ned-functions.tex \
          appendix-eventlog-file-format.tex appendix-result-file-formats.tex \
          appendix-display-strings.tex
+ALLTEX = usman.tex title.tex $(TEXCHAPTERS)
+HTMCHAPTERS = $(TEXCHAPTERS:.tex=.htm)
 
-
-PICS = figures/*
 SVGPICS = $(wildcard figures/*.svg)
 PDFPICS = $(SVGPICS:.svg=.pdf)
 
@@ -27,14 +28,7 @@ LOGFILTER =
 default: usman.pdf
 	cp usman.pdf ../../manual
 
-usman.dvi: $(TEXSRC) $(PICS)
-	latex usman.tex $(LOGFILTER)
-	bibtex usman usman-bibl
-	makeindex usman
-	latex usman.tex $(LOGFILTER)
-	latex usman.tex $(LOGFILTER)
-
-usman.pdf: $(TEXSRC) $(PDFPICS)
+usman.pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	pdflatex usman.tex $(LOGFILTER)
 	bibtex usman
 	makeindex usman
@@ -42,28 +36,6 @@ usman.pdf: $(TEXSRC) $(PDFPICS)
 	pdflatex usman.tex $(LOGFILTER)
 
 # --- generating html ---
-
-HTM_FILES = ch-introduction.htm \
-            ch-overview.htm \
-            ch-ned-lang.htm \
-            ch-simple-modules.htm \
-            ch-messages.htm \
-            ch-sim-lib.htm \
-            ch-build-sim-progs.htm \
-            ch-run-sim.htm \
-            ch-graphics.htm \
-            ch-ana-sim.htm \
-            ch-neddoc.htm \
-            ch-parallel-exec.htm \
-            ch-opp-design.htm \
-            appendix-ned-grammar.htm \
-            appendix-ned-functions.htm \
-            appendix-msg-grammar.htm \
-            appendix-display-strings.htm \
-            appendix-config-options.htm \
-            appendix-eventlog-file-format.htm \
-            appendix-result-file-formats.htm \
-            usman-bibl.htm
 
 .SUFFIXES : .tex .bbl .htm .svg
 
@@ -82,8 +54,8 @@ HTM_FILES = ch-introduction.htm \
 .tex.htm:
 	$(PERL) ltoh.pl $<
 
-usman.html : $(HTM_FILES) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
-	cat $(HTM_FILES) > usman.tmp
+usman.html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
+	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 usman.tmp
 	rm usman.tmp
 	cp usman.html .../../manual
