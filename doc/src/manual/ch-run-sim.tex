@@ -387,8 +387,8 @@ used):
 
 
 To write a literal \$\{..\} inside a string constant, quote
-"\{" with a backslash, and write
-"\${\textbackslash}\{..\}".
+"\{" with a backslash, and write "\${\textbackslash}\{..\}".
+
 
 \subsection{Named iteration variables}
 
@@ -483,7 +483,7 @@ simulations.
 
 \begin{note}
 Mersenne Twister, the default RNG of OMNeT++ has a cycle length of
-$2^19937$, which is more than enough for any conceivable purpose.
+$2^{19937}$, which is more than enough for any conceivable purpose.
 \end{note}
 
 The seed-set= key tells the simulation kernel which seed set to use.
@@ -548,6 +548,7 @@ seed-3-mt = \$\{        34542, 67563, 96433, 23567 ! seed1\}
 That is, the iterators of seed-2-mt and seed-3-mt are advanced
 in lockstep with the seed1 iteration.
 
+
 \section{Scenarios and Result Analysis}
 
 \subsection{Output vectors and scalars}
@@ -558,13 +559,13 @@ an output vector file created in one run would be overwritten in the
 next run. Thus, we have changed the default file names to make them
 differ for every run. The new defaults are:
 
-\ttt{  output-vector-file = "\$\{configname\}-\$\{runnumber\}.vec"}
-\ttt{  output-scalar-file = "\$\{configname\}-\$\{runnumber\}.sca"}
+\begin{Verbatim}[commandchars=\\\{\}]
+output-vector-file = "\$\{configname\}-\$\{runnumber\}.vec"
+output-scalar-file = "\$\{configname\}-\$\{runnumber\}.sca"
+\end{Verbatim}
 
 
-This generates file names like
-"PureAloha-0.vec",
-"PureAloha-1.vec", and so on.
+This generates file names like "PureAloha-0.vec", "PureAloha-1.vec", and so on.
 
 Also, in OMNeT++ 3.x output scalar files were always appended to by the
 simulation program, rather than being overwritten. This behavior was
@@ -572,34 +573,33 @@ changed in 4.0 to make it consistent with vector files, that is, output
 scalar files are also overwritten by the simulator, and not appended
 to.
 
-\textbf{NOTE}: The old behavior can be turned back on by setting
-output-scalar-file-append=true.
+\begin{note}
+    The old behavior can be turned back on by setting
+    output-scalar-file-append=true.
+\end{note}
 
 The way of configuring output vectors has also changed. In OMNeT++ 3.x,
 the keys for enabling-disabling a vector and specifying recording
-interval were
-<module-and-vectorname-pattern>.enabled,
-and
-<module-and-vectorname-pattern>.interval.
-The "enabled" and
-"interval" words changed to
-"enable-recording" and
+interval were <module-and-vectorname-pattern>.enabled,
+and <module-and-vectorname-pattern>.interval.
+The "enabled" and "interval" words changed to "enable-recording" and
 "recording-interval".
 
-\textbf{NOTE}: The reason for this change is that per-object
-configuration keys are now required to have a hyphen in their names, to
-make it possible to tell them apart from module parameter assignments.
-This allows the simulator to catch mistyped config keys in ini files.
+\begin{note}
+    The reason for this change is that per-object
+    configuration keys are now required to have a hyphen in their names, to
+    make it possible to tell them apart from module parameter assignments.
+    This allows the simulator to catch mistyped config keys in ini files.
+\end{note}
 
 The syntax for specifying the recording interval has also been extended
 (in a backward compatible way) to accept multiple intervals, separated
 by comma. An example:
-\ttt{  **.fifo[2].queueLengthVector.enable-recording = false}
-\ttt{  **.fifo[*].queueLengthVector.recording-interval = ..100, 300..500,
-900..}
 
-
-
+\begin{Verbatim}[commandchars=\\\{\}]
+**.fifo[2].queueLengthVector.enable-recording = false
+**.fifo[*].queueLengthVector.recording-interval = ..100, 300..500, 900..
+\end{Verbatim}
 
 Although it has nothing to do with our main topic (ini files), this is a
 good place to mention that the format of result files have been
@@ -628,7 +628,9 @@ requested by the user, by configuring save-as-scalar=true for the
 parameters in question. The configuration key is a pattern that
 identifies the parameter, plus ".save-as-scalar". An example:
 
-\ttt{  **.host[*].networkLoad.save-as-scalar = true}
+\begin{Verbatim}[commandchars=\\\{\}]
+**.host[*].networkLoad.save-as-scalar = true
+\end{Verbatim}
 
 This looks simple enough. However, there are three pitfalls:
 non-numeric parameters, too many matching parameters, and
@@ -644,31 +646,35 @@ if the host[] module vector size is 1000 in the example below, then the
 same value (3) will be saved 1000 times into the scalar file, once for
 each host.
 
-\ttt{  **.host[*].startTime = 3}
-\ttt{  **.host[*].startTime.save-as-scalar = true  \# saves "3" once for each host}
+\begin{Verbatim}[commandchars=\\\{\}]
+**.host[*].startTime = 3
+**.host[*].startTime.save-as-scalar = true  \# saves "3" once for each host
+\end{Verbatim}
 
 Third, recording a random-valued volatile parameter will just save a
 random number from that distribution. This is rarely what you need, and
 the simulation kernel will also issue a warning if this happens.
 
-\begin{verbatim}
-\ttt{  **.interarrivalTime = exponential(1)}
-\ttt{  **.interarrivalTime.save-as-scalar = true  \# saves random values!}
-\end{verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
+**.interarrivalTime = exponential(1)
+**.interarrivalTime.save-as-scalar = true  \# wrong: saves random values!
+\end{Verbatim}
 
 
 These pitfalls are not rare in practice, so it is usually more
 convenient to rely on the iteration variables in the result analysis.
 That is, one can rewrite the above example as
 
-\begin{verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 **.interarrivalTime = exponential( ${mean=1} )
-\end{verbatim}
+\end{Verbatim}
 
 and refer to the \$mean iteration variable instead of the
 interarrivalTime module parameter(s) during result analysis.
 save-as-scalar=true is not needed because iteration variables are
 automatically saved into the result files.
+
+
 
 \subsection{Experiment-Measurement-Replication}
 
@@ -695,11 +701,12 @@ accordingly on the user interface.
 These labels can be explicitly specified in the ini file using the
 experiment=, measurement= and replication= config keys. If they are
 missing, the default is the following:
-\ttt{  experiment = "\$\{configname\}"}
-\ttt{  measurement = "\$\{iterationvars\}"}
-\ttt{  replication = "\#\$\{repetition\},seed-set=<seedset>"}
 
-
+\begin{Verbatim}[commandchars=\\\{\}]
+experiment = "\$\{configname\}"
+measurement = "\$\{iterationvars\}"
+replication = "\#\$\{repetition\},seed-set=<seedset>"
+\end{Verbatim}
 
 
 That is, the default experiment label is the configuration name; the
@@ -707,10 +714,12 @@ measurement label is concatenated from the iteration variables; and the
 replication label contains the repeat loop variable and for the
 seed-set. Thus, for our first example the
 experiment-measurement-replication tree would look like this:
-\ttt{\textrm{"PureAloha" }\textrm{\textit{--
-experiment}}}
-\ttt{\textrm{\$N=1,\$mean=0.2}\textrm{\textit{ -- measurement}}}
-\ttt{\textrm{\#0, seed-set=0}\textrm{\textit{ -- replication}}}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\textrm{"PureAloha" }\textrm{\textit{--experiment}}
+\textrm{\$N=1,\$mean=0.2}\textrm{\textit{ -- measurement}}
+\textrm{\#0, seed-set=0}\textrm{\textit{ -- replication}}
+\end{Verbatim}
 
 \#1, seed-set=1
 
@@ -790,9 +799,8 @@ repetition in the tree. For example:
 
 
 
-The tree shows that ("PureAloha",
-"\$N=1,\$mean=0.2", "\#0,
-seed-set=0") was run three times. The results produced
+The tree shows that ("PureAloha", "\$N=1,\$mean=0.2", "\#0, seed-set=0")
+was run three times. The results produced
 by these three executions should be identical, unless, for example,
 some parameter was modified in the ini file, or a bug got fixed in the
 C++ code.
@@ -803,14 +811,14 @@ sufficient in the majority of the simulation studies. However, you can
 customize it if needed. For example, here is a way to join two
 scenarios into one experiment:
 
-\begin{verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 [Config PureAloha\_Part1]
 experiment = "PureAloha"
 ...
 [Config PureAloha\_Part2]
 experiment = "PureAloha"
 ...
-\end{verbatim}
+\end{Verbatim}
 
 
 
@@ -821,10 +829,10 @@ making use of named iteration variables, \$\{repetition\},
 to customize the generated measurement and replication labels. For
 example:
 
-\begin{verbatim}
+\begin{Verbatim}[commandchars=\\\{\}]
 [Config PureAloha\_Part1]
 measurement = "\$\{N\} hosts, exponential(\$\{mean\}) packet generation interval"
-\end{verbatim}
+\end{Verbatim}
 
 
 One should be careful with the above technique though, because if some
