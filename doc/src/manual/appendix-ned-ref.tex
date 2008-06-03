@@ -429,31 +429,6 @@ size of a vector gate\index{gate!vector}. The \fname{index}
 operator\index{ned!index operator} gives the index of the current
 submodule in its module vector.
 
-The following example describes a router with several ports and one routing unit.
-We assume that gate vectors \ttt{in[]} and \ttt{out[]} have the same size.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Router
-    \tbf{gates}:
-        \tbf{in}: in[];
-        \tbf{out}: out[];
-    \tbf{submodules}:
-        port: PPPInterface[\tbf{sizeof}(in)]; // one PPP for each input gate
-            \tbf{parameters}: interfaceId = 1+\tbf{index}; // 1,2,3...
-        routing: RoutingUnit;
-            \tbf{gatesizes}:
-                in[\tbf{sizeof}(in)];  // one gate pair for each port
-                out[\tbf{sizeof}(in)];
-    \tbf{connections}:
-        \tbf{for} i = 0..\tbf{sizeof}(in)-1 \tbf{do}
-            in[i] --> port[i].in;
-            out[i] <-- port[i].out;
-            port[i].out --> routing.in[i];
-            port[i].in <-- routing.out[i];
-        \tbf{endfor};
-\tbf{endmodule}
-\end{Verbatim}
-
 
 \subsection{The \fname{xmldoc()} operator}
 
@@ -578,82 +553,8 @@ and so on.
 \subsection{Functions}
 \index{ned!functions}
 
-In NED expressions, you can use the following mathematical functions:
-\begin{itemize}
-  \item{many of the C language's \ttt{<math.h>} library functions:
-    \ttt{exp()}, \ttt{log()}, \ttt{sin()}, \ttt{cos()}, \ttt{floor()},
-    \ttt{ceil()}, \ttt{etc.}}
-  \item{functions that generate random variables: \ttt{uniform},
-    \ttt{exponential}, \ttt{normal} and others were already
-    discussed.}
-\end{itemize}
-
-It is possible to add new ones, see \ref{sec:ch-ned-lang:defining-functions}.
-
-\subsection{Random values}
-
-Expressions may contain random variates from different distributions.
-Such parameters, unless declared as \ttt{const},
-return different values each time they are evaluated.
-
-If the parameter is declared as \ttt{const}, it is only evaluated
-once at the beginning of the simulation, and subsequent queries
-on the parameter will always return the same value.
-
-Random variate functions use one of the random number generators (RNGs)
-provided by \opp. By default this is generator 0, but you can specify
-which one is to be used.
-
-{\opp} has the following predefined distributions\index{distribution!predefined}:
-
-\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
-\hline
-\tbf{Function} & \tbf{Description}\\\hline
-\multicolumn{2}{|c|}{\tbf{Continuous distributions}}\\\hline
-\fname{uniform(a, b, \textit{rng=0})} & uniform distribution in the range [a,b) \\\hline
-\fname{exponential(mean, \textit{rng=0})} & exponential distribution with the given mean \\\hline
-\fname{normal(mean, stddev, \textit{rng=0})} & normal distribution with the given mean and standard deviation \\\hline
-\fname{truncnormal(mean, stddev, \textit{rng=0})} & normal distribution truncated to nonnegative values \\\hline
-\fname{gamma\_d(alpha, beta, \textit{rng=0})} & gamma distribution with parameters alpha>0, beta>0 \\\hline
-\fname{beta(alpha1, alpha2, \textit{rng=0})} & beta distribution with parameters alpha1>0, alpha2>0 \\\hline
-\fname{erlang\_k(k, mean, \textit{rng=0})} & Erlang distribution with k>0 phases and the given mean \\\hline
-\fname{chi\_square(k, \textit{rng=0})} & chi-square distribution with k>0 degrees of freedom \\\hline
-\fname{student\_t(i, \textit{rng=0})} & student-t distribution with i>0 degrees of freedom \\\hline
-\fname{cauchy(a, b, \textit{rng=0})} & Cauchy distribution with parameters a,b where b>0 \\\hline
-\fname{triang(a, b, c, \textit{rng=0})} & triangular distribution with parameters a<=b<=c, a!=c \\\hline
-\fname{lognormal(m, s, rng=0)} & lognormal distribution with mean m and variance s>0 \\\hline
-\fname{weibull(a, b, \textit{rng=0})} & Weibull distribution with parameters a>0, b>0 \\\hline
-\fname{pareto\_shifted(a, b, c, \textit{rng=0})} & generalized Pareto distribution with parameters a, b and shift c \\\hline
-\multicolumn{2}{|c|}{\tbf{Discrete distributions}} \\\hline
-\fname{intuniform(a, b, \textit{rng=0})} & uniform integer from a..b \\\hline
-\fname{bernoulli(p, \textit{rng=0})} & result of a Bernoulli trial with probability 0<=p<=1 (1 with probability p and 0 with probability (1-p)) \\\hline
-\fname{binomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>=0 and 0<=p<=1 \\\hline
-\fname{geometric(p, \textit{rng=0})} & geometric distribution with parameter 0<=p<=1 \\\hline
-\fname{negbinomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>0 and 0<=p<=1\\\hline
-\fname{poisson(lambda, \textit{rng=0})} & Poisson distribution with parameter lambda \\\hline
-
-\end{longtable}
-
-%
-% FIXME insert this into the table then hypergeom() starts to work:
-% fname{hypergeometric(a, b, n, \textit{rng=0})} & hypergeometric distribution with parameters a>0,b>0 and 0<=n<=a+b.\\\hline
-%
-
-If you do not specify the optional \fpar{rng} argument, the functions will
-use random number generator 0.
-
-Examples:
-
-\begin{verbatim}
-intuniform(0,10)/10  // one of: 0, 0.1, 0.2, ..., 0.9, 1
-exponential(5)       // exponential with mean=5 (thus parameter=0.2)
-2+truncnormal(5,3)   // normal distr with mean 7 truncated to >=2 values
-\end{verbatim}
-
-The above distributions are implemented with C functions, and you can easily
-add new ones (see section \ref{sec:ch-ned-lang:defining-functions}).
-Your distributions will be treated in the same way as the built-in ones.
-
+The functions available in NED are listed in Appendix
+\ref{cha:ned-functions}.
 
 \subsection{Physical units}
 \label{ch-ned-lang:sec:units}
