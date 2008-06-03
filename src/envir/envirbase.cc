@@ -52,6 +52,7 @@
 #include "opp_ctype.h"
 #include "stringtokenizer.h"
 #include "fileglobber.h"
+#include "unitconversion.h"
 #include "commonutil.h"
 
 #include "timeutil.h"
@@ -328,6 +329,7 @@ void EnvirBase::printHelp()
     ev << "    -h classdesc      Lists C++ classes that have associated reflection\n";
     ev << "                      information (needed for Tkenv inspectors)\n";
     ev << "    -h nedfunctions   Lists registered NED functions\n";
+    ev << "    -h units          Lists recognized physical units\n";
     ev << "    -h enums          Lists registered enums\n";
     ev << "    -h all            Union of all the above\n";
     ev << "\n";
@@ -483,6 +485,21 @@ void EnvirBase::dumpComponentList(const char *category)
         {
             cObject *obj = table->get(i);
             ev << "  " << obj->fullName() << " : " << obj->info() << "\n";
+        }
+        ev << "\n";
+    }
+    if (wantAll || !strcmp(category, "units"))
+    {
+        processed = true;
+        ev << "Recognized physical units (note: other units can be used as well, only\n";
+        ev << "no automatic conversion will be available for them):\n";
+        std::vector<const char *> units = UnitConversion::allUnits();
+        for (int i=0; i<units.size(); i++)
+        {
+            const char *u = units[i];
+            const char *bu = UnitConversion::baseUnit(u);
+            ev << "  " << u << "\t" << UnitConversion::longName(u) << "\t"
+               << UnitConversion::convertUnit(1,u,bu) << " " << bu << "\n";
         }
         ev << "\n";
     }
