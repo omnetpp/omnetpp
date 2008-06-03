@@ -22,14 +22,14 @@ in UTF-8, or any character set compatible with ASCII (8859-1, etc).
 Keywords and other syntactic elements in NED are ASCII, and identifiers must be
 ASCII as well. Comments and string literals may contain characters above
 127. String literals (e.g. in parameter values) will be passed to the C++ code
-as \ttt{const char *} without any conversion. 
+as \ttt{const char *} without any conversion.
 
 Line ending may be either CR or CRLF, regardless of platform.
 
 
 \subsection{Reserved words}
 
-Authors have to take care that no reserved words are used for names.
+Authors have to take care that no reserved words are used as identifiers.
 The reserved words of the NED language are:
 
 \ttt{allowunconnected bool channel channelinterface connections const
@@ -41,97 +41,41 @@ sizeof string submodules this true types volatile xml xmldoc}
 \subsection{Identifiers}
 
 Identifiers must be composed of letters of the English alphabet (a-z, A-Z),
-numbers (0-9) and the underscore ``\_''. Identifiers may only begin with a
+numbers (0-9) and underscore ``\_''. Identifiers may only begin with a
 letter or underscore.
 
 The recommended way to compose identifiers from multiple words is to
-capitalize the beginning of each word (\textit{camel-case}).
+capitalize the beginning of each word (\textit{camel case}).
 
 \subsection{Case sensitivity}
 
 Keywords and identifiers in the NED language are case sensitive. For example,
-\ttt{TCP} and \ttt{Tcp} are two different names. 
+\ttt{TCP} and \ttt{Tcp} are two different names.
 
-\subsection{Constants}
+\subsection{Literals}
 
-\subsubsection{Numeric and string constants}
+\subsubsection{String literals}
+
+String literals use double quotes. The following C-style backslash
+escapes are recognized: \ttt{{\textbackslash}b}, \ttt{{\textbackslash}f}, \ttt{{\textbackslash}n}, \ttt{{\textbackslash}r},
+\ttt{{\textbackslash}t}, \ttt{{\textbackslash}{\textbackslash}}, \ttt{{\textbackslash}"}, and \ttt{{\textbackslash}xhh} where \textit{h} is a
+hexadecimal digit.
+
+\subsubsection{Numeric constants}
 
 Numeric constants are accepted in their usual decimal or
 scientific notations.
 
-%% FIXME Only decimal notation is accepted!!! no hex, octal or binary...
+\subsubsection{Quantity constants}
 
-\subsubsection{String constants}
+A quantity constant has the form \textit{(<numeric-constant> <unit>)+}, for
+example \ttt{12.5mW} or \ttt{3h 15min 37.2s}. When multiple units are present,
+they have to be convertible into each other (i.e. refer to the same physical
+quantity).
 
-String constants use double quotes.
-
-%% FIXME no escape character sequences are accepted!!!
-
-\subsubsection{Time constants}
-
-FIXME
-
-Anywhere you would put numeric constants\index{numeric constants}
-(integer or real) to mean time in seconds, you can also specify the
-time in units like milliseconds, minutes or hours:
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-    ...
-    \tbf{parameters}:
-        propagationDelay = 560ms, // 0.560s
-        connectionTimeout = 6m 30s 500ms, // 390.5s
-        recoveryIntvl = 0.5h; // 30 min
-\end{Verbatim}
-
-
-The following units can be used:
-
-\begin{longtable}{|c|c|r|}
-\hline
-\tabheadcol
-\tbf{Unit} & \tbf{Name} & \tbf{Value} \\\hline
-s & second & \\\hline
-d & day & 86400s \\\hline
-h & hour & 3600s \\\hline
-min & minute & 60s \\\hline
-ms & millisecond & 1e-3s \\\hline
-us & microsecond & 1e-6s \\\hline
-ns & nanosecond & 1e-9s \\\hline
-ps & picosecond & 1e-12s \\\hline
-bps & bit/sec & \\\hline
-Kbps & kilobit/sec & 1e3bps \\\hline
-Mbps & megabit/sec & 1e6bps \\\hline
-Gbps & gigabit/sec & 1e9bps \\\hline
-Tbps & terabit/sec & 1e12bps \\\hline
-B & byte & \\\hline
-KB & kilobyte & 1024B \\\hline
-MB & megabyte & 1.04858e6B \\\hline
-GB & gigabyte & 1.07374e9B \\\hline
-TB & terabyte & 1.09951e12B \\\hline
-b & bit & \\\hline
-m & meter & \\\hline
-km & kilometer & 1e3m \\\hline
-cm & centimeter & 1e-2m \\\hline
-mm & millimeter & 1e-3m \\\hline
-W & watt & \\\hline
-mW & milliwatt & 1e-3W \\\hline
-Hz & herz & \\\hline
-kHz & kiloherz & 1e3Hz \\\hline
-MHz & megaherz & 1e6Hz \\\hline
-GHz & gigaherz & 1e9Hz \\\hline
-g & gram & 1e-3kg \\\hline
-kg & kilogram & \\\hline
-J & joule & \\\hline
-kJ & kilojoule & 1e3J \\\hline
-MJ & megajoule & 1e6J \\\hline
-V & volt & \\\hline
-kV & kilovolt & 1e3V \\\hline
-mV & millivolt & 1e-3V \\\hline
-A & amper & \\\hline
-mA & milliamper & 1e-3A \\\hline
-uA & microamper & 1e-6A \\\hline
-\end{longtable}
+Section \ref{ch-ned-lang:sec:units} lists the units recognized by \opp.
+Other units can be used as well, the only downside being that \opp will not be
+able to perform conversions on them.
 
 \subsection{Comments}
 
@@ -141,39 +85,70 @@ the end of the line.
 
 \subsection{Grammar}
 
-The grammar of the NED language can be found in Appendix FIXME.
+The grammar of the NED language can be found in Appendix
+\ref{cha:ned-language-grammar}.
 
 
 \section{Packages}
 
-NED supports hierarchical namespaces called \ttt{packages}. The solution is
-roughly modelled after Java's packages, with minor changes.
+NED supports hierarchical namespaces called \textit{packages}. The solution
+is roughly modelled after Java's packages, with minor changes.
 
-\section{Packages, imports}
+\subsection{Package declaration}
 
-A NED file may contain a package declaration:
+The package of the declarations in a NED file is determined by the package
+declaration in the file (\ttt{package} keyword). A NED file may contain at
+most one package declaration. If there is no package declaration, the file's
+contents is in the \textit{default package}.
 
-  package inet.protocols.transport.tcp;
+\subsection{Directory structure, package.ned}
 
-If there is no package declaration, the file is said to be in the
-"default package".
+Like in Java, the directory of a NED file must match the package
+declaration. However, it is possible to omit directories at the top which do
+not contain any NED files (like the typical \ttt{/org/\textit{<projectname>}}
+directories in Java).
+
+The top of a directory tree containing NED files is named a \textit{NED source
+folder}. The \ttt{package.ned} file direcly in a NED source folder plays a
+special role.
+
+If there is no toplevel \ttt{package.ned} or it contains no package declaration,
+the declared package of a NED file in the folder \ttt{\textit{<srcfolder>}/x/y/z}
+\textit{must} be \ttt{x.y.z}.
+If there is a toplevel \ttt{package.ned} and it declares to be in package
+\ttt{a.b}, then any NED file in the folder \ttt{\textit{<srcfolder>}/x/y/z}
+\textit{must} have the declared package \ttt{a.b.x.y.z}.
+
+\begin{note}
+    \ttt{package.ned} files are allowed in other folders as well, but they
+    are not treated specially, i.e. they cannot be used to define the package
+    they are in.
+\end{note}
+
+
+\section{Type name resolution}
 
 Names from other NED files can be referred to either by fully qualified
 name ("inet.protocols.network.ip.RoutingTable"), or by short name
 ("RoutingTable") if the name is visible.
 
 Visible names are:
-  - anything from the same package;
-  - imported names.
+\begin{itemize}
+  \item anything from the same package;
+  \item imported names.
+\end{itemize}
 
-Import directives also have a similar syntax to Java, but they
-are more flexible with wildcards. All of the following are legal:
+\subsection{Imports}
 
-  import  inet.protocols.network.ip.RoutingTable;
-  import  inet.protocols.network.ip.*;
-  import  inet.protocols.network.ip.Ro*Ta*;
-  import  inet.protocols.*.ip.*;
-  import  inet.**.RoutingTable;
+Imports have a similar syntax to Java, but they are more flexible with wildcards.
+All of the following are legal:
+\begin{verbatim}
+import inet.protocols.network.ip.RoutingTable;
+import inet.protocols.network.ip.*;
+import inet.protocols.network.ip.Ro*Ta*;
+import inet.protocols.*.ip.*;
+import inet.**.RoutingTable;
+\end{verbatim}
 
 One asterisk "*" stands for "any character sequence not containing
 period"; two asterisks mean "any character sequence which may
@@ -184,42 +159,6 @@ However, it is legal for an import that does contain wildcards
 not to match any NED type (although that might generate a warning.)
 
 Inner types may not be referred to outside their enclosing types.
-
-
-\section{Directory Structure, package.ned}
-
-Like in Java, the directory of a NED file MUST match the package declaration.
-However, it is possible to omit directories at the top which don't
-contain any NED files (like the "/org/projectname/" directories in Java).
-
-There is a notion of "NED source folders". If a NED Source Folder is
-named "src", then a NED file containing the package declaration
-"inet.protocols.transport.tcp" must be in the following folder:
-
-   src/inet/protocols/transport/tcp/
-
-If the "inet" and "protocols" directories don't contain any NED files,
-they can be omitted:
-
-   src/transport/tcp
-
-and the "src" directory must contain a "package.ned" file which declares
-what package it corresponds to:
-
-  src/package.ned:
-  package inet.protocols;
-
-All NED files under the "src" directory tree must have package
-declarations consistent with that.
-
-"package.ned" files are allowed in other folders as well (as long as
-their package declarations are consistent with the NED source
-directory's "package.ned"), and any file-level comment in them
-will be treated as the package's documentation (similar to Java's
-package.html).
-
-
-\section{Name lookups}
 
 \subsection{Base types and submodules}
 
@@ -246,20 +185,6 @@ Simple (unqualified) names are tried with the same package as the
 ini file is in (provided it's in a NED directory).
 
 
-\section{The NEDPATH environment variable}
-
-A simulation may need NED files from several "NED source folders".
-When a simulation is launched as a separate application, it will expect
-to receive the list of NED source folders to scan in the NEDPATH
-environment variable (similar to Java's CLASSPATH). NEDPATH should
-contain the source folder names separated by a semicolon (";").
-On Unix-like systems, colon (":") will also be accepted as separator.
-
-In the future, zip files may become supported in NEDPATH as well;
-then the root folder of the zip file will be treated as a NED source
-folder.
-
-
 \section{Inheritance rules}
 
 \begin{itemize}
@@ -275,10 +200,11 @@ property set, so the same rules apply to it as to compound modules.
 
 Inheritance may:
 \begin{itemize}
-\item add new properties, parameters, gates, inner types, submodules,
-connections
-\item modify inherited properties, and properties of inherited parameters and gates
-\item it may NOT modify inherited submodules, connections and inner types
+  \item add new properties, parameters, gates, inner types, submodules,
+        connections
+  \item modify inherited properties, and properties of inherited parameters and
+        gates
+  \item it may NOT modify inherited submodules, connections and inner types
 \end{itemize}
 
 See other rules for specifics.
@@ -288,7 +214,7 @@ See other rules for specifics.
 
 An interface (module interface or channel interface) may NOT contain
 parameter assignment or parameter default value assignment. An interface
-may NOT contain inner types (rationale: what use would they be?).
+may NOT contain inner types. (Rationale: what use would they be?).
 
 A module type that implements ("like") a module interface is required
 to have at least the parameters and the gates defined in the interface,
@@ -368,7 +294,7 @@ Examples:
 The @unit property of a parameter may NOT be modified via inheritance.
 
 Example:
-\begin{verbatim} 
+\begin{verbatim}
 simple A {
     double p @unit(s);
 }
@@ -496,9 +422,6 @@ Here's the complete list of operators, in order of decreasing precendence:
 %%
 \ttt{?:}                         & the C/C++ ``inline if'' \\\hline
 \end{longtable}
-
-
-
 \subsection{The \fname{sizeof()} and \fname{index} operators}
 
 A useful operator is \fname{sizeof()}\index{ned!sizeof()}, which gives the
@@ -732,6 +655,58 @@ add new ones (see section \ref{sec:ch-ned-lang:defining-functions}).
 Your distributions will be treated in the same way as the built-in ones.
 
 
+\subsection{Physical units}
+\label{ch-ned-lang:sec:units}
+
+The following physical units will be recorgnized in constants. Other units can
+be used as well, the only downside being that \opp will not be able to
+perform conversions on them.
+
+\begin{longtable}{|c|c|r|}
+  \hline
+  \tabheadcol
+  \tbf{Unit} & \tbf{Name} & \tbf{Value} \\\hline
+  s & second & \\\hline
+  d & day & 86400s \\\hline
+  h & hour & 3600s \\\hline
+  min & minute & 60s \\\hline
+  ms & millisecond & 1e-3s \\\hline
+  us & microsecond & 1e-6s \\\hline
+  ns & nanosecond & 1e-9s \\\hline
+  ps & picosecond & 1e-12s \\\hline
+  bps & bit/sec & \\\hline
+  Kbps & kilobit/sec & 1e3bps \\\hline
+  Mbps & megabit/sec & 1e6bps \\\hline
+  Gbps & gigabit/sec & 1e9bps \\\hline
+  Tbps & terabit/sec & 1e12bps \\\hline
+  B & byte & \\\hline
+  KB & kilobyte & 1024B \\\hline
+  MB & megabyte & 1.04858e6B \\\hline
+  GB & gigabyte & 1.07374e9B \\\hline
+  TB & terabyte & 1.09951e12B \\\hline
+  b & bit & \\\hline
+  m & meter & \\\hline
+  km & kilometer & 1e3m \\\hline
+  cm & centimeter & 1e-2m \\\hline
+  mm & millimeter & 1e-3m \\\hline
+  W & watt & \\\hline
+  mW & milliwatt & 1e-3W \\\hline
+  Hz & herz & \\\hline
+  kHz & kiloherz & 1e3Hz \\\hline
+  MHz & megaherz & 1e6Hz \\\hline
+  GHz & gigaherz & 1e9Hz \\\hline
+  g & gram & 1e-3kg \\\hline
+  kg & kilogram & \\\hline
+  J & joule & \\\hline
+  kJ & kilojoule & 1e3J \\\hline
+  MJ & megajoule & 1e6J \\\hline
+  V & volt & \\\hline
+  kV & kilovolt & 1e3V \\\hline
+  mV & millivolt & 1e-3V \\\hline
+  A & amper & \\\hline
+  mA & milliamper & 1e-3A \\\hline
+  uA & microamper & 1e-6A \\\hline
+\end{longtable}
 
 
 
@@ -739,3 +714,6 @@ Your distributions will be treated in the same way as the built-in ones.
 %%% mode: latex
 %%% TeX-master: "usman"
 %%% End:
+
+
+
