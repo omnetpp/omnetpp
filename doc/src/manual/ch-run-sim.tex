@@ -1,51 +1,17 @@
 \chapter{Configuring and Running Simulations}
 \label{cha:run-sim}
 
-\section{User interfaces}
+\section{Configuring simulations}
 
-{\opp} simulations can be run under different user interfaces.
-Currenly, two user interfaces are supported:
-
-\begin{itemize}
-  \item Tkenv: Tcl/Tk-based graphical, windowing user interface
-  \item Cmdenv: command-line user interface for batch execution
-\end{itemize}
-
-
-You would typically test and debug your simulation under Tkenv,
-then run actual simulation experiments from the command line or
-shell script, using Cmdenv. Tkenv is also better suited for educational or
-demonstration purposes.
-
-Both Tkenv and Cmdenv are provided in the form of a library, and
-you choose between them by linking one or the other into your
-simulation executable. (Creating the executable was described in
-chapter \ref{cha:building-simulation-programs}). Both user interfaces
-are supported on Unix and Windows platforms.
-
-Common functionality in Tkenv and Cmdenv has been collected and
-placed into the Envir library\index{Envir}, which can be thought of as the
-``common base class'' for the two user interfaces.
-
-The user interface\index{user interface} is separated from the
-simulation kernel, and the two parts interact through a well-defined
-interface. This also means that, if needed, you can write your
-own user interface or embed an {\opp} simulation into your application
-without any change to models or the simulation library.
-
-Configuration and input data for the simulation are described in
+Configuration and input data for the simulation are in
 a configuration file usually called \fname{omnetpp.ini}.
 Some entries in this file apply to Tkenv or Cmdenv only, other
 settings are in effect regardless of the user interface.
 Both user interfaces accept command-line arguments, too.
 
+The following sections explain \fname{omnetpp.ini}.
 
-The following sections explain \fname{omnetpp.ini} and the common part of
-the user interfaces, describe Cmdenv and Tkenv in detail, then
-go on to specific problems.
-
-
-\section{The configuration file: omnetpp.ini\index{omnetpp.ini}}
+\section{The configuration file: omnetpp.ini}
 
 \subsection{An example}
 
@@ -193,47 +159,746 @@ This rule also applies to other file names occurring in ini files
 entries, and \ttt{xmldoc()} module parameter values.)
 
 
-\subsection{Sections}
+\section{Sections}
+\subsection{Overview}
 
-The following sections can exist:
+Named configurations are sections of the form \ttt{[Config <configname>]}, where
+<configname> is by convention a camel-case
+string that starts with a capital letter:
+\ttt{Config1}, \ttt{WirelessPing}, \ttt{OverloadedFifo}, etc. For example,
+\ttt{omnetpp.ini} for an Aloha simulation might have the following skeleton:
 
-\begin{longtable}{|p{4cm}|p{10cm}|}
-\hline
-\tabheadcol
-\tbf{Section} & \tbf{Description}\\\hline
-%%
-\ttt{[General]} & Contains general settings that apply to all simulation runs
-and all user interfaces. For details, see section \ref{sec:ch-run-sim:general-section}.
-\\\hline
-\ttt{[Run 1]}, \ttt{[Run 2]}, ...  & Contains per-run settings.
-These sections may contain any entries that are accepted in other
-sections.
-\\\hline
-%%
-\ttt{[Cmdenv]} & Contains Cmdenv-specific settings.
-For details, see section \ref{sec:ch-run-sim:cmdenv-section}
-\\\hline
-%%
-\ttt{[Tkenv]} & Contains Tkenv-specific settings.
-For details, see section \ref{sec:ch-run-sim:tkenv-section}
-\\\hline
-%%
-\ttt{[Parameters]} & Contains values for module parameters that did not
-get a value (or got \fname{input} value) inside the NED files.
-For details, see section \ref{sec:ch-run-sim:parameter-settings}
-\\\hline
-%%
-\ttt{[OutVectors]} & Configures recording of output vectors. You can specify
-filtering by vector names and by simulation time (start/stop recording).
-For details, see section \ref{sec:ch-run-sim:outvectors}
-\\\hline
-%%
-\end{longtable}
+\begin{Verbatim}[commandchars=\\\{\}]
+[General]
+...
+[Config PureAloha]
+...
+[Config SlottedAloha1]
+...
+[Config SlottedAloha2]
+...
+\end{Verbatim}
+
+Some configuration keys (such as user interface selection) are only
+accepted in the \ttt{[General]} section, but most of them can go into Config
+sections as well.
+
+When you run a simulation, you need to select one of the configurations
+to be activated. In Cmdenv, this is done with the \ttt{-c} command-line option:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+$ aloha -c PureAloha
+\end{Verbatim}
+
+The simulation will then use the contents of the \ttt{[Config PureAloha]}
+section to set up the simulation. (Tkenv, of course, lets you select
+the configuration from a dialog.)
+
+
+\subsection{Fallbacks}
+
+Actually, when you activate the PureAloha configuration, the contents of
+the \ttt{[General]} section will also be taken into account: if some
+configuration key or parameter value is not found in \ttt{[Config PureAloha]},
+then the search will continue in the \ttt{[General]} section. In
+other words, lookups in \ttt{[Config PureAloha]} will fall back to \ttt{[General]}.
+The \ttt{[General]} section itself is optional; when it is absent, it is
+treated like an empty \ttt{[General]} section.
+
+All named configurations fall back to \ttt{[General]} by default. However, for
+each configuration it is possible to specify a fall-back section
+explicitly, using the extends= key. Consider the following ini file
+skeleton:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+[General]
+...
+[Config SlottedAlohaBase]
+...
+[Config SlottedAloha1]
+extends = SlottedAlohaBase
+...
+[Config SlottedAloha2]
+extends = SlottedAlohaBase
+...
+[Config SlottedAloha2a]
+extends = SlottedAloha2
+...
+[Config SlottedAloha2b]
+extends = SlottedAloha2
+...
+\end{Verbatim}
+
+
+If you activate the \ttt{SlottedAloha2b} configuration, lookups will consider
+sections in the following order (this is also called the
+\textit{section fallback chain}): \ttt{SlottedAloha2b},
+\ttt{SlottedAloha2}, \ttt{SlottedAlohaBase}, \ttt{General}.
+
+The effect is the same as if the contents of the sections
+SlottedAloha2b, SlottedAloha2, SlottedAlohaBase and General were copied
+together into one section, one after another, \ttt{[Config SlottedAloha2b]}
+being at the top, and \ttt{[General]} at the bottom. Lookups always start at
+the top, and stop at the first matching entry.
+
+The concept is similar to inheritance in object-oriented languages,
+and benefits are similar too: you can to factor out the common parts of
+several configurations into a "base"
+configuration, and the other way round, you can reuse existing
+configurations (as opposed to copying them) by using them as a base. In
+practice you will often have "abstract"
+configurations too (in the C++/Java sense), which assign only a subset
+of parameters and leave the others open, to be assigned in derived
+configurations.
+
+If you are experimenting a lot with different parameter settings of a
+simulation model, these techniques will make it a lot easier to manage
+ini files.
+
+\section{Scenarios}
+
+\subsection{Basic use}
+
+
+It is quite common in simulation studies that the simulation model is
+run several times with different parameter settings, and the results
+are analyzed in relation to the input parameters. OMNeT++ 3.x had no
+direct support for batch runs, and users had to resort to writing shell
+(or Python, Ruby, etc.) scripts that iterated over the required
+parameter space, and generated a (partial) ini file and run the
+simulation program in each iteration.
+
+OMNeT++ 4.0 largely automates this process, and eliminates the need for
+writing batch execution scripts. It is the ini file where the user can
+specify iterations over various parameter settings.
+Here's an example:
+\ttt{\ \ [Config AlohaScenario]}
+\ttt{\ \ *.numHosts = \$\{1, 2, 5, 10..50 step 10\}}
+\ttt{\ \ **.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )}
+
+
+
+
+This scenario expands to 8*3 = 24 simulation runs, where the number of
+hosts iterates over the numbers 1, 2, 5, 10, 20, 30, 40, 50, and for
+each host count three simulation runs will be done, with the generation
+interval being exponential(0.2), exponential(0.4), and
+exponential(0.6).
+
+How does it get run? First of all, Cmdenv with the
+'-n' option will tell you how many
+simulation runs a given section expands to. (You'll of
+course use Cmdenv for batch runs, not Tkenv.)
+\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario {--}n}
+
+
+
+\ttt{\ \ OMNeT++/OMNEST Discrete Event Simulation}
+\ttt{\ \ ...}
+\ttt{\ \ Config: AlohaScenario}
+\ttt{\ \ Number of runs: 24}
+
+
+
+
+If you add the '-g' option, the
+program will also print out the values of the iteration variables for
+each run. Note that the scenario description actually maps to nested
+loops, with the last "\$\{..\}" becoming
+the innermost loop. The iteration variables are just named \$0 and \$1
+-- we'll see that it is possible to give
+meaningful names to them. Please ignore the
+'\$repetition=0' part in the printout
+for now.
+\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -n -g}
+\ttt{\ \ OMNeT++/OMNEST Discrete Event Simulation}
+\ttt{\ \ ...}
+\ttt{\ \ Config: AlohaScenario}
+\ttt{\ \ Number of runs: 24}
+\ttt{\ \ Run 0: \$0=1, \$1=0.2, \$repetition=0}
+\ttt{\ \ Run 1: \$0=1, \$1=0.4, \$repetition=0}
+\ttt{\ \ Run 2: \$0=1, \$1=0.6, \$repetition=0}
+\ttt{\ \ Run 3: \$0=2, \$1=0.2, \$repetition=0}
+\ttt{\ \ Run 4: \$0=2, \$1=0.4, \$repetition=0}
+\ttt{\ \ Run 5: \$0=2, \$1=0.6, \$repetition=0}
+\ttt{\ \ Run 6: \$0=5, \$1=0.2, \$repetition=0}
+\ttt{\ \ Run 7: \$0=5, \$1=0.4, \$repetition=0}
+\ttt{\ \ ...}
+\ttt{\ \ Run 19: \$0=40, \$1=0.4, \$repetition=0}
+\ttt{\ \ Run 20: \$0=40, \$1=0.6, \$repetition=0}
+\ttt{\ \ Run 21: \$0=50, \$1=0.2, \$repetition=0}
+\ttt{\ \ Run 22: \$0=50, \$1=0.4, \$repetition=0}
+\ttt{\ \ Run 23: \$0=50, \$1=0.6, \$repetition=0}
+
+
+
+
+Any of these runs can be executed by passing the '-r
+<runnumber>' option to Cmdenv.
+So, the task is now to run the simulation program 24 times, with
+'-r' running from 0 through 23:
+\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -r 0}
+\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -r 1}
+\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -r 2}
+\ttt{\ \ ...}
+\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -r 23}
+
+
+
+
+This batch can be executed either from the OMNeT++ IDE (where you are
+prompted to pick an executable and an ini file, choose the scenario
+from a list, and just click Run), or using a little command-line
+batch execution tool supplied with OMNeT++.
+
+Actually, it is also possible to get Cmdenv execute all runs in one go,
+by simply omitting the '-r' option.
+\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario}
+
+
+
+\ttt{\ \ OMNeT++/OMNEST Discrete Event Simulation}
+\ttt{\ \ Preparing for running configuration AlohaScenario, run \#0...}
+\ttt{\ \ ...}
+\ttt{\ \ Preparing for running configuration AlohaScenario, run \#1...}
+\ttt{\ \ ...}
+\ttt{\ \ ...}
+\ttt{\ \ Preparing for running configuration AlohaScenario, run \#23...}
+
+
+
+
+However, this approach is not recommended, because it is more
+susceptible to C++ programming errors in the model. (For example, if
+any of the runs crashes, the whole batch is terminated -- which may
+not be what the user wants).
+
+Let us get back to the ini file. We had:
+\ttt{\ \ [Config AlohaScenario]}
+\ttt{\ \ *.numHosts = \$\{1, 2, 5, 10..50 step 10\}}
+\ttt{\ \ **.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )}
+
+
+
+
+The \$\{...\} syntax specifies an iteration. It is sort of a macro: at
+each run, the whole \$\{...\} string gets textually replaced with the
+current iteration value. The values to iterate over do not need to be
+numbers (unless you want to use the
+\textit{"a..b"} or
+\textit{"a..b step c"} syntax), and the
+substitution takes place even inside string constants. So, the
+following examples are all valid (note that textual substitution is
+used):
+\ttt{\ \ *.param = 1 + \$\{1e-6, 1/3, sin(0.5)\}}
+\ttt{\ \ \ \ \ \ ==> *.param = 1 + 1e-6}
+\ttt{\ \ \ \ \ \ \ \ \ \ *.param = 1 + 1/3}
+\ttt{\ \ \ \ \ \ \ \ \ \ *.param = 1 + sin(0.5)}
+
+
+
+\ttt{\ \ *.greeting = "We will simulate \$\{1,2,5\}
+host(s)."}
+\ttt{\ \ \ \ \ \ ==> *.greeting = "We will
+simulate 1 host(s)."}
+\ttt{\ \ \ \ \ \ \ \ \ \ *.greeting = "We will simulate 2
+host(s)."}
+\ttt{\ \ \ \ \ \ \ \ \ \ *.greeting = "We will simulate 5
+host(s)."}
+
+
+
+
+To write a literal \$\{..\} inside a string constant, quote
+"\{" with a backslash, and write
+"\${\textbackslash}\{..\}".
+
+\subsection{Named iteration variables}
+
+You can assign names to iteration variables, which has the advantage
+that you'll see meaningful names instead of \$0 and
+\$1 in the Cmdenv output, and also lets you refer to the variables at
+more than one place in the ini file. The syntax is
+\$\{<varname>=<iteration>\},
+and variables can be referred to simply as
+\$\{<varname>\}:
+\ttt{\ \ [Config Aloha]}
+\ttt{\ \ *.numHosts = \$\{N=1, 2, 5, 10..50 step 10\}}
+\ttt{\ \ **.host[*].generationInterval = exponential( \$\{mean=0.2, 0.4,
+0.6\} )}
+\ttt{\ \ **.greeting = "There are \$\{N\} hosts"}
+
+
+
+
+The scope of the variable name is the section that defines it, plus
+sections based on that section (via extends=).
+
+There are also a number of predefined variables: \$\{configname\} and
+\$\{runnumber\} with the obvious meanings; \$\{network\} is the name of
+the network that is simulated; \$\{processid\} and \$\{datetime\}
+expand to the OS process id of the simulation and the time it was
+started; and there are some more: \$\{runid\}, \$\{iterationvars\} and
+\$\{repetition\}.
+
+\$\{runid\} holds the Run ID. When a simulation is run, it gets assigned
+a Run ID, which uniquely identifies that instance of running the
+simulation: if you run the same thing again, it will get a different
+Run ID. Run ID is a concatenation of several variables like
+\$\{configname\}, \$\{runnumber\}, \$\{datetime\} and \$\{processid\}.
+This yields an identifier that is unique
+"enough" for all practical purposes, yet it
+is meaningful for humans. The Run ID is recorded into result files
+written during the simulation, and can be used to match vectors and
+scalars written by the same simulation run.
+
+In cases when not all combinations of the iteration variables make sense
+or need to be simulated, it is possible to specify an additional
+constraint expression. This expression is interpreted as a conditional
+(an "if" statement) within the innermost
+loop, and it must evaluate to "true" for
+the variable combination to generate a run. The expression should be
+given with the constraint= configuration key. An example:
+\ttt{\ \ *.numNodes = \$\{n=10..100 step 10\}}
+\ttt{\ \ **.numNeighbors = \$\{m=2..10 step 2\}}
+\ttt{\ \ constraint = \$m <= sqrt(\$n)}
+
+
+
+
+The expression syntax supports most C language operators (including
+boolean, conditional and binary shift operations) and most
+<math.h> functions; data types are boolean,
+double and string. The expression must evaluate to a boolean.
+
+\textbf{NOTE}: It is not supported to refer to other iteration variables
+in the definition of an iteration variable (i.e. you cannot write
+things like \$\{j=\$i..10\}), although it might get implemented in
+future OMNeT++ releases.
+
+\subsection{Repeating runs with different seeds}
+
+It is directly supported to perform several runs with the same
+parameters but different random number seeds. There are two
+configuration keys related to this: repeat= and seed-set=. The first
+one simple specifies how many times a run needs to be repeated. For
+example,
+\ttt{\ \ repeat = 10}
+
+
+
+
+causes every combination of iteration variables to be repeated 10 times,
+and the \$\{repetition\} predefined variable holds the loop counter.
+Indeed, repeat=10 is equivalent of adding \$\{repetition=0..9\} to the
+ini file. The \$\{repetition\} loop always becomes the innermost loop.
+
+The seed-set= configuration key affects seed selection. Every
+simulation uses one or more random number generators (as configured by
+the num-rngs= key), for which the simulation kernel can automatically
+generate seeds. The first simulation run may use one set of seeds (seed
+set 0), the second run may use a second set (seed set 1), and so on.
+Each set contains as many seeds as there are RNGs configured. All
+automatic seeds generate random number sequences that are far apart in
+the RNG's cycle, so they will never overlap during
+simulations.
+
+\textbf{NOTE:} Mersenne Twister, the default RNG of OMNeT++ has a cycle
+length of 2\textsuperscript{19937}, which is more than enough for any
+conceivable purpose.
+
+The seed-set= key tells the simulation kernel which seed set to use.
+It can be set to a concrete number (such as seed-set=0), but it
+usually does not make sense as it would cause every simulation to run
+with exactly the same seeds. It is more practical to set it to either
+\$\{runnumber\} or to \$\{repetition\}. The default setting is
+\$\{runnumber\}:
+\ttt{\ \ seed-set = \$\{runnumber\} \ \ \# this is the default}
+
+
+
+
+This makes every simulation run to execute with a unique seed set. The
+second option is:
+\ttt{\ \ seed-set = \$\{repetition\}}
+
+
+
+
+where all \$repetition=0 runs will use the same seeds (seed set 0), all
+\$repetition=1 runs use another seed set, \$repetition=2 a third seed
+set, etc.
+
+To perform runs with manually selected seed sets, you can just define an
+iteration for the seed-set= key:
+\ttt{\ \ seed-set = \$\{5,6,8..11\}}
+
+
+
+
+In this case, the repeat= key should be left out, as seed-set= already
+defines an iteration and there's no need for an extra
+loop.
+
+It is of course also possible to manually specify individual seeds for
+simulations. This is rarely necessary, but we can use it here to
+demonstrate another feature, parallel iterators:
+\ttt{\ \ repeat = 4}
+\ttt{\ \ seed-1-mt = \$\{53542, 45732, 47853, 33434 ! repetition\}}
+\ttt{\ \ seed-2-mt = \$\{75335, 35463, 24674, 56673 ! repetition\}}
+\ttt{\ \ seed-3-mt = \$\{34542, 67563, 96433, 23567 ! repetition\}}
+
+
+
+
+The meaning of the above is this: in the first repetition, the first
+column of seeds is chosen, for the second repetition, the second
+column, etc. The "!" syntax chooses the
+\textit{kth} value from the iteration, where \textit{k} is the position
+(iteration count) of the iteration variable after the
+"!". Thus, the above example is equivalent
+to the following:
+\ttt{\ \ \# no repeat= !}
+\ttt{\ \ seed-1-mt = \$\{seed1 = 53542, 45732, 47853, 33434\}}
+\ttt{\ \ seed-2-mt = \$\{ \ \ \ \ \ \ \ 75335, 35463, 24674, 56673 !
+seed1\}}
+\ttt{\ \ seed-3-mt = \$\{ \ \ \ \ \ \ \ 34542, 67563, 96433, 23567 !
+seed1\}}
+
+
+
+
+That is, the iterators of seed-2-mt and seed-3-mt are advanced
+in lockstep with the seed1 iteration.
+
+\section{Scenarios and Result Analysis}
+
+\subsection{Output vectors and scalars}
+
+In OMNeT++ 3.x, the default result file names were ``omnetpp.vec'' and
+``omnetpp.sca''. This is not very convenient for batch execution, where
+an output vector file created in one run would be overwritten in the
+next run. Thus, we have changed the default file names to make them
+differ for every run. The new defaults are:
+\ttt{\ \ output-vector-file =
+"\$\{configname\}-\$\{runnumber\}.vec"}
+\ttt{\ \ output-scalar-file =
+"\$\{configname\}-\$\{runnumber\}.sca"}
+
+
+This generates file names like
+"PureAloha-0.vec",
+"PureAloha-1.vec", and so on.
+
+Also, in OMNeT++ 3.x output scalar files were always appended to by the
+simulation program, rather than being overwritten. This behavior was
+changed in 4.0 to make it consistent with vector files, that is, output
+scalar files are also overwritten by the simulator, and not appended
+to.
+
+\textbf{NOTE}: The old behavior can be turned back on by setting
+output-scalar-file-append=true.
+
+The way of configuring output vectors has also changed. In OMNeT++ 3.x,
+the keys for enabling-disabling a vector and specifying recording
+interval were
+<module-and-vectorname-pattern>.enabled,
+and
+<module-and-vectorname-pattern>.interval.
+The "enabled" and
+"interval" words changed to
+"enable-recording" and
+"recording-interval".
+
+\textbf{NOTE}: The reason for this change is that per-object
+configuration keys are now required to have a hyphen in their names, to
+make it possible to tell them apart from module parameter assignments.
+This allows the simulator to catch mistyped config keys in ini files.
+
+The syntax for specifying the recording interval has also been extended
+(in a backward compatible way) to accept multiple intervals, separated
+by comma. An example:
+\ttt{\ \ **.fifo[2].queueLengthVector.enable-recording = false}
+\ttt{\ \ **.fifo[*].queueLengthVector.recording-interval = ..100, 300..500,
+900..}
+
+
+
+
+Although it has nothing to do with our main topic (ini files), this is a
+good place to mention that the format of result files have been
+extended to include meta info such as the run ID, network name, all
+configuration settings, etc. These data make the files more
+self-documenting, which can be valuable during the result analysis
+phase, and increase reproduciblity of the results. Another change is
+that vector data are now recorded into the file clustered by the output
+vectors, which (combined with index files) allows much more efficient
+processing.
+
+\subsection{Saving parameters as scalars}
+
+When you are running several simulations with different parameter
+settings, you'll usually want to refer to selected
+input parameters in the result analysis as well -- for example when
+drawing a throughput (or response time) versus load (or network
+background traffic) plot. Average throughput or response time numbers
+are saved into the output scalar files, and it is useful for the input
+parameters to get saved into the same file as well.
+
+For convenience, OMNeT++ automatically saves the iteration variables
+into the output scalar file, so they can be referred to during result
+analysis. Module parameters can also be saved, but this has to be
+requested by the user, by configuring save-as-scalar=true for the
+parameters in question. The configuration key is a pattern that
+identifies the parameter, plus ".save-as-scalar". An example:
+
+\ttt{\ \ **.host[*].networkLoad.save-as-scalar = true}
+
+This looks simple enough. However, there are three pitfalls:
+non-numeric parameters, too many matching parameters, and
+random-valued volatile parameters.
+
+First, the scalar file only holds numeric results, so non-numeric
+parameters cannot be recorded -- that will result in a runtime
+error.
+
+Second, if wildcards in the pattern match too many parameters, that
+might unnecessarily increase the size of the scalar file. For example,
+if the host[] module vector size is 1000 in the example below, then the
+same value (3) will be saved 1000 times into the scalar file, once for
+each host.
+
+\ttt{\ \ **.host[*].startTime = 3}
+\ttt{\ \ **.host[*].startTime.save-as-scalar = true \ \# saves "3" once for each host}
+
+Third, recording a random-valued volatile parameter will just save a
+random number from that distribution. This is rarely what you need, and
+the simulation kernel will also issue a warning if this happens.
+
+\begin{verbatim}
+\ttt{\ \ **.interarrivalTime = exponential(1)}
+\ttt{\ \ **.interarrivalTime.save-as-scalar = true \ \# saves random values!}
+\end{verbatim}
+
+
+These pitfalls are not rare in practice, so it is usually more
+convenient to rely on the iteration variables in the result analysis.
+That is, one can rewrite the above example as
+
+\begin{verbatim}
+**.interarrivalTime = exponential( ${mean=1} )
+\end{verbatim}
+
+and refer to the \$mean iteration variable instead of the
+interarrivalTime module parameter(s) during result analysis.
+save-as-scalar=true is not needed because iteration variables are
+automatically saved into the result files.
+
+\subsection{Experiment-Measurement-Replication}
+
+We have introduced three concepts that are useful for organizing
+simulation results generated by batch executions or several batches of
+executions.
+
+During a simulation study, a person prepares several
+\textit{experiments}. The purpose of an experiment is to find out the
+answer to questions like \textit{"how does the number of
+nodes affect response times in the network?"} For an
+experiment, several \textit{measurements} are performed on the
+simulation model, and each measurement runs the simulation model with a
+different parameter settings. To eliminate the bias introduced by the
+particular random number stream used for the simulation, several
+\textit{replications} of every measurement are run with different
+random number seeds, and the results are averaged.
+
+OMNeT++ result analysis tools can take advantage of
+experiment/measurement/replication labels recorded into result files,
+and organize simulation runs and recorded output scalars and vectors
+accordingly on the user interface.
+
+These labels can be explicitly specified in the ini file using the
+experiment=, measurement= and replication= config keys. If they are
+missing, the default is the following:
+\ttt{\ \ experiment = "\$\{configname\}"}
+\ttt{\ \ measurement = "\$\{iterationvars\}"}
+\ttt{\ \ replication = "\#\$\{repetition\},seed-set=<seedset>"}
+
+
+
+
+That is, the default experiment label is the configuration name; the
+measurement label is concatenated from the iteration variables; and the
+replication label contains the repeat loop variable and for the
+seed-set. Thus, for our first example the
+experiment-measurement-replication tree would look like this:
+\ttt{\textrm{"PureAloha" }\textrm{\textit{--
+experiment}}}
+\ttt{\textrm{\$N=1,\$mean=0.2}\textrm{\textit{ -- measurement}}}
+\ttt{\textrm{\#0, seed-set=0}\textrm{\textit{ -- replication}}}
+
+\#1, seed-set=1
+
+\#2, seed-set=2
+
+\#3, seed-set=3
+
+\#4, seed-set=4
+
+\$N=1,\$mean=0.4
+
+\#0, seed-set=5
+
+\#1, seed-set=6
+
+...
+
+\#4, seed-set=9
+
+\$N=1,\$mean=0.6
+
+\#0, seed-set=10
+
+\#1, seed-set=11
+
+...
+
+\#4, seed-set=14
+
+\$N=2,\$mean=0.2
+
+...
+
+\$N=2,\$mean=0.4
+
+...
+
+...
+
+
+
+
+The experiment-measurement-replication labels should be enough to
+reproduce the same simulation results, given of course that the ini
+files and the model (NED files and C++ code) haven't
+changed.
+
+Every instance of running the simulation gets a unique run ID. We can
+illustrate this by listing the corresponding run IDs under each
+repetition in the tree. For example:
+
+"PureAloha"
+
+\$N=1,\$mean=0.2
+
+\#0, seed-set=0
+
+\textit{PureAloha-0-20070704-11:38:21-3241}
+
+\textit{PureAloha-0-20070704-11:53:47-3884}
+
+\textit{PureAloha-0-20070704-16:50:44-4612}
+
+\#1, seed-set=1
+
+\textit{PureAloha-1-20070704-16:50:55-4613}
+
+\#2, seed-set=2
+
+\textit{PureAloha-2-20070704-11:55:23-3892}
+
+\textit{PureAloha-2-20070704-16:51:17-4615}
+
+{\itshape
+{\dots}}
+
+
+
+
+The tree shows that ("PureAloha",
+"\$N=1,\$mean=0.2", "\#0,
+seed-set=0") was run three times. The results produced
+by these three executions should be identical, unless, for example,
+some parameter was modified in the ini file, or a bug got fixed in the
+C++ code.
+
+We believe that the default way of generating
+experiment-measurement-replication labels will be useful and
+sufficient in the majority of the simulation studies. However, you can
+customize it if needed. For example, here is a way to join two
+scenarios into one experiment:
+
+\begin{verbatim}
+[Config PureAloha\_Part1]
+experiment = "PureAloha"
+...
+[Config PureAloha\_Part2]
+experiment = "PureAloha"
+...
+\end{verbatim}
+
+
+
+
+Measurement and replication labels can be customized in a similar way,
+making use of named iteration variables, \$\{repetition\},
+\$\{runnumber\} and other predefined variables. One possible benefit is
+to customize the generated measurement and replication labels. For
+example:
+
+\begin{verbatim}
+[Config PureAloha\_Part1]
+measurement = "\$\{N\} hosts, exponential(\$\{mean\}) packet generation interval"
+\end{verbatim}
+
+
+One should be careful with the above technique though, because if some
+iteration variables are left out of the measurement labels, runs with
+all values of those variables will be grouped together to the same
+replications.
+
+
+
+////////////////////////////////////////////////////////////////
+
+
+
+
+
+\section{User interfaces}
+
+{\opp} simulations can be run under different user interfaces.
+Currenly, two user interfaces are supported:
+
+\begin{itemize}
+  \item Tkenv: Tcl/Tk-based graphical, windowing user interface
+  \item Cmdenv: command-line user interface for batch execution
+\end{itemize}
+
+
+You would typically test and debug your simulation under Tkenv,
+then run actual simulation experiments from the command line or
+shell script, using Cmdenv. Tkenv is also better suited for educational or
+demonstration purposes.
+
+Both Tkenv and Cmdenv are provided in the form of a library, and
+you choose between them by linking one or the other into your
+simulation executable. (Creating the executable was described in
+chapter \ref{cha:building-simulation-programs}). Both user interfaces
+are supported on Unix and Windows platforms.
+
+Common functionality in Tkenv and Cmdenv has been collected and
+placed into the Envir library\index{Envir}, which can be thought of as the
+``common base class'' for the two user interfaces.
+
+The user interface\index{user interface} is separated from the
+simulation kernel, and the two parts interact through a well-defined
+interface. This also means that, if needed, you can write your
+own user interface or embed an {\opp} simulation into your application
+without any change to models or the simulation library.
 
 
 
 \subsection{The [General] section}
-\label{sec:ch-run-sim:general-section}
 
 The most important options of the \texttt{[General]} section are the
 following.
@@ -246,209 +911,6 @@ following.
     \fpar{output-vector-file}, \fpar{output-scalar-file} and \fpar{snapshot-file}.}
 \end{itemize}
 
-The full list of supported options follows. Almost every one these options
-can also be put into the \ttt{[Run \textit{n}]} sections. Per-run settings
-have priority over globally set ones.
-
-
-\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
-\hline
-\tabheadcol
-\tbf{Name and default value} & \tbf{Description}\\\hline
-\multicolumn{2}{|c|}{\tbf{[General]}} \\\hline
-%%
-\fpar{ini-warnings} = yes & When enabled, {\opp} lists the names of
-ini file entries for which the default values were used.
-This can at times be useful for debugging ini files.
-\\\hline
-%%
-\fpar{preload-ned-files} = & List of NED files to be loaded dynamically
-(see \ref{cha:run-sim:dynamic-ned}). \\\hline
-%%
-\fpar{network} = & The name of the network to be simulated. \\\hline
-%%
-\fpar{snapshot-file} = omnetpp.sna & Name of the snapshot file. The result of
-each \fname{snapshot()} call will be appended to this file. \\\hline
-%%
-\fpar{output-vector-file} = omnetpp.vec & Name of output vector file. \\\hline
-%%
-\fpar{output-scalar-file} = omnetpp.sca & Name of output scalar file. \\\hline
-%%
-\fpar{pause-in-sendmsg} = no & Only makes sense with step-by-step execution.
-If enabled, {\opp} will split \fname{send()} calls to two steps.\\\hline
-%%
-\fpar{sim-time-limit} = & Duration of the simulation in simulation time.\\\hline
-%%
-\fpar{cpu-time-limit} = & Duration of the simulation in real time.\\\hline
-%%
-\fpar{num-rngs} = 1 & Number of random number generators.\\\hline
-%%
-\fpar{rng-class} = \ttt{"cMersenneTwister"} & The RNG class to be used. It can be
-\ttt{"cMersenneTwister"}, \ttt{"cLCG32"}, or \ttt{"cAkaroaRNG"},
-or you can use your own RNG class (it must be subclassed from \cclass{cRNG}).\\\hline
-%%
-\fpar{seed-N-mt} =, \fpar{seed-N-lcg32} = & Specifies seeds for the
-cMersenneTwister and the cLCG32 RNGs (substitute N with the RNG number: 0, 1, 2...);
-default is auto seed selection. This obsoletes the \textit{random-seed=} and
-\textit{gen0-seed=}, \textit{gen1-seed=}, etc. entries which are no longer in use.\\\hline
-%%
-\fpar{total-stack-kb} = & Specifies the total stack size (sum of all coroutine stacks)
-in kilobytes. You need to increase this value if you get the
-``Cannot allocate coroutine stack...'' error.\\\hline
-%%
-\fpar{debug-on-errors} = false & When set to \ttt{true}, runtime errors will
-cause the simulation program to break into the C++ debugger (if the simulation
-is running under one, or just-in-time debugging is activated).
-Once in the debugger, you can view the stack trace or examine variables. \\\hline
-%%
-\fpar{load-libs} = & {\raggedright List of shared libraries (separated by
-spaces) to load in the initialization phase. {\opp} appends a platform-specific
-extension to the library name: \ttt{.dll} on Windows and \ttt{.so} on Unix systems.
-This feature can be used to dynamically load Envir extensions (RNGs, output vector
-managers, etc.) or simple modules. Example:
-
-\fpar{load-libs} = \ttt{"../lib/rng2 ../lib/ospfrouting"}}\\\hline
-%%
-\fpar{perform-gc} = false & {\raggedright If \ttt{true}, the simulation kernel
-will \ttt{delete} on network cleanup the simulation objects not deleted
-by simple module destructors. Not recommended because it may cause crashes
-under certain scenarios. See \ref{sec:garbage-collection}. {\new}}\\\hline
-%%
-\fpar{print-undisposed} = true & {\raggedright When perform-gc is \ttt{false}
-(default setting), it selects whether simulation objects not deleted by
-simple module destructors should be reported by the simulation kernel. {\new}}\\\hline
-%%
-\fpar{output-scalar-precision} = \ttt{12} & {\raggedright Adjusts the number
-of significant digits recorded into the output scalar file.
-See \ref{sec:outputfile-precision} for a discussion. {\new}}\\\hline
-%%
-\fpar{output-vector-precision} = \ttt{12} & {\raggedright Adjusts the number
-of significant digits recorded into the output vector file.
-See \ref{sec:outputfile-precision} for a discussion. {\new}}\\\hline
-%%
-\fpar{fname-append-host} = false & {\raggedright Turning it on will cause the
-host name and process Id to be appended to the names of output files
-(e.g. \ttt{omnetpp.vec}, \ttt{omnetpp.sca}). This is especially useful
-for parallel distributed simulation (chapter \ref{cha:parallel-execution}).}\\\hline
-%%
-\fpar{parallel-simulation} = false & {\raggedright Enables parallel distributed
-simulation (see chapter \ref{cha:parallel-execution}).}\\\hline
-%%
-\mbox{\fpar{scheduler-class} =} \linebreak
-\cclass{cSequentialScheduler}
-&
-{\raggedright Part of the Envir\index{Envir} plugin mechanism:
-selects the scheduler class. This plugin interface allows for implementing
-real-time, hardware-in-the-loop, distributed and distributed parallel simulation.
-The class has to implement the \cclass{cScheduler} interface
-defined in \ttt{envirext.h}.
-More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
-%%
-\mbox{\fpar{configuration-class} =} \linebreak
-\cclass{cInifile}
-&
-{\raggedright Part of the Envir\index{Envir} plugin mechanism: selects the
-class from which all configuration will be obtained. In other words, this
-option lets you replace \ttt{omnetpp.ini} with some other implementation,
-e.g. database input. The simulation program still has to bootstrap from
-an \ttt{omnetpp.ini} though (which contains the \ttt{configuration-class}
-setting). The class has to implement the \cclass{cConfiguration} interface
-defined in \ttt{envirext.h}.
-More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
-%%
-\mbox{\fpar{outputvectormanager-class} =} \linebreak
-\cclass{cFileOutputVectorManager}
-&
-{\raggedright Part of the Envir\index{Envir} plugin mechanism: selects
-the output vector manager class to be used to record data from output
-vectors\index{output!vector}.  The class has to implement the
-\cclass{cOutputVectorManager} interface defined in \ttt{envirext.h}.
-More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
-%%
-\mbox{\fpar{outputscalarmanager-class} =} \linebreak
-\cclass{cFileOutputScalarManager}
-&
-{\raggedright Part of the Envir plugin mechanism: selects the output
-scalar manager class to be used to record data passed to
-\fname{recordScalar()}. The class has to implement the
-\cclass{cOutputScalarManager} interface defined in \ttt{envirext.h}.
-More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
-%%
-\mbox{\fpar{snapshotmanager-class} =} \linebreak
-\cclass{cFileSnapshotManager}
-&
-{\raggedright Part of the Envir plugin mechanism: selects the class to
-handle streams to which \fname{snapshot()} writes its output.  The
-class has to implement the \cclass{cSnapshotManager} interface defined
-in \ttt{envirext.h}.
-More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
-
-\end{longtable}
-
-
-\section{Dynamic NED loading}
-\label{cha:run-sim:dynamic-ned}
-
-Prior to {\opp} 3.0, NED files had to be translated into C++ by the
-NED compiler, compiled and linked into the simulation program.
-From {\opp} 3.0 up, one can use dynamic NED loading, which means
-that a simulation program can load NED files at runtime when it starts
--- compiling NED files into the simulation program is no longer necessary.
-This results in more flexibility, and can also save model development time.
-
-The key is the \ttt{preload-ned-files=} configuration option in the
-\ttt{[General]} section of \fname{omnetpp.ini}. This option should
-list the names of the NED files to be loaded when the simulation program
-starts.
-
-Example:
-
-\begin{verbatim}
-[General]
-preload-ned-files = host.ned router.ned networks/testnetwork1.ned
-\end{verbatim}
-
-Wildcards can also be used:
-
-\begin{verbatim}
-[General]
-preload-ned-files = *.ned networks/*.ned
-\end{verbatim}
-
-It is also possible to use list files, with the \ttt{@} notation:
-
-\begin{verbatim}
-[General]
-preload-ned-files = *.ned @../nedfiles.lst
-\end{verbatim}
-
-where the \ttt{nedfiles.lst} file contains the list of NED files,
-one per line, like this:
-
-\begin{verbatim}
-transport/tcp/tcp.ned
-transport/udp/udp.ned
-network/ip/ip.ned
-\end{verbatim}
-
-The Unix \fprog{find} command is often a very convenient way
-to create list files (try \ttt{find . -name '*.ned' > listfile.lst}).
-
-Moreover, the list file can also contain wildcards, and references
-to other list files:
-
-\begin{verbatim}
-transport/tcp/*.ned
-transport/udp/*.ned
-@moreprotocols.lst
-\end{verbatim}
-
-Files given with relative paths are relative to the location of the
-list file (and not to the current working directory). That is,
-the \ttt{transport} directory and \ttt{moreprotocols.lst} in the example
-above are expected to be in the same directory as \ttt{nedfiles.lst},
-whatever the current working directory is.
-
 It is important to note, that the loaded NED files may contain
 any number of modules, channel and \textit{any number of networks} as well.
 It does not matter whether you use all or just some of them
@@ -460,7 +922,6 @@ for it has been loaded, network setup will be successful.
 
 \section{Setting module parameters in omnetpp.ini}
 \label{sec:ch-run-sim:parameter-settings}
-\index{module!parameters}
 
 Simulations get input via module parameters, which can be assigned a
 value in NED files or in \ttt{omnetpp.ini} -- in this order. Since parameters
@@ -485,46 +946,8 @@ net.server.transactionsPerSecond = 100
 \end{verbatim}
 
 
-\subsection{Run-specific and general sections}
-
-Values for module parameters can be placed into the \texttt{[Parameters]}
-or the \texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file.
-The run-specific settings take precedence over the overall settings.
-
-Though runs are identified by numbers, you can assign them short
-descriptive labels, which will get displayed e.g. in the Tkenv
-run selection dialog. Just place a \ttt{description="some text"}
-line under the \ttt{[Run x]} heading.
-
-An example \ttt{omnetpp.ini} (everything after \# is a comment):
-
-\begin{verbatim}
-[Parameters]
-net.numHosts = 15
-net.server.transactionsPerSecond = 100
-
-[Run 1]
-description="general settings"
-# uses settings from the [Parameters] section
-
-[Run 2]
-description="higher transaction rate"
-net.server.transactionsPerSecond = 150  # overrides the value in [Parameters]
-# net.numHosts comes from the [Parameters] section
-
-[Run 3]
-description="more hosts and higher transaction rate"
-# override both setting in [Parameters]
-net.numHosts = 20
-net.server.transactionsPerSecond = 150
-\end{verbatim}
-
-
-
-
 \subsection{Using wildcard patterns}
 \label{sec:ch-run-sim:wildcards}
-\index{ini file!wildcards}
 
 Models can have a large number of parameters to be configured, and it would
 be tedious to set them one-by-one in \ttt{omnetpp.ini}. {\opp} supports
@@ -613,26 +1036,6 @@ An example for numeric ranges:
 *.*.queue[12..].bufSize = 18
 *.*.queue[*].bufSize = 6  # this will only affect queues 0,1,2 and 6..11
 \end{verbatim}
-
-\subsubsection{Compatibility}
-
-In {\opp} versions prior to 3.0, the \ttt{**} wildcard did not exist, and \ttt{*}
-matched dot as well. This means that ini files written for earlier {\opp}
-versions may have a different meaning when used in {\opp} 3.0 -- so
-ini files have to be updated. In practice, every line which begins
-with \ttt{*.} should be changed to begin with \ttt{**.} -- that'll do most
-of the time, further tweaking is rarely necessary.
-
-If you still want to run the old \ttt{omnetpp.ini} (for example, to check the new one
-against it), you can add the line
-
-\begin{verbatim}
-#% old-wildcards
-\end{verbatim}
-
-at the top of (each) old ini file. This will switch back to the old
-behaviour. Since \ttt{\#\% old-wildcards} is only provided to ease transition
-from {\opp} 2.3 to 3.0, it will be removed in some future version.
 
 
 \subsection{Applying the defaults}
@@ -1178,36 +1581,7 @@ debugging\index{simulation!debugging}. Tkenv is recommended in the
 development stage of a simulation or for presentation and educational
 purposes, since it allows one to get a detailed picture of the state
 of simulation at any point of execution and to follow what happens
-inside the network. The most important feaures are:
-\begin{itemize}
-  \item{message flow animation}
-  \item{graphical display of statistics (histograms etc.) and output
-    vectors during simulation execution}
-  \item{separate window for each module's text output}
-  \item{scheduled messages can be watched in a window as simulation
-    progresses}
-  \item{event-by-event, normal and fast execution}
-  \item{labeled breakpoints}
-  \item{inspector windows to examine and alter objects and variables
-    in the model}
-  \item{simulation can be restarted}
-  \item{snapshots (detailed report about the model: objects, variables
-    etc.)}
-\end{itemize}
-
-
-Tkenv makes it possible to view simulation results (output vectors
-etc.) during execution. Results can be displayed as histograms and
-time-series diagrams. This can speed up the process of verifying the
-correct operation of the simulation program and provides a good
-environment for experimenting with the model during execution.  When
-used together with \fprog{gdb} or \fprog{xxgdb}, Tkenv can speed up
-debugging a lot.
-
-Tkenv is built with Tcl/Tk, and it work on all platforms where
-Tcl/Tk has been ported to: Unix/X, Windows, Macintosh.
-You can get more information about Tcl/Tk on the Web pages listed
-in the Reference.
+inside the network.
 
 \subsection{Command-line switches}
 
@@ -1245,176 +1619,6 @@ switches\index{command line switches}:
   ini file entry.
 
 \end{longtable}
-
-\subsection{Tkenv ini file settings}
-\label{sec:ch-run-sim:tkenv-section}
-
-Tkenv accepts the following settings in the \ttt{[Tkenv]} section of the ini file.
-
-\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
-\hline
-\tabheadcol
-\tbf{Entry and default value} & \tbf{Description}\\\hline
-\multicolumn{2}{|c|}{\tbf{[Tkenv]}}\\\hline
-%%
-\fpar{extra-stack-kb} = 48 & Specifies the extra amount of stack
-(in kilobytes) that is reserved for each \textit{\fname{activity()}}
-simple module when the simulation is run under Tkenv. This value is
-significantly higher than the similar one for Cmdenv -- handling
-GUI events requires a large amount of stack space.\\\hline
-%%
-\fpar{default-run} = 1 & Specifies which run Tkenv should set up
-automatically after startup. If there's no default-run= entry or the
-value is 0, Tkenv will ask which run to set up. \\\hline
-%%
-\end{longtable}
-
-The following configuration entries are of marginal usefulness,
-because corresponding settings are also accessible in the
-Simulation options dialog in the Tkenv GUI, and the GUI settings
-take precedence. Tkenv stores the settings in the
-\ttt{.tkenvrc} file in the current directory -- the ini file
-settings are only used if there is no \ttt{.tkenvrc} file.
-
-\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
-\hline
-\tabheadcol
-\tbf{Entry and default value} & \tbf{Description}\\\hline
-\multicolumn{2}{|c|}{\tbf{[Tkenv]}}\\\hline
-%%
-\fpar{use-mainwindow} = yes & Enables/disables writing \textit{ev} output to the Tkenv main window. \\\hline
-%%
-\fpar{print-banners} = yes & Enables/disables printing banners for
-each event.\\\hline
-%%
-\fpar{breakpoints-enabled} = yes & Specifies whether the simulation
-should be stopped at each \fname{breakpoint()} call in the
-simple modules. \\\hline
-%%
-\fpar{update-freq-fast} = 10 & Number of events executed between two
-display updates when in \textit{Fast} execution mode. \\\hline
-%%
-\fpar{update-freq-express} = 500 & Number of events executed between
-two display updates when in \textit{Express} execution mode. \\\hline
-%%
-\fpar{animation-delay} = 0.3s & Delay between steps when you slow-execute the simulation. \\\hline
-%%
-\fpar{animation-enabled} = yes & Enables/disables message flow animation. \\\hline
-%%
-\fpar{animation-msgnames} = yes & Enables/disables displaying message names during message flow
-animation. \\\hline
-%%
-\fpar{animation-msgcolors} = yes & Enables/disables using different colors
-for each message kind during message flow animation. \\\hline
-%%
-\fpar{animation-speed} = 1.0 & Specifies the speed of message flow animation. \\\hline
-%%
-\fpar{methodcalls-delay} = & Sets delay after method call animation. \\\hline
-%%
-\fpar{show-layouting} = true & Show layouting process of network graphics. \\\hline
-%%
-\end{longtable}
-
-
-\subsection{Using the graphical environment}
-
-\subsubsection{Simulation running modes in Tkenv}
-
-
-Tkenv has the following modes for running the simulation :
-
-\begin{itemize}
-   \item{Step}
-   \item{Run}
-   \item{Fast run}
-   \item{Express run}
-\end{itemize}
-
-
-The running modes have their corresponding buttons on Tkenv's
-toolbar.
-
-
-In \tbf{Step} mode, you can execute the simulation event-by-event.
-
-In \tbf{Run} mode, the simulation runs with all tracing aids on.
-Message animation is active and inspector windows are updated
-after each event. Output messages are displayed in the main window
-and module output windows. You can stop the simulation with the
-Stop button on the toolbar. You can fully interact with the user
-interface while the simulation is running: you can open inspectors
-etc.
-
-In \tbf{Fast} mode, animation is turned off. The inspectors and
-the message output windows are updated after each 10 events (the
-actual number can be set in Options{\textbar}Simulation options and
-also in the ini file). Fast mode is several times faster than
-the Run mode; the speedup can get close to 10 (or the configured
-event count).
-
-In \tbf{Express} mode, the simulation runs at about the same speed
-as with Cmdenv, all tracing disabled. Module output is not recorded
-in the output windows any more. You can interact with the simulation
-only once in a while (1000 events is the default as I recall),
-thus the run-time overhead of the user interface is minimal.
-You have to explicitly push the Update inspectors button if you
-want an update.
-
-Tkenv has a status bar which is regularly updated while the simulation
-is running. The gauges displayed are similar to those in Cmdenv,
-described in section \ref{sec:ch-run-sim:interpreting-cmdenv-output}.
-
-
-\subsubsection{Inspectors}
-
-
-In Tkenv, objects can be viewed through inspectors. To start, choose
-Inspect{\textbar}Network from the menu. Usage should be obvious; just
-use double-clicks and popup menus that are brought up by
-right-clicking. In Step, Run and Fast Run modes, inspectors are
-updated automatically as the simulation progresses. To make ordinary
-variables (int, double, char etc.) appear in Tkenv, use the
-\fname{WATCH()} macro in the C++ code.
-
-Tkenv inspectors also display the object pointer, and can also copy
-the pointer value to the clipboard. This can be invaluable for debugging:
-when the simulation is running under a debugger like gdb or the MSVC IDE,
-you can paste the object pointer into the debugger and have closer look
-at the data structures.
-
-
-\subsubsection{Configuring Tkenv}
-
-
-In case of nonstandard installation, it may be necessary to set the
-\fvar{OMNETPP\_TKENV\_DIR} environment variable so that Tkenv can find
-its parts written in Tcl script.
-
-The default path from where the icons are loaded can be changed with
-the \fvar{OMNETPP\_BITMAP\_PATH} variable, which is a
-semicolon-separated list of directories and defaults to
-\ttt{\textit{omnetpp-dir}/bitmaps;./bitmaps}. (See section
-\ref{sec:ch-graphics:icon library} as well).
-
-%FIXME TBD: section about Tkenv plugins, see ChangeLog 2003-11-07
-
-
-\subsubsection{Embedding Tcl code into the executable}
-
-A significant part of Tkenv is written in Tcl, in several
-\texttt{.tcl} script files. The default location of the scripts is
-passed compile-time to \texttt{tkapp.cc}, and it can be overridden at
-run-time by the \fvar{OMNETPP\_TKENV\_DIR} environment variable. The
-existence of a separate script library can be inconvenient if you want
-to carry standalone simulation executables to different machines. To
-solve the problem, there is a possibility to compile the script parts
-into Tkenv.
-
-The details: the \fprog{tcl2c} program (its C source is there in the
-Tkenv directory) is used to translate the \texttt{.tcl} files into C
-code (\texttt{tclcode.cc}), which gets included into
-\texttt{tkapp.cc}. This possibility is built into the makefiles
-and can be optionally enabled.
 
 \subsection{In Memoriam\dots }
 
@@ -1997,34 +2201,6 @@ A proven commercial tool \textit{Rational Purify}. It has
 a good reputation and proved its usefulness many times.
 
 
-
-% \subsubsection{Poor man's memory leak debugger}
-%
-% However, if you don't have such tools, you can use the basic
-% heap debugging code in Cmdenv. It is disabled by default;
-% to turn it on, you have to uncomment the \ttt{\#defines}
-% in \ttt{src/envir/cmdenv/heap.cc}:
-%
-% \begin{longtable}{l@{\qquad}p{10cm}}
-% \fmac{HEAPCHECK} & checks heap on new/delete\\
-% \fmac{COUNTBLOCKS} & counts blocks on heap and tells it if none left\\
-% \fmac{ALLOCTABLE} & remembers pointers and reports heap contents if only LASTN
-% blocks remained\\
-% \fmac{DISPLAYALL} & reports every new/delete\\
-% \fmac{DISPSTRAYS} & reports deleting of pointers that were not registered
-% by operator new or that were deleted since then\\
-% \fmac{BKPT} &  calls a function at a specified new/delete; you can set a
-% breakpoint to that function\\
-% \end{longtable}
-%
-%
-% If \fmac{COUNTBLOCKS} is turned on, you should see the
-% \texttt{[heap.cc-DEBUG:ALL BLOCKS FREED OK]} message at the end of the
-% simulation. If you do not see it, it means that some blocks have not
-% been freed up properly, that is, your simulation program is likely to
-% have memory leaks\index{memory leaks}.
-
-
 \subsection{Simulation executes slowly}
 
 What can you do if the simulation executes much slower than you expect?
@@ -2065,107 +2241,6 @@ than one would expect.
 %  \item{Store the module parameters in local variables to avoid
 %    calling \cclass{cPar} member functions every time.}
 %\end{itemize}
-
-
-%%
-%% Following section is very obsolete, removed:
-%%
-%
-% \section{Execution speed}
-%
-% If your simulation program is tested and runs OK, you'll probably want
-% to run it as fast as possible. Here's a table that could help where to
-% begin optimizing\index{simulation!optimizing for speed}.
-%
-%
-% The measurements were made on one version of the FDDI model (you can
-% find it in the samples directory); we simulated 10 milliseconds.  We
-% used Cmdenv. The machine was a 100Mhz Intel Pentium with 32MB RAM. The
-% simulation program was compiled with Borland C++ 3.1 (no particular
-% optimization) and run on DOS 6.22. Disk caching was installed
-% (SmartDrive read/write caching, 8MB cache).
-%
-% \begin{longtable}{|p{3cm}|p{2cm}|p{8cm}|}
-% \hline
-% %% ROW 1
-% \tabheadcol
-% \tbf{Settings} & \tbf{Execution time} & \tbf{Details}\\\hline
-% %%
-% {\raggedright all screen output on;\\
-%   full heapcheck}
-% &
-% 7 min 50 sec
-% &
-% {\raggedright Setting in \texttt{omnetpp.ini}:\\
-% \texttt{verbose-simulation = yes}\\
-% \texttt{module-messages = yes}\\
-% The \ttt{\#defines} in \ttt{envir/cmdenv/heap.cc} were all enabled. This means
-% full heapcheck with each allocation, tracking of all allocated
-% blocks etc.}\\\hline
-% %%
-% {\raggedright no screen output at all;\\
-%   full heapcheck}
-% &
-% 5 min 50 sec
-% &
-% {\raggedright All screen output were \#ifdef'ed out from source; also, the \texttt{omnetpp.ini}
-% contained the\\
-% \texttt{verbose-simulation = no}\\
-% line. The heapcheck defines were turned on.}\\\hline
-% %%
-% {\raggedright all screen output on;\\
-%   no heapcheck}
-% &
-% 2 min
-% &
-% We turned off heapcheck (we commented out the defines in heap.cc)
-% and turned back on the screen output. We used the same \texttt{omnetpp.ini}:
-% setting as with first case.\\\hline
-% %%
-% {\raggedright screen output redirected to file;\\
-%   no heapcheck}
-% &
-% 15.5 sec
-% &
-% {\raggedright Same as previous configuration, except that we run the program
-% with\\
-% \texttt{fddi > output.txt}} \\\hline
-% %%
-% {\raggedright screen output redirected to NUL;\\
-%   no heapcheck}
-% &
-% 13 sec
-% &
-% {\raggedright Same as previous configuration, except that we run the program
-% with\\
-% \texttt{fddi > NUL}}\\\hline
-% %%
-% {\raggedright screen output turned off from ini file;\\
-%   no heapcheck}
-% &
-% 7.5 sec
-% &
-% {\raggedright We did not only redirect but also disabled screen output. Setting
-% in \texttt{omnetpp.ini}:\\
-% \texttt{verbose-simulation = no}\\
-% \texttt{module-messages = no}}\\\hline
-% %%
-% {\raggedright no screen output generation;\\
-%   no heapcheck}
-% &
-% 4.5 sec
-% &
-% We \#ifdef'ed out all printouts from the simple module sources
-% and also turned off any messages from \texttt{omnetpp.ini}.\\\hline
-% \end{longtable}
-%
-%
-%
-% The moral is that heap checks\index{head checks} and screen output
-% greatly influences speed, so once you do not need them (debugging is
-% over), throw them out. You also gain a lot by putting \texttt{\#ifdef}
-% lines around your debugging code. And of course, program with care.
-%
 
 %%% Local Variables:
 %%% mode: latex
