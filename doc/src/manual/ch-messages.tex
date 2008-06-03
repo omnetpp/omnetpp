@@ -352,7 +352,7 @@ error occurs.
 The \fname{encapsulatedMsg()} function returns a pointer to the encapsulated
 message, or \ttt{NULL} if no message was encapsulated.
 
-\subsubsection{Reference counting{\new}}
+\subsubsection{Reference counting}
 
 Since the 3.2 release, {\opp} implements reference counting of
 encapsulated messages, meaning that if you \fname{dup()} a message
@@ -552,17 +552,6 @@ In {\opp}, however, there's nothing to worry about: you can
 customize the generated class to any extent you like.
 Even if you decide to heavily customize the generated class,
 message definitions still save you a great deal of manual work.
-
-The message subclassing feature in {\opp} is still somewhat experimental,
-meaning that:
-
-\begin{itemize}
-  \item The message description syntax and features may slightly change
-    in the future, based on feedback from the community;
-  \item The compiler that translates message descriptions into C++ is
-    a perl script \fprog{opp\_msgc}. This is a temporary solution until
-    the C++-based \fprog{nedtool} is finished.
-\end{itemize}
 
 The subclassing approach for adding message parameters was originally
 suggested by Nimrod Mesika.

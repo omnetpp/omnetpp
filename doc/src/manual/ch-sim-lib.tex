@@ -1945,7 +1945,7 @@ void Sink::handleMessage(cMessage *msg)
 }
 \end{verbatim}
 
-There is also a \fname{recordWithTimestamp()} method{\new}, to make it
+There is also a \fname{recordWithTimestamp()} method, to make it
 possible to record values into output vectors with a timestamp other than
 \fname{simTime()}. Increasing timestamp order is still enforced though.
 
@@ -2043,7 +2043,7 @@ The format and processing of output vector files is described in section
 \ref{sec:ch-ana-sim:output-scalars}.
 
 
-\subsection{Precision{\new}}
+\subsection{Precision}
 \label{sec:outputfile-precision}
 
 Output scalar and output vector files are text files, and floating point
@@ -2163,7 +2163,7 @@ and their values there. Tkenv also lets you change the value of a
 watched variable.
 
 The \fmac{WATCH()} macro can be used with any type that has a
-stream output operator (\ttt{operator<<}) defined{\new}. By default,
+stream output operator (\ttt{operator<<}) defined. By default,
 this includes all primitive types and \ttt{std::string}, but since
 you can write \ttt{operator<<} for your classes/structs and basically
 any type, \fmac{WATCH()} can be used with anything. The only limitation
@@ -2187,7 +2187,7 @@ WATCH(currentClientInfo);
 \end{verbatim}
 
 
-\subsection{Read-write watches{\new}}
+\subsection{Read-write watches}
 
 Watches for primitive types and \ttt{std::string} allow for changing
 the value from the GUI as well, but for other types you need to explicitly
@@ -2212,7 +2212,7 @@ WATCH_RW(currentClientInfo);
 \end{verbatim}
 
 
-\subsection{Structured watches{\new}}
+\subsection{Structured watches}
 
 \ttt{WATCH()} and \ttt{WATCH\_RW()} are basic watches: they allow one
 line of (unstructured) text to be displayed. However, if you have a
@@ -2246,7 +2246,7 @@ watchedPtr = NULL;  // set to NULL when object gets deleted
 \end{verbatim}
 
 
-\subsection{STL watches{\new}}
+\subsection{STL watches}
 
 The standard C++ container classes (\ttt{vector}, \ttt{map}, \ttt{set}, etc)
 also have structured watches, available via the following macros:
