@@ -458,13 +458,13 @@ Colorization works with both submodule and message icons.
 
 \subsection{The image path}
 
-In the current {\opp} version, module icons are GIF files. The icons shipped
-with {\opp} are in the \ttt{images/} subdirectory. Both the GNED editor
+In the current {\opp} version, module icons are PNG or GIF files. The icons shipped
+with {\opp} are in the \ttt{images/} subdirectory. Both the graphical NED editor
 and Tkenv need the exact location of this directory to load the icons.
 
 Icons are loaded from all directories in the \textit{image path},
 a semicolon-separated list of directories.
-The default image path is compiled into GNED and Tkenv with the value
+The default image path is compiled into Tkenv with the value
 \ttt{"\textit{omnetpp-dir}/images;./images;./bitmaps"} -- which will work fine
 as long as you don't move the directory, and you'll also be able to
 load more icons from the \ttt{images/} subdirectory of the current
@@ -579,88 +579,6 @@ number of iterations,random number seed) can be specified via the
 \textit{<edgelen>}=40,\textit{<maxiter>}=500,\textit{<rng-seed>}"}.
 The \ttt{"l="} tag is somewhat experimental and its arguments
 may change in further releases.
-
-
-\section{GNED -- Graphical NED Editor}
-
-\index{ned!graphical interface}
-
-The GNED editor allows you to design compound modules graphically.
-GNED works directly with NED files -- it doesn't have any internal file
-format. You can load any of your existing NED files, edit the compound
-modules in it graphically and then save the file back. Other components
-in the NED file (simple modules, channels, networks etc.) will
-survive the operation. GNED puts all graphics-related data into
-display strings.
-
-GNED works by parsing your NED file into an internal data structure,
-and regenerating the NED text when you save the file. One consequence
-of this is that indentation will be ``canonized''.
-Comments in the original NED are preserved -- the parser associates
-them with the NED elements they belong to, so comments won't
-be messed up even if you edit the graphical representation extensively
-by removing/adding submodules, gates, parameters, connections, etc.
-
-GNED is a fully two-way visual tool. While editing the graphics,
-you can always switch to NED source view, edit in there and switch
-back to graphics. Your changes in the NED source will be immediately
-backparsed to graphics; in fact, the graphics will be totally
-reconstructed from the NED source and the display strings in
-it.
-
-
-\subsection{Keyboard and mouse bindings}
-
-\index{gned!mouse bindings}
-
-In graphics view, there are two editing modes: draw and select/mode.
-The mouse bindings are the following:
-
-
-\begin{longtable}{|p{7cm}|p{7cm}|}
-\hline
-% ROW 1
-\tabheadcol
-\tbf{Mouse} & \tbf{Effect}\\\hline
-\multicolumn{2}{|c|}{\tbf{In \textit{draw} mode:}} \\
-\hline
-% ROW 3
-Drag out a rectangle in empty area: &  create new submodule \\\hline
-% ROW 4
-Drag from one submodule to another: &  create new connection \\\hline
-% ROW 5
-Click in empty area: & switch to select/move mode \\\hline
-\multicolumn{2}{|c|}{\tbf{In \textit{select/move} mode:}} \\\hline
-% ROW 7
-Click submodule/connection: & select it\\\hline
-% ROW 8
-Ctrl-click submodule/conn.: & add to selection \\\hline
-% ROW 9
-Click in empty area: & clear selection\\\hline
-% ROW 10
-Drag a selected object: & move selected objects \\\hline
-% ROW 11
-Drag submodule or connection: & move it \\\hline
-% ROW 12
-Drag either end of connection: & move that end \\\hline
-% ROW 13
-Drag corner of (sub)module: & resize module\\\hline
-% ROW 14
-Drag starting in empty area: & select enclosed submodules/connections \\\hline
-% ROW 15
-\textit{Del} key & delete selected objects \\\hline
-\multicolumn{2}{|c|}{\tbf{Both editing modes:}} \\\hline
-% ROW 17
-Right-click on module/submodule/con\-nec\-tion: & popup menu \\\hline
-% ROW 18
-Double-click on submodule: & go into submodule \\\hline
-% ROW 19
-Click name label & edit name \\\hline
-% ROW 20
-Drag\&drop module type from the tree view to the canvas &
-create a submodule of that type \\\hline
-\end{longtable}
-
 
 
 \section{Enhancing animation}
