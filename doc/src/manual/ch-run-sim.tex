@@ -16,40 +16,35 @@ The following sections explain \fname{omnetpp.ini}.
 \subsection{An example}
 
 For a start, let us see a simple \fname{omnetpp.ini} file which
-can be used to run the Fifo1 sample simulation under Cmdenv.
+can be used to run the Fifo example simulation.
 
 \begin{verbatim}
 [General]
-network = fifonet1
-sim-time-limit = 500000s
-output-vector-file = fifo1.vec
+network = FifoNet
+sim-time-limit = 100h
+cpu-time-limit = 300s
+#debug-on-errors = true
+#record-eventlog = true
 
-[Cmdenv]
-express-mode = yes
+[Config Fifo1]
+description = "low job arrival rate"
+**.gen.sendIaTime = exponential(0.2s)
+**.gen.msgLength = 100b
+**.fifo.bitsPerSec = 1000bps
 
-[Parameters]
-# generate a large number of jobs of length 5..10 according to Poisson
-fifonet1.gen.num_messages = 10000000
-fifonet1.gen.ia_time = exponential(1)
-fifonet1.gen.msg_length = intuniform(5,10)
-# processing speeed of queue server
-fifonet1.fifo.bits_per_sec = 10
+[Config Fifo2]
+description = "high job arrival rate"
+**.gen.sendIaTime = exponential(0.01s)
+**.gen.msgLength = 10b
+**.fifo.bitsPerSec = 1000bps
 \end{verbatim}
 
-The file is grouped into \textit{sections} named \ttt{[General]}, \ttt{[Cmdenv]}
-and \ttt{[Parameters]}, each one containing several \textit{entries}.
-The \ttt{[General]} section applies to both Tkenv and Cmdenv, and the entries
-in this case specify that the network named \fname{fifonet1} should be simulated and run
-for 500,000 simulated seconds, and vector results should be written into the
-\fname{fifo1.vec} file. The entry in the \ttt{[Cmdenv]} section tells
-Cmdenv to run the simulation at full speed and print periodic updates
-about the progress of the simulation. The \ttt{[Parameters]} section assigns
-values to parameters that did not get a value (or got \fname{input} value)
-inside the NED files.
+The file is grouped into \textit{sections} named \ttt{[General]}, \ttt{[Config Fifo1]}
+and \ttt{[Config Fifo2]}, each one containing several \textit{entries}.
 
-Lines that start with ``\#'' or ``;'' are comments.
+Lines that start with ``\#'' are comments.
 
-When you build the Fifo1 sample with Cmdenv and you run it by typing \fname{fifo1}
+When you build the Fifo example with Cmdenv and you run it by typing \fname{fifo1}
 (or on Unix, \fname{./fifo1}) on the command prompt, you should see
 something like this.
 
@@ -61,27 +56,18 @@ Setting up Cmdenv (command-line user interface)...
 Preparing for Run #1...
 Setting up network `fifonet1'...
 Running simulation...
-** Event #0        T=0.0000000  ( 0.00s)   Elapsed: 0m  0s   ev/sec=0
-** Event #100000   T=25321.99 ( 7h  2m)    Elapsed: 0m  1s   ev/sec=0
-** Event #200000   T=50275.694 (13h 57m)   Elapsed: 0m  3s   ev/sec=60168.5
-** Event #300000   T=75217.597 (20h 53m)   Elapsed: 0m  5s   ev/sec=59808.6
-** Event #400000   T=100125.76 ( 1d  3h)   Elapsed: 0m  6s   ev/sec=59772.9
-** Event #500000   T=125239.67 ( 1d 10h)   Elapsed: 0m  8s   ev/sec=60168.5
+** Event #0        T=0.0000000   Elapsed: 0m  0s
+** Event #100000   T=25321.99    Elapsed: 0m  1s
+** Event #200000   T=50275.694   Elapsed: 0m  3s
+** Event #300000   T=75217.597   Elapsed: 0m  5s
+** Event #400000   T=100125.76   Elapsed: 0m  6s
+** Event #500000   T=125239.67   Elapsed: 0m  8s
 ...
-** Event #1700000  T=424529.21 ( 4d 21h)   Elapsed: 0m 28s   ev/sec=58754.4
-** Event #1800000  T=449573.47 ( 5d  4h)   Elapsed: 0m 30s   ev/sec=59066.7
-** Event #1900000  T=474429.06 ( 5d 11h)   Elapsed: 0m 32s   ev/sec=59453
-** Event #2000000  T=499417.66 ( 5d 18h)   Elapsed: 0m 34s   ev/sec=58719.9
+** Event #1700000  T=424529.21   Elapsed: 0m 28s
+** Event #1800000  T=449573.47   Elapsed: 0m 30s
+** Event #1900000  T=474429.06   Elapsed: 0m 32s
+** Event #2000000  T=499417.66   Elapsed: 0m 34s
 <!> Simulation time limit reached -- simulation stopped.
-
-Calling finish() at end of Run #1...
-*** Module: fifonet1.sink***
-Total jobs processed: 9818
-Avg queueing time:    1.8523
-Max queueing time:    10.5473
-Standard deviation:   1.3826
-
-End run of OMNeT++
 \end{verbatim}
 
 As Cmdenv runs the simulation, periodically it prints the sequence number
@@ -110,16 +96,12 @@ The order of the sections doesn't matter. Also, if you have two sections
 with the same name (e.g. \ttt{[General]} occurs twice in the file),
 they will be merged.
 
-Lines that start with "\#" or ";" are comments, and will be ignored during
-processing.
+Lines that start with "\#" are comments, and will be ignored during processing.
 
 Long lines can be broken up using the backslash notation: if the last character
 of a line is "\textbackslash", it will be merged with the next line.
 
-The size of the ini file (the number of sections and entries) is not limited.
-Currently there is a 1024-character limit on the line length,
-which \textit{cannot} be increased by breaking up the line using backslashes.
-This limit might be lifted in future releases.
+There is no limit on the file size or the maximum line length.
 
 Example:
 
@@ -153,18 +135,17 @@ You can also include files from other directories. If the included ini file
 further includes others, their path names will be understood as relative
 to the location of the file which contains the reference,
 rather than relative to the current working directory of the simulation.
+
 This rule also applies to other file names occurring in ini files
-(such as the \ttt{preload-ned-files=}, \ttt{load-libs=},
-\ttt{bitmap-path=}, \ttt{output-vector-file=}, \ttt{output-scalar-file=} etc
-entries, and \ttt{xmldoc()} module parameter values.)
+(such as the \ttt{load-libs=}, \ttt{output-vector-file=}, \ttt{output-scalar-file=}
+etc. options, and \ttt{xmldoc()} module parameter values.)
 
 
 \section{Sections}
 \subsection{Overview}
 
 Named configurations are sections of the form \ttt{[Config <configname>]}, where
-<configname> is by convention a camel-case
-string that starts with a capital letter:
+\textit{<configname>} is by convention a camel-case string that starts with a capital letter:
 \ttt{Config1}, \ttt{WirelessPing}, \ttt{OverloadedFifo}, etc. For example,
 \ttt{omnetpp.ini} for an Aloha simulation might have the following skeleton:
 
@@ -272,11 +253,12 @@ OMNeT++ 4.0 largely automates this process, and eliminates the need for
 writing batch execution scripts. It is the ini file where the user can
 specify iterations over various parameter settings.
 Here's an example:
-\ttt{\ \ [Config AlohaScenario]}
-\ttt{\ \ *.numHosts = \$\{1, 2, 5, 10..50 step 10\}}
-\ttt{\ \ **.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )}
 
-
+\begin{Verbatim}[commandchars=\\\{\}]
+[Config AlohaScenario]
+*.numHosts = \$\{1, 2, 5, 10..50 step 10\}
+**.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )
+\end{Verbatim}
 
 
 This scenario expands to 8*3 = 24 simulation runs, where the number of
@@ -285,20 +267,18 @@ each host count three simulation runs will be done, with the generation
 interval being exponential(0.2), exponential(0.4), and
 exponential(0.6).
 
-How does it get run? First of all, Cmdenv with the
-'-n' option will tell you how many
-simulation runs a given section expands to. (You'll of
-course use Cmdenv for batch runs, not Tkenv.)
-\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario {--}n}
+How does it get run? First of all, Cmdenv with the '-n' option will tell you how many
+simulation runs a given section expands to. (You'll of course use Cmdenv for batch runs,
+not Tkenv.)
 
+\begin{Verbatim}[commandchars=\\\{\}]
+\$ aloha -u Cmdenv -c AlohaScenario -n
 
-
-\ttt{\ \ OMNeT++/OMNEST Discrete Event Simulation}
-\ttt{\ \ ...}
-\ttt{\ \ Config: AlohaScenario}
-\ttt{\ \ Number of runs: 24}
-
-
+OMNeT++/OMNEST Discrete Event Simulation
+...
+Config: AlohaScenario
+Number of runs: 24
+\end{Verbatim}
 
 
 If you add the '-g' option, the
@@ -310,40 +290,43 @@ the innermost loop. The iteration variables are just named \$0 and \$1
 meaningful names to them. Please ignore the
 '\$repetition=0' part in the printout
 for now.
-\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -n -g}
-\ttt{\ \ OMNeT++/OMNEST Discrete Event Simulation}
-\ttt{\ \ ...}
-\ttt{\ \ Config: AlohaScenario}
-\ttt{\ \ Number of runs: 24}
-\ttt{\ \ Run 0: \$0=1, \$1=0.2, \$repetition=0}
-\ttt{\ \ Run 1: \$0=1, \$1=0.4, \$repetition=0}
-\ttt{\ \ Run 2: \$0=1, \$1=0.6, \$repetition=0}
-\ttt{\ \ Run 3: \$0=2, \$1=0.2, \$repetition=0}
-\ttt{\ \ Run 4: \$0=2, \$1=0.4, \$repetition=0}
-\ttt{\ \ Run 5: \$0=2, \$1=0.6, \$repetition=0}
-\ttt{\ \ Run 6: \$0=5, \$1=0.2, \$repetition=0}
-\ttt{\ \ Run 7: \$0=5, \$1=0.4, \$repetition=0}
-\ttt{\ \ ...}
-\ttt{\ \ Run 19: \$0=40, \$1=0.4, \$repetition=0}
-\ttt{\ \ Run 20: \$0=40, \$1=0.6, \$repetition=0}
-\ttt{\ \ Run 21: \$0=50, \$1=0.2, \$repetition=0}
-\ttt{\ \ Run 22: \$0=50, \$1=0.4, \$repetition=0}
-\ttt{\ \ Run 23: \$0=50, \$1=0.6, \$repetition=0}
 
 
+\begin{Verbatim}[commandchars=\\\{\}]
+\$ aloha -u Cmdenv -c AlohaScenario -n -g
+OMNeT++/OMNEST Discrete Event Simulation
+...
+Config: AlohaScenario
+Number of runs: 24
+Run 0: \$0=1, \$1=0.2, \$repetition=0
+Run 1: \$0=1, \$1=0.4, \$repetition=0
+Run 2: \$0=1, \$1=0.6, \$repetition=0
+Run 3: \$0=2, \$1=0.2, \$repetition=0
+Run 4: \$0=2, \$1=0.4, \$repetition=0
+Run 5: \$0=2, \$1=0.6, \$repetition=0
+Run 6: \$0=5, \$1=0.2, \$repetition=0
+Run 7: \$0=5, \$1=0.4, \$repetition=0
+...
+Run 19: \$0=40, \$1=0.4, \$repetition=0
+Run 20: \$0=40, \$1=0.6, \$repetition=0
+Run 21: \$0=50, \$1=0.2, \$repetition=0
+Run 22: \$0=50, \$1=0.4, \$repetition=0
+Run 23: \$0=50, \$1=0.6, \$repetition=0
+\end{Verbatim}
 
 
 Any of these runs can be executed by passing the '-r
 <runnumber>' option to Cmdenv.
 So, the task is now to run the simulation program 24 times, with
 '-r' running from 0 through 23:
-\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -r 0}
-\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -r 1}
-\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -r 2}
-\ttt{\ \ ...}
-\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario -r 23}
 
-
+\begin{Verbatim}[commandchars=\\\{\}]
+\$ aloha -u Cmdenv -c AlohaScenario -r 0
+\$ aloha -u Cmdenv -c AlohaScenario -r 1
+\$ aloha -u Cmdenv -c AlohaScenario -r 2
+...
+\$ aloha -u Cmdenv -c AlohaScenario -r 23
+\end{Verbatim}
 
 
 This batch can be executed either from the OMNeT++ IDE (where you are
@@ -353,19 +336,19 @@ batch execution tool supplied with OMNeT++.
 
 Actually, it is also possible to get Cmdenv execute all runs in one go,
 by simply omitting the '-r' option.
-\ttt{\ \ \% aloha -u Cmdenv -c AlohaScenario}
 
 
+\begin{Verbatim}[commandchars=\\\{\}]
+\$ aloha -u Cmdenv -c AlohaScenario
 
-\ttt{\ \ OMNeT++/OMNEST Discrete Event Simulation}
-\ttt{\ \ Preparing for running configuration AlohaScenario, run \#0...}
-\ttt{\ \ ...}
-\ttt{\ \ Preparing for running configuration AlohaScenario, run \#1...}
-\ttt{\ \ ...}
-\ttt{\ \ ...}
-\ttt{\ \ Preparing for running configuration AlohaScenario, run \#23...}
-
-
+OMNeT++/OMNEST Discrete Event Simulation
+Preparing for running configuration AlohaScenario, run \#0...
+...
+Preparing for running configuration AlohaScenario, run \#1...
+...
+...
+Preparing for running configuration AlohaScenario, run \#23...
+\end{Verbatim}
 
 
 However, this approach is not recommended, because it is more
@@ -374,39 +357,33 @@ any of the runs crashes, the whole batch is terminated -- which may
 not be what the user wants).
 
 Let us get back to the ini file. We had:
-\ttt{\ \ [Config AlohaScenario]}
-\ttt{\ \ *.numHosts = \$\{1, 2, 5, 10..50 step 10\}}
-\ttt{\ \ **.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )}
 
-
+\begin{Verbatim}[commandchars=\\\{\}]
+[Config AlohaScenario]
+*.numHosts = \$\{1, 2, 5, 10..50 step 10\}
+**.host[*].generationInterval = exponential( \$\{0.2, 0.4, 0.6\} )
+\end{Verbatim}
 
 
 The \$\{...\} syntax specifies an iteration. It is sort of a macro: at
 each run, the whole \$\{...\} string gets textually replaced with the
 current iteration value. The values to iterate over do not need to be
-numbers (unless you want to use the
-\textit{"a..b"} or
+numbers (unless you want to use the \textit{"a..b"} or
 \textit{"a..b step c"} syntax), and the
 substitution takes place even inside string constants. So, the
 following examples are all valid (note that textual substitution is
 used):
-\ttt{\ \ *.param = 1 + \$\{1e-6, 1/3, sin(0.5)\}}
-\ttt{\ \ \ \ \ \ ==> *.param = 1 + 1e-6}
-\ttt{\ \ \ \ \ \ \ \ \ \ *.param = 1 + 1/3}
-\ttt{\ \ \ \ \ \ \ \ \ \ *.param = 1 + sin(0.5)}
 
-
-
-\ttt{\ \ *.greeting = "We will simulate \$\{1,2,5\}
-host(s)."}
-\ttt{\ \ \ \ \ \ ==> *.greeting = "We will
-simulate 1 host(s)."}
-\ttt{\ \ \ \ \ \ \ \ \ \ *.greeting = "We will simulate 2
-host(s)."}
-\ttt{\ \ \ \ \ \ \ \ \ \ *.greeting = "We will simulate 5
-host(s)."}
-
-
+\begin{Verbatim}[commandchars=\\\{\}]
+*.param = 1 + \$\{1e-6, 1/3, sin(0.5)\}
+    ==> *.param = 1 + 1e-6
+        *.param = 1 + 1/3
+        *.param = 1 + sin(0.5)
+*.greeting = "We will simulate \$\{1,2,5\} host(s)."
+    ==> *.greeting = "We will simulate 1 host(s)."
+        *.greeting = "We will simulate 2 host(s)."
+        *.greeting = "We will simulate 5 host(s)."
+\end{Verbatim}
 
 
 To write a literal \$\{..\} inside a string constant, quote
@@ -419,17 +396,15 @@ You can assign names to iteration variables, which has the advantage
 that you'll see meaningful names instead of \$0 and
 \$1 in the Cmdenv output, and also lets you refer to the variables at
 more than one place in the ini file. The syntax is
-\$\{<varname>=<iteration>\},
-and variables can be referred to simply as
+\$\{<varname>=<iteration>\}, and variables can be referred to simply as
 \$\{<varname>\}:
-\ttt{\ \ [Config Aloha]}
-\ttt{\ \ *.numHosts = \$\{N=1, 2, 5, 10..50 step 10\}}
-\ttt{\ \ **.host[*].generationInterval = exponential( \$\{mean=0.2, 0.4,
-0.6\} )}
-\ttt{\ \ **.greeting = "There are \$\{N\} hosts"}
 
-
-
+\begin{Verbatim}[commandchars=\\\{\}]
+[Config Aloha]
+*.numHosts = \$\{N=1, 2, 5, 10..50 step 10\}
+**.host[*].generationInterval = exponential( \$\{mean=0.2, 0.4, 0.6\} )
+**.greeting = "There are \$\{N\} hosts"
+\end{Verbatim}
 
 The scope of the variable name is the section that defines it, plus
 sections based on that section (via extends=).
@@ -459,11 +434,12 @@ constraint expression. This expression is interpreted as a conditional
 loop, and it must evaluate to "true" for
 the variable combination to generate a run. The expression should be
 given with the constraint= configuration key. An example:
-\ttt{\ \ *.numNodes = \$\{n=10..100 step 10\}}
-\ttt{\ \ **.numNeighbors = \$\{m=2..10 step 2\}}
-\ttt{\ \ constraint = \$m <= sqrt(\$n)}
 
-
+\begin{Verbatim}[commandchars=\\\{\}]
+*.numNodes = \$\{n=10..100 step 10\}
+**.numNeighbors = \$\{m=2..10 step 2\}
+constraint = \$m <= sqrt(\$n)
+\end{Verbatim}
 
 
 The expression syntax supports most C language operators (including
@@ -471,10 +447,12 @@ boolean, conditional and binary shift operations) and most
 <math.h> functions; data types are boolean,
 double and string. The expression must evaluate to a boolean.
 
-\textbf{NOTE}: It is not supported to refer to other iteration variables
-in the definition of an iteration variable (i.e. you cannot write
-things like \$\{j=\$i..10\}), although it might get implemented in
-future OMNeT++ releases.
+\begin{note}
+    It is not supported to refer to other iteration variables
+    in the definition of an iteration variable (i.e. you cannot write
+    things like \$\{j=\$i..10\}), although it might get implemented in
+    future OMNeT++ releases.
+\end{note}
 
 \subsection{Repeating runs with different seeds}
 
@@ -483,10 +461,10 @@ parameters but different random number seeds. There are two
 configuration keys related to this: repeat= and seed-set=. The first
 one simple specifies how many times a run needs to be repeated. For
 example,
-\ttt{\ \ repeat = 10}
 
-
-
+\begin{Verbatim}[commandchars=\\\{\}]
+repeat = 10
+\end{Verbatim}
 
 causes every combination of iteration variables to be repeated 10 times,
 and the \$\{repetition\} predefined variable holds the loop counter.
@@ -503,9 +481,10 @@ automatic seeds generate random number sequences that are far apart in
 the RNG's cycle, so they will never overlap during
 simulations.
 
-\textbf{NOTE:} Mersenne Twister, the default RNG of OMNeT++ has a cycle
-length of 2\textsuperscript{19937}, which is more than enough for any
-conceivable purpose.
+\begin{note}
+Mersenne Twister, the default RNG of OMNeT++ has a cycle length of
+$2^19937$, which is more than enough for any conceivable purpose.
+\end{note}
 
 The seed-set= key tells the simulation kernel which seed set to use.
 It can be set to a concrete number (such as seed-set=0), but it
@@ -513,17 +492,17 @@ usually does not make sense as it would cause every simulation to run
 with exactly the same seeds. It is more practical to set it to either
 \$\{runnumber\} or to \$\{repetition\}. The default setting is
 \$\{runnumber\}:
-\ttt{\ \ seed-set = \$\{runnumber\} \ \ \# this is the default}
 
-
-
+\begin{Verbatim}[commandchars=\\\{\}]
+seed-set = \$\{runnumber\}   # this is the default
+\end{Verbatim}
 
 This makes every simulation run to execute with a unique seed set. The
 second option is:
-\ttt{\ \ seed-set = \$\{repetition\}}
 
-
-
+\begin{Verbatim}[commandchars=\\\{\}]
+seed-set = \$\{repetition\}
+\end{Verbatim}
 
 where all \$repetition=0 runs will use the same seeds (seed set 0), all
 \$repetition=1 runs use another seed set, \$repetition=2 a third seed
@@ -531,10 +510,10 @@ set, etc.
 
 To perform runs with manually selected seed sets, you can just define an
 iteration for the seed-set= key:
-\ttt{\ \ seed-set = \$\{5,6,8..11\}}
 
-
-
+\begin{Verbatim}[commandchars=\\\{\}]
+seed-set = \$\{5,6,8..11\}
+\end{Verbatim}
 
 In this case, the repeat= key should be left out, as seed-set= already
 defines an iteration and there's no need for an extra
@@ -543,13 +522,13 @@ loop.
 It is of course also possible to manually specify individual seeds for
 simulations. This is rarely necessary, but we can use it here to
 demonstrate another feature, parallel iterators:
-\ttt{\ \ repeat = 4}
-\ttt{\ \ seed-1-mt = \$\{53542, 45732, 47853, 33434 ! repetition\}}
-\ttt{\ \ seed-2-mt = \$\{75335, 35463, 24674, 56673 ! repetition\}}
-\ttt{\ \ seed-3-mt = \$\{34542, 67563, 96433, 23567 ! repetition\}}
 
-
-
+\begin{Verbatim}[commandchars=\\\{\}]
+repeat = 4
+seed-1-mt = \$\{53542, 45732, 47853, 33434 ! repetition\}
+seed-2-mt = \$\{75335, 35463, 24674, 56673 ! repetition\}
+seed-3-mt = \$\{34542, 67563, 96433, 23567 ! repetition\}
+\end{Verbatim}
 
 The meaning of the above is this: in the first repetition, the first
 column of seeds is chosen, for the second repetition, the second
@@ -558,15 +537,13 @@ column, etc. The "!" syntax chooses the
 (iteration count) of the iteration variable after the
 "!". Thus, the above example is equivalent
 to the following:
-\ttt{\ \ \# no repeat= !}
-\ttt{\ \ seed-1-mt = \$\{seed1 = 53542, 45732, 47853, 33434\}}
-\ttt{\ \ seed-2-mt = \$\{ \ \ \ \ \ \ \ 75335, 35463, 24674, 56673 !
-seed1\}}
-\ttt{\ \ seed-3-mt = \$\{ \ \ \ \ \ \ \ 34542, 67563, 96433, 23567 !
-seed1\}}
 
-
-
+\begin{Verbatim}[commandchars=\\\{\}]
+# no repeat= line!
+seed-1-mt = \$\{seed1 = 53542, 45732, 47853, 33434\}
+seed-2-mt = \$\{        75335, 35463, 24674, 56673 ! seed1\}
+seed-3-mt = \$\{        34542, 67563, 96433, 23567 ! seed1\}
+\end{Verbatim}
 
 That is, the iterators of seed-2-mt and seed-3-mt are advanced
 in lockstep with the seed1 iteration.
@@ -580,10 +557,9 @@ In OMNeT++ 3.x, the default result file names were ``omnetpp.vec'' and
 an output vector file created in one run would be overwritten in the
 next run. Thus, we have changed the default file names to make them
 differ for every run. The new defaults are:
-\ttt{\ \ output-vector-file =
-"\$\{configname\}-\$\{runnumber\}.vec"}
-\ttt{\ \ output-scalar-file =
-"\$\{configname\}-\$\{runnumber\}.sca"}
+
+\ttt{  output-vector-file = "\$\{configname\}-\$\{runnumber\}.vec"}
+\ttt{  output-scalar-file = "\$\{configname\}-\$\{runnumber\}.sca"}
 
 
 This generates file names like
@@ -618,8 +594,8 @@ This allows the simulator to catch mistyped config keys in ini files.
 The syntax for specifying the recording interval has also been extended
 (in a backward compatible way) to accept multiple intervals, separated
 by comma. An example:
-\ttt{\ \ **.fifo[2].queueLengthVector.enable-recording = false}
-\ttt{\ \ **.fifo[*].queueLengthVector.recording-interval = ..100, 300..500,
+\ttt{  **.fifo[2].queueLengthVector.enable-recording = false}
+\ttt{  **.fifo[*].queueLengthVector.recording-interval = ..100, 300..500,
 900..}
 
 
@@ -652,7 +628,7 @@ requested by the user, by configuring save-as-scalar=true for the
 parameters in question. The configuration key is a pattern that
 identifies the parameter, plus ".save-as-scalar". An example:
 
-\ttt{\ \ **.host[*].networkLoad.save-as-scalar = true}
+\ttt{  **.host[*].networkLoad.save-as-scalar = true}
 
 This looks simple enough. However, there are three pitfalls:
 non-numeric parameters, too many matching parameters, and
@@ -668,16 +644,16 @@ if the host[] module vector size is 1000 in the example below, then the
 same value (3) will be saved 1000 times into the scalar file, once for
 each host.
 
-\ttt{\ \ **.host[*].startTime = 3}
-\ttt{\ \ **.host[*].startTime.save-as-scalar = true \ \# saves "3" once for each host}
+\ttt{  **.host[*].startTime = 3}
+\ttt{  **.host[*].startTime.save-as-scalar = true  \# saves "3" once for each host}
 
 Third, recording a random-valued volatile parameter will just save a
 random number from that distribution. This is rarely what you need, and
 the simulation kernel will also issue a warning if this happens.
 
 \begin{verbatim}
-\ttt{\ \ **.interarrivalTime = exponential(1)}
-\ttt{\ \ **.interarrivalTime.save-as-scalar = true \ \# saves random values!}
+\ttt{  **.interarrivalTime = exponential(1)}
+\ttt{  **.interarrivalTime.save-as-scalar = true  \# saves random values!}
 \end{verbatim}
 
 
@@ -719,9 +695,9 @@ accordingly on the user interface.
 These labels can be explicitly specified in the ini file using the
 experiment=, measurement= and replication= config keys. If they are
 missing, the default is the following:
-\ttt{\ \ experiment = "\$\{configname\}"}
-\ttt{\ \ measurement = "\$\{iterationvars\}"}
-\ttt{\ \ replication = "\#\$\{repetition\},seed-set=<seedset>"}
+\ttt{  experiment = "\$\{configname\}"}
+\ttt{  measurement = "\$\{iterationvars\}"}
+\ttt{  replication = "\#\$\{repetition\},seed-set=<seedset>"}
 
 
 
