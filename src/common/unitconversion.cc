@@ -223,3 +223,23 @@ double UnitConversion::convertUnit(double d, const char *unit, const char *targe
     return factor * d;
 }
 
+const char *UnitConversion::longName(const char *unit)
+{
+    UnitDesc *unitDesc = lookupUnit(unit);
+    return unitDesc ? unitDesc->longName : NULL;
+}
+
+const char *UnitConversion::baseUnit(const char *unit)
+{
+    UnitDesc *unitDesc = lookupUnit(unit);
+    return unitDesc ? unitDesc->baseUnit: NULL;
+}
+
+std::vector<const char *> UnitConversion::allUnits()
+{
+    std::vector<const char *> result;
+    for (int i=0; unitTable[i].unit; i++)
+        result.push_back(unitTable[i].unit);
+    return result;
+}
+

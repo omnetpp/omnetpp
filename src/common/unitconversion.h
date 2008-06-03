@@ -17,6 +17,7 @@
 #ifndef _UNITCONVERSION_H_
 #define _UNITCONVERSION_H_
 
+#include <vector>
 #include "commondefs.h"
 #include "exception.h"
 
@@ -89,6 +90,23 @@ class COMMON_API UnitConversion
      * Throws an error if the conversion is not possible.
      */
     static double convertUnit(double d, const char *unit, const char *targetUnit);
+
+    /**
+     * Returns the long name for the given unit, or NULL if it is unrecognized.
+     * See allUnits().
+     */
+    static const char *longName(const char *unit);
+
+    /**
+     * Returns the base unit for the given unit, or NULL if the unit is unrecognized.
+     * See allUnits().
+     */
+    static const char *baseUnit(const char *unit);
+
+    /**
+     * Produces the list of all recognized units, with their short names.
+     */
+    static std::vector<const char *> allUnits();
 };
 
 NAMESPACE_END
