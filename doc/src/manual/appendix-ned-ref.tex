@@ -484,71 +484,36 @@ If the expression matches several elements, the first element
 unlike XPath, which selects all matching nodes.)
 
 The expression syntax is the following:
-
 \begin{itemize}
   \item An expression consists of \textit{path components} (or "steps")
         separated by "\ttt{/}" or "\ttt{//}".
   \item A path component can be an element tag name, "\ttt{*}", "\ttt{.}"
         or "\ttt{..}".
-  \item "\ttt{/}" means child element (just as e.g. in \ttt{/usr/bin/gcc});
+  \item "\ttt{/}" means child element (just as in \ttt{/usr/bin/gcc});
         "\ttt{//}" means an element any levels under the current element.
-  \item "\ttt{.}", "\ttt{..}" and "\ttt{*}" mean current element,
-        parent element, and an element with any tag name, respectively.
+  \item "\ttt{.}", "\ttt{..}" and "\ttt{*}" mean the current element,
+        the parent element, and an element with any tag name, respectively.
   \item Element tag names and "\ttt{*}" can have an optional predicate
         in the form "\ttt{[position]}" or "\ttt{[@attribute='value']}".
         Positions start from zero.
   \item Predicate of the form "\ttt{[@attribute=\textit{\$param}]}" are also
         accepted, where \ttt{\textit{\$param}} can be one of:
-        \ttt{\$MODULE\_FULLPATH}, \ttt{\$MODULE\_FULLNAME}, \ttt{\$MODULE\_NAME},
-        \ttt{\$MODULE\_INDEX}, \ttt{\$MODULE\_ID},
-        \ttt{\$PARENTMODULE\_FULLPATH}, \ttt{\$PARENTMODULE\_FULLNAME},
-        \ttt{\$PARENTMODULE\_NAME}, \ttt{\$PARENTMODULE\_INDEX}, \ttt{\$PARENTMODULE\_ID},
-        \ttt{\$GRANDPARENTMODULE\_FULLPATH}, \ttt{\$GRANDPARENTMODULE\_FULLNAME},
-        \ttt{\$GRANDPARENTMODULE\_NAME}, \ttt{\$GRANDPARENTMODULE\_INDEX},
-        \ttt{\$GRANDPARENTMODULE\_ID}.
+        \ttt{\$MODULE\_\-FULLPATH}, 
+        \ttt{\$MODULE\_\-FULLNAME}, 
+        \ttt{\$MODULE\_\-NAME},
+        \ttt{\$MODULE\_\-INDEX}, 
+        \ttt{\$MODULE\_\-ID},
+        \ttt{\$PARENT\-MODULE\_\-FULLPATH}, 
+        \ttt{\$PARENT\-MODULE\_\-FULLNAME},
+        \ttt{\$PARENT\-MODULE\_\-NAME}, 
+        \ttt{\$PARENT\-MODULE\_\-INDEX},
+        \ttt{\$PARENT\-MODULE\_\-ID}, 
+        \ttt{\$GRANDPARENT\-MODULE\_\-FULLPATH}, 
+        \ttt{\$GRANDPARENT\-MODULE\_\-FULLNAME},
+        \ttt{\$GRANDPARENT\-MODULE\_\-NAME}, 
+        \ttt{\$GRANDPARENT\-MODULE\_\-INDEX},
+        \ttt{\$GRANDPARENT\-MODULE\_\-ID}.
 \end{itemize}
-
-Examples:
-
-\begin{itemize}
-  \item \ttt{/foo} -- the root element which must be called \ttt{<foo>}
-  \item \ttt{/foo/bar} -- first \ttt{<bar>} child of the \ttt{<foo>} root element
-  \item \ttt{//bar} -- first \ttt{<bar>} anywhere (depth-first search!)
-  \item \ttt{/*/bar} -- first \ttt{<bar>} child of the root element which may have any tag name
-  \item \ttt{/*/*/bar} -- first \ttt{<bar>} child two levels below the root element
-  \item \ttt{/*/foo[0]} -- first \ttt{<foo>} child of the root element
-  \item \ttt{/*/foo[1]} -- second \ttt{<foo>} child of the root element
-  \item \ttt{/*/foo[@color='green']} -- first \ttt{<foo>} child which has attribute "color" with value "green"
-  \item \ttt{//bar[1]} -- a \ttt{<bar>} element anywhere which is the second \ttt{<bar>} among its siblings
-  \item \ttt{//*[@color='yellow']} -- any element anywhere which has attribute "color" with value "yellow"
-  \item \ttt{//*[@color='yellow']/foo/bar} -- first \ttt{<bar>} child of first \ttt{<foo>} child of a "yellow-colored" element anywhere
-\end{itemize}
-
-Path support allows you put all your XML configuration into
-a single XML document, when you would otherwise end up with lots
-of small XML files. For example, consider the following \ttt{sample.xml}:
-
-\begin{verbatim}
-<?xml version="1.0" encoding="UTF-8"?>
-<root>
-    <traffic-profile id="low">
-        ...
-    </traffic-profile>
-    <traffic-profile id="medium">
-        ...
-    </traffic-profile>
-    <traffic-profile id="high">
-        ...
-    </traffic-profile>
-</root>
-\end{verbatim}
-
-In one simulation you can configure module parameters as
-\ttt{xmldoc("sample.xml", "//traffic-profile[@id='low']")};
-in another run as
-\ttt{xmldoc("sample.xml", "//traffic-profile[@id='medium']")},
-and so on.
-
 
 \subsection{Functions}
 \index{ned!functions}
