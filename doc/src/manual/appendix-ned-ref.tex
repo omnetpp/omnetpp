@@ -1,0 +1,314 @@
+\chapter{NED Reference}
+\label{cha:ned-ref}
+
+\section{Syntax}
+
+\subsection{NED file extension}
+
+NED files have the \texttt{.ned} file name suffix. This is mandatory, and
+cannot be overridden.
+
+\subsection{NED file encoding}
+
+NED files are read as 8-bit-clean ASCII. This permits NED files saved
+in UTF-8, or any character set compatible with ASCII (8859-1, etc).
+
+\begin{note}
+    There is no official way to determine the encoding of a NED file. It is up
+    to the user to configure the correct encoding in text editors and other
+    tools that are used to edit or process NED files.
+\end{note}
+
+Keywords and other syntactic elements in NED are ASCII, and identifiers must be
+ASCII as well. Comments and string literals may contain characters above
+127. String literals (e.g. in parameter values) will be passed to the C++ code
+as \ttt{const char *} without any conversion. 
+
+Line ending may be either CR or CRLF, regardless of platform.
+
+
+\subsection{Reserved words}
+
+Authors have to take care that no reserved words are used for names.
+The reserved words of the NED language are:
+
+\ttt{allowunconnected bool channel channelinterface connections const
+default double extends false for gates if import index inout input int like
+module moduleinterface network output package parameters property simple
+sizeof string submodules this true types volatile xml xmldoc}
+
+
+\subsection{Identifiers}
+
+Identifiers must be composed of letters of the English alphabet (a-z, A-Z),
+numbers (0-9) and the underscore ``\_''. Identifiers may only begin with a
+letter or underscore.
+
+The recommended way to compose identifiers from multiple words is to
+capitalize the beginning of each word (\textit{camel-case}).
+
+\subsection{Case sensitivity}
+
+Keywords and identifiers in the NED language are case sensitive. For example,
+\ttt{TCP} and \ttt{Tcp} are two different names. 
+
+\subsection{Comments}
+
+Comments can be placed anywhere in the NED file, with the usual C++
+syntax: comments begin with a double slash `//', and last until
+the end of the line.
+
+\subsection{Grammar}
+
+The grammar of the NED language can be found in Appendix FIXME.
+
+
+\section{Packages}
+
+NED supports hierarchical namespaces called \ttt{packages}. The solution is
+roughly modelled after Java's packages, with minor changes.
+
+\section{Packages, imports}
+
+A NED file may contain a package declaration:
+
+  package inet.protocols.transport.tcp;
+
+If there is no package declaration, the file is said to be in the
+"default package".
+
+Names from other NED files can be referred to either by fully qualified
+name ("inet.protocols.network.ip.RoutingTable"), or by short name
+("RoutingTable") if the name is visible.
+
+Visible names are:
+  - anything from the same package;
+  - imported names.
+
+Import directives also have a similar syntax to Java, but they
+are more flexible with wildcards. All of the following are legal:
+
+  import  inet.protocols.network.ip.RoutingTable;
+  import  inet.protocols.network.ip.*;
+  import  inet.protocols.network.ip.Ro*Ta*;
+  import  inet.protocols.*.ip.*;
+  import  inet.**.RoutingTable;
+
+One asterisk "*" stands for "any character sequence not containing
+period"; two asterisks mean "any character sequence which may
+contain period". No other wildcards are recognized.
+
+An import not containing wildcard MUST match an existing NED type.
+However, it is legal for an import that does contain wildcards
+not to match any NED type (although that might generate a warning.)
+
+Inner types may not be referred to outside their enclosing types.
+
+
+\section{Directory Structure, package.ned}
+
+Like in Java, the directory of a NED file MUST match the package declaration.
+However, it is possible to omit directories at the top which don't
+contain any NED files (like the "/org/projectname/" directories in Java).
+
+There is a notion of "NED source folders". If a NED Source Folder is
+named "src", then a NED file containing the package declaration
+"inet.protocols.transport.tcp" must be in the following folder:
+
+   src/inet/protocols/transport/tcp/
+
+If the "inet" and "protocols" directories don't contain any NED files,
+they can be omitted:
+
+   src/transport/tcp
+
+and the "src" directory must contain a "package.ned" file which declares
+what package it corresponds to:
+
+  src/package.ned:
+  package inet.protocols;
+
+All NED files under the "src" directory tree must have package
+declarations consistent with that.
+
+"package.ned" files are allowed in other folders as well (as long as
+their package declarations are consistent with the NED source
+directory's "package.ned"), and any file-level comment in them
+will be treated as the package's documentation (similar to Java's
+package.html).
+
+
+\section{Name lookups}
+
+\subsection{Base types and submodules}
+
+Fully qualified names and simple names are accepted. Simple names
+are looked up among the inner types of the enclosing type (compound
+module), then using imports, then in the same package.
+
+
+\subsection{Parametric module types ("like" submodules)}
+
+Lookup of the actual module type for "like" submodules differs for normal
+lookups. This lookup ignores the imports in the file altogether.
+Instead, it collects all modules that support the given interface
+and match the given type name string (i.e. end in the same simple name,
+or have the same fully qualified name). The result must be exactly
+one module type.
+
+The algorithm for parametric channel types works in the same way.
+
+
+\subsection{Network name in the ini file}
+
+Simple (unqualified) names are tried with the same package as the
+ini file is in (provided it's in a NED directory).
+
+
+\section{The NEDPATH environment variable}
+
+A simulation may need NED files from several "NED source folders".
+When a simulation is launched as a separate application, it will expect
+to receive the list of NED source folders to scan in the NEDPATH
+environment variable (similar to Java's CLASSPATH). NEDPATH should
+contain the source folder names separated by a semicolon (";").
+On Unix-like systems, colon (":") will also be accepted as separator.
+
+In the future, zip files may become supported in NEDPATH as well;
+then the root folder of the zip file will be treated as a NED source
+folder.
+
+
+\section{Inheritance rules}
+
+\begin{itemize}
+  \item A simple module may only extend a simple module.
+  \item A compound module may only extend a compound module.
+  \item A channel may only extend a channel.
+  \item A module interface may only extend a module interface (or several module
+        interfaces).
+  \item A channel interface may only extend a channel interface (or several
+        channel interfaces).
+\end{itemize}A \ttt{network} is a shorthand for a compound module with the \ttt{@isNetwork}
+property set, so the same rules apply to it as to compound modules.
+
+Inheritance may:
+\begin{itemize}
+\item add new properties, parameters, gates, inner types, submodules,
+connections
+\item modify inherited properties, and properties of inherited parameters and gates
+\item it may NOT modify inherited submodules, connections and inner types
+\end{itemize}
+
+See other rules for specifics.
+
+
+\subsection{Rules for interfaces}
+
+An interface (module interface or channel interface) may NOT contain
+parameter assignment or parameter default value assignment. An interface
+may NOT contain inner types (rationale: what use would they be?).
+
+A module type that implements ("like") a module interface is required
+to have at least the parameters and the gates defined in the interface,
+with the same types.
+
+Regarding properties, parameter properties and gate properties defined
+in the interface: the module is required to have those properties,
+with at least the same values. It may have additional properties,
+and properties may add more keys and values (see property inheritance.)
+
+Similar rules apply to channel types.
+
+\subsection{Rules for parameter assignments}
+
+Default values for parameters may be overridden in subclasses.
+Parameter (non-default) assignments may NOT be overridden in subclasses.
+
+
+\subsection{Rules for gate vector sizes}
+
+Gate vector sizes may NOT be overridden in subclasses.
+
+
+\subsection{Rules for property inheritance}
+
+Generally, properties may be modified via inheritance. Inheritance may:
+
+\begin{itemize}
+    \item add new keys
+    \item add/overwrite values for existing keys
+    \item remove a value from an existing key (by using the special value '-')
+\end{itemize}
+
+\section{Special properties}
+
+\subsection{Rules for @isNetwork}
+
+The @isNetwork property is only accepted on simple modules and
+compound modules. The value may be empty, true or false:
+
+\begin{verbatim}
+  @isNetwork;
+  @isNetwork();
+  @isNetwork(true);
+  @isNetwork(false);
+\end{verbatim}
+
+The empty value corresponds to \ttt{@isNetwork(true)}.
+
+The @isNetwork property does NOT get inherited, that is, a subclass
+of a module with @isNetwork set does NOT automatically become a network.
+The @isNetwork property needs to be explicitly added to the subclass
+to make it a network.
+
+Rationale: subclassing may add gates, whereas networks cannot have gates.
+
+\subsection{Rules for @unit()}
+
+A parameter may have a @unit property to associate it with a physical unit.
+The @unit property should contain one string value for the default key.
+Examples:
+  @unit("s")
+  @unit(s)
+  @unit("second")
+  @unit(second)
+
+When present, values assigned to the parameter must be in the
+same or in a compatible (that is, convertible) unit.
+Examples:
+  double a @unit(s) = 5s;  // OK
+  double a @unit(s) = 5;   // error: should be 5s
+  double a @unit(s) = 5kg; // error: incompatible unit
+
+@unit behavior for non-numeric parameters (string, XML) is unspecified
+(may be ignored or may be an error).
+
+The @unit property of a parameter may NOT be modified via inheritance.
+
+Example:
+\begin{verbatim} 
+simple A {
+    double p @unit(s);
+}
+simple B extends A {
+    p @unit(mW);  // illegal: cannot override @unit
+}
+\end{verbatim}
+
+
+\subsection{Rules for @class and @namespace}
+
+@namespace property may be added to the package.ned file
+
+@class
+
+- @unit and expression evaluation wrt units
+- rules for resolving an identifier in an expression
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "usman"
+%%% End:

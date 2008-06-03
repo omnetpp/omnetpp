@@ -297,7 +297,6 @@ Example:
 
 \section{Compound modules}
 
-
 Compound modules are modules composed of one or more submodules.
 Any module type (simple or compound module) can be used as a submodule.
 Like simple modules, compound modules can also have gates and parameters,
@@ -656,45 +655,7 @@ the \ttt{gate++} (``extend gate vector with a new gate'') notation later in the
 
 
 
-\subsection{Conditional parameters and gatesizes sections}
-
-
-Multiple \ttt{parameters}\index{ned!parameters} and
-\texttt{gatesizes}\index{ned!gatesizes} sections can exist in a submodule
-definition and each of them can be tagged with
-conditions\index{gate!conditional}.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Chain
-    \tbf{parameters}: count: \tbf{const};
-    \tbf{submodules}:
-        node : Node [count]
-            \tbf{parameters}:
-                position = "middle";
-            \tbf{parameters} \tbf{if} index==0:
-                position = "beginning";
-            \tbf{parameters} \tbf{if} index==count-1:
-                position = "end";
-            \tbf{gatesizes}:
-                in[2], out[2];
-            \tbf{gatesizes} \tbf{if} index==0 {\textbar}{\textbar} index==count-1:
-                in[1], in[1];
-    \tbf{connections}:
-        //...
-\tbf{endmodule}
-\end{Verbatim}
-
-If the conditions are not disjoint and a parameter value or a
-gate size is defined twice, the last definition will take effect,
-overwriting the former ones. Thus, values intended as defaults
-should appear in the first sections.
-
-
-
 \subsection{Connections}
-
 
 The compound module definition specifies how the gates of the compound
 module and its immediate sub-modules are connected\index{connection}.
@@ -914,7 +875,7 @@ simple modules' responsibility not to send messages on gates
 that are not connected.
 
 
-\section{Network definitions}
+\section{Networks}
 \label{sec:ch-ned-lang:network}
 \index{ned!network definition}
 
@@ -956,6 +917,182 @@ be used in network definitions.
 Just as in submodules, you do not need to assign values to all
 parameters. Unassigned parameters can get their values from the
 config file (\ttt{omnetpp.ini}) or will be interactively prompted for.
+
+\section{Inheritance}
+
+Single inheritance is supported between modules, ie. you can further
+specialize the above module:
+FIXME TODO
+
+\section{Packages}
+
+To address increasingly common name collisions in NED files,
+\opp 4.0 introduces a package feature for NED. The solution
+is roughly modelled after Java's packages, with minor enhancements.
+
+
+\subsection{Packages, imports}
+
+A NED file may contain a package declaration:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{package} inet.protocols.transport.tcp;
+\end{Verbatim}
+
+If there is no package declaration, the file is said to be in the
+\textit{default package}.
+
+Names from other NED files can be referred to either by fully qualified
+name (\ttt{"inet.protocols.network.ip.RoutingTable"}), or by short name
+(\ttt{"RoutingTable"}) if the name is visible.
+
+Visible names are:
+\begin{itemize}
+  \item anything from the same package;
+  \item imported names.
+\end{itemize}
+
+Import directives also have a similar syntax to Java, but they
+are more flexible with wildcards. All of the following are legal:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{import} inet.protocols.network.ip.RoutingTable;
+\tbf{import} inet.protocols.network.ip.*;
+\tbf{import} inet.protocols.network.ip.Ro*Ta*;
+\tbf{import} inet.protocols.*.ip.*;
+\tbf{import} inet.**.RoutingTable;
+\end{Verbatim}
+
+One asterisk "*" stands for "any character sequence not containing
+period"; two asterisks mean "any character sequence which may
+contain period". No other wildcards are recognized.
+
+An import not containing wildcard MUST match an existing NED type.
+However, it is legal for an import that does contain wildcards
+not to match any NED type (although that might generate a warning.)
+
+Inner types may not be referred to outside their enclosing types.
+
+
+\subsection{Directory Structure, package.ned}
+
+Like in Java, the directory of a NED file MUST match the package declaration.
+However, it is possible to omit directories at the top which don't
+contain any NED files (like the "/org/projectname/" directories in Java).
+
+There is a notion of "NED source folders". If a NED Source Folder is
+named "src", then a NED file containing the package declaration
+"inet.protocols.transport.tcp" must be in the following folder:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+src/inet/protocols/transport/tcp/
+\end{Verbatim}
+
+If the "inet" and "protocols" directories don't contain any NED files,
+they can be omitted:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+src/transport/tcp
+\end{Verbatim}
+
+and the "src" directory must contain a "package.ned" file which declares
+what package it corresponds to:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+// file src/package.ned:
+package inet.protocols;
+\end{Verbatim}
+
+All NED files under the "src" directory tree must have package
+declarations consistent with that.
+
+"package.ned" files are allowed in other folders as well (as long as
+their package declarations are consistent with the NED source
+directory's "package.ned"), and any file-level comment in them
+will be treated as the package's documentation (similar to Java's
+package.html).
+
+
+\subsection{Name lookups}
+
+\subsubsection{Base types and submodules}
+
+Fully qualified names and simple names are accepted. Simple names
+are looked up among the inner types of the enclosing type (compound
+module), then using imports, then in the same package.
+
+
+\subsubsection{Parametric module types ("like" submodules)}
+
+Lookup of the actual module type for "like" submodules differs for normal
+lookups. This lookup ignores the imports in the file altogether.
+Instead, it collects all modules that support the given interface
+and match the given type name string (i.e. end in the same simple name,
+or have the same fully qualified name). The result must be exactly
+one module type.
+
+The algorithm for parametric channel types works in the same way.
+
+
+\subsubsection{Network name in the ini file}
+
+Simple (unqualified) names are tried with the same package as the
+ini file is in (provided it's in a NED directory).
+
+
+
+\subsection{The NEDPATH environment variable}
+
+A simulation may need NED files from several "NED source folders".
+When a simulation is launched as a separate application, it will expect
+to receive the list of NED source folders to scan in the NEDPATH
+environment variable (similar to Java's CLASSPATH). NEDPATH should
+contain the source folder names separated by a semicolon (";").
+On Unix-like systems, colon (":") will also be accepted as separator.
+
+In the future, zip files may become supported in NEDPATH as well;
+then the root folder of the zip file will be treated as a NED source
+folder.
+
+
+%%FIXME into other doc
+\subsection{OMNeT++ Projects in Eclipse}
+
+OMNeT++ projects within Eclipse are marked with the "OMNEST/OMNeT++ Nature",
+that is, those projects marked with that nature will be recognized as
+OMNeT++ projects.
+
+NED source folders can only be located within OMNeT++ projects. (That is,
+NED files within non-OMNeT++ projects will be always ignored.)
+
+Which folders in a project are NED source folders is determined by
+the ".nedfolders" file in the project root directory. This is a plain
+text file, which contains directory names (as relative to the
+project root directory), one per line. If the ".nedfolders" file is
+missing, then the project root directory will be treated as the (only)
+NED source folder.
+
+
+%%FIXME into other doc
+\subsection{Cross-Project Dependencies}
+
+OMNeT++ projects in Eclipse may refer to NED files in other projects.
+This feature is supported by making use of the Eclipse Platform's
+support for project dependencies. (In the Eclipse Platform, for any
+project one can define the list other projects it depends on.)
+
+In one project, one may only refer to NED files in the same project
+or dependent projects.
+
+
+\section{Inner types}
+FIXME TODO
+
+\section{Interfaces}
+FIXME TODO
+
+\section{Metadata annotations}
+FIXME TODO
 
 
 \section{Parameters}
@@ -1549,22 +1686,6 @@ static double _wrap_factorial(double k)
 
 Define_Function2(factorial, _wrap_factorial, 1);
 \end{verbatim}
-
-
-\section{Interfaces}
-FIXME TODO
-
-\section{Inheritance}
-FIXME TODO
-
-\section{Packages}
-FIXME TODO
-
-\section{Inner types}
-FIXME TODO
-
-\section{Metadata annotations}
-FIXME TODO
 
 
 \section{Parameterized compound modules}
