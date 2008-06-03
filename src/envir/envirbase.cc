@@ -500,7 +500,7 @@ void EnvirBase::dumpComponentList(const char *category)
             const char *bu = UnitConversion::baseUnit(u);
             ev << "  " << u << "\t" << UnitConversion::longName(u);
             if (opp_strcmp(u,bu)!=0)
-                ev << "\t" << UnitConversion::convertUnit(1,u,bu) << " " << bu;
+                ev << "\t" << UnitConversion::convertUnit(1,u,bu) << bu;
             ev << "\n";
         }
         ev << "\n";
