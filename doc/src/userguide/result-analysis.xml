@@ -1,10 +1,33 @@
 <?xml version="1.0"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
     "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
 <chapter id="result-anal">
+
 <title>Analyzing the Results</title>
+
 <sect1>
 <title>Overview</title>
+
+<para>[from feature-list.doc:]</para>
+
+<para>
+Scave is the result analysis tool of OMNeT++, and its task is to help the
+user process and visualize simulation results saved into vector and scalar
+files. Scave is designed so that the user can work equally well on the
+output of a single simulation run (one or two files) and the result of
+simulation batches (which may be several hundred files, possibly in
+multiple directories). Ad-hoc browsing of the data is supported just as
+well as systematic and repeatable processing. The latter means that all
+processing and charts are stored as "recipes"; for example, if simulations
+need to be re-run due to a model bug or misconfiguration, existing charts
+need not be drawn all over again, but simply replacing the old result files
+with the new ones will result in the charts being automatically displayed
+with the new data.
+</para>
+
+<para>[from Gabor:]</para>
+
 <para>While it might be powerful in facilitating quick debugging to
 view how simulations work in the Tkenv environment, in most cases
 the result of the final simulations will be recorded as scalar
@@ -12,6 +35,8 @@ values (e.g. average load: 75%), or vector values (e.g. queue
 length over time) or histograms. These values will be recorded at
 the end of the simulation as well as during runtime and provide
 real insight into the scenario you are looking at.</para>
+
+<para>[from Gabor:]</para>
 
 <para>In OMNEST/OMNeT++ 4.0, statistical analysis becomes a lot
 more powerful. Not only is the statistical analysis tool integrated
@@ -21,6 +46,37 @@ files (.anf) and become instantly reproducible. Even if you need to
 replace some of the underlying data in your experiments, you do not
 need to re-develop the recipe (filters, operations, graphs) to
 squeeze the results you want out of the system.</para>
+
+<para>[from the simutools2008 paper:]</para>
+
+<para>
+Analyzing the simulation result is a lengthy and time consuming process.
+In most cases the user wants to see the same type of data for each run of
+the simulation or display the same graphs for different modules in the
+model, so automation is very important. (The user does not want to repeat
+the steps of re-creating charts every time simulations have to be re-run
+for some reason.) The lack of automation support drives many users away
+from existing GUI analysis tools, and forces them to write scripts.
+</para>
+
+<para>
+OMNeT++ solves this by making result analysis rule-based. Simulations and
+series of simulations produce various result files. The user selects the
+input of the analysis by specifying file names or file name patterns (e.g.
+"adhoc-*.vec"). Data of interest can be selected into datasets by further
+pattern rules. The user completes datasets by adding various processing,
+filtering and charting steps, all using the GUI (Figure 7). Whenever the
+underlying files or their contents change, dataset contents and charts are
+recalculated. The editor only saves the "recipe" and not the actual
+numbers, so when simulations are re-run and so result files get replaced,
+charts are automatically up-to-date. Data in result files are tagged with
+meta information: experiment, measurement and replication labels are added
+to the result files to make the filtering process easy. It is possible to
+create very sophisticated filtering rules, for example, “all 802.11 retry
+counts of host[5..10] in experiment X, averaged over replications”. In
+addition datasets can use other datasets as their input so datasets can
+build on each other.
+</para>
 
 </sect1>
 
@@ -32,7 +88,66 @@ squeeze the results you want out of the system.</para>
 
 <sect1>
 <title>Result File Analyzer</title>
-<para>TBD</para>
+
+<para>
+Scave is implemented as a multi-page editor. What the editor edits is the
+"recipe": what result files to take as inputs, what data to select from
+them, what (optional) processing to apply, and what kind of charts to
+create from them. The pages (tabs) of the editor roughly correspond to
+these steps. You will see that Scave is much more than just a union of the
+OMNeT++ 3.x Scalars and Plove tools.
+</para>
+
+<para>
+SCREENSHOT: Specifying input files for data analysis
+</para>
+
+<para>
+The first page displays the result files that serve as input to the
+analysis. The upper half specifies what files to select, by explicit
+filenames or by wildcards. The lower half shows what files actually matched
+the input specification, and what runs they contain. Note that OMNeT++ 4.0
+result files contain a unique run ID and several metadata annotations in
+addition to the actual recorded data.  The third tree organizes simulation
+runs runs according to their experiment-measurement-replication labels.
+</para>
+
+<para>
+The underlying assumption is that users will organize their
+simulation-based research into various /experiments/. An experiment will
+consist of several /measurements/, which are typically (but not
+necessarily) simulations done with the same model but with different
+parameter settings; that is, the user will explore the parameter space with
+several simulation runs. And, to gain statistical confidence in the
+results, each measurement will be possibly repeated several times, with
+different random number seeds. It is easy to set up such scenarios with the
+improved ini files of OMNeT++ 4.0, and then the
+experiment-measurement-replication labels will be assigned more-or-less
+automatically -- please refer to the chapter "Configuring simulations TBD check"
+in the manual) for more discussion.
+</para>
+
+<para>
+SCREENSHOT: Browsing vector and scalar data generated by the simulation
+</para>
+
+<para>
+The second page displays results (vectors, scalars and histograms) from all
+files in tables, and lets the user browse them.  Results can be sorted and
+filtered. Simple filtering is possible with combo boxes, or when that's not
+enough, the user can write arbitrarily complex filters using a generic
+pattern matching expression language. Selected or filtered data can be
+immediately plotted, or remembered in named datasets for further
+processing.
+</para>
+
+<para>
+SCREENSHOT: Defining datasets to be analyzed
+</para>
+
+<para>
+The Datasets page ...
+</para>
 
 </sect1>
 
