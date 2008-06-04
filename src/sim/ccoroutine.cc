@@ -62,6 +62,9 @@ bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size )
     // stack size is 1MB by default; this allows ~2048 coroutines in a
     // 2GB address space
     stacksize = stack_size;
+    //XXX: CreateFiberEx() does not seem to work any better than CreateFiber(),
+    //it appears to have the same limit for the number of fibers that can be created.
+    //lpFiber = CreateFiberEx(stacksize, stacksize, 0, (LPFIBER_START_ROUTINE)fnp, arg);
     lpFiber = CreateFiber(stack_size, (LPFIBER_START_ROUTINE)fnp, arg);
     return lpFiber!=NULL;
 }
