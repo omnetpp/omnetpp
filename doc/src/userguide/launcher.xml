@@ -14,7 +14,7 @@
       the IDE.
     </para>
     <sect2>
-      <title> Creating launch configuration</title>
+      <title>Creating launch configuration</title>
       <para>
         OMNeT++ IDE adds a new Eclipse launch configuration type that supports launching
         simulation executables. This launch type, OMNeT++ Simulation, is available from
@@ -23,30 +23,71 @@
          Select OMNeT++ Simulation, click the New launch configuration icon, then enter a
         configuration name at the top of the dialog form that appears.
       </para>
+      <picture file="pictures/Launch-RunDialog.png">The Simulation Launcher</picture>
       <para>
         The main tab of the configuration dialog was designed to make the launching of
         simulation as easy as possible. The only required field is the simulation program,
         all others have defaults. If you only select the simulation program, it will run
-        Run 1 of the first configuration from the omnetpp.ini file in the working
+        Run 0 of the first configuration from the omnetpp.ini file in the working
         directory.
       </para>
+      <tip>
+        Hover your mouse above the controls in this dialog and you will receive tooltip
+        help for the particular control.
+      </tip>
       <itemizedlist>
         <listitem>
           <para>
-            Simulation program: you must set the name of the simulation executable here.
-            This path is relative to the workspace root. You may use the Browse...button
-            to select the executable directly.
+            Working directory: set it to your working directory. Several of the below
+            entries are treated as relative to this directory. Changing the working
+            directory invalidates all previously selected entries in other fields of the
+            dialog.
           </para>
         </listitem>
         <listitem>
           <para>
-            Dynamically loaded libraries: A simulation may load additional DLLs or shared
-            libraries before execution. The browse button is available to select one or
-            more files (use CTRL click for multiple selection). This option can be used to
-            load simulation code (i.e. simple modules), user interface libraries, or other
-            extension libraries (scheduler, output file managers, etc)
+            Simulation program: you must set the name of the simulation executable here.
+            This path is relative to the workspace root. You may use the
+            <guibutton>Browse...</guibutton>
+            button to select the executable directly.
+          </para>
+          <warning>
+            If you want to debug your simulation, be sure to select the 'debug' version of
+            your executable here.
+          </warning>
+        </listitem>
+        <listitem>
+          <para>
+            Dynamic libraries: A simulation may load additional DLLs or shared libraries
+            before execution. The
+            <guibutton>Browse</guibutton>
+            button is available to select one or more files (use
+            <keycap>CTRL</keycap>
+            click for multiple selection). This option can be used to load simulation code
+            (i.e. simple modules), user interface libraries, or other extension libraries
+            (scheduler, output file managers, etc)
+          </para>
+          <warning>
+            You must ensure that the executable part has access to the shared library. On
+            Windows you must set the PATH, on Linux and Mac you must set the
+            LD_LIBRARY_PATH to point to the directory where the DLLs or shared libraries
+            are located. You can set these variables either globally or in the Environment
+            tab in the Launcher Configuration Dialog.
+          </warning>
+        </listitem>
+        <listitem>
+          <para>
+            NED Source Path: The directories where the NED files are read from. (Relative
+            to the first selected INI file.) If left empty, calculates the path from the
+            project settings.
+            <tip>
+              The variable ${ned_path} refers to the automatically calculated path. i.e.
+              If you want to add additional NED folders to the automatically calculated
+              list, use the ${ned_path:/my_project_path}:/my/additional/path syntax.
+            </tip>
           </para>
         </listitem>
+
         <listitem>
           <para>
             Initialization file(s): You should specify an INI file(s) that will be used to
@@ -64,7 +105,7 @@
             launched.
             <note>
               The working directory and the INI file must contain valid entries before
-              trying to set this option
+              trying to set this option.
             </note>
           </para>
         </listitem>
@@ -74,30 +115,35 @@
             the simulation. If the executable name and the INI file was already selected
             and a Scenario was specified for the configuration name, it is possible to
             hover above the field to get more info about the possible run numbers. You can
-            use comma and hyphen to separate the run numbers; for example, 1,2,5-9,20
+            use comma and .. to separate the run numbers; for example, 1,2,5..9,20
             corresponds to run numbers 1,2,5,6,7,8,9,20. Entering a single asterisk (*)
             corresponds to all run numbers. Running several simulations in this manner is
-            called batch execution.
+            called batch execution. If you do not specify anything here, Run 0 will be
+            executed.
           </para>
-          <para>
-            Batch execution is possible only if the User interface is command line
-            (simulation was built to support command line environment (Cmdenv) and the
-            User interface. (see User interface selection)
-          </para>
+          <note>
+            Batch execution is possible only if you run your program in command line
+            environment. (simulation was built to support command line environment
+            (Cmdenv) and the User interface selection is 'Command line'. (see User
+            interface selection)
+          </note>
         </listitem>
         <listitem>
           <para>
             Processes to run in parallel: with batch execution, it is possible to tell the
             launcher to keep two or more simulations running at a time. This way you can
-            take advantage of multiple CPUs or CPU cores. Use this option carefully, only
-            if your simulation is CPU-limited, and you have enough physical RAM to support
-            all of them at the same time. Do not set it higher than the number of physical
-            processors you have in your machine.
+            take advantage of multiple CPUs or CPU cores.
           </para>
           <note>
             This is usually an easier and more efficient way to exploit multiprocessing
             power than parallel simulation (PDES).
           </note>
+          <warning>
+            Use this option carefully, only if your simulation is CPU-limited, and you
+            have enough physical RAM to support all of the processes at the same time. Do
+            not set it higher than the number of physical processors you have in your
+            machine.
+          </warning>
         </listitem>
         <listitem>
           <para>
@@ -119,18 +165,6 @@
         </listitem>
         <listitem>
           <para>
-            Working directory: you can change the default working directory for the
-            process. You can specify a workspace relative or absolute file system path, or
-            even a path relative to predefined system variables.
-          </para>
-          <note>
-            All paths (except for the Simulation Program) are relative to the
-            working directory. Changing the working directory invalidates all previously
-            selected entries.
-          </note>
-        </listitem>
-        <listitem>
-          <para>
             Show Debug View on Launch: convenience function to open the debug view on
             simulation execution. Debug View allows you to see and terminate the processes
             you have launched and allows to switch between their output in the console
@@ -138,80 +172,141 @@
           </para>
         </listitem>
       </itemizedlist>
-      <para>
-        Most settings in the dialog simply translate to command-line options to the
-        simulation executable. This is summarized in the following list:
-      </para>
-      <itemizedlist>
-        <listitem>
-          <para>
-            Dynamically loaded libraries: maps to multiple “-l &lt;library&gt;” options
-          </para>
-        </listitem>
-        <listitem>
-          <para>Initialization files: maps to multiple “-f &lt;inifile&gt;” options</para>
-        </listitem>
-        <listitem>
-          <para>Configuration name: adds a “-c &lt;configname&gt;” option</para>
-        </listitem>
-        <listitem>
-          <para>Run number:adds a “-r &lt;runnumber&gt;” option</para>
-        </listitem>
-        <listitem>
-          <para>User interface: adds a “-u &lt;userinterface&gt;” option</para>
-        </listitem>
-      </itemizedlist>
+      <sect3>
+        <title>Related command line arguments</title>
+        <para>
+          Most settings in the dialog simply translate to command-line options to the
+          simulation executable. This is summarized in the following list:
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              Dynamically loaded libraries: maps to multiple “-l &lt;library&gt;” options
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Initialization files: maps to multiple “-f &lt;inifile&gt;” options
+            </para>
+          </listitem>
+          <listitem>
+            <para>Configuration name: adds a “-c &lt;configname&gt;” option</para>
+          </listitem>
+          <listitem>
+            <para>Run number:adds a “-r &lt;runnumber&gt;” option</para>
+          </listitem>
+          <listitem>
+            <para>User interface: adds a “-u &lt;userinterface&gt;” option</para>
+          </listitem>
+        </itemizedlist>
+      </sect3>
     </sect2>
-    <sect2>
-      <title>Controlling the execution and progress reporting</title>
-      <para>
-        After starting a simulation process or simulation batch we can keep track of the
-        started processes in the Debug View. To open the Debug View check the Show Debug
-        View on Launch in the run configuration dialog, or select Window / Show View... /
-        Other... / Debug / Debug. Clicking on the process allows terminating the process
-        or switching to the output of that process in the Console view. Use the context
-        menu for more options to control the process execution.  
-      </para>
-      <tip>
-        Place the debug view to a different tab group than the console so you will be able
-        to switch between the process outputs and see the process list at the same time.
-      </tip>
-      <para>
-        If you have executed the simulation in the command line environment, you can
-        monitor the progress of the simulation in the progress view. See the status line
-        for the overall progress indicator and click on it to open the detailed progress
-        view. It is possible to terminate the whole batch by clicking on the cancel button
-        in the progress view. 
-      </para>
-      <note>
-        When progress view displays "Waiting for user input" the simulation is waiting for
-        the user. Switch to the appropriate console and provide the requested input for
-        the simulation.
-      </note>
-    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Batch Execution</title>
+    <para>
+      In previous versions of OMNeT++ to run a simulation several times with different
+      parameters, you had to create an external script that created an INI file for each
+      run and started the simulation with the specified file. In OMNeT++ 4.0 it is no
+      longer needed. The vastly improved INI file syntax allows you to specify loops for
+      specific parameters so you no longer need separate INI files for each run. In
+      addition the IDE itself supports starting your simulation several times.
+    </para>
+    <note>Batch running is supported only in command line environment.</note>
+    <para>
+      If you create a Configuration with one or more iteration variables, you will be able
+      to run your simulations using each possible value of these variables. Practically
+      the IDE creates the chartezian product from these variables and assigns a run number
+      to each product. It is possible to execute one, more or all runs of the simulation
+      by specifying the
+      <literal>Run number</literal>
+      field in the Run Dialog. You can specify a single number (e.g. 3), and a combination
+      of more numbers (e.g. 2,3,6,7..11) or all run numbers (using *).
+    </para>
+    <tip>
+      If you already have specified your executable and the configuration which should be
+      run, you may try to hover over the
+      <literal>Run Number</literal>
+      field. This will give you a description of the possible runs and how they are
+      associated with the iteration variable values.
+    </tip>
+    <para>
+      If you have a multi-core or multi-processor system and have ample of memory, you may
+      try to set the
+      <literal>Processes to run parallel</literal>
+      field to a higher number. This will allow the IDE to start more simulation process
+      in parallel resulting in a much lower overall simulation time for the whole batch.
+    </para>
+    <warning>
+      Be aware that you need enough memory to run all these processes in parallel. We
+      recommend to use this feature only if your simulation is CPU bound. If you do not
+      have enough memory your operating system may start to use virtual memory
+      dramatically decreasing the overall performance.
+    </warning>
   </sect1>
 
   <sect1>
     <title>Debugging a Simulation</title>
     <para>
       The OMNeT++ IDE integrates with the CDT (C/C++ Development Tooling). If you want to
-      debug your application you have to launch/debug your application by starting it as a
-      C/C++ Local Application. OMNeT++ contributes an additional tab to the CDT launch
-      dialog for your convenience. You will be able to specify simulation related command
-      line options on this tab and CDT will launch your simulation with these arguments.
-      The executable name must be specified on the Main tab. The rest of the fields have
-      similar meaning like in the OMNeT++ Simulation launch type. You can add additional
-      arguments on the default Arguments tab.
+      debug your application you have to do it by starting it from the
+      <guimenuitem>Run|Open Debug Dialog</guimenuitem>
+      . You should launch your debugging session exactly the same way you were running it.
     </para>
     <note>
+      If you have problems with starting the debug session check whether:
+      <itemizedlist>
+        <listitem>your executable is built with debug info</listitem>
+        <listitem>
+          you can run the same executable without problem (using the same launch
+          configuration)
+        </listitem>
+        <listitem>
+          the Debugger type is set properly on the Debugger tab of the Launch dialog.
+        </listitem>
+      </itemizedlist>
+    </note>
+    <warning>
       Batch (and parallel) execution is not possible in this launch type, so you may
       specify only a single run number.
-    </note>
+    </warning>
   </sect1>
 
   <sect1>
-    <title>Batch Execution</title>
-    <para>TBD</para>
+    <title>Controlling the execution and progress reporting</title>
+    <para>
+      After starting a simulation process or simulation batch we can keep track of the
+      started processes in the Debug View. To open the Debug View automatically during
+      launch, check the Show Debug View on Launch in the run configuration dialog, or
+      select
+      <guimenuitem>Window / Show View... / Other... / Debug / Debug</guimenuitem>
+      . Clicking on the process allows terminating the process or switching to the output
+      of that process in the Console view. Use the context menu for more options to
+      control the process execution.  
+    </para>
+    <tip>
+      Place the debug view to a different tab group than the console so you will be able
+      to switch between the process outputs and see the process list at the same time.
+    </tip>
+    <para>
+      If you have executed the simulation in the command line environment, you can monitor
+      the progress of the simulation in the progress view. See the status line for the
+      overall progress indicator and click on it to open the detailed progress view. It is
+      possible to terminate the whole batch by clicking on the cancel button in the
+      progress view.
+    </para>
+    <note>
+      When progress view displays "Waiting for user input" the simulation is waiting for
+      the user. Switch to the appropriate console and provide the requested input for the
+      simulation.
+    </note>
+    <note>
+      By default cmdenv reports progress only on every 100000th event. If you feel that
+      the progress should be more often reported set the
+      <literal>cmdenv-status-frequency</literal>
+      option in your INI file to a lower value.
+    </note>
   </sect1>
 
   <sect1>

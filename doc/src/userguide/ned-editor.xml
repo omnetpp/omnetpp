@@ -69,7 +69,7 @@
     </para>
     <para>
       Once you have an empty OMNeT++ project, you can create new NED files. Choosing
-      <guimenuitem>File|New|Network Description File…</guimenuitem>
+      <guimenuitem>File|New|Network Description File</guimenuitem>
       from the menu will bring up a wizard where you can specify the target directory and
       the file/module name. You may choose to create an empty NED file, or a
       simple/compound module, or a network. Once you press the

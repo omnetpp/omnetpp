@@ -2,17 +2,29 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
     "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="msg-editor">
-<title>Editing Message Files</title>
-<sect1>
-<title>Creaing Message Files</title>
-<para>TBD</para>
+  <title>Editing Message Files</title>
+  <sect1>
+    <title>Creating Message Files</title>
+    <para>
+      Choosing
+      <guimenuitem>File|New|Message Definition (msg)</guimenuitem>
+      from the menu will bring up a wizard where you can specify the target directory and
+      the file name for your message definition. You may choose to create an empty MSG file, or a
+      or choose from the predefined templates. Once you press the
+      <guibutton>Finish</guibutton>
+      button, a new MSG file will be created with the requested content.
+      <picture file="pictures/MSG-NewWizard.png">Creating a new MSG file</picture>
+    </para>
 
-</sect1>
+  </sect1>
 
-<sect1>
-<title>The Message File Editor</title>
-<para>TBD</para>
+  <sect1>
+    <title>The Message File Editor</title>
+    <para>The message file editor is a basic text editor with syntax highlight support. </para>
+    <picture file="pictures/MSG-TextEditor.png">Message file editor</picture>
+    <note>Currently the editor does not support advanced features like content assistance or 
+    syntax aware foldig.</note>
 
-</sect1>
+  </sect1>
 
 </chapter>
