@@ -3,7 +3,7 @@
     "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="intro">
 <title>Introduction</title>
-<p>The OMNeT++ simulation IDE is based on the Eclipse Framework,
+<para>The OMNeT++ simulation IDE is based on the Eclipse Framework,
 for which manuals are available on 
 <ulink url="http://www.eclipse.org/">www.eclipse.org</ulink>. While
 this flexible and easy to use platform makes the OMNeT++ simulation
@@ -17,56 +17,56 @@ environment will be instantly recognizable to those at home with
 the Eclipse system, but sections will also become quickly familiar
 to users of earlier versions of OMNeT++. Having the system's
 functions interconnected this way brings more power and flexibility
-to the system.</p>
+to the system.</para>
 
-<p>The OMNeT++ 4.0 Integrated Development Environment extends
+<para>The OMNeT++ 4.0 Integrated Development Environment extends
 Eclipse with new editors, views, wizards, and other functionality.
 OMNeT++ adds functionality for creating and configuring models (NED
 and .ini files), performing batch executions and analyzing the
 simulation results, while Eclipse provides C++ editing, CVS/SVN
 integration and optionally other features (UML modeling,
 bug-tracker integration, database access, etc) via various
-open-source and commercial plug-ins.</p>
+open-source and commercial plug-ins.</para>
 
 <sect1>
 <title>The Workbench</title>
-<p>The Eclipse Editor layout consists of various Views and
+<para>The Eclipse Editor layout consists of various Views and
 Editors. These are collected into Perspectives that define which
 Views and Editors are visible, and how they are sized and
-positioned.</p>
+positioned.</para>
 
-<p>Eclipse is a very flexible system. You can move, resize, hide
+<para>Eclipse is a very flexible system. You can move, resize, hide
 and show various panels, editors and navigators. This allows you to
 customize the IDE to your liking, but it also makes it more
 difficult to describe. First, we need to make sure that we are
-looking at the same thing.</p>
+looking at the same thing.</para>
 
-<p>TODO: Ensure there is a default view available to load, and
-describe it here.</p>
+<para>TODO: Ensure there is a default view available to load, and
+describe it here.</para>
 
 <picture file="pictures/1.0_Select_Perspective.png">Selecting the
 OMNeT++ perspective in Eclipse</picture>
 
-<p>Most interface elements within Eclipse are movable, can be
+<para>Most interface elements within Eclipse are movable, can be
 docked to various palettes or sections. The whole workspace is
 configurable, so you can construct your own workspace, but we will
 use the following layout throughout this manual, to get familiar
-with the various sections:</p>
+with the various sections:</para>
 
 <picture file="pictures/2.0_IDE_default_layout_view.png">OMNeT++
 IDE with README.txt selected in the Navigator</picture>
 
-<p>The Navigator on the top left part of the screen shows a
+<para>The Navigator on the top left part of the screen shows a
 hierarchical view of the various open projects in your workspace.
 In the example above, the "aloha" demo project is open, you can see
-the various .NED, .ini and other files inside.</p>
+the various .NED, .ini and other files inside.</para>
 
-<p>We double-clicked the README.txt file, and its contents are
+<para>We double-clicked the README.txt file, and its contents are
 loaded into the editor area. Eclipse automatically launches the
 editor associated with a particular file type, so you can start
-editing right away.</p>
+editing right away.</para>
 
-<p>This view contains information on the particular object that
+<para>This view contains information on the particular object that
 is selected.in the editor area, or one of the other views that
 serve as a selection provider. In case of NED objects for example,
 display-specific properties such as icons, colorization, position,
@@ -74,47 +74,47 @@ etc. Can be read and set here. Help is also available in the form
 of code assist, where pressing CTRL+SPACE in one of the fields will
 provide you with a list of selectable valid options for that field.
 Some fields, such as the Icon property, or Color type properties
-have graphical picker dialogs associated with them too.</p>
+have graphical picker dialogs associated with them too.</para>
 
-<p>A number of views are docked here. The Problems View
+<para>A number of views are docked here. The Problems View
 references code lines where Eclipse encountered a problem while
 parsing. The Editor also provides visual feedback by placing a red
 "X" icon in front of the line of code that is causing the
-problem.</p>
+problem.</para>
 
-<p>The Module Hierarchy View will show you what modules are
-nested in the currently selected NED object.</p>
+<para>The Module Hierarchy View will show you what modules are
+nested in the currently selected NED object.</para>
 
-<p>The NED Parameters View lists all the parameters defined
+<para>The NED Parameters View lists all the parameters defined
 inside the selected object, as well as the parameters that the
-object inherited from other objects.</p>
+object inherited from other objects.</para>
 
-<p>The Debug View contains debug output. This is a standard
-Eclipse feature.</p>
+<para>The Debug View contains debug output. This is a standard
+Eclipse feature.</para>
 
-<p>The Console View is where all console output will be
-redirected to, if you run a simulation from within Eclipse.</p>
+<para>The Console View is where all console output will be
+redirected to, if you run a simulation from within Eclipse.</para>
 
-<p>The Event Log View will show you a list of events for a
-simulation that has been executed.</p>
+<para>The Event Log View will show you a list of events for a
+simulation that has been executed.</para>
 
 </sect1>
 
 <sect1>
 <title>The Simulation Perspective</title>
-<p>TBD</p>
+<para>TBD</para>
 
 </sect1>
 
 <sect1>
 <title>Creating OMNeT++ Projects</title>
-<p>TBD</p>
+<para>TBD</para>
 
 </sect1>
 
 <sect1>
 <title>Getting Help</title>
-<p>TBD</p>
+<para>TBD</para>
 
 </sect1>
 

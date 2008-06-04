@@ -31,11 +31,11 @@
 
   <sect1>
     <title>Creating an Event Log</title>
-    <p>
+    <para>
       To prepare a log file to be processed by the log viewer, simply insert the
       record-eventlog = true line into the corresponding omnetpp.ini file, or use the
       Inifile Editor's Output Files section to enable the feature.
-    </p>
+    </para>
     <picture file="pictures/7.1_Generate_log_omnetpp_ini.png">TODO</picture>
     <note>
       Since writing an event log file might significantly decrease overall simulation

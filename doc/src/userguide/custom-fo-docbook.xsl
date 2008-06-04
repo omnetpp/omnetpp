@@ -346,9 +346,6 @@ A4</xsl:param>
     <xsl:value-of select="$body.font.master">
     </xsl:value-of><xsl:text>pt</xsl:text>
   </xsl:attribute>
-  <xsl:attribute name="hyphenate">
-    false
-  </xsl:attribute>
   <xsl:attribute name="space-after.minimum">
     0.4em
   </xsl:attribute>
@@ -408,7 +405,7 @@ A4</xsl:param>
 <!--  The properties of level-3 section titles. -->
 <xsl:attribute-set name="section.title.level3.properties">
   <xsl:attribute name="font-size">
-      <xsl:value-of select="$body.font.master * 1.1"></xsl:value-of><xsl:text>pt</xsl:text>
+      <xsl:value-of select="$body.font.master"></xsl:value-of><xsl:text>pt</xsl:text>
   </xsl:attribute>
 </xsl:attribute-set>
 

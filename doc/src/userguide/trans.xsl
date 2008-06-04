@@ -7,10 +7,8 @@
    </xsl:copy>
 </xsl:template>
 
-<xsl:template match="p">
-   <para>
-      <xsl:apply-templates select="@*|node()"/>
-   </para>
+<xsl:template match="commercial">
+   <!-- <xsl:apply-templates select="@*|node()"/> -->
 </xsl:template>
 
 <xsl:template match="picture">

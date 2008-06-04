@@ -134,7 +134,7 @@
       </para>
       <tip>
         It is a good practice to place only a single module or network into a NED files
-        and name the file according to the type name.
+        and name the file according to the module name.
       </tip>
       <para>
         Simple modules and submodules are represented as icons while compound modules and
@@ -170,112 +170,212 @@
         edit properties of the element.
       </para>
       <para>
-        Hovering an element will display its documentation (the comment in the NED source
-        above the definition) in a “tooltip” if it has one. Pressing F2 will make the
-        tooltip window persistent, so that it can be resized and scrolled for more
-        convenient reading.
+        Hovering over an element will display its documentation (the comment in the NED
+        source above the definition) in a “tooltip” if it has one. Pressing
+        <keycap>F2</keycap>
+        will make the tooltip window persistent, so that it can be resized and scrolled
+        for more convenient reading.
       </para>
-      <para>Creating modules</para>
-      <para>
-        To create a module or a submodule, click on the appropriate palette item, and then
-        click where you want to place the new element.
-      </para>
-      <para>Creating and changing connections</para>
-      <para>
-        Select the connection tool (if there are channels defined in the project, you can
-        use the drop down to select which channel type the connection should have). First
-        click the source module, then the destination. A pop-up menu will appear, asking
-        which gates should be connected on the two selected modules. The tool will offer
-        only valid connections (for example, it will not offer connecting two output
-        gates.)
-      </para>
-      <para>Reconnecting modules</para>
-      <para>
-        Clicking and dragging a connection endpoint to another module will reconnect it.
-      </para>
-      <para>Selecting elements</para>
-      <para>
-        Selecting an element is done by clicking on it. Compound modules can be selected
-        by clicking on their border or title. The CTRL and SHIFT key can be used to
-        add/remove to/from the current selection. Note that the keyboard (arrow keys) can
-        also be used to navigate between submodules.
-      </para>
-      <para>Undo, redo, deleting elements</para>
-      <para>
-        Use
-        <keycap>Ctrl+Z</keycap>
-        ,
-        <keycap>Ctrl+Y</keycap>
-        for undo/redo, and the DEL key for deletion. These functions are also available in
-        the Edit menu.
-      </para>
-      <para>Moving and resizing elements</para>
-      <para>
-        You can move/resize the selected elements with the mouse. Holding down SHIFT
-        during move will perform a constrained (horizontal, diagonal or vertical) move
-        operation. CTRL + resize will resize around the object’s center. SHIFT + resize
-        will keep the aspect ratio of the element.
-      </para>
-      <para>
-        If you turn on Snap to Geometry in the View menu, helper lines will appear to
-        allow you to align to other modules. Selecting more than one submodule activates
-        the Alignment menu (found both in the View menu and in the context menu).
-      </para>
-      <para>Copying elements</para>
-      <para>
-        Holding down CTRL while dragging will clone the module(s). Copy/Paste can be also used
-        both on single modules and with group selection.
-      </para>
-      <para>Zoom</para>
-      <para>
-        Zooming in and out is possible from the View menu, or using
-        <keycap>Ctrl+-</keycap>
-        or
-        <keycap>Ctrl+=,</keycap>
-        or holding down CTRL and using the mouse wheel.
-      </para>
-      <para>Pinning and unpinning, re-layouting</para>
-      <para>
-        A submodule display string may or may not contain explicit coordinates for the
-        submodule; if it does not, then the location of the submodule will be determined
-        by the layouting algorithm. A submodule with explicit coordinates is pinned; one
-        without is unpinned. The Pin action inserts the current coordinates into the
-        display string, and the Unpin action removes them. Moving a submodule also
-        automatically pins it. The position of an unpinned module is undetermined, and may
-        change every time the layouting algorithm runs. For convenience, the layouter does
-        not run when a submodule gets unpinned (so that the submodule does not jump away
-        on unpinning), but this also means that unpinned submodules may appear at
-        different locations next time the same NED file gets opened.
-      </para>
-      <para>Navigation</para>
-      <para>
-        Double-clicking a submodule will open the corresponding module type in a NED
-        editor.
-      </para>
-      <para>Opening a NED type</para>
-      <para>
-        If you know only the name of a type of a module or other NED element, you can use
-        the Open NED Type dialog (
-        <keycap>Ctrl+SHIFT-N</keycap>
-        ). Type the name, or search with wildcards. The requested type will be opened in
-        an editor. This feature is not tied to the graphical editor: the Open NED Type
-        dialog is available from anywhere in the IDE.
-      </para>
-      <para>
-        Elements of the display string and other properties associated with the selected
-        elements can be edited in the Properties View.  
-      </para>
-      <picture file="pictures/NED-PropertiesView.png">Property Editor</picture>
+      <sect3>
+        <title>Creating modules</title>
+        <para>
+          To create a module or a submodule, click on the appropriate palette item, and
+          then click where you want to place the new element. Submodules can be placed
+          only inside compound modules or networks while other types can be dropped
+          directly in the editor window.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Creating and changing connections</title>
+        <para>
+          Select the
+          <guimenuitem>connection tool</guimenuitem>
+          (if there are channels defined in the project, you can use the drop down to
+          select which channel type the connection should have). First click the source
+          module, then the destination. A pop-up menu will appear, asking which gates
+          should be connected on the two selected modules. The tool will offer only valid
+          connections (for example, it will not offer connecting two output gates).
+        </para>
+      </sect3>
+      <sect3>
+        <title>Reconnecting modules</title>
+        <para>
+          Clicking and dragging a connection end point to another module will reconnect it
+          optionally asking for the gate which should be connected. If you want to change
+          only the gate just drag the connection end point and drop it to the original
+          module. A popup will appear asking for the source or destination gate.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Selecting elements</title>
+        <para>
+          Selecting an element is done by clicking on it or by dragging a rectangle around
+          the target modules. Compound modules can be selected by clicking on their border
+          or title. If you want to select only connections with the selection rectangle,
+          use the
+          <guimenuitem>connection selector</guimenuitem>
+          tool in the dropdown menu of the
+          <guimenuitem>connection tool</guimenuitem>
+          . The
+          <keycap>CTRL</keycap>
+          and
+          <keycap>SHIFT</keycap>
+          key can be used to add/remove to/from the current selection. Note that the
+          keyboard (arrow keys) can also be used to navigate between submodules. You can
+          also select using a selection rectangle by dragging the
+        </para>
+      </sect3>
+      <sect3>
+        <title>Undo, redo, deleting elements</title>
+        <para>
+          Use
+          <keycap>Ctrl+Z</keycap>
+          ,
+          <keycap>Ctrl+Y</keycap>
+          for undo/redo, and the DEL key for deletion. These functions are also available
+          in the Edit menu and in the context menu of the selected element.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Moving and resizing elements</title>
+        <para>
+          You can move/resize the selected elements with the mouse. Holding down
+          <keycap>SHIFT</keycap>
+          during move will perform a constrained (horizontal, diagonal or vertical) move
+          operation.
+          <keycap>CTRL</keycap>
+          + resize will resize around the object’s center.
+          <keycap>SHIFT</keycap>
+          + resize will keep the aspect ratio of the element.
+        </para>
+        <para>
+          If you turn on
+          <guimenuitem>Snap to Geometry</guimenuitem>
+          in the
+          <guimenu>View</guimenu>
+          menu, helper lines will appear to allow you to align to other modules. Selecting
+          more than one submodule activates the
+          <guimenuitem>Alignment</guimenuitem>
+          menu (found both in the View menu and in the context menu).
+        </para>
+      </sect3>
+      <sect3>
+        <title>Copying elements</title>
+        <para>
+          Holding down
+          <keycap>CTRL</keycap>
+          while dragging will clone the module(s). Copy/Paste can be also used both on
+          single modules and with group selection.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Zooming</title>
+        <para>
+          Zooming in and out is possible from the View menu, or using
+          <keycap>Ctrl+-</keycap>
+          or
+          <keycap>Ctrl+=,</keycap>
+          or holding down
+          <keycap>CTRL</keycap>
+          and using the mouse wheel.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Pinning and unpinning, re-layouting</title>
+        <para>
+          A submodule display string may or may not contain explicit coordinates for the
+          submodule; if it does not, then the location of the submodule will be determined
+          by the layouting algorithm. A submodule with explicit coordinates is pinned; one
+          without is unpinned. The Pin action inserts the current coordinates into the
+          display string, and the Unpin action removes them. Moving a submodule also
+          automatically pins it. The position of an unpinned module is undetermined, and
+          may change every time the layouting algorithm runs. For convenience, the
+          layouter does not run when a submodule gets unpinned (so that the submodule does
+          not jump away on unpinning), but this also means that unpinned submodules may
+          appear at different locations next time the same NED file gets opened.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Choosing icon for a module</title>
+        <para>
+          To choose an icon for a module right click on it and select the
+          <guimenuitem>Choose an Icon...</guimenuitem>
+          menu item from the context menu or select the module and modify the icon
+          property in the Properties View.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Navigation</title>
+        <para>
+          Double-clicking a submodule will open the corresponding module type in a NED
+          editor. Selecting an element in the graphical editor and then switching to text
+          mode will place the cursor near the previously selected element in the text
+          editor.
+        </para>
+        <para>
+          Navigating inside a longer NED file is much easier if you open the Outline View
+          to see the internal structure of the file. Selecting an element in the outline
+          will select the same element in the graphical editor.
+        </para>
+        <para>
+          If you want to see the selected element in a different view select the element
+          and right click on it. Choose
+          <guimenuitem>Show In</guimenuitem>
+          from the context menu and select the desired view.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Opening a NED type</title>
+        <para>
+          If you know only the name of a type of a module or other NED element, you can
+          use the Open NED Type dialog by pressing
+          <keycap>Ctrl+SHIFT-N</keycap>
+          . Type the name, or search with wildcards. The requested type will be opened in
+          an editor. This feature is not tied to the graphical editor: the Open NED Type
+          dialog is available from anywhere in the IDE.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Setting properties</title>
+        <para>
+          Elements of the display string and other properties associated with the selected
+          elements can be edited in the Properties View. The property view is grouped and
+          hierarchically organized however you can switch off this behavior on the view
+          toolbar. Most properties can be edited directly in the view but some has also
+          specific editors that can be activated by pressing the ellipsis button at the
+          end of the field. Fields marked with a small light bulb support content assist.
+          Try the
+          <keycap>CTRL+SPACE</keycap>
+          key combination to get a list of posible values.
+        </para>
+        <picture file="pictures/NED-PropertiesView.png">Property Editor</picture>
+      </sect3>
+      <note>
+        The following functions are available only in source editing mode:
+        <itemizedlist>
+          <listitem>
+            Creating or modifying module, submodule and channel parameters
+          </listitem>
+          <listitem>Creating or modifying gates</listitem>
+          <listitem>Creating or modifying inner types in compound modules</listitem>
+          <listitem>Creating grouped and conditional connections</listitem>
+          <listitem>Adding or editing properties</listitem>
+          <listitem>Adding or editing imports</listitem>
+          <listitem>Creating submodule vectors</listitem>
+          <listitem>Editing submodule vector size</listitem>
+        </itemizedlist>
+      </note>
     </sect2>
-    
+
     <sect2>
-      <title>Editing in text mode</title>
+      <title>Editing in source mode</title>
       <para>
         The NED source editor supports all functionality that one can expect from an
         Eclipse-based text editor, such as syntax highlighting (for the new NED syntax),
         clipboard cut/copy/paste and unlimited undo/redo. A summary of these features:
       </para>
-      <orderedlist>
+
+      <itemizedlist>
         <listitem>
           <para>
             Undo (
@@ -314,96 +414,165 @@
           </para>
         </listitem>
         <listitem>
-          <para>
-            Folding regions can be manually defined (Automatic folding according to the
-            NED syntax is not yet implemented)
-          </para>
+          <para>Folding regions (NED syntax aware)</para>
         </listitem>
-      </orderedlist>
-      <para>
+      </itemizedlist>
+      <note>
         <keycap>Ctrl+Shift+L</keycap>
         pops up a window with all keyboard bindings listed.
-      </para>
+      </note>
       <para>
         The NED source is continually parsed as you type, and errors and warnings are
-        displayed as error markers on the editor rulers. At times when the NED text is
+        displayed as markers on the editor rulers. At times when the NED text is
         syntactically correct, the editor has full knowledge of “what is what” in the text
         buffer.
       </para>
+      <picture file="pictures/NED-TextEditor.png">NED Source Editor</picture>
       <para>
         Hovering the mouse over a NED type name will display the documentation in a
-        “tooltip” window, which can be made persistent by hitting
+        "tooltip" window, which can be made persistent by hitting
         <keycap>F2</keycap>
         .
       </para>
-      <para>Converting from old to new NED format</para>
-      <para>
-        If you have a NED file with older syntax, you still can open it. A context menu
-        item allows you to convert it to the new syntax.
-      </para>
-      <para>Content assist</para>
-      <para>
-        If you need help, just press
-        <keycap>Ctrl+SPACE</keycap>
-        . The editor will offer possible words or templates. This is context sensitive, so
-        it will offer only valid ones. Content assist is also a good way of exploring the
-        new NED syntax and features.
-      </para>
-      <para>Navigation</para>
-      <para>
-        Holding the
-        <keycap>CTRL</keycap>
-        key and clicking on an HTTP link or on a module type will jump to the type
-        definition.
-      </para>
-      <para>
-        If you switch to graphical mode from text mode, the editor will try to locate the
-        NED element under the cursor and select it in the graphical editor.
-      </para>
-      <para>Bookmarks and navigation history fully work as well.</para>
+      <sect3>
+        <title>Converting from old to new NED format</title>
+        <para>
+          If you have a NED file with older syntax, you still can open it. A context menu
+          item allows you to convert it to the new syntax. If the NED file is already
+          using the new syntax the
+          <guimenuitem>Convert to 4.0 Format</guimenuitem>
+          menu item is disabled.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Content assist</title>
+        <para>
+          If you need help, just press
+          <keycap>Ctrl+SPACE</keycap>
+          . The editor will offer possible words or templates. This is context sensitive,
+          so it will offer only valid ones. Content assist is also a good way of exploring
+          the new NED syntax and features.
+        </para>
+        <picture file="pictures/NED-TextEditorCA.png">
+          NED Source Editor with content assist activated
+        </picture>
+      </sect3>
+      <sect3>
+        <title>Searching in NED Files</title>
+        <para>
+          Selecting a text or moving the cursor over a word and pressing
+          <keycap>SHIFT+CTRL+G</keycap>
+          searches for the selection in all NED files in the open projects. This function
+          lets you quickly find references to the word or type currently under the cursor.
+          The results are shown in the standard Search View.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Organizing imports</title>
+        <para>
+          Sometimes it is very inconvenient to add the necessary import statements to the
+          beginning of the NED file by hand. The IDE can do it for you (almost)
+          automatically. Pressing
+          <keycap>SHIFT+CTRL+O</keycap>
+          will try to insert all needed import statement and asks you to specify the used
+          packages in case of ambiguity.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Cleaning up NED files</title>
+        <para>
+          This function does a general repair on all selected NED files. Throws out or
+          adds import statement as needed, checks whether the file's package declaration
+          is correct and reformats the source code. It can be activated by clicking on the
+          <guimenuitem>Clean Up NED Files</guimenuitem>
+          menu item from the main menu.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Formatting the source code</title>
+        <para>
+          It is possible to reformat the whole NED file according to the recommended
+          coding guidelines by activating the
+          <guimenuitem>Format SOurce</guimenuitem>
+          context menu item or by pressing the
+          <keycap>SHIFT+CTRL+F</keycap>
+          key combination.
+        </para>
+        <note>
+          Using the graphical editor and switching to source mode automatically re-formats
+          the NED source code.
+        </note>
+      </sect3>
+
+      <sect3>
+        <title>Navigation</title>
+        <para>
+          Holding the
+          <keycap>CTRL</keycap>
+          key and clicking on an HTTP link or on a module type will jump to the target
+          page or type definition.
+        </para>
+        <para>
+          If you switch to graphical mode from text mode, the editor will try to locate
+          the NED element under the cursor and select it in the graphical editor.
+        </para>
+        <para>Bookmarks and navigation history fully work as well.</para>
+      </sect3>
     </sect2>
-    <sect2>
-      <title>Other features</title>
-      <para>Printing</para>
-      <para>
-        Printing and Print Preview functionality are available in the File menu..
-      </para>
-      <para>Exporting images</para>
-      <para>
-        To export a compound module as a picture, select the compound module and bring up
-        its context menu, select Export Image... and choose file name and type. The module
-        will be exported to the file system. BMP, PNG, JPEG, SVG and PDF formats are
-        supported.
-      </para>
-      <para>
-        It is also possible to export images from all (or selected) NED files; the
-        corresponding wizard can be found under File|Export… in the menu.
-      </para>
-    </sect2>
+    <commercial>
+      <sect2>
+        <title>Other features</title>
+        <sect3>
+          <title>Printing</title>
+          <para>You can print the content of the</para>
+        </sect3>
+        <sect3>
+          <title>Exporting images</title>
+          <para>
+            To export a compound module as a picture, select the compound module and bring
+            up its context menu, select Export Image... and choose file name and type. The
+            module will be exported to the file system. BMP, PNG, JPEG, SVG and PDF
+            formats are supported.
+          </para>
+          <para>
+            It is also possible to export images from all (or selected) NED files; the
+            corresponding wizard can be found under File|Export… in the menu.
+          </para>
+        </sect3>
+      </sect2>
+    </commercial>
   </sect1>
 
   <sect1>
     <title>Associated Views</title>
     <para>
       There are several views related to the NED editor. These views can be displayed (if
-      not already open) by choosing Window|Show View in the menu.
+      not already open) by choosing Window|Show View in the menu or by selecting a NED
+      element in the graphical editor and selecting
+      <guimenuitem>Show In</guimenuitem>
+      from the context menu.
     </para>
     <sect2>
       <title>Outline View</title>
       <para>
         The Outline View allows an overview of the current NED file. Clicking on an
-        element will focus the corresponding element in the text or graphical view. In
-        graphical view, it has limited editing functionality. You can delete an object
-        here (right click/delete), and the order of elements can be rearranged by dragging
-        them.
+        element will focus the corresponding element in the text or graphical view. It has
+        limited editing functionality; you can copy/cut/paste and delete an object.
       </para>
+      <picture file="pictures/NED-OutlineView.png">Outline View</picture>
     </sect2>
     <sect2>
       <title>Property View</title>
       <para>
         The Property View contains all properties of the selected graphical element.
         Visual appearance, name, type and other properties can be changed in this view.
+        Some fields has specialized editors that can be activated by clicking on the
+        ellipsis button in the field editor. Fields marked with a small light bulb icon
+        has content assist support. Pressing
+        <keycap>CTRL+SPACE</keycap>
+        will offer the possible values the field can hold.
       </para>
+      <picture file="pictures/NED-PropertiesView.png">Properties View</picture>
     </sect2>
     <sect2>
       <title>Palette View</title>
@@ -421,23 +590,35 @@
         Double-clicking a line will open the problematic file and move to the appropriate
         marker.
       </para>
+      <picture file="pictures/NED-ProblemsView.png">Problems View</picture>
     </sect2>
     <sect2>
       <title>NED Inheritance View</title>
-      <p>TBD</p>
+      <para>
+        The Inheritance View displays the relationship between different NED types. Select
+        a NED element in the graphical editor or move the cursor into a NED definition and
+        the Inheritance view will display the ancestors of this type. If you do not want
+        the view to follow the selection in the editor, click the Pin icon on the view
+        toolbar. This will fix the displayed type to the currently selected one.
+      </para>
+      <picture file="pictures/NED-InheritanceView.png">NED Inheritance View</picture>
     </sect2>
     <sect2>
       <title>Module Hierarchy View</title>
       <para>
-        The Module Hierarchy View shows the contained submodules, several levels deep.
+        The Module Hierarchy View shows the contained submodules and their parameters,
+        several levels deep. It also displays the parameters and other contained features.
       </para>
+      <picture file="pictures/NED-ModuleHierarchyView.png">Module Hierarchy View</picture>
     </sect2>
     <sect2>
       <title>Parameters View</title>
       <para>
         The Parameters View shows parameters of the selected module, including inherited
-        parameters.
+        parameters, the values of the parameters and the origin of the values (NED
+        definition, INI file or undefined).
       </para>
+      <picture file="pictures/NED-ParametersView.png">Outline View</picture>
     </sect2>
     <para>The latter two views have their main uses with the Inifile Editor.</para>
   </sect1>
