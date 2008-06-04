@@ -158,9 +158,16 @@ std::string NEDTypeInfo::getPackage() const
 
 std::string NEDTypeInfo::getCxxNamespace() const
 {
+    const char *namespaceName = NULL;
+
+    // look for @namespace in the current file
+    NEDElement *nedfile = getTree()->getParentWithTag(NED_NED_FILE);
+    namespaceName = nedfile ? NEDElementUtil::getLocalStringProperty(nedfile, "namespace") : NULL;
+    if (namespaceName)
+        return namespaceName;
+
     // find first @namespace() property in package.ned of this package and parent packages
     std::string packageName = getPackage();
-    const char *namespaceName = NULL;
     while (true) {
         // check the package.ned file for this property
         NEDElement *nedfile = getResolver()->getPackageNedFile(packageName.c_str());
