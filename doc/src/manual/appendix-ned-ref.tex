@@ -88,12 +88,54 @@ the end of the line.
 The grammar of the NED language can be found in Appendix
 \ref{cha:ned-language-grammar}.
 
+\section{Built-in definitions}
+\label{ch-ned-ref:sec:built-in-defs}
+
+The NED language has the following built-in definitions, all in the \ttt{ned}
+package: channels \ttt{IdealChannel} and \ttt{BasicChannel}, and module
+interfaces \ttt{IBidirectionalChannel} and \ttt{IUnidirectionalChannel}; the
+latter two are reserved for future use.
+
+%%
+%% Note: the following code is from src/nedxml/nedparser.cc, 
+%%       NEDParser::getBuiltInDeclarations()
+%%
+\begin{verbatim}
+package ned;
+
+@namespace("");
+
+channel BasicChannel {
+    @class(cBasicChannel);
+    bool disabled = false;
+    double delay = 0s @unit(s);
+    double error = 0;
+    double datarate = 0bps @unit(bps);
+}
+
+channel IdealChannel {
+    @class(cIdealChannel);
+}
+
+moduleinterface IBidirectionalChannel {
+    gates:
+        inout a;
+        inout b;
+}
+
+moduleinterface IUnidirectionalChannel {
+    gates:
+        input i;
+        output o;
+}
+\end{verbatim}
+
+
 
 \section{Packages}
 
 NED supports hierarchical namespaces called \textit{packages}. The solution
 is roughly modelled after Java's packages, with minor changes.
-
 \subsection{Package declaration}
 
 The package of the declarations in a NED file is determined by the package
@@ -324,15 +366,15 @@ name will be composed of the \textit{current namespace} (see
 property. The \ttt{@class} property should contain a single value.
 
 \begin{note}
-    1. As with simple modules, the \ttt{@class} property is needed when you want
+    As with simple modules, the \ttt{@class} property is needed when you want
     to subclass the C++ implementation class as well.
 \end{note}
     
-\begin{note}
-    2. It was considered to make \ttt{IdealChannel} the default base
+\begin{rationale}
+    It was considered to make \ttt{IdealChannel} the default base
     class and let the user spell out \ttt{extends BasicChannel}, but this idea
     was discarded as impractical.
-\end{note}
+\end{rationale}
 
 
 \section{Interfaces}
@@ -356,72 +398,17 @@ and properties may add more keys and values (see property inheritance.)
 Extra params CANNOT be added in submodules and connection channelspecs --
 they can only be added in new types.
 
+FIXME: submodules
+FIXME: connections
 
-\subsection{Rules for parameter assignments}
+\section{Networks}
 
-Default values for parameters may be overridden in subclasses.
-Parameter (non-default) assignments may NOT be overridden in subclasses.
+\subsection{The network keyword}
 
+A network declared with the \ttt{network} keyword is equivalent to a compound
+module (\ttt{module} keyword) with the \ttt{@isNetwork(true)} property.
 
-\subsection{Rules for gate vector sizes}
-
-Gate vector sizes may NOT be overridden in subclasses.
-
-
-\subsection{Rules for property inheritance}
-
-Generally, properties may be modified via inheritance. Inheritance may:
-
-\begin{itemize}
-    \item add new keys
-    \item add/overwrite values for existing keys
-    \item remove a value from an existing key (by using the special value '-')
-\end{itemize}
-
-\section{Built-in definitions}
-\label{ch-ned-ref:sec:built-in-defs}
-
-The NED language has the following built-in definitions, all in the \ttt{ned}
-package: channels \ttt{IdealChannel} and \ttt{BasicChannel}, and module
-interfaces \ttt{IBidirectionalChannel} and \ttt{IUnidirectionalChannel}; the
-latter two are reserved for future use.
-
-%%
-%% Note: the following code is from src/nedxml/nedparser.cc, 
-%%       NEDParser::getBuiltInDeclarations()
-%%
-\begin{verbatim}
-package ned;
-@namespace("");
-
-channel BasicChannel {
-    @class(cBasicChannel);
-    bool disabled = false;
-    double delay = 0s @unit(s);
-    double error = 0;
-    double datarate = 0bps @unit(bps);
-}
-
-channel IdealChannel {
-    @class(cIdealChannel);
-}
-
-moduleinterface IBidirectionalChannel {
-    gates:
-        inout a;
-        inout b;
-}
-
-moduleinterface IUnidirectionalChannel {
-    gates:
-        input i;
-        output o;
-}
-\end{verbatim}
-
-\section{Special properties}
-
-\subsection{Rules for @isNetwork}
+\subsection{The @isNetwork property}
 
 The \ttt{@isNetwork} property is only accepted on simple modules and
 compound modules. The value may be empty, true or false:
@@ -440,10 +427,35 @@ of a module with \ttt{@isNetwork} set does NOT automatically become a network.
 The \ttt{@isNetwork} property needs to be explicitly added to the subclass
 to make it a network.
 
-Rationale: subclassing may add gates, whereas networks cannot have gates.
+\begin{rationale}
+	Subclassing may introduce changes to a module that make it unfit to be used
+	as a network.
+\end{rationale}
 
 
-\subsection{Rules for @unit()}
+
+\section{Properties}
+
+\subsection{Property inheritance}
+
+Generally, properties may be modified via inheritance. Inheritance may:
+
+\begin{itemize}
+    \item add new keys
+    \item add/overwrite values for existing keys
+    \item remove a value from an existing key (by using the special value '-')
+\end{itemize}
+
+
+
+\section{Parameters}
+
+\subsection{Parameter inheritance}
+
+Default values for parameters may be overridden in subclasses.
+Parameter (non-default) assignments may NOT be overridden in subclasses.
+
+\subsection{The @unit property}
 
 A parameter may have a \ttt{@unit} property to associate it with a physical
 unit. The \ttt{@unit} property should contain one string value for the default
@@ -480,6 +492,15 @@ simple B extends A {
     p @unit(mW);  // illegal: cannot override @unit
 }
 \end{verbatim}
+
+
+
+\section{Gates}
+
+\subsection{Rules for gate vector sizes}
+
+Gate vector sizes may NOT be overridden in subclasses.
+
 
 
 \section{Expressions}
