@@ -260,15 +260,13 @@ or \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
 \index{channel!datarate}
 
 A channel definition specifies a connection type of given characteristics.
-The channel name can be used later in the NED description to
-create connections with these parameters.
-
-The syntax:
+Let us see an example channel:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{channel} ChannelName
-    //...
-\tbf{endchannel}
+channel Backbone extends ned.BasicChannel 
+\{
+    FIXME
+\}
 \end{Verbatim}
 
 Three attributes can be assigned values in the body of the channel declaration,

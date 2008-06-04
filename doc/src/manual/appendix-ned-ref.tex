@@ -125,6 +125,16 @@ If there is a toplevel \ttt{package.ned} and it declares to be in package
     they are in.
 \end{note}
 
+\section{Name uniqueness}
+
+All component type names must be unique.  
+%%FIXME clarify
+
+Identifier names within a component must be unique. That is, submodule
+or inner type cannot be named the same, or the same as a gate or
+parameter of the parent module.
+
+
 
 \section{Type name resolution}
 
@@ -185,7 +195,7 @@ Simple (unqualified) names are tried with the same package as the
 ini file is in (provided it's in a NED directory).
 
 
-\section{Inheritance rules}
+\section{Inheritance}
 
 \begin{itemize}
   \item A simple module may only extend a simple module.
@@ -207,25 +217,145 @@ Inheritance may:
   \item it may NOT modify inherited submodules, connections and inner types
 \end{itemize}
 
+XXX 
+- parameter once assigned in base class or type MUST be allowed to be
+  set to a different value in subclass/place of usage!!!
+
+XXX
+- rules of inheritance:
+    o for inner types:
+       - can I define an inner type with the same name in subclasses? NO
+    o for properties:
+       - contents will be merged (rules like for display strings: values on
+         same key and same position will overwrite old ones)
+    o for parameters:
+       - type cannot be redefined
+       - value may be redefined in subclasses or place of usage
+    o for gates:
+       - type cannot be redefined
+       - vector size may be redefined in subclasses or place of usage
+    o for gate/parameter properties:
+       - extra properties can be added
+       - existing properties can be overridden/extended like for standalone properties (?)
+    o for submodules:
+       - new submodules may be added, but inherited ones cannot be modified
+    o for connections:
+       - new connections may be added, but inherited ones cannot be modified
+
 See other rules for specifics.
 
 
-\subsection{Rules for interfaces}
+\section{Simple modules}
+
+\subsection{The C++ class name}
+
+The C++ implementation class for a simple module is determined as follows:
+
+If the simple module extends another simple module, and has no \ttt{@class}
+property, the C++ implementation class is inherited from the base class.
+
+If the simple module contains has a \ttt{@class} property, the C++ class
+name will be composed of the \textit{current namespace} (see
+\ref{cha:ned-ref:current-namespace}) and the value of the \ttt{@class}
+property. The \ttt{@class} property should contain a single value.
+
+\begin{note}
+    The \ttt{@class} property may itself contain a namespace declaration (ie.
+    may contain ``\ttt{::}'').
+\end{note}
+
+If the simple module contains no \ttt{@class} property and has no base
+class, the C++ class name will be composed of the \textit{current namespace} and the
+unqualified name simple module type.
+
+\begin{note}
+    NED subclassing does not imply subclassing the C++ implementation. If you
+    subclass a simple module in NED as well as in C++, you explicitly need the to
+    specify the \ttt{@class} property, otherwise the derived simple module
+    will continue to use the C++ class from its super type.\end{note}
+
+\subsection{Current namespace}
+\label{cha:ned-ref:current-namespace}
+ 
+The \textit{current namespace} is the value of the first \ttt{@namespace}
+property found while searching the following order:
+
+\begin{enumerate}
+  \item the current NED file
+  \item the \ttt{package.ned} file in the current package
+  \item the \ttt{package.ned} file of the parent package or the first ancestor
+        package searching upwards
+\end{enumerate}
+
+The \ttt{@namespace} property should contain a single value.
+
+\begin{note}
+    This was considered and discarded: \ttt{module X extends ASimple}
+    instead of \ttt{simple X extends ASimple}. It was proposed because
+    otherwise, if base type's implementation gets changed from simple to compound, all
+    subclasses will have to be changed. Idea discarded because the confusion
+    this would create is worse than the problem itself.
+\end{note}
+
+
+\section{Channels}
+
+\subsection{Base class}
+
+When a channel does not explicitly extend another channel, the implicit
+base class is \ttt{ned.BasicChannel}, which already declares
+the \ttt{delay}, \ttt{error} and \ttt{datarate} parameters (see
+\ref{ch-ned-ref:sec:built-in-defs}). 
+
+To create a channel that does not have these parameters, the channel needs to
+extend \ttt{ned.IdealChannel}.
+
+\subsection{The C++ class name}
+
+The C++ implementation class for a simple module is determined as follows:
+
+If the channel does not have a \ttt{@class} property, the C++ class gets
+inherited from the base class (or from the implicit base class
+\ttt{ned.BasicChannel}).
+
+If the channel has a \ttt{@class} property, the C++ class
+name will be composed of the \textit{current namespace} (see
+\ref{cha:ned-ref:current-namespace}) and the value of the \ttt{@class}
+property. The \ttt{@class} property should contain a single value.
+
+\begin{note}
+    1. As with simple modules, the \ttt{@class} property is needed when you want
+    to subclass the C++ implementation class as well.
+\end{note}
+    
+\begin{note}
+    2. It was considered to make \ttt{IdealChannel} the default base
+    class and let the user spell out \ttt{extends BasicChannel}, but this idea
+    was discarded as impractical.
+\end{note}
+
+
+\section{Interfaces}
 
 An interface (module interface or channel interface) may NOT contain
 parameter assignment or parameter default value assignment. An interface
 may NOT contain inner types. (Rationale: what use would they be?).
 
-A module type that implements ("like") a module interface is required
-to have at least the parameters and the gates defined in the interface,
-with the same types.
+A module or channel type that implements ("like") an interface is
+required to have at least the parameters and, for modules, the gates
+defined in the interface, with the same types.
 
 Regarding properties, parameter properties and gate properties defined
-in the interface: the module is required to have those properties,
+in the interface: the module or channel is required to have those properties,
 with at least the same values. It may have additional properties,
 and properties may add more keys and values (see property inheritance.)
 
-Similar rules apply to channel types.
+
+\section{Compound modules}
+
+Extra params CANNOT be added in submodules and connection channelspecs --
+they can only be added in new types.
+
 
 \subsection{Rules for parameter assignments}
 
@@ -248,45 +378,93 @@ Generally, properties may be modified via inheritance. Inheritance may:
     \item remove a value from an existing key (by using the special value '-')
 \end{itemize}
 
+\section{Built-in definitions}
+\label{ch-ned-ref:sec:built-in-defs}
+
+The NED language has the following built-in definitions, all in the \ttt{ned}
+package: channels \ttt{IdealChannel} and \ttt{BasicChannel}, and module
+interfaces \ttt{IBidirectionalChannel} and \ttt{IUnidirectionalChannel}; the
+latter two are reserved for future use.
+
+%%
+%% Note: the following code is from src/nedxml/nedparser.cc, 
+%%       NEDParser::getBuiltInDeclarations()
+%%
+\begin{verbatim}
+package ned;
+@namespace("");
+
+channel BasicChannel {
+    @class(cBasicChannel);
+    bool disabled = false;
+    double delay = 0s @unit(s);
+    double error = 0;
+    double datarate = 0bps @unit(bps);
+}
+
+channel IdealChannel {
+    @class(cIdealChannel);
+}
+
+moduleinterface IBidirectionalChannel {
+    gates:
+        inout a;
+        inout b;
+}
+
+moduleinterface IUnidirectionalChannel {
+    gates:
+        input i;
+        output o;
+}
+\end{verbatim}
+
 \section{Special properties}
 
 \subsection{Rules for @isNetwork}
 
-The @isNetwork property is only accepted on simple modules and
+The \ttt{@isNetwork} property is only accepted on simple modules and
 compound modules. The value may be empty, true or false:
 
 \begin{verbatim}
-  @isNetwork;
-  @isNetwork();
-  @isNetwork(true);
-  @isNetwork(false);
+@isNetwork;
+@isNetwork();
+@isNetwork(true);
+@isNetwork(false);
 \end{verbatim}
 
 The empty value corresponds to \ttt{@isNetwork(true)}.
 
-The @isNetwork property does NOT get inherited, that is, a subclass
-of a module with @isNetwork set does NOT automatically become a network.
-The @isNetwork property needs to be explicitly added to the subclass
+The \ttt{@isNetwork} property does NOT get inherited, that is, a subclass
+of a module with \ttt{@isNetwork} set does NOT automatically become a network.
+The \ttt{@isNetwork} property needs to be explicitly added to the subclass
 to make it a network.
 
 Rationale: subclassing may add gates, whereas networks cannot have gates.
 
+
 \subsection{Rules for @unit()}
 
-A parameter may have a @unit property to associate it with a physical unit.
-The @unit property should contain one string value for the default key.
-Examples:
-  @unit("s")
-  @unit(s)
-  @unit("second")
-  @unit(second)
+A parameter may have a \ttt{@unit} property to associate it with a physical
+unit. The \ttt{@unit} property should contain one string value for the default
+key. Examples:
+
+\begin{verbatim}
+@unit("s")
+@unit(s)
+@unit("second")
+@unit(second)
+\end{verbatim}
 
 When present, values assigned to the parameter must be in the
 same or in a compatible (that is, convertible) unit.
 Examples:
+
+\begin{verbatim}
   double a @unit(s) = 5s;  // OK
   double a @unit(s) = 5;   // error: should be 5s
   double a @unit(s) = 5kg; // error: incompatible unit
+\end{verbatim}
 
 @unit behavior for non-numeric parameters (string, XML) is unspecified
 (may be ignored or may be an error).
@@ -304,17 +482,12 @@ simple B extends A {
 \end{verbatim}
 
 
-\subsection{Rules for @class and @namespace}
+\section{Expressions}
+\label{ch-ned-ref:sec:expressions}
 
-@namespace property may be added to the package.ned file
-
-@class
-
+FIXME TODO: 
 - @unit and expression evaluation wrt units
 - rules for resolving an identifier in an expression
-
-\section{Expressions}
-\label{ch-ned-lang:sec:expressions}
 
 In the NED language there are a number of places where
 expressions\index{ned!expressions} are expected.
@@ -429,6 +602,24 @@ size of a vector gate\index{gate!vector}. The \fname{index}
 operator\index{ned!index operator} gives the index of the current
 submodule in its module vector.
 
+FIXME TBD:
+- sizeof() resolution:
+    IN SUBMODULE SCOPE:
+        sizeof(foo): must refer to a parent module gate vector, or
+                     sibling submodule vector (there cannot be ambiguity
+                     here, because of the name uniqueness rule above)
+                     NOTE: IT CANNOT REFER TO LOCAL GATE VECTOR !!!
+        sizeof(this.foo): refers to local gate vector
+        sizeof(foo.bar): refers to gatevector of sibling submodule
+    IN CONNECTION SCOPE:
+        same as above, only sizeof(this.foo) does not make sense
+    IN [PARENT] MODULE SCOPE:
+        sizeof(foo), sizeof(this.foo): refers to that module's gatevector
+        sizeof(foo.bar): makes no sense (thus illegal)
+
+- "index" operator: it always returns the same (sub)module's index in whose "parameters"
+   block it is defined. It is NOT POSSIBLE to obtain the parent module's index.
+
 
 \subsection{The \fname{xmldoc()} operator}
 
@@ -522,7 +713,7 @@ The functions available in NED are listed in Appendix
 \ref{cha:ned-functions}.
 
 \subsection{Physical units}
-\label{ch-ned-lang:sec:units}
+\label{ch-ned-ref:sec:units}
 
 The following physical units will be recorgnized in constants. Other units can
 be used as well, the only downside being that \opp will not be able to
