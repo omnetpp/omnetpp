@@ -20,8 +20,8 @@ TEXCHAPTERS = \
          ch-neddoc.tex \
          ch-parallel-exec.tex \
          ch-opp-design.tex \
-         appendix-ned-grammar.tex \
          appendix-ned-ref.tex \
+         appendix-ned-grammar.tex \
          appendix-ned-dtd.tex \
          appendix-ned-functions.tex \
          appendix-msg-grammar.tex \
