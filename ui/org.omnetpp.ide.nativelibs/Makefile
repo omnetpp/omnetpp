@@ -113,7 +113,7 @@ eventlog.cxx : eventlog.i
 
 $O/$(DLL): $(OBJS)
 	@# force static linking of libstdc++. see: http://www.trilithium.com/johan/2005/06/static-libstdc/
-	ln -s `g++ -print-file-name=libstdc++.a` $O
+	ln -s -f `$(CXX) $(LDFLAGS) -print-file-name=libstdc++.a` $O
 	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
 	strip $(STRIP_FLAGS) $O/$(DLL)
 
