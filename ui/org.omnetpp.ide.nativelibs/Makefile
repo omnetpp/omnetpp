@@ -46,10 +46,12 @@ ifeq ("$(JNI_LIB_SUFFIX)",".dll")
 # on mingw we dont need the lib prefix for a JNI library 
 DLL = opplibs$(JNI_LIB_SUFFIX)
 # the following is needed for building JNI lib with mingw (name mangling issue)
-LDFLAGS+=-Wl,--kill-at 
+LDFLAGS+= -Wl,--kill-at
 else 
 DLL = $(LIB_PREFIX)opplibs$(JNI_LIB_SUFFIX)
 endif
+# link statically against glibc and libstdc++ to avoid version dependencies
+LDFLAGS+= -static-libgcc -L$O
 
 # on MAC OS X we should strip only the non public symbols
 ifeq ("$(JNI_LIB_SUFFIX)",".jnilib")
@@ -110,6 +112,8 @@ eventlog.cxx : eventlog.i
 	$(SWIG) -c++ -java $(INCLUDES) -package $(EVENTLOG_JAVAPKG) -outdir $(EVENTLOG_JAVADIR) -o $@ $<
 
 $O/$(DLL): $(OBJS)
+	@# force static linking of libstdc++. see: http://www.trilithium.com/johan/2005/06/static-libstdc/
+	ln -s `g++ -print-file-name=libstdc++.a` $O
 	$(SHLIB_LD) -o $O/$(DLL) $(OBJS) $(LIBS) $(LDFLAGS)
 	strip $(STRIP_FLAGS) $O/$(DLL)
 
