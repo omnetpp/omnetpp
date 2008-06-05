@@ -177,12 +177,6 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /** @name Redefined cObject functions */
     //@{
     /**
-     * Lie about the class name: we return the NED type name instead of the
-     * real one, that is, "MobileHost" instead of "cCompoundModule" for example.
-     */
-    virtual const char *className() const;
-
-    /**
      * Redefined to include component parameters in the traversal as well.
      */
     virtual void forEachChild(cVisitor *v);
