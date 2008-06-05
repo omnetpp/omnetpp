@@ -74,7 +74,7 @@ proc inspectorlist_storename {w} {
     }
 
     set insp_w2name($w) [opp_getobjectfullpath $object]
-    set insp_w2class($w) [opp_getobjectclassname $object]
+    set insp_w2class($w) [opp_getobjecttypename $object]
     #debug "object and class name for $w stored"
 }
 
@@ -119,7 +119,7 @@ proc inspectorlist_remove {w} {
         error "window name $w doesn't look like an inspector window"
     }
 
-    set key "[opp_getobjectfullpath $object]:[opp_getobjectclassname $object]:$type"
+    set key "[opp_getobjectfullpath $object]:[opp_getobjecttypename $object]:$type"
 
     catch {
         unset pil_name($key)
@@ -137,7 +137,7 @@ proc inspectorlist_tkenvrc_get_contents {} {
     foreach win [winfo children .] {
        if [regexp {\.(ptr.*)-([0-9]+)} $win match object type] {
            set objname [opp_getobjectfullpath $object]
-           set class [opp_getobjectclassname $object]
+           set class [opp_getobjecttypename $object]
            set geom [winfo geometry $win]
 
            append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"

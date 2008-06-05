@@ -81,7 +81,7 @@ int getFileName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
-int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectTypeName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectOwner_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectField_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -179,7 +179,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectname",    getObjectName_cmd        }, // args: <pointer>  ret: name()
    { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: fullName()
    { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: fullPath()
-   { "opp_getobjectclassname",getObjectClassName_cmd  }, // args: <pointer>  ret: className()
+   { "opp_getobjecttypename",getObjectTypeName_cmd    }, // args: <pointer>  ret: className() or NED simple name
    { "opp_getobjectbaseclass",getObjectBaseClass_cmd  }, // args: <pointer>  ret: a base class
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectowner",   getObjectOwner_cmd       }, // args: <pointer>  ret: <ownerptr>
@@ -590,12 +590,12 @@ int getObjectFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    return TCL_OK;
 }
 
-int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int getObjectTypeName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(getObjectTypeName(object)), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -632,6 +632,8 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
        Tcl_SetResult(interp, TCLCONST(object->fullPath().c_str()), TCL_VOLATILE);
    } else if (!strcmp(field,"className")) {
        Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
+   } else if (!strcmp(field,"typeName")) {
+       Tcl_SetResult(interp, TCLCONST(getObjectTypeName(object)), TCL_VOLATILE);
    } else if (!strcmp(field,"info")) {
        Tcl_SetResult(interp, TCLCONST(object->info().c_str()), TCL_VOLATILE);
    } else if (!strcmp(field,"detailedInfo")) {
@@ -710,7 +712,7 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    else if (dynamic_cast<cWatchBase *>(object))
        Tcl_SetResult(interp, TCLCONST("cWatchBase"), TCL_STATIC);
    else
-       Tcl_SetResult(interp, TCLCONST(object->className()), TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE); // return itself as base class
    return TCL_OK;
 }
 

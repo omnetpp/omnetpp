@@ -953,7 +953,7 @@ proc filteredobjectlist_refresh {w} {
             $w.f.numobj config -text "Found $num objects:"
         }
         foreach ptr $objlist {
-            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]] [get_icon_for_object $ptr]
+            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjecttypename $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]] [get_icon_for_object $ptr]
         }
         set filtobjlist_state(outofdate) 0
         #$lb selection set 0

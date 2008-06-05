@@ -121,7 +121,7 @@ proc getFieldNodeInfo {w op {key ""}} {
             switch $keytype {
                 obj {
                     set name [opp_getobjectfullname $obj]
-                    set classname [opp_getobjectclassname $obj]
+                    set classname [opp_getobjecttypename $obj]
                     return "$name ($classname)"
                 }
                 struct {
@@ -394,7 +394,7 @@ proc getFieldNodeInfo_getFieldText {obj sd fieldid index} {
                 set fieldobjname [opp_getobjectfullpath $fieldobj]
             }
             set fieldobjname [opp_getobjectfullname $fieldobj]
-            set fieldobjclassname [opp_getobjectclassname $fieldobj]
+            set fieldobjclassname [opp_getobjecttypename $fieldobj]
             set fieldobjinfo [opp_getobjectinfostring $fieldobj]
             if {$fieldobjinfo!=""} {
                 set fieldobjinfotext ": $fieldobjinfo"

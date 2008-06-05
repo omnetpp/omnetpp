@@ -33,6 +33,7 @@
 
 #include "patternmatcher.h"
 #include "visitor.h"
+#include "tkutil.h"
 
 USING_NAMESPACE
 
@@ -186,7 +187,7 @@ static int qsort_cmp_byfullpath(const void *a, const void *b)
 }
 static int qsort_cmp_byclass(const void *a, const void *b)
 {
-    return opp_strcmp(OBJPTR(a)->className(), OBJPTR(b)->className());
+    return opp_strcmp(getObjectTypeName(OBJPTR(a)), getObjectTypeName(OBJPTR(b)));
 }
 #undef OBJPTR
 

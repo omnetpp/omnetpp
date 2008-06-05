@@ -145,9 +145,9 @@ void TInspector::update()
    fullpath[299] = 0;
    int len = strlen(fullpath);
    if (len<=45)
-       sprintf(newtitle, "%s(%.40s) %s", prefix, object->className(), fullpath);
+       sprintf(newtitle, "%s(%.40s) %s", prefix, getObjectTypeName(object), fullpath);
    else
-       sprintf(newtitle, "%s(%.40s) ...%s", prefix, object->className(), fullpath+len-40);
+       sprintf(newtitle, "%s(%.40s) ...%s", prefix, getObjectTypeName(object), fullpath+len-40);
 
    if (strcmp(newtitle, windowtitle)!=0)
    {
@@ -160,10 +160,10 @@ void TInspector::update()
    char buf[30];
    cModule *mod = dynamic_cast<cModule *>(object);
    if (mod)
-       sprintf(newname, "(%s) %s  (id=%d)  (%s)",object->className(),
+       sprintf(newname, "(%s) %s  (id=%d)  (%s)", getObjectTypeName(object),
                         object->fullPath().c_str(), mod->id(), ptrToStr(object,buf));
    else
-       sprintf(newname, "(%s) %s  (%s)",object->className(),
+       sprintf(newname, "(%s) %s  (%s)", getObjectTypeName(object),
                         object->fullPath().c_str(), ptrToStr(object,buf));
    CHK(Tcl_VarEval(interp, windowname,".infobar.name config -text {",newname,"}",NULL));
 
@@ -256,7 +256,7 @@ void TInspector::setInspectButton(const char *button, cObject *object, bool disp
           sprintf(idtext, " (id=%d)", static_cast<cModule *>(object)->id());
       }
       CHK(Tcl_VarEval(interp, windowname, button,".e config -state normal ",
-                              "-text {(", object->className(), ") ",
+                              "-text {(", getObjectTypeName(object), ") ",
                               (displayfullpath ? object->fullPath().c_str() : object->fullName()),
                               idtext, "} ",
                               "-command {opp_inspect ",ptrToStr(object)," ",buf,"}",

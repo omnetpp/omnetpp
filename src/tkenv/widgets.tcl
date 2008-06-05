@@ -91,7 +91,6 @@ proc setupTkOptions {} {
    if {[string equal [tk windowingsystem] aqua]}  {
        set B2 3
        set B3 2
-       icons_workaround_for_osx
    }
 
    # also, work around bug in Tk/Aqua image handling
