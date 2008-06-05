@@ -213,11 +213,14 @@
       specific parameters so you no longer need separate INI files for each run. In
       addition the IDE itself supports starting your simulation several times.
     </para>
+    <picture file="pictures/Launch-BatchRun.png">
+      Iteration variable in the INI file
+    </picture>
     <note>Batch running is supported only in command line environment.</note>
     <para>
       If you create a Configuration with one or more iteration variables, you will be able
       to run your simulations using each possible value of these variables. Practically
-      the IDE creates the chartezian product from these variables and assigns a run number
+      the IDE creates the cartesian product from these variables and assigns a run number
       to each product. It is possible to execute one, more or all runs of the simulation
       by specifying the
       <literal>Run number</literal>
@@ -231,6 +234,9 @@
       field. This will give you a description of the possible runs and how they are
       associated with the iteration variable values.
     </tip>
+    <picture file="pictures/Launch-BatchRun2.png">
+      Iteration variable in the INI file
+    </picture>
     <para>
       If you have a multi-core or multi-processor system and have ample of memory, you may
       try to set the
@@ -281,42 +287,60 @@
       launch, check the Show Debug View on Launch in the run configuration dialog, or
       select
       <guimenuitem>Window / Show View... / Other... / Debug / Debug</guimenuitem>
-      . Clicking on the process allows terminating the process or switching to the output
-      of that process in the Console view. Use the context menu for more options to
-      control the process execution.  
+      . Select a process and click the terminate button to stop a specific simulation run
+      or use the context menu for more options to control the process execution.  
     </para>
+    <picture file="pictures/Launch-DebugView.png">Debug View</picture>
     <tip>
       Place the debug view to a different tab group than the console so you will be able
       to switch between the process outputs and see the process list at the same time.
     </tip>
+    <note>
+      You can terminate all currently running processes by selecting the root of the
+      launch. This will not cancel the whole batch only the currently active processes. If
+      you want to cancel the whole batch, open the Progress View and cancel the simulation
+      batch there.
+    </note>
     <para>
-      If you have executed the simulation in the command line environment, you can monitor
-      the progress of the simulation in the progress view. See the status line for the
-      overall progress indicator and click on it to open the detailed progress view. It is
-      possible to terminate the whole batch by clicking on the cancel button in the
-      progress view.
+      Clicking on the process in the Debug View switches to the output of that process in
+      the Console view. The process may ask user input via the console too. Switch to the
+      appropriate console and enter the requested paameters.
     </para>
+    <picture file="pictures/Launch-ConsoleView.png">
+      Displaying the output of a simulation process in Console View
+    </picture>
     <note>
-      When progress view displays "Waiting for user input" the simulation is waiting for
-      the user. Switch to the appropriate console and provide the requested input for the
-      simulation.
+      By default the Console View automatically activates when a process is writing to it.
+      If you are running several processes in parallel this might be an annoying behavior
+      and might prevent you to switch to the Progress View. You can switch off the auto
+      activation by disabling the
+      <guibutton>Show Console When Standard Out/Error Changes</guibutton>
+      in the Console View toolbar.
     </note>
-    <note>
-      By default cmdenv reports progress only on every 100000th event. If you feel that
-      the progress should be more often reported set the
-      <literal>cmdenv-status-frequency</literal>
-      option in your INI file to a lower value.
-    </note>
-  </sect1>
 
-  <sect1>
-    <title>Progress View</title>
-    <para>TBD</para>
+    <sect3>
+    <title>Progress reporting</title>
+      <para>
+        If you have executed the simulation in the command line environment, you can
+        monitor the progress of the simulation in the Progress View. See the status line
+        for the overall progress indicator and click on it to open the detailed progress
+        view. It is possible to terminate the whole batch by clicking on the cancel button
+        in the Progress View.
+      </para>
+      <picture file="pictures/Launch-ProgressView.png">
+        Progress reporting running four processes parallel
+      </picture>
+      <note>
+        When Progress View displays "Waiting for user input" the simulation is waiting for
+        the user. Switch to the appropriate console and provide the requested input for
+        the simulation.
+      </note>
+      <note>
+        By default cmdenv reports progress only on every 100000th event. If you feel that
+        the progress should be more often reported set the
+        <literal>cmdenv-status-frequency</literal>
+        option in your INI file to a lower value.
+      </note>
+    </sect3>
   </sect1>
-
-  <sect1>
-    <title>Console View</title>
-    <para>TBD</para>
-  </sect1>
-
 </chapter>
