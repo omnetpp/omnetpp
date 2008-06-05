@@ -3,6 +3,9 @@
 class Dump : public cSimpleModule
 {
   protected:
+    bool printClassNames;
+
+  protected:
     virtual void initialize();
     virtual void dump(cModule *mod, std::string currentIndent);
     virtual std::string props2str(cProperties *props);
@@ -12,6 +15,7 @@ Define_Module(Dump);
 
 void Dump::initialize()
 {
+    printClassNames = par("printClassNames").boolValue();
     printf("==============================\n");
     dump(simulation.systemModule(), std::string());
     printf("==============================\n");
@@ -34,7 +38,10 @@ void Dump::dump(cModule *mod, std::string currentIndent)
 
     const char *indent = currentIndent.c_str();
 
-    printf("%smodule %s: %s {\n", indent, mod->fullPath().c_str(), mod->componentType()->fullName());
+    printf("%smodule %s: %s", indent, mod->fullPath().c_str(),mod->componentType()->fullName());
+    if (printClassNames)
+        printf(" (%s)", mod->className());
+    printf(" {\n");
 
     mod->displayString().str(); //important side effect: parse @display into display string; some test cases rely on this taking place here!
 
@@ -54,7 +61,10 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     for (cModule::GateIterator i(mod); !i.end(); i++) {
         cGate *gate = i();
         if (!gateheadingprinted) {printf("%s    gates:\n", indent);gateheadingprinted=true;}
-        printf("%s        %s%s: %s\n", indent, gate->fullName(), props2str(gate->properties()).c_str(), gate->info().c_str());
+        printf("%s        %s%s: %s", indent, gate->fullName(), props2str(gate->properties()).c_str(), gate->info().c_str());
+        if (printClassNames && gate->channel()!=NULL)
+            printf(" (%s)", gate->channel()->className());
+        printf("\n");
     }
 
     bool submodheadingprinted = false;

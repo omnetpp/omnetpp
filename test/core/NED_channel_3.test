@@ -40,5 +40,5 @@ Register_Class(TestChannelClass);
 }; //namespace
 
 %contains: stdout
-out[0]: --> b.in[0], TestChannel  (foo:TestChannelClass)
+out[0]: --> b.in[0], TestChannel  ({}::foo::TestChannelClass)
 
