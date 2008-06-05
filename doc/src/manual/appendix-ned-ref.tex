@@ -453,7 +453,13 @@ Generally, properties may be modified via inheritance. Inheritance may:
 \subsection{Parameter inheritance}
 
 Default values for parameters may be overridden in subclasses.
-Parameter (non-default) assignments may NOT be overridden in subclasses.
+
+Parameter (non-default) assignments may also be overridden in subclasses.
+
+\begin{rationale}
+    The latter is needed for ease of use of channels and their \ttt{delay},
+    \ttt{error}, \ttt{datarate} parameters.
+\end{rationale}
 
 \subsection{The @unit property}
 

@@ -4,12 +4,11 @@
 
 \section{NED overview}
 
-The user describes the structure of a simulation model in the NED language.
-NED stands for Network Description. NED lets the user declare simple modules,
-and connect and assemble them into compound modules. The user can label
-some compound modules as \textit{networks}, self-contained simulation
-models. Channels are another component type, whose instances can also be used
-in compound modules.
+The user describes the structure of a simulation model in the NED language. NED
+stands for Network Description. NED lets the user declare simple modules, and
+connect and assemble them into compound modules. The user can label some compound
+modules as \textit{networks}, self-contained simulation models. Channels are
+another component type, whose instances can also be used in compound modules.
 
 The NED languge has several features which let it scale well to large projects:
 
@@ -81,70 +80,23 @@ other system like SQL databases, and so on.
 
 \begin{note}
     This chapter is going to explain the NED language gradually, via examples.
-    Users looking for a more formal treatment might want to read to the
-    language grammar in Appendix \ref{cha:ned-language-grammar} in addition to
-    the more reference-style sections in this chapter.
+    If you are looking for a more formal and concise treatment, see
+    Appendix \ref{cha:ned-language-grammar}.
 \end{note}
 
 
-\section{Elements of the language}
+\section{NED files}
 
-\subsection{NED files}
-
-NED files have the \texttt{.ned} file name suffix. This is mandatory, and
-cannot be changed.
-
-
-\subsection{Reserved words}
-\index{ned!keywords}
-
-Authors have to take care that no reserved words are used for names.
-The reserved words of the NED language are:
-
-\ttt{allowunconnected bool channel channelinterface connections const
-default double extends false for gates if import index inout input int like
-module moduleinterface network output package parameters property simple
-sizeof string submodules this true types volatile xml xmldoc}
-
-
-\subsection{Identifiers}
-\index{ned!identifiers}
-
-Identifiers are the names of modules, channels, networks,
-submodules, parameters, gates, channel attributes and functions.
-
-Identifiers must be composed of letters of the English alphabet (a-z, A-Z),
-numbers (0-9) and the underscore ``\_''.
-Identifiers may only begin with a letter or the underscore.
-
-If you have identifiers that are composed of several words, the convention
-is to capitalize the beginning of every word (``camel case''). Also, it is
-recommended that you begin the names of types (modules, channels, networks,
-etc.) with a capital letter, and the names of parameters, gates and submodules
-with a lower-case letter.
-
-
-\subsection{Case sensitivity}
-\index{ned!case sensitivity}
-
-The network description and all identifiers in it are case sensitive.
-For example, \ttt{TCP} and \ttt{Tcp} are two different names.
-
-
-\subsection{Comments}
-\index{ned!comments}
-
-Comments can be placed anywhere in the NED file, with the usual C++
-syntax: comments begin with a double slash `//', and last until
-the end of the line.
+NED files have the \ttt{.ned} file name suffix. The location of the files
+matter as well, because the NED language has a package structure similar to
+Java, where the subdirectory corresponds to the package. More about this in
+section FIXME.
 
 
 \section{Simple modules}
 
 Simple modules are the basic building blocks for other (compound)
-modules. By convention, module names begin with upper-case letters.
-
-An example simple module declaration:
+modules. An example simple module declaration:
 
 %% FIXME TODO syntax highlight here and everywhere
 
@@ -165,7 +117,15 @@ simple Queue
 \end{Verbatim}
 
 This declares a simple module named \ttt{Queue}, which has two parameters
-\ttt{capacity} and \ttt{serviceTime}, and two gates \ttt{in} and \ttt{out}.
+\ttt{capacity} and \ttt{serviceTime}, and two gates \ttt{in} and \ttt{out}. The
+lines starting with ``\ttt{//}'' are comments.
+
+Note that the module name (\ttt{Queue}) begins with a capital letter, and
+parameter and gate names (\ttt{capacity}, \ttt{serviceTime}, \ttt{in},
+\ttt{out}) begin with lowercase. This is the recommended naming convention.
+(Capitalization matters because the language is case sensitive). It is also
+the recommended practice to have one module per file, and the file name to be
+the same as the module name (plus \ttt{.ned}).
 
 Notice that this declaration doesn't contain any code to define the operation
 of the queue itself: that part is expressed in C++. By default, \opp looks for a
@@ -253,45 +213,69 @@ or \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
 
 
 \section{Channels}
-\index{channel}
-\index{channel!definition}
-\index{channel!delay}
-\index{channel!error}
-\index{channel!datarate}
 
-A channel definition specifies a connection type of given characteristics.
+A channel definition specifies a connection type of some given characteristics.
 Let us see an example channel:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-channel Backbone extends ned.BasicChannel 
+channel Backbone extends ned.BasicChannel
 \{
-    FIXME
+    parameters:
+        delay = 2ms;
+        datarate = 10Gbps;
 \}
 \end{Verbatim}
 
-Three attributes can be assigned values in the body of the channel declaration,
-all of them are optional: \ttt{delay}, \ttt{error} and \ttt{datarate}.
-\ttt{delay} is the propagation delay in (simulated) seconds;
-\ttt{error} is the bit error rate that speficifies the probability
-that a bit is incorrectly transmitted; and \ttt{datarate}
-is the channel bandwidth in bits/second, used for calculating
-transmission time of a packet. The attributes can appear
-in any order.
+Our \ttt{Backbone} channel type extends (subclasses, builds upon) the
+\ttt{ned.BasicChannel} channel type. (In the latter name, \ttt{ned} is the
+package name, and \ttt{BasicChannel} is the actual type name.)
+\ttt{ned.BasicChannel} is a built-in NED type, and it declares four parameters:
+\ttt{delay} (propagation delay), \ttt{error} (bit error rate), \ttt{datarate}
+(channel bandwidth, used for calculating transmission time of a packet), and
+\ttt{disabled} (a boolean parameter).
 
-The values should be constants.
+\begin{note}
+    \ttt{error} and \ttt{datarate} are present to facilitate simulation of
+    communication networks, they would simply be unused in, say, queueing
+    network simulations.
+\end{note}
 
-Example:
+\ttt{ned.BasicChannel} initializes these parameters to provide an ideal channel
+(zero delay and bit error rate, infinite data rate). In the above
+declaration, we override \ttt{delay} and \ttt{datarate} to get our custom
+channel.
+
+With channels, the default base type is \ttt{ned.BasicChannel}, so the
+\ttt{extends\ldots} bit can be left out. Also, the \ttt{parameters:} keyword
+is optional (everywhere, not only with channels), so our declaration can be
+simplified to the following, completely equivalent one:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{channel} LeasedLine
-    \tbf{delay} 0.0018  // sec
-    \tbf{error} 1e-8
-    \tbf{datarate} 128000  // bit/sec
-\tbf{endchannel}
+channel Backbone
+\{
+    delay = 2ms;
+    datarate = 10Gbps;
+\}
 \end{Verbatim}
 
+For completeness, there is another built-in channel type,
+\ttt{ned.IdealChannel}. It defines no parameters, and its C++ implementation
+does nothing but let the message though without any change or delay.
+
+FIXME::::
+
+channel MyChannel extends ned.IdealChannel
+{
+   @class(MyChannel);
+}
+
+r1.g <--> {delay=10ms} <--> r2.g;
 
 
+
+adding parameters
+
+specifying the implementation (@class)
 
 \section{Compound modules}
 
