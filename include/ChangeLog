@@ -150,6 +150,8 @@
 	- gates() removed, as gate IDs are no longer integers in the 0..gates()-1
 	  interval (use the new cModule::GateIterator for enumerating the gates).
 	- added gateNames() method
+	- className() for cModule (or cComponent in general) no longer lies 
+	  the NED type name, but returns the real C++ class name
 
 	Message parameters:
 	- deprecated; type changed: cMsgPar instead of cPar
