@@ -1,0 +1,44 @@
+%description:
+Tests @class with channels.
+
+%file: test.ned
+
+import testlib.Dump;
+
+channel TestChannel {
+    @class("foo::TestChannelClass");
+}
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
+
+network Test
+{
+    submodules:
+        a: Node;
+        b: Node;
+        dump: Dump {printClassNames=true;}
+    connections allowunconnected:
+        a.out++ --> TestChannel --> b.in++;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+namespace foo {
+
+class TestChannelClass : public cIdealChannel
+{
+};
+
+Register_Class(TestChannelClass);
+
+};
+
+}; //namespace
+
+%contains: stdout
+out[0]: --> b.in[0], TestChannel  (foo:TestChannelClass)
+

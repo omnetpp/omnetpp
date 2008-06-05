@@ -1,0 +1,39 @@
+%description:
+Tests that a channel without base class needs a C++ class of the
+same name (as with simple modules)
+
+%file: test.ned
+
+import testlib.Dump;
+
+channel TestChannel { }
+
+module Node { gates: input in[]; output out[]; connections allowunconnected: }
+
+network Test
+{
+    submodules:
+        a: Node;
+        b: Node;
+        dump: Dump {printClassNames=true;}
+    connections allowunconnected:
+        a.out++ --> TestChannel --> b.in++;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace {} {
+
+class TestChannel : public cIdealChannel
+{
+};
+
+Register_Class(TestChannel);
+
+}; //namespace
+
+%contains: stdout
+out[0]: --> b.in[0], TestChannel  (TestChannel)
+
