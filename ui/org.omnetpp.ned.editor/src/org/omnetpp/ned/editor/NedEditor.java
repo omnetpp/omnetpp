@@ -224,13 +224,13 @@ public class NedEditor
             // setup graphical editor
             graphPageIndex = addPage(graphicalEditor, getEditorInput());
             graphicalEditor.markContent();
-            setPageText(graphPageIndex, "Graphical");
+            setPageText(graphPageIndex, "Design");
 
             // setup text editor
             // we don't have to set the content because it's set
             // automatically by the text editor (from the FileEditorInput)
             textPageIndex = addPage(textEditor, getEditorInput());
-            setPageText(textPageIndex,"Text");
+            setPageText(textPageIndex,"Source");
 
             // switch to graphics mode initially if there's no error in the file
             setActivePage(maySwitchToGraphicalEditor() ? graphPageIndex : textPageIndex);

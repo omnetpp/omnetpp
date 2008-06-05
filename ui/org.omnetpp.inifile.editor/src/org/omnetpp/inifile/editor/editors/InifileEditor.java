@@ -100,7 +100,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		try {
 			textEditor = new InifileTextEditor(this);
 			int index = addPage(textEditor, getEditorInput());
-			setPageText(index, "Text");
+			setPageText(index, "Source");
 		} catch (PartInitException e) {
 			ErrorDialog.openError(getSite().getShell(), "Error creating nested text editor", null, e.getStatus());
 		}
