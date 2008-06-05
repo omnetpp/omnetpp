@@ -73,7 +73,7 @@ example \ttt{12.5mW} or \ttt{3h 15min 37.2s}. When multiple units are present,
 they have to be convertible into each other (i.e. refer to the same physical
 quantity).
 
-Section \ref{ch-ned-lang:sec:units} lists the units recognized by \opp.
+Section \ref{ch-ned-ref:sec:units} lists the units recognized by \opp.
 Other units can be used as well, the only downside being that \opp will not be
 able to perform conversions on them.
 
@@ -105,16 +105,16 @@ package ned;
 
 @namespace("");
 
+channel IdealChannel {
+    @class(cIdealChannel);
+}
+
 channel BasicChannel {
     @class(cBasicChannel);
     bool disabled = false;
     double delay = 0s @unit(s);
     double error = 0;
     double datarate = 0bps @unit(bps);
-}
-
-channel IdealChannel {
-    @class(cIdealChannel);
 }
 
 moduleinterface IBidirectionalChannel {
@@ -286,17 +286,26 @@ XXX
 
 See other rules for specifics.
 
-
 \section{Simple modules}
 
-\subsection{The C++ class name}
+XXX
 
-The C++ implementation class for a simple module is determined as follows:
+\section{Channels}
 
-If the simple module extends another simple module, and has no \ttt{@class}
-property, the C++ implementation class is inherited from the base class.
+XXX
 
-If the simple module contains has a \ttt{@class} property, the C++ class
+\section[C++ class for simple modules/channels]{Determining the implementation
+C++ class for simple modules and channels}
+
+The procedure for determiming the C++ implementation class for simple modules
+and for channels are identical. It goes as follows (we are going to say
+\textit{component} instead of \textit{``simple module or channel''}):
+
+If the component extends another component and has no
+\ttt{@class} property, the C++ implementation class is inherited from the base
+type.
+
+If the component contains has a \ttt{@class} property, the C++ class
 name will be composed of the \textit{current namespace} (see
 \ref{cha:ned-ref:current-namespace}) and the value of the \ttt{@class}
 property. The \ttt{@class} property should contain a single value.
@@ -306,22 +315,21 @@ property. The \ttt{@class} property should contain a single value.
     may contain ``\ttt{::}'').
 \end{note}
 
-If the simple module contains no \ttt{@class} property and has no base
+If the component contains no \ttt{@class} property and has no base
 class, the C++ class name will be composed of the \textit{current namespace} and the
-unqualified name simple module type.
+unqualified name of the component.
 
 \begin{note}
     NED subclassing does not imply subclassing the C++ implementation. If you
-    subclass a simple module in NED as well as in C++, you explicitly need the to
-    specify the \ttt{@class} property, otherwise the derived simple module
-    will continue to use the C++ class from its super type.\end{note}
+    want to subclass a simple module or channel in NED as well as in C++, you
+    explicitly need the to specify the \ttt{@class} property, otherwise the
+    derived simple module or channel will continue to use the C++ class from its    super type.\end{note}
 
 \subsection{Current namespace}
 \label{cha:ned-ref:current-namespace}
  
 The \textit{current namespace} is the value of the first \ttt{@namespace}
 property found while searching the following order:
-
 \begin{enumerate}
   \item the current NED file
   \item the \ttt{package.ned} file in the current package
@@ -338,43 +346,6 @@ The \ttt{@namespace} property should contain a single value.
     subclasses will have to be changed. Idea discarded because the confusion
     this would create is worse than the problem itself.
 \end{note}
-
-
-\section{Channels}
-
-\subsection{Base class}
-
-When a channel does not explicitly extend another channel, the implicit
-base class is \ttt{ned.BasicChannel}, which already declares
-the \ttt{delay}, \ttt{error} and \ttt{datarate} parameters (see
-\ref{ch-ned-ref:sec:built-in-defs}). 
-
-To create a channel that does not have these parameters, the channel needs to
-extend \ttt{ned.IdealChannel}.
-
-\subsection{The C++ class name}
-
-The C++ implementation class for a simple module is determined as follows:
-
-If the channel does not have a \ttt{@class} property, the C++ class gets
-inherited from the base class (or from the implicit base class
-\ttt{ned.BasicChannel}).
-
-If the channel has a \ttt{@class} property, the C++ class
-name will be composed of the \textit{current namespace} (see
-\ref{cha:ned-ref:current-namespace}) and the value of the \ttt{@class}
-property. The \ttt{@class} property should contain a single value.
-
-\begin{note}
-    As with simple modules, the \ttt{@class} property is needed when you want
-    to subclass the C++ implementation class as well.
-\end{note}
-    
-\begin{rationale}
-    It was considered to make \ttt{IdealChannel} the default base
-    class and let the user spell out \ttt{extends BasicChannel}, but this idea
-    was discarded as impractical.
-\end{rationale}
 
 
 \section{Interfaces}
