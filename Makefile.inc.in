@@ -122,8 +122,8 @@ ECLIPSE_PLATFORM = @ECLIPSE_PLATFORM@
 # Definitions for makemake-generated makefiles
 #
 ALL_ENV_LIBS = @ALL_ENV_LIBS@
-CMDENV_LIBS = -u _cmdenv_lib -lenvir$D -lcmdenv$D
-TKENV_LIBS = -u _tkenv_lib -lenvir$D -ltkenv$D
+CMDENV_LIBS = -u _cmdenv_lib -lenvir$D $(WHOLE_ARCHIVE_ON) -lcmdenv$D $(WHOLE_ARCHIVE_OFF)
+TKENV_LIBS = -u _tkenv_lib -lenvir$D $(WHOLE_ARCHIVE_ON) -llayout$D -ltkenv$D $(WHOLE_ARCHIVE_OFF)
 KERNEL_LIBS = -lsim_std$D
 
 ifeq ($(WITH_PARSIM),yes)
@@ -136,6 +136,7 @@ else
 LIB_SUFFIX = $(A_LIB_SUFFIX)
 # extra libs we are indirectly depend on. they are needed if we are building statically
 KERNEL_LIBS += $(XML_LIBS) -lnedxml$D -lcommon$D
+TKENV_LIBS += $(TK_LIBS) $(BLT_LIBS) $(ZLIB_LIBS)
 endif
 
 SYS_LIBS = @SYS_LIBS@
