@@ -134,6 +134,8 @@ ifeq ("$(BUILD_SHARED_LIBS)", "yes")
 LIB_SUFFIX =  $(SHARED_LIB_SUFFIX)
 else
 LIB_SUFFIX = $(A_LIB_SUFFIX)
+# extra libs we are indirectly depend on. they are needed if we are building statically
+KERNEL_LIBS += $(XML_LIBS) -lnedxml$D -lcommon$D
 endif
 
 SYS_LIBS = @SYS_LIBS@
