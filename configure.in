@@ -1111,8 +1111,8 @@ if test -n "$NO_TCL"; then
     cat << EOT
 
 OMNeT++/OMNEST was configured without Tcl/Tk (\$NO_TCL set) -- GUI components
-will not be available. Also, sample simulations will not compile until you
-manually switch them over to Cmdenv, by editing their Makefiles.
+will not be available. Also, sample simulation will run only in command line.
+You may need to edit their omnetpp.ini file to specify unbound parameters.
 EOT
 
 elif test -z "$TCL_LIBRARY"; then

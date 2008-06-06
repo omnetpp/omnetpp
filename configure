@@ -4121,8 +4121,8 @@ fi
 
 if test "$SWIG" = "not found"; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  swig (optional)"
-   { echo "$as_me:$LINENO: WARNING: swig not found -- it is needed only to create the OMNeT++/OMNEST IDE support library." >&5
-echo "$as_me: WARNING: swig not found -- it is needed only to create the OMNeT++/OMNEST IDE support library." >&2;}
+   { echo "$as_me:$LINENO: WARNING: swig not found -- it is only needed to rebuild the OMNeT++/OMNEST IDE support library." >&5
+echo "$as_me: WARNING: swig not found -- it is only needed to rebuild the OMNeT++/OMNEST IDE support library." >&2;}
    { echo "$as_me:$LINENO: WARNING: It is available from http://www.swig.org/" >&5
 echo "$as_me: WARNING: It is available from http://www.swig.org/" >&2;}
 fi
@@ -7170,7 +7170,7 @@ fi
 
 # on NT, set total stack size
 if test "$cygwin" = yes; then
-  LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
+  LDFLAGS="$LDFLAGS -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
 fi
 
 # on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
@@ -8506,8 +8506,8 @@ if test -n "$NO_TCL"; then
     cat << EOT
 
 OMNeT++/OMNEST was configured without Tcl/Tk (\$NO_TCL set) -- GUI components
-will not be available. Also, sample simulations will not compile until you
-manually switch them over to Cmdenv, by editing their Makefiles.
+will not be available. Also, sample simulation will run only in command line.
+You may need to edit their omnetpp.ini file to specify unbound parameters.
 EOT
 
 elif test -z "$TCL_LIBRARY"; then
