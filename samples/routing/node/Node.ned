@@ -11,7 +11,7 @@
 package node;
 
 //
-// A "Node" consists of a Router plus an App module which represents the
+// A "Node" consists of a Routing plus an App module which represents the
 // aggregate traffic of the subnets connected to that router.
 //
 module Node
