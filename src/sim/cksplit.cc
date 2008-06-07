@@ -439,7 +439,7 @@ void cKSplit::expandGridVector()
    gridv = newgridv;
 }
 
-double cKSplit::realCellValue (Grid& grid, int i) const
+double cKSplit::realCellValue(Grid& grid, int i) const
 {
    // returns the actual amount of observations in cell 'i' of 'grid'
 
@@ -555,7 +555,7 @@ double cKSplit::cell(int nr) const
   return iter->cellValue();
 }
 
-double cKSplit::basepoint (int nr) const
+double cKSplit::basepoint(int nr) const
 {
   if (nr>=num_cells) return rangemax;
 
@@ -650,7 +650,7 @@ double cKSplit::random() const
 //  CODE NOT CLEANED UP BY VA YET!
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-double cKSplit::pdf (double x) const
+double cKSplit::pdf(double x) const
 {
    if (!isTransformed())
      return 0;
@@ -689,7 +689,7 @@ double cKSplit::pdf (double x) const
    return realCellValue(lp,i) / pow ((double)K, dpth - cdpth);
 }
 
-double cKSplit::cdf (double) const
+double cKSplit::cdf(double) const
 {
    throw cRuntimeError(this,"cdf() not implemented");
 }
