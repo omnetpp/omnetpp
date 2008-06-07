@@ -33,9 +33,9 @@ void nedfunctions_dummy() {} //see util.cc
 
 typedef cDynamicExpression::Value Value;  // abbreviation for local use
 
-#define DEF(NAME, SIGNATURE, BODY) \
+#define DEF(NAME, SIGNATURE, CATEGORY, DESCRIPTION, BODY) \
     static Value NAME##_f(cComponent *context, Value argv[], int argc) {BODY} \
-    Define_NED_Function2(NAME, NAME##_f, SIGNATURE);
+    Define_NED_Function2(NAME, NAME##_f, SIGNATURE, CATEGORY, DESCRIPTION);
 
 
 //
@@ -64,23 +64,23 @@ Define_Function(log, 1)
 Define_Function(log10, 1)
 
 
-DEF(fabs, "Q->Q", {
+DEF(fabs, "Q->Q", "math", "", {
     argv[0].dbl = fabs(argv[0].dbl);  // preserve unit
     return argv[0];
 })
 
-DEF(fmod, "QQ->Q", {
+DEF(fmod, "QQ->Q", "math", "", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = fmod(argv[0].dbl, argv1converted);
     return argv[0];
 })
 
-DEF(min, "QQ->Q", {
+DEF(min, "QQ->Q", "math", "", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     return argv[0].dbl < argv1converted ? argv[0] : argv[1];
 })
 
-DEF(max, "QQ->Q", {
+DEF(max, "QQ->Q", "math", "", {
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     return argv[0].dbl < argv1converted ? argv[1] : argv[0];
 })
@@ -92,24 +92,24 @@ DEF(max, "QQ->Q", {
 
 static cStringPool stringPool;
 
-DEF(dropUnit, "Q->D", {
+DEF(dropUnit, "Q->D", "unit", "", {
     argv[0].dblunit = NULL;
     return argv[0];
 })
 
-DEF(replaceUnit, "QS->Q", {
+DEF(replaceUnit, "QS->Q", "unit", "", {
     argv[0].dblunit = stringPool.get(argv[1].s.c_str());
     return argv[0];
 })
 
-DEF(convertUnit, "QS->Q", {
+DEF(convertUnit, "QS->Q", "unit", "", {
     const char *newUnit = stringPool.get(argv[1].s.c_str());
     argv[0].dbl = UnitConversion::convertUnit(argv[0].dbl, argv[0].dblunit, newUnit);
     argv[0].dblunit = newUnit;
     return argv[0];
 })
 
-DEF(unitOf, "Q->S", {
+DEF(unitOf, "Q->S", "unit", "Returns the unit of the given quantity.", {
     return argv[0].dblunit;
 })
 
@@ -118,15 +118,15 @@ DEF(unitOf, "Q->S", {
 // String manipulation functions.
 //
 
-DEF(length, "S->L", {
+DEF(length, "S->L", "string", "", {
     return (long)argv[0].s.size();
 })
 
-DEF(contains, "SS->B", {
+DEF(contains, "SS->B", "string", "", {
     return argv[0].s.find(argv[1].s) != std::string::npos;
 })
 
-DEF(substring, "SL/L->S", {  // Note: substring(str,index[,length]), i.e. length is optional
+DEF(substring, "SL/L->S", "string", "", {  // Note: substring(str,index[,length]), i.e. length is optional
     int size = argv[0].s.size();
     int index = (int)argv[1].dbl;
     int length = argc==3 ? (int)argv[2].dbl : size-index;
@@ -138,35 +138,35 @@ DEF(substring, "SL/L->S", {  // Note: substring(str,index[,length]), i.e. length
     return argv[0].s.substr(index, length);
 })
 
-DEF(substringBefore, "SS->S", {
+DEF(substringBefore, "SS->S", "string", "", {
     unsigned int pos = argv[0].s.find(argv[1].s);
     return pos==std::string::npos ? "" : argv[0].s.substr(0,pos);
 })
 
-DEF(substringAfter, "SS->S", {
+DEF(substringAfter, "SS->S", "string", "", {
     unsigned int pos = argv[0].s.find(argv[1].s);
     return pos==std::string::npos ? "" : argv[0].s.substr(pos+argv[1].s.size());
 })
 
-DEF(substringBeforeLast, "SS->S", {
+DEF(substringBeforeLast, "SS->S", "string", "", {
     unsigned int pos = argv[0].s.rfind(argv[1].s);
     return pos==std::string::npos ? "" : argv[0].s.substr(0,pos);
 })
 
-DEF(substringAfterLast, "SS->S", {
+DEF(substringAfterLast, "SS->S", "string", "", {
     unsigned int pos = argv[0].s.rfind(argv[1].s);
     return pos==std::string::npos ? "" : argv[0].s.substr(pos+argv[1].s.size());
 })
 
-DEF(startsWith, "SS->B", {
+DEF(startsWith, "SS->B", "string", "", {
     return argv[0].s.find(argv[1].s) == 0;
 })
 
-DEF(endsWith, "SS->B", {
+DEF(endsWith, "SS->B", "string", "", {
     return argv[0].s.rfind(argv[1].s) == argv[0].s.size() - argv[1].s.size();
 })
 
-DEF(tail, "SL->S", {
+DEF(tail, "SL->S", "", "string", {
     int length = (int)argv[1].dbl;
     if (length < 0)
         throw cRuntimeError("tail(): length is negative");
@@ -174,7 +174,7 @@ DEF(tail, "SL->S", {
     return argv[0].s.substr(std::max(0, size - length), size);
 })
 
-DEF(replace, "SSS/L->S", {
+DEF(replace, "SSS/L->S", "string", "", {
     std::string str = argv[0].s;
     std::string& search = argv[1].s;
     std::string& replacement = argv[2].s;
@@ -194,7 +194,7 @@ DEF(replace, "SSS/L->S", {
     return str;
 })
 
-DEF(replaceFirst, "SSS/L->S", {
+DEF(replaceFirst, "SSS/L->S", "string", "", {
     std::string str = argv[0].s;
     std::string& search = argv[1].s;
     std::string& replacement = argv[2].s;
@@ -211,15 +211,15 @@ DEF(replaceFirst, "SSS/L->S", {
     return str;
 })
 
-DEF(trim, "S->S", {
+DEF(trim, "S->S", "", "string", {
     return opp_trim(argv[0].s.c_str());
 })
 
-DEF(indexOf, "SS->L", {
+DEF(indexOf, "SS->L", "string", "", {
     return (long)argv[0].s.find(argv[1].s);
 })
 
-DEF(choose, "LS->S", {
+DEF(choose, "LS->S", "string", "", {
     int index = (int)argv[0].dbl;
     if (index < 0)
         throw cRuntimeError("choose(): negative index");
@@ -231,7 +231,7 @@ DEF(choose, "LS->S", {
     return tokenizer.nextToken();
 })
 
-DEF(toUpper, "S->S", {
+DEF(toUpper, "S->S", "string", "", {
     std::string tmp = argv[0].s;
     int length = tmp.length();
     for (int i=0; i<length; i++)
@@ -239,7 +239,7 @@ DEF(toUpper, "S->S", {
     return tmp;
 })
 
-DEF(toLower, "S->S", {
+DEF(toLower, "S->S", "string", "", {
     std::string tmp = argv[0].s;
     int length = tmp.length();
     for (int i=0; i<length; i++)
@@ -247,7 +247,7 @@ DEF(toLower, "S->S", {
     return tmp;
 })
 
-DEF(int, "*->L", {
+DEF(int, "*->L", "conversion", "", {
     switch (argv[0].type) {
         case Value::BOOL:
             return argv[0].bl ? 1L : 0L;
@@ -262,7 +262,7 @@ DEF(int, "*->L", {
     }
 })
 
-DEF(double, "*->D", {
+DEF(double, "*->D", "conversion", "", {
     switch (argv[0].type) {
         case Value::BOOL:
             return argv[0].bl ? 1.0 : 0.0;
@@ -277,7 +277,7 @@ DEF(double, "*->D", {
     }
 })
 
-DEF(string, "*->S", {
+DEF(string, "*->S", "conversion", "", {
     return argv[0].str();
 })
 
@@ -286,15 +286,15 @@ DEF(string, "*->S", {
 // Reflection
 //
 
-DEF(fullPath, "->S", {
+DEF(fullPath, "->S", "ned", "", {
     return context->fullPath();
 })
 
-DEF(fullName, "->S", {
+DEF(fullName, "->S", "ned", "", {
     return context->fullName();
 })
 
-DEF(parentIndex, "->L", {
+DEF(parentIndex, "->L", "ned", "", {
     cModule *mod = context->parentModule();
     if (!mod)
         throw cRuntimeError("parentIndex(): `%s' has no parent module", context->fullPath().c_str());
@@ -303,7 +303,7 @@ DEF(parentIndex, "->L", {
     return (long)mod->index();
 })
 
-DEF(ancestorIndex, "L->L", {
+DEF(ancestorIndex, "L->L", "ned", "", {
     int levels = (int)argv[0].dbl;
     if (levels<0)
         throw cRuntimeError("ancestorIndex(): negative number of levels");
@@ -325,46 +325,46 @@ DEF(ancestorIndex, "L->L", {
 //
 
 // continuous
-DEF(uniform, "QQ/L->Q", {
+DEF(uniform, "QQ/L->Q", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = uniform(argv[0].dbl, argv1converted, rng);
     return argv[0];
 })
 
-DEF(exponential, "Q/L->Q", {
+DEF(exponential, "Q/L->Q", "random", "", {
     int rng = argc==2 ? (int)argv[1].dbl : 0;
     argv[0].dbl = exponential(argv[0].dbl, rng);
     return argv[0];
 })
 
-DEF(normal, "QQ/L->Q", {
+DEF(normal, "QQ/L->Q", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = normal(argv[0].dbl, argv1converted, rng);
     return argv[0];
 })
 
-DEF(truncnormal, "QQ/L->Q", {
+DEF(truncnormal, "QQ/L->Q", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = truncnormal(argv[0].dbl, argv1converted, rng);
     return argv[0];
 })
 
-DEF(gamma_d, "DQ/L->Q", {
+DEF(gamma_d, "DQ/L->Q", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     argv[1].dbl = gamma_d(argv[0].dbl, argv[1].dbl, rng);
     return argv[1];
 })
 
-DEF(beta, "DD/L->D", {
+DEF(beta, "DD/L->D", "", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     argv[0].dbl = beta(argv[0].dbl, argv[1].dbl, rng);
     return argv[0];
 })
 
-DEF(erlang_k, "LQ/L->Q", {
+DEF(erlang_k, "LQ/L->Q", "random", "", {
     if (argv[0].dbl < 0.0)
        throw cRuntimeError("erlang_k(): k parameter (number of phases) must be positive "
                            "(k=%g", argv[0].dbl);
@@ -373,7 +373,7 @@ DEF(erlang_k, "LQ/L->Q", {
     return argv[1];
 })
 
-DEF(chi_square, "L/L->D", {
+DEF(chi_square, "L/L->D", "random", "", {
     if (argv[0].dbl < 0.0)
        throw cRuntimeError("chi_square(): k parameter (degrees of freedom) must be positive "
                            "(k=%g", argv[0].dbl);
@@ -382,7 +382,7 @@ DEF(chi_square, "L/L->D", {
     return argv[0];
 })
 
-DEF(student_t, "L/L->D", {
+DEF(student_t, "L/L->D", "random", "", {
     if (argv[0].dbl < 0.0)
        throw cRuntimeError("student_t(): i parameter (degrees of freedom) must be positive "
                            "(i=%g", argv[0].dbl);
@@ -391,14 +391,14 @@ DEF(student_t, "L/L->D", {
     return argv[0];
 })
 
-DEF(cauchy, "QQ/L->Q", {
+DEF(cauchy, "QQ/L->Q", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = cauchy(argv[0].dbl, argv1converted, rng);
     return argv[0];
 })
 
-DEF(triang, "QQQ/L->Q", {
+DEF(triang, "QQQ/L->Q", random"", "", {
     int rng = argc==4 ? (int)argv[3].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     double argv2converted = UnitConversion::convertUnit(argv[2].dbl, argv[2].dblunit, argv[0].dblunit);
@@ -406,20 +406,20 @@ DEF(triang, "QQQ/L->Q", {
     return argv[0];
 })
 
-DEF(lognormal, "DD/L->D", {
+DEF(lognormal, "DD/L->D", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     argv[0].dbl = lognormal(argv[0].dbl, argv[1].dbl, rng);
     return argv[0];
 })
 
-DEF(weibull, "QQ/L->Q", {
+DEF(weibull, "QQ/L->Q", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     argv[0].dbl = weibull(argv[0].dbl, argv1converted, rng);
     return argv[0];
 })
 
-DEF(pareto_shifted, "DQQ/L->Q", {
+DEF(pareto_shifted, "DQQ/L->Q", "", "", {
     int rng = argc==4 ? (int)argv[3].dbl : 0;
     double argv2converted = UnitConversion::convertUnit(argv[2].dbl, argv[2].dblunit, argv[1].dblunit);
     argv[1].dbl = pareto_shifted(argv[0].dbl, argv[1].dbl, argv2converted, rng);
@@ -428,37 +428,37 @@ DEF(pareto_shifted, "DQQ/L->Q", {
 
 // discrete
 
-DEF(intuniform, "LL/L->L", {
+DEF(intuniform, "LL/L->L", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     argv[0].dbl = intuniform((int)argv[0].dbl, (int)argv[1].dbl, rng);
     return argv[0];
 })
 
-DEF(bernoulli, "D/L->L", {
+DEF(bernoulli, "D/L->L", "random", "", {
     int rng = argc==2 ? (int)argv[1].dbl : 0;
     argv[0].dbl = bernoulli(argv[0].dbl, rng);
     return argv[0];
 })
 
-DEF(binomial, "LD/L->L", {
+DEF(binomial, "LD/L->L", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     argv[0].dbl = binomial((int)argv[0].dbl, argv[1].dbl, rng);
     return argv[0];
 })
 
-DEF(geometric, "D/L->L", {
+DEF(geometric, "D/L->L", "random", "", {
     int rng = argc==2 ? (int)argv[1].dbl : 0;
     argv[0].dbl = geometric(argv[0].dbl, rng);
     return argv[0];
 })
 
-DEF(negbinomial, "LD/L->L", {
+DEF(negbinomial, "LD/L->L", "random", "", {
     int rng = argc==3 ? (int)argv[2].dbl : 0;
     argv[0].dbl = negbinomial((int)argv[0].dbl, argv[1].dbl, rng);
     return argv[0];
 })
 
-DEF(poisson, "D/L->L", {
+DEF(poisson, "D/L->L", "random", "", {
     int rng = argc==2 ? (int)argv[1].dbl : 0;
     argv[0].dbl = poisson(argv[0].dbl, rng);
     return argv[0];

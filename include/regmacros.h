@@ -45,7 +45,7 @@ NAMESPACE_BEGIN
 /**
  * Like Define_Function(), but takes three arguments, the second one being the
  * pointer to the function. This macro allows registering a function with a
- * different name than its implementation.
+ * different name from its implementation.
  *
  * @hideinitializer
  */
@@ -69,12 +69,21 @@ NAMESPACE_BEGIN
 
 /**
  * Like Define_NED_Function(), but it allows registering a function with a
- * different name than its implementation.
+ * different name from its implementation.
  *
  * @hideinitializer
  */
 #define Define_NED_Function2(NAME,FUNCTION,SIGNATURE) \
   EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE));)
+
+/**
+ * Like Define_NED_Function2(), but allows one to specify a category string
+ * and documentation as well.
+ *
+ * @hideinitializer
+ */
+#define Define_NED_Function3(NAME,FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION) \
+  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
 
 /**
  * Register class. This defines a factory object which makes it possible

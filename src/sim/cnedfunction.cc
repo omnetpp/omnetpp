@@ -27,13 +27,18 @@ USING_NAMESPACE
 //XXX also: wrap invocation of function, so that cNEDFunction checks arg types etc
 //XXX also: old Define_Function be implemented with cNEDFunction (ie an adapter func)
 
-cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *signature) : cNoncopyableOwnedObject(name,false)
+cNEDFunction::cNEDFunction(const char *name, NEDFunction f, const char *signature,
+                           const char *category, const char *description) :
+  cNoncopyableOwnedObject(name,false)
 {
     ASSERT(f);
     signature = opp_nulltoempty(signature);
 
     this->f = f;
     this->sign = opp_nulltoempty(signature);
+
+    this->categ = opp_nulltoempty(category);
+    this->desc = opp_nulltoempty(description);
 
     parseSignature(signature);
 }

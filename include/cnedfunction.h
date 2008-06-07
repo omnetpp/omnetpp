@@ -51,10 +51,12 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     char rettype;          // one of B,L,D,Q,S,X,*
     int minargc, maxargc;  // minimum and maximum argument count
     NEDFunction f;         // function ptr
+    std::string categ;     // category string; only used when listing all functions
+    std::string desc;      // optional documentation string
 
   protected:
-      void parseSignature(const char *signature);
-      void checkArgs(cDynamicExpression::Value argv[], int argc);
+    void parseSignature(const char *signature);
+    void checkArgs(cDynamicExpression::Value argv[], int argc);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -67,7 +69,7 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
      *  - "/" marks end of mandatory args and start of optional args
      * Examples: "QQ->D"; "SD/D->S"
      */
-    cNEDFunction(const char *name, NEDFunction f, const char *signature);
+    cNEDFunction(const char *name, NEDFunction f, const char *signature, const char *category=NULL, const char *description=NULL);
 
     /**
      * Destructor.
@@ -123,6 +125,17 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
      * args are optional).
      */
     int maxArgs() const  {return maxargc;}
+
+    /**
+     * Returns a string that can be useful in classifying NED functions,
+     * e.g. "trigonometric".
+     */
+    const char *category() const  {return categ.c_str();}
+
+    /**
+     * Returns the function's documentation as a string.
+     */
+    const char *description() const  {return desc.c_str();}
     //@}
 
     /**
