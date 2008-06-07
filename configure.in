@@ -1110,9 +1110,9 @@ if test -n "$NO_TCL"; then
 
     cat << EOT
 
-OMNeT++/OMNEST was configured without Tcl/Tk (\$NO_TCL set) -- GUI components
-will not be available. Also, sample simulation will run only in command line.
-You may need to edit their omnetpp.ini file to specify unbound parameters.
+OMNeT++/OMNEST was configured without Tcl/Tk (\$NO_TCL set). Tkenv (the GUI 
+runtime environment) will not be available, simulations need to be run 
+under Cmdenv.
 EOT
 
 elif test -z "$TCL_LIBRARY"; then
@@ -1120,7 +1120,7 @@ elif test -z "$TCL_LIBRARY"; then
     cat 1>&2 << EOT
 
 WARNING: The TCL_LIBRARY environment variable is not set, and without it
-OMNEST/OMNeT++ GUI programs may be unable to find the BLT library.
+Tkenv (the GUI runtime environment) may be unable to find the BLT library.
 
 Add the following line to your .profile or .bash_profile (provided you use bash):
   export TCL_LIBRARY=$tcl_library
