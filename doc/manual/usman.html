@@ -47,10 +47,13 @@ a:visited {text-decoration: none;}
 <B><A HREF="#toc_12" class="toc">12 Parallel Distributed Simulation</A></B><BR>
 <B><A HREF="#toc_13" class="toc">13 Customization and Embedding</A></B><BR>
 <B><A HREF="#toc_14" class="toc">14 NED Language Grammar</A></B><BR>
-<B><A HREF="#toc_15" class="toc">15 NED Language Grammar</A></B><BR>
-<B><A HREF="#toc_16" class="toc">16 NED Language Grammar</A></B><BR>
-<B><A HREF="#toc_17" class="toc">17 NED Language Grammar</A></B><BR>
-<B><A HREF="#toc_18" class="toc">18 NED Language Grammar</A></B><BR>
+<B><A HREF="#toc_15" class="toc">15 NED Functions</A></B><BR>
+<B><A HREF="#toc_16" class="toc">16 NED Functions</A></B><BR>
+<B><A HREF="#toc_17" class="toc">17 Message Definitions Grammar</A></B><BR>
+<B><A HREF="#toc_18" class="toc">18 Display String Tags</A></B><BR>
+<B><A HREF="#toc_19" class="toc">19 Configuration Options</A></B><BR>
+<B><A HREF="#toc_20" class="toc">20 Result File Formats</A></B><BR>
+<B><A HREF="#toc_21" class="toc">21 Eventlog File Format</A></B><BR>
 </p><HR><H1>Table of Contents</H1>
 <p>
 <BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_1"/><A HREF="#sec100" class="toc">1 Introduction</A></B></FONT><BR>
@@ -71,7 +74,7 @@ a:visited {text-decoration: none;}
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_2.3.2"/><A HREF="#sec115" class="toc">2.3.2 What is in the distribution</A><BR>
 <BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_3"/><A HREF="#sec116" class="toc">3 The NED Language</A></B></FONT><BR>
 <B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_3.1"/><A HREF="#sec117" class="toc">3.1 NED overview</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_3.1.1"/><A HREF="#sec118" class="toc">3.1.1 Components of a NED description</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_3.1.1"/><A HREF="#sec118" class="toc">3.1.1 NED files</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_3.1.2"/><A HREF="#sec119" class="toc">3.1.2 Reserved words</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_3.1.3"/><A HREF="#sec120" class="toc">3.1.3 Identifiers</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_3.1.4"/><A HREF="#sec121" class="toc">3.1.4 Case sensitivity</A><BR>
@@ -353,10 +356,15 @@ a:visited {text-decoration: none;}
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5.3"/><A HREF="#sec397" class="toc">13.5.3 Customizing Envir</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5.4"/><A HREF="#sec398" class="toc">13.5.4 Implementation of the user interface: simulation applications</A><BR>
 <BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_14"/><A HREF="#sec399" class="toc">14 NED Language Grammar</A></B></FONT><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_15"/><A HREF="#sec400" class="toc">15 NED Language Grammar</A></B></FONT><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_16"/><A HREF="#sec401" class="toc">16 NED Language Grammar</A></B></FONT><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_17"/><A HREF="#sec402" class="toc">17 NED Language Grammar</A></B></FONT><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_18"/><A HREF="#sec403" class="toc">18 NED Language Grammar</A></B></FONT><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_15"/><A HREF="#sec400" class="toc">15 NED Functions</A></B></FONT><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_16"/><A HREF="#sec401" class="toc">16 NED Functions</A></B></FONT><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_17"/><A HREF="#sec402" class="toc">17 Message Definitions Grammar</A></B></FONT><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_18"/><A HREF="#sec403" class="toc">18 Display String Tags</A></B></FONT><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_19"/><A HREF="#sec404" class="toc">19 Configuration Options</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_19.1"/><A HREF="#sec405" class="toc">19.1 Configuration Options</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_19.2"/><A HREF="#sec406" class="toc">19.2 Predefined Configuration Variables</A></B><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_20"/><A HREF="#sec407" class="toc">20 Result File Formats</A></B></FONT><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_21"/><A HREF="#sec408" class="toc">21 Eventlog File Format</A></B></FONT><BR>
 </p> 
 <hr><hr><H1><A NAME="sec100"/>1 Introduction</H1>
 <a name="cha:introduction"></a>
@@ -400,12 +408,14 @@ Modules at the lowest level of the module hierarchy are called
 simple modules, and they encapsulate behaviour. Simple modules
 are programmed in C++, and make use of the simulation library.
 
-<p>OMNeT++ simulations can be run under various user interfaces.
+<p><fontmaroon><em> Unknown LaTeX command </em> \begin </font>graybox<fontmaroon><em>  </em>  </font>
+OMNeT++ simulations can be run under various user interfaces.
 Graphical, animating user interfaces are highly useful for
 demonstration and debugging purposes, and command-line user
 interfaces are best for batch execution.
 
-<p>The simulator as well as user interfaces and tools are highly portable.
+<p>
+The simulator as well as user interfaces and tools are highly portable.
 They are tested on the most common operating systems (Linux, Mac OS/X,
 Windows), and they can be compiled out of the box or after trivial
 modifications on most Unix-like operating systems.
@@ -459,7 +469,7 @@ from Simulcraft Inc.
     architecture and the internals of OMNeT++. This chapter will be
     useful to those who want to extend the capabilities of the
     simulator or want to embed it into a larger application.
-  <li>Appendix <a href="#sec403">[18]</a> provides a reference
+  <li>Appendix <a href="#sec399">[14]</a> provides a reference
     of the NED language<!--ned!language-->.
 </ul>
 
@@ -992,50 +1002,98 @@ integration components for Microsoft Visual C++, etc.
 <p>
 <H2><A NAME="sec117"/>3.1 NED overview</H2>
 
-<p>The structure of simulation models is described in the NED language.
+<p>The user describes the structure of a simulation model in the NED language.
+NED stands for Network Description. NED lets the user declare simple modules,
+and connect and assemble them into compound modules. The user can label
+some compound modules as <i>networks</i>, self-contained simulation
+models. Channels are another component type, whose instances can also be used
+in compound modules.
 
-<p>The NED language facilitates the modular description of a network.
-This means that a network description<!--network!description--> may consist
-of a number of component descriptions (channels<!--channel-->,
-simple<!--module!simple-->/compound<!--module!compound--> module
-types). The channels, simple modules and compound
-modules of one network description can be reused in another network
-description.
+<p>The NED languge has several features which let it scale well to large projects:
 
-<p>Files containing network descriptions generally have a <tt>.ned</tt>
-suffix. NED files can be loaded dynamically into simulation programs,
-or translated into C++ by the NED compiler and linked into
-the simulation executable.
+<p><dl>
+<li>[Hierarchical] The traditional way to deal with complexity is via introducing hierarchies.
+In OMNeT++, any module which would be too complex as a single entity can be broken down into
+smaller modules, and used as a compound module.
 
-<p>The formal language grammar can be found in Appendix
-<a href="#sec403">[18]</a>.
+<p><li>[Component-Based] Simple modules and compound modules are inherently reusable, which not only
+reduces code copying, but more importantly, allows component libraries (like the INET Framework,
+MiXiM, Castalia, etc.) to exist.
+
+<p><li>[Interfaces] Module and channel interfaces can be used as a placeholder where normally a module or channel type would be used, and the concrete module or channel type is determined at network setup time by a parameter. Concrete module types have to ``implement'' the interface they can substitute. For example,
+given a compound module type named <tt>MobileHost</tt> contains a <tt>mobility</tt> submodule of the type <tt>IMobility</tt> (where <tt>IMobility</tt> is a module interface), the actual type of <tt>mobility</tt> may be chosen from the module types that implemented <tt>IMobility</tt> (<tt>RandomWalkMobility</tt>, <tt>TurtleMobility</tt>, etc.)
+
+<p><li>[Inheritance] Modules and channels can be subclassed. Derived modules and channels may add new parameters, gates, and (in the case of compound modules) new submodules and connections. They may set existing parameters to a specific value, and also set the gate size of a gate vector. This makes it possible, for example, to take a <tt>GenericTCPClientApp</tt> module and derive an <tt>FTPApp</tt> from it by setting certain parameters to a fixed value; or derive a <tt>WebClientHost</tt> compound module from a <tt>BaseHost</tt> compound module by adding a <tt>WebClientApp</tt> submodule and connecting it to the inherited <tt>TCP</tt> submodule.
+
+<p><li>[Packages] To address name clashes between different models and to simplify specifying which NED files are needed by a specific simulation model, the NED language features a Java-like package structure.
+
+<p><li>[Inner types] Channel types and module types used locally by a compound module can be defined within the compound module, in order to reduce namespace pollution.
+
+<p><li>[Metadata annotations] It is possible to annotate module or channel types, parameters, gates and submodules by adding properties. Metadata are not used by the simulation kernel directly, but they can carry extra information for various tools, the runtime environment, or even for other modules in the model. For example, a module's graphical representation (icon, etc)  or the prompt string and physical unit (milliwatt, etc) of a parameter are already specified as metadata annotations.
+
+<p></dl>
+
+<p><fontmaroon><em> Unknown LaTeX command </em> \begin </font>note<fontmaroon><em>  </em>  </font>
+    The NED language has changed significantly in the 4.0 version. Inheritance, interfaces, packages,
+    inner types, metadata annotations, inout gates were all added in the 4.0 release, together with
+    many other features. Since the basic syntax has changed as well, old NED files need to be converted
+    to the new syntax. There are automated tools for this purpose, so manual editing is only needed
+    to take advantage of new NED features.
 
 <p>
-<H3><A NAME="sec118"/>3.1.1 Components of a NED description</H3>
-<!--ned!components-->
+The NED language has an equivalent tree representation which can be serialized to XML; that is, NED files can be converted to XML and back without loss of data, including comments. This lowers the barrier for programmatic manipulation of NED files, for example extracting information, refactoring and transforming NED, generating NED from information stored in other system like SQL databases, and so on.
 
-<p>A NED description can contain the following components, in arbitrary
-number or order:
-<ul>
-  <li>import directives<!--import directives-->
-  <li>channel definitions<!--channel!definitions-->
-  <li>simple<!--module!simple--> and compound<!--module!compound--> module definitions
-  <li>network definitions<!--network!definitions-->
-</ul>
+<p>The formal language grammar can be found in Appendix
+<a href="#sec399">[14]</a>.
+
+<p><H3><A NAME="sec118"/>3.1.1 NED files</H3>
+
+<p>NED files have the <tt>.ned</tt> file name suffix. This is mandatory, and cannot be changed.
 
 <p>
 <H3><A NAME="sec119"/>3.1.2 Reserved words</H3>
 <!--ned!keywords-->
 
-<p>The writer of the network description has to take care that no
-reserved words are used for names. The reserved words of the
+<p>Authors have to take care that no reserved words are used for names. The reserved words of the
 NED language are:
 
 <p><tt>
-import channel endchannel simple endsimple module endmodule
-error delay datarate const parameters gates submodules connections
-gatesizes if for do endfor network endnetwork nocheck
-ref ancestor true false like input numeric string bool char xml xmldoc
+allowunconnected
+bool
+channel
+channelinterface
+connections
+const
+default
+double
+extends
+false
+for
+gates
+if
+import
+index
+inout
+input
+int
+like
+module
+moduleinterface
+network
+output
+package
+parameters
+property
+simple
+sizeof
+string
+submodules
+this
+true
+types
+volatile
+xml
+xmldoc
 </tt>
 
 <p>
@@ -1048,8 +1106,6 @@ submodules, parameters, gates, channel attributes and functions.
 <p>Identifiers must be composed of letters of the English alphabet (a-z, A-Z),
 numbers (0-9) and the underscore ``_''.
 Identifiers may only begin with a letter or the underscore.
-If you want to begin an identifier with a digit, prefix the name
-you'd like to have with an underscore, e.g. <tt>_3Com</tt>.
 
 <p>If you have identifiers that are composed of several words, the convention
 is to capitalize the beginning of every word. Also, it is recommended
@@ -1070,7 +1126,7 @@ For example, <tt>TCP</tt> and <tt>Tcp</tt> are two different names.
 
 <p>Comments can be placed anywhere in the NED file, with the usual C++
 syntax: comments begin with a double slash `//', and last until
-the end of the line. Comments are ignored by the NED compiler.
+the end of the line.
 
 <p>NED comments can be used for documentation generation,
 much like JavaDoc or Doxygen. This feature is described in
@@ -15769,1061 +15825,25 @@ Specific user interfaces such as <tt>TCmdenv</tt>,
 <hr><hr><H1><A NAME="sec399"/>14 NED Language Grammar</H1>
 <a name="cha:ned-language-grammar"></a>
 
-<p>The NED language<!--ned!language-->, the network topology description language of
-OMNeT++ will be given using the extended BNF notation.
-
-<p>Space, horizontal tab and new line characters counts as delimiters,
-so one or more of them is required between two elements of the
-description which would otherwise be unseparable. '//' (two slashes)
-may be used to write comments that last to the end of the line.
-The language only distinguishes between lower and upper case
-letters in names, but not in keywords.
-
-<p>
-In this description, the {xxx...} notation stands for one or
-more xxx's separated with spaces, tabs or new line characters,
-and {xxx,,,} stands for one or more xxx's, separated with a
-comma and (optionally) spaces, tabs or new line characters.
-
-<p>
-For ease of reading, in some cases we use textual definitions.
-The <i>networkdescription</i> symbol is the sentence symbol of the
-grammar.
-
-<p>
-
-<pre>
-nedfile
-        : definitions
-        |
-        ;
-
-definitions
-        : definitions definition
-        | definition
-        ;
-
-definition
-        : packagedeclaration
-        | import
-        | propertydecl
-        | fileproperty
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
-        ;
-
-packagedeclaration
-        : PACKAGE dottedname ';'
-        ;
-
-dottedname
-        : dottedname '.' NAME
-        | NAME
-        ;
-
-import
-        : IMPORT importspec ';'
-        ;
-
-importspec
-        : importspec '.' importname
-        | importname
-        ;
-
-importname
-        : importname NAME
-        | importname '*'
-        | importname '**'
-        | NAME
-        | '*'
-        | '**'
-        ;
-
-propertydecl
-        : propertydecl_header opt_inline_properties ';'
-        | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
-        ;
-
-propertydecl_header
-        : PROPERTY '@' NAME
-        | PROPERTY '@' NAME '[' ']'
-        ;
-
-opt_propertydecl_keys
-        : propertydecl_keys
-        |
-        ;
-
-propertydecl_keys
-        : propertydecl_keys ';' propertydecl_key
-        | propertydecl_key
-        ;
-
-propertydecl_key
-        : NAME
-        ;
-
-fileproperty
-        : property_namevalue ';'
-        ;
-
-channeldefinition
-        : channelheader '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelheader
-        : CHANNEL NAME
-           opt_inheritance
-        ;
-
-opt_inheritance
-        :
-        | EXTENDS extendsname
-        | LIKE likenames
-        | EXTENDS extendsname LIKE likenames
-        ;
-
-extendsname
-        : dottedname
-        ;
-
-likenames
-        : likenames ',' likename
-        | likename
-        ;
-
-likename
-        : dottedname
-        ;
-
-channelinterfacedefinition
-        : channelinterfaceheader '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelinterfaceheader
-        : CHANNELINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_interfaceinheritance
-        : EXTENDS extendsnames
-        |
-        ;
-
-extendsnames
-        : extendsnames ',' extendsname
-        | extendsname
-        ;
-
-simplemoduledefinition
-        : simplemoduleheader '{'
-            opt_paramblock
-            opt_gateblock
-          '}'
-        ;
-
-simplemoduleheader
-        : SIMPLE NAME
-          opt_inheritance
-        ;
-
-compoundmoduledefinition
-        : compoundmoduleheader '{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '}'
-        ;
-
-compoundmoduleheader
-        : MODULE NAME
-          opt_inheritance
-        ;
-
-networkdefinition
-        : networkheader '{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '}'
-        ;
-
-networkheader
-        : NETWORK NAME
-          opt_inheritance
-        ;
-
-moduleinterfacedefinition
-        : moduleinterfaceheader '{'
-            opt_paramblock
-            opt_gateblock
-          '}'
-        ;
-
-moduleinterfaceheader
-        : MODULEINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_paramblock
-        : opt_params
-        | PARAMETERS ':'
-          opt_params
-        ;
-
-opt_params
-        : params
-        |
-        ;
-
-params
-        : params paramsitem
-        | paramsitem
-        ;
-
-paramsitem
-        : param
-        | property
-        ;
-
-param
-        : param_typenamevalue
-        | pattern_value
-        ;
-
-param_typenamevalue
-        : param_typename opt_inline_properties ';'
-        | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
-        ;
-
-param_typename
-        : opt_volatile paramtype NAME
-        | NAME
-        ;
-
-pattern_value
-        : '/' pattern '/' '=' paramvalue
-        ;
-
-paramtype
-        : DOUBLE
-        | INT
-        | STRING
-        | BOOL
-        | XML
-        ;
-
-opt_volatile
-        : VOLATILE
-        |
-        ;
-
-paramvalue
-        : expression
-        | DEFAULT '(' expression ')'
-        ;
-
-opt_inline_properties
-        : inline_properties
-        |
-        ;
-
-inline_properties
-        : inline_properties property_namevalue
-        | property_namevalue
-        ;
-
-pattern
-        : pattern pattern_elem
-        | pattern_elem
-        ;
-
-pattern_elem
-        : '.'
-        | '*'
-        | '?'
-        | '**'
-        | NAME
-        | INTCONSTANT
-        | '..'
-        | '[' pattern ']'
-        | '{' pattern '}'
-        | IMPORT | PACKAGE | PROPERTY
-        | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
-        | EXTENDS | LIKE
-        | DOUBLE | INT | STRING | BOOL | XML | VOLATILE
-        | INPUT | OUTPUT | INOUT | IF | FOR
-        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
-        | TRUE | FALSE | THIS | DEFAULT | CONST | SIZEOF | INDEX | XMLDOC
-        ;
-
-property
-        : property_namevalue ';'
-        ;
-
-property_namevalue
-        : property_name
-        | property_name '(' opt_property_keys ')'
-        ;
-
-property_name
-        : '@' NAME
-        | '@' NAME '[' NAME ']'
-        ;
-
-opt_property_keys
-        : property_keys
-        ;
-
-property_keys
-        : property_keys ';' property_key
-        | property_key
-        ;
-
-property_key
-        : NAME '=' property_values
-        | property_values
-        ;
-
-property_values
-        : property_values ',' property_value
-        | property_value
-        ;
-
-property_value
-        : NAME
-        | '$' NAME
-        | STRINGCONSTANT
-        | TRUE
-        | FALSE
-        | INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        | '-'
-        |
-        ;
-
-opt_gateblock
-        : gateblock
-        |
-        ;
-
-gateblock
-        : GATES ':'
-          opt_gates
-        ;
-
-opt_gates
-        : gates
-        |
-        ;
-
-gates
-        : gates gate
-        | gate
-        ;
-
-gate
-        : gate_typenamesize
-          opt_inline_properties ';'
-        ;
-
-gate_typenamesize
-        : gatetype NAME
-        | gatetype NAME '[' ']'
-        | gatetype NAME vector
-        | NAME
-        | NAME '[' ']'
-        | NAME vector
-        ;
-
-gatetype
-        : INPUT
-        | OUTPUT
-        | INOUT
-        ;
-
-opt_typeblock
-        : typeblock
-        |
-        ;
-
-typeblock
-        : TYPES ':'
-           opt_localtypes
-        ;
-
-opt_localtypes
-        : localtypes
-        |
-        ;
-
-localtypes
-        : localtypes localtype
-        | localtype
-        ;
-
-localtype
-        : propertydecl
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
-        ;
-
-opt_submodblock
-        : submodblock
-        |
-        ;
-
-submodblock
-        : SUBMODULES ':'
-          opt_submodules
-        ;
-
-opt_submodules
-        : submodules
-        |
-        ;
-
-submodules
-        : submodules submodule
-        | submodule
-        ;
-
-submodule
-        : submoduleheader ';'
-        | submoduleheader '{'
-          opt_paramblock
-          opt_gateblock
-          '}' opt_semicolon
-        ;
-
-submoduleheader
-        : submodulename ':' dottedname
-        | submodulename ':' likeparam LIKE dottedname
-        ;
-
-submodulename
-        : NAME
-        |  NAME vector
-        ;
-
-likeparam
-        : '&lt;' '&gt;'
-        | '&lt;' expression '&gt;'
-        ;
-
-opt_connblock
-        : connblock
-        |
-        ;
-
-connblock
-        : CONNECTIONS ALLOWUNCONNECTED ':'
-          opt_connections
-        | CONNECTIONS ':'
-          opt_connections
-        ;
-
-opt_connections
-        : connections
-        |
-        ;
-
-connections
-        : connections connectionsitem
-        | connectionsitem
-        ;
-
-connectionsitem
-        : connectiongroup
-        | connection opt_loops_and_conditions ';'
-        ;
-
-connectiongroup
-        : opt_loops_and_conditions '{'
-          connections '}' opt_semicolon
-        ;
-
-opt_loops_and_conditions
-        : loops_and_conditions
-        |
-        ;
-
-loops_and_conditions
-        : loops_and_conditions ',' loop_or_condition
-        | loop_or_condition
-        ;
-
-loop_or_condition
-        : loop
-        | condition
-        ;
-
-loop
-        : FOR NAME '=' expression '..' expression
-        ;
-
-connection
-        : leftgatespec '--&gt;' rightgatespec
-        | leftgatespec '--&gt;' channelspec '--&gt;' rightgatespec
-        | leftgatespec '&lt;--' rightgatespec
-        | leftgatespec '&lt;--' channelspec '&lt;--' rightgatespec
-        | leftgatespec '&lt;--&gt;' rightgatespec
-        | leftgatespec '&lt;--&gt;' channelspec '&lt;--&gt;' rightgatespec
-        ;
-
-leftgatespec
-        : leftmod '.' leftgate
-        | parentleftgate
-        ;
-
-leftmod
-        : NAME vector
-        | NAME
-        ;
-
-leftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentleftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-rightgatespec
-        : rightmod '.' rightgate
-        | parentrightgate
-        ;
-
-rightmod
-        : NAME
-        | NAME vector
-        ;
-
-rightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentrightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-opt_subgate
-        : '$' NAME
-        |
-        ;
-
-channelspec
-        : channelspec_header
-        | channelspec_header '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelspec_header
-        :
-        | dottedname
-        | likeparam LIKE dottedname
-        ;
-
-condition
-        : IF expression
-        ;
-
-vector
-        : '[' expression ']'
-        ;
-
-expression
-        :
-          expr
-        | xmldocvalue
-        ;
-
-xmldocvalue
-        : XMLDOC '(' stringliteral ',' stringliteral ')'
-        | XMLDOC '(' stringliteral ')'
-        ;
-
-expr
-        : simple_expr
-        | '(' expr ')'
-        | CONST '(' expr ')'
-        | expr '+' expr
-        | expr '-' expr
-        | expr '*' expr
-        | expr '/' expr
-        | expr '%' expr
-        | expr '^' expr
-        | '-' expr
-        | expr '==' expr
-        | expr '!=' expr
-        | expr '&gt;' expr
-        | expr '&gt;=' expr
-        | expr '&lt;' expr
-        | expr '&lt;=' expr
-        | expr '&&' expr
-        | expr '||' expr
-        | expr '##' expr
-        | '!' expr
-        | expr '&' expr
-        | expr '|' expr
-        | expr '#' expr
-        | '~' expr
-        | expr '&lt;&lt;' expr
-        | expr '&gt;&gt;' expr
-        | expr '?' expr ':' expr
-        | INT '(' expr ')'
-        | DOUBLE '(' expr ')'
-        | STRING '(' expr ')'
-        | NAME '(' ')'
-        | NAME '(' expr ')'
-        | NAME '(' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        ;
-
-simple_expr
-        : identifier
-        | special_expr
-        | literal
-        ;
-
-identifier
-        : NAME
-        | THIS '.' NAME
-        | NAME '.' NAME
-        | NAME '[' expr ']' '.' NAME
-        ;
-
-special_expr
-        : INDEX
-        | INDEX '(' ')'
-        | SIZEOF '(' identifier ')'
-        ;
-
-literal
-        : stringliteral
-        | boolliteral
-        | numliteral
-        ;
-
-stringliteral
-        : STRINGCONSTANT
-        ;
-
-boolliteral
-        : TRUE
-        | FALSE
-        ;
-
-numliteral
-        : INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        ;
-
-quantity
-        : quantity INTCONSTANT NAME
-        | quantity REALCONSTANT NAME
-        | INTCONSTANT NAME
-        | REALCONSTANT NAME
-        ;
-
-opt_semicolon
-        : ';'
-        |
-        ;
-
-</pre>
-
-<p>
-</BODY>
-</HTML>
-
-
-@BookJain91,
-  author = "Jain, Raj",
-  title = The Art of Computer Systems Performance Analysis,
-  publisher = "Wiley, New York",
-  year = 1991,
-
-
-<p>@BookBFS86,
-  author = "Bratley P. and Fox, B. L. and Schrage, L. E.",
-  title = A Guide to Simulation,
-  publisher = "Springer-Verlag, New York",
-  year = 1986
-
-
-<p>@ArticleJCh85,
-  author = "Jain, Raj and Chlamtac, Imrich",
-  title = The <i>P<sup>2</sup></i> Algorithm for Dynamic Calculation of Quantiles
-           and Histograms without Storing Observations,
-  journal = "Communications of the ACM",
-  volume = 28,
-  number = 10,
-  pages = "1076-1085",
-  year = 1985
-
-
-<p>
-
-@techreportPongorOmnet,
-  author = Pongor, Gy&ouml;rgy,
-  title = OMNET: An Object-Oriented Network Simulator,
-  institution = "Technical University of Budapest, Dept. of Telecommunications",
-  year = 1991
-
-
-<p>
-@techreportPongorSSM92,
-  author = Pongor, Gy&ouml;rgy,
-  title = Statistical Synchronization: A Different Approach of
-           Parallel Discrete Event Simulation,
-  institution = "University of Technology, Data Communications Laboratory",
-  address = "Lappeenranta, Finland",
-  year = 1992
-
-
-<p>@InproceedingsPongorSSM93,
-  author = Pongor, Gy&ouml;rgy,
-  title = On the Efficiency of the Statistical Synchronization Method,
-  booktitle = "Proceedings of the European Simulation Symposium (ESS'93),
-               Delft, The Netherlands, Oct. 25-28, 1993",
-  organization = "International Society for Computer Simulation",
-  year = 1993
-
-
-
-@InproceedingsOppParsim03,
-  title = Parallel Simulation Made Easy with OMNeT++,
-  author = "Y. Ahmet Sekercioglu and  Andr&aacute;s Varga and Gregory K. Egan",
-  booktitle = "Proceedings of the European Simulation Symposium (ESS 2003),
-               26-29 Oct, 2003, Delft, The Netherlands",
-  organization = "International Society for Computer Simulation",
-  year = 2003
-
-
-<p>@InproceedingsParsimCrit03,
-  title = "A Practical Efficiency Criterion for the Null Message Algorithm",
-  author = "Andr&aacute;s Varga and Y. Ahmet Sekercioglu and Gregory K. Egan",
-  booktitle = "Proceedings of the European Simulation Symposium (ESS 2003),
-               26-29 Oct, 2003, Delft, The Netherlands",
-  organization = "International Society for Computer Simulation",
-  year = 2003
-
-
-<p>@ArticleEdu99,
-  author = "Andr&aacute;s Varga",
-  title = Using the OMNeT++ Discrete Event Simulation System in Education,
-  journal = "IEEE Transactions on Education",
-  month = nov,
-  volume = 42,
-  number = 4,
-  pages = 372,
-  year = 1999,
-  note = "(on CD-ROM issue; journal contains abstract)"
-
-
-<p>@InproceedingsKSplit98,
-  title = K-split -- On-Line Density Estimation for Simulation Result Collection,
-  author = "Andr&aacute;s Varga",
-  booktitle = "Proceedings of the European Simulation Symposium (ESS'98),
-               Nottingham, UK, October 26-28",
-  organization = "International Society for Computer Simulation",
-  year = 1998
-
-
-<p>@InproceedingsParamtop98,
-  title = Parameterized Topologies for Simulation Programs,
-  author = "Andr&aacute;s Varga",
-  booktitle = "Proceedings of the Western Multiconference on Simulation
-               (WMC'98)
-               Communication Networks and Distributed Systems (CNDS'98),
-               San Diego, CA, January 11-14",
-  organization = "International Society for Computer Simulation",
-  year = 1998
-
-
-<p>@InproceedingsKSplit97,
-  author = "Andr&aacute;s Varga and Babak Fakhamzadeh",
-  title = The K-Split Algorithm for the PDF Approximation of
-            Multi-Dimensional
-           Empirical Distributions without Storing Observations,
-  booktitle = "Proceedings of the 9th European Simulation Symposium (ESS'97),
-               Passau, Germany, October 19-22, 1997",
-  organization = "International Society for Computer Simulation",
-  pages = "94--98",
-  year = 1997
-
-
-<p>@InproceedingsFlex97,
-  author = Andr&aacute;s Varga and Gy&ouml;rgy Pongor,
-  title = Flexible Topology Description Language for Simulation Programs,
-  booktitle = "Proceedings of the 9th European Simulation Symposium (ESS'97),
-               Passau, Germany, October 19-22, 1997",
-  pages = "225-229",
-  year = 1997
-
-
-
-@mastersthesisVZThesis,
-  author = "Vass, Zolt&aacute;n",
-  title = PVM Extension of OMNeT++ to Support Statistical Synchronization,
-  school = "Technical University of Budapest",
-  year = 1996,
-  note = "In Hungarian"
-
-
-<p>@techreportOMNeTExamples,
-  author = "Andr&eacute; Maurits and George van Montfort and Gerard van de Weerd",
-  title = "OMNeT++ Extensions and Examples",
-  institution = "Technical University of Budapest, Dept. of Telecommunications",
-  year = 1995
-
-
-<p>@techreportJAR,
-  author = "Jan Heijmans and Alex Paalvast and Robert van der Leij",
-  title = Network Simulation Using the JAR Compiler for the OMNeT++ Simulation System,
-  institution = "Technical University of Budapest, Dept. of Telecommunications",
-  year = 1995
-
-
-<p>@mastersthesisAVThesis,
-  author = "Varga, Andr&aacute;s",
-  title = Portable User Interface for the OMNeT++ Simulation System,
-  school = "Technical University of Budapest",
-  year = 1994,
-  note = "In Hungarian"
-
-
-<p>@mastersthesisLGThesis,
-  author = "Lencse, G&aacute;bor",
-  title = Graphical Network Editor for OMNeT++,
-  school = "Technical University of Budapest",
-  year = 1994,
-  note = "In Hungarian"
-
-
-<p>@InproceedingsAVTDK,
-  author = "Varga, Andr&aacute;s",
-  title = OMNeT++ - Portable Simulation Environment in C++,
-  booktitle = "Proceedings of the Annual Students' Scientific Conference (TDK), 1992",
-  organization = "Technical University of Budapest",
-  year = 1992,
-  note = "In Hungarian"
-
-
-
-@ArticleKofoed95,
-  author = "Kofoed, Stig",
-  title = Portable Multitasking in C++,
-  journal = "Dr. Dobb's Journal",
-  month = nov,
-  year = 1995,
-  note = "Download source from <a href="http://www.ddj.com/ftp/1995/1995.11/mtask.zip/">http://www.ddj.com/ftp/1995/1995.11/mtask.zip/</a>"
-
-
-<p>@BookWelchBook,
-  author = "Welch, Brent",
-  title = "Practical Programming in Tcl and Tk",
-  publisher = "Prentice-Hall",
-  year = 1995
-
-
-<p>@InproceedingsAkaroa99,
-  author = "G. Ewing and K. Pawlikowski and D. McNickle",
-  title = Akaroa2: Exploiting Network Computing by Distributing Stochastic Simulation,
-  booktitle = "Proceedings of the European Simulation Multiconference ESM'99,
-               Warsaw, June 1999",
-  organization = "International Society for Computer Simulation",
-  pages = "175-181",
-  year = "1999"
-
-
-<p>@articleGoldberg91what,
-    author = "David Goldberg",
-    title = What Every Computer Scientist Should Know About Floating-Point Arithmetic,
-    journal = "ACM Computing Surveys",
-    volume = "23",
-    number = "1",
-    pages = "5--48",
-    year = "1991",
-    url = "citeseer.nj.nec.com/goldberg91what.html"
-
-
-<p>@articlePawlikowsky02,
-    author = "K. Pawlikowski and H. Jeong and J. Lee",
-    title = On Credibility of Simulation Studies of Telecommunication
-              Networks,
-    journal = "IEEE Communications Magazine",
-    pages = "132--139",
-    year = "2002",
-    month = "jan"
-
-
-
-@articleEntacher02,
-    author = "K. Entacher and B. Hechenleitner and S. Wegenkittl",
-    title = A Simple OMNeT++ Queuing Experiment Using Parallel Streams,
-    journal = "PARALLEL NUMERICS'02 - Theory and Applications",
-    pages = "89-105",
-    year = "2002",
-    note = "Editors: R. Trobec, P. Zinterhof, M. Vajtersic and A. Uhl"
-
-
-<p>@articleMatsumoto98,
-    author = "M. Matsumoto and T. Nishimura",
-    title = Mersenne Twister: A 623-dimensionally Equidistributed Uniform Pseudorandom Number Generator,
-    journal = "ACM Trans. on Modeling and Computer Simulation",
-    volume = 8,
-    number = 1,
-    pages = "3-30",
-    year = "1998",
-    note = "Source code can be downloaded from <a href="http://www.math.keio.ac.jp/~matumoto/emt.html">http://www.math.keio.ac.jp/~matumoto/emt.html</a>"
-
-
-<p>@articleLEcuyer02,
-    author = "P. L'Ecuyer and R. Simard and E. J. Chen and W. D. Kelton",
-    title = An Objected-Oriented Random-Number Package with Many Long Streams and Substreams,
-    journal = "Operations Research",
-    volume = 50,
-    number = 6,
-    pages = "1073--1075",
-    year = "2002",
-    note = "Source code can be downloaded from <a href="http://www.iro.umontreal.ca/~lecuyer/papers.html">http://www.iro.umontreal.ca/~lecuyer/papers.html</a>"
-
-
-<p>
-@articleHellekalek98,
-    author = "P. Hellekalek",
-    title = Don't Trust Parallel Monte Carlo,
-    journal = "ACM SIGSIM Simulation Digest",
-    volume = 28,
-    number = 1,
-    pages = "82--89",
-    year = "1998",
-    month = "jul",
-    note = "Author's page is a great source of information, see <a href="http://random.mat.sbg.ac.at/">http://random.mat.sbg.ac.at/</a>"
-
-
-
-@articlechandymisra79,
-    author = "M. Chandy and J. Misra",
-    title = Distributed Simulation: A Case Study in Design and Verification of Distributed Programs,
-    journal = "IEEE Transactions on Software Engineering",
-    number = "5",
-    pages = "440-452",
-    year = "1979",
-    url = "http://citeseer.nj.nec.com/context/58222/0"
-
-
-<p>@Misclammpi,
-  key = LAM-MPI,
-  title =       LAM-MPI home page,
-  howpublished = <a href="http://www.lam-mpi.org/">http://www.lam-mpi.org/</a>,
-
-
-<p>@Miscquadrics,
-  key = Quadrics,
-  title =       Quadrics home page,
-  howpublished = <a href="http://www.quadrics.com/">http://www.quadrics.com/</a>,
-
-
-<p>@articlebagrodia00,
-  author =       R. L. Bagrodia and M. Takai,
-  title =        Performance Evaluation of Conservative Algorithms in
-                  Parallel Simulation Languages,
-  year =         2000,
-  journal =      ITPDS,
-  pages =        395--414,
-  number =       4,
-  url =          citeseer.nj.nec.com/bagrodia98performance.html,
-  volume =       11
-
-
-<p>
-@articlempiforum94,
-  key = MPI,
-  author = Message Passing Interface Forum,
-  pages = 165-414,
-  volume = 8,
-  number = 3/4,
-  title = MPI: A Message-Passing Interface Standard,
-  year = 1994,
-  journal = IJSA,
-
-
-<p>
-@InProceedingsongfarrell2000,
-  author =       Hong Ong and Paul A. Farrell,
-  title =        Performance Comparison of LAM/MPI, MPICH and MVICH
-                  on a Linux Cluster Connected by a Gigabit Ethernet Network,
-  year =         2000,
-  booktitle =    Proceedings of the 4th Annual Linux Showcase &amp; Conference, Atlanta, October 10-14, 2000,
-  organization = The USENIX Association,
-
-
-<p>
-
-</BODY>
-</HTML>
-<hr><hr><H1><A NAME="sec400"/>15 NED Language Grammar</H1>
-<a name="cha:ned-language-grammar"></a>
-
-<p>The NED language<!--ned!language-->, the network topology description language of
-OMNeT++ will be given using the extended BNF notation.
-
-<p>Space, horizontal tab and new line characters counts as delimiters,
-so one or more of them is required between two elements of the
-description which would otherwise be unseparable. '//' (two slashes)
-may be used to write comments that last to the end of the line.
-The language only distinguishes between lower and upper case
-letters in names, but not in keywords.
-
-<p>
-In this description, the {xxx...} notation stands for one or
-more xxx's separated with spaces, tabs or new line characters,
-and {xxx,,,} stands for one or more xxx's, separated with a
-comma and (optionally) spaces, tabs or new line characters.
-
-<p>
-For ease of reading, in some cases we use textual definitions.
-The <i>networkdescription</i> symbol is the sentence symbol of the
-grammar.
+<p>This appendix contains the grammar for the NED language<!--ned!language-->.
+
+<p>In the NED language, space, horizontal tab and new line characters count
+as delimiters, so one or more of them is required between two elements of the
+description which would otherwise be unseparable.
+
+<p>'//' (two slashes) may be used to write comments that last to the end of the line.
+
+<p>The language is fully case sensitive.
+
+<p>Notation:
+<ul>
+  <li>rule syntax is that of <i>bison</i>/<i>yacc</i>
+  <li>uppercase words are terminals, lowercase words are nonterminals
+  <li><tt>NAME</tt>, <tt>STRINGCONSTANT</tt>, <tt>INTCONSTANT</tt>,
+        <tt>REALCONSTANT</tt> represent identifier names and string,
+        integer and real number literals (defined as in the C language)
+  <li>other terminals represent keywords in all lowercase
+</ul>
 
 <p>
 
@@ -17507,308 +16527,619 @@ opt_semicolon
 <p>
 </BODY>
 </HTML>
-<hr><hr><H1><A NAME="sec401"/>16 NED Language Grammar</H1>
-<a name="cha:ned-language-grammar"></a>
+<hr><hr><H1><A NAME="sec400"/>15 NED Functions</H1>
+<a name="cha:ned-functions"></a>
 
-<p>The NED language<!--ned!language-->, the network topology description language of
-OMNeT++ will be given using the extended BNF notation.
+<p>This appendix lists the functions that can be used in NED
+expressions and ini files:
 
-<p>Space, horizontal tab and new line characters counts as delimiters,
-so one or more of them is required between two elements of the
-description which would otherwise be unseparable. '//' (two slashes)
-may be used to write comments that last to the end of the line.
-The language only distinguishes between lower and upper case
-letters in names, but not in keywords.
-
-<p>
-In this description, the {xxx...} notation stands for one or
-more xxx's separated with spaces, tabs or new line characters,
-and {xxx,,,} stands for one or more xxx's, separated with a
-comma and (optionally) spaces, tabs or new line characters.
-
-<p>
-For ease of reading, in some cases we use textual definitions.
-The <i>networkdescription</i> symbol is the sentence symbol of the
-grammar.
-
-<p>
 
 <pre>
-nedfile
+&lt;!ELEMENT files ((ned-file|msg-file)*)&gt;
+
+&lt;!--
+  **  NED-2.
+  --&gt;
+
+&lt;!ELEMENT ned-file (comment*, (package|import|property-decl|property|channel|
+                    channel-interface|simple-module|compound-module|module-interface)*)&gt;
+&lt;!ATTLIST ned-file
+     filename           CDATA     #REQUIRED
+     version            CDATA     "2"&gt;
+
+&lt;!-- comments and whitespace; comments include '//' marks. Note that although
+     nearly all elements may contain comment elements, there are places
+     (e.g. within expressions) where they are ignored by the implementation.
+     Default value is a space or a newline, depending on the context.
+ --&gt;
+&lt;!ELEMENT comment EMPTY&gt;
+&lt;!ATTLIST comment
+     locid              NMTOKEN   #REQUIRED
+     content            CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT package (comment*)&gt;
+&lt;!ATTLIST package
+     name               CDATA     #REQUIRED&gt;
+
+&lt;!ELEMENT import (comment*)&gt;
+&lt;!ATTLIST import
+     import-spec        CDATA     #REQUIRED&gt;
+
+&lt;!ELEMENT property-decl (comment*, property-key*, property*)&gt;
+&lt;!ATTLIST property-decl
+     name               NMTOKEN   #REQUIRED
+     is-array           (true|false) "false"&gt;
+
+&lt;!ELEMENT extends (comment*)&gt;
+&lt;!ATTLIST extends
+     name               CDATA     #REQUIRED&gt;
+
+&lt;!ELEMENT interface-name (comment*)&gt;
+&lt;!ATTLIST interface-name
+     name               CDATA     #REQUIRED&gt;
+
+&lt;!ELEMENT simple-module (comment*, extends?, interface-name*, parameters?, gates?)&gt;
+&lt;!ATTLIST simple-module
+     name               NMTOKEN   #REQUIRED&gt;
+
+&lt;!ELEMENT module-interface (comment*, extends*, parameters?, gates?)&gt;
+&lt;!ATTLIST module-interface
+     name               NMTOKEN   #REQUIRED&gt;
+
+&lt;!ELEMENT compound-module (comment*, extends?, interface-name*,
+                           parameters?, gates?, types?, submodules?, connections?)&gt;
+&lt;!ATTLIST compound-module
+     name               NMTOKEN   #REQUIRED&gt;
+
+&lt;!ELEMENT channel-interface (comment*, extends*, parameters?)&gt;
+&lt;!ATTLIST channel-interface
+     name                NMTOKEN   #REQUIRED&gt;
+
+&lt;!ELEMENT channel (comment*, extends?, interface-name*, parameters?)&gt;
+&lt;!ATTLIST channel
+     name                NMTOKEN   #REQUIRED&gt;
+
+&lt;!ELEMENT parameters (comment*, (property|param|pattern)*)&gt;
+&lt;!ATTLIST parameters
+    is-implicit         (true|false)  "false"&gt;
+
+&lt;!ELEMENT param (comment*, expression?, property*)&gt;
+&lt;!ATTLIST param
+     type               (double|int|string|bool|xml) #IMPLIED
+     is-volatile        (true|false)  "false"
+     name               NMTOKEN   #REQUIRED
+     value              CDATA     #IMPLIED
+     is-default         (true|false)  "false"&gt;
+
+&lt;!ELEMENT pattern (comment*, expression?, property*)&gt;
+&lt;!ATTLIST pattern
+     pattern            CDATA     #REQUIRED
+     value              CDATA     #IMPLIED
+     is-default         (true|false)  "false"&gt;
+
+&lt;!ELEMENT property (comment*, property-key*)&gt;
+&lt;!ATTLIST property
+     is-implicit        (true|false) "false"
+     name               NMTOKEN   #REQUIRED
+     index              NMTOKEN   #IMPLIED&gt;
+
+&lt;!ELEMENT property-key (comment*, literal*)&gt;
+&lt;!ATTLIST property-key
+     name               CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT gates (comment*, gate*)&gt;
+
+&lt;!ELEMENT gate (comment*, expression?, property*)&gt;
+&lt;!ATTLIST gate
+     name               NMTOKEN   #REQUIRED
+     type               (input|output|inout) #IMPLIED
+     is-vector          (true|false) "false"
+     vector-size        CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT types (comment*, (channel|channel-interface|simple-module|
+                               compound-module|module-interface)*)&gt;
+
+&lt;!ELEMENT submodules (comment*, submodule*)&gt;
+
+&lt;!ELEMENT submodule (comment*, expression*, parameters?, gates?)&gt;
+&lt;!ATTLIST submodule
+     name               NMTOKEN   #REQUIRED
+     type               CDATA     #IMPLIED
+     like-type          CDATA     #IMPLIED
+     like-param         CDATA     #IMPLIED
+     vector-size        CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT connections (comment*, (connection|connection-group)*)&gt;
+&lt;!ATTLIST connections
+     allow-unconnected (true|false) "false"&gt;
+
+&lt;!ELEMENT connection (comment*, expression*, channel-spec?, (loop|condition)*)&gt;
+&lt;!ATTLIST connection
+     src-module          NMTOKEN   #IMPLIED
+     src-module-index    CDATA     #IMPLIED
+     src-gate            NMTOKEN   #REQUIRED
+     src-gate-plusplus  (true|false) "false"
+     src-gate-index      CDATA     #IMPLIED
+     src-gate-subg       (i|o)     #IMPLIED
+     dest-module         NMTOKEN   #IMPLIED
+     dest-module-index   CDATA     #IMPLIED
+     dest-gate           NMTOKEN   #REQUIRED
+     dest-gate-plusplus (true|false) "false"
+     dest-gate-index     CDATA     #IMPLIED
+     dest-gate-subg      (i|o)     #IMPLIED
+     arrow-direction    (l2r|r2l|bidir) #REQUIRED&gt;
+
+&lt;!ELEMENT channel-spec (comment*, expression*, parameters?)&gt;
+&lt;!ATTLIST channel-spec
+     type               CDATA     #IMPLIED
+     like-type          CDATA     #IMPLIED
+     like-param         CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT connection-group (comment*, (loop|condition)*, connection*)&gt;
+
+&lt;!ELEMENT loop (comment*, expression*)&gt;
+&lt;!ATTLIST loop
+     param-name          NMTOKEN   #REQUIRED
+     from-value          CDATA     #IMPLIED
+     to-value            CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT condition (comment*, expression?)&gt;
+&lt;!ATTLIST condition
+     condition           CDATA     #IMPLIED&gt;
+
+&lt;!--
+  **  Expressions
+  --&gt;
+
+&lt;!ELEMENT expression (comment*, (operator|function|ident|literal))&gt;
+&lt;!ATTLIST expression
+     target              CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT operator (comment*, (operator|function|ident|literal)+)&gt;
+&lt;!ATTLIST operator
+     name                CDATA     #REQUIRED&gt;
+
+&lt;!-- functions, "index", "const" and "sizeof" --&gt;
+&lt;!ELEMENT function (comment*, (operator|function|ident|literal)*)&gt;
+&lt;!ATTLIST function
+     name                NMTOKEN   #REQUIRED&gt;
+
+&lt;!-- Ident is either a parameter reference or an identifier for 'sizeof' operator
+     format is 'name' or 'module.name' or 'module[n].name'. If there's a child,
+     that's the module index n.
+--&gt;
+&lt;!ELEMENT ident (comment*, (operator|function|ident|literal)?)&gt;
+&lt;!ATTLIST ident
+     module              CDATA     #IMPLIED
+     name                NMTOKEN   #REQUIRED&gt;
+
+
+&lt;!ELEMENT literal (comment*)&gt;
+&lt;!-- Note: value is in fact REQUIRED, but empty attr value should
+     also be accepted because that represents the "" string literal;
+     "spec" is for properties, to store the null value and "-",
+     the antivalue. Unit can only be present with "double".
+ --&gt;
+&lt;!ATTLIST literal
+     type  (double|int|string|bool|spec)  #REQUIRED
+     unit                CDATA     #IMPLIED
+     text                CDATA     #IMPLIED
+     value               CDATA     #IMPLIED&gt;
+
+&lt;!--**********************************************************************--&gt;
+
+&lt;!--
+**
+** Message Definitions (MSG)
+**
+--&gt;
+
+&lt;!ELEMENT msg-file (comment*, (namespace|property-decl|property|cplusplus|struct-decl|class-decl|message-decl|enum-decl|
+                     enum|message|class|struct)*)&gt;
+
+&lt;!ATTLIST msg-file
+     filename            CDATA     #IMPLIED
+     version             CDATA     "2"&gt;
+
+&lt;!ELEMENT namespace (comment*)&gt;
+&lt;!ATTLIST namespace
+     name                CDATA     #REQUIRED&gt;  &lt;!-- note: not NMTOKEN because it may contain "::" --&gt;
+
+&lt;!ELEMENT cplusplus (comment*)&gt;
+&lt;!ATTLIST cplusplus
+     body                CDATA     #REQUIRED&gt;
+
+&lt;!-- C++ type announcements --&gt;
+
+&lt;!ELEMENT struct-decl (comment*)&gt;
+&lt;!ATTLIST struct-decl
+     name                NMTOKEN   #REQUIRED&gt;
+
+&lt;!ELEMENT class-decl (comment*)&gt;
+&lt;!ATTLIST class-decl
+     name                NMTOKEN   #REQUIRED
+     is-cobject      (true|false)  "false"&gt;
+
+&lt;!ELEMENT message-decl (comment*)&gt;
+&lt;!ATTLIST message-decl
+     name                NMTOKEN   #REQUIRED&gt;
+
+&lt;!ELEMENT enum-decl (comment*)&gt;
+&lt;!ATTLIST enum-decl
+     name                NMTOKEN   #REQUIRED&gt;
+
+&lt;!-- Enums --&gt;
+
+&lt;!ELEMENT enum (comment*, enum-fields?)&gt;
+&lt;!ATTLIST enum
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     source-code         CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT enum-fields (comment*, enum-field*)&gt;
+
+&lt;!ELEMENT enum-field (comment*)&gt;
+&lt;!ATTLIST enum-field
+     name                NMTOKEN   #REQUIRED
+     value               CDATA     #IMPLIED&gt;
+
+&lt;!-- Message, class, struct --&gt;
+
+&lt;!ELEMENT message (comment*, (property|field)*)&gt;
+&lt;!ATTLIST message
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     source-code         CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT class (comment*, (property|field)*)&gt;
+&lt;!ATTLIST class
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     source-code         CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT struct (comment*, (property|field)*)&gt;
+&lt;!ATTLIST struct
+     name                NMTOKEN   #REQUIRED
+     extends-name        NMTOKEN   #IMPLIED
+     source-code         CDATA     #IMPLIED&gt;
+
+&lt;!ELEMENT field (comment*)&gt;
+&lt;!ATTLIST field
+     name                NMTOKEN   #REQUIRED
+     data-type           CDATA     #IMPLIED
+     is-abstract     (true|false)  "false"
+     is-readonly     (true|false)  "false"
+     is-vector       (true|false)  "false"
+     vector-size         CDATA     #IMPLIED
+     enum-name           NMTOKEN   #IMPLIED
+     default-value       CDATA     #IMPLIED&gt;
+
+&lt;!--
+  **  'unknown' is used internally to represent elements not in this NED DTD
+  --&gt;
+&lt;!ELEMENT unknown        ANY&gt;
+&lt;!ATTLIST unknown
+     element             CDATA     #REQUIRED&gt;
+
+
+</pre>
+<p>
+
+</BODY>
+</HTML>
+<hr><hr><H1><A NAME="sec401"/>16 NED Functions</H1>
+<a name="cha:ned-functions"></a>
+
+<p>This appendix lists the functions that can be used in NED
+expressions and ini files:
+
+
+<p>
+<pre>
+acos : (double) -&gt; double
+ancestorIndex : (long) -&gt; long
+asin : (double) -&gt; double
+atan : (double) -&gt; double
+atan2 : (double,double) -&gt; double
+bernoulli : (double[,long]) -&gt; long
+beta : (double,double[,long]) -&gt; double
+binomial : (long,double[,long]) -&gt; long
+cauchy : (quantity,quantity[,long]) -&gt; quantity
+ceil : (double) -&gt; double
+chi_square : (long[,long]) -&gt; double
+choose : (long,string) -&gt; string
+contains : (string,string) -&gt; bool
+convertUnit : (quantity,string) -&gt; quantity
+cos : (double) -&gt; double
+double : (any) -&gt; double
+dropUnit : (quantity) -&gt; double
+endsWith : (string,string) -&gt; bool
+erlang_k : (long,quantity[,long]) -&gt; quantity
+exp : (double) -&gt; double
+exponential : (quantity[,long]) -&gt; quantity
+fabs : (quantity) -&gt; quantity
+floor : (double) -&gt; double
+fmod : (quantity,quantity) -&gt; quantity
+fullName : () -&gt; string
+fullPath : () -&gt; string
+gamma_d : (double,quantity[,long]) -&gt; quantity
+genk_exponential : (double,double) -&gt; double
+genk_intuniform : (double,double,double) -&gt; double
+genk_normal : (double,double,double) -&gt; double
+genk_truncnormal : (double,double,double) -&gt; double
+genk_uniform : (double,double,double) -&gt; double
+geometric : (double[,long]) -&gt; long
+hypot : (double,double) -&gt; double
+indexOf : (string,string) -&gt; long
+int : (any) -&gt; long
+intuniform : (long,long[,long]) -&gt; long
+length : (string) -&gt; long
+log : (double) -&gt; double
+log10 : (double) -&gt; double
+lognormal : (double,double[,long]) -&gt; double
+max : (quantity,quantity) -&gt; quantity
+min : (quantity,quantity) -&gt; quantity
+negbinomial : (long,double[,long]) -&gt; long
+normal : (quantity,quantity[,long]) -&gt; quantity
+parentIndex : () -&gt; long
+pareto_shifted : (double,quantity,quantity[,long]) -&gt; quantity
+poisson : (double[,long]) -&gt; long
+pow : (double,double) -&gt; double
+replace : (string,string,string[,long]) -&gt; string
+replaceFirst : (string,string,string[,long]) -&gt; string
+replaceUnit : (quantity,string) -&gt; quantity
+sin : (double) -&gt; double
+sqrt : (double) -&gt; double
+startsWith : (string,string) -&gt; bool
+string : (any) -&gt; string
+student_t : (long[,long]) -&gt; double
+substring : (string,long[,long]) -&gt; string
+substringAfter : (string,string) -&gt; string
+substringAfterLast : (string,string) -&gt; string
+substringBefore : (string,string) -&gt; string
+substringBeforeLast : (string,string) -&gt; string
+tail : (string,long) -&gt; string
+tan : (double) -&gt; double
+toLower : (string) -&gt; string
+toUpper : (string) -&gt; string
+triang : (quantity,quantity,quantity[,long]) -&gt; quantity
+trim : (string) -&gt; string
+truncnormal : (quantity,quantity[,long]) -&gt; quantity
+uniform : (quantity,quantity[,long]) -&gt; quantity
+unitOf : (quantity) -&gt; string
+weibull : (quantity,quantity[,long]) -&gt; quantity
+</pre>
+
+</BODY>
+</HTML>
+<hr><hr><H1><A NAME="sec402"/>17 Message Definitions Grammar</H1>
+<a name="cha:msg-language-grammar"></a>
+
+<p>This appendix contains the grammar for the message definitions
+language.
+
+<p>In the language, space, horizontal tab and new line characters count
+as delimiters, so one or more of them is required between two elements of the
+description which would otherwise be unseparable.
+
+<p>'//' (two slashes) may be used to write comments that last to the end of the line.
+
+<p>The language is fully case sensitive.
+
+<p>Notation:
+<ul>
+  <li>rule syntax is that of <i>bison</i>/<i>yacc</i>
+  <li>uppercase words are terminals, lowercase words are nonterminals
+  <li><tt>NAME</tt>, <tt>CHARCONSTANT</tt>, <tt>STRINGCONSTANT</tt>, <tt>INTCONSTANT</tt>,
+        <tt>REALCONSTANT</tt> represent identifier names and string, character,
+        integer and real number literals (defined as in the C language)
+  <li>other terminals represent keywords in all lowercase
+</ul>
+
+<p>Nonterminals ending in <tt>_old</tt> are present so that message files
+from the previous versions of OMNeT++ (3.x) can be parsed.
+
+
+<pre>
+
+
+msgfile
         : definitions
-        |
         ;
 
 definitions
         : definitions definition
-        | definition
+        |
         ;
 
 definition
-        : packagedeclaration
-        | import
-        | propertydecl
-        | fileproperty
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
+        : namespace_decl
+        | cplusplus
+        | struct_decl
+        | class_decl
+        | message_decl
+        | enum_decl
+        | enum
+        | message
+        | class
+        | struct
         ;
 
-packagedeclaration
-        : PACKAGE dottedname ';'
-        ;
+namespace_decl
+        : NAMESPACE namespacename ';'
 
-dottedname
-        : dottedname '.' NAME
+namespacename
+        : namespacename ':' ':' NAME
         | NAME
         ;
 
-import
-        : IMPORT importspec ';'
+cplusplus
+        : CPLUSPLUS '{{' ... '}}' opt_semicolon
         ;
 
-importspec
-        : importspec '.' importname
-        | importname
+struct_decl
+        : STRUCT NAME ';'
         ;
 
-importname
-        : importname NAME
-        | importname '*'
-        | importname '**'
-        | NAME
-        | '*'
-        | '**'
+class_decl
+        : CLASS NAME ';'
+        | CLASS NONCOBJECT NAME ';'
         ;
 
-propertydecl
-        : propertydecl_header opt_inline_properties ';'
-        | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
+message_decl
+        : MESSAGE NAME ';'
         ;
 
-propertydecl_header
-        : PROPERTY '@' NAME
-        | PROPERTY '@' NAME '[' ']'
+enum_decl
+        : ENUM NAME ';'
         ;
 
-opt_propertydecl_keys
-        : propertydecl_keys
+enum
+        : ENUM NAME '{'
+          opt_enumfields '}' opt_semicolon
+        | ENUM NAME EXTENDS NAME '{'
+          opt_enumfields '}' opt_semicolon
+        ;
+
+opt_enumfields
+        : enumfields
         |
         ;
 
-propertydecl_keys
-        : propertydecl_keys ';' propertydecl_key
-        | propertydecl_key
+enumfields
+        : enumfields enumfield
+        | enumfield
         ;
 
-propertydecl_key
-        : NAME
+enumfield
+        : NAME ';'
+        | NAME '=' enumvalue ';'
         ;
 
-fileproperty
-        : property_namevalue ';'
+message
+        : message_header body
         ;
 
-channeldefinition
-        : channelheader '{'
-            opt_paramblock
-          '}'
+class
+        : class_header body
         ;
 
-channelheader
-        : CHANNEL NAME
-           opt_inheritance
+struct
+        : struct_header body
         ;
 
-opt_inheritance
-        :
-        | EXTENDS extendsname
-        | LIKE likenames
-        | EXTENDS extendsname LIKE likenames
+message_header
+        : MESSAGE NAME '{'
+        | MESSAGE NAME EXTENDS NAME '{'
         ;
 
-extendsname
-        : dottedname
+class_header
+        : CLASS NAME '{'
+        | CLASS NAME EXTENDS NAME '{'
         ;
 
-likenames
-        : likenames ',' likename
-        | likename
+struct_header
+        : STRUCT NAME '{'
+        | STRUCT NAME EXTENDS NAME '{'
         ;
 
-likename
-        : dottedname
+body
+        : opt_fields_and_properties
+          opt_propertiesblock_old
+          opt_fieldsblock_old
+          '}' opt_semicolon
         ;
 
-channelinterfacedefinition
-        : channelinterfaceheader '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelinterfaceheader
-        : CHANNELINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_interfaceinheritance
-        : EXTENDS extendsnames
+opt_fields_and_properties
+        : fields_and_properties
         |
         ;
 
-extendsnames
-        : extendsnames ',' extendsname
-        | extendsname
-        ;
-
-simplemoduledefinition
-        : simplemoduleheader '{'
-            opt_paramblock
-            opt_gateblock
-          '}'
-        ;
-
-simplemoduleheader
-        : SIMPLE NAME
-          opt_inheritance
-        ;
-
-compoundmoduledefinition
-        : compoundmoduleheader '{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '}'
-        ;
-
-compoundmoduleheader
-        : MODULE NAME
-          opt_inheritance
-        ;
-
-networkdefinition
-        : networkheader '{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '}'
-        ;
-
-networkheader
-        : NETWORK NAME
-          opt_inheritance
-        ;
-
-moduleinterfacedefinition
-        : moduleinterfaceheader '{'
-            opt_paramblock
-            opt_gateblock
-          '}'
-        ;
-
-moduleinterfaceheader
-        : MODULEINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_paramblock
-        : opt_params
-        | PARAMETERS ':'
-          opt_params
-        ;
-
-opt_params
-        : params
-        |
-        ;
-
-params
-        : params paramsitem
-        | paramsitem
-        ;
-
-paramsitem
-        : param
+fields_and_properties
+        : fields_and_properties field
+        | fields_and_properties property
+        | field
         | property
         ;
 
-param
-        : param_typenamevalue
-        | pattern_value
+field
+        : fieldmodifiers fielddatatype NAME
+           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
+        | fieldmodifiers NAME
+           opt_fieldvector opt_fieldenum opt_fieldvalue ';'
         ;
 
-param_typenamevalue
-        : param_typename opt_inline_properties ';'
-        | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
+fieldmodifiers
+        : ABSTRACT
+        | READONLY
+        | ABSTRACT READONLY
+        | READONLY ABSTRACT
+        |
         ;
 
-param_typename
-        : opt_volatile paramtype NAME
-        | NAME
-        ;
-
-pattern_value
-        : '/' pattern '/' '=' paramvalue
-        ;
-
-paramtype
-        : DOUBLE
+fielddatatype
+        : NAME
+        | NAME '*'
+        | CHAR
+        | SHORT
         | INT
+        | LONG
+        | UNSIGNED CHAR
+        | UNSIGNED SHORT
+        | UNSIGNED INT
+        | UNSIGNED LONG
+        | DOUBLE
         | STRING
         | BOOL
-        | XML
         ;
 
-opt_volatile
-        : VOLATILE
+opt_fieldvector
+        : '[' INTCONSTANT ']'
+        | '[' NAME ']'
+        | '[' ']'
         |
         ;
 
-paramvalue
-        : expression
-        | DEFAULT '(' expression ')'
-        ;
-
-opt_inline_properties
-        : inline_properties
+opt_fieldenum
+        : ENUM '(' NAME ')'
         |
         ;
 
-inline_properties
-        : inline_properties property_namevalue
-        | property_namevalue
+opt_fieldvalue
+        : '=' fieldvalue
+        |
         ;
 
-pattern
-        : pattern pattern_elem
-        | pattern_elem
+fieldvalue
+        : fieldvalue fieldvalueitem
+        | fieldvalueitem
         ;
 
-pattern_elem
-        : '.'
-        | '*'
-        | '?'
-        | '**'
-        | NAME
+fieldvalueitem
+        : STRINGCONSTANT
+        | CHARCONSTANT
         | INTCONSTANT
-        | '..'
-        | '[' pattern ']'
-        | '{' pattern '}'
-        | IMPORT | PACKAGE | PROPERTY
-        | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
-        | EXTENDS | LIKE
-        | DOUBLE | INT | STRING | BOOL | XML | VOLATILE
-        | INPUT | OUTPUT | INOUT | IF | FOR
-        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
-        | TRUE | FALSE | THIS | DEFAULT | CONST | SIZEOF | INDEX | XMLDOC
+        | REALCONSTANT
+        | TRUE
+        | FALSE
+        | NAME
+        | '?' | ':' | '&&' | '||' | '##' | '==' | '!=' | '&gt;' | '&gt;=' | '&lt;' | '&lt;='
+        | '&' | '|' | '#' | '&lt;&lt;' | '&gt;&gt;'
+        | '+' | '-' | '*' | '/' | '%' | '^' | '&' | UMIN | '!' | '~'
+        | '.' | ',' | '(' | ')' | '[' | ']'
+        ;
+
+enumvalue
+        : INTCONSTANT
+        | '-' INTCONSTANT
+        | NAME
+        ;
+
+quantity
+        : quantity INTCONSTANT NAME
+        | quantity REALCONSTANT NAME
+        | INTCONSTANT NAME
+        | REALCONSTANT NAME
         ;
 
 property
@@ -17857,1771 +17188,1383 @@ property_value
         |
         ;
 
-opt_gateblock
-        : gateblock
+opt_fieldsblock_old
+        : FIELDS ':'
+          opt_fields_old
         |
         ;
 
-gateblock
-        : GATES ':'
-          opt_gates
-        ;
-
-opt_gates
-        : gates
+opt_fields_old
+        : fields_old
         |
         ;
 
-gates
-        : gates gate
-        | gate
+fields_old
+        : fields_old field
+        | field
         ;
 
-gate
-        : gate_typenamesize
-          opt_inline_properties ';'
-        ;
-
-gate_typenamesize
-        : gatetype NAME
-        | gatetype NAME '[' ']'
-        | gatetype NAME vector
-        | NAME
-        | NAME '[' ']'
-        | NAME vector
-        ;
-
-gatetype
-        : INPUT
-        | OUTPUT
-        | INOUT
-        ;
-
-opt_typeblock
-        : typeblock
+opt_propertiesblock_old
+        : PROPERTIES ':'
+          opt_properties_old
         |
         ;
 
-typeblock
-        : TYPES ':'
-           opt_localtypes
-        ;
-
-opt_localtypes
-        : localtypes
+opt_properties_old
+        : properties_old
         |
         ;
 
-localtypes
-        : localtypes localtype
-        | localtype
+properties_old
+        : properties_old property_old
+        | property_old
         ;
 
-localtype
-        : propertydecl
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
+property_old
+        : NAME '=' property_value ';'
         ;
 
-opt_submodblock
-        : submodblock
-        |
-        ;
-
-submodblock
-        : SUBMODULES ':'
-          opt_submodules
-        ;
-
-opt_submodules
-        : submodules
-        |
-        ;
-
-submodules
-        : submodules submodule
-        | submodule
-        ;
-
-submodule
-        : submoduleheader ';'
-        | submoduleheader '{'
-          opt_paramblock
-          opt_gateblock
-          '}' opt_semicolon
-        ;
-
-submoduleheader
-        : submodulename ':' dottedname
-        | submodulename ':' likeparam LIKE dottedname
-        ;
-
-submodulename
-        : NAME
-        |  NAME vector
-        ;
-
-likeparam
-        : '&lt;' '&gt;'
-        | '&lt;' expression '&gt;'
-        ;
-
-opt_connblock
-        : connblock
-        |
-        ;
-
-connblock
-        : CONNECTIONS ALLOWUNCONNECTED ':'
-          opt_connections
-        | CONNECTIONS ':'
-          opt_connections
-        ;
-
-opt_connections
-        : connections
-        |
-        ;
-
-connections
-        : connections connectionsitem
-        | connectionsitem
-        ;
-
-connectionsitem
-        : connectiongroup
-        | connection opt_loops_and_conditions ';'
-        ;
-
-connectiongroup
-        : opt_loops_and_conditions '{'
-          connections '}' opt_semicolon
-        ;
-
-opt_loops_and_conditions
-        : loops_and_conditions
-        |
-        ;
-
-loops_and_conditions
-        : loops_and_conditions ',' loop_or_condition
-        | loop_or_condition
-        ;
-
-loop_or_condition
-        : loop
-        | condition
-        ;
-
-loop
-        : FOR NAME '=' expression '..' expression
-        ;
-
-connection
-        : leftgatespec '--&gt;' rightgatespec
-        | leftgatespec '--&gt;' channelspec '--&gt;' rightgatespec
-        | leftgatespec '&lt;--' rightgatespec
-        | leftgatespec '&lt;--' channelspec '&lt;--' rightgatespec
-        | leftgatespec '&lt;--&gt;' rightgatespec
-        | leftgatespec '&lt;--&gt;' channelspec '&lt;--&gt;' rightgatespec
-        ;
-
-leftgatespec
-        : leftmod '.' leftgate
-        | parentleftgate
-        ;
-
-leftmod
-        : NAME vector
-        | NAME
-        ;
-
-leftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentleftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-rightgatespec
-        : rightmod '.' rightgate
-        | parentrightgate
-        ;
-
-rightmod
-        : NAME
-        | NAME vector
-        ;
-
-rightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentrightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-opt_subgate
-        : '$' NAME
-        |
-        ;
-
-channelspec
-        : channelspec_header
-        | channelspec_header '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelspec_header
-        :
-        | dottedname
-        | likeparam LIKE dottedname
-        ;
-
-condition
-        : IF expression
-        ;
-
-vector
-        : '[' expression ']'
-        ;
-
-expression
-        :
-          expr
-        | xmldocvalue
-        ;
-
-xmldocvalue
-        : XMLDOC '(' stringliteral ',' stringliteral ')'
-        | XMLDOC '(' stringliteral ')'
-        ;
-
-expr
-        : simple_expr
-        | '(' expr ')'
-        | CONST '(' expr ')'
-        | expr '+' expr
-        | expr '-' expr
-        | expr '*' expr
-        | expr '/' expr
-        | expr '%' expr
-        | expr '^' expr
-        | '-' expr
-        | expr '==' expr
-        | expr '!=' expr
-        | expr '&gt;' expr
-        | expr '&gt;=' expr
-        | expr '&lt;' expr
-        | expr '&lt;=' expr
-        | expr '&&' expr
-        | expr '||' expr
-        | expr '##' expr
-        | '!' expr
-        | expr '&' expr
-        | expr '|' expr
-        | expr '#' expr
-        | '~' expr
-        | expr '&lt;&lt;' expr
-        | expr '&gt;&gt;' expr
-        | expr '?' expr ':' expr
-        | INT '(' expr ')'
-        | DOUBLE '(' expr ')'
-        | STRING '(' expr ')'
-        | NAME '(' ')'
-        | NAME '(' expr ')'
-        | NAME '(' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        ;
-
-simple_expr
-        : identifier
-        | special_expr
-        | literal
-        ;
-
-identifier
-        : NAME
-        | THIS '.' NAME
-        | NAME '.' NAME
-        | NAME '[' expr ']' '.' NAME
-        ;
-
-special_expr
-        : INDEX
-        | INDEX '(' ')'
-        | SIZEOF '(' identifier ')'
-        ;
-
-literal
-        : stringliteral
-        | boolliteral
-        | numliteral
-        ;
-
-stringliteral
-        : STRINGCONSTANT
-        ;
-
-boolliteral
-        : TRUE
-        | FALSE
-        ;
-
-numliteral
-        : INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        ;
-
-quantity
-        : quantity INTCONSTANT NAME
-        | quantity REALCONSTANT NAME
-        | INTCONSTANT NAME
-        | REALCONSTANT NAME
-        ;
-
-opt_semicolon
-        : ';'
-        |
-        ;
+opt_semicolon : ';' | ;
 
 </pre>
 
 <p>
 </BODY>
 </HTML>
-<hr><hr><H1><A NAME="sec402"/>17 NED Language Grammar</H1>
-<a name="cha:ned-language-grammar"></a>
+<hr><hr><H1><A NAME="sec403"/>18 Display String Tags</H1>
+<a name="cha:display-string-tags"></a>
 
-<p>The NED language<!--ned!language-->, the network topology description language of
-OMNeT++ will be given using the extended BNF notation.
+<p>This appendix lists all display string tags.
 
-<p>Space, horizontal tab and new line characters counts as delimiters,
-so one or more of them is required between two elements of the
-description which would otherwise be unseparable. '//' (two slashes)
-may be used to write comments that last to the end of the line.
-The language only distinguishes between lower and upper case
-letters in names, but not in keywords.
 
-<p>
-In this description, the {xxx...} notation stands for one or
-more xxx's separated with spaces, tabs or new line characters,
-and {xxx,,,} stands for one or more xxx's, separated with a
-comma and (optionally) spaces, tabs or new line characters.
+<table border>
+<TR> <TD align=left>
 
-<p>
-For ease of reading, in some cases we use textual definitions.
-The <i>networkdescription</i> symbol is the sentence symbol of the
-grammar.
+<p><b>Tag[argument index] - name</b> </TD> <TD align=left> <b>Description</b>
+</TD></TR>
+<TR> <TD align=left>
+<b>p</b>[0] - x
+</TD> <TD align=left>
+X position of the center of the icon/shape; defaults to automatic graph layouting
+</TD></TR>
+<TR> <TD align=left>
+<b>p</b>[1] - y
+</TD> <TD align=left>
+Y position of the center of the icon/shape; defaults to automatic graph layouting
+</TD></TR>
+<TR> <TD align=left>
+<b>p</b>[2] - arrangement
+</TD> <TD align=left>
+Arrangement of submodule vectors. Values: row (r), column (c), matrix (m), ring (ri), exact (x)
+</TD></TR>
+<TR> <TD align=left>
+<b>p</b>[3] - arr. par1
+</TD> <TD align=left>
+Depends on arrangement: matrix =&gt; ncols, ring =&gt; rx, exact =&gt; dx, row =&gt; dx, column =&gt; dy
+</TD></TR>
+<TR> <TD align=left>
+<b>p</b>[4] - arr. par2
+</TD> <TD align=left>
+Depends on arrangement: matrix =&gt; dx, ring =&gt; ry, exact =&gt; dy
+</TD></TR>
+<TR> <TD align=left>
+<b>p</b>[5] - arr. par3
+</TD> <TD align=left>
+Depends on arrangement: matrix =&gt; dy
+</TD></TR>
+<TR> <TD align=left>
+<b>b</b>[0] - width
+</TD> <TD align=left>
+Width of object. Default: 40
+</TD></TR>
+<TR> <TD align=left>
+<b>b</b>[1] - height
+</TD> <TD align=left>
+Height of object. Default: 24
+</TD></TR>
+<TR> <TD align=left>
+<b>b</b>[2] - shape
+</TD> <TD align=left>
+Shape of object. Values: rectangle (rect), oval (oval). Default: rect
+</TD></TR>
+<TR> <TD align=left>
+<b>b</b>[3] - fill color
+</TD> <TD align=left>
+Fill color of the object (colorname or #RRGGBB or @HHSSBB). Default: #8080ff
+</TD></TR>
+<TR> <TD align=left>
+<b>b</b>[4] - border color
+</TD> <TD align=left>
+Border color of the object (colorname or #RRGGBB or @HHSSBB). Default: black
+</TD></TR>
+<TR> <TD align=left>
+<b>b</b>[5] - border width
+</TD> <TD align=left>
+Border width of the object. Default: 2
+</TD></TR>
+<TR> <TD align=left>
+<b>i</b>[0] - icon
+</TD> <TD align=left>
+An icon representing the object
+</TD></TR>
+<TR> <TD align=left>
+<b>i</b>[1] - icon color
+</TD> <TD align=left>
+A color to colorize the icon (colorname or #RRGGBB or @HHSSBB)
+</TD></TR>
+<TR> <TD align=left>
+<b>i</b>[2] - icon colorization %
+</TD> <TD align=left>
+Amount of colorization in percent. Default: 30
+</TD></TR>
+<TR> <TD align=left>
+<b>is</b>[0] - icon size
+</TD> <TD align=left>
+The size of the image. Values: very small (vs), small (s), normal (n), large (l), very large (vl)
+</TD></TR>
+<TR> <TD align=left>
+<b>i2</b>[0] - overlay icon
+</TD> <TD align=left>
+An icon added to the upper right corner of the original image
+</TD></TR>
+<TR> <TD align=left>
+<b>i2</b>[1] - overlay icon color
+</TD> <TD align=left>
+A color to colorize the overlay icon (colorname or #RRGGBB or @HHSSBB)
+</TD></TR>
+<TR> <TD align=left>
+<b>i2</b>[2] - overlay icon colorization %
+</TD> <TD align=left>
+Amount of colorization in percent. Default: 30
+</TD></TR>
+<TR> <TD align=left>
+<b>r</b>[0] - range
+</TD> <TD align=left>
+Radius of the range indicator
+</TD></TR>
+<TR> <TD align=left>
+<b>r</b>[1] - range fill color
+</TD> <TD align=left>
+Fill color of the range indicator (colorname or #RRGGBB or @HHSSBB)
+</TD></TR>
+<TR> <TD align=left>
+<b>r</b>[2] - range border color
+</TD> <TD align=left>
+Border color of the range indicator (colorname or #RRGGBB or @HHSSBB). Default: black
+</TD></TR>
+<TR> <TD align=left>
+<b>r</b>[3] - range border width
+</TD> <TD align=left>
+Border width of the range indicator. Default: 1
+</TD></TR>
+<TR> <TD align=left>
+<b>q</b>[0] - queue object
+</TD> <TD align=left>
+Displays the length of the named queue object
+</TD></TR>
+<TR> <TD align=left>
+<b>t</b>[0] - text
+</TD> <TD align=left>
+Additional text to display
+</TD></TR>
+<TR> <TD align=left>
+<b>t</b>[1] - text position
+</TD> <TD align=left>
+Position of the text. Values: left (l), right (r), top (t). Default: t
+</TD></TR>
+<TR> <TD align=left>
+<b>t</b>[2] - text color
+</TD> <TD align=left>
+Color of the displayed text (colorname or #RRGGBB or @HHSSBB). Default: blue
+</TD></TR>
+<TR> <TD align=left>
+<b>tt</b>[0] - tooltip
+</TD> <TD align=left>
+Tooltip to be displayed over the object
+</TD></TR>
+<TR> <TD align=left>
+<b>bgp</b>[0] - bg x
+</TD> <TD align=left>
+Module background horizontal offset
+</TD></TR>
+<TR> <TD align=left>
+<b>bgp</b>[1] - bg y
+</TD> <TD align=left>
+Module background vertical offset
+</TD></TR>
+<TR> <TD align=left>
+<b>bgb</b>[0] - bg width
+</TD> <TD align=left>
+Width of the module background rectangle
+</TD></TR>
+<TR> <TD align=left>
+<b>bgb</b>[1] - bg height
+</TD> <TD align=left>
+Height of the module background rectangle
+</TD></TR>
+<TR> <TD align=left>
+<b>bgb</b>[2] - bg fill color
+</TD> <TD align=left>
+Background fill color (colorname or #RRGGBB or @HHSSBB). Default: grey82
+</TD></TR>
+<TR> <TD align=left>
+<b>bgb</b>[3] - bg border color
+</TD> <TD align=left>
+Border color of the module background rectangle (colorname or #RRGGBB or @HHSSBB). Default: black
+</TD></TR>
+<TR> <TD align=left>
+<b>bgb</b>[4] - bg border width
+</TD> <TD align=left>
+Border width of the module background rectangle. Default: 2
+</TD></TR>
+<TR> <TD align=left>
+<b>bgtt</b>[0] - bg tooltip
+</TD> <TD align=left>
+Tooltip to be displayed over the module's background
+</TD></TR>
+<TR> <TD align=left>
+<b>bgi</b>[0] - bg image
+</TD> <TD align=left>
+An image to be displayed as a module background
+</TD></TR>
+<TR> <TD align=left>
+<b>bgi</b>[1] - bg image mode
+</TD> <TD align=left>
+How to arrange the module's background image. Values: fix (f), tile (t), stretch (s), center (c). Default: fixed
+</TD></TR>
+<TR> <TD align=left>
+<b>bgg</b>[0] - grid tick distance
+</TD> <TD align=left>
+Distance between two major ticks measured in units
+</TD></TR>
+<TR> <TD align=left>
+<b>bgg</b>[1] - grid minor ticks
+</TD> <TD align=left>
+Minor ticks per major ticks. Default: 1
+</TD></TR>
+<TR> <TD align=left>
+<b>bgg</b>[2] - grid color
+</TD> <TD align=left>
+Color of the grid lines (colorname or #RRGGBB or @HHSSBB). Default: grey
+</TD></TR>
+<TR> <TD align=left>
+<b>bgl</b>[0] - layout seed
+</TD> <TD align=left>
+Seed value for layout algorithm
+</TD></TR>
+<TR> <TD align=left>
+<b>bgl</b>[1] - layout algorithm
+</TD> <TD align=left>
+Algorithm for child layouting
+</TD></TR>
+<TR> <TD align=left>
+<b>bgs</b>[0] - pixels per unit
+</TD> <TD align=left>
+Number of pixels per distance unit
+</TD></TR>
+<TR> <TD align=left>
+<b>bgs</b>[1] - unit name
+</TD> <TD align=left>
+Name of distance unit
+</TD></TR>
+<TR> <TD align=left>
+<b>ls</b>[0] - line color
+</TD> <TD align=left>
+Connection color (colorname or #RRGGBB or @HHSSBB). Default: black
+</TD></TR>
+<TR> <TD align=left>
+<b>ls</b>[1] - line width
+</TD> <TD align=left>
+Connection line width. Default: 1
+</TD></TR>
+<TR> <TD align=left>
+<b>ls</b>[2] - line style
+</TD> <TD align=left>
+Connection line style. Values: solid (s), dotted (d), dashed (da). Default: solid
+</TD></TR>
+<TR> <TD align=left>
+</table>
+</BODY>
+</HTML>
+<hr><hr><H1><A NAME="sec404"/>19 Configuration Options</H1>
+<a name="cha:config-options"></a>
 
-<p>
+<p><H2><A NAME="sec405"/>19.1 Configuration Options</H2>
+
+<p>This section lists all configuration options that are available in ini files.
+A similar list can be obtained from any simulation executable by running it
+with the <tt>-h configdetails</tt> option.
 
 <pre>
-nedfile
-        : definitions
-        |
-        ;
-
-definitions
-        : definitions definition
-        | definition
-        ;
-
-definition
-        : packagedeclaration
-        | import
-        | propertydecl
-        | fileproperty
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
-        ;
-
-packagedeclaration
-        : PACKAGE dottedname ';'
-        ;
-
-dottedname
-        : dottedname '.' NAME
-        | NAME
-        ;
-
-import
-        : IMPORT importspec ';'
-        ;
-
-importspec
-        : importspec '.' importname
-        | importname
-        ;
-
-importname
-        : importname NAME
-        | importname '*'
-        | importname '**'
-        | NAME
-        | '*'
-        | '**'
-        ;
-
-propertydecl
-        : propertydecl_header opt_inline_properties ';'
-        | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
-        ;
-
-propertydecl_header
-        : PROPERTY '@' NAME
-        | PROPERTY '@' NAME '[' ']'
-        ;
-
-opt_propertydecl_keys
-        : propertydecl_keys
-        |
-        ;
-
-propertydecl_keys
-        : propertydecl_keys ';' propertydecl_key
-        | propertydecl_key
-        ;
-
-propertydecl_key
-        : NAME
-        ;
-
-fileproperty
-        : property_namevalue ';'
-        ;
-
-channeldefinition
-        : channelheader '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelheader
-        : CHANNEL NAME
-           opt_inheritance
-        ;
-
-opt_inheritance
-        :
-        | EXTENDS extendsname
-        | LIKE likenames
-        | EXTENDS extendsname LIKE likenames
-        ;
-
-extendsname
-        : dottedname
-        ;
-
-likenames
-        : likenames ',' likename
-        | likename
-        ;
-
-likename
-        : dottedname
-        ;
-
-channelinterfacedefinition
-        : channelinterfaceheader '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelinterfaceheader
-        : CHANNELINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_interfaceinheritance
-        : EXTENDS extendsnames
-        |
-        ;
-
-extendsnames
-        : extendsnames ',' extendsname
-        | extendsname
-        ;
-
-simplemoduledefinition
-        : simplemoduleheader '{'
-            opt_paramblock
-            opt_gateblock
-          '}'
-        ;
-
-simplemoduleheader
-        : SIMPLE NAME
-          opt_inheritance
-        ;
-
-compoundmoduledefinition
-        : compoundmoduleheader '{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '}'
-        ;
-
-compoundmoduleheader
-        : MODULE NAME
-          opt_inheritance
-        ;
-
-networkdefinition
-        : networkheader '{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '}'
-        ;
-
-networkheader
-        : NETWORK NAME
-          opt_inheritance
-        ;
-
-moduleinterfacedefinition
-        : moduleinterfaceheader '{'
-            opt_paramblock
-            opt_gateblock
-          '}'
-        ;
-
-moduleinterfaceheader
-        : MODULEINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_paramblock
-        : opt_params
-        | PARAMETERS ':'
-          opt_params
-        ;
-
-opt_params
-        : params
-        |
-        ;
-
-params
-        : params paramsitem
-        | paramsitem
-        ;
-
-paramsitem
-        : param
-        | property
-        ;
-
-param
-        : param_typenamevalue
-        | pattern_value
-        ;
-
-param_typenamevalue
-        : param_typename opt_inline_properties ';'
-        | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
-        ;
-
-param_typename
-        : opt_volatile paramtype NAME
-        | NAME
-        ;
-
-pattern_value
-        : '/' pattern '/' '=' paramvalue
-        ;
-
-paramtype
-        : DOUBLE
-        | INT
-        | STRING
-        | BOOL
-        | XML
-        ;
-
-opt_volatile
-        : VOLATILE
-        |
-        ;
-
-paramvalue
-        : expression
-        | DEFAULT '(' expression ')'
-        ;
-
-opt_inline_properties
-        : inline_properties
-        |
-        ;
-
-inline_properties
-        : inline_properties property_namevalue
-        | property_namevalue
-        ;
-
-pattern
-        : pattern pattern_elem
-        | pattern_elem
-        ;
-
-pattern_elem
-        : '.'
-        | '*'
-        | '?'
-        | '**'
-        | NAME
-        | INTCONSTANT
-        | '..'
-        | '[' pattern ']'
-        | '{' pattern '}'
-        | IMPORT | PACKAGE | PROPERTY
-        | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
-        | EXTENDS | LIKE
-        | DOUBLE | INT | STRING | BOOL | XML | VOLATILE
-        | INPUT | OUTPUT | INOUT | IF | FOR
-        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
-        | TRUE | FALSE | THIS | DEFAULT | CONST | SIZEOF | INDEX | XMLDOC
-        ;
-
-property
-        : property_namevalue ';'
-        ;
-
-property_namevalue
-        : property_name
-        | property_name '(' opt_property_keys ')'
-        ;
-
-property_name
-        : '@' NAME
-        | '@' NAME '[' NAME ']'
-        ;
-
-opt_property_keys
-        : property_keys
-        ;
-
-property_keys
-        : property_keys ';' property_key
-        | property_key
-        ;
-
-property_key
-        : NAME '=' property_values
-        | property_values
-        ;
-
-property_values
-        : property_values ',' property_value
-        | property_value
-        ;
-
-property_value
-        : NAME
-        | '$' NAME
-        | STRINGCONSTANT
-        | TRUE
-        | FALSE
-        | INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        | '-'
-        |
-        ;
-
-opt_gateblock
-        : gateblock
-        |
-        ;
-
-gateblock
-        : GATES ':'
-          opt_gates
-        ;
-
-opt_gates
-        : gates
-        |
-        ;
-
-gates
-        : gates gate
-        | gate
-        ;
-
-gate
-        : gate_typenamesize
-          opt_inline_properties ';'
-        ;
-
-gate_typenamesize
-        : gatetype NAME
-        | gatetype NAME '[' ']'
-        | gatetype NAME vector
-        | NAME
-        | NAME '[' ']'
-        | NAME vector
-        ;
-
-gatetype
-        : INPUT
-        | OUTPUT
-        | INOUT
-        ;
-
-opt_typeblock
-        : typeblock
-        |
-        ;
-
-typeblock
-        : TYPES ':'
-           opt_localtypes
-        ;
-
-opt_localtypes
-        : localtypes
-        |
-        ;
-
-localtypes
-        : localtypes localtype
-        | localtype
-        ;
-
-localtype
-        : propertydecl
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
-        ;
-
-opt_submodblock
-        : submodblock
-        |
-        ;
-
-submodblock
-        : SUBMODULES ':'
-          opt_submodules
-        ;
-
-opt_submodules
-        : submodules
-        |
-        ;
-
-submodules
-        : submodules submodule
-        | submodule
-        ;
-
-submodule
-        : submoduleheader ';'
-        | submoduleheader '{'
-          opt_paramblock
-          opt_gateblock
-          '}' opt_semicolon
-        ;
-
-submoduleheader
-        : submodulename ':' dottedname
-        | submodulename ':' likeparam LIKE dottedname
-        ;
-
-submodulename
-        : NAME
-        |  NAME vector
-        ;
-
-likeparam
-        : '&lt;' '&gt;'
-        | '&lt;' expression '&gt;'
-        ;
-
-opt_connblock
-        : connblock
-        |
-        ;
-
-connblock
-        : CONNECTIONS ALLOWUNCONNECTED ':'
-          opt_connections
-        | CONNECTIONS ':'
-          opt_connections
-        ;
-
-opt_connections
-        : connections
-        |
-        ;
-
-connections
-        : connections connectionsitem
-        | connectionsitem
-        ;
-
-connectionsitem
-        : connectiongroup
-        | connection opt_loops_and_conditions ';'
-        ;
-
-connectiongroup
-        : opt_loops_and_conditions '{'
-          connections '}' opt_semicolon
-        ;
-
-opt_loops_and_conditions
-        : loops_and_conditions
-        |
-        ;
-
-loops_and_conditions
-        : loops_and_conditions ',' loop_or_condition
-        | loop_or_condition
-        ;
-
-loop_or_condition
-        : loop
-        | condition
-        ;
-
-loop
-        : FOR NAME '=' expression '..' expression
-        ;
-
-connection
-        : leftgatespec '--&gt;' rightgatespec
-        | leftgatespec '--&gt;' channelspec '--&gt;' rightgatespec
-        | leftgatespec '&lt;--' rightgatespec
-        | leftgatespec '&lt;--' channelspec '&lt;--' rightgatespec
-        | leftgatespec '&lt;--&gt;' rightgatespec
-        | leftgatespec '&lt;--&gt;' channelspec '&lt;--&gt;' rightgatespec
-        ;
-
-leftgatespec
-        : leftmod '.' leftgate
-        | parentleftgate
-        ;
-
-leftmod
-        : NAME vector
-        | NAME
-        ;
-
-leftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentleftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-rightgatespec
-        : rightmod '.' rightgate
-        | parentrightgate
-        ;
-
-rightmod
-        : NAME
-        | NAME vector
-        ;
-
-rightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentrightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-opt_subgate
-        : '$' NAME
-        |
-        ;
-
-channelspec
-        : channelspec_header
-        | channelspec_header '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelspec_header
-        :
-        | dottedname
-        | likeparam LIKE dottedname
-        ;
-
-condition
-        : IF expression
-        ;
-
-vector
-        : '[' expression ']'
-        ;
-
-expression
-        :
-          expr
-        | xmldocvalue
-        ;
-
-xmldocvalue
-        : XMLDOC '(' stringliteral ',' stringliteral ')'
-        | XMLDOC '(' stringliteral ')'
-        ;
-
-expr
-        : simple_expr
-        | '(' expr ')'
-        | CONST '(' expr ')'
-        | expr '+' expr
-        | expr '-' expr
-        | expr '*' expr
-        | expr '/' expr
-        | expr '%' expr
-        | expr '^' expr
-        | '-' expr
-        | expr '==' expr
-        | expr '!=' expr
-        | expr '&gt;' expr
-        | expr '&gt;=' expr
-        | expr '&lt;' expr
-        | expr '&lt;=' expr
-        | expr '&&' expr
-        | expr '||' expr
-        | expr '##' expr
-        | '!' expr
-        | expr '&' expr
-        | expr '|' expr
-        | expr '#' expr
-        | '~' expr
-        | expr '&lt;&lt;' expr
-        | expr '&gt;&gt;' expr
-        | expr '?' expr ':' expr
-        | INT '(' expr ')'
-        | DOUBLE '(' expr ')'
-        | STRING '(' expr ')'
-        | NAME '(' ')'
-        | NAME '(' expr ')'
-        | NAME '(' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        ;
-
-simple_expr
-        : identifier
-        | special_expr
-        | literal
-        ;
-
-identifier
-        : NAME
-        | THIS '.' NAME
-        | NAME '.' NAME
-        | NAME '[' expr ']' '.' NAME
-        ;
-
-special_expr
-        : INDEX
-        | INDEX '(' ')'
-        | SIZEOF '(' identifier ')'
-        ;
-
-literal
-        : stringliteral
-        | boolliteral
-        | numliteral
-        ;
-
-stringliteral
-        : STRINGCONSTANT
-        ;
-
-boolliteral
-        : TRUE
-        | FALSE
-        ;
-
-numliteral
-        : INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        ;
-
-quantity
-        : quantity INTCONSTANT NAME
-        | quantity REALCONSTANT NAME
-        | INTCONSTANT NAME
-        | REALCONSTANT NAME
-        ;
-
-opt_semicolon
-        : ';'
-        |
-        ;
-
+&lt;object-full-path&gt;.apply-default=&lt;bool&gt;, default:false; per-object setting
+    Applies to module parameters: whether NED default values should be assigned
+    if present.
+
+cmdenv-autoflush=&lt;bool&gt;, default:false; per-run setting
+    Call fflush(stdout) after each event banner or status update; affects both
+    express and normal mode. Turning on autoflush may have a performance
+    penalty, but it can be useful with printf-style debugging for tracking down
+    program crashes.
+
+cmdenv-config-name=&lt;string&gt;; global setting
+    Specifies the name of the configuration to be run (for a value `Foo',
+    section [Config Foo] will be used from the ini file). See also
+    cmdenv-runs-to-execute=. The -c command line option overrides this setting.
+
+&lt;object-full-path&gt;.cmdenv-ev-output=&lt;bool&gt;, default:true; per-object setting
+    When cmdenv-express-mode=false: whether Cmdenv should print debug messages
+    (ev&lt;&lt;) from the selected modules.
+
+cmdenv-event-banner-details=&lt;bool&gt;, default:false; per-run setting
+    When cmdenv-express-mode=false: print extra information after event
+    banners.
+
+cmdenv-event-banners=&lt;bool&gt;, default:true; per-run setting
+    When cmdenv-express-mode=false: turns printing event banners on/off.
+
+cmdenv-express-mode=&lt;bool&gt;, default:true; per-run setting
+    Selects ``normal'' (debug/trace) or ``express'' mode.
+
+cmdenv-extra-stack=&lt;double&gt;, unit="B", default:8KB; global setting
+    Specifies the extra amount of stack that is reserved for each activity()
+    simple module when the simulation is run under Cmdenv.
+
+cmdenv-interactive=&lt;bool&gt;, default:false; global setting
+    Defines what Cmdenv should do when the model contains unassigned
+    parameters. In interactive mode, it asks the user. In non-interactive mode
+    (which is more suitable for batch execution), Cmdenv stops with an error.
+
+cmdenv-message-trace=&lt;bool&gt;, default:false; per-run setting
+    When cmdenv-express-mode=false: print a line per message sending (by
+    send(),scheduleAt(), etc) and delivery on the standard output.
+
+cmdenv-module-messages=&lt;bool&gt;, default:true; per-run setting
+    When cmdenv-express-mode=false: turns printing module ev&lt;&lt; output on/off.
+
+cmdenv-output-file=&lt;filename&gt;; global setting
+    When a filename is specified, Cmdenv redirects standard output into the
+    given file. This is especially useful with parallel simulation. See the
+    `fname-append-host' option as well.
+
+cmdenv-performance-display=&lt;bool&gt;, default:true; per-run setting
+    When cmdenv-express-mode=true: print detailed performance information.
+    Turning it on results in a 3-line entry printed on each update, containing
+    ev/sec, simsec/sec, ev/simsec, number of messages created/still
+    present/currently scheduled in FES.
+
+cmdenv-runs-to-execute=&lt;string&gt;; global setting
+    Specifies which runs to execute from the selected configuration (see
+    cmdenv-config-name=). It accepts a comma-separated list of run numbers or
+    run number ranges, e.g. 1,3..4,7..9. If the value is missing, Cmdenv
+    executes all runs in the selected configuration. The -r command line option
+    overrides this setting.
+
+cmdenv-status-frequency=&lt;int&gt;, default:100000; per-run setting
+    When cmdenv-express-mode=true: print status update every n events. Typical
+    values are 100,000...1,000,000.
+
+configuration-class=&lt;string&gt;; global setting
+    Part of the Envir plugin mechanism: selects the class from which all
+    configuration information will be obtained. This option lets you replace
+    omnetpp.ini with some other implementation, e.g. database input. The
+    simulation program still has to bootstrap from an omnetpp.ini (which
+    contains the configuration-class setting). The class should implement the
+    <a href="../api/classcConfiguration.html">cConfiguration</a> interface.
+
+constraint=&lt;string&gt;; per-run setting
+    For scenarios. Contains an expression that iteration variables (${} syntax)
+    must satisfy for that simulation to run. Example: $i &lt; $j+1.
+
+cpu-time-limit=&lt;double&gt;, unit="s"; per-run setting
+    Stops the simulation when CPU usage has reached the given limit. The
+    default is no limit.
+
+debug-on-errors=&lt;bool&gt;, default:false; global setting
+    When set to true, runtime errors will cause the simulation program to break
+    into the C++ debugger (if the simulation is running under one, or
+    just-in-time debugging is activated). Once in the debugger, you can view
+    the stack trace or examine variables.
+
+description=&lt;string&gt;; per-run setting
+    Descriptive name for the given simulation configuration. Descriptions get
+    displayed in the run selection dialog.
+
+eventlog-file=&lt;filename&gt;, default:${resultdir}/${configname}-${runnumber}.log; per-run setting
+    Name of the event log file to generate.
+
+eventlog-message-detail-pattern=&lt;custom&gt;; per-run setting
+    A list of patterns separated by '|' character which will be used to write
+    message detail information into the event log for each message sent during
+    the simulation. The message detail will be presented in the sequence chart
+    tool. Each pattern starts with an object pattern optionally followed by ':'
+    character and a comma separated list of field patterns. In both patterns
+    and/or/not/* and various field matcher expressions can be used. The object
+    pattern matches to class name, the field pattern matches to field name by
+    default.
+      EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN
+      DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]
+      OBJECT-PATTERN := MATCHER-EXPRESSION
+      FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN
+      FIELD-PATTERN := MATCHER-EXPRESSION
+    Examples (enter them without quotes):
+      "*": captures all fields of all messages
+      "*Frame:*Address,*Id": captures all fields named somethingAddress and
+    somethingId from messages of any class named somethingFrame
+      "MyMessage:declaredOn(MyMessage)": captures instances of MyMessage
+    recording the fields declared on the MyMessage class
+      "*:(not declaredOn(<a href="../api/classcMessage.html">cMessage</a>) and not declaredOn(<a href="../api/classcNamedObject.html">cNamedObject</a>) and not
+    declaredOn(<a href="../api/classcObject.html">cObject</a>))": records user-defined fields from all messages
+
+eventlog-recording-intervals=&lt;custom&gt;; per-run setting
+    Interval(s) when events should be recorded. Syntax: [&lt;from&gt;]..[&lt;to&gt;],...
+    That is, both start and end of an interval are optional, and intervals are
+    separated by comma. Example: ..100, 200..400, 900..
+
+experiment-label=&lt;string&gt;, default:${configname}; per-run setting
+    Identifies the simulation experiment (which consists of several,
+    potentially repeated measurements). This string gets recorded into result
+    files, and may be referred to during result analysis.
+
+extends=&lt;string&gt;; per-run setting
+    Name of the configuration this section is based on. Entries from that
+    section will be inherited and can be overridden. In other words,
+    configuration lookups will fall back to the base section.
+
+fingerprint=&lt;string&gt;; per-run setting
+    The expected fingerprint, suitable for crude regression tests. If present,
+    the actual fingerprint is calculated during simulation, and compared
+    against the expected one.
+
+fname-append-host=&lt;bool&gt;, default:false; global setting
+    Turning it on will cause the host name and process Id to be appended to the
+    names of output files (e.g. omnetpp.vec, omnetpp.sca). This is especially
+    useful with distributed simulation.
+
+ini-warnings=&lt;bool&gt;, default:false; global setting
+    Currently ignored. Accepted for backward compatibility.
+
+load-libs=&lt;filenames&gt;; global setting
+    A space-separated list of dynamic libraries to be loaded on startup. The
+    libraries should be given without the `.dll' or `.so' suffix -- that will
+    be automatically appended.
+
+max-module-nesting=&lt;int&gt;, default:50; per-run setting
+    The maximum allowed depth of submodule nesting. This is used to catch
+    accidental infinite recursions in NED.
+
+measurement-label=&lt;string&gt;, default:${iterationvars}; per-run setting
+    Identifies the measurement within the experiment. This string gets recorded
+    into result files, and may be referred to during result analysis.
+
+&lt;object-full-path&gt;.module-eventlog-recording=&lt;bool&gt;, default:true; per-object setting
+    Enables recording events on a per module basis. This is meaningful for
+    simple modules only.
+    Example:
+     **.router[10..20].**.module-eventlog-recording = true
+     **.module-eventlog-recording = false
+
+ned-path=&lt;string&gt;; global setting
+    A semicolon-separated list of directories which will be appended to the
+    NEDPATH environment variable. The directories will be regarded as roots of
+    the NED package hierarchy, and all NED files will be loaded from the
+    subdirectories under them.
+
+network=&lt;string&gt;; per-run setting
+    The name of the network to be simulated.
+
+num-rngs=&lt;int&gt;, default:1; per-run setting
+    The number of random number generators.
+
+output-scalar-file=&lt;filename&gt;, default:${resultdir}/${configname}-${runnumber}.sca; per-run setting
+    Name for the output scalar file.
+
+output-scalar-file-append=&lt;bool&gt;, default:false; per-run setting
+    What to do when the output scalar file already exists: append to it
+    (OMNeT++ 3.x behavior), or delete it and begin a new file (default).
+
+output-scalar-precision=&lt;int&gt;, default:14; per-run setting
+    The number of significant digits for recording data into the output scalar
+    file. The maximum value is ~15 (IEEE double precision).
+
+output-vector-file=&lt;filename&gt;, default:${resultdir}/${configname}-${runnumber}.vec; per-run setting
+    Name for the output vector file.
+
+output-vector-precision=&lt;int&gt;, default:14; per-run setting
+    The number of significant digits for recording data into the output vector
+    file. The maximum value is ~15 (IEEE double precision). This setting has no
+    effect on the "time" column of output vectors, which are represented as
+    fixed-point numbers and always get recorded precisely.
+
+output-vectors-memory-limit=&lt;double&gt;, unit="B", default:16MB; per-run setting
+    Total memory that can be used for buffering output vectors. Larger values
+    produce less fragmented vector files (i.e. cause vector data to be grouped
+    into larger chunks), and therefore allow more efficient processing later.
+
+outputscalarmanager-class=&lt;string&gt;, default:cFileOutputScalarManager; global setting
+    Part of the Envir plugin mechanism: selects the output scalar manager class
+    to be used to record data passed to recordScalar(). The class has to
+    implement the <a href="../api/classcOutputScalarManager.html">cOutputScalarManager</a> interface.
+
+outputvectormanager-class=&lt;string&gt;, default:cIndexedFileOutputVectorManager; global setting
+    Part of the Envir plugin mechanism: selects the output vector manager class
+    to be used to record data from output vectors. The class has to implement
+    the <a href="../api/classcOutputVectorManager.html">cOutputVectorManager</a> interface.
+
+parallel-simulation=&lt;bool&gt;, default:false; global setting
+    Enables parallel distributed simulation.
+
+&lt;object-full-path&gt;.param-record-as-scalar=&lt;bool&gt;, default:false; per-object setting
+    Applicable to module parameters: specifies whether the module parameter
+    should be recorded into the output scalar file. Set it for parameters whose
+    value you'll need for result analysis.
+
+parsim-communications-class=&lt;string&gt;, default:cFileCommunications; global setting
+    If parallel-simulation=true, it selects the class that implements
+    communication between partitions. The class must implement the
+    <a href="../api/classcParsimCommunications.html">cParsimCommunications</a> interface.
+
+parsim-debug=&lt;bool&gt;, default:true; global setting
+    With parallel-simulation=true: turns on printing of log messages from the
+    parallel simulation code.
+
+parsim-filecommunications-prefix=&lt;string&gt;, default:comm/; global setting
+    When cFileCommunications is selected as parsim communications class:
+    specifies the prefix (directory+potential filename prefix) for creating the
+    files for cross-partition messages.
+
+parsim-filecommunications-preserve-read=&lt;bool&gt;, default:false; global setting
+    When cFileCommunications is selected as parsim communications class:
+    specifies that consumed files should be moved into another directory
+    instead of being deleted.
+
+parsim-filecommunications-read-prefix=&lt;string&gt;, default:comm/read/; global setting
+    When cFileCommunications is selected as parsim communications class:
+    specifies the prefix (directory) where files will be moved after having
+    been consumed.
+
+parsim-idealsimulationprotocol-tablesize=&lt;int&gt;, default:100000; global setting
+    When cIdealSimulationProtocol is selected as parsim synchronization class:
+    specifies the memory buffer size for reading the ISP event trace file.
+
+parsim-namedpipecommunications-prefix=&lt;string&gt;, default:omnetpp; global setting
+    When cNamedPipeCommunications is selected as parsim communications class:
+    selects the name prefix for Windows named pipes created.
+
+parsim-nullmessageprotocol-laziness=&lt;double&gt;, default:0.5; global setting
+    When cNullMessageProtocol is selected as parsim synchronization class:
+    specifies the laziness of sending null messages. Values in the range [0,1)
+    are accepted. Laziness=0 causes null messages to be sent out immediately as
+    a new EOT is learned, which may result in excessive null message traffic.
+
+parsim-nullmessageprotocol-lookahead-class=&lt;string&gt;, default:cLinkDelayLookahead; global setting
+    When cNullMessageProtocol is selected as parsim synchronization class:
+    specifies the C++ class that calculates lookahead. The class should
+    subclass from cNMPLookahead.
+
+parsim-synchronization-class=&lt;string&gt;, default:cNullMessageProtocol; global setting
+    If parallel-simulation=true, it selects the parallel simulation algorithm.
+    The class must implement the cParsimSynchronizer interface.
+
+&lt;object-full-path&gt;.partition-id=&lt;string&gt;; per-object setting
+    With parallel simulation: in which partition the module should be
+    instantiated. Specify numeric partition ID, or a comma-separated list of
+    partition IDs for compound modules that span across multiple partitions.
+    Ranges ("5..9") and "*" (=all) are accepted too.
+
+perform-gc=&lt;bool&gt;, default:false; global setting
+    Whether the simulation kernel should delete on network cleanup the
+    simulation objects not deleted by simple module destructors. Not
+    recommended.
+
+print-undisposed=&lt;bool&gt;, default:true; global setting
+    Whether to report objects left (that is, not deallocated by simple module
+    destructors) after network cleanup.
+
+realtimescheduler-scaling=&lt;double&gt;; global setting
+    When <a href="../api/classcRealTimeScheduler.html">cRealTimeScheduler</a> is selected as scheduler class: ratio of simulation
+    time to real time. For example, scaling=2 will cause simulation time to
+    progress twice as fast as runtime.
+
+record-eventlog=&lt;bool&gt;, default:false; per-run setting
+    Enables recording an eventlog file, which can be later visualized on a
+    sequence chart. See eventlog-file= option too.
+
+repeat=&lt;int&gt;, default:1; per-run setting
+    For scenarios. Specifies how many replications should be done with the same
+    parameters (iteration variables). This is typically used to perform
+    multiple runs with different random number seeds. The loop variable is
+    available as ${repetition}. See also: seed-set= key.
+
+replication-label=&lt;string&gt;, default:#${repetition}; per-run setting
+    Identifies one replication of a measurement (see repeat= and
+    measurement-label= as well). This string gets recorded into result files,
+    and may be referred to during result analysis.
+
+result-dir=&lt;string&gt;, default:results; per-run setting
+    Value for the ${resultdir} variable, which is used as the default directory
+    for result files (output vector file, output scalar file, eventlog file,
+    etc.)
+
+&lt;object-full-path&gt;.rng-%=&lt;int&gt;; per-object setting
+    Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3
+    maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The
+    default is one-to-one mapping.
+
+rng-class=&lt;string&gt;, default:<a href="../api/classcMersenneTwister.html">cMersenneTwister</a>; per-run setting
+    The random number generator class to be used. It can be `<a href="../api/classcMersenneTwister.html">cMersenneTwister</a>',
+    `<a href="../api/classcLCG32.html">cLCG32</a>', `cAkaroaRNG', or you can use your own RNG class (it must be
+    subclassed from <a href="../api/classcRNG.html">cRNG</a>).
+
+&lt;object-full-path&gt;.scalar-recording=&lt;bool&gt;, default:true; per-object setting
+    Whether the matching output scalars should be recorded. Syntax:
+    &lt;module-full-path&gt;.&lt;scalar-name&gt;.scalar-recording=true/false. Example:
+    **.queue.packetsDropped.scalar-recording=true
+
+scheduler-class=&lt;string&gt;, default:<a href="../api/classcSequentialScheduler.html">cSequentialScheduler</a>; global setting
+    Part of the Envir plugin mechanism: selects the scheduler class. This
+    plugin interface allows for implementing real-time, hardware-in-the-loop,
+    distributed and distributed parallel simulation. The class has to implement
+    the <a href="../api/classcScheduler.html">cScheduler</a> interface.
+
+seed-%-lcg32=&lt;int&gt;; per-run setting
+    When <a href="../api/classcLCG32.html">cLCG32</a> is selected as random number generator: seed for the kth RNG.
+    (Substitute k for '%' in the key.)
+
+seed-%-mt=&lt;int&gt;; per-run setting
+    When Mersenne Twister is selected as random number generator (default):
+    seed for RNG number k. (Substitute k for '%' in the key.)
+
+seed-%-mt-p%=&lt;int&gt;; per-run setting
+    With parallel simulation: When Mersenne Twister is selected as random
+    number generator (default): seed for RNG number k in partition number p.
+    (Substitute k for the first '%' in the key, and p for the second.)
+
+seed-set=&lt;int&gt;, default:${runnumber}; per-run setting
+    Selects the kth set of automatic random number seeds for the simulation.
+    Meaningful values include ${repetition} which is the repeat loop counter
+    (see repeat= key), and ${runnumber}.
+
+sim-time-limit=&lt;double&gt;, unit="s"; per-run setting
+    Stops the simulation when simulation time reaches the given limit. The
+    default is no limit.
+
+simtime-scale=&lt;int&gt;, default:-12; global setting
+    Sets the scale exponent, and thus the resolution of time for the 64-bit
+    fixed-point simulation time representation. Accepted values are -18..0; for
+    example, -6 selects microsecond resolution. -12 means picosecond
+    resolution, with a maximum simtime of ~110 days.
+
+snapshot-file=&lt;filename&gt;, default:${resultdir}/${configname}-${runnumber}.sna; per-run setting
+    Name of the snapshot file.
+
+snapshotmanager-class=&lt;string&gt;, default:cFileSnapshotManager; global setting
+    Part of the Envir plugin mechanism: selects the class to handle streams to
+    which snapshot() writes its output. The class has to implement the
+    <a href="../api/classcSnapshotManager.html">cSnapshotManager</a> interface.
+
+tkenv-default-config=&lt;string&gt;; global setting
+    Specifies which config Tkenv should set up automatically on startup. The
+    default is to ask the user.
+
+tkenv-default-run=&lt;int&gt;, default:0; global setting
+    Specifies which run (of the default config, see tkenv-default-config) Tkenv
+    should set up automatically on startup. The default is to ask the user.
+
+tkenv-extra-stack=&lt;double&gt;, unit="B", default:48KB; global setting
+    Specifies the extra amount of stack that is reserved for each activity()
+    simple module when the simulation is run under Tkenv.
+
+tkenv-image-path=&lt;filename&gt;; global setting
+    Specifies the path for loading module icons.
+
+tkenv-plugin-path=&lt;filename&gt;; global setting
+    Specifies the search path for Tkenv plugins. Tkenv plugins are .tcl files
+    that get evaluated on startup.
+
+total-stack=&lt;double&gt;, unit="B"; global setting
+    Specifies the maximum memory for activity() simple module stacks. You need
+    to increase this value if you get a ``Cannot allocate coroutine stack''
+    error.
+
+&lt;object-full-path&gt;.type-name=&lt;string&gt;; per-object setting
+    Specifies type for submodules and channels declared with 'like &lt;&gt;'.
+
+user-interface=&lt;string&gt;; global setting
+    Selects the user interface to be started. Possible values are Cmdenv and
+    Tkenv, provided the simulation executable contains the respective libraries
+    or loads them dynamically.
+
+&lt;object-full-path&gt;.vector-max-buffered-values=&lt;int&gt;; per-object setting
+    For output vectors: the maximum number of values to buffer per vector,
+    before writing out a block into the output vector file. The default is no
+    per-vector limit (i.e. only the total memory limit is in effect)
+
+&lt;object-full-path&gt;.vector-record-eventnumbers=&lt;bool&gt;, default:true; per-object setting
+    Whether to record event numbers for an output vector. Simulation time and
+    value are always recorded. Event numbers are needed by the Sequence Chart
+    Tool, for example.
+
+&lt;object-full-path&gt;.vector-recording=&lt;bool&gt;, default:true; per-object setting
+    Whether data written into an output vector should be recorded.
+
+&lt;object-full-path&gt;.vector-recording-interval=&lt;custom&gt;; per-object setting
+    Recording interval(s) for an output vector. Syntax: [&lt;from&gt;]..[&lt;to&gt;],...
+    That is, both start and end of an interval are optional, and intervals are
+    separated by comma. Example: ..100, 200..400, 900..
+
+warnings=&lt;bool&gt;, default:true; per-run setting
+    Enables warnings.
 </pre>
+<p>
 
+<p>Predefined variables that can be used in config values:
+
+<pre>
+${runid}
+    A reasonably globally unique identifier for the run, produced by
+    concatenating the configuration name, run number, date/time, etc.
+${inifile}
+    Name of the (primary) inifile
+${configname}
+    Name of the active configuration
+${runnumber}
+    Sequence number of the current run within all runs in the active
+    configuration
+${network}
+    Value of the "network" configuration option
+${experiment}
+    Value of the "experiment-label" configuration option
+${measurement}
+    Value of the "measurement-label" configuration option
+${replication}
+    Value of the "replication-label" configuration option
+${processid}
+    PID of the simulation process
+${datetime}
+    Date and time the simulation run was started
+${resultdir}
+    Value of the "result-dir" configuration option
+${repetition}
+    The iteration number in 0..N-1, where N is the value of the "repeat"
+    configuration option
+${seedset}
+    Value of the "seed-set" configuration option
+${iterationvars}
+    Concatenation of all user-defined iteration variables in name=value form
+${iterationvars2}
+    Concatenation of all user-defined iteration variables in name=value form,
+    plus ${repetition}
+</pre>
+<p>
+
+<p>
+<H2><A NAME="sec406"/>19.2 Predefined Configuration Variables</H2>
+
+<p>Predefined variables that can be used in config values:
+
+<pre>
+${runid}
+    A reasonably globally unique identifier for the run, produced by
+    concatenating the configuration name, run number, date/time, etc.
+${inifile}
+    Name of the (primary) inifile
+${configname}
+    Name of the active configuration
+${runnumber}
+    Sequence number of the current run within all runs in the active
+    configuration
+${network}
+    Value of the "network" configuration option
+${experiment}
+    Value of the "experiment-label" configuration option
+${measurement}
+    Value of the "measurement-label" configuration option
+${replication}
+    Value of the "replication-label" configuration option
+${processid}
+    PID of the simulation process
+${datetime}
+    Date and time the simulation run was started
+${resultdir}
+    Value of the "result-dir" configuration option
+${repetition}
+    The iteration number in 0..N-1, where N is the value of the "repeat"
+    configuration option
+${seedset}
+    Value of the "seed-set" configuration option
+${iterationvars}
+    Concatenation of all user-defined iteration variables in name=value form
+${iterationvars2}
+    Concatenation of all user-defined iteration variables in name=value form,
+    plus ${repetition}
+</pre>
 <p>
 </BODY>
 </HTML>
-<hr><hr><H1><A NAME="sec403"/>18 NED Language Grammar</H1>
-<a name="cha:ned-language-grammar"></a>
+<hr><hr><H1><A NAME="sec407"/>20 Result File Formats</H1>
+<a name="cha:result-file-formats"></a>
 
-<p>The NED language<!--ned!language-->, the network topology description language of
-OMNeT++ will be given using the extended BNF notation.
+<p>The file format described here applies to <i>both output vector and
+output scalar files</i>. Their formats are consistent, only the types of
+entries occurring into them are different. This unified format also
+means that they can be read with a common routine.
 
-<p>Space, horizontal tab and new line characters counts as delimiters,
-so one or more of them is required between two elements of the
-description which would otherwise be unseparable. '//' (two slashes)
-may be used to write comments that last to the end of the line.
-The language only distinguishes between lower and upper case
-letters in names, but not in keywords.
+<p>Result files are <i>line oriented</i>. A line consists of one or more
+tokens, separated by whitespace. Tokens either don't
+contain whitespace, or or whitespace is escaped using a backslash, or
+are quoted using double quotes. Escaping within quotes using
+backslashes is also permitted.
+
+<p>The first token of a line usually identifies the type of the entry. A
+notable exception is an output vector data line, which begins with a
+numeric identifier of the given output vector.
+
+<p>A line starting with # as the first non-whitespace character denotes
+a comment, and is to be ignored during processing.
+
+<p>Result files are written from simulation runs. A simulation run
+generates physically contiguous sets of lines into one or more result
+files. (That is, lines from different runs do not arbitrarily mix in
+the files.)
 
 <p>
-In this description, the {xxx...} notation stands for one or
-more xxx's separated with spaces, tabs or new line characters,
-and {xxx,,,} stands for one or more xxx's, separated with a
-comma and (optionally) spaces, tabs or new line characters.
+A run is identified by a unique textual<i> runId</i>, which appears in
+all result files written during that run. The runId may appear on the
+user interface, so it should be somewhat meaningful to the user.
+Nothing should be assumed about the particular format of runId, but it
+will be some string concatenated from the simulated network's name, the
+time/date, the hostname, and other pieces of data to make it unique.
 
 <p>
-For ease of reading, in some cases we use textual definitions.
-The <i>networkdescription</i> symbol is the sentence symbol of the
-grammar.
+A simulation run will typically write into two result files (.vec and
+.sca). However, when using parallel distributed simulation, the user
+will end up with several .vec and .sca files, because different
+partitions (a separate process each) will write into different files.
+However, all these files will contain the same runId, so it is possible
+to relate data that belong together.
+
+<p><br><br>
+
+<p>Entry types:
+
+<p>\bfseries
+``Run''
+
+<p>Marks the beginning of a new run in the file. Entries after this line
+belong to this run.
 
 <p>
+<br><br>
+
+<p>Format:
+
+<p><b>run</b> <i>runId</i>
+
+<p>
+<br><br>
+
+<p>The following forms are obsolete, but should be understood nevertheless:
+
+<p><b>run</b> <i>runNumber</i>
+
+<p><b>run</b> <i>runNumber</i> <i>networkName</i>
+
+<p><b>run</b> <i>runNumber</i> <i>networkName</i> <i>dateTime</i>
+
+<p>
+<br><br>
+
+<p>These forms can be distinguished from the first one during processing,
+because runId is not numeric while runNumber is. During processing, the
+program can construct an artificial runId from the file name, run
+number, and the line number at which this line appears in the file.
+(The runNumber comes from omnetpp.ini, and it is not guaranteed to be
+unique).
+
+<p>In the new format, runNumber, networkName and dateTime will appear on
+separate lines as <i>run</i> <i>attributes</i>.
+
+<p>
+<br><br>
+
+<p>Old output vector files don't contain a ``run'' line. During processing,
+if any line type is encountered before a ``run'' line, then an implicit
+\ ``run'' has to be created and subsequenet entries be assumed to be
+part of that.
+
+<p>
+<br><br>
+
+<p>Performance note: if not the whole file is kept in memory during
+analysis, then the runs in the file (i.e. offsets of the ``run'' lines)
+may be indexed for more efficient random access.
+
+<p>
+<br><br>
+
+<p>Example:
+
+<p>\ttfamily
+run
+"largeNet-20050710-14:34:11-localhost-12374"
+
+<p>
+<br><br>
+
+<p>\bfseries
+``Run Attributes''
+
+<p>Contains an attribute for the current run. These attributes include the
+network name, the time/date of execution, the
+experiment/measurement/replication labels, the random number seeds,
+configuration options that took effect such as the scheduler class,
+etc.
+
+<p>
+<br><br>
+
+<p>Format:
+
+<p><b>attr</b> <i>name</i> <i>value</i>
+
+<p>
+<br><br>
+
+<p><b>TODO</b> define the list of recognized attribute names
+
+<p>
+<br><br>
+
+<p>Example
+
+<p>\ttfamily
+attr run 1
+
+<p>\ttfamily
+attr network "largeNet" 
+
+<p>\ttfamily
+attr date "2005-07-10 14:34:11"
+
+<p>\ttfamily
+attr host "localhost" 
+
+<p>\ttfamily
+attr inifile "xxx.ini"
+
+<p>\ttfamily
+attr experiment "blabla" 
+
+<p>\ttfamily
+attr measurement "rtete" 
+
+<p>\ttfamily
+attr replication "12th"
+
+<p>\ttfamily
+attr numseeds 2 
+
+<p>\ttfamily
+attr seed-0-mt 573367
+
+<p>\ttfamily
+attr seed-1-mt 124643
+
+<p>
+<br><br>
+
+<p>\bfseries
+``Param''
+
+<p>Contains a module parameter value for the given run. This is needed so
+that module parameters may be included in the analysis (e.g. to
+identify the load for a ``thruput vs load'' plot).
+
+<p>
+<br><br>
+
+<p>It is not feasible to simply store all parameters of all modules in the
+result file (it's just too much). We assume that NED files are
+invariant and don't store parameters defined in them. However, we store
+parameter assignments that come from omnetpp.ini, in their original
+wildcard form (i.e. not expanded) to conserve space. Parameter values
+entered interactively by the user are also stored.
+
+<p>
+<br><br>
+
+<p>When the original NED files are present, it should thus be possible to
+reconstruct all parameters for the given simulation.
+
+<p>
+
+<p>Format:
+
+<p><b>param</b> <i>parameterNamePattern</i> <i>value</i>
+
+<p>
+<br><br>
+
+<p>Example:
+
+<p>\ttfamily
+param **.gen.sendIaTime \ \ exponential(0.01)
+
+<p>\ttfamily
+param **.gen.msgLength \ \ \ 10
+
+<p>\ttfamily
+param **.fifo.bitsPerSec \ 1000
+
+<p>
+<br><br>
+
+<p>\bfseries
+``Scalar''
+
+<p>Contains an output scalar value. This is the same as in older output
+scalar files.
+
+<p>\
+
+<p>Format:
+
+<p><b>scalar</b> <i>moduleName</i> <i>scalarName</i> <i>value</i>
+
+<p>
+<br><br>
+
+<p><b>TODO</b> room to include the unit (seconds, bits, megabit/second,
+etc), and possible extra data (for tagging, commenting, etc?)
+
+<p>
+<br><br>
+
+<p>Examples:
+
+<p>\ttfamily
+scalar "net.switchA.relay"
+"processed frames" 100
+
+<p>
+<br><br>
+
+<p>\bfseries
+``Vector''
+
+<p>Defines an output vector. This is the same as in older output vector
+files.
+
+<p>Format:
+
+<p><b>vector</b> <i>vectorId</i> \ <i>moduleName</i>
+\ <i>vectorName</i>
+
+<p><b>vector</b> <i>vectorId</i> \ <i>moduleName</i>
+\ <i>vectorName</i> \ 1
+
+<p><b>vector </b><i>vectorId</i> <i>moduleName vectorName columns</i>
+
+<p>
+<i> </i>Where columns is a string encoding the meaning and ordering
+the columns of data lines. Characters of the string mean:
+
+<p>  <b>E</b> event number
+  <b>T</b> simulation time
+  <b>V</b> vector value
+
+<p>The default value of columns is 'TV'
+for compatibility with old vector files.
+
+<p>
+<br><br>
+
+<p>\bfseries
+``Vector Attributes''
+
+<p>Vector attributes may follow the definition of vectors. These attibutes
+include vector unit, enum definitions, interpolation mode, etc.
+
+<p>
+<br><br>
+
+<p>Format:
+
+<p><b>attr</b> name value
+
+<p>\
+
+<p>
+<br><br>
+
+<p>\bfseries
+``Vector Data''
+
+<p>Adds a value to an output vector. This is the same as in older output
+vector files.
+
+<p>Format:
+
+<p>\itshape vectorId column1 column2 ...
+
+<p>Simulation times and event numbers <i>within an output vector</i> are
+required to be in increasing order.
+
+<p>Performance note: Data lines belonging to the same output vector may be
+written out in clusters (of sizes roughly multiple of the disk's
+physical block size). Then, since an output vector file is typically
+not kept in memory during analysis, indexing the start offsets of these
+clusters allows one to read the file and seek in it more efficiently.
+This does not require any change or extension to the file format.
+
+<p><br><br>
+
+<p>\bfseries ``Histogram''
+
+<p>Contains histogram data.
+
+<p>Format:
+
+<p><b>histogram</b> <i>moduleName</i> \ <i>histogramName</i>
+
+<p><b>bin</b> --INF <i>value0</i>
+
+<p><b>bin</b> <i>binLowerBound1</i> <i>value1</i>
+
+<p><b>bin</b> <i>binLowerBound2</i> <i>value2</i>
+
+<p>\bfseries ...
+
+<p>Histogram name and module is defined on the <b>histogram</b> line,
+which is followed by several <b>bin</b> lines to contain data. Any
+non-<b>bin</b> line marks the end of the histogram data.
+
+<p>The <i>binLowerBound </i>column of <b>bin</b> lines represent the
+lower bound of the given histogram cell. <b>Bin</b> lines are in
+increasing <i>binLowerBound</i> order.
+
+<p>The <i>value</i> column of <b>bin</b> lines represent observation
+count in the given cell: <i>value k</i> is the number of observations
+greater or equal than <i>binLowerBound k</i>, but smaller than
+<i>binLowerBound k+1</i>. <i>Value</i> is not necessarily an
+integer, because the <a href="../api/classcKSplit.html">cKSplit</a> and <a href="../api/classcPSquare.html">cPSquare</a> algorithms produce
+non-integer estimates. The first <b>bin</b> line is the underflow
+cell, and the last <b>bin</b> line is the overflow cell.
+
+<p>
+
+</BODY>
+</HTML>
+<hr><hr><H1><A NAME="sec408"/>21 Eventlog File Format</H1>
+<a name="cha:eventlog-file-format"></a>
+
+<p>This appendix documents the format of the eventlog file. Eventlog
+files are written by the simulation (when enabled). Everything
+that happens during the simulation gets recorded into the file,
+  <br><ul><font size=-1>[With certain granularity of course, and subject to
+  filters that were active during simulation]</font></ul>
+so the file can later be used to reproduce the history of the
+simulation on a sequence chart, or in some other form.
+
+<p>The file is line-oriented text file. Blank lines and lines beginning
+with "#" (comments) will get ignored. Other lines begin with an
+<i>entry identifier</i> like <tt>E</tt> for <i>Event</i> or
+<tt>BS</tt> for <i>BeginSend</i>, followed by <i>attribute-identifier</i>
+and <i>value</i> pairs. One exception is debug output
+(recorded from <tt>ev&lt;&lt;...</tt> statements), which are represented
+by lines that begin with a hypen, and continue with the actual text.
 
 <pre>
-nedfile
-        : definitions
-        |
-        ;
-
-definitions
-        : definitions definition
-        | definition
-        ;
-
-definition
-        : packagedeclaration
-        | import
-        | propertydecl
-        | fileproperty
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
-        ;
-
-packagedeclaration
-        : PACKAGE dottedname ';'
-        ;
-
-dottedname
-        : dottedname '.' NAME
-        | NAME
-        ;
-
-import
-        : IMPORT importspec ';'
-        ;
-
-importspec
-        : importspec '.' importname
-        | importname
-        ;
-
-importname
-        : importname NAME
-        | importname '*'
-        | importname '**'
-        | NAME
-        | '*'
-        | '**'
-        ;
-
-propertydecl
-        : propertydecl_header opt_inline_properties ';'
-        | propertydecl_header '(' opt_propertydecl_keys ')' opt_inline_properties ';'
-        ;
-
-propertydecl_header
-        : PROPERTY '@' NAME
-        | PROPERTY '@' NAME '[' ']'
-        ;
-
-opt_propertydecl_keys
-        : propertydecl_keys
-        |
-        ;
-
-propertydecl_keys
-        : propertydecl_keys ';' propertydecl_key
-        | propertydecl_key
-        ;
-
-propertydecl_key
-        : NAME
-        ;
-
-fileproperty
-        : property_namevalue ';'
-        ;
-
-channeldefinition
-        : channelheader '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelheader
-        : CHANNEL NAME
-           opt_inheritance
-        ;
-
-opt_inheritance
-        :
-        | EXTENDS extendsname
-        | LIKE likenames
-        | EXTENDS extendsname LIKE likenames
-        ;
-
-extendsname
-        : dottedname
-        ;
-
-likenames
-        : likenames ',' likename
-        | likename
-        ;
-
-likename
-        : dottedname
-        ;
-
-channelinterfacedefinition
-        : channelinterfaceheader '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelinterfaceheader
-        : CHANNELINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_interfaceinheritance
-        : EXTENDS extendsnames
-        |
-        ;
-
-extendsnames
-        : extendsnames ',' extendsname
-        | extendsname
-        ;
-
-simplemoduledefinition
-        : simplemoduleheader '{'
-            opt_paramblock
-            opt_gateblock
-          '}'
-        ;
-
-simplemoduleheader
-        : SIMPLE NAME
-          opt_inheritance
-        ;
-
-compoundmoduledefinition
-        : compoundmoduleheader '{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '}'
-        ;
-
-compoundmoduleheader
-        : MODULE NAME
-          opt_inheritance
-        ;
-
-networkdefinition
-        : networkheader '{'
-            opt_paramblock
-            opt_gateblock
-            opt_typeblock
-            opt_submodblock
-            opt_connblock
-          '}'
-        ;
-
-networkheader
-        : NETWORK NAME
-          opt_inheritance
-        ;
-
-moduleinterfacedefinition
-        : moduleinterfaceheader '{'
-            opt_paramblock
-            opt_gateblock
-          '}'
-        ;
-
-moduleinterfaceheader
-        : MODULEINTERFACE NAME
-           opt_interfaceinheritance
-        ;
-
-opt_paramblock
-        : opt_params
-        | PARAMETERS ':'
-          opt_params
-        ;
-
-opt_params
-        : params
-        |
-        ;
-
-params
-        : params paramsitem
-        | paramsitem
-        ;
-
-paramsitem
-        : param
-        | property
-        ;
-
-param
-        : param_typenamevalue
-        | pattern_value
-        ;
-
-param_typenamevalue
-        : param_typename opt_inline_properties ';'
-        | param_typename opt_inline_properties '=' paramvalue opt_inline_properties ';'
-        ;
-
-param_typename
-        : opt_volatile paramtype NAME
-        | NAME
-        ;
-
-pattern_value
-        : '/' pattern '/' '=' paramvalue
-        ;
-
-paramtype
-        : DOUBLE
-        | INT
-        | STRING
-        | BOOL
-        | XML
-        ;
-
-opt_volatile
-        : VOLATILE
-        |
-        ;
-
-paramvalue
-        : expression
-        | DEFAULT '(' expression ')'
-        ;
-
-opt_inline_properties
-        : inline_properties
-        |
-        ;
-
-inline_properties
-        : inline_properties property_namevalue
-        | property_namevalue
-        ;
-
-pattern
-        : pattern pattern_elem
-        | pattern_elem
-        ;
-
-pattern_elem
-        : '.'
-        | '*'
-        | '?'
-        | '**'
-        | NAME
-        | INTCONSTANT
-        | '..'
-        | '[' pattern ']'
-        | '{' pattern '}'
-        | IMPORT | PACKAGE | PROPERTY
-        | MODULE | SIMPLE | NETWORK | CHANNEL | MODULEINTERFACE | CHANNELINTERFACE
-        | EXTENDS | LIKE
-        | DOUBLE | INT | STRING | BOOL | XML | VOLATILE
-        | INPUT | OUTPUT | INOUT | IF | FOR
-        | TYPES | PARAMETERS | GATES | SUBMODULES | CONNECTIONS | ALLOWUNCONNECTED
-        | TRUE | FALSE | THIS | DEFAULT | CONST | SIZEOF | INDEX | XMLDOC
-        ;
-
-property
-        : property_namevalue ';'
-        ;
-
-property_namevalue
-        : property_name
-        | property_name '(' opt_property_keys ')'
-        ;
-
-property_name
-        : '@' NAME
-        | '@' NAME '[' NAME ']'
-        ;
-
-opt_property_keys
-        : property_keys
-        ;
-
-property_keys
-        : property_keys ';' property_key
-        | property_key
-        ;
-
-property_key
-        : NAME '=' property_values
-        | property_values
-        ;
-
-property_values
-        : property_values ',' property_value
-        | property_value
-        ;
-
-property_value
-        : NAME
-        | '$' NAME
-        | STRINGCONSTANT
-        | TRUE
-        | FALSE
-        | INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        | '-'
-        |
-        ;
-
-opt_gateblock
-        : gateblock
-        |
-        ;
-
-gateblock
-        : GATES ':'
-          opt_gates
-        ;
-
-opt_gates
-        : gates
-        |
-        ;
-
-gates
-        : gates gate
-        | gate
-        ;
-
-gate
-        : gate_typenamesize
-          opt_inline_properties ';'
-        ;
-
-gate_typenamesize
-        : gatetype NAME
-        | gatetype NAME '[' ']'
-        | gatetype NAME vector
-        | NAME
-        | NAME '[' ']'
-        | NAME vector
-        ;
-
-gatetype
-        : INPUT
-        | OUTPUT
-        | INOUT
-        ;
-
-opt_typeblock
-        : typeblock
-        |
-        ;
-
-typeblock
-        : TYPES ':'
-           opt_localtypes
-        ;
-
-opt_localtypes
-        : localtypes
-        |
-        ;
-
-localtypes
-        : localtypes localtype
-        | localtype
-        ;
-
-localtype
-        : propertydecl
-        | channeldefinition
-        | channelinterfacedefinition
-        | simplemoduledefinition
-        | compoundmoduledefinition
-        | networkdefinition
-        | moduleinterfacedefinition
-        | ';'
-        ;
-
-opt_submodblock
-        : submodblock
-        |
-        ;
-
-submodblock
-        : SUBMODULES ':'
-          opt_submodules
-        ;
-
-opt_submodules
-        : submodules
-        |
-        ;
-
-submodules
-        : submodules submodule
-        | submodule
-        ;
-
-submodule
-        : submoduleheader ';'
-        | submoduleheader '{'
-          opt_paramblock
-          opt_gateblock
-          '}' opt_semicolon
-        ;
-
-submoduleheader
-        : submodulename ':' dottedname
-        | submodulename ':' likeparam LIKE dottedname
-        ;
-
-submodulename
-        : NAME
-        |  NAME vector
-        ;
-
-likeparam
-        : '&lt;' '&gt;'
-        | '&lt;' expression '&gt;'
-        ;
-
-opt_connblock
-        : connblock
-        |
-        ;
-
-connblock
-        : CONNECTIONS ALLOWUNCONNECTED ':'
-          opt_connections
-        | CONNECTIONS ':'
-          opt_connections
-        ;
-
-opt_connections
-        : connections
-        |
-        ;
-
-connections
-        : connections connectionsitem
-        | connectionsitem
-        ;
-
-connectionsitem
-        : connectiongroup
-        | connection opt_loops_and_conditions ';'
-        ;
-
-connectiongroup
-        : opt_loops_and_conditions '{'
-          connections '}' opt_semicolon
-        ;
-
-opt_loops_and_conditions
-        : loops_and_conditions
-        |
-        ;
-
-loops_and_conditions
-        : loops_and_conditions ',' loop_or_condition
-        | loop_or_condition
-        ;
-
-loop_or_condition
-        : loop
-        | condition
-        ;
-
-loop
-        : FOR NAME '=' expression '..' expression
-        ;
-
-connection
-        : leftgatespec '--&gt;' rightgatespec
-        | leftgatespec '--&gt;' channelspec '--&gt;' rightgatespec
-        | leftgatespec '&lt;--' rightgatespec
-        | leftgatespec '&lt;--' channelspec '&lt;--' rightgatespec
-        | leftgatespec '&lt;--&gt;' rightgatespec
-        | leftgatespec '&lt;--&gt;' channelspec '&lt;--&gt;' rightgatespec
-        ;
-
-leftgatespec
-        : leftmod '.' leftgate
-        | parentleftgate
-        ;
-
-leftmod
-        : NAME vector
-        | NAME
-        ;
-
-leftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentleftgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-rightgatespec
-        : rightmod '.' rightgate
-        | parentrightgate
-        ;
-
-rightmod
-        : NAME
-        | NAME vector
-        ;
-
-rightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-parentrightgate
-        : NAME opt_subgate
-        | NAME opt_subgate vector
-        | NAME opt_subgate '++'
-        ;
-
-opt_subgate
-        : '$' NAME
-        |
-        ;
-
-channelspec
-        : channelspec_header
-        | channelspec_header '{'
-            opt_paramblock
-          '}'
-        ;
-
-channelspec_header
-        :
-        | dottedname
-        | likeparam LIKE dottedname
-        ;
-
-condition
-        : IF expression
-        ;
-
-vector
-        : '[' expression ']'
-        ;
-
-expression
-        :
-          expr
-        | xmldocvalue
-        ;
-
-xmldocvalue
-        : XMLDOC '(' stringliteral ',' stringliteral ')'
-        | XMLDOC '(' stringliteral ')'
-        ;
-
-expr
-        : simple_expr
-        | '(' expr ')'
-        | CONST '(' expr ')'
-        | expr '+' expr
-        | expr '-' expr
-        | expr '*' expr
-        | expr '/' expr
-        | expr '%' expr
-        | expr '^' expr
-        | '-' expr
-        | expr '==' expr
-        | expr '!=' expr
-        | expr '&gt;' expr
-        | expr '&gt;=' expr
-        | expr '&lt;' expr
-        | expr '&lt;=' expr
-        | expr '&&' expr
-        | expr '||' expr
-        | expr '##' expr
-        | '!' expr
-        | expr '&' expr
-        | expr '|' expr
-        | expr '#' expr
-        | '~' expr
-        | expr '&lt;&lt;' expr
-        | expr '&gt;&gt;' expr
-        | expr '?' expr ':' expr
-        | INT '(' expr ')'
-        | DOUBLE '(' expr ')'
-        | STRING '(' expr ')'
-        | NAME '(' ')'
-        | NAME '(' expr ')'
-        | NAME '(' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        ;
-
-simple_expr
-        : identifier
-        | special_expr
-        | literal
-        ;
-
-identifier
-        : NAME
-        | THIS '.' NAME
-        | NAME '.' NAME
-        | NAME '[' expr ']' '.' NAME
-        ;
-
-special_expr
-        : INDEX
-        | INDEX '(' ')'
-        | SIZEOF '(' identifier ')'
-        ;
-
-literal
-        : stringliteral
-        | boolliteral
-        | numliteral
-        ;
-
-stringliteral
-        : STRINGCONSTANT
-        ;
-
-boolliteral
-        : TRUE
-        | FALSE
-        ;
-
-numliteral
-        : INTCONSTANT
-        | REALCONSTANT
-        | quantity
-        ;
-
-quantity
-        : quantity INTCONSTANT NAME
-        | quantity REALCONSTANT NAME
-        | INTCONSTANT NAME
-        | REALCONSTANT NAME
-        ;
-
-opt_semicolon
-        : ';'
-        |
-        ;
-
+&lt;file&gt; ::= &lt;line&gt;*
+&lt;line&gt; ::= &lt;empty-line&gt; | &lt;user-log-message&gt; | &lt;event-log-entry&gt;
+&lt;empty-line&gt; ::= CR LF
+&lt;user-log-message&gt; ::= - SPACE &lt;text&gt; CR LF
+&lt;event-log-entry&gt; ::= &lt;event-log-entry-type&gt; SPACE &lt;parameters&gt; CR LF
+&lt;event-log-entry-type&gt; ::= BU | MB | ME | MC | MD | MR | CC | CD | CS |
+                           MS | CE | BS | ES | SD | SH | DM | E
+&lt;parameters&gt; ::= (&lt;name&gt; SPACE &lt;value&gt;)*
+&lt;name&gt; ::= &lt;text&gt;
+&lt;value&gt; ::= &lt;integer&gt; | &lt;text&gt; | &lt;quoted-text&gt;
 </pre>
+<p>
+Here is a fragment of an existing eventlog file as an example:
 
+<pre>
+E # 14 t 1.018454036455 m 8 ce 9 msg 6
+BS id 6 tid 6 c <a href="../api/classcMessage.html">cMessage</a> n send/endTx pe 14
+ES t 4.840247053855
+MS id 8 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 8 d t=,,#808000;i=device/pc_s
+
+E # 15 t 1.025727827674 m 2 ce 13 msg 25
+- another frame arrived while receiving -- collision!
+CE id 0 pe 12
+BS id 0 tid 0 c <a href="../api/classcMessage.html">cMessage</a> n end-reception pe 15
+ES t 1.12489449434
+BU id 2 txt "Collision! (3 frames)"
+DM id 25 pe 15
+</pre>
+<p>
+A correct eventlog also fulfills the following requirements:
+<ul>
+   <li> simulation events are in increasing event number and simulation time order
+   <li> FIXME anything more?
+</ul>
+
+<p>The various entry types and their supported attributes are as follows:
+
+<pre>
+SB SimulationBeginEntry // recorded at the first event
+{
+   v int version       // OMNeT++ version, e.g. 0x401 (=1025) is release 4.1
+   rid string runId    // identifies the simulation run
+}
+
+SE SimulationEndEntry // optional last line of an event log file
+{
+}
+
+BU BubbleEntry // display a bubble message
+{
+   id int moduleId // id of the module which printed the bubble message
+   txt string text // displayed message text
+}
+
+MB ModuleMethodBeginEntry // beginning of a call to another module
+{
+   sm int fromModuleId // id of the caller module
+   tm int toModuleId   // id of the module being called
+   m string method     // C++ method name
+}
+
+ME ModuleMethodEndEntry // end of a call to another module
+{
+}
+
+MC ModuleCreatedEntry // creating a module
+{
+   id int moduleId              // id of the new module
+   c string moduleClassName     // C++ class name of the module
+   t string nedTypeName         // fully qualified NED type name
+   pid int parentModuleId  -1   // id of the parent module
+   n string fullName            // full dotted hierarchic module name
+   cm bool compoundModule false // simple or compound module
+}
+
+MD ModuleDeletedEntry // deleting a module
+{
+   id int moduleId // id of the module being deleted
+}
+
+MR ModuleReparentedEntry // reparenting a module
+{
+   id int moduleId         // id of the module being reparented
+   p int newParentModuleId // id of the new parent module
+}
+
+GC GateCreatedEntry     // gate created
+{
+   m int moduleId       // module in which the gate was create
+   g int gateId         // id of the new gate
+   n string name        // gate name
+   i int index -1       // gate index if vector, -1 otherwise
+   o bool isOutput      // input or output gate
+}
+
+GD GateDeletedEntry     // gate deleted
+{
+   m int moduleId       // module in which the gate was created
+   g int gateId         // id of the deleted gate
+}
+
+CC ConnectionCreatedEntry // creating a connection
+{
+   sm int sourceModuleId  // id of the source module identifying the connection
+   sg int sourceGateId    // id of the gate at the source module identifying the connection
+   dm int destModuleId    // id of the destination module
+   dg int destGateId      // id of the gate at the destination module
+}
+
+CD ConnectionDeletedEntry // deleting a connection
+{
+   sm int sourceModuleId // id of the source module identifying the connection
+   sg int sourceGateId   // id of the gate at the source module identifying the connection
+}
+
+CS ConnectionDisplayStringChangedEntry // a connection display string change
+{
+   sm int sourceModuleId  // id of the source module identifying the connection
+   sg int sourceGateId    // id of the gate at the source module identifying the connection
+   d string displayString // the new display string
+}
+
+MS ModuleDisplayStringChangedEntry // a module display string change
+{
+   id int moduleId        // id of the module
+   d string displayString // the new display string
+}
+
+E EventEntry // an event that is processing of a message
+{
+   # long eventNumber          // unique event number
+   t simtime_t simulationTime  // simulation time when the event occurred
+   m int moduleId              // id of the processing module
+   ce long causeEventNumber -1 // event number from which the message being processed was sent or -1 if the message was sent from initialize
+   msg long messageId          // life time unique id of the message being processed
+}
+
+CE CancelEventEntry // canceling an event caused by self message
+{
+   id long messageId              // id of the message being removed from the FES
+   pe long previousEventNumber -1 // event number from which the message being cancelled was sent or -1 if the message was sent from initialize
+}
+
+BS BeginSendEntry // beginning to send a message
+{
+   id long messageId                       // life time unique id of the message being sent
+   //XXX what about writing dup, encapsulate/decapsulate as separate lines?
+   tid long messageTreeId                  // id of the message inherited by dup
+   eid long messageEncapsulationId   -1    // id of the message inherited by encapsulation
+   etid long messageEncapsulationTreeId -1 // id of the message inherited by both dup and encapsulation
+   c string messageClassName               // C++ class name of the message
+   n string messageFullName                // message name
+   pe long previousEventNumber -1          // event number from which the message being sent was processed or -1 if the message has not yet been processed before
+   k short messageKind     0               // message kind
+   p short messagePriority 0               // message priority
+   l int64 messageLength   0               // message length in bits
+   er bool hasBitError   false             // true indicates the message has bit errors
+   d string detail       NULL              // detailed information of message content when recording message data is turned on
+   //XXX and many other fields, including message contents
+}
+
+ES EndSendEntry // prediction of the arrival of a message
+{
+   t simtime_t arrivalTime // when the message will arrive to its destination module
+}
+
+SD SendDirectEntry // sending a message directly to a destination gate
+{
+   sm int senderModuleId            // id of the source module from which the message is being sent
+   dm int destModuleId              // id of the destination module to which the message is being sent
+   dg int destGateId                // id of the gate at the destination module to which the message is being sent
+   pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
+   td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
+}
+
+SH SendHopEntry // sending a message through a connection identified by its source module and gate id
+{
+   sm int senderModuleId            // id of the source module from which the message is being sent
+   sg int senderGateId              // id of the gate at the source module from which the message is being sent
+   pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
+   td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
+}
+
+DM DeleteMessageEntry // deleting a message
+{
+   id int messageId               // id of the message being deleted
+   pe long previousEventNumber -1 // event number from which the message being deleted was sent or -1 if the message was sent from initialize
+}
+</pre>
 <p>
 </BODY>
 </HTML>

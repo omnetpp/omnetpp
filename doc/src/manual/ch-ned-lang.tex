@@ -204,13 +204,19 @@ instantiate this module type) create as many gates as they want.
 \end{note}
 
 Parameters and gates will be discussed in detail in section FIXME.
+Both the \ttt{parameters:} and \ttt{gates:} sections in the simple module are
+optional.
 
-Comments in the NED source also serve a purpose in addition to making the
-NED source more readable: in the \opp IDE they get displayed at various places (tooltips,
+Simple modules can be extended (or specialized) via subclassing. This will be
+discussed in section FIXME.
+
+Comments in the NED source also serve a purpose in addition to making
+the NED source more readable: in the \opp IDE they get displayed at various places (tooltips,
 content assist, etc), and become part of the documentation extracted from the
 NED files. The NED documentation system, not completely unlike \textit{JavaDoc}
 or \textit{Doxygen}, will be described in Chapter \ref{cha:neddoc}.
 
+FIXME @class, @namespace
 
 \section{Channels}
 
@@ -225,6 +231,11 @@ channel Backbone extends ned.BasicChannel
         datarate = 10Gbps;
 \}
 \end{Verbatim}
+
+\begin{note}
+    The \ttt{parameters:} keyword is optional (everywhere, not only in
+    channels), so it can be left out.
+\end{note}
 
 Our \ttt{Backbone} channel type extends (subclasses, builds upon) the
 \ttt{ned.BasicChannel} channel type. (In the latter name, \ttt{ned} is the
@@ -245,41 +256,34 @@ package name, and \ttt{BasicChannel} is the actual type name.)
 declaration, we override \ttt{delay} and \ttt{datarate} to get our custom
 channel.
 
-With channels, the default base type is \ttt{ned.BasicChannel}, so the
-\ttt{extends\ldots} bit can be left out. Also, the \ttt{parameters:} keyword
-is optional (everywhere, not only with channels), so our declaration can be
-simplified to the following, completely equivalent one:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-channel Backbone
-\{
-    delay = 2ms;
-    datarate = 10Gbps;
-\}
-\end{Verbatim}
-
 For completeness, there is another built-in channel type,
 \ttt{ned.IdealChannel}. It defines no parameters, and its C++ implementation
 does nothing but let the message though without any change or delay.
 
-FIXME::::
+% FIXME into Inheritance:
+% It is also possible to add new parameters. . .
+%
+% \begin{Verbatim}[commandchars=\\\{\}]
+% channel Backbone extends ned.BasicChannel
+% \{
+%     double cost;
+%     double length @unit(m);
+%     delay = this.length / 200000km * 1s;
+%     datarate = 10Gbps;
+% \}
+% \end{Verbatim}
 
-channel MyChannel extends ned.IdealChannel
-{
-   @class(MyChannel);
-}
 
-r1.g <--> {delay=10ms} <--> r2.g;
+Channels types resemble simple modules in the sense that they need an underlying
+C++ class to function, the NED declaration itself is not enough. Our
+\ttt{Backbone} channel inherits this C++ class from \ttt{ned.BasicChannel}.
 
+FIXME @class, @namespace
 
-
-adding parameters
-
-specifying the implementation (@class)
 
 \section{Compound modules}
 
-Compound modules are modules composed of one or more submodules.
+Compound modules are modules that are composed of one or more submodules.
 Any module type (simple or compound module) can be used as a submodule.
 Like simple modules, compound modules can also have gates and parameters,
 and they can be used wherever simple modules can be used.
@@ -291,8 +295,7 @@ are simply for grouping modules into larger components that can
 can be used either as a model (see section \ref{sec:ch-ned-lang:network})
 or as a building block for other compound modules.
 
-By convention, module type names (and so compound module type names, too)
-begin with upper-case letters.
+By convention, module type names begin with upper-case letters.
 
 Submodules may use parameters of the compound module.
 They may be connected with each other and/or with
@@ -300,29 +303,50 @@ the compound module itself.
 
 A compound module definition\index{module!compound!definition} looks
 similar to a simple\index{module!simple} module definition:
-it has \texttt{gates} and \texttt{parameters} sections.
-There are two additional sections, \texttt{submodules} and
-\texttt{connections}.
+it has \ttt{gates} and \ttt{parameters} sections.
+There are two additional sections, \ttt{submodules} and
+\ttt{connections}.
 
-The syntax for compound modules is the following:
+Let us see a compound module from the \textit{Routing} example simulation:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} CompoundModule
-    \tbf{parameters}:
-        //...
-    \tbf{gates}:
-        //...
-    \tbf{submodules}:
-        //...
-    \tbf{connections}:
-        //...
-\tbf{endmodule}
+module Node
+\{
+    parameters:
+        int address;
+        @display("i=misc/node_vs,gold");
+    gates:
+        inout port[];
+    submodules:
+        app: App \{
+            parameters:
+                address = address;
+                @display("p=140,60");
+        \}
+        routing: Routing \{
+            parameters:
+                @display("p=140,130");
+            gates:
+                in[sizeof(port)];
+                out[sizeof(port)];
+        \}
+        queue[sizeof(port)]: L2Queue \{
+            parameters:
+                @display("p=80,200,row");
+        \}
+    connections:
+        routing.localOut --> app.in;
+        routing.localIn <-- app.out;
+        for i=0..sizeof(port)-1 \{
+            routing.out[i] --> queue[i].in;
+            routing.in[i] <-- queue[i].out;
+            queue[i].line <--> port[i];
+        \}
+\}
 \end{Verbatim}
 
-All sections (\texttt{parameters}, \texttt{gates}, \texttt{submodules},
-\texttt{connections}) are optional.
-
-
+All sections (\ttt{parameters}, \ttt{gates}, \ttt{submodules},
+\ttt{connections}) are optional.
 
 \subsection{Compound module parameters and gates}
 
@@ -342,28 +366,8 @@ also be used in defining the connections inside the compound module.
 As a practical example, you can create a \ttt{Router} compound module
 with a variable number of ports, specified in a \ttt{numOfPorts} parameter.
 
-Parameters affecting the internal structure should always be declared
-\ttt{const}, so that accessing them always yields the same value.
-Otherwise, if the parameter was assigned a random value, one could
-get a different value each time the parameter is accessed during building
-the internals of the compound module, which is surely not what was meant.
-
-Example:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Router
-    \tbf{parameters}:
-        packetsPerSecond : \tbf{numeric},
-        bufferSize : \tbf{numeric},
-        numOfPorts : \tbf{const};
-    \tbf{gates}:
-        \tbf{in}: inputPort[];
-        \tbf{out}: outputPort[];
-    \tbf{submodules}: //...
-    \tbf{connections}: //...
-\tbf{endmodule}
-\end{Verbatim}
-
+Parameters affecting the internal structure should not be declared
+\ttt{volatile}, as it may lead to unexpected results.
 
 \subsection{Submodules}
 
@@ -432,110 +436,25 @@ Example:
 \end{Verbatim}
 
 
-
-\subsection{Submodule type as parameter}
-\label{sec:ch-ned-lang:like}
-\index{module!as parameter}
-
-Sometimes it is convenient to make the name of a submodule type a parameter,
-so that one can easily `plug in' any module there.
-
-For example, assume the purpose of your simulation study is
-to compare different routing algorithms. Suppose you programmed
-the needed routing algorithms as simple modules: \texttt{DistVecRoutingNode},
-\texttt{AntNetRouting1Node}, \texttt{AntNetRouting2Node}, etc.
-You have also created the network topology as a compound module
-called \ttt{RoutingTestNetwork}, which will serve as a testbed for your routing
-algorithms. Currently, \ttt{RoutingTestNetwork} has \texttt{DistVecRoutingNode}
-hardcoded (all submodules are of this type), but you want
-to be able to switch to other routing algorithms easily.
-
-NED gives you the possibility to add a string-valued parameter,
-say \ttt{routingNodeType} to the \ttt{RoutingTestNetwork} compound module.
-Then you can tell NED that types of the submodules inside \ttt{RoutingTestNetwork}
-are not of any fixed module type, but contained in the \ttt{routingNodeType}
-parameter. That is all -- now you are free to assign any of
-the \texttt{"DistVecRoutingNode"}, \texttt{"AntNetRouting1Node"} or
-\texttt{"AntNetRouting2Node"} string constants to this parameter
-(you can do that in NED, in the config file (\ttt{omnetpp.ini}),
-or even enter it interactively),
-and your network will use the routing algorithm you chose.
-
-If you specify a wrong value, say \texttt{"FooBarRoutingNode"}
-when you have no \ttt{FooBarRoutingNode} module implemented,
-you'll get a runtime error at the beginning of the simulation:
-\textit{module type definition not found}.
-
-Inside the \ttt{RoutingTestNetwork} module you assign parameter values
-and connect the gates of the routing modules. To provide some degree
-of type safety, NED wants to make sure you didn't misspell
-parameter or gate names and you used them correctly.
-To be able to do such checks, NED requires some help from you:
-you have to name an existing module type (say \ttt{RoutingNode})
-and promise NED that all modules you're going you specify
-in the \ttt{routingNodeType} parameter will have (at least) the same
-parameters and gates as the \ttt{RoutingNode} module.
-  \footnote{If you like, the above solution somewhat similar to polymorphism
-  in object-oriented languages -- \ttt{RoutingNode} is like a
-  ``base class'', \texttt{DistVecRoutingNode} and \texttt{AntNetRouting1Node}
-  are like ``derived classes'', and the \ttt{routingNodeType} parameter
-  is like a ``pointer to a base class'' which may be downcast to specific
-  types.}
-
-All the above is achieved via the \fpar[ned!keywords!like]{like} keyword.
-The syntax is the following:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} RoutingTestNetwork
-    \tbf{parameters}:
-        routingNodeType: \tbf{string}; // should hold the name
-                                  // of an existing module type
-    \tbf{gates}: //...
-    \tbf{submodules}:
-        node1: routingNodeType \tbf{like} RoutingNode;
-        node2: routingNodeType \tbf{like} RoutingNode;
-        //...
-    \tbf{connections nocheck}:
-        node1.out0 --> node2.in0;
-        //...
-\tbf{endmodule}
-\end{Verbatim}
-
-The \texttt{RoutingNode} module type does not need to be implemented in
-C++, because no instance of it is created; it is merely used
-to check the correctness of the NED file.
-
-On the other hand, the actual module types that will be substituted
-(e.g. \texttt{DistVecRoutingNode}, \texttt{AntNetRouting1Node},etc.)
-do not need to be declared in the NED files.
-
-The \fpar[ned!keywords!like]{like} phrase lets you create families
-of modules that serve similar purposes and implement the same interface
-(they have the same gates and parameters)
-and to use them interchangeably in NED files.
-
-
-
-
 \subsection{Assigning values to submodule parameters}
 
 \index{module!submodule!parameters}
 
 If the module type used as submodule has parameters, you can assign
-values to them in the \texttt{parameters} section of the submodule
+values to them in the \ttt{parameters} section of the submodule
 declaration.
-As a value you can use a constant (such as \texttt{42} or
-\texttt{"www.foo.org"}), various parameters (most commonly, parameters
+As a value you can use a constant (such as \ttt{42} or
+\ttt{"www.foo.org"}), various parameters (most commonly, parameters
 of the compound module), or write an arbitrary expression containing
 the above.
 
 It is not mandatory to mention and assign all parameters.
 Unassigned parameters can get their values at runtime: either from
-the configuration file (\texttt{omnetpp.ini}), or if the value
+the configuration file (\ttt{omnetpp.ini}), or if the value
 isn't there either, the simulator will prompt you to enter it
 interactively. Indeed, for flexibility reasons it is often very useful
 not to ``hardcode'' parameter values in the NED file,
-but to leave them to \texttt{omnetpp.ini} where they can be
+but to leave them to \ttt{omnetpp.ini} where they can be
 changed more easily.
 
 
@@ -790,7 +709,7 @@ One can place several connections in the body of the
 \fpar[ned!keywords!for]{for} statement, separated by semicolons.
 
 One can create nested loops\index{ned!nested for statements}
-by specifying more than one indices in the \texttt{for} statement,
+by specifying more than one indices in the \ttt{for} statement,
 with the first variable forming the outermost loop.
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -861,44 +780,51 @@ that are not connected.
 \label{sec:ch-ned-lang:network}
 \index{ned!network definition}
 
-Module declarations (compound and simple module declarations)
-just define module types. To actually get a simulation model that
-can be run, you need to write a \textit{network definition}.
+A \textit{network} is nothing else than a module type (simple or compound
+module) which is a self-contained simulation model itself.
 
-A network definition declares a simulation model as an instance
-of a previously defined module type. You'll typically want to use
-a compound module type here, although it is also possible to
-program a model as a self-contained simple module and instantiate it
-as a ``network''.
+A module type becomes a network by adding the \ttt{@isNetwork(true)} property
+to it. Examples:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+module FifoNet
+\{
+    parameters: // this is optional
+        @isNetwork(true);
+    submodules:
+        src: Source;
+        fifo: Fifo;
+        sink: Sink;
+    connections:
+        src.out --> fifo.in;
+        fifo.out --> sink.in;
+\}
+\end{Verbatim}
+
+Since a compound module with \ttt{@isNetwork(true)} occurs very frequently, there
+is a shortcut for it: the \ttt{network} keyword. Thus, the above example can be
+somewhat shortened to:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+network FifoNet
+\{
+    submodules:
+        src: Source;
+        fifo: Fifo;
+        sink: Sink;
+    connections:
+        src.out --> fifo.in;
+        fifo.out --> sink.in;
+\}
+\end{Verbatim}
 
 There can be several network definitions in your NED file or NED files.
 The simulation program that uses those NED files will be
 able to run any of them; you typically select the desired one
 in the config file (\ttt{omnetpp.ini}).
 
-The syntax of a network definition is similar to that of a submodule
-declaration:
+Naturally, only module that has no gates can be a network.
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\tbf{network} wirelessLAN: WirelessLAN
-    \tbf{parameters}:
-        numUsers=10,
-        httpTraffic=true,
-        ftpTraffic=true,
-        distanceFromHub=truncnormal(100,60);
-\tbf{endnetwork}
-\end{Verbatim}
-
-Here, \ttt{WirelessLAN} is the name of previously defined
-compound module type, which presumably contains further
-compound modules of types \ttt{WirelessHost}, \ttt{WirelessHub}, etc.
-
-Naturally, only module types without gates can
-be used in network definitions.
-
-Just as in submodules, you do not need to assign values to all
-parameters. Unassigned parameters can get their values from the
-config file (\ttt{omnetpp.ini}) or will be interactively prompted for.
 
 \section{Inheritance}
 
@@ -1084,7 +1010,7 @@ FIXME TODO
 
 Parameters are variables that belong to a module. Simple module
 parameters can be queried and used by simple module algorithms.
-For example, a module called \texttt{TrafficGen} may have a parameter
+For example, a module called \ttt{TrafficGen} may have a parameter
 called \ttt{numOfMessages} that determines how many messages it
 should generate.
 
@@ -1211,7 +1137,7 @@ the module can have gate vectors of different sizes.
 
 \section{Expressions}
 
-FIXME
+NED expressions have a C-like syntax, with
 
 \subsection{Defining new functions}
 \index{ned!functions}
@@ -1278,6 +1204,86 @@ static double _wrap_factorial(double k)
 Define_Function2(factorial, _wrap_factorial, 1);
 \end{verbatim}
 
+
+\section{Submodule type as parameter}
+\label{sec:ch-ned-lang:like}
+
+Sometimes it is convenient to make the name of a submodule type a parameter,
+so that one can easily `plug in' any module there.
+
+For example, assume the purpose of your simulation study is
+to compare different routing algorithms. Suppose you programmed
+the needed routing algorithms as simple modules: \ttt{DistVecRoutingNode},
+\ttt{AntNetRouting1Node}, \ttt{AntNetRouting2Node}, etc.
+You have also created the network topology as a compound module
+called \ttt{RoutingTestNetwork}, which will serve as a testbed for your routing
+algorithms. Currently, \ttt{RoutingTestNetwork} has \ttt{DistVecRoutingNode}
+hardcoded (all submodules are of this type), but you want
+to be able to switch to other routing algorithms easily.
+
+NED gives you the possibility to add a string-valued parameter,
+say \ttt{routingNodeType} to the \ttt{RoutingTestNetwork} compound module.
+Then you can tell NED that types of the submodules inside \ttt{RoutingTestNetwork}
+are not of any fixed module type, but contained in the \ttt{routingNodeType}
+parameter. That is all -- now you are free to assign any of
+the \ttt{"DistVecRoutingNode"}, \ttt{"AntNetRouting1Node"} or
+\ttt{"AntNetRouting2Node"} string constants to this parameter
+(you can do that in NED, in the config file (\ttt{omnetpp.ini}),
+or even enter it interactively),
+and your network will use the routing algorithm you chose.
+
+If you specify a wrong value, say \ttt{"FooBarRoutingNode"}
+when you have no \ttt{FooBarRoutingNode} module implemented,
+you'll get a runtime error at the beginning of the simulation:
+\textit{module type definition not found}.
+
+Inside the \ttt{RoutingTestNetwork} module you assign parameter values
+and connect the gates of the routing modules. To provide some degree
+of type safety, NED wants to make sure you didn't misspell
+parameter or gate names and you used them correctly.
+To be able to do such checks, NED requires some help from you:
+you have to name an existing module type (say \ttt{RoutingNode})
+and promise NED that all modules you're going you specify
+in the \ttt{routingNodeType} parameter will have (at least) the same
+parameters and gates as the \ttt{RoutingNode} module.
+  \footnote{If you like, the above solution somewhat similar to polymorphism
+  in object-oriented languages -- \ttt{RoutingNode} is like a
+  ``base class'', \ttt{DistVecRoutingNode} and \ttt{AntNetRouting1Node}
+  are like ``derived classes'', and the \ttt{routingNodeType} parameter
+  is like a ``pointer to a base class'' which may be downcast to specific
+  types.}
+
+All the above is achieved via the \fpar[ned!keywords!like]{like} keyword.
+The syntax is the following:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} RoutingTestNetwork
+    \tbf{parameters}:
+        routingNodeType: \tbf{string}; // should hold the name
+                                  // of an existing module type
+    \tbf{gates}: //...
+    \tbf{submodules}:
+        node1: routingNodeType \tbf{like} RoutingNode;
+        node2: routingNodeType \tbf{like} RoutingNode;
+        //...
+    \tbf{connections nocheck}:
+        node1.out0 --> node2.in0;
+        //...
+\tbf{endmodule}
+\end{Verbatim}
+
+The \ttt{RoutingNode} module type does not need to be implemented in
+C++, because no instance of it is created; it is merely used
+to check the correctness of the NED file.
+
+On the other hand, the actual module types that will be substituted
+(e.g. \ttt{DistVecRoutingNode}, \ttt{AntNetRouting1Node},etc.)
+do not need to be declared in the NED files.
+
+The \fpar[ned!keywords!like]{like} phrase lets you create families
+of modules that serve similar purposes and implement the same interface
+(they have the same gates and parameters)
+and to use them interchangeably in NED files.
 
 
 \section{Parameterized compound modules}

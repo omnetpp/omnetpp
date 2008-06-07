@@ -7,10 +7,12 @@
 
 \cclass{cMessage} is a central class in {\opp}. Objects of \cclass{cMessage} and
 subclasses may model a number of things: events\index{events};
-messages\index{message}; packets\index{packets},
-frames\index{frames}, cells\index{cells}, bits or signals travelling
+messages; packets, frames, cells, bits or signals travelling
 in a network; entities travelling in a system and so on.
 
+%
+% FIXME add @omitGetVerb(true) !!
+%
 
 \subsubsection{Attributes}
 
@@ -1169,29 +1171,22 @@ A generated class can simply be customized by subclassing
 from it and redefining whichever methods need to be
 different from their generated versions. This practice
 is known as the \textit{Generation Gap} design pattern.
-It is enabled with the following syntax:
+It is enabled with the \ttt{@customize} property set on the
+message:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-   \tbf{properties}:
-       customize = true;
-   \tbf{fields}:
-       \tbf{int} payloadLength;
+   @customize(true);
+   \tbf{int} payloadLength;
 \};
 \end{Verbatim}
 
-The \fname{properties} section within the message declaration contains
-meta-info that affects how generated code will look like.
-The customize property enables the use of the Generation Gap
-pattern.
-
 If you process the above code with the message compiler,
 the generated code will contain a \fname{FooPacket\_Base} class
-instead of \fname{FooPacket}. The idea is that you have
-to subclass from \fname{FooPacket\_Base} to produce
-\fname{FooPacket}, while doing your customizations
-by redefining the necessary methods.
+instead of \fname{FooPacket}. Then you would subclass
+\fname{FooPacket\_Base} to produce \fname{FooPacket},
+while doing your customizations by redefining the necessary methods.
 
 \begin{verbatim}
 class FooPacket_Base : public cMessage
@@ -1273,10 +1268,8 @@ You can declare any field to be abstract with the following syntax:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
-   \tbf{properties}:
-       customize = true;
-   \tbf{fields}:
-       \tbf{abstract} \tbf{bool} urgentBit;
+   @customize(true);
+   \tbf{abstract} \tbf{bool} urgentBit;
 \};
 \end{Verbatim}
 
@@ -1337,11 +1330,9 @@ See the following message declaration:
 
 \tbf{message} STLMessage
 \{
-   \tbf{properties}:
-       customize=true;
-   \tbf{fields}:
-       \tbf{abstract} Item foo[]; // will use vector<Item>
-       \tbf{abstract} Item bar[]; // will use stack<Item>
+   @customize(true);
+   \tbf{abstract} Item foo[]; // will use vector<Item>
+   \tbf{abstract} Item bar[]; // will use stack<Item>
 \}
 \end{Verbatim}
 
@@ -1518,8 +1509,7 @@ void setField(unsigned k, double d);
 customized class
 \begin{verbatim}
 class Foo {
-  properties:
-    customize=true;
+  @customize(true);
 \end{verbatim}
      &
 \begin{verbatim}
