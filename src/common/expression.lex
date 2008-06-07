@@ -38,11 +38,11 @@ extern YYSTYPE yylval;
 
 // wrap symbols to allow several .lex files coexist
 #define comment     expressionComment
-#define count       expressionCount
+#define countChars  expressionCount
 #define extendCount expressionExtendCount
 
 void comment();
-void count();
+void countChars();
 void extendCount();
 
 #define TEXTBUF_LEN 1024
@@ -57,21 +57,21 @@ static std::string extendbuf;
 %%
 "//"                     { comment(); }
 
-"double"                 { count(); return DOUBLETYPE; }
-"int"                    { count(); return INTTYPE; }
-"string"                 { count(); return STRINGTYPE; }
-"bool"                   { count(); return BOOLTYPE; }
+"double"                 { countChars(); return DOUBLETYPE; }
+"int"                    { countChars(); return INTTYPE; }
+"string"                 { countChars(); return STRINGTYPE; }
+"bool"                   { countChars(); return BOOLTYPE; }
 
-"true"                   { count(); return TRUE_; }
-"false"                  { count(); return FALSE_; }
+"true"                   { countChars(); return TRUE_; }
+"false"                  { countChars(); return FALSE_; }
 
-{L}({L}|{D})*            { count(); yylval = opp_strdup(yytext); return NAME; }
-{D}+                     { count(); yylval = opp_strdup(yytext); return INTCONSTANT; }
-0[xX]{X}+                { count(); yylval = opp_strdup(yytext); return INTCONSTANT; }
-{D}+{E}                  { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
-{D}*"."{D}+({E})?        { count(); yylval = opp_strdup(yytext); return REALCONSTANT; }
+{L}({L}|{D})*            { countChars(); yylval = opp_strdup(yytext); return NAME; }
+{D}+                     { countChars(); yylval = opp_strdup(yytext); return INTCONSTANT; }
+0[xX]{X}+                { countChars(); yylval = opp_strdup(yytext); return INTCONSTANT; }
+{D}+{E}                  { countChars(); yylval = opp_strdup(yytext); return REALCONSTANT; }
+{D}*"."{D}+({E})?        { countChars(); yylval = opp_strdup(yytext); return REALCONSTANT; }
 
-\"                       { BEGIN(stringliteral); count(); }
+\"                       { BEGIN(stringliteral); countChars(); }
 <stringliteral>{
       \n                 { BEGIN(INITIAL); throw std::runtime_error("Error parsing expression: unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file will start from the <stringliteral> state! */  }
       \\\n               { extendCount(); /* line continuation */ }
@@ -81,44 +81,44 @@ static std::string extendbuf;
       \"                 { extendCount(); yylval = opp_strdup(extendbuf.c_str()); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
 }
 
-","                      { count(); return ','; }
-":"                      { count(); return ':'; }
-"="                      { count(); return '='; }
-"("                      { count(); return '('; }
-")"                      { count(); return ')'; }
-"["                      { count(); return '['; }
-"]"                      { count(); return ']'; }
-"."                      { count(); return '.'; }
-"?"                      { count(); return '?'; }
+","                      { countChars(); return ','; }
+":"                      { countChars(); return ':'; }
+"="                      { countChars(); return '='; }
+"("                      { countChars(); return '('; }
+")"                      { countChars(); return ')'; }
+"["                      { countChars(); return '['; }
+"]"                      { countChars(); return ']'; }
+"."                      { countChars(); return '.'; }
+"?"                      { countChars(); return '?'; }
 
-"||"                     { count(); return OR_; }
-"&&"                     { count(); return AND_; }
-"##"                     { count(); return XOR_; }
-"!"                      { count(); return NOT_; }
+"||"                     { countChars(); return OR_; }
+"&&"                     { countChars(); return AND_; }
+"##"                     { countChars(); return XOR_; }
+"!"                      { countChars(); return NOT_; }
 
-"|"                      { count(); return BINOR_; }
-"&"                      { count(); return BINAND_; }
-"#"                      { count(); return BINXOR_; }
-"~"                      { count(); return BINCOMPL_; }
-"<<"                     { count(); return SHIFTLEFT_; }
-">>"                     { count(); return SHIFTRIGHT_; }
+"|"                      { countChars(); return BINOR_; }
+"&"                      { countChars(); return BINAND_; }
+"#"                      { countChars(); return BINXOR_; }
+"~"                      { countChars(); return BINCOMPL_; }
+"<<"                     { countChars(); return SHIFTLEFT_; }
+">>"                     { countChars(); return SHIFTRIGHT_; }
 
-"^"                      { count(); return '^'; }
-"+"                      { count(); return '+'; }
-"-"                      { count(); return '-'; }
-"*"                      { count(); return '*'; }
-"/"                      { count(); return '/'; }
-"%"                      { count(); return '%'; }
-"<"                      { count(); return '<'; }
-">"                      { count(); return '>'; }
+"^"                      { countChars(); return '^'; }
+"+"                      { countChars(); return '+'; }
+"-"                      { countChars(); return '-'; }
+"*"                      { countChars(); return '*'; }
+"/"                      { countChars(); return '/'; }
+"%"                      { countChars(); return '%'; }
+"<"                      { countChars(); return '<'; }
+">"                      { countChars(); return '>'; }
 
-"=="                     { count(); return EQ_; }
-"!="                     { count(); return NE_; }
-"<="                     { count(); return LE_; }
-">="                     { count(); return GE_; }
+"=="                     { countChars(); return EQ_; }
+"!="                     { countChars(); return NE_; }
+"<="                     { countChars(); return LE_; }
+">="                     { countChars(); return GE_; }
 
-{S}                      { count(); }
-.                        { count(); return INVALID_CHAR; }
+{S}                      { countChars(); }
+.                        { countChars(); return INVALID_CHAR; }
 
 %%
 
@@ -158,7 +158,7 @@ static void _count(bool updateprevpos)
     static int textbuflen;
     int i;
 
-    /* printf("DBG: count(): prev=%d,%d  xpos=%d,%d yytext=>>%s<<\n",
+    /* printf("DBG: countChars(): prev=%d,%d  xpos=%d,%d yytext=>>%s<<\n",
            xprevpos.li, xprevpos.co, xpos.li, xpos.co, yytext);
     */
 
@@ -195,7 +195,7 @@ static void _count(bool updateprevpos)
     }
 }
 
-void count()
+void countChars()
 {
     _count(true);
 }

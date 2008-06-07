@@ -39,11 +39,11 @@ extern YYLTYPE yylloc;
 
 // wrap symbols to allow several .lex files coexist
 #define comment     ned1comment
-#define count       ned1count
+#define countChars  ned1count
 #define extendCount ned1extendCount
 
 void comment();
-void count();
+void countChars();
 void extendCount();
 
 #define TEXTBUF_LEN 1024
@@ -57,82 +57,82 @@ USING_NAMESPACE
 "//"                    { comment(); }
 "--"                    { comment(); }
 
-"import"                { count(); return INCLUDE; }
-"network"               { count(); return NETWORK; }
-"module"                { count(); return MODULE; }
-"simple"                { count(); return SIMPLE; }
-"channel"               { count(); return CHANNEL; }
-"for"                   { count(); return FOR; }
-"do"                    { count(); return DO; }
-"true"                  { count(); return TRUE_; }
-"false"                 { count(); return FALSE_; }
-"ref"                   { count(); return REF; }
-"ancestor"              { count(); return ANCESTOR; }
-"input"                 { count(); return INPUT_; }
-"const"                 { count(); return CONSTDECL; }
-"sizeof"                { count(); return SIZEOF; }
-"endsimple"             { count(); return ENDSIMPLE; }
-"endmodule"             { count(); return ENDMODULE; }
-"endchannel"            { count(); return ENDCHANNEL; }
-"endnetwork"            { count(); return ENDNETWORK; }
-"endfor"                { count(); return ENDFOR; }
-"parameters"            { count(); return PARAMETERS; }
-"gates"                 { count(); return GATES; }
-"gatesizes"             { count(); return GATESIZES; }
-"in:"                   { count(); return IN; }
-"out:"                  { count(); return OUT; }
-"submodules"            { count(); return SUBMODULES; }
-"connections"           { count(); return CONNECTIONS; }
-"display"               { count(); return DISPLAY; }
-"on"                    { count(); return ON; }
-"like"                  { count(); return LIKE; }
-"-->"                   { count(); return RIGHT_ARROW; }
-"<--"                   { count(); return LEFT_ARROW; }
-".."                    { count(); return TO; }
-"..."                   { count(); return TO; }
-"to"                    { count(); return TO; }
-"if"                    { count(); return IF; }
-"index"                 { count(); return SUBMODINDEX; }
-"nocheck"               { count(); return NOCHECK; }
-"xmldoc"                { count(); return XMLDOC; }
+"import"                { countChars(); return INCLUDE; }
+"network"               { countChars(); return NETWORK; }
+"module"                { countChars(); return MODULE; }
+"simple"                { countChars(); return SIMPLE; }
+"channel"               { countChars(); return CHANNEL; }
+"for"                   { countChars(); return FOR; }
+"do"                    { countChars(); return DO; }
+"true"                  { countChars(); return TRUE_; }
+"false"                 { countChars(); return FALSE_; }
+"ref"                   { countChars(); return REF; }
+"ancestor"              { countChars(); return ANCESTOR; }
+"input"                 { countChars(); return INPUT_; }
+"const"                 { countChars(); return CONSTDECL; }
+"sizeof"                { countChars(); return SIZEOF; }
+"endsimple"             { countChars(); return ENDSIMPLE; }
+"endmodule"             { countChars(); return ENDMODULE; }
+"endchannel"            { countChars(); return ENDCHANNEL; }
+"endnetwork"            { countChars(); return ENDNETWORK; }
+"endfor"                { countChars(); return ENDFOR; }
+"parameters"            { countChars(); return PARAMETERS; }
+"gates"                 { countChars(); return GATES; }
+"gatesizes"             { countChars(); return GATESIZES; }
+"in:"                   { countChars(); return IN; }
+"out:"                  { countChars(); return OUT; }
+"submodules"            { countChars(); return SUBMODULES; }
+"connections"           { countChars(); return CONNECTIONS; }
+"display"               { countChars(); return DISPLAY; }
+"on"                    { countChars(); return ON; }
+"like"                  { countChars(); return LIKE; }
+"-->"                   { countChars(); return RIGHT_ARROW; }
+"<--"                   { countChars(); return LEFT_ARROW; }
+".."                    { countChars(); return TO; }
+"..."                   { countChars(); return TO; }
+"to"                    { countChars(); return TO; }
+"if"                    { countChars(); return IF; }
+"index"                 { countChars(); return SUBMODINDEX; }
+"nocheck"               { countChars(); return NOCHECK; }
+"xmldoc"                { countChars(); return XMLDOC; }
 
-"numeric"               { count(); return NUMERICTYPE; }
-"string"                { count(); return STRINGTYPE; }
-"bool"                  { count(); return BOOLTYPE; }
-"xml"                   { count(); return XMLTYPE; }
-"anytype"               { count(); return ANYTYPE; }
+"numeric"               { countChars(); return NUMERICTYPE; }
+"string"                { countChars(); return STRINGTYPE; }
+"bool"                  { countChars(); return BOOLTYPE; }
+"xml"                   { countChars(); return XMLTYPE; }
+"anytype"               { countChars(); return ANYTYPE; }
 
-"cplusplus"             { count(); return CPLUSPLUS; }
-"struct"                { count(); return STRUCT; }
-"message"               { count(); return MESSAGE; }
-"class"                 { count(); return CLASS; }
-"noncobject"            { count(); return NONCOBJECT; }
-"enum"                  { count(); return ENUM; }
-"extends"               { count(); return EXTENDS; }
-"fields"                { count(); return FIELDS; }
-"properties"            { count(); return PROPERTIES; }
-"abstract"              { count(); return ABSTRACT; }
-"readonly"              { count(); return READONLY; }
+"cplusplus"             { countChars(); return CPLUSPLUS; }
+"struct"                { countChars(); return STRUCT; }
+"message"               { countChars(); return MESSAGE; }
+"class"                 { countChars(); return CLASS; }
+"noncobject"            { countChars(); return NONCOBJECT; }
+"enum"                  { countChars(); return ENUM; }
+"extends"               { countChars(); return EXTENDS; }
+"fields"                { countChars(); return FIELDS; }
+"properties"            { countChars(); return PROPERTIES; }
+"abstract"              { countChars(); return ABSTRACT; }
+"readonly"              { countChars(); return READONLY; }
 
-"char"                  { count(); return CHARTYPE; }
-"short"                 { count(); return SHORTTYPE; }
-"int"                   { count(); return INTTYPE; }
-"long"                  { count(); return LONGTYPE; }
-"double"                { count(); return DOUBLETYPE; }
-"unsigned"              { count(); return UNSIGNED_; }
+"char"                  { countChars(); return CHARTYPE; }
+"short"                 { countChars(); return SHORTTYPE; }
+"int"                   { countChars(); return INTTYPE; }
+"long"                  { countChars(); return LONGTYPE; }
+"double"                { countChars(); return DOUBLETYPE; }
+"unsigned"              { countChars(); return UNSIGNED_; }
 
-"delay"                 { count(); return CHANATTRNAME; }
-"error"                 { count(); return CHANATTRNAME; }
-"datarate"              { count(); return CHANATTRNAME; }
+"delay"                 { countChars(); return CHANATTRNAME; }
+"error"                 { countChars(); return CHANATTRNAME; }
+"datarate"              { countChars(); return CHANATTRNAME; }
 
-{L}({L}|{D})*           { count(); return NAME; }
-{D}+                    { count(); return INTCONSTANT; }
-0[xX]{X}+               { count(); return INTCONSTANT; }
-{D}+{E}                 { count(); return REALCONSTANT; }
-{D}*"."{D}+({E})?       { count(); return REALCONSTANT; }
-\'[^\']\'               { count(); return CHARCONSTANT; }
+{L}({L}|{D})*           { countChars(); return NAME; }
+{D}+                    { countChars(); return INTCONSTANT; }
+0[xX]{X}+               { countChars(); return INTCONSTANT; }
+{D}+{E}                 { countChars(); return REALCONSTANT; }
+{D}*"."{D}+({E})?       { countChars(); return REALCONSTANT; }
+\'[^\']\'               { countChars(); return CHARCONSTANT; }
 
-\"                      { count(); BEGIN(stringliteral); }
+\"                      { countChars(); BEGIN(stringliteral); }
 <stringliteral>{
       \n                { BEGIN(INITIAL); throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
       \\\n              { extendCount(); /* line continuation */ }
@@ -142,54 +142,54 @@ USING_NAMESPACE
       \"                { extendCount(); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
 }
 
-"{{"                    { count(); BEGIN(cplusplusbody); }
+"{{"                    { countChars(); BEGIN(cplusplusbody); }
 <cplusplusbody>"}}"     { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
 <cplusplusbody>{S}      { extendCount(); }
 <cplusplusbody>.        { extendCount(); }
 
-"++"                    { count(); return PLUSPLUS; }
+"++"                    { countChars(); return PLUSPLUS; }
 
-";"                     { count(); return ';'; }
-","                     { count(); return ','; }
-":"                     { count(); return ':'; }
-"="                     { count(); return '='; }
-"("                     { count(); return '('; }
-")"                     { count(); return ')'; }
-"["                     { count(); return '['; }
-"]"                     { count(); return ']'; }
-"{"                     { count(); return '{'; }
-"}"                     { count(); return '}'; }
-"."                     { count(); return '.'; }
-"?"                     { count(); return '?'; }
+";"                     { countChars(); return ';'; }
+","                     { countChars(); return ','; }
+":"                     { countChars(); return ':'; }
+"="                     { countChars(); return '='; }
+"("                     { countChars(); return '('; }
+")"                     { countChars(); return ')'; }
+"["                     { countChars(); return '['; }
+"]"                     { countChars(); return ']'; }
+"{"                     { countChars(); return '{'; }
+"}"                     { countChars(); return '}'; }
+"."                     { countChars(); return '.'; }
+"?"                     { countChars(); return '?'; }
 
-"||"                    { count(); return OR; }
-"&&"                    { count(); return AND; }
-"##"                    { count(); return XOR; }
-"!"                     { count(); return NOT; }
+"||"                    { countChars(); return OR; }
+"&&"                    { countChars(); return AND; }
+"##"                    { countChars(); return XOR; }
+"!"                     { countChars(); return NOT; }
 
-"|"                     { count(); return BIN_OR; }
-"&"                     { count(); return BIN_AND; }
-"#"                     { count(); return BIN_XOR; }
-"~"                     { count(); return BIN_COMPL; }
-"<<"                    { count(); return SHIFT_LEFT; }
-">>"                    { count(); return SHIFT_RIGHT; }
+"|"                     { countChars(); return BIN_OR; }
+"&"                     { countChars(); return BIN_AND; }
+"#"                     { countChars(); return BIN_XOR; }
+"~"                     { countChars(); return BIN_COMPL; }
+"<<"                    { countChars(); return SHIFT_LEFT; }
+">>"                    { countChars(); return SHIFT_RIGHT; }
 
-"^"                     { count(); return '^'; }
-"+"                     { count(); return '+'; }
-"-"                     { count(); return '-'; }
-"*"                     { count(); return '*'; }
-"/"                     { count(); return '/'; }
-"%"                     { count(); return '%'; }
+"^"                     { countChars(); return '^'; }
+"+"                     { countChars(); return '+'; }
+"-"                     { countChars(); return '-'; }
+"*"                     { countChars(); return '*'; }
+"/"                     { countChars(); return '/'; }
+"%"                     { countChars(); return '%'; }
 
-"=="                    { count(); return EQ; }
-"!="                    { count(); return NE; }
-"<"                     { count(); return LS; }
-"<="                    { count(); return LE; }
-">"                     { count(); return GT; }
-">="                    { count(); return GE; }
+"=="                    { countChars(); return EQ; }
+"!="                    { countChars(); return NE; }
+"<"                     { countChars(); return LS; }
+"<="                    { countChars(); return LE; }
+">"                     { countChars(); return GT; }
+">="                    { countChars(); return GE; }
 
-{S}                     { count(); }
-.                       { count(); return INVALID_CHAR; }
+{S}                     { countChars(); }
+.                       { countChars(); return INVALID_CHAR; }
 
 %%
 
@@ -229,7 +229,7 @@ static void _count(bool updateprevpos)
     static int textbuflen;
     int i;
 
-    /* printf("DBG: count(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
+    /* printf("DBG: countChars(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
            prevpos.li, prevpos.co, pos.li, pos.co, yytext);
     */
 
@@ -269,7 +269,7 @@ static void _count(bool updateprevpos)
     yylloc.last_column  = pos.co;
 }
 
-void count()
+void countChars()
 {
     _count(true);
 }

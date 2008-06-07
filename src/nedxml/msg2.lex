@@ -48,11 +48,11 @@ extern YYLTYPE yylloc;
 
 // wrap symbols to allow several .lex files coexist
 #define comment     msgcomment
-#define count       msgcount
+#define countChars  msgcount
 #define extendCount msgextendCount
 
 void comment();
-void count();
+void countChars();
 void extendCount();
 
 #define TEXTBUF_LEN 1024
@@ -65,38 +65,38 @@ USING_NAMESPACE
 %%
 "//"                    { comment(); }
 
-"namespace"             { count(); return NAMESPACE; }
-"cplusplus"             { count(); return CPLUSPLUS; }
-"struct"                { count(); return STRUCT; }
-"message"               { count(); return MESSAGE; }
-"class"                 { count(); return CLASS; }
-"noncobject"            { count(); return NONCOBJECT; }
-"enum"                  { count(); return ENUM; }
-"extends"               { count(); return EXTENDS; }
-"abstract"              { count(); return ABSTRACT; }
-"readonly"              { count(); return READONLY; }
-"properties"            { count(); return PROPERTIES; }
-"fields"                { count(); return FIELDS; }
+"namespace"             { countChars(); return NAMESPACE; }
+"cplusplus"             { countChars(); return CPLUSPLUS; }
+"struct"                { countChars(); return STRUCT; }
+"message"               { countChars(); return MESSAGE; }
+"class"                 { countChars(); return CLASS; }
+"noncobject"            { countChars(); return NONCOBJECT; }
+"enum"                  { countChars(); return ENUM; }
+"extends"               { countChars(); return EXTENDS; }
+"abstract"              { countChars(); return ABSTRACT; }
+"readonly"              { countChars(); return READONLY; }
+"properties"            { countChars(); return PROPERTIES; }
+"fields"                { countChars(); return FIELDS; }
 
-"bool"                  { count(); return BOOLTYPE; }
-"char"                  { count(); return CHARTYPE; }
-"short"                 { count(); return SHORTTYPE; }
-"int"                   { count(); return INTTYPE; }
-"long"                  { count(); return LONGTYPE; }
-"double"                { count(); return DOUBLETYPE; }
-"unsigned"              { count(); return UNSIGNED_; }
-"string"                { count(); return STRINGTYPE; }
-"true"                  { count(); return TRUE_; }
-"false"                 { count(); return FALSE_; }
+"bool"                  { countChars(); return BOOLTYPE; }
+"char"                  { countChars(); return CHARTYPE; }
+"short"                 { countChars(); return SHORTTYPE; }
+"int"                   { countChars(); return INTTYPE; }
+"long"                  { countChars(); return LONGTYPE; }
+"double"                { countChars(); return DOUBLETYPE; }
+"unsigned"              { countChars(); return UNSIGNED_; }
+"string"                { countChars(); return STRINGTYPE; }
+"true"                  { countChars(); return TRUE_; }
+"false"                 { countChars(); return FALSE_; }
 
-{L}({L}|{D})*           { count(); return NAME; }
-{D}+                    { count(); return INTCONSTANT; }
-0[xX]{X}+               { count(); return INTCONSTANT; }
-{D}+{E}                 { count(); return REALCONSTANT; }
-{D}*"."{D}+({E})?       { count(); return REALCONSTANT; }
-\'[^\']\'               { count(); return CHARCONSTANT; }
+{L}({L}|{D})*           { countChars(); return NAME; }
+{D}+                    { countChars(); return INTCONSTANT; }
+0[xX]{X}+               { countChars(); return INTCONSTANT; }
+{D}+{E}                 { countChars(); return REALCONSTANT; }
+{D}*"."{D}+({E})?       { countChars(); return REALCONSTANT; }
+\'[^\']\'               { countChars(); return CHARCONSTANT; }
 
-\"                      { count(); BEGIN(stringliteral); }
+\"                      { countChars(); BEGIN(stringliteral); }
 <stringliteral>{
       \n                { BEGIN(INITIAL); throw NEDException("unterminated string literal (append backslash to line for multi-line strings)"); /* NOTE: BEGIN(INITIAL) is important, otherwise parsing of the next file (!) will start from the <stringliteral> state! */ }
       \\\n              { extendCount(); /* line continuation */ }
@@ -106,55 +106,55 @@ USING_NAMESPACE
       \"                { extendCount(); BEGIN(INITIAL); return STRINGCONSTANT; /* closing quote */ }
 }
 
-"{{"                    { count(); BEGIN(cplusplusbody); }
+"{{"                    { countChars(); BEGIN(cplusplusbody); }
 <cplusplusbody>"}}"     { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
 <cplusplusbody>{S}      { extendCount(); }
 <cplusplusbody>.        { extendCount(); }
 
-";"                     { count(); return ';'; }
-","                     { count(); return ','; }
-":"                     { count(); return ':'; }
-"="                     { count(); return '='; }
-"("                     { count(); return '('; }
-")"                     { count(); return ')'; }
-"["                     { count(); return '['; }
-"]"                     { count(); return ']'; }
-"{"                     { count(); return '{'; }
-"}"                     { count(); return '}'; }
-"."                     { count(); return '.'; }
-"?"                     { count(); return '?'; }
-"@"                     { count(); return '@'; }
+";"                     { countChars(); return ';'; }
+","                     { countChars(); return ','; }
+":"                     { countChars(); return ':'; }
+"="                     { countChars(); return '='; }
+"("                     { countChars(); return '('; }
+")"                     { countChars(); return ')'; }
+"["                     { countChars(); return '['; }
+"]"                     { countChars(); return ']'; }
+"{"                     { countChars(); return '{'; }
+"}"                     { countChars(); return '}'; }
+"."                     { countChars(); return '.'; }
+"?"                     { countChars(); return '?'; }
+"@"                     { countChars(); return '@'; }
 
    /* FIXME are the next ones really needed? */
 
-"||"                    { count(); return OR; }
-"&&"                    { count(); return AND; }
-"##"                    { count(); return XOR; }
-"!"                     { count(); return NOT; }
+"||"                    { countChars(); return OR; }
+"&&"                    { countChars(); return AND; }
+"##"                    { countChars(); return XOR; }
+"!"                     { countChars(); return NOT; }
 
-"|"                     { count(); return BIN_OR; }
-"&"                     { count(); return BIN_AND; }
-"#"                     { count(); return BIN_XOR; }
-"~"                     { count(); return BIN_COMPL; }
-"<<"                    { count(); return SHIFT_LEFT; }
-">>"                    { count(); return SHIFT_RIGHT; }
+"|"                     { countChars(); return BIN_OR; }
+"&"                     { countChars(); return BIN_AND; }
+"#"                     { countChars(); return BIN_XOR; }
+"~"                     { countChars(); return BIN_COMPL; }
+"<<"                    { countChars(); return SHIFT_LEFT; }
+">>"                    { countChars(); return SHIFT_RIGHT; }
 
-"^"                     { count(); return '^'; }
-"+"                     { count(); return '+'; }
-"-"                     { count(); return '-'; }
-"*"                     { count(); return '*'; }
-"/"                     { count(); return '/'; }
-"%"                     { count(); return '%'; }
-"<"                     { count(); return '<'; }
-">"                     { count(); return '>'; }
+"^"                     { countChars(); return '^'; }
+"+"                     { countChars(); return '+'; }
+"-"                     { countChars(); return '-'; }
+"*"                     { countChars(); return '*'; }
+"/"                     { countChars(); return '/'; }
+"%"                     { countChars(); return '%'; }
+"<"                     { countChars(); return '<'; }
+">"                     { countChars(); return '>'; }
 
-"=="                    { count(); return EQ; }
-"!="                    { count(); return NE; }
-"<="                    { count(); return LE; }
-">="                    { count(); return GE; }
+"=="                    { countChars(); return EQ; }
+"!="                    { countChars(); return NE; }
+"<="                    { countChars(); return LE; }
+">="                    { countChars(); return GE; }
 
-{S}                     { count(); }
-.                       { count(); return INVALID_CHAR; }
+{S}                     { countChars(); }
+.                       { countChars(); return INVALID_CHAR; }
 
 %%
 
@@ -194,7 +194,7 @@ static void _count(bool updateprevpos)
     static int textbuflen;
     int i;
 
-    /* printf("DBG: count(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
+    /* printf("DBG: countChars(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
            prevpos.li, prevpos.co, pos.li, pos.co, yytext);
     */
 
@@ -234,7 +234,7 @@ static void _count(bool updateprevpos)
     yylloc.last_column  = pos.co;
 }
 
-void count()
+void countChars()
 {
     _count(true);
 }
