@@ -210,8 +210,8 @@ Some exponents with the ranges they provide are shown in the following table.
   \begin{tabular}{ | r | r | c | }
     \hline
     Exponent & Resolution & Approx. Range \\ \hline
-     -18 & $10^{-18}$s (1as) & $\pm 9.22$s \\ 
-     -15 & $10^{-15}$s (1fs) & $\pm 153.72$ minutes \\ 
+     -18 & $10^{-18}$s (1as) & $\pm 9.22$s \\
+     -15 & $10^{-15}$s (1fs) & $\pm 153.72$ minutes \\
      -12 & $10^{-12}$s (1ps) & $\pm 106.75$ days \\
      -9  & $10^{-9}$s (1ns)  & $\pm 292.27$ years \\
      -6  & $10^{-6}$s (1us)  & $\pm 292271$ years \\
@@ -220,7 +220,7 @@ Some exponents with the ranges they provide are shown in the following table.
     \hline
   \end{tabular}
 \end{center}
- 
+
 Note that although simulation time cannot be negative, it is still useful to
 be able to represent negative numbers, because they often arise
 during the evaluation of arithmetic expressions.
@@ -228,11 +228,11 @@ during the evaluation of arithmetic expressions.
 \begin{note}
    Earlier \opp used \ttt{double} for simulation time, but this was less than
    ideal. In floating point, large values can only be represented with less
-   precision, and this caused problems in long simulations. Non-associativity
-   (often $(x+y)+z \neq x+(y+z)$, see~\cite{Goldberg91what}) and accumulating
-   rounding errors meant that two \ttt{double} simulation times could not be
-   compared for equality.
-   
+   precision, and this caused very real problems in some long simulations.
+   Non-associativity (often $(x+y)+z \neq x+(y+z)$, see~\cite{Goldberg91what})
+   and accumulating rounding errors meant that two \ttt{double} simulation
+   times could not be reliably compared for equality.
+
    \opp can still be compiled with \ttt{simtime\_t} defined as \ttt{double},
    which can occasionally be useful when porting older simulations.
 \end{note}
@@ -241,7 +241,7 @@ The \ttt{SimTime} class performs additions and substractions as 64-bit integer
 operations. Integer overflows are checked, and will cause the simulation to
 stop with an error message. Other operations (multiplication, division, etc)
 are performed in \ttt{double}, then converted back to integer.
- 
+
 
 \subsection{FES implementation}
 
@@ -331,9 +331,7 @@ you will want to assign data rate to only one connection in the
 path.
 
 
-
 \subsection{Multiple transmissions on links}
-
 
 If a data rate\index{data rate} is specified for a connection, a message
 will have a certain nonzero transmission time\index{transmission
@@ -350,13 +348,11 @@ for a given period (``it is being transmitted'').
 \end{figure}
 
 While a message is under transmission, other messages have to wait
-until the transmission is completed. You can still send messages
-while the gate is busy, but the beginning of the modeled
-message transmission will be delayed, just as if the gate had
-an internal queue for the messages waiting to be transmitted.
+until the transmission is completed. The module sends another message while the
+gate is busy, a runtime error will be thrown.
 
 The {\opp} class library provides functions to check
-whether a certain output gate is transmitting or to learn when
+whether a certain output gate is transmitting and find out when when
 it finishes transmission.
 
 If the connection with a data rate is not directly connected
@@ -364,59 +360,36 @@ to the simple module's output gate but is the second
 one in the path, you have to check the second gate's busy
 condition\index{gate!busy condition}.
 
+\begin{note}
+   In \opp versions prior to 4.0, sending on a busy gate was permitted, and
+   messages got implicitly queued up. The behaviour of the simulation kernel
+   was changed because in practice, sending on a busy gate was more often result
+   of a programming error than calculated behaviour.
+\end{note}
+
 
 \subsubsection{Implementation of message sending}
 
+Message sending is implemented like this: the arrival time\index{arrival time}
+and the bit error\index{bit error} flag of a message are calculated right inside
+the \fname{send()} call, then the message gets inserted into the FES\index{FES}
+with the calculated arrival time. The message does \textit{not} get scheduled
+individually for each link. This implementation was chosen because of its
+run-time efficiency.
 
-Message sending is implemented like this: the arrival
-time\index{arrival time} and the bit error\index{bit error} flag of a
-message are calculated immediately after the \fname{send()} (or a similar)
-function is invoked. That is, if the message travels through several
-links before it reaches its destination, it is \textit{not} scheduled
-individually for each link, but rather, every calculation is done
-once, within the \fname{send()} call. This implementation was chosen
-because of its run-time efficiency.
+\begin{note}
+   The consequence of this implementation is that any change in the
+   channel's parameters (delay, bit rate, bit error rate) will only affect
+   messages \textit{sent} after the change. Messages already under way will not
+   be influenced by the change.
 
-In the actual implementation of queuing the messages at busy gates and
-modeling the transmission delay, messages do not actually queue up in
-gates; gates do not have internal queues. Instead, as the time when
-each gate will finish transmission is known at the time of sending the
-message, the arrival time\index{arrival time} of the message can be
-calculated in advance. Then the message will be stored in the event
-queue (FES)\index{FES} until the simulation time advances to its
-arrival time and it is retrieved by its destination module.
-
-%
-% TBD add pseudocode
-%
-
-
-\subsubsection{Consequence}
-
-
-The implementation has the following consequence. If you change the
-delay (or the bit error rate, or the data rate) of a link\index{link
-  delay} during simulation, the modeling of messages sent ``just
-before'' the parameter change will not be accurate. Namely, if link
-parameters change while a message is ``under way'' in the model, that
-message will not be affected by the parameter change, although it
-should. However, all subsequent messages will be modelled correctly.
-Similar for data rate: if a data rate changes during the simulation,
-the change will affect only the messages that are \textit{sent} after
-the change.
-
-If it is important to model gates and channels with changing
-properties, you can chose one of two paths:
-\begin{itemize}
-  \item{write a sender module such that it schedules events for when the
-    gate finishes its current transmission and sends then;}
-  \item{alternatively, you can implement channels with
-    simple modules (``active channels'').}
-\end{itemize}
+   This is not a huge problem in practice, but if it is important to model
+   channels with changing parameters, the solution is to insert simple modules
+   into the path to ensure strict scheduling.
+\end{note}
 
 
 \subsubsection{The approach of some other simulators}
-
 
 Note that some simulators (e.g. OPNET) assign \textit{packet queues}
 to input gates (ports), and messages sent are buffered at the
@@ -547,6 +520,13 @@ with the module, with 16K of coroutine stack:
 HelloModule::HelloModule() : cSimpleModule(16384) {...}
 \end{verbatim}
 
+\begin{note}
+    The \fmac{Module\_Class\_Members()} macro, already deprecated in \opp 3.2,
+    has been removed in the 4.0 version. When porting older simulation models,
+    occurrences of this macro can simply be removed from the source code.
+\end{note}
+
+
 
 \subsection{Constructor and destructor vs initialize() and finish()}
 
@@ -571,23 +551,25 @@ halfway demolished already.
 
 Based on the above, the following conventions exist for these four methods:
 
-\tbf{Constructor conventions:}
+\begin{description}
+
+\item Constructor:
 
 Set pointer members of the module class to \ttt{NULL}; postpone all other
 initialization tasks to \fname{initialize()}.
 
-\tbf{\fname{initialize()} conventions:}
+\item \fname{initialize()}:
 
 Perform all initialization tasks: read module parameters, initialize
 class variables, allocate dynamic data structures with \ttt{new};
 also allocate and initialize self-messages (timers) if needed.
 
-\tbf{\fname{finish()} conventions:}
+\item \fname{finish()}:
 
 Record statistics. Do \tbf{not} \ttt{delete} anything or cancel timers --
 all cleanup must be done in the destructor.
 
-\tbf{destructor conventions:}
+\item Destructor:
 
 Delete everything which was allocated by \ttt{new} and is still held
 by the module class. With self-messages (timers), use the
@@ -596,37 +578,7 @@ to just delete a self-message from the destructor, because it might be
 in the scheduled events list. The \fname{cancelAndDelete(msg)} function
 checks for that first, and cancels the message before deletion if necessary.
 
-
-\subsection{Compatibility with earlier versions}
-
-{\opp} versions earlier than 3.2 expected a different module class
-constructor, with the following signature:
-
-\begin{verbatim}
-MyModule(const char *name, cModule *parentModule, size_t stack=<stacksize>);
-\end{verbatim}
-
-For convenience, a macro named \fmac{Module\_Class\_Members()} was also
-provided, which expanded to a default (i.e. do-nothing) constructor implementation.
-
-In {\opp} 3.2, the \fmac{Module\_Class\_Members()} macro has been retained
-but expands to the new constructor definition. Thus a module which uses
-\fmac{Module\_Class\_Members()} does not need to be changed to work with
-{\opp} 3.2 or later. When compatiblity with older versions is no longer
-required, the macro call can simply be deleted.
-
-Some (few) modules have hand-coded constructors instead of using
-\fmac{Module\_Class\_Members()}. These modules will produce a compile
-error with {\opp} 3.2 or later, saying \textit{no appropriate constructor
-available}. The easiest way to get them working is to add \ttt{=NULL}
-default value to both the \ttt{name} and the \ttt{parentModule} arguments:
-
-\begin{verbatim}
-MyModule(const char *name=NULL, cModule *parentModule=NULL, size_t stack=<stacksize>);
-\end{verbatim}
-
-Again, when compatibility with older {\opp} versions is no longer required,
-the redundant constructor arguments can be removed.
+\end{description}
 
 
 \subsection{"Garbage collection" and compatibility}
@@ -661,11 +613,12 @@ Starting from {\opp} 3.2, this cleanup-time GC mechanism has been disabled by de
 and it generally not recommended to turn it back on. It does not do any harm
 to run any simulation model without GC (apart from the memory leak).
 
-It is expected that existing modules will be updated for {\opp} 3.2 sooner
-or later, by adding proper constructors and destructors. To catalyse this
-process, {\opp} dumps the list of unreleased objects at the end of the
-simulation. This dump can also be turned off in the configuration
-(\ttt{print-undisposed=} configuration option, see \ref{sec:ch-run-sim:general-section}).
+It is expected that existing modules will be updated sooner or later, by adding
+proper constructors and destructors. To catalyse this process, {\opp} dumps the
+list of unreleased objects at the end of the simulation. This dump can also be
+turned off in the configuration (\ttt{print-undisposed=} configuration option,
+see \ref{sec:ch-run-sim:general-section}).
+
 
 
 \subsection{An example}
@@ -750,16 +703,17 @@ FFGenerator::~FFGenerator()
 }
 \end{verbatim}
 
-It also needs a NED declaration to be able to use it in NED files:
+The corresponding NED declaration:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 // file: FFGenerator.ned
 \textbf{simple} FFGenerator
+\{
     \textbf{parameters}:
-        sendIaTime: \textbf{numeric};
+        \textbf{volatile double} sendIaTime;
     \textbf{gates}:
-        \textbf{out:} out;
-\textbf{endsimple}
+        \textbf{output} out;
+\}
 \end{Verbatim}
 
 
