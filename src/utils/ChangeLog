@@ -1,3 +1,4 @@
+added ln.c
 opp_test: 
  - each test gets its own directory
  - new section %includes -- it goes outside the C++ namespace (%global goes inside)  TODO add to the docu!!!
