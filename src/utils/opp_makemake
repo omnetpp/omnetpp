@@ -944,11 +944,11 @@ $progname [options] [object files or libraries]
                           Specifies the name of the output directory tree
                           for out-of-directory build; defaults to "out".
                           The actual output directory will be
-                          <projectroot>/<dir>/$(CONFIGNAME)/<subpath>,
+                          <projectroot>/<dir>/\$(CONFIGNAME)/<subpath>,
                           where <subpath> is the project-relative path of
                           the current directory (for <projectroot> see -P).
                           An absolute directory path can also be specified,
-                          resulting in <absolute-dir>/$(CONFIGNAME)/<subpath>.
+                          resulting in <absolute-dir>/\$(CONFIGNAME)/<subpath>.
     --deep                Generates a "deep" Makefile. A deep Makefile will
                           cover the whole source tree under the make directory,
                           not just files in that directory. Directories may be
