@@ -312,7 +312,7 @@ and FDDI, stations start to repeat bits before the whole frame arrives;
 in other words, frames ``flow through'' the stations, being delayed only a few bits.
 In such cases, the data rate modeling feature of {\opp} cannot be used.
 
-If a message travels along a route, passing through successive links and
+If a message travels along a path, passing through successive links and
 compound modules, the model behaves as if each module waited until the
 last bit of the message arrives and only started its transmission
 afterwards.
@@ -328,7 +328,7 @@ afterwards.
 
 Since the above effect is usually not the desired one, typically
 you will want to assign data rate to only one connection in the
-route.
+path.
 
 
 
@@ -361,7 +361,7 @@ it finishes transmission.
 
 If the connection with a data rate is not directly connected
 to the simple module's output gate but is the second
-one in the route, you have to check the second gate's busy
+one in the path, you have to check the second gate's busy
 condition\index{gate!busy condition}.
 
 
@@ -2724,7 +2724,7 @@ send( packet, "TxGate");
 
 If the connection with a data rate is not directly connected
 to the simple module's output gate but is the second
-one in the route, you have to check the second gate's busy
+one in the path, you have to check the second gate's busy
 condition\index{gate!busy condition}. You could use the following
 code:
 
