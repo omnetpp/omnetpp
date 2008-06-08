@@ -183,9 +183,6 @@ event occurs is the \textit{arrival time}\index{arrival time} of the
 message. Events like ``timeout expired'' are implemented by the
 module sending a message to itself.
 
-Simulation time in {\opp} is stored in the C++ type
-\fvar{simtime\_t}, which is a typedef for \fvar{double}.
-
 Events are consumed from the FES\index{FES} in arrival time order, to
 maintain causality. More precisely, given two messages, the following
 rules apply:
@@ -200,103 +197,51 @@ rules apply:
 \textit{Priority}\index{message!priority} is a user-assigned integer
 attribute of messages.
 
-Storing simulation time in doubles may sometimes cause inconveniences.
-Due to finite machine precision, two doubles calculated in two
-different ways do not always compare equal even if they mathematically
-should be. For example, addition is not an associative operation
-when it comes to floating point calculations: $(x+y)+z != x+(y+z)$!
-(See~\cite{Goldberg91what}).
-This means that it is generally not a good idea to rely on
-arrival times of two events being the same unless they are
-calculated in exactly the same way.
+\subsection{Simulation time}
 
-One may suggest introducing a small \textit{simtime\_precision} parameter in
-the simulation kernel that would force $t_{1}$ and $t_{2}$ to be regarded
-equal if they are ``very close'' (if they differ
-less than \textit{simtime\_precision}). This approach, however, would
-be more likely to cause confusion than actually cure the problem.
+Simulation time in {\opp} is represented by the C++ type \fvar{simtime\_t}.
 
-%---------------
-%TBD
-%Point: floating point errors shouldn't matter. Simulation is the model
-%of the real world. When two events in the real world occur "simultaneously",
-%their "order" usually cannot be determined and is basically unpredictable,
-%so it should not matter in which order we simulate them.
-%
-%Try increments of 0.1 -- errors will soon come in
-%
-%As an aside: One could think about switching "simtime_t" to "long double".
-%This doesn't seem to be a very good idea. While "double" is standard 64-bit
-%IEEE-754 practically everywhere, there doesn't seem to be an agreement what
-%"long double" should mean in C/C++: 64, 80, 96 or 128 bits (see e.g. [1])
-%-- so simulations could yield somewhat different results on different
-%platforms, which is not very desirable.
-%For example, in Win32, "long double"=="double".
-%
-% User comment:
-%> So why not use some integer based time instead? If you are using a
-%> 64bit integer value, and have some functions to setup the timebase
-%> before the simulation run (how much a difference of 1 in the integers
-%> represent in the timebase, for instance 1ns or 1ps) you could get rid
-%> of all the nasty effects of floating-points with the drawback of some
-%> runtime limitations. But still if use a 64bit integer with an timebase
-%> resolution of 1ns (nano-second), you can represent a timespace about
-%> 584 years, which should be quiet enough for the most simulations.
-%> Usually integer operations are still faster than floating-point ones
-%> (especially doubles) and so simulation speed can be enhanced as well.
-%
-%FIXME TBD
-% Re: integer-based simulation time
-%
-%> It's a good point that 64-bit integers would provide enough range and
-%> resolution (585yrs with ns prec.) for most simulations. But certainly
-%> for not all (some special studies may require sub-ns times, or longer
-%> time than 585yrs), and the other drawback is that C++
-%> provides no comfortable way of working with such numbers (there isn't
-%> such 1e9-shifted fixed-point mode in C/C++ so you'd have to calculate
-%> *everything* in nanoseconds, which is quite a nuisance.) Practically,
-%> to switch the sim kernel to 64-bit integer time (long long, int64,
-%> __int64 on msvc) one would have to change the simtime_t typedef and
-%> the simtimeToStr()/ strToSimtime() funcions at the bare minimum, but
-%> probably there'be other places to change as well (printf's "%lg" is
-%> probably used at some places etc). I don't think it's really feasible.
-%>
-%> But even without all that, when you have beautiful 52-bit integer arithmetic
-%> already built in! I'm talking about the IEEE double-prec number's
-%> 52-bit mantissa.
-%> If you stick to putting integers into doubles, that'll give you
-%> *precise* calculations up to 2^52 = 4.5e15, that is 1250hrs with ns
-%> precision. To do that you'd go on with the current sim kernel
-%> unchanged, but interpret simtime_t in nanoseconds not seconds, and you
-%> restrict yourself to use only integer values with it. The time
-%> displayed on the UI which comes from
-%> simtimeToStr()/strToSimtime() would be crap of course (unless you
-%> replace those functions), but all time calculations will be precise.
-%>
-%> If you'd like to experimentally verify this, please compile and run
-%> the attached little program.
-%
-%#include <stdio.h>
-%#include <math.h>
-%
-%void main()
-%{
-%    // change these two
-%    double start = pow(2.0,50.0);
-%    double increment = 99.0;
-%
-%    double x = floor(start);
-%    int i = 0;
-%    for (;;)
-%    {
-%        double xprev = x;
-%        x = x + increment;
-%        if (floor(x)!=x) printf("\nProblem at x=%lg: not whole number\n", x);
-%        if (x-xprev != increment) printf("\nProblem at x=%lg: increment not right\n", x);
-%        if ((i++ & 0x00ffffff)==0) printf("."); // monitor progress
-%    }
-%}
-%---------------
+\ttt{simtime\_t} is a typedef to \ttt{SimTime} class, which stores simulation
+time in a 64-bit integer, using decimal fixed-point representation. The scale
+exponent can be between chosen between -18 and 0, and it has global effect.
+Some exponents with the ranges they provide are shown in the following table.
+
+\begin{center}
+  \begin{tabular}{ | r | r | c | }
+    \hline
+    Exponent & Resolution & Approx. Range \\ \hline
+     -18 & $10^{-18}$s (1as) & $\pm 9.22$s \\ 
+     -15 & $10^{-15}$s (1fs) & $\pm 153.72$ minutes \\ 
+     -12 & $10^{-12}$s (1ps) & $\pm 106.75$ days \\
+     -9  & $10^{-9}$s (1ns)  & $\pm 292.27$ years \\
+     -6  & $10^{-6}$s (1us)  & $\pm 292271$ years \\
+     -3  & $10^{-3}$s (1ms)  & $\pm 2.9227e8$ years \\
+     0   & 1s                & $\pm 2.9227e11$ years \\
+    \hline
+  \end{tabular}
+\end{center}
+ 
+Note that although simulation time cannot be negative, it is still useful to
+be able to represent negative numbers, because they often arise
+during the evaluation of arithmetic expressions.
+
+\begin{note}
+   Earlier \opp used \ttt{double} for simulation time, but this was less than
+   ideal. In floating point, large values can only be represented with less
+   precision, and this caused problems in long simulations. Non-associativity
+   (often $(x+y)+z \neq x+(y+z)$, see~\cite{Goldberg91what}) and accumulating
+   rounding errors meant that two \ttt{double} simulation times could not be
+   compared for equality.
+   
+   \opp can still be compiled with \ttt{simtime\_t} defined as \ttt{double},
+   which can occasionally be useful when porting older simulations.
+\end{note}
+
+The \ttt{SimTime} class performs additions and substractions as 64-bit integer
+operations. Integer overflows are checked, and will cause the simulation to
+stop with an error message. Other operations (multiplication, division, etc)
+are performed in \ttt{double}, then converted back to integer.
+ 
 
 \subsection{FES implementation}
 
