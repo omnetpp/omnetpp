@@ -115,6 +115,14 @@ $O/expression.o: expression.cc \
   commonutil.h \
   stringutil.h \
   exception.h
+$O/expression.tab.o: expression.tab.cc \
+  commonutil.h \
+  expressionyydefs.h \
+  expression.h \
+  exception.h \
+  stringutil.h \
+  unitconversion.h \
+  commondefs.h
 $O/fileglobber.o: fileglobber.cc \
   fileglobber.h \
   commondefs.h
@@ -138,6 +146,14 @@ $O/lcgrandom.o: lcgrandom.cc \
   lcgrandom.h \
   commondefs.h \
   exception.h
+$O/lex.expressionyy.o: lex.expressionyy.cc \
+  expressionyydefs.h \
+  exception.h \
+  expression.tab.h \
+  stringutil.h \
+  expression.h \
+  commondefs.h \
+  commonutil.h
 $O/linetokenizer.o: linetokenizer.cc \
   exception.h \
   linetokenizer.h \
@@ -148,8 +164,15 @@ $O/matchexpression.o: matchexpression.cc \
   commonutil.h \
   commondefs.h \
   exception.h
+$O/matchexpression.tab.o: matchexpression.tab.cc \
+  matchexpression.h \
+  matchexpressionlexer.h \
+  patternmatcher.h \
+  exception.h \
+  commondefs.h
 $O/matchexpressionlexer.o: matchexpressionlexer.cc \
   stringutil.h \
+  matchexpression.tab.h \
   matchexpressionlexer.h \
   commondefs.h \
   commonutil.h \

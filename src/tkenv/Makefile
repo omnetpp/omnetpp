@@ -619,6 +619,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/ccomponenttype.h \
   inspector.h \
   tkutil.h
+$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
@@ -701,6 +702,7 @@ $O/tkenv.o: tkenv.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
+  tclcode.cc \
   ../envir/envirdefs.h \
   ../../include/globals.h \
   ../../include/onstartup.h \

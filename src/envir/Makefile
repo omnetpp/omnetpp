@@ -299,6 +299,7 @@ $O/envirbase.o: envirbase.cc \
   ../../include/cdefaultlist.h
 $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   eventlogfilemgr.h \
+  eventlogwriter.h \
   ../../include/cconfigkey.h \
   ../../include/cconfiguration.h \
   envirbase.h \
@@ -325,10 +326,10 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/cobject.h \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
+  ../../include/cexception.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/cnamedobject.h \
-  ../../include/cexception.h \
   ../../include/cstringpool.h \
   ../../include/carray.h \
   ../../include/globals.h \
@@ -347,6 +348,39 @@ $O/eventlogfilemgr.o: eventlogfilemgr.cc \
   ../../include/cmsgpar.h \
   ../../include/cmathfunction.h \
   ../../include/ccomponenttype.h
+$O/eventlogwriter.o: eventlogwriter.cc \
+  eventlogwriter.h \
+  ../../include/cconfigkey.h \
+  ../../include/csimulation.h \
+  ../../include/cmodule.h \
+  envirdefs.h \
+  ../../include/cexception.h \
+  ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
+  ../../include/opp_string.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/platdep/inttypes.h \
+  ../../include/simtime.h \
+  ../../include/util.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cownedobject.h \
+  ../../include/cenvir.h \
+  ../../include/cnamedobject.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/regmacros.h \
+  ../../include/globals.h \
+  ../../include/cmessageheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/onstartup.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cclassfactory.h \
+  ../../include/ccomponent.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cexpression.h
 $O/fileoutscalarmgr.o: fileoutscalarmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \

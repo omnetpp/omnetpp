@@ -212,7 +212,7 @@ JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
 CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
 
 # Build shared library by default
-BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS:-yes}
+SHARED_LIBS=${SHARED_LIBS:-yes}
 
 #----------------------
 # Default flags for values for other variables that come from configure.user.
@@ -356,7 +356,7 @@ fi
 if test "$fpic" = "x"; then
    AC_MSG_RESULT(failure)
    AC_MSG_WARN([COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs])
-   BUILD_SHARED_LIBS="no"
+   SHARED_LIBS="no"
 else
    CFLAGS_DEBUG="$CFLAGS_DEBUG $fpic"
    CFLAGS_RELEASE="$CFLAGS_RELEASE $fpic"
@@ -978,7 +978,7 @@ AC_SUBST(DLLTOOL)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
 
-AC_SUBST(BUILD_SHARED_LIBS)
+AC_SUBST(SHARED_LIBS)
 AC_SUBST(A_LIB_SUFFIX)
 AC_SUBST(SHARED_LIB_SUFFIX)
 AC_SUBST(JNI_LIB_SUFFIX)

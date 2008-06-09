@@ -97,7 +97,7 @@ LEX=$(OPT_DIR:\=/)/bin/flex.exe
 # If you want to build .lib files instead of .dlls, specify "no" below.
 # The default is "yes".
 #
-#BUILD_SHARED_LIBS=no
+#SHARED_LIBS=no
 
 #
 # If you don't want to build some of the components below, substitute
@@ -160,11 +160,11 @@ D=
 #
 # Choose whether to build static libs or DLLs
 #
-!ifndef BUILD_SHARED_LIBS
-BUILD_SHARED_LIBS=yes
+!ifndef SHARED_LIBS
+SHARED_LIBS=yes
 !endif
 
-!if "$(BUILD_SHARED_LIBS)"=="yes"
+!if "$(SHARED_LIBS)"=="yes"
 LIB_SUFFIX=.dll
 !else
 LIB_SUFFIX=.lib

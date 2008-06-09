@@ -672,7 +672,7 @@ AR
 SHLIB_LD
 DLLTOOL
 MAKEDEPEND
-BUILD_SHARED_LIBS
+SHARED_LIBS
 A_LIB_SUFFIX
 SHARED_LIB_SUFFIX
 JNI_LIB_SUFFIX
@@ -1999,7 +1999,7 @@ JNI_LIB_SUFFIX=${JNI_LIB_SUFFIX:-$SHARED_LIB_SUFFIX}
 CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
 
 # Build shared library by default
-BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS:-yes}
+SHARED_LIBS=${SHARED_LIBS:-yes}
 
 #----------------------
 # Default flags for values for other variables that come from configure.user.
@@ -3445,7 +3445,7 @@ if test "$fpic" = "x"; then
 echo "${ECHO_T}failure" >&6; }
    { echo "$as_me:$LINENO: WARNING: COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs" >&5
 echo "$as_me: WARNING: COULD NOT FIGURE OUT HOW TO BUILD SHARED LIBRARY -- reverting to static libs" >&2;}
-   BUILD_SHARED_LIBS="no"
+   SHARED_LIBS="no"
 else
    CFLAGS_DEBUG="$CFLAGS_DEBUG $fpic"
    CFLAGS_RELEASE="$CFLAGS_RELEASE $fpic"
@@ -8015,7 +8015,7 @@ AR!$AR$ac_delim
 SHLIB_LD!$SHLIB_LD$ac_delim
 DLLTOOL!$DLLTOOL$ac_delim
 MAKEDEPEND!$MAKEDEPEND$ac_delim
-BUILD_SHARED_LIBS!$BUILD_SHARED_LIBS$ac_delim
+SHARED_LIBS!$SHARED_LIBS$ac_delim
 A_LIB_SUFFIX!$A_LIB_SUFFIX$ac_delim
 _ACEOF
 
@@ -8505,9 +8505,9 @@ if test -n "$NO_TCL"; then
 
     cat << EOT
 
-OMNeT++/OMNEST was configured without Tcl/Tk (\$NO_TCL set) -- GUI components
-will not be available. Also, sample simulation will run only in command line.
-You may need to edit their omnetpp.ini file to specify unbound parameters.
+OMNeT++/OMNEST was configured without Tcl/Tk (\$NO_TCL set). Tkenv (the GUI
+runtime environment) will not be available, simulations need to be run
+under Cmdenv.
 EOT
 
 elif test -z "$TCL_LIBRARY"; then
@@ -8515,7 +8515,7 @@ elif test -z "$TCL_LIBRARY"; then
     cat 1>&2 << EOT
 
 WARNING: The TCL_LIBRARY environment variable is not set, and without it
-OMNEST/OMNeT++ GUI programs may be unable to find the BLT library.
+Tkenv (the GUI runtime environment) may be unable to find the BLT library.
 
 Add the following line to your .profile or .bash_profile (provided you use bash):
   export TCL_LIBRARY=$tcl_library

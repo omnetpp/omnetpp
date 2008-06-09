@@ -140,6 +140,50 @@ $O/cppmsggenerator.o: cppmsggenerator.cc \
   nedelement.h \
   nedxmldefs.h \
   cppexprgenerator.h
+$O/lex.msg2yy.o: lex.msg2yy.cc \
+  nedyydefs.h \
+  nedexception.h \
+  msg2.tab.h \
+  nedxmldefs.h
+$O/lex.ned1yy.o: lex.ned1yy.cc \
+  nedyydefs.h \
+  nedexception.h \
+  ned1.tab.h \
+  nedxmldefs.h
+$O/lex.ned2yy.o: lex.ned2yy.cc \
+  nedyydefs.h \
+  nedexception.h \
+  ned2.tab.h \
+  nedxmldefs.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedyylib.h \
+  nedelement.h
+$O/msg2.tab.o: msg2.tab.cc \
+  nedyydefs.h \
+  nederror.h \
+  nedexception.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelement.h
+$O/ned1.tab.o: ned1.tab.cc \
+  nedyydefs.h \
+  nedutil.h \
+  nederror.h \
+  nedexception.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelement.h
 $O/ned1generator.o: ned1generator.cc \
   ned1generator.h \
   nedutil.h \
@@ -147,6 +191,18 @@ $O/ned1generator.o: ned1generator.cc \
   nederror.h \
   nedelement.h \
   nedxmldefs.h
+$O/ned2.tab.o: ned2.tab.cc \
+  ned2.tab.h \
+  nedyydefs.h \
+  nederror.h \
+  nedexception.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedyylib.h \
+  nedxmldefs.h \
+  nedelement.h
 $O/ned2generator.o: ned2generator.cc \
   ned2generator.h \
   nedutil.h \

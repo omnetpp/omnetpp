@@ -49,8 +49,8 @@ nice gui windows and dialogs.
 2. Starting the IDE
 
 OMNeT++ 4.0 comes with a brand new IDE (based on Eclipse). You will need at least
-sun-java5-jre installed on your machine (sun-java6-jre or openjdk-6-jre should work too). 
-After building the libraries (see previous step) you should be able to start the IDE 
+sun-java5-jre installed on your machine (sun-java6-jre or openjdk-6-jre should work too).
+After building the libraries (see previous step) you should be able to start the IDE
 by typing:
 
 omnetpp
@@ -76,17 +76,17 @@ of the library and type:
     make clean
     make
 
-If you want to build ONLY release or debug builds use: 
+If you want to build ONLY release or debug builds use:
 (if MODE is not specified both debug and release will be created)
-   
-    make MODE=release
-    
-If you want to create static libraries use: 
-(by default shared libraries will be created)
-    
-    make BUILD_SHARED_LIBS=no    
 
-NOTE: The built libraries and programs are immediately copied 
+    make MODE=release
+
+If you want to create static libraries use:
+(by default shared libraries will be created)
+
+    make SHARED_LIBS=no
+
+NOTE: The built libraries and programs are immediately copied
 to the lib/ and bin/ subdirs.
 
 
@@ -101,13 +101,13 @@ If you get it to work, please send a mail to the mailing list!
 
 - If you are using Advanced Desktop effects on Linux you may notice that all windows
   (including tooltip, menu etc.) are using the the open/close animation. This can be
-  quite annoying for menus and tooltips. To disable this behavior (on Gnome), go to 
+  quite annoying for menus and tooltips. To disable this behavior (on Gnome), go to
   Advanced Desktop Effect Settings / Animations and on the Open/Close  Animation tab
-  and change the "type=Unknown" to "name=tk" selection entries. This will effectively 
+  and change the "type=Unknown" to "name=tk" selection entries. This will effectively
   disable the animation for non toplevel Tcl/Tk windows.
 
-- If you are running the IDE on GTK you will notice that a lotof space is vasted in 
-  list and treelist controls (this is a general GTK issue). To make the IDE a little 
+- If you are running the IDE on GTK you will notice that a lotof space is vasted in
+  list and treelist controls (this is a general GTK issue). To make the IDE a little
   more compact and usable look into the 'contrib' directory. We have created a .gtkrc
   file which tweaks the GTK environment a little bit more compact.
 

@@ -16,7 +16,7 @@
 
 # Make sure that we are linking statically
 !if "$(LIB_SUFFIX)"!=".lib"
-!error The UI library is supported only with static linking. Please build with "nmake BUILD_SHARED_LIBS=no ..."
+!error The UI library is supported only with static linking. Please build with "nmake SHARED_LIBS=no ..."
 !endif
 
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)

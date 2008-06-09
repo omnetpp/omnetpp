@@ -91,7 +91,7 @@ If you want to build ONLY release or debug builds use:
 If you want to create static libraries use: 
 (by default shared libraries will be created)
     
-    make BUILD_SHARED_LIBS=no    
+    make SHARED_LIBS=no    
 
 NOTE: The built libraries and programs are immediately copied 
 to the lib/ and bin/ subdirs.
