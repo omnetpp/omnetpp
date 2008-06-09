@@ -1,0 +1,14 @@
+FOP=$(TOOLS_DIR)\fop\fop.bat
+XSLTPROC=$(TOOLS_DIR)\libxslt\bin\xsltproc
+DOCBOOK=$(TOOLS_DIR)\docbook
+
+html:  
+	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
+	$(XSLTPROC) --nonet --output userguide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
+	rm tmp.xml
+
+pdf:   
+	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
+	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook.xsl tmp.xml
+	$(FOP) -fo tmp.fo -pdf userguide.pdf
+	rm tmp.fo tmp.xml
