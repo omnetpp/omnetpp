@@ -250,6 +250,10 @@ public class VectorChart extends ChartCanvas {
 		return (VectorChartSelection)selection;
 	}
 	
+	public Rectangle getPlotRectangle() {
+		return plot != null ? plot.getPlotRectangle() : Rectangle.SINGLETON;
+	}
+	
 	@Override
 	protected double transformX(double x) {
 		return xAxis.transform(x);

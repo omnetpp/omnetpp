@@ -4,6 +4,7 @@
 package org.omnetpp.scave.charting;
 
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Rectangle;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
@@ -83,10 +84,14 @@ public class VectorChartSelection implements IChartSelection {
 		if (props != null && props.getDisplayLine()) {
 			int xx = coordsMapping.toCanvasX(this.vectorChart.transformX(x));
 			int yy = coordsMapping.toCanvasY(this.vectorChart.transformY(y));
+			Rectangle clipping = gc.getClipping();
+			org.eclipse.draw2d.geometry.Rectangle plotArea = vectorChart.getPlotRectangle();
+			gc.setClipping(clipping.intersection(new Rectangle(plotArea.x, plotArea.y, plotArea.width, plotArea.height)));
 			gc.setForeground(ColorFactory.RED);
 			gc.setLineWidth(1);
 			gc.drawPoint(xx+5, yy);
 			gc.drawOval(xx-5, yy-5, 10, 10);
+			gc.setClipping(clipping);
 		}
 	}
 }
