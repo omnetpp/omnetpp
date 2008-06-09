@@ -44,6 +44,14 @@ public class ChartUpdater {
 	public ResultFileManager getResultFileManager() {
 		return manager;
 	}
+	
+	public Chart getChart() {
+		return chart;
+	}
+	
+	public ChartCanvas getChartView() {
+		return view;
+	}
 
 	/**
 	 * Propagate changes on the "Chart" model object to the chart view. 

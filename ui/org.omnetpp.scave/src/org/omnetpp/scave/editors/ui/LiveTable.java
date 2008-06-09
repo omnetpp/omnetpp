@@ -1,6 +1,7 @@
 package org.omnetpp.scave.editors.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,7 +47,8 @@ public class LiveTable extends Composite  implements ISelectionProvider {
  	
 	private ArrayList<Control> orderedChildren = new ArrayList<Control>();
 	private ArrayList<Control> selection = new ArrayList<Control>();
-	private ListenerList listeners = new ListenerList();
+	private ListenerList selectionChangedListeners = new ListenerList();
+	private ListenerList childOrderChangedListeners = new ListenerList();
 	private Control insertMark = null;
 	
 	/**
@@ -69,13 +71,19 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 	public Control[] getChildren() {
 		// synchronize orderedChildren to actual children; remove disposed ones, add new ones
 		Control[] children = super.getChildren();
-		for (Control child : orderedChildren)
-			if (child.isDisposed())
-				orderedChildren.remove(child);
+		for (Iterator<Control> childIterator = orderedChildren.iterator(); childIterator.hasNext(); )
+			if (childIterator.next().isDisposed())
+				childIterator.remove();
 		for (Control child : children)
 			if (!orderedChildren.contains(child))
 				orderedChildren.add(child);
 		return orderedChildren.toArray(new Control[orderedChildren.size()]);
+	}
+	
+	public void setChildOrder(List<? extends Control> childOrder) {
+		// TODO check children
+		orderedChildren.clear();
+		orderedChildren.addAll(childOrder);
 	}
 	
 	/**
@@ -191,10 +199,8 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 		Assert.isTrue(atItem.getParent()==this);
 		if (item==atItem)
 			return;
-
-		int index = orderedChildren.indexOf(atItem);
-		orderedChildren.remove(item);
-		orderedChildren.add(index, item);
+		
+		moveTo(Collections.singletonList(item), atItem);
 		layout();
 	}
 
@@ -204,14 +210,20 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 	 */
 	protected void moveSelectionTo(Control target) {
 		Assert.isTrue(target.getParent()==this);
+		moveTo(selection, target);
+		layout();
+	}
+	
+	protected void moveTo(List<Control> controls, Control target) {
 		int index = orderedChildren.indexOf(target);
-		for (Control sel : selection)
-			orderedChildren.remove(sel);
+		for (Control control : controls)
+			orderedChildren.remove(control);
 		if (index>orderedChildren.size())
 			index = orderedChildren.size();
-		for (Control sel : selection)
-			orderedChildren.add(index++, sel);
-		layout();
+		for (Control control : controls)
+			orderedChildren.add(index++, control);
+		
+		fireChildOrderChanged();
 	}
 	
 	private void addToSelection(Control control) {
@@ -300,14 +312,14 @@ public class LiveTable extends Composite  implements ISelectionProvider {
      * Adds a listener for selection changes in this selection provider.
 	 */
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
-		listeners.add(listener);
+		selectionChangedListeners.add(listener);
 	}
 
 	/**
      * Removes the given selection change listener from this selection provider.
 	 */
 	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-		listeners.remove(listener);
+		selectionChangedListeners.remove(listener);
 	}
 	
 	/**
@@ -315,7 +327,24 @@ public class LiveTable extends Composite  implements ISelectionProvider {
 	 */
 	protected void fireSelectionChanged() {
 		SelectionChangedEvent event = new SelectionChangedEvent(this, getSelection());
-		for (Object listener : listeners.getListeners())
+		for (Object listener : selectionChangedListeners.getListeners())
 			((ISelectionChangedListener)listener).selectionChanged(event);
+	}
+	
+	public void addChildOrderChangedListener(IChildOrderChangedListener listener) {
+		childOrderChangedListeners.add(listener);
+	}
+	
+	public void removeChildOrderChangedListener(IChildOrderChangedListener listener) {
+		childOrderChangedListeners.remove(listener);
+	}
+	
+	protected void fireChildOrderChanged() {
+		for (Object listener : childOrderChangedListeners.getListeners())
+			((IChildOrderChangedListener)listener).childOrderChanged(this);
+	}
+	
+	public static interface IChildOrderChangedListener {
+		void childOrderChanged(LiveTable table);
 	}
 }
