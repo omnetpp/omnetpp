@@ -39,6 +39,8 @@ public class RemoveAction extends AbstractScaveAction {
 		Iterator<Object> elements = selection.iterator();
 		while (elements.hasNext()) {
 			Object element = elements.next();
+			if (element instanceof IWrapperItemProvider)
+				element = ((IWrapperItemProvider)element).getValue();
 			if (!(element instanceof EObject) || editor.isTemporaryObject((EObject)element))
 				return false;
 		}
