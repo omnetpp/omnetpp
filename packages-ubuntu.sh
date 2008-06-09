@@ -22,6 +22,9 @@ sudo apt-get install \
 	doxygen \
 	graphviz \
 	texlive \
-	texlive-latex-extra
+	texlive-latex-extra \
+	inkscape \
+	docbook-xml \
+	docbook-xsl
 
 
