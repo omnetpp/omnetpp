@@ -42,12 +42,13 @@ LOGFILTER =
 default: pdf html
 
 pdf: $(ALLTEX) $(PDFPICS) figures/*.png
-	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
-	bibtex tmp/usman
-	makeindex tmp/usman
-	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
-	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
+	pdflatex usman.tex $(LOGFILTER)
+	bibtex usman
+	makeindex usman
+	pdflatex usman.tex $(LOGFILTER)
+	pdflatex usman.tex $(LOGFILTER)
 	cp usman.pdf ../../manual
+	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
 # --- generating html ---
 
@@ -72,7 +73,7 @@ html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	cat $(HTMCHAPTERS) > usman.tmp
 	$(PERL) prephtml2 usman.tmp
 	rm usman.tmp
-	cp usman.html .../../manual
+	cp usman.html ../../manual
 	cp *.png ../../manual
 	cp figures/*.png ../../manual
 
