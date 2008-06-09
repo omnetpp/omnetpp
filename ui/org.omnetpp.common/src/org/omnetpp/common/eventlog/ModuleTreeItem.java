@@ -183,4 +183,9 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 
 		return descendant[0];
 	}
+	
+	@Override
+	public String toString() {
+	    return getModuleFullPath();
+	}
 }

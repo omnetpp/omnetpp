@@ -33,4 +33,9 @@ public class Pair<T1,T2> {
 		return ObjectUtils.equals(first, otherPair.first) &&
 				ObjectUtils.equals(second, otherPair.second);
 	}
+	
+	@Override
+	public String toString() {
+	    return "(" + first.toString() + ", " + second.toString() + ")";
+	}
 }
