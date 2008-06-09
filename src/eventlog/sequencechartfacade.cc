@@ -510,42 +510,60 @@ std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_
     return result;
 }
 
-std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples)
+std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIndexMap, int numberOfSamples, int messageSendWeight, int messageReuseWeight)
 {
     LCGRandom lcgRandom;
     std::vector<int> adjacencyMatrix;
-    std::set<int> axisIdSet;
-    std::set<long> eventNumbers;
+    std::set<int> axisIndexSet;
+    std::map<long, IEvent *> eventNumberToEventMap;
 
-    for (std::map<int, int>::iterator it = moduleIdToAxisIdMap->begin(); it != moduleIdToAxisIdMap->end(); it++)
-        axisIdSet.insert(it->second);
+    for (std::map<int, int>::iterator it = moduleIdToAxisIndexMap->begin(); it != moduleIdToAxisIndexMap->end(); it++)
+        axisIndexSet.insert(it->second);
 
-    int numberOfAxes = axisIdSet.size();
+    int numberOfAxes = axisIndexSet.size();
     adjacencyMatrix.resize(numberOfAxes * numberOfAxes);
 
     for (int i = 0; i < numberOfSamples; i++)
     {
+        // draw random
         double percentage = lcgRandom.next01();
         IEvent *event = eventLog->getApproximateEventAt(percentage);
+        eventNumberToEventMap[event->getEventNumber()] = event;
 
-        if (eventNumbers.find(event->getEventNumber()) == eventNumbers.end()) {
-            IMessageDependencyList *causes = event->getCauses();
+        // look before origin
+        if (timelineCoordinateOriginEventNumber != -1) {
+            if (timelineCoordinateOriginEventNumber - i >= 0) {
+                event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber - i);
+                if (event)
+                    eventNumberToEventMap[event->getEventNumber()] = event;
+            }
 
-            for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
-                IMessageDependency *messageDependency = *it;
-                IEvent *causeEvent = messageDependency->getCauseEvent();
-                IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
+            // look after origin
+            event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber + i);
+            if (event)
+                eventNumberToEventMap[event->getEventNumber()] = event;
+        }
+    }
 
-                if (causeEvent && consequenceEvent) {
-                    int causeModuleId = causeEvent->getModuleId();
-                    int consequenceModuleId = consequenceEvent->getModuleId();
+    for (std::map<long, IEvent *>::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++) {
+        IEvent *event = it->second;
+        IMessageDependencyList *causes = event->getCauses();
 
-                    std::map<int, int>::iterator causeModuleIdIt = moduleIdToAxisIdMap->find(causeModuleId);
-                    std::map<int, int>::iterator consequenceModuleIdIt = moduleIdToAxisIdMap->find(consequenceModuleId);
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++) {
+            IMessageDependency *messageDependency = *it;
+            IEvent *causeEvent = messageDependency->getCauseEvent();
+            IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
+            int weight = messageDependency->getIsReuse() ? messageReuseWeight : messageSendWeight;
 
-                    if (causeModuleIdIt !=  moduleIdToAxisIdMap->end() && consequenceModuleIdIt !=  moduleIdToAxisIdMap->end())
-                        adjacencyMatrix.at(causeModuleIdIt->second * numberOfAxes + consequenceModuleIdIt->second)++;
-                }
+            if (causeEvent && consequenceEvent && weight != 0) {
+                int causeModuleId = causeEvent->getModuleId();
+                int consequenceModuleId = consequenceEvent->getModuleId();
+
+                std::map<int, int>::iterator causeModuleIdIt = moduleIdToAxisIndexMap->find(causeModuleId);
+                std::map<int, int>::iterator consequenceModuleIdIt = moduleIdToAxisIndexMap->find(consequenceModuleId);
+
+                if (causeModuleIdIt !=  moduleIdToAxisIndexMap->end() && consequenceModuleIdIt != moduleIdToAxisIndexMap->end())
+                    adjacencyMatrix.at(causeModuleIdIt->second * numberOfAxes + consequenceModuleIdIt->second) += weight;
             }
         }
     }
