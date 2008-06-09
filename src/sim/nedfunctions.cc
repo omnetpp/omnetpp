@@ -35,7 +35,7 @@ typedef cDynamicExpression::Value Value;  // abbreviation for local use
 
 #define DEF(NAME, SIGNATURE, CATEGORY, DESCRIPTION, BODY) \
     static Value NAME##_f(cComponent *context, Value argv[], int argc) {BODY} \
-    Define_NED_Function2(NAME, NAME##_f, SIGNATURE, CATEGORY, DESCRIPTION);
+    Define_NED_Function3(NAME, NAME##_f, SIGNATURE, CATEGORY, DESCRIPTION);
 
 
 //
@@ -398,7 +398,7 @@ DEF(cauchy, "QQ/L->Q", "random", "", {
     return argv[0];
 })
 
-DEF(triang, "QQQ/L->Q", random"", "", {
+DEF(triang, "QQQ/L->Q", "random", "", {
     int rng = argc==4 ? (int)argv[3].dbl : 0;
     double argv1converted = UnitConversion::convertUnit(argv[1].dbl, argv[1].dblunit, argv[0].dblunit);
     double argv2converted = UnitConversion::convertUnit(argv[2].dbl, argv[2].dblunit, argv[0].dblunit);
