@@ -398,11 +398,11 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
         throw cRuntimeError("sendDelayed(): negative delay %s", SIMTIME_STR(delay));
 
     // set message parameters and send it
-    simtime_t sendTime = simTime()+delay;
-    msg->setSentFrom(this, outgate->id(), sendTime);
+    simtime_t delayEndTime = simTime()+delay;
+    msg->setSentFrom(this, outgate->id(), delayEndTime);
 
     EVCB.beginSend(msg);
-    bool keepit = outgate->deliver(msg, sendTime);
+    bool keepit = outgate->deliver(msg, delayEndTime);
     if (!keepit)
     {
         delete msg; //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash
