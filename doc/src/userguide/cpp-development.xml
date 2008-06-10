@@ -6,67 +6,74 @@
 <sect1>
 <title>Prerequisites</title>
 <para>TBD: compilers</para>
-
 </sect1>
 
 <sect1>
 <title>Creating a C++ Project</title>
 <para>TBD</para>
-
+      <picture file="pictures/Intro-NewProjectWizard.png">Creating a C++ project</picture>
+      <picture file="pictures/Intro-NewProjectWizard2.png">Selecting a toolchain</picture>
+      <picture file="pictures/Intro-NewProjectWizard3.png">Selecting configurations</picture>
 </sect1>
 
 <sect1>
 <title>Configuring the Project</title>
 <para>TBD</para>
-
-</sect1>
-
-<sect1>
-<title>Editiong C++ Code</title>
-<para>TBD</para>
-
-</sect1>
-
-<sect1>
-<title>Building the Project</title>
-<para>TBD</para>
-
-</sect1>
-
-<sect1>
-<title>Running or Debgging the Project</title>
-<para>TBD: refer to Launcher chapter</para>
-
+      <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
+      <picture file="pictures/CPP-ConfigureProject2.png">Target definition</picture>
+      <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
+      <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
+      <picture file="pictures/CPP-SourceFolder.png">Setting a source folder</picture>
+      <picture file="pictures/CPP-ExcludeSource.png">Excluding a directory from the build</picture>
 </sect1>
 
 <sect1>
 <title>Dependent Projects</title>
 <para>TBD</para>
+      <picture file="pictures/CPP-ProjectReferences.png">Setting project dependencies</picture>
+</sect1>
 
+<sect1>
+<title>Editing C++ Code</title>
+<para>TBD</para>
+      <picture file="pictures/CPP-Editor.png">C++ source editor</picture>
+</sect1>
+
+<sect1>
+<title>Building the Project</title>
+<para>TBD</para>
+      <picture file="pictures/CPP-BuildConfiguration.png">Activating a build configuration</picture>
+      <picture file="pictures/CPP-BuildProject.png">Building a project</picture>
+</sect1>
+
+<sect1>
+<title>Running or Debgging the Project</title>
+<para>TBD: refer to Launcher chapter</para>
+      <picture file="pictures/CPP-RunProject.png">Running a project</picture>
 </sect1>
 
 <sect1>
 <title>Outline View</title>
 <para>TBD</para>
-
+      <picture file="pictures/CPP-OutlineView.png">Navigating with outline view</picture>
 </sect1>
 
 <sect1>
 <title>Problems View</title>
 <para>TBD</para>
-
+      <picture file="pictures/CPP-ProblemsView.png">C++ problems</picture>
 </sect1>
 
 <sect1>
 <title>Console View</title>
 <para>TBD</para>
-
+      <picture file="pictures/CPP-ConsoleView.png">Build output in a console</picture>
 </sect1>
 
 <sect1>
 <title>Type Hierarchy View</title>
 <para>TBD</para>
-
+      <picture file="pictures/CPP-TypeHierarchy.png">C++ Type hierarchy</picture>
 </sect1>
 
 </chapter>
