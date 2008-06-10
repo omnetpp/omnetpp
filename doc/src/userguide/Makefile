@@ -7,7 +7,8 @@ html:
 
 pdf:   
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
-	xsltproc  --output tmp.fo custom-fo-docbook.xsl tmp.xml
+	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:////usr/share/xml/docbook/stylesheet/nwalsh/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
+	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -pdf userguide.pdf
 	rm tmp.fo tmp.xml
 
