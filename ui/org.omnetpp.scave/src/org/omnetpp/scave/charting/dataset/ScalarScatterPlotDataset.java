@@ -2,8 +2,8 @@ package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.scave.engine.ResultItemField;
+import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.XYDataset;
-import org.omnetpp.scave.model2.StatUtils;
 
 /**
  * IXYDataset implementation for a scatter plot computed from a list of scalars.
@@ -54,8 +54,8 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 		return new BigDecimal(getX(series, item));
 	}
 
-	public double getXConfidenceInterval(int series, int item, double p) {
-		return StatUtils.confidenceInterval(scalars.getValue(0, item), p);
+	public Statistics getXStatistics(int series, int item) {
+		return scalars.getValue(0, item);
 	}
 
 	public double getY(int series, int item) {
@@ -66,8 +66,8 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 		return new BigDecimal(getY(series, item));
 	}
 
-	public double getYConfidenceInterval(int series, int item, double p) {
-		return StatUtils.confidenceInterval(scalars.getValue(series+1, item), p);
+	public Statistics getYStatistics(int series, int item) {
+		return scalars.getValue(series+1, item);
 	}
 	
 	private static final ResultItemField MODULE = new ResultItemField(ResultItemField.MODULE);

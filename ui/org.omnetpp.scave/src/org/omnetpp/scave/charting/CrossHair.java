@@ -37,6 +37,8 @@ import org.omnetpp.scave.charting.dataset.IAveragedXYDataset;
 import org.omnetpp.scave.charting.dataset.IStringValueXYDataset;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
+import org.omnetpp.scave.engine.Statistics;
+import org.omnetpp.scave.model2.StatUtils;
 
 /**
  * Displays crosshair mouse cursor for VectorChart.
@@ -297,15 +299,19 @@ class CrossHair {
 		if (xStr == null) {
 			BigDecimal xp = dataset.getPreciseX(series, index);
 			double x = dataset.getX(series, index);
-			if (dataset instanceof IAveragedXYDataset)
-				xConf = ((IAveragedXYDataset)dataset).getXConfidenceInterval(series, index, ChartCanvas.CONFIDENCE_LEVEL);
+			if (dataset instanceof IAveragedXYDataset) {
+				Statistics xStat = ((IAveragedXYDataset)dataset).getXStatistics(series, index);
+				xConf = StatUtils.confidenceInterval(xStat, ChartCanvas.CONFIDENCE_LEVEL);
+			}
 			xStr = (xp != null ? xp.toString() : chart.formatValue(x, xConf));
 		}
 		if (yStr == null) {
 			BigDecimal yp = dataset.getPreciseY(series, index);
 			double y = dataset.getY(series, index);
-			if (dataset instanceof IAveragedXYDataset)
-				yConf = ((IAveragedXYDataset)dataset).getYConfidenceInterval(series, index, ChartCanvas.CONFIDENCE_LEVEL);
+			if (dataset instanceof IAveragedXYDataset) {
+				Statistics yStat = ((IAveragedXYDataset)dataset).getYStatistics(series, index);
+				yConf = StatUtils.confidenceInterval(yStat, ChartCanvas.CONFIDENCE_LEVEL);
+			}
 			yStr = (yp != null ? yp.toString() : chart.formatValue(y, yConf));
 		}
 		String seriesStr = dataset.getSeriesKey(series);

@@ -1,6 +1,8 @@
 package org.omnetpp.scave.charting.dataset;
 
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.scave.engine.Statistics;
+import org.omnetpp.scave.model2.StatUtils;
 
 public class CompoundXYDataset extends XYDatasetSupport implements IAveragedXYDataset {
 
@@ -49,11 +51,11 @@ public class CompoundXYDataset extends XYDatasetSupport implements IAveragedXYDa
 		return seriesToDatasetMap[series].getPreciseX(series - seriesToOffsetMap[series], item);
 	}
 
-	public double getXConfidenceInterval(int series, int item, double p) {
+	public Statistics getXStatistics(int series, int item) {
 		IXYDataset dataset = seriesToDatasetMap[series];
 		return dataset instanceof IAveragedXYDataset ?
-				((IAveragedXYDataset)dataset).getXConfidenceInterval(series - seriesToOffsetMap[series], item, p) :
-				Double.NaN;
+				((IAveragedXYDataset)dataset).getXStatistics(series - seriesToOffsetMap[series], item) :
+				StatUtils.singleValueStatistics(getX(series, item));
 	}
 
 	public double getY(int series, int item) {
@@ -64,10 +66,10 @@ public class CompoundXYDataset extends XYDatasetSupport implements IAveragedXYDa
 		return seriesToDatasetMap[series].getPreciseY(series - seriesToOffsetMap[series], item);
 	}
 
-	public double getYConfidenceInterval(int series, int item, double p) {
+	public Statistics getYStatistics(int series, int item) {
 		IXYDataset dataset = seriesToDatasetMap[series];
 		return dataset instanceof IAveragedXYDataset ?
-				((IAveragedXYDataset)dataset).getYConfidenceInterval(series - seriesToOffsetMap[series], item, p) :
-				Double.NaN;
+				((IAveragedXYDataset)dataset).getYStatistics(series - seriesToOffsetMap[series], item) :
+				StatUtils.singleValueStatistics(getY(series, item));
 	}
 }

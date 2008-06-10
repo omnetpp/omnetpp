@@ -34,6 +34,7 @@ public class HistogramDataset implements IHistogramDataset {
 	private HistogramData[] histograms;
 	
 	public HistogramDataset(IDList idlist, ResultFileManager manager) {
+		Assert.isLegal(idlist.areAllHistograms());
 		String[] keys = DatasetManager.getResultItemNames(idlist, null, manager);
 		Assert.isTrue(keys.length == idlist.size());
 		histograms = new HistogramData[idlist.size()];

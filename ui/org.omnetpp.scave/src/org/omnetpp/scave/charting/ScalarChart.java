@@ -44,6 +44,8 @@ import org.omnetpp.scave.charting.plotter.IChartSymbol;
 import org.omnetpp.scave.charting.plotter.SquareSymbol;
 import org.omnetpp.scave.charting.properties.ChartProperties.ShowGrid;
 import org.omnetpp.scave.charting.properties.ScalarChartProperties.BarPlacement;
+import org.omnetpp.scave.engine.Statistics;
+import org.omnetpp.scave.model2.StatUtils;
 
 /**
  * Bar chart.
@@ -382,8 +384,10 @@ public class ScalarChart extends ChartCanvas {
 			if (valueStr == null) {
 				double value = dataset.getValue(row, column);
 				double halfInterval = Double.NaN;
-				if (dataset instanceof IAveragedScalarDataset)
-					halfInterval = ((IAveragedScalarDataset)dataset).getConfidenceInterval(row, column, ScalarChart.CONFIDENCE_LEVEL);
+				if (dataset instanceof IAveragedScalarDataset) {
+					Statistics stat = ((IAveragedScalarDataset)dataset).getStatistics(row, column);
+					halfInterval = StatUtils.confidenceInterval(stat, ScalarChart.CONFIDENCE_LEVEL);
+				}
 				valueStr = formatValue(value, halfInterval);
 			}
 			String line1 = StringEscapeUtils.escapeHtml(key);

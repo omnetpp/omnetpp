@@ -1,15 +1,15 @@
 package org.omnetpp.scave.charting.dataset;
 
+import org.omnetpp.scave.engine.Statistics;
+
 public interface IAveragedScalarDataset extends IScalarDataset {
 
 	/**
-     * Returns the half length of the confidence interval for the
-     * value associated with the cell.
+     * Returns the collected statistics for the value associated with the cell.
      * 
      * @param row  the row index
      * @param column  the column index
-     * @param p  the confidence level
-     * @return the half interval length of NaN if not applicable
+     * @return the statistics
      */
-    double getConfidenceInterval(int row, int column, double p);
+    Statistics getStatistics(int row, int column);
 }

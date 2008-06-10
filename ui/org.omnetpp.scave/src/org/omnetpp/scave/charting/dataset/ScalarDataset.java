@@ -21,9 +21,9 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItemField;
 import org.omnetpp.scave.engine.ResultItemFields;
 import org.omnetpp.scave.engine.ScalarDataSorter;
+import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.XYDataset;
-import org.omnetpp.scave.model2.StatUtils;
 
 /**
  * Class representing the dataset of a scalar chart.
@@ -118,12 +118,12 @@ public class ScalarDataset implements IAveragedScalarDataset {
     }
     
 	/**
-	 * Returns the confidence interval for a given row and column.
+	 * Returns the statistics for a given row and column.
 	 * 
-	 * @see IScalarDataset#getConfidenceInterval(int, int, double)
+	 * @see IScalarDataset#getStatistics(int, int)
 	 */
-    public double getConfidenceInterval(int row, int column, double p) {
-		return StatUtils.confidenceInterval(data.getValue(row, column), p);
+    public Statistics getStatistics(int row, int column) {
+		return data.getValue(row, column);
 	}
     
     private void computeFields(List<String> groupByFields, List<String> barFields, List<String> averagedFields,
