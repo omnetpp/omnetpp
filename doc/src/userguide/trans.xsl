@@ -12,27 +12,34 @@
 </xsl:template>
 
 <xsl:template match="picture">
-<figure float="0">
-   <title><xsl:apply-templates select="node()"/></title>
-   <screenshot>
-     <mediaobject>
-       <imageobject>
-          <xsl:choose>
-	     <xsl:when test="@width">
-                <imagedata fileref="{@file}" width="{@width}" align="center"/>
-	     </xsl:when>	
-	     <xsl:otherwise>	
-                <imagedata fileref="{@file}" scale="50" align="center"/>
-	     </xsl:otherwise>	
-	  </xsl:choose>     
-       </imageobject>
-       <textobject>
-          <phrase></phrase>
-       </textobject>
-     </mediaobject>
-   </screenshot>
-</figure>
+   <figure float="0">
+      <title><xsl:apply-templates select="node()"/></title>
+      <screenshot>
+        <mediaobject>
+          <imageobject>
+             <xsl:choose>
+                <xsl:when test="@width">
+                   <imagedata fileref="{@file}" width="{@width}" align="center"/>
+                </xsl:when>	
+                <xsl:otherwise>	
+                   <imagedata fileref="{@file}" scale="50" align="center"/>
+                </xsl:otherwise>	
+             </xsl:choose>     
+          </imageobject>
+          <textobject>
+             <phrase></phrase>
+          </textobject>
+        </mediaobject>
+      </screenshot>
+   </figure>
+</xsl:template>
+
+<xsl:template match="inifile">
+   <screen><xsl:apply-templates select="node()"/></screen>
+</xsl:template>
+
+<xsl:template match="eventlog">
+   <screen><xsl:apply-templates select="node()"/></screen>
 </xsl:template>
 
 </xsl:stylesheet>
-	    
