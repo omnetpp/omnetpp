@@ -3271,7 +3271,9 @@ if test "$TOOLCHAIN_NAME" = ""; then
     elif test "$cygwin" = yes; then
         TOOLCHAIN_NAME="cygwin"
     else
-        TOOLCHAIN_NAME=`echo $CC | sed 's|/ |_|g'`
+        # toolchain name: compiler ($CC) without path
+        # note: doubling the brackets is needed, otherwise M4 swallows them!
+        TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![ :]!_!'g`
     fi
 fi
 
