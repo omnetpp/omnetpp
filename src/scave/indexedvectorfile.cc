@@ -26,6 +26,7 @@
 USING_NAMESPACE
 
 #define LL  INT64_PRINTF_FORMAT
+#define VECTOR_FILE_VERSION 2
 
 //=========================================================================
 
@@ -295,6 +296,7 @@ void IndexedVectorFileWriterNode::process()
         f = openFile(fileName);
         // print file header
         CHECK(fprintf(f,"%s\n", fileHeader.c_str()));
+        CHECK(fprintf(f,"version %d\n", VECTOR_FILE_VERSION));
 
         // print run attributes
         run.writeToFile(f, fileName.c_str());

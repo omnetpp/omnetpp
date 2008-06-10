@@ -19,6 +19,7 @@
 #include "vectorfilewriter.h"
 #include "stringutil.h"
 
+#define VECTOR_FILE_VERSION 2
 
 #ifdef CHECK
 #undef CHECK
@@ -64,6 +65,8 @@ void VectorFileWriterNode::process()
 
         // print file header and vector declarations
         CHECK(fprintf(f,"%s\n\n", fileHeader.c_str()));
+        CHECK(fprintf(f,"version %d\n", VECTOR_FILE_VERSION));
+        
         for (PortVector::iterator it=ports.begin(); it!=ports.end(); it++)
             CHECK(fprintf(f, "vector %d  %s  %s  %s\n", it->id,
                              QUOTE(it->moduleName.c_str()),

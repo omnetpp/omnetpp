@@ -42,6 +42,7 @@
 
 USING_NAMESPACE
 
+#define INDEX_FILE_VERSION 2
 #define LL  INT64_PRINTF_FORMAT
 
 using std::ostream;
@@ -233,6 +234,7 @@ void cIndexedFileOutputVectorManager::writeRunData()
     if (!fi)
     {
         openIndexFile();
+        CHECK(fprintf(fi, "version %d\n", INDEX_FILE_VERSION), ifname);
     }
 
     run.writeRunData(fi, ifname);

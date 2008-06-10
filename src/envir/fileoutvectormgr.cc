@@ -37,6 +37,7 @@ USING_NAMESPACE
 
 Register_Class(cFileOutputVectorManager);
 
+#define VECTOR_FILE_VERSION 2
 #define DEFAULT_PRECISION  "14"
 
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.vec", "Name for the output vector file.");
@@ -93,6 +94,8 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
     {
         openFile();
         if (!f) return;
+        
+        CHECK(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
     }
 
     if (!run.initialized)

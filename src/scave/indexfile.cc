@@ -404,6 +404,13 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         index->fingerprint.fileSize = fileSize;
         index->fingerprint.lastModified = lastModified;
     }
+    else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0)
+    {
+    	int version;
+    	CHECK(numTokens >= 2, "missing version number", lineNum);
+    	CHECK(parseInt(tokens[1], version), "version is not a number", lineNum);
+    	CHECK(version <= 2, "expects version 2 or lower", lineNum);
+    }
     else if (index->run.parseLine(tokens, numTokens, filename.c_str(), lineNum))
     {
         return;
@@ -448,6 +455,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
 #undef CHECK
 #endif
 #define CHECK(fprintf)    if (fprintf<0) throw opp_runtime_error("Cannot write output file `%s'", filename.c_str())
+#define INDEX_FILE_VERSION 2
 
 IndexFileWriter::IndexFileWriter(const char *filename, int precision)
     : filename(filename), precision(precision), file(NULL)
@@ -558,6 +566,8 @@ void IndexFileWriter::openFile()
 
     // space for header
     CHECK(fprintf(file, "%64s\n", ""));
+    // version
+    CHECK(fprintf(file, "version %d\n", INDEX_FILE_VERSION));
 }
 
 void IndexFileWriter::closeFile()

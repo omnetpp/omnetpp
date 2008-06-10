@@ -35,6 +35,7 @@
 
 USING_NAMESPACE
 
+#define SCALAR_FILE_VERSION 2
 #define DEFAULT_PRECISION  "14"
 
 Register_PerRunConfigEntry(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.sca", "Name for the output scalar file.");
@@ -108,6 +109,8 @@ void cFileOutputScalarManager::init()
     {
         openFile();
         if (!f) return;
+        
+        CHECK(fprintf(f, "version %d\n", SCALAR_FILE_VERSION));
     }
 
     if (!run.initialized)

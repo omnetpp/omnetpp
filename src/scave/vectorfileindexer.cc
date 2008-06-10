@@ -142,6 +142,16 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
                 lastVectorDecl = index.getVectorAt(index.getNumberOfVectors() - 1);
                 currentVectorRef = NULL;
             }
+            else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0)
+            {
+            	int version;
+            	if(numTokens < 2)
+            		throw ResultFileFormatException("vector file indexer: missing version number", vectorFileName, lineNo);
+            	if(!parseInt(tokens[1], version))
+            		throw ResultFileFormatException("vector file indexer: version is not a number", vectorFileName, lineNo);
+            	if(version > 2)
+            		throw ResultFileFormatException("vector file indexer: expects version 2 or lower", vectorFileName, lineNo);
+            }
             else // data line
             {
                 int vectorId;

@@ -108,6 +108,11 @@ Datum parseColumns(char **tokens, int numtokens, const string &columns, const ch
     return a;
 }
 
+#ifdef CHECK
+#undef CHECK
+#endif
+#define CHECK(cond,msg) if (!(cond)) { throw ResultFileFormatException("vector file reader" msg, file, lineNo); }
+
 void VectorFileReaderNode::process()
 {
     const char *file = filename.c_str();
@@ -123,28 +128,31 @@ void VectorFileReaderNode::process()
 
         if (vec[0][0] == 'v' && strcmp(vec[0], "vector") == 0)
         {
-            if (numtokens < 4)
-                throw ResultFileFormatException("vector file reader: broken vector declaration", file, lineNo);
+            CHECK(numtokens >= 4, "broken vector declaration");
 
             int vectorId;
-            if (!parseInt(vec[1], vectorId))
-                throw ResultFileFormatException("vector file reader: malformed vector in vector declaration", file, lineNo);
+            CHECK(parseInt(vec[1], vectorId), "malformed vector in vector declaration");
             if (ports.find(vectorId) != ports.end())
                 columns[vectorId] = (numtokens < 5 || opp_isdigit(vec[4][0]) ? "TV" : vec[4]);
+        }
+        else if (vec[0][0] == 'v' && strcmp(vec[0], "version") == 0)
+        {
+        	int version;
+        	CHECK(numtokens >= 2, "missing version number");
+        	CHECK(parseInt(vec[1], version), "version is not a number");
+        	CHECK(version <= 2, "expects version 2 or lower");
         }
         else if (numtokens>=3 && opp_isdigit(vec[0][0]))  // silently ignore incomplete lines
         {
             // extract vector id
             int vectorId;
-            if (!parseInt(vec[0], vectorId))
-                throw ResultFileFormatException("invalid vector file syntax: invalid vector id column", file, lineNo);
+            CHECK(parseInt(vec[0], vectorId), "invalid vector id column");
 
             Portmap::iterator portvec = ports.find(vectorId);
             if (portvec!=ports.end())
             {
                 ColumnMap::iterator columnSpec = columns.find(vectorId);
-                if (columnSpec == columns.end())
-                    throw ResultFileFormatException("vector file reader: missing vector declaration", file, lineNo);
+                CHECK(columnSpec != columns.end(), "missing vector declaration");
 
                 // parse columns
                 Datum a = parseColumns(vec, numtokens, columnSpec->second, file, lineNo, -1);
