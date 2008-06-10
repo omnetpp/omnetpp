@@ -73,7 +73,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual cEnvir& flush();
      virtual std::string gets(const char *promptstr, const char *defaultreply);
      virtual bool idle();
-     virtual unsigned extraStackForEnvir();
+     virtual unsigned extraStackForEnvir() const;
 
    protected:
      virtual void setup();

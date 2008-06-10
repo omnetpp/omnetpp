@@ -731,7 +731,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Used internally by the parallel simulation kernel.
      */
-    int srcProcId() {return srcprocid;}
+    int srcProcId() const {return srcprocid;}
     //@}
 
     /** @name Miscellaneous. */

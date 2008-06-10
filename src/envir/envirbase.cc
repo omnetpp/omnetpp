@@ -1098,7 +1098,7 @@ void EnvirBase::readPerRunOptions()
 
 //-------------------------------------------------------------
 
-int EnvirBase::numRNGs()
+int EnvirBase::numRNGs() const
 {
     return num_rngs;
 }
@@ -1249,12 +1249,12 @@ bool EnvirBase::idle()
     return false;
 }
 
-int EnvirBase::argCount()
+int EnvirBase::argCount() const
 {
     return args->argCount();
 }
 
-char **EnvirBase::argVector()
+char **EnvirBase::argVector() const
 {
     return args->argVector();
 }

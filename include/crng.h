@@ -77,7 +77,7 @@ class SIM_API cRNG : public cObject
      * Returns how many random numbers have been drawn from this RNG.
      * Subclasses should increment numDrawn in the intRand(), etc. methods.
      */
-    virtual unsigned long numbersDrawn() {return numDrawn;}
+    virtual unsigned long numbersDrawn() const  {return numDrawn;}
 
     /**
      * Random integer in the range [0,intRandMax()]

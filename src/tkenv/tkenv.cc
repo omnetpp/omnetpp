@@ -1783,7 +1783,7 @@ bool Tkenv::askyesno(const char *question)
     return Tcl_GetStringResult(interp)[0]=='y';
 }
 
-unsigned Tkenv::extraStackForEnvir()
+unsigned Tkenv::extraStackForEnvir() const
 {
      return opt_extrastack;
 }

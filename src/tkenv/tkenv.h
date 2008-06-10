@@ -156,7 +156,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual bool idle();
 
       // with Tkenv, activity() modules need extra stack
-      virtual unsigned extraStackForEnvir();
+      virtual unsigned extraStackForEnvir() const;
 
   protected:
       // redefined virtual functions from EnvirBase

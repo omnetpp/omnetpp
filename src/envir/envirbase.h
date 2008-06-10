@@ -176,7 +176,7 @@ class ENVIR_API EnvirBase : public cEnvir
     // leave to subclasses: virtual cEnvir& flush();
 
     // RNGs
-    virtual int numRNGs();
+    virtual int numRNGs() const;
     virtual cRNG *rng(int k);
     virtual void getRNGMappingFor(cComponent *component);
 
@@ -195,8 +195,8 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os);
 
     // misc
-    virtual int argCount();
-    virtual char **argVector();
+    virtual int argCount() const;
+    virtual char **argVector() const;
     virtual int getParsimProcId();
     virtual int getParsimNumPartitions();
     virtual const char *getRunId()  {return runid.c_str();}

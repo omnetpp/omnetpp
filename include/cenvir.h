@@ -347,7 +347,7 @@ class SIM_API cEnvir
      * Called from cSimpleModule, it returns how much extra stack space
      * the user interface recommends for activity() simple modules.
      */
-    virtual unsigned extraStackForEnvir() = 0;
+    virtual unsigned extraStackForEnvir() const = 0;
 
     /**
      * Access to the configuration data (by default, omnetpp.ini).
@@ -472,7 +472,7 @@ class SIM_API cEnvir
      * Returns the number of RNGs available for the simulation
      * ("num-rngs=" omnetpp.ini setting).
      */
-    virtual int numRNGs() = 0;
+    virtual int numRNGs() const = 0;
 
     /**
      * Returns pointer to "physical" RNG k (0 <= k < numRNGs()).
@@ -567,12 +567,12 @@ class SIM_API cEnvir
     /**
      * Access to original command-line arguments.
      */
-    virtual int argCount() = 0;
+    virtual int argCount() const = 0;
 
     /**
      * Access to original command-line arguments.
      */
-    virtual char **argVector() = 0;
+    virtual char **argVector() const = 0;
 
     /**
      * Returns the partitionID when parallel simulation is active.

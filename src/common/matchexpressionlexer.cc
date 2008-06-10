@@ -15,9 +15,9 @@
 *--------------------------------------------------------------*/
 
 #include "stringutil.h"
-// include token values
-#include "matchexpression.tab.h"
+#include "matchexpression.tab.h"  // token values
 #include "matchexpressionlexer.h"
+#include "platmisc.h"   // strncasecmp
 
 USING_NAMESPACE
 

@@ -627,7 +627,7 @@ void Cmdenv::printUISpecificHelp()
     ev << "\n";
 }
 
-unsigned Cmdenv::extraStackForEnvir()
+unsigned Cmdenv::extraStackForEnvir() const
 {
     return opt_extrastack;
 }

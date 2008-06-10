@@ -29,7 +29,7 @@
 NAMESPACE_BEGIN
 
 //FIXME refine this macro
-#define UNSUPPORTED   {printf("unsupported function called"); throw opp_runtime_error("baaad!");}
+#define UNSUPPORTED   {throw opp_runtime_error("unsupported function called");}
 
 
 /**
@@ -78,7 +78,7 @@ class ENVIR_API BootEnv : public cEnvir
     virtual void readParameter(cPar *parameter)  {UNSUPPORTED;}
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {UNSUPPORTED;}
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL)  {UNSUPPORTED;}
-    virtual unsigned extraStackForEnvir()  {UNSUPPORTED;}
+    virtual unsigned extraStackForEnvir() const  {UNSUPPORTED;}
     virtual cConfiguration *config()  {UNSUPPORTED;}
     virtual bool isGUI()  {UNSUPPORTED;}
 
@@ -88,7 +88,7 @@ class ENVIR_API BootEnv : public cEnvir
     virtual cEnvir& flush();
 
     // RNGs
-    virtual int numRNGs()  {UNSUPPORTED;}
+    virtual int numRNGs() const {UNSUPPORTED;}
     virtual cRNG *rng(int k)  {UNSUPPORTED;}
     virtual void getRNGMappingFor(cComponent *component)  {UNSUPPORTED;}
 
@@ -107,8 +107,8 @@ class ENVIR_API BootEnv : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os)  {UNSUPPORTED;}
 
     // misc
-    virtual int argCount()  {UNSUPPORTED;}
-    virtual char **argVector()  {UNSUPPORTED;}
+    virtual int argCount() const  {UNSUPPORTED;}
+    virtual char **argVector() const  {UNSUPPORTED;}
     virtual int getParsimProcId()  {UNSUPPORTED;}
     virtual int getParsimNumPartitions()  {UNSUPPORTED;}
     virtual const char *getRunId()  {UNSUPPORTED;}
