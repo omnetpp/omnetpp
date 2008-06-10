@@ -232,8 +232,11 @@ public class ResultFilesTracker implements INotifyChangedListener, IResourceChan
 	 * Loads the file specified by <code>resourcePath</code> into the ResultFileManager.
 	 */
 	private void loadFile(String resourcePath) {
+		IPath path = new Path(resourcePath);
+		if (!path.isAbsolute())
+			path = baseDir.append(path);
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = workspaceRoot.findMember(resourcePath);
+		IResource resource = workspaceRoot.findMember(path);
 		if (resource instanceof IFile) {
 			IFile file = (IFile)resource;
 			if (isResultFile(file) && !isDerived(file))
