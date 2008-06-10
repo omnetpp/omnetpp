@@ -451,6 +451,7 @@ $O/resultfilemanager.obj: resultfilemanager.cc \
   resultfilemanager.h \
   ../common/fileutil.h \
   ../common/commonutil.h \
+  ../common/stringutil.h \
   ../common/commondefs.h \
   ../common/exception.h \
   scavedefs.h \

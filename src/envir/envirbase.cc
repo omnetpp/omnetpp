@@ -535,7 +535,7 @@ void EnvirBase::dumpComponentList(const char *category)
         throw cRuntimeError("Unrecognized category for '-h' option: %s", category);
 }
 
-int EnvirBase::getParsimProcId()
+int EnvirBase::getParsimProcId() const
 {
 #ifdef WITH_PARSIM
     return parsimcomm ? parsimcomm->getProcId() : 0;
@@ -544,7 +544,7 @@ int EnvirBase::getParsimProcId()
 #endif
 }
 
-int EnvirBase::getParsimNumPartitions()
+int EnvirBase::getParsimNumPartitions() const
 {
 #ifdef WITH_PARSIM
     return parsimcomm ? parsimcomm->getNumPartitions() : 0;

@@ -366,7 +366,7 @@ class SIM_API cEnvir
      * and with Cmdenv it returns false.) Simple modules can examine this flag
      * to decide whether or not they need to bother updating display strings.
      */
-    virtual bool isGUI() = 0;
+    virtual bool isGUI() const = 0;
 
     /**
      * Returns true if the simulation is running in an Express or Express-like mode
@@ -384,7 +384,7 @@ class SIM_API cEnvir
      *     EV << "Packet " << msg->name() << " received";
      * </pre>
      */
-    bool disabled() {return disable_tracing;}
+    bool disabled() const {return disable_tracing;}
 
     /**
      * Overloaded << operator to make cEnvir behave like an ostream.
@@ -577,19 +577,19 @@ class SIM_API cEnvir
     /**
      * Returns the partitionID when parallel simulation is active.
      */
-    virtual int getParsimProcId() = 0;
+    virtual int getParsimProcId() const = 0;
 
     /**
      * Returns the number of partitions when parallel simulation is active;
      * otherwise it returns 0.
      */
-    virtual int getParsimNumPartitions() = 0;
+    virtual int getParsimNumPartitions() const = 0;
 
     /**
      * Returns the Run Id of the current simulation run, or NULL if
      * no simulation run is active.
      */
-    virtual const char *getRunId() = 0;
+    virtual const char *getRunId() const = 0;
 
     /**
      * The function underlying cSimulation::getUniqueNumber().

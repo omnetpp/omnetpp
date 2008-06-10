@@ -169,6 +169,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cproperty.h \
   ../../include/cpsquare.h \
   ../../include/cqueue.h \
+  ../../include/cpacketqueue.h \
   ../../include/crng.h \
   ../../include/cscheduler.h \
   ../../include/csimplemodule.h \
@@ -262,6 +263,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cproperty.h \
   ../../include/cpsquare.h \
   ../../include/cqueue.h \
+  ../../include/cpacketqueue.h \
   ../../include/crng.h \
   ../../include/cscheduler.h \
   ../../include/csimplemodule.h \
@@ -460,6 +462,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cproperty.h \
   ../../include/cpsquare.h \
   ../../include/cqueue.h \
+  ../../include/cpacketqueue.h \
   ../../include/crng.h \
   ../../include/cscheduler.h \
   ../../include/csimplemodule.h \
@@ -741,6 +744,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/cchannel.h \
   ../../include/cgate.h \
   visitor.h \
+  tkutil.h \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \

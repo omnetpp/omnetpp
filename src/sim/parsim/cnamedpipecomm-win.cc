@@ -164,12 +164,12 @@ void cNamedPipeCommunications::shutdown()
 {
 }
 
-int cNamedPipeCommunications::getNumPartitions()
+int cNamedPipeCommunications::getNumPartitions() const
 {
     return numPartitions;
 }
 
-int cNamedPipeCommunications::getProcId()
+int cNamedPipeCommunications::getProcId() const
 {
     return myProcId;
 }

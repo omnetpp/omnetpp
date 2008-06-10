@@ -206,18 +206,18 @@ class COMMON_API FileReader
     /**
      * Returns the start offset of the line last parsed with readNextLine() or readPreviousLine().
      */
-    file_offset_t getCurrentLineStartOffset() { return currentLineStartOffset; }
+    file_offset_t getCurrentLineStartOffset() const { return currentLineStartOffset; }
 
     /**
      * Returns the end offset of the line last parsed with readNextLine() or readPreviousLine().
      * This points to the start offset of the next line, so it includes the CR/LF of the previous line.
      */
-    file_offset_t getCurrentLineEndOffset() { return currentLineEndOffset; }
+    file_offset_t getCurrentLineEndOffset() const { return currentLineEndOffset; }
 
     /**
      * Returns the length of the last line including CR/LF.
      */
-    int getCurrentLineLength() { return currentLineEndOffset - currentLineStartOffset; }
+    int getCurrentLineLength() const { return currentLineEndOffset - currentLineStartOffset; }
 
     /**
      * Returns the size of the file when last time synchronize was called.
@@ -232,12 +232,12 @@ class COMMON_API FileReader
     /**
      * Returns the total number of lines requested so far.
      */
-    int64 getNumReadLines() { return numReadLines; };
+    int64 getNumReadLines() const { return numReadLines; };
 
     /**
      * Returns the total number of bytes read in so far.
      */
-    int64 getNumReadBytes() { return numReadBytes; }
+    int64 getNumReadBytes() const { return numReadBytes; }
 };
 
 NAMESPACE_END

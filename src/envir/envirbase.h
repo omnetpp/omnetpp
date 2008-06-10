@@ -197,9 +197,9 @@ class ENVIR_API EnvirBase : public cEnvir
     // misc
     virtual int argCount() const;
     virtual char **argVector() const;
-    virtual int getParsimProcId();
-    virtual int getParsimNumPartitions();
-    virtual const char *getRunId()  {return runid.c_str();}
+    virtual int getParsimProcId() const;
+    virtual int getParsimNumPartitions() const;
+    virtual const char *getRunId() const {return runid.c_str();}
     virtual unsigned long getUniqueNumber();
     virtual bool idle();
     //@}

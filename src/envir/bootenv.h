@@ -80,7 +80,7 @@ class ENVIR_API BootEnv : public cEnvir
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL)  {UNSUPPORTED;}
     virtual unsigned extraStackForEnvir() const  {UNSUPPORTED;}
     virtual cConfiguration *config()  {UNSUPPORTED;}
-    virtual bool isGUI()  {UNSUPPORTED;}
+    virtual bool isGUI() const  {UNSUPPORTED;}
 
     // UI functions (see also protected ones)
     virtual void bubble(cComponent *component, const char *text)  {UNSUPPORTED;}
@@ -109,9 +109,9 @@ class ENVIR_API BootEnv : public cEnvir
     // misc
     virtual int argCount() const  {UNSUPPORTED;}
     virtual char **argVector() const  {UNSUPPORTED;}
-    virtual int getParsimProcId()  {UNSUPPORTED;}
-    virtual int getParsimNumPartitions()  {UNSUPPORTED;}
-    virtual const char *getRunId()  {UNSUPPORTED;}
+    virtual int getParsimProcId() const {UNSUPPORTED;}
+    virtual int getParsimNumPartitions() const {UNSUPPORTED;}
+    virtual const char *getRunId() const  {UNSUPPORTED;}
     virtual unsigned long getUniqueNumber()  {UNSUPPORTED;}
     virtual bool idle()  {UNSUPPORTED;}
 };

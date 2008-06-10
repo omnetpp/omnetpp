@@ -145,6 +145,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   args.h \
   envirdefs.h \
   ../../include/envirext.h \
+  eventlogfilemgr.h \
   ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/cnamedobject.h \
@@ -155,6 +156,10 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
+  objectprinter.h \
+  intervals.h \
+  matchablefield.h \
+  matchableobject.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -163,8 +168,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   fileoutvectormgr.h \
-  runattributes.h \
-  intervals.h
+  runattributes.h
 $O/args.obj: args.cc \
   args.h \
   envirdefs.h
@@ -245,8 +249,6 @@ $O/envirbase.obj: envirbase.cc \
   args.h \
   envirbase.h \
   appreg.h \
-  fsutils.h \
-  eventlogfilemgr.h \
   ../../include/ccoroutine.h \
   ../../include/csimulation.h \
   ../../include/cscheduler.h \
@@ -256,11 +258,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/random.h \
   ../../include/crng.h \
   ../../include/cmodule.h \
-  ../../include/ccompoundmodule.h \
-  ../../include/cchannel.h \
   ../../include/ccomponenttype.h \
-  ../../include/cmessage.h \
-  ../../include/cdisplaystring.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
   ../../include/chasher.h \
@@ -274,6 +272,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/envirext.h \
+  eventlogfilemgr.h \
   ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/simkerneldefs.h \
@@ -299,9 +298,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cexpression.h \
   ../../include/ccomponent.h \
   ../../include/cgate.h \
-  ../../include/cdefaultlist.h \
-  ../../include/cmsgpar.h \
-  ../../include/cmathfunction.h
+  ../../include/cdefaultlist.h
 $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   eventlogfilemgr.h \
   eventlogwriter.h \
@@ -417,10 +414,15 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/globals.h \
   args.h \
   ../../include/envirext.h \
+  eventlogfilemgr.h \
   ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
+  objectprinter.h \
+  intervals.h \
+  matchablefield.h \
+  matchableobject.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -459,10 +461,15 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/globals.h \
   args.h \
   ../../include/envirext.h \
+  eventlogfilemgr.h \
   ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
+  objectprinter.h \
+  intervals.h \
+  matchablefield.h \
+  matchableobject.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -470,8 +477,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/cpar.h \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
-  runattributes.h \
-  intervals.h
+  runattributes.h
 $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/cconfigkey.h \
@@ -498,10 +504,15 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   ../../include/globals.h \
   args.h \
   ../../include/envirext.h \
+  eventlogfilemgr.h \
   ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
-  ../../include/cclassfactory.h
+  ../../include/cclassfactory.h \
+  objectprinter.h \
+  intervals.h \
+  matchablefield.h \
+  matchableobject.h
 $O/fsutils.obj: fsutils.cc \
   fsutils.h \
   ../../include/onstartup.h \
@@ -550,10 +561,15 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   args.h \
   envirdefs.h \
   ../../include/envirext.h \
+  eventlogfilemgr.h \
   ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
+  objectprinter.h \
+  intervals.h \
+  matchablefield.h \
+  matchableobject.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
@@ -562,8 +578,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/cdefaultlist.h \
   ../../include/cexpression.h \
   fileoutvectormgr.h \
-  runattributes.h \
-  intervals.h
+  runattributes.h
 $O/inifilereader.obj: inifilereader.cc \
   inifilereader.h \
   fsutils.h \
@@ -588,6 +603,7 @@ $O/intervals.obj: intervals.cc \
   args.h \
   envirdefs.h \
   ../../include/envirext.h \
+  eventlogfilemgr.h \
   ../../include/cconfiguration.h \
   ../../include/cownedobject.h \
   ../../include/simkerneldefs.h \
@@ -605,7 +621,10 @@ $O/intervals.obj: intervals.cc \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  objectprinter.h \
+  matchablefield.h \
+  matchableobject.h
 $O/main.obj: main.cc \
   ../../include/cownedobject.h \
   bootenv.h \
@@ -741,10 +760,15 @@ $O/runattributes.obj: runattributes.cc \
   args.h \
   envirdefs.h \
   ../../include/envirext.h \
+  eventlogfilemgr.h \
   ../../include/cconfiguration.h \
   ../../include/onstartup.h \
   ../../include/cregistrationlist.h \
   ../../include/cclassfactory.h \
+  objectprinter.h \
+  intervals.h \
+  matchablefield.h \
+  matchableobject.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h
 $O/scenario.obj: scenario.cc \

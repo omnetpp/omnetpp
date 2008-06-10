@@ -247,7 +247,7 @@ cADByStddev& cADByStddev::operator=(const cADByStddev& res)
    return *this;
 }
 
-double cADByStddev::stddev()
+double cADByStddev::stddev() const
 {
    if (!sctr)
       return 0.0;

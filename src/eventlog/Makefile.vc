@@ -140,9 +140,9 @@ $O/eventlogfacade.obj: eventlogfacade.cc \
   filteredeventlog.h \
   eventlogfacade.h \
   eventlogentry.h \
+  eventlogentries.h \
   messagedependency.h \
   eventlogdefs.h \
-  eventlogentries.h \
   eventlogindex.h
 $O/eventlogindex.obj: eventlogindex.cc \
   eventlogindex.h \
@@ -153,9 +153,9 @@ $O/eventlogtablefacade.obj: eventlogtablefacade.cc \
   event.h \
   eventlogtablefacade.h \
   eventlogentry.h \
+  eventlogentries.h \
   messagedependency.h \
   eventlogdefs.h \
-  eventlogentries.h \
   eventlogfacade.h
 $O/eventlogtool.obj: eventlogtool.cc \
   ../utils/ver.h \
@@ -190,23 +190,23 @@ $O/filteredeventlog.obj: filteredeventlog.cc \
   filteredevent.h \
   ievent.h \
   eventlogentry.h \
-  messagedependency.h \
   eventlogentries.h \
+  messagedependency.h \
   event.h \
   eventlogindex.h
 $O/ievent.obj: ievent.cc \
   ievent.h \
   eventlogentry.h \
+  eventlogentries.h \
   messagedependency.h \
-  eventlogdefs.h \
-  eventlogentries.h
+  eventlogdefs.h
 $O/ieventlog.obj: ieventlog.cc \
   ieventlog.h \
   eventlogdefs.h \
   ievent.h \
   eventlogentry.h \
-  messagedependency.h \
-  eventlogentries.h
+  eventlogentries.h \
+  messagedependency.h
 $O/messagedependency.obj: messagedependency.cc \
   eventlogdefs.h \
   ievent.h \
@@ -221,6 +221,6 @@ $O/sequencechartfacade.obj: sequencechartfacade.cc \
   messagedependency.h \
   sequencechartfacade.h \
   eventlogentry.h \
-  eventlogdefs.h \
   eventlogentries.h \
+  eventlogdefs.h \
   eventlogfacade.h

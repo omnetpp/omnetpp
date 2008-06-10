@@ -73,12 +73,12 @@ class SIM_API cParsimCommunications : public cObject
     /**
      * Returns total number of partitions.
      */
-    virtual int getNumPartitions() = 0;
+    virtual int getNumPartitions() const = 0;
 
     /**
      * Returns id of this partition, an integer in the range 0..getNumPartitions()-1.
      */
-    virtual int getProcId() = 0;
+    virtual int getProcId() const = 0;
 
     /** @name Buffers, send, receive */
     //@{

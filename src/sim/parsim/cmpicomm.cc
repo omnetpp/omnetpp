@@ -86,12 +86,12 @@ void cMPICommunications::shutdown()
     MPI_Finalize();
 }
 
-int cMPICommunications::getNumPartitions()
+int cMPICommunications::getNumPartitions() const
 {
     return numPartitions;
 }
 
-int cMPICommunications::getProcId()
+int cMPICommunications::getProcId() const
 {
     return myRank;
 }

@@ -71,12 +71,12 @@ class SIM_API cMPICommunications : public cParsimCommunications
     /**
      * Returns total number of partitions.
      */
-    virtual int getNumPartitions();
+    virtual int getNumPartitions() const;
 
     /**
      * Returns the MPI rank of this partition.
      */
-    virtual int getProcId();
+    virtual int getProcId() const;
 
     /**
      * Creates an empty buffer of type cMPICommBuffer.

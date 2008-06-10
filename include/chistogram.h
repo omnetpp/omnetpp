@@ -244,7 +244,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase
      * Returns the cell size, or 0 when unknow (i.e. the cells have not
      * been set up yet, and setCellSize() has not been called).
      */
-    virtual double cellSize() {return cellsize;}
+    virtual double cellSize() const {return cellsize;}
     //@}
 
 };

@@ -140,37 +140,37 @@ class SIM_API cMathFunction : public cNoncopyableOwnedObject
      * Returns function pointer as double function with unchecked arg list
      * (no type safety!)
      */
-    MathFunc mathFunc()  {return f;}
+    MathFunc mathFunc() const {return f;}
 
     /**
      * Returns function pointer as double function with no args.
      * Throws exception is actual arg count is different.
      */
-    MathFuncNoArg mathFuncNoArg();
+    MathFuncNoArg mathFuncNoArg() const;
 
     /**
      * Returns function pointer as double function with 1 double arg.
      * Throws exception is actual arg count is different.
      */
-    MathFunc1Arg mathFunc1Arg();
+    MathFunc1Arg mathFunc1Arg() const;
 
     /**
      * Returns function pointer as double function with 2 double args.
      * Throws exception is actual arg count is different.
      */
-    MathFunc2Args mathFunc2Args();
+    MathFunc2Args mathFunc2Args() const;
 
     /**
      * Returns function pointer as double function with 3 double args.
      * Throws exception is actual arg count is different.
      */
-    MathFunc3Args mathFunc3Args();
+    MathFunc3Args mathFunc3Args() const;
 
     /**
      * Returns function pointer as double function with 4 double args.
      * Throws exception is actual arg count is different.
      */
-    MathFunc4Args mathFunc4Args();
+    MathFunc4Args mathFunc4Args() const;
     //@}
 
     /**

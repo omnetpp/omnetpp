@@ -95,35 +95,35 @@ std::string cMathFunction::info() const
     return out.str();
 }
 
-MathFuncNoArg cMathFunction::mathFuncNoArg()
+MathFuncNoArg cMathFunction::mathFuncNoArg() const
 {
     if (argc!=0)
         throw cRuntimeError(this,"mathFuncNoArg(): arg count mismatch (argc=%d)",argc);
     return (MathFuncNoArg)f;
 }
 
-MathFunc1Arg cMathFunction::mathFunc1Arg()
+MathFunc1Arg cMathFunction::mathFunc1Arg() const
 {
     if (argc!=1)
         throw cRuntimeError(this,"mathFunc1Arg(): arg count mismatch (argc=%d)",argc);
     return (MathFunc1Arg)f;
 }
 
-MathFunc2Args cMathFunction::mathFunc2Args()
+MathFunc2Args cMathFunction::mathFunc2Args() const
 {
     if (argc!=2)
         throw cRuntimeError(this,"mathFunc2Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc2Args)f;
 }
 
-MathFunc3Args cMathFunction::mathFunc3Args()
+MathFunc3Args cMathFunction::mathFunc3Args() const
 {
     if (argc!=3)
         throw cRuntimeError(this,"mathFunc3Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc3Args)f;
 }
 
-MathFunc4Args cMathFunction::mathFunc4Args()
+MathFunc4Args cMathFunction::mathFunc4Args() const
 {
     if (argc!=4)
         throw cRuntimeError(this,"mathFunc4Args(): arg count mismatch (argc=%d)",argc);

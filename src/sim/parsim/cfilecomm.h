@@ -73,12 +73,12 @@ class SIM_API cFileCommunications : public cParsimCommunications
     /**
      * Returns total number of partitions.
      */
-    virtual int getNumPartitions();
+    virtual int getNumPartitions() const;
 
     /**
      * Returns the id of this partition.
      */
-    virtual int getProcId();
+    virtual int getProcId() const;
 
     /**
      * Creates an empty buffer of type cFileCommBuffer.

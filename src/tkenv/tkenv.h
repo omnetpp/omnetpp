@@ -144,7 +144,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void connectionDeleted(cGate *srcgate);
       virtual void displayStringChanged(cComponent *component);
 
-      virtual bool isGUI() {return true;}
+      virtual bool isGUI() const {return true;}
       virtual void bubble(cComponent *component, const char *text);
 
       virtual void putsmsg(const char *s);

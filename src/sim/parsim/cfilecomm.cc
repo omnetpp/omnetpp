@@ -72,12 +72,12 @@ void cFileCommunications::shutdown()
 {
 }
 
-int cFileCommunications::getNumPartitions()
+int cFileCommunications::getNumPartitions() const
 {
     return numPartitions;
 }
 
-int cFileCommunications::getProcId()
+int cFileCommunications::getProcId() const
 {
     return myProcId;
 }

@@ -69,7 +69,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void moduleCreated(cModule *newmodule);
      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
      virtual void simulationEvent(cMessage *msg);
-     virtual bool isGUI() {return false;}
+     virtual bool isGUI() const {return false;}
      virtual cEnvir& flush();
      virtual std::string gets(const char *promptstr, const char *defaultreply);
      virtual bool idle();

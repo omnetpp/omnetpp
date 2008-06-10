@@ -357,7 +357,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     void detectAccuracy();
 
     // internal: compute the standard deviation
-    double stddev();
+    double stddev() const;
 
   public:
     /** @name Constructors, destructor, assignment. */
