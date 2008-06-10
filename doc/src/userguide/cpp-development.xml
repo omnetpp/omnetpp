@@ -2,78 +2,152 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
     "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="cpp-dev">
-<title>C++ Development</title>
-<sect1>
-<title>Prerequisites</title>
-<para>TBD: compilers</para>
-</sect1>
+  <title>C++ Development</title>
+  <sect1>
+    <title>Introduction</title>
+    <para>
+      The OMNeT++ IDE contains CDT (C/C++ Development Tooling) to help you develop the C++
+      part of your simulation. We recommend reading the CDT documentation in the IDE help
+      system (Help/Help Content) to get a better understanding, how CDT is working in
+      general. The OMNeT++ IDE adds several extensions to the standard CDT features to
+      make your life easier:
+      <itemizedlist>
+        <listitem>Customized project creation dialog</listitem>
+        <listitem>Extended C++ toolchain for OMNeT++ (including MSG compiler)</listitem>
+        <listitem>Automatic makefile generation</listitem>
+        <listitem>OMNeT++ specific build configuration</listitem>
+        <listitem>
+          Special launch configuration type for launching and debugging OMNeT++
+          Simulations
+        </listitem>
+      </itemizedlist>
+    </para>
+  </sect1>
 
-<sect1>
-<title>Creating a C++ Project</title>
-<para>TBD</para>
-      <picture file="pictures/Intro-NewProjectWizard.png">Creating a C++ project</picture>
-      <picture file="pictures/Intro-NewProjectWizard2.png">Selecting a toolchain</picture>
-      <picture file="pictures/Intro-NewProjectWizard3.png">Selecting configurations</picture>
-</sect1>
+  <sect1>
+    <title>Prerequisites</title>
+    <para>
+      The OMNeT++ IDE (and the OMNeT++ simulation framework itself) requires a
+      pre-installed compiler toolchain to function properly.
+      <itemizedlist>
+        <listitem>
+          On Windows: The OMNeT++ distribution comes with a pre-configured MINGW compiler
+          toolchain. You don't have to install or download anything. The IDE should be
+          able to use the MINGW compiler without any problem.
+        </listitem>
+        <listitem>
+          On Linux: The default GCC toolchain can be used. OMNeT++ 4.0 was tested on GCC
+          4.2.3 although other version should work too. You have to install the gcc
+          toolchain on your distribution before trying to compile a simulation with
+          OMNeT++.
+        </listitem>
+        <listitem>
+          On Mac OS X: Version 10.5 (i386) is supported. You should install XCode tools to
+          get compiler support, before trying to compile a simulation with OMNeT++.
+        </listitem>
+      </itemizedlist>
+    </para>
+  </sect1>
 
-<sect1>
-<title>Configuring the Project</title>
-<para>TBD</para>
-      <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
-      <picture file="pictures/CPP-ConfigureProject2.png">Target definition</picture>
-      <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
-      <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
-      <picture file="pictures/CPP-SourceFolder.png">Setting a source folder</picture>
-      <picture file="pictures/CPP-ExcludeSource.png">Excluding a directory from the build</picture>
-</sect1>
+  <sect1>
+    <title>Creating a C++ Project</title>
+    <para>
+      To create an OMNeT++ project that supports C++ development, select File from the
+      menu and choose New/OMNeT++ Project for C++.
+    </para>
+    <picture file="pictures/Intro-NewProject.png">Creating an OMNeT++ project</picture>
+    <para>
+      This will show you the New OMNeT++ Project Wizard, that lets you create a project
+      supporting NED, MSG and INI file editing as well as supporting C++ development for
+      simple modules.
+    </para>
+    <para>
+      At the first page of the wizard you should specify the project name and ensure that
+      the Support C++ Development checkbox is selected.
+    </para>
+    <picture file="pictures/Intro-NewProjectWizard.png">
+      Setting project name and enabling C++ support
+    </picture>
+    <para>
+      You must select a toolchain which is supported on your platform. Usually you will
+      see only a single toolchain supported on your platform, so you don't need to select
+      anything.
+    </para>
+    <picture file="pictures/Intro-NewProjectWizard2.png">Selecting a toolchain</picture>
+    <para>
+      Finally choose from the preset configurations. By default a debug and a release
+      configuration can be created. Pressing the <guibutton>Finish</guibutton> button will 
+      create the project.
+    </para>
+    <picture file="pictures/Intro-NewProjectWizard3.png">
+      Selecting configurations
+    </picture>
+  </sect1>
 
-<sect1>
-<title>Dependent Projects</title>
-<para>TBD</para>
-      <picture file="pictures/CPP-ProjectReferences.png">Setting project dependencies</picture>
-</sect1>
+  <sect1>
+    <title>Configuring the Project</title>
+    <para>TBD</para>
+    <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
+    <picture file="pictures/CPP-ConfigureProject2.png">Target definition</picture>
+    <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
+    <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
+    <picture file="pictures/CPP-SourceFolder.png">Setting a source folder</picture>
+    <picture file="pictures/CPP-ExcludeSource.png">
+      Excluding a directory from the build
+    </picture>
+  </sect1>
 
-<sect1>
-<title>Editing C++ Code</title>
-<para>TBD</para>
-      <picture file="pictures/CPP-Editor.png">C++ source editor</picture>
-</sect1>
+  <sect1>
+    <title>Dependent Projects</title>
+    <para>TBD</para>
+    <picture file="pictures/CPP-ProjectReferences.png">
+      Setting project dependencies
+    </picture>
+  </sect1>
 
-<sect1>
-<title>Building the Project</title>
-<para>TBD</para>
-      <picture file="pictures/CPP-BuildConfiguration.png">Activating a build configuration</picture>
-      <picture file="pictures/CPP-BuildProject.png">Building a project</picture>
-</sect1>
+  <sect1>
+    <title>Editing C++ Code</title>
+    <para>TBD</para>
+    <picture file="pictures/CPP-Editor.png">C++ source editor</picture>
+  </sect1>
 
-<sect1>
-<title>Running or Debgging the Project</title>
-<para>TBD: refer to Launcher chapter</para>
-      <picture file="pictures/CPP-RunProject.png">Running a project</picture>
-</sect1>
+  <sect1>
+    <title>Building the Project</title>
+    <para>TBD</para>
+    <picture file="pictures/CPP-BuildConfiguration.png">
+      Activating a build configuration
+    </picture>
+    <picture file="pictures/CPP-BuildProject.png">Building a project</picture>
+  </sect1>
 
-<sect1>
-<title>Outline View</title>
-<para>TBD</para>
-      <picture file="pictures/CPP-OutlineView.png">Navigating with outline view</picture>
-</sect1>
+  <sect1>
+    <title>Running or Debugging the Project</title>
+    <para>TBD: refer to Launcher chapter</para>
+    <picture file="pictures/CPP-RunProject.png">Running a project</picture>
+  </sect1>
 
-<sect1>
-<title>Problems View</title>
-<para>TBD</para>
-      <picture file="pictures/CPP-ProblemsView.png">C++ problems</picture>
-</sect1>
+  <sect1>
+    <title>Outline View</title>
+    <para>TBD</para>
+    <picture file="pictures/CPP-OutlineView.png">Navigating with outline view</picture>
+  </sect1>
 
-<sect1>
-<title>Console View</title>
-<para>TBD</para>
-      <picture file="pictures/CPP-ConsoleView.png">Build output in a console</picture>
-</sect1>
+  <sect1>
+    <title>Problems View</title>
+    <para>TBD</para>
+    <picture file="pictures/CPP-ProblemsView.png">C++ problems</picture>
+  </sect1>
 
-<sect1>
-<title>Type Hierarchy View</title>
-<para>TBD</para>
-      <picture file="pictures/CPP-TypeHierarchy.png">C++ Type hierarchy</picture>
-</sect1>
+  <sect1>
+    <title>Console View</title>
+    <para>TBD</para>
+    <picture file="pictures/CPP-ConsoleView.png">Build output in a console</picture>
+  </sect1>
+
+  <sect1>
+    <title>Type Hierarchy View</title>
+    <para>TBD</para>
+    <picture file="pictures/CPP-TypeHierarchy.png">C++ Type hierarchy</picture>
+  </sect1>
 
 </chapter>
