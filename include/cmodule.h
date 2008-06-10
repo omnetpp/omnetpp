@@ -233,7 +233,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
   public:
     // internal: currently used by init
     void setRecordEvents(bool e)  {setFlag(FL_RECORD_EVENTS,e);}
-    bool isRecordEvents()  {return flags&FL_RECORD_EVENTS;}
+    bool isRecordEvents() const  {return flags&FL_RECORD_EVENTS;}
 
   protected:
     // internal: called from callInitialize(). Does one stage for this submodule

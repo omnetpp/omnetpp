@@ -56,12 +56,12 @@ class SIM_API cCommBufferBase : public cCommBuffer
     /**
      * Returns the buffer after packing.
      */
-    char *getBuffer();
+    char *getBuffer() const;
 
     /**
      * Returns the size of the buffer.
      */
-    int getBufferLength();
+    int getBufferLength() const;
 
     /**
      * Extend buffer to the given size is needed. Existing buffer contents
@@ -78,7 +78,7 @@ class SIM_API cCommBufferBase : public cCommBuffer
     /**
      * Returns message length in the buffer.
      */
-    int getMessageSize();
+    int getMessageSize() const;
 
     /**
      * Reset buffer to an empty state.
@@ -90,7 +90,7 @@ class SIM_API cCommBufferBase : public cCommBuffer
      * Returns false if there was underflow (too much data unpacked)
      * or still there's unpacked data in the buffer.
      */
-    virtual bool isBufferEmpty();
+    virtual bool isBufferEmpty() const;
 
     /**
      * Utility function. To be called after unpacking a communication buffer,

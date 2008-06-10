@@ -38,12 +38,12 @@ cCommBufferBase::~cCommBufferBase ()
     delete [] mBuffer;
 }
 
-char *cCommBufferBase::getBuffer()
+char *cCommBufferBase::getBuffer() const
 {
     return mBuffer;
 }
 
-int cCommBufferBase::getBufferLength()
+int cCommBufferBase::getBufferLength() const
 {
     return mBufferSize;
 }
@@ -65,7 +65,7 @@ void cCommBufferBase::setMessageSize(int size)
     mPosition = 0;
 }
 
-int cCommBufferBase::getMessageSize()
+int cCommBufferBase::getMessageSize() const
 {
     return mMsgSize;
 }
@@ -101,7 +101,7 @@ void cCommBufferBase::extendBufferFor(int dataSize)
     }
 }
 
-bool cCommBufferBase::isBufferEmpty()
+bool cCommBufferBase::isBufferEmpty() const
 {
     return mPosition == mMsgSize;
 }

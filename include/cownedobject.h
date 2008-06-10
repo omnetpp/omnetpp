@@ -214,7 +214,7 @@ class SIM_API cOwnedObject : public cNamedObject
      * "Hard owners" will raise an error if some other object tries to take()
      * an object they own. The only soft owner class is cDefaultList.
      */
-    virtual bool isSoftOwner()  {return false;}
+    virtual bool isSoftOwner() const {return false;}
 
     /**
      * The object that will be the owner of new or dropped (see drop()) objects.

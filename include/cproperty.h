@@ -69,7 +69,7 @@ class SIM_API cProperty : public cNamedObject
     virtual void lock() {setFlag(FL_ISLOCKED, true);}
 
     // internal:
-    virtual bool isLocked() {return flags&FL_ISLOCKED;}
+    virtual bool isLocked() const {return flags&FL_ISLOCKED;}
 
     // internal: set the containing cProperties
     virtual void setOwner(cProperties *p) {ownerp = p;}

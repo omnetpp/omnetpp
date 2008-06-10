@@ -88,7 +88,7 @@ class SIM_API cDisplayString
     void assemble() const;
     int gettagindex(const char *tagname) const;
     void cleartags();
-    bool isinbuffer(char *s) {return s>=buffer && s<=bufferend;}
+    bool isinbuffer(char *s) const {return s>=buffer && s<=bufferend;}
     static void strcatescaped(char *d, const char *s);
 
   private:

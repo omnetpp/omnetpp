@@ -62,7 +62,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
   public:
     // internal: currently used by Cmdenv
     void setEvEnabled(bool e)  {setFlag(FL_EVLOGENABLED,e);}
-    bool isEvEnabled()  {return flags&FL_EVLOGENABLED;}
+    bool isEvEnabled() const  {return flags&FL_EVLOGENABLED;}
 
     // internal: invoked from within cEnvir::getRNGMappingFor(component)
     void setRNGMap(short size, int *map) {rngmapsize=size; rngmap=map;}
@@ -85,7 +85,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     // internal: used from Tkenv: find out if this module has a display string.
     // displayString() would create the object immediately which we want to avoid.
-    bool hasDisplayString();
+    bool hasDisplayString() const;
 
   protected:
     /** @name Initialization, finish and parameter change hooks.

@@ -28,9 +28,9 @@ NAMESPACE_BEGIN
 
 /**
  * Internal class, used as a base class for modules and channels. It is not
- * intended for subclassing outside the simulation kernel. 
+ * intended for subclassing outside the simulation kernel.
  *
- * cDefaultList acts as a "soft owner" (see object ownership discussion 
+ * cDefaultList acts as a "soft owner" (see object ownership discussion
  * in cOwnedObject documentation).
  *
  * @ingroup Internals
@@ -89,7 +89,7 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     /**
      * Returns true.
      */
-    virtual bool isSoftOwner()  {return true;}
+    virtual bool isSoftOwner() const {return true;}
 
     /**
      * Produces a one-line description of object contents.
