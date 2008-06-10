@@ -85,7 +85,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     // internal: used from Tkenv: find out if this module has a display string.
     // displayString() would create the object immediately which we want to avoid.
-    bool hasDisplayString() const;
+    bool hasDisplayString();
 
   protected:
     /** @name Initialization, finish and parameter change hooks.

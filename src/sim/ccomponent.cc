@@ -151,7 +151,7 @@ void cComponent::finalizeParameters()
     flags |= FL_PARAMSFINALIZED;
 }
 
-bool cComponent::hasDisplayString() const
+bool cComponent::hasDisplayString()
 {
     if (dispstr)
         return true;

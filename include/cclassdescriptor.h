@@ -140,7 +140,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * Returns the number of base classes up to the root -- as far as
      * it's reflected in the descriptors.
      */
-    int getInheritanceChainLength() const;
+    int getInheritanceChainLength();
 
     /**
      * Returns the value of the given property of the descriptor as a single string.
