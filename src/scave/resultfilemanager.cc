@@ -939,6 +939,15 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         ctx.clearHistogram();
         return;
     }
+    else if (vec[0][0] == 'v' && strcmp(vec[0], "version") == 0)
+    {
+    	int version;
+    	CHECK(numTokens >= 2, "missing version number");
+    	CHECK(parseInt(vec[1], version), "version is not a number");
+    	CHECK(version <= 2, "expects version 2 or lower");
+    	return;
+    }
+    
 
     // if we haven't seen a "run" line yet (as with old vector files), add a default run
     if (ctx.fileRunRef==NULL)
@@ -1094,13 +1103,6 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         CHECK(oldPairRef == params.end() || oldPairRef->second == paramValue,
               "Value of module parameter conflicts with previously loaded value");
         params[paramName] = paramValue;
-    }
-    else if (vec[0][0] == 'v' && strcmp(vec[0], "version") == 0)
-    {
-    	int version;
-    	CHECK(numTokens >= 2, "missing version number");
-    	CHECK(parseInt(vec[1], version), "version is not a number");
-    	CHECK(version <= 2, "expects version 2 or lower");
     }
     else if (opp_isdigit(vec[0][0]) && numTokens>=3)
     {
