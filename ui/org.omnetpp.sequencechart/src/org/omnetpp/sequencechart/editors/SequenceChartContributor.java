@@ -660,7 +660,6 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 						addSubMenuItem(menu, "Module Id", SequenceChart.AxisOrderingMode.MODULE_ID);
 						addSubMenuItem(menu, "Module Name", SequenceChart.AxisOrderingMode.MODULE_NAME);
 						addSubMenuItem(menu, "Minimize Crossings", SequenceChart.AxisOrderingMode.MINIMIZE_CROSSINGS);
-						addSubMenuItem(menu, "Minimize Crossings Hierarchically", SequenceChart.AxisOrderingMode.MINIMIZE_CROSSINGS_HIERARCHICALLY);
 					}
 
 					private void addSubMenuItem(Menu menu, String text, final SequenceChart.AxisOrderingMode axisOrderingMode) {
@@ -671,9 +670,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 								MenuItem menuItem = (MenuItem)e.widget;
 								
 								if (menuItem.getSelection()) {
-								    if (axisOrderingMode == SequenceChart.AxisOrderingMode.MANUAL)
-								        sequenceChart.showManualOrderingDialog();
-									sequenceChart.setAxisOrderingMode(axisOrderingMode);
+								    if (axisOrderingMode == SequenceChart.AxisOrderingMode.MANUAL && 
+								        sequenceChart.showManualOrderingDialog() == Window.CANCEL)
+								        return;
+
+								    sequenceChart.setAxisOrderingMode(axisOrderingMode);
 									update();
 								}
 							}
@@ -925,7 +926,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		return new SequenceChartAction("Increase Spacing", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_INCREASE_SPACING)) {
 			@Override
 			public void run() {
-				sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
+			    sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
 				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() + 5);
 			}
 		};
@@ -935,7 +936,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		return new SequenceChartAction("Decrease Spacing", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_DECREASE_SPACING)) {
 			@Override
 			public void run() {
-				sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
+			    sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
 				sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() - 5);
 			}
 		};
@@ -972,7 +973,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		return new SequenceChartAction("Dense Axes", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_DENSE_AXES)) {
 			@Override
 			public void run() {
-				sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
+			    sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
 				sequenceChart.setAxisSpacing(16);
 			}
 		};
