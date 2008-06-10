@@ -1,3 +1,25 @@
+2008-05-23
+----------
+
+Additions:
+
+   + New 'timetoserial' filter node: it replaces the X coordinates with their serial number.
+
+   + Histogram charts have three options: show counts/probability density function/cumulative 
+     density function.
+
+Fixes:
+
+   + Fix: mouse cursor did not always showed the mouse mode.
+
+   + Preview canvas in LineChart edit dialog was broken.
+
+   + Fix: index file finger print with VS7. (was "%lld" format string problem)
+
+   + Bar chart layout: gap between groups are relative to the group width.
+
+   + Property sheet displays parameters of the selected Apply/Compute operation.
+
 2008-05-13
 ----------
 
