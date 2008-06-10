@@ -5,7 +5,7 @@
     version="1.0">
 
 <!-- The local path to Norm Walsh's DocBook FO stylesheets -->
-<xsl:import href="file:////usr/share/xml/docbook/stylesheet/nwalsh/fo/docbook.xsl"/>
+<xsl:import href="@DOCBOOK_STYLESHEET@"/>
 
 <!-- The local path to your common customization stylesheet 
 <xsl:import href="file:///not set"/> 

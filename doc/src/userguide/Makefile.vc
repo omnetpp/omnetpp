@@ -9,6 +9,7 @@ html:
 
 pdf:   
 	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
-	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook.xsl tmp.xml
+	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
+	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
 	$(FOP) -fo tmp.fo -pdf userguide.pdf
 	rm tmp.fo tmp.xml
