@@ -437,7 +437,7 @@ void EnvirBase::dumpComponentList(const char *category)
         ev << "\n";
 
         std::vector<const char *> vars = config()->getPredefinedVariableNames();
-        for (int i=0; i<vars.size(); i++)
+        for (int i=0; i<(int)vars.size(); i++)
         {
             opp_string id = vars[i];
             opp_strupr(id.buffer());
@@ -494,7 +494,7 @@ void EnvirBase::dumpComponentList(const char *category)
         ev << "Recognized physical units (note: other units can be used as well, only\n";
         ev << "no automatic conversion will be available for them):\n";
         std::vector<const char *> units = UnitConversion::allUnits();
-        for (int i=0; i<units.size(); i++)
+        for (int i=0; i<(int)units.size(); i++)
         {
             const char *u = units[i];
             const char *bu = UnitConversion::baseUnit(u);
@@ -1294,7 +1294,7 @@ void EnvirBase::checkTimeLimits()
          throw cTerminationException(eSIMTIME);
     if (opt_cputimelimit==0) // no limit
          return;
-    if (disable_tracing && simulation.eventNumber()&0xFF!=0) // optimize: in Express mode, don't call gettimeofday() on every event
+    if (disable_tracing && (simulation.eventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
          return;
     timeval now;
     gettimeofday(&now, NULL);

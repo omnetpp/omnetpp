@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <stdlib.h>
 #include "channel.h"
 #include "vectorfilewriter.h"
 #include "stringutil.h"

@@ -14,9 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <stdlib.h>
 #include "ieventlog.h"
 
 USING_NAMESPACE
+
 
 IEventLog::IEventLog()
 {

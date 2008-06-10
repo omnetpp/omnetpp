@@ -18,6 +18,7 @@
 #define _STRINGUTIL_H_
 
 #include <stdarg.h>
+#include <string.h>
 #include <string>
 #include "commondefs.h"
 #include "commonutil.h"

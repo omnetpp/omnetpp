@@ -18,6 +18,7 @@
 #define __STRINGPOOL_H_
 
 #include <set>
+#include <string.h>
 #include "commondefs.h"
 
 NAMESPACE_BEGIN

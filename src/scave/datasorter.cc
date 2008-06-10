@@ -454,7 +454,7 @@ struct IsoGroupingFn : public std::binary_function<ResultItem, ResultItem, bool>
 {
     typedef map<Run*, vector<double> > RunIsoValueMap;
     typedef map<pair<string, string>, int> IsoAttrIndexMap;
-    RunIsoValueMap map;
+    RunIsoValueMap isoMap;
 
     IsoGroupingFn() {}
     IDList init(const IDList &idlist, StringVector moduleNames, StringVector scalarNames, ResultFileManager *manager);
@@ -487,10 +487,10 @@ IDList IsoGroupingFn::init(const IDList &idlist, StringVector moduleNames, Strin
         {
             int index = it->second;
             Run *run = scalar.fileRunRef->runRef;
-            RunIsoValueMap::iterator it2 = map.find(run);
-            if (it2 == map.end())
+            RunIsoValueMap::iterator it2 = isoMap.find(run);
+            if (it2 == isoMap.end())
             {
-                it2 = map.insert(make_pair(run, vector<double>(numOfIsoValues, dblNaN))).first;
+                it2 = isoMap.insert(make_pair(run, vector<double>(numOfIsoValues, dblNaN))).first;
             }
             it2->second[index] = scalar.value;
         }
@@ -506,12 +506,12 @@ bool IsoGroupingFn::operator()(const ResultItem &d1, const ResultItem &d2) const
     if (d1.fileRunRef->runRef == d2.fileRunRef->runRef)
         return true;
 
-    if (map.empty())
+    if (isoMap.empty())
         return true;
 
-    RunIsoValueMap::const_iterator it1 = map.find(d1.fileRunRef->runRef);
-    RunIsoValueMap::const_iterator it2 = map.find(d2.fileRunRef->runRef);
-    if (it1 == map.end() || it2 == map.end())
+    RunIsoValueMap::const_iterator it1 = isoMap.find(d1.fileRunRef->runRef);
+    RunIsoValueMap::const_iterator it2 = isoMap.find(d2.fileRunRef->runRef);
+    if (it1 == isoMap.end() || it2 == isoMap.end())
         return false;
 
     const vector<double> &v1 = it1->second;

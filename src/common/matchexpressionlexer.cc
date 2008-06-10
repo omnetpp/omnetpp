@@ -54,17 +54,11 @@ int MatchExpressionLexer::getNextToken(char **valuep) {
             };
             END:
             int len = ptr - start;
-            if (len == 2 &&
-                (*start == 'o' && strncmp(start,"or",2) == 0 ||
-                 *start == 'O' && strncmp(start,"OR",2) == 0))
+            if (len == 2 && strncasecmp(start, "or", 2) == 0)
                 return OR_;
-            if (len == 3 &&
-                (*start == 'a' && strncmp(start,"and",3) == 0 ||
-                 *start == 'A' && strncmp(start,"AND",3) == 0))
+            if (len == 3 && strncasecmp(start, "and", 3) == 0)
                 return AND_;
-            if (len == 3 &&
-                (*start == 'n' && strncmp(start,"not",3) == 0 ||
-                 *start == 'N' && strncmp(start,"NOT",3) == 0))
+            if (len == 3 && strncasecmp(start, "not", 3) == 0)
                 return NOT_;
             std::string str(start, len);
             *valuep = opp_strdup(str.c_str());

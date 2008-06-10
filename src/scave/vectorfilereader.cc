@@ -15,6 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <string.h>
+#include <stdlib.h>
 #include "opp_ctype.h"
 #include "channel.h"
 #include "scaveutils.h"

@@ -64,7 +64,7 @@ void sRunData::initRun()
 */
         // fill in moduleParams[]
         std::vector<const char *> params = cfg->getParameterKeyValuePairs();
-        for (int i=0; i<params.size(); i+=2)
+        for (int i=0; i<(int)params.size(); i+=2)
             moduleParams[params[i]] = params[i+1];
 
         initialized = true;

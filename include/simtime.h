@@ -178,7 +178,7 @@ class SIM_API SimTime
      * Returns the largest simulation time that can be represented using the
      * present scale exponent.
      */
-    static const SimTime maxTime() {return SimTime().setRaw((((int64)1) << 63) - 1);}
+    static const SimTime maxTime() {return SimTime().setRaw(INT64_MAX);}
 
     /**
      * Returns the time resolution as the number of units per second,

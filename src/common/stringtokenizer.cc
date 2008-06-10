@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include "stringtokenizer.h"
 
 USING_NAMESPACE

@@ -82,6 +82,7 @@ using OPP::Expression;
 static Expression::Elem *e;
 static Expression::Resolver *resolver;
 
+/*
 static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
 {
     char *d = new char[strlen(s1)+strlen(s2)+strlen(s3?s3:"")+4];
@@ -92,6 +93,7 @@ static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
     delete [] s1; delete [] s2; delete [] s3;
     return d;
 }
+*/
 
 static void addFunction(const char *funcname, int numargs)
 {

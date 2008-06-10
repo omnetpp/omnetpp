@@ -20,6 +20,7 @@
 #else
 #include <unistd.h>
 #endif
+#include <string.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <string>
@@ -199,12 +200,14 @@ std::string concatDirAndFile(const char *basedir, const char *pathname)
 #endif
 }
 
+/*
 static std::string removeTrailingSlash(const char *pathname)
 {
     char lastChar = *(pathname+strlen(pathname)-1);
     return (lastChar=='/' || lastChar=='\\') ? std::string(pathname, strlen(pathname)-1) : pathname;
 
 }
+*/
 
 bool fileExists(const char *pathname)
 {

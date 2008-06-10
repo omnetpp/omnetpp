@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <string.h>
 #include "channel.h"
 #include "nodetype.h"
 #include "commonnodes.h"

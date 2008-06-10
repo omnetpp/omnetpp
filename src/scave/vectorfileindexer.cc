@@ -107,8 +107,8 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
 
             if (numTokens == 0 || tokens[0][0] == '#')
                 continue;
-            else if (tokens[0][0] == 'r' && strcmp(tokens[0], "run") == 0 ||
-                     tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0)
+            else if ((tokens[0][0] == 'r' && strcmp(tokens[0], "run") == 0) ||
+                     (tokens[0][0] == 'p' && strcmp(tokens[0], "param") == 0))
             {
                 index.run.parseLine(tokens, numTokens, vectorFileName, lineNo);
             }

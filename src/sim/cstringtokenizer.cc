@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <errno.h>
+#include <limits.h>  //LONG_MAX
 #include "cstringtokenizer.h"
 #include "cexception.h"
 

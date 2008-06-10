@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <stdarg.h>
+#include <limits.h>
 #include <errno.h>
 #include <math.h>   //HUGE_VAL
 #include "commonutil.h"

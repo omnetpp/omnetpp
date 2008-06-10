@@ -20,6 +20,7 @@
 #include <string>
 #include <iostream>
 #include <math.h>
+#include <limits.h>
 #include "commondefs.h"
 #include "exception.h"
 #include "inttypes.h"
@@ -28,10 +29,6 @@ NAMESPACE_BEGIN
 
 // maximum number of digits in an int64 number, i.e. number of digits in INT64_MAX.
 #define INT64_MAX_DIGITS 19
-
-// maximum signed value on 64 bits
-//FIXME write unit test for BigDecimal, and also for this constant!
-#define INT64_MAX   ((((int64)1)<<63)-1)
 
 
 /**

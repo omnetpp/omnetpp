@@ -16,6 +16,7 @@
 
 #include <sstream>
 #include <assert.h>
+#include <string.h>
 #include "opp_ctype.h"
 #include "platmisc.h"
 #include "bigdecimal.h"
@@ -176,7 +177,7 @@ const BigDecimal& BigDecimal::operator=(double d)
     }
 
     // normalize
-    while (intVal & 1 == 0)
+    while ((intVal & 1) == 0)
     {
         intVal >>= 1;
         exponent++;
@@ -247,7 +248,7 @@ bool BigDecimal::operator<(const BigDecimal &x) const
     if (sgn(intVal) > sgn(x.intVal))
         return false;
 
-    assert(intVal < 0 && x.intVal < 0 || intVal > 0 && x.intVal > 0);
+    assert((intVal < 0 && x.intVal < 0) || (intVal > 0 && x.intVal > 0));
     bool negatives = intVal < 0;
 
     // compare absolute values by comparing most significant digits first

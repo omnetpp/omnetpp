@@ -17,6 +17,7 @@
 
 #include <assert.h>
 #include <sstream>
+#include <string.h>
 #include "exception.h"
 #include "linetokenizer.h"
 

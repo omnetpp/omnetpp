@@ -101,7 +101,7 @@ std::string unquoteString(const char *str)
         const char *p = str+1;
         for (; *p; ++p)
         {
-            if (*p == '\\' && *(p+1) == '\\' || *(p+1) == '"')
+            if (*p == '\\' && (*(p+1) == '\\' || *(p+1) == '"'))
                 result.push_back(*(++p));
             else if (*p == '"' && *(p+1) == '\0')
                 break;

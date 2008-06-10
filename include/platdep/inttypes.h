@@ -16,6 +16,8 @@
 #ifndef __INTTYPES_H
 #define __INTTYPES_H
 
+//FIXME consider using <stdint.h> [not available in VC++ though]
+
 #ifdef _MSC_VER
     typedef __int8              int8;
     typedef __int16             int16;
@@ -37,6 +39,9 @@
     typedef unsigned int        uint32;
     typedef unsigned long long  uint64;
 #endif
+
+#define INT64_MAX   (int64)((((uint64)1)<<63)-1)
+
 
 // Note: %I64d is only used with VC++ 7.1 and MinGW gcc 3.4.x; once we
 // drop support for these compilers, this macro can be dropped altogether

@@ -79,18 +79,18 @@ void cNEDFunction::checkArgs(cDynamicExpression::Value argv[], int argc)
         throw cRuntimeError("%s: called with wrong number of arguments", name());
 
     for (int i=0; i<argc; i++) {
-        char decltype = argtypes[i];
-        if (decltype=='D' || decltype=='L') {
+        char declType = argtypes[i];
+        if (declType=='D' || declType=='L') {
             if (argv[i].type != 'D')
                 throw cRuntimeError(eEBADARGS, name());
             if (!opp_isempty(argv[i].dblunit))
                 throw cRuntimeError(eDIMLESS, name()); //XXX better msg! only arg i is dimless
         }
-        else if (decltype=='Q') {
+        else if (declType=='Q') {
             if (argv[i].type != 'D')
                 throw cRuntimeError(eEBADARGS, name());
         }
-        else if (decltype!='*' && argv[i].type!=decltype) {
+        else if (declType!='*' && argv[i].type!=declType) {
             throw cRuntimeError(eEBADARGS, name());
         }
     }

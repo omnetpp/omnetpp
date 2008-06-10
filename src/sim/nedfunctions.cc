@@ -187,7 +187,7 @@ DEF(replace, "SSS/L->S", "string", "", {
 
     unsigned int searchSize = search.size();
     unsigned int replacementSize = replacement.size();
-    while ((index = str.find(search, index)) != std::string::npos) {
+    while ((index = str.find(search, index)) != (int)std::string::npos) {
         str.replace(index, searchSize, replacement);
         index += replacementSize - searchSize + 1;
     }
@@ -206,7 +206,7 @@ DEF(replaceFirst, "SSS/L->S", "string", "", {
     }
 
     unsigned int searchSize = search.size();
-    if ((index = str.find(search, index)) != std::string::npos)
+    if ((index = str.find(search, index)) != (int)std::string::npos)
         str.replace(index, searchSize, replacement);
     return str;
 })

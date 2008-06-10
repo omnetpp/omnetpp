@@ -399,11 +399,12 @@ void cDisplayString::parse()
     // check tag names are OK (matching [a-zA-Z0-9:]+)
     for (int i=0; i<numtags; i++)
     {
-        if (!tags[i].name[0])
+        if (!tags[i].name[0]) {
             if (tags[i].numargs==0)
                 ; // empty tag (occurs when there're redundant semicolons, or the display string is empty) -- XXX remove it
             else
                 throw cRuntimeError("Error parsing display string: missing tag name in \"%s\"", dispstr);
+        }
         for (const char *s=tags[i].name; *s; s++)
             if (!opp_isalnum(*s) && *s!=':')
                 throw cRuntimeError("Error parsing display string: tag name \"%s\" contains invalid character in  \"%s\"", tags[i].name, dispstr);

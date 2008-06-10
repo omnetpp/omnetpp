@@ -427,7 +427,7 @@ cGate *cModule::gate(int id)
         ASSERT(desc->namep); // not deleted
         unsigned int index = id & (GATEID_LMASK>>1);
         //FIXME assert isvector, type, etc
-        if (index>=desc->gateSize())
+        if (index>=(unsigned int)desc->gateSize())
             return NULL;  //FIXME error/assert instead
         bool isOutput = id & (1<<(GATEID_LBITS-1));  // L's MSB
         return isOutput ? desc->outputgatev[index] : desc->inputgatev[index];

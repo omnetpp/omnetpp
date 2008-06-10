@@ -20,7 +20,9 @@
 
 USING_NAMESPACE
 
-static void nothing()
+namespace {
+
+void nothing()
 {
     // main() is part of the envir library, so here there's nothing to
     // do except creating a reference to the envir library
@@ -28,4 +30,4 @@ static void nothing()
     (void)dummy;
 }
 
-
+}

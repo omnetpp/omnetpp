@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include "fnamelisttokenizer.h"
 
 USING_NAMESPACE

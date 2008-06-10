@@ -17,6 +17,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
 #include "opp_ctype.h"
 #include "platmisc.h"
 #include "patternmatcher.h"

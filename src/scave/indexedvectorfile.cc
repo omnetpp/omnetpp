@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 
+#include <stdlib.h>
 #include "platmisc.h"
 #include "exception.h"
 #include "linetokenizer.h"
@@ -282,7 +283,7 @@ bool IndexedVectorFileWriterNode::isReady() const
     for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
     {
         VectorInputPort *port=*it;
-        if (port->channel()->length()>0 || port->channel()->closing() && port->hasBufferedData())
+        if (port->channel()->length()>0 || (port->channel()->closing() && port->hasBufferedData()))
             return true;
     }
     return false;

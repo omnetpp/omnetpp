@@ -22,6 +22,7 @@
 #include <string.h>  // for strlen, etc.
 #include <stdarg.h>  // for va_list
 #include <stdio.h>   // for sprintf
+#include <stdlib.h>  // for gcvt
 #include <typeinfo>  // for type_info
 #include "platdep/platmisc.h"
 #include "simkerneldefs.h"

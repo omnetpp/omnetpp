@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 
+#include <string.h>
 #include "platmisc.h"
 #include "fileglobber.h"
 

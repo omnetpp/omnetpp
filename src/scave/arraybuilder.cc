@@ -15,6 +15,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <memory.h>
+#include <string.h>
 #include "channel.h"
 #include "arraybuilder.h"
 

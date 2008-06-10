@@ -16,6 +16,7 @@
 *--------------------------------------------------------------*/
 
 #include <math.h>
+#include <stdlib.h>
 #include "channel.h"
 #include "filternodes.h"
 #include "stringutil.h"

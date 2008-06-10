@@ -213,7 +213,7 @@ bool Event::isSelfMessage(BeginSendEntry *beginSendEntry)
     Assert(beginSendEntry && this == beginSendEntry->getEvent());
     int index = beginSendEntry->getEntryIndex();
 
-    if (index + 1 < eventLogEntries.size())
+    if (index + 1 < (int)eventLogEntries.size())
         return dynamic_cast<EndSendEntry *>(eventLogEntries[index + 1]);
     else
         return false;
@@ -227,7 +227,7 @@ bool Event::isSelfMessageProcessingEvent()
 
 EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
 {
-    for (int i = beginSendEntry->getEntryIndex(); i < eventLogEntries.size(); i++)
+    for (int i = beginSendEntry->getEntryIndex(); i < (int)eventLogEntries.size(); i++)
     {
         EventLogEntry *eventLogEntry = eventLogEntries[i];
 

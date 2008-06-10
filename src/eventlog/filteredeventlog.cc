@@ -495,12 +495,12 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
             event = eventLog->getEventForEventNumber(firstEventNumber, LAST_OR_NEXT);
     }
     else {
-        if (lastMatchingEvent && lastMatchingEvent->getEventNumber() < event->getEventNumber())
+        if (lastMatchingEvent && lastMatchingEvent->getEventNumber() < event->getEventNumber()) {
             if (stopEventNumber != -1 && lastMatchingEvent->getEventNumber() < stopEventNumber)
                 return NULL;
             else
                 return lastMatchingEvent;
-
+        }
         if (lastEventNumber != -1 && lastEventNumber < event->getEventNumber())
             event = eventLog->getEventForEventNumber(lastEventNumber, FIRST_OR_PREVIOUS);
     }
