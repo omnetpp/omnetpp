@@ -164,42 +164,45 @@ cClassDescriptor::~cClassDescriptor()
 {
 }
 
-cClassDescriptor *cClassDescriptor::getBaseClassDescriptor()
+cClassDescriptor *cClassDescriptor::getBaseClassDescriptor() const
 {
     if (!baseclassdesc && !baseclassname.empty())
     {
-        baseclassdesc = getDescriptorFor(baseclassname.c_str());
+        cClassDescriptor *this_ = const_cast<cClassDescriptor*>(this);
+        this_->baseclassdesc = getDescriptorFor(baseclassname.c_str());
         if (baseclassdesc)
-            inheritancechainlength = 1 + baseclassdesc->getInheritanceChainLength();
+            this_->inheritancechainlength = 1 + baseclassdesc->getInheritanceChainLength();
     }
     return baseclassdesc;
 }
 
-bool cClassDescriptor::extendsCObject()
+bool cClassDescriptor::extendsCObject() const
 {
     if (extendscobject == -1) {
-        extendscobject = false;
-        cClassDescriptor *current = this;
+        cClassDescriptor *this_ = const_cast<cClassDescriptor*>(this);
+        this_->extendscobject = false;
+        const cClassDescriptor *current = this;
 
         while (current) {
             if (!strcmp("cObject", current->name())) {
-                extendscobject = true;
+                this_->extendscobject = true;
                 break;
             }
-            else
+            else {
                 current = current->getBaseClassDescriptor();
+            }
         }
     }
     return extendscobject;
 }
 
-int cClassDescriptor::getInheritanceChainLength()
+int cClassDescriptor::getInheritanceChainLength() const
 {
     getBaseClassDescriptor(); // force resolution of inheritance
     return inheritancechainlength;
 }
 
-const char *cClassDescriptor::getFieldDeclaredOn(void *object, int field)
+const char *cClassDescriptor::getFieldDeclaredOn(void *object, int field) const
 {
     cClassDescriptor *base = getBaseClassDescriptor();
     if (base && field < base->getFieldCount(object))
