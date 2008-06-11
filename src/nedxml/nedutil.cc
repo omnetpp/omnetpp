@@ -43,7 +43,7 @@ std::string DisplayStringUtil::upgradeBackgroundDisplayString(const char *s)
     renameTag(ds, "p",  "bgp");
     renameTag(ds, "b",  "bgb");
     renameTag(ds, "tt", "bgtt");
-    if (ds.existsTag("o"))
+    if (ds.containsTag("o"))
     {
         ds.setTagArg("bgb", 2, ds.getTagArg("o",0));
         ds.setTagArg("bgb", 3, ds.getTagArg("o",1));
@@ -57,7 +57,7 @@ std::string DisplayStringUtil::upgradeSubmoduleDisplayString(const char *s)
 {
     DisplayString ds;
     parseDisplayString(s, ds);
-    if (ds.existsTag("o"))
+    if (ds.containsTag("o"))
     {
         ds.setTagArg("b", 3, ds.getTagArg("o",0));
         ds.setTagArg("b", 4, ds.getTagArg("o",1));

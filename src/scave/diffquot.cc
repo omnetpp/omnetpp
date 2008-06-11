@@ -56,7 +56,7 @@ void DifferenceQuotientNode::process()
 
 //-----
 
-const char *DifferenceQuotientNodeType::description() const
+const char *DifferenceQuotientNodeType::getDescription() const
 {
     return "Calculates the difference quotient of every value and the subsequent one:\n"
            "y[k] = (y[k+1]-y[k]) / (x[k+1]-x[k])";

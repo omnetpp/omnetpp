@@ -106,7 +106,7 @@ std::vector<std::string> cConfiguration::parseFilenames(const char *s, const cha
 
 //---
 
-#define TRY(CODE)   try { CODE; } catch (std::exception& e) {throw cRuntimeError("Error getting entry %s= from the configuration: %s", entry->name(), e.what());}
+#define TRY(CODE)   try { CODE; } catch (std::exception& e) {throw cRuntimeError("Error getting entry %s= from the configuration: %s", entry->getName(), e.what());}
 
 inline const char *fallback(const char *s, const char *defaultValue, const char *fallbackValue)
 {
@@ -118,57 +118,57 @@ static void assertType(cConfigKey *entry, bool isPerObject, cConfigKey::Type req
     if (entry->isPerObject() != isPerObject)
     {
         if (entry->isPerObject())
-            throw cRuntimeError("Entry %s= is read from the configuration in the wrong way: it is per-object configuration", entry->name());
+            throw cRuntimeError("Entry %s= is read from the configuration in the wrong way: it is per-object configuration", entry->getName());
         else
-            throw cRuntimeError("Entry %s= is read from the configuration in the wrong way: it is global (not per-object) configuration", entry->name());
+            throw cRuntimeError("Entry %s= is read from the configuration in the wrong way: it is global (not per-object) configuration", entry->getName());
     }
-    if (entry->type() != requiredType)
+    if (entry->getType() != requiredType)
         throw cRuntimeError("Entry %s= is read from the configuration with the wrong type (type=%s, actual=%s)",
-                            entry->name(), cConfigKey::typeName(requiredType), cConfigKey::typeName(entry->type()));
+                            entry->getName(), cConfigKey::getTypeName(requiredType), cConfigKey::getTypeName(entry->getType()));
 }
 
 const char *cConfiguration::getAsCustom(cConfigKey *entry, const char *fallbackValue)
 {
     assertType(entry, false, cConfigKey::CFG_CUSTOM);
-    TRY(return fallback(getConfigValue(entry->name()), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return fallback(getConfigValue(entry->getName()), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 bool cConfiguration::getAsBool(cConfigKey *entry, bool fallbackValue)
 {
     assertType(entry, false, cConfigKey::CFG_BOOL);
-    TRY(return parseBool(getConfigValue(entry->name()), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return parseBool(getConfigValue(entry->getName()), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 long cConfiguration::getAsInt(cConfigKey *entry, long fallbackValue)
 {
     assertType(entry, false, cConfigKey::CFG_INT);
-    TRY(return parseLong(getConfigValue(entry->name()), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return parseLong(getConfigValue(entry->getName()), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 double cConfiguration::getAsDouble(cConfigKey *entry, double fallbackValue)
 {
     assertType(entry, false, cConfigKey::CFG_DOUBLE);
-    TRY(return parseDouble(getConfigValue(entry->name()), entry->unit(), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return parseDouble(getConfigValue(entry->getName()), entry->getUnit(), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 std::string cConfiguration::getAsString(cConfigKey *entry, const char *fallbackValue)
 {
     assertType(entry, false, cConfigKey::CFG_STRING);
-    TRY(return parseString(getConfigValue(entry->name()), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return parseString(getConfigValue(entry->getName()), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 std::string cConfiguration::getAsFilename(cConfigKey *entry)
 {
     assertType(entry, false, cConfigKey::CFG_FILENAME);
-    const KeyValue& keyvalue = getConfigEntry(entry->name());
-    TRY(return parseFilename(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->defaultValue())));
+    const KeyValue& keyvalue = getConfigEntry(entry->getName());
+    TRY(return parseFilename(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->getDefaultValue())));
 }
 
 std::vector<std::string> cConfiguration::getAsFilenames(cConfigKey *entry)
 {
     assertType(entry, false, cConfigKey::CFG_FILENAMES);
-    const KeyValue& keyvalue = getConfigEntry(entry->name());
-    TRY(return parseFilenames(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->defaultValue())));
+    const KeyValue& keyvalue = getConfigEntry(entry->getName());
+    TRY(return parseFilenames(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->getDefaultValue())));
 }
 
 //----
@@ -176,44 +176,44 @@ std::vector<std::string> cConfiguration::getAsFilenames(cConfigKey *entry)
 const char *cConfiguration::getAsCustom(const char *objectFullPath, cConfigKey *entry, const char *fallbackValue)
 {
     assertType(entry, true, cConfigKey::CFG_CUSTOM);
-    TRY(return fallback(getPerObjectConfigValue(objectFullPath, entry->name()), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return fallback(getPerObjectConfigValue(objectFullPath, entry->getName()), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 bool cConfiguration::getAsBool(const char *objectFullPath, cConfigKey *entry, bool fallbackValue)
 {
     assertType(entry, true, cConfigKey::CFG_BOOL);
-    TRY(return parseBool(getPerObjectConfigValue(objectFullPath, entry->name()), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return parseBool(getPerObjectConfigValue(objectFullPath, entry->getName()), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 long cConfiguration::getAsInt(const char *objectFullPath, cConfigKey *entry, long fallbackValue)
 {
     assertType(entry, true, cConfigKey::CFG_INT);
-    TRY(return parseLong(getPerObjectConfigValue(objectFullPath, entry->name()), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return parseLong(getPerObjectConfigValue(objectFullPath, entry->getName()), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 double cConfiguration::getAsDouble(const char *objectFullPath, cConfigKey *entry, double fallbackValue)
 {
     assertType(entry, true, cConfigKey::CFG_DOUBLE);
-    TRY(return parseDouble(getPerObjectConfigValue(objectFullPath, entry->name()), entry->unit(), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return parseDouble(getPerObjectConfigValue(objectFullPath, entry->getName()), entry->getUnit(), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 std::string cConfiguration::getAsString(const char *objectFullPath, cConfigKey *entry, const char *fallbackValue)
 {
     assertType(entry, true, cConfigKey::CFG_STRING);
-    TRY(return parseString(getPerObjectConfigValue(objectFullPath, entry->name()), substituteVariables(entry->defaultValue()), fallbackValue));
+    TRY(return parseString(getPerObjectConfigValue(objectFullPath, entry->getName()), substituteVariables(entry->getDefaultValue()), fallbackValue));
 }
 
 std::string cConfiguration::getAsFilename(const char *objectFullPath, cConfigKey *entry)
 {
     assertType(entry, true, cConfigKey::CFG_FILENAME);
-    const KeyValue& keyvalue = getConfigEntry(entry->name());
-    TRY(return parseFilename(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->defaultValue())));
+    const KeyValue& keyvalue = getConfigEntry(entry->getName());
+    TRY(return parseFilename(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->getDefaultValue())));
 }
 
 std::vector<std::string> cConfiguration::getAsFilenames(const char *objectFullPath, cConfigKey *entry)
 {
     assertType(entry, true, cConfigKey::CFG_FILENAMES);
-    const KeyValue& keyvalue = getConfigEntry(entry->name());
-    TRY(return parseFilenames(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->defaultValue())));
+    const KeyValue& keyvalue = getConfigEntry(entry->getName());
+    TRY(return parseFilenames(keyvalue.getValue(), keyvalue.getBaseDirectory(), substituteVariables(entry->getDefaultValue())));
 }
 

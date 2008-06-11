@@ -59,7 +59,7 @@ using std::ostream;
  *         so H is effectively 11 bits, allowing ~2046 vector gates max.
  *   note2: 19 bits allow a maximum vector size of ~500,000
  *
- * Mostly affected methods are cGate::id() and cModule::gate(int id).
+ * Mostly affected methods are cGate::getId() and cModule::gate(int id).
  */
 
 
@@ -112,12 +112,12 @@ void cGate::forEachChild(cVisitor *v)
         v->visit(channelp);
 }
 
-const char *cGate::baseName() const
+const char *cGate::getBaseName() const
 {
     return desc->namep->name.c_str();
 }
 
-const char *cGate::name() const
+const char *cGate::getName() const
 {
     if (desc->namep->type==INOUT)
         return desc->isInput(this) ? desc->namep->namei.c_str() : desc->namep->nameo.c_str();
@@ -125,21 +125,21 @@ const char *cGate::name() const
         return desc->namep->name.c_str();
 }
 
-const char *cGate::fullName() const
+const char *cGate::getFullName() const
 {
-    // if not in a vector, normal name() will do
+    // if not in a vector, normal getName() will do
     if (!isVector())
-        return name();
+        return getName();
 
     // otherwise, produce fullname in a temp buffer, and return its stringpooled copy
     // note: this implementation assumes that this method will be called infrequently
     // (ie. we reproduce the string every time).
-    if (opp_strlen(name()) > 100)
-        throw cRuntimeError(this, "fullName(): gate name too long, should be under 100 characters");
+    if (opp_strlen(getName()) > 100)
+        throw cRuntimeError(this, "getFullName(): gate name too long, should be under 100 characters");
 
     static char tmp[128];
-    strcpy(tmp, name());
-    opp_appendindex(tmp, index());
+    strcpy(tmp, getName());
+    opp_appendindex(tmp, getIndex());
     return gateFullnamePool.get(tmp); // non-refcounted stringpool
 }
 
@@ -150,9 +150,9 @@ std::string cGate::info() const
     cGate const *conng;
     cChannel const *chan;
 
-    if (type()==OUTPUT)
+    if (getType()==OUTPUT)
         {arrow = "--> "; g = togatep; conng = this; chan = channelp; }
-    else if (type()==INPUT)
+    else if (getType()==INPUT)
         {arrow = "<-- "; g = fromgatep; conng = fromgatep; chan = fromgatep ? fromgatep->channelp : NULL;}
     else
         ASSERT(0);  // a cGate is never INOUT
@@ -164,27 +164,27 @@ std::string cGate::info() const
     std::stringstream out;
     out << arrow;
 
-    out << (g->ownerModule()==ownerModule()->parentModule() ? "<parent>" : g->ownerModule()->fullName());
-    out << "." << g->fullName();
+    out << (g->getOwnerModule()==getOwnerModule()->getParentModule() ? "<parent>" : g->getOwnerModule()->getFullName());
+    out << "." << g->getFullName();
 
     if (chan)
-        out << ", " << chan->componentType()->fullName() << " " << chan->info();
+        out << ", " << chan->getComponentType()->getFullName() << " " << chan->info();
 
     return out.str();
 }
 
-cObject *cGate::owner() const
+cObject *cGate::getOwner() const
 {
     // note: this function cannot go inline because of circular dependencies
     return desc->ownerp;
 }
 
-cModule *cGate::ownerModule() const
+cModule *cGate::getOwnerModule() const
 {
     return desc->ownerp;
 }
 
-int cGate::id() const
+int cGate::getId() const
 {
     int descIndex = desc - desc->ownerp->descv;
     int id;
@@ -196,11 +196,11 @@ int cGate::id() const
     return id;
 }
 
-cProperties *cGate::properties() const
+cProperties *cGate::getProperties() const
 {
-    cComponent *component = check_and_cast<cComponent *>(owner());
-    cComponentType *componentType = component->componentType();
-    cProperties *props = componentType->gateProperties(baseName());
+    cComponent *component = check_and_cast<cComponent *>(getOwner());
+    cComponentType *componentType = component->getComponentType();
+    cProperties *props = componentType->getGateProperties(getBaseName());
     return props;
 }
 
@@ -252,14 +252,14 @@ void cGate::setChannel(cChannel *ch)
     }
 }
 
-cGate *cGate::sourceGate() const
+cGate *cGate::getSourceGate() const
 {
     const cGate *g;
     for (g=this; g->fromgatep!=NULL; g=g->fromgatep);
     return const_cast<cGate *>(g);
 }
 
-cGate *cGate::destinationGate() const
+cGate *cGate::getDestinationGate() const
 {
     const cGate *g;
     for (g=this; g->togatep!=NULL; g=g->togatep);
@@ -270,7 +270,7 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
 {
     if (togatep==NULL)
     {
-        ownerModule()->arrived(msg, id(), t);
+        getOwnerModule()->arrived(msg, getId(), t);
         return true;
     }
     else
@@ -290,9 +290,9 @@ bool cGate::isBusy() const
     return ch ? ch->isBusy() : false;
 }
 
-simtime_t cGate::transmissionFinishes() const
+simtime_t cGate::getTransmissionFinishTime() const
 {
-    return channelp ? channelp->transmissionFinishes() : simulation.simTime();
+    return channelp ? channelp->getTransmissionFinishTime() : simulation.simTime();
 }
 
 bool cGate::pathContains(cModule *mod, int gate)
@@ -300,17 +300,17 @@ bool cGate::pathContains(cModule *mod, int gate)
     cGate *g;
 
     for (g=this; g!=NULL; g=g->fromgatep)
-        if (g->ownerModule()==mod && (gate==-1 || g->id()==gate))
+        if (g->getOwnerModule()==mod && (gate==-1 || g->getId()==gate))
             return true;
     for (g=togatep; g!=NULL; g=g->togatep)
-        if (g->ownerModule()==mod && (gate==-1 || g->id()==gate))
+        if (g->getOwnerModule()==mod && (gate==-1 || g->getId()==gate))
             return true;
     return false;
 }
 
 bool cGate::isConnectedOutside() const
 {
-    if (type()==INPUT)
+    if (getType()==INPUT)
         return fromgatep!=NULL;
     else
         return togatep!=NULL;
@@ -318,7 +318,7 @@ bool cGate::isConnectedOutside() const
 
 bool cGate::isConnectedInside() const
 {
-    if (type()==INPUT)
+    if (getType()==INPUT)
         return togatep!=NULL;
     else
         return fromgatep!=NULL;
@@ -328,7 +328,7 @@ bool cGate::isConnected() const
 {
     // for compound modules, both inside and outside must be non-NULL,
     // for simple modules, only check outside.
-    if (!ownerModule()->isSimple())
+    if (!getOwnerModule()->isSimple())
         return fromgatep!=NULL && togatep!=NULL;
     else
         return isConnectedOutside();
@@ -336,22 +336,22 @@ bool cGate::isConnected() const
 
 bool cGate::isPathOK() const
 {
-    return sourceGate()->ownerModule()->isSimple() &&
-           destinationGate()->ownerModule()->isSimple();
+    return getSourceGate()->getOwnerModule()->isSimple() &&
+           getDestinationGate()->getOwnerModule()->isSimple();
 }
 
-cDisplayString& cGate::displayString()
+cDisplayString& cGate::getDisplayString()
 {
-    if (!channel()) {
-        cChannel *channel = cChannelType::createIdealChannel("channel", ownerModule());
+    if (!getChannel()) {
+        cChannel *channel = cChannelType::createIdealChannel("channel", getOwnerModule());
         channel->finalizeParameters();
         setChannel(channel);
     }
-    return channel()->displayString();
+    return getChannel()->getDisplayString();
 }
 
 void cGate::setDisplayString(const char *dispstr)
 {
-    displayString().set(dispstr);
+    getDisplayString().set(dispstr);
 }
 

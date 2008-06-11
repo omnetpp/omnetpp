@@ -123,7 +123,7 @@ cXMLElement *cStringParImpl::xmlValue(cComponent *) const
     throw cRuntimeError(this, eBADCAST, "string", "XML");
 }
 
-cExpression *cStringParImpl::expression() const
+cExpression *cStringParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
@@ -142,7 +142,7 @@ void cStringParImpl::deleteOld()
     }
 }
 
-cPar::Type cStringParImpl::type() const
+cPar::Type cStringParImpl::getType() const
 {
     return cPar::STRING;
 }

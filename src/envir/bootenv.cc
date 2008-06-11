@@ -63,7 +63,7 @@ static cOmnetAppRegistration *chooseBestOmnetApp()
     cOmnetAppRegistration *best_appreg = NULL;
 
     // choose the one with highest score.
-    cRegistrationList *a = omnetapps.instance();
+    cRegistrationList *a = omnetapps.getInstance();
     for (int i=0; i<a->size(); i++)
     {
         cOmnetAppRegistration *appreg = static_cast<cOmnetAppRegistration *>(a->get(i));
@@ -189,9 +189,9 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
         // validate the configuration, but make sure we don't report cmdenv-* keys
         // as errors if Cmdenv is absent; same for Tkenv.
         std::string ignorablekeys;
-        if (omnetapps.instance()->lookup("Cmdenv")==NULL)
+        if (omnetapps.getInstance()->lookup("Cmdenv")==NULL)
             ignorablekeys += " cmdenv-*";
-        if (omnetapps.instance()->lookup("Tkenv")==NULL)
+        if (omnetapps.getInstance()->lookup("Tkenv")==NULL)
             ignorablekeys += " tkenv-*";
         configobject->validate(ignorablekeys.c_str());
 
@@ -209,15 +209,15 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
         if (!appname.empty())
         {
             // look up specified user interface
-            appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->lookup(appname.c_str()));
+            appreg = static_cast<cOmnetAppRegistration *>(omnetapps.getInstance()->lookup(appname.c_str()));
             if (!appreg)
             {
                 ::printf("\n"
                          "User interface '%s' not found (not linked in or loaded dynamically).\n"
                          "Available ones are:\n", appname.c_str());
-                cRegistrationList *a = omnetapps.instance();
+                cRegistrationList *a = omnetapps.getInstance();
                 for (int i=0; i<a->size(); i++)
-                    ::printf("  %s : %s\n", a->get(i)->name(), a->get(i)->info().c_str());
+                    ::printf("  %s : %s\n", a->get(i)->getName(), a->get(i)->info().c_str());
 
                 throw cRuntimeError("Could not start user interface '%s'", appname.c_str());
             }
@@ -233,7 +233,7 @@ int BootEnv::run(int argc, char *argv[], cConfiguration *cfg)
         //
         // Finally, set up user interface object. All the rest will be done there.
         //
-        ::printf("Setting up %s...\n", appreg->name());
+        ::printf("Setting up %s...\n", appreg->getName());
         app = appreg->createOne();
     }
     catch (std::exception& e)
@@ -311,7 +311,7 @@ void BootEnv::undisposedObject(cObject *obj)
 {
     // we must have been called after BootEnv has already shut down
     ::printf("<!> WARNING: global object variable (DISCOURAGED) detected: (%s)`%s' at %p\n",
-             obj->className(), obj->fullPath().c_str(), obj);
+             obj->getClassName(), obj->getFullPath().c_str(), obj);
 }
 
 //---------------------------------------------------------

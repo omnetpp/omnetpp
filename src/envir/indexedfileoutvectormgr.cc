@@ -70,7 +70,7 @@ cIndexedFileOutputVectorManager::cIndexedFileOutputVectorManager()
     fi = NULL;
     memoryUsed = 0;
 
-    long d = (long) ev.config()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
+    long d = (long) ev.getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
     maxMemoryUsed = (size_t) std::max(d, (long)MIN_BUFFER_MEMORY);
 }
 
@@ -140,7 +140,7 @@ void cIndexedFileOutputVectorManager::endRun()
 void *cIndexedFileOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
 {
     sVector *vp = (sVector *)cFileOutputVectorManager::registerVector(modulename, vectorname);
-    vp->maxBufferedSamples = ev.config()->getAsInt(modulename, CFGID_VECTOR_MAX_BUFFERED_VALUES);
+    vp->maxBufferedSamples = ev.getConfig()->getAsInt(modulename, CFGID_VECTOR_MAX_BUFFERED_VALUES);
     if (vp->maxBufferedSamples > 0)
         vp->allocateBuffer(vp->maxBufferedSamples);
 
@@ -198,7 +198,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
             initVector(vp);
 
         sBlock &currentBlock = vp->currentBlock;
-        long eventNumber = simulation.eventNumber();
+        long eventNumber = simulation.getEventNumber();
         if (currentBlock.count == 0)
         {
             currentBlock.startTime = t;

@@ -54,11 +54,11 @@ using std::endl;
  * messages, e.g.:
  *
  * <pre>
- * ev << "Received packet " << msg->name() << ", length " << msg->length()/8 << " bytes\n";
+ * ev << "Received packet " << msg->getName() << ", length " << msg->length()/8 << " bytes\n";
  * ev << "Sending up to higher layer\n";
  * </pre>
  *
- * Other useful methods are cEnvir::isGUI() and cEnvir::disabled().
+ * Other useful methods are cEnvir::isGUI() and cEnvir::isDisabled().
  *
  * The rest of cEnvir methods are used internally for communication between
  * the simulation kernel and the environment.
@@ -255,11 +255,11 @@ class SIM_API cEnvir
     /**
      * Notifies the environment that a module was (more precisely: is being)
      * deleted. This method is called from cModule destructor, so the
-     * "real" type (className() and everything from the actual subclass)
-     * is already lost at this point, however name(), fullName(), fullPath(),
+     * "real" type (getClassName() and everything from the actual subclass)
+     * is already lost at this point, however getName(), getFullName(), getFullPath(),
      * gates, parameters (everything that comes from cModule) are still valid.
      *
-     * If a compound module (or a module with dynamically created submodules)
+     * If a compound getModule(or a module with dynamically created submodules)
      * is deleted, one should not assume anything about the relative order
      * moduleDeleted() is called for the module and its submodules.
      */
@@ -347,7 +347,7 @@ class SIM_API cEnvir
      * Called from cSimpleModule, it returns how much extra stack space
      * the user interface recommends for activity() simple modules.
      */
-    virtual unsigned extraStackForEnvir() const = 0;
+    virtual unsigned getExtraStackForEnvir() const = 0;
 
     /**
      * Access to the configuration data (by default, omnetpp.ini).
@@ -356,7 +356,7 @@ class SIM_API cEnvir
      * Models (simple modules) should NOT directly access the configuration --
      * they should rely on module parameters to get input.
      */
-    virtual cConfiguration *config() = 0;
+    virtual cConfiguration *getConfig() = 0;
     //@}
 
     /** @name Input/output methods called from simple modules or the simulation kernel. */
@@ -374,21 +374,21 @@ class SIM_API cEnvir
      * not printed or logged anywhere but discarded. Model code may make <tt>ev&lt;&lt;</tt>
      * statements conditional on this flag to save CPU cycles. For example:
      * <pre>
-     *     if (!ev.disabled())  ev << "Packet " << msg->name() << " received";
+     *     if (!ev.isDisabled())  ev << "Packet " << msg->getName() << " received";
      * </pre>
      *
      * The following version may also be useful (it makes use of the fact that <<
      * binds stronger than ?:)
      * <pre>
-     *     \#define EV  ev.disabled()?ev:ev
-     *     EV << "Packet " << msg->name() << " received";
+     *     \#define EV  ev.isDisabled()?ev:ev
+     *     EV << "Packet " << msg->getName() << " received";
      * </pre>
      */
-    bool disabled() const {return disable_tracing;}
+    bool isDisabled() const {return disable_tracing;}
 
     /**
      * Overloaded << operator to make cEnvir behave like an ostream.
-     * @see ostream()
+     * @see getOStream()
      */
     // implementation note: needed because otherwise the templated version
     // would cause ambiguity errors in some cases
@@ -400,10 +400,10 @@ class SIM_API cEnvir
      * This method can be used by modules and channels to display debugging output.
      * It is up to the user interface implementation to display the text in
      * the way it wants. The text is usually associated with the module or channel
-     * in context (see cSimulation::context()), and may get displayed in the
+     * in context (see cSimulation::getContext()), and may get displayed in the
      * module's debug window, or enabled/disabled per module.
      *
-     * @see ostream()
+     * @see getOStream()
      */
     template<typename T> cEnvir& operator<<(const T& t) {out << t; return *this;}
 
@@ -416,7 +416,7 @@ class SIM_API cEnvir
      * Returns the std::ostream instance where '<<' operators delegate.
      * Writes will be eventually delegated to cEnvir::sputn(), after buffering.
      */
-    std::ostream& ostream() {return out;}
+    std::ostream& getOStream() {return out;}
 
     /**
      * In graphical user interfaces (Tkenv), it pops up a "bubble" over the
@@ -434,7 +434,7 @@ class SIM_API cEnvir
      * This method can be used by modules and channels to display debugging output.
      * It is up to the user interface implementation to display the text in
      * the way it wants. The text is usually associated with the module or channel
-     * in context (see cSimulation::context()), and may get displayed in the
+     * in context (see cSimulation::getContext()), and may get displayed in the
      * module's debug window, or enabled/disabled per module.
      *
      * The function's arguments are identical to the standard \<stdio.h\> printf().
@@ -472,12 +472,12 @@ class SIM_API cEnvir
      * Returns the number of RNGs available for the simulation
      * ("num-rngs=" omnetpp.ini setting).
      */
-    virtual int numRNGs() const = 0;
+    virtual int getNumRNGs() const = 0;
 
     /**
-     * Returns pointer to "physical" RNG k (0 <= k < numRNGs()).
+     * Returns pointer to "physical" RNG k (0 <= k < getNumRNGs()).
      */
-    virtual cRNG *rng(int k) = 0;
+    virtual cRNG *getRNG(int k) = 0;
 
     /**
      * Sets up RNG mapping (which maps module-local RNG numbers to "physical"
@@ -567,12 +567,12 @@ class SIM_API cEnvir
     /**
      * Access to original command-line arguments.
      */
-    virtual int argCount() const = 0;
+    virtual int getArgCount() const = 0;
 
     /**
      * Access to original command-line arguments.
      */
-    virtual char **argVector() const = 0;
+    virtual char **getArgVector() const = 0;
 
     /**
      * Returns the partitionID when parallel simulation is active.

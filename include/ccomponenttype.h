@@ -34,8 +34,8 @@ class cProperties;
 /**
  * Common base class for cModuleType and cChannelType.
  *
- * The name() method returns the unqualified name (without namespace, e.g.
- * "Queue"), and fullName() returns the qualified name (with namespace,
+ * The getName() method returns the unqualified name (without namespace, e.g.
+ * "Queue"), and getFullName() returns the qualified name (with namespace,
  * e.g. "inet.network.Queue").
  *
  * @ingroup Internals
@@ -60,23 +60,23 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     friend class cGate;
 
     // internal: returns the properties for this component.
-    virtual cProperties *properties() const = 0;
+    virtual cProperties *getProperties() const = 0;
 
     // internal: returns the properties of parameter
-    virtual cProperties *paramProperties(const char *paramName) const = 0;
+    virtual cProperties *getParamProperties(const char *paramName) const = 0;
 
     // internal: returns the properties of gate
-    virtual cProperties *gateProperties(const char *gateName) const = 0;
+    virtual cProperties *getGateProperties(const char *gateName) const = 0;
 
     // internal: returns the properties of a submodule.
     // (Subcomponent type is needed because with the NED "like" syntax,
     // we need the runtime type not the NED type of the submodule.)
-    virtual cProperties *submoduleProperties(const char *submoduleName, const char *submoduleType) const = 0;
+    virtual cProperties *getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const = 0;
 
     // internal: returns the properties of a contained connection.
     // (Subcomponent type is needed because with the NED "like" syntax,
     // we need the runtime type not the NED type of the submodule.)
-    virtual cProperties *connectionProperties(int connectionId, const char *channelType) const = 0;
+    virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const = 0;
 
     cParImpl *getSharedParImpl(const char *key) const;
     void putSharedParImpl(const char *key, cParImpl *value);
@@ -104,7 +104,7 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
      * Returns the fully qualified name (i.e. the simple name prefixed
      * with the package name and any existing enclosing NED type names).
      */
-    virtual const char *fullName() const  {return qualifiedName.c_str();}
+    virtual const char *getFullName() const  {return qualifiedName.c_str();}
     //@}
 
     /**

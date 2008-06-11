@@ -108,7 +108,7 @@ cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
 void cHistogramBase::doMergeCellValues(const cDensityEstBase *other)
 {
     for (int i=0; i<num_cells; i++)
-        cellv[i] += (unsigned int) other->cell(i);  //FIXME overflow check
+        cellv[i] += (unsigned int) other->getCellValue(i);  //FIXME overflow check
 }
 
 void cHistogramBase::clearResult()
@@ -133,7 +133,7 @@ void cHistogramBase::transform()
     transfd = true;
 }
 
-int cHistogramBase::cells() const
+int cHistogramBase::getNumCells() const
 {
     if (!isTransformed()) return 0;
 
@@ -238,10 +238,10 @@ void cEqdHistogramBase::collectTransformed (double val)
         cellv[k]++;
 }
 
-double cEqdHistogramBase::pdf(double x) const
+double cEqdHistogramBase::getPDF(double x) const
 {
     if (!isTransformed())
-        throw cRuntimeError(this,"pdf(x) cannot be called before histogram is transformed");
+        throw cRuntimeError(this,"getPDF(x) cannot be called before histogram is transformed");
 
     int k = (int)floor((x-rangemin)/cellsize);
     if (k<0 || x<rangemin || k>=num_cells || x>=rangemax)
@@ -250,13 +250,13 @@ double cEqdHistogramBase::pdf(double x) const
     return cellv[k] / cellsize / num_vals;
 }
 
-double cEqdHistogramBase::cdf(double) const
+double cEqdHistogramBase::getCDF(double) const
 {
-    throw cRuntimeError(this,"cdf() not implemented");
+    throw cRuntimeError(this,"getCDF() not implemented");
 }
 
 // return kth basepoint
-double cEqdHistogramBase::basepoint(int k) const
+double cEqdHistogramBase::getBasepoint(int k) const
 {
     //   k=0           : rangemin
     //   k=1,2,...     : rangemin + k*cellsize
@@ -271,7 +271,7 @@ double cEqdHistogramBase::basepoint(int k) const
         return rangemin + k*cellsize;
 }
 
-double cEqdHistogramBase::cell(int k) const
+double cEqdHistogramBase::getCellValue(int k) const
 {
     if (k<0 || k>num_cells)
         throw cRuntimeError(this,"invalid cell index %u",k);

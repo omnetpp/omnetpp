@@ -287,20 +287,20 @@ DEF(string, "*->S", "conversion", "", {
 //
 
 DEF(fullPath, "->S", "ned", "", {
-    return context->fullPath();
+    return context->getFullPath();
 })
 
 DEF(fullName, "->S", "ned", "", {
-    return context->fullName();
+    return context->getFullName();
 })
 
 DEF(parentIndex, "->L", "ned", "", {
-    cModule *mod = context->parentModule();
+    cModule *mod = context->getParentModule();
     if (!mod)
-        throw cRuntimeError("parentIndex(): `%s' has no parent module", context->fullPath().c_str());
+        throw cRuntimeError("parentIndex(): `%s' has no parent module", context->getFullPath().c_str());
     if (!mod->isVector())
-        throw cRuntimeError("parentIndex(): module `%s' is not a vector", mod->fullPath().c_str());
-    return (long)mod->index();
+        throw cRuntimeError("parentIndex(): module `%s' is not a vector", mod->getFullPath().c_str());
+    return (long)mod->getIndex();
 })
 
 DEF(ancestorIndex, "L->L", "ned", "", {
@@ -311,12 +311,12 @@ DEF(ancestorIndex, "L->L", "ned", "", {
         throw cRuntimeError("ancestorIndex(): numlevels==0 and this is not a module");
     cModule *mod = dynamic_cast<cModule *>(context);
     for (int i=0; mod && i<levels; i++)
-        mod = mod->parentModule();
+        mod = mod->getParentModule();
     if (!mod)
         throw cRuntimeError("ancestorIndex(): argument is larger than current nesting level");
     if (!mod->isVector())
-        throw cRuntimeError("ancestorIndex(): module `%s' is not a vector", mod->fullPath().c_str());
-    return (long)mod->index();
+        throw cRuntimeError("ancestorIndex(): module `%s' is not a vector", mod->getFullPath().c_str());
+    return (long)mod->getIndex();
 })
 
 

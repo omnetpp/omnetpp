@@ -39,7 +39,7 @@ USING_NAMESPACE
 
 cNEDLoader *cNEDLoader::inst;
 
-cNEDLoader *cNEDLoader::instance()
+cNEDLoader *cNEDLoader::getInstance()
 {
     if (!inst) {
         inst = new cNEDLoader();
@@ -67,7 +67,7 @@ void cNEDLoader::registerNedType(const char *qname, NEDElement *node)
     else if (node->getTagCode()==NED_CHANNEL)
         type = new cDynamicChannelType(qname);
     if (type)
-        componentTypes.instance()->add(type);
+        componentTypes.getInstance()->add(type);
 }
 
 cNEDDeclaration *cNEDLoader::getDecl(const char *qname) const

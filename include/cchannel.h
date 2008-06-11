@@ -38,7 +38,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 {
   protected:
     cGate *fromgatep; // gate the channel is attached to
-    int connId;       // for cChannelType::connectionProperties()
+    int connId;       // for cChannelType::getConnectionProperties()
 
   public:
     // internal: called from cGate
@@ -118,28 +118,28 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     //@{
     /**
      * Returns the compound module containing this channel. That is,
-     * the channel is either between two submodules of parentModule(),
-     * or between parentModule() and one of its submodules.
-     * (For completeness, it may also connect two gates of parentModule()
+     * the channel is either between two submodules of getParentModule(),
+     * or between getParentModule() and one of its submodules.
+     * (For completeness, it may also connect two gates of getParentModule()
      * on the inside).
      */
-    virtual cModule *parentModule() const;
+    virtual cModule *getParentModule() const;
 
     /**
-     * Convenience method: casts the return value of componentType() to cChannelType.
+     * Convenience method: casts the return value of getComponentType() to cChannelType.
      */
-    cChannelType *channelType() const  {return (cChannelType *)componentType();}
+    cChannelType *getChannelType() const  {return (cChannelType *)getComponentType();}
 
     /**
      * Return the properties for this channel. Properties cannot be changed
      * at runtime. Redefined from cComponent.
      */
-    virtual cProperties *properties() const;
+    virtual cProperties *getProperties() const;
 
     /**
      * Returns the gate this channel is attached to.
      */
-    cGate *fromGate() const  {return fromgatep;}
+    cGate *getFromGate() const  {return fromgatep;}
     //@}
 
     /** @name Channel functionality */
@@ -159,7 +159,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * Transmission time of a message depends on the message length
      * and the data rate assigned to the channel.
      */
-    virtual simtime_t transmissionFinishes() const = 0;
+    virtual simtime_t getTransmissionFinishTime() const = 0;
     //@}
 };
 
@@ -197,7 +197,7 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
     /**
      * This implementation just returns the current simulation time.
      */
-    virtual simtime_t transmissionFinishes() const;
+    virtual simtime_t getTransmissionFinishTime() const;
     //@}
 };
 

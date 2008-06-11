@@ -135,7 +135,7 @@ XYArray *ArrayBuilderNode::getArray()
 
 //------
 
-const char *ArrayBuilderNodeType::description() const
+const char *ArrayBuilderNodeType::getDescription() const
 {
     return "Collects data into an array. The arrays can be accessed as two double* arrays in the C++ API.";
 }

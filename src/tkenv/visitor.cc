@@ -179,11 +179,11 @@ void cCountChildrenVisitor::visit(cObject *obj)
 #define OBJPTR(a) (*(cObject **)a)
 static int qsort_cmp_byname(const void *a, const void *b)
 {
-    return opp_strcmp(OBJPTR(a)->fullName(), OBJPTR(b)->fullName());
+    return opp_strcmp(OBJPTR(a)->getFullName(), OBJPTR(b)->getFullName());
 }
 static int qsort_cmp_byfullpath(const void *a, const void *b)
 {
-    return opp_strcmp(OBJPTR(a)->fullPath().c_str(), OBJPTR(b)->fullPath().c_str());
+    return opp_strcmp(OBJPTR(a)->getFullPath().c_str(), OBJPTR(b)->getFullPath().c_str());
 }
 static int qsort_cmp_byclass(const void *a, const void *b)
 {

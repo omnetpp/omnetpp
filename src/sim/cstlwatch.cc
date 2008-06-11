@@ -80,7 +80,7 @@ const char *cStdVectorWatcherDescriptor::getFieldName(void *object, int field) c
 {
     cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
-        case 0: return pp->name();
+        case 0: return pp->getName();
         default: return NULL;
     }
 }
@@ -89,7 +89,7 @@ const char *cStdVectorWatcherDescriptor::getFieldTypeString(void *object, int fi
 {
     cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
-        case 0: return pp->elemTypeName();
+        case 0: return pp->getElemTypeName();
         default: return NULL;
     }
 }
@@ -149,7 +149,7 @@ std::string cStdVectorWatcherBase::detailedInfo() const
     std::stringstream out;
     int n = size()<=3 ? size() : 3;
     for (int i=0; i<n; i++)
-        out << fullName() << "[" << i << "] = " << at(i) << "\n";
+        out << getFullName() << "[" << i << "] = " << at(i) << "\n";
     if (size()>3)
         out << "...\n";
     return out.str();

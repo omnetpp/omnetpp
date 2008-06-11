@@ -64,7 +64,7 @@ Register_Class(cRealTimeScheduler);
 
 void cRealTimeScheduler::startRun()
 {
-    factor = ev.config()->getAsDouble(CFGID_REALTIMESCHEDULER_SCALING);
+    factor = ev.getConfig()->getAsDouble(CFGID_REALTIMESCHEDULER_SCALING);
     if (factor!=0)
         factor = 1/factor;
     doScaling = (factor!=0);
@@ -111,7 +111,7 @@ cMessage *cRealTimeScheduler::getNextEvent()
         throw cTerminationException(eENDEDOK);
 
     // calculate target time
-    simtime_t eventSimtime = msg->arrivalTime();
+    simtime_t eventSimtime = msg->getArrivalTime();
     timeval targetTime = timeval_add(baseTime, SIMTIME_DBL(doScaling ? factor*eventSimtime : eventSimtime));
 
     // if needed, wait until that time arrives

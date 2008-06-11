@@ -120,7 +120,7 @@ bool IndexedVectorFileReaderNode2::readNextBlock(PortData &portData)
 
     Block &block = vector->blocks[portData.currentBlockIndex++];
     file_offset_t startOffset = block.startOffset;
-    long count = block.count();
+    long count = block.getCount();
 
     reader.seekTo(startOffset);
 
@@ -145,7 +145,7 @@ bool IndexedVectorFileReaderNode2::readNextBlock(PortData &portData)
 
         // write to port(s)
         for (PortVector::const_iterator port = portData.ports.begin(); port != portData.ports.end(); ++port)
-            port->channel()->write(&a,1);
+            port->getChannel()->write(&a,1);
     }
 
     return true;
@@ -153,7 +153,7 @@ bool IndexedVectorFileReaderNode2::readNextBlock(PortData &portData)
 
 //-----
 
-const char *IndexedVectorFileReaderNode2Type::description() const
+const char *IndexedVectorFileReaderNode2Type::getDescription() const
 {
     return "Reads indexed output vector files.";
 }

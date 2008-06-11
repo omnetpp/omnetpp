@@ -117,9 +117,9 @@
  * random number generator algorithms (default is cMersenneTwister).
  * RNGs can be configured in omnetpp.ini.
  *
- * RNGs are made available via the cRNG interface, and the cModule::rng()
+ * RNGs are made available via the cRNG interface, and the cModule::getRNG()
  * method. All functions returning random variates, etc. internally
- * call cModule::rng() and cRNG::intRand(), cRNG::doubleRand().
+ * call cModule::getRNG() and cRNG::intRand(), cRNG::doubleRand().
  */
 
 /**

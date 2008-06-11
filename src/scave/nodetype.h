@@ -49,17 +49,17 @@ class SCAVE_API NodeType
         /**
          * Returns type name as displayed on the UI (e.g. "mean" or "winavg")
          */
-        virtual const char *name() const = 0;
+        virtual const char *getName() const = 0;
 
         /**
-         * Returns the category of the node (source, sink, filter, etc.)
+         * Returns the category of the getNode(source, sink, filter, etc.)
          */
-        virtual const char *category() const = 0;
+        virtual const char *getCategory() const = 0;
 
         /**
-         * Returns the description of the node (this can be displayed on the UI.)
+         * Returns the description of the getNode(this can be displayed on the UI.)
          */
-        virtual const char *description() const = 0;
+        virtual const char *getDescription() const = 0;
 
         /**
          * Returns true if this node should not appear in the UI.

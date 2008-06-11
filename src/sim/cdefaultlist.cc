@@ -194,7 +194,7 @@ void cDefaultList::drop(cOwnedObject *obj)
 {
     if (obj->ownerp!=this)
         throw cRuntimeError(this,"drop(): not owner of object (%s)%s",
-                                obj->className(), obj->fullPath().c_str());
+                                obj->getClassName(), obj->getFullPath().c_str());
     // the following 2 lines are actually the same as defaultOwner->take(obj);
     yieldOwnership(obj, defaultowner);
     defaultowner->doInsert(obj);
@@ -209,7 +209,7 @@ cOwnedObject *cDefaultList::defaultListGet(int k)
 
 bool cDefaultList::defaultListContains(cOwnedObject *obj) const
 {
-    return obj && obj->owner()==const_cast<cDefaultList *>(this);
+    return obj && obj->getOwner()==const_cast<cDefaultList *>(this);
 }
 
 NAMESPACE_END

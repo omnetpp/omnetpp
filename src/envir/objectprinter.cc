@@ -61,7 +61,7 @@ ObjectPrinter::ObjectPrinter(std::vector<MatchExpression> &objectMatchExpression
 void ObjectPrinter::printObjectToStream(std::ostream& ostream, cObject *object)
 {
     cClassDescriptor *descriptor = cClassDescriptor::getDescriptorFor(object);
-    ostream << "class " << descriptor->name() << " {\n";
+    ostream << "class " << descriptor->getName() << " {\n";
     printObjectToStream(ostream, object, descriptor, 1);
     ostream << "}\n";
 }
@@ -117,7 +117,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
 
                         if (fieldDescriptor) {
                             if (isCObject)
-                                ostream << "class " << ((cObject *)fieldValue)->className() << " ";
+                                ostream << "class " << ((cObject *)fieldValue)->getClassName() << " ";
                             else
                                 ostream << "struct " << descriptor->getFieldStructName(object, fieldIndex) << " ";
 

@@ -49,7 +49,7 @@ void printAllObjects()
 {
     for (std::set<cOwnedObject*>::iterator it = objectlist.begin(); it != objectlist.end(); ++it)
     {
-        printf(" %p (%s)%s\n", (*it), (*it)->className(), (*it)->name());
+        printf(" %p (%s)%s\n", (*it), (*it)->getClassName(), (*it)->getName());
     }
 }
 #endif
@@ -90,7 +90,7 @@ cOwnedObject::cOwnedObject(const char *name, bool namepooling) : cNamedObject(na
 
 cOwnedObject::cOwnedObject(const cOwnedObject& obj)
 {
-    setName(obj.name());
+    setName(obj.getName());
     defaultowner->doInsert(this);
     operator=(obj);
 
@@ -128,7 +128,7 @@ void cOwnedObject::setDefaultOwner(cDefaultList *list)
     defaultowner = list;
 }
 
-cDefaultList *cOwnedObject::defaultOwner()
+cDefaultList *cOwnedObject::getDefaultOwner()
 {
     return defaultowner;
 }
@@ -167,19 +167,19 @@ void cOwnedObject::netUnpack(cCommBuffer *buffer)
 cNoncopyableOwnedObject *cNoncopyableOwnedObject::dup() const
 {
     throw cRuntimeError(this, "dup(): %s subclasses from cNoncopyableOwnedObject, "
-                              "and does not support dup()", className());
+                              "and does not support dup()", getClassName());
 }
 
 void cNoncopyableOwnedObject::netPack(cCommBuffer *buffer)
 {
     throw cRuntimeError(this, "netPack(): %s subclasses from cNoncopyableOwnedObject, and "
-                              "does not support pack/unpack operations", className());
+                              "does not support pack/unpack operations", getClassName());
 }
 
 void cNoncopyableOwnedObject::netUnpack(cCommBuffer *buffer)
 {
     throw cRuntimeError(this, "netUnpack(): %s subclasses from cNoncopyableOwnedObject, and "
-                              "does not support pack/unpack operations", className());
+                              "does not support pack/unpack operations", getClassName());
 }
 
 //-----
@@ -188,12 +188,12 @@ ostream& operator<< (ostream& os, const cOwnedObject *p)
 {
     if (!p)
         return os << "(NULL)";
-    return os << "(" << p->className() << ")" << p->fullName();
+    return os << "(" << p->getClassName() << ")" << p->getFullName();
 }
 
 ostream& operator<< (ostream& os, const cOwnedObject& o)
 {
-    return os << "(" << o.className() << ")" << o.fullName();
+    return os << "(" << o.getClassName() << ")" << o.getFullName();
 }
 
 NAMESPACE_END

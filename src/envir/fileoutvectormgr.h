@@ -123,7 +123,7 @@ class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
     /**
      * Returns the file name.
      */
-    const char *fileName() const;
+    const char *getFileName() const;
 
     /**
      * Calls fflush().

@@ -72,16 +72,16 @@ void cAdvancedLinkDelayLookahead::startRun()
     ev << "  collecting links...\n";
 
     // step 1: count gates
-    for (int modId=0; modId<=sim->lastModuleId(); modId++)
+    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
     {
-        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
         if (mod)
         {
             for (cModule::GateIterator i(mod); !i.end(); i++)
             {
                 cGate *g = i();
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
-                if (pg && pg->fromGate() && pg->getRemoteProcId()>=0)
+                if (pg && pg->getFromGate() && pg->getRemoteProcId()>=0)
                     segInfo[pg->getRemoteProcId()].numLinks++;
             }
         }
@@ -97,9 +97,9 @@ void cAdvancedLinkDelayLookahead::startRun()
     }
 
     // step 3: fill in
-    for (int modId=0; modId<=sim->lastModuleId(); modId++)
+    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
     {
-        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
         if (mod)
         {
             for (cModule::GateIterator i(mod); !i.end(); i++)
@@ -108,16 +108,16 @@ void cAdvancedLinkDelayLookahead::startRun()
                 // FIXME leave out gates from other cPlaceholderModules
                 cGate *g = i();
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
-                if (pg && pg->fromGate() && pg->getRemoteProcId()>=0)
+                if (pg && pg->getFromGate() && pg->getRemoteProcId()>=0)
                 {
                     // check we have a delay on this link (it gives us lookahead)
-                    cGate *fromg  = pg->fromGate();
-                    cChannel *chan = fromg ? fromg->channel() : NULL;
+                    cGate *fromg  = pg->getFromGate();
+                    cChannel *chan = fromg ? fromg->getChannel() : NULL;
                     cBasicChannel *basicChan = dynamic_cast<cBasicChannel *>(chan);
-                    cPar *delaypar = basicChan ? basicChan->delay() : NULL;
+                    cPar *delaypar = basicChan ? basicChan->getDelay() : NULL;
                     double linkDelay = delaypar ? delaypar->doubleValue() : 0;
                     if (linkDelay<=0.0)
-                        throw cRuntimeError("cAdvancedLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->fullPath().c_str());
+                        throw cRuntimeError("cAdvancedLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());
 
                     // store
                     int procId = pg->getRemoteProcId();
@@ -129,7 +129,7 @@ void cAdvancedLinkDelayLookahead::startRun()
                     link->lookahead = linkDelay;
                     link->eot = 0.0;
 
-                    ev << "    link " << k << " to procId=" << procId << " on gate `" << fromg->fullPath() <<"': delay=" << linkDelay << "\n";
+                    ev << "    link " << k << " to procId=" << procId << " on gate `" << fromg->getFullPath() <<"': delay=" << linkDelay << "\n";
                 }
             }
         }

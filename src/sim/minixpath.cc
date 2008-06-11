@@ -158,7 +158,7 @@ cXMLElement *MiniXPath::matchSeparator(cXMLElement *node, const char *seppathexp
         return matchStep(node, seppathexpr+1); // separator is "/"  -- match a child
 }
 
-// "node": the current node (".") whose children we'll try to match
+// "node": the current getNode(".") whose children we'll try to match
 cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
 {
     // find end of first pattern step

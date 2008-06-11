@@ -38,7 +38,7 @@ class cMessageHeap;
 
 
 /**
- * Predefined message kind values (values for cMessage's kind(),
+ * Predefined message kind values (values for cMessage's getKind(),
  * setKind() methods).
  *
  * Negative values are reserved for the \opp system and its
@@ -149,7 +149,7 @@ class SIM_API cMessage : public cOwnedObject
     // has to be called before any operation on encapmsg, to prevent trouble
     // that may arise from accessing shared message instances. E.g. without calling
     // _detachEncapMsg(), encapmsg's ownerp is unpredictable (may be any previous owner,
-    // possibly not even existing any more) which makes even a call to its fullPath()
+    // possibly not even existing any more) which makes even a call to its getFullPath()
     // method dangerous.
     void _detachEncapMsg();
 
@@ -159,21 +159,21 @@ class SIM_API cMessage : public cOwnedObject
   public:
     // internal: returns the event number which scheduled this event, or the event in which
     // this message was last delivered to a module. Stored for recording into the event log file.
-    long previousEventNumber() const {return prev_event_num;}
+    long getPreviousEventNumber() const {return prev_event_num;}
 
     // internal: sets previousEventNumber.
     void setPreviousEventNumber(long num) {prev_event_num = num;}
 
-    // internal convenience method: returns the id() of the innermost encapsulated message,
+    // internal convenience method: returns the getId() of the innermost encapsulated message,
     // or itself if there's no encapsulated message
-    long encapsulationId() const;
+    long getEncapsulationId() const;
 
-    // internal convenience method: returns treeId() of the innermost encapsulated message,
+    // internal convenience method: returns getTreeId() of the innermost encapsulated message,
     // or itself if there's no encapsulated message
-    long encapsulationTreeId() const;
+    long getEncapsulationTreeId() const;
 
     // internal: only to be used by test cases
-    int shareCount() const {return sharecount;}
+    int getShareCount() const {return sharecount;}
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -346,12 +346,12 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns message kind.
      */
-    short kind() const  {return msgkind;}
+    short getKind() const  {return msgkind;}
 
     /**
      * Returns message priority.
      */
-    short priority() const  {return prior;}
+    short getPriority() const  {return prior;}
 
     /**
      * Returns message length (in bits).
@@ -362,7 +362,7 @@ class SIM_API cMessage : public cOwnedObject
      * Returns message length in bytes, that is, length()/8. If length()
      * is not a multiple of 8, the result is rounded up.
      */
-    int64 byteLength() const  {return (len+7)>>3;}
+    int64 getByteLength() const  {return (len+7)>>3;}
 
     /**
      * Returns true if bit error flag is set, false otherwise.
@@ -372,22 +372,22 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns the message's time stamp.
      */
-    simtime_t timestamp() const {return tstamp;}
+    simtime_t getTimestamp() const {return tstamp;}
 
     /**
      * INTERNAL: Used by cMessageHeap.
      */
-    unsigned long insertOrder() const {return insertordr;}
+    unsigned long getInsertOrder() const {return insertordr;}
 
     /**
      * Returns the context pointer.
      */
-    void *contextPointer() const {return contextptr;}
+    void *getContextPointer() const {return contextptr;}
 
     /**
      * Returns pointer to the attached "control info".
      */
-    cObject *controlInfo() const {return ctrlp;}
+    cObject *getControlInfo() const {return ctrlp;}
     //@}
 
     /** @name Dynamically attaching objects. */
@@ -398,7 +398,7 @@ class SIM_API cMessage : public cOwnedObject
      * which is used to store parameter (cMsgPar) objects and other objects
      * attached to the message.
      *
-     * One can use either parList() combined with cArray methods,
+     * One can use either getParList() combined with cArray methods,
      * or several convenience methods (addPar(), addObject(), par(), etc.)
      * to add, retrieve or remove cMsgPars and other objects.
      *
@@ -406,46 +406,46 @@ class SIM_API cMessage : public cOwnedObject
      * suit your needs. For more information, see class description for discussion
      * about message subclassing vs dynamically attached objects.</i>
      */
-    cArray& parList()  {if (!parlistp) _createparlist(); return *parlistp;}
+    cArray& getParList()  {if (!parlistp) _createparlist(); return *parlistp;}
 
     /**
      * Add a new, empty parameter (cMsgPar object) with the given name
      * to the message's object list.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::add() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
-    cMsgPar& addPar(const char *s)  {cMsgPar *p=new cMsgPar(s);parList().add(p);return *p;}
+    cMsgPar& addPar(const char *s)  {cMsgPar *p=new cMsgPar(s);getParList().add(p);return *p;}
 
     /**
      * Add a parameter object to the message's object list.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::add() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
-    cMsgPar& addPar(cMsgPar *p)  {parList().add(p); return *p;}
+    cMsgPar& addPar(cMsgPar *p)  {getParList().add(p); return *p;}
 
     /**
      * DEPRECATED! Use addPar(cMsgPar *p) instead.
      */
-    _OPPDEPRECATED cMsgPar& addPar(cMsgPar& p)  {parList().add(&p); return p;}
+    _OPPDEPRECATED cMsgPar& addPar(cMsgPar& p)  {getParList().add(&p); return p;}
 
     /**
      * Returns the nth object in the message's object list, converting it to a cMsgPar.
      * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
      * the method throws a cRuntimeError.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::get() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
     cMsgPar& par(int n);
 
@@ -455,11 +455,11 @@ class SIM_API cMessage : public cOwnedObject
      * If the object doesn't exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
      * the method throws a cRuntimeError.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::get() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
     cMsgPar& par(const char *s);
 
@@ -467,11 +467,11 @@ class SIM_API cMessage : public cOwnedObject
      * Returns the index of the parameter with the given name in the message's
      * object list, or -1 if it could not be found.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::find() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
     int findPar(const char *s) const;
 
@@ -479,45 +479,45 @@ class SIM_API cMessage : public cOwnedObject
      * Check if a parameter with the given name exists in the message's
      * object list.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::exist() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
     bool hasPar(const char *s) const {return findPar(s)>=0;}
 
     /**
      * Add an object to the message's object list.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::add() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
-    cOwnedObject *addObject(cOwnedObject *p)  {parList().add(p); return p;}
+    cOwnedObject *addObject(cOwnedObject *p)  {getParList().add(p); return p;}
 
     /**
      * Returns the object with the given name in the message's object list.
      * If the object is not found, it returns NULL.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::get() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
-    cObject *getObject(const char *s)  {return parList().get(s);}
+    cObject *getObject(const char *s)  {return getParList().get(s);}
 
     /**
      * Check if an object with the given name exists in the message's object list.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::exist() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
     bool hasObject(const char *s)  {return !parlistp ? false : parlistp->find(s)>=0;}
 
@@ -525,25 +525,25 @@ class SIM_API cMessage : public cOwnedObject
      * Remove the object with the given name from the message's object list, and
      * return its pointer. If the object doesn't exist, NULL is returned.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::remove() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
-    cObject *removeObject(const char *s)  {return parList().remove(s);}
+    cObject *removeObject(const char *s)  {return getParList().remove(s);}
 
     /**
      * Remove the object with the given name from the message's object list, and
      * return its pointer. If the object doesn't exist, NULL is returned.
      *
-     * <i>NOTE: This is a convenience function: one may use parList() and
+     * <i>NOTE: This is a convenience function: one may use getParList() and
      * cArray::remove() instead. See also class description for discussion about
      * message subclassing vs dynamically attached objects.</i>
      *
-     * @see parList()
+     * @see getParList()
      */
-    cObject *removeObject(cOwnedObject *p)  {return parList().remove(p);}
+    cObject *removeObject(cOwnedObject *p)  {return getParList().remove(p);}
     //@}
 
     /** @name Message encapsulation. */
@@ -559,7 +559,7 @@ class SIM_API cMessage : public cOwnedObject
      * message is not duplicated when you duplicate a message, but rather,
      * both (all) copies share the same message instance. Any change done
      * to the encapsulated message would affect other messages as well.
-     * Decapsulation (and even calling encapsulatedMsg()) will create an
+     * Decapsulation (and even calling getEncapsulatedMsg()) will create an
      * own (non-shared) copy of the message.
      */
     void encapsulate(cMessage *msg);
@@ -577,7 +577,7 @@ class SIM_API cMessage : public cOwnedObject
      * IMPORTANT: see notes at encapsulate() about reference counting
      * of encapsulated messages.
      */
-    cMessage *encapsulatedMsg() const;
+    cMessage *getEncapsulatedMsg() const;
     //@}
 
     /** @name Sending/arrival information. */
@@ -598,70 +598,70 @@ class SIM_API cMessage : public cOwnedObject
      * hasn't been sent/scheduled yet, or if the sender module got deleted
      * in the meantime.
      */
-    cModule *senderModule() const {return simulation.module(frommod);}
+    cModule *getSenderModule() const {return simulation.getModule(frommod);}
 
     /**
      * Returns pointers to the gate from which the message was sent and
      * on which gate it arrived. A NULL pointer is returned
      * for new (unsent) messages and messages sent via scheduleAt().
      */
-    cGate *senderGate() const;
+    cGate *getSenderGate() const;
 
     /**
      * Returns a pointer to the arrival module. It returns NULL if the message
      * hasn't been sent/scheduled yet, or if the module got deleted
      * in the meantime.
      */
-    cModule *arrivalModule() const {return simulation.module(tomod);}
+    cModule *getArrivalModule() const {return simulation.getModule(tomod);}
 
     /**
      * Returns pointers to the gate from which the message was sent and
      * on which gate it arrived. A NULL pointer is returned
      * for new (unsent) messages and messages sent via scheduleAt().
      */
-    cGate *arrivalGate() const;
+    cGate *getArrivalGate() const;
 
     /**
      * Returns sender module's index in the module vector or -1 if the
      * message hasn't been sent/scheduled yet.
      */
-    int senderModuleId() const {return frommod;}
+    int getSenderModuleId() const {return frommod;}
 
     /**
      * Returns index of gate sent through in the sender module or -1
      * if the message hasn't been sent/scheduled yet.
      */
-    int senderGateId() const   {return fromgate;}
+    int getSenderGateId() const   {return fromgate;}
 
     /**
      * Returns receiver module's index in the module vector or -1 if
      * the message hasn't been sent/scheduled yet.
      */
-    int arrivalModuleId() const {return tomod;}
+    int getArrivalModuleId() const {return tomod;}
 
     /**
      * Returns index of gate the message arrived on in the sender module
      * or -1 if the message hasn't sent/scheduled yet.
      */
-    int arrivalGateId() const  {return togate;}
+    int getArrivalGateId() const  {return togate;}
 
     /**
      * Returns time when the message was created.
      */
-    simtime_t creationTime() const {return created;}
+    simtime_t getCreationTime() const {return created;}
 
     /**
      * Returns time when the message was sent/scheduled or 0 if the message
      * hasn't been sent yet.
      */
-    simtime_t sendingTime()  const {return sent;}
+    simtime_t getSendingTime()  const {return sent;}
 
     /**
      * Returns time when the message arrived (or will arrive if it
      * is currently scheduled or is underway), or 0 if the message
      * hasn't been sent/scheduled yet.
      */
-    simtime_t arrivalTime()  const {return delivd;}
+    simtime_t getArrivalTime()  const {return delivd;}
 
     /**
      * Return true if the message arrived through gate g.
@@ -684,13 +684,13 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Returns a unique message identifier assigned upon message creation.
      */
-    long id() const {return msgid;}
+    long getId() const {return msgid;}
 
     /**
      * Returns an identifier which is shared among a message object and all messages
      * created by copying it (i.e. by dup() or the copy constructor).
      */
-    long treeId() const {return msgtreeid;}
+    long getTreeId() const {return msgtreeid;}
     //@}
 
     /** @name Internally used methods. */
@@ -699,27 +699,27 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Called internally by the simulation kernel as part of the send(),
      * scheduleAt() calls to set the parameters returned by the
-     * senderModuleId(), senderGate(), sendingTime() methods.
+     * getSenderModuleId(), getSenderGate(), getSendingTime() methods.
      */
     virtual void setSentFrom(cModule *module, int gateId, simtime_t t);
 
     /**
      * Called internally by the simulation kernel as part of processing
      * the send(), scheduleAt() calls to set the parameters returned
-     * by the arrivalModuleId(), arrivalGate() methods.
+     * by the getArrivalModuleId(), getArrivalGate() methods.
      */
     virtual void setArrival(cModule *module, int gateId);
 
     /**
      * Called internally by the simulation kernel as part of processing
      * the send(), scheduleAt() calls to set the parameters returned
-     * by the arrivalModuleId(), arrivalGate(), arrivalTime() methods.
+     * by the getArrivalModuleId(), getArrivalGate(), getArrivalTime() methods.
      */
     virtual void setArrival(cModule *module, int gate, simtime_t t);
 
     /**
      * Called internally by the simulation kernel to set the parameters
-     * returned by the arrivalTime() method.
+     * returned by the getArrivalTime() method.
      */
     virtual void setArrivalTime(simtime_t t);
 
@@ -731,7 +731,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Used internally by the parallel simulation kernel.
      */
-    int srcProcId() const {return srcprocid;}
+    int getSrcProcId() const {return srcprocid;}
     //@}
 
     /** @name Miscellaneous. */
@@ -742,7 +742,7 @@ class SIM_API cMessage : public cOwnedObject
      * affects message appearance in Tkenv. This default implementation
      * returns "".
      */
-    virtual const char *displayString() const;
+    virtual const char *getDisplayString() const;
     //@}
 
     /** @name Statistics. */
@@ -755,7 +755,7 @@ class SIM_API cMessage : public cOwnedObject
      * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long totalMessageCount() {return total_msgs;}
+    static long getTotalMessageCount() {return total_msgs;}
 
     /**
      * Returns the number of message objects that currently exist in the
@@ -764,10 +764,10 @@ class SIM_API cMessage : public cOwnedObject
      * May be useful for profiling or debugging memory leaks caused by forgetting
      * to delete messages.
      */
-    static long liveMessageCount() {return live_msgs;}
+    static long getLiveMessageCount() {return live_msgs;}
 
     /**
-     * Reset counters used by totalMessageCount() and liveMessageCount().
+     * Reset counters used by getTotalMessageCount() and getLiveMessageCount().
      */
     static void resetMessageCounters()  {total_msgs=live_msgs=0;}
     //@}

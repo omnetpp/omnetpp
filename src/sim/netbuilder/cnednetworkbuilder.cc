@@ -84,7 +84,7 @@ static void updateOrRethrowException(std::exception& e, NEDElement *context)
 
 void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration *decl)
 {
-    //TRACE("addParametersTo(%s), decl=%s", component->fullPath().c_str(), decl->name()); //XXX
+    //TRACE("addParametersTo(%s), decl=%s", component->getFullPath().c_str(), decl->getName()); //XXX
 
     //TODO for performance: component->reallocParamv(decl->getParameterDeclarations().size());
 
@@ -92,7 +92,7 @@ void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration 
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
-        cNEDDeclaration *superDecl = cNEDLoader::instance()->getDecl(superName);
+        cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
         addParametersTo(component, superDecl);
     }
 
@@ -167,7 +167,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 
             component->addPar(impl);
 
-            cProperties *paramProps = component->par(paramName).properties();
+            cProperties *paramProps = component->par(paramName).getProperties();
             cProperty *unitProp = paramProps->get("unit");
             const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
             impl->setUnit(declUnit);
@@ -252,13 +252,13 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
 
 void cNEDNetworkBuilder::addGatesTo(cModule *module, cNEDDeclaration *decl)
 {
-    //TRACE("addGatesTo(%s), decl=%s", module->fullPath().c_str(), decl->name()); //XXX
+    //TRACE("addGatesTo(%s), decl=%s", module->getFullPath().c_str(), decl->getName()); //XXX
 
     // recursively add and assign super types' gates
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
-        cNEDDeclaration *superDecl = cNEDLoader::instance()->getDecl(superName);
+        cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
         addGatesTo(module, superDecl);
     }
 
@@ -273,17 +273,17 @@ void cNEDNetworkBuilder::addGatesTo(cModule *module, cNEDDeclaration *decl)
 
 void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
-    //TRACE("buildinside(%s), decl=%s", modp->fullPath().c_str(), decl->name());  //XXX
+    //TRACE("buildinside(%s), decl=%s", modp->getFullPath().c_str(), decl->getName());  //XXX
 
-    if (modp->id() % 50 == 0)
+    if (modp->getId() % 50 == 0)
     {
         // half-hearted attempt to catch "recursive compound module" bug (where
         // a compound module contains itself, directly or via other compound modules)
-        int limit = ev.config()->getAsInt(CFGID_MAX_MODULE_NESTING);
+        int limit = ev.getConfig()->getAsInt(CFGID_MAX_MODULE_NESTING);
         if (limit>0)
         {
             int depth = 0;
-            for (cModule *p=modp; p; p=p->parentModule())
+            for (cModule *p=modp; p; p=p->getParentModule())
                 depth++;
             if (depth > limit)
                 throw cRuntimeError(modp, "Submodule nesting too deep (%d) (potential infinite recursion?)", depth);
@@ -316,7 +316,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
-        cNEDDeclaration *superDecl = cNEDLoader::instance()->getDecl(superName);
+        cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
         buildRecursively(modp, superDecl);
     }
 
@@ -326,7 +326,7 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
 
 void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 {
-    //TRACE("addSubmodulesAndConnections(%s), decl=%s", modp->fullPath().c_str(), currentDecl->name()); //XXX
+    //TRACE("addSubmodulesAndConnections(%s), decl=%s", modp->getFullPath().c_str(), currentDecl->getName()); //XXX
     //dump(currentDecl->getTree()); XXX
 
     SubmodulesElement *submods = currentDecl->getSubmodulesElement();
@@ -348,7 +348,7 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected(cNEDDeclaration *decl) const
     while (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
-        decl = cNEDLoader::instance()->getDecl(superName);
+        decl = cNEDLoader::getInstance()->getDecl(superName);
         ASSERT(decl); // all super classes must be loaded before we start building
         ConnectionsElement *conns = decl->getConnectionsElement();
         if (conns && conns->getAllowUnconnected())
@@ -364,13 +364,13 @@ std::string cNEDNetworkBuilder::resolveComponentType(const NEDLookupContext& con
     // NOT on the NED files loaded. This allows the user to instantiate
     // cModuleTypes/cChannelTypes which are not declared in NED.
     ComponentTypeNames qnames;
-    return cNEDLoader::instance()->resolveNedType(context, nedtypename, &qnames);
+    return cNEDLoader::getInstance()->resolveNedType(context, nedtypename, &qnames);
 }
 
 cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodname)
 {
     //FIXME cache the result to speed up further lookups
-    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
+    NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string qname = resolveComponentType(context, modTypeName);
     if (qname.empty())
         throw cRuntimeError(modp, "Submodule %s: cannot resolve module type `%s' (not in the loaded NED files?)",
@@ -387,9 +387,9 @@ cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeN
     //FIXME cache the result to speed up further lookups
 
     // resolve the interface
-    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
-    std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
-    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
+    NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
+    std::string interfaceqname = cNEDLoader::getInstance()->resolveNedType(context, likeType);
+    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceqname.c_str());
     if (!interfacedecl)
         throw cRuntimeError(modp, "Submodule %s: cannot resolve module interface `%s'",
                             submodname, likeType);
@@ -420,7 +420,7 @@ std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *n
     // try to interpret it as a fully qualified name
     ComponentTypeNames qnames;
     if (qnames.contains(nedtypename)) {
-        cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(nedtypename);
+        cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedtypename);
         ASSERT(decl);
         if (decl->supportsInterface(interfaceqname)) {
             candidates.push_back(nedtypename);
@@ -436,7 +436,7 @@ std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *n
         for (int i=0; i<qnames.size(); i++) {
             const char *qname = qnames.get(i);
             if (opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0) {
-                cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(qname);
+                cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(qname);
                 ASSERT(decl);
                 if (decl->supportsInterface(interfaceqname))
                     candidates.push_back(qname);
@@ -464,12 +464,12 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
             if (likeParamExpr)
                 submodtypename = evaluateAsString(likeParamExpr, modp, false);
             else {
-                std::string key = modp->fullPath() + "." + submodname;
+                std::string key = modp->getFullPath() + "." + submodname;
                 if (index != -1)
                     key = opp_stringf("%s[%d]", key.c_str(), index);
-                submodtypename = ev.config()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+                submodtypename = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
                 if (submodtypename.empty())
-                    throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s", submodname, key.c_str(), CFGID_TYPE_NAME->name());
+                    throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s", submodname, key.c_str(), CFGID_TYPE_NAME->getName());
             }
         }
     }
@@ -648,17 +648,17 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
                                              conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                                              conn->getDestGateSubg(), conn->getDestGatePlusplus());
 
-            //printf("creating connection: %s --> %s\n", srcg->fullPath().c_str(), destg->fullPath().c_str());
+            //printf("creating connection: %s --> %s\n", srcg->getFullPath().c_str(), destg->getFullPath().c_str());
 
             // check directions
             cGate *errg = NULL;
-            if (srcg->ownerModule()==modp ? srcg->type()!=cGate::INPUT : srcg->type()!=cGate::OUTPUT)
+            if (srcg->getOwnerModule()==modp ? srcg->getType()!=cGate::INPUT : srcg->getType()!=cGate::OUTPUT)
                 errg = srcg;
-            if (destg->ownerModule()==modp ? destg->type()!=cGate::OUTPUT : destg->type()!=cGate::INPUT)
+            if (destg->getOwnerModule()==modp ? destg->getType()!=cGate::OUTPUT : destg->getType()!=cGate::INPUT)
                 errg = destg;
             if (errg)
                 throw cRuntimeError(modp, "Gate %s is being connected in the wrong direction",
-                                    errg->fullPath().c_str());
+                                    errg->getFullPath().c_str());
 
             doConnectGates(modp, srcg, destg, conn);
         }
@@ -680,8 +680,8 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
                              conn->getDestGatePlusplus(),
                              destg1, destg2);
 
-            //printf("Creating bidir conn: %s --> %s\n", srcg2->fullPath().c_str(), destg1->fullPath().c_str());
-            //printf("                and: %s <-- %s\n", srcg1->fullPath().c_str(), destg2->fullPath().c_str());
+            //printf("Creating bidir conn: %s --> %s\n", srcg2->getFullPath().c_str(), destg1->getFullPath().c_str());
+            //printf("                and: %s <-- %s\n", srcg1->getFullPath().c_str(), destg2->getFullPath().c_str());
 
             doConnectGates(modp, srcg2, destg1, conn);
             doConnectGates(modp, destg2, srcg1, conn);
@@ -715,7 +715,7 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
                                        const char *gatename, ExpressionElement *gateindexp,
                                        int subg, bool isplusplus)
 {
-    //TRACE("resolveGate(mod=%s, %s.%s, subg=%d, plusplus=%d)", parentmodp->fullPath().c_str(), modname, gatename, subg, isplusplus);
+    //TRACE("resolveGate(mod=%s, %s.%s, subg=%d, plusplus=%d)", parentmodp->getFullPath().c_str(), modname, gatename, subg, isplusplus);
 
     if (isplusplus && gateindexp)
         throw cRuntimeError(parentmodp, "Both `++' and gate index expression used in a connection");
@@ -846,10 +846,10 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
             if (likeParamExpr)
                 channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
             else {
-                std::string key = srcgate->fullPath() + "." + channelname;
-                channeltypename = ev.config()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+                std::string key = srcgate->getFullPath() + "." + channelname;
+                channeltypename = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
                 if (channeltypename.empty())
-                    throw cRuntimeError(parentmodp, "Unable to determine type name for channel: missing config entry %s.%s", key.c_str(), CFGID_TYPE_NAME->name());
+                    throw cRuntimeError(parentmodp, "Unable to determine type name for channel: missing config entry %s.%s", key.c_str(), CFGID_TYPE_NAME->getName());
             }
         }
     }
@@ -881,7 +881,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecElement *channelspec, cMo
 cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename, cModule *modp)
 {
     //FIXME cache the result to speed up further lookups
-    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
+    NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string qname = resolveComponentType(context, channeltypename);
     if (qname.empty())
         throw cRuntimeError(modp, "Cannot resolve channel type `%s' (not in the loaded NED files?)", channeltypename);
@@ -897,9 +897,9 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channe
     //FIXME cache the result to speed up further lookups
 
     // resolve the interface
-    NEDLookupContext context(currentDecl->getTree(), currentDecl->fullName());
-    std::string interfaceqname = cNEDLoader::instance()->resolveNedType(context, likeType);
-    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::instance()->lookup(interfaceqname.c_str());
+    NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
+    std::string interfaceqname = cNEDLoader::getInstance()->resolveNedType(context, likeType);
+    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceqname.c_str());
     if (!interfacedecl)
         throw cRuntimeError(modp, "Cannot resolve channel interface `%s'", likeType);
     if (interfacedecl->getTree()->getTagCode()!=NED_CHANNEL_INTERFACE)

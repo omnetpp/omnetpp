@@ -156,7 +156,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual bool idle();
 
       // with Tkenv, activity() modules need extra stack
-      virtual unsigned extraStackForEnvir() const;
+      virtual unsigned getExtraStackForEnvir() const;
 
   protected:
       // redefined virtual functions from EnvirBase
@@ -223,10 +223,10 @@ class TKENV_API Tkenv : public EnvirBase
       void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
       std::string getLocalPackage()      {return simulation.getNedPackageForFolder(opt_inifile_network_dir.c_str());}
-      const char *getIniFileName()       {return config()->getFileName();}
-      const char *getOutVectorFileName() {return outvectormgr->fileName();}
-      const char *getOutScalarFileName() {return outscalarmgr->fileName();}
-      const char *getSnapshotFileName()  {return snapshotmgr->fileName();}
+      const char *getIniFileName()       {return getConfig()->getFileName();}
+      const char *getOutVectorFileName() {return outvectormgr->getFileName();}
+      const char *getOutScalarFileName() {return outscalarmgr->getFileName();}
+      const char *getSnapshotFileName()  {return snapshotmgr->getFileName();}
       const char *getWindowTitlePrefix() {return windowtitleprefix.c_str();}
 
 };

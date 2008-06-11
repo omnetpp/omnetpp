@@ -179,10 +179,10 @@ class COMMON_API Expression
       public:
         virtual ~Functor() {}
         virtual Functor *dup() const = 0;
-        virtual const char *name() const = 0;
-        virtual const char *argTypes() const = 0;
-        virtual int numArgs() const {return strlen(argTypes());}
-        virtual char returnType() const = 0;
+        virtual const char *getName() const = 0;
+        virtual const char *getArgTypes() const = 0;
+        virtual int getNumArgs() const {return strlen(getArgTypes());}
+        virtual char getReturnType() const = 0;
         virtual Value evaluate(Value args[], int numargs) = 0;
         virtual std::string str(std::string args[], int numargs) = 0;
     };
@@ -315,9 +315,9 @@ class COMMON_API MathFunction : public Expression::Functor
     MathFunction(const char *name);
     virtual ~MathFunction();
     virtual Functor *dup() const;
-    virtual const char *name() const;
-    virtual const char *argTypes() const;
-    virtual char returnType() const;
+    virtual const char *getName() const;
+    virtual const char *getArgTypes() const;
+    virtual char getReturnType() const;
     virtual Expression::Value evaluate(Expression::Value args[], int numargs);
     virtual std::string str(std::string args[], int numargs);
 };

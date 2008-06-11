@@ -67,12 +67,12 @@ class ENVIR_API Scenario
         VariableReference(Scenario *node, const char *name) {hostnode = node; varname = name;}
         virtual ~VariableReference() {}
         virtual Expression::Functor *dup() const {return new VariableReference(hostnode, varname.c_str());}
-        virtual const char *name() const {return varname.c_str();}
-        virtual const char *argTypes() const {return "";}
-        virtual char returnType() const {return Expression::Value::DBL;}
+        virtual const char *getName() const {return varname.c_str();}
+        virtual const char *getArgTypes() const {return "";}
+        virtual char getReturnType() const {return Expression::Value::DBL;}
         virtual Expression::Value evaluate(Expression::Value args[], int numargs)
             {return hostnode->getIterationVariable(varname.c_str());}
-        virtual std::string str(std::string args[], int numargs) {return name();}
+        virtual std::string str(std::string args[], int numargs) {return getName();}
     };
 
   public:

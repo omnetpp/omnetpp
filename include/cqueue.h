@@ -31,7 +31,7 @@ NAMESPACE_BEGIN
  * remove them at the front using pop().
  *
  * By default, cQueue's destructor deletes all contained objects. This behaviour
- * can be changed by calling takeOwnership(false) before inserting objects.
+ * can be changed by calling setTakeOwnership(false) before inserting objects.
  * More precisely, the behaviour can be controlled per-object: the
  * insertion-time state of the <i>takeOwnership</i> flag will determine
  * whether the inserted object will be deleted by the cQueue destructor or not.
@@ -217,7 +217,7 @@ class SIM_API cQueue : public cOwnedObject
 
     /**
      * Empties the container. Contained objects that were owned by the
-     * queue (see takeOwnership()) will be deleted.
+     * queue (see getTakeOwnership()) will be deleted.
      */
     virtual void clear();
     //@}
@@ -269,14 +269,14 @@ class SIM_API cQueue : public cOwnedObject
      * should automatically take ownership of the objects that are inserted
      * into it.
      */
-    void takeOwnership(bool tk) {tkownership=tk;}
+    void setTakeOwnership(bool tk) {tkownership=tk;}
 
     /**
      * Returns the flag which determines whether the container object
      * should automatically take ownership of the objects that are inserted
      * into it.
      */
-    bool takeOwnership() const   {return tkownership;}
+    bool getTakeOwnership() const   {return tkownership;}
     //@}
 };
 

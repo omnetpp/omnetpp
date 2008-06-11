@@ -55,7 +55,7 @@ Register_Class(cFileOutputScalarManager);
 cFileOutputScalarManager::cFileOutputScalarManager()
 {
     f = NULL;
-    prec = ev.config()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
+    prec = ev.getConfig()->getAsInt(CFGID_OUTPUT_SCALAR_PRECISION);
 }
 
 cFileOutputScalarManager::~cFileOutputScalarManager()
@@ -84,9 +84,9 @@ void cFileOutputScalarManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
-    fname = ev.config()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
+    fname = ev.getConfig()->getAsFilename(CFGID_OUTPUT_SCALAR_FILE).c_str();
     dynamic_cast<EnvirBase *>(&ev)->processFileName(fname);
-    if (ev.config()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
+    if (ev.getConfig()->getAsBool(CFGID_OUTPUT_SCALAR_FILE_APPEND)==false)
         removeFile(fname.c_str(), "old output scalar file");
     run.reset();
 }
@@ -121,11 +121,11 @@ void cFileOutputScalarManager::init()
         run.writeRunData(f, fname);
 
         // save iteration variables
-        std::vector<const char *> v = ev.config()->getIterationVariableNames();
+        std::vector<const char *> v = ev.getConfig()->getIterationVariableNames();
         for (int i=0; i<(int)v.size(); i++)
         {
             const char *name = v[i];
-            const char *value = ev.config()->getVariable(v[i]);
+            const char *value = ev.getConfig()->getVariable(v[i]);
             //XXX write with using an "itervar" keyword not "scalar"
             if (isNumeric(value))
                 CHECK(fprintf(f, "scalar . \t%s \t%s\n", name, value));
@@ -143,10 +143,10 @@ void cFileOutputScalarManager::recordScalar(cComponent *component, const char *n
     if (!name || !name[0])
         name = "(unnamed)";
 
-    bool enabled = ev.config()->getAsBool((component->fullPath()+"."+name).c_str(), CFGID_SCALAR_RECORDING);
+    bool enabled = ev.getConfig()->getAsBool((component->getFullPath()+"."+name).c_str(), CFGID_SCALAR_RECORDING);
     if (enabled)
     {
-        CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->fullPath().c_str()), QUOTE(name), prec, value));
+        CHECK(fprintf(f, "scalar %s \t%s \t%.*g\n", QUOTE(component->getFullPath().c_str()), QUOTE(name), prec, value));
         if (attributes)
             for (opp_string_map::iterator it=attributes->begin(); it!=attributes->end(); it++)
                 CHECK(fprintf(f,"attr %s  %s\n", QUOTE(it->first.c_str()), QUOTE(it->second.c_str())));
@@ -161,13 +161,13 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
         return;
 
     if (!name)
-        name = statistic->fullName();
+        name = statistic->getFullName();
     if (!name || !name[0])
         name = "(unnamed)";
 
     // check that recording this statistic is not disabled as a whole
-    std::string objectFullPath = component->fullPath() + "." + name;
-    bool enabled = ev.config()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
+    std::string objectFullPath = component->getFullPath() + "." + name;
+    bool enabled = ev.getConfig()->getAsBool(objectFullPath.c_str(), CFGID_SCALAR_RECORDING);
     if (!enabled)
         return;
 
@@ -183,20 +183,20 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     //   bin 20 19
     //   ...
     // In Scave, fields are read as separate scalars.
-    CHECK(fprintf(f, "statistic %s \t%s\n", QUOTE(component->fullPath().c_str()), QUOTE(name)));
-    writeStatisticField("count", statistic->count());
-    writeStatisticField("mean", statistic->mean());
-    writeStatisticField("stddev", statistic->stddev());
-    writeStatisticField("sum", statistic->sum());
-    writeStatisticField("sqrsum", statistic->sqrSum());
-    writeStatisticField("min", statistic->min());
-    writeStatisticField("max", statistic->max());
+    CHECK(fprintf(f, "statistic %s \t%s\n", QUOTE(component->getFullPath().c_str()), QUOTE(name)));
+    writeStatisticField("count", statistic->getCount());
+    writeStatisticField("mean", statistic->getMean());
+    writeStatisticField("stddev", statistic->getStddev());
+    writeStatisticField("sum", statistic->getSum());
+    writeStatisticField("sqrsum", statistic->getSqrSum());
+    writeStatisticField("min", statistic->getMin());
+    writeStatisticField("max", statistic->getMax());
     if (statistic->isWeighted())
     {
-        writeStatisticField("weights", statistic->weights());
-        writeStatisticField("weightedSum", statistic->weightedSum());
-        writeStatisticField("sqrSumWeights", statistic->sqrSumWeights());
-        writeStatisticField("weightedSqrSum", statistic->weightedSqrSum());
+        writeStatisticField("weights", statistic->getWeights());
+        writeStatisticField("weightedSum", statistic->getWeightedSum());
+        writeStatisticField("sqrSumWeights", statistic->getSqrSumWeights());
+        writeStatisticField("weightedSqrSum", statistic->getWeightedSqrSum());
     }
 
     if (attributes)
@@ -206,23 +206,23 @@ void cFileOutputScalarManager::recordStatistic(cComponent *component, const char
     if (dynamic_cast<cDensityEstBase *>(statistic))
     {
         // check that recording the histogram is enabled
-        bool enabled = ev.config()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_SCALAR_RECORDING);
+        bool enabled = ev.getConfig()->getAsBool((objectFullPath+":histogram").c_str(), CFGID_SCALAR_RECORDING);
         if (enabled)
         {
             cDensityEstBase *hist = (cDensityEstBase *)statistic;
-            int n = hist->cells();
+            int n = hist->getNumCells();
             if (n>0)
             {
-                CHECK(fprintf(f, "bin\t-INF\t%lu\n", hist->underflowCell()));
+                CHECK(fprintf(f, "bin\t-INF\t%lu\n", hist->getUnderflowCell()));
                 for (int i=0; i<n; i++)
-                    CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, hist->basepoint(i), prec, hist->cell(i)));
-                CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, hist->basepoint(n), hist->overflowCell()));
+                    CHECK(fprintf(f, "bin\t%.*g\t%.*g\n", prec, hist->getBasepoint(i), prec, hist->getCellValue(i)));
+                CHECK(fprintf(f, "bin\t%.*g\t%lu\n", prec, hist->getBasepoint(n), hist->getOverflowCell()));
             }
         }
     }
 }
 
-const char *cFileOutputScalarManager::fileName() const
+const char *cFileOutputScalarManager::getFileName() const
 {
     return fname.c_str();
 }

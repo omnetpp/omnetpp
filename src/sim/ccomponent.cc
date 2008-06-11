@@ -84,9 +84,9 @@ void cComponent::handleParameterChange(const char *)
     // Can be redefined by the user.
 }
 
-const char *cComponent::nedTypeName() const
+const char *cComponent::getNedTypeName() const
 {
-    return componentType()->fullName();
+    return getComponentType()->getFullName();
 }
 
 void cComponent::reallocParamv(int size)
@@ -106,8 +106,8 @@ void cComponent::addPar(cParImpl *value)
 {
     if (areParamsFinalized())
         throw cRuntimeError(this, "cannot add parameters at runtime");
-    if (findPar(value->name())>=0)
-        throw cRuntimeError(this, "cannot add `%s': already exists", value->name());
+    if (findPar(value->getName())>=0)
+        throw cRuntimeError(this, "cannot add `%s': already exists", value->getName());
     if (numparams==paramvsize)
         reallocParamv(paramvsize+1);
     paramv[numparams++].init(this, value);
@@ -130,7 +130,7 @@ cPar& cComponent::par(const char *parname)
 
 int cComponent::findPar(const char *parname) const
 {
-    int n = params();
+    int n = getNumParams();
     for (int i=0; i<n; i++)
         if (paramv[i].isName(parname))
             return i;
@@ -144,7 +144,7 @@ void cComponent::finalizeParameters()
     cContextTypeSwitcher tmp2(CTX_BUILD);
 
     // read input parameters
-    int n = params();
+    int n = getNumParams();
     for (int i=0; i<n; i++)
         par(i).read();
 
@@ -159,7 +159,7 @@ bool cComponent::hasDisplayString()
         return flags & FL_DISPSTR_NOTEMPTY;
 
     // not yet checked: do it now
-    cProperties *props = properties();
+    cProperties *props = getProperties();
     cProperty *prop = props->get("display");
     const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
     bool result = !opp_isempty(propValue);
@@ -169,7 +169,7 @@ bool cComponent::hasDisplayString()
     return result;
 }
 
-cDisplayString& cComponent::displayString()
+cDisplayString& cComponent::getDisplayString()
 {
     if (!dispstr)
     {
@@ -179,7 +179,7 @@ cDisplayString& cComponent::displayString()
         // set display string (it may depend on parameter values via "$param" references)
         if (!areParamsFinalized())
             throw cRuntimeError(this, "Cannot access display string yet: parameters not yet set up");
-        cProperties *props = properties();
+        cProperties *props = getProperties();
         cProperty *prop = props->get("display");
         const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
         if (propValue)
@@ -190,7 +190,7 @@ cDisplayString& cComponent::displayString()
 
 void cComponent::setDisplayString(const char *s)
 {
-    displayString().parse(s);
+    getDisplayString().parse(s);
 }
 
 void cComponent::bubble(const char *text)
@@ -200,17 +200,17 @@ void cComponent::bubble(const char *text)
 
 void cComponent::recordParametersAsScalars()
 {
-    int n = params();
+    int n = getNumParams();
     for (int i=0; i<n; i++)
     {
-        if (ev.config()->getAsBool(par(i).fullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false))
+        if (ev.getConfig()->getAsBool(par(i).getFullPath().c_str(), CFGID_PARAM_RECORD_AS_SCALAR, false))
         {
             //XXX the following checks should probably produce a WARNING not an error
             if (!par(i).isNumeric())
-                throw cRuntimeError(this, "cannot record non-numeric parameter `%s' as an output scalar", par(i).name());
+                throw cRuntimeError(this, "cannot record non-numeric parameter `%s' as an output scalar", par(i).getName());
             if (par(i).isVolatile() && (par(i).doubleValue()!=par(i).doubleValue() || par(i).doubleValue()!=par(i).doubleValue()))
-                throw cRuntimeError(this, "recording volatile parameter `%s' that contains a non-constant value (probably a random variate) as an output scalar -- recorded value is probably just a meaningless random number", par(i).name());
-            recordScalar(par(i).name(), par(i).doubleValue());  //XXX mark value specially (as being a "param") in the file?
+                throw cRuntimeError(this, "recording volatile parameter `%s' that contains a non-constant value (probably a random variate) as an output scalar -- recorded value is probably just a meaningless random number", par(i).getName());
+            recordScalar(par(i).getName(), par(i).doubleValue());  //XXX mark value specially (as being a "param") in the file?
         }
     }
 }

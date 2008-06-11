@@ -41,7 +41,7 @@ class cComponent;
  * Parameters get their initial values automatically, from the NED
  * declarations and the configuration. It is possible to change the
  * parameter value during runtime (see various setter methods and
- * operator='s), but not the type of the parameter (see type()).
+ * operator='s), but not the type of the parameter (see getType()).
  * The type correspond to NED types (bool, double, long, string, xml),
  * and cannot be changed at runtime.
  *
@@ -111,7 +111,7 @@ class SIM_API cPar : public cObject
     /**
      * Returns the parameter name.
      */
-    virtual const char *name() const;
+    virtual const char *getName() const;
 
     /**
      * Returns a one-line description of the object.
@@ -127,7 +127,7 @@ class SIM_API cPar : public cObject
     /**
      * Returns the component (module/channel) this parameter belongs to.
      */
-    virtual cObject *owner() const;
+    virtual cObject *getOwner() const;
 
     /**
      * Assignment
@@ -140,12 +140,12 @@ class SIM_API cPar : public cObject
     /**
      * Returns the parameter type
      */
-    Type type() const;
+    Type getType() const;
 
     /**
      * Returns the given type as a string.
      */
-    static const char *typeName(Type t);
+    static const char *getTypeName(Type t);
 
     /**
      * Returns true if the stored value is of a numeric type.
@@ -183,7 +183,7 @@ class SIM_API cPar : public cObject
      * Return the properties for this parameter. Properties cannot be changed
      * at runtime.
      */
-    cProperties *properties() const;
+    cProperties *getProperties() const;
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */
@@ -251,11 +251,11 @@ class SIM_API cPar : public cObject
     double doubleValue() const;
 
     /**
-     * Returns the parameter's unit, as declared with \@unit() in the NED source,
+     * Returns the parameter's unit, as declared with \@getUnit() in the NED source,
      * or NULL if no unit is specified. Unit is only valid for LONG and DOUBLE
      * types.
      */
-    const char *unit() const;
+    const char *getUnit() const;
 
     /**
      * Returns value as const char *. The cPar type must be STRING.
@@ -280,7 +280,7 @@ class SIM_API cPar : public cObject
     /**
      * Returns pointer to the expression stored by the object, or NULL.
      */
-    cExpression *expression() const;
+    cExpression *getExpression() const;
     //@}
 
     /** @name Miscellaneous utility functions. */

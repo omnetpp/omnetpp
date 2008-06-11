@@ -44,7 +44,7 @@ NAMESPACE_BEGIN
 // the macro
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
     static cEnvir *__FILEUNIQUENAME__() {return new CLASSNAME();} \
-    EXECUTE_ON_STARTUP(omnetapps.instance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
+    EXECUTE_ON_STARTUP(omnetapps.getInstance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,__FILEUNIQUENAME__)))
 
 class cEnvir;
 
@@ -63,7 +63,7 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
     virtual ~cOmnetAppRegistration()  {}
 
     // redefined functions
-    virtual const char *className() const {return "cOmnetAppRegistration";}
+    virtual const char *getClassName() const {return "cOmnetAppRegistration";}
 
     // new functions
     cEnvir *createOne()  {return creatorfunc();}

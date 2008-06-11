@@ -90,7 +90,7 @@ void cClassDescriptor::enum2string(long e, const char *enumname, char *buf, int 
         // this enum type is not registered
         return;
     }
-    const char *s = enump->stringFor(e);
+    const char *s = enump->getStringFor(e);
     if (!s) {
         // no string for this numeric value
         sprintf(buf+strlen(buf), " (unknown)");
@@ -184,7 +184,7 @@ bool cClassDescriptor::extendsCObject() const
         const cClassDescriptor *current = this;
 
         while (current) {
-            if (!strcmp("cObject", current->name())) {
+            if (!strcmp("cObject", current->getName())) {
                 this_->extendscobject = true;
                 break;
             }
@@ -207,18 +207,18 @@ const char *cClassDescriptor::getFieldDeclaredOn(void *object, int field) const
     cClassDescriptor *base = getBaseClassDescriptor();
     if (base && field < base->getFieldCount(object))
         return base->getFieldDeclaredOn(object, field);
-    return name();
+    return getName();
 }
 
 cClassDescriptor *cClassDescriptor::getDescriptorFor(const char *classname)
 {
-    return dynamic_cast<cClassDescriptor *>(classDescriptors.instance()->lookup(classname));
+    return dynamic_cast<cClassDescriptor *>(classDescriptors.getInstance()->lookup(classname));
 }
 
 cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
 {
     // find descriptor by class name
-    cClassDescriptor *desc = cClassDescriptor::getDescriptorFor(object->className());
+    cClassDescriptor *desc = cClassDescriptor::getDescriptorFor(object->getClassName());
     if (desc)
         return desc;
 
@@ -226,7 +226,7 @@ cClassDescriptor *cClassDescriptor::getDescriptorFor(cObject *object)
     //XXX we could even cache the result in a {classname->descriptor} hashtable.
     cClassDescriptor *bestDesc = NULL;
     int bestInheritanceChainLength = -1;
-    cRegistrationList *array = classDescriptors.instance();
+    cRegistrationList *array = classDescriptors.getInstance();
     for (int i=0; i<array->size(); i++)
     {
         cClassDescriptor *desc = dynamic_cast<cClassDescriptor *>(array->get(i));

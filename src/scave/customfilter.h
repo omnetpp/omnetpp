@@ -55,12 +55,12 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
                 {hostnode = node; varname = name; hostnode->skipFirstDatum |= (varname=="xprev" || varname=="yprev"); }
             virtual ~NodeVar() {}
             virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
-            virtual const char *name() const {return varname.c_str();}
-            virtual const char *argTypes() const {return "";}
-            virtual char returnType() const {return Expression::Value::DBL;}
+            virtual const char *getName() const {return varname.c_str();}
+            virtual const char *getArgTypes() const {return "";}
+            virtual char getReturnType() const {return Expression::Value::DBL;}
             virtual Expression::Value evaluate(Expression::Value args[], int numargs)
                 {return hostnode->getVariable(varname.c_str());}
-            virtual std::string str(std::string args[], int numargs) {return name();}
+            virtual std::string str(std::string args[], int numargs) {return getName();}
         };
     private:
         Expression *expr;
@@ -77,8 +77,8 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
 class SCAVE_API ExpressionFilterNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "expression";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "expression";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs) const;

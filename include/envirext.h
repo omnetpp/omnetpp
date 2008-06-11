@@ -118,7 +118,7 @@ class SIM_API cOutputVectorManager : public cObject
      * Returns the output vector file name. Returns NULL if this object is not
      * producing file output.
      */
-    virtual const char *fileName() const = 0;
+    virtual const char *getFileName() const = 0;
 
     /**
      * Force writing out all buffered output.
@@ -201,7 +201,7 @@ class SIM_API cOutputScalarManager : public cObject
      * Returns the output scalar file name. Returns NULL if this object is not
      * producing file output.
      */
-    virtual const char *fileName() const = 0;
+    virtual const char *getFileName() const = 0;
 
     /**
      * Force writing out all buffered output.
@@ -282,7 +282,7 @@ class SIM_API cSnapshotManager : public cObject
      * Returns the snapshot file name. Returns NULL if this object is not
      * producing file output.
      */
-    virtual const char *fileName() const = 0;
+    virtual const char *getFileName() const = 0;
     //@}
 };
 

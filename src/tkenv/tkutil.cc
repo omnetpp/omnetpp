@@ -86,9 +86,9 @@ TclQuotedString::~TclQuotedString()
 const char *getObjectTypeName(cObject *object)
 {
    if (dynamic_cast<cComponent*>(object))
-       return ((cComponent*)object)->componentType()->name();
+       return ((cComponent*)object)->getComponentType()->getName();
    else
-       return object->className();
+       return object->getClassName();
 }
 
 char *voidPtrToStr(void *ptr, char *buffer)
@@ -141,7 +141,7 @@ void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject
     const char *ptr = ptrToStr(obj);
     CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
                             "ptr {",ptr,"} "
-                            "name {",(fullpath ? obj->fullPath().c_str() : obj->fullName()),"} "
+                            "name {",(fullpath ? obj->getFullPath().c_str() : obj->getFullName()),"} "
                             "class {",getObjectTypeName(obj),"} "
                             "info ",TclQuotedString(obj->info().c_str()).get(),
                             "} ",
@@ -207,12 +207,12 @@ class cInspectByNameVisitor : public cVisitor
         // we have to do exhaustive search here... optimization, such as checking
         // if objpath matches beginning of fullpath to see if we're on the
         // right track is not usable, because some objects (simulation, modules'
-        // paramv, gatev members) don't appear in object's fullPath()...
+        // paramv, gatev members) don't appear in object's getFullPath()...
 
-        std::string objpath = obj->fullPath();
+        std::string objpath = obj->getFullPath();
 
         // however, a module's name and the future event set's name is not hidden,
-        // so if this obj is a module (or cMessageHeap) and its name doesn't match
+        // so if this obj is a getModule(or cMessageHeap) and its name doesn't match
         // the beginning of fullpath, we can cut the search here.
         if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
             && strncmp(objpath.c_str(), fullpath, strlen(objpath.c_str()))!=0)

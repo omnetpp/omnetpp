@@ -50,7 +50,7 @@ class cOwnedObject;
  * of an object, because a class with a virtual function already has a vptr.
  *
  * cObject allows the object to be displayed in graphical user
- * interface (Tkenv) via the className(), info() and detailedInfo() methods
+ * interface (Tkenv) via the getClassName(), info() and detailedInfo() methods
  * which you may choose to redefine in your own subclasses.
  *
  * Using cObject also strengthens type safety. <tt>cObject *</tt>
@@ -102,7 +102,7 @@ class SIM_API cObject
      * using typeid (C++ RTTI), and it does not need to be overridden
      * in subclasses.
      */
-    virtual const char *className() const;
+    virtual const char *getClassName() const;
 
     /** @name Empty virtual functions which can be redefined in subclasses */
     //@{
@@ -110,12 +110,12 @@ class SIM_API cObject
      * Returns pointer to the object's name. It should never return NULL.
      * This default implementation just returns an empty string ("").
      */
-    virtual const char *name() const  {return "";}
+    virtual const char *getName() const  {return "";}
 
      /**
      * Returns true if the object's name is identical to the string passed.
      */
-    bool isName(const char *s) const {return !opp_strcmp(name(),s);}
+    bool isName(const char *s) const {return !opp_strcmp(getName(),s);}
 
     /**
      * When this object is part of a vector (like a submodule can be part of
@@ -123,18 +123,18 @@ class SIM_API cObject
      * returns the object's name with the index in brackets; for example:
      * "out[5]".
      *
-     * This default implementation just returns name().
+     * This default implementation just returns getName().
      */
-    virtual const char *fullName() const  {return name();}
+    virtual const char *getFullName() const  {return getName();}
 
     /**
      * Returns the full path of the object in the object hierarchy,
-     * like "net.host[2].tcp.winsize". This method relies on owner():
+     * like "net.host[2].tcp.winsize". This method relies on getOwner():
      * if there is an owner object, this method returns the owner's fullPath
      * plus this object's fullName, separated by a dot; otherwise it simply
      * returns fullName.
      */
-    virtual std::string fullPath() const;
+    virtual std::string getFullPath() const;
 
     /**
      * Can be redefined to produce a one-line description of object.
@@ -232,7 +232,7 @@ class SIM_API cObject
      * May be redefined to return an owner or parent object. This default
      * implementation just returns NULL.
      */
-    virtual cObject *owner() const {return NULL;}
+    virtual cObject *getOwner() const {return NULL;}
 
     /**
      * Returns true if this class is a subclass of cOwnedObject.
@@ -262,7 +262,7 @@ class SIM_API cObject
      * contained will be searched, otherwise the function searches the
      * whole subtree for the object. It uses the forEachChild() mechanism.
      *
-     * Do not use it for finding submodules! Use cModule::moduleByRelativePath()
+     * Do not use it for finding submodules! Use cModule::getModuleByRelativePath()
      * instead.
      */
     cObject *findObject(const char *name, bool deep=true);

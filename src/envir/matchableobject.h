@@ -29,7 +29,7 @@ class cClassDescriptor;
 
 /**
  * Wrapper around a cObject to make it matchable with MatchExpression.
- * The default attribute is either fullName() or fullPath().
+ * The default attribute is either getFullName() or getFullPath().
  */
 class ENVIR_API MatchableObjectAdapter : public MatchExpression::Matchable
 {

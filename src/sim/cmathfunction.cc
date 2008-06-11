@@ -95,48 +95,48 @@ std::string cMathFunction::info() const
     return out.str();
 }
 
-MathFuncNoArg cMathFunction::mathFuncNoArg() const
+MathFuncNoArg cMathFunction::getMathFuncNoArg() const
 {
     if (argc!=0)
-        throw cRuntimeError(this,"mathFuncNoArg(): arg count mismatch (argc=%d)",argc);
+        throw cRuntimeError(this,"getMathFuncNoArg(): arg count mismatch (argc=%d)",argc);
     return (MathFuncNoArg)f;
 }
 
-MathFunc1Arg cMathFunction::mathFunc1Arg() const
+MathFunc1Arg cMathFunction::getMathFunc1Arg() const
 {
     if (argc!=1)
-        throw cRuntimeError(this,"mathFunc1Arg(): arg count mismatch (argc=%d)",argc);
+        throw cRuntimeError(this,"getMathFunc1Arg(): arg count mismatch (argc=%d)",argc);
     return (MathFunc1Arg)f;
 }
 
-MathFunc2Args cMathFunction::mathFunc2Args() const
+MathFunc2Args cMathFunction::getMathFunc2Args() const
 {
     if (argc!=2)
-        throw cRuntimeError(this,"mathFunc2Args(): arg count mismatch (argc=%d)",argc);
+        throw cRuntimeError(this,"getMathFunc2Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc2Args)f;
 }
 
-MathFunc3Args cMathFunction::mathFunc3Args() const
+MathFunc3Args cMathFunction::getMathFunc3Args() const
 {
     if (argc!=3)
-        throw cRuntimeError(this,"mathFunc3Args(): arg count mismatch (argc=%d)",argc);
+        throw cRuntimeError(this,"getMathFunc3Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc3Args)f;
 }
 
-MathFunc4Args cMathFunction::mathFunc4Args() const
+MathFunc4Args cMathFunction::getMathFunc4Args() const
 {
     if (argc!=4)
-        throw cRuntimeError(this,"mathFunc4Args(): arg count mismatch (argc=%d)",argc);
+        throw cRuntimeError(this,"getMathFunc4Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc4Args)f;
 }
 
 cMathFunction *cMathFunction::find(const char *name, int argcount)
 {
-    cRegistrationList *a = nedFunctions.instance();
+    cRegistrationList *a = nedFunctions.getInstance();
     for (int i=0; i<a->size(); i++)
     {
         cMathFunction *f = dynamic_cast<cMathFunction *>(a->get(i));
-        if (f && f->isName(name) && f->numArgs()==argcount)
+        if (f && f->isName(name) && f->getNumArgs()==argcount)
             return f;
     }
     return NULL;
@@ -144,11 +144,11 @@ cMathFunction *cMathFunction::find(const char *name, int argcount)
 
 cMathFunction *cMathFunction::findByPointer(MathFunc f)
 {
-    cRegistrationList *a = nedFunctions.instance();
+    cRegistrationList *a = nedFunctions.getInstance();
     for (int i=0; i<a->size(); i++)
     {
         cMathFunction *ff = dynamic_cast<cMathFunction *>(a->get(i));
-        if (ff && ff->mathFunc() == f)
+        if (ff && ff->getMathFunc() == f)
             return ff;
     }
     return NULL;

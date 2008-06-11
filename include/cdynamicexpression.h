@@ -196,7 +196,7 @@ class SIM_API cDynamicExpression : public cExpression
      */
     struct SIM_API Value
     {
-        // Note: char codes need to be present and be consistent with cNEDFunction::argTypes()
+        // Note: char codes need to be present and be consistent with cNEDFunction::getArgTypes()
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
         bool bl;
         double dbl;
@@ -233,9 +233,9 @@ class SIM_API cDynamicExpression : public cExpression
     class SIM_API Functor : public cObject
     {
       public:
-        virtual const char *argTypes() const = 0;
-        virtual int numArgs() const {return strlen(argTypes());}
-        virtual char returnType() const = 0;
+        virtual const char *getArgTypes() const = 0;
+        virtual int getNumArgs() const {return strlen(getArgTypes());}
+        virtual char getReturnType() const = 0;
         virtual Value evaluate(cComponent *context, Value args[], int numargs) = 0;
         virtual std::string str(std::string args[], int numargs) = 0;
     };

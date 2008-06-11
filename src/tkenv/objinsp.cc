@@ -149,7 +149,7 @@ void TWatchInspector::update()
    TInspector::update();
 
    cWatchBase *watch = static_cast<cWatchBase *>(object);
-   setLabel(".main.name.l", (std::string(watch->className())+" "+watch->name()).c_str());
+   setLabel(".main.name.l", (std::string(watch->getClassName())+" "+watch->getName()).c_str());
    setEntry(".main.name.e", watch->info().c_str());
 }
 

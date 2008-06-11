@@ -93,9 +93,9 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
 
         /** Name, description etc. */
         //@{
-        virtual const char *name() const;
-        virtual const char *category() const  {return "custom filter";}
-        virtual const char *description() const;
+        virtual const char *getName() const;
+        virtual const char *getCategory() const  {return "custom filter";}
+        virtual const char *getDescription() const;
         virtual bool isHidden() const {return _hidden;}
         virtual void setName(const char *);
         virtual void setDescription(const char *);

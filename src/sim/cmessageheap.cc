@@ -34,11 +34,11 @@ Register_Class(cMessageHeap);
 
 inline int operator <= (cMessage& a, cMessage& b)
 {
-    return (a.arrivalTime() < b.arrivalTime()) ? 1 :
-           (a.arrivalTime() > b.arrivalTime()) ? 0 :
-           (a.priority() < b.priority()) ? 1 :
-           (a.priority() > b.priority()) ? 0 :
-            a.insertOrder() <= b.insertOrder();
+    return (a.getArrivalTime() < b.getArrivalTime()) ? 1 :
+           (a.getArrivalTime() > b.getArrivalTime()) ? 0 :
+           (a.getPriority() < b.getPriority()) ? 1 :
+           (a.getPriority() > b.getPriority()) ? 0 :
+            a.getInsertOrder() <= b.getInsertOrder();
 }
 
 inline int operator > (cMessage& a, cMessage& b)
@@ -51,15 +51,15 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
     cMessage *m1 = *(cMessage **)p1;
     cMessage *m2 = *(cMessage **)p2;
 
-    if (m1->arrivalTime() < m2->arrivalTime())
+    if (m1->getArrivalTime() < m2->getArrivalTime())
         return -1;
-    if (m1->arrivalTime() > m2->arrivalTime())
+    if (m1->getArrivalTime() > m2->getArrivalTime())
         return 1;
 
-    int dpri = m1->priority() - m2->priority();
+    int dpri = m1->getPriority() - m2->getPriority();
     if (dpri) return dpri;
 
-    return (m1->insertOrder() < m2->insertOrder()) ? -1 : 1;
+    return (m1->getInsertOrder() < m2->getInsertOrder()) ? -1 : 1;
 }
 
 //----
@@ -75,7 +75,7 @@ cMessageHeap::cMessageHeap(const char *name, int siz) : cOwnedObject(name, false
 cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cOwnedObject()
 {
     h=NULL; n=0;
-    setName(heap.name());
+    setName(heap.getName());
     operator=(heap);
 }
 
@@ -90,7 +90,7 @@ std::string cMessageHeap::info() const
     if (n==0)
         return std::string("empty");
     std::stringstream out;
-    out << "length=" << n << " Tmin=" << h[1]->arrivalTime();
+    out << "length=" << n << " Tmin=" << h[1]->getArrivalTime();
     return out.str();
 }
 

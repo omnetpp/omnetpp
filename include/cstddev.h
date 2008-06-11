@@ -48,7 +48,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Copy constructor.
      */
-    cStdDev(const cStdDev& r) : cStatistic() {setName(r.name());operator=(r);}
+    cStdDev(const cStdDev& r) : cStatistic() {setName(r.getName());operator=(r);}
 
     /**
      * Constructor.
@@ -133,66 +133,66 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Returns the number of observations collected.
      */
-    virtual long count() const  {return num_vals;}
+    virtual long getCount() const  {return num_vals;}
 
     /**
      * Returns the sum of the values.
      */
-    virtual double sum() const  {return sum_vals;}
+    virtual double getSum() const  {return sum_vals;}
 
     /**
      * Returns the squared sum of the collected values.
      */
-    virtual double sqrSum() const  {return sqrsum_vals;}
+    virtual double getSqrSum() const  {return sqrsum_vals;}
 
     /**
      * Returns the minimum of the collected values.
      */
-    virtual double min() const  {return min_vals;}
+    virtual double getMin() const  {return min_vals;}
 
     /**
      * Returns the maximum of the collected values.
      */
-    virtual double max() const  {return max_vals;}
+    virtual double getMax() const  {return max_vals;}
 
     /**
      * Returns the mean of the observations.
      * Returns 0.0 if nothing was collected yet.
      */
-    virtual double mean() const  {return num_vals==0 ? 0 : sum_vals/num_vals;}
+    virtual double getMean() const  {return num_vals==0 ? 0 : sum_vals/num_vals;}
 
     /**
      * Returns the standard deviation of the observations.
      */
-    virtual double stddev() const;
+    virtual double getStddev() const;
 
     /**
      * Returns the variance of the observations collected.
      */
-    virtual double variance() const;
+    virtual double getVariance() const;
 
     /**
-     * Since this is unweighted statistics, the sum of weights is count().
+     * Since this is unweighted statistics, the sum of weights is getCount().
      */
-    virtual double weights() const  {return count();}
+    virtual double getWeights() const  {return getCount();}
 
     /**
      * Since this is unweighted statistics, the sum of weight*value products
-     * is sum().
+     * is getSum().
      */
-    virtual double weightedSum() const  {return sum();}
+    virtual double getWeightedSum() const  {return getSum();}
 
     /**
      * Since this is unweighted statistics, the sum of squared weights
-     * is count().
+     * is getCount().
      */
-    virtual double sqrSumWeights() const  {return count();}
+    virtual double getSqrSumWeights() const  {return getCount();}
 
     /**
      * Since this is unweighted statistics, the sum of weight*value*value
-     * products is sqrSum().
+     * products is getSqrSum().
      */
-    virtual double weightedSqrSum() const  {return sqrSum();}
+    virtual double getWeightedSqrSum() const  {return getSqrSum();}
 
     /**
      * Returns numbers from a normal distribution with the current mean and
@@ -241,7 +241,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Constructors, destructor, duplication and assignment.
      */
-    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev() {setName(r.name());operator=(r);}
+    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev() {setName(r.getName());operator=(r);}
 
     /**
      * Constructors, destructor, duplication and assignment.
@@ -347,32 +347,32 @@ class SIM_API cWeightedStdDev : public cStdDev
      * Returns the mean of the observations collected.
      * Returns 0.0 if nothing was collected yet.
      */
-    virtual double mean() const  {return sum_weights==0 ? 0 : sum_weighted_vals / sum_weights;}
+    virtual double getMean() const  {return sum_weights==0 ? 0 : sum_weighted_vals / sum_weights;}
 
     /**
      * Returns the variance of the observations collected.
      */
-    virtual double variance() const;
+    virtual double getVariance() const;
 
     /**
      * Returns the sum of weights.
      */
-    virtual double weights() const  {return sum_weights;}
+    virtual double getWeights() const  {return sum_weights;}
 
     /**
      * Returns the sum of weight*value products.
      */
-    virtual double weightedSum() const  {return sum_weighted_vals;}
+    virtual double getWeightedSum() const  {return sum_weighted_vals;}
 
     /**
      * Returns the sum of squared weights.
      */
-    virtual double sqrSumWeights() const  {return sum_squared_weights;}
+    virtual double getSqrSumWeights() const  {return sum_squared_weights;}
 
     /**
      * Returns the sum of weight*value*value products.
      */
-    virtual double weightedSqrSum() const  {return sum_weights_squared_vals;}
+    virtual double getWeightedSqrSum() const  {return sum_weights_squared_vals;}
 
     /**
      * Writes the contents of the object into a text file.

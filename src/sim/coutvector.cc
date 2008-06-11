@@ -52,7 +52,7 @@ cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 
     // register early if possible (only required by Akaroa)
     if (name)
-        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name);
+        handle = ev.registerOutputVector(simulation.getContext()->getFullPath().c_str(), name);
 }
 
 cOutVector::~cOutVector()
@@ -70,7 +70,7 @@ void cOutVector::setName(const char *nam)
 
     // register early (only needed for Akaroa...)
     if (nam)
-        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name());
+        handle = ev.registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
 }
 
 std::string cOutVector::info() const
@@ -111,7 +111,7 @@ void cOutVector::setEnum(cEnum *enumDecl)
 {
     if (!handle)
         throw cRuntimeError(this,"setEnum(): set the object name first, using setName()");
-    ev.setVectorAttribute(handle, "enumname", enumDecl->name());
+    ev.setVectorAttribute(handle, "enumname", enumDecl->getName());
     ev.setVectorAttribute(handle, "enum", enumDecl->str().c_str());
 }
 
@@ -197,7 +197,7 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 
     // initialize if not yet done
     if (!handle)
-        handle = ev.registerOutputVector(simulation.context()->fullPath().c_str(), name());
+        handle = ev.registerOutputVector(simulation.getContext()->getFullPath().c_str(), getName());
 
     // pass data to envir for storage
     bool stored = ev.recordInOutputVector(handle, t, value);

@@ -51,7 +51,7 @@ bool cProxyGate::deliver(cMessage *msg, simtime_t t)
     ASSERT(togatep==NULL);
     ASSERT(partition!=NULL);
     if (remoteProcId==-1)
-        throw cRuntimeError(this, "cannot deliver message '%s': not connected to remote gate", msg->name());
+        throw cRuntimeError(this, "cannot deliver message '%s': not connected to remote gate", msg->getName());
 
     msg->setArrivalTime(t);  // merge arrival time into message
     partition->processOutgoingMessage(msg, remoteProcId, remoteModuleId, remoteGateId, data);

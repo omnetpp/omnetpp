@@ -59,11 +59,11 @@ cStdDev::cStdDev(const char *s) : cStatistic(s)
 std::string cStdDev::info() const
 {
     std::stringstream out;
-    out << "n=" << count()
-        << " mean=" << mean()
-        << " stddev=" << stddev()
-        << " min=" << min()
-        << " max=" << max();
+    out << "n=" << getCount()
+        << " mean=" << getMean()
+        << " stddev=" << getStddev()
+        << " min=" << getMin()
+        << " max=" << getMax();
     return out.str();
 }
 
@@ -114,7 +114,7 @@ void cStdDev::collect(double value)
     if (++num_vals <= 0)
     {
         // num_vals overflow: issue warning and stop collecting
-        ev.printf("\a\nWARNING: (%s)%s: collect(): observation count overflow!\n\n",className(),fullPath().c_str());
+        ev.printf("\a\nWARNING: (%s)%s: collect(): observation count overflow!\n\n",getClassName(),getFullPath().c_str());
         num_vals--;  // restore
         return;
     }
@@ -134,35 +134,35 @@ void cStdDev::collect(double value)
         min_vals = max_vals = value;
     }
 
-    if (transientDetectionObject()) td->collect(value);  //NL
-    if (accuracyDetectionObject()) ra->collect(value);   //NL
+    if (getTransientDetectionObject()) td->collect(value);  //NL
+    if (getAccuracyDetectionObject()) ra->collect(value);   //NL
 }
 
 void cStdDev::doMerge(const cStatistic *other)
 {
     long orig_num_vals = num_vals;
-    num_vals += other->count();
+    num_vals += other->getCount();
     if (num_vals < 0)
         throw cRuntimeError(this, "merge(): observation count overflow");
 
-    if (other->count()>0 && (orig_num_vals==0 || min_vals>other->min()))
-        min_vals = other->min();
-    if (other->count()>0 && (orig_num_vals==0 || max_vals<other->max()))
-        max_vals = other->max();
+    if (other->getCount()>0 && (orig_num_vals==0 || min_vals>other->getMin()))
+        min_vals = other->getMin();
+    if (other->getCount()>0 && (orig_num_vals==0 || max_vals<other->getMax()))
+        max_vals = other->getMax();
 
-    sum_vals += other->sum();
-    sqrsum_vals += other->sqrSum();
+    sum_vals += other->getSum();
+    sqrsum_vals += other->getSqrSum();
 }
 
 void cStdDev::merge(const cStatistic *other)
 {
     if (other->isWeighted())
         throw cRuntimeError(this, "Cannot merge weighted statistics (%s)%s into unweighted statistics",
-                                  other->className(), other->fullPath().c_str());
+                                  other->getClassName(), other->getFullPath().c_str());
     doMerge(other);
 }
 
-double cStdDev::variance() const
+double cStdDev::getVariance() const
 {
     if (num_vals<=1)
         return 0.0;
@@ -177,9 +177,9 @@ double cStdDev::variance() const
     }
 }
 
-double cStdDev::stddev() const
+double cStdDev::getStddev() const
 {
-    return sqrt(variance());
+    return sqrt(getVariance());
 }
 
 std::string cStdDev::detailedInfo() const
@@ -190,8 +190,8 @@ std::string cStdDev::detailedInfo() const
         os << "  Value          = " << min_vals << "\n";
     else if (num_vals>0)
     {
-        os << "  Mean value     = " << mean() << "\n";
-        os << "  Standard dev.  = " << stddev() << "\n";
+        os << "  Mean value     = " << getMean() << "\n";
+        os << "  Standard dev.  = " << getStddev() << "\n";
         os << "  Minimal value  = " << min_vals << "\n";
         os << "  Maximal value  = " << max_vals << "\n";
     }
@@ -210,13 +210,13 @@ double cStdDev::random() const
     {
         case 0:  return 0.0;
         case 1:  return min_vals;
-        default: return normal(mean(), stddev(), genk);
+        default: return normal(getMean(), getStddev(), genk);
     }
 }
 
 void cStdDev::saveToFile(FILE *f) const
 {
-    fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath().c_str());
+    fprintf(f,"\n#\n# (%s) %s\n#\n", getClassName(), getFullPath().c_str());
     fprintf(f,"%ld\t #= num_vals\n",num_vals);
     fprintf(f,"%g %g\t #= min, max\n", min_vals, max_vals);
     fprintf(f,"%g\t #= sum\n", sum_vals);
@@ -237,11 +237,11 @@ void cStdDev::loadFromFile(FILE *f)
 std::string cWeightedStdDev::info() const
 {
     std::stringstream out;
-    out << "n=" << count()
-        << " mean=" << mean()
-        << " stddev=" << stddev()
-        << " min=" << min()
-        << " max=" << max();
+    out << "n=" << getCount()
+        << " mean=" << getMean()
+        << " stddev=" << getStddev()
+        << " min=" << getMin()
+        << " max=" << getMax();
     return out.str();
 }
 
@@ -290,7 +290,7 @@ void cWeightedStdDev::collect2(double value, double weight)
         if (++num_vals <= 0)
         {
             // num_vals overflow: issue warning and stop collecting
-            ev.printf("\a\nWARNING: (%s)%s: collect2(): observation count overflow!\n\n",className(),fullPath().c_str());
+            ev.printf("\a\nWARNING: (%s)%s: collect2(): observation count overflow!\n\n",getClassName(),getFullPath().c_str());
             num_vals--;  // restore
             return;
         }
@@ -315,8 +315,8 @@ void cWeightedStdDev::collect2(double value, double weight)
         sum_squared_weights += weight * weight;
         sum_weights_squared_vals += weight * value * value;
 
-        if (transientDetectionObject()) td->collect(value);
-        if (accuracyDetectionObject()) ra->collect(value);
+        if (getTransientDetectionObject()) td->collect(value);
+        if (getAccuracyDetectionObject()) ra->collect(value);
     }
     else if (weight < 0)
     {
@@ -327,10 +327,10 @@ void cWeightedStdDev::collect2(double value, double weight)
 void cWeightedStdDev::merge(const cStatistic *other)
 {
     cStdDev::doMerge(other);
-    sum_weights += other->weights();
-    sum_weighted_vals += other->weightedSum();
-    sum_squared_weights += other->sqrSumWeights();
-    sum_weights_squared_vals += other->weightedSqrSum();
+    sum_weights += other->getWeights();
+    sum_weighted_vals += other->getWeightedSum();
+    sum_squared_weights += other->getSqrSumWeights();
+    sum_weights_squared_vals += other->getWeightedSqrSum();
 }
 
 void cWeightedStdDev::clearResult()
@@ -342,7 +342,7 @@ void cWeightedStdDev::clearResult()
     sum_weights_squared_vals = 0.0;
 }
 
-double cWeightedStdDev::variance() const
+double cWeightedStdDev::getVariance() const
 {
     // note: no check for division by zero, we prefer to return Inf or NaN
     double denominator = sum_weights * sum_weights - sum_squared_weights;

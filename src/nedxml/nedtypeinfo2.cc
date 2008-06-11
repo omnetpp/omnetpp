@@ -56,7 +56,7 @@ NEDTypeInfo2::NEDTypeInfo2(NEDResourceCache *resolver, const char *qname, NEDEle
         else if (numExtendsNames()!=0)
             implClassName = opp_nulltoempty(getSuperDecl()->implementationClassName());
         else
-            implClassName = opp_join("::", getCxxNamespace().c_str(), name());
+            implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
     }
 
     bool isInterface = type==MODULEINTERFACE || type==CHANNELINTERFACE;
@@ -122,15 +122,15 @@ NEDTypeInfo2::~NEDTypeInfo2()
     // note: we don't delete "tree", as it belongs to resolver
 }
 
-const char *NEDTypeInfo2::name() const
+const char *NEDTypeInfo2::getName() const
 {
     // take substring after the last dot
-    const char *qname = fullName();
+    const char *qname = getFullName();
     const char *lastdot = strrchr(qname, '.');
     return !lastdot ? qname : lastdot + 1;
 }
 
-const char *NEDTypeInfo2::fullName() const
+const char *NEDTypeInfo2::getFullName() const
 {
     return qualifiedName.c_str();
 }
@@ -256,20 +256,20 @@ void NEDTypeInfo2::checkComplianceToInterface(NEDTypeInfo2 *idecl)
             ParamElement *param = findParamDecl(iparam->getName());
             if (!param)
                 throw NEDException(getTree(), "%s type has no parameter `%s', required by interface `%s'",
-                                   (getType()==CHANNEL ? "channel" : "module"), iparam->getName(), idecl->fullName());
+                                   (getType()==CHANNEL ? "channel" : "module"), iparam->getName(), idecl->getFullName());
 
             // check parameter type
             if (param->getType()!=iparam->getType())
                 throw NEDException(param, "type of parameter `%s' must be %s, as required by interface `%s'",
-                                   param->getName(), iparam->getAttribute("type"), idecl->fullName());
+                                   param->getName(), iparam->getAttribute("type"), idecl->getFullName());
 
             // check parameter volatile flag
             if (param->getIsVolatile() && !iparam->getIsVolatile())
                 throw NEDException(param, "parameter `%s' must not be volatile, as required by interface `%s'",
-                                   param->getName(), idecl->fullName());
+                                   param->getName(), idecl->getFullName());
             if (!param->getIsVolatile() && iparam->getIsVolatile())
                 throw NEDException(param, "parameter `%s' must be volatile, as required by interface `%s'",
-                                   param->getName(), idecl->fullName());
+                                   param->getName(), idecl->getFullName());
 
             // TODO check properties
         }
@@ -285,20 +285,20 @@ void NEDTypeInfo2::checkComplianceToInterface(NEDTypeInfo2 *idecl)
             GateElement *gate = findGateDecl(igate->getName());
             if (!gate)
                 throw NEDException(getTree(), "%s type has no gate `%s', required by interface `%s'",
-                                   (getType()==CHANNEL ? "channel" : "module"), igate->getName(), idecl->fullName());
+                                   (getType()==CHANNEL ? "channel" : "module"), igate->getName(), idecl->getFullName());
 
             // check gate type
             if (gate->getType()!=igate->getType())
                 throw NEDException(gate, "type of gate `%s' must be %s, as required by interface `%s'",
-                                   gate->getName(), igate->getAttribute("type"), idecl->fullName());
+                                   gate->getName(), igate->getAttribute("type"), idecl->getFullName());
 
             // check vector/nonvector
             if (!igate->getIsVector() && gate->getIsVector())
                 throw NEDException(gate, "gate `%s' must not be a vector gate, as required by interface `%s'",
-                                   gate->getName(), idecl->fullName());
+                                   gate->getName(), idecl->getFullName());
             if (igate->getIsVector() && !gate->getIsVector())
                 throw NEDException(gate, "gate `%s' must be a vector gate, as required by interface `%s'",
-                                   gate->getName(), idecl->fullName());
+                                   gate->getName(), idecl->getFullName());
 
             // if both are vectors, check vector size specs are compatible
             if (igate->getIsVector() && gate->getIsVector())
@@ -311,10 +311,10 @@ void NEDTypeInfo2::checkComplianceToInterface(NEDTypeInfo2 *idecl)
 
                 if (hasGatesize && !ihasGatesize)
                     throw NEDException(gate, "size of gate vector `%s' must be left unspecified, as required by interface `%s'",
-                                       gate->getName(), idecl->fullName());
+                                       gate->getName(), idecl->getFullName());
                 if (!hasGatesize && ihasGatesize)
                     throw NEDException(gate, "size of gate vector `%s' must be specified as in interface `%s'",
-                                       gate->getName(), idecl->fullName());
+                                       gate->getName(), idecl->getFullName());
 
                 // if both gatesizes are given, check that they are actually the same
                 if (hasGatesize && ihasGatesize)
@@ -324,7 +324,7 @@ void NEDTypeInfo2::checkComplianceToInterface(NEDTypeInfo2 *idecl)
                         opp_strcmp(gate->getVectorSize(), igate->getVectorSize())!=0;  // with unparsed expressions
                     if (mismatch)
                         throw NEDException(gate, "size of gate vector `%s' must be specified as in interface `%s'",
-                                           gate->getName(), idecl->fullName());
+                                           gate->getName(), idecl->getFullName());
                 }
 
             }

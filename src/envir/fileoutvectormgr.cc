@@ -57,7 +57,7 @@ cFileOutputVectorManager::cFileOutputVectorManager()
 {
     nextid = 0;
     f = NULL;
-    prec = ev.config()->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
+    prec = ev.getConfig()->getAsInt(CFGID_OUTPUT_VECTOR_PRECISION);
 }
 
 cFileOutputVectorManager::~cFileOutputVectorManager()
@@ -116,7 +116,7 @@ void cFileOutputVectorManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
-    fname = ev.config()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
+    fname = ev.getConfig()->getAsFilename(CFGID_OUTPUT_VECTOR_FILE).c_str();
     dynamic_cast<EnvirBase *>(&ev)->processFileName(fname);
     removeFile(fname.c_str(), "old output vector file");
 
@@ -134,11 +134,11 @@ void cFileOutputVectorManager::getOutVectorConfig(const char *modname,const char
                                                   Intervals& outIntervals)
 {
     std::string vectorfullpath = std::string(modname) + "." + vecname;
-    outEnabled = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
-    outRecordEventNumbers = ev.config()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
+    outEnabled = ev.getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
+    outRecordEventNumbers = ev.getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
 
     // get interval string
-    const char *text = ev.config()->getAsCustom(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING_INTERVAL);
+    const char *text = ev.getConfig()->getAsCustom(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING_INTERVAL);
     if (text)
         outIntervals.parse(text);
 }
@@ -191,7 +191,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         assert(f!=NULL);
         if (vp->recordEventNumbers)
         {
-            CHECK(fprintf(f,"%d\t%ld\t%s\t%.*g\n", vp->id, simulation.eventNumber(), SIMTIME_TTOA(buff, t), prec, value));
+            CHECK(fprintf(f,"%d\t%ld\t%s\t%.*g\n", vp->id, simulation.getEventNumber(), SIMTIME_TTOA(buff, t), prec, value));
         }
         else
         {
@@ -202,7 +202,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
     return false;
 }
 
-const char *cFileOutputVectorManager::fileName() const
+const char *cFileOutputVectorManager::getFileName() const
 {
     return fname.c_str();
 }

@@ -49,9 +49,9 @@ extern cConfigKey *CFGID_PARSIM_DEBUG; // registered in cparsimpartition.cc
 cIdealSimulationProtocol::cIdealSimulationProtocol() : cParsimProtocolBase()
 {
     fin = NULL;
-    debug = ev.config()->getAsBool(CFGID_PARSIM_DEBUG);
+    debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 
-    tableSize = ev.config()->getAsInt(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE);
+    tableSize = ev.getConfig()->getAsInt(CFGID_PARSIM_IDEALSIMULATIONPROTOCOL_TABLESIZE);
     table = new ExternalEvent[tableSize];
     numItems = 0;
     nextPos = 0;
@@ -92,19 +92,19 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
             return NULL;
 
     cMessage *msg = sim->msgQueue.peekFirst();
-    simtime_t msgTime = msg->arrivalTime();
+    simtime_t msgTime = msg->getArrivalTime();
 
     // if we aren't at the next external even yet --> nothing special to do
     if (msgTime < nextExternalEvent.t)
     {
-        ASSERT(msg->srcProcId()==-1); // must be local message
+        ASSERT(msg->getSrcProcId()==-1); // must be local message
         return msg;
     }
 
     // if we reached the next external event in the log file, do it
-    if (msg->srcProcId()==nextExternalEvent.srcProcId && msgTime==nextExternalEvent.t)
+    if (msg->getSrcProcId()==nextExternalEvent.srcProcId && msgTime==nextExternalEvent.t)
     {
-        if (debug) ev << "expected external event (srcProcId=" << msg->srcProcId()
+        if (debug) ev << "expected external event (srcProcId=" << msg->getSrcProcId()
                       << " t=" << nextExternalEvent.t << ") has already arrived, good!\n";
         readNextRecordedEvent();
         msg->setPriority(0);
@@ -124,9 +124,9 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
         if (!receiveBlocking())
             return NULL;
         msg = sim->msgQueue.peekFirst();
-        msgTime = msg->arrivalTime();
+        msgTime = msg->getArrivalTime();
     }
-    while (msg->srcProcId()!=nextExternalEvent.srcProcId || msgTime > nextExternalEvent.t);
+    while (msg->getSrcProcId()!=nextExternalEvent.srcProcId || msgTime > nextExternalEvent.t);
 
     if (msgTime < nextExternalEvent.t)
     {

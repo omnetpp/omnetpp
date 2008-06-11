@@ -103,7 +103,7 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
    {
        if (mod==potentialparent)
            return true;
-       mod = mod->parentModule();
+       mod = mod->getParentModule();
    }
    return false;
 }
@@ -119,7 +119,7 @@ Tkenv::Tkenv()
     isconfigrun = false;
 
     // set the name here, to prevent warning from cStringPool on shutdown when Cmdenv runs
-    inspectorfactories.instance()->setName("inspectorfactories");
+    inspectorfactories.getInstance()->setName("inspectorfactories");
 
     // initialize .tkenvrc config variables
     opt_stepdelay = 300;
@@ -192,7 +192,7 @@ void Tkenv::setup()
             plugin_path = std::string(opt_plugin_path.c_str()) + ";" + plugin_path;
 
         // set up Tcl/Tk
-        interp = initTk(args->argCount(), args->argVector());
+        interp = initTk(args->getArgCount(), args->getArgVector());
         if (!interp)
             throw opp_runtime_error("Tkenv: cannot create Tcl interpreter");
 
@@ -298,13 +298,13 @@ void Tkenv::printUISpecificHelp()
 void Tkenv::rebuildSim()
 {
     if (isconfigrun)
-         newRun(std::string(config()->getActiveConfigName()).c_str(), config()->getActiveRunNumber());
-    else if (simulation.networkType()!=NULL)
-         newNetwork(simulation.networkType()->name());
+         newRun(std::string(getConfig()->getActiveConfigName()).c_str(), getConfig()->getActiveRunNumber());
+    else if (simulation.getNetworkType()!=NULL)
+         newNetwork(simulation.getNetworkType()->getName());
     else
          confirm("Choose File|New Network or File|New Run.");
-    if (simulation.systemModule())
-         inspect(simulation.systemModule(),INSP_DEFAULT,"",NULL);
+    if (simulation.getSystemModule())
+         inspect(simulation.getSystemModule(),INSP_DEFAULT,"",NULL);
 }
 
 void Tkenv::doOneStep()
@@ -504,7 +504,7 @@ bool Tkenv::doRunSimulation()
         flushLastLine();
 
         // display update
-        if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
+        if (frequent_updates || simulation.getEventNumber()%opt_updatefreq_fast==0)
         {
             updateSimtimeDisplay();
             if (speedometer.millisecsInThisInterval() > SPEEDOMETER_UPDATEMILLISECS)
@@ -520,7 +520,7 @@ bool Tkenv::doRunSimulation()
         if (untilmodule_reached) break;
         if (stopsimulation_flag) break;
         if (rununtil_time>0 && simulation.guessNextSimtime()>=rununtil_time) break;
-        if (rununtil_event>0 && simulation.eventNumber()>=rununtil_event) break;
+        if (rununtil_event>0 && simulation.getEventNumber()>=rununtil_event) break;
 
         // delay loop for slow simulation
         if (runmode==RUNMODE_SLOW)
@@ -575,7 +575,7 @@ bool Tkenv::doRunSimulationExpress()
 
         simulation.doOneEvent(mod);
 
-        if (simulation.eventNumber()%opt_updatefreq_express==0)
+        if (simulation.getEventNumber()%opt_updatefreq_express==0)
         {
             updateSimtimeDisplay();
             if (speedometer.millisecsInThisInterval() > SPEEDOMETER_UPDATEMILLISECS)
@@ -593,7 +593,7 @@ bool Tkenv::doRunSimulationExpress()
     }
     while( !stopsimulation_flag &&
            (rununtil_time<=0 || simulation.guessNextSimtime() < rununtil_time) &&
-           (rununtil_event<=0 || simulation.eventNumber() < rununtil_event)
+           (rununtil_event<=0 || simulation.getEventNumber() < rununtil_event)
          );
     return false;
 }
@@ -687,9 +687,9 @@ void Tkenv::newNetwork(const char *networkname)
 
         // set up new network with config General.
         isconfigrun = false;
-        config()->activateConfig("General", 0);
+        getConfig()->activateConfig("General", 0);
         readPerRunOptions();
-        opt_network_name = network->name();  // override config setting
+        opt_network_name = network->getName();  // override config setting
         simulation.setupNetwork(network);
         startRun();
 
@@ -723,7 +723,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
 
         // set up new network
         isconfigrun = true;
-        config()->activateConfig(configname, runnumber);
+        getConfig()->activateConfig(configname, runnumber);
         readPerRunOptions();
 
         if (opt_network_name.empty())
@@ -770,7 +770,7 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *d
     cInspectorFactory *p = findInspectorFactoryFor(obj,type);
     if (!p)
     {
-        confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->className()).c_str());
+        confirm(opp_stringf("Class `%s' has no associated inspectors.", obj->getClassName()).c_str());
         return NULL;
     }
 
@@ -786,7 +786,7 @@ TInspector *Tkenv::inspect(cObject *obj, int type, const char *geometry, void *d
     if (!insp)
     {
         // message: object has no such inspector
-        confirm(opp_stringf("Class `%s' has no `%s' inspector.",obj->className(),insptypeNameFromCode(type)).c_str());
+        confirm(opp_stringf("Class `%s' has no `%s' inspector.",obj->getClassName(),insptypeNameFromCode(type)).c_str());
         return NULL;
     }
 
@@ -861,15 +861,15 @@ void Tkenv::updateNetworkRunDisplay()
     char runnr[10];
     const char *networkname;
 
-    if (config()->getActiveRunNumber())
+    if (getConfig()->getActiveRunNumber())
         sprintf(runnr, "?");
     else
-        sprintf(runnr, "%d", config()->getActiveRunNumber());
+        sprintf(runnr, "%d", getConfig()->getActiveRunNumber());
 
-    if (simulation.networkType()==NULL)
+    if (simulation.getNetworkType()==NULL)
         networkname = "(no network)";
     else
-        networkname = simulation.networkType()->name();
+        networkname = simulation.getNetworkType()->getName();
 
     CHK(Tcl_VarEval(interp, NETWORK_LABEL " config -text {",
                         "Run #",runnr,": ",networkname,
@@ -881,7 +881,7 @@ void Tkenv::updateSimtimeDisplay()
 {
     // event and time display
     char buf[16];
-    sprintf(buf, "%lu", simulation.eventNumber());
+    sprintf(buf, "%lu", simulation.getEventNumber());
     CHK(Tcl_VarEval(interp, EVENT_LABEL " config -text {"
                         "Event #", buf,
                         "}", NULL ));
@@ -894,11 +894,11 @@ void Tkenv::updateSimtimeDisplay()
     CHK(Tcl_VarEval(interp, FESLENGTH_LABEL " config -text {"
                         "Msgs scheduled: ", buf,
                         "}", NULL ));
-    sprintf(buf, "%lu", cMessage::totalMessageCount());
+    sprintf(buf, "%lu", cMessage::getTotalMessageCount());
     CHK(Tcl_VarEval(interp, TOTALMSGS_LABEL " config -text {"
                         "Msgs created: ", buf,
                         "}", NULL ));
-    sprintf(buf, "%lu", cMessage::liveMessageCount());
+    sprintf(buf, "%lu", cMessage::getLiveMessageCount());
     CHK(Tcl_VarEval(interp, LIVEMSGS_LABEL " config -text {"
                         "Msgs present: ", buf,
                         "}", NULL ));
@@ -918,8 +918,8 @@ void Tkenv::updateNextModuleDisplay()
     std::string modname;
     if (mod)
     {
-        modname = mod->fullPath();
-        sprintf(id," (id=%u)", mod->id());
+        modname = mod->getFullPath();
+        sprintf(id," (id=%u)", mod->getId());
     }
     else
     {
@@ -956,10 +956,10 @@ void Tkenv::printEventBanner(cSimpleModule *module)
 {
     char banner[MAX_OBJECTFULLPATH+60];
     sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
-            simulation.eventNumber(),
+            simulation.getEventNumber(),
             SIMTIME_STR(simulation.simTime()),
-            module->id(),
-            module->fullPath().c_str()
+            module->getId(),
+            module->getFullPath().c_str()
           );
 
     // insert into main window
@@ -988,7 +988,7 @@ void Tkenv::printEventBanner(cSimpleModule *module)
                insp->windowName(),".main.text see end",
                NULL));
         }
-        mod = mod->parentModule();
+        mod = mod->getParentModule();
     }
 }
 
@@ -998,7 +998,7 @@ void Tkenv::readOptions()
 {
     EnvirBase::readOptions();
 
-    cConfiguration *cfg = config();
+    cConfiguration *cfg = getConfig();
 
     opt_extrastack = (size_t) cfg->getAsDouble(CFGID_TKENV_EXTRA_STACK);
 
@@ -1059,7 +1059,7 @@ void Tkenv::simulationEvent(cMessage *msg)
     if (hasmessagewindow)
         CHK(Tcl_VarEval(interp,
             "catch {\n"
-            " .messagewindow.main.text insert end {DELIVD:\t (",msg->className(),")",msg->fullName(),"}\n"
+            " .messagewindow.main.text insert end {DELIVD:\t (",msg->getClassName(),")",msg->getFullName(),"}\n"
             " .messagewindow.main.text insert end ",TclQuotedString(msg->info().c_str()).get(),"\n"
             " .messagewindow.main.text insert end {\n}\n"
             " .messagewindow.main.text see end\n"
@@ -1068,13 +1068,13 @@ void Tkenv::simulationEvent(cMessage *msg)
 
     if (animating && opt_animation_enabled)
     {
-        cGate *arrivalGate = msg->arrivalGate();
+        cGate *arrivalGate = msg->getArrivalGate();
         if (!arrivalGate)
             return;
 
         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
         updateGraphicalInspectorsBeforeAnimation();
-        if (arrivalGate->fromGate())
+        if (arrivalGate->getFromGate())
         {
             animateDelivery(msg);
         }
@@ -1091,7 +1091,7 @@ void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME nee
     if (hasmessagewindow)
         CHK(Tcl_VarEval(interp,
             "catch {\n"
-            " .messagewindow.main.text insert end {SENT:\t (", msg->className(),")", msg->fullName(), "}\n"
+            " .messagewindow.main.text insert end {SENT:\t (", msg->getClassName(),")", msg->getFullName(), "}\n"
             " .messagewindow.main.text insert end ", TclQuotedString(msg->info().c_str()).get(), "\n"
             " .messagewindow.main.text insert end {\n}\n"
             " .messagewindow.main.text see end\n"
@@ -1106,13 +1106,13 @@ void Tkenv::messageSent_OBSOLETE(cMessage *msg, cGate *directToGate) //FIXME nee
         if (!directToGate)
         {
             // message was sent via a gate (send())
-            animateSend(msg, msg->senderGate(), msg->arrivalGate());
+            animateSend(msg, msg->getSenderGate(), msg->getArrivalGate());
         }
         else
         {
             // sendDirect() was used
-            animateSendDirect(msg, simulation.module(msg->senderModuleId()), directToGate);
-            animateSend(msg, directToGate, msg->arrivalGate());
+            animateSendDirect(msg, simulation.getModule(msg->getSenderModuleId()), directToGate);
+            animateSend(msg, directToGate, msg->getArrivalGate());
         }
     }
 }
@@ -1184,9 +1184,9 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
         {
             // ascent
             cModule *mod = i->from;
-            cModule *enclosingmod = mod->parentModule();
-            //ev << "DBG: animate ascent inside " << enclosingmod->fullPath()
-            //   << " from " << mod->fullPath() << endl;
+            cModule *enclosingmod = mod->getParentModule();
+            //ev << "DBG: animate ascent inside " << enclosingmod->getFullPath()
+            //   << " from " << mod->getFullPath() << endl;
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
@@ -1206,9 +1206,9 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
         {
             // animate descent towards destmod
             cModule *mod = i->to;
-            cModule *enclosingmod = mod->parentModule();
-            //ev << "DBG: animate descent in " << enclosingmod->fullPath() <<
-            //   " to " << mod->fullPath() << endl;
+            cModule *enclosingmod = mod->getParentModule();
+            //ev << "DBG: animate descent in " << enclosingmod->getFullPath() <<
+            //   " to " << mod->getFullPath() << endl;
 
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
@@ -1227,7 +1227,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
         }
         else
         {
-            cModule *enclosingmod = i->from->parentModule();
+            cModule *enclosingmod = i->from->getParentModule();
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
@@ -1254,7 +1254,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
         for (i=pathvec.begin(); i!=pathvec.end(); i++)
         {
             cModule *mod= i->from ? i->from : i->to;
-            cModule *enclosingmod = mod->parentModule();
+            cModule *enclosingmod = mod->getParentModule();
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
@@ -1275,7 +1275,7 @@ void Tkenv::moduleCreated(cModule *newmodule)
 {
     EnvirBase::moduleCreated(newmodule);
 
-    cModule *mod = newmodule->parentModule();
+    cModule *mod = newmodule->getParentModule();
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (!insp) return;
     TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
@@ -1287,7 +1287,7 @@ void Tkenv::moduleDeleted(cModule *module)
 {
     EnvirBase::moduleDeleted(module);
 
-    cModule *mod = module->parentModule();
+    cModule *mod = module->getParentModule();
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (!insp) return;
     TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
@@ -1304,7 +1304,7 @@ void Tkenv::moduleReparented(cModule *module, cModule *oldparent)
     TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
     if (modinsp) modinsp->submoduleDeleted(module);
 
-    cModule *mod = module->parentModule();
+    cModule *mod = module->getParentModule();
     TInspector *insp2 = findInspector(mod,INSP_GRAPHICAL);
     TGraphicalModWindow *modinsp2 = dynamic_cast<TGraphicalModWindow *>(insp2);
     if (modinsp2) modinsp2->submoduleCreated(module);
@@ -1316,10 +1316,10 @@ void Tkenv::connectionCreated(cGate *srcgate)
 
     // notify compound module where the connection (whose source is this gate) is displayed
     cModule *notifymodule = NULL;
-    if (srcgate->type()==cGate::OUTPUT)
-        notifymodule = srcgate->ownerModule()->parentModule();
+    if (srcgate->getType()==cGate::OUTPUT)
+        notifymodule = srcgate->getOwnerModule()->getParentModule();
     else
-        notifymodule = srcgate->ownerModule();
+        notifymodule = srcgate->getOwnerModule();
     TInspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
     if (!insp) return;
     TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
@@ -1334,10 +1334,10 @@ void Tkenv::connectionDeleted(cGate *srcgate)
     // notify compound module where the connection (whose source is this gate) is displayed
     // note: almost the same code as above
     cModule *notifymodule;
-    if (srcgate->type()==cGate::OUTPUT)
-        notifymodule = srcgate->ownerModule()->parentModule();
+    if (srcgate->getType()==cGate::OUTPUT)
+        notifymodule = srcgate->getOwnerModule()->getParentModule();
     else
-        notifymodule = srcgate->ownerModule();
+        notifymodule = srcgate->getOwnerModule();
     TInspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
     if (!insp) return;
     TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
@@ -1357,14 +1357,14 @@ void Tkenv::displayStringChanged(cComponent *component)
 
 void Tkenv::channelDisplayStringChanged(cChannel *channel)
 {
-    cGate *gate = channel->fromGate();
+    cGate *gate = channel->getFromGate();
 
     // notify module inspector which displays connection
     cModule *notifymodule;
-    if (gate->type()==cGate::OUTPUT)
-        notifymodule = gate->ownerModule()->parentModule();
+    if (gate->getType()==cGate::OUTPUT)
+        notifymodule = gate->getOwnerModule()->getParentModule();
     else
-        notifymodule = gate->ownerModule();
+        notifymodule = gate->getOwnerModule();
 
     TInspector *insp = findInspector(notifymodule,INSP_GRAPHICAL);
     if (insp)
@@ -1388,7 +1388,7 @@ void Tkenv::channelDisplayStringChanged(cChannel *channel)
 void Tkenv::moduleDisplayStringChanged(cModule *module)
 {
     // refresh inspector where this module is a submodule
-    cModule *parentmodule = module->parentModule();
+    cModule *parentmodule = module->getParentModule();
     TInspector *insp = findInspector(parentmodule,INSP_GRAPHICAL);
     if (insp)
     {
@@ -1416,15 +1416,15 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
     cGate *g = fromgate;
     cGate *arrivalgate = togate;
 
-    while (g && g->toGate())
+    while (g && g->getToGate())
     {
-        cModule *mod = g->ownerModule();
-        if (g->type()==cGate::OUTPUT) mod = mod->parentModule();
+        cModule *mod = g->getOwnerModule();
+        if (g->getType()==cGate::OUTPUT) mod = mod->getParentModule();
 
         TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
         if (insp)
         {
-            int lastgate = (g->toGate()==arrivalgate);
+            int lastgate = (g->getToGate()==arrivalgate);
             CHK(Tcl_VarEval(interp, "graphmodwin_animate_on_conn ",
                                     insp->windowName(), " ",
                                     msgptr, " ",
@@ -1432,7 +1432,7 @@ void Tkenv::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
                                     (lastgate?"beg":"thru"),
                                     NULL));
         }
-        g = g->toGate();
+        g = g->getToGate();
     }
 }
 
@@ -1444,8 +1444,8 @@ static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandch
 
     // search upwards from 'towardsgrandchild'
     cModule *m = towardsgrandchild;
-    while (m && m->parentModule()!=parentmod)
-       m = m->parentModule();
+    while (m && m->getParentModule()!=parentmod)
+       m = m->getParentModule();
     return m;
 }
 
@@ -1454,7 +1454,7 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
 {
     // for animation purposes, we assume that the message travels up
     // in the module hierarchy until it finds the first compound module
-    // that also contains the destination module (possibly somewhere deep),
+    // that also contains the destination getModule(possibly somewhere deep),
     // and then it descends to the destination module. We have to find the
     // list of modules visited during the travel.
 
@@ -1465,10 +1465,10 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
         // try to find commonparent among ancestors of destmod
         cModule *m = destmod;
         while (m && commonparent!=m)
-            m = m->parentModule();
+            m = m->getParentModule();
         if (commonparent==m)
             break;
-        commonparent = commonparent->parentModule();
+        commonparent = commonparent->getParentModule();
     }
 
     // commonparent should exist, worst case it's the system module,
@@ -1480,10 +1480,10 @@ void Tkenv::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pathvec)
     // The second condition, destmod==commonparent covers case when we're sending
     // to an output gate of the parent (grandparent, etc) gate.
     cModule *mod = srcmod;
-    while (mod!=commonparent && (mod->parentModule()!=commonparent || destmod==commonparent))
+    while (mod!=commonparent && (mod->getParentModule()!=commonparent || destmod==commonparent))
     {
         pathvec.push_back(sPathEntry(mod,NULL));
-        mod = mod->parentModule();
+        mod = mod->getParentModule();
     }
 
     // animate within commonparent
@@ -1513,9 +1513,9 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
     ptrToStr(msg,msgptr);
 
     PathVec pathvec;
-    findDirectPath(frommodule, togate->ownerModule(), pathvec);
+    findDirectPath(frommodule, togate->getOwnerModule(), pathvec);
 
-    cModule *arrivalmod = msg->arrivalGate()->ownerModule();
+    cModule *arrivalmod = msg->getArrivalGate()->getOwnerModule();
 
     PathVec::iterator i;
     for (i=pathvec.begin(); i!=pathvec.end(); i++)
@@ -1524,7 +1524,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
         {
             // ascent
             cModule *mod = i->from;
-            cModule *enclosingmod = mod->parentModule();
+            cModule *enclosingmod = mod->getParentModule();
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
@@ -1544,7 +1544,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
         {
             // animate descent towards destmod
             cModule *mod = i->to;
-            cModule *enclosingmod = mod->parentModule();
+            cModule *enclosingmod = mod->getParentModule();
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
@@ -1562,7 +1562,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
         }
         else
         {
-            cModule *enclosingmod = i->from->parentModule();
+            cModule *enclosingmod = i->from->getParentModule();
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
@@ -1584,7 +1584,7 @@ void Tkenv::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
     for (i=pathvec.begin(); i!=pathvec.end(); i++)
     {
         cModule *mod= i->from ? i->from : i->to;
-        cModule *enclosingmod = mod->parentModule();
+        cModule *enclosingmod = mod->getParentModule();
         TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
         if (insp)
         {
@@ -1602,13 +1602,13 @@ void Tkenv::animateDelivery(cMessage *msg)
     ptrToStr(msg,msgptr);
 
     // find suitable inspectors and do animate the message...
-    cGate *g = msg->arrivalGate();
+    cGate *g = msg->getArrivalGate();
     ASSERT(g);
-    g = g->fromGate();
+    g = g->getFromGate();
     ASSERT(g);
 
-    cModule *mod = g->ownerModule();
-    if (g->type()==cGate::OUTPUT) mod = mod->parentModule();
+    cModule *mod = g->getOwnerModule();
+    if (g->getType()==cGate::OUTPUT) mod = mod->getParentModule();
 
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (insp)
@@ -1628,10 +1628,10 @@ void Tkenv::animateDeliveryDirect(cMessage *msg)
     ptrToStr(msg,msgptr);
 
     // find suitable inspectors and do animate the message...
-    cGate *g = msg->arrivalGate();
+    cGate *g = msg->getArrivalGate();
     ASSERT(g);
-    cModule *destmod = g->ownerModule();
-    cModule *mod = destmod->parentModule();
+    cModule *destmod = g->getOwnerModule();
+    cModule *mod = destmod->getParentModule();
 
     TInspector *insp = findInspector(mod,INSP_GRAPHICAL);
     if (insp)
@@ -1663,7 +1663,7 @@ void Tkenv::bubble(cComponent *component, const char *text)
     {
         // module bubble
         cModule *mod = (cModule *)component;
-        cModule *parentmod = mod->parentModule();
+        cModule *parentmod = mod->getParentModule();
         TInspector *insp = findInspector(parentmod,INSP_GRAPHICAL);
         if (!insp) return;
         TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
@@ -1716,7 +1716,7 @@ void Tkenv::sputn(const char *s, int n)
     TclQuotedString quotedstr;
 
     // output string into main window
-    cModule *module = simulation.contextModule();
+    cModule *module = simulation.getContextModule();
     const char *tag = (!module) ? "log" : "";
     if (!module || opt_use_mainwindow)
     {
@@ -1744,7 +1744,7 @@ void Tkenv::sputn(const char *s, int n)
               insp->windowName(),".main.text insert end ",quotedstr.get()," ", tag, "\n",
               insp->windowName(),".main.text see end", NULL));
         }
-        mod = mod->parentModule();
+        mod = mod->getParentModule();
     }
 }
 
@@ -1757,11 +1757,11 @@ cEnvir& Tkenv::flush()
 std::string Tkenv::gets(const char *msg, const char *defaultreply)
 {
     char title[70];
-    cModule *mod = simulation.contextModule();
+    cModule *mod = simulation.getContextModule();
     if (mod)
-       strncpy(title, mod->fullPath().c_str(),69);
+       strncpy(title, mod->getFullPath().c_str(),69);
     else
-       strncpy(title, simulation.networkType()->name(),69);
+       strncpy(title, simulation.getNetworkType()->getName(),69);
     title[69]=0;
 
     CHK(Tcl_Eval(interp, "global opp"));
@@ -1783,7 +1783,7 @@ bool Tkenv::askyesno(const char *question)
     return Tcl_GetStringResult(interp)[0]=='y';
 }
 
-unsigned Tkenv::extraStackForEnvir() const
+unsigned Tkenv::getExtraStackForEnvir() const
 {
      return opt_extrastack;
 }

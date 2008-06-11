@@ -41,7 +41,7 @@ cQueue::cQueue(const cQueue& queue) : cOwnedObject()
 {
     frontp = backp = NULL;
     n = 0;
-    setName( queue.name() );
+    setName( queue.getName() );
     operator=(queue);
 }
 
@@ -84,7 +84,7 @@ void cQueue::netPack(cCommBuffer *buffer)
 
     for (cQueue::Iterator iter(*this, 0); !iter.end(); iter--)
     {
-        if (iter()->owner() != this)
+        if (iter()->getOwner() != this)
             throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
         buffer->packObject(iter());
     }
@@ -113,7 +113,7 @@ void cQueue::clear()
     while (frontp)
     {
         QElem *tmp = frontp->next;
-        if (frontp->obj->owner()==this)
+        if (frontp->obj->getOwner()==this)
             dropAndDelete(frontp->obj);
         delete frontp;
         frontp = tmp;
@@ -131,15 +131,15 @@ cQueue& cQueue::operator=(const cQueue& queue)
     cOwnedObject::operator=(queue);
     tkownership = queue.tkownership;
 
-    bool old_tk = takeOwnership();
+    bool old_tk = getTakeOwnership();
     for (cQueue::Iterator iter(queue, false); !iter.end(); iter++)
     {
-        if (iter()->owner()==const_cast<cQueue*>(&queue))
-            {takeOwnership(true); insert((cOwnedObject *)iter()->dup());}
+        if (iter()->getOwner()==const_cast<cQueue*>(&queue))
+            {setTakeOwnership(true); insert((cOwnedObject *)iter()->dup());}
         else
-            {takeOwnership(false); insert(iter());}
+            {setTakeOwnership(false); insert(iter());}
     }
-    takeOwnership(old_tk);
+    setTakeOwnership(old_tk);
     return *this;
 }
 
@@ -195,7 +195,7 @@ cOwnedObject *cQueue::remove_qelem(QElem *p)
     cOwnedObject *retobj = p->obj;
     delete p;
     n--;
-    if (retobj->owner()==this)
+    if (retobj->getOwner()==this)
         drop(retobj);
     return retobj;
 }
@@ -206,7 +206,7 @@ void cQueue::insert(cOwnedObject *obj)
     if (!obj)
         throw cRuntimeError(this, "cannot insert NULL pointer in queue");
 
-    if (takeOwnership())
+    if (getTakeOwnership())
         take(obj);
 
     if (backp)
@@ -231,9 +231,9 @@ void cQueue::insertBefore(cOwnedObject *where, cOwnedObject *obj)
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw cRuntimeError(this, "insertBefore(w,o): object w=`%s' not in queue", where->name());
+        throw cRuntimeError(this, "insertBefore(w,o): object w=`%s' not in queue", where->getName());
 
-    if (takeOwnership())
+    if (getTakeOwnership())
         take(obj);
     insbefore_qelem(p,obj);
 }
@@ -245,9 +245,9 @@ void cQueue::insertAfter(cOwnedObject *where, cOwnedObject *obj)
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw cRuntimeError(this, "insertAfter(w,o): object w=`%s' not in queue",where->name());
+        throw cRuntimeError(this, "insertAfter(w,o): object w=`%s' not in queue",where->getName());
 
-    if (takeOwnership())
+    if (getTakeOwnership())
         take(obj);
     insafter_qelem(p,obj);
 }

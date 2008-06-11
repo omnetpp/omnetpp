@@ -176,10 +176,10 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getbaseconfig",    getBaseConfig_cmd        }, // args: <configname>
    { "opp_getnumrunsinscenario",getNumRunsInScenario_cmd}, // args: <configname>
    { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: filename
-   { "opp_getobjectname",    getObjectName_cmd        }, // args: <pointer>  ret: name()
-   { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: fullName()
-   { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: fullPath()
-   { "opp_getobjecttypename",getObjectTypeName_cmd    }, // args: <pointer>  ret: className() or NED simple name
+   { "opp_getobjectname",    getObjectName_cmd        }, // args: <pointer>  ret: getName()
+   { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: getFullName()
+   { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: getFullPath()
+   { "opp_getobjecttypename",getObjectTypeName_cmd    }, // args: <pointer>  ret: getClassName() or NED simple name
    { "opp_getobjectbaseclass",getObjectBaseClass_cmd  }, // args: <pointer>  ret: a base class
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectowner",   getObjectOwner_cmd       }, // args: <pointer>  ret: <ownerptr>
@@ -290,7 +290,7 @@ int getConfigNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
 
-   cConfiguration *cfg = app->config();
+   cConfiguration *cfg = app->getConfig();
    std::vector<std::string> confignames = cfg->getConfigNames();
 
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
@@ -307,7 +307,7 @@ int getConfigDescription_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
    Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
-   cConfiguration *cfg = app->config();
+   cConfiguration *cfg = app->getConfig();
    std::string desc = cfg->getConfigDescription(configname);
    Tcl_SetResult(interp, TCLCONST(desc.c_str()), TCL_VOLATILE);
    return TCL_OK;
@@ -321,7 +321,7 @@ int getBaseConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
-   cConfiguration *cfg = app->config();
+   cConfiguration *cfg = app->getConfig();
    std::string result = cfg->getBaseConfig(configname);
    Tcl_SetResult(interp, TCLCONST(result.c_str()), TCL_VOLATILE);
    return TCL_OK;
@@ -335,7 +335,7 @@ int getNumRunsInScenario_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
    Tkenv *app = getTkenv();
    const char *configname = argv[1];
 
-   cConfiguration *cfg = app->config();
+   cConfiguration *cfg = app->getConfig();
    int n = cfg->getNumRunsInScenario(configname);
    Tcl_SetObjResult(interp, Tcl_NewIntObj(n));
    return TCL_OK;
@@ -511,7 +511,7 @@ int getActiveConfigName_cmd(ClientData, Tcl_Interp *interp, int argc, const char
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    Tkenv *app = getTkenv();
-   Tcl_SetResult(interp, TCLCONST(app->config()->getActiveConfigName()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(app->getConfig()->getActiveConfigName()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -520,7 +520,7 @@ int getActiveRunNumber_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    char buf[16];
    Tkenv *app = getTkenv();
-   sprintf(buf, "%d", app->config()->getActiveRunNumber());
+   sprintf(buf, "%d", app->getConfig()->getActiveRunNumber());
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
@@ -530,7 +530,7 @@ int getValueFromConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *key = argv[1];
    Tkenv *app = getTkenv();
-   const char *value = app->config()->getConfigValue(key);
+   const char *value = app->getConfig()->getConfigValue(key);
    Tcl_SetResult(interp, TCLCONST(value ? value : ""), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -538,8 +538,8 @@ int getValueFromConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   cModuleType *n = simulation.networkType();
-   Tcl_SetResult(interp, TCLCONST(!n ? "" : n->name()), TCL_VOLATILE);
+   cModuleType *n = simulation.getNetworkType();
+   Tcl_SetResult(interp, TCLCONST(!n ? "" : n->getName()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -568,7 +568,7 @@ int getObjectName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, TCLCONST(object->name()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(object->getName()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -577,7 +577,7 @@ int getObjectFullName_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, TCLCONST(object->fullName()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(object->getFullName()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -586,7 +586,7 @@ int getObjectFullPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, TCLCONST(object->fullPath().c_str()), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(object->getFullPath().c_str()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -605,7 +605,7 @@ int getObjectOwner_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    cObject *object = strToPtr(argv[1]);
    if (!object) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
 
-   Tcl_SetResult(interp, ptrToStr(object->owner()), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(object->getOwner()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -627,11 +627,11 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    const char *field = argv[2];
 
    if (!strcmp(field,"fullName")) {
-       Tcl_SetResult(interp, TCLCONST(object->fullName()), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(object->getFullName()), TCL_VOLATILE);
    } else if (!strcmp(field,"fullPath")) {
-       Tcl_SetResult(interp, TCLCONST(object->fullPath().c_str()), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(object->getFullPath().c_str()), TCL_VOLATILE);
    } else if (!strcmp(field,"className")) {
-       Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(object->getClassName()), TCL_VOLATILE);
    } else if (!strcmp(field,"typeName")) {
        Tcl_SetResult(interp, TCLCONST(getObjectTypeName(object)), TCL_VOLATILE);
    } else if (!strcmp(field,"info")) {
@@ -641,14 +641,14 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"displayString")) {
        if (dynamic_cast<cModule *>(object)) {
            cModule *mod = dynamic_cast<cModule *>(object);
-           const char *str = mod->hasDisplayString() ? mod->displayString().str() : "";
+           const char *str = mod->hasDisplayString() ? mod->getDisplayString().str() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else if (dynamic_cast<cMessage *>(object)) {
-           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
+           Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->getDisplayString()), TCL_VOLATILE);
        } else if (dynamic_cast<cGate *>(object)) {
            cGate *gate = dynamic_cast<cGate *>(object);
-           cChannel *chan = gate->channel();
-           const char *str = (chan && chan->hasDisplayString()) ? chan->displayString().str() : "";
+           cChannel *chan = gate->getChannel();
+           const char *str = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
@@ -656,7 +656,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"kind")) {
        if (dynamic_cast<cMessage *>(object)) {
            char buf[20];
-           sprintf(buf,"%d", dynamic_cast<cMessage *>(object)->kind());
+           sprintf(buf,"%d", dynamic_cast<cMessage *>(object)->getKind());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
@@ -712,7 +712,7 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    else if (dynamic_cast<cWatchBase *>(object))
        Tcl_SetResult(interp, TCLCONST("cWatchBase"), TCL_STATIC);
    else
-       Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE); // return itself as base class
+       Tcl_SetResult(interp, TCLCONST(object->getClassName()), TCL_VOLATILE); // return itself as base class
    return TCL_OK;
 }
 
@@ -725,7 +725,7 @@ int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (dynamic_cast<cModule *>(object))
    {
        char buf[32];
-       sprintf(buf, "%d", dynamic_cast<cModule *>(object)->id());
+       sprintf(buf, "%d", dynamic_cast<cModule *>(object)->getId());
        Tcl_SetResult(interp, buf, TCL_VOLATILE);
    }
    else
@@ -743,7 +743,7 @@ int getComponentTypeObject_cmd(ClientData, Tcl_Interp *interp, int argc, const c
    cComponent *component = dynamic_cast<cModule *>(object);
    if (!component) {Tcl_SetResult(interp, TCLCONST("object is not a module or channel"), TCL_STATIC); return TCL_ERROR;}
 
-   Tcl_SetResult(interp, ptrToStr(component->componentType()), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr(component->getComponentType()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1017,7 +1017,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
 
 int getNetworkTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   cRegistrationList *types = componentTypes.instance();
+   cRegistrationList *types = componentTypes.getInstance();
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
    for (int i=0; i<types->size(); i++)
    {
@@ -1112,7 +1112,7 @@ int setModDispStrTagArg_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    int k = atoi(argv[3]);
    const char *value = argv[4];
 
-   modp->displayString().setTagArg(tag, k, value);
+   modp->getDisplayString().setTagArg(tag, k, value);
    return TCL_OK;
 }
 
@@ -1253,7 +1253,7 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    const char *path = argv[1];
    cModule *mod;
-   TRY(mod = simulation.moduleByPath(path));
+   TRY(mod = simulation.getModuleByPath(path));
    Tcl_SetResult(interp, ptrToStr(mod), TCL_VOLATILE);
    return TCL_OK;
 }
@@ -1322,9 +1322,9 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    simtime_t now = simulation.simTime();
    simtime_t tmin = now;
    for (int i=0; i<len; i++)
-       if (simulation.msgQueue.peek(i)->arrivalTime()!=now)
-           {tmin = simulation.msgQueue.peek(i)->arrivalTime(); break;}
-   simtime_t tmax = simulation.msgQueue.peek(len-1)->arrivalTime();
+       if (simulation.msgQueue.peek(i)->getArrivalTime()!=now)
+           {tmin = simulation.msgQueue.peek(i)->getArrivalTime(); break;}
+   simtime_t tmax = simulation.msgQueue.peek(len-1)->getArrivalTime();
 
    // return result
    Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
@@ -1339,7 +1339,7 @@ int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cMessage *msg = dynamic_cast<cMessage *>(strToPtr( argv[1] ));
    if (!msg) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   simtime_t dt = msg->arrivalTime()-simulation.simTime();
+   simtime_t dt = msg->getArrivalTime()-simulation.simTime();
    Tcl_SetObjResult(interp, Tcl_NewDoubleObj(SIMTIME_DBL(dt)));
    return TCL_OK;
 }
@@ -1395,7 +1395,7 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    // collect supported inspector types
    int insp_types[20];
    int n=0;
-   cRegistrationList *a = inspectorfactories.instance();
+   cRegistrationList *a = inspectorfactories.getInstance();
    for (int i=0; i<a->size(); i++)
    {
       cInspectorFactory *ifc = static_cast<cInspectorFactory *>(a->get(i));
@@ -1638,7 +1638,7 @@ int objectSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
 int objectSystemModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( simulation.systemModule() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( simulation.getSystemModule() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1652,35 +1652,35 @@ int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int objectComponentTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
     if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( componentTypes.instance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( componentTypes.getInstance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectFunctions_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( nedFunctions.instance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( nedFunctions.getInstance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectClasses_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( classes.instance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( classes.getInstance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectEnums_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( enums.instance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( enums.getInstance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectConfigEntries_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( configKeys.instance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( configKeys.getInstance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1846,7 +1846,7 @@ int getNameForEnum_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    const char *enumName = argv[1];
    int value = atoi(argv[2]);
    cEnum *e = cEnum::find(enumName);
-   Tcl_SetResult(interp, TCLCONST(e ? e->stringFor(value) : ""), TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(e ? e->getStringFor(value) : ""), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -1866,7 +1866,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    if (strcmp(cmd,"name")==0)
    {
       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
-      Tcl_SetResult(interp, TCLCONST(sd->name()), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getName()), TCL_VOLATILE);
       return TCL_OK;
    }
 

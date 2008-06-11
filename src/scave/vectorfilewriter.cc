@@ -157,7 +157,7 @@ bool VectorFileWriterNode::finished() const
 
 //-------
 
-const char *VectorFileWriterNodeType::description() const
+const char *VectorFileWriterNodeType::getDescription() const
 {
     return "Writes the output (several streams) into an output vector file.";
 }

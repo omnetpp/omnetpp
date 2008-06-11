@@ -122,14 +122,14 @@ cXMLElement *cLongParImpl::xmlValue(cComponent *) const
     throw cRuntimeError(this, eBADCAST, "int/long", "XML");
 }
 
-cExpression *cLongParImpl::expression() const
+cExpression *cLongParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
 
 long cLongParImpl::evaluate(cComponent *context) const
 {
-    return (flags & FL_ISEXPR) ? expr->longValue(context, unit()) : val;
+    return (flags & FL_ISEXPR) ? expr->longValue(context, getUnit()) : val;
 }
 
 void cLongParImpl::deleteOld()
@@ -141,7 +141,7 @@ void cLongParImpl::deleteOld()
     }
 }
 
-cPar::Type cLongParImpl::type() const
+cPar::Type cLongParImpl::getType() const
 {
     return cPar::LONG;
 }

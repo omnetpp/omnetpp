@@ -45,9 +45,9 @@ class SIM_API cNEDNetworkBuilder
   protected:
     class ComponentTypeNames : public NEDResourceCache::INEDTypeNames {
       public:
-        virtual bool contains(const char *qname) const  {return componentTypes.instance()->lookup(qname)!=NULL;}
-        virtual int size() const  {return componentTypes.instance()->size();}
-        virtual const char *get(int k) const  {return componentTypes.instance()->get(k)->fullName();}
+        virtual bool contains(const char *qname) const  {return componentTypes.getInstance()->lookup(qname)!=NULL;}
+        virtual int size() const  {return componentTypes.getInstance()->size();}
+        virtual const char *get(int k) const  {return componentTypes.getInstance()->get(k)->getFullName();}
     };
 
   protected:
@@ -59,7 +59,7 @@ class SIM_API cNEDNetworkBuilder
     struct {const char *varname; int value;} loopVarStack[MAX_LOOP_NESTING];
     int loopVarSP;
 
-    // submodule pointers. This is an optimization because cModule::submodule()
+    // submodule pointers. This is an optimization because cModule::getSubmodule()
     // is slow if there are very large submodule vectors.
     typedef std::vector<cModule*> ModulePtrVector;
     typedef std::map<std::string,ModulePtrVector> SubmodMap;

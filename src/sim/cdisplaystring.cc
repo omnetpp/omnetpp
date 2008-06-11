@@ -134,7 +134,7 @@ void cDisplayString::updateWith(const char *s)
     updateWith(ds);
 }
 
-bool cDisplayString::existsTag(const char *tagname) const
+bool cDisplayString::containsTag(const char *tagname) const
 {
     int t = gettagindex(tagname);
     return t!=-1;

@@ -77,11 +77,11 @@ void _dummy_for_statinsp() {}
 //
 //    cStatistic *stat = static_cast<cStatistic *>(object);
 //
-//    setLabel(".nb.info.count.e", (double) stat->count() );
-//    setLabel(".nb.info.mean.e", stat->mean() );
-//    setLabel(".nb.info.stddev.e", stat->stddev() );
-//    setLabel(".nb.info.min.e", stat->min() );
-//    setLabel(".nb.info.max.e", stat->max() );
+//    setLabel(".nb.info.count.e", (double) stat->getCount() );
+//    setLabel(".nb.info.mean.e", stat->getMean() );
+//    setLabel(".nb.info.stddev.e", stat->getStddev() );
+//    setLabel(".nb.info.min.e", stat->getMin() );
+//    setLabel(".nb.info.max.e", stat->getMax() );
 // }
 //
 
@@ -131,26 +131,26 @@ void THistogramWindow::update()
    CHK(Tcl_VarEval(interp, windowname,".bot.info config -text {",buf,"}",NULL));
 
    // can we draw anything at all?
-   if (!distr->isTransformed() || distr->cells()==0) return;
+   if (!distr->isTransformed() || distr->getNumCells()==0) return;
 
-   long num_vals = distr->count();
-   int basepts = distr->cells()+1;
+   long num_vals = distr->getCount();
+   int basepts = distr->getNumCells()+1;
    int cell;
    double cell_lower, cell_upper;
 
-   double xmin = distr->basepoint(0);
-   double xrange = distr->basepoint(basepts-1) - xmin;
+   double xmin = distr->getBasepoint(0);
+   double xrange = distr->getBasepoint(basepts-1) - xmin;
 
    // determine maximum height (will be used for y scaling)
    double ymax = -1.0; // a good start because all y values are >=0
-   cell_upper = distr->basepoint(0);
+   cell_upper = distr->getBasepoint(0);
    for (cell=0; cell<basepts-1; cell++)
    {
        // get cell
        cell_lower = cell_upper;
-       cell_upper = distr->basepoint(cell+1);
+       cell_upper = distr->getBasepoint(cell+1);
        // calculate height
-       double y = distr->cell(cell) / (double)(num_vals) / (cell_upper-cell_lower);
+       double y = distr->getCellValue(cell) / (double)(num_vals) / (cell_upper-cell_lower);
        if (y>ymax) ymax=y;
    }
 
@@ -168,7 +168,7 @@ void THistogramWindow::update()
    CHK(Tcl_VarEval(interp, canvas," delete all", NULL));
 
    // draw the histogram
-   cell_upper = distr->basepoint(0);
+   cell_upper = distr->getBasepoint(0);
    for (cell=0; cell<basepts-1; cell++)
    {
        char tag[16];
@@ -176,9 +176,9 @@ void THistogramWindow::update()
 
        // get cell
        cell_lower = cell_upper;
-       cell_upper = distr->basepoint(cell+1);
+       cell_upper = distr->getBasepoint(cell+1);
        // calculate height
-       double y = distr->cell(cell) / (double)(num_vals) / (cell_upper-cell_lower);
+       double y = distr->getCellValue(cell) / (double)(num_vals) / (cell_upper-cell_lower);
        // prepare rectangle coordinates
        char coords[64];
        sprintf(coords,"%d %d %d %d", X(cell_lower), Y(0), X(cell_upper), Y(y));
@@ -195,26 +195,26 @@ void THistogramWindow::generalInfo( char *buf )
 {
    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
    if (!d->isTransformed())
-       sprintf( buf, "(collecting initial values, N=%ld)", d->count());
+       sprintf( buf, "(collecting initial values, N=%ld)", d->getCount());
    else
        sprintf( buf, "Histogram: (%g...%g)  N=%ld  #cells=%d",
-                 d->basepoint(0), d->basepoint(d->cells()),
-                 d->count(),
-                 d->cells()
+                 d->getBasepoint(0), d->getBasepoint(d->getNumCells()),
+                 d->getCount(),
+                 d->getNumCells()
               );
 }
 
-void THistogramWindow::cellInfo( char *buf, int cell )
+void THistogramWindow::getCellInfo( char *buf, int cell )
 {
    cDensityEstBase *d = static_cast<cDensityEstBase *>(object);
-   double count = d->cell(cell);
-   double cell_lower = d->basepoint(cell);
-   double cell_upper = d->basepoint(cell+1);
+   double count = d->getCellValue(cell);
+   double cell_lower = d->getBasepoint(cell);
+   double cell_upper = d->getBasepoint(cell+1);
    sprintf( buf, "Cell #%d:  (%g...%g)  n=%g  PDF=%g",
                  cell,
                  cell_lower, cell_upper,
                  count,
-                 count / (double)(d->count()) / (cell_upper-cell_lower)
+                 count / (double)(d->getCount()) / (cell_upper-cell_lower)
           );
 }
 
@@ -230,7 +230,7 @@ int THistogramWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char 
       if (argc==1)
          generalInfo(buf);
       else
-         cellInfo(buf, atoi(argv[1]) );
+         getCellInfo(buf, atoi(argv[1]) );
       Tcl_SetResult(interp,buf,TCL_VOLATILE);
       return TCL_OK;
    }

@@ -43,7 +43,7 @@ Register_Class(cPSquare);
 
 cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase()
 {
-    setName( r.name() );
+    setName( r.getName() );
     operator=(r);
 }
 
@@ -333,7 +333,7 @@ double cPSquare::random() const
     return dblrand()*(q[k]-q[l])+q[l];
 }
 
-int cPSquare::cells() const
+int cPSquare::getNumCells() const
 {
     if (numobs<2)
        return 0;
@@ -343,12 +343,12 @@ int cPSquare::cells() const
        return numcells;
 }
 
-double cPSquare::basepoint(int k) const
+double cPSquare::getBasepoint(int k) const
 {
     return q[k+1];
 }
 
-double cPSquare::cell(int k) const
+double cPSquare::getCellValue(int k) const
 {
     return n[k+2] - n[k+1] + (k==0);
 }
@@ -367,7 +367,7 @@ std::string cPSquare::detailedInfo() const
     return os.str();
 }
 
-double cPSquare::cdf(double x) const
+double cPSquare::getCDF(double x) const
 {
    // returns 0..1; uses linear approximation between two markers
    for (int i=1; i<numcells+2 ; i++)
@@ -376,7 +376,7 @@ double cPSquare::cdf(double x) const
    return 1.0;
 }
 
-double cPSquare::pdf(double x) const
+double cPSquare::getPDF(double x) const
 {
    // returns 0..1; assumes constant PDF within a cell
    for (int i=1 ; i<numcells+2 ; i++)

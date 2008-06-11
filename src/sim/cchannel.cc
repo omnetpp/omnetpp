@@ -51,10 +51,10 @@ std::string cChannel::info() const
 {
     // print all parameters
     std::stringstream out;
-    for (int i=0; i<params(); i++)
+    for (int i=0; i<getNumParams(); i++)
     {
         cPar& p = const_cast<cChannel *>(this)->par(i);
-        out << p.fullName() << "=" << p.info() << " ";
+        out << p.getFullName() << "=" << p.info() << " ";
     }
     return out.str();
 }
@@ -93,13 +93,13 @@ bool cChannel::initializeChannel(int stage)
 {
     // channels don't contain further subcomponents, so just we just invoke
     // initialize(stage) in the right context here.
-    if (simulation.contextType()!=CTX_INITIALIZE)
+    if (simulation.getContextType()!=CTX_INITIALIZE)
         throw cRuntimeError("internal function initializeChannel() may only be called via callInitialize()");
 
     int numStages = numInitStages();
     if (stage < numStages)
     {
-        ev << "Initializing channel " << fullPath() << ", stage " << stage << "\n";
+        ev << "Initializing channel " << getFullPath() << ", stage " << stage << "\n";
 
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
@@ -120,26 +120,26 @@ void cChannel::callFinish()
     finish();
 }
 
-cModule *cChannel::parentModule() const
+cModule *cChannel::getParentModule() const
 {
     // find which (compound) module contains this connection
     if (!fromgatep)
         return NULL;
-    cModule *ownerMod = fromgatep->ownerModule();
+    cModule *ownerMod = fromgatep->getOwnerModule();
     if (!ownerMod)
         return NULL;
-    return fromgatep->type()==cGate::INPUT ? ownerMod : ownerMod->parentModule();
+    return fromgatep->getType()==cGate::INPUT ? ownerMod : ownerMod->getParentModule();
 }
 
-cProperties *cChannel::properties() const
+cProperties *cChannel::getProperties() const
 {
-    cModule *parent = parentModule();
-    cComponentType *type = componentType();
+    cModule *parent = getParentModule();
+    cComponentType *type = getComponentType();
     cProperties *props;
     if (parent)
-        props = parent->componentType()->connectionProperties(connId, type->fullName());
+        props = parent->getComponentType()->getConnectionProperties(connId, type->getFullName());
     else
-        props = type->properties();
+        props = type->getProperties();
     return props;
 }
 
@@ -148,11 +148,11 @@ cProperties *cChannel::properties() const
 bool cIdealChannel::deliver(cMessage *msg, simtime_t t)
 {
     // just hand over msg to next gate
-    EVCB.messageSendHop(msg, fromGate());
-    return fromGate()->toGate()->deliver(msg, t);
+    EVCB.messageSendHop(msg, getFromGate());
+    return getFromGate()->getToGate()->deliver(msg, t);
 }
 
-simtime_t cIdealChannel::transmissionFinishes() const
+simtime_t cIdealChannel::getTransmissionFinishTime() const
 {
     return simulation.simTime();
 }

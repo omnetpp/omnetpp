@@ -44,22 +44,22 @@ class SCAVE_API StddevNode : public SingleSinkNode
         virtual void process();
         virtual bool finished() const;
 
-        virtual long count() const     {return num_vals;}
-        virtual double sum() const     {return sum_vals;}
-        virtual double sqrSum() const  {return sqrsum_vals;}
-        virtual double min() const     {return min_vals;}
-        virtual double max() const     {return max_vals;}
-        virtual double mean() const    {return num_vals ? sum_vals/num_vals : 0.0;}
-        virtual double stddev() const;
-        virtual double variance() const;
+        virtual long getCount() const     {return num_vals;}
+        virtual double getSum() const     {return sum_vals;}
+        virtual double getSqrSum() const  {return sqrsum_vals;}
+        virtual double getMin() const     {return min_vals;}
+        virtual double getMax() const     {return max_vals;}
+        virtual double getMean() const    {return num_vals ? sum_vals/num_vals : 0.0;}
+        virtual double getStddev() const;
+        virtual double getVariance() const;
 };
 
 
 class SCAVE_API StddevNodeType : public SingleSinkNodeType
 {
     public:
-        virtual const char *name() const {return "stddev";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "stddev";}
+        virtual const char *getDescription() const;
         virtual bool isHidden() const {return true;}
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

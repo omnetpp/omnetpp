@@ -111,28 +111,28 @@ class SIM_API cKSplit : public cDensityEstBase
         /**
          * Returns the index of the current cell.
          */
-        int cellNumber() const     {return cellnum;}
+        int getCellNumber() const     {return cellnum;}
 
         /**
          * Returns the upper lower of the current cell.
          */
-        double cellMin() const     {return gridmin+cell*cellsize;}
+        double getCellMin() const     {return gridmin+cell*cellsize;}
 
         /**
          * Returns the upper bound of the current cell.
          */
-        double cellMax() const     {return gridmin+(cell+1)*cellsize;}
+        double getCellMax() const     {return gridmin+(cell+1)*cellsize;}
 
         /**
          * Returns the size of the current cell.
          */
-        double cellSize() const    {return cellsize;}
+        double getCellSize() const    {return cellsize;}
 
         /**
          * Returns the actual amount of observations in current cell.
          * This is not necessarily an integer value because of previous cell splits.
          */
-        double cellValue() const;
+        double getCellValue() const;
     };
 
     friend class Iterator;
@@ -151,7 +151,7 @@ class SIM_API cKSplit : public cDensityEstBase
     DivFunc divfunc;          // function to calc. lambda for cell division
     double *divdata;          // data array to pass to div. function
 
-    mutable Iterator *iter;   // iterator used by basepoint(), cell() etc.
+    mutable Iterator *iter;   // iterator used by getBasepoint(), getCellValue() etc.
     mutable long iter_num_vals; // num_vals when iterator was created
 
   protected:
@@ -176,7 +176,7 @@ class SIM_API cKSplit : public cDensityEstBase
     // internal:
     void expandGridVector();
 
-    // internal: helper for basepoint(), cell()
+    // internal: helper for getBasepoint(), getCellValue()
     void iteratorToCell(int cell_nr) const;
 
     // abstract method in cDensityEstBase
@@ -256,27 +256,27 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int cells() const;
+    virtual int getNumCells() const;
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k) const;
+    virtual double getBasepoint(int k) const;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k) const;
+    virtual double getCellValue(int k) const;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x) const;
+    virtual double getPDF(double x) const;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x) const;
+    virtual double getCDF(double x) const;
 
     /**
      * Merging is not supported by this class. This method throws an error.
@@ -318,7 +318,7 @@ class SIM_API cKSplit : public cDensityEstBase
      * Enables/disables range extension. If range extension is enabled,
      * a new observation that falls outside the k-split range (ie. outside
      * the root grid) will cause the range to be expanded (i.e. new
-     * root grid(s) to be placed above the current root grid).
+     * root getGrid(s) to be placed above the current root grid).
      * If range extension is disabled, such observations will simply be
      * counted as underflows or overflows.
      */
@@ -331,18 +331,18 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the depth of the k-split tree.
      */
-    int treeDepth() const;
+    int getTreeDepth() const;
 
     /**
      * Returns the depth of the k-split tree measured from the specified grid.
      */
-    int treeDepth(Grid& grid) const;
+    int getTreeDepth(Grid& grid) const;
 
     /**
      * Returns the actual amount of observations in cell 'cell' of 'grid'.
      * This is not necessarily an integer value because of previous cell splits.
      */
-    double realCellValue(Grid& grid, int cell) const;
+    double getRealCellValue(Grid& grid, int cell) const;
 
     /**
      * Dumps the contents of the k-split data structure to ev.
@@ -352,12 +352,12 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the kth grid in the k-split data structure.
      */
-    Grid& grid(int k) const {return gridv[k];}
+    Grid& getGrid(int k) const {return gridv[k];}
 
     /**
      * Returns the root grid of the k-split data structure.
      */
-    Grid& rootGrid() const {return gridv[rootgrid];}
+    Grid& getRootGrid() const {return gridv[rootgrid];}
     //@}
 };
 

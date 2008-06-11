@@ -106,17 +106,17 @@ class SIM_API cGate : public cObject, noncopyable
 
         Desc() {ownerp=NULL; size=-1; namep=NULL; inputgate=outputgate=NULL;}
         bool inUse() const {return namep!=NULL;}
-        Type type() const {return namep->type;}
+        Type getType() const {return namep->type;}
         bool isVector() const {return size>=0;}
         int indexOf(const cGate *g) const {return (g->pos>>1)==-1 ? 0 : g->pos>>1;}
-        Type typeOf(const cGate *g) const {return (g->pos&1)==0 ? INPUT : OUTPUT;}
+        Type getTypeOf(const cGate *g) const {return (g->pos&1)==0 ? INPUT : OUTPUT;}
         bool isInput(const cGate *g) const {return (g->pos&1)==0;}
         bool isOutput(const cGate *g) const {return (g->pos&1)==1;}
         int gateSize() const {return size>=0 ? size : 1;}
-        void setInputGate(cGate *g) {ASSERT(type()!=OUTPUT && !isVector()); inputgate=g; g->desc=this; g->pos=(-1<<1);}
-        void setOutputGate(cGate *g) {ASSERT(type()!=INPUT && !isVector()); outputgate=g; g->desc=this; g->pos=(-1<<1)|1;}
-        void setInputGate(cGate *g, int index) {ASSERT(type()!=OUTPUT && isVector()); inputgatev[index]=g; g->desc=this; g->pos=(index<<1);}
-        void setOutputGate(cGate *g, int index) {ASSERT(type()!=INPUT && isVector()); outputgatev[index]=g; g->desc=this; g->pos=(index<<1)|1;}
+        void setInputGate(cGate *g) {ASSERT(getType()!=OUTPUT && !isVector()); inputgate=g; g->desc=this; g->pos=(-1<<1);}
+        void setOutputGate(cGate *g) {ASSERT(getType()!=INPUT && !isVector()); outputgate=g; g->desc=this; g->pos=(-1<<1)|1;}
+        void setInputGate(cGate *g, int index) {ASSERT(getType()!=OUTPUT && isVector()); inputgatev[index]=g; g->desc=this; g->pos=(index<<1);}
+        void setOutputGate(cGate *g, int index) {ASSERT(getType()!=INPUT && isVector()); outputgatev[index]=g; g->desc=this; g->pos=(index<<1)|1;}
         static int capacityFor(int size) {return size<8 ? (size+1)&~1 : size<32 ? (size+3)&~3 : size<256 ? (size+15)&~15 : (size+63)&~63;}
     };
 
@@ -144,14 +144,14 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Returns the name of the the gate without the gate index in brackets.
      */
-    virtual const char *name() const;
+    virtual const char *getName() const;
 
     /**
-     * Returns the full name of the gate, which is name() plus the
+     * Returns the full name of the gate, which is getName() plus the
      * index in square brackets (e.g. "out[4]"). Redefined to add the
      * index.
      */
-    virtual const char *fullName() const;
+    virtual const char *getFullName() const;
 
     /**
      * Calls v->visit(this) for each contained object.
@@ -168,7 +168,7 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Returns the owner module of this gate.
      */
-    virtual cObject *owner() const;
+    virtual cObject *getOwner() const;
     //@}
 
     /**
@@ -219,10 +219,10 @@ class SIM_API cGate : public cObject, noncopyable
 
     /**
      * Returns the channel object attached to this gate, or NULL if there's
-     * no channel. This is the channel between this gate and this->toGate(),
+     * no channel. This is the channel between this gate and this->getToGate(),
      * that is, channels are stored on the "from" side of the connections.
      */
-    cChannel *channel() const {return channelp;}
+    cChannel *getChannel() const {return channelp;}
     //@}
 
     /** @name Information about the gate. */
@@ -230,25 +230,25 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Returns the gate name without index and potential "$i"/"$o" suffix.
      */
-    const char *baseName() const;
+    const char *getBaseName() const;
 
     /**
      * Returns the properties for this gate. Properties cannot be changed
      * at runtime.
      */
-    cProperties *properties() const;
+    cProperties *getProperties() const;
 
     /**
      * Returns the gate's type, cGate::INPUT or cGate::OUTPUT. (It never returns
      * cGate::INOUT, because a cGate object is always either the input or
      * the output half of an inout gate ("name$i" or "name$o").
      */
-    Type type() const  {return desc->typeOf(this);}
+    Type getType() const  {return desc->getTypeOf(this);}
 
     /**
      * Returns a pointer to the owner module of the gate.
      */
-    cModule *ownerModule() const;
+    cModule *getOwnerModule() const;
 
     /**
      * Returns the gate ID, which uniquely identifies the gate within the
@@ -263,7 +263,7 @@ class SIM_API cGate : public cObject, noncopyable
      * cannot be used for iterating over the gates of a module.
      * Use cModule::GateIterator for iteration.
      */
-    int id() const;
+    int getId() const;
 
     /**
      * Returns true if the gate is part of a gate vector.
@@ -274,7 +274,7 @@ class SIM_API cGate : public cObject, noncopyable
      * If the gate is part of a gate vector, returns the gate's index in the vector.
      * Otherwise, it returns 0.
      */
-    int index() const  {return desc->indexOf(this);}
+    int getIndex() const  {return desc->indexOf(this);}
 
     /**
      * If the gate is part of a gate vector, returns the size of the vector.
@@ -297,10 +297,10 @@ class SIM_API cGate : public cObject, noncopyable
 
     /**
      * If the gate has a channel, the method invokes and returns the result of
-     * transmissionFinishes() on the channel; otherwise it returns the
+     * getTransmissionFinishTime() on the channel; otherwise it returns the
      * current simulation time.
      */
-    simtime_t transmissionFinishes() const;
+    simtime_t getTransmissionFinishTime() const;
     //@}
 
     /** @name Gate connectivity. */
@@ -311,26 +311,26 @@ class SIM_API cGate : public cObject, noncopyable
      * contains this gate, or a NULL pointer if this gate is the first one in the path.
      * (E.g. for a simple module output gate, this function will return NULL.)
      */
-    cGate *fromGate() const {return fromgatep;}
+    cGate *getFromGate() const {return fromgatep;}
 
     /**
      * Returns the next gate in the series of connections (the path) that
      * contains this gate, or a NULL pointer if this gate is the last one in the path.
      * (E.g. for a simple module input gate, this function will return NULL.)
      */
-    cGate *toGate() const   {return togatep;}
+    cGate *getToGate() const   {return togatep;}
 
     /**
      * Return the ultimate source of the series of connections
      * (the path) that contains this gate.
      */
-    cGate *sourceGate() const;
+    cGate *getSourceGate() const;
 
     /**
      * Return the ultimate destination of the series of connections
      * (the path) that contains this gate.
      */
-    cGate *destinationGate() const;
+    cGate *getDestinationGate() const;
 
     /**
      * Determines if a given module is in the path containing this gate.
@@ -341,8 +341,8 @@ class SIM_API cGate : public cObject, noncopyable
      * Returns true if the gate is connected outside (i.e. to one of its
      * sibling modules or to the parent module).
      *
-     * This means that for an input gate, fromGate() must be non-NULL; for an output
-     * gate, toGate() must be non-NULL.
+     * This means that for an input gate, getFromGate() must be non-NULL; for an output
+     * gate, getToGate() must be non-NULL.
      */
     bool isConnectedOutside() const;
 
@@ -350,8 +350,8 @@ class SIM_API cGate : public cObject, noncopyable
      * Returns true if the gate (of a compound module) is connected inside
      * (i.e. to one of its submodules).
      *
-     * This means that for an input gate, toGate() must be non-NULL; for an output
-     * gate, fromGate() must be non-NULL.
+     * This means that for an input gate, getToGate() must be non-NULL; for an output
+     * gate, getFromGate() must be non-NULL.
      */
     bool isConnectedInside() const;
 
@@ -377,10 +377,10 @@ class SIM_API cGate : public cObject, noncopyable
      * XXX delegates to the channel; if there's no channel, it created a
      * cIdealChannel.
      */
-    cDisplayString& displayString();
+    cDisplayString& getDisplayString();
 
     /**
-     * Shortcut to <tt>displayString().set(dispstr)</tt>.
+     * Shortcut to <tt>getDisplayString().set(dispstr)</tt>.
      */
     void setDisplayString(const char *dispstr);
     //@}

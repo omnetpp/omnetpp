@@ -339,7 +339,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
 
     out << "static void _readModuleParameters(cModule *mod)\n";
     out << "{\n";
-    out << "    int n = mod->params();\n";
+    out << "    int n = mod->getNumParams();\n";
     out << "    for (int k=0; k<n; k++)\n";
     out << "        if (mod->par(k).isInput())\n";
     out << "            mod->par(k).read();\n";
@@ -358,7 +358,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cGate *g = mod->gate(gatename);\n";
     out << "    if (!g)\n";
-    out << "        throw cRuntimeError(\"%s has no gate named %s\",mod->fullPath().c_str(), gatename);\n";
+    out << "        throw cRuntimeError(\"%s has no gate named %s\",mod->getFullPath().c_str(), gatename);\n";
     out << "    return g;\n";
     out << "}\n";
     out << "\n";
@@ -367,7 +367,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    cGate *g = mod->gate(gatename, gateindex);\n";
     out << "    if (!g)\n";
-    out << "        throw cRuntimeError(\"%s has no gate %s[%d]\",mod->fullPath().c_str(), gatename, gateindex);\n";
+    out << "        throw cRuntimeError(\"%s has no gate %s[%d]\",mod->getFullPath().c_str(), gatename, gateindex);\n";
     out << "    return g;\n";
     out << "}\n";
     out << "\n";
@@ -376,12 +376,12 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    int baseId = mod->findGate(gatename);\n";
     out << "    if (baseId<0)\n";
-    out << "        throw cRuntimeError(\"%s has no %s[] gate\",mod->fullPath().c_str(), gatename);\n";
+    out << "        throw cRuntimeError(\"%s has no %s[] gate\",mod->getFullPath().c_str(), gatename);\n";
     out << "    int n = mod->gate(baseId)->size();\n";
     out << "    for (int i=0; i<n; i++)\n";
     out << "        if (!mod->gate(baseId+i)->isConnectedInside())\n";
     out << "            return mod->gate(baseId+i);\n";
-    out << "    throw cRuntimeError(\"%s[] gates are all connected, no gate left for `++' operator\",mod->fullPath().c_str(), gatename);\n";
+    out << "    throw cRuntimeError(\"%s[] gates are all connected, no gate left for `++' operator\",mod->getFullPath().c_str(), gatename);\n";
     out << "}\n";
     out << "\n";
 
@@ -389,7 +389,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    int baseId = mod->findGate(gatename);\n";
     out << "    if (baseId<0)\n";
-    out << "        throw cRuntimeError(\"%s has no %s[] gate\",mod->fullPath().c_str(), gatename);\n";
+    out << "        throw cRuntimeError(\"%s has no %s[] gate\",mod->getFullPath().c_str(), gatename);\n";
     out << "    int n = mod->gate(baseId)->size();\n";
     out << "    for (int i=0; i<n; i++)\n";
     out << "        if (!mod->gate(baseId+i)->isConnectedOutside())\n";
@@ -484,7 +484,7 @@ void NEDCppGenerator::doChannel(ChannelElement *node, const char *indent, int mo
     out << "{\n";
     out << "  public:\n";
     out << "    " << channelname << "(const char *name) : cChannelType(name) {}\n";
-    out << "    " << channelname << "(const " << channelname << "& n) : cChannelType(n.name()) {operator=(n);}\n";
+    out << "    " << channelname << "(const " << channelname << "& n) : cChannelType(n.getName()) {operator=(n);}\n";
     out << "    virtual cChannel *create(const char *name);\n";
     out << "};\n\n";
 
@@ -525,7 +525,7 @@ void NEDCppGenerator::doNetwork(NetworkElement *node, const char *indent, int mo
     out << "{\n";
     out << "  public:\n";
     out << "    " << networkname << "(const char *name) : cNetworkType(name) {}\n";
-    out << "    " << networkname << "(const " << networkname << "& n) : cNetworkType(n.name()) {operator=(n);}\n";
+    out << "    " << networkname << "(const " << networkname << "& n) : cNetworkType(n.getName()) {operator=(n);}\n";
     out << "    virtual void setupNetwork();\n";
     out << "};\n\n";
 

@@ -79,7 +79,7 @@ class ENVIR_API cFileSnapshotManager : public cSnapshotManager
     /**
      * Returns the file name.
      */
-    const char *fileName() const;
+    const char *getFileName() const;
     //@}
 };
 

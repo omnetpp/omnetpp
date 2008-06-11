@@ -78,7 +78,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
         bufferSize = MIN_BUFFER_SIZE;
     FileReader reader(fname.c_str(), bufferSize);
 
-    long count=block.count();
+    long count=block.getCount();
     reader.seekTo(block.startOffset);
     currentEntries.resize(count);
 
@@ -121,7 +121,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
 
 OutputVectorEntry *IndexedVectorFileReader::getEntryBySerial(long serial)
 {
-    if (serial<0 || serial>=vector->count())
+    if (serial<0 || serial>=vector->getCount())
         return NULL;
 
     if (currentBlock == NULL || !currentBlock->contains(serial))
@@ -187,7 +187,7 @@ long IndexedVectorFileReader::collectEntriesInSimtimeInterval(simultime_t startT
     {
         const Block &block = vector->blocks[i];
         loadBlock(block);
-        for (long j = 0; j < block.count(); ++j)
+        for (long j = 0; j < block.getCount(); ++j)
         {
             OutputVectorEntry &entry = currentEntries[j];
             if (startTime <= entry.simtime && entry.simtime <= endTime)
@@ -214,7 +214,7 @@ long IndexedVectorFileReader::collectEntriesInEventnumInterval(long startEventNu
         const Block &block = vector->blocks[i];
         loadBlock(block);
 
-        for (long j = 0; j < block.count(); ++j)
+        for (long j = 0; j < block.getCount(); ++j)
         {
             OutputVectorEntry &entry = currentEntries[j];
             if (startEventNum <= entry.eventNumber && entry.eventNumber <= endEventNum)
@@ -283,7 +283,7 @@ bool IndexedVectorFileWriterNode::isReady() const
     for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
     {
         VectorInputPort *port=*it;
-        if (port->channel()->length()>0 || (port->channel()->closing() && port->hasBufferedData()))
+        if (port->getChannel()->length()>0 || (port->getChannel()->closing() && port->hasBufferedData()))
             return true;
     }
     return false;
@@ -318,9 +318,9 @@ void IndexedVectorFileWriterNode::process()
         VectorInputPort *port=*it;
         if (!port->finished)
         {
-            if (port->channel()->length()>0)
+            if (port->getChannel()->length()>0)
                 writeRecordsToBuffer(port);
-            if (port->channel()->eof()) {
+            if (port->getChannel()->eof()) {
                 if (port->hasBufferedData())
                     writeBufferToFile(port);
                 writeIndex(port);
@@ -368,7 +368,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
     assert(port->vector.blocks.size() > 0);
 
     int vectorId = port->vector.vectorId;
-    Channel *chan = port->channel();
+    Channel *chan = port->getChannel();
     int n = chan->length();
     std::string &columns = port->vector.columns;
     int colno = columns.size();
@@ -463,7 +463,7 @@ void IndexedVectorFileWriterNode::writeIndex(VectorInputPort *port)
 
 //=========================================================================
 
-const char *IndexedVectorFileWriterNodeType::description() const
+const char *IndexedVectorFileWriterNodeType::getDescription() const
 {
     return "Writes the output (several streams) into an indexed output vector file.";
 }

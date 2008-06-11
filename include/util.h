@@ -36,7 +36,7 @@ class cComponent;
 // logically belongs to csimulation.h but must be here because of declaration order
 enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
 
-// windows.h defines min() and max() as macros
+// windows.h defines getMin() and getMax() as macros
 #undef min
 #undef max
 
@@ -206,7 +206,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
  *
  * The macro should be put at the top of every module member function
  * that may be called from other modules. This macro arranges to
- * temporarily switch the context to this module (the old context
+ * temporarily switch the context to this getModule(the old context
  * will be restored automatically when the method returns),
  * and also lets the graphical user interface animate the method call.
  *
@@ -234,7 +234,7 @@ SIM_API const char *opp_typename(const std::type_info& t);
  * The constructor switches the context to the given component, and the
  * destructor restores the original context.
  *
- * @see cSimulation::contextModule(), cSimulation::setContextModule()
+ * @see cSimulation::getContextModule(), cSimulation::setContextModule()
  * @ingroup Internals
  */
 class SIM_API cContextSwitcher
@@ -281,7 +281,7 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
  * The constructor switches the context type, and the destructor restores
  * the original context type.
  *
- * @see cSimulation::contextModule(), cSimulation::setContextModule()
+ * @see cSimulation::getContextModule(), cSimulation::setContextModule()
  * @ingroup Internals
  */
 class SIM_API cContextTypeSwitcher

@@ -352,8 +352,8 @@ void CppExpressionGenerator::doValueForCachedVar(NEDElement *node)
     {
         const char *funcname = ((FunctionElement *)node)->getName();
         int argcount = ((FunctionElement *)node)->getNumChildren();
-        const char *methods[] = {"mathFuncNoArg()", "mathFunc1Arg()", "mathFunc2Args()",
-                                 "mathFunc3Args()", "mathFunc4Args()"};
+        const char *methods[] = {"getMathFuncNoArg()", "getMathFunc1Arg()", "getMathFunc2Args()",
+                                 "getMathFunc3Args()", "getMathFunc4Args()"};
         out << "_getFunction(\"" << funcname << "\"," << argcount << ")->" << methods[argcount];
     }
     else
@@ -588,8 +588,8 @@ void CppExpressionGenerator::doFunction(FunctionElement *node, const char *inden
     }
     else // MODE_INLINE_EXPRESSION
     {
-        const char *methods[] = {"mathFuncNoArg()", "mathFunc1Arg()", "mathFunc2Args()",
-                                 "mathFunc3Args()", "mathFunc4Args()"};
+        const char *methods[] = {"getMathFuncNoArg()", "getMathFunc1Arg()", "getMathFunc2Args()",
+                                 "getMathFunc3Args()", "getMathFunc4Args()"};
         out << "_getFunction(\"" << funcname << "\"," << argcount << ")->" << methods[argcount];
     }
 
@@ -615,7 +615,7 @@ void CppExpressionGenerator::doParamref(IdentElement *node, const char *indent, 
         }
         else if (node->getIsAncestor())
         {
-            out << "mod->ancestorPar(\"" << node->getParamName() << "\")";
+            out << "mod->getAncestorPar(\"" << node->getParamName() << "\")";
         }
         else
         {
@@ -624,7 +624,7 @@ void CppExpressionGenerator::doParamref(IdentElement *node, const char *indent, 
             if (!opp_isempty(node->getModule()))
             {
                 // TBD implement: parameter of another submodule
-                out << "->submodule(\"" << node->getModule() << "\")";
+                out << "->getSubmodule(\"" << node->getModule() << "\")";
                 ExpressionElement *modindex = (ExpressionElement *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
                 if (modindex)
                 {
@@ -643,7 +643,7 @@ void CppExpressionGenerator::doParamref(IdentElement *node, const char *indent, 
         {
             if (node->getIsRef())
                 out << "cPar().setRedirection(&("; // note: cannot use tmpval here, because redirection would remain!
-            out << "mod->ancestorPar(\"" << node->getParamName() << "\")";
+            out << "mod->getAncestorPar(\"" << node->getParamName() << "\")";
             if (node->getIsRef())
                 out << "))";
         }

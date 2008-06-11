@@ -31,7 +31,7 @@ cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
     cInspectorFactory *best=NULL;
     double bestweight=0;
-    cRegistrationList *a = inspectorfactories.instance();
+    cRegistrationList *a = inspectorfactories.getInstance();
     for (int i=0; i<a->size(); i++)
     {
         cInspectorFactory *ifc = static_cast<cInspectorFactory *>(a->get(i));

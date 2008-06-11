@@ -47,7 +47,7 @@ using std::ostream;
 
 cStatistic::cStatistic(const cStatistic& r) : cOwnedObject()
 {
-    setName(r.name());
+    setName(r.getName());
     td = NULL;
     ra = NULL;
     operator=(r);
@@ -140,11 +140,11 @@ void cStatistic::collect2(double, double)
 
 void cStatistic::recordAs(const char *scalarname, const char *unit)
 {
-    cSimpleModule *mod = dynamic_cast<cSimpleModule *>(simulation.contextModule());
+    cSimpleModule *mod = dynamic_cast<cSimpleModule *>(simulation.getContextModule());
     if (!mod)
         throw cRuntimeError(this,"record() may only be invoked from within a simple module");
     if (!scalarname)
-        scalarname = fullName();
+        scalarname = getFullName();
 
     opp_string_map attributes;
     if (unit)

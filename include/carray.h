@@ -32,13 +32,13 @@ NAMESPACE_BEGIN
  * a specified delta.
  *
  * By default, cArray's destructor deletes all contained objects. This behaviour
- * can be changed by calling takeOwnership(false) before inserting objects.
+ * can be changed by calling setTakeOwnership(false) before inserting objects.
  * More precisely, the behaviour can be controlled per-object: the
  * insertion-time state of the <i>takeOwnership</i> flag will determine
  * whether the inserted object will be deleted by the cArray destructor or not.
  *
 //FIXME even more complicated: non-cOwnedObject ones are NOT deleted, ever;
-// even if their owner() returns the array
+// even if their getOwner() returns the array
 //cOwnedObjects are only deleted if their owner is the array
  *
  * @ingroup Containers
@@ -114,7 +114,7 @@ class SIM_API cArray : public cOwnedObject
 
     /**
      * Copy constructor. Contained objects that are owned by cArray
-     * (that is, whose owner() is the cArray) will
+     * (that is, whose getOwner() is the cArray) will
      * be duplicated so that the new cArray will have its own
      * copy of them.
      */
@@ -327,14 +327,14 @@ class SIM_API cArray : public cOwnedObject
      * should automatically take ownership of the objects that are inserted
      * into it.
      */
-    void takeOwnership(bool tk) {tkownership=tk;}
+    void setTakeOwnership(bool tk) {tkownership=tk;}
 
     /**
      * Returns the flag which determines whether the container object
      * should automatically take ownership of the objects that are inserted
      * into it.
      */
-    bool takeOwnership() const   {return tkownership;}
+    bool getTakeOwnership() const   {return tkownership;}
     //@}
 };
 

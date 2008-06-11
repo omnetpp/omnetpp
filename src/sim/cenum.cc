@@ -34,7 +34,7 @@ Register_Class(cEnum);
 
 cEnum::cEnum(const cEnum& list) : cOwnedObject()
 {
-     setName(list.name());
+     setName(list.getName());
      operator=(list);
 }
 
@@ -67,7 +67,7 @@ void cEnum::insert(int value, const char *name)
     nameToValueMap[name] = value;
 }
 
-const char *cEnum::stringFor(int value)
+const char *cEnum::getStringFor(int value)
 {
     std::map<int,std::string>::const_iterator it = valueToNameMap.find(value);
     return it==valueToNameMap.end() ? NULL : it->second.c_str();
@@ -81,7 +81,7 @@ int cEnum::lookup(const char *name, int fallback)
 
 cEnum *cEnum::find(const char *name)
 {
-    return dynamic_cast<cEnum *>(enums.instance()->lookup(name));
+    return dynamic_cast<cEnum *>(enums.getInstance()->lookup(name));
 }
 
 cEnum *cEnum::registerNames(const char *nameList)

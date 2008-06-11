@@ -67,10 +67,10 @@ void cISPEventLogger::processReceivedMessage(cMessage *msg, int destModuleId, in
 
 void cISPEventLogger::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
 {
-    if (msg->priority()!=0)
-        throw cRuntimeError("cISPEventLogger: outgoing message (%s)%s has nonzero priority() set -- "
+    if (msg->getPriority()!=0)
+        throw cRuntimeError("cISPEventLogger: outgoing message (%s)%s has nonzero priority set -- "
                             "this conflicts with ISP which uses priority for its own purposes",
-                            msg->className(), msg->name());
+                            msg->getClassName(), msg->getName());
     cParsimProtocolBase::processOutgoingMessage(msg, procId, moduleId, gateId, data);
 }
 
@@ -78,15 +78,15 @@ cMessage *cISPEventLogger::getNextEvent()
 {
     cMessage *msg = cNullMessageProtocol::getNextEvent();
 
-    if (msg->srcProcId()!=-1)  // received from another partition
+    if (msg->getSrcProcId()!=-1)  // received from another partition
     {
         // restore original priority
         msg->setPriority(0);
 
         // log event to file
         cIdealSimulationProtocol::ExternalEvent e;
-        e.t = msg->arrivalTime();
-        e.srcProcId = msg->srcProcId();
+        e.t = msg->getArrivalTime();
+        e.srcProcId = msg->getSrcProcId();
 
         if (fwrite(&e, sizeof(cIdealSimulationProtocol::ExternalEvent), 1, fout)<1)
             throw cRuntimeError("cISPEventLogger error: file write failed (disk full?)");

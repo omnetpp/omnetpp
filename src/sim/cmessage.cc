@@ -118,26 +118,26 @@ std::string cMessage::info() const
         out << "at T=" << delivd << ", in dt=" << (delivd - simulation.simTime()) << "; ";
     }
 
-#define MODNAME(modp) ((modp) ? (modp)->fullPath().c_str() : deletedstr)
-    if (kind()==MK_STARTER)
+#define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)
+    if (getKind()==MK_STARTER)
     {
-        cModule *tomodp = simulation.module(tomod);
+        cModule *tomodp = simulation.getModule(tomod);
         out << "starter for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
-    else if (kind()==MK_TIMEOUT)
+    else if (getKind()==MK_TIMEOUT)
     {
-        cModule *tomodp = simulation.module(tomod);
+        cModule *tomodp = simulation.getModule(tomod);
         out << "timeoutmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else if (frommod==tomod)
     {
-        cModule *tomodp = simulation.module(tomod);
+        cModule *tomodp = simulation.getModule(tomod);
         out << "selfmsg for " << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
     else
     {
-        cModule *frommodp = simulation.module(frommod);
-        cModule *tomodp = simulation.module(tomod);
+        cModule *frommodp = simulation.getModule(frommod);
+        cModule *tomodp = simulation.getModule(tomod);
         out << "src=" << MODNAME(frommodp) << " (id=" << frommod << ") ";
         out << " dest=" << MODNAME(tomodp) << " (id=" << tomod << ") ";
     }
@@ -145,10 +145,10 @@ std::string cMessage::info() const
 
     if (encapmsg)
         // #ifdef REFCOUNTING const_cast<cMessage *>(this)->_detachEncapMsg();  // see _detachEncapMsg() comment why this might be needed
-        out << "  encapsulates: (" << encapmsg->className() << ")" << encapmsg->fullName();
+        out << "  encapsulates: (" << encapmsg->getClassName() << ")" << encapmsg->getFullName();
 
     if (ctrlp)
-        out << "  control info: (" << ctrlp->className() << ") " << ctrlp->fullName() << "\n";
+        out << "  control info: (" << ctrlp->getClassName() << ") " << ctrlp->getFullName() << "\n";
 
     return out.str();
 }
@@ -364,10 +364,10 @@ void cMessage::encapsulate(cMessage *msg)
 
     if (msg)
     {
-        if (msg->owner()!=simulation.contextSimpleModule())
+        if (msg->getOwner()!=simulation.getContextSimpleModule())
             throw cRuntimeError(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
-                                    msg->className(), msg->fullName(),
-                                    msg->owner()->className(), msg->owner()->fullPath().c_str());
+                                    msg->getClassName(), msg->getFullName(),
+                                    msg->getOwner()->getClassName(), msg->getOwner()->getFullPath().c_str());
         take(encapmsg = msg);
 #ifdef REFCOUNTING
         ASSERT(encapmsg->sharecount==0);
@@ -403,7 +403,7 @@ cMessage *cMessage::decapsulate()
     return msg;
 }
 
-cMessage *cMessage::encapsulatedMsg() const
+cMessage *cMessage::getEncapsulatedMsg() const
 {
 #ifdef REFCOUNTING
     // encapmsg may be shared (sharecount>0) -- we'll make our own copy,
@@ -437,43 +437,43 @@ cObject *cMessage::removeControlInfo()
     return p;
 }
 
-long cMessage::encapsulationId() const
+long cMessage::getEncapsulationId() const
 {
-    // find innermost msg. Note: don't use encapsulatedMsg() because it does copy-on-touch of shared msgs
+    // find innermost msg. Note: don't use getEncapsulatedMsg() because it does copy-on-touch of shared msgs
     const cMessage *msg = this;
     while (msg->encapmsg)
         msg = msg->encapmsg;
-    return msg->id();
+    return msg->getId();
 }
 
-long cMessage::encapsulationTreeId() const
+long cMessage::getEncapsulationTreeId() const
 {
-    // find innermost msg. Note: don't use encapsulatedMsg() because it does copy-on-touch of shared msgs
+    // find innermost msg. Note: don't use getEncapsulatedMsg() because it does copy-on-touch of shared msgs
     const cMessage *msg = this;
     while (msg->encapmsg)
         msg = msg->encapmsg;
-    return msg->treeId();
+    return msg->getTreeId();
 }
 
 cMsgPar& cMessage::par(int n)
 {
-    cArray& parlist = parList();
+    cArray& parlist = getParList();
     cObject *p = parlist.get(n);
     if (!p)
         throw cRuntimeError(this,"par(int): has no parameter #%d",n);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw cRuntimeError(this,"par(int): parameter #%d is of type %s, not cMsgPar",n, p->className());
+        throw cRuntimeError(this,"par(int): parameter #%d is of type %s, not cMsgPar",n, p->getClassName());
     return *(cMsgPar *)p;
 }
 
 cMsgPar& cMessage::par(const char *s)
 {
-    cArray& parlist = parList();
+    cArray& parlist = getParList();
     cObject *p = parlist.get(s);
     if (!p)
         throw cRuntimeError(this,"par(const char *): has no parameter called `%s'",s);
     if (!dynamic_cast<cMsgPar *>(p))
-        throw cRuntimeError(this,"par(const char *): parameter `%s' is of type %s, not cMsgPar",s, p->className());
+        throw cRuntimeError(this,"par(const char *): parameter `%s' is of type %s, not cMsgPar",s, p->getClassName());
     return *(cMsgPar *)p;
 }
 
@@ -484,37 +484,37 @@ int cMessage::findPar(const char *s) const
     return parlistp->find(s);
 }
 
-cGate *cMessage::senderGate() const
+cGate *cMessage::getSenderGate() const
 {
     if (frommod<0 || fromgate<0)  return NULL;
-    cModule *mod = simulation.module(frommod);
+    cModule *mod = simulation.getModule(frommod);
     if (!mod) return NULL;
     return mod->gate( fromgate );
 }
 
-cGate *cMessage::arrivalGate() const
+cGate *cMessage::getArrivalGate() const
 {
     if (tomod<0 || togate<0)  return NULL;
-    cModule *mod = simulation.module(tomod);
+    cModule *mod = simulation.getModule(tomod);
     if (!mod) return NULL;
     return mod->gate(togate);
 }
 
 bool cMessage::arrivedOn(const char *s)
 {
-    cGate *arrgate = arrivalGate();
+    cGate *arrgate = getArrivalGate();
     if (!arrgate) return false;
     return arrgate->isName(s);
 }
 
 bool cMessage::arrivedOn(const char *s, int gateindex)
 {
-    cGate *arrgate = arrivalGate();
+    cGate *arrgate = getArrivalGate();
     if (!arrgate) return false;
-    return arrgate->isName(s) && arrgate->index()==gateindex;
+    return arrgate->isName(s) && arrgate->getIndex()==gateindex;
 }
 
-const char *cMessage::displayString() const
+const char *cMessage::getDisplayString() const
 {
     // redefine to get messages with custom appearance
     return "";
@@ -523,21 +523,21 @@ const char *cMessage::displayString() const
 
 void cMessage::setSentFrom(cModule *module, int gate, simtime_t t)
 {
-    frommod = module ? module->id() : -1;
+    frommod = module ? module->getId() : -1;
     fromgate = gate;
     sent = t;
 }
 
 void cMessage::setArrival(cModule *module, int gate, simtime_t t)
 {
-    tomod = module ? module->id() : -1;
+    tomod = module ? module->getId() : -1;
     togate = gate;
     delivd = t;
 }
 
 void cMessage::setArrival(cModule *module, int gate)
 {
-    tomod = module ? module->id() : -1;
+    tomod = module ? module->getId() : -1;
     togate = gate;
 }
 

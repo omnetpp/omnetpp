@@ -112,7 +112,7 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
 {
     if (!areParamsFinalized())
         throw cRuntimeError("Error sending message (%s)%s on gate %s: channel parameters not yet set up",
-                            msg->className(), msg->fullName(), fromGate()->fullPath().c_str());
+                            msg->getClassName(), msg->getFullName(), getFromGate()->getFullPath().c_str());
 
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)
@@ -123,9 +123,9 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
         throw cRuntimeError("Error sending message (%s)%s on gate %s: gate is currently "
                             "busy with an ongoing transmission -- please rewrite the sender "
                             "simple module to only send when the previous transmission has "
-                            "already finished, using cGate::transmissionFinishes(), scheduleAt(), "
+                            "already finished, using cGate::getTransmissionFinishTime(), scheduleAt(), "
                             "and possibly a cQueue for storing messages waiting to be transmitted",
-                            msg->className(), msg->fullName(), fromGate()->fullPath().c_str());
+                            msg->getClassName(), msg->getFullName(), getFromGate()->getFullPath().c_str());
 
     simtime_t transmissiondelay = 0;
 
@@ -151,9 +151,9 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
     }
 
     // FIXME: XXX: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
-    EVCB.messageSendHop(msg, fromGate(), delayparam, transmissiondelay);
+    EVCB.messageSendHop(msg, getFromGate(), delayparam, transmissiondelay);
 
     // hand over msg to next gate
-    return fromGate()->toGate()->deliver(msg, t);
+    return getFromGate()->getToGate()->deliver(msg, t);
 }
 

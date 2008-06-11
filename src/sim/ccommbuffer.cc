@@ -29,7 +29,7 @@ USING_NAMESPACE
 
 void cCommBuffer::packObject(cObject *obj)
 {
-    pack(obj->className());
+    pack(obj->getClassName());
     obj->netPack(this);
 }
 

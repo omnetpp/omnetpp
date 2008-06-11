@@ -69,17 +69,17 @@ bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size )
     return lpFiber!=NULL;
 }
 
-bool cCoroutine::stackOverflow() const
+bool cCoroutine::hasStackOverflow() const
 {
     return false;
 }
 
-unsigned cCoroutine::stackSize() const
+unsigned cCoroutine::getStackSize() const
 {
     return stacksize;
 }
 
-unsigned cCoroutine::stackUsage() const
+unsigned cCoroutine::getStackUsage() const
 {
     return 0;
 }
@@ -121,17 +121,17 @@ bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
     return task!=NULL;
 }
 
-bool cCoroutine::stackOverflow() const
+bool cCoroutine::hasStackOverflow() const
 {
     return task==NULL ? false : task_testoverflow( task );
 }
 
-unsigned cCoroutine::stackSize() const
+unsigned cCoroutine::getStackSize() const
 {
     return task==NULL ? 0 : task->size;
 }
 
-unsigned cCoroutine::stackUsage() const
+unsigned cCoroutine::getStackUsage() const
 {
     return task==NULL ? 0 : task_stackusage( task );
 }

@@ -250,10 +250,10 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     variables[CFGVAR_INIFILE] = opp_nulltoempty(getFileName());
     variables[CFGVAR_CONFIGNAME] = configName;
     variables[CFGVAR_RUNNUMBER] = opp_stringf("%d", runNumber);
-    variables[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_NETWORK->name()));
+    variables[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_NETWORK->getName()));
     variables[CFGVAR_PROCESSID] = opp_stringf("%d", (int) getpid());
     variables[CFGVAR_DATETIME] = opp_makedatetimestring();
-    variables[CFGVAR_RESULTDIR] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_RESULT_DIR->name(), CFGID_RESULT_DIR->defaultValue()));
+    variables[CFGVAR_RESULTDIR] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_RESULT_DIR->getName(), CFGID_RESULT_DIR->getDefaultValue()));
     variables[CFGVAR_RUNID] = runId = variables[CFGVAR_CONFIGNAME]+"-"+variables[CFGVAR_RUNNUMBER]+"-"+variables[CFGVAR_DATETIME]+"-"+variables[CFGVAR_PROCESSID];
 
     // store iteration variables, and also their "positions" (iteration count) as "&varid"
@@ -278,10 +278,10 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     variables[CFGVAR_ITERATIONVARS2] = iterationvars2;
 
     // experiment/measurement/replication must be done as last, because they may depend on the above vars
-    variables[CFGVAR_SEEDSET] = substituteVariables(internalGetValue(sectionChain, CFGID_SEED_SET->name(), CFGID_SEED_SET->defaultValue()), -1, -1);
-    variables[CFGVAR_EXPERIMENT] = substituteVariables(internalGetValue(sectionChain, CFGID_EXPERIMENT_LABEL->name(), CFGID_EXPERIMENT_LABEL->defaultValue()), -1, -1);
-    variables[CFGVAR_MEASUREMENT] = substituteVariables(internalGetValue(sectionChain, CFGID_MEASUREMENT_LABEL->name(), CFGID_MEASUREMENT_LABEL->defaultValue()), -1, -1);
-    variables[CFGVAR_REPLICATION] = substituteVariables(internalGetValue(sectionChain, CFGID_REPLICATION_LABEL->name(), CFGID_REPLICATION_LABEL->defaultValue()), -1, -1);
+    variables[CFGVAR_SEEDSET] = substituteVariables(internalGetValue(sectionChain, CFGID_SEED_SET->getName(), CFGID_SEED_SET->getDefaultValue()), -1, -1);
+    variables[CFGVAR_EXPERIMENT] = substituteVariables(internalGetValue(sectionChain, CFGID_EXPERIMENT_LABEL->getName(), CFGID_EXPERIMENT_LABEL->getDefaultValue()), -1, -1);
+    variables[CFGVAR_MEASUREMENT] = substituteVariables(internalGetValue(sectionChain, CFGID_MEASUREMENT_LABEL->getName(), CFGID_MEASUREMENT_LABEL->getDefaultValue()), -1, -1);
+    variables[CFGVAR_REPLICATION] = substituteVariables(internalGetValue(sectionChain, CFGID_REPLICATION_LABEL->getName(), CFGID_REPLICATION_LABEL->getDefaultValue()), -1, -1);
 }
 
 int SectionBasedConfiguration::getNumRunsInScenario(const char *configName) const
@@ -948,7 +948,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
 
 cConfigKey *SectionBasedConfiguration::lookupConfigKey(const char *key)
 {
-    cConfigKey *e = (cConfigKey *) configKeys.instance()->lookup(key);
+    cConfigKey *e = (cConfigKey *) configKeys.getInstance()->lookup(key);
     if (e)
         return e;  // found it, great
 
@@ -956,13 +956,13 @@ cConfigKey *SectionBasedConfiguration::lookupConfigKey(const char *key)
     // such as "seed-1-mt" matches on the "seed-%-mt" cConfigKey.
     // We have to iterate over all cConfigKeys to verify this.
     // "%" means "any number" in config keys.
-    int n = configKeys.instance()->size();
+    int n = configKeys.getInstance()->size();
     for (int i=0; i<n; i++)
     {
-        cConfigKey *e = (cConfigKey *) configKeys.instance()->get(i);
-        if (PatternMatcher::containsWildcards(e->name()) || strchr(e->name(),'%')!=NULL)
+        cConfigKey *e = (cConfigKey *) configKeys.getInstance()->get(i);
+        if (PatternMatcher::containsWildcards(e->getName()) || strchr(e->getName(),'%')!=NULL)
         {
-            std::string pattern = opp_replacesubstring(e->name(), "%", "{..}", true);
+            std::string pattern = opp_replacesubstring(e->getName(), "%", "{..}", true);
             if (PatternMatcher(pattern.c_str(), false, true, true).matches(key))
                 return e;
         }

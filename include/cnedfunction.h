@@ -96,46 +96,46 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
      * Returns the function pointer. Do not call the function
      * directly, because that would bypass argument type validation.
      */
-    NEDFunction functionPointer() const  {return f;}
+    NEDFunction getFunctionPointer() const  {return f;}
 
     /**
      * Returns the functions signature, as passed to the constructor
      */
-    const char *signature() const {return sign.c_str();}
+    const char *getSignature() const {return sign.c_str();}
 
     /**
      * Returns the function return type, one of: B,L,D,Q,S,X,*
      */
-    char returnType() const  {return rettype;}
+    char getReturnType() const  {return rettype;}
 
     /**
      * Returns the type of the kth argument; result is
      * one of: B,L,D,Q,S,X,*
      */
-    char argType(int k) const  {return argtypes[k];}
+    char getArgType(int k) const  {return argtypes[k];}
 
     /**
      * Returns the minimum number of arguments (i.e. the number
      * of mandatory arguments).
      */
-    int minArgs() const  {return minargc;}
+    int getMinArgs() const  {return minargc;}
 
     /**
      * Returns the maximum number of arguments (i.e. the last max-min
      * args are optional).
      */
-    int maxArgs() const  {return maxargc;}
+    int getMaxArgs() const  {return maxargc;}
 
     /**
      * Returns a string that can be useful in classifying NED functions,
      * e.g. "trigonometric".
      */
-    const char *category() const  {return categ.c_str();}
+    const char *getCategory() const  {return categ.c_str();}
 
     /**
      * Returns the function's documentation as a string.
      */
-    const char *description() const  {return desc.c_str();}
+    const char *getDescription() const  {return desc.c_str();}
     //@}
 
     /**

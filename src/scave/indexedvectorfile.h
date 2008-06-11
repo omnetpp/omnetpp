@@ -68,7 +68,7 @@ class SCAVE_API IndexedVectorFileReader
         /**
          * Returns the number of entries in the vector.
          */
-        int getNumberOfEntries() const { return vector->count(); };
+        int getNumberOfEntries() const { return vector->getCount(); };
         /**
          * Returns the entry with the specified serial,
          * or NULL if the serial is out of range.
@@ -170,9 +170,9 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
 class SCAVE_API IndexedVectorFileWriterNodeType : public NodeType
 {
     public:
-        virtual const char *name() const {return "indexedvectorfilewriter";}
-        virtual const char *category() const {return "multi-port sink";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "indexedvectorfilewriter";}
+        virtual const char *getCategory() const {return "multi-port sink";}
+        virtual const char *getDescription() const;
         virtual bool isHidden() const {return true;}
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

@@ -87,7 +87,7 @@ class cConfigKey;
  * \opp will get the rest of the configuration from your configuration
  * class.
  *
- * See also: cEnvir::config()
+ * See also: cEnvir::getConfig()
  *
  * @ingroup EnvirExtensions
  */

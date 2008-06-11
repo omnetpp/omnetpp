@@ -228,14 +228,14 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      * this output vector object. This includes the values passed while
      * the object was disabled (see disable()).
      */
-    long valuesReceived() const  {return num_received;}
+    long getValuesReceived() const  {return num_received;}
 
     /**
      * Returns the number of values actually stored by this output vector object.
      * The values passed while the object was disabled (via disable(),
      * environment configuration, filtering, etc.) do not count.
      */
-    long valuesStored() const  {return num_stored;}
+    long getValuesStored() const  {return num_stored;}
     //@}
 };
 

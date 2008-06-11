@@ -48,7 +48,7 @@ class SCAVE_API NodeTypeRegistry
 
     public:
         /** Access to singleton instance */
-        static NodeTypeRegistry *instance();
+        static NodeTypeRegistry *getInstance();
 
         /** Returns list of node types */
         NodeTypeVector getNodeTypes();

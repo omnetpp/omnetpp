@@ -117,7 +117,7 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
     VectorData *vector = portDataPtr->vector;
     file_offset_t startOffset = blockPtr->startOffset;
-    long count = blockPtr->count();
+    long count = blockPtr->getCount();
 
     reader.seekTo(startOffset);
 
@@ -154,7 +154,7 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
         // write to port(s)
         for (PortVector::const_iterator port = portDataPtr->ports.begin(); port != portDataPtr->ports.end(); ++port)
-            port->channel()->write(&a,1);
+            port->getChannel()->write(&a,1);
     }
 
 //    printf("read: %ldms tokenize: %ldms parse: %ldms\n",
@@ -165,7 +165,7 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
 //-----
 
-const char *IndexedVectorFileReaderNodeType::description() const
+const char *IndexedVectorFileReaderNodeType::getDescription() const
 {
     return "Reads indexed output vector files.";
 }

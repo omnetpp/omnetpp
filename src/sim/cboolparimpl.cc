@@ -120,7 +120,7 @@ cXMLElement *cBoolParImpl::xmlValue(cComponent *) const
     throw cRuntimeError(this, eBADCAST, "bool", "XML");
 }
 
-cExpression *cBoolParImpl::expression() const
+cExpression *cBoolParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
@@ -139,7 +139,7 @@ void cBoolParImpl::deleteOld()
     }
 }
 
-cPar::Type cBoolParImpl::type() const
+cPar::Type cBoolParImpl::getType() const
 {
     return cPar::BOOL;
 }

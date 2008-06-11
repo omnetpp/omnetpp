@@ -555,7 +555,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
     outh << "    virtual ~" << cld.msgclass << "();\n";
     if (cld.classtype == CLASSTYPE_COBJECT)
     {
-        outh << "    virtual const char *className() const {return \"" << cld.realmsgclass << "\";}\n";
+        outh << "    virtual const char *getClassName() const {return \"" << cld.realmsgclass << "\";}\n";
     }
 
     // operator=, dup
@@ -687,7 +687,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
     out << "{\n";
     if (cld.classtype == CLASSTYPE_COBJECT)
     {
-        out << "    setName(other.name());\n";
+        out << "    setName(other.getName());\n";
     }
     for (i=0; i<numfields; i++)
     {
@@ -879,7 +879,7 @@ void NEDCppGenerator::generateDescriptorClass(NEDCppGenerator::ClassDesc& cld, N
     out << "  public:\n";
     out << "    " << cld.msgdescclass << "(void *p=NULL);\n";
     out << "    virtual ~" << cld.msgdescclass << "();\n";
-    out << "    virtual const char *className() const {return \"" << cld.msgdescclass << "\";}\n";
+    out << "    virtual const char *getClassName() const {return \"" << cld.msgdescclass << "\";}\n";
     out << "    " << cld.msgdescclass << "& operator=(const " << cld.msgdescclass << "& other);\n";
     out << "    virtual cObject *dup() const {return new " << cld.msgdescclass << "(*this);}\n";
     out << "\n";

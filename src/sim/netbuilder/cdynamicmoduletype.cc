@@ -47,7 +47,7 @@ cNEDDeclaration *cDynamicModuleType::getDecl() const
 {
     // do not store the pointer, because the declaration object may have been
     // thrown out of cNEDLoader to conserve memory
-    cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(fullName());
+    cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(getFullName());
     ASSERT(decl->getType()==cNEDDeclaration::SIMPLE_MODULE || decl->getType()==cNEDDeclaration::COMPOUND_MODULE);
     return decl;
 }
@@ -84,34 +84,34 @@ void cDynamicModuleType::buildInside(cModule *module)
     cNEDNetworkBuilder().buildInside(module, decl);
 }
 
-cProperties *cDynamicModuleType::properties() const
+cProperties *cDynamicModuleType::getProperties() const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->properties();
+    return decl->getProperties();
 }
 
-cProperties *cDynamicModuleType::paramProperties(const char *paramName) const
+cProperties *cDynamicModuleType::getParamProperties(const char *paramName) const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->paramProperties(paramName);
+    return decl->getParamProperties(paramName);
 }
 
-cProperties *cDynamicModuleType::gateProperties(const char *gateName) const
+cProperties *cDynamicModuleType::getGateProperties(const char *gateName) const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->gateProperties(gateName);
+    return decl->getGateProperties(gateName);
 }
 
-cProperties *cDynamicModuleType::submoduleProperties(const char *submoduleName, const char *submoduleType) const
+cProperties *cDynamicModuleType::getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->submoduleProperties(submoduleName, submoduleType);
+    return decl->getSubmoduleProperties(submoduleName, submoduleType);
 }
 
-cProperties *cDynamicModuleType::connectionProperties(int connectionId, const char *channelType) const
+cProperties *cDynamicModuleType::getConnectionProperties(int connectionId, const char *channelType) const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->connectionProperties(connectionId, channelType);
+    return decl->getConnectionProperties(connectionId, channelType);
 }
 
 

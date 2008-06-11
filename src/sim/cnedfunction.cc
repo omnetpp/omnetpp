@@ -59,7 +59,7 @@ void cNEDFunction::parseSignature(const char *signature)
             break;
         }
         else
-            throw cRuntimeError("Define_NED_Function(%s): invalid character '%c' in signature \"%s\"", name(), c, signature);
+            throw cRuntimeError("Define_NED_Function(%s): invalid character '%c' in signature \"%s\"", getName(), c, signature);
     }
     maxargc = argtypes.size();
     if (minargc==-1)
@@ -67,31 +67,31 @@ void cNEDFunction::parseSignature(const char *signature)
 
     // parse return type
     if (strchr("BLDQSX*", *s)==NULL)
-        throw cRuntimeError("Define_NED_Function(%s): invalid return type '%c' in signature \"%s\"", name(), *s, signature);
+        throw cRuntimeError("Define_NED_Function(%s): invalid return type '%c' in signature \"%s\"", getName(), *s, signature);
     rettype = *s++;
     if (*s)
-        throw cRuntimeError("Define_NED_Function(%s): trailing garbage in signature \"%s\"", name(), signature);
+        throw cRuntimeError("Define_NED_Function(%s): trailing garbage in signature \"%s\"", getName(), signature);
 }
 
 void cNEDFunction::checkArgs(cDynamicExpression::Value argv[], int argc)
 {
     if (argc<minargc || argc>maxargc)
-        throw cRuntimeError("%s: called with wrong number of arguments", name());
+        throw cRuntimeError("%s: called with wrong number of arguments", getName());
 
     for (int i=0; i<argc; i++) {
         char declType = argtypes[i];
         if (declType=='D' || declType=='L') {
             if (argv[i].type != 'D')
-                throw cRuntimeError(eEBADARGS, name());
+                throw cRuntimeError(eEBADARGS, getName());
             if (!opp_isempty(argv[i].dblunit))
-                throw cRuntimeError(eDIMLESS, name()); //XXX better msg! only arg i is dimless
+                throw cRuntimeError(eDIMLESS, getName()); //XXX better msg! only arg i is dimless
         }
         else if (declType=='Q') {
             if (argv[i].type != 'D')
-                throw cRuntimeError(eEBADARGS, name());
+                throw cRuntimeError(eEBADARGS, getName());
         }
         else if (declType!='*' && argv[i].type!=declType) {
-            throw cRuntimeError(eEBADARGS, name());
+            throw cRuntimeError(eEBADARGS, getName());
         }
     }
 }
@@ -102,7 +102,7 @@ cDynamicExpression::Value cNEDFunction::invoke(cComponent *context, cDynamicExpr
     return f(context, argv, argc);
 }
 
-static const char *typeName(char t)
+static const char *getTypeName(char t)
 {
     switch (t)
     {
@@ -121,18 +121,18 @@ std::string cNEDFunction::info() const
 {
     std::stringstream out;
     out << "(";
-    for (int i = 0; i < maxArgs(); i++)
-        out << (i==minArgs() ? "[" : "") << (i?",":"") << typeName(argType(i));
-    out << (minArgs()!=maxArgs() ? "]" : "") << ") -> " << typeName(returnType());
+    for (int i = 0; i < getMaxArgs(); i++)
+        out << (i==getMinArgs() ? "[" : "") << (i?",":"") << getTypeName(getArgType(i));
+    out << (getMinArgs()!=getMaxArgs() ? "]" : "") << ") -> " << getTypeName(getReturnType());
     return out.str();
 }
 
 cNEDFunction *cNEDFunction::find(const char *name, int argcount)
 {
-    cRegistrationList *a = nedFunctions.instance();
+    cRegistrationList *a = nedFunctions.getInstance();
     for (int i=0; i<a->size(); i++) {
         cNEDFunction *f = dynamic_cast<cNEDFunction *>(a->get(i));
-        if (f && f->isName(name) && f->minArgs()<=argcount && f->maxArgs()>=argcount)
+        if (f && f->isName(name) && f->getMinArgs()<=argcount && f->getMaxArgs()>=argcount)
             return f;
     }
     return NULL;
@@ -140,10 +140,10 @@ cNEDFunction *cNEDFunction::find(const char *name, int argcount)
 
 cNEDFunction *cNEDFunction::findByPointer(NEDFunction f)
 {
-    cRegistrationList *a = nedFunctions.instance();
+    cRegistrationList *a = nedFunctions.getInstance();
     for (int i=0; i<a->size(); i++) {
         cNEDFunction *ff = dynamic_cast<cNEDFunction *>(a->get(i));
-        if (ff && ff->functionPointer() == f)
+        if (ff && ff->getFunctionPointer() == f)
             return ff;
     }
     return NULL;

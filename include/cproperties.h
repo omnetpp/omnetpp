@@ -82,7 +82,7 @@ class SIM_API cProperties : public cObject
     /**
      * Returns object name.
      */
-    virtual const char *name() const  {return "properties";}
+    virtual const char *getName() const  {return "properties";}
 
     /**
      * Produces a one-line description of object contents.
@@ -105,7 +105,7 @@ class SIM_API cProperties : public cObject
     /**
      * Returns the number of properties.
      */
-    virtual int numProperties() const  {return propv.size();}
+    virtual int getNumProperties() const  {return propv.size();}
 
     /**
      * Returns the names of cProperty object stored in this object.
@@ -115,7 +115,7 @@ class SIM_API cProperties : public cObject
     virtual const std::vector<const char *> getNames() const;
 
     /**
-     * Returns kth property, where 0 <= k < numProperties().
+     * Returns kth property, where 0 <= k < getNumProperties().
      */
     virtual cProperty *get(int k) const;
 

@@ -88,14 +88,14 @@ int cDynamicExpression::Elem::compare(const Elem& other) const
 
 void cDynamicExpression::Value::operator=(const cPar& par)
 {
-    switch (par.type())
+    switch (par.getType())
     {
       case cPar::BOOL: *this = par.boolValue(); break;
-      case cPar::DOUBLE: *this = par.doubleValue(); dblunit = par.unit(); break;
+      case cPar::DOUBLE: *this = par.doubleValue(); dblunit = par.getUnit(); break;
       case cPar::LONG: *this = par.doubleValue(); break;
       case cPar::STRING: *this = par.stdstringValue(); break;
       case cPar::XML: *this = par.xmlValue(); break;
-      default: throw cRuntimeError("internal error: bad cPar type: %s", par.fullPath().c_str());
+      default: throw cRuntimeError("internal error: bad cPar type: %s", par.getFullPath().c_str());
     }
 }
 
@@ -317,48 +317,48 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
              break;
 
            case Elem::MATHFUNC:
-             switch (e.f->numArgs())
+             switch (e.f->getNumArgs())
              {
                case 0:
-                   stk[++tos] = e.f->mathFuncNoArg()();
+                   stk[++tos] = e.f->getMathFuncNoArg()();
                    break;
                case 1:
                    if (tos<0)
                        throw cRuntimeError(eESTKUFLOW);
                    if (stk[tos].type!=Value::DBL)
-                       throw cRuntimeError(eEBADARGS,e.f->name());
+                       throw cRuntimeError(eEBADARGS,e.f->getName());
                    if (!opp_isempty(stk[tos].dblunit))
-                       throw cRuntimeError(eDIMLESS,e.f->name());
-                   stk[tos] = e.f->mathFunc1Arg()(stk[tos].dbl);
+                       throw cRuntimeError(eDIMLESS,e.f->getName());
+                   stk[tos] = e.f->getMathFunc1Arg()(stk[tos].dbl);
                    break;
                case 2:
                    if (tos<1)
                        throw cRuntimeError(eESTKUFLOW);
                    if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
-                       throw cRuntimeError(eEBADARGS,e.f->name());
+                       throw cRuntimeError(eEBADARGS,e.f->getName());
                    if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
-                       throw cRuntimeError(eDIMLESS,e.f->name());
-                   stk[tos-1] = e.f->mathFunc2Args()(stk[tos-1].dbl, stk[tos].dbl);
+                       throw cRuntimeError(eDIMLESS,e.f->getName());
+                   stk[tos-1] = e.f->getMathFunc2Args()(stk[tos-1].dbl, stk[tos].dbl);
                    tos--;
                    break;
                case 3:
                    if (tos<2)
                        throw cRuntimeError(eESTKUFLOW);
                    if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL || stk[tos-2].type!=Value::DBL)
-                       throw cRuntimeError(eEBADARGS,e.f->name());
+                       throw cRuntimeError(eEBADARGS,e.f->getName());
                    if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit) || !opp_isempty(stk[tos-2].dblunit))
-                       throw cRuntimeError(eDIMLESS,e.f->name());
-                   stk[tos-2] = e.f->mathFunc3Args()(stk[tos-2].dbl, stk[tos-1].dbl, stk[tos].dbl);
+                       throw cRuntimeError(eDIMLESS,e.f->getName());
+                   stk[tos-2] = e.f->getMathFunc3Args()(stk[tos-2].dbl, stk[tos-1].dbl, stk[tos].dbl);
                    tos-=2;
                    break;
                case 4:
                    if (tos<3)
                        throw cRuntimeError(eESTKUFLOW);
                    if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL || stk[tos-2].type!=Value::DBL || stk[tos-3].type!=Value::DBL)
-                       throw cRuntimeError(eEBADARGS,e.f->name());
+                       throw cRuntimeError(eEBADARGS,e.f->getName());
                    if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit) || !opp_isempty(stk[tos-2].dblunit) || !opp_isempty(stk[tos-3].dblunit))
-                       throw cRuntimeError(eDIMLESS,e.f->name());
-                   stk[tos-3] = e.f->mathFunc4Args()(stk[tos-3].dbl, stk[tos-2].dbl, stk[tos-1].dbl, stk[tos].dbl);
+                       throw cRuntimeError(eDIMLESS,e.f->getName());
+                   stk[tos-3] = e.f->getMathFunc4Args()(stk[tos-3].dbl, stk[tos-2].dbl, stk[tos-1].dbl, stk[tos].dbl);
                    tos-=3;
                    break;
                default:
@@ -380,14 +380,14 @@ cDynamicExpression::Value cDynamicExpression::evaluate(cComponent *context) cons
 
            case Elem::FUNCTOR:
              {
-             int numargs = e.fu->numArgs();
+             int numargs = e.fu->getNumArgs();
              int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
              if (argpos<0)
                  throw cRuntimeError(eESTKUFLOW);
-             const char *argtypes = e.fu->argTypes();
+             const char *argtypes = e.fu->getArgTypes();
              for (int i=0; i<numargs; i++)
                  if (argtypes[i] != '*' && stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
-                     throw cRuntimeError(eEBADARGS,e.fu->fullName());
+                     throw cRuntimeError(eEBADARGS,e.fu->getFullName());
              // note: unit checking is left to the function itself
              stk[argpos] = e.fu->evaluate(context, stk+argpos, numargs);
              tos = argpos;
@@ -654,8 +654,8 @@ std::string cDynamicExpression::str() const
                case Elem::MATHFUNC:
                case Elem::NEDFUNC:
                  {
-                 int numargs = (e.type==Elem::MATHFUNC) ? e.f->numArgs() : e.nf.argc;
-                 std::string name = (e.type==Elem::MATHFUNC) ? e.f->name() : e.nf.f->name();
+                 int numargs = (e.type==Elem::MATHFUNC) ? e.f->getNumArgs() : e.nf.argc;
+                 std::string name = (e.type==Elem::MATHFUNC) ? e.f->getName() : e.nf.f->getName();
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
                      throw cRuntimeError(eESTKUFLOW);
@@ -670,7 +670,7 @@ std::string cDynamicExpression::str() const
                  }
                case Elem::FUNCTOR:
                  {
-                 int numargs = e.fu->numArgs();
+                 int numargs = e.fu->getNumArgs();
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
                      throw cRuntimeError(eESTKUFLOW);

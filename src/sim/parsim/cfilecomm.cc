@@ -47,9 +47,9 @@ Register_GlobalConfigEntry(CFGID_FILECOMM_PRESERVE_READ, "parsim-filecommunicati
 
 cFileCommunications::cFileCommunications()
 {
-    commDirPrefix = ev.config()->getAsString(CFGID_FILECOMM_PREFIX);
-    readDirPrefix = ev.config()->getAsString(CFGID_FILECOMM_READ_PREFIX);
-    preserveReadFiles = ev.config()->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
+    commDirPrefix = ev.getConfig()->getAsString(CFGID_FILECOMM_PREFIX);
+    readDirPrefix = ev.getConfig()->getAsString(CFGID_FILECOMM_READ_PREFIX);
+    preserveReadFiles = ev.getConfig()->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
 
     seqNum = 0;
 }

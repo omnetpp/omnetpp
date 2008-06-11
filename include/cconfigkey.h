@@ -83,29 +83,29 @@ class SIM_API cConfigKey : public cNoncopyableOwnedObject
     /**
      * Data type of the key.
      */
-    Type type() const  {return type_;}
+    Type getType() const  {return type_;}
 
     /**
      * Returns the human-readable name of an key data type.
      */
-    static const char *typeName(Type type);
+    static const char *getTypeName(Type type);
 
     /**
      * Returns the unit of the key (e.g. "s" for seconds, "b" for bytes, etc),
      * or NULL if the key does not have a unit.
      */
-    const char *unit() const  {return unit_.empty() ? NULL : unit_.c_str();}
+    const char *getUnit() const  {return unit_.empty() ? NULL : unit_.c_str();}
 
     /**
      * Returns the default value in string form, or NULL if there is no default.
      */
-    const char *defaultValue() const  {return defaultValue_.empty() ? NULL : defaultValue_.c_str();}
+    const char *getDefaultValue() const  {return defaultValue_.empty() ? NULL : defaultValue_.c_str();}
 
     /**
      * Returns a brief textual description of the key, which can be used as
      * help text or hint.
      */
-    const char *description() const  {return description_.c_str();}
+    const char *getDescription() const  {return description_.c_str();}
     //@}
 };
 

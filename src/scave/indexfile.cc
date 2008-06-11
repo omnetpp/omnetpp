@@ -36,7 +36,7 @@ static bool serialLess(const Block &first, const Block &second)
 
 const Block* VectorData::getBlockBySerial(long serial) const
 {
-    if (serial < 0 || serial >= count())
+    if (serial < 0 || serial >= getCount())
         return NULL;
 
     Block blockToFind;
@@ -544,7 +544,7 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
     static char buff1[64], buff2[64];
     char *e;
 
-    if (block.count() > 0)
+    if (block.getCount() > 0)
     {
         CHECK(fprintf(file, "%d\t%"LL"d %"LL"d", vector.vectorId, (int64)block.startOffset, (int64)block.size));
         if (vector.hasColumn('E')) { CHECK(fprintf(file, " %ld %ld", block.startEventNum, block.endEventNum)); }
@@ -552,8 +552,8 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
                                                         BigDecimal::ttoa(buff1, block.startTime, e),
                                                         BigDecimal::ttoa(buff2, block.endTime, e))); }
         if (vector.hasColumn('V')) { CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
-                                                block.count(), precision, block.min(), precision, block.max(),
-                                                precision, block.sum(), precision, block.sumSqr())); }
+                                                block.getCount(), precision, block.getMin(), precision, block.getMax(),
+                                                precision, block.getSum(), precision, block.sumSqr())); }
         CHECK(fprintf(file, "\n"));
     }
 }

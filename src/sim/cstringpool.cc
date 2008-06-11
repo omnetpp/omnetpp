@@ -29,7 +29,7 @@ cStringPool::~cStringPool()
     // for their strings, so cStringPool gets empty by itself.
 #ifndef NDEBUG
     // dump unreleased strings, except after Ctrl+C on Windows
-    if (!cStaticFlag::exiting())
+    if (!cStaticFlag::isExiting())
         dump();
 #endif
     alive = false;

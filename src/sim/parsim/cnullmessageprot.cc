@@ -51,12 +51,12 @@ cNullMessageProtocol::cNullMessageProtocol() : cParsimProtocolBase()
     numSeg = 0;
     segInfo = NULL;
 
-    debug = ev.config()->getAsBool(CFGID_PARSIM_DEBUG);
-    std::string lookhClass = ev.config()->getAsString(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS);
+    debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
+    std::string lookhClass = ev.getConfig()->getAsString(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LOOKAHEAD_CLASS);
     lookaheadcalc = dynamic_cast<cNMPLookahead *>(createOne(lookhClass.c_str()));
     if (!lookaheadcalc) \
          throw cRuntimeError("Class \"%s\" is not subclassed from cNMPLookahead", lookhClass.c_str());
-    laziness = ev.config()->getAsDouble(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS);
+    laziness = ev.getConfig()->getAsDouble(CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS);
 }
 
 cNullMessageProtocol::~cNullMessageProtocol()
@@ -158,7 +158,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
         rescheduleEvent(segInfo[destProcId].eotEvent, eotResendTime);
 
         {if (debug) ev.printf("piggybacking null msg on `%s' to %d, lookahead=%s, EOT=%s; next resend at %s\n",
-                              msg->name(),destProcId,SIMTIME_STR(lookahead),SIMTIME_STR(eot),SIMTIME_STR(eotResendTime));}
+                              msg->getName(),destProcId,SIMTIME_STR(lookahead),SIMTIME_STR(eot),SIMTIME_STR(eotResendTime));}
 
         // send cMessage with piggybacked null message
         buffer->pack(eot);
@@ -169,7 +169,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
     }
     else
     {
-        {if (debug) ev.printf("sending `%s' to %d\n",msg->name(),destProcId);}
+        {if (debug) ev.printf("sending `%s' to %d\n",msg->getName(),destProcId);}
 
         // send cMessage
         buffer->pack(destModuleId);
@@ -224,7 +224,7 @@ void cNullMessageProtocol::processReceivedEIT(int sourceProcId, simtime_t eit)
     {if (debug) ev.printf("null msg received from %d, EIT=%s, rescheduling EIT event\n", sourceProcId, SIMTIME_STR(eit));}
 
     // sanity check
-    ASSERT(eit > eitMsg->arrivalTime());
+    ASSERT(eit > eitMsg->getArrivalTime());
 
     // reschedule it to the EIT just received
     rescheduleEvent(eitMsg, eit);
@@ -249,16 +249,16 @@ cMessage *cNullMessageProtocol::getNextEvent()
     while (true)
     {
         msg = sim->msgQueue.peekFirst();
-        if (msg->kind() == MK_PARSIM_RESENDEOT)
+        if (msg->getKind() == MK_PARSIM_RESENDEOT)
         {
             // send null messages if window closed for a partition
-            int procId = (long) msg->contextPointer();  // khmm...
-            sendNullMessage(procId, msg->arrivalTime());
+            int procId = (long) msg->getContextPointer();  // khmm...
+            sendNullMessage(procId, msg->getArrivalTime());
         }
-        else if (msg->kind() == MK_PARSIM_EIT)
+        else if (msg->getKind() == MK_PARSIM_EIT)
         {
             // wait until it gets out of the way (i.e. we get a higher EIT)
-            {if (debug) ev.printf("blocking on EIT event `%s'\n", msg->name());}
+            {if (debug) ev.printf("blocking on EIT event `%s'\n", msg->getName());}
             if (!receiveBlocking())
                 return NULL;
         }

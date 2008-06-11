@@ -71,8 +71,8 @@ class cCollectObjectsVisitor : public cVisitor
 
 /**
  * Traverses an object tree, and collects objects that belong to certain
- * "categories" (see CATEGORY_... constants) and their className()
- * and/or fullPath() matches a pattern. Used by the Tkenv "Object Filter" dialog.
+ * "categories" (see CATEGORY_... constants) and their getClassName()
+ * and/or getFullPath() matches a pattern. Used by the Tkenv "Object Filter" dialog.
  */
 class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 {

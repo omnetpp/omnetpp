@@ -329,44 +329,44 @@ static std::string my_itostr(int d)
 
 bool ModNameParamResolver::resolve(const char *paramname, std::string& value)
 {
-    //printf("resolving $%s in context=%s\n", paramname, mod ? mod->fullPath().c_str() : "NULL");
+    //printf("resolving $%s in context=%s\n", paramname, mod ? mod->getFullPath().c_str() : "NULL");
     if (!mod)
         return false;
-    cModule *parentMod = mod->parentModule();
-    cModule *grandparentMod = parentMod ? parentMod->parentModule() : NULL;
+    cModule *parentMod = mod->getParentModule();
+    cModule *grandparentMod = parentMod ? parentMod->getParentModule() : NULL;
 
     if (!strcmp(paramname, "MODULE_FULLPATH"))
-        value = mod->fullPath();
+        value = mod->getFullPath();
     else if (!strcmp(paramname, "MODULE_FULLNAME"))
-        value = mod->fullName();
+        value = mod->getFullName();
     else if (!strcmp(paramname, "MODULE_NAME"))
-        value = mod->name();
+        value = mod->getName();
     else if (!strcmp(paramname, "MODULE_INDEX"))
-        value = my_itostr(mod->index());
+        value = my_itostr(mod->getIndex());
     else if (!strcmp(paramname, "MODULE_ID"))
-        value = my_itostr(mod->id());
+        value = my_itostr(mod->getId());
 
     else if (!strcmp(paramname, "PARENTMODULE_FULLPATH") && parentMod)
-        value = parentMod->fullPath();
+        value = parentMod->getFullPath();
     else if (!strcmp(paramname, "PARENTMODULE_FULLNAME") && parentMod)
-        value = parentMod->fullName();
+        value = parentMod->getFullName();
     else if (!strcmp(paramname, "PARENTMODULE_NAME") && parentMod)
-        value = parentMod->name();
+        value = parentMod->getName();
     else if (!strcmp(paramname, "PARENTMODULE_INDEX") && parentMod)
-        value = my_itostr(parentMod->index());
+        value = my_itostr(parentMod->getIndex());
     else if (!strcmp(paramname, "PARENTMODULE_ID") && parentMod)
-        value = my_itostr(parentMod->id());
+        value = my_itostr(parentMod->getId());
 
     else if (!strcmp(paramname, "GRANDPARENTMODULE_FULLPATH") && grandparentMod)
-        value = grandparentMod->fullPath();
+        value = grandparentMod->getFullPath();
     else if (!strcmp(paramname, "GRANDPARENTMODULE_FULLNAME") && grandparentMod)
-        value = grandparentMod->fullName();
+        value = grandparentMod->getFullName();
     else if (!strcmp(paramname, "GRANDPARENTMODULE_NAME") && grandparentMod)
-        value = grandparentMod->name();
+        value = grandparentMod->getName();
     else if (!strcmp(paramname, "GRANDPARENTMODULE_INDEX") && grandparentMod)
-        value = my_itostr(grandparentMod->index());
+        value = my_itostr(grandparentMod->getIndex());
     else if (!strcmp(paramname, "GRANDPARENTMODULE_ID") && grandparentMod)
-        value = my_itostr(grandparentMod->id());
+        value = my_itostr(grandparentMod->getId());
     else
         return false;
 

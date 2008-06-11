@@ -67,7 +67,7 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
     /**
      * Returns a description string.
      */
-    const char *description() const  {return descr.c_str();}
+    const char *getDescription() const  {return descr.c_str();}
     //@}
 
     /** @name Static factory methods */

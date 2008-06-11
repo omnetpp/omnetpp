@@ -42,7 +42,7 @@ USING_NAMESPACE
 
 //TODO consider:
 //  call cGate::clearFullnamePool() between events, and add to doc:
-//  "lifetime of the string returned by fullName() is the simulation event"?
+//  "lifetime of the string returned by getFullName() is the simulation event"?
 
 
 // static members:
@@ -73,7 +73,7 @@ cModule::~cModule()
     // delete submodules
     for (SubmoduleIterator submod(this); !submod.end(); )
     {
-        if (submod() == (cModule *)simulation.activityModule())
+        if (submod() == (cModule *)simulation.getActivityModule())
         {
             throw cRuntimeError("Cannot delete a compound module from one of its submodules!");
             // The reason is that deleteModule() of the currently executing
@@ -94,10 +94,10 @@ cModule::~cModule()
     for (GateIterator i(this); !i.end(); i++)
     {
         cGate *gate = i();
-        if (gate->toGate() && gate->toGate()->fromGate()==gate)
+        if (gate->getToGate() && gate->getToGate()->getFromGate()==gate)
            gate->disconnect();
-        if (gate->fromGate() && gate->fromGate()->toGate()==gate)
-           gate->fromGate()->disconnect();
+        if (gate->getFromGate() && gate->getFromGate()->getToGate()==gate)
+           gate->getFromGate()->disconnect();
     }
 
     // delete all gates
@@ -106,8 +106,8 @@ cModule::~cModule()
     // deregister ourselves
     if (mod_id!=-1)
         simulation.deregisterModule(this);
-    if (parentModule())
-        parentModule()->removeSubmodule(this);
+    if (getParentModule())
+        getParentModule()->removeSubmodule(this);
 
     delete [] fullname;
 }
@@ -141,9 +141,9 @@ void cModule::setIndex(int i, int n)
     }
     if (isVector())
     {
-        fullname = new char[opp_strlen(name())+10];
-        strcpy(fullname, name());
-        opp_appendindex(fullname, index());
+        fullname = new char[opp_strlen(getName())+10];
+        strcpy(fullname, getName());
+        opp_appendindex(fullname, getIndex());
     }
 }
 
@@ -161,7 +161,7 @@ void cModule::insertSubmodule(cModule *mod)
         firstsubmodp = mod;
     lastsubmodp = mod;
 
-    // cached module fullPath() possibly became invalid
+    // cached module getFullPath() possibly became invalid
     lastmodulefullpathmod = NULL;
 }
 
@@ -184,13 +184,13 @@ void cModule::removeSubmodule(cModule *mod)
     // this is not strictly needed but makes it cleaner
     mod->prevp = mod->nextp = NULL;
 
-    // cached module fullPath() possibly became invalid
+    // cached module getFullPath() possibly became invalid
     lastmodulefullpathmod = NULL;
 }
 
-cModule *cModule::parentModule() const
+cModule *cModule::getParentModule() const
 {
-    return dynamic_cast<cModule *>(owner());
+    return dynamic_cast<cModule *>(getOwner());
 }
 
 void cModule::setName(const char *s)
@@ -201,27 +201,27 @@ void cModule::setName(const char *s)
     if (isVector())
     {
         if (fullname)  delete [] fullname;
-        fullname = new char[opp_strlen(name())+10];
-        sprintf(fullname, "%s[%d]", name(), index());
+        fullname = new char[opp_strlen(getName())+10];
+        sprintf(fullname, "%s[%d]", getName(), getIndex());
     }
 }
 
-const char *cModule::fullName() const
+const char *cModule::getFullName() const
 {
-    // if not in a vector, normal name() will do
-    return isVector() ? fullname : name();
+    // if not in a vector, normal getName() will do
+    return isVector() ? fullname : getName();
 }
 
-std::string cModule::fullPath() const
+std::string cModule::getFullPath() const
 {
     if (lastmodulefullpathmod!=this)
     {
-        // stop at the toplevel module (don't go up to cSimulation);
+        // stop at the toplevel getModule(don't go up to cSimulation);
         // plus, cache the result, expecting more hits from this module
-        if (parentModule()==NULL)
-            lastmodulefullpath = fullName();
+        if (getParentModule()==NULL)
+            lastmodulefullpath = getFullName();
         else
-            lastmodulefullpath = parentModule()->fullPath() + "." + fullName();
+            lastmodulefullpath = getParentModule()->getFullPath() + "." + getFullName();
         lastmodulefullpathmod = this;
     }
     return lastmodulefullpath;
@@ -232,15 +232,15 @@ bool cModule::isSimple() const
     return dynamic_cast<const cSimpleModule *>(this) != NULL;
 }
 
-cProperties *cModule::properties() const
+cProperties *cModule::getProperties() const
 {
-    cModule *parent = parentModule();
-    cComponentType *type = componentType();
+    cModule *parent = getParentModule();
+    cComponentType *type = getComponentType();
     cProperties *props;
     if (parent)
-        props = parent->componentType()->submoduleProperties(name(), type->fullName());
+        props = parent->getComponentType()->getSubmoduleProperties(getName(), type->getFullName());
     else
-        props = type->properties();
+        props = type->getProperties();
     return props;
 }
 
@@ -255,8 +255,8 @@ void cModule::disposeGateObject(cGate *gate, bool checkConnected)
 {
     if (gate)
     {
-        if (checkConnected && (gate->fromGate() || gate->toGate()))
-            throw cRuntimeError(this, "Cannot delete gate `%s', it is still connected", gate->fullName());
+        if (checkConnected && (gate->getFromGate() || gate->getToGate()))
+            throw cRuntimeError(this, "Cannot delete gate `%s', it is still connected", gate->getFullName());
         EVCB.gateDeleted(gate);
         delete gate;
     }
@@ -413,7 +413,7 @@ cGate *cModule::gate(int id)
         cGate::Desc *desc = descv + descIndex;
         ASSERT(desc->namep); // not deleted
         ASSERT(!desc->isVector()); //FIXME too many asserts here?
-        ASSERT((id&1)==0 ? desc->type()!=cGate::OUTPUT : desc->type()!=cGate::INPUT);
+        ASSERT((id&1)==0 ? desc->getType()!=cGate::OUTPUT : desc->getType()!=cGate::INPUT);
         //return (id&1)==0 ? desc->inputgate : desc->outputgate;
         cGate *g = (id&1)==0 ? desc->inputgate : desc->outputgate;
         ASSERT((id&1)==(g->pos&1));
@@ -492,7 +492,7 @@ void cModule::setGateSize(const char *gatename, int newSize)
     if (newSize>MAX_VECTORGATESIZE)
         throw cRuntimeError(this, "setGateSize(): vector size for gate %s[] too large (%d), limit is %d", gatename, newSize, MAX_VECTORGATESIZE);
     int oldSize = desc->size;
-    cGate::Type type = desc->type();
+    cGate::Type type = desc->getType();
 
     // we need to allocate more (to have good gate++ performance) but we
     // don't want to store the capacity -- so we'll always calculated the
@@ -510,14 +510,14 @@ void cModule::setGateSize(const char *gatename, int newSize)
             // check & notify
             if (type!=cGate::OUTPUT) {
                 cGate *gate = desc->inputgatev[i];
-                if (gate->fromGate() || gate->toGate())
-                    throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->fullPath().c_str());
+                if (gate->getFromGate() || gate->getToGate())
+                    throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->getFullPath().c_str());
                 EVCB.gateDeleted(gate);
             }
             if (type!=cGate::INPUT) {
                 cGate *gate = desc->outputgatev[i];
-                if (gate->fromGate() || gate->toGate())
-                    throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->fullPath().c_str());
+                if (gate->getFromGate() || gate->getToGate())
+                    throw cRuntimeError(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->getFullPath().c_str());
                 EVCB.gateDeleted(gate);
             }
 
@@ -550,7 +550,7 @@ void cModule::setGateSize(const char *gatename, int newSize)
         if (type!=cGate::INPUT)
             reallocGatev(desc->outputgatev, oldCapacity, newCapacity);
 
-        // set new size beforehand, because EVCB.gateCreate() calls id()
+        // set new size beforehand, because EVCB.gateCreate() calls getId()
         // which assumes that gate->index < gateSize.
         desc->size = newSize;
 
@@ -582,9 +582,9 @@ cGate *cModule::gate(const char *gatename, int index)
 {
     char suffix;
     const cGate::Desc *desc = gateDesc(gatename, suffix);
-    if (desc->type()==cGate::INOUT && !suffix)
+    if (desc->getType()==cGate::INOUT && !suffix)
         throw cRuntimeError(this, "Inout gate `%s' cannot be referenced without $i/$o suffix", gatename);
-    bool isInput = (suffix=='i' || desc->type()==cGate::INPUT);
+    bool isInput = (suffix=='i' || desc->getType()==cGate::INPUT);
 
     if (!desc->isVector())
     {
@@ -611,23 +611,23 @@ int cModule::findGate(const char *gatename, int index) const
     if (descIndex<0)
         return -1;  // no such gate name
     const cGate::Desc *desc = descv + descIndex;
-    if (desc->type()==cGate::INOUT && !suffix)
+    if (desc->getType()==cGate::INOUT && !suffix)
         return -1;  // inout gate cannot be referenced without "$i" or "$o" suffix
-    bool isInput = (suffix=='i' || desc->type()==cGate::INPUT);
+    bool isInput = (suffix=='i' || desc->getType()==cGate::INPUT);
 
     if (!desc->isVector())
     {
         // gate is scalar
         if (index!=-1)
             return -1;  // wrong: scalar gate referenced with index
-        return isInput ? desc->inputgate->id() : desc->outputgate->id();
+        return isInput ? desc->inputgate->getId() : desc->outputgate->getId();
     }
     else
     {
         // gate is vector
         if (index<0 || index>=desc->size)
             return -1;  // index not specified (-1) or out of range
-        return isInput ? desc->inputgatev[index]->id() : desc->outputgatev[index]->id();
+        return isInput ? desc->inputgatev[index]->getId() : desc->outputgatev[index]->getId();
     }
 }
 
@@ -658,7 +658,7 @@ void cModule::deleteGate(const char *gatename)
     disposeGateDesc(desc, true);
 }
 
-std::vector<const char *> cModule::gateNames() const
+std::vector<const char *> cModule::getGateNames() const
 {
     std::vector<const char *> result;
     for (int i=0; i<descvSize; i++)
@@ -686,7 +686,7 @@ bool cModule::isGateVector(const char *gatename) const
 
 //XXX test code:
 //    bool operator()(cGate *a, cGate *b) {
-//        printf("   comparing %s, %s ==> ", (a?a->fullName():NULL), (b?b->fullName():NULL) );
+//        printf("   comparing %s, %s ==> ", (a?a->getFullName():NULL), (b?b->getFullName():NULL) );
 //        bool x = (a && a->isConnectedInside()) > (b && b->isConnectedInside());
 //        printf("%d > %d : ", (a && a->isConnectedInside()), (b && b->isConnectedInside()));
 //        printf("%d\n", x);
@@ -706,7 +706,7 @@ struct less_gatePairConnectedInside {
     less_gatePairConnectedInside(cGate **otherv) {this->otherv = otherv;}
     bool operator()(cGate *a, cGate *b) {
         return (a && a->isConnectedInside()) > (b && b->isConnectedInside()) &&
-               (a && otherv[a->index()]->isConnectedInside()) > (b && otherv[b->index()]->isConnectedInside());
+               (a && otherv[a->getIndex()]->isConnectedInside()) > (b && otherv[b->getIndex()]->isConnectedInside());
     }
 };
 
@@ -715,7 +715,7 @@ struct less_gatePairConnectedOutside {
     less_gatePairConnectedOutside(cGate **otherv) {this->otherv = otherv;}
     bool operator()(cGate *a, cGate *b) {
         return (a && a->isConnectedOutside()) > (b && b->isConnectedOutside()) &&
-               (a && otherv[a->index()]->isConnectedOutside()) > (b && otherv[b->index()]->isConnectedOutside());
+               (a && otherv[a->getIndex()]->isConnectedOutside()) > (b && otherv[b->getIndex()]->isConnectedOutside());
     }
 };
 
@@ -736,9 +736,9 @@ cGate *cModule::getOrCreateFirstUnconnectedGate(const char *gatename, char suffi
     bool inputSide;
     if (!suffix)
     {
-        if (desc->type()==cGate::INOUT)
+        if (desc->getType()==cGate::INOUT)
             throw cRuntimeError(this,"getOrCreateFirstUnconnectedGate(): inout gate specified but no suffix");
-        inputSide = desc->type()==cGate::INPUT;
+        inputSide = desc->getType()==cGate::INPUT;
     }
     else
     {
@@ -803,7 +803,7 @@ void cModule::getOrCreateFirstUnconnectedGatePair(const char *gatename,
         std::lower_bound(inputgatev, inputgatev+oldSize, (cGate *)NULL, less_gatePairConnectedOutside(outputgatev));
     if (it != inputgatev+oldSize) {
         gatein = *it;
-        gateout = outputgatev[gatein->index()];
+        gateout = outputgatev[gatein->getIndex()];
         return;
     }
 
@@ -835,9 +835,9 @@ int cModule::gateCount() const
         cGate::Desc *desc = descv + i;
         if (desc->namep) {
             if (!desc->isVector())
-                n += (desc->type()==cGate::INOUT) ? 2 : 1;
+                n += (desc->getType()==cGate::INOUT) ? 2 : 1;
             else
-                n += (desc->type()==cGate::INOUT) ? 2*desc->size : desc->size;
+                n += (desc->getType()==cGate::INOUT) ? 2*desc->size : desc->size;
         }
     }
     return n;
@@ -860,7 +860,7 @@ bool cModule::checkInternalConnections() const
     {
        cGate *g = i();
        if (g->size()!=0 && !g->isConnectedInside())
-            throw cRuntimeError(this,"Gate `%s' is not connected to submodule (or output gate of same module)", g->fullPath().c_str());
+            throw cRuntimeError(this,"Gate `%s' is not connected to getSubmodule(or output gate of same module)", g->getFullPath().c_str());
     }
 
     // check submodules
@@ -871,7 +871,7 @@ bool cModule::checkInternalConnections() const
         {
             cGate *g = i();
             if (g->size()!=0 && !g->isConnectedOutside())
-                throw cRuntimeError(this,"Gate `%s' is not connected to sibling or parent module", g->fullPath().c_str());
+                throw cRuntimeError(this,"Gate `%s' is not connected to sibling or parent module", g->getFullPath().c_str());
         }
     }
     return true;
@@ -881,23 +881,23 @@ int cModule::findSubmodule(const char *submodname, int idx)
 {
     for (SubmoduleIterator i(this); !i.end(); i++)
         if (i()->isName(submodname) &&
-            ((idx==-1 && !i()->isVector()) || i()->index()==idx)
+            ((idx==-1 && !i()->isVector()) || i()->getIndex()==idx)
            )
-            return i()->id();
+            return i()->getId();
     return -1;
 }
 
-cModule *cModule::submodule(const char *submodname, int idx)
+cModule *cModule::getSubmodule(const char *submodname, int idx)
 {
     for (SubmoduleIterator i(this); !i.end(); i++)
         if (i()->isName(submodname) &&
-            ((idx==-1 && !i()->isVector()) || i()->index()==idx)
+            ((idx==-1 && !i()->isVector()) || i()->getIndex()==idx)
            )
             return i();
     return NULL;
 }
 
-cModule *cModule::moduleByRelativePath(const char *path)
+cModule *cModule::getModuleByRelativePath(const char *path)
 {
     // start tokenizing the path
     opp_string pathbuf(path);
@@ -910,26 +910,26 @@ cModule *cModule::moduleByRelativePath(const char *path)
     do {
         char *b;
         if ((b=strchr(s,'['))==NULL)
-            modp = modp->submodule(s);  // no index given
+            modp = modp->getSubmodule(s);  // no index given
         else
         {
             if (s[strlen(s)-1]!=']')
-                throw cRuntimeError(this,"moduleByRelativePath(): syntax error in path `%s'", path);
+                throw cRuntimeError(this,"getModuleByRelativePath(): syntax error in path `%s'", path);
             *b='\0';
-            modp = modp->submodule(s,atoi(b+1));
+            modp = modp->getSubmodule(s,atoi(b+1));
         }
     } while ((s=strtok(NULL,"."))!=NULL && modp!=NULL);
 
     return modp;  // NULL if not found
 }
 
-cPar& cModule::ancestorPar(const char *name)
+cPar& cModule::getAncestorPar(const char *name)
 {
     // search parameter in parent modules
     cModule *pmod = this;
     int k;
     while (pmod && (k=pmod->findPar(name))<0)
-        pmod = pmod->parentModule();
+        pmod = pmod->getParentModule();
     if (!pmod)
         throw cRuntimeError(this,"has no ancestor parameter called `%s'",name);
     return pmod->par(k);
@@ -944,7 +944,7 @@ void cModule::finalizeParameters()
     cContextTypeSwitcher tmp2(CTX_BUILD);
 
     // set up gate vectors (their sizes may depend on the parameter settings)
-    moduleType()->addGatesTo(this);
+    getModuleType()->addGatesTo(this);
 }
 
 int cModule::buildInside()
@@ -962,7 +962,7 @@ int cModule::buildInside()
 void cModule::deleteModule()
 {
     // check this module doesn't contain the executing module somehow
-    for (cModule *mod = simulation.contextModule(); mod; mod = mod->parentModule())
+    for (cModule *mod = simulation.getContextModule(); mod; mod = mod->getParentModule())
         if (mod==this)
             throw cRuntimeError(this, "it is not supported to delete module which contains "
                                       "the currently executing simple module");
@@ -980,15 +980,15 @@ void cModule::changeParentTo(cModule *mod)
     for (GateIterator i(this); !i.end(); i++)
         if (g=i(), g->isConnectedOutside())
             throw cRuntimeError(this, "changeParentTo(): gates of the module must not be "
-                                      "connected (%s is connected now)", g->fullName());
+                                      "connected (%s is connected now)", g->getFullName());
 
     // cannot insert module under one of its own submodules
-    for (cModule *m = mod; m; m = m->parentModule())
+    for (cModule *m = mod; m; m = m->getParentModule())
         if (m==this)
             throw cRuntimeError(this, "changeParentTo(): cannot move module under one of its own submodules");
 
     // do it
-    cModule *oldparent = parentModule();
+    cModule *oldparent = getParentModule();
     oldparent->removeSubmodule(this);
     mod->insertSubmodule(this);
 
@@ -1028,7 +1028,7 @@ bool cModule::callInitialize(int stage)
 
 bool cModule::initializeChannels(int stage)
 {
-    if (simulation.contextType()!=CTX_INITIALIZE)
+    if (simulation.getContextType()!=CTX_INITIALIZE)
         throw cRuntimeError("internal function initializeChannels() may only be called via callInitialize()");
 
     // initialize channels directly under this module
@@ -1047,14 +1047,14 @@ bool cModule::initializeChannels(int stage)
 
 bool cModule::initializeModules(int stage)
 {
-    if (simulation.contextType()!=CTX_INITIALIZE)
+    if (simulation.getContextType()!=CTX_INITIALIZE)
         throw cRuntimeError("internal function initializeModules() may only be called via callInitialize()");
 
     // first call initialize(stage) for this module...
     int numStages = numInitStages();
     if (stage < numStages)
     {
-        ev << "Initializing module " << fullPath() << ", stage " << stage << "\n";
+        ev << "Initializing module " << getFullPath() << ", stage " << stage << "\n";
 
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
@@ -1105,7 +1105,7 @@ void cModule::GateIterator::advance()
     cGate::Desc *desc = module->descv + descIndex;
 
     if (desc->namep) {
-        if (isOutput==false && desc->type()==cGate::OUTPUT) {
+        if (isOutput==false && desc->getType()==cGate::OUTPUT) {
             isOutput = true;
             return;
         }
@@ -1117,7 +1117,7 @@ void cModule::GateIterator::advance()
             }
             index = 0;
         }
-        if (isOutput==false && desc->type()!=cGate::INPUT) {
+        if (isOutput==false && desc->getType()!=cGate::INPUT) {
             isOutput = true;
             return;
         }
@@ -1141,7 +1141,7 @@ cGate *cModule::GateIterator::current() const
     cGate::Desc *desc = module->descv + descIndex;
     if (!desc->namep)
         return NULL; // deleted gate
-    if (isOutput==false && desc->type()==cGate::OUTPUT)
+    if (isOutput==false && desc->getType()==cGate::OUTPUT)
         return NULL; // isOutput still incorrect
     if (!desc->isVector())
         return isOutput ? desc->outputgate : desc->inputgate;
@@ -1186,8 +1186,8 @@ void cModule::ChannelIterator::init(const cModule *parentmodule)
         {
             const cGate *gate = i();
             cGate::Type wantedGateType = parent ? cGate::INPUT : cGate::OUTPUT;
-            if (gate && gate->channel() && gate->type()==wantedGateType)
-                channels.push_back(gate->channel());
+            if (gate && gate->getChannel() && gate->getType()==wantedGateType)
+                channels.push_back(gate->getChannel());
         }
     }
 

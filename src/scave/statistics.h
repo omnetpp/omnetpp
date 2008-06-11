@@ -42,20 +42,20 @@ class SCAVE_API Statistics
         Statistics(long count, double min, double max, double sum, double sumSqr)
             :_count(count), _min(min), _max(max), _sum(sum), _sumSqr(sumSqr) {}
 
-        long count() const { return _count; }
-        double min() const { return _min; }
-        double max() const { return _max; }
-        double sum() const { return _sum; }
+        long getCount() const { return _count; }
+        double getMin() const { return _min; }
+        double getMax() const { return _max; }
+        double getSum() const { return _sum; }
         double sumSqr() const { return _sumSqr; }
-        double mean() const { return _count == 0 ? dblNaN : _sum / _count; }
-        double stddev() const { return sqrt(variance()); }
-        double variance() const;
+        double getMean() const { return _count == 0 ? dblNaN : _sum / _count; }
+        double getStddev() const { return sqrt(getVariance()); }
+        double getVariance() const;
 
         void collect(double value);
         void adjoin(const Statistics &other);
 };
 
-inline double Statistics::variance() const
+inline double Statistics::getVariance() const
 {
             if (_count >= 1)
             {

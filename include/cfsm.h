@@ -87,12 +87,12 @@ NAMESPACE_BEGIN
 //
 #define FSM_Switch(fsm)  \
    for (int __i=1, __savedstate;  \
-        (__i<3 || (__i&1)==0 || (fsm).inTransientState()) &&  \
-        (__i<2*FSM_MAXT || (opp_error(eINFLOOP,(fsm).stateName()),0));  \
-        ((__i&1)==0 && __savedstate!=(fsm).state() &&  \
-         (opp_error(eSTATECHG,(fsm).stateName()),0)),  \
-         __savedstate=(fsm).state(),++__i)  \
-     switch (FSM_Print(fsm,__i&1),(((fsm).state()<<1)|(__i&1)))
+        (__i<3 || (__i&1)==0 || (fsm).isInTransientState()) &&  \
+        (__i<2*FSM_MAXT || (opp_error(eINFLOOP,(fsm).getStateName()),0));  \
+        ((__i&1)==0 && __savedstate!=(fsm).getState() &&  \
+         (opp_error(eSTATECHG,(fsm).getStateName()),0)),  \
+         __savedstate=(fsm).getState(),++__i)  \
+     switch (FSM_Print(fsm,__i&1),(((fsm).getState()<<1)|(__i&1)))
 
 /**
  * Declares a transient state; to be used in enum which declares states.
@@ -164,11 +164,11 @@ NAMESPACE_BEGIN
  * @see FSM_Switch
  */
 #define FSM_Print(fsm,exiting) \
-    (ev << "FSM " << (fsm).name() \
+    (ev << "FSM " << (fsm).getName() \
         << ((exiting) ? ": leaving state  " : ": entering state ") \
-        << (fsm).stateName() << endl)
+        << (fsm).getStateName() << endl)
 // this may also be useful as third line:
-//      << ((fsm).inTransientState() ? "transient state " : "steady state ")
+//      << ((fsm).isInTransientState() ? "transient state " : "steady state ")
 #else
 #define FSM_Print(fsm,entering) ((void)0)
 #endif
@@ -208,7 +208,7 @@ class SIM_API cFSM : public cOwnedObject
     /**
      * Copy constructor.
      */
-    cFSM(const cFSM& vs) : cOwnedObject() {setName(vs.name());operator=(vs);}
+    cFSM(const cFSM& vs) : cOwnedObject() {setName(vs.getName());operator=(vs);}
 
     /**
      * Assignment operator. The name member doesn't get copied;
@@ -253,17 +253,17 @@ class SIM_API cFSM : public cOwnedObject
     /**
      * Returns the state the FSM is currently in.
      */
-    int state() const  {return _state;}
+    int getState() const  {return _state;}
 
     /**
      * Returns the name of the state the FSM is currently in.
      */
-    const char *stateName() const {return _statename?_statename:"";}
+    const char *getStateName() const {return _statename?_statename:"";}
 
     /**
      * Returns true if the FSM is currently in a transient state.
      */
-    int inTransientState() const  {return _state<0;}
+    int isInTransientState() const  {return _state<0;}
 
     /**
      * Sets the state of the FSM. This method is usually invoked through

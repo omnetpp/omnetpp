@@ -52,8 +52,8 @@ cMPICommunications::~cMPICommunications()
 void cMPICommunications::init()
 {
     // sanity check
-    int argc = ev.argCount();
-    char **argv = ev.argVector();
+    int argc = ev.getArgCount();
+    char **argv = ev.getArgVector();
     for (int i=1; i<argc; i++)
         if (argv[i][0]=='-' && argv[i][1]=='p')
             ev.printf("WARNING: cMPICommunications doesn't need -p command-line option, ignored\n");
@@ -72,7 +72,7 @@ void cMPICommunications::init()
 
     // set up MPI send buffer (+16K prevents MPI_Buffer_attach() error if numPartitions==1)
     int defaultBufSize = MPI_SEND_BUFFER_PER_PARTITION * (numPartitions-1) + 16384;
-    int bufSize = ev.config()->getAsInt(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER);
+    int bufSize = ev.getConfig()->getAsInt(CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER);
     if (bufSize<=0) bufSize = defaultBufSize;
     char *buf = new char[bufSize];
     MPI_Buffer_attach(buf, bufSize);

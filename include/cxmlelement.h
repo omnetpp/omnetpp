@@ -53,7 +53,7 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  *
  * Features: only readonly (getter) methods; represents only elements
  * and text (entities, processing instructions, comments are ignored);
- * attributes are presented as part of an element node (not as separate
+ * attributes are presented as part of an element getNode(not as separate
  * attribute nodes as in DOM); mixed content model not supported
  * (element body cannot mix text with further elements);
  * text is represented as a property of its enclosing element (and not
@@ -296,14 +296,14 @@ class SIM_API cXMLElement
      *  - <tt>foo</tt> -- same as <tt>./foo</tt> (initial <tt>./</tt> can be omitted)
      *  - <tt>./foo</tt> -- first "foo" child of this node
      *  - <tt>./foo/bar</tt> -- first "bar" child of first "foo" child of this node
-     *  - <tt>.//bar</tt> -- first "bar" anywhere under this node (depth-first search!)
-     *  - <tt>./ * /bar</tt> -- first "bar" child two levels below this node (omit spaces)
+     *  - <tt>.//bar</tt> -- first "bar" anywhere under this getNode(depth-first search!)
+     *  - <tt>./ * /bar</tt> -- first "bar" child two levels below this getNode(omit spaces)
      *  - <tt>./foo[0]</tt> -- first "foo" child of this node
      *  - <tt>./foo[1]</tt> -- second "foo" child of this node
      *  - <tt>./foo[\@color='green']</tt> -- first "foo" child which has attribute "color" with value "green"
      *  - <tt>.//bar[1]</tt> -- a "bar" anywhere under this node which is the second "bar" among its siblings
      *  - <tt>.// * [\@color='yellow']</tt> -- an element anywhere under this node with attribute color="yellow" (omit spaces)
-     *  - <tt>.// * [\@color='yellow']/foo/bar</tt> -- first "bar" child of first "foo" child of a "yellow-colored" node (omit spaces)
+     *  - <tt>.// * [\@color='yellow']/foo/bar</tt> -- first "bar" child of first "foo" child of a "yellow-colored" getNode(omit spaces)
      *
      * The method throws an exception if the path expression is invalid,
      * and returns NULL if the element is not found.

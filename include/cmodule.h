@@ -38,8 +38,8 @@ class  cModuleType;
  * and a set of virtual methods.
  *
  * For navigating around in the module tree, see:
- * parentModule(), submodule(), cModule::SubmoduleIterator,
- * moduleByRelativePath(), cSimulation::moduleByPath().
+ * getParentModule(), getSubmodule(), cModule::SubmoduleIterator,
+ * getModuleByRelativePath(), cSimulation::getModuleByPath().
  *
  * @ingroup SimCore
  */
@@ -163,7 +163,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Walks along the channels inside a module, that is, the channels
      * among the module and its submodules. This is the same set of channels
-     * whose parentModule() would return the iterated module.
+     * whose getParentModule() would return the iterated module.
      */
     class SIM_API ChannelIterator
     {
@@ -203,7 +203,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     };
 
   public:
-    static std::string lastmodulefullpath; // cached result of last fullPath() call
+    static std::string lastmodulefullpath; // cached result of last getFullPath() call
     static const cModule *lastmodulefullpathmod; // module of lastmodulefullpath
 
   private:
@@ -220,7 +220,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // (e.g. the system module which is owned by the global object 'simulation').
     cModule *prevp, *nextp; // pointers to sibling submodules
     cModule *firstsubmodp;  // pointer to first submodule
-    cModule *lastsubmodp;   // pointer to last submodule (needed for efficient append operation)
+    cModule *lastsubmodp;   // pointer to last getSubmodule(needed for efficient append operation)
 
     typedef std::set<cGate::Name> NamePool;
     static NamePool namePool;
@@ -245,7 +245,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual bool initializeChannels(int stage);
 
     // internal: called when a message arrives at a gate which is no further
-    // connected (that is, toGate() is NULL)
+    // connected (that is, getToGate() is NULL)
     virtual void arrived(cMessage *msg,int n,simtime_t t) = 0;
 
     // internal: sets the module ID. Called as part of the module creation process.
@@ -339,18 +339,18 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual void setName(const char *s);
 
     /**
-     * Returns the full name of the module, which is name() plus the
+     * Returns the full name of the module, which is getName() plus the
      * index in square brackets (e.g. "module[4]"). Redefined to add the
      * index.
      */
-    virtual const char *fullName() const;
+    virtual const char *getFullName() const;
 
     /**
      * Returns the full path name of the module. Example: <tt>"net.node[12].gen"</tt>.
-     * The original fullPath() was redefined in order to hide the global cSimulation
+     * The original getFullPath() was redefined in order to hide the global cSimulation
      * instance from the path name.
      */
-    virtual std::string fullPath() const;
+    virtual std::string getFullPath() const;
     //@}
 
     /** @name Setting up the module. */
@@ -462,18 +462,18 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns the module containing this module. For the system module,
      * it returns NULL.
      */
-    virtual cModule *parentModule() const;
+    virtual cModule *getParentModule() const;
 
     /**
-     * Convenience method: casts the return value of componentType() to cModuleType.
+     * Convenience method: casts the return value of getComponentType() to cModuleType.
      */
-    cModuleType *moduleType() const  {return (cModuleType *)componentType();}
+    cModuleType *getModuleType() const  {return (cModuleType *)getComponentType();}
 
     /**
      * Return the properties for this module. Properties cannot be changed
      * at runtime. Redefined from cComponent.
      */
-    virtual cProperties *properties() const;
+    virtual cProperties *getProperties() const;
 
     /**
      * Returns the module ID. It is actually the index of the module
@@ -482,7 +482,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * (that is, IDs of deleted modules are not given out to newly created
      * modules).
      */
-    int id() const  {return mod_id;}
+    int getId() const  {return mod_id;}
 
     /**
      * Returns true if this module is in a module vector.
@@ -492,7 +492,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Returns the index of the module if it is in a module vector, otherwise 0.
      */
-    int index() const  {return idx;}
+    int getIndex() const  {return idx;}
 
     /**
      * Returns the size of the module vector the module is in. For non-vector
@@ -516,7 +516,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * its pointer. If the submodule was not found, returns NULL.
      * Index must be specified exactly if the module is member of a module vector.
      */
-    cModule *submodule(const char *submodname, int idx=-1);
+    cModule *getSubmodule(const char *submodname, int idx=-1);
 
     /**
      * Finds a submodule potentially several levels deeper, given with
@@ -524,7 +524,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * full names separated by dots). If the submodule was not found,
      * returns NULL.
      */
-    cModule *moduleByRelativePath(const char *path);
+    cModule *getModuleByRelativePath(const char *path);
     //@}
 
     /** @name Gates. */
@@ -623,7 +623,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *
      * @see gateType(), isGateVector(), gateSize()
      */
-    virtual std::vector<const char *> gateNames() const;
+    virtual std::vector<const char *> getGateNames() const;
 
     /**
      * Returns the type of the gate (or gate vector) with the given name.
@@ -653,7 +653,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * For compound modules, it checks if all gates are connected inside
-     * the module (it returns <tt>true</tt> if they are OK); for simple
+     * the getModule(it returns <tt>true</tt> if they are OK); for simple
      * modules, it returns <tt>true</tt>. This function is called during
      * network setup.
      */
@@ -666,7 +666,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Searches for the parameter in the parent modules, up to the system
      * module. If the parameter is not found, throws cRuntimeError.
      */
-    cPar& ancestorPar(const char *parname);
+    cPar& getAncestorPar(const char *parname);
     //@}
 
     /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.
@@ -698,7 +698,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Pure virtual function; it is redefined in both cCompoundModule
      * and cSimpleModule. It creates starting message for dynamically
-     * created module (or recursively for its submodules). See the user
+     * created getModule(or recursively for its submodules). See the user
      * manual for explanation how to use dynamically created modules.
      */
     virtual void scheduleStart(simtime_t t) = 0;
@@ -727,7 +727,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *  -# it is recommended that the module name be made unique among the
      *     submodules of its new parent.
      *  -# be aware that if the module is part of a module vector, its
-     *     isVector(), index() and size() functions will continue to deliver
+     *     isVector(), getIndex() and size() functions will continue to deliver
      *     the same info -- although other elements of the vector will not
      *     necessarily be present under the same parent module.
      */

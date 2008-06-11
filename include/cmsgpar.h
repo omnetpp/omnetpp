@@ -42,7 +42,7 @@ class  cXMLElement;
  * via subclassing, using <tt>.msg</tt> files and the <i>opp_msgc</i> tool.
  *
  * cMsgPar supports several data types. Data types are identified by type
- * characters. The current data type is returned by type().
+ * characters. The current data type is returned by getType().
  *     - basic types: <b>S</b> string, <b>B</b> bool, <b>L</b> long, <b>D</b> double
  *     - <b>F</b> math function (MathFuncNoArgs,MathFunc1Args,etc),
  *     - <b>T</b> a statistic object (subclassed from cStatistic)
@@ -82,7 +82,7 @@ class SIM_API cMsgPar : public cOwnedObject
     void deleteOld();
 
     // helper func: rand.num with given distr.(T)
-    double fromstat();
+    double getFromstat();
 
     // setFromText() helper func.
     bool setfunction(char *w);
@@ -264,7 +264,7 @@ class SIM_API cMsgPar : public cOwnedObject
 
     /**
      * Sets the value to the given object. Whether cMsgPar will take the
-     * ownership of the object depends on the takeOwnership() flag.
+     * ownership of the object depends on the getTakeOwnership() flag.
      */
     cMsgPar& setObjectValue(cOwnedObject *obj);
 
@@ -299,12 +299,12 @@ class SIM_API cMsgPar : public cOwnedObject
      * setDoubleValue(cStatistic *) should automatically take ownership of
      * the objects.
      */
-    void takeOwnership(bool tk) {tkownership=tk;}
+    void setTakeOwnership(bool tk) {tkownership=tk;}
 
     /**
-     * Returns the takeOwnership flag, see takeOwnership().
+     * Returns the takeOwnership flag, see getTakeOwnership().
      */
-    bool takeOwnership() const   {return tkownership;}
+    bool getTakeOwnership() const   {return tkownership;}
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */
@@ -340,7 +340,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Returns value as pointer to cOwnedObject. The cMsgPar type must be pointer (O).
      */
-    cOwnedObject *objectValue();
+    cOwnedObject *getObjectValue();
 
     /**
      * Returns value as pointer to cXMLElement. The cMsgPar type must be XML (M).
@@ -354,7 +354,7 @@ class SIM_API cMsgPar : public cOwnedObject
     /**
      * Returns type character.
      */
-    char type() const;
+    char getType() const;
 
     /**
      * Returns true if the stored value is of a numeric type.
@@ -369,11 +369,11 @@ class SIM_API cMsgPar : public cOwnedObject
     bool isConstant() const;
 
     /**
-     * Returns true if the value has changed since the last changed() call.
+     * Returns true if the value has changed since the last hasChanged() call.
      * Side effect: clears the 'changed' flag, so a next call will return
      * false.
      */
-    bool changed();
+    bool hasChanged();
     //@}
 
     /** @name Utility functions. */
@@ -568,9 +568,9 @@ class SIM_API cMsgPar : public cOwnedObject
     operator void *()        {return pointerValue();}
 
     /**
-     * Equivalent to objectValue().
+     * Equivalent to getObjectValue().
      */
-    operator cOwnedObject *()     {return objectValue();}
+    operator cOwnedObject *()     {return getObjectValue();}
 
     /**
      * Equivalent to xmlValue().

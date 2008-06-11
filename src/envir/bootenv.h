@@ -78,8 +78,8 @@ class ENVIR_API BootEnv : public cEnvir
     virtual void readParameter(cPar *parameter)  {UNSUPPORTED;}
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {UNSUPPORTED;}
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL)  {UNSUPPORTED;}
-    virtual unsigned extraStackForEnvir() const  {UNSUPPORTED;}
-    virtual cConfiguration *config()  {UNSUPPORTED;}
+    virtual unsigned getExtraStackForEnvir() const  {UNSUPPORTED;}
+    virtual cConfiguration *getConfig()  {UNSUPPORTED;}
     virtual bool isGUI() const  {UNSUPPORTED;}
 
     // UI functions (see also protected ones)
@@ -88,8 +88,8 @@ class ENVIR_API BootEnv : public cEnvir
     virtual cEnvir& flush();
 
     // RNGs
-    virtual int numRNGs() const {UNSUPPORTED;}
-    virtual cRNG *rng(int k)  {UNSUPPORTED;}
+    virtual int getNumRNGs() const {UNSUPPORTED;}
+    virtual cRNG *getRNG(int k)  {UNSUPPORTED;}
     virtual void getRNGMappingFor(cComponent *component)  {UNSUPPORTED;}
 
     // output vectors
@@ -107,8 +107,8 @@ class ENVIR_API BootEnv : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os)  {UNSUPPORTED;}
 
     // misc
-    virtual int argCount() const  {UNSUPPORTED;}
-    virtual char **argVector() const  {UNSUPPORTED;}
+    virtual int getArgCount() const  {UNSUPPORTED;}
+    virtual char **getArgVector() const  {UNSUPPORTED;}
     virtual int getParsimProcId() const {UNSUPPORTED;}
     virtual int getParsimNumPartitions() const {UNSUPPORTED;}
     virtual const char *getRunId() const  {UNSUPPORTED;}

@@ -88,12 +88,12 @@ class ENVIR_API ArgList
     /**
      * Returns the original argc.
      */
-    int argCount() const  {return argc;}
+    int getArgCount() const  {return argc;}
 
     /**
      * Returns the original argv. It should not be modified.
      */
-    char **argVector() const  {return argv;}
+    char **getArgVector() const  {return argv;}
 };
 
 NAMESPACE_END

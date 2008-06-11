@@ -125,7 +125,7 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Returns the parameter type.
      */
-    virtual Type type() const = 0;
+    virtual Type getType() const = 0;
 
     /**
      * Returns true if the stored value is of a numeric type.
@@ -181,7 +181,7 @@ class SIM_API cParImpl : public cNamedObject
      * as declared in the \@unit property of the parameter in NED.
      * Unit is only meaningful with numeric parameters.
      */
-    virtual const char *unit() const;
+    virtual const char *getUnit() const;
 
     /**
      * Initialize the parameter's unit (normally from the \@unit property).
@@ -276,7 +276,7 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Returns pointer to the expression stored by the object, or NULL.
      */
-    virtual cExpression *expression() const = 0;
+    virtual cExpression *getExpression() const = 0;
     //@}
 
     /** @name Miscellaneous utility functions. */
@@ -336,7 +336,7 @@ class SIM_API cParImpl : public cNamedObject
      * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long totalParImplObjectCount() {return total_parimpl_objs;}
+    static long getTotalParImplObjectCount() {return total_parimpl_objs;}
 
     /**
      * Returns the number of objects that currently exist in the program.
@@ -344,11 +344,11 @@ class SIM_API cParImpl : public cNamedObject
      * the destructor.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long liveParImplObjectCount() {return live_parimpl_objs;}
+    static long getLiveParImplObjectCount() {return live_parimpl_objs;}
 
     /**
-     * Reset counters used by totalObjectCount() and liveObjectCount().
-     * (Note that liveObjectCount() may go negative after a reset call.)
+     * Reset counters used by getTotalObjectCount() and getLiveObjectCount().
+     * (Note that getLiveObjectCount() may go negative after a reset call.)
      */
     static void resetParImplObjectCounters()  {total_parimpl_objs=live_parimpl_objs=0L;}
     //@}

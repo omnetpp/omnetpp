@@ -74,7 +74,7 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    prefix = ev.config()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
+    prefix = ev.getConfig()->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
     rpipes = NULL;
     wpipes = NULL;
     rrBase = 0;

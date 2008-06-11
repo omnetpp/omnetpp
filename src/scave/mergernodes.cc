@@ -75,7 +75,7 @@ bool MergerNode::finished() const
 
 //-------
 
-const char *MergerNodeType::description() const
+const char *MergerNodeType::getDescription() const
 {
     return "Merges several series into a single one, maintaining increasing\n"
            "time order in the output.";

@@ -41,7 +41,7 @@ cPacketQueue::cPacketQueue(const char *name) : cQueue(name)
 
 cPacketQueue::cPacketQueue(const cPacketQueue& queue)
 {
-    setName(queue.name());
+    setName(queue.getName());
     operator=(queue);
 }
 
@@ -57,7 +57,7 @@ std::string cPacketQueue::info() const
     if (empty())
         return std::string("empty");
     std::stringstream out;
-    out << "len=" << length() << ", " << bitLength() << " bits (" << byteLength() << " bytes)";
+    out << "len=" << length() << ", " << getBitLength() << " bits (" << getByteLength() << " bytes)";
     return out.str();
 }
 
@@ -86,7 +86,7 @@ void cPacketQueue::msgAdd(cOwnedObject *obj)
     if (obj) {
         cMessage *msg = dynamic_cast<cMessage *>(obj);
         if (!msg)
-            throw cRuntimeError(this, "insert(): (%s)%s is not a cMessage", obj->className(), obj->fullName());
+            throw cRuntimeError(this, "insert(): (%s)%s is not a cMessage", obj->getClassName(), obj->getFullName());
         bitlength += msg->length();
     }
 }

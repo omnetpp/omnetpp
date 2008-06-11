@@ -115,7 +115,7 @@ void DisplayString::updateWith(const char *s)
     updateWith(ds);
 }
 
-bool DisplayString::existsTag(const char *tagname) const
+bool DisplayString::containsTag(const char *tagname) const
 {
     int t = gettagindex(tagname);
     return t!=-1;

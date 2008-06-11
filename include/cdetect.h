@@ -130,7 +130,7 @@ class SIM_API cTransientDetection : public cOwnedObject, noncopyable
     /**
      * Returns a pointer to the host object.
      */
-    virtual cStatistic *hostObject() const  {return back;}
+    virtual cStatistic *getHostObject() const  {return back;}
     //@}
 };
 
@@ -223,7 +223,7 @@ class SIM_API cAccuracyDetection : public cOwnedObject, noncopyable
     /**
      * Returns a pointer to the host object.
      */
-    virtual cStatistic *hostObject() const  {return back;}
+    virtual cStatistic *getHostObject() const  {return back;}
     //@}
 };
 
@@ -357,7 +357,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     void detectAccuracy();
 
     // internal: compute the standard deviation
-    double stddev() const;
+    double getStddev() const;
 
   public:
     /** @name Constructors, destructor, assignment. */

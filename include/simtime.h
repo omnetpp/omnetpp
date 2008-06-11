@@ -162,7 +162,7 @@ class SIM_API SimTime
      * beginning. Please read the documentation of ttoa() for the minimum
      * required buffer size.
      */
-    char *str(char *buf) {char *endp; return SimTime::ttoa(buf, t, scaleExp(), endp);}
+    char *str(char *buf) {char *endp; return SimTime::ttoa(buf, t, getScaleExp(), endp);}
 
     /**
      * Returns the underlying 64-bit integer.
@@ -178,19 +178,19 @@ class SIM_API SimTime
      * Returns the largest simulation time that can be represented using the
      * present scale exponent.
      */
-    static const SimTime maxTime() {return SimTime().setRaw(INT64_MAX);}
+    static const SimTime getMaxTime() {return SimTime().setRaw(INT64_MAX);}
 
     /**
      * Returns the time resolution as the number of units per second,
      * e.g. for microsecond resolution it returns 1000000.
      */
-    static int64 scale()  {return dscale;}
+    static int64 getScale()  {return dscale;}
 
     /**
      * Returns the scale exponent, which is an integer in the range -18..0.
      * For example, for microsecond resolution it returns -6.
      */
-    static int scaleExp() {return scaleexp;}
+    static int getScaleExp() {return scaleexp;}
 
     /**
      * Sets the scale exponent, and thus the resolution of time. Accepted
@@ -277,7 +277,7 @@ inline double operator/(const SimTime& x, const SimTime& y)
 inline std::ostream& operator<<(std::ostream& os, const SimTime& x)
 {
     char buf[64]; char *endp;
-    return os << SimTime::ttoa(buf, x.raw(), SimTime::scaleExp(), endp);
+    return os << SimTime::ttoa(buf, x.raw(), SimTime::getScaleExp(), endp);
 }
 
 NAMESPACE_END
@@ -294,7 +294,7 @@ inline int64 _i64mod(const int64& any_t, const int64& positive_u)
  */
 inline const OPP::SimTime floor(const OPP::SimTime& x)
 {
-    int64 u = OPP::SimTime::scale();
+    int64 u = OPP::SimTime::getScale();
     int64 t = x.raw();
     return OPP::SimTime().setRaw(t - _i64mod(t,u));
 }
@@ -319,7 +319,7 @@ inline const OPP::SimTime floor(const OPP::SimTime& x, const OPP::SimTime& unit,
  */
 inline const OPP::SimTime ceil(const OPP::SimTime& x)
 {
-    int64 u = OPP::SimTime::scale();
+    int64 u = OPP::SimTime::getScale();
     int64 t = x.raw() + u-1;
     return OPP::SimTime().setRaw(t - _i64mod(t,u));
 }

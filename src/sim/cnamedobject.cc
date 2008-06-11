@@ -57,7 +57,7 @@ cNamedObject::cNamedObject(const cNamedObject& obj)
 {
     flags = obj.flags; // copy all flags, incl namepooling
     namep = NULL;
-    setName(obj.name());
+    setName(obj.getName());
     operator=(obj);
 }
 
@@ -136,7 +136,7 @@ void cNamedObject::netPack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    buffer->pack(name());
+    buffer->pack(getName());
 #endif
 }
 

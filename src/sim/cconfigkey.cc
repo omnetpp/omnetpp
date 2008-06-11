@@ -41,14 +41,14 @@ std::string cConfigKey::info() const
     std::stringstream out;
     out << (isPerObject_ ? "per-object " : "");
     out << (isGlobal_ ? "global" : "per-run");
-    out << ", type=" << typeName(type_);
+    out << ", type=" << getTypeName(type_);
     if (!unit_.empty()) out << ", unit=\"" << unit_ << "\"";
     if (!defaultValue_.empty()) out << ", default=\"" << defaultValue_ << "\"";
     if (!description_.empty()) out << ", hint: " << description_;
     return out.str();
 }
 
-const char *cConfigKey::typeName(Type type)
+const char *cConfigKey::getTypeName(Type type)
 {
     switch (type)
     {

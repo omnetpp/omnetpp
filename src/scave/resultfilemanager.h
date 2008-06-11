@@ -102,12 +102,12 @@ struct SCAVE_API VectorResult : public ResultItem
 
     VectorResult() : vectorId(-1), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
-    long count()      const { return stat.count(); }
-    double min()      const { return stat.min(); }
-    double max()      const { return stat.max(); }
-    double mean()     const { return stat.mean(); }
-    double variance() const { return stat.variance(); }
-    double stddev()   const { return stat.stddev(); }
+    long getCount()      const { return stat.getCount(); }
+    double getMin()      const { return stat.getMin(); }
+    double getMax()      const { return stat.getMax(); }
+    double getMean()     const { return stat.getMean(); }
+    double getVariance() const { return stat.getVariance(); }
+    double getStddev()   const { return stat.getStddev(); }
 
     /**
      * Returns the value of the "interpolation-mode" attribute as an InterpolationMode,
@@ -125,12 +125,12 @@ struct SCAVE_API HistogramResult : public ResultItem
     std::vector<double> bins;
     std::vector<double> values;
 
-    long count()      const { return stat.count(); }
-    double min()      const { return stat.min(); }
-    double max()      const { return stat.max(); }
-    double mean()     const { return stat.mean(); }
-    double variance() const { return stat.variance(); }
-    double stddev()   const { return stat.stddev(); }
+    long getCount()      const { return stat.getCount(); }
+    double getMin()      const { return stat.getMin(); }
+    double getMax()      const { return stat.getMax(); }
+    double getMean()     const { return stat.getMean(); }
+    double getVariance() const { return stat.getVariance(); }
+    double getStddev()   const { return stat.getStddev(); }
 
     void addBin(double lower_bound, double value)
     {

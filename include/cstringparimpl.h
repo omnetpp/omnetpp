@@ -53,7 +53,7 @@ class SIM_API cStringParImpl : public cParImpl
     /**
      * Copy constructor.
      */
-    cStringParImpl(const cStringParImpl& other) {setName(other.name()); operator=(other);}
+    cStringParImpl(const cStringParImpl& other) {setName(other.getName()); operator=(other);}
 
     /**
      * Destructor.
@@ -156,7 +156,7 @@ class SIM_API cStringParImpl : public cParImpl
     /**
      * Returns pointer to the expression stored by the object, or NULL.
      */
-    virtual cExpression *expression() const;
+    virtual cExpression *getExpression() const;
     //@}
 
     /** @name Type, prompt text, input flag, change flag. */
@@ -165,7 +165,7 @@ class SIM_API cStringParImpl : public cParImpl
     /**
      * Returns STRING.
      */
-    virtual Type type() const;
+    virtual Type getType() const;
 
     /**
      * Returns false.

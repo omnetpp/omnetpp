@@ -91,7 +91,7 @@ class ENVIR_API cFileOutputScalarManager : public cOutputScalarManager
     /**
      * Returns the file name.
      */
-    const char *fileName() const;
+    const char *getFileName() const;
 
     /**
      * Calls fflush().

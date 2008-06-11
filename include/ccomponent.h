@@ -84,7 +84,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     bool areParamsFinalized() const {return flags&FL_PARAMSFINALIZED;}
 
     // internal: used from Tkenv: find out if this module has a display string.
-    // displayString() would create the object immediately which we want to avoid.
+    // getDisplayString() would create the object immediately which we want to avoid.
     bool hasDisplayString();
 
   protected:
@@ -146,8 +146,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * code into your initialize() and/or finish() methods:
      *
      * <pre>
-     * for (int i=0; i<params(); i++)
-     *     handleParameterChange(par(i).name());
+     * for (int i=0; i<getNumParams(); i++)
+     *     handleParameterChange(par(i).getName());
      * </pre>
      *
      * Also, one must be extremely careful when changing parameters from inside
@@ -162,7 +162,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Constructor. Note that module and channel objects should not be created
      * directly, via their cComponentType objects. cComponentType::create()
-     * will do all housekeeping associated with creating the module (assigning
+     * will do all housekeeping associated with creating the getModule(assigning
      * an ID to the module, inserting it into the <tt>simulation</tt> object,
      * etc.).
      */
@@ -197,18 +197,18 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Return the properties for this component. Properties cannot be changed
      * at runtime.
      */
-    virtual cProperties *properties() const = 0;
+    virtual cProperties *getProperties() const = 0;
 
     /**
      * Returns the associated component type.
      */
-    cComponentType *componentType() const  {return componenttype;}
+    cComponentType *getComponentType() const  {return componenttype;}
 
     /**
      * Returns the fully qualified NED type name of the component.
-     * This is a shortcut to <tt>componentType()->fullName()</tt>.
+     * This is a shortcut to <tt>getComponentType()->getFullName()</tt>.
      */
-    virtual const char *nedTypeName() const;
+    virtual const char *getNedTypeName() const;
 
     /**
      * Redefined to return true in cModule and subclasses, otherwise returns false.
@@ -217,16 +217,16 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     /**
      * Returns the module containing this module/channel. This is not necessarily
-     * the same object as owner(), especially for channel objects. For the system
+     * the same object as getOwner(), especially for channel objects. For the system
      * module, it returns NULL.
      */
-    virtual cModule *parentModule() const = 0;
+    virtual cModule *getParentModule() const = 0;
 
     /**
      * Returns the global RNG mapped to local RNG number k. For large indices
      * (k >= map size) the global RNG k is returned, provided it exists.
      */
-    cRNG *rng(int k) const  {return ev.rng(k<rngmapsize ? rngmap[k] : k);}
+    cRNG *getRNG(int k) const  {return ev.getRNG(k<rngmapsize ? rngmap[k] : k);}
     //@}
 
     /** @name Interface for calling initialize()/finish().
@@ -259,7 +259,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Returns total number of the component's parameters.
      */
-    virtual int params() const  {return numparams;}
+    virtual int getNumParams() const  {return numparams;}
 
     /**
      * Returns reference to the parameter identified with its
@@ -303,10 +303,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * Returns the display string which defines presentation when the module
      * is displayed as a submodule in a compound module graphics.
      */
-    cDisplayString& displayString();
+    cDisplayString& getDisplayString();
 
     /**
-     * Shortcut to <tt>displayString().set(dispstr)</tt>.
+     * Shortcut to <tt>getDisplayString().set(dispstr)</tt>.
      */
     void setDisplayString(const char *dispstr);
 

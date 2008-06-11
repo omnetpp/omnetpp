@@ -60,7 +60,7 @@ class SIM_API cProperty : public cNamedObject
   protected:
     static void releaseValues(CharPtrVector& vals);
     int findKey(const char *key) const;
-    CharPtrVector& valuesVector(const char *key) const;
+    CharPtrVector& getValuesVector(const char *key) const;
 
   public:
     // internal: locks the object against modifications. It cannot be unlocked
@@ -110,7 +110,7 @@ class SIM_API cProperty : public cNamedObject
     /**
      * Redefined to return the property name plus optional index.
      */
-    virtual const char *fullName() const;
+    virtual const char *getFullName() const;
 
     /**
      * Creates and returns an exact copy of this object.
@@ -147,7 +147,7 @@ class SIM_API cProperty : public cNamedObject
      * Returns NULL if the property has no index
      * (<tt>\@propname(keys-and-values)</tt>).
      */
-    virtual const char *index() const;
+    virtual const char *getIndex() const;
 
     /**
      * Returns the "implicit" flag of this property.
@@ -165,7 +165,7 @@ class SIM_API cProperty : public cNamedObject
      * Returns the list of keys if this property. The default key is
      * listed as "".
      */
-    virtual const std::vector<const char *>& keys() const;
+    virtual const std::vector<const char *>& getKeys() const;
 
     /**
      * Returns true if the property contains the given key. Specify ""
@@ -185,12 +185,12 @@ class SIM_API cProperty : public cNamedObject
      *
      * Throws an error of the given key does not exist.
      */
-    virtual int numValues(const char *key) const;
+    virtual int getNumValues(const char *key) const;
 
     /**
      * Expands or trims the list of values for the given key in the property,
      * by discarding elements or adding "" elements. Specify "" for the default
-     * key. Note that simply setting an element above numValues(key) will also
+     * key. Note that simply setting an element above getNumValues(key) will also
      * expand the list.
      *
      * Throws an error of the given key does not exist.
@@ -199,7 +199,7 @@ class SIM_API cProperty : public cNamedObject
 
     /**
      * Returns the kth value for the given key in the property.
-     * Specify "" for the default key. For k>numValues(key), it returns "".  XXX why not NULL?
+     * Specify "" for the default key. For k>getNumValues(key), it returns "".  XXX why not NULL?
      */
     //XXX should return NULL/"" if key does not exist? currently it's an error
     virtual const char *value(const char *key, int k=0) const;
@@ -207,7 +207,7 @@ class SIM_API cProperty : public cNamedObject
     /**
      * Replaces a value for the given key in the property. Specify "" for
      * the default key. cProperty will create its own copy of the string passed.
-     * k may be greater than numValues(k), which will cause the values list,
+     * k may be greater than getNumValues(k), which will cause the values list,
      * to expand, the new elements filled with "".
      */
     //XXX create key if does not exist?

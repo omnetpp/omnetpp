@@ -47,7 +47,7 @@ Register_Class(cMsgPar);
 
 const char *cMsgPar::possibletypes = "SBLDFTP";
 
-static const char *typeName(char typechar)
+static const char *getTypeName(char typechar)
 {
     switch (typechar)
     {
@@ -78,7 +78,7 @@ cMsgPar::cMsgPar(const cMsgPar& par) : cOwnedObject()
     typechar = 'L';
     lng.val = 0L;
 
-    setName( par.name() );
+    setName( par.getName() );
     cMsgPar::operator=(par);
 }
 
@@ -107,7 +107,7 @@ void cMsgPar::deleteOld()
     }
     else if (typechar=='T')
     {
-        if (dtr.res->owner()==this)
+        if (dtr.res->getOwner()==this)
             dropAndDelete(dtr.res);
     }
     else if (typechar=='P')
@@ -122,7 +122,7 @@ void cMsgPar::deleteOld()
     }
     else if (typechar=='O')
     {
-        if (obj.obj->owner()==this)
+        if (obj.obj->getOwner()==this)
             dropAndDelete(obj.obj);
     }
     typechar = 'L';
@@ -145,11 +145,11 @@ std::string cMsgPar::info() const
                   break;
         case 'L': out << lng.val << " (L)"; break;
         case 'D': out << dbl.val << " (D)"; break;
-        case 'T': out << (dtr.res ? dtr.res->fullPath().c_str():"null") << " (T)"; break;
+        case 'T': out << (dtr.res ? dtr.res->getFullPath().c_str():"null") << " (T)"; break;
         case 'P': out << ptr.ptr << " (P)"; break;
-        case 'O': out << (obj.obj ? obj.obj->fullPath().c_str():"null") << " (O)"; break;
+        case 'O': out << (obj.obj ? obj.obj->getFullPath().c_str():"null") << " (O)"; break;
         case 'F': ff = cMathFunction::findByPointer(func.f);
-                  out << (ff ? ff->name() : "unknown") << "(";
+                  out << (ff ? ff->getName() : "unknown") << "(";
                   switch(func.argc) {
                     case 0: out << ")"; break;
                     case 1: out << func.p1; break;
@@ -234,7 +234,7 @@ void cMsgPar::netPack(cCommBuffer *buffer)
         if (ff == NULL)
             throw cRuntimeError(this,"netPack(): cannot transmit unregistered function");
 
-        buffer->pack(ff->name());
+        buffer->pack(ff->getName());
         buffer->pack(func.argc);
         buffer->pack(func.p1);
         buffer->pack(func.p2);
@@ -243,7 +243,7 @@ void cMsgPar::netPack(cCommBuffer *buffer)
         break;
 
     case 'T':
-        if (dtr.res && dtr.res->owner() != this)
+        if (dtr.res && dtr.res->getOwner() != this)
             throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
         if (buffer->packFlag(dtr.res!=NULL))
             buffer->packObject(dtr.res);
@@ -253,7 +253,7 @@ void cMsgPar::netPack(cCommBuffer *buffer)
         throw cRuntimeError(this,"netPack(): cannot transmit pointer to unknown data structure (type 'P')");
 
     case 'O':
-        if (obj.obj && obj.obj->owner() != this)
+        if (obj.obj && obj.obj->getOwner() != this)
             throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
         if (buffer->packFlag(obj.obj!=NULL))
             buffer->packObject(obj.obj);
@@ -308,7 +308,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
             throw cRuntimeError(this,"netUnpack(): transmitted function `%s' with %d args not registered here",
                                     funcname, argc);
         }
-        func.f = ff->mathFunc();
+        func.f = ff->getMathFunc();
         func.argc = argc;
         buffer->unpack(func.p1);
         buffer->unpack(func.p2);
@@ -340,12 +340,12 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
 
 //----
 
-char cMsgPar::type() const
+char cMsgPar::getType() const
 {
      return typechar;
 }
 
-bool cMsgPar::changed()
+bool cMsgPar::hasChanged()
 {
      bool ch = changedflag;
      changedflag=false;
@@ -467,12 +467,12 @@ cMsgPar& cMsgPar::setDoubleValue(MathFunc4Args f, double p1, double p2, double p
 cMsgPar& cMsgPar::setDoubleValue(cStatistic *res)
 {
     if (!res)
-        throw cRuntimeError(this,eBADINIT,typeName('T'));
+        throw cRuntimeError(this,eBADINIT,getTypeName('T'));
 
     beforeChange();
     deleteOld();
     dtr.res = res;
-    if (takeOwnership())
+    if (getTakeOwnership())
        take(res);
     typechar = 'T';
     afterChange();
@@ -501,7 +501,7 @@ cMsgPar& cMsgPar::setObjectValue(cOwnedObject *_obj)
     beforeChange();
     deleteOld();
     obj.obj = _obj;
-    if (takeOwnership())
+    if (getTakeOwnership())
         take( _obj );
     typechar = 'O';
     afterChange();
@@ -533,7 +533,7 @@ void cMsgPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
 const char *cMsgPar::stringValue()
 {
     if (typechar!='S')
-        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('S'));
+        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('S'));
     return ss.sht ? ss.str : ls.str;
 }
 
@@ -550,7 +550,7 @@ bool cMsgPar::boolValue()
     else if (isNumeric())
         return doubleValue()!=0;
     else
-        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('B'));
+        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('B'));
 }
 
 inline long _double_to_long(double d)
@@ -570,7 +570,7 @@ long cMsgPar::longValue()
     else if (isNumeric())
         return _double_to_long(doubleValue());
     else
-        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('L'));
+        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('L'));
 }
 
 double cMsgPar::doubleValue()
@@ -580,7 +580,7 @@ double cMsgPar::doubleValue()
     else if (typechar=='D')
         return dbl.val;
     else if (typechar=='T')
-        return fromstat();
+        return getFromstat();
     else if (typechar=='F')
         return func.argc==0 ? ((MathFuncNoArg)func.f)() :
                func.argc==1 ? ((MathFunc1Arg) func.f)(func.p1) :
@@ -588,7 +588,7 @@ double cMsgPar::doubleValue()
                func.argc==3 ? ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3) :
                               ((MathFunc4Args)func.f)(func.p1,func.p2,func.p3,func.p4);
     else
-        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('D'));
+        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('D'));
 }
 
 void *cMsgPar::pointerValue()
@@ -596,15 +596,15 @@ void *cMsgPar::pointerValue()
     if (typechar=='P')
         return ptr.ptr;
     else
-        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('P'));
+        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('P'));
 }
 
-cOwnedObject *cMsgPar::objectValue()
+cOwnedObject *cMsgPar::getObjectValue()
 {
     if (typechar=='O')
         return obj.obj;
     else
-        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('O'));
+        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('O'));
 }
 
 cXMLElement *cMsgPar::xmlValue()
@@ -612,7 +612,7 @@ cXMLElement *cMsgPar::xmlValue()
     if (typechar=='M')
         return xmlp.node;
     else
-        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('M'));
+        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('M'));
 }
 
 bool cMsgPar::isNumeric() const
@@ -687,7 +687,7 @@ string cMsgPar::str() const
        case 'D': sprintf(bb,"%g",dbl.val);
                  return string(bb);
        case 'F': ff = cMathFunction::findByPointer(func.f);
-                 fn = ff ? ff->name() : "unknown";
+                 fn = ff ? ff->getName() : "unknown";
                  switch(func.argc) {
                  case 0: sprintf(bb,"()"); break;
                  case 1: sprintf(bb,"(%g)",func.p1); break;
@@ -697,9 +697,9 @@ string cMsgPar::str() const
                  default: sprintf(bb,"() with %d args",func.argc); break;
                  };
                  return string(fn)+bb;
-       case 'T': return string("distribution ")+(dtr.res?dtr.res->fullPath().c_str():"NULL");
+       case 'T': return string("distribution ")+(dtr.res?dtr.res->getFullPath().c_str():"NULL");
        case 'P': sprintf(bb,"pointer %p", ptr.ptr); return string(bb);
-       case 'O': return string("object ")+(obj.obj?obj.obj->fullPath().c_str():"NULL");
+       case 'O': return string("object ")+(obj.obj?obj.obj->getFullPath().c_str():"NULL");
        case 'M': if (xmlp.node)
                      return string("<")+xmlp.node->getTagName()+"> from "+xmlp.node->getSourceLocation();
                  else
@@ -881,22 +881,22 @@ bool cMsgPar::setfunction(char *text)
     // now `args' points to something like '(10,1.5E-3)', without spaces
     s = args;
     double p1,p2,p3,p4;
-    switch(ff->numArgs())
+    switch(ff->getNumArgs())
     {
        case 0: if (strcmp(s,"()")!=0) return false;
-               setDoubleValue(ff->mathFuncNoArg());
+               setDoubleValue(ff->getMathFuncNoArg());
                return true;
        case 1: if (*s++!='(') return false;
                p1 = parsedbl(s);
                if (*s++!=')') return false;
-               setDoubleValue(ff->mathFunc1Arg(), p1);
+               setDoubleValue(ff->getMathFunc1Arg(), p1);
                return true;
        case 2: if (*s++!='(') return false;
                p1 = parsedbl(s);
                if (*s++!=',') return false;
                p2 = parsedbl(s);
                if (*s++!=')') return false;
-               setDoubleValue(ff->mathFunc2Args(), p1,p2);
+               setDoubleValue(ff->getMathFunc2Args(), p1,p2);
                return true;
        case 3: if (*s++!='(') return false;
                p1 = parsedbl(s);
@@ -905,7 +905,7 @@ bool cMsgPar::setfunction(char *text)
                if (*s++!=',') return false;
                p3 = parsedbl(s);
                if (*s++!=')') return false;
-               setDoubleValue(ff->mathFunc3Args(), p1,p2,p3);
+               setDoubleValue(ff->getMathFunc3Args(), p1,p2,p3);
                return true;
        case 4: if (*s++!='(') return false;
                p1 = parsedbl(s);
@@ -916,7 +916,7 @@ bool cMsgPar::setfunction(char *text)
                if (*s++!=',') return false;
                p4 = parsedbl(s);
                if (*s++!=')') return false;
-               setDoubleValue(ff->mathFunc4Args(), p1,p2,p3,p4);
+               setDoubleValue(ff->getMathFunc4Args(), p1,p2,p3,p4);
                return true;
        default:
                return false; // invalid argcount
@@ -924,10 +924,10 @@ bool cMsgPar::setfunction(char *text)
 }
 
 
-double cMsgPar::fromstat()
+double cMsgPar::getFromstat()
 {
     if (typechar!='T')
-        throw cRuntimeError(this,eBADCAST,typeName(typechar),typeName('T'));
+        throw cRuntimeError(this,eBADCAST,getTypeName(typechar),getTypeName('T'));
     return  dtr.res->random();
 }
 
@@ -954,7 +954,7 @@ cMsgPar& cMsgPar::operator=(const cMsgPar& val)
     else if (typechar=='T')
     {
          cStatistic *&p = dtr.res;
-         if (p->owner()==const_cast<cMsgPar*>(&val))
+         if (p->getOwner()==const_cast<cMsgPar*>(&val))
             take( p=(cStatistic *)p->dup() );
     }
     else if (typechar=='P')
@@ -968,7 +968,7 @@ cMsgPar& cMsgPar::operator=(const cMsgPar& val)
     else if (typechar=='O')
     {
          cOwnedObject *&p = obj.obj;
-         if (p->owner()==const_cast<cMsgPar*>(&val))
+         if (p->getOwner()==const_cast<cMsgPar*>(&val))
             take( p = (cOwnedObject *)p->dup() );
     }
 

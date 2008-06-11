@@ -88,10 +88,10 @@ class NEDXML_API NEDTypeInfo
     virtual ~NEDTypeInfo();
 
     /** Returns the simple name of the NED type */
-    virtual const char *name() const;
+    virtual const char *getName() const;
 
     /** Returns the fully qualified name of the NED type */
-    virtual const char *fullName() const;
+    virtual const char *getFullName() const;
 
     /** Returns the raw NEDElement tree representing the component */
     virtual NEDElement *getTree() const;

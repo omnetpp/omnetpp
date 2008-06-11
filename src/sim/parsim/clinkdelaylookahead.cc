@@ -65,9 +65,9 @@ void cLinkDelayLookahead::startRun()
 
     // fill in minDelays
     ev << "  calculating minimum link delays...\n";
-    for (int modId=0; modId<=sim->lastModuleId(); modId++)
+    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
     {
-        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
         if (mod)
         {
             for (cModule::GateIterator i(mod); !i.end(); i++)
@@ -76,15 +76,15 @@ void cLinkDelayLookahead::startRun()
                 // FIXME leave out gates from other cPlaceholderModules
                 cGate *g = i();
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
-                if (pg && pg->fromGate() && pg->getRemoteProcId()>=0)
+                if (pg && pg->getFromGate() && pg->getRemoteProcId()>=0)
                 {
                     // check we have a delay on this link (it gives us lookahead)
-                    cGate *fromg  = pg->fromGate();
-                    cChannel *chan = fromg->channel();
+                    cGate *fromg  = pg->getFromGate();
+                    cChannel *chan = fromg->getChannel();
                     cBasicChannel *basicChan = dynamic_cast<cBasicChannel *>(chan);
-                    simtime_t linkDelay = basicChan ? basicChan->delay() : 0.0;
+                    simtime_t linkDelay = basicChan ? basicChan->getDelay() : 0.0;
                     if (linkDelay<=0.0)
-                        throw cRuntimeError("cLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->fullPath().c_str());
+                        throw cRuntimeError("cLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());
 
                     // store
                     int procId = pg->getRemoteProcId();

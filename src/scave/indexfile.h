@@ -43,19 +43,19 @@ struct Block {
     Block() : startOffset(-1), size(0), startSerial(-1), startEventNum(-1), endEventNum(-1),
         startTime(0.0), endTime(0.0) {}
 
-    long count() const { return stat.count(); }
-    double min() const { return stat.min(); }
-    double max() const { return stat.max(); }
-    double sum() const { return stat.sum(); }
+    long getCount() const { return stat.getCount(); }
+    double getMin() const { return stat.getMin(); }
+    double getMax() const { return stat.getMax(); }
+    double getSum() const { return stat.getSum(); }
     double sumSqr() const { return stat.sumSqr(); }
 
-    long endSerial() const { return startSerial + count(); }
+    long endSerial() const { return startSerial + getCount(); }
 
     bool contains(long serial) const { return startSerial <= serial && serial < endSerial(); }
 
     void collect(long eventNum, simultime_t simtime, double value)
     {
-        if (count() == 0)
+        if (getCount() == 0)
         {
             startEventNum = eventNum;
             startTime = simtime;
@@ -95,10 +95,10 @@ struct VectorData {
         : vectorId(vectorId), moduleName(moduleName), name(name), columns(columns), blockSize(blockSize),
           startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
-    long count() const { return stat.count(); }
-    double min() const { return stat.min(); }
-    double max() const { return stat.max(); }
-    double sum() const { return stat.sum(); }
+    long getCount() const { return stat.getCount(); }
+    double getMin() const { return stat.getMin(); }
+    double getMax() const { return stat.getMax(); }
+    double getSum() const { return stat.getSum(); }
     double sumSqr() const { return stat.sumSqr(); }
 
     /**
@@ -106,7 +106,7 @@ struct VectorData {
      */
     void collect(const Block &block)
     {
-        if (count() == 0)
+        if (getCount() == 0)
         {
             startEventNum = block.startEventNum;
             startTime = block.startTime;

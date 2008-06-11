@@ -112,7 +112,7 @@ void XYDataset::sortColumnsAccordingToFirstRowMean()
         int firstRow = rowOrder[0];
         for (int i = 0; i < (int)values[firstRow].size(); ++i)
         {
-            double mean = values[firstRow][i].mean();
+            double mean = values[firstRow][i].getMean();
             if (!isNaN(mean))
                 vals.push_back(ValueAndIndex(mean, i));
         }

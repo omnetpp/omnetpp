@@ -48,7 +48,7 @@ class SIM_API cNEDLoader : public NEDResourceCache
 
   public:
     /** Access to the singleton instance */
-    static cNEDLoader *instance();
+    static cNEDLoader *getInstance();
 
     /** Disposes of the singleton instance */
     static void clear();

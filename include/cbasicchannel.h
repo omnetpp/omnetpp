@@ -107,7 +107,7 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
      * This value affects the transmission time of messages sent through
      * the channel.
      *
-     * @see isBusy(), transmissionFinishes()
+     * @see isBusy(), getTransmissionFinishTime()
      */
     virtual void setDatarate(double d);
 
@@ -120,22 +120,22 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
     /**
      * Returns the delay of the channel.
      */
-    virtual simtime_t delay() const {checkState(); return delayparam;}
+    virtual simtime_t getDelay() const {checkState(); return delayparam;}
 
     /**
      * Returns the bit error rate of the channel.
      */
-    virtual double error() const  {checkState(); return errorparam;}
+    virtual double getError() const  {checkState(); return errorparam;}
 
     /**
      * Returns the data rate of the channel.
      */
-    virtual double datarate() const  {checkState(); return datarateparam;}
+    virtual double getDatarate() const  {checkState(); return datarateparam;}
 
     /**
      * Returns the "disabled" parameter of the channel.
      */
-    virtual bool disabled() const  {checkState(); return flags & FL_ISDISABLED;}
+    virtual bool isDisabled() const  {checkState(); return flags & FL_ISDISABLED;}
     //@}
 
     /** @name Transmission state. */
@@ -157,7 +157,7 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
      * Transmission time of a message depends on the message length
      * and the data rate assigned to the channel.
      */
-    virtual simtime_t transmissionFinishes() const {return txfinishtime;}
+    virtual simtime_t getTransmissionFinishTime() const {return txfinishtime;}
     //@}
 
     /** @name Internally used methods. */

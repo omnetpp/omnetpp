@@ -35,7 +35,7 @@ USING_NAMESPACE
 cTDExpandingWindows::cTDExpandingWindows(const cTDExpandingWindows& r) : cTransientDetection()
 {
     func=0;
-    setName(r.name());
+    setName(r.getName());
     operator=(r);
 }
 
@@ -61,7 +61,7 @@ cTDExpandingWindows& cTDExpandingWindows::operator=(const cTDExpandingWindows& r
 
     cOwnedObject::operator=(res);
 
-    // setHostObject(res.hostObject());
+    // setHostObject(res.getHostObject());
     go=res.go;
     transval=res.transval;
     accuracy=res.accuracy;
@@ -217,7 +217,7 @@ cADByStddev::cADByStddev(const cADByStddev& r) : cAccuracyDetection()
     detreps=sctr=0;
     ssum=sqrsum=0.0;
 
-    setName(r.name());
+    setName(r.getName());
     operator=(r);
 }
 
@@ -238,7 +238,7 @@ cADByStddev& cADByStddev::operator=(const cADByStddev& res)
    if (this==&res) return *this;
 
    cOwnedObject::operator=(res);
-   // setHostObject(res.hostObject());
+   // setHostObject(res.getHostObject());
    go=res.go; resaccval=res.resaccval;
    accuracy=res.accuracy; sctr=res.sctr;
    ssum=res.ssum; sqrsum=sqrsum;
@@ -247,7 +247,7 @@ cADByStddev& cADByStddev::operator=(const cADByStddev& res)
    return *this;
 }
 
-double cADByStddev::stddev() const
+double cADByStddev::getStddev() const
 {
    if (!sctr)
       return 0.0;
@@ -283,7 +283,7 @@ void cADByStddev::detectAccuracy()
    // the actual algorithm: divide the standard deviation by the square of
    // the number of values and check if this is small enough
 
-   double sdvmean = (stddev()/(sctr*sctr));
+   double sdvmean = (getStddev()/(sctr*sctr));
    if (sdvmean <= accuracy) detreps--;
    else detreps = repeats;
    resaccval = (detreps <= 0);

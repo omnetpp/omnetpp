@@ -86,7 +86,7 @@ cProperty *cProperties::get(int k) const
 cProperty *cProperties::get(const char *name, const char *index) const
 {
     for (int i = 0; i < (int)propv.size(); i++)
-        if (!strcmp(propv[i]->name(), name) && !opp_strcmp(index, propv[i]->index()))
+        if (!strcmp(propv[i]->getName(), name) && !opp_strcmp(index, propv[i]->getIndex()))
             return propv[i];
     return NULL;
 }
@@ -116,7 +116,7 @@ const std::vector<const char *> cProperties::getNames() const
     std::vector<const char *> v;
     for (int i = 0; i < (int)propv.size(); i++)
     {
-        const char *s = propv[i]->name();
+        const char *s = propv[i]->getName();
         if (std::find(v.begin(), v.end(), s) != v.end())
             v.push_back(s);
     }
@@ -128,9 +128,9 @@ const std::vector<const char *> cProperties::getIndicesFor(const char *name) con
     std::vector<const char *> v;
     for (int i = 0; i < (int)propv.size(); i++)
     {
-        if (!strcmp(propv[i]->name(), name))
+        if (!strcmp(propv[i]->getName(), name))
         {
-            const char *s = propv[i]->index();
+            const char *s = propv[i]->getIndex();
             if (std::find(v.begin(), v.end(), s) != v.end())
                 v.push_back(s);
         }

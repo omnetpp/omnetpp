@@ -75,7 +75,7 @@ bool FileWriterNode::finished() const
 
 //--------
 
-const char *FileWriterNodeType::description() const
+const char *FileWriterNodeType::getDescription() const
 {
     return "Writes the output into a two-column text file.";
 }

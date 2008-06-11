@@ -61,9 +61,9 @@ void cPar::moveto(cPar& other)
     p = NULL;
 }
 
-const char *cPar::name() const
+const char *cPar::getName() const
 {
-    return p->name();
+    return p->getName();
 }
 
 std::string cPar::info() const
@@ -73,7 +73,7 @@ std::string cPar::info() const
 
 std::string cPar::detailedInfo() const
 {
-    return p->detailedInfo() + " " + properties()->info();
+    return p->detailedInfo() + " " + getProperties()->info();
 }
 
 cParImpl *cPar::copyIfShared()
@@ -85,7 +85,7 @@ cParImpl *cPar::copyIfShared()
     return p;
 }
 
-cObject *cPar::owner() const
+cObject *cPar::getOwner() const
 {
     return ownercomponent;
 }
@@ -96,11 +96,11 @@ void cPar::operator=(const cPar& other)
     // simulation models to copy parameters
     if (other.isExpression())
     {
-        setExpression(other.expression()->dup());
+        setExpression(other.getExpression()->dup());
     }
     else
     {
-        switch (type())
+        switch (getType())
         {
             case BOOL:   setBoolValue(other.boolValue()); break;
             case DOUBLE: setDoubleValue(other.doubleValue()); break;
@@ -112,15 +112,15 @@ void cPar::operator=(const cPar& other)
     }
 }
 
-cProperties *cPar::properties() const
+cProperties *cPar::getProperties() const
 {
-    cComponent *component = check_and_cast<cComponent *>(owner());
-    cComponentType *componentType = component->componentType();
-    cProperties *props = componentType->paramProperties(name());
+    cComponent *component = check_and_cast<cComponent *>(getOwner());
+    cComponentType *componentType = component->getComponentType();
+    cProperties *props = componentType->getParamProperties(getName());
     return props;
 }
 
-const char *cPar::typeName(Type t)
+const char *cPar::getTypeName(Type t)
 {
     switch (t)
     {
@@ -141,9 +141,9 @@ std::string cPar::str() const
     return p->str();
 }
 
-cPar::Type cPar::type() const
+cPar::Type cPar::getType() const
 {
-    return p->type();
+    return p->getType();
 }
 
 bool cPar::isShared() const
@@ -172,7 +172,7 @@ bool cPar::isExpression() const
 }
 
 #define TRY(x) \
-    try {x;} catch (std::exception& e) {throw cRuntimeError(ePARAM, fullName(), e.what());}
+    try {x;} catch (std::exception& e) {throw cRuntimeError(ePARAM, getFullName(), e.what());}
 
 bool cPar::boolValue() const
 {
@@ -189,9 +189,9 @@ double cPar::doubleValue() const
     TRY(return p->doubleValue(ownercomponent));
 }
 
-const char *cPar::unit() const
+const char *cPar::getUnit() const
 {
-    return p->unit();
+    return p->getUnit();
 }
 
 const char *cPar::stringValue() const
@@ -209,9 +209,9 @@ cXMLElement *cPar::xmlValue() const
     TRY(return p->xmlValue(ownercomponent));
 }
 
-cExpression *cPar::expression() const
+cExpression *cPar::getExpression() const
 {
-    return p->expression();
+    return p->getExpression();
 }
 
 cPar& cPar::setBoolValue(bool b)
@@ -264,17 +264,17 @@ cPar& cPar::setExpression(cExpression *e)
 
 void cPar::afterChange()
 {
-    if (simulation.contextType()==CTX_EVENT) // don't call during build, initialize or finish
+    if (simulation.getContextType()==CTX_EVENT) // don't call during build, initialize or finish
     {
         ASSERT(ownercomponent);
         cContextSwitcher tmp(ownercomponent);
-        ownercomponent->handleParameterChange(fullName());
+        ownercomponent->handleParameterChange(getFullName());
     }
 }
 
 void cPar::read()
 {
-    //TRACE("read() of par=%s", fullPath().c_str());
+    //TRACE("read() of par=%s", getFullPath().c_str());
 
     // obtain value if parameter is not set yet
     if (p->isInput())
@@ -304,7 +304,7 @@ void cPar::acceptDefault()
     {
         // try to look up the value in the value cache (temporarily setting isInput=false)
         p->setIsInput(false);
-        cComponentType *componentType = ownercomponent->componentType();
+        cComponentType *componentType = ownercomponent->getComponentType();
         cParImpl *cachedValue = componentType->getSharedParImpl(p);
         p->setIsInput(true);
 
@@ -325,11 +325,11 @@ void cPar::convertToConst()
     try {
         p->convertToConst(ownercomponent);
     } catch (std::exception& e) {
-        throw cRuntimeError(ePARAM, fullName(), e.what());
+        throw cRuntimeError(ePARAM, getFullName(), e.what());
     }
 
     // maybe replace it with a shared copy
-    cComponentType *componentType = ownercomponent->componentType();
+    cComponentType *componentType = ownercomponent->getComponentType();
     cParImpl *cachedValue = componentType->getSharedParImpl(p);
     if (cachedValue)
         setImpl(cachedValue);
@@ -349,8 +349,8 @@ void cPar::parse(const char *text)
     // storage ensures that parameters of identical name but different types
     // don't cause trouble.
     //
-    cComponentType *componentType = ownercomponent->componentType();
-    std::string key = std::string(componentType->name()) + ":" + name() + ":" + text;
+    cComponentType *componentType = ownercomponent->getComponentType();
+    std::string key = std::string(componentType->getName()) + ":" + getName() + ":" + text;
     cParImpl *cachedValue = componentType->getSharedParImpl(key.c_str());
     if (cachedValue)
     {
@@ -369,7 +369,7 @@ void cPar::parse(const char *text)
         catch (std::exception& e)
         {
             delete tmp;
-            throw cRuntimeError("Wrong value `%s' for parameter `%s': %s", text, fullPath().c_str(), e.what());
+            throw cRuntimeError("Wrong value `%s' for parameter `%s': %s", text, getFullPath().c_str(), e.what());
         }
 
         // successfully parsed: install it

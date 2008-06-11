@@ -75,7 +75,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     cCoroutine *coroutine;
 
     static bool stack_cleanup_requested; // 'true' value asks activity() to throw a cStackCleanupException
-    static cSimpleModule *after_cleanup_transfer_to; // transfer back to this module (or to main)
+    static cSimpleModule *after_cleanup_transfer_to; // transfer back to this getModule(or to main)
 
   private:
     // internal use
@@ -274,7 +274,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     /**
      * Send a message directly to another module.
      *
-     * If the gate is further connected (i.e. toGate()!=NULL), the
+     * If the gate is further connected (i.e. getToGate()!=NULL), the
      * message will follow the connections that start at that gate.
      * For example, when sending to an input gate of a compound module,
      * the message will follow the connections to the inside of the compound module.
@@ -285,11 +285,11 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * to a single output gate of their parent module.
      *
      * It is not permitted to send to a gate of a compound module which is not
-     * further connected (i.e. toGate()==NULL), as this would cause the message
+     * further connected (i.e. getToGate()==NULL), as this would cause the message
      * to arrive at a compound module.
      *
      * Also, it is not permitted to send to a gate which is otherwise connected
-     * i.e. where fromGate()!=NULL. This means that modules MUST have
+     * i.e. where getFromGate()!=NULL. This means that modules MUST have
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
      */
@@ -346,9 +346,9 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      *
      * When the message is delivered at the module, you can call
      * <tt>msg->isSelfMessage()</tt> to tell it apart from messages arriving
-     * from other modules. <tt>msg->kind()</tt> can be used to further
+     * from other modules. <tt>msg->getKind()</tt> can be used to further
      * classify it, or of you need to manage an unbounded number of timers,
-     * you can set <tt>msg->contextPointer()</tt> before scheduling to
+     * you can set <tt>msg->getContextPointer()</tt> before scheduling to
      * point to the data structure the message belongs to -- this way
      * you can avoid having to search through lists or other data structures
      * to find out where a just-arrived self-message belongs.
@@ -465,13 +465,13 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      *
      * @see cCoroutine
      */
-    virtual bool stackOverflow() const;
+    virtual bool hasStackOverflow() const;
 
     /**
      * Returns the stack size of the coroutine. If the module uses handleMessage(),
      * this method always returns 0.
      */
-    virtual unsigned stackSize() const;
+    virtual unsigned getStackSize() const;
 
     /**
      * Returns the amount of stack actually used by the coroutine.
@@ -481,7 +481,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      *
      * @see cCoroutine
      */
-    virtual unsigned stackUsage() const;
+    virtual unsigned getStackUsage() const;
     //@}
 };
 

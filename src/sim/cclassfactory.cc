@@ -42,7 +42,7 @@ std::string cClassFactory::info() const
 
 cClassFactory *cClassFactory::find(const char *classname)
 {
-    return dynamic_cast<cClassFactory *>(classes.instance()->lookup(classname));
+    return dynamic_cast<cClassFactory *>(classes.getInstance()->lookup(classname));
 }
 
 cObject *cClassFactory::createOne(const char *classname)

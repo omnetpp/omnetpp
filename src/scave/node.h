@@ -62,8 +62,8 @@ class SCAVE_API Port
         Port(const Port& p) {ownernode = p.ownernode; chan = p.chan;}
         ~Port() {}
         void setChannel(Channel *channel) {Assert(!chan); chan = channel;}
-        Node *node() {return ownernode;}
-        Channel *channel() const  {return chan;}
+        Node *getNode() {return ownernode;}
+        Channel *getChannel() const  {return chan;}
         Channel *operator()() const {Assert(chan); return chan;}
 };
 

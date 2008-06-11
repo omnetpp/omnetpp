@@ -40,8 +40,8 @@ class SCAVE_API DifferenceQuotientNode : public FilterNode
 class SCAVE_API DifferenceQuotientNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "diffquot";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "diffquot";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

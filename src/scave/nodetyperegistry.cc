@@ -39,7 +39,7 @@ USING_NAMESPACE
 
 NodeTypeRegistry *NodeTypeRegistry::inst;
 
-NodeTypeRegistry *NodeTypeRegistry::instance()
+NodeTypeRegistry *NodeTypeRegistry::getInstance()
 {
     if (!inst)
         inst = new NodeTypeRegistry();
@@ -48,12 +48,12 @@ NodeTypeRegistry *NodeTypeRegistry::instance()
 
 void NodeTypeRegistry::add(NodeType *nodetype)
 {
-    nodeTypeMap[nodetype->name()] = nodetype;
+    nodeTypeMap[nodetype->getName()] = nodetype;
 }
 
 void NodeTypeRegistry::remove(NodeType *nodetype)
 {
-    NodeTypeMap::iterator it = nodeTypeMap.find(nodetype->name());
+    NodeTypeMap::iterator it = nodeTypeMap.find(nodetype->getName());
     if (it!=nodeTypeMap.end())
         nodeTypeMap.erase(it);
 }

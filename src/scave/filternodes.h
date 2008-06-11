@@ -38,8 +38,8 @@ class SCAVE_API NopNode : public FilterNode
 class SCAVE_API NopNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "nop";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "nop";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };
@@ -63,8 +63,8 @@ class SCAVE_API AdderNode : public FilterNode
 class SCAVE_API AdderNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "add";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "add";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
@@ -89,8 +89,8 @@ class SCAVE_API MultiplierNode : public FilterNode
 class SCAVE_API MultiplierNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "multiply-by";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "multiply-by";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -116,8 +116,8 @@ class SCAVE_API DividerNode : public FilterNode
 class SCAVE_API DividerNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "divide-by";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "divide-by";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -143,8 +143,8 @@ class SCAVE_API ModuloNode : public FilterNode
 class SCAVE_API ModuloNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "modulo";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "modulo";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -170,8 +170,8 @@ class SCAVE_API DifferenceNode : public FilterNode
 class SCAVE_API DifferenceNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "difference";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "difference";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -197,8 +197,8 @@ class SCAVE_API TimeDiffNode : public FilterNode
 class SCAVE_API TimeDiffNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "timediff";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "timediff";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -226,8 +226,8 @@ class SCAVE_API MovingAverageNode : public FilterNode
 class SCAVE_API MovingAverageNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "movingavg";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "movingavg";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -253,8 +253,8 @@ class SCAVE_API SumNode : public FilterNode
 class SCAVE_API SumNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "sum";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "sum";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -279,8 +279,8 @@ class SCAVE_API TimeShiftNode : public FilterNode
 class SCAVE_API TimeShiftNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "timeshift";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "timeshift";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };
@@ -304,8 +304,8 @@ class SCAVE_API LinearTrendNode : public FilterNode
 class SCAVE_API LinearTrendNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "lineartrend";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "lineartrend";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -331,8 +331,8 @@ class SCAVE_API CropNode : public FilterNode
 class SCAVE_API CropNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "crop";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "crop";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };
@@ -357,8 +357,8 @@ class SCAVE_API MeanNode : public FilterNode
 class SCAVE_API MeanNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "mean";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "mean";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
@@ -384,8 +384,8 @@ class SCAVE_API RemoveRepeatsNode : public FilterNode
 class SCAVE_API RemoveRepeatsNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "removerepeats";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "removerepeats";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -423,8 +423,8 @@ class SCAVE_API CompareNode : public FilterNode
 class SCAVE_API CompareNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "compare";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "compare";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -453,8 +453,8 @@ class SCAVE_API IntegrateNode : public FilterNode
 class SCAVE_API IntegrateNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "integrate";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "integrate";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -483,8 +483,8 @@ class SCAVE_API TimeAverageNode : public FilterNode
 class SCAVE_API TimeAverageNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "timeavg";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "timeavg";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
@@ -509,8 +509,8 @@ class SCAVE_API DivideByTimeNode : public FilterNode
 class SCAVE_API DivideByTimeNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "divtime";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "divtime";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;
@@ -534,8 +534,8 @@ class SCAVE_API TimeToSerialNode : public FilterNode
 class SCAVE_API TimeToSerialNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "timetoserial";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "timetoserial";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual void mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const;

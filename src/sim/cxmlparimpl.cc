@@ -126,7 +126,7 @@ cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
     return evaluate(context);
 }
 
-cExpression *cXMLParImpl::expression() const
+cExpression *cXMLParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
@@ -145,7 +145,7 @@ void cXMLParImpl::deleteOld()
     }
 }
 
-cPar::Type cXMLParImpl::type() const
+cPar::Type cXMLParImpl::getType() const
 {
     return cPar::XML;
 }

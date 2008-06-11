@@ -141,7 +141,7 @@ void TInspector::update()
    char newtitle[128];
    const char *prefix = getTkenv()->getWindowTitlePrefix();
    char fullpath[300];
-   strncpy(fullpath, object->fullPath().c_str(), 300);
+   strncpy(fullpath, object->getFullPath().c_str(), 300);
    fullpath[299] = 0;
    int len = strlen(fullpath);
    if (len<=45)
@@ -161,14 +161,14 @@ void TInspector::update()
    cModule *mod = dynamic_cast<cModule *>(object);
    if (mod)
        sprintf(newname, "(%s) %s  (id=%d)  (%s)", getObjectTypeName(object),
-                        object->fullPath().c_str(), mod->id(), ptrToStr(object,buf));
+                        object->getFullPath().c_str(), mod->getId(), ptrToStr(object,buf));
    else
        sprintf(newname, "(%s) %s  (%s)", getObjectTypeName(object),
-                        object->fullPath().c_str(), ptrToStr(object,buf));
+                        object->getFullPath().c_str(), ptrToStr(object,buf));
    CHK(Tcl_VarEval(interp, windowname,".infobar.name config -text {",newname,"}",NULL));
 
    // owner button on toolbar
-   setToolbarInspectButton(".toolbar.owner", mod ? mod->parentModule() : object->owner(), INSP_DEFAULT);
+   setToolbarInspectButton(".toolbar.owner", mod ? mod->getParentModule() : object->getOwner(), INSP_DEFAULT);
 }
 
 void TInspector::setEntry(const char *entry, const char *val)
@@ -253,11 +253,11 @@ void TInspector::setInspectButton(const char *button, cObject *object, bool disp
       char idtext[30] = "";
       if (dynamic_cast<cModule *>(object))
       {
-          sprintf(idtext, " (id=%d)", static_cast<cModule *>(object)->id());
+          sprintf(idtext, " (id=%d)", static_cast<cModule *>(object)->getId());
       }
       CHK(Tcl_VarEval(interp, windowname, button,".e config -state normal ",
                               "-text {(", getObjectTypeName(object), ") ",
-                              (displayfullpath ? object->fullPath().c_str() : object->fullName()),
+                              (displayfullpath ? object->getFullPath().c_str() : object->getFullName()),
                               idtext, "} ",
                               "-command {opp_inspect ",ptrToStr(object)," ",buf,"}",
                               NULL));

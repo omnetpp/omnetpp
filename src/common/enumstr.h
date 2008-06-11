@@ -37,7 +37,7 @@ class COMMON_API EnumStringIterator
      EnumStringIterator(const char *s);
      int operator++(int);
      int operator()() {return err ? -1 : current;}
-     bool error()      {return err;}
+     bool hasError() const {return err;}
 };
 
 NAMESPACE_END

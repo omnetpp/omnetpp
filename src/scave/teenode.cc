@@ -53,7 +53,7 @@ bool TeeNode::finished() const
 
 //-------
 
-const char *TeeNodeType::description() const
+const char *TeeNodeType::getDescription() const
 {
     return "Splits the input into several output by copying its data.\n";
 }

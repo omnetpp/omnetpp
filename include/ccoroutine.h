@@ -38,7 +38,7 @@
 #include <windows.h>
 
 NAMESPACE_BEGIN
-// their min() and max() macros interfere with us
+// their getMin() and getMax() macros interfere with us
 #undef min
 #undef max
 #endif
@@ -148,12 +148,12 @@ class SIM_API cCoroutine
      * middle of such a local variable, it may be preserved intact and
      * stack violation is not detected.
      */
-    virtual bool stackOverflow() const;
+    virtual bool hasStackOverflow() const;
 
     /**
      * Returns the stack size of the coroutine.
      */
-    virtual unsigned stackSize() const;
+    virtual unsigned getStackSize() const;
 
     /**
      * Returns the amount of stack actually used by the coroutine.
@@ -163,7 +163,7 @@ class SIM_API cCoroutine
      * Portable coroutines: It works by checking the intactness of
      * predefined byte patterns (0xdeadbeef) placed in the stack.
      */
-    virtual unsigned stackUsage() const;
+    virtual unsigned getStackUsage() const;
     //@}
 };
 

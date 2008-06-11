@@ -53,7 +53,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
      * Copy constructor.
      */
     cHistogramBase(const cHistogramBase& r) : cDensityEstBase(r)
-        {setName(r.name());cellv=NULL;operator=(r);}
+        {setName(r.getName());cellv=NULL;operator=(r);}
 
     /**
      * Constructor.
@@ -108,7 +108,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int cells() const;
+    virtual int getNumCells() const;
 
     /**
      * Writes the contents of the object into a text file.
@@ -151,7 +151,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase
      * Copy constructor.
      */
     cEqdHistogramBase(const cEqdHistogramBase& r) : cHistogramBase(r)
-        {setName(r.name());operator=(r);}
+        {setName(r.getName());operator=(r);}
 
     /**
      * Constructor.
@@ -204,22 +204,22 @@ class SIM_API cEqdHistogramBase : public cHistogramBase
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k) const;
+    virtual double getBasepoint(int k) const;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k) const;
+    virtual double getCellValue(int k) const;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x) const;
+    virtual double getPDF(double x) const;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x) const;
+    virtual double getCDF(double x) const;
 
     /**
      * Writes the contents of the object into a text file.
@@ -244,7 +244,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase
      * Returns the cell size, or 0 when unknow (i.e. the cells have not
      * been set up yet, and setCellSize() has not been called).
      */
-    virtual double cellSize() const {return cellsize;}
+    virtual double getCellSize() const {return cellsize;}
     //@}
 
 };
@@ -329,7 +329,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      * Copy constructor.
      */
     cLongHistogram(const cLongHistogram& r) : cEqdHistogramBase(r)
-        {setName(r.name());operator=(r);}
+        {setName(r.getName());operator=(r);}
 
     /**
      * Constructor.
@@ -461,7 +461,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * Copy constructor
      */
     cDoubleHistogram(const cDoubleHistogram& r) : cEqdHistogramBase(r)
-          {setName(r.name());operator=(r);}
+          {setName(r.getName());operator=(r);}
 
     /**
      * Constructor.

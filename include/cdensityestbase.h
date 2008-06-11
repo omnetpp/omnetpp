@@ -124,7 +124,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * Copy constructor.
      */
     cDensityEstBase(const cDensityEstBase& r) : cStdDev()
-            {setName(r.name());firstvals=NULL;operator=(r);}
+            {setName(r.getName());firstvals=NULL;operator=(r);}
 
     /**
      * Constructor.
@@ -300,50 +300,50 @@ class SIM_API cDensityEstBase : public cStdDev
      * Returns the number of histogram cells used.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual int cells() const = 0;
+    virtual int getNumCells() const = 0;
 
     /**
-     * Returns the kth cell boundary. Legal values for k are 0 through cells(),
+     * Returns the kth cell boundary. Legal values for k are 0 through getNumCells(),
      * that is, there' one more basepoint than the number of cells.
-     * Basepoint(0) returns the low end of the first cell, and basepoint(cells())
+     * Basepoint(0) returns the low end of the first cell, and getBasepoint(getNumCells())
      * returns the high end of the last histogram cell.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double basepoint(int k) const = 0;
+    virtual double getBasepoint(int k) const = 0;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      * Before transformation, this method may return zero. See transform().
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double cell(int k) const = 0;
+    virtual double getCellValue(int k) const = 0;
 
     /**
      * Returns the estimated value of the Probability Density Function
      * within the kth cell. This method simply divides the number of observations
      * in cell k with the cell size and the number of total observations collected.
-     * Note that before transformation, cell() and also this method may return zero.
+     * Note that before transformation, getCellValue() and also this method may return zero.
      * See transform().
      */
-    virtual double cellPDF(int k) const;
+    virtual double getCellPDF(int k) const;
 
     /**
      * Returns number of observations that, being too small, fell out of the histogram
      * range.
      */
-    virtual unsigned long underflowCell() const {return cell_under;}
+    virtual unsigned long getUnderflowCell() const {return cell_under;}
 
     /**
      * Returns number of observations that, being too large, fell out of the histogram
      * range.
      */
-    virtual unsigned long overflowCell() const {return cell_over;}
+    virtual unsigned long getOverflowCell() const {return cell_over;}
 
     /**
-     * Combines the functionality of basepoint(), cell() and cellPDF() into a
+     * Combines the functionality of getBasepoint(), getCellValue() and getCellPDF() into a
      * single call.
      */
-    virtual Cell cellInfo(int k) const;
+    virtual Cell getCellInfo(int k) const;
     //@}
 
     /** @name Density and cumulated density approximation functions. */
@@ -354,14 +354,14 @@ class SIM_API cDensityEstBase : public cStdDev
      * This is a pure virtual function, implementation is provided
      * in subclasses implementing concrete histogram types.
      */
-    virtual double pdf(double x) const = 0;
+    virtual double getPDF(double x) const = 0;
 
     /**
      * Returns the estimated value of the Cumulated Density Function at a given x.
      * This is a pure virtual function, implementation is provided
      * in subclasses implementing concrete histogram types.
      */
-    virtual double cdf(double x) const = 0;
+    virtual double getCDF(double x) const = 0;
     //@}
 };
 

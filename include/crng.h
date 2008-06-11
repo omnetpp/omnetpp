@@ -43,7 +43,7 @@ class cConfiguration;
  * rng-class="MyClass"
  * </pre>
  *
- * See also cModule::rng().
+ * See also cModule::getRNG().
  *
  * @ingroup RandomNumbers
  * @ingroup EnvirExtensions
@@ -77,7 +77,7 @@ class SIM_API cRNG : public cObject
      * Returns how many random numbers have been drawn from this RNG.
      * Subclasses should increment numDrawn in the intRand(), etc. methods.
      */
-    virtual unsigned long numbersDrawn() const  {return numDrawn;}
+    virtual unsigned long getNumbersDrawn() const  {return numDrawn;}
 
     /**
      * Random integer in the range [0,intRandMax()]

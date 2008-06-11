@@ -62,12 +62,12 @@ cProperty& cProperty::operator=(const cProperty& other)
     cNamedObject::operator=(other);
     setFlag(FL_ISLOCKED, oldIsLocked);
 
-    setName(other.name()); // cNamedObject doesn't do that
+    setName(other.getName()); // cNamedObject doesn't do that
 
     stringPool.release(propfullname);
     propfullname = NULL;
 
-    setIndex(other.index());
+    setIndex(other.getIndex());
 
     // release old value
     int n = keyv.size();
@@ -108,16 +108,16 @@ void cProperty::setName(const char *name)
     propfullname = NULL;
 }
 
-const char *cProperty::fullName() const
+const char *cProperty::getFullName() const
 {
     if (!propfullname)
     {
         if (!propindex) {
-            propfullname = stringPool.get(name());
+            propfullname = stringPool.get(getName());
         }
         else {
             std::stringstream os;
-            os << name() << "[" << propindex << "]";
+            os << getName() << "[" << propindex << "]";
             propfullname = stringPool.get(os.str().c_str());
         }
     }
@@ -127,7 +127,7 @@ const char *cProperty::fullName() const
 std::string cProperty::info() const
 {
     std::stringstream os;
-    os << "@" << fullName();
+    os << "@" << getFullName();
     if (!keyv.empty())
     {
         os << "(";
@@ -170,7 +170,7 @@ void cProperty::setIndex(const char *index)
     propfullname = NULL;
 }
 
-const char *cProperty::index() const
+const char *cProperty::getIndex() const
 {
     return propindex;
 }
@@ -197,7 +197,7 @@ int cProperty::findKey(const char *key) const
     return -1;
 }
 
-const std::vector<const char *>& cProperty::keys() const
+const std::vector<const char *>& cProperty::getKeys() const
 {
     return keyv;
 }
@@ -219,7 +219,7 @@ void cProperty::addKey(const char *key)
     }
 }
 
-cProperty::CharPtrVector& cProperty::valuesVector(const char *key) const
+cProperty::CharPtrVector& cProperty::getValuesVector(const char *key) const
 {
     if (!key)
         key = "";
@@ -229,9 +229,9 @@ cProperty::CharPtrVector& cProperty::valuesVector(const char *key) const
     return const_cast<CharPtrVector&>(valuesv[k]);
 }
 
-int cProperty::numValues(const char *key) const
+int cProperty::getNumValues(const char *key) const
 {
-    CharPtrVector& v = valuesVector(key);
+    CharPtrVector& v = getValuesVector(key);
     return v.size();
 }
 
@@ -239,7 +239,7 @@ void cProperty::setNumValues(const char *key, int size)
 {
     if (isLocked())
         throw cRuntimeError(this, eLOCKED);
-    CharPtrVector& v = valuesVector(key);
+    CharPtrVector& v = getValuesVector(key);
     int oldsize = v.size();
 
     // if shrink, release extra elements
@@ -256,7 +256,7 @@ void cProperty::setNumValues(const char *key, int size)
 
 const char *cProperty::value(const char *key, int k) const
 {
-    CharPtrVector& v = valuesVector(key);
+    CharPtrVector& v = getValuesVector(key);
     if (k<0 || k>=(int)v.size())
         return "";
     return v[k];
@@ -268,7 +268,7 @@ void cProperty::setValue(const char *key, int k, const char *value)
         throw cRuntimeError(this, eLOCKED);
     if (!value)
         value = "";
-    CharPtrVector& v = valuesVector(key);
+    CharPtrVector& v = getValuesVector(key);
     if (k<0)
         throw cRuntimeError(this, "negative property value index %d for key `%s'", k, key);
     if (k>=(int)v.size())

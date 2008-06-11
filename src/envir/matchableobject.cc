@@ -37,9 +37,9 @@ const char *MatchableObjectAdapter::getDefaultAttribute() const
 {
     switch (attr)
     {
-        case FULLPATH:  tmp = obj->fullPath(); return tmp.c_str();
-        case FULLNAME:  return obj->fullName();
-        case CLASSNAME: return obj->className();
+        case FULLPATH:  tmp = obj->getFullPath(); return tmp.c_str();
+        case FULLNAME:  return obj->getFullName();
+        case CLASSNAME: return obj->getClassName();
         default: throw opp_runtime_error("unknown setting for default attribute");
     }
 }

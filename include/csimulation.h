@@ -60,7 +60,7 @@ SIM_API extern cSimulation simulation;
  * libraries (Envir, Cmdenv, Tkenv) to set up and run simulations).
  *
  * Some methods which can be of interest when programming simple modules:
- * getUniqueNumber(), moduleByPath(), module(), snapshot().
+ * getUniqueNumber(), getModuleByPath(), getModule(), snapshot().
  *
  * @ingroup SimCore
  * @ingroup Internals
@@ -95,7 +95,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
   public:
     // internal: FES
     cMessageHeap msgQueue;     // future messages (FES)
-    cMessageHeap& messageQueue() {return msgQueue;}  // accessor for sim_std.msg
+    cMessageHeap& getMessageQueue() {return msgQueue;}  // accessor for sim_std.msg
 
     // internal: things that cannot be done from the constructor of global object
     void init();
@@ -128,7 +128,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
      */
-    virtual std::string fullPath() const;
+    virtual std::string getFullPath() const;
     //@}
 
     /** @name Accessing modules. */
@@ -151,23 +151,23 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     /**
      * Returns highest used module ID.
      */
-    int lastModuleId() const    {return last_id;}
+    int getLastModuleId() const    {return last_id;}
 
     /**
      * Finds a module by its path. Inclusion of the name of the toplevel module
      * in the path is optional. Returns NULL if not found.
      */
-    cModule *moduleByPath(const char *modulepath) const;
+    cModule *getModuleByPath(const char *modulepath) const;
 
     /**
      * Looks up a module by ID. If the module doesn't exist, returns NULL.
      */
-    cModule *module(int id) const  {return id>=0 && id<size ? vect[id] : NULL;}
+    cModule *getModule(int id) const  {return id>=0 && id<size ? vect[id] : NULL;}
 
     /**
-     * DEPRECATED because it might return null reference; use module(int) instead.
+     * DEPRECATED because it might return null reference; use getModule(int) instead.
      *
-     * Same as module(int), only this returns reference instead of pointer.
+     * Same as getModule(int), only this returns reference instead of pointer.
      */
     _OPPDEPRECATED cModule& operator[](int id) const  {return id>=0 && id<size ? *vect[id] : *(cModule *)NULL;}
 
@@ -179,7 +179,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     /**
      * Returns pointer to the system module, the top-level module in the model.
      */
-    cModule *systemModule() const  {return systemmodp;}
+    cModule *getSystemModule() const  {return systemmodp;}
     //@}
 
     /** @name Setting up and finishing a simulation run. */
@@ -194,7 +194,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     /**
      * Returns the scheduler object.
      */
-    cScheduler *scheduler() const  {return schedulerp;}
+    cScheduler *getScheduler() const  {return schedulerp;}
 
     /**
      * Load all NED files from a NED source folder. This involves visiting
@@ -275,7 +275,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Returns the cModuleType object that was instantiated to set up
      * the current simulation model.
      */
-    cModuleType *networkType() const  {return networktype;}
+    cModuleType *getNetworkType() const  {return networktype;}
 
     /**
      * WARNING: INTERNAL USE ONLY. This method should NEVER be invoked from
@@ -292,7 +292,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     /**
      * Returns sequence number of current event.
      */
-    long eventNumber() const  {return event_num;}
+    long getEventNumber() const  {return event_num;}
     //@}
 
     /** @name Scheduling and context switching during simulation. */
@@ -354,7 +354,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * returned by selectNextModule(); that is, the module
      * to which the next event (lowest timestamp event in
      * the FES) belongs. Also increments the event number
-     * (returned by eventNumber()).
+     * (returned by getEventNumber()).
      */
     void doOneEvent(cSimpleModule *m);
 
@@ -396,32 +396,32 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Returns NULL if no module is running, or the current module uses
      * handleMessage().
      */
-    cSimpleModule *activityModule() const {return activitymodp;}
+    cSimpleModule *getActivityModule() const {return activitymodp;}
 
     /**
      * Returns the component (module or channel) currently in context.
      */
-    cComponent *context() const {return contextmodp;}
+    cComponent *getContext() const {return contextmodp;}
 
     /**
-     * Returns value only valid if contextModule()!=NULL. Returns one of:
+     * Returns value only valid if getContextModule()!=NULL. Returns one of:
      * CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH depending on
      * what the module in context is doing.
      */
-    int contextType() const {return contexttype;}
+    int getContextType() const {return contexttype;}
 
     /**
      * If the current context is a module, returns its pointer,
      * otherwise returns NULL.
      */
-    cModule *contextModule() const;
+    cModule *getContextModule() const;
 
     /**
      * Returns the module currently in context as a simple module.
      * If the module in context is not a simple module, returns NULL.
-     * This is a convenience function which simply calls contextModule().
+     * This is a convenience function which simply calls getContextModule().
      */
-    cSimpleModule *contextSimpleModule() const;
+    cSimpleModule *getContextSimpleModule() const;
     //@}
 
     /** @name Miscellaneous. */
@@ -445,7 +445,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
      * Returns the object used for fingerprint calculation. It returns NULL
      * if no fingerprint is being calculated during this simulation run.
      */
-    cHasher *hasher() {return hasherp;}
+    cHasher *getHasher() {return hasherp;}
 
     /**
      * Installs a new hasher object, used for fingerprint calculation.

@@ -58,8 +58,8 @@ class SCAVE_API ArrayBuilderNodeType : public SingleSinkNodeType
 {
     friend class ArrayBuilderNode;
     public:
-        virtual const char *name() const {return "arraybuilder";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "arraybuilder";}
+        virtual const char *getDescription() const;
         virtual bool isHidden() const {return true;}
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;

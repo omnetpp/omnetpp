@@ -75,8 +75,8 @@ class SCAVE_API IndexedVectorFileReaderNode2 : public ReaderNode
 class SCAVE_API IndexedVectorFileReaderNode2Type : public ReaderNodeType
 {
     public:
-        virtual const char *name() const {return "indexedvectorfilereader2";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "indexedvectorfilereader2";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual Port *getPort(Node *node, const char *portname) const;

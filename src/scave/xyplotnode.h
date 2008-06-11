@@ -57,9 +57,9 @@ class SCAVE_API XYPlotNode : public Node
 class SCAVE_API XYPlotNodeType : public NodeType
 {
     public:
-        virtual const char *name() const {return "xyplot";}
-        virtual const char *category() const {return "merger";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "xyplot";}
+        virtual const char *getCategory() const {return "merger";}
+        virtual const char *getDescription() const;
         virtual bool isHidden() const {return true;}
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

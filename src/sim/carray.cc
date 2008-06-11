@@ -34,8 +34,8 @@ Register_Class(cArray);
 
 
 //XXX this needs to be tested (test suite!) with:
-// 1) non-cOwnedObject objects, where owner() returns NULL
-// 2) non-cOwnedObject objects, where owner()!=NULL (and possible the array)
+// 1) non-cOwnedObject objects, where getOwner() returns NULL
+// 2) non-cOwnedObject objects, where getOwner()!=NULL (and possible the array)
 // 3) cOwnedObject objects with takeownership==false
 // 4) cOwnedObject objects with takeownership==true
 
@@ -90,7 +90,7 @@ cArray::cArray(const cArray& list) : cOwnedObject()
 {
     vect=NULL;
     last=-1;
-    setName( list.name() );
+    setName( list.getName() );
     operator=(list);
 }
 
@@ -132,7 +132,7 @@ cArray& cArray::operator=(const cArray& list)
     memcpy(vect, list.vect, capacity * sizeof(cObject *));
 
     for (int i=0; i<=last; i++)
-        if (vect[i] && vect[i]->isOwnedObject() && vect[i]->owner()==const_cast<cArray*>(&list))
+        if (vect[i] && vect[i]->isOwnedObject() && vect[i]->getOwner()==const_cast<cArray*>(&list))
             take((cOwnedObject *)(vect[i] = vect[i]->dup()));
     return *this;
 }
@@ -169,7 +169,7 @@ void cArray::netPack(cCommBuffer *buffer)
     {
         if (buffer->packFlag(vect[i]!=NULL))
         {
-            if (vect[i]->owner() != this)
+            if (vect[i]->getOwner() != this)
                 throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
             buffer->packObject(vect[i]);
         }
@@ -209,7 +209,7 @@ void cArray::clear()
 {
     for (int i=0; i<=last; i++)
     {
-        if (vect[i] && vect[i]->isOwnedObject() && vect[i]->owner()==this)
+        if (vect[i] && vect[i]->isOwnedObject() && vect[i]->getOwner()==this)
             dropAndDelete((cOwnedObject *)vect[i]);
         vect[i] = NULL;  // this is not strictly necessary
     }
@@ -223,7 +223,7 @@ int cArray::add(cObject *obj)
         throw cRuntimeError(this,"cannot insert NULL pointer");
 
     int retval;
-    if (obj->isOwnedObject() && takeOwnership())
+    if (obj->isOwnedObject() && getTakeOwnership())
         take((cOwnedObject *)obj);
     if (firstfree < capacity)  // fits in current vector
     {
@@ -261,7 +261,7 @@ int cArray::addAt(int m, cObject *obj)
         if (vect[m]!=NULL)
             throw cRuntimeError(this,"addAt(): position %d already used",m);
         vect[m] = obj;
-        if (obj->isOwnedObject() && takeOwnership())
+        if (obj->isOwnedObject() && getTakeOwnership())
             take((cOwnedObject *)obj);
         last = Max(m,last);
         if (firstfree==m)
@@ -277,7 +277,7 @@ int cArray::addAt(int m, cObject *obj)
         delete [] vect;
         vect = v;
         vect[m] = obj;
-        if (obj->isOwnedObject() && takeOwnership())
+        if (obj->isOwnedObject() && getTakeOwnership())
             take((cOwnedObject *)obj);
         capacity = m+delta;
         last = m;
@@ -292,17 +292,17 @@ int cArray::set(cObject *obj)
     if (!obj)
         throw cRuntimeError(this,"cannot insert NULL pointer");
 
-    int i = find(obj->name());
+    int i = find(obj->getName());
     if (i<0)
     {
         return add(obj);
     }
     else
     {
-        if (vect[i]->isOwnedObject() && vect[i]->owner()==this)
+        if (vect[i]->isOwnedObject() && vect[i]->getOwner()==this)
             dropAndDelete((cOwnedObject *)vect[i]);
         vect[i] = obj;
-        if (obj->isOwnedObject() && takeOwnership())
+        if (obj->isOwnedObject() && getTakeOwnership())
             take((cOwnedObject *)obj);
         return i;
     }
@@ -393,7 +393,7 @@ cObject *cArray::remove(int m)
         do {
             last--;
         } while (last>=0 && vect[last]==NULL);
-    if (obj->isOwnedObject() && obj->owner()==this)
+    if (obj->isOwnedObject() && obj->getOwner()==this)
         drop((cOwnedObject *)obj);
     return obj;
 }

@@ -47,7 +47,7 @@ cParsimPartition::cParsimPartition()
     sim = NULL;
     comm = NULL;
     synch = NULL;
-    debug = ev.config()->getAsBool(CFGID_PARSIM_DEBUG);
+    debug = ev.getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 }
 
 cParsimPartition::~cParsimPartition()
@@ -89,9 +89,9 @@ void cParsimPartition::connectRemoteGates()
     // Step 1: broadcast what input gates we have that have to be connected
     //
     ev << "connecting remote gates: step 1 - broadcasting input gates...\n";
-    for (int modId=0; modId<=sim->lastModuleId(); modId++)
+    for (int modId=0; modId<=sim->getLastModuleId(); modId++)
     {
-        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->module(modId));
+        cPlaceholderModule *mod = dynamic_cast<cPlaceholderModule *>(sim->getModule(modId));
         if (mod)
         {
             for (cModule::GateIterator i(mod); !i.end(); i++)
@@ -99,17 +99,17 @@ void cParsimPartition::connectRemoteGates()
                 cGate *g = i();
                 // if this is a normal output gate which leads to a simple module,
                 // send the input gate where it is connected.
-                if (g->type()==cGate::OUTPUT && g->toGate() &&
-                    g->destinationGate()->ownerModule()->isSimple())
+                if (g->getType()==cGate::OUTPUT && g->getToGate() &&
+                    g->getDestinationGate()->getOwnerModule()->isSimple())
                 {
-                    cGate *ing = g->toGate();
+                    cGate *ing = g->getToGate();
                     // pack gate "address" here
-                    buffer->pack(ing->ownerModule()->id());
-                    buffer->pack(ing->id());
+                    buffer->pack(ing->getOwnerModule()->getId());
+                    buffer->pack(ing->getId());
                     // pack gate name
-                    buffer->pack(ing->ownerModule()->fullPath().c_str());
-                    buffer->pack(ing->name());
-                    buffer->pack(ing->index());
+                    buffer->pack(ing->getOwnerModule()->getFullPath().c_str());
+                    buffer->pack(ing->getName());
+                    buffer->pack(ing->getIndex());
                 }
             }
         }
@@ -152,7 +152,7 @@ void cParsimPartition::connectRemoteGates()
 
             // find corresponding output gate (if we have it) and set remote
             // gate address to the received one
-            cModule *m = sim->moduleByPath(moduleFullPath);
+            cModule *m = sim->getModuleByPath(moduleFullPath);
             cGate *g = m ? m->gate(gateName,gateIndex) : NULL;
             cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
 
@@ -179,8 +179,8 @@ void cParsimPartition::connectRemoteGates()
 
 void cParsimPartition::processOutgoingMessage(cMessage *msg, int procId, int moduleId, int gateId, void *data)
 {
-    if (debug) ev << "sending message '" << msg->fullName() << "' (for T=" <<
-                 msg->arrivalTime() << " to procId=" << procId << "\n";
+    if (debug) ev << "sending message '" << msg->getFullName() << "' (for T=" <<
+                 msg->getArrivalTime() << " to procId=" << procId << "\n";
 
     synch->processOutgoingMessage(msg, procId, moduleId, gateId, data);
 }
@@ -206,24 +206,24 @@ void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int s
 void cParsimPartition::processReceivedMessage(cMessage *msg, int destModuleId, int destGateId, int sourceProcId)
 {
     msg->setSrcProcId(sourceProcId);
-    cModule *mod = sim->module(destModuleId);
+    cModule *mod = sim->getModule(destModuleId);
     if (!mod)
         throw cRuntimeError("parallel simulation error: destination module id=%d for message \"%s\""
                              "from partition %d does not exist (any longer)",
-                             destModuleId, msg->name(), sourceProcId);
+                             destModuleId, msg->getName(), sourceProcId);
     cGate *g = mod->gate(destGateId);
     if (!g)
         throw cRuntimeError("parallel simulation error: destination gate %d of module id=%d "
                              "for message \"%s\" from partition %d does not exist",
-                             destGateId, destModuleId, msg->name(), sourceProcId);
+                             destGateId, destModuleId, msg->getName(), sourceProcId);
 
     // do our best to set the source gate (the gate of a cPlaceholderModule)
-    cGate *srcg = g->sourceGate();
-    msg->setSentFrom(srcg->ownerModule(), srcg->id(), msg->sendingTime());
+    cGate *srcg = g->getSourceGate();
+    msg->setSentFrom(srcg->getOwnerModule(), srcg->getId(), msg->getSendingTime());
 
     // deliver it to the "destination" gate of the connection -- the channel
     // has already been simulated in the originating partition.
-    g->deliver(msg, msg->arrivalTime());
+    g->deliver(msg, msg->getArrivalTime());
     ev.messageSent_OBSOLETE(msg); //FIXME change to the newer callback methods! messageSendHop() etc
 }
 

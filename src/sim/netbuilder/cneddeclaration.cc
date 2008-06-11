@@ -42,7 +42,7 @@ cNEDDeclaration::~cNEDDeclaration()
     clearPropsMap(submodulePropsMap);
     clearPropsMap(connectionPropsMap);
 
-    //XXX printf("%s: %d cached expressions\n", name(), parimplMap.size());
+    //XXX printf("%s: %d cached expressions\n", getName(), parimplMap.size());
     clearSharedParImplMap(parimplMap);
 }
 
@@ -83,11 +83,11 @@ cProperties *cNEDDeclaration::getFromPropsMap(const StringPropsMap& propsMap, co
     return it==propsMap.end() ? NULL : it->second;
 }
 
-cProperties *cNEDDeclaration::properties() const
+cProperties *cNEDDeclaration::getProperties() const
 {
     cProperties *props = doProperties();
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties", fullName());
+        throw cRuntimeError("Internal error in NED type `%s': no properties", getFullName());
     return props;
 }
 
@@ -106,11 +106,11 @@ cProperties *cNEDDeclaration::doProperties() const
     return props;
 }
 
-cProperties *cNEDDeclaration::paramProperties(const char *paramName) const
+cProperties *cNEDDeclaration::getParamProperties(const char *paramName) const
 {
     cProperties *props = doParamProperties(paramName);
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties for parameter %s", fullName(), paramName);
+        throw cRuntimeError("Internal error in NED type `%s': no properties for parameter %s", getFullName(), paramName);
     return props;
 }
 
@@ -134,11 +134,11 @@ cProperties *cNEDDeclaration::doParamProperties(const char *paramName) const
     return props;
 }
 
-cProperties *cNEDDeclaration::gateProperties(const char *gateName) const
+cProperties *cNEDDeclaration::getGateProperties(const char *gateName) const
 {
     cProperties *props = doGateProperties(gateName);
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties for gate %s", fullName(), gateName);
+        throw cRuntimeError("Internal error in NED type `%s': no properties for gate %s", getFullName(), gateName);
     return props;
 }
 
@@ -162,11 +162,11 @@ cProperties *cNEDDeclaration::doGateProperties(const char *gateName) const
     return props;
 }
 
-cProperties *cNEDDeclaration::submoduleProperties(const char *submoduleName, const char *submoduleType) const
+cProperties *cNEDDeclaration::getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
     cProperties *props = doSubmoduleProperties(submoduleName, submoduleType);
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties for submodule %s, type %s", fullName(), submoduleName, submoduleType);
+        throw cRuntimeError("Internal error in NED type `%s': no properties for submodule %s, type %s", getFullName(), submoduleName, submoduleType);
     return props;
 
 }
@@ -182,7 +182,7 @@ cProperties *cNEDDeclaration::doSubmoduleProperties(const char *submoduleName, c
     if (numExtendsNames()!=0)
         props = getSuperDecl()->doSubmoduleProperties(submoduleName, submoduleType);
     if (!props)
-        props = cNEDLoader::instance()->getDecl(submoduleType)->properties();
+        props = cNEDLoader::getInstance()->getDecl(submoduleType)->getProperties();
 
     // update with local properties
     NEDElement *subcomponentNode = getSubmoduleElement(submoduleName);
@@ -194,11 +194,11 @@ cProperties *cNEDDeclaration::doSubmoduleProperties(const char *submoduleName, c
     return props;
 }
 
-cProperties *cNEDDeclaration::connectionProperties(int connectionId, const char *channelType) const
+cProperties *cNEDDeclaration::getConnectionProperties(int connectionId, const char *channelType) const
 {
     cProperties *props = doConnectionProperties(connectionId, channelType);
     if (!props)
-        throw cRuntimeError("Internal error in NED type `%s': no properties for connection with id=%d type=%s", fullName(), connectionId, channelType);
+        throw cRuntimeError("Internal error in NED type `%s': no properties for connection with id=%d type=%s", getFullName(), connectionId, channelType);
     return props;
 }
 
@@ -214,7 +214,7 @@ cProperties *cNEDDeclaration::doConnectionProperties(int connectionId, const cha
     if (numExtendsNames()!=0)
         props = getSuperDecl()->doConnectionProperties(connectionId, channelType);
     if (!props)
-        props = cNEDLoader::instance()->getDecl(channelType)->properties();
+        props = cNEDLoader::getInstance()->getDecl(channelType)->getProperties();
 
     // update with local properties
     NEDElement *connectionNode = getConnectionElement(connectionId);
@@ -302,7 +302,7 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     // if old display string is empty, just set it
     if (!prop->hasKey(cProperty::DEFAULTKEY))
         prop->addKey(cProperty::DEFAULTKEY);
-    if (prop->numValues(cProperty::DEFAULTKEY)==0)
+    if (prop->getNumValues(cProperty::DEFAULTKEY)==0)
     {
         prop->setValue(cProperty::DEFAULTKEY, 0, newdisplaystring);
         return;

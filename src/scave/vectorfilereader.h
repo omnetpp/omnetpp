@@ -67,8 +67,8 @@ class SCAVE_API VectorFileReaderNode : public ReaderNode
 class SCAVE_API VectorFileReaderNodeType : public ReaderNodeType
 {
     public:
-        virtual const char *name() const {return "vectorfilereader";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "vectorfilereader";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
         virtual Port *getPort(Node *node, const char *portname) const;

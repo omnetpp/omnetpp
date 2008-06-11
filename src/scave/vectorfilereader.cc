@@ -161,7 +161,7 @@ void VectorFileReaderNode::process()
 
                 // write to port(s)
                 for (PortVector::iterator p=portvec->second.begin(); p!=portvec->second.end(); ++p)
-                    p->channel()->write(&a,1);
+                    p->getChannel()->write(&a,1);
 
                 //DBG(("vectorfilereader: written id=%d (%ld,%g,%g)\n", vectorId, a.eventNumber, a.x, a.y));
             }
@@ -180,7 +180,7 @@ bool VectorFileReaderNode::finished() const
 
 //-----
 
-const char *VectorFileReaderNodeType::description() const
+const char *VectorFileReaderNodeType::getDescription() const
 {
     return "Reads output vector files.";
 }

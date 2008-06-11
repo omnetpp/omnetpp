@@ -139,9 +139,9 @@ void cSimulation::forEachChild(cVisitor *v)
     v->visit(&msgQueue);
 }
 
-std::string cSimulation::fullPath() const
+std::string cSimulation::getFullPath() const
 {
-    return fullName();
+    return getFullName();
 }
 
 static std::string xmlquote(const std::string& str)
@@ -174,7 +174,7 @@ class cSnapshotWriterVisitor : public cVisitor
     }
     virtual void visit(cObject *obj) {
         std::string indent(2*indentlevel, ' ');
-        os << indent << "<object class=\"" << obj->className() << "\" fullpath=\"" << xmlquote(obj->fullPath()) << "\">\n";
+        os << indent << "<object class=\"" << obj->getClassName() << "\" fullpath=\"" << xmlquote(obj->getFullPath()) << "\">\n";
         os << indent << "  <info>" << xmlquote(obj->info()) << "</info>\n";
         std::string details = obj->detailedInfo();
         if (!details.empty())
@@ -201,10 +201,10 @@ bool cSimulation::snapshot(cObject *object, const char *label)
 
     os << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
     os << "<snapshot\n";
-    os << "    object=\"" << xmlquote(object->fullPath()) << "\"\n";
+    os << "    object=\"" << xmlquote(object->getFullPath()) << "\"\n";
     os << "    label=\"" << xmlquote(label?label:"") << "\"\n";
     os << "    simtime=\"" << xmlquote(SIMTIME_STR(simTime())) << "\"\n";
-    os << "    network=\"" << xmlquote(networktype?networktype->name():"") << "\"\n";
+    os << "    network=\"" << xmlquote(networktype?networktype->getName():"") << "\"\n";
     os << "    >\n";
 
     cSnapshotWriterVisitor v(os);
@@ -223,18 +223,18 @@ bool cSimulation::snapshot(cObject *object, const char *label)
 static void writemodule( ostream& os, cModule& m, int indent )
 {
     static char sp[] = "                                                 ";
-    os << (sp+sizeof(sp)-indent) << "`" << m.fullName() << "'";
-    os << " id=" << m.id() << " ";
+    os << (sp+sizeof(sp)-indent) << "`" << m.getFullName() << "'";
+    os << " id=" << m.getId() << " ";
     //os <<  (m.isSimple() ? "simple" : "compound");
-    os <<  "(" << m.moduleType()->name() << ")\n";
+    os <<  "(" << m.getModuleType()->getName() << ")\n";
 }
 
 static void writesubmodules(ostream& os, cModule *p, int indent )
 {
     writemodule( os, *p, indent );
-    for (int i=0; i<=simulation.lastModuleId(); i++)
-        if (simulation.module(i) && p==simulation.module(i)->parentModule())
-            writesubmodules(os, simulation.module(i), indent+4 );
+    for (int i=0; i<=simulation.getLastModuleId(); i++)
+        if (simulation.getModule(i) && p==simulation.getModule(i)->getParentModule())
+            writesubmodules(os, simulation.getModule(i), indent+4 );
 }
 
 void cSimulation::setScheduler(cScheduler *sched)
@@ -247,7 +247,7 @@ void cSimulation::setScheduler(cScheduler *sched)
 void cSimulation::loadNedFile(const char *nedfile, const char *expectedPackage, bool isXML)
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::instance()->loadNedFile(nedfile, expectedPackage, isXML);
+    cNEDLoader::getInstance()->loadNedFile(nedfile, expectedPackage, isXML);
 #else
     throw cRuntimeError("cannot load `%s': simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
@@ -257,7 +257,7 @@ void cSimulation::loadNedFile(const char *nedfile, const char *expectedPackage, 
 int cSimulation::loadNedSourceFolder(const char *folder)
 {
 #ifdef WITH_NETBUILDER
-    return cNEDLoader::instance()->loadNedSourceFolder(folder);
+    return cNEDLoader::getInstance()->loadNedSourceFolder(folder);
 #else
     throw cRuntimeError("cannot load NED files from `%s': simulation kernel was compiled without "
                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", folder);
@@ -267,7 +267,7 @@ int cSimulation::loadNedSourceFolder(const char *folder)
 std::string cSimulation::getNedPackageForFolder(const char *folder) const
 {
 #ifdef WITH_NETBUILDER
-    return cNEDLoader::instance()->getNedPackageForFolder(folder);
+    return cNEDLoader::getInstance()->getNedPackageForFolder(folder);
 #else
     return "-";
 #endif
@@ -276,7 +276,7 @@ std::string cSimulation::getNedPackageForFolder(const char *folder) const
 void cSimulation::doneLoadingNedFiles()
 {
 #ifdef WITH_NETBUILDER
-    cNEDLoader::instance()->doneLoadingNedFiles();
+    cNEDLoader::getInstance()->doneLoadingNedFiles();
 #endif
 }
 
@@ -305,7 +305,7 @@ int cSimulation::registerModule(cModule *mod)
 
 void cSimulation::deregisterModule(cModule *mod)
 {
-    int id = mod->id();
+    int id = mod->getId();
     vect[id] = NULL;
 
     if (mod==systemmodp)
@@ -321,14 +321,14 @@ void cSimulation::setSystemModule(cModule *p)
     take(p);
 }
 
-cModule *cSimulation::moduleByPath(const char *path) const
+cModule *cSimulation::getModuleByPath(const char *path) const
 {
     // start tokenizing the path (path format: "SysModule.DemandGen[2].Source")
     opp_string pathbuf(path);
     char *s = strtok(pathbuf.buffer(),".");
 
     // search starts from system module
-    cModule *modp = systemModule();
+    cModule *modp = getSystemModule();
     if (!modp) return NULL;
 
     // 1st component in the path may be the system module, skip it then
@@ -341,14 +341,14 @@ cModule *cSimulation::moduleByPath(const char *path) const
         char *b;
         if ((b=strchr(s,'['))==NULL)
         {
-            modp = modp->submodule(s);  // no index given
+            modp = modp->getSubmodule(s);  // no index given
         }
         else
         {
             if (s[strlen(s)-1]!=']')
-                throw cRuntimeError("moduleByPath(): syntax error in path `%s'", path);
+                throw cRuntimeError("getModuleByPath(): syntax error in path `%s'", path);
             *b='\0';
-            modp = modp->submodule(s,atoi(b+1));
+            modp = modp->getSubmodule(s,atoi(b+1));
         }
         s = strtok(NULL,".");
     }
@@ -359,7 +359,7 @@ cModule *cSimulation::moduleByPath(const char *path) const
 void cSimulation::setupNetwork(cModuleType *network)
 {
 #ifdef DEVELOPER_DEBUG
-    printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::liveObjectCount());
+    printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
     objectlist.clear();
 #endif
     if (!network)
@@ -375,7 +375,7 @@ void cSimulation::setupNetwork(cModuleType *network)
     {
         // set up the network by instantiating the toplevel module
         cContextTypeSwitcher tmp(CTX_BUILD);
-        cModule *mod = networktype->create(networktype->name(), NULL);
+        cModule *mod = networktype->create(networktype->getName(), NULL);
         mod->finalizeParameters();
         mod->buildInside();
     }
@@ -393,7 +393,7 @@ void cSimulation::setupNetwork(cModuleType *network)
     //    throw cRuntimeError("unknown exception occurred");
     //}
 
-    printf("setupNetwork finished, cParImpl objects in use: %ld\n", cParImpl::liveParImplObjectCount()); //XXX
+    printf("setupNetwork finished, cParImpl objects in use: %ld\n", cParImpl::getLiveParImplObjectCount()); //XXX
 }
 
 void cSimulation::startRun()
@@ -441,7 +441,7 @@ void cSimulation::deleteNetwork()
     if (!systemmodp)
         return;  // network already deleted
 
-    if (contextModule()!=NULL)
+    if (getContextModule()!=NULL)
         throw cRuntimeError("Attempt to delete network during simulation");
 
     // delete all modules recursively
@@ -466,7 +466,7 @@ void cSimulation::deleteNetwork()
     msgQueue.clear();
 
 #ifdef DEVELOPER_DEBUG
-    printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::liveObjectCount());
+    printf("DEBUG: after deleteNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
     printAllObjects();
 #endif
 
@@ -481,7 +481,7 @@ cSimpleModule *cSimulation::selectNextModule()
         return NULL; // scheduler got interrupted while waiting
 
     // check if destination module exists and is still running
-    cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
+    cSimpleModule *modp = (cSimpleModule *)vect[msg->getArrivalModuleId()];
     if (!modp || modp->isTerminated())
     {
         // Deleted/ended modules may have self-messages and sent messages
@@ -497,7 +497,7 @@ cSimpleModule *cSimulation::selectNextModule()
     }
 
     // advance simulation time
-    sim_time = msg->arrivalTime();
+    sim_time = msg->getArrivalTime();
 
     return modp;
 }
@@ -513,7 +513,7 @@ cMessage *cSimulation::guessNextEvent()
 simtime_t cSimulation::guessNextSimtime()
 {
     cMessage *msg = guessNextEvent();
-    return msg==NULL ? -1 : msg->arrivalTime();
+    return msg==NULL ? -1 : msg->getArrivalTime();
 }
 
 cSimpleModule *cSimulation::guessNextModule()
@@ -523,9 +523,9 @@ cSimpleModule *cSimulation::guessNextModule()
         return NULL;
 
     // check if dest module exists and still running
-    if (msg->arrivalModuleId()==-1)
+    if (msg->getArrivalModuleId()==-1)
         return NULL;
-    cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
+    cSimpleModule *modp = (cSimpleModule *)vect[msg->getArrivalModuleId()];
     if (!modp || modp->isTerminated())
         return NULL;
     return modp;
@@ -541,10 +541,10 @@ void cSimulation::transferTo(cSimpleModule *modp)
     activitymodp = modp;
     cCoroutine::switchTo(modp->coroutine);
 
-    if (modp->stackOverflow())
+    if (modp->hasStackOverflow())
         throw cRuntimeError("Stack violation in module (%s)%s: module stack too small? "
                             "Try increasing it in the class' Module_Class_Members() or constructor",
-                            modp->className(), modp->fullPath().c_str());
+                            modp->getClassName(), modp->getFullPath().c_str());
 
     // if exception occurred in activity(), re-throw it. This allows us to handle
     // handleMessage() and activity() in an uniform way in the upper layer.
@@ -588,11 +588,11 @@ void cSimulation::doOneEvent(cSimpleModule *mod)  //FIXME why do we need the cSi
     setContext(mod);
     setContextType(CTX_EVENT);
 
-    if (hasher())
+    if (getHasher())
     {
-        // note: there's probably no value in adding eventNumber()
-        hasher()->add(SIMTIME_RAW(simTime()));
-        hasher()->add(mod->id());
+        // note: there's probably no value in adding getEventNumber()
+        getHasher()->add(SIMTIME_RAW(simTime()));
+        getHasher()->add(mod->getId());
         //XXX msg id too?
     }
 
@@ -665,7 +665,7 @@ void cSimulation::setContext(cComponent *p)
     cOwnedObject::setDefaultOwner(p);
 }
 
-cModule *cSimulation::contextModule() const
+cModule *cSimulation::getContextModule() const
 {
     // cannot go inline (upward cast would require including cmodule.h in csimulation.h)
     if (!contextmodp || !contextmodp->isModule())
@@ -673,7 +673,7 @@ cModule *cSimulation::contextModule() const
     return (cModule *)contextmodp;
 }
 
-cSimpleModule *cSimulation::contextSimpleModule() const
+cSimpleModule *cSimulation::getContextSimpleModule() const
 {
     // cannot go inline (upward cast would require including cmodule.h in csimulation.h)
     if (!contextmodp || !contextmodp->isModule() || !((cModule *)contextmodp)->isSimple())

@@ -138,13 +138,13 @@ class SIM_API cPacketQueue : public cQueue
      * Returns the total size of the messages in the queue, in bits.
      * This is the sum of the message lengths; see cMessage::length().
      */
-    int64 bitLength() const  {return bitlength;}
+    int64 getBitLength() const  {return bitlength;}
 
     /**
-     * Returns the sum of the message lengths in bytes, that is, bitLength()/8.
-     * If bitLength() is not a multiple of 8, the result is rounded up.
+     * Returns the sum of the message lengths in bytes, that is, getBitLength()/8.
+     * If getBitLength() is not a multiple of 8, the result is rounded up.
      */
-    int64 byteLength() const  {return (bitlength+7)>>3;}
+    int64 getByteLength() const  {return (bitlength+7)>>3;}
 
     /**
      * Returns pointer to the object at the front of the queue.

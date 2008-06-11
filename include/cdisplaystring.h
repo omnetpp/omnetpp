@@ -181,7 +181,7 @@ class SIM_API cDisplayString
     /**
      * Returns true if the stored display string contains the given tag.
      */
-    bool existsTag(const char *tagname) const;
+    bool containsTag(const char *tagname) const;
 
     /**
      * Returns the number of arguments a tag actually has in the display

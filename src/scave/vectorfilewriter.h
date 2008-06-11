@@ -65,9 +65,9 @@ class SCAVE_API VectorFileWriterNode : public Node
 class SCAVE_API VectorFileWriterNodeType : public NodeType
 {
     public:
-        virtual const char *name() const {return "vectorfilewriter";}
-        virtual const char *category() const {return "multi-port sink";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "vectorfilewriter";}
+        virtual const char *getCategory() const {return "multi-port sink";}
+        virtual const char *getDescription() const;
         virtual bool isHidden() const {return true;}
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

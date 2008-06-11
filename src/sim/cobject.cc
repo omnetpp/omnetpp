@@ -31,7 +31,7 @@ cObject::~cObject()
     ev.objectDeleted(this);
 }
 
-const char *cObject::className() const
+const char *cObject::getClassName() const
 {
     return opp_typename(typeid(*this));
 }
@@ -41,12 +41,12 @@ cClassDescriptor *cObject::getDescriptor()
     return cClassDescriptor::getDescriptorFor(this);
 }
 
-std::string cObject::fullPath() const
+std::string cObject::getFullPath() const
 {
-    if (owner()==NULL)
-        return fullName();
+    if (getOwner()==NULL)
+        return getFullName();
     else
-        return owner()->fullPath() + "." + fullName();
+        return getOwner()->getFullPath() + "." + getFullName();
 }
 
 std::string cObject::info() const
@@ -62,29 +62,29 @@ std::string cObject::detailedInfo() const
 cObject *cObject::dup() const
 {
     throw cRuntimeError("The dup() method, declared in cObject, is not "
-                        "redefined in class %s", className());
+                        "redefined in class %s", getClassName());
 }
 
 void cObject::ownedObjectDeleted(cOwnedObject *obj)
 {
-    // Note: too late to call obj->className(), at this point it'll aways return "cOwnedObject"
+    // Note: too late to call obj->getClassName(), at this point it'll aways return "cOwnedObject"
     throw cRuntimeError("Object %s is currently in (%s)%s, it cannot be deleted. "
                         "If this error occurs inside %s, it needs to be changed "
                         "to call drop() before it can delete that object. "
                         "If this error occurs inside %s's destructor and %s is a class member, "
                         "%s needs to call drop() in the destructor",
-                        obj->fullName(), className(), fullPath().c_str(),
-                        className(),
-                        className(), obj->fullName(),
-                        className());
+                        obj->getFullName(), getClassName(), getFullPath().c_str(),
+                        getClassName(),
+                        getClassName(), obj->getFullName(),
+                        getClassName());
 }
 
 void cObject::yieldOwnership(cOwnedObject *obj, cObject *newowner)
 {
     throw cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
-                        obj->className(), obj->fullName(),
-                        className(), fullPath().c_str(),
-                        newowner->className(), newowner->fullPath().c_str());
+                        obj->getClassName(), obj->getFullName(),
+                        getClassName(), getFullPath().c_str(),
+                        newowner->getClassName(), newowner->getFullPath().c_str());
 }
 
 
@@ -98,7 +98,7 @@ void cObject::drop(cOwnedObject *obj)
 {
     if (obj->ownerp!=this)
         throw cRuntimeError(this, "drop(): not owner of object (%s)%s",
-                                  obj->className(), obj->fullPath().c_str());
+                                  obj->getClassName(), obj->getFullPath().c_str());
     cOwnedObject::defaultowner->doInsert(obj);
 }
 
@@ -108,7 +108,7 @@ void cObject::dropAndDelete(cOwnedObject *obj)
         return;
     if (obj->ownerp!=this)
         throw cRuntimeError(this, "dropAndDelete(): not owner of object (%s)%s",
-                                  obj->className(), obj->fullPath().c_str());
+                                  obj->getClassName(), obj->getFullPath().c_str());
     obj->ownerp = NULL;
     delete obj;
 }

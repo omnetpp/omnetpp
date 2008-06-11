@@ -122,14 +122,14 @@ cXMLElement *cDoubleParImpl::xmlValue(cComponent *) const
     throw cRuntimeError(this, eBADCAST, "double", "XML");
 }
 
-cExpression *cDoubleParImpl::expression() const
+cExpression *cDoubleParImpl::getExpression() const
 {
     return (flags | FL_ISEXPR) ? expr : NULL;
 }
 
 double cDoubleParImpl::evaluate(cComponent *context) const
 {
-    return (flags & FL_ISEXPR) ? expr->doubleValue(context, unit()) : val;
+    return (flags & FL_ISEXPR) ? expr->doubleValue(context, getUnit()) : val;
 }
 
 void cDoubleParImpl::deleteOld()
@@ -141,7 +141,7 @@ void cDoubleParImpl::deleteOld()
     }
 }
 
-cPar::Type cDoubleParImpl::type() const
+cPar::Type cDoubleParImpl::getType() const
 {
     return cPar::DOUBLE;
 }

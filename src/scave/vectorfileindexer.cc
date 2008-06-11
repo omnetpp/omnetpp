@@ -211,7 +211,7 @@ void VectorFileIndexer::generateIndex(const char *vectorFileName, IProgressMonit
         }
 
         // finish last block
-        if (currentBlock.count() > 0)
+        if (currentBlock.getCount() > 0)
         {
             assert(currentVectorRef != NULL);
             currentBlock.size = (int64)(reader.getFileSize() - currentBlock.startOffset);
@@ -311,7 +311,7 @@ void VectorFileIndexer::rebuildVectorFile(const char *vectorFileName, IProgressM
         //
         {
             DataflowManager dataflowManager;
-            NodeTypeRegistry *registry = NodeTypeRegistry::instance();
+            NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
 
             // create reader node
             NodeType *readerNodeType = registry->getNodeType("vectorfilereader");

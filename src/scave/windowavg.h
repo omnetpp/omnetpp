@@ -43,8 +43,8 @@ class SCAVE_API WindowAverageNode : public FilterNode
 class SCAVE_API WindowAverageNodeType : public FilterNodeType
 {
     public:
-        virtual const char *name() const {return "winavg";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "winavg";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual void getAttrDefaults(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;

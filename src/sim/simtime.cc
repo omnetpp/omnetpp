@@ -53,7 +53,7 @@ void SimTime::setScaleExp(int e)
 
 static std::string range()
 {
-    return std::string("(-") + SimTime::maxTime().str() + "," + SimTime::maxTime().str() + ")";
+    return std::string("(-") + SimTime::getMaxTime().str() + "," + SimTime::getMaxTime().str() + ")";
 }
 
 void SimTime::initError(double d)

@@ -65,7 +65,7 @@ cTopology::cTopology(const char *name) : cOwnedObject(name)
 cTopology::cTopology(const cTopology& topo) : cOwnedObject()
 {
     nodev = NULL;
-    setName(topo.name());
+    setName(topo.getName());
     cTopology::operator=(topo);
 }
 
@@ -115,7 +115,7 @@ static bool selectByModulePath(cModule *mod, void *data)
 {
     // actually, this is selectByModuleFullPathPattern()
     const std::vector<std::string>& v = *(const std::vector<std::string> *)data;
-    std::string path = mod->fullPath();
+    std::string path = mod->getFullPath();
     for (int i=0; i<(int)v.size(); i++)
         if (PatternMatcher(v[i].c_str(), true, true, true).matches(path.c_str()))
             return true;
@@ -125,14 +125,14 @@ static bool selectByModulePath(cModule *mod, void *data)
 static bool selectByNedTypeName(cModule *mod, void *data)
 {
     const std::vector<std::string>& v = *(const std::vector<std::string> *)data;
-    return std::find(v.begin(), v.end(), mod->nedTypeName()) != v.end();
+    return std::find(v.begin(), v.end(), mod->getNedTypeName()) != v.end();
 }
 
 static bool selectByProperty(cModule *mod, void *data)
 {
     struct ParamData {const char *name; const char *value;};
     ParamData *d = (ParamData *)data;
-    cProperty *prop = mod->properties()->get(d->name);
+    cProperty *prop = mod->getProperties()->get(d->name);
     if (!prop)
         return false;
     const char *value = prop->hasKey(cProperty::DEFAULTKEY) ? prop->value(cProperty::DEFAULTKEY, 0) : NULL;
@@ -190,14 +190,14 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
 {
     clear();
 
-    Node *temp_nodev = new Node[simulation.lastModuleId()];
+    Node *temp_nodev = new Node[simulation.getLastModuleId()];
 
     // Loop through all modules and find those which have the required
     // parameter with the (optionally) required value.
     int k=0;
-    for (int mod_id=0; mod_id<=simulation.lastModuleId(); mod_id++)
+    for (int mod_id=0; mod_id<=simulation.getLastModuleId(); mod_id++)
     {
-        cModule *mod = simulation.module(mod_id);
+        cModule *mod = simulation.getModule(mod_id);
         if (mod && selfunc(mod,data))
         {
             // ith module is OK, insert into nodev[]
@@ -229,30 +229,30 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
         // Loop through all its gates and find those which come
         // from or go to modules included in the topology.
 
-        cModule *mod = simulation.module(nodev[k].module_id);
+        cModule *mod = simulation.getModule(nodev[k].module_id);
         cTopology::Link *temp_out_links = new cTopology::Link[mod->gateCount()];
 
         int n_out=0;
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            if (gate->type()!=cGate::OUTPUT)
+            if (gate->getType()!=cGate::OUTPUT)
                 continue;
 
             // follow path
             cGate *src_gate = gate;
             do {
-                gate = gate->toGate();
+                gate = gate->getToGate();
             }
-            while(gate && !selfunc(gate->ownerModule(),data));
+            while(gate && !selfunc(gate->getOwnerModule(),data));
 
             // if we arrived at a module in the topology, record it.
             if (gate)
             {
                 temp_out_links[n_out].src_node = nodev+k;
-                temp_out_links[n_out].src_gate = src_gate->id();
-                temp_out_links[n_out].dest_node = nodeFor(gate->ownerModule());
-                temp_out_links[n_out].dest_gate = gate->id();
+                temp_out_links[n_out].src_gate = src_gate->getId();
+                temp_out_links[n_out].dest_node = getNodeFor(gate->getOwnerModule());
+                temp_out_links[n_out].dest_gate = gate->getId();
                 temp_out_links[n_out].wgt = 1.0;
                 temp_out_links[n_out].enabl = true;
                 n_out++;
@@ -276,14 +276,14 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
     }
 }
 
-cTopology::Node *cTopology::node(int i)
+cTopology::Node *cTopology::getNode(int i)
 {
     if (i<0 || i>=num_nodes)
         throw cRuntimeError(this,"invalid node index %d",i);
     return nodev+i;
 }
 
-cTopology::Node *cTopology::nodeFor(cModule *mod)
+cTopology::Node *cTopology::getNodeFor(cModule *mod)
 {
     // binary search can be done because nodev[] is ordered
 
@@ -292,16 +292,16 @@ cTopology::Node *cTopology::nodeFor(cModule *mod)
           lo<index;
           index=(lo+up)/2 )
     {
-        // cycle invariant: nodev[lo].mod_id <= mod->id() < nodev[up].mod_id
-        if (mod->id() < nodev[index].module_id)
+        // cycle invariant: nodev[lo].mod_id <= mod->getId() < nodev[up].mod_id
+        if (mod->getId() < nodev[index].module_id)
              up = index;
         else
              lo = index;
     }
-    return (mod->id() == nodev[index].module_id) ? nodev+index : NULL;
+    return (mod->getId() == nodev[index].module_id) ? nodev+index : NULL;
 }
 
-void cTopology::unweightedSingleShortestPathsTo(Node *_target)
+void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
 {
     // multiple paths not supported :-(
 

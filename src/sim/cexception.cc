@@ -88,15 +88,15 @@ cException::cException(const cException& e)
 
 void cException::storeCtx()
 {
-    hascontext = simulation.context()!=NULL;
+    hascontext = simulation.getContext()!=NULL;
     moduleid = -1;
 
-    if (simulation.context())
+    if (simulation.getContext())
     {
-        contextclassname = simulation.context()->className();
-        contextfullpath = simulation.context()->fullPath().c_str();
-        if (simulation.contextModule())
-            moduleid = simulation.contextModule()->id();
+        contextclassname = simulation.getContext()->getClassName();
+        contextfullpath = simulation.getContext()->getFullPath().c_str();
+        if (simulation.getContextModule())
+            moduleid = simulation.getContextModule()->getId();
     }
 }
 
@@ -117,15 +117,15 @@ void cException::init(const cObject *where, ErrorCode errorcode, const char *fmt
 
     // print "(%s)%s:" conditionally:
     //  - if object is the module itself: skip
-    //  - if object is local in module: use fullName()
-    //  - if object is somewhere else: use fullPath()
+    //  - if object is local in module: use getFullName()
+    //  - if object is somewhere else: use getFullPath()
     buffer[0]='\0';
-    if (where && where!=simulation.context())
+    if (where && where!=simulation.getContext())
     {
         // try: if context's fullpath is same as module fullpath + object fullname, no need to print path
-        sprintf(buffer2,"%s.%s",(simulation.context()?simulation.context()->fullPath().c_str():""), where->fullName());
-        bool needpath = strcmp(buffer2,where->fullPath().c_str())!=0;
-        sprintf(buffer, "(%s)%s: ", where->className(), needpath ? where->fullPath().c_str() : where->fullName());
+        sprintf(buffer2,"%s.%s",(simulation.getContext()?simulation.getContext()->getFullPath().c_str():""), where->getFullName());
+        bool needpath = strcmp(buffer2,where->getFullPath().c_str())!=0;
+        sprintf(buffer, "(%s)%s: ", where->getClassName(), needpath ? where->getFullPath().c_str() : where->getFullName());
     }
 
     vsprintf(buffer+strlen(buffer),fmt,va);
@@ -221,12 +221,12 @@ void cRuntimeError::breakIntoDebuggerIfRequested()
                );
         if (!hascontext)
             printf("<!> Error: %s.\n", what());
-        else if (moduleID()==-1)
+        else if (getModuleID()==-1)
             printf("<!> Error in component (%s) %s: %s.\n",
-                   contextClassName(), contextFullPath(), what());
+                   getContextClassName(), getContextFullPath(), what());
         else
             printf("<!> Error in module (%s) %s (id=%d): %s.\n",
-                   contextClassName(), contextFullPath(), moduleID(), what());
+                   getContextClassName(), getContextFullPath(), getModuleID(), what());
         fflush(stdout);
 
 #ifdef _MSC_VER

@@ -37,7 +37,7 @@ class THistogramWindow : public TInspector
 
       // return textual information in general or about a value/value pair
       void generalInfo( char *buf );
-      void cellInfo( char *buf, int cellindex );
+      void getCellInfo( char *buf, int cellindex );
 };
 
 class CircBuffer

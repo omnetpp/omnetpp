@@ -42,7 +42,7 @@
 #define NULL ((void*)0)
 #endif
 
-// maximum lengths for className() and fullPath() strings
+// maximum lengths for getClassName() and getFullPath() strings
 #define MAX_CLASSNAME       100        //FIXME remove!!!
 #define MAX_OBJECTFULLPATH  1024
 
@@ -120,7 +120,7 @@ NAMESPACE_END
 
 typedef OPP::SimTime   simtime_t;
 typedef const double   const_simtime_t;
-#define MAXTIME        OPP::SimTime::maxTime()
+#define MAXTIME        OPP::SimTime::getMaxTime()
 #define SIMTIME_ZERO   OPP::SimTime()
 #define SIMTIME_STR(t) ((t).str().c_str())
 #define SIMTIME_DBL(t) ((t).dbl())

@@ -29,17 +29,17 @@ NAMESPACE_BEGIN
 class cOwnedObject;
 
 /**
- * Stores objects with a qualified name. The name() method of objects
+ * Stores objects with a qualified name. The getName() method of objects
  * should return the unqualified name (without namespace or package name),
- * and the fullName() method the qualified name (with namespace or package).
+ * and the getFullName() method the qualified name (with namespace or package).
  */
 class SIM_API cRegistrationList : public cNamedObject, noncopyable
 {
   private:
     typedef std::map<std::string, cOwnedObject*> StringObjectMap;
     std::vector<cOwnedObject *> vec;  // for fast iteration
-    StringObjectMap nameMap;   // for lookup by name()
-    StringObjectMap fullnameMap;  // for lookup by fullName()
+    StringObjectMap nameMap;   // for lookup by getName()
+    StringObjectMap fullnameMap;  // for lookup by getFullName()
 
   public:
     cRegistrationList(const char *name) : cNamedObject(name, false) {}
@@ -73,13 +73,13 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
     virtual cOwnedObject *get(const char *name) const;
 
     /**
-     * Returns the object with exactly the given qualified name (fullName()).
+     * Returns the object with exactly the given qualified name (getFullName()).
      * Returns NULL if not found.
      */
     virtual cOwnedObject *lookup(const char *qualifiedName) const;
 
     /**
-     * Sorts the elements by qualified name (fullName()). This affects
+     * Sorts the elements by qualified name (getFullName()). This affects
      * the order get() will return the elements.
      */
     virtual void sort();
@@ -101,7 +101,7 @@ class SIM_API cGlobalRegistrationList
     cGlobalRegistrationList();
     cGlobalRegistrationList(const char *name);
     ~cGlobalRegistrationList();
-    cRegistrationList *instance();
+    cRegistrationList *getInstance();
     void clear();
 };
 

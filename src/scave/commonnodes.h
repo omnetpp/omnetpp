@@ -89,7 +89,7 @@ class SCAVE_API ReaderNode : public Node
 class SCAVE_API SingleSourceNodeType : public NodeType
 {
     public:
-        virtual const char *category() const {return "single sources";}
+        virtual const char *getCategory() const {return "single sources";}
         virtual bool isHidden() const {return true;}
         virtual Port *getPort(Node *node, const char *portname) const;
 };
@@ -101,7 +101,7 @@ class SCAVE_API SingleSourceNodeType : public NodeType
 class SCAVE_API SingleSinkNodeType : public NodeType
 {
     public:
-        virtual const char *category() const {return "single sinks";}
+        virtual const char *getCategory() const {return "single sinks";}
         virtual bool isHidden() const {return true;}
         virtual Port *getPort(Node *node, const char *portname) const;
 };
@@ -113,7 +113,7 @@ class SCAVE_API SingleSinkNodeType : public NodeType
 class SCAVE_API FilterNodeType : public NodeType
 {
     public:
-        virtual const char *category() const {return "filter";}
+        virtual const char *getCategory() const {return "filter";}
         virtual bool isHidden() const {return false;}
         virtual Port *getPort(Node *node, const char *portname) const;
 };
@@ -124,7 +124,7 @@ class SCAVE_API FilterNodeType : public NodeType
 class SCAVE_API ReaderNodeType : public NodeType
 {
     public:
-        virtual const char *category() const {return "reader-node";}
+        virtual const char *getCategory() const {return "reader-node";}
         virtual bool isHidden() const {return true;}
 };
 

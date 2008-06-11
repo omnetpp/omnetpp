@@ -58,7 +58,7 @@ int critfunc_const(const cKSplit&, cKSplit::Grid& g, int i, double *c)
 
 int critfunc_depth(const cKSplit& ks, cKSplit::Grid& g, int i, double *c)
 {
-     int depth = g.reldepth - ks.rootGrid().reldepth;
+     int depth = g.reldepth - ks.getRootGrid().reldepth;
      return g.cells[i] >= c[1]*pow(c[2],depth);
 }
 
@@ -80,7 +80,7 @@ double divfunc_babak(const cKSplit&, cKSplit::Grid& g, double mother, double *d)
 
 cKSplit::cKSplit(const cKSplit& r) : cDensityEstBase()
 {
-    setName( r.name() );
+    setName( r.getName() );
     gridv=NULL; iter=NULL;
     operator=(r);
 }
@@ -162,7 +162,7 @@ std::string cKSplit::detailedInfo() const
 
    os << "\n  cells:\n";
    for (int i=0; i<nn; i++)
-      os << "       >=" << basepoint(i) << ": " << cell(i) << endl;
+      os << "       >=" << getBasepoint(i) << ": " << getCellValue(i) << endl;
    return os.str();
 }
 
@@ -356,7 +356,7 @@ void cKSplit::distributeMotherObservations(int grid)
    Grid orig = g;
 
    for(int i=0; i<K; i++)
-      g.cells[i] = (unsigned)realCellValue(orig,i); // WRONG!!!
+      g.cells[i] = (unsigned)getRealCellValue(orig,i); // WRONG!!!
 
    g.mother = 0;
 }
@@ -439,7 +439,7 @@ void cKSplit::expandGridVector()
    gridv = newgridv;
 }
 
-double cKSplit::realCellValue(Grid& grid, int i) const
+double cKSplit::getRealCellValue(Grid& grid, int i) const
 {
    // returns the actual amount of observations in cell 'i' of 'grid'
 
@@ -463,7 +463,7 @@ double cKSplit::realCellValue(Grid& grid, int i) const
             break;
 
       // parent grid's undistributed observations
-      mother = realCellValue(parentgrid,k);
+      mother = getRealCellValue(parentgrid,k);
    }
 #endif
    // interpolate between even and proportional division of the mother obs.
@@ -478,12 +478,12 @@ double cKSplit::realCellValue(Grid& grid, int i) const
    return cell_mot + (1-lambda)*even + lambda*prop;
 }
 
-int cKSplit::treeDepth() const
+int cKSplit::getTreeDepth() const
 {
-   return treeDepth( gridv[rootgrid] );
+   return getTreeDepth( gridv[rootgrid] );
 }
 
-int cKSplit::treeDepth(Grid& grid) const
+int cKSplit::getTreeDepth(Grid& grid) const
 {
    int d, maxd=0;
    double c;
@@ -492,7 +492,7 @@ int cKSplit::treeDepth(Grid& grid) const
       c = grid.cells[i];
       if (c<0)
       {
-         d = treeDepth( gridv[-(int)c] );
+         d = getTreeDepth( gridv[-(int)c] );
          if (d>maxd) maxd=d;
       }
    }
@@ -533,34 +533,34 @@ void cKSplit::iteratorToCell(int cell_nr) const
       {iter->init(*this,cell_nr<num_cells/2); iter_num_vals=num_vals;}
 
    // drive iterator up or down to reach cell_nr
-   if (cell_nr>iter->cellNumber())
-      while (cell_nr!=iter->cellNumber())
+   if (cell_nr>iter->getCellNumber())
+      while (cell_nr!=iter->getCellNumber())
          (*iter)++;
-   else if (cell_nr<iter->cellNumber())
-      while (cell_nr!=iter->cellNumber())
+   else if (cell_nr<iter->getCellNumber())
+      while (cell_nr!=iter->getCellNumber())
          (*iter)--;
 }
 
-int cKSplit::cells() const
+int cKSplit::getNumCells() const
 {
    if (!isTransformed()) return 0;
    return num_cells;
 }
 
-double cKSplit::cell(int nr) const
+double cKSplit::getCellValue(int nr) const
 {
   if (nr>=num_cells) return 0.0;
 
   iteratorToCell( nr );
-  return iter->cellValue();
+  return iter->getCellValue();
 }
 
-double cKSplit::basepoint(int nr) const
+double cKSplit::getBasepoint(int nr) const
 {
   if (nr>=num_cells) return rangemax;
 
   iteratorToCell( nr );
-  return iter->cellMin();
+  return iter->getCellMin();
 }
 
 
@@ -578,7 +578,7 @@ double cKSplit::basepoint(int nr) const
 double cKSplit::random() const
 {
    int i;
-   //int dp = treeDepth();
+   //int dp = getTreeDepth();
    int cd = 1;
 
    double x = genk_intrand( genk, num_vals);
@@ -601,7 +601,7 @@ double cKSplit::random() const
      { Grid lp = gridv[location];
 
        if (lp.cells[i] >= 0)
-       { hlp = realCellValue (lp,i);}
+       { hlp = getRealCellValue(lp,i);}
        else
        { hlp = lp.cells[i];}
 
@@ -640,7 +640,7 @@ double cKSplit::random() const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// pdf()
+// getPDF()
 //  The location of the observation in the tree of cells is found. After that, the pdf
 //  value of that location is calculated and returned. When the observation falls outside of
 //  root grid, zero is returned.
@@ -650,14 +650,14 @@ double cKSplit::random() const
 //  CODE NOT CLEANED UP BY VA YET!
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-double cKSplit::pdf(double x) const
+double cKSplit::getPDF(double x) const
 {
    if (!isTransformed())
      return 0;
 
    int i;
 
-   int dpth = treeDepth();
+   int dpth = getTreeDepth();
    int cdpth = 1;
 
    double xi = rangemin;             //used for computing the boundary values of the current
@@ -686,12 +686,12 @@ double cKSplit::pdf(double x) const
 
    Grid lp = gridv[location];
 
-   return realCellValue(lp,i) / pow ((double)K, dpth - cdpth);
+   return getRealCellValue(lp,i) / pow ((double)K, dpth - cdpth);
 }
 
-double cKSplit::cdf(double) const
+double cKSplit::getCDF(double) const
 {
-   throw cRuntimeError(this,"cdf() not implemented");
+   throw cRuntimeError(this,"getCDF() not implemented");
 }
 
 void cKSplit::saveToFile(FILE *f) const
@@ -843,10 +843,10 @@ void cKSplit::Iterator::operator--(int)
    dive(K-1);
 }
 
-double cKSplit::Iterator::cellValue() const
+double cKSplit::Iterator::getCellValue() const
 {
    cKSplit::Grid& g = ks->gridv[grid];
-   return ks->realCellValue(g,cell);
+   return ks->getRealCellValue(g,cell);
 }
 
 NAMESPACE_END

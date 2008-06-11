@@ -51,8 +51,8 @@ void cRegistrationList::add(cOwnedObject *obj)
 {
     take(obj);
     vec.push_back(obj);
-    nameMap[obj->name()] = obj;
-    fullnameMap[obj->fullName()] = obj;
+    nameMap[obj->getName()] = obj;
+    fullnameMap[obj->getFullName()] = obj;
 }
 
 cOwnedObject *cRegistrationList::get(int i) const
@@ -76,7 +76,7 @@ cOwnedObject *cRegistrationList::lookup(const char *qname) const
 
 inline bool less(cObject *a, cObject *b)
 {
-    return strcmp(a->fullName(), b->fullName()) < 0;
+    return strcmp(a->getFullName(), b->getFullName()) < 0;
 }
 
 void cRegistrationList::sort()
@@ -105,7 +105,7 @@ cGlobalRegistrationList::~cGlobalRegistrationList()
     // exiting via exit() or abort(), ie. not by returning from main().
 }
 
-cRegistrationList *cGlobalRegistrationList::instance()
+cRegistrationList *cGlobalRegistrationList::getInstance()
 {
     if (!inst)
         inst = new cRegistrationList(tmpname);

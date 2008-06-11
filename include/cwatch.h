@@ -72,7 +72,7 @@ class cGenericReadonlyWatch : public cWatchBase
     const T& r;
   public:
     cGenericReadonlyWatch(const char *name, const T& x) : cWatchBase(name), r(x) {}
-    virtual const char *className() const {return opp_typename(typeid(T));}
+    virtual const char *getClassName() const {return opp_typename(typeid(T));}
     virtual bool supportsAssignment() const {return false;}
     virtual std::string info() const
     {
@@ -95,7 +95,7 @@ class cGenericAssignableWatch : public cWatchBase
     T& r;
   public:
     cGenericAssignableWatch(const char *name, T& x) : cWatchBase(name), r(x) {}
-    virtual const char *className() const {return opp_typename(typeid(T));}
+    virtual const char *getClassName() const {return opp_typename(typeid(T));}
     virtual bool supportsAssignment() const {return true;}
     virtual std::string info() const
     {
@@ -120,7 +120,7 @@ class SIM_API cWatch_bool : public cWatchBase
     bool& r;
   public:
     cWatch_bool(const char *name, bool& x) : cWatchBase(name), r(x) {}
-    virtual const char *className() const {return "bool";}
+    virtual const char *getClassName() const {return "bool";}
     virtual bool supportsAssignment() const {return true;}
     virtual std::string info() const
     {
@@ -142,7 +142,7 @@ class SIM_API cWatch_char : public cWatchBase
     char& r;
   public:
     cWatch_char(const char *name, char& x) : cWatchBase(name), r(x) {}
-    virtual const char *className() const {return "char";}
+    virtual const char *getClassName() const {return "char";}
     virtual bool supportsAssignment() const {return true;}
     virtual std::string info() const
     {
@@ -169,7 +169,7 @@ class SIM_API cWatch_uchar : public cWatchBase
     unsigned char& r;
   public:
     cWatch_uchar(const char *name, unsigned char& x) : cWatchBase(name), r(x) {}
-    virtual const char *className() const {return "unsigned char";}
+    virtual const char *getClassName() const {return "unsigned char";}
     virtual bool supportsAssignment() const {return true;}
     virtual std::string info() const
     {
@@ -196,7 +196,7 @@ class SIM_API cWatch_stdstring : public cWatchBase
     std::string& r;
   public:
     cWatch_stdstring(const char *name, std::string& x) : cWatchBase(name), r(x) {}
-    virtual const char *className() const {return "std::string";}
+    virtual const char *getClassName() const {return "std::string";}
     virtual bool supportsAssignment() const {return true;}
     virtual std::string info() const;
     virtual void assign(const char *s);
@@ -212,7 +212,7 @@ class SIM_API cWatch_cObject : public cWatchBase
     cObject& r;
   public:
     cWatch_cObject(const char *name, cObject& ref) : cWatchBase(name), r(ref) {}
-    virtual const char *className() const {return r.className();}
+    virtual const char *getClassName() const {return r.getClassName();}
     virtual std::string info() const {return r.info();}
     virtual bool supportsAssignment() const {return false;}
     virtual cClassDescriptor *getDescriptor() {return r.getDescriptor();}
@@ -228,7 +228,7 @@ class SIM_API cWatch_cObjectPtr : public cWatchBase
     cObject *&rp;
   public:
     cWatch_cObjectPtr(const char *name, cObject *&ptr) : cWatchBase(name), rp(ptr) {}
-    virtual const char *className() const {return rp? rp->className() : "n/a";}
+    virtual const char *getClassName() const {return rp? rp->getClassName() : "n/a";}
     virtual std::string info() const {return rp ? rp->info() : "<null>";}
     virtual bool supportsAssignment() const {return false;}
     virtual cClassDescriptor *getDescriptor() {return rp ? rp->getDescriptor() : NULL;}

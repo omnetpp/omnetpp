@@ -83,7 +83,7 @@ class SIM_API cNamedObject : public cObject
      *
      * Assigment copies the contents of the object EXCEPT for the name string.
      * If you want to copy the name string, you can do it by hand:
-     * <tt>setName(o.name()</tt>).
+     * <tt>setName(o.getName()</tt>).
      */
     cNamedObject& operator=(const cNamedObject& o);
 
@@ -114,7 +114,7 @@ class SIM_API cNamedObject : public cObject
      * Returns pointer to the object's name, a string stored in the object.
      * This function never returns NULL.
      */
-    virtual const char *name() const  {return namep ? namep : "";}
+    virtual const char *getName() const  {return namep ? namep : "";}
 
     /**
      * Turn name pooling on/off. Name pooling is an optimization technique that saves

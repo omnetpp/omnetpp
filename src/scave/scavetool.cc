@@ -197,7 +197,7 @@ int filterCommand(int argc, char **argv)
         // assemble dataflow network for vectors
         //
         DataflowManager dataflowManager;
-        NodeTypeRegistry *registry = NodeTypeRegistry::instance();
+        NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
 
         // create filereader for each vector file
         if (opt_verbose) printf("creating vector file reader(s)\n");
@@ -248,7 +248,7 @@ int filterCommand(int argc, char **argv)
                 outPort = &(filterNode->out);
             }
 
-            // create writer node(s) and connect
+            // create writer getNode(s) and connect
             if (opt_writeVectorFile)
             {
                 // everything goes to a common vector file
@@ -382,7 +382,7 @@ int infoCommand(int argc, char **argv)
             {fprintf(stderr, "unknown option `%s'", opt);return 1;}
     }
 
-    NodeTypeRegistry *registry = NodeTypeRegistry::instance();
+    NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
     NodeTypeVector nodeTypes = registry->getNodeTypes();
     for (int i=0; i<(int)nodeTypes.size(); i++)
     {
@@ -393,12 +393,12 @@ int infoCommand(int argc, char **argv)
         if (opt_brief)
         {
             // this is the -b format
-            printf("%s\n", nodeType->name());
+            printf("%s\n", nodeType->getName());
         }
         else
         {
             // print name(parameters,...)
-            printf("%s", nodeType->name());
+            printf("%s", nodeType->getName());
             StringMap attrs, attrDefaults;
             nodeType->getAttributes(attrs);
             nodeType->getAttrDefaults(attrDefaults);
@@ -417,7 +417,7 @@ int infoCommand(int argc, char **argv)
             else
             {
                 // print filter description and parameter descriptions
-                printf(":\n%s\n", opp_indentlines(opp_breaklines(nodeType->description(),76).c_str(),"  ").c_str());
+                printf(":\n%s\n", opp_indentlines(opp_breaklines(nodeType->getDescription(),76).c_str(),"  ").c_str());
                 for (StringMap::iterator it=attrs.begin(); it!=attrs.end(); ++it)
                 {
                     printf("    - %s: %s\n", it->first.c_str(), it->second.c_str());

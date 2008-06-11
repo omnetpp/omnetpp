@@ -131,14 +131,14 @@ Expression::Value Expression::evaluate() const
 
            case Elem::FUNCTOR:
              {
-             int numargs = e.fu->numArgs();
+             int numargs = e.fu->getNumArgs();
              int argpos = tos-numargs+1; // stk[] index of 1st arg to pass
              if (argpos<0)
                  throw opp_runtime_error(eESTKUFLOW);
-             const char *argtypes = e.fu->argTypes();
+             const char *argtypes = e.fu->getArgTypes();
              for (int i=0; i<numargs; i++)
                  if (stk[argpos+i].type != (argtypes[i]=='L' ? 'D' : argtypes[i]))
-                     throw opp_runtime_error(eEBADARGS,e.fu->name());
+                     throw opp_runtime_error(eEBADARGS,e.fu->getName());
              stk[argpos] = e.fu->evaluate(stk+argpos, numargs);
              tos = argpos;
              break;
@@ -396,7 +396,7 @@ std::string Expression::str() const
                  break;
                case Elem::FUNCTOR:
                  {
-                 int numargs = e.fu->numArgs();
+                 int numargs = e.fu->getNumArgs();
                  int argpos = tos-numargs+1; // strstk[] index of 1st arg to pass
                  if (argpos<0)
                      throw opp_runtime_error(eESTKUFLOW);
@@ -572,10 +572,10 @@ MathFunction::~MathFunction()
 
 Expression::Functor *MathFunction::dup() const
 {
-    return new MathFunction(name());
+    return new MathFunction(getName());
 }
 
-const char *MathFunction::name() const
+const char *MathFunction::getName() const
 {
      return funcname.c_str();
 }
@@ -593,7 +593,7 @@ bool MathFunction::supports(const char *name)
     return lookup(name)!=NULL;
 }
 
-const char *MathFunction::argTypes() const
+const char *MathFunction::getArgTypes() const
 {
     Assert(Expression::Value::DBL == 'D');
     FuncDesc *fd = lookup(funcname.c_str());
@@ -602,7 +602,7 @@ const char *MathFunction::argTypes() const
     return ddd+strlen(ddd)-n;
 }
 
-char MathFunction::returnType() const
+char MathFunction::getReturnType() const
 {
     return Expression::Value::DBL;
 }

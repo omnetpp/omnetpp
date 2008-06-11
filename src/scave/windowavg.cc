@@ -60,7 +60,7 @@ void WindowAverageNode::process()
 
 //-----
 
-const char *WindowAverageNodeType::description() const
+const char *WindowAverageNodeType::getDescription() const
 {
     return "Calculates batched average: replaces every `winsize' input values\n"
            "with their mean. Time is the time of the first value in the batch.";
@@ -92,6 +92,6 @@ Node *WindowAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
 void WindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }

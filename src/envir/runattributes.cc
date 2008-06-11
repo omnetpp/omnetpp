@@ -43,7 +43,7 @@ void sRunData::initRun()
         //
         runId = ev.getRunId();
 
-        cConfiguration *cfg = ev.config();
+        cConfiguration *cfg = ev.getConfig();
 
         std::vector<const char *> keys1 = cfg->getPredefinedVariableNames();
         for (int i=0; i<(int)keys1.size(); i++)

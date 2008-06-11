@@ -254,7 +254,7 @@ void EnvirBase::setup()
         const char *nedpath1 = args->optionValue('n',0);
         if (!nedpath1)
             nedpath1 = getenv("NEDPATH");
-        std::string nedpath2 = config()->getAsString(CFGID_NED_PATH, "");
+        std::string nedpath2 = getConfig()->getAsString(CFGID_NED_PATH, "");
         std::string nedpath = opp_join(";", nedpath1, nedpath2.c_str());
         if (nedpath.empty())
             nedpath = ".";
@@ -276,7 +276,7 @@ void EnvirBase::setup()
 
         // load NED files from the "preload-ned-files=" config entry.
         // XXX This code is now obsolete, as we load NED files from NEDPATH trees
-        //std::vector<std::string> nedfiles = config()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
+        //std::vector<std::string> nedfiles = getConfig()->getAsFilenames(CFGID_PRELOAD_NED_FILES);
         //if (!nedfiles.empty())
         //{
         //    // iterate through file names
@@ -346,7 +346,7 @@ void EnvirBase::dumpComponentList(const char *category)
         ev << "Supported configuration keys (omnetpp.ini):\n";
         bool printDescriptions = strcmp(category, "configdetails")==0;
 
-        cRegistrationList *table = configKeys.instance();
+        cRegistrationList *table = configKeys.getInstance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
@@ -354,27 +354,27 @@ void EnvirBase::dumpComponentList(const char *category)
             ASSERT(obj);
             if (!printDescriptions) ev << "  ";
             if (obj->isPerObject()) ev << "<object-full-path>.";
-            ev << obj->name() << "=";
-            ev << "<" << cConfigKey::typeName(obj->type()) << ">";
-            if (obj->unit())
-                ev << ", unit=\"" << obj->unit() << "\"";
-            if (obj->defaultValue())
-                ev << ", default:" << obj->defaultValue() << "";
+            ev << obj->getName() << "=";
+            ev << "<" << cConfigKey::getTypeName(obj->getType()) << ">";
+            if (obj->getUnit())
+                ev << ", unit=\"" << obj->getUnit() << "\"";
+            if (obj->getDefaultValue())
+                ev << ", default:" << obj->getDefaultValue() << "";
             ev << "; " << (obj->isGlobal() ? "global" : obj->isPerObject() ? "per-object" : "per-run") << " setting";
             ev << "\n";
-            if (printDescriptions && !opp_isempty(obj->description()))
-                ev << opp_indentlines(opp_breaklines(obj->description(),75).c_str(), "    ") << "\n";
+            if (printDescriptions && !opp_isempty(obj->getDescription()))
+                ev << opp_indentlines(opp_breaklines(obj->getDescription(),75).c_str(), "    ") << "\n";
             if (printDescriptions) ev << "\n";
         }
         ev << "\n";
 
         ev << "Predefined variables that can be used in config values:\n";
-        std::vector<const char *> v = config()->getPredefinedVariableNames();
+        std::vector<const char *> v = getConfig()->getPredefinedVariableNames();
         for (int i=0; i<(int)v.size(); i++)
         {
             if (!printDescriptions) ev << "  ";
             ev << "${" << v[i] << "}\n";
-            const char *desc = config()->getVariableDescription(v[i]);
+            const char *desc = getConfig()->getVariableDescription(v[i]);
             if (printDescriptions && !opp_isempty(desc))
                 ev << opp_indentlines(opp_breaklines(desc,75).c_str(), "    ") << "\n";
         }
@@ -385,7 +385,7 @@ void EnvirBase::dumpComponentList(const char *category)
         // generate Java code for ConfigurationRegistry.java in the IDE
         processed = true;
         ev << "Supported configuration keys (as Java code):\n";
-        cRegistrationList *table = configKeys.instance();
+        cRegistrationList *table = configKeys.getInstance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
@@ -393,14 +393,14 @@ void EnvirBase::dumpComponentList(const char *category)
             ASSERT(key);
 
             std::string id = "CFGID_";
-            for (const char *s = key->name(); *s; s++)
+            for (const char *s = key->getName(); *s; s++)
                 id.append(1, opp_isalpha(*s) ? opp_toupper(*s) : *s=='-' ? '_' : *s=='%' ? 'n' : *s);
             const char *method = key->isGlobal() ? "addGlobalEntry" :
                                  !key->isPerObject() ? "addPerRunEntry" :
                                  "addPerObjectEntry";
             #define CASE(X)  case cConfigKey::X: typestring = #X; break;
             const char *typestring;
-            switch (key->type()) {
+            switch (key->getType()) {
                 CASE(CFG_BOOL)
                 CASE(CFG_INT)
                 CASE(CFG_DOUBLE)
@@ -412,19 +412,19 @@ void EnvirBase::dumpComponentList(const char *category)
             #undef CASE
 
             ev << "    public static final ConfigKey " << id << " = ";
-            ev << method << (key->unit() ? "U" : "") << "(\n";
-            ev << "        \"" << key->name() << "\", ";
-            if (!key->unit())
+            ev << method << (key->getUnit() ? "U" : "") << "(\n";
+            ev << "        \"" << key->getName() << "\", ";
+            if (!key->getUnit())
                 ev << typestring << ", ";
             else
-                ev << "\"" << key->unit() << "\", ";
-            if (!key->defaultValue())
+                ev << "\"" << key->getUnit() << "\", ";
+            if (!key->getDefaultValue())
                 ev << "null";
             else
-                ev << "\"" << opp_replacesubstring(key->defaultValue(), "\"", "\\\"", true) << "\"";
+                ev << "\"" << opp_replacesubstring(key->getDefaultValue(), "\"", "\\\"", true) << "\"";
             ev << ",\n";
 
-            std::string desc = key->description();
+            std::string desc = key->getDescription();
             desc = opp_replacesubstring(desc.c_str(), "\n", "\\n\n", true); // keep explicit line breaks
             desc = opp_breaklines(desc.c_str(), 75);  // break long lines
             desc = opp_replacesubstring(desc.c_str(), "\"", "\\\"", true);
@@ -436,12 +436,12 @@ void EnvirBase::dumpComponentList(const char *category)
         }
         ev << "\n";
 
-        std::vector<const char *> vars = config()->getPredefinedVariableNames();
+        std::vector<const char *> vars = getConfig()->getPredefinedVariableNames();
         for (int i=0; i<(int)vars.size(); i++)
         {
             opp_string id = vars[i];
             opp_strupr(id.buffer());
-            const char *desc = config()->getVariableDescription(vars[i]);
+            const char *desc = getConfig()->getVariableDescription(vars[i]);
             ev << "    public static final String CFGVAR_" << id << " = addConfigVariable(";
             ev << "\"" << vars[i] << "\", \"" << opp_replacesubstring(desc, "\"", "\\\"", true) << "\");\n";
         }
@@ -451,12 +451,12 @@ void EnvirBase::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "Registered C++ classes, including modules, channels and messages:\n";
-        cRegistrationList *table = classes.instance();
+        cRegistrationList *table = classes.getInstance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cObject *obj = table->get(i);
-            ev << "  class " << obj->fullName() << "\n";
+            ev << "  class " << obj->getFullName() << "\n";
         }
         ev << "Note: if your class is not listed, it needs to be registered in the\n";
         ev << "C++ code using Define_Module(), Define_Channel() or Register_Class().\n";
@@ -466,12 +466,12 @@ void EnvirBase::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "Classes that have associated reflection information (needed for Tkenv inspectors):\n";
-        cRegistrationList *table = classDescriptors.instance();
+        cRegistrationList *table = classDescriptors.getInstance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cObject *obj = table->get(i);
-            ev << "  class " << obj->fullName() << "\n";
+            ev << "  class " << obj->getFullName() << "\n";
         }
         ev << "\n";
     }
@@ -479,12 +479,12 @@ void EnvirBase::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "Functions that can be used in NED expressions and in omnetpp.ini:\n";
-        cRegistrationList *table = nedFunctions.instance();
+        cRegistrationList *table = nedFunctions.getInstance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cObject *obj = table->get(i);
-            ev << "  " << obj->fullName() << " : " << obj->info() << "\n";
+            ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
         }
         ev << "\n";
     }
@@ -509,12 +509,12 @@ void EnvirBase::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "Enums defined in .msg files\n";
-        cRegistrationList *table = enums.instance();
+        cRegistrationList *table = enums.getInstance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cObject *obj = table->get(i);
-            ev << "  " << obj->fullName() << " : " << obj->info() << "\n";
+            ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
         }
         ev << "\n";
     }
@@ -522,12 +522,12 @@ void EnvirBase::dumpComponentList(const char *category)
     {
         processed = true;
         ev << "User interfaces loaded:\n";
-        cRegistrationList *table = omnetapps.instance();
+        cRegistrationList *table = omnetapps.getInstance();
         table->sort();
         for (int i=0; i<table->size(); i++)
         {
             cObject *obj = table->get(i);
-            ev << "  " << obj->fullName() << " : " << obj->info() << "\n";
+            ev << "  " << obj->getFullName() << " : " << obj->info() << "\n";
         }
     }
 
@@ -575,7 +575,7 @@ void EnvirBase::shutdown()
 
 void EnvirBase::startRun()
 {
-    runid = config()->getVariable(CFGVAR_RUNID);
+    runid = getConfig()->getVariable(CFGVAR_RUNID);
 
     resetClock();
     outvectormgr->startRun();
@@ -589,7 +589,7 @@ void EnvirBase::startRun()
         parsimpartition->startRun();
 #endif
     }
-    simulation.scheduler()->startRun();
+    simulation.getScheduler()->startRun();
     simulation.startRun();
     flushLastLine();
 }
@@ -598,7 +598,7 @@ void EnvirBase::endRun()
 {
     // reverse order as startRun()
     simulation.endRun();
-    simulation.scheduler()->endRun();
+    simulation.getScheduler()->endRun();
     if (opt_parsim)
     {
 #ifdef WITH_PARSIM
@@ -620,8 +620,8 @@ void EnvirBase::endRun()
 void EnvirBase::readParameter(cPar *par)
 {
     // get it from the ini file
-    std::string moduleFullPath = par->owner()->fullPath();
-    const char *str = config()->getParameterValue(moduleFullPath.c_str(), par->name(), par->hasValue());
+    std::string moduleFullPath = par->getOwner()->getFullPath();
+    const char *str = getConfig()->getParameterValue(moduleFullPath.c_str(), par->getName(), par->hasValue());
 
 /* XXX hack to use base directory for resolving xml files location has been commented out
  * FIXME a solution needs to be worked out!
@@ -639,7 +639,7 @@ void EnvirBase::readParameter(cPar *par)
         if (!endQuote)
             return std::string(str);
         std::string fname(begQuote+1, endQuote-begQuote-1);
-        const char *baseDir = config()->getBaseDirectoryFor(NULL, "Parameters", parname);
+        const char *baseDir = getConfig()->getBaseDirectoryFor(NULL, "Parameters", parname);
         fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str(),true);
         std::string ret = std::string(str, begQuote-str+1) + fname + endQuote;
         //XXX use "ret" further!!!
@@ -663,7 +663,7 @@ void EnvirBase::readParameter(cPar *par)
     bool success = false;
     while (!success)
     {
-        cProperties *props = par->properties();
+        cProperties *props = par->getProperties();
         cProperty *prop = props->get("prompt");
         std::string prompt = prop ? prop->value(cProperty::DEFAULTKEY) : "";
         std::string reply;
@@ -674,7 +674,7 @@ void EnvirBase::readParameter(cPar *par)
         else
             // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
             // against this string for detecting user input
-            reply = this->gets((std::string("Enter parameter `")+par->fullPath()+"':").c_str(), par->str().c_str());
+            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"':").c_str(), par->str().c_str());
 
         try
         {
@@ -701,14 +701,14 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
     // find out if this module is (or has any submodules that are) on this partition
     char parname[MAX_OBJECTFULLPATH];
     if (index<0)
-        sprintf(parname,"%s.%s", parentmod->fullPath().c_str(), modname);
+        sprintf(parname,"%s.%s", parentmod->getFullPath().c_str(), modname);
     else
-        sprintf(parname,"%s.%s[%d]", parentmod->fullPath().c_str(), modname, index); //FIXME this is incorrectly chosen for non-vector modules too!
-    std::string procIds = config()->getAsString(parname, CFGID_PARTITION_ID, "");
+        sprintf(parname,"%s.%s[%d]", parentmod->getFullPath().c_str(), modname, index); //FIXME this is incorrectly chosen for non-vector modules too!
+    std::string procIds = getConfig()->getAsString(parname, CFGID_PARTITION_ID, "");
     if (procIds.empty())
     {
-        // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
-        if (!parentmod->parentModule())
+        // modules inherit the setting from their parents, except when the parent is the system getModule(the network) itself
+        if (!parentmod->getParentModule())
             throw cRuntimeError("incomplete partitioning: missing value for '%s'",parname);
         // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into
         return true;
@@ -724,7 +724,7 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
         // module needs to be instantiated. So we return true if any of the numbers
         // is the Id of the local partition, otherwise false.
         EnumStringIterator procIdIter(procIds.c_str());
-        if (procIdIter.error())
+        if (procIdIter.hasError())
             throw cRuntimeError("wrong partitioning: syntax error in value '%s' for '%s' "
                                 "(allowed syntax: '', '*', '1', '0,3,5-7')",
                                 procIds.c_str(), parname);
@@ -751,7 +751,7 @@ cXMLElement *EnvirBase::getXMLDocument(const char *filename, const char *path)
     assert(documentnode);
     if (path)
     {
-        ModNameParamResolver resolver(simulation.contextModule()); // resolves $MODULE_NAME etc in XPath expr.
+        ModNameParamResolver resolver(simulation.getContextModule()); // resolves $MODULE_NAME etc in XPath expr.
         return cXMLElement::getDocumentElementByPath(documentnode, path, &resolver);
     }
     else
@@ -761,7 +761,7 @@ cXMLElement *EnvirBase::getXMLDocument(const char *filename, const char *path)
     }
 }
 
-cConfiguration *EnvirBase::config()
+cConfiguration *EnvirBase::getConfig()
 {
     return cfg;
 }
@@ -901,7 +901,7 @@ void EnvirBase::sputn(const char *s, int n)
 void EnvirBase::undisposedObject(cObject *obj)
 {
     if (opt_print_undisposed)
-        ::printf("undisposed object: (%s) %s -- check module destructor\n", obj->className(), obj->fullPath().c_str());
+        ::printf("undisposed object: (%s) %s -- check module destructor\n", obj->getClassName(), obj->getFullPath().c_str());
 }
 
 //-------------------------------------------------------------
@@ -933,7 +933,7 @@ void EnvirBase::processFileName(opp_string& fname)
 
 void EnvirBase::readOptions()
 {
-    cConfiguration *cfg = config();
+    cConfiguration *cfg = getConfig();
 
     opt_total_stack = (size_t) cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
     opt_parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
@@ -965,18 +965,18 @@ void EnvirBase::readOptions()
     SimTime::setScaleExp(scaleexp);
 
     // note: this is read per run as well, but Tkenv needs its value on startup too
-    opt_inifile_network_dir = cfg->getConfigEntry(CFGID_NETWORK->name()).getBaseDirectory();
+    opt_inifile_network_dir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
 
     // other options are read on per-run basis
 }
 
 void EnvirBase::readPerRunOptions()
 {
-    cConfiguration *cfg = config();
+    cConfiguration *cfg = getConfig();
 
     // get options from ini file
     opt_network_name = cfg->getAsString(CFGID_NETWORK);
-    opt_inifile_network_dir = cfg->getConfigEntry(CFGID_NETWORK->name()).getBaseDirectory();
+    opt_inifile_network_dir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
     opt_warnings = cfg->getAsBool(CFGID_WARNINGS);
     opt_simtimelimit = cfg->getAsDouble(CFGID_SIM_TIME_LIMIT);
     opt_cputimelimit = (long) cfg->getAsDouble(CFGID_CPU_TIME_LIMIT);
@@ -1011,7 +1011,7 @@ void EnvirBase::readPerRunOptions()
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(opt_seedset, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), config());
+        rngs[i]->initialize(opt_seedset, i, num_rngs, getParsimProcId(), getParsimNumPartitions(), getConfig());
     }
 
     // init nextuniquenumber -- startRun() is too late because simple module ctors have run by then
@@ -1098,12 +1098,12 @@ void EnvirBase::readPerRunOptions()
 
 //-------------------------------------------------------------
 
-int EnvirBase::numRNGs() const
+int EnvirBase::getNumRNGs() const
 {
     return num_rngs;
 }
 
-cRNG *EnvirBase::rng(int k)
+cRNG *EnvirBase::getRNG(int k)
 {
     if (k<0 || k>=num_rngs)
         throw cRuntimeError("RNG index %d is out of range (num-rngs=%d, check the configuration)", k, num_rngs);
@@ -1112,8 +1112,8 @@ cRNG *EnvirBase::rng(int k)
 
 void EnvirBase::getRNGMappingFor(cComponent *component)
 {
-    cConfiguration *cfg = config();
-    std::string componentFullPath = component->fullPath();
+    cConfiguration *cfg = getConfig();
+    std::string componentFullPath = component->getFullPath();
     std::vector<const char *> suffixes = cfg->getMatchingPerObjectConfigKeySuffixes(componentFullPath.c_str(), "rng-*"); // CFGID_RNG_K
     if (suffixes.size()==0)
         return;
@@ -1132,18 +1132,18 @@ void EnvirBase::getRNGMappingFor(cComponent *component)
         if (*s1!='\0' || *s2!='\0')
             throw cRuntimeError("Configuration error: %s=%s for module/channel %s: "
                                 "numeric RNG indices expected",
-                                suffix, value, component->fullPath().c_str());
+                                suffix, value, component->getFullPath().c_str());
 
-        if (physRng>numRNGs())
+        if (physRng>getNumRNGs())
             throw cRuntimeError("Configuration error: rng-%d=%d of module/channel %s: "
                                 "RNG index out of range (num-rngs=%d)",
-                                modRng, physRng, component->fullPath().c_str(), numRNGs());
+                                modRng, physRng, component->getFullPath().c_str(), getNumRNGs());
         if (modRng>=mapsize)
         {
             if (modRng>=100)
                 throw cRuntimeError("Configuration error: rng-%d=... of module/channel %s: "
                                     "local RNG index out of supported range 0..99",
-                                    modRng, component->fullPath().c_str());
+                                    modRng, component->getFullPath().c_str());
             while (mapsize<=modRng)
             {
                 tmpmap[mapsize] = mapsize;
@@ -1227,10 +1227,10 @@ void EnvirBase::displayError(std::exception& ex)
     cException *e = dynamic_cast<cException *>(&ex);
     if (!e || !e->hasContext())
         ev.printfmsg("Error: %s.", ex.what());
-    else if (e->moduleID()==-1)
-        ev.printfmsg("Error in component (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->what());
+    else if (e->getModuleID()==-1)
+        ev.printfmsg("Error in component (%s) %s: %s.", e->getContextClassName(), e->getContextFullPath(), e->what());
     else
-        ev.printfmsg("Error in module (%s) %s (id=%d): %s.", e->contextClassName(), e->contextFullPath(), e->moduleID(), e->what());
+        ev.printfmsg("Error in module (%s) %s (id=%d): %s.", e->getContextClassName(), e->getContextFullPath(), e->getModuleID(), e->what());
 }
 
 void EnvirBase::displayMessage(std::exception& ex)
@@ -1238,10 +1238,10 @@ void EnvirBase::displayMessage(std::exception& ex)
     cException *e = dynamic_cast<cException *>(&ex);
     if (!e || !e->hasContext())
         ev.printfmsg("%s.", ex.what());
-    else if (e->moduleID()==-1)
-        ev.printfmsg("Component (%s) %s: %s.", e->contextClassName(), e->contextFullPath(), e->what());
+    else if (e->getModuleID()==-1)
+        ev.printfmsg("Component (%s) %s: %s.", e->getContextClassName(), e->getContextFullPath(), e->what());
     else
-        ev.printfmsg("Module (%s) %s (id=%d): %s.", e->contextClassName(), e->contextFullPath(), e->moduleID(), e->what());
+        ev.printfmsg("Module (%s) %s (id=%d): %s.", e->getContextClassName(), e->getContextFullPath(), e->getModuleID(), e->what());
 }
 
 bool EnvirBase::idle()
@@ -1249,14 +1249,14 @@ bool EnvirBase::idle()
     return false;
 }
 
-int EnvirBase::argCount() const
+int EnvirBase::getArgCount() const
 {
-    return args->argCount();
+    return args->getArgCount();
 }
 
-char **EnvirBase::argVector() const
+char **EnvirBase::getArgVector() const
 {
-    return args->argVector();
+    return args->getArgVector();
 }
 
 //-------------------------------------------------------------
@@ -1294,7 +1294,7 @@ void EnvirBase::checkTimeLimits()
          throw cTerminationException(eSIMTIME);
     if (opt_cputimelimit==0) // no limit
          return;
-    if (disable_tracing && (simulation.eventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
+    if (disable_tracing && (simulation.getEventNumber()&0xFF)!=0) // optimize: in Express mode, don't call gettimeofday() on every event
          return;
     timeval now;
     gettimeofday(&now, NULL);
@@ -1325,14 +1325,14 @@ void EnvirBase::stoppedWithException(std::exception& e)
 
 void EnvirBase::checkFingerprint()
 {
-    if (opt_fingerprint.empty() || !simulation.hasher())
+    if (opt_fingerprint.empty() || !simulation.getHasher())
         return;
 
-    if (simulation.hasher()->equals(opt_fingerprint.c_str()))
+    if (simulation.getHasher()->equals(opt_fingerprint.c_str()))
         putsmsg("Fingerprint successfully verified.");
     else
         putsmsg((std::string("Fingerprint mismatch! expected: ")+opt_fingerprint.c_str()+
-               ", actual: "+simulation.hasher()->str()).c_str());
+               ", actual: "+simulation.getHasher()->str()).c_str());
 }
 
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)
@@ -1353,7 +1353,7 @@ cModuleType *EnvirBase::resolveNetwork(const char *networkname)
             throw cRuntimeError("Network `%s' not found, check .ini and .ned files", networkname);
     }
     if (!network->isNetwork())
-        throw cRuntimeError("Module type `%s' is not a network", network->fullName());
+        throw cRuntimeError("Module type `%s' is not a network", network->getFullName());
     return network;
 }
 

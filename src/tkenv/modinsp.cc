@@ -47,18 +47,18 @@ static cPar *displayStringPar(const char *parname, cModule *mod, bool searchpare
    if (k>=0)
       par = &(mod->par(k));
 
-   if (!par && searchparent && mod->parentModule())
+   if (!par && searchparent && mod->getParentModule())
    {
-      k = mod->parentModule()->findPar( parname );
+      k = mod->getParentModule()->findPar( parname );
       if (k>=0)
-         par = &(mod->parentModule()->par(k));
+         par = &(mod->getParentModule()->par(k));
    }
    if (!par)
    {
       if (!searchparent)
-          throw cRuntimeError("module `%s' has no parameter `%s'", mod->fullPath().c_str(), parname);
+          throw cRuntimeError("module `%s' has no parameter `%s'", mod->getFullPath().c_str(), parname);
       else
-          throw cRuntimeError("module `%s' and its parent have no parameter `%s'", mod->fullPath().c_str(), parname);
+          throw cRuntimeError("module `%s' and its parent have no parameter `%s'", mod->getFullPath().c_str(), parname);
    }
    return par;
 }
@@ -221,7 +221,7 @@ void TGraphicalModWindow::relayoutAndRedrawAll()
        else
            sprintf(problem, "may contain a lot of connections (modules have a large number of gates)");
        CHK(Tcl_VarEval(interp,"tk_messageBox -parent ",windowname," -type yesno -title Warning -icon question "
-                              "-message {Module '", object->fullName(), "' ", problem,
+                              "-message {Module '", object->getFullName(), "' ", problem,
                               ", it may take a long time to display the graphics. "
                               "Do you want to proceed with drawing?}", NULL));
        bool answer = (Tcl_GetStringResult(interp)[0]=='y');
@@ -255,16 +255,16 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
                                                               int& x, int& y, int& sx, int& sy)
 {
     const cDisplayString blank;
-    const cDisplayString& ds = submod->hasDisplayString() ? submod->displayString() : blank;
+    const cDisplayString& ds = submod->hasDisplayString() ? submod->getDisplayString() : blank;
 
     // get size -- we'll need to return that too, and may be needed for matrix, ring etc. layout
     int boxsx=0, boxsy=0, iconsx=0, iconsy=0;
-    if (ds.existsTag("b") || !ds.existsTag("i"))
+    if (ds.containsTag("b") || !ds.containsTag("i"))
     {
         boxsx = resolveLongDispStrArg(ds.getTagArg("b",0), submod, 40);
         boxsy = resolveLongDispStrArg(ds.getTagArg("b",1), submod, 24);
     }
-    if (ds.existsTag("i"))
+    if (ds.containsTag("i"))
     {
         const char *imgname = ds.getTagArg("i",0);
         const char *imgsize = ds.getTagArg("is",0);
@@ -321,12 +321,12 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     {
         // perhaps we should use the size of the 1st element in the vector?
         int dx = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 2*sx);
-        x += submod->index()*dx;
+        x += submod->getIndex()*dx;
     }
     else if (!strcmp(layout,"c") || !strcmp(layout,"col") || !strcmp(layout,"column"))
     {
         int dy = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 2*sy);
-        y += submod->index()*dy;
+        y += submod->getIndex()*dy;
     }
     else if (!strcmp(layout,"m") || !strcmp(layout,"matrix"))
     {
@@ -334,8 +334,8 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
         int columns = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 5);
         int dx = resolveLongDispStrArg(ds.getTagArg("p",4), submod, 2*sx);
         int dy = resolveLongDispStrArg(ds.getTagArg("p",5), submod, 2*sy);
-        x += (submod->index() % columns)*dx;
-        y += (submod->index() / columns)*dy;
+        x += (submod->getIndex() % columns)*dx;
+        y += (submod->getIndex() / columns)*dy;
     }
     else if (!strcmp(layout,"i") || !strcmp(layout,"ri") || !strcmp(layout,"ring"))
     {
@@ -343,8 +343,8 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
         int rx = resolveLongDispStrArg(ds.getTagArg("p",3), submod, (sx+sy)*submod->size()/4);
         int ry = resolveLongDispStrArg(ds.getTagArg("p",4), submod, rx);
 
-        x += (int) floor(rx - rx*sin(submod->index()*2*PI/submod->size()));
-        y += (int) floor(ry - ry*cos(submod->index()*2*PI/submod->size()));
+        x += (int) floor(rx - rx*sin(submod->getIndex()*2*PI/submod->size()));
+        y += (int) floor(ry - ry*cos(submod->getIndex()*2*PI/submod->size()));
     }
     else
     {
@@ -369,10 +369,10 @@ void TGraphicalModWindow::refreshLayout()
 
     cModule *parentmodule = static_cast<cModule *>(object);
 
-    // Note trick avoid calling displayString() directly because it'd cause
+    // Note trick avoid calling getDisplayString() directly because it'd cause
     // the display string object inside cModule to spring into existence
     const cDisplayString blank;
-    const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->displayString() : blank;
+    const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->getDisplayString() : blank;
 
     // create and configure layouter object
     GraphLayouter *layouter = getTkenv()->opt_usenewlayouter ?
@@ -422,7 +422,7 @@ void TGraphicalModWindow::refreshLayout()
         {
             // all modules are anchored to the anchor point with the vector's name
             // e.g. "p=,,ring"
-            layouter->addAnchoredNode(submod, submod->name(), x, y, sx, sy);
+            layouter->addAnchoredNode(submod, submod->getName(), x, y, sx, sy);
         }
         else
         {
@@ -439,10 +439,10 @@ void TGraphicalModWindow::refreshLayout()
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            cGate *destgate = gate->toGate();
-            if (gate->type()==(parent ? cGate::INPUT : cGate::OUTPUT) && destgate)
+            cGate *destgate = gate->getToGate();
+            if (gate->getType()==(parent ? cGate::INPUT : cGate::OUTPUT) && destgate)
             {
-                cModule *destmod = destgate->ownerModule();
+                cModule *destmod = destgate->getOwnerModule();
                 if (mod==parentmodule && destmod==parentmodule) {
                     // nop
                 } else if (mod==parentmodule) {
@@ -493,11 +493,11 @@ void TGraphicalModWindow::redrawModules()
     // then display all submodules
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
     const cDisplayString blank;
-    const char *scaling = parentmodule->hasDisplayString() ? parentmodule->displayString().getTagArg("bgs",0) : "";
+    const char *scaling = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
     for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
     {
         cModule *submod = it();
-        const cDisplayString& ds = submod->hasDisplayString() ? submod->displayString() : blank;
+        const cDisplayString& ds = submod->hasDisplayString() ? submod->getDisplayString() : blank;
 
         // call Tcl procedure to draw the submodule
         assert(submodPosMap.find(submod)!=submodPosMap.end());
@@ -508,18 +508,18 @@ void TGraphicalModWindow::redrawModules()
                         canvas, " ",
                         ptrToStr(submod), " ",
                         coords,
-                        "{", submod->fullName(), "} ",
+                        "{", submod->getFullName(), "} ",
                         "{", ds.str(), "} ",
                         "{", scaling, "} ",
                         NULL ));
     }
 
     // draw enclosing module
-    const char *dispstr = parentmodule->hasDisplayString() ? parentmodule->displayString().str() : "";
+    const char *dispstr = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().str() : "";
     CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
                        canvas, " ",
                        ptrToStr(parentmodule), " ",
-                       "{", parentmodule->fullPath().c_str(), "} ",
+                       "{", parentmodule->getFullPath().c_str(), "} ",
                        "{", dispstr, "} ",
                        "{", scaling, "} ",
                        NULL ));
@@ -533,18 +533,18 @@ void TGraphicalModWindow::redrawModules()
         for (cModule::GateIterator i(mod); !i.end(); i++)
         {
             cGate *gate = i();
-            cGate *dest_gate = gate->toGate();
-            if (gate->type()==(parent ? cGate::INPUT: cGate::OUTPUT) && dest_gate!=NULL)
+            cGate *dest_gate = gate->getToGate();
+            if (gate->getType()==(parent ? cGate::INPUT: cGate::OUTPUT) && dest_gate!=NULL)
             {
                 char gateptr[32], srcptr[32], destptr[32], indices[32];
                 ptrToStr(gate, gateptr);
                 ptrToStr(mod, srcptr);
-                ptrToStr(dest_gate->ownerModule(), destptr);
+                ptrToStr(dest_gate->getOwnerModule(), destptr);
                 sprintf(indices,"%d %d %d %d",
-                        gate->index(), gate->size(),
-                        dest_gate->index(), dest_gate->size());
-                cChannel *chan = gate->channel();
-                const char *dispstr = (chan && chan->hasDisplayString()) ? chan->displayString().str() : "";
+                        gate->getIndex(), gate->size(),
+                        dest_gate->getIndex(), dest_gate->size());
+                cChannel *chan = gate->getChannel();
+                const char *dispstr = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
 
                 CHK(Tcl_VarEval(interp, "draw_connection ",
                         canvas, " ",
@@ -577,17 +577,17 @@ void TGraphicalModWindow::redrawMessages()
       char msgptr[32];
       ptrToStr(msg(),msgptr);
 
-      cModule *arrivalmod = simulation.module( msg()->arrivalModuleId() );
+      cModule *arrivalmod = simulation.getModule( msg()->getArrivalModuleId() );
       if (arrivalmod &&
-          arrivalmod->parentModule()==static_cast<cModule *>(object) &&
-          msg()->arrivalGateId()>=0)
+          arrivalmod->getParentModule()==static_cast<cModule *>(object) &&
+          msg()->getArrivalGateId()>=0)
       {
-         cGate *arrivalGate = msg()->arrivalGate();
+         cGate *arrivalGate = msg()->getArrivalGate();
 
          // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
-         if (arrivalGate->fromGate())
+         if (arrivalGate->getFromGate())
          {
-             cGate *gate = arrivalGate->fromGate();
+             cGate *gate = arrivalGate->getFromGate();
              CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_gate ",
                              canvas, " ",
                              ptrToStr(gate), " ",
@@ -622,8 +622,8 @@ void TGraphicalModWindow::redrawNextEventMarker()
    // if any parent of the module containing the next event is on this canvas, draw marker
    cModule *nextmod = simulation.guessNextModule();
    cModule *nextmodparent = nextmod;
-   while (nextmodparent && nextmodparent->parentModule()!=mod)
-       nextmodparent = nextmodparent->parentModule();
+   while (nextmodparent && nextmodparent->getParentModule()!=mod)
+       nextmodparent = nextmodparent->getParentModule();
    if (nextmodparent)
    {
        CHK(Tcl_VarEval(interp, "graphmodwin_draw_nexteventmarker ",
@@ -742,7 +742,7 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
    cPar *par;
    TRY( par = displayStringPar(parname, mod, searchparents) );
 
-   if (par->type()=='S')
+   if (par->getType()=='S')
    {
       Tcl_SetResult(interp, TCLCONST(par->stdstringValue().c_str()), TCL_VOLATILE);
    }
@@ -839,12 +839,12 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //
 //    cCompoundModule *mod = static_cast<cCompoundModule *>(object);
 //
-//    //setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+//    //setToolbarInspectButton(".toolbar.parent", mod->getParentModule(),INSP_DEFAULT);
 //
-//    setEntry(".nb.info.name.e", mod->name());
-//    char id[16]; sprintf(id,"%ld", (long)mod->id());
+//    setEntry(".nb.info.name.e", mod->getName());
+//    char id[16]; sprintf(id,"%ld", (long)mod->getId());
 //    setLabel(".nb.info.id.e", id);
-//    setEntry(".nb.info.dispstr.e", mod->displayString());
+//    setEntry(".nb.info.dispstr.e", mod->getDisplayString());
 //    setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
 //
 //    deleteInspectorListbox(".nb.contents");
@@ -855,7 +855,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 // {
 //    cCompoundModule *mod = static_cast<cCompoundModule *>(object);
 //    mod->setName(getEntry(".nb.info.name.e"));
-//    mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
+//    mod->getDisplayString().parse(getEntry(".nb.info.dispstr.e"));
 //    mod->backgroundDisplayString().parse(getEntry(".nb.info.dispstrpt.e"));
 //
 //    TInspector::writeBack();    // must be there after all changes
@@ -904,17 +904,17 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //    cSimpleModule *mod = static_cast<cSimpleModule *>(object);
 //
 //    char buf[40];
-//    setEntry(".nb.info.name.e", mod->name());
-//    sprintf(buf,"%ld", (long)mod->id());
+//    setEntry(".nb.info.name.e", mod->getName());
+//    sprintf(buf,"%ld", (long)mod->getId());
 //    setLabel(".nb.info.id.e", buf);
-//    setEntry(".nb.info.dispstr.e", mod->displayString());
+//    setEntry(".nb.info.dispstr.e", mod->getDisplayString());
 //    setEntry(".nb.info.dispstrpt.e", mod->backgroundDisplayString());
 //    setLabel(".nb.info.state.e",  modstate[ mod->moduleState() ]  );
 //    if (mod->usesActivity())
 //    {
-//       unsigned stk = mod->stackSize();
-//       unsigned extra = ev.extraStackForEnvir();
-//       unsigned used = mod->stackUsage();
+//       unsigned stk = mod->getStackSize();
+//       unsigned extra = ev.getExtraStackForEnvir();
+//       unsigned used = mod->getStackUsage();
 //       sprintf(buf,"%u + %u = %u bytes", stk-extra, extra, stk);
 //       setLabel(".nb.info.stacksize.e", buf );
 //       sprintf(buf,"approx. %u bytes", used);
@@ -934,7 +934,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 // {
 //    cSimpleModule *mod = static_cast<cSimpleModule *>(object);
 //    mod->setName(getEntry(".nb.info.name.e"));
-//    mod->displayString().parse(getEntry(".nb.info.dispstr.e"));
+//    mod->getDisplayString().parse(getEntry(".nb.info.dispstr.e"));
 //    mod->backgroundDisplayString().parse(getEntry(".nb.info.dispstrpt.e"));
 //
 //    TInspector::writeBack();    // must be there after all changes
@@ -981,17 +981,17 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //
 //    cGate *g = static_cast<cGate *>(object);
 //
-//    setEntry(".nb.info.name.e", g->name());
+//    setEntry(".nb.info.name.e", g->getName());
 //    char buf[64];
-//    sprintf(buf,"#%d", g->id());
+//    sprintf(buf,"#%d", g->getId());
 //    setLabel(".nb.info.id.e", buf);
-//    setEntry(".nb.info.dispstr.e", g->displayString().str());
-//    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
+//    setEntry(".nb.info.dispstr.e", g->getDisplayString().str());
+//    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->getChannel());
 //    if (ch)
 //    {
-//        setEntry(".nb.info.delay.e", ch->delay());
-//        setEntry(".nb.info.error.e", ch->error());
-//        setEntry(".nb.info.datarate.e", ch->datarate());
+//        setEntry(".nb.info.delay.e", ch->getDelay());
+//        setEntry(".nb.info.error.e", ch->getError());
+//        setEntry(".nb.info.datarate.e", ch->getDatarate());
 //    }
 //    else
 //    {
@@ -999,18 +999,18 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //        setEntry(".nb.info.error.e", 0.0);
 //        setEntry(".nb.info.datarate.e", 0.0);
 //    }
-//    setLabel(".nb.info.trfinish.e", g->transmissionFinishes());
+//    setLabel(".nb.info.trfinish.e", g->getTransmissionFinishTime());
 //
-//    setInspectButton(".nb.info.from", g->fromGate(), true, INSP_DEFAULT);
-//    setInspectButton(".nb.info.to", g->toGate(), true, INSP_DEFAULT);
+//    setInspectButton(".nb.info.from", g->getFromGate(), true, INSP_DEFAULT);
+//    setInspectButton(".nb.info.to", g->getToGate(), true, INSP_DEFAULT);
 // }
 //
 // void TGateInspector::writeBack()
 // {
 //    cGate *g = static_cast<cGate *>(object);
 //    g->setName(getEntry(".nb.info.name.e"));
-//    g->displayString().parse(getEntry(".nb.info.dispstr.e"));
-//    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->channel());
+//    g->getDisplayString().parse(getEntry(".nb.info.dispstr.e"));
+//    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->getChannel());
 //    double delay = atof(getEntry(".nb.info.delay.e"));
 //    double error = atof(getEntry(".nb.info.error.e"));
 //    double datarate = atof(getEntry(".nb.info.datarate.e"));
@@ -1075,25 +1075,25 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    int xsiz = 0;
    char prevdir = ' ';
    cGate *g;
-   for (g = gate->sourceGate(); g!=NULL; g=g->toGate(),k++)
+   for (g = gate->getSourceGate(); g!=NULL; g=g->getToGate(),k++)
    {
-        if (g->type()==prevdir)
-             xsiz += (g->type()==cGate::OUTPUT) ? 1 : -1;
+        if (g->getType()==prevdir)
+             xsiz += (g->getType()==cGate::OUTPUT) ? 1 : -1;
         else
-             prevdir = g->type();
+             prevdir = g->getType();
 
         char modptr[32], gateptr[32], kstr[16], xstr[16], dir[2];
-        ptrToStr(g->ownerModule(),modptr);
+        ptrToStr(g->getOwnerModule(),modptr);
         ptrToStr(g,gateptr);
         sprintf(kstr,"%d",k);
         sprintf(xstr,"%d",xsiz);
-        dir[0] = g->type(); dir[1]=0;
+        dir[0] = g->getType(); dir[1]=0;
         CHK(Tcl_VarEval(interp, "draw_module_gate ",
                       canvas, " ",
                       modptr, " ",
                       gateptr, " ",
-                      "{",g->ownerModule()->fullPath().c_str(), "} ",
-                      "{",g->fullName(), "} ",
+                      "{",g->getOwnerModule()->getFullPath().c_str(), "} ",
+                      "{",g->getFullName(), "} ",
                       kstr," ",
                       xstr," ",
                       dir, " ",
@@ -1102,14 +1102,14 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
    }
 
    // draw connections
-   for (g = gate->sourceGate(); g->toGate()!=NULL; g=g->toGate())
+   for (g = gate->getSourceGate(); g->getToGate()!=NULL; g=g->getToGate())
    {
-        cChannel *channel = g->channel();
+        cChannel *channel = g->getChannel();
         char srcgateptr[32], destgateptr[32];
         ptrToStr(g,srcgateptr);
-        ptrToStr(g->toGate(),destgateptr);
-        cChannel *chan = g->channel();
-        const char *dispstr = (chan && chan->hasDisplayString()) ? chan->displayString().str() : "";
+        ptrToStr(g->getToGate(),destgateptr);
+        cChannel *chan = g->getChannel();
+        const char *dispstr = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
         CHK(Tcl_VarEval(interp, "draw_conn ",
                       canvas, " ",
                       srcgateptr, " ",
@@ -1136,16 +1136,16 @@ void TGraphicalGateWindow::update()
 
    // loop through all messages in the event queue
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
-   cGate *destgate = gate->destinationGate();
+   cGate *destgate = gate->getDestinationGate();
    for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
       char gateptr[32], msgptr[32];
       ptrToStr(msg(),msgptr);
 
-      if (msg()->arrivalGate()== destgate)
+      if (msg()->getArrivalGate()== destgate)
       {
-         cGate *gate = msg()->arrivalGate();
-         if (gate) gate = gate->fromGate();
+         cGate *gate = msg()->getArrivalGate();
+         if (gate) gate = gate->getFromGate();
          if (gate)
          {
              CHK(Tcl_VarEval(interp, "graphmodwin_draw_message_on_gate ",

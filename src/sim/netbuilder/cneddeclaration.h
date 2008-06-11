@@ -64,7 +64,7 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
     mutable StringPropsMap connectionPropsMap;
 
     // cached expressions: NED expressions (ExpressionElement) compiled into
-    // cParImpl get cached here, indexed by exprNode->id().
+    // cParImpl get cached here, indexed by exprNode->getId().
     typedef std::map<long, cParImpl *> SharedParImplMap;
     SharedParImplMap parimplMap;
 
@@ -103,11 +103,11 @@ class SIM_API cNEDDeclaration : public NEDTypeInfo
 
     /** @name Properties of this type, its parameters, gates etc. */
     //@{
-    virtual cProperties *properties() const;
-    virtual cProperties *paramProperties(const char *paramName) const;
-    virtual cProperties *gateProperties(const char *gateName) const;
-    virtual cProperties *submoduleProperties(const char *submoduleName, const char *submoduleType) const;
-    virtual cProperties *connectionProperties(int connectionId, const char *channelType) const;
+    virtual cProperties *getProperties() const;
+    virtual cProperties *getParamProperties(const char *paramName) const;
+    virtual cProperties *getGateProperties(const char *gateName) const;
+    virtual cProperties *getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const;
+    virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const;
     //@}
 
     /** @name Caching of pre-built cParImpls, so that we we don't have to build them from NEDElements every time */

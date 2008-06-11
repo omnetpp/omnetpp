@@ -49,7 +49,7 @@ cComponentType::~cComponentType()
 
 cComponentType *cComponentType::find(const char *qname)
 {
-    return dynamic_cast<cComponentType *>(componentTypes.instance()->lookup(qname));
+    return dynamic_cast<cComponentType *>(componentTypes.getInstance()->lookup(qname));
 }
 
 cParImpl *cComponentType::getSharedParImpl(const char *key) const
@@ -101,7 +101,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 
     // Object members of the new module class are collected to tmplist.
     cDefaultList tmplist;
-    cDefaultList *oldlist = cOwnedObject::defaultOwner();
+    cDefaultList *oldlist = cOwnedObject::getDefaultOwner();
     cOwnedObject::setDefaultOwner(&tmplist);
 
     // create the new module object
@@ -122,7 +122,7 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     if (parentmod)
         parentmod->insertSubmodule(mod);
 
-    // set system module (must be done before takeAllObjectsFrom(tmplist) because
+    // set system getModule(must be done before takeAllObjectsFrom(tmplist) because
     // if parentmod==NULL, mod itself is on tmplist)
     if (!parentmod)
          simulation.setSystemModule(mod);
@@ -163,7 +163,7 @@ cModule *cModuleType::createScheduleInit(const char *modname, cModule *parentmod
 {
     if (!parentmod)
         throw cRuntimeError("createScheduleInit(): parent module pointer cannot be NULL "
-                            "when creating module named '%s' of type %s", modname, fullName());
+                            "when creating module named '%s' of type %s", modname, getFullName());
     cModule *mod = create(modname, parentmod);
     mod->finalizeParameters();
     mod->buildInside();
@@ -174,7 +174,7 @@ cModule *cModuleType::createScheduleInit(const char *modname, cModule *parentmod
 
 cModuleType *cModuleType::find(const char *qname)
 {
-    return dynamic_cast<cModuleType *>(componentTypes.instance()->lookup(qname));
+    return dynamic_cast<cModuleType *>(componentTypes.getInstance()->lookup(qname));
 }
 
 //----
@@ -201,7 +201,7 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
 
     // Object members of the new channel class are collected to tmplist.
     cDefaultList tmplist;
-    cDefaultList *oldlist = cOwnedObject::defaultOwner();
+    cDefaultList *oldlist = cOwnedObject::getDefaultOwner();
     cOwnedObject::setDefaultOwner(&tmplist);
 
     // create channel object
@@ -251,7 +251,7 @@ cBasicChannel *cChannelType::createBasicChannel(const char *name, cModule *paren
 
 cChannelType *cChannelType::find(const char *qname)
 {
-    return dynamic_cast<cChannelType *>(componentTypes.instance()->lookup(qname));
+    return dynamic_cast<cChannelType *>(componentTypes.getInstance()->lookup(qname));
 }
 
 

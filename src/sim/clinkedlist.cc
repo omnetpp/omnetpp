@@ -38,7 +38,7 @@ Register_Class(cLinkedList);
 cLinkedList::cLinkedList(const cLinkedList& llist) : cOwnedObject()
 {
     headp = tailp = NULL; n = 0;
-    setName( llist.name() );
+    setName( llist.getName() );
     operator=(llist);
 }
 

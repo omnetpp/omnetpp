@@ -504,7 +504,7 @@ sub processFile()
 
         print CC "EXECUTE_ON_STARTUP(\n";
         print CC "    cEnum *e = cEnum::find(\"$enumname\");\n";
-        print CC "    if (!e) enums.instance()->add(e = new cEnum(\"$enumname\"));\n";
+        print CC "    if (!e) enums.getInstance()->add(e = new cEnum(\"$enumname\"));\n";
         foreach $fieldname (@fieldlist)
         {
             print CC "    e->insert($fieldname, \"$fieldname\");\n";
@@ -1150,7 +1150,7 @@ sub generateClass
             } else {
                 print H " *     $realmsgclass(const char *name=NULL) : $msgclass(name) {}\n";
             }
-            print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass(other.name()) {operator=(other);}\n";
+            print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass(other.getName()) {operator=(other);}\n";
         } else {
             print H " *     $realmsgclass() : $msgclass() {}\n";
             print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass() {operator=(other);}\n";
@@ -1330,7 +1330,7 @@ sub generateClass
     }
     print CC "{\n";
     if ($classtype eq "cobject") {
-        print CC "    setName(other.name());\n";
+        print CC "    setName(other.getName());\n";
     }
     foreach $fieldname (@fieldlist)
     {
@@ -1386,7 +1386,7 @@ sub generateClass
                 print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
                 if ($classtype{$ftype{$fieldname}} eq 'cobject') {
                     print CC "    for (unsigned int i=0; i<$farraysize{$fieldname}; i++)\n";
-                    print CC "        this->$var{$fieldname}\[i\].setName(other.$var{$fieldname}\[i\].name());\n";
+                    print CC "        this->$var{$fieldname}\[i\].setName(other.$var{$fieldname}\[i\].getName());\n";
                 }
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "    delete [] this->$var{$fieldname};\n";
@@ -1397,7 +1397,7 @@ sub generateClass
                     print CC "    {\n";
                     print CC "        take(&(this->$var{$fieldname}\[i\]));\n";
                     print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
-                    print CC "        this->$var{$fieldname}\[i\].setName(other.$var{$fieldname}\[i\].name());\n";
+                    print CC "        this->$var{$fieldname}\[i\].setName(other.$var{$fieldname}\[i\].getName());\n";
                     print CC "    }\n";
                 } else {
                     print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
@@ -1405,7 +1405,7 @@ sub generateClass
             } else {
                 print CC "    this->$var{$fieldname} = other.$var{$fieldname};\n";
                 if (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cobject') {
-                    print CC "    this->$var{$fieldname}.setName(other.$var{$fieldname}.name());\n";
+                    print CC "    this->$var{$fieldname}.setName(other.$var{$fieldname}.getName());\n";
                 }
             }
         }

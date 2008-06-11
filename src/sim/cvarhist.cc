@@ -350,7 +350,7 @@ void cVarHistogram::clearResult() //--LG
 }
 
 // return kth basepoint
-double cVarHistogram::basepoint(int k) const
+double cVarHistogram::getBasepoint(int k) const
 {
     if (k<num_cells+1)
         return bin_bounds[k];
@@ -358,7 +358,7 @@ double cVarHistogram::basepoint(int k) const
         throw cRuntimeError(this,"invalid basepoint index %u",k);
 }
 
-double cVarHistogram::cell(int k) const
+double cVarHistogram::getCellValue(int k) const
 {
     if (k<num_cells)
         return cellv[k];
@@ -395,13 +395,13 @@ double cVarHistogram::random() const //--LG
     }
 }
 
-double cVarHistogram::pdf(double x) const // --LG
+double cVarHistogram::getPDF(double x) const // --LG
 {
     if (!num_vals)
         return 0.0;
 
     if (!isTransformed())
-        throw cRuntimeError(this,"pdf(x) cannot be called before histogram is transformed");
+        throw cRuntimeError(this,"getPDF(x) cannot be called before histogram is transformed");
 
     if (x<rangemin || x>=rangemax)
         return 0.0;
@@ -427,9 +427,9 @@ double cVarHistogram::pdf(double x) const // --LG
     return cellv[lower_index]/(bin_bounds[lower_index+1]-bin_bounds[lower_index])/num_vals;
 }
 
-double cVarHistogram::cdf(double) const
+double cVarHistogram::getCDF(double) const
 {
-    throw cRuntimeError(this,"cdf(x) not implemented");
+    throw cRuntimeError(this,"getCDF(x) not implemented");
 }
 
 void cVarHistogram::saveToFile(FILE *f) const //--LG

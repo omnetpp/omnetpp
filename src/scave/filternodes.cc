@@ -42,7 +42,7 @@ void NopNode::process()
 
 //--
 
-const char *NopNodeType::description() const
+const char *NopNodeType::getDescription() const
 {
     return "Does nothing";
 }
@@ -82,7 +82,7 @@ void AdderNode::process()
 
 //--
 
-const char *AdderNodeType::description() const
+const char *AdderNodeType::getDescription() const
 {
     return "Adds a constant to the input: y(t) = x(t)+c";
 }
@@ -107,7 +107,7 @@ Node *AdderNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void AdderNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double"; // XXX int?
 }
 
@@ -132,7 +132,7 @@ void MultiplierNode::process()
 
 //--
 
-const char *MultiplierNodeType::description() const
+const char *MultiplierNodeType::getDescription() const
 {
     return "Multiplies input by a constant: y(t) = a*x(t)";
 }
@@ -162,7 +162,7 @@ Node *MultiplierNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void MultiplierNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double"; // XXX int?
 }
 
@@ -187,7 +187,7 @@ void DividerNode::process()
 
 //--
 
-const char *DividerNodeType::description() const
+const char *DividerNodeType::getDescription() const
 {
     return "Divides input by a constant: y(t) = x(t)/a";
 }
@@ -217,7 +217,7 @@ Node *DividerNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void DividerNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
@@ -243,7 +243,7 @@ void ModuloNode::process()
 
 //--
 
-const char *ModuloNodeType::description() const
+const char *ModuloNodeType::getDescription() const
 {
     return "Computes input modulo a constant: y(t) = x(t)%a";
 }
@@ -273,7 +273,7 @@ Node *ModuloNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void ModuloNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double"; // XXX int?
 }
 
@@ -303,7 +303,7 @@ void DifferenceNode::process()
 
 //--
 
-const char *DifferenceNodeType::description() const
+const char *DifferenceNodeType::getDescription() const
 {
     return "Substracts the previous value from every value: y[k] = y[k] - y[k-1]";
 }
@@ -329,7 +329,7 @@ Node *DifferenceNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void DifferenceNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     if (attrs["type"] != "int")
         attrs["type"] = "double";
     // TODO interpolation-mode
@@ -360,7 +360,7 @@ void TimeDiffNode::process()
 
 //--
 
-const char *TimeDiffNodeType::description() const
+const char *TimeDiffNodeType::getDescription() const
 {
     return "Returns the difference in time between this and the previous value: y[k] = x[k] - x[k-1]";
 }
@@ -427,7 +427,7 @@ void MovingAverageNode::process()
 
 //--
 
-const char *MovingAverageNodeType::description() const
+const char *MovingAverageNodeType::getDescription() const
 {
     return "Applies the exponentially weighted moving average filter:\n"
            "yout[k] = yout[k-1] + alpha*(y[k]-yout[k-1])";
@@ -458,7 +458,7 @@ Node *MovingAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) cons
 void MovingAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
@@ -487,7 +487,7 @@ void SumNode::process()
 
 //--
 
-const char *SumNodeType::description() const
+const char *SumNodeType::getDescription() const
 {
     return "Sums up values: y[k] = SUM(y[i], i=0..k)";
 }
@@ -513,7 +513,7 @@ Node *SumNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void SumNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     if (attrs["type"] != "int")
         attrs["type"] = "double";
 }
@@ -541,7 +541,7 @@ void TimeShiftNode::process()
 
 //--
 
-const char *TimeShiftNodeType::description() const
+const char *TimeShiftNodeType::getDescription() const
 {
     return "Shifts the input series in time by a constant: y(t) = x(t-dt)";
 }
@@ -584,7 +584,7 @@ void LinearTrendNode::process()
 
 //--
 
-const char *LinearTrendNodeType::description() const
+const char *LinearTrendNodeType::getDescription() const
 {
     return "Adds linear component to input series: y(t) = x(t) + a*t";
 }
@@ -614,7 +614,7 @@ Node *LinearTrendNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void LinearTrendNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
@@ -640,7 +640,7 @@ void CropNode::process()
 
 //--
 
-const char *CropNodeType::description() const
+const char *CropNodeType::getDescription() const
 {
     return "Discards values outside the [t1, t2] interval";
 }
@@ -688,14 +688,14 @@ void MeanNode::process()
 void MeanNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
 
 //--
 
-const char *MeanNodeType::description() const
+const char *MeanNodeType::getDescription() const
 {
     return "Calculates mean on (0,t)";
 }
@@ -739,7 +739,7 @@ void RemoveRepeatsNode::process()
 
 //--
 
-const char *RemoveRepeatsNodeType::description() const
+const char *RemoveRepeatsNodeType::getDescription() const
 {
     return "Removes repeated y values";
 }
@@ -804,7 +804,7 @@ void CompareNode::process()
 
 //--
 
-const char *CompareNodeType::description() const
+const char *CompareNodeType::getDescription() const
 {
     return "Compares value against a threshold, and optionally replaces it with a constant";
 }
@@ -869,7 +869,7 @@ void IntegrateNode::process()
 
 //--
 
-const char *IntegrateNodeType::description() const
+const char *IntegrateNodeType::getDescription() const
 {
     return "Integrates the input as a step function (sample-hold or backward-sample-hold) or with linear interpolation";
 }
@@ -909,7 +909,7 @@ Node *IntegrateNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void IntegrateNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
@@ -943,7 +943,7 @@ void TimeAverageNode::process()
 
 //--
 
-const char *TimeAverageNodeType::description() const
+const char *TimeAverageNodeType::getDescription() const
 {
     return "Calculates the time average of the input (integral divided by time)";
 }
@@ -983,7 +983,7 @@ Node *TimeAverageNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void TimeAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
@@ -1008,7 +1008,7 @@ void DivideByTimeNode::process()
 
 //--
 
-const char *DivideByTimeNodeType::description() const
+const char *DivideByTimeNodeType::getDescription() const
 {
     return "Divides input by the current time: y(t) = x(t)/t";
 }
@@ -1030,7 +1030,7 @@ Node *DivideByTimeNodeType::create(DataflowManager *mgr, StringMap& attrs) const
 void DivideByTimeNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     if (attrs["type"] == "enum")
-        warnings.push_back(std::string("Applying '") + name() + "' to an enum");
+        warnings.push_back(std::string("Applying '") + getName() + "' to an enum");
     attrs["type"] = "double";
 }
 
@@ -1057,7 +1057,7 @@ void TimeToSerialNode::process()
 
 //--
 
-const char *TimeToSerialNodeType::description() const
+const char *TimeToSerialNodeType::getDescription() const
 {
     return "Replaces time values with their index: t -> k";
 }

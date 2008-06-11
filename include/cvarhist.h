@@ -99,7 +99,7 @@ class SIM_API cVarHistogram : public cHistogramBase
      * Copy constructor.
      */
     cVarHistogram(const cVarHistogram& r) : cHistogramBase(r)
-       {setName(r.name());bin_bounds=NULL;operator=(r);}
+       {setName(r.getName());bin_bounds=NULL;operator=(r);}
 
     /**
      * Constructor. The third argument can be one of HIST_TR_NO_TRANSFORM,
@@ -174,22 +174,22 @@ class SIM_API cVarHistogram : public cHistogramBase
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x) const;
+    virtual double getPDF(double x) const;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x) const;
+    virtual double getCDF(double x) const;
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k) const;
+    virtual double getBasepoint(int k) const;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k) const;
+    virtual double getCellValue(int k) const;
 
     /**
      * Writes the contents of the object into a text file.

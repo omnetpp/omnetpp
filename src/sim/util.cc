@@ -193,14 +193,14 @@ void opp_warning(ErrorCode errorcode...)
     vsprintf(message, cErrorMessages::get(errorcode),va);
     va_end(va);
 
-    if (!simulation.contextModule())
+    if (!simulation.getContextModule())
     {
         // we're called from global context
         ev.printfmsg("%s.", message);
     }
     else
     {
-        ev.printfmsg("Module %s: %s.", simulation.contextModule()->fullPath().c_str(), message);
+        ev.printfmsg("Module %s: %s.", simulation.getContextModule()->getFullPath().c_str(), message);
     }
 }
 
@@ -212,14 +212,14 @@ void opp_warning(const char *msgformat...)
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    if (!simulation.contextModule())
+    if (!simulation.getContextModule())
     {
         // we're called from global context
         ev.printfmsg("%s.", message);
     }
     else
     {
-        ev.printfmsg("Module %s: %s.", simulation.contextModule()->fullPath().c_str(), message);
+        ev.printfmsg("Module %s: %s.", simulation.getContextModule()->getFullPath().c_str(), message);
     }
 }
 
@@ -314,7 +314,7 @@ const char *opp_typename(const std::type_info& t)
 cContextSwitcher::cContextSwitcher(cComponent *newContext)
 {
     // save current context and switch to new
-    callerContext = simulation.context();
+    callerContext = simulation.getContext();
     simulation.setContext(newContext);
 }
 
@@ -338,10 +338,10 @@ cMethodCallContextSwitcher::cMethodCallContextSwitcher(cComponent *newContext, b
 
 void cMethodCallContextSwitcher::methodCall(const char *fmt,...)
 {
-    cComponent *newContext = simulation.context();
+    cComponent *newContext = simulation.getContext();
     if (newContext!=callerContext)
     {
-        //FIXME move vsprintf into componentMethodBegin()! so that it can be skipped when ev.disabled() AND not logging into a file!!! this speeds up simulations a lot! [from Ingmar Baumgart, Dec 15 2006]
+        //FIXME move vsprintf into componentMethodBegin()! so that it can be skipped when ev.isDisabled() AND not logging into a file!!! this speeds up simulations a lot! [from Ingmar Baumgart, Dec 15 2006]
         static char buf[MAX_METHODCALL];
         va_list va;
         va_start(va, fmt);
@@ -354,7 +354,7 @@ void cMethodCallContextSwitcher::methodCall(const char *fmt,...)
 
 cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 {
-    cComponent *methodContext = simulation.context();
+    cComponent *methodContext = simulation.getContext();
     if (methodContext!=callerContext)
         EVCB.componentMethodEnd();
 }
@@ -364,7 +364,7 @@ cMethodCallContextSwitcher::~cMethodCallContextSwitcher()
 cContextTypeSwitcher::cContextTypeSwitcher(int ctxtype)
 {
     // save current context type and switch to new one
-    contexttype = simulation.contextType();
+    contexttype = simulation.getContextType();
     simulation.setContextType(ctxtype);
 }
 

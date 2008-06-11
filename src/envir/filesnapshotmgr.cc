@@ -50,7 +50,7 @@ cFileSnapshotManager::~cFileSnapshotManager()
 void cFileSnapshotManager::startRun()
 {
     // clean up file from previous runs
-    fname = ev.config()->getAsFilename(CFGID_SNAPSHOT_FILE).c_str();
+    fname = ev.getConfig()->getAsFilename(CFGID_SNAPSHOT_FILE).c_str();
     dynamic_cast<EnvirBase *>(&ev)->processFileName(fname);
     removeFile(fname.c_str(), "old snapshot file");
 }
@@ -71,7 +71,7 @@ void cFileSnapshotManager::releaseStreamForSnapshot(std::ostream *os)
     delete os;
 }
 
-const char *cFileSnapshotManager::fileName() const
+const char *cFileSnapshotManager::getFileName() const
 {
     return fname.c_str();
 }

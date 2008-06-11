@@ -45,7 +45,7 @@ class SIM_API cStdVectorWatcherBase : public cWatchBase
     virtual std::string detailedInfo() const;
     virtual bool supportsAssignment() const {return false;}
 
-    virtual const char *elemTypeName() const = 0;
+    virtual const char *getElemTypeName() const = 0;
     virtual int size() const = 0;
     virtual std::string at(int i) const = 0;
     virtual cClassDescriptor *getDescriptor();
@@ -65,8 +65,8 @@ class cStdVectorWatcher : public cStdVectorWatcherBase
     cStdVectorWatcher(const char *name, std::vector<T>& var) : cStdVectorWatcherBase(name), v(var) {
         classname = std::string("std::vector<")+opp_typename(typeid(T))+">";
     }
-    const char *className() const {return classname.c_str();}
-    virtual const char *elemTypeName() const {return opp_typename(typeid(T));}
+    const char *getClassName() const {return classname.c_str();}
+    virtual const char *getElemTypeName() const {return opp_typename(typeid(T));}
     virtual int size() const {return v.size();}
     virtual std::string at(int i) const {std::stringstream out; out << v[i]; return out.str();}
 };
@@ -111,8 +111,8 @@ class cStdListWatcher : public cStdVectorWatcherBase
         itPos=-1;
         classname = std::string("std::list<")+opp_typename(typeid(T))+">";
     }
-    const char *className() const {return classname.c_str();}
-    virtual const char *elemTypeName() const {return opp_typename(typeid(T));}
+    const char *getClassName() const {return classname.c_str();}
+    virtual const char *getElemTypeName() const {return opp_typename(typeid(T));}
     virtual int size() const {return v.size();}
     virtual std::string at(int i) const {
         // std::list doesn't support random access iterator and iteration is slow,
@@ -184,8 +184,8 @@ class cStdSetWatcher : public cStdVectorWatcherBase
         itPos=-1;
         classname = std::string("std::set<")+opp_typename(typeid(T))+">";
     }
-    const char *className() const {return classname.c_str();}
-    virtual const char *elemTypeName() const {return opp_typename(typeid(T));}
+    const char *getClassName() const {return classname.c_str();}
+    virtual const char *getElemTypeName() const {return opp_typename(typeid(T));}
     virtual int size() const {return v.size();}
     virtual std::string at(int i) const {
         // std::set doesn't support random access iterator and iteration is slow,
@@ -257,8 +257,8 @@ class cStdMapWatcher : public cStdVectorWatcherBase
         itPos=-1;
         classname = std::string("std::map<")+opp_typename(typeid(KeyT))+","+opp_typename(typeid(ValueT))+">";
     }
-    const char *className() const {return classname.c_str();}
-    virtual const char *elemTypeName() const {return "struct pair<*,*>";}
+    const char *getClassName() const {return classname.c_str();}
+    virtual const char *getElemTypeName() const {return "struct pair<*,*>";}
     virtual int size() const {return m.size();}
     virtual std::string at(int i) const {
         // std::map doesn't support random access iterator and iteration is slow,

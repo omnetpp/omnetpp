@@ -154,7 +154,7 @@ class SIM_API cMessageHeap : public cOwnedObject
     /**
      * Returns the mth message in the heap if 0 <= m < length(), and NULL
      * otherwise. Note that iteration does not necessarily return messages
-     * in increasing timestamp (arrivalTime()) order unless you called
+     * in increasing timestamp (getArrivalTime()) order unless you called
      * sort() before.
      */
     cMessage *peek(int m);

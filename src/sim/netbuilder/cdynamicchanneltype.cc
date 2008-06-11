@@ -35,7 +35,7 @@ cNEDDeclaration *cDynamicChannelType::getDecl() const
 {
     // do not store the pointer, because the declaration object may have been
     // thrown out of cNEDLoader to conserve memory
-    cNEDDeclaration *decl = cNEDLoader::instance()->getDecl(fullName());
+    cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(getFullName());
     ASSERT(decl->getType()==cNEDDeclaration::CHANNEL);
     return decl;
 }
@@ -62,30 +62,30 @@ void cDynamicChannelType::addParametersTo(cChannel *channel)
     cNEDNetworkBuilder().addParametersTo(channel, decl);
 }
 
-cProperties *cDynamicChannelType::properties() const
+cProperties *cDynamicChannelType::getProperties() const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->properties();
+    return decl->getProperties();
 }
 
-cProperties *cDynamicChannelType::paramProperties(const char *paramName) const
+cProperties *cDynamicChannelType::getParamProperties(const char *paramName) const
 {
     cNEDDeclaration *decl = getDecl();
-    return decl->paramProperties(paramName);
+    return decl->getParamProperties(paramName);
 }
 
-cProperties *cDynamicChannelType::gateProperties(const char *gateName) const
+cProperties *cDynamicChannelType::getGateProperties(const char *gateName) const
 {
-    throw cRuntimeError("cDynamicChannelType::gateProperties(): channels have no gates");
+    throw cRuntimeError("cDynamicChannelType::getGateProperties(): channels have no gates");
 }
 
-cProperties *cDynamicChannelType::submoduleProperties(const char *submoduleName, const char *submoduleType) const
+cProperties *cDynamicChannelType::getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const
 {
-    throw cRuntimeError("cDynamicChannelType::submoduleProperties(): channels do not contain submodules");
+    throw cRuntimeError("cDynamicChannelType::getSubmoduleProperties(): channels do not contain submodules");
 }
 
-cProperties *cDynamicChannelType::connectionProperties(int connectionId, const char *channelType) const
+cProperties *cDynamicChannelType::getConnectionProperties(int connectionId, const char *channelType) const
 {
-    throw cRuntimeError("cDynamicChannelType::connectionProperties(): channels do not contain further connections");
+    throw cRuntimeError("cDynamicChannelType::getConnectionProperties(): channels do not contain further connections");
 }
 

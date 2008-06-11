@@ -41,11 +41,11 @@ class SIM_API cDynamicChannelType : public cChannelType
     cNEDDeclaration *getDecl() const;
 
     // methods redefined from cComponentType
-    virtual cProperties *properties() const;
-    virtual cProperties *paramProperties(const char *paramName) const;
-    virtual cProperties *gateProperties(const char *gateName) const;
-    virtual cProperties *submoduleProperties(const char *submoduleName, const char *submoduleType) const;
-    virtual cProperties *connectionProperties(int connectionId, const char *channelType) const;
+    virtual cProperties *getProperties() const;
+    virtual cProperties *getParamProperties(const char *paramName) const;
+    virtual cProperties *getGateProperties(const char *gateName) const;
+    virtual cProperties *getSubmoduleProperties(const char *submoduleName, const char *submoduleType) const;
+    virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const;
 
   public:
     /**

@@ -167,8 +167,8 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void readParameter(cPar *parameter);
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
-    // leave to subclasses: virtual unsigned extraStackForEnvir();
-    virtual cConfiguration *config();
+    // leave to subclasses: virtual unsigned getExtraStackForEnvir();
+    virtual cConfiguration *getConfig();
 
     // UI functions
     virtual void bubble(cComponent *component, const char *text);
@@ -176,8 +176,8 @@ class ENVIR_API EnvirBase : public cEnvir
     // leave to subclasses: virtual cEnvir& flush();
 
     // RNGs
-    virtual int numRNGs() const;
-    virtual cRNG *rng(int k);
+    virtual int getNumRNGs() const;
+    virtual cRNG *getRNG(int k);
     virtual void getRNGMappingFor(cComponent *component);
 
     // output vectors
@@ -195,8 +195,8 @@ class ENVIR_API EnvirBase : public cEnvir
     virtual void releaseStreamForSnapshot(std::ostream *os);
 
     // misc
-    virtual int argCount() const;
-    virtual char **argVector() const;
+    virtual int getArgCount() const;
+    virtual char **getArgVector() const;
     virtual int getParsimProcId() const;
     virtual int getParsimNumPartitions() const;
     virtual const char *getRunId() const {return runid.c_str();}

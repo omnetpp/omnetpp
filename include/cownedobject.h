@@ -65,7 +65,7 @@ typedef int (*CompareFunc)(cOwnedObject *a, cOwnedObject *b);
  * errors. As a definition, <i>ownership means the exclusive right and duty
  * to delete owned objects.</i>
  *
- * cOwnedObjects hold a pointer to their owner objects; the owner() method returns
+ * cOwnedObjects hold a pointer to their owner objects; the getOwner() method returns
  * this pointer. An example will help to understand how it is used:
  *
  *    - when you insert a cMessage into a cQueue, the cQueue will become
@@ -176,7 +176,7 @@ class SIM_API cOwnedObject : public cNamedObject
      *
      * Assigment copies the contents of the object EXCEPT for the name string.
      * If you want to copy the name string, you can do it by hand:
-     * <tt>setName(o.name()</tt>).
+     * <tt>setName(o.getName()</tt>).
      *
      * Ownership of the object is not affected by assigments.
      */
@@ -201,7 +201,7 @@ class SIM_API cOwnedObject : public cNamedObject
     /**
      * Returns pointer to the owner of the object.
      */
-    virtual cObject *owner() const {return ownerp;}
+    virtual cObject *getOwner() const {return ownerp;}
 
     /**
      * Returns true.
@@ -221,7 +221,7 @@ class SIM_API cOwnedObject : public cNamedObject
      * The default owner is set internally, it is usually the simple module processing
      * the current event.
      */
-    static cDefaultList *defaultOwner();
+    static cDefaultList *getDefaultOwner();
     //@}
 
     /** @name Statistics. */
@@ -233,7 +233,7 @@ class SIM_API cOwnedObject : public cNamedObject
      * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long totalObjectCount() {return total_objs;}
+    static long getTotalObjectCount() {return total_objs;}
 
     /**
      * Returns the number of objects that currently exist in the program.
@@ -241,11 +241,11 @@ class SIM_API cOwnedObject : public cNamedObject
      * the destructor.
      * May be useful for profiling or debugging memory leaks.
      */
-    static long liveObjectCount() {return live_objs;}
+    static long getLiveObjectCount() {return live_objs;}
 
     /**
-     * Reset counters used by totalObjectCount() and liveObjectCount().
-     * (Note that liveObjectCount() may go negative after a reset call.)
+     * Reset counters used by getTotalObjectCount() and getLiveObjectCount().
+     * (Note that getLiveObjectCount() may go negative after a reset call.)
      */
     static void resetObjectCounters()  {total_objs=live_objs=0L;}
     //@}
@@ -302,7 +302,7 @@ class SIM_API cStaticFlag
     cStaticFlag()  {staticflag = true;}
     ~cStaticFlag() {staticflag = false;}
     static void setExiting() {exitingflag = true;}
-    static bool exiting() {return exitingflag;}
+    static bool isExiting() {return exitingflag;}
     static bool isSet() {return staticflag;}
 };
 
@@ -342,7 +342,7 @@ T check_and_cast(cObject *p)
         throw cRuntimeError("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));
     T ret = dynamic_cast<T>(p);
     if (!ret)
-        throw cRuntimeError("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->className(),p->fullPath().c_str(),opp_typename(typeid(T)));
+        throw cRuntimeError("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->getClassName(),p->getFullPath().c_str(),opp_typename(typeid(T)));
     return ret;
 }
 

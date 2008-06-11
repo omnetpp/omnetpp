@@ -26,7 +26,7 @@
 NAMESPACE_BEGIN
 
 #define Register_Enum(NAME, VALUES)  \
-    EXECUTE_ON_STARTUP(enums.instance()->add((new cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))
+    EXECUTE_ON_STARTUP(enums.getInstance()->add((new cEnum(#NAME))->registerNames(#VALUES)->registerValues VALUES))
 
 /**
  * Provides string representation for enums. The class basically implements
@@ -101,7 +101,7 @@ class SIM_API cEnum : public cOwnedObject
      * Look up value and return string representation. Return
      * NULL if not found.
      */
-    const char *stringFor(int value);
+    const char *getStringFor(int value);
 
     /**
      * Look up string and return numeric code. If not found, return

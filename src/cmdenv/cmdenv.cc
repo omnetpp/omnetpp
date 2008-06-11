@@ -101,7 +101,7 @@ void Cmdenv::readOptions()
 {
     EnvirBase::readOptions();
 
-    cConfiguration *cfg = config();
+    cConfiguration *cfg = getConfig();
 
     // note: configname and runstoexec will possibly be overwritten
     // with the -c, -r command-line options in our setup() method
@@ -126,7 +126,7 @@ void Cmdenv::readPerRunOptions()
 {
     EnvirBase::readPerRunOptions();
 
-    cConfiguration *cfg = config();
+    cConfiguration *cfg = getConfig();
     opt_expressmode = cfg->getAsBool(CFGID_EXPRESS_MODE);
     opt_interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
     opt_autoflush = cfg->getAsBool(CFGID_AUTOFLUSH);
@@ -200,7 +200,7 @@ int Cmdenv::run()
 
     setupSignals();
 
-    cConfiguration *cfg = config();
+    cConfiguration *cfg = getConfig();
 
     if (opt_printnumruns)
     {
@@ -229,7 +229,7 @@ int Cmdenv::run()
     }
 
     EnumStringIterator runiterator(opt_runstoexec.c_str());
-    if (runiterator.error())
+    if (runiterator.hasError())
     {
         ev.printfmsg("Error parsing list of runs to execute: `%s'", opt_runstoexec.c_str());
         return 1;
@@ -385,19 +385,19 @@ void Cmdenv::simulate()
                if (opt_eventbanners && mod->isEvEnabled())
                {
                    ::fprintf(fout, "** Event #%ld  T=%s%s.  (%s) %s (id=%d)\n",
-                           simulation.eventNumber(),
+                           simulation.getEventNumber(),
                            SIMTIME_STR(simulation.simTime()),
                            progressPercentage(),
-                           mod->className(),
-                           mod->fullPath().c_str(),
-                           mod->id()
+                           mod->getClassName(),
+                           mod->getFullPath().c_str(),
+                           mod->getId()
                          );
                    if (opt_eventbanner_details)
                    {
                        ::fprintf(fout, "   Elapsed: %s   Messages: created: %ld  present: %ld  in FES: %d\n",
                                timeToStr(totalElapsed()),
-                               cMessage::totalMessageCount(),
-                               cMessage::liveMessageCount(),
+                               cMessage::getTotalMessageCount(),
+                               cMessage::getLiveMessageCount(),
                                simulation.msgQueue.length());
                    }
                }
@@ -432,15 +432,15 @@ void Cmdenv::simulate()
                speedometer.addEvent(simulation.simTime()); //XXX potential performance hog
 
                // print event banner from time to time
-               // ... if (simulation.eventNumber() >= last_update_ev + opt_status_frequency_ev && ...
-               if (simulation.eventNumber()%opt_status_frequency_ev==0)
+               // ... if (simulation.getEventNumber() >= last_update_ev + opt_status_frequency_ev && ...
+               if (simulation.getEventNumber()%opt_status_frequency_ev==0)
                {
                    speedometer.beginNewInterval();
 
                    if (opt_perfdisplay)
                    {
                        ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s%s\n",
-                               simulation.eventNumber(),
+                               simulation.getEventNumber(),
                                SIMTIME_STR(simulation.simTime()),
                                timeToStr(totalElapsed()),
                                progressPercentage());
@@ -450,14 +450,14 @@ void Cmdenv::simulate()
                                speedometer.eventsPerSimSec());
 
                        ::fprintf(fout, "     Messages:  created: %ld   present: %ld   in FES: %d\n",
-                               cMessage::totalMessageCount(),
-                               cMessage::liveMessageCount(),
+                               cMessage::getTotalMessageCount(),
+                               cMessage::getLiveMessageCount(),
                                simulation.msgQueue.length());
                    }
                    else
                    {
                        ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s%s   ev/sec=%g\n",
-                               simulation.eventNumber(),
+                               simulation.getEventNumber(),
                                SIMTIME_STR(simulation.simTime()),
                                timeToStr(totalElapsed()),
                                progressPercentage(),
@@ -510,8 +510,8 @@ void Cmdenv::sputn(const char *s, int n)
 
     EnvirBase::sputn(s, n);
 
-    cModule *ctxmod = simulation.contextModule();  //FIXME shouldn't this be "component" ?
-    if (!ctxmod || (opt_modulemsgs && ctxmod->isEvEnabled()) || simulation.contextType()==CTX_FINISH)
+    cModule *ctxmod = simulation.getContextModule();  //FIXME shouldn't this be "component" ?
+    if (!ctxmod || (opt_modulemsgs && ctxmod->isEvEnabled()) || simulation.getContextType()==CTX_FINISH)
     {
         ::fwrite(s,1,n,fout);
         if (opt_autoflush)
@@ -582,7 +582,7 @@ void Cmdenv::moduleCreated(cModule *mod)
 {
     EnvirBase::moduleCreated(mod);
 
-    bool ev_enabled = ev.config()->getAsBool(mod->fullPath().c_str(), CFGID_CMDENV_EV_OUTPUT);
+    bool ev_enabled = ev.getConfig()->getAsBool(mod->getFullPath().c_str(), CFGID_CMDENV_EV_OUTPUT);
     mod->setEvEnabled(ev_enabled);
 }
 
@@ -627,7 +627,7 @@ void Cmdenv::printUISpecificHelp()
     ev << "\n";
 }
 
-unsigned Cmdenv::extraStackForEnvir() const
+unsigned Cmdenv::getExtraStackForEnvir() const
 {
     return opt_extrastack;
 }

@@ -72,7 +72,7 @@ void StddevNode::collect(double val)
     }
 }
 
-double StddevNode::variance() const
+double StddevNode::getVariance() const
 {
     if (num_vals<=1)
         return 0.0;
@@ -86,15 +86,15 @@ double StddevNode::variance() const
     }
 }
 
-double StddevNode::stddev() const
+double StddevNode::getStddev() const
 {
-    return sqrt( variance() );
+    return sqrt( getVariance() );
 }
 
 
 //------
 
-const char *StddevNodeType::description() const
+const char *StddevNodeType::getDescription() const
 {
     return "Collects basic statistics like min, max, mean, stddev.";
 }

@@ -53,7 +53,7 @@ class SIM_API cBoolParImpl : public cParImpl
     /**
      * Copy constructor.
      */
-    cBoolParImpl(const cBoolParImpl& other) {setName(other.name()); operator=(other);}
+    cBoolParImpl(const cBoolParImpl& other) {setName(other.getName()); operator=(other);}
 
     /**
      * Destructor.
@@ -156,7 +156,7 @@ class SIM_API cBoolParImpl : public cParImpl
     /**
      * Returns pointer to the expression stored by the object, or NULL.
      */
-    virtual cExpression *expression() const;
+    virtual cExpression *getExpression() const;
     //@}
 
     /** @name Type, prompt text, input flag, change flag. */
@@ -165,7 +165,7 @@ class SIM_API cBoolParImpl : public cParImpl
     /**
      * Returns BOOL.
      */
-    virtual Type type() const;
+    virtual Type getType() const;
 
     /**
      * Returns true.

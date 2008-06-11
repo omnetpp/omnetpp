@@ -126,7 +126,7 @@ void cDensityEstBase::merge(const cStatistic *other)
 {
     if (dynamic_cast<const cDensityEstBase *>(other)==NULL)
         throw cRuntimeError(this, "Cannot merge non-histogram (non-cDensityEstBase) statistics (%s)%s into a histogram type",
-                                  other->className(), other->fullPath().c_str());
+                                  other->getClassName(), other->getFullPath().c_str());
 
     const cDensityEstBase *otherd = (const cDensityEstBase *)other;
 
@@ -147,18 +147,18 @@ void cDensityEstBase::merge(const cStatistic *other)
             transform();
 
         // make sure that cells are aligned
-        if (cells() != otherd->cells())
+        if (getNumCells() != otherd->getNumCells())
             throw cRuntimeError(this, "Cannot merge (%s)%s: different number of histogram cells (%d vs %d)",
-                                      otherd->className(), otherd->fullPath().c_str(), cells(), otherd->cells());
-        int n = cells();
+                                      otherd->getClassName(), otherd->getFullPath().c_str(), getNumCells(), otherd->getNumCells());
+        int n = getNumCells();
         for (int i=0; i<=n; i++)
-            if (basepoint(i) != otherd->basepoint(i))
+            if (getBasepoint(i) != otherd->getBasepoint(i))
                 throw cRuntimeError(this, "Cannot merge (%s)%s: histogram cells are not aligned",
-                                          otherd->className(), otherd->fullPath().c_str());
+                                          otherd->getClassName(), otherd->getFullPath().c_str());
 
         // merge underflow/overflow cells
-        cell_under += otherd->underflowCell(); //FIXME check overflow!! but this is unsigned long....
-        cell_over += otherd->overflowCell();
+        cell_under += otherd->getUnderflowCell(); //FIXME check overflow!! but this is unsigned long....
+        cell_over += otherd->getOverflowCell();
 
         // then merge cell counters
         doMergeCellValues(otherd);
@@ -286,11 +286,11 @@ void cDensityEstBase::collect(double val)
     }
 }
 
-double cDensityEstBase::cellPDF(int k) const
+double cDensityEstBase::getCellPDF(int k) const
 {
     if (num_vals==0) return 0.0;
-    double cellsize = basepoint(k+1) - basepoint(k);
-    return cellsize==0 ? 0.0 : cell(k)/cellsize/count();
+    double cellsize = getBasepoint(k+1) - getBasepoint(k);
+    return cellsize==0 ? 0.0 : getCellValue(k)/cellsize/getCount();
 }
 
 void cDensityEstBase::plotline(ostream& os, const char *pref, double xval, double count, double a)
@@ -328,18 +328,18 @@ std::string cDensityEstBase::detailedInfo() const
     {
         const int picwidth=55;   // width of picture
         double max=0;           // biggest cell value
-        int nc = cells();        // number of cells
+        int nc = getNumCells();        // number of cells
         int k;
         double d;
         for (k=0; k<nc; k++)
-            if ((d=cell(k)) > max)
+            if ((d=getCellValue(k)) > max)
                max = d;
         double a=(double)picwidth/max;
 
         os << "Distribution density function:\n";
         for (k=0; k<nc; k++)
-            plotline(os, "< ", basepoint(k), (k==0 ? cell_under : cell(k-1)), a);
-        plotline(os, ">=", basepoint(nc), cell_over, a);
+            plotline(os, "< ", getBasepoint(k), (k==0 ? cell_under : getCellValue(k-1)), a);
+        plotline(os, ">=", getBasepoint(nc), cell_over, a);
         os << "\n";
     }
     return os.str();
@@ -384,15 +384,15 @@ void cDensityEstBase::loadFromFile(FILE *f)
     }
 }
 
-cDensityEstBase::Cell cDensityEstBase::cellInfo(int k) const
+cDensityEstBase::Cell cDensityEstBase::getCellInfo(int k) const
 {
-    if (k<0 || k>=cells())
+    if (k<0 || k>=getNumCells())
         return Cell();
     Cell c;
-    c.lower = basepoint(k);
-    c.upper = basepoint(k+1);
-    c.value = cell(k);
-    c.relativeFreq = cellPDF(k);
+    c.lower = getBasepoint(k);
+    c.upper = getBasepoint(k+1);
+    c.value = getCellValue(k);
+    c.relativeFreq = getCellPDF(k);
     return c;
 }
 

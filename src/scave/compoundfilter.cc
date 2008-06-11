@@ -31,12 +31,12 @@ bool CompoundFilterType::Subfilter::operator==(const CompoundFilterType::Subfilt
            _attrassignments==other._attrassignments;
 }
 
-const char *CompoundFilterType::name() const
+const char *CompoundFilterType::getName() const
 {
     return _name.c_str();
 }
 
-const char *CompoundFilterType::description() const
+const char *CompoundFilterType::getDescription() const
 {
     return _description.c_str();
 }
@@ -102,28 +102,28 @@ int CompoundFilterType::numSubfilters() const
 CompoundFilterType::Subfilter& CompoundFilterType::subfilter(int pos)
 {
     if (pos<0 || pos>=(int)_subfilters.size())
-        throw opp_runtime_error("%s: invalid subfilter index %d", name(), pos);
+        throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
     return _subfilters[pos];
 }
 
 const CompoundFilterType::Subfilter& CompoundFilterType::subfilter(int pos) const
 {
     if (pos<0 || pos>=(int)_subfilters.size())
-        throw opp_runtime_error("%s: invalid subfilter index %d", name(), pos);
+        throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
     return _subfilters[pos];
 }
 
 void CompoundFilterType::insertSubfilter(int pos, const Subfilter& f)
 {
     if (pos<0 || pos>(int)_subfilters.size())
-        throw opp_runtime_error("%s: invalid subfilter insert index %d", name(), pos);
+        throw opp_runtime_error("%s: invalid subfilter insert index %d", getName(), pos);
     _subfilters.insert(_subfilters.begin()+pos, f);
 }
 
 void CompoundFilterType::removeSubfilter(int pos)
 {
     if (pos<0 || pos>=(int)_subfilters.size())
-        throw opp_runtime_error("%s: invalid subfilter index %d", name(), pos);
+        throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
     _subfilters.erase(_subfilters.begin()+pos);
 }
 
@@ -148,7 +148,7 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
 
         // get type
         const char *subnodetypename = subfilt.nodeType();
-        NodeType *subnodetype = NodeTypeRegistry::instance()->getNodeType(subnodetypename);
+        NodeType *subnodetype = NodeTypeRegistry::getInstance()->getNodeType(subnodetypename);
 
         // collect parameters for subfilter
         StringMap subattrs;
@@ -169,7 +169,7 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
         // create and add instance
         FilterNode *subnode = dynamic_cast<FilterNode *>(subnodetype->create(mgr,subattrs));
         if (!subnode)
-            throw opp_runtime_error("%s: subfilter type %s is not subclassed from FilterNode", name(), subnodetypename);
+            throw opp_runtime_error("%s: subfilter type %s is not subclassed from FilterNode", getName(), subnodetypename);
         if (i==0)
             node->first = subnode;
         if (i==n-1)
@@ -205,7 +205,7 @@ void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/S
     for (int i=0; i<n; i++)
     {
         const char *nodetypename = subfilter(i).nodeType();
-        NodeType *nodeType = NodeTypeRegistry::instance()->getNodeType(nodetypename);
+        NodeType *nodeType = NodeTypeRegistry::getInstance()->getNodeType(nodetypename);
         nodeType->mapVectorAttributes(attrs, warnings);
     }
 }

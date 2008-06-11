@@ -47,8 +47,8 @@ class SCAVE_API FileWriterNode : public SingleSinkNode
 class SCAVE_API FileWriterNodeType : public SingleSinkNodeType
 {
     public:
-        virtual const char *name() const {return "filewriter";}
-        virtual const char *description() const;
+        virtual const char *getName() const {return "filewriter";}
+        virtual const char *getDescription() const;
         virtual void getAttributes(StringMap& attrs) const;
         virtual Node *create(DataflowManager *mgr, StringMap& attrs) const;
 };

@@ -52,11 +52,11 @@ void DataflowManager::addChannel(Channel *channel)
 
 void DataflowManager::connect(Port *src, Port *dest)
 {
-    if (src->channel())
+    if (src->getChannel())
         throw opp_runtime_error("connect: source port already connected");
-    if (dest->channel())
+    if (dest->getChannel())
         throw opp_runtime_error("connect: destination port already connected");
-    if (!dest->node())
+    if (!dest->getNode())
         throw opp_runtime_error("connect: port's owner node not filled in");
 
     Channel *ch = new Channel();
@@ -64,8 +64,8 @@ void DataflowManager::connect(Port *src, Port *dest)
 
     src->setChannel(ch);
     dest->setChannel(ch);
-    ch->setProducerNode(src->node());
-    ch->setConsumerNode(dest->node());
+    ch->setProducerNode(src->getNode());
+    ch->setConsumerNode(dest->getNode());
 }
 
 // FIXME: validate node attributes
@@ -116,7 +116,7 @@ void DataflowManager::execute(IProgressMonitor *monitor)
             }
         }
 
-        DBG(("execute: invoking %s\n", node->nodeType()->name()));
+        DBG(("execute: invoking %s\n", node->nodeType()->getName()));
         node->process();
 
         if (monitor)
@@ -155,7 +155,7 @@ void DataflowManager::execute(IProgressMonitor *monitor)
     for (i=0; i<nodes.size(); i++)
         if (!nodes[i]->alreadyFinished())
             throw opp_runtime_error("execute: deadlock: no ready nodes but node %s not finished",
-                                nodes[i]->nodeType()->name());
+                                nodes[i]->nodeType()->getName());
 
     // check all channel buffers are empty
     for (i=0; i<channels.size(); i++)
@@ -174,7 +174,7 @@ bool DataflowManager::updateNodeFinished(Node *node)
     if (!node->finished())
         return false;
 
-    DBG(("DBG: %s finished\n", node->nodeType()->name()));
+    DBG(("DBG: %s finished\n", node->nodeType()->getName()));
     node->setAlreadyFinished();
     int nc = channels.size();
     for (int i=0; i!=nc; i++)
@@ -231,7 +231,7 @@ Node *DataflowManager::selectNode()
                 else if (node->isReady())
                 {
                     if (i==lastnode)
-                        DBG(("DBG: %s invoked again -- perhaps its process() doesn't do as much at once as it could?\n", node->nodeType()->name()));
+                        DBG(("DBG: %s invoked again -- perhaps its process() doesn't do as much at once as it could?\n", node->nodeType()->getName()));
                     lastnode = i;
                     return node;
                 }
@@ -244,7 +244,7 @@ Node *DataflowManager::selectNode()
 
 bool DataflowManager::isReaderNode(Node *node)
 {
-    return strcmp(node->nodeType()->category(), "reader-node") == 0;
+    return strcmp(node->nodeType()->getCategory(), "reader-node") == 0;
 }
 
 int64 DataflowManager::totalBytesToBeRead()
@@ -270,7 +270,7 @@ void DataflowManager::dump()
     {
         Node *node = nodes[i];
         NodeType *nodeType = node->nodeType();
-        printf(" node[%d]: %p %s\n", i, node, nodeType->name());
+        printf(" node[%d]: %p %s\n", i, node, nodeType->getName());
     }
 
     int nc = channels.size();
@@ -281,8 +281,8 @@ void DataflowManager::dump()
         Node *prodNode = ch->producerNode();
         Node *consNode = ch->consumerNode();
         printf(" channel[%d]: node %p %s --> node %p %s\n", j,
-             prodNode, prodNode->nodeType()->name(),
-             consNode, consNode->nodeType()->name());
+             prodNode, prodNode->nodeType()->getName(),
+             consNode, consNode->nodeType()->getName());
     }
     fflush(stdout);
 }

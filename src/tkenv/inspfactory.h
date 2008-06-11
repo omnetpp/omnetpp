@@ -26,7 +26,7 @@
 NAMESPACE_BEGIN
 
 #define Register_InspectorFactory(FACTORYNAME) \
-  EXECUTE_ON_STARTUP(inspectorfactories.instance()->add(new FACTORYNAME(#FACTORYNAME));)
+  EXECUTE_ON_STARTUP(inspectorfactories.getInstance()->add(new FACTORYNAME(#FACTORYNAME));)
 
 
 /**

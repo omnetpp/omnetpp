@@ -145,44 +145,44 @@ class SIM_API cStatistic : public cOwnedObject
     /**
      * Returns the number of the observations.
      */
-    virtual long count() const = 0;
+    virtual long getCount() const = 0;
 
     /**
      * Returns the sum of the values.
-     * @see weightedSum()
+     * @see getWeightedSum()
      */
-    virtual double sum() const = 0;
+    virtual double getSum() const = 0;
 
     /**
      * Returns the sum of the squared values.
-     * @see weightedSqrSum()
+     * @see getWeightedSqrSum()
      */
-    virtual double sqrSum() const = 0;
+    virtual double getSqrSum() const = 0;
 
     /**
      * Returns the minimum of the values.
      */
-    virtual double min() const = 0;
+    virtual double getMin() const = 0;
 
     /**
      * Returns the maximum of the values.
      */
-    virtual double max() const = 0;
+    virtual double getMax() const = 0;
 
     /**
      * Returns the mean of the (weighted) observations.
      */
-    virtual double mean() const = 0;
+    virtual double getMean() const = 0;
 
     /**
      * Returns the standard deviation of the (weighted) observations.
      */
-    virtual double stddev() const = 0;
+    virtual double getStddev() const = 0;
 
     /**
      * Returns the variance of the (weighted) observations.
      */
-    virtual double variance() const = 0;
+    virtual double getVariance() const = 0;
     //@}
 
     /** @name Weighted statistics. */
@@ -190,22 +190,22 @@ class SIM_API cStatistic : public cOwnedObject
     /**
      * Returns the sum of weights.
      */
-    virtual double weights() const = 0;
+    virtual double getWeights() const = 0;
 
     /**
      * Returns the sum of weight*value products.
      */
-    virtual double weightedSum() const = 0;
+    virtual double getWeightedSum() const = 0;
 
     /**
      * Returns the sum of squared weights.
      */
-    virtual double sqrSumWeights() const = 0;
+    virtual double getSqrSumWeights() const = 0;
 
     /**
      * Returns the sum of weight*value*value products.
      */
-    virtual double weightedSqrSum() const = 0;
+    virtual double getWeightedSqrSum() const = 0;
     //@}
 
     /** @name Transient and result accuracy detection. */
@@ -226,12 +226,12 @@ class SIM_API cStatistic : public cOwnedObject
     /**
      * Returns the assigned transient and accuracy detection objects.
      */
-    cTransientDetection *transientDetectionObject() const  {return td;}
+    cTransientDetection *getTransientDetectionObject() const  {return td;}
 
     /**
      * Returns the assigned transient and accuracy detection objects.
      */
-    cAccuracyDetection  *accuracyDetectionObject() const  {return ra;}
+    cAccuracyDetection  *getAccuracyDetectionObject() const  {return ra;}
     //@}
 
     /** @name Generating random numbers based on the collected data */
@@ -270,14 +270,14 @@ class SIM_API cStatistic : public cOwnedObject
      * Records the statistics into the scalar result file. (Recorded data
      * includes the number of observations, mean, standard deviation, min,
      * max, potential histogram data, etc.)  The name of the recorded
-     * statistic will be the object name (see fullName()).
+     * statistic will be the object name (see getFullName()).
      */
     virtual void record()  {recordAs(NULL, NULL);}
 
     /**
      * Records the statistics into the scalar result file, with the given
      * unit (e.g. "s", "m/s", etc). The name of the recorded statistic
-     * will be the object name (see name()).
+     * will be the object name (see getName()).
      */
     virtual void recordWithUnit(const char *unit)  {recordAs(NULL, unit);}
 

@@ -50,7 +50,7 @@ cParImpl& cParImpl::operator=(const cParImpl& other)
     bool shared = isShared();
     cNamedObject::operator=(other);
     setIsShared(shared); // preserve FL_ISSHARED flag
-    setUnit(other.unit());
+    setUnit(other.getUnit());
     return *this;
 }
 
@@ -72,7 +72,7 @@ std::string cParImpl::info() const
 std::string cParImpl::detailedInfo() const
 {
     std::stringstream out;
-    out << cPar::typeName(type()) << " " << name();
+    out << cPar::getTypeName(getType()) << " " << getName();
     if (hasValue())
     {
         if (isInput())
@@ -93,7 +93,7 @@ cParImpl *cParImpl::dup() const
     throw cRuntimeError(this, eCANTDUP);  // cannot instantiate an abstract class
 }
 
-const char *cParImpl::unit() const
+const char *cParImpl::getUnit() const
 {
     return unitp;
 }
@@ -106,20 +106,20 @@ void cParImpl::setUnit(const char *s)
 
 bool cParImpl::containsConstSubexpressions() const
 {
-    cExpression *expr = expression();
+    cExpression *expr = getExpression();
     return expr==NULL ? false : expr->containsConstSubexpressions();
 }
 
 void cParImpl::evaluateConstSubexpressions(cComponent *context)
 {
-    cExpression *expr = expression();
+    cExpression *expr = getExpression();
     if (expr)
         expr->evaluateConstSubexpressions(context);
 }
 
 int cParImpl::compare(const cParImpl *other) const
 {
-    int res = strcmp(name(), other->name());
+    int res = strcmp(getName(), other->getName());
     if (res!=0)
         return res;
 
@@ -128,8 +128,8 @@ int cParImpl::compare(const cParImpl *other) const
     if (flags2!=otherflags2)
         return flags2 < otherflags2 ? -1 : 1;
 
-    if (type()!=other->type())
-        return type() < other->type() ? -1 : 1;
+    if (getType()!=other->getType())
+        return getType() < other->getType() ? -1 : 1;
 
     return opp_strcmp(unitp, other->unitp);
 }

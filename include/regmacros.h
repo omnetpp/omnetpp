@@ -40,7 +40,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT));)
 
 /**
  * Like Define_Function(), but takes three arguments, the second one being the
@@ -50,7 +50,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
  * Registers a C/C++ function for use in NED and ini files. The function
@@ -65,7 +65,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Function(NAME,SIGNATURE) \
-  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,NAME,SIGNATURE));)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDFunction(#NAME,NAME,SIGNATURE));)
 
 /**
  * Like Define_NED_Function(), but it allows registering a function with a
@@ -74,7 +74,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Function2(NAME,FUNCTION,SIGNATURE) \
-  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE));)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE));)
 
 /**
  * Like Define_NED_Function2(), but allows one to specify a category string
@@ -83,7 +83,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Function3(NAME,FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(nedFunctions.instance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDFunction(#NAME,FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION));)
 
 /**
  * Register class. This defines a factory object which makes it possible
@@ -95,7 +95,7 @@ NAMESPACE_BEGIN
  */
 #define Register_Class(CLASSNAME) \
   static cObject *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__));)
+  EXECUTE_ON_STARTUP(classes.getInstance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__));)
 
 /**
  * Announces the C++ simple module class to \opp, and couples it with the
@@ -106,7 +106,7 @@ NAMESPACE_BEGIN
 // Implementation note: this is basically a Register_Class(), making sure the class subclasses from cModule.
 #define Define_Module(CLASSNAME) \
   static cObject *__FILEUNIQUENAME__() {cModule *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__,"module"));)
+  EXECUTE_ON_STARTUP(classes.getInstance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__,"module"));)
 
 /**
  * Announces the C++ simple module class to \opp, and couples it with the
@@ -127,7 +127,7 @@ NAMESPACE_BEGIN
 // Implementation note: this is basically a Register_Class().
 #define Define_Channel(CLASSNAME) \
   static cObject *__FILEUNIQUENAME__() {cChannel *ret = new CLASSNAME; return ret; } \
-  EXECUTE_ON_STARTUP(classes.instance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__, "channel"));)
+  EXECUTE_ON_STARTUP(classes.getInstance()->add(new cClassFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__, "channel"));)
 
 /**
  * Announces the C++ channel class to \opp, and couples it with the
@@ -146,7 +146,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Register_ClassDescriptor(DESCRIPTORCLASS) \
-  EXECUTE_ON_STARTUP(classDescriptors.instance()->add(new DESCRIPTORCLASS());)
+  EXECUTE_ON_STARTUP(classDescriptors.getInstance()->add(new DESCRIPTORCLASS());)
 
 /**
  * This macro has been previously marked as deprecated, and was removed in \opp 4.0.
@@ -178,7 +178,7 @@ NAMESPACE_BEGIN
 // internal
 #define __REGISTER_CONFIGENTRY(ID, ARGLIST) \
   cConfigKey *ID; \
-  EXECUTE_ON_STARTUP(configKeys.instance()->add(ID = new cConfigKey ARGLIST);)
+  EXECUTE_ON_STARTUP(configKeys.getInstance()->add(ID = new cConfigKey ARGLIST);)
 
 /**
  * Generic, with unit==NULL.
