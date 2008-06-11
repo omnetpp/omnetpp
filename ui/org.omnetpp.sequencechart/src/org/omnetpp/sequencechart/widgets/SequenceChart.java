@@ -89,7 +89,6 @@ import org.omnetpp.sequencechart.editors.SequenceChartContributor;
 import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleId;
 import org.omnetpp.sequencechart.widgets.axisorder.AxisOrderByModuleName;
 import org.omnetpp.sequencechart.widgets.axisorder.FlatAxisOrderByMinimizingCost;
-import org.omnetpp.sequencechart.widgets.axisorder.HierarchicalAxisOrderByMinimizingCost;
 import org.omnetpp.sequencechart.widgets.axisorder.ManualAxisOrder;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
@@ -106,7 +105,6 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
  */
 //TODO cf with ns2 trace file and cEnvir callback, and modify file format...
 //TODO proper "hand" cursor - current one is not very intuitive
-//TODO hierarchical sort should be able to reverse order of sorted axes of its submodules
 //TODO rubberband vs. haircross, show them at once
 //TODO factor out the svg export to org.omnetpp.imageexport
 public class SequenceChart
@@ -607,9 +605,14 @@ public class SequenceChart
 		clearCanvasCacheAndRedraw();
 	}
 	
-	public void showManualOrderingDialog() {
-        manualAxisOrder.showManualOrderDialog(axisModules.toArray(new ModuleTreeItem[0]));
-	}
+    public int showManualOrderingDialog() {
+        ModuleTreeItem[] sortedAxisModules = new ModuleTreeItem[axisModules.size()];
+        
+        for (int i = 0; i < sortedAxisModules.length; i++)
+            sortedAxisModules[axisModulePositions[i]] = axisModules.get(i);
+
+        return manualAxisOrder.showManualOrderDialog(sortedAxisModules);
+    }
 
 	/**
 	 * Returns the currently visible range of simulation times as an array of two doubles.
@@ -1360,34 +1363,28 @@ public class SequenceChart
 	 * Sorts axis modules depending on timeline ordering mode.
 	 */
 	private void calculateAxisModulePositions() {
-		eventLogInput.runWithProgressMonitor(new Runnable() {
-			public void run() {
-				if (axisModulePositions == null)
-					axisModulePositions = new int[axisModules.size()];
+        eventLogInput.runWithProgressMonitor(new Runnable() {
+            public void run() {
+                ModuleTreeItem[] axisModulesArray = axisModules.toArray(new ModuleTreeItem[0]);
 
-				ModuleTreeItem[] axisModulesArray = axisModules.toArray(new ModuleTreeItem[0]);
-
-				switch (axisOrderingMode) {
-					case MANUAL:
-						manualAxisOrder.calculateOrdering(axisModulesArray, axisModulePositions);
-						break;
-					case MODULE_ID:
-						new AxisOrderByModuleId().calculateOrdering(axisModulesArray, axisModulePositions);
-						break;
-					case MODULE_NAME:
-						new AxisOrderByModuleName().calculateOrdering(axisModulesArray, axisModulePositions);
-						break;
-					case MINIMIZE_CROSSINGS:
-						new FlatAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModulesArray, axisModulePositions);
-						break;
-					case MINIMIZE_CROSSINGS_HIERARCHICALLY:
-						new HierarchicalAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModulesArray, axisModulePositions);
-						break;
-					default:
-						throw new RuntimeException("Unknown axis ordering mode");
-				}
-			}
-		});
+                switch (axisOrderingMode) {
+                    case MANUAL:
+                        axisModulePositions = manualAxisOrder.calculateOrdering(axisModulesArray);
+                        break;
+                    case MODULE_ID:
+                        axisModulePositions = new AxisOrderByModuleId().calculateOrdering(axisModulesArray);
+                        break;
+                    case MODULE_NAME:
+                        axisModulePositions = new AxisOrderByModuleName().calculateOrdering(axisModulesArray);
+                        break;
+                    case MINIMIZE_CROSSINGS:
+                        axisModulePositions = new FlatAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModulesArray, moduleIdToAxisModuleIndexMap);
+                        break;
+                    default:
+                        throw new RuntimeException("Unknown axis ordering mode");
+                }
+            }
+        });
 	}
 
 	/**
