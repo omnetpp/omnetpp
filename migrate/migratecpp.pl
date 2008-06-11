@@ -1,3 +1,42 @@
+my $arglessGetters = "accuracyDetectionObject activityModule
+    argCount argTypes argVector arrivalGate arrivalGateId arrivalModule
+    arrivalModuleId arrivalTime baseName bitLength byteLength category
+    cellMax cellMin cellNumber cellSize cellValue channel channelType
+    className componentType config context contextClassName
+    contextFullPath contextModule contextSimpleModule contextPointer
+    contextType controlInfo count creationTime datarate defaultOwner
+    defaultValue delay description destinationGate displayString
+    distanceToTarget elemTypeName encapsulatedMsg encapsulationId
+    encapsulationTreeId error errorCode eventNumber expression
+    extraStackForEnvir fileName fromGate fromstat fullName fullPath
+    functionPointer gateNames hasher hostObject id index
+    insertOrder instance keys kind lastModuleId liveMessageCount
+    liveObjectCount liveParImplObjectCount localGate localGateId mathFunc
+    mathFunc1Arg mathFunc2Args mathFunc3Args mathFunc4Args mathFuncNoArg
+    max maxArgs maxTime mean messageQueue min minArgs module moduleID
+    moduleId moduleType name nedTypeName networkType numArgs
+    numProperties numRNGs numbersDrawn objectValue overflowCell owner
+    ownerModule parList parentModule previousEventNumber priority
+    properties remoteGate remoteGateId remoteNode returnType rootGrid
+    scale scaleExp scheduler senderGate senderGateId senderModule
+    senderModuleId sendingTime shareCount signature sourceGate sqrSum
+    sqrSumWeights srcProcId stackSize stackUsage state stateName stddev
+    sum systemModule targetNode timestamp toGate totalMessageCount
+    totalObjectCount totalParImplObjectCount transientDetectionObject
+    treeDepth treeId type underflowCell unit valuesReceived valuesStored
+    variance weight weightedSqrSum weightedSum weights";
+
+my $gettersWithArg = "ancestorPar argType basepoint cellPDF
+    connectionProperties gateProperties grid
+    module moduleByPath moduleByRelativePath numValues paramProperties
+    realCellValue sizeofGate sizeofIdent sizeofIndexedSiblingModuleGate
+    sizeofParentModuleGate sizeofSiblingModuleGate stringFor submodule
+    submoduleProperties treeDepth typeName typeOf valuesVector node
+    nodeFor";
+
+$arglessGetters =~ s/\s+/|/g;
+$gettersWithArg =~ s/\s+/|/g;
+
 
 $listfname = $ARGV[0];
 open(LISTFILE, $listfname) || die "cannot open $listfname";
@@ -49,10 +88,11 @@ while (<LISTFILE>)
     $txt =~ s/\brecordScalar *\( *\)/record()/mg;
     $txt =~ s/\. *recordScalar *\( *"/.recordAs("/mg;
 
-    # display string
+    # cDisplayString
+    $txt =~ s/\bexistsTag\(/containsTag(/mg;
     $txt =~ s/\bgetString *\( *\)/str()/mg;
 
-     # cSimulation
+    # cSimulation
     $txt =~ s/\brunningModule *\( *\)/activityModule()/mg;
 
     # cGate
@@ -61,6 +101,38 @@ while (<LISTFILE>)
     $txt =~ s/->datarate\(\)->doubleValue\(\)/->channel()->par("datarate").doubleValue()/mg;
     $txt =~ s/->delay\(\)->doubleValue\(\)/->channel()->par("delay").doubleValue()/mg;
     $txt =~ s/->error\(\)->doubleValue\(\)/->channel()->par("error").doubleValue()/mg;
+
+    # cTopology
+    $txt =~ s/\bunweightedSingleShortestPathsTo\(/calculateUnweightedSingleShortestPathsTo(/mg;
+
+    # add getters (automatic)
+    $txt =~ s/\b($arglessGetters) ?\( *\)/"get".ucfirst($1)."()"/mge;
+    $txt =~ s/\b($gettersWithArg) ?\(/"get".ucfirst($1)."("/mge;
+
+    # add getters (manual)
+    $txt =~ s/\bchanged\(\)/hasChanged()/mg;
+    $txt =~ s/\bdisabled\(\)/isDisabled()/mg;
+    $txt =~ s/\benabled\(\)/isEnabled()/mg;
+    $txt =~ s/\bstackOverflow\(\)/hasStackOverflow()/mg;
+    $txt =~ s/\btakeOwnership\(\)/getTakeOwnership()/mg;
+    $txt =~ s/\bexiting\(\)/isExiting()/mg;
+
+    $txt =~ s/\bparams\(\)/getNumParams()/mg;
+    $txt =~ s/\btransmissionFinishes\(\)/getTransmissionFinishTime()/mg;
+    $txt =~ s/\bcells\(\)/getNumCells()/mg;
+    $txt =~ s/\bnodes\(\)/getNumNodes()/mg;
+    $txt =~ s/\binLinks\(\)/getNumInLinks()/mg;
+    $txt =~ s/\boutLinks\(\)/getNumOutLinks()/mg;
+    $txt =~ s/\bpaths\(\)/getNumPaths()/mg;
+    $txt =~ s/\bostream\(\)/getOStream()/mg;
+    $txt =~ s/\binTransientState\(\)/isInTransientState()/mg;
+
+    $txt =~ s/\btakeOwnership\(/setTakeOwnership(/mg;  # since getter is done already
+    $txt =~ s/\bcellInfo\(/getCellInfo(/mg;
+    $txt =~ s/\bcell\(/getCellValue(/mg;
+    $txt =~ s/\brng\(/getRNG(/mg;
+    $txt =~ s/\bpdf\(/getPDF(/mg;
+    $txt =~ s/\bcdf\(/getCDF(/mg;
 
     # ancient stuff, from compat.h
     $txt =~ s/\bcKSplitIterator\b/cKSplit::Iterator/mg;
