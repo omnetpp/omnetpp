@@ -309,7 +309,7 @@ void cNEDDeclaration::updateDisplayProperty(PropertyElement *propNode, cProperty
     }
 
     // merge
-    const char *olddisplaystring = prop->value(cProperty::DEFAULTKEY, 0);
+    const char *olddisplaystring = prop->getValue(cProperty::DEFAULTKEY, 0);
     cDisplayString d(olddisplaystring);
     cDisplayString dnew(newdisplaystring);
     d.updateWith(dnew);

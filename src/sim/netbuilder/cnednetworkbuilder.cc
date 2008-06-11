@@ -169,7 +169,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 
             cProperties *paramProps = component->par(paramName).getProperties();
             cProperty *unitProp = paramProps->get("unit");
-            const char *declUnit = unitProp ? unitProp->value(cProperty::DEFAULTKEY) : NULL;
+            const char *declUnit = unitProp ? unitProp->getValue(cProperty::DEFAULTKEY) : NULL;
             impl->setUnit(declUnit);
         }
         else {

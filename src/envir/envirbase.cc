@@ -665,7 +665,7 @@ void EnvirBase::readParameter(cPar *par)
     {
         cProperties *props = par->getProperties();
         cProperty *prop = props->get("prompt");
-        std::string prompt = prop ? prop->value(cProperty::DEFAULTKEY) : "";
+        std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
         std::string reply;
 
         // ask the user. note: gets() will signal "cancel" by throwing an exception

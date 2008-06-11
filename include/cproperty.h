@@ -202,7 +202,7 @@ class SIM_API cProperty : public cNamedObject
      * Specify "" for the default key. For k>getNumValues(key), it returns "".  XXX why not NULL?
      */
     //XXX should return NULL/"" if key does not exist? currently it's an error
-    virtual const char *value(const char *key, int k=0) const;
+    virtual const char *getValue(const char *key, int k=0) const;
 
     /**
      * Replaces a value for the given key in the property. Specify "" for

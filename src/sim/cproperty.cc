@@ -254,7 +254,7 @@ void cProperty::setNumValues(const char *key, int size)
         v[i] = stringPool.get("");
 }
 
-const char *cProperty::value(const char *key, int k) const
+const char *cProperty::getValue(const char *key, int k) const
 {
     CharPtrVector& v = getValuesVector(key);
     if (k<0 || k>=(int)v.size())

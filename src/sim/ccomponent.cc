@@ -161,7 +161,7 @@ bool cComponent::hasDisplayString()
     // not yet checked: do it now
     cProperties *props = getProperties();
     cProperty *prop = props->get("display");
-    const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
+    const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : NULL;
     bool result = !opp_isempty(propValue);
 
     flags |= FL_DISPSTR_CHECKED;
@@ -181,7 +181,7 @@ cDisplayString& cComponent::getDisplayString()
             throw cRuntimeError(this, "Cannot access display string yet: parameters not yet set up");
         cProperties *props = getProperties();
         cProperty *prop = props->get("display");
-        const char *propValue = prop ? prop->value(cProperty::DEFAULTKEY) : NULL;
+        const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : NULL;
         if (propValue)
             dispstr->parse(propValue);
     }
