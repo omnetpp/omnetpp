@@ -14,7 +14,7 @@ static bool casesensitive;
 
 static void match(const char *pattern, cObject *obj)
 {
-    ev << pattern << " | (" << obj->className() << ")" << obj->name() << " --> ";
+    ev << pattern << " | (" << obj->getClassName() << ")" << obj->getName() << " --> ";
     try {
         MatchExpression me(pattern, dottedpath, fullstring, casesensitive);
         MatchableObjectAdapter matchobj(MatchableObjectAdapter::FULLNAME, obj);

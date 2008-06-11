@@ -46,7 +46,7 @@ class Node1 : public cSimpleModule
 
 Define_Module(Node1);
 
-#define PRINTGATESTATE()  ev << "t=" << simTime() << ": busy:" << g->isBusy() << ", finishes:" << g->transmissionFinishes() << endl;
+#define PRINTGATESTATE()  ev << "t=" << simTime() << ": busy:" << g->isBusy() << ", finishes:" << g->getTransmissionFinishTime() << endl;
 
 void Node1::activity()
 {
@@ -102,7 +102,7 @@ void Node2::activity()
     for (;;)
     {
         cMessage *msg = receive();
-        ev << "t=" << simTime() << ": " << msg->name() << " arrived" << endl;
+        ev << "t=" << simTime() << ": " << msg->getName() << " arrived" << endl;
         delete msg;
     }
 }

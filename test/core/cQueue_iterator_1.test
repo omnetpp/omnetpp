@@ -22,7 +22,7 @@ i=0;
 ev << "forward:\n";
 for (cQueue::Iterator iter(q); !iter.end(); iter++, i++)
 {
-    ev << " msg[" << i << "]=" << msgs[i]->name() << ", iter()=" << iter()->name() << endl;
+    ev << " msg[" << i << "]=" << msgs[i]->getName() << ", iter()=" << iter()->getName() << endl;
     CHECK(iter()==msgs[i]);
 }
 
@@ -30,7 +30,7 @@ i=4;
 ev << "backward:\n";
 for (cQueue::Iterator iter2(q,true); !iter2.end(); iter2--, i--)
 {
-    ev << " msg[" << i << "]=" << msgs[i]->name() << ", iter()=" << iter2()->name() << endl;
+    ev << " msg[" << i << "]=" << msgs[i]->getName() << ", iter()=" << iter2()->getName() << endl;
     CHECK(iter2()==msgs[i]);
 }
 

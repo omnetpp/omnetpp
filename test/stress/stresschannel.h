@@ -21,7 +21,7 @@ class StressChannel : public cChannel
 		StressChannel();
 
     protected:
-	    virtual simtime_t transmissionFinishes() const { return transmittingUntil; }
+	    virtual simtime_t getTransmissionFinishTime() const { return transmittingUntil; }
     	virtual bool deliver(cMessage *msg, simtime_t t);
 };
 

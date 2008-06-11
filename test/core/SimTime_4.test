@@ -1,5 +1,5 @@
 %description:
-SimTime: test math functions: ceil(), floor(), fabs(), fmod(), max(), min()
+SimTime: test math functions: ceil(), floor(), fabs(), fmod(), getMax(), getMin()
 
 %includes:
 #include <algorithm>

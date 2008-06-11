@@ -13,12 +13,12 @@ class Sender : public cSimpleModule
 
 Define_Module(Sender);
 
-#define PRINT(g)   ev << #g << ":" << ((g) ? (g)->fullName() : "NULL") << endl
+#define PRINT(g)   ev << #g << ":" << ((g) ? (g)->getFullName() : "NULL") << endl
 
 cChannel *Sender::createChannel(double delay)
 {
     cChannelType *channelType = cChannelType::find("ned.BasicChannel"); //XXX find something more concise to create a basic channel...
-    cBasicChannel *ch = (cBasicChannel *)channelType->create("chan", parentModule());
+    cBasicChannel *ch = (cBasicChannel *)channelType->create("chan", getParentModule());
     ch->setDelay(delay);
     ch->callInitialize();
     return ch;
@@ -27,7 +27,7 @@ cChannel *Sender::createChannel(double delay)
 void Sender::activity()
 {
    cGate *out = gate("out");
-   cGate *rcvin = gate("out")->toGate();
+   cGate *rcvin = gate("out")->getToGate();
    cChannel *ch;
 
    // start clean
@@ -36,7 +36,7 @@ void Sender::activity()
    // connect, then check if OK
    ch = createChannel(0.5);
    out->connectTo(rcvin, ch);
-   PRINT(out->channel());
+   PRINT(out->getChannel());
 
    // even send message to verify
    cMessage *msg = new cMessage("hello1");
@@ -45,13 +45,13 @@ void Sender::activity()
 
    // disconnect, then check if OK
    out->disconnect();
-   PRINT(out->channel());
+   PRINT(out->getChannel());
 
    // set channel, then reconnect
    ch = createChannel(0.25);
    out->setChannel(ch);
    out->connectTo(rcvin);
-   PRINT(out->channel());
+   PRINT(out->getChannel());
 
    // send to verify
    cMessage *msg2 = new cMessage("hello2");
@@ -69,7 +69,7 @@ void Sender::activity()
 
    // remove channel
    out->setChannel(NULL);
-   PRINT(out->channel());
+   PRINT(out->getChannel());
 
    ev << "done\n";
 }
@@ -90,7 +90,7 @@ void Receiver::activity()
     while (true)
     {
         cMessage *msg = receive();
-        ev << msg->name() << " arrived at " << simTime() << endl;
+        ev << msg->getName() << " arrived at " << simTime() << endl;
         delete msg;
     }
 }

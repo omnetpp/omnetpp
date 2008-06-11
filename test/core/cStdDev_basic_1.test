@@ -4,11 +4,11 @@ basic use of cStdDev
 %global:
 void print(cStdDev& s)
 {
-    ev << "n=" << s.count() << ":w=" << s.weights()
-       << ":S=" << s.sum() << ":SS=" << s.sqrSum()
-       << ":min=" << s.min() << ":max=" << s.max()
-       << ":mean=" << s.mean() << ":stddev=" << s.stddev()
-       << ":var=" << s.variance() << endl;
+    ev << "n=" << s.getCount() << ":w=" << s.getWeights()
+       << ":S=" << s.getSum() << ":SS=" << s.getSqrSum()
+       << ":min=" << s.getMin() << ":max=" << s.getMax()
+       << ":mean=" << s.getMean() << ":stddev=" << s.getStddev()
+       << ":var=" << s.getVariance() << endl;
 }
 
 %activity:

@@ -7,7 +7,7 @@ Tests cMsgPar's operator=() methods for basic data types (string,bool,long,doubl
 %activity:
 cMsgPar p;
 
-#define PRINT(X)  ev << p.type() << ":" << p.isNumeric() << ":" << X << endl
+#define PRINT(X)  ev << p.getType() << ":" << p.isNumeric() << ":" << X << endl
 
 p = false; PRINT(p.boolValue());
 p = true; PRINT(p.boolValue());

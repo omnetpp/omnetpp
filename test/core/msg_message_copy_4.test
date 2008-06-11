@@ -45,8 +45,8 @@ void print(const char *what, MyMessage& x)
                  << x.getMc(0).getBb() << ":"
                  << x.getMc(1).getBb() << endl;
    ev << "q[]:"  << x.getQArraySize() << ":"
-                 << x.getQ(0).name() << ":" << x.getQ(0).length() << ":"
-                 << x.getQ(1).name() << ":" << x.getQ(1).length() << endl;
+                 << x.getQ(0).getName() << ":" << x.getQ(0).length() << ":"
+                 << x.getQ(1).getName() << ":" << x.getQ(1).length() << endl;
    ev << "ms2[]:" << x.getMs2ArraySize() << ":"
                   << x.getMs2(0).bb << ":"
                   << x.getMs2(1).bb << endl;
@@ -54,8 +54,8 @@ void print(const char *what, MyMessage& x)
                   << x.getMc2(0).getBb() << ":"
                   << x.getMc2(1).getBb() << endl;
    ev << "q2[]:"  << x.getQ2ArraySize() << ":"
-                  << x.getQ2(0).name() << ":" << x.getQ2(0).length() << ":"
-                  << x.getQ2(1).name() << ":" << x.getQ2(1).length() << endl;
+                  << x.getQ2(0).getName() << ":" << x.getQ2(0).length() << ":"
+                  << x.getQ2(1).getName() << ":" << x.getQ2(1).length() << endl;
    ev << "." << endl;
 }
 

@@ -31,8 +31,8 @@ Define_Module(Test);
 
 void Test::activity()
 {
-    for (int i=0; i<params(); i++)
-        ev << par(i).name() << "=" << std::hex << (unsigned long)par(i) << endl;
+    for (int i=0; i<getNumParams(); i++)
+        ev << par(i).getName() << "=" << std::hex << (unsigned long)par(i) << endl;
     ev << ".\n";
 }
 

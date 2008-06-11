@@ -2,18 +2,18 @@
 Basic cWeightedStdDev test: for integer weights it should yield the same 
 results as cStdDev with collect() called those many times.
 
-Note: there might be a small difference in stddev() values between the two 
+Note: there might be a small difference in getStddev() values between the two 
 for smaller N's, because cStdDev uses the "N-1" formula, while cWeigtedStdDev 
 uses the "N" formula (N-1 gets nasty in the weighted case).
 
 %global:
 void print(cStdDev& s)
 {
-    ev << "n=" << s.count() << " w=" << s.weights()
-       << " sum=" << s.sum() << " sqrsum=" << s.sqrSum()
-       << " min=" << s.min() << " max=" << s.max()
-       << " mean=" << s.mean() << " stddev=" << s.stddev()
-       << " var=" << s.variance() << endl;
+    ev << "n=" << s.getCount() << " w=" << s.getWeights()
+       << " sum=" << s.getSum() << " sqrsum=" << s.getSqrSum()
+       << " min=" << s.getMin() << " max=" << s.getMax()
+       << " mean=" << s.getMean() << " stddev=" << s.getStddev()
+       << " var=" << s.getVariance() << endl;
 }
 
 %activity:

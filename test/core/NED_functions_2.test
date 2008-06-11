@@ -1,7 +1,7 @@
 %description:
 Test the following NED functions:
-   fullPath()
-   fullName()
+   getFullPath()
+   getFullName()
    parentIndex()
    ancestorIndex(int numlevels)
 
@@ -12,8 +12,8 @@ import testlib.Dump;
 
 module Node {
     parameters:
-        string fullpath = fullPath();
-        string fullname = fullName();
+        string fullpath = getFullPath();
+        string fullname = getFullName();
         int parentindex = parentIndex();
         int ancestorindex0 = ancestorIndex(0);
         int ancestorindex1 = ancestorIndex(1);

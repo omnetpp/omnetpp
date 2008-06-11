@@ -40,7 +40,7 @@ void Node::activity()
 {
     for (int i=0; i<5; i++)
     {
-        bool exists = (parentModule()->submodule("suicide") != NULL);
+        bool exists = (getParentModule()->getSubmodule("suicide") != NULL);
         ev << "t=" << simTime()  << ": exists=" << exists << endl;
         wait(1);
     }

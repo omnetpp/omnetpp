@@ -3,41 +3,41 @@ Tests reference counting of encapsulated messages.
 
 %activity:
 cMessage *payload = new cMessage;
-ev << "sharecount=" << payload->shareCount() << "\n";
+ev << "sharecount=" << payload->getShareCount() << "\n";
 
 // encapsulate
 cMessage *msg0 = new cMessage;
 msg0->encapsulate(payload);
-ev << "after encap: sharecount=" << payload->shareCount() << "\n";
+ev << "after encap: sharecount=" << payload->getShareCount() << "\n";
 
 // duplicate msg three times: this must result in sharecount=3
 cMessage *msg1 = (cMessage *)msg0->dup();
-ev << "after dup: sharecount=" << payload->shareCount() << "\n";
+ev << "after dup: sharecount=" << payload->getShareCount() << "\n";
 
 cMessage *msg2 = (cMessage *)msg1->dup();
-ev << "after dup: sharecount=" << payload->shareCount() << "\n";
+ev << "after dup: sharecount=" << payload->getShareCount() << "\n";
 
 cMessage *msg3 = (cMessage *)msg0->dup();
-ev << "after dup: sharecount=" << payload->shareCount() << "\n";
+ev << "after dup: sharecount=" << payload->getShareCount() << "\n";
 
 // decapsulate: this should cause an own (non-shared) copy to be made
 cMessage *decapsmsg = msg1->decapsulate();
-ev << "after decap: sharecount=" << payload->shareCount() << ", "
+ev << "after decap: sharecount=" << payload->getShareCount() << ", "
    << (payload==decapsmsg ? "same" : "different") << ", "
-   << "decapsmsg.sharecount=" << decapsmsg->shareCount() << "\n";
+   << "decapsmsg.sharecount=" << decapsmsg->getShareCount() << "\n";
 
 // test encapsulatedMsg:  this should cause an own (non-shared) copy to be made
-cMessage *encapmsg = msg2->encapsulatedMsg();
-ev << "after encapsulatedmsg: sharecount=" << payload->shareCount() << ", "
+cMessage *encapmsg = msg2->getEncapsulatedMsg();
+ev << "after encapsulatedmsg: sharecount=" << payload->getShareCount() << ", "
    << (payload==encapmsg ? "same" : "different") << ", "
-   << "encapmsg.sharecount=" << encapmsg->shareCount() << "\n";
+   << "encapmsg.sharecount=" << encapmsg->getShareCount() << "\n";
 
 // test delete with sharecount=0
 delete msg2;
 
 // test delete with sharecount>0
 delete msg3;
-ev << "after delete: sharecount=" << payload->shareCount() << "\n";
+ev << "after delete: sharecount=" << payload->getShareCount() << "\n";
 
 delete msg0;
 

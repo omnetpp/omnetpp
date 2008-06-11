@@ -15,7 +15,7 @@ Define_Module(StressCapsulate);
 
 void StressCapsulate::handleMessage(cMessage *msg)
 {
-    if (msg->encapsulatedMsg() && uniform(0, 1) < par("decapsulateProbability").doubleValue()) {
+    if (msg->getEncapsulatedMsg() && uniform(0, 1) < par("decapsulateProbability").doubleValue()) {
         ev << "Decapsulating message: "  << msg << "\n";;
         cMessage *decapsulatedMsg = msg->decapsulate();
         decapsulatedMsg->setName("Decapsulated");

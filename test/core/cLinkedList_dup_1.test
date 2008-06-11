@@ -27,7 +27,7 @@ void Llist::fillLlist(cLinkedList& ll)
 
 void Llist::output(cLinkedList& ll)
 {
-  ev << ll.name() << ":";
+  ev << ll.getName() << ":";
   while (!ll.empty())
     ev << " " << *((int*) ll.pop());
   ev << endl;

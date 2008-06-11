@@ -56,7 +56,7 @@ void StressSource::handleMessage(cMessage *msg)
 
 void StressSource::sendOut(cMessage *msg)
 {
-    bool otherModule = this != simulation.contextModule();
+    bool otherModule = this != simulation.getContextModule();
     Enter_Method("sendOut");
 
     // send our own message if did not get one

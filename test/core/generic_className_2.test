@@ -1,5 +1,5 @@
 %description:
-Test that NED-generated simple modules have the right className() methods.
+Test that NED-generated simple modules have the right getClassName() methods.
 
 %module_a: SomeModule
 
@@ -14,7 +14,7 @@ Define_Module(SomeModule);
 
 void SomeModule::activity()
 {
-    ev << "'" << className() << "'" << endl;
+    ev << "'" << getClassName() << "'" << endl;
 }
 
 %module_b: Dummy

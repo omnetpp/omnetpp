@@ -40,10 +40,10 @@ Define_Module(Test);
 
 void Test::activity()
 {
-    for (int i=0; i<params(); i++)
+    for (int i=0; i<getNumParams(); i++)
     {
-        ev << cPar::typeName(par(i).type()) << " " << par(i).name() << "=";
-        switch (par(i).type()) {
+        ev << cPar::getTypeName(par(i).getType()) << " " << par(i).getName() << "=";
+        switch (par(i).getType()) {
           case cPar::STRING: ev << par(i).stringValue(); break;
           case cPar::LONG:   ev << par(i).longValue(); break;
           case cPar::DOUBLE: ev << par(i).doubleValue(); break;

@@ -25,7 +25,7 @@ class MyClass extends Base
 MyClass x("myclass");
 
 ev << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
-ev << x.className() << ":" << x.name() << endl;
+ev << x.getClassName() << ":" << x.getName() << endl;
 x.setB(11); PRINT(x.getB());
 x.setC('x'); PRINT(x.getC());
 

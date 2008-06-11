@@ -17,7 +17,7 @@ int i;
 for (i=0; i<100; i++)
 {
     if (i==50)
-        a.takeOwnership(false);
+        a.setTakeOwnership(false);
     char name[20];
     sprintf(name,"msg-%d", i);
     msgs[i] = new cMessage(name);
@@ -32,21 +32,21 @@ for (i=0; i<100; i++)
     int k = pos[i];
 
     CHECK(a.find(msg)==k);
-    CHECK(a.find(msg->name())==k);
+    CHECK(a.find(msg->getName())==k);
     CHECK(a.get(k)==msg);
     CHECK(a[k]==msg);
 
-    CHECK(a.get(msg->name())==msg);
-    CHECK(a[msg->name()]==msg);
+    CHECK(a.get(msg->getName())==msg);
+    CHECK(a[msg->getName()]==msg);
 
     CHECK(a.exist(k));
-    CHECK(a.exist(msg->name()));
+    CHECK(a.exist(msg->getName()));
 
     if (i<50) {
-        CHECK(msg->owner()==&a);
+        CHECK(msg->getOwner()==&a);
     }
     else {
-        CHECK(msg->owner()!=&a);
+        CHECK(msg->getOwner()!=&a);
     }
 }
 
@@ -61,7 +61,7 @@ for (i=0; i<100; i++)
         CHECK(a.remove(k)==msg);
     }
     if (i%3==1) {
-        CHECK(a.remove(msg->name())==msg);
+        CHECK(a.remove(msg->getName())==msg);
     }
     if (i%3==2) {
         CHECK(a.remove(msg)==msg);
@@ -69,16 +69,16 @@ for (i=0; i<100; i++)
 
     // check it's no longer in there
     CHECK(a.find(msg)<0);
-    CHECK(a.find(msg->name())<0);
+    CHECK(a.find(msg->getName())<0);
     CHECK(!a.exist(k));
-    CHECK(!a.exist(msg->name()));
+    CHECK(!a.exist(msg->getName()));
     CHECK(a.get(k)==NULL);
     CHECK(a[k]==NULL);
-    CHECK(a.get(msg->name())==NULL);
-    CHECK(a[msg->name()]==NULL);
-    CHECK(msg->owner()!=&a);
+    CHECK(a.get(msg->getName())==NULL);
+    CHECK(a[msg->getName()]==NULL);
+    CHECK(msg->getOwner()!=&a);
     CHECK(a.remove(k)==NULL);
-    CHECK(a.remove(msg->name())==NULL);
+    CHECK(a.remove(msg->getName())==NULL);
     CHECK(a.remove(msg)==NULL);
 }
 

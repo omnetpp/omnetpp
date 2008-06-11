@@ -22,7 +22,7 @@ class MyClass : public MyClass_Base
     int m;
   public:
     MyClass(const char *name=NULL) : MyClass_Base(name) {m=0;}
-    MyClass(const MyClass& other) : MyClass_Base() {operator=(other);setName(other.name());}
+    MyClass(const MyClass& other) : MyClass_Base() {operator=(other);setName(other.getName());}
     MyClass& operator=(const MyClass& other) {MyClass_Base::operator=(other); m=other.m; return *this;}
     virtual cPolymorphic *dup() {return new MyClass(*this);}
 
@@ -40,7 +40,7 @@ Register_Class(MyClass);
 MyClass x("myclass");
 
 ev << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
-ev << x.className() << ":" << x.name() << endl;
+ev << x.getClassName() << ":" << x.getName() << endl;
 
 x.setB(11); PRINT(x.getB());
 x.setI(11); PRINT(x.getI());

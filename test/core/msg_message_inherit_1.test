@@ -24,7 +24,7 @@ message MyMessage extends Base
 
 MyMessage x("msg");
 
-ev << x.className() << ":" << x.name() << endl;
+ev << x.getClassName() << ":" << x.getName() << endl;
 x.setB(11); PRINT(x.getB());
 x.setC('x'); PRINT(x.getC());
 

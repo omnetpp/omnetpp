@@ -36,8 +36,8 @@ bool StressChannel::deliver(cMessage *msg, simtime_t t)
     t += delay;
 
 	// TODO: this should be factored out to base class
-    EVCB.messageSendHop(msg, fromGate(), delay, transmissionDelay);
+    EVCB.messageSendHop(msg, getFromGate(), delay, transmissionDelay);
 
     // hand over msg to next gate
-    return fromGate()->toGate()->deliver(msg, t);
+    return getFromGate()->getToGate()->deliver(msg, t);
 }

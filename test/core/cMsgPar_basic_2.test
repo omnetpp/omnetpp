@@ -7,7 +7,7 @@ Tests cMsgPar's conversions to basic types (operator long(), operator double(), 
 %activity:
 cMsgPar p;
 
-#define PRINT(X)  ev << p.type() << ":" << p.isNumeric() << ":" << X << endl
+#define PRINT(X)  ev << p.getType() << ":" << p.isNumeric() << ":" << X << endl
 
 p.setBoolValue(false); PRINT((bool)p);
 p.setBoolValue(true); PRINT((bool)p);

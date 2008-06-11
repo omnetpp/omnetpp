@@ -23,19 +23,19 @@ cMessage msg2("tmp");
 msg2.netUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
-PRINT(msg2.name());
+PRINT(msg2.getName());
 PRINT(msg2.length());
-PRINT(msg2.encapsulatedMsg()==NULL);
+PRINT(msg2.getEncapsulatedMsg()==NULL);
 
 cMessage *payload2 = msg2.decapsulate();
-PRINT(payload2->name());
+PRINT(payload2->getName());
 PRINT(payload2->length());
 
 %contains: stdout
 isBufferEmpty:1
-msg2.name():msg
+msg2.getName():msg
 msg2.length():1623
-msg2.encapsulatedMsg()==NULL:0
-payload2->name():payload
+msg2.getEncapsulatedMsg()==NULL:0
+payload2->getName():payload
 payload2->length():123
 

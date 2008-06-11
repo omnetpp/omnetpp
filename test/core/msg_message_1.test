@@ -30,7 +30,7 @@ MyMessage x("msg");
 // test it's really subclassed from cMessage
 (void)(cMessage *)&x;
 ev << (dynamic_cast<cMessage *>(&x)!=0 ? "cMessage" : "generic") << endl;
-ev << x.className() << ":" << x.name() << endl;
+ev << x.getClassName() << ":" << x.getName() << endl;
 
 // fields must initialize to zero
 PRINT(x.getB());

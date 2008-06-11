@@ -12,20 +12,20 @@ class Sender : public cSimpleModule
 
 Define_Module(Sender);
 
-#define PRINT(g)   ev << #g << ":" << ((g) ? (g)->fullName() : "NULL") << endl
+#define PRINT(g)   ev << #g << ":" << ((g) ? (g)->getFullName() : "NULL") << endl
 
 void Sender::activity()
 {
    cGate *out = gate("out");
-   cGate *rcvin = gate("out")->toGate();
+   cGate *rcvin = gate("out")->getToGate();
 
    // start clean
    out->disconnect();
 
    // connect, then check if OK
    out->connectTo(rcvin);
-   PRINT(out->toGate());
-   PRINT(rcvin->fromGate());
+   PRINT(out->getToGate());
+   PRINT(rcvin->getFromGate());
 
    // even send message to verify
    cMessage *msg = new cMessage("hello");
@@ -34,18 +34,18 @@ void Sender::activity()
 
    // disconnect, then check if OK
    out->disconnect();
-   PRINT(out->toGate());
-   PRINT(rcvin->fromGate());
+   PRINT(out->getToGate());
+   PRINT(rcvin->getFromGate());
 
    // disconnect should be idempotent
    out->disconnect();
-   PRINT(out->toGate());
-   PRINT(rcvin->fromGate());
+   PRINT(out->getToGate());
+   PRINT(rcvin->getFromGate());
 
    // connect twice -- second one must throw error
    out->connectTo(rcvin);
-   PRINT(out->toGate());
-   PRINT(rcvin->fromGate());
+   PRINT(out->getToGate());
+   PRINT(rcvin->getFromGate());
 
    out->connectTo(rcvin);
 }
@@ -64,7 +64,7 @@ Define_Module(Receiver);
 void Receiver::activity()
 {
     cMessage *msg = receive();
-    ev << "arrived:" << msg->name() << endl;
+    ev << "arrived:" << msg->getName() << endl;
     delete msg;
 }
 

@@ -32,8 +32,8 @@ Define_Module(Test);
 
 void Test::activity()
 {
-    for (int i=0; i<params(); i++)
-        ev << par(i).name() << "=" << par(i).str() << endl;
+    for (int i=0; i<getNumParams(); i++)
+        ev << par(i).getName() << "=" << par(i).str() << endl;
     ev << ".\n";
 }
 

@@ -51,14 +51,14 @@ void StressQueue::handleMessage(cMessage *msg)
         sendOutMsg->setName("Dequeued");
 		send(sendOutMsg, outGate);
 
-		scheduleAt(outGate->transmissionFinishes(), timer);
+		scheduleAt(outGate->getTransmissionFinishTime(), timer);
 	}
 
 	// colorize icon
 	if (!timer->isScheduled())
-		displayString().setTagArg("i", 1, "");
+		getDisplayString().setTagArg("i", 1, "");
 	else if (queue.empty())
-		displayString().setTagArg("i", 1, "green");
+		getDisplayString().setTagArg("i", 1, "green");
 	else
-		displayString().setTagArg("i", 1, "yellow");
+		getDisplayString().setTagArg("i", 1, "yellow");
 }

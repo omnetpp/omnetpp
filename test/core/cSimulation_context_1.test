@@ -1,6 +1,6 @@
 %description:
 Test initialize() and finish() of a channel;
-e.g. simulation.context() and simulation.contextType() should be correctly set.
+e.g. simulation.getContext() and simulation.getContextType() should be correctly set.
 
 %file: test.ned
 
@@ -35,22 +35,22 @@ class TestChannel: public cIdealChannel
     TestChannel() { }
 
     virtual void initialize() {
-        ASSERT(simulation.context() == this);
-        ASSERT(simulation.contextType() == CTX_INITIALIZE);
-        ev << "- " << fullPath() << " initialize\n";
+        ASSERT(simulation.getContext() == this);
+        ASSERT(simulation.getContextType() == CTX_INITIALIZE);
+        ev << "- " << getFullPath() << " initialize\n";
     }
 
     virtual bool deliver(cMessage *msg, simtime_t t) {
-        //FIXME this fails: ASSERT(simulation.context() == this);
-        ASSERT(simulation.contextType() == CTX_EVENT);
-        ev << "- " << fullPath() << " deliver: \"" << msg->name() << "\"\n";
+        //FIXME this fails: ASSERT(simulation.getContext() == this);
+        ASSERT(simulation.getContextType() == CTX_EVENT);
+        ev << "- " << getFullPath() << " deliver: \"" << msg->getName() << "\"\n";
         return cIdealChannel::deliver(msg, t);
     }
 
     virtual void finish() {
-        ASSERT(simulation.context() == this);
-        ASSERT(simulation.contextType() == CTX_FINISH);
-        ev << "- " << fullPath() << " finish\n";
+        ASSERT(simulation.getContext() == this);
+        ASSERT(simulation.getContextType() == CTX_FINISH);
+        ev << "- " << getFullPath() << " finish\n";
     }
 };
 
@@ -63,25 +63,25 @@ class Node : public cSimpleModule
     Node() { }
 
     virtual void initialize() {
-        ASSERT(simulation.context() == this);
-        ASSERT(simulation.contextType() == CTX_INITIALIZE);
-        ev << "- " << fullPath() << " initialize\n";
+        ASSERT(simulation.getContext() == this);
+        ASSERT(simulation.getContextType() == CTX_INITIALIZE);
+        ev << "- " << getFullPath() << " initialize\n";
         scheduleAt(1, new cMessage("timer"));
     }
 
     virtual void handleMessage(cMessage *msg) {
-        ASSERT(simulation.context() == this);
-        ASSERT(simulation.contextType() == CTX_EVENT);
-        ev << "- " << fullPath() << " handleMessage: \"" << msg->name() << "\"\n";
+        ASSERT(simulation.getContext() == this);
+        ASSERT(simulation.getContextType() == CTX_EVENT);
+        ev << "- " << getFullPath() << " handleMessage: \"" << msg->getName() << "\"\n";
         if (msg->isSelfMessage())
             send(new cMessage("packet"), "g$o");
         delete msg;
     }
 
     virtual void finish() {
-        ASSERT(simulation.context() == this);
-        ASSERT(simulation.contextType() == CTX_FINISH);
-        ev << "- " << fullPath() << " finish\n";
+        ASSERT(simulation.getContext() == this);
+        ASSERT(simulation.getContextType() == CTX_FINISH);
+        ev << "- " << getFullPath() << " finish\n";
     }
 };
 

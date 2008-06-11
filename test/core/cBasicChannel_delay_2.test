@@ -43,7 +43,7 @@ void Sender::activity()
 {
    // create and set channel
    cChannelType *channelType = cChannelType::find("ned.BasicChannel"); //XXX find something more concise to create a basic channel...
-   cBasicChannel *ch = (cBasicChannel *)channelType->create("chan", parentModule());
+   cBasicChannel *ch = (cBasicChannel *)channelType->create("chan", getParentModule());
    ch->setDelay(0.1);
    ch->callInitialize();
    gate("out")->setChannel( ch );
@@ -65,7 +65,7 @@ Define_Module(Receiver);
 void Receiver::activity()
 {
    cMessage *msg = receive();
-   simtime_t diff = simTime() - msg->timestamp();
+   simtime_t diff = simTime() - msg->getTimestamp();
    ev << "diff: " << diff << endl;
 }
 

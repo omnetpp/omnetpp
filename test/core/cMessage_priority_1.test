@@ -25,7 +25,7 @@ scheduleAt(3.1, createMsg("C''", 1));
 while (true)
 {
     cMessage *msg = receive();
-    ev << "at " << simTime() << ": " << msg->name() << " pri=" << msg->priority() << "\n";
+    ev << "at " << simTime() << ": " << msg->getName() << " pri=" << msg->getPriority() << "\n";
     delete msg;
 }
 

@@ -13,9 +13,9 @@ SimTime: check overflow detection
 
 SimTime t,t2;
 
-double dmax = floor(SimTime::maxTime().dbl());
+double dmax = floor(SimTime::getMaxTime().dbl());
 
-ASSERT(SimTime::scaleExp()==-12);
+ASSERT(SimTime::getScaleExp()==-12);
 
 // these should be OK
 TRY( t=dmax; )

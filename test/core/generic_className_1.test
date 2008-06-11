@@ -1,5 +1,5 @@
 %description:
-Test the className() methods of several classes.
+Test the getClassName() methods of several classes.
 
 The following classes cannot be tested because they're abstract (instantiation
 not possible) or internally used classes:
@@ -10,7 +10,7 @@ cStatistic, cModuleType, cChannelType, cWatch, cPar, etc...
 
 %activity:
 
-#define PRINT_CLASSNAME(T) {T a##T; ev << #T ": " << a##T.className() << endl;}
+#define PRINT_CLASSNAME(T) {T a##T; ev << #T ": " << a##T.getClassName() << endl;}
 
 PRINT_CLASSNAME( cArray )
 PRINT_CLASSNAME( cTDExpandingWindows )

@@ -39,9 +39,9 @@ void print(const char *what, MyMessage& x)
 {
    ev << what << ":";
    ev << x.getMs().bb << ":" << x.getMc().getBb() << ":"
-      << x.getQ().name() << ":" << x.getQ().length() << ":";
+      << x.getQ().getName() << ":" << x.getQ().length() << ":";
    ev << x.getMs2().bb << ":" << x.getMc2().getBb() << ":"
-      << x.getQ2().name() << ":" << x.getQ2().length();
+      << x.getQ2().getName() << ":" << x.getQ2().length();
    ev << "." << endl;
 }
 

@@ -94,10 +94,10 @@ Define_Module(Simple);
 
 void Simple::activity()
 {
-    for (int i=0; i<params(); i++)
+    for (int i=0; i<getNumParams(); i++)
     {
         cXMLElement *node = par(i).xmlValue();
-        ev << par(i).name() << ": <" << node->getTagName() << " id='"<< node->getAttribute("id") << "'>" << endl;
+        ev << par(i).getName() << ": <" << node->getTagName() << " id='"<< node->getAttribute("id") << "'>" << endl;
     }
 }
 

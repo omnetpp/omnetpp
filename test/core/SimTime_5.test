@@ -6,9 +6,9 @@ SimTime t, t2;
 
 #define P(x) {ev << #x << " -> " << (x) << "\n";}
 
-double dmax = floor(SimTime::maxTime().dbl());
+double dmax = floor(SimTime::getMaxTime().dbl());
 
-ASSERT(SimTime::scaleExp()==-12);
+ASSERT(SimTime::getScaleExp()==-12);
 
 P((t=0.99, t*=2.5, t));
 P((t=0.99, t*=-2.5, t));

@@ -30,7 +30,7 @@ MyClass x("myclass");
 // test it's really subclassed from cOwnedObject
 (void)(cOwnedObject *)&x;
 ev << (dynamic_cast<cOwnedObject *>(&x)!=0 ? "cOwnedObject" : "generic") << endl;
-ev << x.className() << ":" << x.name() << endl;
+ev << x.getClassName() << ":" << x.getName() << endl;
 
 // fields must initialize to zero
 PRINT(x.getB());

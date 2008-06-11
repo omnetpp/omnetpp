@@ -49,7 +49,7 @@ Define_Module(Node1);
 void Node1::activity()
 {
     // set channel to disabled
-    cBasicChannel *chan = check_and_cast<cBasicChannel *>(gate("out")->channel());
+    cBasicChannel *chan = check_and_cast<cBasicChannel *>(gate("out")->getChannel());
     chan->setDisabled(true);
 
     // send packets
@@ -75,7 +75,7 @@ Define_Module(Node2);
 
 void Node2::handleMessage(cMessage *msg)
 {
-    ev << "received " << msg->name() << "\n";
+    ev << "received " << msg->getName() << "\n";
     delete msg;
 }
 

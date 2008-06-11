@@ -103,14 +103,14 @@ Define_Module(Simple);
 
 void Simple::activity()
 {
-    for (int i=0; i<params(); i++)
-        ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
+    for (int i=0; i<getNumParams(); i++)
+        ev << getFullName() << "." << par(i).getName() << "=" << (double)par(i) << endl;
     for (cModule::GateIterator i(this); !i.end(); i++)
-        if (i()->index()==0)
-            ev << i()->name() << " size=" << i()->size() << endl;
-    for (cModule::SubmoduleIterator j(parentModule()); !j.end(); j++)
-        if (j()->index()==0)
-            ev << j()->name() << " size=" << j()->size() << endl;
+        if (i()->getIndex()==0)
+            ev << i()->getName() << " size=" << i()->size() << endl;
+    for (cModule::SubmoduleIterator j(getParentModule()); !j.end(); j++)
+        if (j()->getIndex()==0)
+            ev << j()->getName() << " size=" << j()->size() << endl;
 }
 
 }; //namespace

@@ -42,7 +42,7 @@ void testReaderWriter(const char *inputfile, const char *outputfile)
 {
     ResultFileManager resultfilemanager;
     DataflowManager manager;
-    NodeTypeRegistry *registry = NodeTypeRegistry::instance();
+    NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
 
     NodeType *readerType = registry->getNodeType("vectorfilereader");
     NodeType *writerType = registry->getNodeType("vectorfilewriter");
@@ -76,7 +76,7 @@ void testReaderBuilder(const char *inputfile, const char *outputfile)
 {
     ResultFileManager resultfilemanager;
     DataflowManager manager;
-    NodeTypeRegistry *registry = NodeTypeRegistry::instance();
+    NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
 
     NodeType *readerType = registry->getNodeType("vectorfilereader");
     NodeType *builderType = registry->getNodeType("arraybuilder");
@@ -134,7 +134,7 @@ void testReader(const char* readerNodeType, const char *inputFile, int *vectorId
 			!IndexFile::isIndexFileUpToDate(inputFile))
 		throw exception("Index file is not up to date");
 	
-    NodeTypeRegistry *registry = NodeTypeRegistry::instance();
+    NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
     NodeType *readerType = registry->getNodeType(readerNodeType);
     NodeType *builderType = registry->getNodeType("arraybuilder");
 

@@ -1,5 +1,5 @@
 %description:
-Test that a cOwnedObject-subclass controlInfo()'s ownership is properly managed,
+Test that a cOwnedObject-subclass getControlInfo()'s ownership is properly managed,
 and it gets deleted when message gets deleted
 
 %global:
@@ -14,16 +14,16 @@ class Ctrl : public cOwnedObject
 %activity:
 cMessage *msg = new cMessage("msg");
 Ctrl *ctrl = new Ctrl();
-ev << "1. owner:" << ctrl->owner()->name() << "\n";
+ev << "1. owner:" << ctrl->getOwner()->getName() << "\n";
 
 msg->setControlInfo(ctrl);
-ev << "2. owner:" << ctrl->owner()->name() << "\n";
+ev << "2. owner:" << ctrl->getOwner()->getName() << "\n";
 
 msg->removeControlInfo();
-ev << "3. owner:" << ctrl->owner()->name() << "\n";
+ev << "3. owner:" << ctrl->getOwner()->getName() << "\n";
 
 msg->setControlInfo(ctrl);
-ev << "4. owner:" << ctrl->owner()->name() << "\n";
+ev << "4. owner:" << ctrl->getOwner()->getName() << "\n";
 delete msg;
 
 ev << "done\n";

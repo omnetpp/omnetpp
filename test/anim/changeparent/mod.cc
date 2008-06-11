@@ -17,7 +17,7 @@ void Mod::activity()
 
     ev << "before changeParentTo()\n";
 
-    cModule *box2 = parentModule()->parentModule()->submodule("box2");
+    cModule *box2 = getParentModule()->getParentModule()->getSubmodule("box2");
     changeParentTo(box2);
 
     ev << "after changeParentTo()\n";

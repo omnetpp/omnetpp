@@ -26,7 +26,7 @@ copies[0] = new cMessage(*msg);
 copies[1] = (cMessage *) msg->dup();
 
 copies[2] = new cMessage();
-copies[2]->setName(msg->name()); // op= doesn't copy name string
+copies[2]->setName(msg->getName()); // op= doesn't copy name string
 *copies[2] = *msg;
 
 for (int i=0; i<3; i++)
@@ -34,13 +34,13 @@ for (int i=0; i<3; i++)
     ev << i << endl;
     cMessage *cc = copies[i];
 
-    CHECK(!strcmp(cc->name(), msg->name()));
-    CHECK(cc->kind()==msg->kind());
-    CHECK(cc->priority()==msg->priority());
+    CHECK(!strcmp(cc->getName(), msg->getName()));
+    CHECK(cc->getKind()==msg->getKind());
+    CHECK(cc->getPriority()==msg->getPriority());
     CHECK(cc->length()==msg->length());
     CHECK(cc->hasBitError()==msg->hasBitError());
-    CHECK(cc->timestamp()==msg->timestamp());
-    CHECK(cc->contextPointer()==msg->contextPointer());
+    CHECK(cc->getTimestamp()==msg->getTimestamp());
+    CHECK(cc->getContextPointer()==msg->getContextPointer());
 
     delete cc;
 }

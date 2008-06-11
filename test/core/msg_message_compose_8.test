@@ -18,8 +18,8 @@ message MyMessage
 %activity:
 
 #define PRINT(X) ev << #X << ":" << X << endl
-#define PRINTOBJ(X)  ev << #X << ":" << X.className() << ":" << X.name() << ":" \
-                        << (X.owner()==&x ? "owned" : "not owned") << ":" \
+#define PRINTOBJ(X)  ev << #X << ":" << X.getClassName() << ":" << X.getName() << ":" \
+                        << (X.getOwner()==&x ? "owned" : "not owned") << ":" \
                         << X.length() << endl;
 
 MyMessage x;

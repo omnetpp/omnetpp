@@ -4,10 +4,10 @@ Tests cProperty name and index.
 %global:
 #include <string.h>
 
-#define PRINTNAMES(p) ev << "name='" << (p)->name() \
-                         << "' index='" << ((p)->index() ? (p)->index() : "NULL") \
-                         << "' fullName='" << (p)->fullName() \
-                         << "' fullPath='" << (p)->fullPath() << "'\n";
+#define PRINTNAMES(p) ev << "name='" << (p)->getName() \
+                         << "' index='" << ((p)->getIndex() ? (p)->getIndex() : "NULL") \
+                         << "' fullName='" << (p)->getFullName() \
+                         << "' fullPath='" << (p)->getFullPath() << "'\n";
 
 %activity:
 cProperty *prop;

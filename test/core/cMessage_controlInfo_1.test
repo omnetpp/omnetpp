@@ -1,5 +1,5 @@
 %description:
-Test that controlInfo() gets deleted when message gets deleted
+Test that getControlInfo() gets deleted when message gets deleted
 
 %global:
 

@@ -28,8 +28,8 @@ Define_Module(Test);
 
 void Test::activity()
 {
-    for (int i=0; i<params(); i++) {
-        ev << par(i).name() << "=";
+    for (int i=0; i<getNumParams(); i++) {
+        ev << par(i).getName() << "=";
         par(i).isNumeric() ? ev << par(i).doubleValue() : ev << par(i).stringValue();
         ev << endl;
     }

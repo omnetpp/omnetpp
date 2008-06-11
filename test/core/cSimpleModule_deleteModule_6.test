@@ -45,7 +45,7 @@ void NodeA::activity()
 {
     for (int i=0; i<10; i++)
     {
-        ev << "NodeA " << fullPath() << " at t=" << simTime() << endl;
+        ev << "NodeA " << getFullPath() << " at t=" << simTime() << endl;
         wait(1);
     }
 }
@@ -64,7 +64,7 @@ void NodeB::activity()
     cMessage *msg = new cMessage("timeout");
     for (int i=0; i<10; i++)
     {
-        ev << "NodeB " << fullPath() << " at t=" << simTime() << endl;
+        ev << "NodeB " << getFullPath() << " at t=" << simTime() << endl;
         scheduleAt(simTime()+1, msg);
         msg = receive();
     }
@@ -89,8 +89,8 @@ void Deleter::handleMessage(cMessage *msg)
     delete msg;
 
     ev << "Deleting nodeA, nodeB at t=" << simTime() << endl;
-    cModule *nodeA = parentModule()->submodule("nodeA");
-    cModule *nodeB = parentModule()->submodule("nodeB");
+    cModule *nodeA = getParentModule()->getSubmodule("nodeA");
+    cModule *nodeB = getParentModule()->getSubmodule("nodeB");
     nodeA->deleteModule();
     nodeB->deleteModule();
     ev << "Deleted" << endl;

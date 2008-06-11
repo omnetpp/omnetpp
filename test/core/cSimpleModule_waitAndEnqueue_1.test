@@ -22,18 +22,18 @@ cMessage *msg;
 while (!queue.empty())
 {
     msg = (cMessage *) queue.pop();
-    ev << "  " << msg->name() << endl;
+    ev << "  " << msg->getName() << endl;
     delete msg;
 }
 
 // receive remaining messages
 ev << "receiving further messages:\n";
 msg = receive();
-ev << "  " << msg->name() << endl;
+ev << "  " << msg->getName() << endl;
 delete msg;
 
 msg = receive();
-ev << "  " << msg->name() << endl;
+ev << "  " << msg->getName() << endl;
 delete msg;
 
 %contains-regex: stdout

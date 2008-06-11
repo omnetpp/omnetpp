@@ -7,7 +7,7 @@ Tests assignment operator (copying a cMsgPar to another cMsgPar) for basic data 
 %activity:
 cMsgPar p, q;
 
-#define PRINT(X)  ev << q.type() << ":" << q.isNumeric() << ":" << X << endl
+#define PRINT(X)  ev << q.getType() << ":" << q.isNumeric() << ":" << X << endl
 
 p = false; q = p; PRINT(q.boolValue());
 p = true; q = p; PRINT(q.boolValue());

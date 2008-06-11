@@ -44,18 +44,18 @@ void Gen::activity()
 void Gen::icons()
 {
     ev << "ICONS -- valid values only:\n";
-    displayString().setTagArg("i", 0, "block/app");  show();
-    displayString().setTagArg("i", 0, "block/app_s");  show();
-    displayString().setTagArg("i", 0, "block/app_vs");  show();
-    displayString().setTagArg("i", 0, "device/satellite_s");  show();
-    displayString().setTagArg("i", 0, "device/satellite");  show();
-    displayString().setTagArg("i", 0, "device/satellite_l");  show();
-    displayString().setTagArg("i", 0, "device/switch"); show();
-    displayString().setTagArg("i", 0, "device/terminal"); show();
-    displayString().setTagArg("i", 0, "device/printer"); show();
-    displayString().setTagArg("i", 0, "abstract/penguin"); show();
-    displayString().setTagArg("i", 0, ""); show();
-    displayString().removeTag("i"); show();
+    getDisplayString().setTagArg("i", 0, "block/app");  show();
+    getDisplayString().setTagArg("i", 0, "block/app_s");  show();
+    getDisplayString().setTagArg("i", 0, "block/app_vs");  show();
+    getDisplayString().setTagArg("i", 0, "device/satellite_s");  show();
+    getDisplayString().setTagArg("i", 0, "device/satellite");  show();
+    getDisplayString().setTagArg("i", 0, "device/satellite_l");  show();
+    getDisplayString().setTagArg("i", 0, "device/switch"); show();
+    getDisplayString().setTagArg("i", 0, "device/terminal"); show();
+    getDisplayString().setTagArg("i", 0, "device/printer"); show();
+    getDisplayString().setTagArg("i", 0, "abstract/penguin"); show();
+    getDisplayString().setTagArg("i", 0, ""); show();
+    getDisplayString().removeTag("i"); show();
 }
 
 void Gen::boxes()
@@ -71,9 +71,9 @@ void Gen::boxes()
         {
             for (const char **h = height; *h; h++)
             {
-                displayString().setTagArg("b", 0, *w);
-                displayString().setTagArg("b", 1, *h);
-                displayString().setTagArg("b", 2, *sh);
+                getDisplayString().setTagArg("b", 0, *w);
+                getDisplayString().setTagArg("b", 1, *h);
+                getDisplayString().setTagArg("b", 2, *sh);
                 show();
             }
         }
@@ -83,10 +83,10 @@ void Gen::boxes()
 void Gen::options()
 {
     ev << "OPTIONS -- valid values only:\n";
-    displayString().setTagArg("b",0,"50");
-    displayString().setTagArg("b",1,"50");
-    displayString().setTagArg("b",2,"oval");
-    displayString().setTagArg("i",0,"device/laptop");
+    getDisplayString().setTagArg("b",0,"50");
+    getDisplayString().setTagArg("b",1,"50");
+    getDisplayString().setTagArg("b",2,"oval");
+    getDisplayString().setTagArg("i",0,"device/laptop");
 
     const char *fill[] = {"", "-", "yellow", "#00ff00", "@2080ff", NULL};
     const char *outline[] = {"", "-", "blue", "#ff0000", "@ff80a0", NULL};
@@ -97,9 +97,9 @@ void Gen::options()
         {
             for (const char **bd = borderwidth; *bd; bd++)
             {
-                displayString().setTagArg("b", 3, *f);
-                displayString().setTagArg("b", 4, *o);
-                displayString().setTagArg("b", 5, *bd);
+                getDisplayString().setTagArg("b", 3, *f);
+                getDisplayString().setTagArg("b", 4, *o);
+                getDisplayString().setTagArg("b", 5, *bd);
                 show();
             }
         }
@@ -113,7 +113,7 @@ void Gen::hue()
     {
         char buf[10];
         sprintf(buf, "@%2.2xffff", i);
-        displayString().setTagArg("b", 3, buf);
+        getDisplayString().setTagArg("b", 3, buf);
         show();
     }
 }
@@ -125,7 +125,7 @@ void Gen::saturation()
     {
         char buf[10];
         sprintf(buf, "@40%2.2xff", i);
-        displayString().setTagArg("b", 3, buf);
+        getDisplayString().setTagArg("b", 3, buf);
         show();
     }
 }
@@ -137,14 +137,14 @@ void Gen::brightness()
     {
         char buf[10];
         sprintf(buf, "@4080%2.2x", i);
-        displayString().setTagArg("b", 3, buf);
+        getDisplayString().setTagArg("b", 3, buf);
         show();
     }
 }
 
 void Gen::show()
 {
-    ev << "display string: \"" << displayString().getString() << "\"" << endl;
+    ev << "display string: \"" << getDisplayString().getString() << "\"" << endl;
     wait(0);
 }
 

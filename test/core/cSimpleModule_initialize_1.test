@@ -29,11 +29,11 @@ network Test
 namespace {} {
 
 class PlainInit : public cSimpleModule {
-    virtual void initialize() {ev << "init " << fullPath() << "\n";}
+    virtual void initialize() {ev << "init " << getFullPath() << "\n";}
 };
 
 class StagedInit : public cSimpleModule {
-    virtual void initialize(int stage) {ev << "init " << fullPath() << " stage " << stage << "\n";}
+    virtual void initialize(int stage) {ev << "init " << getFullPath() << " stage " << stage << "\n";}
 };
 
 class ZeroStageInit : public StagedInit {

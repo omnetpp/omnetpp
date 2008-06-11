@@ -4,13 +4,13 @@ merging two cLongHistogram objects
 %global:
 void print(cLongHistogram& s)
 {
-    ev << s.name() << " n=" << s.count()
-       << " min=" << s.min() << " max=" << s.max()
-       << " mean=" << s.mean() << " stddev=" << s.stddev() << endl;
-    ev << s.underflowCell();
-    for (int i=0; i<s.cells(); i++)
-        ev << " | " << s.basepoint(i) << "<:" << s.cell(i);
-    ev << " | " << s.basepoint(s.cells()) << "<:" << s.overflowCell();
+    ev << s.getName() << " n=" << s.getCount()
+       << " min=" << s.getMin() << " max=" << s.getMax()
+       << " mean=" << s.getMean() << " stddev=" << s.getStddev() << endl;
+    ev << s.getUnderflowCell();
+    for (int i=0; i<s.getNumCells(); i++)
+        ev << " | " << s.getBasepoint(i) << "<:" << s.getCellValue(i);
+    ev << " | " << s.getBasepoint(s.getNumCells()) << "<:" << s.getOverflowCell();
     ev << "\n";
 }
 

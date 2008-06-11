@@ -14,11 +14,11 @@ class Variable : public Expression::Functor
     Variable(const char *name) {varname = name;}
     virtual ~Variable() { }
     virtual Expression::Functor *dup() const {return new Variable(varname.c_str());}
-    virtual const char *name() const {return varname.c_str();}
-    virtual const char *argTypes() const {return "";}
-    virtual char returnType() const {return Expression::Value::DBL;}
+    virtual const char *getName() const {return varname.c_str();}
+    virtual const char *getArgTypes() const {return "";}
+    virtual char getReturnType() const {return Expression::Value::DBL;}
     virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return (double)(varname[1]-'0');}
-    virtual std::string str(std::string args[], int numargs) {return name();}
+    virtual std::string str(std::string args[], int numargs) {return getName();}
 };
 
 class Resolver : public Expression::Resolver

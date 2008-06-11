@@ -60,7 +60,7 @@ Define_Module(Simple);
  {\
    cPar& PARNAME = par(#PARNAME); cStdDev s; \
    for (int i=0; i<numrepl; i++) s.collect((double)PARNAME); \
-   ev.printf("%s: m=%lg v=%lg\n", #PARNAME, s.mean(), s.variance()); \
+   ev.printf("%s: m=%lg v=%lg\n", #PARNAME, s.getMean(), s.getVariance()); \
  }
 
 void Simple::activity()

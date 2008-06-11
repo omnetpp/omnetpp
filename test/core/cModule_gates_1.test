@@ -78,7 +78,7 @@ void Node::checkOneGate(const char *gatename, cGate::Type type, int size, int in
 {
     ASSERT(type!=cGate::INOUT);
 
-    // TODO assert that gateNames() contains gatename (less $i/$o)
+    // TODO assert that getGateNames() contains gatename (less $i/$o)
     ASSERT(hasGate(gatename));
     ASSERT(gateType(gatename)==type);
     ASSERT(isGateVector(gatename)==(size!=-1));
@@ -88,14 +88,14 @@ void Node::checkOneGate(const char *gatename, cGate::Type type, int size, int in
         ASSERT(hasGate(gatename, index));
         cGate *g = gate(gatename, index);
         ASSERT(g != NULL);
-        int id = g->id();
+        int id = g->getId();
         ASSERT(findGate(gatename, index) == id);
         ASSERT(gate(id) == g);
-        ASSERT(g->name() == std::string(gatename));
-        ASSERT(g->type() == type);
+        ASSERT(g->getName() == std::string(gatename));
+        ASSERT(g->getType() == type);
 
         if (size>0) { // is vector
-            ASSERT(g->index() == index);
+            ASSERT(g->getIndex() == index);
             ASSERT(g->size() == size);
         }
 
@@ -187,7 +187,7 @@ void Node::testGateIterator()
     for (GateIterator i(this); !i.end(); i++) {
         cGate *g = i();
         ASSERT(g!=NULL);
-        ASSERT(gate(g->id()) == g);
+        ASSERT(gate(g->getId()) == g);
         ASSERT(visited.count(g)==0);
         visited.insert(g);
         ASSERT(visited.count(g)==1);

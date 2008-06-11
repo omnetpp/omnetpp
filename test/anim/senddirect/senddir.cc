@@ -49,7 +49,7 @@ void Gen::sendTo(const char *modname, const char *gatename)
     sprintf(msgname, "job-%d", ctr++);
     cMessage *msg = new cMessage(msgname);
 
-    cModule *target = simulation.moduleByPath(modname);
+    cModule *target = simulation.getModuleByPath(modname);
     ev << "Sending " << msgname <<  " to " << modname << "." << gatename << endl;
     wait(0);
     sendDirect(msg, 0, target->gate(gatename));

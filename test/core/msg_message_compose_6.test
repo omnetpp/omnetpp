@@ -24,8 +24,8 @@ MyMessage x;
 
 cQueue& q = x.getQ();
 q.setName("queue");
-ev << q.className() << ":" << q.name() << ":" <<
-      (q.owner()==&x ? "owned" : "not owned") << endl;
+ev << q.getClassName() << ":" << q.getName() << ":" <<
+      (q.getOwner()==&x ? "owned" : "not owned") << endl;
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout

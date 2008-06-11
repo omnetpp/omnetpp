@@ -111,13 +111,13 @@ void Gen::activity()
     {
         ev << i << ":";
         cGate *g = gate("out",i);
-        cChannel *ch = g->channel();
+        cChannel *ch = g->getChannel();
         if (ch)
         {
             cBasicChannel *sch = check_and_cast<cBasicChannel *>(ch);
-            if (sch->delay() != 0)  ev << "delay=" << sch->delay() << ":";
-            if (sch->error())  ev << "error=" << sch->error() << ":";
-            if (sch->datarate())  ev << "datarate=" << sch->datarate() << ":";
+            if (sch->getDelay() != 0)  ev << "delay=" << sch->getDelay() << ":";
+            if (sch->getError())  ev << "error=" << sch->getError() << ":";
+            if (sch->getDatarate())  ev << "datarate=" << sch->getDatarate() << ":";
         }
         ev << endl;
     }

@@ -19,7 +19,7 @@ The dist/ dir can be used to test the functions.
 #define MEAN_AND_VARIANCE(f) \
  {\
    cStdDev s; for (int i=0; i<numrepl; i++) s.collect(f); \
-   ev.printf("%s: m=%lg v=%lg\n", #f, s.mean(), s.variance()); \
+   ev.printf("%s: m=%lg v=%lg\n", #f, s.getMean(), s.getVariance()); \
  }
 
 int rng=0;

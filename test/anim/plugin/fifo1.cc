@@ -48,8 +48,8 @@ void FF1AbstractFifo::activity()
 
 void FF1AbstractFifo::finish()
 {
-    ev << "*** Module: " << fullPath() << "***" << endl;
-    ev << "Stack actually used: " << stackUsage() << " bytes" << endl;
+    ev << "*** Module: " << getFullPath() << "***" << endl;
+    ev << "Stack actually used: " << getStackUsage() << " bytes" << endl;
 }
 
 //------------------------------------------------
@@ -58,13 +58,13 @@ Define_Module( FF1PacketFifo );
 
 simtime_t FF1PacketFifo::startService(cMessage *msg)
 {
-    ev << "Starting service of " << msg->name() << endl;
+    ev << "Starting service of " << msg->getName() << endl;
     return 1.0 / par("serviceRate").doubleValue();
 }
 
 void FF1PacketFifo::endService(cMessage *msg)
 {
-    ev << "Completed service of " << msg->name() << endl;
+    ev << "Completed service of " << msg->getName() << endl;
     send( msg, "out" );
 }
 

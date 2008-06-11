@@ -13,7 +13,7 @@ SimTime::setScaleExp(SimTime::SCALEEXP_NS);
 
 SimTime t, t2, tmp;
 
-#define P(x) if (x <= SimTime::maxTime().dbl()) {t=(x); ev << #x << " -> " << t << "\n";}
+#define P(x) if (x <= SimTime::getMaxTime().dbl()) {t=(x); ev << #x << " -> " << t << "\n";}
 
 P(1e-15); P(1e-14); P(1e-13); P(1e-12); P(1e-11); P(1e-10); P(1e-9);
 P(1e-8); P(1e-7); P(1e-6); P(1e-5); P(1e-4); P(1e-3); P(1e-2); P(1e0);
