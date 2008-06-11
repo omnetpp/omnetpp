@@ -29,7 +29,7 @@ Host::~Host()
 
 void Host::initialize()
 {
-    server = simulation.moduleByPath("server");
+    server = simulation.getModuleByPath("server");
     if (!server) error("server not found");
 
     txRate = par("txRate");
@@ -49,7 +49,7 @@ void Host::initialize()
     WATCH(pkCounter);
 
     if (ev.isGUI())
-        displayString().setTagArg("t",2,"#808000");
+        getDisplayString().setTagArg("t",2,"#808000");
 
     scheduleAt(iaTime->doubleValue(), endTxEvent);
 }
@@ -63,7 +63,7 @@ void Host::handleMessage(cMessage *msg)
     {
         // generate packet and schedule timer when it ends
         char pkname[40];
-        sprintf(pkname,"pk-%d-#%d", id(), pkCounter++);
+        sprintf(pkname,"pk-%d-#%d", getId(), pkCounter++);
         ev << "generating packet " << pkname << endl;
 
         state = TRANSMIT;
@@ -71,8 +71,8 @@ void Host::handleMessage(cMessage *msg)
         // update network graphics
         if (ev.isGUI())
         {
-            displayString().setTagArg("i",1,"yellow");
-            displayString().setTagArg("t",0,"TRANSMIT");
+            getDisplayString().setTagArg("i",1,"yellow");
+            getDisplayString().setTagArg("t",0,"TRANSMIT");
         }
 
         cMessage *pk = new cMessage(pkname);
@@ -103,8 +103,8 @@ void Host::handleMessage(cMessage *msg)
         // update network graphics
         if (ev.isGUI())
         {
-            displayString().setTagArg("i",1,"");
-            displayString().setTagArg("t",0,"");
+            getDisplayString().setTagArg("i",1,"");
+            getDisplayString().setTagArg("t",0,"");
         }
     }
     else

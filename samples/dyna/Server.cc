@@ -35,17 +35,17 @@ void Server::handleMessage(cMessage *msg)
 {
     DynaPacket *pk = check_and_cast<DynaPacket *>(msg);
 
-    if (pk->kind()==DYNA_CONN_REQ)
+    if (pk->getKind()==DYNA_CONN_REQ)
     {
         cModule *mod = srvProcType->createScheduleInit("serverproc",this);
-        ev << "DYNA_CONN_REQ: Created process ID=" << mod->id() << endl;
+        ev << "DYNA_CONN_REQ: Created process ID=" << mod->getId() << endl;
         sendDirect(pk, 0.0, mod, "in");
     }
     else
     {
         int serverProcId = pk->getServerProcId();
         ev << "Redirecting msg to process ID=" << serverProcId << endl;
-        cModule *mod = simulation.module(serverProcId);
+        cModule *mod = simulation.getModule(serverProcId);
         if (!mod) {
             ev << " That process already exited, deleting msg\n";
             delete pk;

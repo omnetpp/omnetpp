@@ -64,7 +64,7 @@ void Txc5::initialize()
     // No tictoc message yet.
     tictocMsg = NULL;
 
-    if (strcmp("tic", name()) == 0)
+    if (strcmp("tic", getName()) == 0)
     {
         // We don't start right away, but instead send an message to ourselves
         // (a "self-message") -- we'll do the first sending when it arrives

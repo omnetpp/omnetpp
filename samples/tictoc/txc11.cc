@@ -44,7 +44,7 @@ void Txc11::initialize()
     WATCH(numReceived);
 
     // Module 0 sends the first message
-    if (index()==0)
+    if (getIndex()==0)
     {
         // Boot the process scheduling the initial message as a self-message.
         TicTocMsg11 *msg = generateMessage();
@@ -56,7 +56,7 @@ void Txc11::handleMessage(cMessage *msg)
 {
     TicTocMsg11 *ttmsg = check_and_cast<TicTocMsg11 *>(msg);
 
-    if (ttmsg->getDestination()==index())
+    if (ttmsg->getDestination()==getIndex())
     {
         // Message arrived
         int hopcount = ttmsg->getHopCount();
@@ -85,7 +85,7 @@ void Txc11::handleMessage(cMessage *msg)
 TicTocMsg11 *Txc11::generateMessage()
 {
     // Produce source and destination addresses.
-    int src = index();   // our module index
+    int src = getIndex();   // our module index
     int n = size();      // module vector size
     int dest = intuniform(0,n-2);
     if (dest>=src) dest++;
@@ -117,7 +117,7 @@ void Txc11::updateDisplay()
 {
     char buf[40];
     sprintf(buf, "rcvd: %ld sent: %ld", numReceived, numSent);
-    displayString().setTagArg("t",0,buf);
+    getDisplayString().setTagArg("t",0,buf);
 }
 
 

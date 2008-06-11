@@ -39,7 +39,7 @@ void Sink::handleMessage(cMessage *msg) {
     Job *job = check_and_cast<Job *>(msg);
 
     // gather statistics
-    lifeTimeStats.record(simTime()- job->creationTime());
+    lifeTimeStats.record(simTime()- job->getCreationTime());
     queueingTimeStats.record(job->getTotalQueueingTime());
     queueStats.record(job->getQueueCount());
     serviceTimeStats.record(job->getTotalServiceTime());

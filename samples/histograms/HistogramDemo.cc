@@ -108,12 +108,12 @@ void HistogramDemo::activity()
 
     ev << endl;
     ev << "Cells in ksplit:\n";
-    for (i=0; i<ksplit.cells(); i++)
+    for (i=0; i<ksplit.getNumCells(); i++)
     {
         ev << " cell " << i << ":";
-        ev << " [" << ksplit.basepoint(i) << "," << ksplit.basepoint(i+1) << "]";
-        ev << "  n=" << ksplit.cell(i);
-        ev << "  PDF=" << ksplit.cellPDF(i) << endl;
+        ev << " [" << ksplit.getBasepoint(i) << "," << ksplit.getBasepoint(i+1) << "]";
+        ev << "  n=" << ksplit.getCellValue(i);
+        ev << "  PDF=" << ksplit.getCellPDF(i) << endl;
     }
 
     ev << endl;

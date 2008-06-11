@@ -33,7 +33,7 @@ void Source::initialize()
     // if empty, use the module name as the default for message names
     jobName = par("jobName");
     if (strcmp(jobName, "") == 0)
-        jobName = name();
+        jobName = getName();
 
     // schedule the first message timer for start time
     selfMsg = new cMessage("newJobTimer");

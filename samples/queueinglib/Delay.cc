@@ -46,7 +46,7 @@ void Delay::handleMessage(cMessage *msg)
     else
     {
         job->setDelayCount(job->getDelayCount()+1);
-        simtime_t d = simTime() - job->timestamp();
+        simtime_t d = simTime() - job->getTimestamp();
         job->setTotalDelayTime(job->getTotalDelayTime() + d);
 
         // if it was a self message (ie. we have already delayed) so we send it out
@@ -57,7 +57,7 @@ void Delay::handleMessage(cMessage *msg)
     sizeStats.record(currentlyStored);
 
     if (ev.isGUI())
-        displayString().setTagArg("i",1, currentlyStored==0 ? "" : "cyan4");
+        getDisplayString().setTagArg("i",1, currentlyStored==0 ? "" : "cyan4");
 }
 
 }; //namespace

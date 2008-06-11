@@ -56,7 +56,7 @@ void Txc12::initialize()
     hopCountVector.setName("HopCount");
 
     // Module 0 sends the first message
-    if (index()==0)
+    if (getIndex()==0)
     {
         // Boot the process scheduling the initial message as a self-message.
         TicTocMsg12 *msg = generateMessage();
@@ -68,7 +68,7 @@ void Txc12::handleMessage(cMessage *msg)
 {
     TicTocMsg12 *ttmsg = check_and_cast<TicTocMsg12 *>(msg);
 
-    if (ttmsg->getDestination()==index())
+    if (ttmsg->getDestination()==getIndex())
     {
         // Message arrived
         int hopcount = ttmsg->getHopCount();
@@ -99,7 +99,7 @@ void Txc12::handleMessage(cMessage *msg)
 TicTocMsg12 *Txc12::generateMessage()
 {
     // Produce source and destination addresses.
-    int src = index();
+    int src = getIndex();
     int n = size();
     int dest = intuniform(0,n-2);
     if (dest>=src) dest++;
@@ -132,10 +132,10 @@ void Txc12::finish()
     // This function is called by OMNeT++ at the end of the simulation.
     ev << "Sent:     " << numSent << endl;
     ev << "Received: " << numReceived << endl;
-    ev << "Hop count, min:    " << hopCountStats.min() << endl;
-    ev << "Hop count, max:    " << hopCountStats.max() << endl;
-    ev << "Hop count, mean:   " << hopCountStats.mean() << endl;
-    ev << "Hop count, stddev: " << hopCountStats.stddev() << endl;
+    ev << "Hop count, min:    " << hopCountStats.getMin() << endl;
+    ev << "Hop count, max:    " << hopCountStats.getMax() << endl;
+    ev << "Hop count, mean:   " << hopCountStats.getMean() << endl;
+    ev << "Hop count, stddev: " << hopCountStats.getStddev() << endl;
 
     recordScalar("#sent", numSent);
     recordScalar("#received", numReceived);

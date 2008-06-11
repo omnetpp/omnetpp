@@ -28,9 +28,9 @@ Define_Module( ServerProcess );
 void ServerProcess::activity()
 {
     // retrieve parameters
-    cPar& processingTime = parentModule()->par("processingTime");
+    cPar& processingTime = getParentModule()->par("processingTime");
 
-    cGate *serverOutGate = parentModule()->gate("port$o");
+    cGate *serverOutGate = getParentModule()->gate("port$o");
 
     int clientAddr=0, ownAddr=0;
     WATCH(clientAddr); WATCH(ownAddr);
@@ -46,7 +46,7 @@ void ServerProcess::activity()
 
     // set the module name to something informative
     char buf[30];
-    sprintf(buf, "serverproc%d-clientaddr%d", id(), clientAddr);
+    sprintf(buf, "serverproc%d-clientaddr%d", getId(), clientAddr);
     setName(buf);
 
     // respond to CONN_REQ by CONN_ACK
@@ -55,7 +55,7 @@ void ServerProcess::activity()
     pk->setKind(DYNA_CONN_ACK);
     pk->setSrcAddress(ownAddr);
     pk->setDestAddress(clientAddr);
-    pk->setServerProcId(id());
+    pk->setServerProcId(getId());
     sendDirect(pk, 0, serverOutGate);
 
     // process data packets until DISC_REQ comes
@@ -63,7 +63,7 @@ void ServerProcess::activity()
     {
         ev << "waiting for DATA(query) (or DYNA_DISC_REQ)\n";
         pk = (DynaPacket *) receive();
-        int type = pk->kind();
+        int type = pk->getKind();
 
         if (type==DYNA_DISC_REQ)
             break;

@@ -167,7 +167,7 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
     /**
      * Returns NULL, because this class doesn't use a file.
      */
-    const char *fileName() const {return NULL;}
+    const char *getFileName() const {return NULL;}
 
     /**
      * Performs a database commit.

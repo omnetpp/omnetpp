@@ -40,7 +40,7 @@
  * void MyInterfaceModule::initialize()
  * {
  *     extEvent = new cMessage("extEvent");
- *     rtScheduler = check_and_cast<cSocketRTScheduler *>(simulation.scheduler());
+ *     rtScheduler = check_and_cast<cSocketRTScheduler *>(simulation.getScheduler());
  *     rtScheduler->setInterfaceModule(this, extEvent, buf, 4000, numBytes);
  * }
  * \endcode

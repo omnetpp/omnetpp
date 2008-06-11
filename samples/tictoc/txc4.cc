@@ -34,7 +34,7 @@ void Txc4::initialize()
     // in the NED file (tictoc4.ned).
     counter = par("limit");
 
-    if (strcmp("tic", name()) == 0)
+    if (strcmp("tic", getName()) == 0)
     {
         ev << "Sending initial message\n";
         cMessage *msg = new cMessage("tictocMsg");
@@ -47,12 +47,12 @@ void Txc4::handleMessage(cMessage *msg)
     counter--;
     if (counter==0)
     {
-        ev << name() << "'s counter reached zero, deleting message\n";
+        ev << getName() << "'s counter reached zero, deleting message\n";
         delete msg;
     }
     else
     {
-        ev << name() << "'s counter is " << counter << ", sending back message\n";
+        ev << getName() << "'s counter is " << counter << ", sending back message\n";
         send(msg, "out");
     }
 }

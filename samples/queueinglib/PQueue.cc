@@ -93,7 +93,7 @@ void PQueue::handleMessage(cMessage *msg)
 
     // change the icon color
     if (ev.isGUI())
-        displayString().setTagArg("i",1, queue.empty() ? "" : "cyan3");
+        getDisplayString().setTagArg("i",1, queue.empty() ? "" : "cyan3");
 }
 
 void PQueue::queueLengthChanged()
@@ -131,7 +131,7 @@ void PQueue::request(int gateIndex)
     }
 
     job->setQueueCount(job->getQueueCount()+1);
-    simtime_t d = simTime() - job->timestamp();
+    simtime_t d = simTime() - job->getTimestamp();
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
     queueingTimeStats.record(d);
 
@@ -141,15 +141,15 @@ void PQueue::request(int gateIndex)
     lengthStats.record(length());
 
     if (ev.isGUI())
-        displayString().setTagArg("i",1, queue.empty() ? "" : "cyan");
+        getDisplayString().setTagArg("i",1, queue.empty() ? "" : "cyan");
 }
 
 void PQueue::finish()
 {
-    recordScalar("min length",scalarLengthStats.min());
-    recordScalar("max length",scalarLengthStats.max());
-    recordScalar("avg length",scalarWeightedLengthStats.mean());
-    recordScalar("utilization",scalarUtilizationStats.mean());
+    recordScalar("min length",scalarLengthStats.getMin());
+    recordScalar("max length",scalarLengthStats.getMax());
+    recordScalar("avg length",scalarWeightedLengthStats.getMean());
+    recordScalar("utilization",scalarUtilizationStats.getMean());
     recordScalar("dropped jobs", droppedJobs);
 }
 

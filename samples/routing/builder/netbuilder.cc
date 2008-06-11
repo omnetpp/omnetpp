@@ -50,14 +50,14 @@ void NetBuilder::handleMessage(cMessage *msg)
         error("This modules does not process messages.");
 
     delete msg;
-    buildNetwork(parentModule());
+    buildNetwork(getParentModule());
 }
 
 void NetBuilder::addLinkAttributes(cGate *src, double delay, double error, double datarate)
 {
     if (delay>0 || error>0 || datarate>0)
     {
-        cBasicChannel *channel = cChannelType::createBasicChannel("channel", src->ownerModule());
+        cBasicChannel *channel = cChannelType::createBasicChannel("channel", src->getOwnerModule());
         if (delay>0)
             channel->setDelay(delay);
         if (error>0)

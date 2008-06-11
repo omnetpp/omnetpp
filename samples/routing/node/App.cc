@@ -102,21 +102,21 @@ void App::handleMessage(cMessage *msg)
         send(pk,"out");
 
         scheduleAt(simTime() + sendIATime->doubleValue(), generatePacket);
-        if (ev.isGUI()) parentModule()->bubble("Generating packet...");
+        if (ev.isGUI()) getParentModule()->bubble("Generating packet...");
     }
     else
     {
         // Handle incoming packet
         Packet *pk = check_and_cast<Packet *>(msg);
-        ev << "received packet " << pk->name() << " after " << pk->getHopCount() << "hops" << endl;
+        ev << "received packet " << pk->getName() << " after " << pk->getHopCount() << "hops" << endl;
         hopCounts.collect(pk->getHopCount());
         pkReceived++;
         delete pk;
 
         if (ev.isGUI())
         {
-            parentModule()->displayString().setTagArg("i",1,"green");
-            parentModule()->bubble("Arrived!");
+            getParentModule()->getDisplayString().setTagArg("i",1,"green");
+            getParentModule()->bubble("Arrived!");
         }
     }
 }

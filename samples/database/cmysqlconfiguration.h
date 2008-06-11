@@ -166,7 +166,7 @@ class cMySQLConfiguration : public cConfiguration
     /**
      * Redefined method from cConfiguration.
      */
-    virtual const char *fileName() const;
+    virtual const char *getFileName() const;
 };
 
 #endif

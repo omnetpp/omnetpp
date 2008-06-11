@@ -16,13 +16,13 @@ Define_Module(PacketFifo);
 
 simtime_t PacketFifo::startService(cMessage *msg)
 {
-    ev << "Starting service of " << msg->name() << endl;
+    ev << "Starting service of " << msg->getName() << endl;
     return par("serviceTime");
 }
 
 void PacketFifo::endService(cMessage *msg)
 {
-    ev << "Completed service of " << msg->name() << endl;
+    ev << "Completed service of " << msg->getName() << endl;
     send( msg, "out" );
 }
 
@@ -32,13 +32,13 @@ Define_Module(BitFifo);
 
 simtime_t BitFifo::startService(cMessage *msg)
 {
-    ev << "Starting service of " << msg->name() << endl;
+    ev << "Starting service of " << msg->getName() << endl;
     return msg->length() / (double)par("bitsPerSec");
 }
 
 void BitFifo::endService(cMessage *msg)
 {
-    ev << "Completed service of " << msg->name() << endl;
+    ev << "Completed service of " << msg->getName() << endl;
     send( msg, "out" );
 }
 

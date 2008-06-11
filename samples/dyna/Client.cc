@@ -38,19 +38,19 @@ void Client::activity()
     WATCH(actNumQuery); WATCH(i);
 
     // assign address: index of Switch's gate to which we are connected
-    int ownAddr = gate("port$o")->toGate()->index();
-    int serverAddr = gate("port$o")->toGate()->size()-1;
+    int ownAddr = gate("port$o")->getToGate()->getIndex();
+    int serverAddr = gate("port$o")->getToGate()->size()-1;
     int serverprocId = 0;
     WATCH(ownAddr); WATCH(serverAddr); WATCH(serverprocId);
 
     for(;;)
     {
-        if (ev.isGUI()) displayString().setTagArg("i",1,"");
+        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"");
 
         // keep an interval between subsequent connections
         wait( (double)connectionIaTime );
 
-        if (ev.isGUI()) displayString().setTagArg("i",1,"green");
+        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"green");
 
         // connection setup
         ev << "sending DYNA_CONN_REQ\n";
@@ -70,7 +70,7 @@ void Client::activity()
 
         if (ev.isGUI())
         {
-            displayString().setTagArg("i",1,"gold");
+            getDisplayString().setTagArg("i",1,"gold");
             bubble("Connected!");
         }
 
@@ -96,7 +96,7 @@ void Client::activity()
             wait( (double)queryIaTime );
         }
 
-        if (ev.isGUI()) displayString().setTagArg("i",1,"blue");
+        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"blue");
 
         // connection teardown
         ev << "sending DYNA_DISC_REQ\n";

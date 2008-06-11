@@ -64,7 +64,7 @@ void L2Queue::initialize()
 
     // we're connected if other end of connection path is an input gate
     cGate *lineOut = gate("line$o");
-    bool connected = lineOut->destinationGate()->type()==cGate::INPUT;
+    bool connected = lineOut->getDestinationGate()->getType()==cGate::INPUT;
 
     // if we're connected, get the gate with transmission rate
     gateToWatch = lineOut;
@@ -74,11 +74,11 @@ void L2Queue::initialize()
         while (gateToWatch)
         {
             // does this gate have data rate?
-            cBasicChannel *chan = dynamic_cast<cBasicChannel*>(gateToWatch->channel());
+            cBasicChannel *chan = dynamic_cast<cBasicChannel*>(gateToWatch->getChannel());
             if (chan && (datarate=chan->par("datarate").doubleValue())>0)
                 break;
             // otherwise just check next connection in path
-            gateToWatch = gateToWatch->toGate();
+            gateToWatch = gateToWatch->getToGate();
         }
         if (!gateToWatch)
             error("gate line must be connected (directly or indirectly) to a link with data rate");
@@ -93,7 +93,7 @@ void L2Queue::startTransmitting(cMessage *msg)
     send(msg, "line$o");
 
     // The schedule an event for the time when last bit will leave the gate.
-    simtime_t endTransmission = gateToWatch->transmissionFinishes();
+    simtime_t endTransmission = gateToWatch->getTransmissionFinishTime();
     scheduleAt(endTransmission, endTransmissionEvent);
 }
 
@@ -143,7 +143,7 @@ void L2Queue::handleMessage(cMessage *msg)
 
 void L2Queue::displayStatus(bool isBusy)
 {
-    displayString().setTagArg("t",0, isBusy ? "transmitting" : "idle");
-    displayString().setTagArg("i",1, isBusy ? (queue.length()>=3 ? "red" : "yellow") : "");
+    getDisplayString().setTagArg("t",0, isBusy ? "transmitting" : "idle");
+    getDisplayString().setTagArg("i",1, isBusy ? (queue.length()>=3 ? "red" : "yellow") : "");
 }
 

@@ -25,13 +25,13 @@ void HTTPServer::initialize()
 
 simtime_t HTTPServer::startService(cMessage *msg)
 {
-    ev << "Starting service of " << msg->name() << endl;
+    ev << "Starting service of " << msg->getName() << endl;
     return par("serviceTime").doubleValue();
 }
 
 void HTTPServer::endService(cMessage *msg)
 {
-    ev << "Completed service of " << msg->name() << endl;
+    ev << "Completed service of " << msg->getName() << endl;
 
     HTTPMsg *httpMsg = check_and_cast<HTTPMsg *>(msg);
 

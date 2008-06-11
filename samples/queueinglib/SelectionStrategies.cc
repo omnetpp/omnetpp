@@ -56,9 +56,9 @@ SelectionStrategy *SelectionStrategy::create(const char *algName, cSimpleModule 
 cGate *SelectionStrategy::selectableGate(int i)
 {
     if (isInputGate)
-        return hostModule->gate("in", i)->fromGate();
+        return hostModule->gate("in", i)->getFromGate();
     else
-        return hostModule->gate("out", i)->toGate();
+        return hostModule->gate("out", i)->getToGate();
 }
 
 bool SelectionStrategy::isSelectable(cModule *module)
@@ -86,7 +86,7 @@ int PrioritySelectionStrategy::select()
 {
     // return the smallest selectable index
     for (int i=0; i<gateSize; i++)
-        if (isSelectable(selectableGate(i)->ownerModule()))
+        if (isSelectable(selectableGate(i)->getOwnerModule()))
             return i;
 
     // if none of them is selectable return an invalid no.
@@ -105,13 +105,13 @@ int RandomSelectionStrategy::select()
     // return the smallest selectable index
     int noOfSelectables = 0;
     for (int i=0; i<gateSize; i++)
-        if (isSelectable(selectableGate(i)->ownerModule()))
+        if (isSelectable(selectableGate(i)->getOwnerModule()))
             noOfSelectables++;
 
     int rnd = intuniform(1, noOfSelectables);
 
     for (int i=0; i<gateSize; i++)
-        if (isSelectable(selectableGate(i)->ownerModule()) && (--rnd == 0))
+        if (isSelectable(selectableGate(i)->getOwnerModule()) && (--rnd == 0))
             return i;
     return -1;
 }
@@ -130,7 +130,7 @@ int RoundRobinSelectionStrategy::select()
     for (int i = 0; i<gateSize; ++i)
     {
         lastIndex = (lastIndex+1) % gateSize;
-        if (isSelectable(selectableGate(lastIndex)->ownerModule()))
+        if (isSelectable(selectableGate(lastIndex)->getOwnerModule()))
             return lastIndex;
     }
 
@@ -152,7 +152,7 @@ int ShortestQueueSelectionStrategy::select()
     int sizeMin = INT_MAX;
     for (int i = 0; i<gateSize; ++i)
     {
-        PQueue *queue = check_and_cast<PQueue *>(selectableGate(i)->ownerModule());
+        PQueue *queue = check_and_cast<PQueue *>(selectableGate(i)->getOwnerModule());
         if (isSelectable(queue) && (queue->length()<sizeMin))
         {
             sizeMin = queue->length();
@@ -176,7 +176,7 @@ int LongestQueueSelectionStrategy::select()
     int sizeMax = -1;
     for (int i = 0; i<gateSize; ++i)
     {
-        PQueue *queue = check_and_cast<PQueue *>(selectableGate(i)->ownerModule());
+        PQueue *queue = check_and_cast<PQueue *>(selectableGate(i)->getOwnerModule());
         if (isSelectable(queue) && queue->length()>sizeMax)
         {
             sizeMax = queue->length();

@@ -54,7 +54,7 @@ ExtTelnetClient::~ExtTelnetClient()
 void ExtTelnetClient::initialize()
 {
     rtEvent = new cMessage("rtEvent");
-    rtScheduler = check_and_cast<cSocketRTScheduler *>(simulation.scheduler());
+    rtScheduler = check_and_cast<cSocketRTScheduler *>(simulation.getScheduler());
     rtScheduler->setInterfaceModule(this, rtEvent, recvBuffer, 4000, &numRecvBytes);
 
     addr = par("addr");

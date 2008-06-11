@@ -37,7 +37,7 @@ Define_Module(Routing);
 
 void Routing::initialize()
 {
-    myAddress = parentModule()->par("address");
+    myAddress = getParentModule()->par("address");
 
     //
     // Brute force approach -- every node does topology discovery on its own,
@@ -48,23 +48,23 @@ void Routing::initialize()
     cTopology *topo = new cTopology("topo");
 
     std::vector<std::string> nedTypes;
-    nedTypes.push_back(parentModule()->nedTypeName());
+    nedTypes.push_back(getParentModule()->getNedTypeName());
     topo->extractByNedTypeName(nedTypes);
-    ev << "cTopology found " << topo->nodes() << " nodes\n";
+    ev << "cTopology found " << topo->getNumNodes() << " nodes\n";
 
-    cTopology::Node *thisNode = topo->nodeFor(parentModule());
+    cTopology::Node *thisNode = topo->getNodeFor(getParentModule());
 
     // find and store next hops
-    for (int i=0; i<topo->nodes(); i++)
+    for (int i=0; i<topo->getNumNodes(); i++)
     {
-        if (topo->node(i)==thisNode) continue; // skip ourselves
-        topo->unweightedSingleShortestPathsTo(topo->node(i));
+        if (topo->getNode(i)==thisNode) continue; // skip ourselves
+        topo->calculateUnweightedSingleShortestPathsTo(topo->getNode(i));
 
-        if (thisNode->paths()==0) continue; // not connected
+        if (thisNode->getNumPaths()==0) continue; // not connected
 
-        cGate *parentModuleGate = thisNode->path(0)->localGate();
-        int gateIndex = parentModuleGate->index();
-        int address = topo->node(i)->module()->par("address");
+        cGate *parentModuleGate = thisNode->path(0)->getLocalGate();
+        int gateIndex = parentModuleGate->getIndex();
+        int address = topo->getNode(i)->getModule()->par("address");
         rtable[address] = gateIndex;
         ev << "  towards address " << address << " gateIndex is " << gateIndex << endl;
     }
@@ -78,7 +78,7 @@ void Routing::handleMessage(cMessage *msg)
 
     if (destAddr == myAddress)
     {
-        ev << "local delivery of packet " << pk->name() << endl;
+        ev << "local delivery of packet " << pk->getName() << endl;
         send(pk, "localOut");
         return;
     }
@@ -86,13 +86,13 @@ void Routing::handleMessage(cMessage *msg)
     RoutingTable::iterator it = rtable.find(destAddr);
     if (it==rtable.end())
     {
-        ev << "address " << destAddr << " unreachable, discarding packet " << pk->name() << endl;
+        ev << "address " << destAddr << " unreachable, discarding packet " << pk->getName() << endl;
         delete pk;
         return;
     }
 
     int outGateIndex = (*it).second;
-    ev << "forwarding packet " << pk->name() << " on gate index " << outGateIndex << endl;
+    ev << "forwarding packet " << pk->getName() << " on gate index " << outGateIndex << endl;
     pk->setHopCount(pk->getHopCount()+1);
 
     send(pk, "out", outGateIndex);

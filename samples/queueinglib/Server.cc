@@ -61,12 +61,12 @@ void Server::handleMessage(cMessage *msg)
     if (msg==endServiceMsg)
     {
         ASSERT(jobServiced!=NULL);
-        simtime_t d = simTime() - jobServiced->timestamp();
+        simtime_t d = simTime() - jobServiced->getTimestamp();
         jobServiced->setTotalServiceTime(jobServiced->getTotalServiceTime() + d);
         send(jobServiced, "out");
         jobServiced = NULL;
 
-        if (ev.isGUI()) displayString().setTagArg("i",1,"");
+        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"");
 
         // examine all input queues, and request a new job from a non empty queue
         int k = selectionStrategy->select();
@@ -74,7 +74,7 @@ void Server::handleMessage(cMessage *msg)
         {
             ev << "requesting job from queue " << k << endl;
             cGate *gate = selectionStrategy->selectableGate(k);
-            check_and_cast<PQueue *>(gate->ownerModule())->request(gate->index());
+            check_and_cast<PQueue *>(gate->getOwnerModule())->request(gate->getIndex());
         }
     }
     else
@@ -88,13 +88,13 @@ void Server::handleMessage(cMessage *msg)
         simtime_t serviceTime = par("serviceTime");
         scheduleAt(simTime()+serviceTime, endServiceMsg);
 
-        if (ev.isGUI()) displayString().setTagArg("i",1,"cyan");
+        if (ev.isGUI()) getDisplayString().setTagArg("i",1,"cyan");
     }
 }
 
 void Server::finish()
 {
-    recordScalar("utilization", scalarUtilizationStats.mean());
+    recordScalar("utilization", scalarUtilizationStats.getMean());
 }
 
 bool Server::isIdle()

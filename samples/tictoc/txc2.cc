@@ -29,7 +29,7 @@ Define_Module(Txc2);
 
 void Txc2::initialize()
 {
-    if (strcmp("tic", name()) == 0)
+    if (strcmp("tic", getName()) == 0)
     {
         // The `ev' object works like `cout' in C++.
         ev << "Sending initial message\n";
@@ -40,8 +40,8 @@ void Txc2::initialize()
 
 void Txc2::handleMessage(cMessage *msg)
 {
-    // msg->name() is name of the msg object, here it will be "tictocMsg".
-    ev << "Received message `" << msg->name() << "', sending it out again\n";
+    // msg->getName() is name of the msg object, here it will be "tictocMsg".
+    ev << "Received message `" << msg->getName() << "', sending it out again\n";
     send(msg, "out");
 }
 

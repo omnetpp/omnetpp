@@ -108,7 +108,7 @@ void Queue::handleMessage(cMessage *msg)
 
     lengthStats.record(length());
 
-    if (ev.isGUI()) displayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
+    if (ev.isGUI()) getDisplayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
 }
 
 Job *Queue::getFromQueue()
@@ -153,28 +153,28 @@ void Queue::arrival(Job *job)
 simtime_t Queue::startService(Job *job)
 {
     // gather queueing time statistics
-    simtime_t d = simTime() - job->timestamp();
+    simtime_t d = simTime() - job->getTimestamp();
     job->setTotalQueueingTime(job->getTotalQueueingTime() + d);
     queueingTimeStats.record(d);
-    ev << "Starting service of " << job->name() << endl;
+    ev << "Starting service of " << job->getName() << endl;
     job->setTimestamp();
     return par("serviceTime").doubleValue();
 }
 
 void Queue::endService(Job *job)
 {
-    ev << "Finishing service of " << job->name() << endl;
-    simtime_t d = simTime() - job->timestamp();
+    ev << "Finishing service of " << job->getName() << endl;
+    simtime_t d = simTime() - job->getTimestamp();
     job->setTotalServiceTime(job->getTotalServiceTime() + d);
     send(job, "out");
 }
 
 void Queue::finish()
 {
-    recordScalar("min length",scalarLengthStats.min());
-    recordScalar("max length",scalarLengthStats.max());
-    recordScalar("avg length",scalarWeightedLengthStats.mean());
-    recordScalar("utilization",scalarUtilizationStats.mean());
+    recordScalar("min length",scalarLengthStats.getMin());
+    recordScalar("max length",scalarLengthStats.getMax());
+    recordScalar("avg length",scalarWeightedLengthStats.getMean());
+    recordScalar("utilization",scalarUtilizationStats.getMean());
     recordScalar("dropped jobs", droppedJobs);
 }
 

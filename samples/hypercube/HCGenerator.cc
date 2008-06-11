@@ -41,7 +41,7 @@ void HCGenerator::activity()
 
         // send out the message
 #ifdef TRACE_MSG
-        ev.printf("gen[%d]: Generated new pkt: '%s'\n",my_address, pkt->name());
+        ev.printf("gen[%d]: Generated new pkt: '%s'\n",my_address, pkt->getName());
 #endif
         send(pkt, "out");
 

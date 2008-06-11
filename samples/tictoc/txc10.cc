@@ -47,7 +47,7 @@ Define_Module(Txc10);
 void Txc10::initialize()
 {
     // Module 0 sends the first message
-    if (index()==0)
+    if (getIndex()==0)
     {
         // Boot the process scheduling the initial message as a self-message.
         TicTocMsg10 *msg = generateMessage();
@@ -59,7 +59,7 @@ void Txc10::handleMessage(cMessage *msg)
 {
     TicTocMsg10 *ttmsg = check_and_cast<TicTocMsg10 *>(msg);
 
-    if (ttmsg->getDestination()==index())
+    if (ttmsg->getDestination()==getIndex())
     {
         // Message arrived.
         ev << "Message " << ttmsg << " arrived after " << ttmsg->getHopCount() << " hops.\n";
@@ -82,7 +82,7 @@ void Txc10::handleMessage(cMessage *msg)
 TicTocMsg10 *Txc10::generateMessage()
 {
     // Produce source and destination addresses.
-    int src = index();   // our module index
+    int src = getIndex();   // our module index
     int n = size();      // module vector size
     int dest = intuniform(0,n-2);
     if (dest>=src) dest++;

@@ -40,7 +40,7 @@ void HCSink::activity()
         HCPacket *pkt = check_and_cast<HCPacket *>(msg);
 
         // calculate statistics and record in output vector file
-        simtime_t eed = pkt->arrivalTime() - pkt->timestamp();
+        simtime_t eed = pkt->getArrivalTime() - pkt->getTimestamp();
         int acthops = pkt->getHops();
         int minhops = hammingDistance(pkt->getSrcAddress(), pkt->getDestAddress());
 
@@ -49,7 +49,7 @@ void HCSink::activity()
         hopratio_vec.record( acthops/(double)minhops );
 
 #ifdef TRACE_MSG
-        ev.printf("Message received: '%s'\n", pkt->name());
+        ev.printf("Message received: '%s'\n", pkt->getName());
         ev.printf("  - end-to-end delay=%g\n", eed);
         ev.printf("  - distance=%d, actual hops=%d\n", minhops, acthops);
 #endif

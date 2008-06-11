@@ -50,7 +50,7 @@ void Txc6::initialize()
     event = new cMessage("event");
     tictocMsg = NULL;
 
-    if (strcmp("tic", name()) == 0)
+    if (strcmp("tic", getName()) == 0)
     {
         ev << "Scheduling first send to t=5.0s\n";
         scheduleAt(5.0, event);

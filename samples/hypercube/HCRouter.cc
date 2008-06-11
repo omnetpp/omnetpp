@@ -96,7 +96,7 @@ void HCRouter::activity()
 {
    int my_address = par("address");
    int dim = par("dim");
-   int fromUserGateId = gate("fromGen")->id();
+   int fromUserGateId = gate("fromGen")->getId();
    long total_usr = 0, discarded_usr = 0;
 
    cMessage *endOfSlot = new cMessage("endOfSlot");
@@ -116,7 +116,7 @@ void HCRouter::activity()
       while ((msg=receive())!=endOfSlot)
       {
          HCPacket *pkt = check_and_cast<HCPacket *>(msg);
-         if (pkt->arrivalGateId()!=fromUserGateId)
+         if (pkt->getArrivalGateId()!=fromUserGateId)
          {
             if (pkt->getDestAddress()!=my_address)
                rte_cell[num_rte++] = pkt;

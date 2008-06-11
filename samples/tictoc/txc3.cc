@@ -39,7 +39,7 @@ void Txc3::initialize()
     // and you'll find "counter" in the list.
     WATCH(counter);
 
-    if (strcmp("tic", name()) == 0)
+    if (strcmp("tic", getName()) == 0)
     {
         ev << "Sending initial message\n";
         cMessage *msg = new cMessage("tictocMsg");
@@ -56,12 +56,12 @@ void Txc3::handleMessage(cMessage *msg)
         // If counter is zero, delete message. If you run the model, you'll
         // find that the simulation will stop at this point with the message
         // "no more events".
-        ev << name() << "'s counter reached zero, deleting message\n";
+        ev << getName() << "'s counter reached zero, deleting message\n";
         delete msg;
     }
     else
     {
-        ev << name() << "'s counter is " << counter << ", sending back message\n";
+        ev << getName() << "'s counter is " << counter << ", sending back message\n";
         send(msg, "out");
     }
 }

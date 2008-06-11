@@ -46,15 +46,15 @@ cMySQLOutputScalarManager::~cMySQLOutputScalarManager()
 void cMySQLOutputScalarManager::openDB()
 {
     // connect
-    const char *prefix = ev.config()->getAsString(CFGID_MYSQLOUTSCALARMGR_CONNECTPREFIX);
-    ev << className() << " connecting to MySQL database";
+    const char *prefix = ev.getConfig()->getAsString(CFGID_MYSQLOUTSCALARMGR_CONNECTPREFIX);
+    ev << getClassName() << " connecting to MySQL database";
     if (prefix && prefix[0]) ev << " using " << prefix << "-* config entries";
     ev << "...";
     mysql = mysql_init(NULL);
-    opp_mysql_connectToDB(mysql, ev.config(), prefix);
+    opp_mysql_connectToDB(mysql, ev.getConfig(), prefix);
     ev << " OK\n";
 
-    commitFreq = ev.config()->getAsInt(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ);
+    commitFreq = ev.getConfig()->getAsInt(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ);
     insertCount = 0;
 
     // prepare and bind INSERT INTO SCALAR...
@@ -115,7 +115,7 @@ void cMySQLOutputScalarManager::insertRunIntoDB()
         // insert run into the database
         std::string insertRunStmt = SQL_INSERT_RUN;
         opp_mysql_substitute(insertRunStmt, "@runnumber@", simulation.runNumber(), mysql);
-        opp_mysql_substitute(insertRunStmt, "@network@", simulation.networkType()->name(), mysql);
+        opp_mysql_substitute(insertRunStmt, "@network@", simulation.getNetworkType()->getName(), mysql);
         if (mysql_query(mysql, insertRunStmt.c_str()))
             throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
 
@@ -133,7 +133,7 @@ void cMySQLOutputScalarManager::recordScalar(cComponent *component, const char *
 
     // fill in prepared statement parameters, and fire off the statement
     runidBuf = runId;
-    opp_mysql_assignSTRING(insScalarBind[1], moduleBuf, component->fullPath().c_str());
+    opp_mysql_assignSTRING(insScalarBind[1], moduleBuf, component->getFullPath().c_str());
     opp_mysql_assignSTRING(insScalarBind[2], nameBuf, name);
     valueBuf = value;
 

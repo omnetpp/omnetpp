@@ -32,11 +32,11 @@ Define_Module(Txc9);
 
 void Txc9::initialize()
 {
-    if (index()==0)
+    if (getIndex()==0)
     {
         // Boot the process scheduling the initial message as a self-message.
         char msgname[20];
-        sprintf(msgname, "tic-%d", index());
+        sprintf(msgname, "tic-%d", getIndex());
         cMessage *msg = new cMessage(msgname);
         scheduleAt(0.0, msg);
     }
@@ -44,7 +44,7 @@ void Txc9::initialize()
 
 void Txc9::handleMessage(cMessage *msg)
 {
-    if (index()==3)
+    if (getIndex()==3)
     {
         // Message arrived.
         ev << "Message " << msg << " arrived.\n";

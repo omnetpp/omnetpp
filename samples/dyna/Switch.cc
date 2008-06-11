@@ -49,12 +49,12 @@ void Switch::activity()
 
         // display status: normal=queue empty, yellow=queued packets; red=queue overflow
         int qLen = queue.length();
-        if (ev.isGUI()) displayString().setTagArg("i",1, qLen==0 ? "" : qLen<queueMaxLen ? "gold" : "red");
+        if (ev.isGUI()) getDisplayString().setTagArg("i",1, qLen==0 ? "" : qLen<queueMaxLen ? "gold" : "red");
 
         // model finite queue size
         while (queue.length() > queueMaxLen)
         {
-            ev << "Buffer overflow, discarding " << queue.front()->name() << endl;
+            ev << "Buffer overflow, discarding " << queue.front()->getName() << endl;
             delete queue.pop();
         }
     }

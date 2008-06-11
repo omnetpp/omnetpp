@@ -49,7 +49,7 @@ void cMySQLConfiguration::initializeFrom(cConfiguration *cfg)
 
     // connect
     const char *prefix = cfg->getAsString(CFGID_MYSQLCONFIGURATION_CONNECTPREFIX);
-    ev << className() << " connecting to MySQL database";
+    ev << getClassName() << " connecting to MySQL database";
     if (prefix && prefix[0]) ev << " using " << prefix << "-* config entries";
     ev << "...";
     MYSQL *mysql = mysql_init(NULL);
@@ -123,11 +123,11 @@ void cMySQLConfiguration::copyExistingConfig(cConfiguration *cfg)
         int secnum = getSectionId(cfg, it.section());
         ASSERT(secnum!=-1 && sectionold2new.find(secnum)!=sectionold2new.end());
 
-        int fileId = getFileId(it.fileName());
+        int fileId = getFileId(it.getFileName());
         if (fileId==-1) {
             files.push_back(sFile());
             sFile& f = files.back();
-            f.fname = opp_strdup(it.fileName());
+            f.fname = opp_strdup(it.getFileName());
             f.directory = opp_strdup(it.baseDir());
             fileId = files.size()-1;
         }
@@ -633,7 +633,7 @@ std::string cMySQLConfiguration::getLocation(const char *sect1, const char *sect
     return a;
 }
 
-const char *cMySQLConfiguration::fileName() const
+const char *cMySQLConfiguration::getFileName() const
 {
     return NULL;
 }

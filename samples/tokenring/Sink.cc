@@ -57,10 +57,10 @@ void Sink::initialize()
 
 void Sink::handleMessage(cMessage *msg)
 {
-    simtime_t eed = simTime() - msg->creationTime();
+    simtime_t eed = simTime() - msg->getCreationTime();
     if (debug)
     {
-        ev << "Received app. data: \"" << msg->name() << "\", "
+        ev << "Received app. data: \"" << msg->getName() << "\", "
               "length=" << msg->length()/8 << "bytes, " <<
               "end-to-end delay=" << eed << endl;
     }

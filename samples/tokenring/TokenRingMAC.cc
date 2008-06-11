@@ -146,10 +146,10 @@ void TokenRingMAC::activity()
                 ev << "Token arrived (we can keep it for THT=" << tokenHoldingTime << ")" << endl;
                 if (ev.isGUI())
                 {
-                    parentModule()->displayString().setTagArg("i",1,"gold");
-                    parentModule()->displayString().setTagArg("t",0,"ACTIVE");
-                    parentModule()->displayString().setTagArg("t",2,"#707000");
-                    parentModule()->bubble(sendQueue.empty() ? "Nothing to send!" : "Captured token.");
+                    getParentModule()->getDisplayString().setTagArg("i",1,"gold");
+                    getParentModule()->getDisplayString().setTagArg("t",0,"ACTIVE");
+                    getParentModule()->getDisplayString().setTagArg("t",2,"#707000");
+                    getParentModule()->bubble(sendQueue.empty() ? "Nothing to send!" : "Captured token.");
                 }
             }
 
@@ -166,7 +166,7 @@ void TokenRingMAC::activity()
                     // no time left for this packet
                     if (debug)
                     {
-                        ev << "Data packet \"" << data->name() << "\" cannot be sent within THT, skipping" << endl;
+                        ev << "Data packet \"" << data->getName() << "\" cannot be sent within THT, skipping" << endl;
                     }
                     break;
                 }
@@ -178,7 +178,7 @@ void TokenRingMAC::activity()
                 queueLenBytes.record(sendQueueBytes);
 
                 // write queueing time statistics
-                queueingTime.record(simTime() - data->timestamp());
+                queueingTime.record(simTime() - data->getTimestamp());
 
                 // create Token Ring frame, and send data in it
                 sprintf(msgname, "%d-->%d", myAddress, data->getDestination());
@@ -190,8 +190,8 @@ void TokenRingMAC::activity()
 
                 if (debug)
                 {
-                    ev << "Begun transmitting \"" << data->name() << "\""
-                          " in frame \"" << frame->name() << "\"" << endl;
+                    ev << "Begun transmitting \"" << data->getName() << "\""
+                          " in frame \"" << frame->getName() << "\"" << endl;
                 }
                 send(frame, "phyOut");
 
@@ -213,8 +213,8 @@ void TokenRingMAC::activity()
                 ev << "Releasing token." << endl;
                 if (ev.isGUI())
                 {
-                    parentModule()->displayString().setTagArg("i",1,"");
-                    parentModule()->displayString().setTagArg("t",0,"");
+                    getParentModule()->getDisplayString().setTagArg("i",1,"");
+                    getParentModule()->getDisplayString().setTagArg("t",0,"");
                 }
             }
             send(token, "phyOut");
@@ -230,12 +230,12 @@ void TokenRingMAC::activity()
         // end receiving a packet?
         else if (msg==recvEnd)
         {
-            cMessage *data = (cMessage *) recvEnd->contextPointer();
+            cMessage *data = (cMessage *) recvEnd->getContextPointer();
             endReceiveFrame(data);
         }
         else
         {
-            throw cRuntimeError("unexpected message arrived: (%s)%s", msg->className(), msg->name());
+            throw cRuntimeError("unexpected message arrived: (%s)%s", msg->getClassName(), msg->getName());
         }
     }
 }
@@ -264,12 +264,12 @@ void TokenRingMAC::handleMessagesWhileTransmitting()
         // its reception may end while we're still transmitting)
         else if (msg==recvEnd)
         {
-            cMessage *data = (cMessage *) recvEnd->contextPointer();
+            cMessage *data = (cMessage *) recvEnd->getContextPointer();
             endReceiveFrame(data);
         }
         else
         {
-            throw cRuntimeError("unexpected message arrived: (%s)%s", msg->className(), msg->name());
+            throw cRuntimeError("unexpected message arrived: (%s)%s", msg->getClassName(), msg->getName());
         }
     }
 }
@@ -278,7 +278,7 @@ void TokenRingMAC::storeDataPacket(TRApplicationData *msg)
 {
     if (debug)
     {
-        ev << "App data received from higher layer: \"" << msg->name() << "\", "
+        ev << "App data received from higher layer: \"" << msg->getName() << "\", "
               "length=" << msg->length()/8 << "bytes" << endl;
     }
 
@@ -318,7 +318,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
 {
     if (debug)
     {
-        ev << "Received beginning of frame \"" << frame->name() << "\"" << endl;
+        ev << "Received beginning of frame \"" << frame->getName() << "\"" << endl;
     }
 
     // extract source and destination
@@ -332,7 +332,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         {
             ev << "We are the destination: as soon as we fully received the frame," << endl;
             ev << "we'll pass up a copy of the payload \"" <<
-                  frame->encapsulatedMsg()->name() << "\" to the higher layer." << endl;
+                  frame->getEncapsulatedMsg()->getName() << "\" to the higher layer." << endl;
             ev << "Frame will be extracted from the ring by the sender." << endl;
         }
 
@@ -344,7 +344,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         if (recvEnd->isScheduled())
         {
             // make sure our assumption is right
-            ASSERT(fabs((recvEnd->arrivalTime()-simTime())) < 1e-10);
+            ASSERT(fabs((recvEnd->getArrivalTime()-simTime())) < 1e-10);
 
             if (debug)
             {
@@ -353,13 +353,13 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
 
             // then remedy the situation
             cancelEvent(recvEnd);
-            cMessage *data = (cMessage *) recvEnd->contextPointer();
+            cMessage *data = (cMessage *) recvEnd->getContextPointer();
             endReceiveFrame(data);
         }
 
         // make a copy of the payload in the frame -- we'll send this one
         // to the higher layer
-        cMessage *data2 = (cMessage *) frame->encapsulatedMsg()->dup();
+        cMessage *data2 = (cMessage *) frame->getEncapsulatedMsg()->dup();
 
         // The arrival of a message in the model represents the arrival
         // of the first bit of the packet. It has to be completely received
@@ -396,14 +396,14 @@ void TokenRingMAC::endReceiveFrame(cMessage *data)
 {
     if (debug)
     {
-        ev << "End receiving frame containing \"" << data->name() << "\", passing up to higher layer." << endl;
+        ev << "End receiving frame containing \"" << data->getName() << "\", passing up to higher layer." << endl;
     }
     send(data, "toHL");
 }
 
 void TokenRingMAC::finish()
 {
-    ev << "Module: " << fullPath() << endl;
+    ev << "Module: " << getFullPath() << endl;
     ev << "Total packets received from higher layer: " << numPacketsToSend << endl;
     ev << "Higher layer still in queue: " << sendQueue.length() << endl;
     ev << "Higher layer packets dropped: " << numPacketsToSendDropped << endl;

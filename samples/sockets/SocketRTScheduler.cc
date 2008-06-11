@@ -52,7 +52,7 @@ void cSocketRTScheduler::startRun()
     recvBufferSize = 0;
     numBytesPtr = NULL;
 
-    port = ev.config()->getAsInt(CFGID_SOCKETRTSCHEDULER_PORT);
+    port = ev.getConfig()->getAsInt(CFGID_SOCKETRTSCHEDULER_PORT);
     setupListener();
 }
 
@@ -213,7 +213,7 @@ cMessage *cSocketRTScheduler::getNextEvent()
     else
     {
         // use time of next event
-        simtime_t eventSimtime = msg->arrivalTime();
+        simtime_t eventSimtime = msg->getArrivalTime();
         targetTime = timeval_add(baseTime, SIMTIME_DBL(eventSimtime));
     }
 

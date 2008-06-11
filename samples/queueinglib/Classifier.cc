@@ -31,9 +31,9 @@ void Classifier::handleMessage(cMessage *msg)
 {
     int outGateIndex = -1;
     if (strcmp(dispatchField, "type") == 0)
-        outGateIndex = msg->kind();
+        outGateIndex = msg->getKind();
     else if (strcmp(dispatchField, "priority") == 0)
-        outGateIndex = msg->priority();
+        outGateIndex = msg->getPriority();
     else
         error("invalid dispatchField parameter, must be \"type\" or \"priority\"");
     // TODO we could look for the value in the dynamically added parameters too

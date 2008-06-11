@@ -65,7 +65,7 @@ void Server::initialize()
     collisionLengthHistogram.setRangeAutoUpper(0.0);
 
     if (ev.isGUI())
-        displayString().setTagArg("i2",0,"x_off");
+        getDisplayString().setTagArg("i2",0,"x_off");
 }
 
 
@@ -98,8 +98,8 @@ void Server::handleMessage(cMessage *msg)
         // update network graphics
         if (ev.isGUI())
         {
-            displayString().setTagArg("i2",0,"x_off");
-            displayString().setTagArg("t",0,"");
+            getDisplayString().setTagArg("i2",0,"x_off");
+            getDisplayString().setTagArg("t",0,"");
         }
     }
     else
@@ -114,9 +114,9 @@ void Server::handleMessage(cMessage *msg)
             scheduleAt(endReception, endRxEvent);
             if (ev.isGUI())
             {
-                displayString().setTagArg("i2",0,"x_yellow");
-                displayString().setTagArg("t",0,"RECEIVE");
-                displayString().setTagArg("t",2,"#808000");
+                getDisplayString().setTagArg("i2",0,"x_yellow");
+                getDisplayString().setTagArg("t",0,"RECEIVE");
+                getDisplayString().setTagArg("t",2,"#808000");
             }
         }
         else
@@ -129,7 +129,7 @@ void Server::handleMessage(cMessage *msg)
             else
                 currentCollisionNumFrames++;
 
-            if (endReception > endRxEvent->arrivalTime())
+            if (endReception > endRxEvent->getArrivalTime())
             {
                 cancelEvent(endRxEvent);
                 scheduleAt(endReception, endRxEvent);
@@ -138,9 +138,9 @@ void Server::handleMessage(cMessage *msg)
             // update network graphics
             if (ev.isGUI())
             {
-                displayString().setTagArg("i2",0,"x_red");
-                displayString().setTagArg("t",0,"COLLISION");
-                displayString().setTagArg("t",2,"#800000");
+                getDisplayString().setTagArg("i2",0,"x_red");
+                getDisplayString().setTagArg("t",0,"COLLISION");
+                getDisplayString().setTagArg("t",2,"#800000");
                 char buf[32];
                 sprintf(buf, "Collision! (%ld frames)", currentCollisionNumFrames);
                 bubble(buf);

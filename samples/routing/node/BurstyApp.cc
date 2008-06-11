@@ -127,7 +127,7 @@ void BurstyApp::processTimer(cMessage *msg)
             // display message, restore normal icon color
             ev << "sleeping for " << d << "s\n";
             bubble("burst ended, sleeping");
-            displayString().setTagArg("i",1,"");
+            getDisplayString().setTagArg("i",1,"");
             break;
 
         case FSM_Exit(SLEEP):
@@ -138,7 +138,7 @@ void BurstyApp::processTimer(cMessage *msg)
             // display message, turn icon yellow
             ev << "starting burst of duration " << d << "s\n";
             bubble("burst started");
-            displayString().setTagArg("i",1,"yellow");
+            getDisplayString().setTagArg("i",1,"yellow");
 
             // transition to ACTIVE state:
             if (msg!=startStopBurst)
@@ -195,8 +195,8 @@ void BurstyApp::generatePacket()
 void BurstyApp::processPacket(cMessage *msg)
 {
     // update statistics and delete message
-    simtime_t eed = simTime()-msg->creationTime();
-    ev << "Received " << msg->name() << ", end-to-end delay: " << eed << "sec" << endl;
+    simtime_t eed = simTime()-msg->getCreationTime();
+    ev << "Received " << msg->getName() << ", end-to-end delay: " << eed << "sec" << endl;
     delete msg;
 
     numReceived++;
@@ -208,6 +208,6 @@ void BurstyApp::updateDisplayString()
     // update status string above icon
     char txt[64];
     sprintf(txt, "sent:%ld received:%ld", numSent, numReceived);
-    displayString().setTagArg("t", 0, txt);
+    getDisplayString().setTagArg("t", 0, txt);
 }
 
