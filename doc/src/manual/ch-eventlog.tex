@@ -1,0 +1,152 @@
+\chapter{Eventlog}
+\label{cha:eventlog}
+
+\section{Introduction}
+The eventlog feature and the related tools are completely new in OMNeT++ 4.0. They
+aim to help understanding complex simulation models and to help correctly
+implementing the desired component behaviors. Using these tools you will be able to
+easily examine every minute detail of the simulation back and forth in terms of
+simulation time or step-by-step focusing on the behavior instead of the statistical
+results of your model.
+
+The eventlog file is created automatically during a simulation run upon explicit
+request configurable in the ini file. The resulting file can be viewed in the
+OMNeT++ IDE using the Sequence Chart and the Eventlog Table Tools or can be
+processed by the command line Eventlog Tool. These tools support filtering the
+collected data to show you only the relevant parts focusing on what you are looking
+for. They allow examining causality relationships and provide filtering based on
+simulation times, event numbers, modules and messages.
+
+The simulation kernel records into the eventlog among others: user level messages,
+creation and deletion of modules, gates and connections, scheduling of self
+messages, sending of messages to other modules either through gates or directly and
+processing of messages (that is events). Optionally detailed message data can also
+be automatically recorded based on a message filter. The result is an eventlog file
+which contains detailed information of the simulation run and later can be used for
+various purposes described in this chapter.
+
+\begin{note}
+The resulting eventlog file may become quite large for long running simulations
+(often hundreds of Mbytes but occasionally multiple Gbytes), because it contains a
+lot of information about the run especially when message detail recording is turned
+on.
+\end{note}
+
+The following sections discuss how to set up the eventlog and what services do the
+various tools provide to you.
+
+\section{Configuration}
+To record an eventlog file during the simulation, simply insert the
+\begin{verbatim}
+record-eventlog = true
+\end{verbatim}
+line into the ini file or use the Inifile Editor's Output Files section to enable
+the recording.
+\begin{note}
+Since writing an eventlog file might significantly decrease overall simulation
+performance therefore eventlog recording is turned off by default.
+\end{note}
+
+\subsection{File Name}
+The simulation kernel will write the eventlog file during the simulation into the
+file specified by the following ini file configuration entry, showing the default
+file name pattern here:
+\begin{verbatim}
+eventlog-file = ${resultdir}/${configname}-${runnumber}.log
+\end{verbatim}
+Despite the simulation kernel keeps the eventlog file open for writing while the
+simulation is running it may be opened in Eclipse simultaneously. Both the
+Sequence Chart and the Eventlog Table can be instructed by pressing the END
+key to follow the end of the eventlog when new content is appended to it.
+\begin{note}
+The eventlog file should have the file extension
+\fname{log}
+as the example shows above so that Eclipse tools will be able to recognize it
+automatically.
+\end{note}
+
+\subsection{Recording Intervals}
+The size of an eventlog file is approximately proportional to the number of events
+it contains. To reduce the file size and speed up the simulation it might be
+useful to record only certain events. The following ini file configuration entry
+instructs the kernel to record events with simulation time less than or equal to
+10.2, between 22.2 and 100 and greater than or equal to 233.3.
+\begin{verbatim}
+eventlog-recording-intervals = ..10.2, 22.2..100, 233.3..
+\end{verbatim}
+
+\subsection{Recording Modules}
+Another factor that affects the size of an eventlog file is the number of modules
+in the simulation. The following ini file configuration entry instructs the kernel
+to record only the events that occurred in any of the routers between 10 and 20.
+\begin{verbatim}
+**.router[10..20].**.module-eventlog-recording = true
+**.module-eventlog-recording = false
+\end{verbatim}
+
+\subsection{Recording Message Data}
+Since recording message data might dramatically increase the size of the eventlog
+file and additionally slow down the simulation therefore it is turned off by
+default even if writing the eventlog is enabled. To turn on message data recording
+enter a value for the following configuration key in the ini file:
+\begin{verbatim}
+eventlog-message-detail-pattern
+\end{verbatim}
+An example configuration for an IEEE 80211 model that records the field
+encapsulationMsg and all other fields which name ends with Address from messages
+which class name ends with Frame looks like this:
+\begin{verbatim}
+eventlog-message-detail-pattern = *Frame:encapsulatedMsg,*Address
+\end{verbatim}
+An example configuration for a TCP/IP model that records the port and address
+fields in network packets looks like the following:
+\begin{verbatim}
+eventlog-message-detail-pattern =
+PPPFrame:encapsulatedMsg|IPDatagram:encapsulatedMsg,*Address|TCPSegment:*Port
+\end{verbatim}
+In general the configuration entry is a list of patterns separated by '|'
+character which will be used to write message detail information into the eventlog
+for each message sent during the simulation. The message detail will be
+automatically presented in the Sequence Chart and the Eventlog Table Tools. Each
+pattern starts with an object pattern optionally followed by ':' character and a
+comma separated list of field name patterns. In the object pattern and/or/not/*
+and various field matcher expressions can be used. The field pattern contains
+wildcard expressions matched against field names.
+\begin{note}
+Take care about long running simulations because they might output eventlog files
+of several Gbytes and thus fail due to insufficient disk space. Both the eventlog
+table and the sequence chart are capable of efficiently displaying such huge
+eventlog files without requiring large amounts of physical memory to load the
+whole file at once.
+\end{note}
+
+\section{Eventlog Tool}
+The eventlog tool is a command line tool to process eventlog files. Invoking it
+without parameters will display usage information such as available commands and
+options. The following are the commands most useful for users.
+
+\subsection{Filter}
+The eventlog tool provides off line filtering that is usually applied to the
+eventlog file after the simulation has been finished and before actually opening
+it in Eclipse. Use the filter command and the various options to specify what
+should be present in the result file.
+
+Some of the filter options are also available using the Eclipse platform for on
+the fly in memory filtering but may result in long running computations. In such
+cases pre-filtering the result file might give better performance.
+
+\subsection{Echo}
+Since the eventlog file format is text based and users are encouraged to implement
+their own filters therefore there needs to be a way to check whether an eventlog
+file is correct. The echo command provides a way to check this and help users
+creating custom filters. Anything not echoed back by the eventlog tool will not be
+taken into consideration by the other tools.
+\begin{note}
+Custom filter tools should filter out whole events only otherwise the consequences
+are undefined
+\end{note}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "usman"
+%%% End:
