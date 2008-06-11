@@ -23,11 +23,12 @@ by lines that begin with a hypen, and continue with the actual text.
 <empty-line> ::= CR LF
 <user-log-message> ::= - SPACE <text> CR LF
 <event-log-entry> ::= <event-log-entry-type> SPACE <parameters> CR LF
-<event-log-entry-type> ::= BU | MB | ME | MC | MD | MR | CC | CD | CS |
-                           MS | CE | BS | ES | SD | SH | DM | E
-<parameters> ::= (<name> SPACE <value>)*
+<event-log-entry-type> ::= SB | SE | BU | MB | ME | MC | MD | MR | GC | GD |
+                           CC | CD | CS | MS | CE | BS | ES | SD | SH | DM | E
+<parameters> ::= (<parameter>)*
+<parameter> ::= <name> SPACE <value>
 <name> ::= <text>
-<value> ::= <integer> | <text> | <quoted-text>
+<value> ::= <boolean> | <integer> | <text> | <quoted-text>
 \end{verbatim}
 
 Here is a fragment of an existing eventlog file as an example:
