@@ -17,6 +17,7 @@ TEXCHAPTERS = \
          ch-run-sim.tex \
          ch-graphics.tex \
          ch-ana-sim.tex \
+         ch-eventlog.tex \
          ch-neddoc.tex \
          ch-parallel-exec.tex \
          ch-opp-design.tex \
