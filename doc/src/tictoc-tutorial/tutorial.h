@@ -541,7 +541,7 @@ The resulting topology looks like this:
 <img src="step9.gif">
 
 In this version, tic[0] will generate the message to be sent around.
-This is done in initialize(), with the help of the index() function which
+This is done in initialize(), with the help of the getIndex() function which
 returns the index of the module in the vector.
 
 The meat of the code is the forwardMessage() function which we invoke
@@ -560,9 +560,9 @@ See the full code in @ref txc9.cc.
 <i>Exercise: you'll notice that this simple "routing" is not very efficient:
 often the packet keeps bouncing between two nodes for a while before it is sent
 to a different direction. This can be improved somewhat if nodes don't send
-the packet back to the sender. Implement this. Hints: cMessage::arrivalGate(),
-cGate::index(). Note that if the message didn't arrive via a gate but was
-a self-message, then arrivalGate() returns NULL.
+the packet back to the sender. Implement this. Hints: cMessage::getArrivalGate(),
+cGate::getIndex(). Note that if the message didn't arrive via a gate but was
+a self-message, then getArrivalGate() returns NULL.
 </i>
 
 Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
@@ -620,7 +620,7 @@ following:
 <img src="step10e.gif">
 
 In the next line, we check if the destination address is the same as the
-node's address. The <tt>index()</tt> member function returns the index
+node's address. The <tt>getIndex()</tt> member function returns the index
 of the module in the submodule vector (remember, in the NED file we
 declarared it as <tt>tic: Txc10[6]</tt>, so our nodes have addresses 0..5).
 
