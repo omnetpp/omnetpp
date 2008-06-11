@@ -41,19 +41,19 @@ Register_PerRunConfigEntry(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-mess
         "the simulation. The message detail will be presented in the sequence chart "
         "tool. Each pattern starts with an object pattern optionally followed by ':' "
         "character and a comma separated list of field patterns. In both "
-        "patterns and/or/not/* and various field matcher expressions can be used. "
+        "patterns and/or/not/* and various field match expressions can be used. "
         "The object pattern matches to class name, the field pattern matches to field name by default.\n"
         "  EVENTLOG-MESSAGE-DETAIL-PATTERN := ( DETAIL-PATTERN '|' )* DETAIL_PATTERN\n"
         "  DETAIL-PATTERN := OBJECT-PATTERN [ ':' FIELD-PATTERNS ]\n"
-        "  OBJECT-PATTERN := MATCHER-EXPRESSION\n"
+        "  OBJECT-PATTERN := MATCH-EXPRESSION\n"
         "  FIELD-PATTERNS := ( FIELD-PATTERN ',' )* FIELD_PATTERN\n"
-        "  FIELD-PATTERN := MATCHER-EXPRESSION\n"
+        "  FIELD-PATTERN := MATCH-EXPRESSION\n"
         "Examples (enter them without quotes):\n"
         "  \"*\": captures all fields of all messages\n"
         "  \"*Frame:*Address,*Id\": captures all fields named somethingAddress and somethingId from messages of any class named somethingFrame\n"
         "  \"MyMessage:declaredOn(MyMessage)\": captures instances of MyMessage recording the fields declared on the MyMessage class\n"
         "  \"*:(not declaredOn(cMessage) and not declaredOn(cNamedObject) and not declaredOn(cObject))\": records user-defined fields from all messages");
-Register_PerRunConfigEntry(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, NULL, "Interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..100, 200..400, 900..");
+Register_PerRunConfigEntry(CFGID_EVENTLOG_RECORDING_INTERVALS, "eventlog-recording-intervals", CFG_CUSTOM, NULL, "Simulation time interval(s) when events should be recorded. Syntax: [<from>]..[<to>],... That is, both start and end of an interval are optional, and intervals are separated by comma. Example: ..10.2, 22.2..100, 233.3..");
 Register_PerObjectConfigEntry(CFGID_MODULE_EVENTLOG_RECORDING, "module-eventlog-recording", CFG_BOOL, "true", "Enables recording events on a per module basis. This is meaningful for simple modules only. \nExample:\n **.router[10..20].**.module-eventlog-recording = true\n **.module-eventlog-recording = false");
 
 
