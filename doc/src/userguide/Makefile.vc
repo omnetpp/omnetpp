@@ -2,6 +2,9 @@ FOP=$(TOOLS_DIR)\fop\fop.bat
 XSLTPROC=$(TOOLS_DIR)\libxslt\bin\xsltproc
 DOCBOOK=$(TOOLS_DIR)\docbook
 
+icons:
+	perl icons.pl > icons.xml
+
 html:  
 	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
 	$(XSLTPROC) --nonet --output userguide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
