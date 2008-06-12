@@ -3,7 +3,7 @@ XSLTPROC=$(TOOLS_DIR)\libxslt\bin\xsltproc
 DOCBOOK=$(TOOLS_DIR)\docbook
 
 icons:
-	perl icons.pl > icons.xml
+	perl icons.pl
 
 html:  
 	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
