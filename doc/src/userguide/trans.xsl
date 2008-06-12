@@ -34,6 +34,21 @@
    </figure>
 </xsl:template>
 
+<xsl:key name="icon" match="//icons/icon/@file" use="../@name"/>
+
+<xsl:template match="icon">
+   <guibutton>
+      <inlinegraphic>
+         <xsl:variable name="name" select="@name"/>
+         <xsl:for-each select="document('icons.xml')">
+            <xsl:attribute name="fileref">
+               <xsl:value-of select="concat('../../../ui/',key('icon', $name))"/>
+            </xsl:attribute>
+         </xsl:for-each>
+      </inlinegraphic>
+   </guibutton>
+</xsl:template>
+
 <xsl:template match="inifile">
    <screen><xsl:apply-templates select="node()"/></screen>
 </xsl:template>
