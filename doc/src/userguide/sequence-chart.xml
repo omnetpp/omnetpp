@@ -3,168 +3,196 @@
     "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <chapter id="seq-chart">
   <title>Sequence Charts</title>
+
   <sect1>
     <title>Introduction</title>
     <para>
-      This feature is completely new in OMNeT++ 4.0 and will empower you to easily examine
-      every minute detail of the simulation forwards, backward, in real time or
-      step-by-step. You can filter the data to show you only what you are looking for.
-      Examine causality relationships, and filter for them automatically. This log file is
-      created during a simulation run, and can become quite large, since it contains a lot
-      of information about the simulation.
+      The Sequence Chart and the Event Log Table are part of the OMNeT++ IDE and they are
+      based on the eventlog feature of OMNeT++ 4.0. They aim to help understanding complex
+      simulation models and to help correctly implementing the desired component
+      behaviors. Using these tools you will be able to easily examine every minute detail
+      of the simulation back and forth in terms of simulation time or step-by-step
+      focusing on the behavior instead of the statistical results of your model.
     </para>
     <para>
-      The simulation kernel is capable to log automatically various things during the
-      simulation along with user level messages. These include among others module and
-      connection creation and deletion, scheduling of self messages, sending of messages
-      to other modules either through gates or directly and processing of messages. The
-      result is an event log file which contains detailed information of the simulation
-      and later can be used for various purposes.
-    </para>
-    <para>
-      Understanding a complex simulation model and making it correct might be a difficult
-      task to do. One of the goals of the event log concept is to provide tools which help
-      this process. The following chapters discuss how to set up the event log and what
-      services do the tools provide to you.
+      Refer to the OMNeT++ 4.0 User Manual for further details on what an eventlog file
+      is, what its format and how to set up the simulation kernel to automatically record
+      it during simulation.
     </para>
   </sect1>
 
   <sect1>
-    <title>Creating an Event Log</title>
+    <title>Configuration</title>
     <para>
-      To prepare a log file to be processed by the log viewer, simply insert the
-      record-eventlog = true line into the corresponding omnetpp.ini file, or use the
-      Inifile Editor's Output Files section to enable the feature.
+      The Inifile Editor provides a small group of widgets in the Output Files section to
+      configure the eventlog feature. To enable recording simply put a checkmark next to
+      its checkbox.
     </para>
-    <picture file="pictures/7.1_Generate_log_omnetpp_ini.png">TODO</picture>
-    <note>
-      Since writing an event log file might significantly decrease overall simulation
-      performance therefore event log recording is turned off by default. For details
-      about the ini file format in general, see the OMNeT++ 4.0 Manual.
-    </note>
+    <picture file="pictures/INI-Eventlog.png">
+      Inifile Editor - Output Files section - Eventlog
+    </picture>
+    <para>
+      The eventlog file should have the file extension <filename>log</filename> as the
+      example shows above so that OMNeT++ IDE tools will be able to recognize it
+      automatically. To open an eventlog file simply double click on it in the Project
+      Explorer view.
+      <note>
+	To open a file in an editor other than its default editor right click on it and
+	choose an item from the <guisubmenu>Open With</guisubmenu> submenu.
+      </note>
+    </para>
+    <para>
+      All the other eventlog specific parameters described in the OMNeT++ 4.0 User Manual
+      can also be set using the Inifile Editor in the usual way.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Tools</title>
+    <para>
+      There are two tools called the Sequence Chart and the Eventlog Table (often just
+      referred as tools in the rest of this chapter) in the OMNeT++ IDE to inspect the
+      contents of an eventlog file. Both tools can be used as an editor and a view. The
+      difference between being an editor or a view is quite important from the user's
+      point of view, because there is only at most one instance of a view of the same
+      kind. It means that even if multiple eventlog files are open in editors there are no
+      more than one Eventlog Table view. This singleton view will automatically display
+      the eventlog file of the active editor remembering its position and state when
+      switching among editors back and forth. For more details on what an editor and a
+      view is and what are the differences see the Eclipse documentation.
+    </para>
+    <para>
+      It is possible to open the same eventlog file in multiple editors and to navigate to
+      different locations or use different filters in them. Once an eventlog is open in an
+      editor you can use the <guimenuitem>Window|New Editor</guimenuitem> to open it
+      again.
+      <note>
+	Dragging one of the editors from the tabbed pane to one of the sides of the editor
+	area allows to interact with the two simultaneously.
+      </note>
+    </para>    
     <sect2>
-      <title>Event Log File</title>
+      <title>Long File Support</title>
       <para>
-        The simulation kernel will write the event log file during the simulation. The
-        event log file may be opened in Eclipse while the simulation is still running and
-        wherever it makes sense tools will follow changes written to it.
+	Since an eventlog file might be several Gbytes long therefore both tools are
+	designed in a way that allows efficiently displaying such a file without requiring
+	large amounts of physical memory to load it at once. As you navigate through the
+	file physical memory is filled up with the content lazily. Since it is difficult
+	to reliably identify in a platform independent way when the system is going low on
+	physical memory it is left up to the user to release the allocated memory when
+	needed. This operation although usually not required at all is available from the
+	popup menu as <guimenuitem>Release Memory</guimenuitem>. Executing it will not
+	affect the user interface in any way.
+      </para>
+      <para>
+	The eventlog file being loaded lazily (and optionally filtered) also means that
+	the exact number of events and rows it contains cannot be determined. This affects
+	the way scrollbars work in the lazy direction, horizontal for the Sequence Chart
+	and vertical for the Eventlog Table. Basically the scrollbars become non linear in
+	that direction which most of the time remains unnoticable for the user unless the
+	file is really small.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Live Data</title>
+      <para>
+	Despite the simulation kernel keeps the eventlog file open for writing while the
+	simulation is running it may be opened in the OMNeT++ IDE simultaneously. Both
+	tools can be instructed by pressing the <keycap>END</keycap> key to follow the end
+	of the eventlog as new content is appended to it.
+      </para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Eventlog Table</title>
+    <para>
+      The Eventlog Table can display the content of an eventlog file recorded during a
+      simulation both as a view and as an editor in the OMNeT++ IDE. It is also capable to
+      display filtered eventlog files whether they were created via the Eventlog Tool
+      filter command, by a custom filter tool or by on the fly in memory filtering.
+    </para>
+    <para>
+      The table has three columns where the first two called event number and simulation
+      time show the values corresponding to the event where that line was recorded. The
+      third column called details contains the actual data which varies for each kind. The
+      different kind of lines can be easily recognized by their icon. Some lines such as
+      sending a message through a sequence of gates relate with each other and are
+      indented for easier recognition.
+    </para>
+    <sect2>
+      <title>Display Mode</title>
+      <para>
+	The eventlog file content may be displayed in two different notations. The
+	<guilabel>Raw</guilabel> data notation shows exactly what is present in the file
+	while the <guilabel>Descriptive</guilabel> notation displays it after some
+	preprocessing into a human readable form. To switch between them use the
+	<guilabel>Display Mode</guilabel> <icon name="displaymode.png"/> option from the
+	toolbar or the context menu.
+      </para>
+      <picture file="pictures/sequencechart2.png"><guilabel>Descriptive</guilabel> notation</picture>
+      <picture file="pictures/sequencechart3.png"><guilabel>Raw</guilabel> notation</picture>
+    </sect2>
+    <sect2>
+      <title>Name Mode</title>
+      <para>TODO <icon name="namemode.gif"/>
+      </para>
+    </sect2>
+    <sect2>
+      <title>Type Mode</title>
+      <para>TODO
+      </para>
+    </sect2>
+    <sect2>
+      <title>Line Filter</title>
+      <para>
+	The Eventlog Table may be filtered by using the <guilabel>Line Filter</guilabel>
+	selector on the toolbar or from the context menu which allows filtering lines with
+	specific types. There are some predefined filters but also custom filter patterns
+	may be specified referring to fields present in the raw mode. The following is a
+	custom filter example which shows message sends where the class of the message is
+	AirFrame.
+	<screen>BS and c(AirFrame)</screen>
       </para>
       <note>
-        The event log file should have the file extension 'log' as the example shows above
-        so that the Eclipse tools will be able to recognize it automatically.
+	Event lines marked with green circles <icon name="event.png"/> are always shown in the Eventlog Table.
       </note>
     </sect2>
     <sect2>
-      <title>Recording Message Data</title>
+      <title>Navigation</title>
       <para>
-        Since recording message data might dramatically increase the size of the event log
-        file and additionally slow down the simulation therefore it is turned off by
-        default even if writing the event log is enabled. To turn on message data
-        recording enter a value for the following configuration key in the ini file:
+	Standard navigation and selection within the Eventlog Table is done just like in
+	any other table but there are extra navigation options in the context menu. These
+	options focus on the causes of events and consequences of message sends.
       </para>
-      <para>eventlog-message-detail-pattern</para>
+      <picture file="pictures/sequencechart4.png">Context menu</picture>
+      <picture file="pictures/sequencechart5.png">Bookmark</picture>
+    </sect2>
+    <sect2>
+      <title>Searching</title>
+    </sect2>
+    <sect2>
+      <title>Bookmarks</title>
       <para>
-        An example configuration for a IEEE 80211 model that records the field
-        encapsulationMsg and all other fields which name ends with Address from messages
-        which class name ends with Frame looks like this:
-      </para>
-      <para>eventlog-message-detail-pattern = *Frame:encapsulatedMsg,*Address</para>
-      <para>
-        An example configuration for a TCP/IP model that records the port and address
-        fields looks like the following:
-      </para>
-      <para>
-        eventlog-message-detail-pattern =
-        PPPFrame:encapsulatedMsg|IPDatagram:encapsulatedMsg,*Address|TCPSegment:*Port
-      </para>
-      <para>
-        In general the configuration entry is a list of patterns separated by '|'
-        character which will be used to write message detail information into the event
-        log for each message sent during the simulation. The message detail will be
-        automatically presented in the sequence chart and the event log table tool. Each
-        pattern starts with an object pattern optionally followed by ':' character and a
-        comma separated list of field name patterns. In the object pattern and/or/not/*
-        and various field matcher expressions can be used. The field pattern contains
-        wildcard expressions matched against field names.
-      </para>
-      <para>
-        <picture file="pictures/sequencechart1.png">Message detail</picture>
-      </para>
-      <para>
-        Note: Take care about long running simulations because they might output event log
-        files of several gigabytes and thus fail due to insufficient disk space. Both the
-        event log table and the sequence chart are capable of efficiently displaying such
-        huge event log files without requiring large amounts of physical memory to load
-        the whole file at once.
+	For easier navigation the OMNeT++ IDE navigation history and bookmarks (from the
+	context menu) are supported. Use the bookmark view to jump to bookmarks even after
+	restarting the IDE.
       </para>
     </sect2>
   </sect1>
-  <sect1>
-    <title>Event Log Table</title>
-    <para>
-      The event log table is able to display the content of an event log file recorded
-      during a simulation both as a view and as an editor in Eclipse. It is also capable
-      to display filtered event log files whether they were created via the event log tool
-      filter command or by custom filter tools or by on the fly in memory filtering.
-    </para>
-    <para>
-      The event log file content may be displayed in two different notations. The raw data
-      notation displays exactly what was written to the file while the descriptive
-      notation displays it after some preprocessing into a human readable form. Use the
-      toolbar or the context menu to switch between them.
-    </para>
-    <para>
-      <picture file="pictures/sequencechart2.png">Descriptive notation</picture>
-    </para>
-    <para>
-      <picture file="pictures/sequencechart3.png">Raw notation</picture>
-    </para>
-    <para>
-      The event log table may be filtered by using the filter mode selector on the toolbar
-      or from the context menu which allows filtering entries with specific types. There
-      are some predefined filters but also custom filter patterns may be specified
-      referring to fields present in the raw mode. The following is a custom filter
-      example which shows message sends where the class of the message is AirFrame.
-    </para>
-    <para>BS and c(AirFrame)</para>
-    <para>
-      Note: Event lines marked with green circles are always shown in the event log table.
-    </para>
-    <para>
-      Standard navigation and selection within the event log table is done just like in
-      any other table but there are extra navigation options in the context menu. These
-      options focus on the causes and consequences of message sends.
-    </para>
-    <para>
-      <picture file="pictures/sequencechart4.png">Context menu</picture>
-    </para>
-    <para>
-      When viewing the very end (which means that the end key was actually pressed) of a
-      running simulation's event log file then the event log table will follow the changes
-      as new lines are written into the file.
-    </para>
-    <para>
-      For easier navigation the Eclipse navigation history and bookmarks (from the context
-      menu) are supported. Use the bookmark view to jump to bookmarks even after
-      restarting eclipse.
-    </para>
-    <para>
-      <picture file="pictures/sequencechart5.png">Bookmark</picture>
-    </para>
-  </sect1>
+
   <sect1>
     <title>Sequence Chart</title>
+    !!! TODO
+    <picture file="pictures/sequencechart1.png">Message detail</picture>
     <para>
-      The sequence chart also displays the content of an event log file focusing on the
+      The Sequence Chart also displays the content of an eventlog file focusing on the
       causes and consequences of events and message sends recorded during the simulation.
-      It is also capable to display filtered event log files just like the event log
-      table.
+      It is also capable to display filtered eventlog files just like the Eventlog Table.
     </para>
+    <picture file="pictures/sequencechart6.png">Sequence Chart</picture>
     <para>
-      <picture file="pictures/sequencechart6.png">Sequence chart</picture>
-    </para>
-    <para>
-      The horizontal axis of the sequence chart corresponds to the simulation time in four
+      The horizontal axis of the Sequence Chart corresponds to the simulation time in four
       different ways. Linear and event number mean that the simulation time and event
       number is proportional to the distance measured in pixels respectively. While non
       linear and step mean that there is a non linear transformation between distance
@@ -173,16 +201,14 @@
       simulation time intervals between events. You can switch between timeline modes from
       the toolbar or the context menu.
     </para>
-    <para>
-      <picture file="pictures/sequencechart7.png">Timeline mode</picture>
-    </para>
+    <picture file="pictures/sequencechart7.png">Timeline mode</picture>
     <para>
       It is quite common in simulation models that multiple events occur at the very same
       simulation time. This is shown as grey areas indicating that the simulation time
       does not change along the horizontal axis within the area.
     </para>
     <para>
-      The vertical axis of the sequence chart corresponds to modules in the simulation. By
+      The vertical axis of the Sequence Chart corresponds to modules in the simulation. By
       default all modules are displayed as a single solid line and events occurred in that
       module are shown as filled circles. A green circle represents the processing of a
       self message while a red circle is an event caused by receiving a message from
@@ -190,27 +216,23 @@
       (approximately) minimizing the number of crossing arrows between them.
     </para>
     <para>
-      Both the top and the bottom of the sequence chart display the simulation times
+      Both the top and the bottom of the Sequence Chart display the simulation times
       corresponding to the currently visible part. The left side of the top simulation
       time gutter displays the common simulation time prefix which should be added to each
       individual simulation time shown at the vertical hairlines. The right side of the
       figure displays the simulation time range currently visible within the sequence
       chart window.
     </para>
+    <picture file="pictures/sequencechart8.png">Gutter</picture>
     <para>
-      <picture file="pictures/sequencechart8.png">Gutter</picture>
-    </para>
-    <para>
-      The sequence chart represents message sends via blue arrows. The arrow starts at the
+      The Sequence Chart represents message sends via blue arrows. The arrow starts at the
       module which is sending the message and ends at the module which processed that
       message. The simulation times corresponding to the start and end points are also
       important. Sometimes a message send goes far away on the figure in which case the
       line is broken into two small parts displayed at the two ends pointing towards each
       other but without actually linked with a continuous line.
     </para>
-    <para>
-      <picture file="pictures/sequencechart9.png">A message arriving from far away</picture>
-    </para>
+    <picture file="pictures/sequencechart9.png">A message arriving from far away</picture>
     <para>
       There is a green arrow representing message reuses. When a message arrives to a
       module which neither deletes nor sends but rather stores it and later on sends the
@@ -224,11 +246,11 @@
       will be turned into a thick colored bar based on the enum values present in the
       vector.
     </para>
+    <picture file="pictures/sequencechart10.png">
+      Vector data with enum type displayed on module axis
+    </picture>
     <para>
-      <picture file="pictures/sequencechart10.png">Vector data with enum type displayed on module axis</picture>
-    </para>
-    <para>
-      Filtering the sequence chart is also possible. This actually means that some of the
+      Filtering the Sequence Chart is also possible. This actually means that some of the
       events are not displayed on the chart so that the user can focus on the relevant
       parts. When filtering is turned on (displayed in the status line) some of the
       message arrows might be decorated with a filter sign (a double zigzag crossing the
@@ -237,42 +259,41 @@
       reaches the target module. The message names correspond to the first and the last
       message in the chain of filtered message sends.
     </para>
+    <picture file="pictures/sequencechart11.png">
+      A chain of filtered message sends represented as a single arrow
+    </picture>
     <para>
-      <picture file="pictures/sequencechart11.png">A chain of filtered message sends represented as a single arrow</picture>
-    </para>
-    <para>
-      The sequence chart supports documentation purposes by being able to export
+      The Sequence Chart supports documentation purposes by being able to export
       continuous parts into SVG format.
     </para>
   </sect1>
+
   <sect1>
     <title>On The Fly Filter Tool</title>
     <para>
-      The content of the event log file may be filtered on the fly by opening the filter
+      The content of the eventlog file may be filtered on the fly by opening the filter
       configuration.
     </para>
-    <para>
-      <picture file="pictures/sequencechart12.png">Opening the filter configuration</picture>
-    </para>
+    <picture file="pictures/sequencechart12.png">
+      Opening the filter configuration
+    </picture>
     <para>
       On the fly filtering means that the result of the filter is not saved into a file
       but it is rather lazily computed and stored within memory. This allows rapid
-      switching between various views on the same event log data within both the sequence
-      chart and the event log table.
+      switching between various views on the same eventlog data within both the sequence
+      chart and the Eventlog Table.
     </para>
     <para>
       The filter configuration dialog has four tabs each restricting the content of the
-      event log on its own. The individual tabs may be turned on and off independently of
+      eventlog on its own. The individual tabs may be turned on and off independently of
       each other.
     </para>
-    <para>
-      <picture file="pictures/sequencechart13.png">Filter configuration dialog</picture>
-    </para>
+    <picture file="pictures/sequencechart13.png">Filter configuration dialog</picture>
     <para>
       The general filter is the simplest one which filters out events from the beginning
-      and from the end of the event log file. This might help to reduce the computation
+      and from the end of the eventlog file. This might help to reduce the computation
       time when defining filters which otherwise would be very expensive to compute for
-      the whole event log.
+      the whole eventlog.
     </para>
     <para>
       The module and message filter tabs each have three inner tabs. These inner tabs
@@ -285,66 +306,12 @@
       specified by its event number. The cause/consequence relation between two events
       means that there is message send path from the cause event to the consequence event.
     </para>
-    <para>
-      Note: Since computing the causes and consequences far away in the log file from the
-      traced event might be a time consuming task therefore there are extra limits around
-      the traced event to be set.
-    </para>
-    <para>
-      <picture file="pictures/sequencechart14.png">Trace tab</picture>
-    </para>
-  </sect1>
-  <sect1>
-    <title>Event Log Tool</title>
-    <para>
-      The event log tool is a command line tool to process event log files. Invoking it
-      without parameters will display usage information such as available commands and
-      options. The following are the commands most useful for users.
-    </para>
-    <sect2>
-      <title>Filter</title>
-      <para>
-        The event log tool provides off line filtering that is usually applied to the
-        event log file after the simulation has been finished and before actually opening
-        it in Eclipse. Use the filter command and the various options to specify what
-        should be present in the result file.
-      </para>
-      <para>
-        Some of the filter options are also available using the Eclipse platform for on
-        the fly in memory filtering but may result in long running computations. In such
-        cases pre-filtering the result file might give better performance.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Echo</title>
-      <para>
-        Since the event log file format is text based and users are encouraged to
-        implement their own filters therefore there needs to be a way to check whether an
-        event log file is correct. The echo command provides a way to check this and help
-        users creating custom filters. Anything not echoed back by the event log tool will
-        not be taken into consideration by the other tools.
-      </para>
-      <para>
-        Note: custom filter tools should filter out whole events only otherwise the
-        consequences are undefined
-      </para>
-    </sect2>
-  </sect1>
-
-  <sect1>
-    <title>Event Log Format</title>
-    <para>
-      The event log file format is a quite simple text and line based format. The event
-      log doesn’t use a binary format to let users write their own filters and still be
-      able to use the provided tools.
-    </para>
-    <para>
-      Each line in the event log file describes an event log entry. The line starts with
-      an entry type identifier which is followed by a list of name, value parameter pairs.
-      The various event log entry types have different parameters some of which contain
-      booleans, simulation times, identifiers, class names, user specified names, quoted
-      strings, etc.
-    </para>
+    <note>
+      Since computing the causes and consequences far away in the log file from the traced
+      event might be a time consuming task therefore there are extra limits around the
+      traced event to be set.
+    </note>
+    <picture file="pictures/sequencechart14.png">Trace tab</picture>
   </sect1>
 
 </chapter>
