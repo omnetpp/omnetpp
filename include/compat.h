@@ -23,20 +23,9 @@
 // This header needs to be included *last* in omnetpp.h.
 //
 
-// following ones became inner classes:
-typedef _OPPDEPRECATED  OPP::cKSplit::Iterator      cKSplitIterator;
-typedef _OPPDEPRECATED  OPP::cKSplit::Grid          sGrid;
-typedef _OPPDEPRECATED  OPP::cLinkedList::Iterator  cLinkedListIterator;
-typedef _OPPDEPRECATED  OPP::cMessageHeap::Iterator cMessageHeapIterator;
-typedef _OPPDEPRECATED  OPP::cTopology::Link        sTopoLink;
-typedef _OPPDEPRECATED  OPP::cTopology::LinkIn      sTopoLinkIn;
-typedef _OPPDEPRECATED  OPP::cTopology::LinkOut     sTopoLinkOut;
-typedef _OPPDEPRECATED  OPP::cTopology::Node        sTopoNode;
-
 // renamed classes:
-typedef _OPPDEPRECATED  OPP::cDisplayString   cDisplayStringParser;
-typedef _OPPDEPRECATED  OPP::cBasicChannel    cSimpleChannel;
-typedef /*TBD:_OPPDEPRECATED*/  OPP::cObject  cPolymorphic;
+typedef _OPPDEPRECATED OPP::cBasicChannel cSimpleChannel;
+typedef /*_OPPDEPRECATED*/ OPP::cObject cPolymorphic;
 
 #endif
 

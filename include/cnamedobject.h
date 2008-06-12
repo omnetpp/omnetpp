@@ -121,6 +121,11 @@ class SIM_API cNamedObject : public cObject
      * memory if several objects have identical names.
      */
     virtual void setNamePooling(bool b);
+
+    /**
+     * Returns whether name pooling is turned on for this object.
+     */
+    virtual bool getNamePooling() {return flags&FL_NAMEPOOLING;}
     //@}
 };
 
