@@ -5,7 +5,7 @@ sub icons {
       $name = $_;
       $file = $File::Find::name;
       $file =~ s|.*?\\ui/||;
-      print "   <icon name=\"$name\" file=\"$file\">\n";
+      print "   <icon name=\"$name\" file=\"$file\"/>\n";
    }
 }
 
