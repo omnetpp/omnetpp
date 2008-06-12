@@ -13,4 +13,4 @@ print "<icons>\n";
 
 find(\&icons, "..\\..\\..\\ui");
 
-print "<\icons>\n";
+print "</icons>\n";
