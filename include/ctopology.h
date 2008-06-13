@@ -93,42 +93,42 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Returns the ID of the network module to which this node corresponds.
          */
-        int getModuleId() const         {return module_id;}
+        int getModuleId() const  {return module_id;}
 
         /**
          * Returns the pointer to the network module to which this node corresponds.
          */
-        cModule *getModule() const      {return simulation.getModule(module_id);}
+        cModule *getModule() const  {return simulation.getModule(module_id);}
 
         /**
          * Returns the weight of this node. Weight is used with the
          * weighted shortest path finder methods of cTopology.
          */
-        double getWeight() const        {return wgt;}
+        double getWeight() const  {return wgt;}
 
         /**
          * Sets the weight of this node. Weight is used with the
          * weighted shortest path finder methods of cTopology.
          */
-        void setWeight(double d)    {wgt=d;}
+        void setWeight(double d)  {wgt=d;}
 
         /**
          * Returns true of this node is enabled. This has significance
          * with the shortest path finder methods of cTopology.
          */
-        bool isEnabled() const         {return enabl;}
+        bool isEnabled() const  {return enabl;}
 
         /**
          * Enable this node. This has significance with the shortest path
          * finder methods of cTopology.
          */
-        void enable()               {enabl=true;}
+        void enable()  {enabl=true;}
 
         /**
          * Disable this node. This has significance with the shortest path
          * finder methods of cTopology.
          */
-        void disable()              {enabl=false;}
+        void disable()  {enabl=false;}
         //@}
 
         /** @name Node connectivity. */
@@ -137,22 +137,22 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Returns the number of incoming links to this graph node.
          */
-        int getNumInLinks() const          {return num_in_links;}
+        int getNumInLinks() const  {return num_in_links;}
 
         /**
          * Returns ith incoming link of graph node.
          */
-        LinkIn *in(int i);
+        LinkIn *getLinkIn(int i);
 
         /**
          * Returns the number of outgoing links from this graph node.
          */
-        int getNumOutLinks() const         {return num_out_links;}
+        int getNumOutLinks() const  {return num_out_links;}
 
         /**
          * Returns ith outgoing link of graph node.
          */
-        LinkOut *out(int i);
+        LinkOut *getLinkOut(int i);
         //@}
 
         /** @name Result of shortest path extraction. */
@@ -161,20 +161,20 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Returns the distance of this node to the target node.
          */
-        double getDistanceToTarget() const   {return dist;}
+        double getDistanceToTarget() const  {return dist;}
 
         /**
          * Returns the number of shortest paths towards the target node.
-         * (There might be several paths with the same lengths.)
+         * (There may be several paths with the same length.)
          */
-        int getNumPaths() const                 {return out_path?1:0;}
+        int getNumPaths() const  {return out_path?1:0;}
 
         /**
          * Returns the next link in the ith shortest paths towards the
-         * target node. (There might be several paths with the same
-         * lengths.)
+         * target node. (There may be several paths with the same
+         * length.)
          */
-        LinkOut *path(int) const     {return (LinkOut *)out_path;}
+        LinkOut *getPath(int) const  {return (LinkOut *)out_path;}
         //@}
     };
 
@@ -199,31 +199,31 @@ class SIM_API cTopology : public cOwnedObject
          * Returns the weight of this link. Weight is used with the
          * weighted shortest path finder methods of cTopology.
          */
-        double getWeight() const        {return wgt;}
+        double getWeight() const  {return wgt;}
 
         /**
          * Sets the weight of this link. Weight is used with the
          * weighted shortest path finder methods of cTopology.
          */
-        void setWeight(double d)    {wgt=d;}
+        void setWeight(double d)  {wgt=d;}
 
         /**
          * Returns true of this link is enabled. This has significance
          * with the shortest path finder methods of cTopology.
          */
-        bool isEnabled() const         {return enabl;}
+        bool isEnabled() const  {return enabl;}
 
         /**
          * Enables this link. This has significance with the shortest path
          * finder methods of cTopology.
          */
-        void enable()               {enabl=true;}
+        void enable()  {enabl=true;}
 
         /**
          * Disables this link. This has significance with the shortest path
          * finder methods of cTopology.
          */
-        void disable()              {enabl=false;}
+        void disable()  {enabl=false;}
     };
 
 
@@ -255,17 +255,17 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Returns the gate ID at the local end of this connection.
          */
-        int getLocalGateId() const   {return dest_gate;}
+        int getLocalGateId() const  {return dest_gate;}
 
         /**
          * Returns the gate at the remote end of this connection.
          */
-        cGate *getRemoteGate() const      {return src_node->getModule()->gate(src_gate);}
+        cGate *getRemoteGate() const  {return src_node->getModule()->gate(src_gate);}
 
         /**
          * Returns the gate at the local end of this connection.
          */
-        cGate *getLocalGate() const       {return dest_node->getModule()->gate(dest_gate);}
+        cGate *getLocalGate() const  {return dest_node->getModule()->gate(dest_gate);}
     };
 
 
@@ -297,17 +297,17 @@ class SIM_API cTopology : public cOwnedObject
         /**
          * Returns the gate ID at the local end of this connection.
          */
-        int getLocalGateId() const   {return src_gate;}
+        int getLocalGateId() const  {return src_gate;}
 
         /**
          * Returns the gate at the remote end of this connection.
          */
-        cGate *getRemoteGate() const      {return dest_node->getModule()->gate(dest_gate);}
+        cGate *getRemoteGate() const  {return dest_node->getModule()->gate(dest_gate);}
 
         /**
          * Returns the gate at the local end of this connection.
          */
-        cGate *getLocalGate() const       {return src_node->getModule()->gate(src_gate);}
+        cGate *getLocalGate() const  {return src_node->getModule()->gate(src_gate);}
     };
 
     /**

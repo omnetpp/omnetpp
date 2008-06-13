@@ -62,7 +62,7 @@ void Routing::initialize()
 
         if (thisNode->getNumPaths()==0) continue; // not connected
 
-        cGate *parentModuleGate = thisNode->path(0)->getLocalGate();
+        cGate *parentModuleGate = thisNode->getPath(0)->getLocalGate();
         int gateIndex = parentModuleGate->getIndex();
         int address = topo->getNode(i)->getModule()->par("address");
         rtable[address] = gateIndex;

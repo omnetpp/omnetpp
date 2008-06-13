@@ -40,17 +40,17 @@ USING_NAMESPACE
 Register_Class(cTopology);
 
 
-cTopology::LinkIn *cTopology::Node::in(int i)
+cTopology::LinkIn *cTopology::Node::getLinkIn(int i)
 {
     if (i<0 || i>=num_in_links)
-        throw cRuntimeError("cTopology::Node: invalid in() index %d",i);
+        throw cRuntimeError("cTopology::Node::getLinkIn: invalid link index %d", i);
     return (cTopology::LinkIn *)in_links[i];
 }
 
-cTopology::LinkOut *cTopology::Node::out(int i)
+cTopology::LinkOut *cTopology::Node::getLinkOut(int i)
 {
     if (i<0 || i>=num_out_links)
-        throw cRuntimeError("cTopology::Node: invalid out() index %d",i);
+        throw cRuntimeError("cTopology::Node::getLinkOut: invalid index %d", i);
     return (cTopology::LinkOut *)(out_links+i);
 }
 

@@ -140,6 +140,10 @@ while (<LISTFILE>)
     $txt =~ s/\bpdf\(/getPDF(/mg;
     $txt =~ s/\bcdf\(/getCDF(/mg;
 
+    $txt =~ s/(\.|->)in\(/$1getLinkIn(/mg;
+    $txt =~ s/(\.|->)out\(/$1getLinkOut(/mg;
+    $txt =~ s/(\.|->)path\(/$1getPath(/mg;
+
     # ancient stuff, from compat.h
     $txt =~ s/\bcKSplitIterator\b/cKSplit::Iterator/mg;
     $txt =~ s/\bsGrid\b/cKSplit::Grid/mg;
