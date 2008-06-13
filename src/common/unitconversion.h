@@ -78,7 +78,7 @@ class COMMON_API UnitConversion
      * Returns a descriptive name of the given unit; in the worst case
      * it returns the input string itself in quotes.
      */
-    static std::string unitDescription(const char *unit);
+    static std::string getUnitDescription(const char *unit);
 
     /**
      * Returns 0.0 if conversion is not possible (unrelated or unrecognized units).
@@ -93,20 +93,20 @@ class COMMON_API UnitConversion
 
     /**
      * Returns the long name for the given unit, or NULL if it is unrecognized.
-     * See allUnits().
+     * See getAllUnits().
      */
-    static const char *longName(const char *unit);
+    static const char *getLongName(const char *unit);
 
     /**
      * Returns the base unit for the given unit, or NULL if the unit is unrecognized.
-     * See allUnits().
+     * See getAllUnits().
      */
-    static const char *baseUnit(const char *unit);
+    static const char *getBaseUnit(const char *unit);
 
     /**
      * Produces the list of all recognized units, with their short names.
      */
-    static std::vector<const char *> allUnits();
+    static std::vector<const char *> getAllUnits();
 };
 
 NAMESPACE_END

@@ -161,7 +161,7 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
         double factor = getConversionFactor(unit.c_str(), tmpUnit.c_str());
         if (factor == 0)
             throw opp_runtime_error("error in quantity '%s': unit %s does not match %s",
-                    str, unitDescription(tmpUnit.c_str()).c_str(), unitDescription(unit.c_str()).c_str());
+                    str, getUnitDescription(tmpUnit.c_str()).c_str(), getUnitDescription(unit.c_str()).c_str());
 
         // do the conversion
         result = result * factor + d;
@@ -181,7 +181,7 @@ std::string UnitConversion::formatQuantity(double d, const char *unit)
     return opp_stringf("%g%s", d, opp_nulltoempty(unit));
 }
 
-std::string UnitConversion::unitDescription(const char *unit)
+std::string UnitConversion::getUnitDescription(const char *unit)
 {
     UnitDesc *desc = lookupUnit(unit);
     std::string result = std::string("'")+unit+"'";
@@ -218,24 +218,24 @@ double UnitConversion::convertUnit(double d, const char *unit, const char *targe
     double factor = getConversionFactor(unit, targetUnit);
     if (factor == 0)
         throw opp_runtime_error("Cannot convert unit %s to %s",
-                (opp_isempty(unit) ? "none" : unitDescription(unit).c_str()),
-                (opp_isempty(targetUnit) ? "none" : unitDescription(targetUnit).c_str()));
+                (opp_isempty(unit) ? "none" : getUnitDescription(unit).c_str()),
+                (opp_isempty(targetUnit) ? "none" : getUnitDescription(targetUnit).c_str()));
     return factor * d;
 }
 
-const char *UnitConversion::longName(const char *unit)
+const char *UnitConversion::getLongName(const char *unit)
 {
     UnitDesc *unitDesc = lookupUnit(unit);
     return unitDesc ? unitDesc->longName : NULL;
 }
 
-const char *UnitConversion::baseUnit(const char *unit)
+const char *UnitConversion::getBaseUnit(const char *unit)
 {
     UnitDesc *unitDesc = lookupUnit(unit);
     return unitDesc ? unitDesc->baseUnit: NULL;
 }
 
-std::vector<const char *> UnitConversion::allUnits()
+std::vector<const char *> UnitConversion::getAllUnits()
 {
     std::vector<const char *> result;
     for (int i=0; unitTable[i].unit; i++)

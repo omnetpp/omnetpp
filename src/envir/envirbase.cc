@@ -493,12 +493,12 @@ void EnvirBase::dumpComponentList(const char *category)
         processed = true;
         ev << "Recognized physical units (note: other units can be used as well, only\n";
         ev << "no automatic conversion will be available for them):\n";
-        std::vector<const char *> units = UnitConversion::allUnits();
+        std::vector<const char *> units = UnitConversion::getAllUnits();
         for (int i=0; i<(int)units.size(); i++)
         {
             const char *u = units[i];
-            const char *bu = UnitConversion::baseUnit(u);
-            ev << "  " << u << "\t" << UnitConversion::longName(u);
+            const char *bu = UnitConversion::getBaseUnit(u);
+            ev << "  " << u << "\t" << UnitConversion::getLongName(u);
             if (opp_strcmp(u,bu)!=0)
                 ev << "\t" << UnitConversion::convertUnit(1,u,bu) << bu;
             ev << "\n";
