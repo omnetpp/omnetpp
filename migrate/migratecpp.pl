@@ -24,7 +24,7 @@ my $arglessGetters = "accuracyDetectionObject activityModule
     sum systemModule targetNode timestamp toGate totalMessageCount
     totalObjectCount totalParImplObjectCount transientDetectionObject
     treeDepth treeId type underflowCell unit valuesReceived valuesStored
-    variance weight weightedSqrSum weightedSum weights info detailedInfo";
+    variance weight weightedSqrSum weightedSum weights";
 
 my $gettersWithArg = "ancestorPar argType basepoint cellPDF
     connectionProperties gateProperties grid
