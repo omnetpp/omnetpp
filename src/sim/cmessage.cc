@@ -74,7 +74,7 @@ cMessage::cMessage(const char *name, short k, int64 ln, short pri, bool err) : c
 
     frommod = fromgate = -1;
     tomod = togate = -1;
-    created = simulation.simTime();
+    created = simulation.getSimTime();
     sent = delivd = tstamp = 0;
     heapindex = -1;
     prev_event_num = -1;
@@ -112,10 +112,10 @@ std::string cMessage::info() const
     std::stringstream out;
     const char *deletedstr = "<deleted module>";
 
-    if (delivd > simulation.simTime())
+    if (delivd > simulation.getSimTime())
     {
         // if it arrived in the past, dt is usually unimportant, don't print it
-        out << "at T=" << delivd << ", in dt=" << (delivd - simulation.simTime()) << "; ";
+        out << "at T=" << delivd << ", in dt=" << (delivd - simulation.getSimTime()) << "; ";
     }
 
 #define MODNAME(modp) ((modp) ? (modp)->getFullPath().c_str() : deletedstr)

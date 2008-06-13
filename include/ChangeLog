@@ -7,6 +7,13 @@
 	over multiple releases after 4.0. So only one porting is needed,
 	and API can be kept more stable over the coming releases.
 
+	General:
+	- "get" verb added to the names of nearly all getter methods; notable
+	   exceptions are STL-like names like size(), empty(), length(), 
+	   end(), str(), c_str(). Methods returning bools begin with "is",
+	   "has", "contains" or a similar verb. [Change voted on the mailing 
+	   list]
+
 	Simulation time:
 	- simtime_t is now not double but class SimTime (64-bit fixed point number)
 	- simtime exponent is base 10, and set globally
@@ -15,6 +22,8 @@
 	  been added that take simtime_t.
 	- simtimeToStr(), strToSimtime() are no longer (use SimTime methods
 	  instead, or the compatibility macros described below!)
+	- simTime() moved out of the cSimpleModule class (i.e. it became a 
+	  global function; it invokes simulation.getSimTime())
 
 	Simtime compatibility mode:
 	- if needed, the simkernel can be compiled with simtime_t = double.

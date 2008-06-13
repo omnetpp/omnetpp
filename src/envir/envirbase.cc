@@ -1278,7 +1278,7 @@ void EnvirBase::stopClock()
 {
     gettimeofday(&simendtime, NULL);
     elapsedtime = elapsedtime + simendtime - laststarted;
-    simulatedtime = simulation.simTime();
+    simulatedtime = simulation.getSimTime();
 }
 
 timeval EnvirBase::totalElapsed()
@@ -1290,7 +1290,7 @@ timeval EnvirBase::totalElapsed()
 
 void EnvirBase::checkTimeLimits()
 {
-    if (opt_simtimelimit!=0 && simulation.simTime()>=opt_simtimelimit)
+    if (opt_simtimelimit!=0 && simulation.getSimTime()>=opt_simtimelimit)
          throw cTerminationException(eSIMTIME);
     if (opt_cputimelimit==0) // no limit
          return;

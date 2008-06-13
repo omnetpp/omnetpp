@@ -194,16 +194,6 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     bool isTerminated() const {return flags&FL_ISTERMINATED;}
     //@}
 
-    /** @name Simulation time. */
-    //@{
-
-    /**
-     * Returns the current simulation time (that is, the arrival time
-     * of the last message returned by a receiveNew() call).
-     */
-    simtime_t simTime() const;   // cannot make inline because of declaration order!
-    //@}
-
     /** @name Debugging aids. */
     //@{
     /**

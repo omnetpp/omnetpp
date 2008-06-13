@@ -468,7 +468,7 @@ bool Tkenv::doRunSimulation()
     //  - stopsimulation_flag
     //
     Speedometer speedometer;
-    speedometer.start(simulation.simTime());
+    speedometer.start(simulation.getSimTime());
     disable_tracing = false;
     bool firstevent = true;
     while(1)
@@ -491,7 +491,7 @@ bool Tkenv::doRunSimulation()
         animating = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW) || untilmodule_reached;
         bool frequent_updates = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW);
 
-        speedometer.addEvent(simulation.simTime());
+        speedometer.addEvent(simulation.getSimTime());
 
         // do a simulation step
         if (opt_print_banners)
@@ -562,7 +562,7 @@ bool Tkenv::doRunSimulationExpress()
 
     // OK, let's begin
     Speedometer speedometer;
-    speedometer.start(simulation.simTime());
+    speedometer.start(simulation.getSimTime());
     disable_tracing = true;
     animating = false;
 
@@ -571,7 +571,7 @@ bool Tkenv::doRunSimulationExpress()
         cSimpleModule *mod = simulation.selectNextModule();
         if (!mod) break; // selectNextModule() interrupted (parsim)
 
-        speedometer.addEvent(simulation.simTime());
+        speedometer.addEvent(simulation.getSimTime());
 
         simulation.doOneEvent(mod);
 
@@ -957,7 +957,7 @@ void Tkenv::printEventBanner(cSimpleModule *module)
     char banner[MAX_OBJECTFULLPATH+60];
     sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
             simulation.getEventNumber(),
-            SIMTIME_STR(simulation.simTime()),
+            SIMTIME_STR(simulation.getSimTime()),
             module->getId(),
             module->getFullPath().c_str()
           );

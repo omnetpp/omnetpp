@@ -175,7 +175,7 @@ void cOutVector::setMax(double maxValue)
 
 bool cOutVector::record(double value)
 {
-    return recordWithTimestamp(simulation.simTime(), value);
+    return recordWithTimestamp(simulation.getSimTime(), value);
 }
 
 bool cOutVector::recordWithTimestamp(simtime_t t, double value)

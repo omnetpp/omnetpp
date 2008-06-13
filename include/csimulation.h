@@ -278,19 +278,20 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     cModuleType *getNetworkType() const  {return networktype;}
 
     /**
-     * WARNING: INTERNAL USE ONLY. This method should NEVER be invoked from
+     * INTERNAL USE ONLY. This method should NEVER be invoked from
      * simulation models, only from scheduler classes subclassed from
      * cScheduler.
      */
     void setSimTime(simtime_t time)  {sim_time = time;}
 
     /**
-     * Returns current simulation time.
+     * Returns the current simulation time. (It is also available via the
+     * global simTime() function.)
      */
-    simtime_t simTime() const  {return sim_time;}
+    simtime_t getSimTime() const  {return sim_time;}
 
     /**
-     * Returns sequence number of current event.
+     * Returns the sequence number of current event.
      */
     long getEventNumber() const  {return event_num;}
     //@}
@@ -453,6 +454,12 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     void setHasher(cHasher *hasher);
     //@}
 };
+
+/**
+ * Returns the current simulation time.
+ */
+inline simtime_t simTime() {return simulation.getSimTime();}
+
 
 NAMESPACE_END
 

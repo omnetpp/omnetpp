@@ -154,7 +154,7 @@ bool cIdealChannel::deliver(cMessage *msg, simtime_t t)
 
 simtime_t cIdealChannel::getTransmissionFinishTime() const
 {
-    return simulation.simTime();
+    return simulation.getSimTime();
 }
 
 

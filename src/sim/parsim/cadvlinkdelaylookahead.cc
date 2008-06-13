@@ -151,7 +151,7 @@ simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int pr
 
     // calculate EOT
     simtime_t eot;
-    simtime_t now = sim->simTime();
+    simtime_t now = sim->getSimTime();
     simtime_t newLinkEot = now + link->lookahead;
 
     // TBD finish...

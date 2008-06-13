@@ -344,7 +344,7 @@ const char *Cmdenv::progressPercentage()
 {
     double simtimeRatio = -1;
     if (opt_simtimelimit!=0)
-         simtimeRatio = simulation.simTime() / opt_simtimelimit;
+         simtimeRatio = simulation.getSimTime() / opt_simtimelimit;
 
     double cputimeRatio = -1;
     if (opt_cputimelimit!=0) {
@@ -386,7 +386,7 @@ void Cmdenv::simulate()
                {
                    ::fprintf(fout, "** Event #%ld  T=%s%s.  (%s) %s (id=%d)\n",
                            simulation.getEventNumber(),
-                           SIMTIME_STR(simulation.simTime()),
+                           SIMTIME_STR(simulation.getSimTime()),
                            progressPercentage(),
                            mod->getClassName(),
                            mod->getFullPath().c_str(),
@@ -422,14 +422,14 @@ void Cmdenv::simulate()
         {
            disable_tracing = true;
            Speedometer speedometer;
-           speedometer.start(simulation.simTime());
+           speedometer.start(simulation.getSimTime());
            while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
                if (!mod)
                    throw cTerminationException("scheduler interrupted while waiting");
 
-               speedometer.addEvent(simulation.simTime()); //XXX potential performance hog
+               speedometer.addEvent(simulation.getSimTime()); //XXX potential performance hog
 
                // print event banner from time to time
                // ... if (simulation.getEventNumber() >= last_update_ev + opt_status_frequency_ev && ...
@@ -441,7 +441,7 @@ void Cmdenv::simulate()
                    {
                        ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s%s\n",
                                simulation.getEventNumber(),
-                               SIMTIME_STR(simulation.simTime()),
+                               SIMTIME_STR(simulation.getSimTime()),
                                timeToStr(totalElapsed()),
                                progressPercentage());
                        ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
@@ -458,7 +458,7 @@ void Cmdenv::simulate()
                    {
                        ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s%s   ev/sec=%g\n",
                                simulation.getEventNumber(),
-                               SIMTIME_STR(simulation.simTime()),
+                               SIMTIME_STR(simulation.getSimTime()),
                                timeToStr(totalElapsed()),
                                progressPercentage(),
                                speedometer.eventsPerSec());

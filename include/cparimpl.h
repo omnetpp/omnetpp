@@ -145,7 +145,8 @@ class SIM_API cParImpl : public cNamedObject
     virtual bool isExpression() const {return flags & FL_ISEXPR;}
 
     /**
-     * Returns true if the parameter has a value set.
+     * Returns true if the parameter has a value set. Note that isInput()
+     * may still return true or false.
      */
     virtual bool hasValue() const  {return flags & FL_HASVALUE;}
 

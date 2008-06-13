@@ -708,11 +708,6 @@ void cSimpleModule::handleMessage(cMessage *)
 
 //-------------
 
-simtime_t cSimpleModule::simTime() const
-{
-    return simulation.simTime();
-}
-
 void cSimpleModule::endSimulation()
 {
     throw cTerminationException(eENDSIM);

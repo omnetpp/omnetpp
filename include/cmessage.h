@@ -302,7 +302,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Sets the message's time stamp to the current simulation time.
      */
-    void setTimestamp() {tstamp=simulation.simTime();}
+    void setTimestamp() {tstamp=simulation.getSimTime();}
 
     /**
      * Directly sets the message's time stamp.

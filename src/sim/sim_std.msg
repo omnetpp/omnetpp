@@ -60,7 +60,6 @@ struct cDensityEstBase_Cell;
 
 class cObject
 {
-        //@omitGetVerb(true);
         string className @group(base) @hint(C++ class name);
         string fullName @group(base) @hint(if object is part of a module/gate vector: name with index);
         string fullPath @group(base) @hint(hierarchical name, composed of full names of this object and its owners/parents);
@@ -70,13 +69,11 @@ class cObject
 
 class cNamedObject extends cObject
 {
-        //@omitGetVerb(true);
         string name @group(base) @editable @hint(an editable string attribute of the object, also used for fullName and fullPath);
 }
 
 class cOwnedObject extends cNamedObject
 {
-        //@omitGetVerb(true);
         cObject *owner @group(base) @hint(module or container this object belongs to);
 }
 
@@ -86,7 +83,6 @@ class cNoncopyableOwnedObject extends cOwnedObject
 
 class cDefaultList extends cNoncopyableOwnedObject
 {
-        //@omitGetVerb(true);
         cOwnedObject *contents[] @getter(defaultListGet) @sizeGetter(defaultListSize) @group(contents) @hint(list of objects directly held by this component);
 }
 
@@ -96,7 +92,6 @@ class noncobject cDisplayString;
 
 class cProperty extends cObject
 {
-        //@omitGetVerb(true);
         bool isImplicit @getter(isImplicit) @group(general);
         string index @group(general);
         string value @getter(info) @hint(name and value);
@@ -104,13 +99,11 @@ class cProperty extends cObject
 
 class cProperties
 {
-        //@omitGetVerb(true);
         cProperty *contents[] @getter(get) @sizeGetter(getNumProperties) @hint(the property list);
 }
 
 class cComponent extends cDefaultList
 {
-        //@omitGetVerb(true);
         bool isModule @getter(isModule) @group(general) @hint(whether this component is a module or a channel);
         cComponentType *componentType @group(general) @hint(the object that represents the type declaration for this component);
         cPar par[] @getter(par) @sizeGetter(getNumParams) @label(parameters) @group(parameters, gates) @hint(parameters);
@@ -119,13 +112,11 @@ class cComponent extends cDefaultList
 
 class cChannel extends cComponent
 {
-        //@omitGetVerb(true);
         cDisplayString displayString @group(general) @hint(controls appearance of this channel in the GUI);
 }
 
 class cBasicChannel extends cChannel
 {
-        //@omitGetVerb(true);
         // Note: no need to spell out delay etc, they come from cComponent parameters
         bool isBusy @getter(isBusy) @group(general) @hint(if channel is currently transmitting);
         simtime_t transmissionFinishTime @group(general) @hint(if busy: when currently active transmissions will finish);
@@ -135,7 +126,6 @@ class cGate;
 
 class cModule extends cComponent
 {
-        //@omitGetVerb(true);
         int id @group(general) @hint(unique module ID -- IDs of deleted modules are not issued again);
         bool isSimple @getter(isSimple) @group(general) @hint(whether this is a simple module);
         bool isVector @getter(isVector) @group(general) @hint(whether this module is part of a module vector);
@@ -147,7 +137,6 @@ class cModule extends cComponent
 
 class cSimpleModule extends cModule
 {
-        //@omitGetVerb(true);
         bool isTerminated @getter(isTerminated) @group(general) @hint(whether this module has terminated);
         bool usesActivity @getter(usesActivity) @group(activity) @hint(whether this simple module was programmed using the "activity" or the "handleMessage" C++ method);
         unsigned int stackSize @group(activity) @hint(if module uses "activity": stack size allocated for this module -- zero means info not available);
@@ -166,7 +155,6 @@ class cComponentType extends cNoncopyableOwnedObject
 
 class cModuleType extends cComponentType
 {
-        //@omitGetVerb(true);
         bool isNetwork @getter(isNetwork) @group(general) @hint(whether this module type can be used as toplevel module);
 }
 
@@ -176,7 +164,6 @@ class cChannelType extends cComponentType
 
 class cRegistrationList extends cNamedObject
 {
-        //@omitGetVerb(true);
         cObject *contents[] @getter(get) @sizeGetter(size) @hint(contained objects);
 }
 
@@ -184,7 +171,6 @@ class cRegistrationList extends cNamedObject
 
 class cGate extends cNoncopyableOwnedObject
 {
-        //@omitGetVerb(true);
         char type @group(general) @enum(cGate_Type) @hint(gate type);
         int id @group(general) @hint(gate id, unique within this module);
         bool isVector @getter(isVector) @group(general) @hint(whether this gate is part of a gate vector);
@@ -208,20 +194,17 @@ class cGate extends cNoncopyableOwnedObject
 
 class cDisplayString
 {
-        //@omitGetVerb(true);
         string value @getter(str) @setter(parse) @editable @hint(the editable display string itself);
 }
 
 class cArray extends cOwnedObject
 {
-        //@omitGetVerb(true);
         bool takeOwnership @group(general) @editable @hint(whether the array should own the objects inserted into it);
         cOwnedObject *contents[] @getter(get) @sizeGetter(size) @hint(objects contained in the array);
 }
 
 class cMessage extends cOwnedObject
 {
-        //@omitGetVerb(true);
         short kind @group(message) @editable @hint(generic user-settable attribute, usually carries "type" or "role" of message);
         short priority @group(message) @editable @hint(controls delivery order of messages with equal timestamps);
         //FIXME the next two fields should be really int64, but opp_msgc doesn't support int64 yet
@@ -258,7 +241,6 @@ class cMessage extends cOwnedObject
 
 class cStatistic extends cOwnedObject
 {
-        //@omitGetVerb(true);
         long count @hint(number of observations collected so far);
         double weights @hint(sum of weights, which equals the number of observations in the unweighted case);
         double sum @hint(sum of observations);
@@ -280,7 +262,6 @@ class cWeightedStdDev extends cStdDev
 
 class cDensityEstBase extends cStdDev
 {
-        //@omitGetVerb(true);
         bool isTransformed @getter(isTransformed) @group(histogram) @hint(if false, the object is still collecting initial observations to be used for laying out histogram cells);
         unsigned long underflowCell @group(histogram) @hint(number of observations below the first histogram cell);
         unsigned long overflowCell @group(histogram) @hint(number of observations above the last histogram cell);
@@ -336,26 +317,22 @@ class cADByStddev extends cAccuracyDetection
 
 class cExpression extends cObject
 {
-        //@omitGetVerb(true);
         string str @getter(str);
 }
 
 class cFSM extends cOwnedObject
 {
-        //@omitGetVerb(true);
         int state @hint(numeric code of the state the FSM is currently in);
         string stateName @hint(name of the current FSM state);
 }
 
 class cMathFunction extends cNoncopyableOwnedObject
 {
-        //@omitGetVerb(true);
         int numArgs @hint(number of "double" parameters this function takes);
 }
 
 class cNEDFunction extends cNoncopyableOwnedObject
 {
-        //@omitGetVerb(true);
         string signature @hint(argument types and return value);
         int minArgs @hint(number of mandatory arguments);
         int maxArgs @hint(maximum number of arguments);
@@ -363,7 +340,6 @@ class cNEDFunction extends cNoncopyableOwnedObject
 
 class cOutVector extends cNoncopyableOwnedObject
 {
-        //@omitGetVerb(true);
         bool isEnabled @getter(isEnabled) @setter(setEnabled) @editable @hint(if disabled, values passed to this object to record are simply discarded);
         long valuesReceived @hint(number of values passed to this object to record);
         long valuesStored @hint(number of values actually stored on the disk);
@@ -371,7 +347,6 @@ class cOutVector extends cNoncopyableOwnedObject
 
 class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
 {
-        //@omitGetVerb(true);
         string value @getter(str) @setter(parse) @editable;
         char type @enum(cPar_Type) @hint(parameter type);
         string unit @hint(for long and double types only);
@@ -383,7 +358,6 @@ class cPar extends cOwnedObject  //FIXME this is a lie! it's cObject!
 
 class cMsgPar extends cOwnedObject
 {
-        //@omitGetVerb(true);
         string value @getter(str) @setter(parse) @editable @hint(parameter value);
         char type @enum(cPar_Type) @hint(parameter type);
         bool isNumeric @getter(isNumeric) @group(flags) @hint(whether parameter is of numeric type);
@@ -392,20 +366,17 @@ class cMsgPar extends cOwnedObject
 
 class cLinkedList extends cOwnedObject
 {
-        //@omitGetVerb(true);
         int length @getter(length) @hint(number of items contained);
 }
 
 class cMessageHeap extends cOwnedObject
 {
-        //@omitGetVerb(true);
         int length @getter(length) @hint(number of items contained);
         cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages currently scheduled and messages currently in transit);
 }
 
 class cQueue extends cOwnedObject
 {
-        //@omitGetVerb(true);
         bool takeOwnership @group(general) @editable @hint(whether the queue should own the objects inserted into it);
         int length @getter(length) @hint(number of items in the queue);
         cOwnedObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
@@ -413,7 +384,6 @@ class cQueue extends cOwnedObject
 
 class cPacketQueue extends cQueue
 {
-        //@omitGetVerb(true);
         //FIXME the next two fields should be really int64, but opp_msgc doesn't support int64 yet
         long bitLength @hint(total size of messages in the queue);
         long byteLength @hint(total size of messages in the queue, in bytes);
@@ -428,8 +398,7 @@ class cHasher
 
 class cSimulation extends cNoncopyableOwnedObject
 {
-        //@omitGetVerb(true);
-        simtime_t simTime @getter(simTime) @hint(the current simulation time in seconds);
+        simtime_t simTime @hint(the current simulation time in seconds);
         long eventNumber @hint(the current event number -- counts from 0 up);
         cMessageHeap messageQueue @label(futureEvents) @hint(self-messages scheduled, and messages in transit);
         int lastModuleId @group(modules) @hint(the largest module ID issued so far);
@@ -464,7 +433,6 @@ class noncobject cTopology_LinkOut;
 
 class cTopology_Node
 {
-        //@omitGetVerb(true);
         int moduleId @hint(ID of the module this node corresponds to);
         cModule *module @hint(the module this node corresponds to);
         double weight @hint(node weight -- affects graph algorithms such as shortest path);
@@ -479,14 +447,12 @@ class cTopology_Node
 
 class cTopology_Link
 {
-        //@omitGetVerb(true);
         double weight @hint(link weight -- affects graph algorithms such as shortest path);
         bool enabled @getter(isEnabled) @hint(link state -- affects graph algorithms such as shortest path);
 }
 
 class cTopology_LinkIn extends cTopology_Link
 {
-        //@omitGetVerb(true);
         cTopology_Node *remoteNode @hint(the node at the remote end of this connection);
         cGate *remoteGate @hint(the gate at the remote end of this connection);
         cGate *localGate @hint(the gate at the local end of this connection);
@@ -494,7 +460,6 @@ class cTopology_LinkIn extends cTopology_Link
 
 class cTopology_LinkOut extends cTopology_Link
 {
-        //@omitGetVerb(true);
         cTopology_Node *remoteNode @hint(the node at the remote end of this connection);
         cGate *remoteGate @hint(the gate at the remote end of this connection);
         cGate *localGate @hint(the gate at the local end of this connection);
@@ -502,14 +467,12 @@ class cTopology_LinkOut extends cTopology_Link
 
 class cTopology extends cOwnedObject
 {
-        //@omitGetVerb(true);
         int numNodes @group(general) @hint(number of nodes in this topology object);
         cTopology_Node *node[] @sizeGetter(getNumNodes) @hint(list of nodes in this topology object);
 }
 
 class cXMLElement
 {
-        //@omitGetVerb(true);
         string tagName @hint(XML element tag);
         string nodeValue @hint(contents of text node inside this XML element);
         string sourceLocation @hint(location this XML element was parsed from);

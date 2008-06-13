@@ -276,7 +276,7 @@ class SIM_API cQueue : public cOwnedObject
      * should automatically take ownership of the objects that are inserted
      * into it.
      */
-    bool getTakeOwnership() const   {return tkownership;}
+    bool getTakeOwnership() const {return tkownership;}
     //@}
 };
 

@@ -1319,7 +1319,7 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    simulation.msgQueue.sort();
    int len = simulation.msgQueue.length();
    if (len==0) {Tcl_SetResult(interp, TCLCONST("0 0"), TCL_STATIC); return TCL_OK;}
-   simtime_t now = simulation.simTime();
+   simtime_t now = simulation.getSimTime();
    simtime_t tmin = now;
    for (int i=0; i<len; i++)
        if (simulation.msgQueue.peek(i)->getArrivalTime()!=now)
@@ -1339,7 +1339,7 @@ int msgArrTimeFromNow_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
    cMessage *msg = dynamic_cast<cMessage *>(strToPtr( argv[1] ));
    if (!msg) {Tcl_SetResult(interp, TCLCONST("null or malformed pointer"), TCL_STATIC); return TCL_ERROR;}
-   simtime_t dt = msg->getArrivalTime()-simulation.simTime();
+   simtime_t dt = msg->getArrivalTime()-simulation.getSimTime();
    Tcl_SetObjResult(interp, Tcl_NewDoubleObj(SIMTIME_DBL(dt)));
    return TCL_OK;
 }

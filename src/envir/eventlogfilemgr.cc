@@ -168,11 +168,11 @@ void EventlogFileManager::simulationEvent(cMessage *msg)
         cModule *mod = simulation.getContextModule();
 
         isModuleEventLogRecordingEnabled = simulation.getContextModule()->isRecordEvents();
-        isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.simTime());
+        isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.getSimTime());
         isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
 
         EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog,
-            simulation.getEventNumber(), simulation.simTime(), mod->getId(),
+            simulation.getEventNumber(), simulation.getSimTime(), mod->getId(),
             msg->getPreviousEventNumber(), msg->getId());
     }
 }

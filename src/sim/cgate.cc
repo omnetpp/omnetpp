@@ -292,7 +292,7 @@ bool cGate::isBusy() const
 
 simtime_t cGate::getTransmissionFinishTime() const
 {
-    return channelp ? channelp->getTransmissionFinishTime() : simulation.simTime();
+    return channelp ? channelp->getTransmissionFinishTime() : simulation.getSimTime();
 }
 
 bool cGate::pathContains(cModule *mod, int gate)

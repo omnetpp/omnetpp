@@ -141,7 +141,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
 {
     // calculate lookahead
     simtime_t lookahead = lookaheadcalc->getCurrentLookahead(msg, destProcId, data);
-    simtime_t eot = sim->simTime() + lookahead;
+    simtime_t eot = sim->getSimTime() + lookahead;
     if (eot < segInfo[destProcId].lastEotSent)
         throw cRuntimeError("cNullMessageProtocol error: attempt to decrease EOT");
 
@@ -154,7 +154,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, int destProcId,
     {
         // update "resend-EOT" timer
         segInfo[destProcId].lastEotSent = eot;
-        simtime_t eotResendTime = sim->simTime() + lookahead*laziness;
+        simtime_t eotResendTime = sim->getSimTime() + lookahead*laziness;
         rescheduleEvent(segInfo[destProcId].eotEvent, eotResendTime);
 
         {if (debug) ev.printf("piggybacking null msg on `%s' to %d, lookahead=%s, EOT=%s; next resend at %s\n",

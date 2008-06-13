@@ -105,7 +105,7 @@ void cBasicChannel::setDisabled(bool d)
 
 bool cBasicChannel::isBusy() const
 {
-    return simulation.simTime() < txfinishtime;
+    return simulation.getSimTime() < txfinishtime;
 }
 
 bool cBasicChannel::deliver(cMessage *msg, simtime_t t)

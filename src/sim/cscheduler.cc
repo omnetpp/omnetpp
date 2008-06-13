@@ -79,7 +79,7 @@ void cRealTimeScheduler::endRun()
 void cRealTimeScheduler::executionResumed()
 {
     gettimeofday(&baseTime, NULL);
-    baseTime = timeval_substract(baseTime, SIMTIME_DBL(doScaling ? factor*sim->simTime() : sim->simTime()));
+    baseTime = timeval_substract(baseTime, SIMTIME_DBL(doScaling ? factor*sim->getSimTime() : sim->getSimTime()));
 }
 
 bool cRealTimeScheduler::waitUntil(const timeval& targetTime)

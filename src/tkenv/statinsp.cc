@@ -336,7 +336,7 @@ void TOutVectorWindow::update()
    int canvasheight = atoi( Tcl_GetStringResult(interp) );
    if (!canvasheight) canvasheight=1;
 
-   simtime_t tbase = simulation.simTime();
+   simtime_t tbase = simulation.getSimTime();
    // simtime_t tbase = circbuf.entry[circbuf.headPos()].t;
 
    if (autoscale)
@@ -405,7 +405,7 @@ void TOutVectorWindow::update()
 
        if (i==circbuf.items())
        {
-           next_x = X(simulation.simTime());
+           next_x = X(simulation.getSimTime());
        }
        else
        {

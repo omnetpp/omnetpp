@@ -167,7 +167,7 @@ cModule *cModuleType::createScheduleInit(const char *modname, cModule *parentmod
     cModule *mod = create(modname, parentmod);
     mod->finalizeParameters();
     mod->buildInside();
-    mod->scheduleStart(simulation.simTime());
+    mod->scheduleStart(simulation.getSimTime());
     mod->callInitialize();
     return mod;
 }
