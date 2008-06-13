@@ -90,7 +90,7 @@ void DataflowManager::execute(IProgressMonitor *monitor)
     int readPercentage = 0;
     if (monitor)
     {
-        onePercentFileSize = totalBytesToBeRead() / 100;
+        onePercentFileSize = getTotalBytesToBeRead() / 100;
         monitor->beginTask("Executing dataflow network", 100);
     }
 
@@ -247,7 +247,7 @@ bool DataflowManager::isReaderNode(Node *node)
     return strcmp(node->getNodeType()->getCategory(), "reader-node") == 0;
 }
 
-int64 DataflowManager::totalBytesToBeRead()
+int64 DataflowManager::getTotalBytesToBeRead()
 {
     int64 totalFileSize = 0;
     for (int i = 0; i < (int)nodes.size(); ++i)

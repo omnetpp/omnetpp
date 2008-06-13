@@ -55,7 +55,7 @@ class SCAVE_API DataflowManager
         bool isReaderNode(Node *node);
 
         // helper to estimate the total amount of work
-        int64 totalBytesToBeRead();
+        int64 getTotalBytesToBeRead();
 
     public:
         /**

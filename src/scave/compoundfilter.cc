@@ -94,19 +94,19 @@ void CompoundFilterType::removeAttr(const char *name)
     _defaults.erase(std::string(name));
 }
 
-int CompoundFilterType::numSubfilters() const
+int CompoundFilterType::getNumSubfilters() const
 {
     return _subfilters.size();
 }
 
-CompoundFilterType::Subfilter& CompoundFilterType::subfilter(int pos)
+CompoundFilterType::Subfilter& CompoundFilterType::getSubfilter(int pos)
 {
     if (pos<0 || pos>=(int)_subfilters.size())
         throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
     return _subfilters[pos];
 }
 
-const CompoundFilterType::Subfilter& CompoundFilterType::subfilter(int pos) const
+const CompoundFilterType::Subfilter& CompoundFilterType::getSubfilter(int pos) const
 {
     if (pos<0 || pos>=(int)_subfilters.size())
         throw opp_runtime_error("%s: invalid subfilter index %d", getName(), pos);
@@ -134,7 +134,7 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
     mgr->addNode(node);
     node->_attrvalues = attrs;
 
-    int n = numSubfilters();
+    int n = getNumSubfilters();
     if (n==0)
     {
         FilterNode *subnode = new NopNode();
@@ -144,7 +144,7 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
     Node *prevsubnode = NULL;
     for (int i=0; i<n; i++)
     {
-        Subfilter& subfilt = const_cast<CompoundFilterType *>(this)->subfilter(i);
+        Subfilter& subfilt = const_cast<CompoundFilterType *>(this)->getSubfilter(i);
 
         // get type
         const char *subnodetypename = subfilt.getNodeType();
@@ -191,8 +191,8 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
 Port *CompoundFilterType::getPort(Node *node, const char *name) const
 {
     CompoundFilter *compound = dynamic_cast<CompoundFilter *>(node);
-    Node *subnode = !strcmp(name,"in") ? compound->firstNode() :
-                    !strcmp(name,"out") ? compound->lastNode() :
+    Node *subnode = !strcmp(name,"in") ? compound->getFirstNode() :
+                    !strcmp(name,"out") ? compound->getLastNode() :
                     NULL;
     if (!subnode)
         throw opp_runtime_error("no such port `%s'", name);
@@ -201,10 +201,10 @@ Port *CompoundFilterType::getPort(Node *node, const char *name) const
 
 void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
-    int n = numSubfilters();
+    int n = getNumSubfilters();
     for (int i=0; i<n; i++)
     {
-        const char *nodetypename = subfilter(i).getNodeType();
+        const char *nodetypename = getSubfilter(i).getNodeType();
         NodeType *nodeType = NodeTypeRegistry::getInstance()->getNodeType(nodetypename);
         nodeType->mapVectorAttributes(attrs, warnings);
     }

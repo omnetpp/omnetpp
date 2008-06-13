@@ -43,8 +43,8 @@ class SCAVE_API CompoundFilter : public FilterNode
     public:
         CompoundFilter() {}
         virtual ~CompoundFilter() {}
-        FilterNode *firstNode() {return first;}
-        FilterNode *lastNode() {return last;}
+        FilterNode *getFirstNode() {return first;}
+        FilterNode *getLastNode() {return last;}
 
         virtual bool isReady() const  {return false;}
         virtual void process()  {}
@@ -67,7 +67,7 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
                 StringMap _attrassignments;  // _attrs[name] = value
             public:
                 const char *getNodeType() const  {return _nodetype.c_str();}
-                const char *comment() const  {return _comment.c_str();}
+                const char *getComment() const  {return _comment.c_str();}
                 void setNodeType(const char *s)  {_nodetype = s;}
                 void setComment(const char *s)  {_comment = s;}
                 /** Allows update, too */
@@ -118,15 +118,15 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
 
         /** Subfilters */
         //@{
-        virtual int numSubfilters() const;
+        virtual int getNumSubfilters() const;
         /**
          * Allows update too, via object reference
          */
-        virtual Subfilter& subfilter(int pos);
+        virtual Subfilter& getSubfilter(int pos);
         /**
          * Access subfilter.
          */
-        virtual const Subfilter& subfilter(int pos) const;
+        virtual const Subfilter& getSubfilter(int pos) const;
         /**
          * Insert subfilter at given position (old filter at pos and following ones
          * are shifted up).

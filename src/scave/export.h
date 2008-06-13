@@ -58,10 +58,10 @@ class SCAVE_API DataTable
         std::vector<Column> header;
         DataTable(const std::string name, const std::string description) : name(name), description(description) {}
     public:
-        int numOfColumns() const { return header.size(); }
-        Column column(int i) const { return header[i]; }
+        int getNumColumns() const { return header.size(); }
+        Column getColumn(int i) const { return header[i]; }
         virtual ~DataTable() {}
-        virtual int numOfRows() const = 0;
+        virtual int getNumRows() const = 0;
         virtual double getDoubleValue(int row, int col) const = 0;
         virtual BigDecimal getBigDecimalValue(int row, int col) const = 0;
         virtual std::string getStringValue(int row, int col) const = 0;
@@ -80,7 +80,7 @@ class SCAVE_API XYDataTable : public DataTable
     public:
         XYDataTable(const std::string name, const std::string description,
             const std::string xColumnName, const std::string yColumnName, const XYArray *vec);
-        virtual int numOfRows() const;
+        virtual int getNumRows() const;
         virtual double getDoubleValue(int row, int col) const;
         virtual BigDecimal getBigDecimalValue(int row, int col) const;
         virtual std::string getStringValue(int row, int col) const;
@@ -98,7 +98,7 @@ class SCAVE_API ScalarDataTable : public DataTable
         ScalarDataTable(const std::string name, const std::string description,
             const IDList &idlist, ResultItemFields groupBy, ResultFileManager &manager);
 
-        virtual int numOfRows() const;
+        virtual int getNumRows() const;
         virtual double getDoubleValue(int row, int col) const;
         virtual BigDecimal getBigDecimalValue(int row, int col) const;
         virtual std::string getStringValue(int row, int col) const;

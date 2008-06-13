@@ -42,7 +42,7 @@ XYDataTable::XYDataTable(const string name, const string description,
     header.push_back(Column(yColumnName, DOUBLE));
 }
 
-int XYDataTable::numOfRows() const
+int XYDataTable::getNumRows() const
 {
     return vec->length();
 }
@@ -115,14 +115,14 @@ ScalarDataTable::ScalarDataTable(const std::string name, const std::string descr
     }
 }
 
-int ScalarDataTable::numOfRows() const
+int ScalarDataTable::getNumRows() const
 {
     return scalars.size();
 }
 
 double ScalarDataTable::getDoubleValue(int row, int col) const
 {
-    if (row >= 0 && row < numOfRows() && col >= 0 && col < numOfColumns())
+    if (row >= 0 && row < getNumRows() && col >= 0 && col < getNumColumns())
     {
         IDVector r = scalars[row];
         ID id = r[col-(header.size() - r.size())];
@@ -143,17 +143,17 @@ BigDecimal ScalarDataTable::getBigDecimalValue(int row, int col) const
 
 std::string ScalarDataTable::getStringValue(int row, int col) const
 {
-    if (row >= 0 && row < numOfRows() && col >= 0 && col < numOfColumns())
+    if (row >= 0 && row < getNumRows() && col >= 0 && col < getNumColumns())
     {
         IDVector r = scalars[row];
         ID id = -1;
-        for (int i = 0; i < numOfColumns(); ++i)
+        for (int i = 0; i < getNumColumns(); ++i)
             if ((id=r[i]) != -1)
                 break;
         if (id != -1)
         {
             const ScalarResult &scalar = manager.getScalar(id);
-            Column c = column(col);
+            Column c = getColumn(col);
             if (c.name == "File") return scalar.fileRunRef->fileRef->filePath;
             else if (c.name == "Run") return scalar.fileRunRef->runRef->runName;
             else if (c.name == "Module") return *scalar.moduleNameRef;
@@ -197,14 +197,14 @@ void ScaveExport::saveVector(const string name, const string description,
 {
     const XYDataTable table(name, description, "X", "Y", xyarray);
     if (endIndex == -1)
-        endIndex = table.numOfRows();
+        endIndex = table.getNumRows();
     saveTable(table, startIndex, endIndex);
 }
 
 void ScaveExport::saveScalars(const string name, const string description, const IDList &scalars, ResultItemFields groupBy, ResultFileManager &manager)
 {
     const ScalarDataTable table(name, description, scalars, groupBy, manager);
-    saveTable(table, 0, table.numOfRows());
+    saveTable(table, 0, table.getNumRows());
 }
 
 /*===============================
@@ -295,9 +295,9 @@ void MatlabScriptExport::writeDescriptionField(const DataTable &table, const str
 
 void MatlabScriptExport::writeColumnFields(const DataTable &table, int startRow, int endRow, const string tableName)
 {
-    for (int col = 0; col < table.numOfColumns(); ++col)
+    for (int col = 0; col < table.getNumColumns(); ++col)
     {
-        DataTable::Column column = table.column(col);
+        DataTable::Column column = table.getColumn(col);
 
         out << tableName + "." + makeIdentifier(column.name) << "=[" << '\n';
         switch (column.type)
@@ -367,7 +367,7 @@ void OctaveTextExport::writeStructHeader(const DataTable &table)
 {
     out << "# name: " << makeUniqueIdentifier(table.name) << "\n"
            "# type: struct\n"
-           "# length: " << table.numOfColumns() + 1 // description + columns
+           "# length: " << table.getNumColumns() + 1 // description + columns
         << "\n";
 }
 
@@ -386,9 +386,9 @@ void OctaveTextExport::writeDescriptionField(const DataTable &table)
 
 void OctaveTextExport::writeColumnFields(const DataTable &table, int startRow, int endRow)
 {
-    for (int col=0; col<table.numOfColumns(); ++col)
+    for (int col=0; col<table.getNumColumns(); ++col)
     {
-        DataTable::Column column = table.column(col);
+        DataTable::Column column = table.getColumn(col);
         switch (column.type)
         {
         case DataTable::DOUBLE: writeDoubleColumn(table, col, startRow, endRow); break;
@@ -400,7 +400,7 @@ void OctaveTextExport::writeColumnFields(const DataTable &table, int startRow, i
 
 void OctaveTextExport::writeDoubleColumn(const DataTable &table, int col, int startRow, int endRow)
 {
-    DataTable::Column column = table.column(col);
+    DataTable::Column column = table.getColumn(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
            "# type: cell\n"
            "# rows: 1\n"
@@ -428,7 +428,7 @@ void OctaveTextExport::writeDoubleColumn(const DataTable &table, int col, int st
 
 void OctaveTextExport::writeBigDecimalColumn(const DataTable &table, int col, int startRow, int endRow)
 {
-    DataTable::Column column = table.column(col);
+    DataTable::Column column = table.getColumn(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
            "# type: cell\n"
            "# rows: 1\n"
@@ -446,7 +446,7 @@ void OctaveTextExport::writeBigDecimalColumn(const DataTable &table, int col, in
 
 void OctaveTextExport::writeStringColumn(const DataTable &table, int col, int startRow, int endRow)
 {
-    DataTable::Column column = table.column(col);
+    DataTable::Column column = table.getColumn(col);
     out << "# name: " << makeIdentifier(column.name) << "\n"
            "# type: cell\n"
            "# rows: 1\n"
@@ -509,7 +509,7 @@ void CsvExport::saveVector(const string name, const string description,
     }
     const XYDataTable table(name, description, xColumn, yColumn, xyarray);
     if (endIndex == -1)
-        endIndex = table.numOfRows();
+        endIndex = table.getNumRows();
     saveTable(table, startIndex, endIndex);
 }
 
@@ -527,11 +527,11 @@ void CsvExport::writeHeader(const DataTable &table)
 {
     if (columnNames)
     {
-        for (int col = 0; col < table.numOfColumns(); ++col)
+        for (int col = 0; col < table.getNumColumns(); ++col)
         {
             if (col > 0)
                 out << separator;
-            DataTable::Column column = table.column(col);
+            DataTable::Column column = table.getColumn(col);
             writeString(column.name);
         }
         out << eol;
@@ -540,9 +540,9 @@ void CsvExport::writeHeader(const DataTable &table)
 
 void CsvExport::writeRow(const DataTable &table, int row)
 {
-    for (int col = 0; col < table.numOfColumns(); ++col)
+    for (int col = 0; col < table.getNumColumns(); ++col)
     {
-        DataTable::Column column = table.column(col);
+        DataTable::Column column = table.getColumn(col);
         if (col > 0)
             out << separator;
         switch (column.type)
