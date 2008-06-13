@@ -124,7 +124,7 @@ public class EventLogTable
     protected void keyUpPressed(KeyEvent e) {
         if (e.stateMask == 0)
             super.keyUpPressed(e);
-        else if (e.stateMask == SWT.CONTROL)
+        else if (e.stateMask == SWT.MOD1)
             eventLogTableContributor.gotoEventCause();
         else if (e.stateMask == SWT.SHIFT)
             eventLogTableContributor.gotoPreviousModuleEvent();
@@ -136,7 +136,7 @@ public class EventLogTable
     protected void keyDownPressed(KeyEvent e) {
         if (e.stateMask == 0)
             super.keyDownPressed(e);
-        else if (e.stateMask == SWT.CONTROL)
+        else if (e.stateMask == SWT.MOD1)
             eventLogTableContributor.gotoMessageArrival();
         else if (e.stateMask == SWT.SHIFT)
             eventLogTableContributor.gotoNextModuleEvent();

@@ -336,14 +336,17 @@ public class SequenceChart
 				    }
                     else if (e.stateMask == SWT.SHIFT) {
                         IEvent event = getSelectionEvent();
-                        int moduleId = event.getModuleId();
-
-                        while (event != null) {
-                            event = event.getPreviousEvent();
-                            
-                            if (moduleId == event.getModuleId()) {
-                                gotoClosestElement(event);
-                                break;
+                        
+                        if (event != null) {
+                            int moduleId = event.getModuleId();
+    
+                            while (event != null) {
+                                event = event.getPreviousEvent();
+                                
+                                if (moduleId == event.getModuleId()) {
+                                    gotoClosestElement(event);
+                                    break;
+                                }
                             }
                         }
                     }
@@ -367,14 +370,17 @@ public class SequenceChart
                     }
                     else if (e.stateMask == SWT.SHIFT) {
                         IEvent event = getSelectionEvent();
-                        int moduleId = event.getModuleId();
 
-                        while (event != null) {
-                            event = event.getNextEvent();
-                            
-                            if (moduleId == event.getModuleId()) {
-                                gotoClosestElement(event);
-                                break;
+                        if (event != null) {
+                            int moduleId = event.getModuleId();
+    
+                            while (event != null) {
+                                event = event.getNextEvent();
+                                
+                                if (moduleId == event.getModuleId()) {
+                                    gotoClosestElement(event);
+                                    break;
+                                }
                             }
                         }
                     }
