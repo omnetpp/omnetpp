@@ -10,7 +10,10 @@
 	General:
 	- "get" verb added to the names of nearly all getter methods; notable
 	   exceptions are STL-like names like size(), empty(), length(), 
-	   end(), str(), c_str(); also par() and gate() methods of cModule. 
+	   end(), str(), c_str(); par() and gate() methods of cModule;
+           boolValue(), longValue(), stringValue() etc methods of cPar 
+           (already consistent with Java); info(), detailedInfo(); 
+           intRand(), dblRand() and other cRNG methods.
 	   Methods returning bools begin with "is", "has", "contains" or a 
 	   similar verb. [Change voted on the mailing list]
 
