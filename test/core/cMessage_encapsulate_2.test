@@ -6,13 +6,13 @@ cMessage *payload = new cMessage;
 payload->setLength(128);
 
 cMessage *frame = new cMessage;
-frame->setLength(32);
+frame->setBitLength(32);
 
 frame->encapsulate(payload);
-ev << frame->length() << endl;
+ev << frame->getBitLength() << endl;
 
 frame->decapsulate();
-ev << frame->length() << endl;
+ev << frame->getBitLength() << endl;
 
 ev << payload->length() << endl;
 

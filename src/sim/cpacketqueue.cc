@@ -87,7 +87,7 @@ void cPacketQueue::msgAdd(cOwnedObject *obj)
         cMessage *msg = dynamic_cast<cMessage *>(obj);
         if (!msg)
             throw cRuntimeError(this, "insert(): (%s)%s is not a cMessage", obj->getClassName(), obj->getFullName());
-        bitlength += msg->length();
+        bitlength += msg->getBitLength();
     }
 }
 
@@ -113,7 +113,7 @@ cMessage *cPacketQueue::remove(cOwnedObject *msg)
 {
     cMessage *msg1 = (cMessage *)cQueue::remove(msg);
     if (msg)
-        bitlength -= msg1->length();
+        bitlength -= msg1->getBitLength();
     return msg1;
 }
 
@@ -121,7 +121,7 @@ cMessage *cPacketQueue::pop()
 {
     cMessage *msg = (cMessage *)cQueue::pop();
     if (msg)
-        bitlength -= msg->length();
+        bitlength -= msg->getBitLength();
     return msg;
 }
 

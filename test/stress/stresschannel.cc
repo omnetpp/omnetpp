@@ -27,7 +27,7 @@ bool StressChannel::deliver(cMessage *msg, simtime_t t)
 	}
 
     // datarate modeling
-    simtime_t transmissionDelay = msg->length() / par("dataRate").doubleValue();
+    simtime_t transmissionDelay = msg->getBitLength() / par("dataRate").doubleValue();
     t += transmissionDelay;
 	transmittingUntil = t;
 

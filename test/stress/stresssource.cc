@@ -86,7 +86,7 @@ cMessage *StressSource::generateMessage()
     bubble("Generating new message");
 
     cMessage *msg = new StressPacket();
-    msg->setLength((long)exponential(par("messageLength").doubleValue()));
+    msg->setBitLength((long)exponential(par("messageLength").doubleValue()));
 
     return msg;
 }

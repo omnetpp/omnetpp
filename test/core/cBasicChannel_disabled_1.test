@@ -56,7 +56,7 @@ void Node1::activity()
     for (int i=0; i<5; i++)
     {
         cMessage *msg = new cMessage("msg");
-        msg->setLength(10);
+        msg->setBitLength(10);
         send(msg, "out");
         wait(1);
     }

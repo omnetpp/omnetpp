@@ -54,7 +54,7 @@ using std::endl;
  * messages, e.g.:
  *
  * <pre>
- * ev << "Received packet " << msg->getName() << ", length " << msg->length()/8 << " bytes\n";
+ * ev << "Received packet " << msg->getName() << ", length " << msg->getBitLength()/8 << " bytes\n";
  * ev << "Sending up to higher layer\n";
  * </pre>
  *

@@ -200,7 +200,7 @@ void EventlogFileManager::beginSend(cMessage *msg)
         EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_p_l_er_d(feventlog,
             msg->getId(), msg->getTreeId(), msg->getEncapsulationId(), msg->getEncapsulationTreeId(),
             msg->getClassName(), msg->getFullName(), msg->getPreviousEventNumber(),
-            msg->getKind(), msg->getPriority(), msg->length(), msg->hasBitError(),
+            msg->getKind(), msg->getPriority(), msg->getBitLength(), msg->hasBitError(),
             objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL);
             //XXX record message display string as well, and many other fields...?
     }

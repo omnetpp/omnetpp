@@ -49,7 +49,7 @@ Define_Module(Node1);
 void Node1::initialize()
 {
     cMessage *msg = new cMessage();
-    msg->setLength(100); // so transmission time = 0.1s
+    msg->setBitLength(100); // so transmission time = 0.1s
     send(msg, "out");
 }
 

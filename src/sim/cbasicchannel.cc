@@ -132,7 +132,7 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
     // datarate modeling
     if (flags & FL_DATARATE_NONZERO)
     {
-        transmissiondelay = msg->length() / datarateparam;
+        transmissiondelay = msg->getBitLength() / datarateparam;
         t += transmissiondelay;
         txfinishtime = t;
     }
@@ -146,7 +146,7 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
     // bit error rate modeling
     if (flags & FL_ERROR_NONZERO)
     {
-        if (dblrand() < 1.0 - pow(1.0-errorparam, (double)msg->length()))
+        if (dblrand() < 1.0 - pow(1.0-errorparam, (double)msg->getBitLength()))
             msg->setBitError(true);
     }
 

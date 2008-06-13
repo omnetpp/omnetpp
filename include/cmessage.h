@@ -265,14 +265,14 @@ class SIM_API cMessage : public cOwnedObject
      * channel, message length affects transmission delay and the probability
      * of setting the bit error flag.
      */
-    void setLength(int64 l);
+    void setBitLength(int64 l);
 
     /**
      * Sets message length (bytes). This is just a convenience function which
-     * invokes setLength() with 8*l as argument. The caller must take care
+     * invokes setBitLength() with 8*l as argument. The caller must take care
      * that the result does not overflow (i.e. fits into an int64).
      */
-    void setByteLength(int64 l)  {setLength(l<<3);}
+    void setByteLength(int64 l)  {setBitLength(l<<3);}
 
     /**
      * Changes message length by the given value (bits). This is useful for
@@ -284,15 +284,15 @@ class SIM_API cMessage : public cOwnedObject
      * If the resulting length would be negative, the method throws a
      * cRuntimeError.
      */
-    void addLength(int64 delta);
+    void addBitLength(int64 delta);
 
     /**
      * Changes message length by the given value (bytes). This is just a
-     * convenience function which invokes addLength() with 8*l as argument.
+     * convenience function which invokes addBitLength() with 8*l as argument.
      * The caller must take care that the result does not overflow (i.e.
      * fits into an int64).
      */
-    void addByteLength(int64 delta)  {addLength(delta<<3);}
+    void addByteLength(int64 delta)  {addBitLength(delta<<3);}
 
     /**
      * Set bit error flag.
@@ -344,22 +344,22 @@ class SIM_API cMessage : public cOwnedObject
     cObject *removeControlInfo();
 
     /**
-     * Returns message kind.
+     * Returns the message kind.
      */
     short getKind() const  {return msgkind;}
 
     /**
-     * Returns message priority.
+     * Returns the message priority.
      */
     short getPriority() const  {return prior;}
 
     /**
-     * Returns message length (in bits).
+     * Returns the message length (in bits).
      */
-    int64 length() const  {return len;}
+    int64 getBitLength() const  {return len;}
 
     /**
-     * Returns message length in bytes, that is, length()/8. If length()
+     * Returns the message length in bytes, that is, bitlength/8. If bitlength
      * is not a multiple of 8, the result is rounded up.
      */
     int64 getByteLength() const  {return (len+7)>>3;}
@@ -550,7 +550,7 @@ class SIM_API cMessage : public cOwnedObject
     //@{
 
     /**
-     * Encapsulates msg in the message. msg->length() is increased by the
+     * Encapsulates msg in the message. msg->getBitLength() is increased by the
      * length of the encapsulated message.
      *
      * IMPORTANT NOTE: IT IS FORBIDDEN TO KEEP A POINTER TO A MESSAGE

@@ -57,7 +57,7 @@ void Node1::activity()
         for (int i=0; i<NUM_MSGS; i++)
         {
             cMessage *msg = new cMessage();
-            msg->setLength(len);
+            msg->setBitLength(len);
             send(msg, "out");
             wait(exponential(1.0));
         }
@@ -86,7 +86,7 @@ void Node2::activity()
     {
         cMessage *msg = receive();
         if (msg->hasBitError())
-            errors[msg->length()]++;
+            errors[msg->getBitLength()]++;
         delete msg;
     }
 }

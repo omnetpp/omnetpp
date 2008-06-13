@@ -72,7 +72,10 @@ while (<LISTFILE>)
     $txt =~ s/\bcException\b/cRuntimeError/mg;
     $txt =~ s/\bcSimpleChannel\b/cBasicChannel/mg;
 
-    # message
+    # message length (careful with length(), as it may easily be string.length(), queue.length() etc)
+    $txt =~ s/([a-zA-Z0-9]*([Mm]sg|[Mm]essage|[Pp]k|[Pp]acket|[Ff]rame)[a-zA-Z0-9]*)->length\(\)/$1->getBitLength()/mg;
+    $txt =~ s/\bsetLength\(/setBitLength(/mg;
+    $txt =~ s/\baddLength\(/addBitLength(/mg;
     #FIXME TODO: if it sees: m->setLength(par("msgLength")) then it should insert a cast to long! otherwise "cannot convert cPar to int64"!
 
     # cModule

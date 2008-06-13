@@ -61,7 +61,7 @@ void Sink::handleMessage(cMessage *msg)
     if (debug)
     {
         ev << "Received app. data: \"" << msg->getName() << "\", "
-              "length=" << msg->length()/8 << "bytes, " <<
+              "length=" << msg->getBitLength()/8 << "bytes, " <<
               "end-to-end delay=" << eed << endl;
     }
 

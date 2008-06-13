@@ -33,7 +33,7 @@ Define_Module(BitFifo);
 simtime_t BitFifo::startService(cMessage *msg)
 {
     ev << "Starting service of " << msg->getName() << endl;
-    return msg->length() / (double)par("bitsPerSec");
+    return msg->getBitLength() / (double)par("bitsPerSec");
 }
 
 void BitFifo::endService(cMessage *msg)

@@ -34,7 +34,7 @@ casesensitive = true;
 
 cMessage *msg = new cMessage("hello");
 msg->setKind(42);
-msg->setLength(999);
+msg->setBitLength(999);
 
 match("hello", msg);
 match("he* AND *lo", msg);

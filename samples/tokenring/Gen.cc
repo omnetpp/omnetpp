@@ -60,7 +60,7 @@ void Generator::activity()
         sprintf(msgname, "app%d-data%d", myAddress, i);
         TRApplicationData *msg = new TRApplicationData(msgname);
         msg->setDestination(dest);
-        msg->setLength(8*length); // length is measured in bits
+        msg->setBitLength(8*length); // length is measured in bits
         msg->setData("here's some application data...");
 
         // send message on gate "out", which is connected to the Token Ring MAC

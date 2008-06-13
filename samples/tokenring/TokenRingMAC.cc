@@ -160,7 +160,7 @@ void TokenRingMAC::activity()
             {
                 // peek at next data packet and see if it can be sent within the tokenHoldingTime
                 TRApplicationData *data = (TRApplicationData *) sendQueue.front();
-                simtime_t transmission_time = (TR_HEADER_BITS+data->length())/(double)dataRate;
+                simtime_t transmission_time = (TR_HEADER_BITS+data->getBitLength())/(double)dataRate;
                 if (simTime()+transmission_time > tokenHoldingTime_expires)
                 {
                     // no time left for this packet
@@ -173,7 +173,7 @@ void TokenRingMAC::activity()
 
                 // remove data packet from the send buffer
                 sendQueue.pop();
-                sendQueueBytes -= data->length()/8;
+                sendQueueBytes -= data->getByteLength();
                 queueLenPackets.record(sendQueue.length());
                 queueLenBytes.record(sendQueueBytes);
 
@@ -183,7 +183,7 @@ void TokenRingMAC::activity()
                 // create Token Ring frame, and send data in it
                 sprintf(msgname, "%d-->%d", myAddress, data->getDestination());
                 TRFrame *frame = new TRFrame(msgname, TR_FRAME);
-                frame->setLength(TR_HEADER_BITS);
+                frame->setBitLength(TR_HEADER_BITS);
                 frame->setSource(myAddress);
                 frame->setDestination(data->getDestination());
                 frame->encapsulate(data);
@@ -279,7 +279,7 @@ void TokenRingMAC::storeDataPacket(TRApplicationData *msg)
     if (debug)
     {
         ev << "App data received from higher layer: \"" << msg->getName() << "\", "
-              "length=" << msg->length()/8 << "bytes" << endl;
+              "length=" << msg->getBitLength()/8 << "bytes" << endl;
     }
 
     // inc counter
@@ -303,7 +303,7 @@ void TokenRingMAC::storeDataPacket(TRApplicationData *msg)
 
     // insert message into send buffer
     sendQueue.insert( msg );
-    sendQueueBytes += msg->length()/8;
+    sendQueueBytes += msg->getBitLength()/8;
     queueLenPackets.record( sendQueue.length() );
     queueLenBytes.record(sendQueueBytes);
 
@@ -367,7 +367,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         // when receiving will finish, and schedule an event for that time.
         //
         recvEnd->setContextPointer(data2);
-        scheduleAt(simTime()+frame->length()/(double)dataRate, recvEnd);
+        scheduleAt(simTime()+frame->getBitLength()/(double)dataRate, recvEnd);
     }
 
     // In the Token Ring protocol, a frame is stripped out from the ring

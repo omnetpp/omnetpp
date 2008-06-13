@@ -105,7 +105,7 @@ void Server::handleMessage(cMessage *msg)
     else
     {
         totalFrames++;
-        simtime_t endReception = simTime() + msg->length() / txRate;
+        simtime_t endReception = simTime() + msg->getBitLength() / txRate;
         if (!channelBusy)
         {
             ev << "started receiving\n";
