@@ -49,7 +49,7 @@ void Speedometer::addEvent(simtime_t t)
     current_simtime = t;
 }
 
-unsigned long Speedometer::millisecsInThisInterval()
+unsigned long Speedometer::getMillisSinceIntervalStart()
 {
     // start() mush have been called already
     assert(started);
@@ -89,19 +89,19 @@ void Speedometer::beginNewInterval()
     intvstart_simtime = current_simtime;
 }
 
-double Speedometer::eventsPerSec()
+double Speedometer::getEventsPerSec()
 {
     if (!started) return 0;
     return last_eventspersec;
 }
 
-double Speedometer::eventsPerSimSec()
+double Speedometer::getEventsPerSimSec()
 {
     if (!started) return 0;
     return last_eventspersimsec;
 }
 
-double Speedometer::simSecPerSec()
+double Speedometer::getSimSecPerSec()
 {
     if (!started) return 0;
     return last_simsecpersec;

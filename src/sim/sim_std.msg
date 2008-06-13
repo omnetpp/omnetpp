@@ -443,11 +443,11 @@ class cTopology_Node
         double weight @hint(node weight -- affects graph algorithms such as shortest path);
         bool enabled @getter(isEnabled) @hint(node state -- affects graph algorithms such as shortest path);
 
-        cTopology_LinkIn *inLink[] @getter(in) @sizeGetter(getNumInLinks) @hint(incoming links of this graph node);
-        cTopology_LinkIn *outLink[] @getter(out) @sizeGetter(getNumOutLinks) @hint(outgoing links of this graph node);
+        cTopology_LinkIn *inLink[] @getter(getLinkIn) @sizeGetter(getNumInLinks) @hint(incoming links of this graph node);
+        cTopology_LinkIn *outLink[] @getter(getLinkOut) @sizeGetter(getNumOutLinks) @hint(outgoing links of this graph node);
 
         double distanceToTarget @group(shortest path) @hint(after running a shortest path algorithm: distance to the target node);
-        cTopology_LinkOut *path[] @getter(path) @sizeGetter(getNumPaths) @group(shortest path) @hint(the next link of the shortest path or paths towards the target node);
+        cTopology_LinkOut *path[] @sizeGetter(getNumPaths) @group(shortest path) @hint(the next link of the shortest path or paths towards the target node);
 }
 
 class cTopology_Link

@@ -445,9 +445,9 @@ void Cmdenv::simulate()
                                timeToStr(totalElapsed()),
                                progressPercentage());
                        ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
-                               speedometer.eventsPerSec(),
-                               speedometer.simSecPerSec(),
-                               speedometer.eventsPerSimSec());
+                               speedometer.getEventsPerSec(),
+                               speedometer.getSimSecPerSec(),
+                               speedometer.getEventsPerSimSec());
 
                        ::fprintf(fout, "     Messages:  created: %ld   present: %ld   in FES: %d\n",
                                cMessage::getTotalMessageCount(),
@@ -461,7 +461,7 @@ void Cmdenv::simulate()
                                SIMTIME_STR(simulation.getSimTime()),
                                timeToStr(totalElapsed()),
                                progressPercentage(),
-                               speedometer.eventsPerSec());
+                               speedometer.getEventsPerSec());
                    }
 
                    if (opt_autoflush)

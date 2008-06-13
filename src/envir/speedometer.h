@@ -40,19 +40,22 @@ class ENVIR_API Speedometer
     double last_eventspersec;
     double last_eventspersimsec;
     double last_simsecpersec;
+
   public:
     Speedometer();
+
     void start(simtime_t t);
     void addEvent(simtime_t t);
-    unsigned long millisecsInThisInterval();
     void beginNewInterval();
-    double eventsPerSec();
-    double eventsPerSimSec();
-    double simSecPerSec();
+
+    unsigned long getMillisSinceIntervalStart();
+
+    double getEventsPerSec();
+    double getEventsPerSimSec();
+    double getSimSecPerSec();
 };
 
 NAMESPACE_END
-
 
 #endif
 

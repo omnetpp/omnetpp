@@ -67,7 +67,7 @@ static cOmnetAppRegistration *chooseBestOmnetApp()
     for (int i=0; i<a->size(); i++)
     {
         cOmnetAppRegistration *appreg = static_cast<cOmnetAppRegistration *>(a->get(i));
-        if (!best_appreg || appreg->score()>best_appreg->score())
+        if (!best_appreg || appreg->getScore() > best_appreg->getScore())
             best_appreg = appreg;
     }
     return best_appreg;

@@ -507,7 +507,7 @@ bool Tkenv::doRunSimulation()
         if (frequent_updates || simulation.getEventNumber()%opt_updatefreq_fast==0)
         {
             updateSimtimeDisplay();
-            if (speedometer.millisecsInThisInterval() > SPEEDOMETER_UPDATEMILLISECS)
+            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
             {
                 speedometer.beginNewInterval();
                 updatePerformanceDisplay(speedometer);
@@ -578,7 +578,7 @@ bool Tkenv::doRunSimulationExpress()
         if (simulation.getEventNumber()%opt_updatefreq_express==0)
         {
             updateSimtimeDisplay();
-            if (speedometer.millisecsInThisInterval() > SPEEDOMETER_UPDATEMILLISECS)
+            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
             {
                 speedometer.beginNewInterval();
                 updatePerformanceDisplay(speedometer);
@@ -937,11 +937,11 @@ void Tkenv::clearNextModuleDisplay()
 void Tkenv::updatePerformanceDisplay(Speedometer& speedometer)
 {
     char buf[16];
-    sprintf(buf, "%g", speedometer.simSecPerSec());
+    sprintf(buf, "%g", speedometer.getSimSecPerSec());
     CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {Simsec/sec: ", buf, "}", NULL));
-    sprintf(buf, "%g", speedometer.eventsPerSec());
+    sprintf(buf, "%g", speedometer.getEventsPerSec());
     CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {Ev/sec: ", buf, "}", NULL));
-    sprintf(buf, "%g", speedometer.eventsPerSimSec());
+    sprintf(buf, "%g", speedometer.getEventsPerSimSec());
     CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {Ev/simsec: ", buf, "}", NULL));
 }
 

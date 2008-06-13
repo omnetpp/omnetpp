@@ -68,7 +68,7 @@ class ENVIR_API cOmnetAppRegistration : public cOwnedObject
     // new functions
     cEnvir *createOne()  {return creatorfunc();}
     std::string info() const {return desc;}
-    int score()  {return scor;}
+    int getScore()  {return scor;}
 };
 
 NAMESPACE_END
