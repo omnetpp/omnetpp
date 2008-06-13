@@ -277,8 +277,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         gotoMessageArrivalAction.run();
     }
 
+    public void gotoPreviousEvent() {
+        gotoPreviousEventAction.run();
+    }
+
     public void gotoPreviousModuleEvent() {
         gotoPreviousModuleEventAction.run();
+    }
+
+    public void gotoNextEvent() {
+        gotoNextEventAction.run();
     }
 
     public void gotoNextModuleEvent() {
@@ -535,18 +543,30 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
 					IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
 					IMessageDependencyList consequences = event.getConsequences();
-					
-					for (int i = 0; i < consequences.size(); i++) {
-						IMessageDependency consequence = consequences.get(i);
 
-						if (!eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(consequence.getCPtr()) &&
-							consequence.getBeginSendEntry().equals(eventLogEntry))
-						{
-							IEvent consequenceEvent = consequence.getConsequenceEvent();
-							
-							if (consequenceEvent != null)
-								return consequenceEvent.getEventEntry();
-						}
+					if (consequences.size() == 1) {
+                        IMessageDependency consequence = consequences.get(0);
+                        
+                        if (!eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(consequence.getCPtr())) {
+                            IEvent consequenceEvent = consequence.getConsequenceEvent();
+                            
+                            if (consequenceEvent != null)
+                                return consequenceEvent.getEventEntry();
+                        }
+					}
+					else {
+    					for (int i = 0; i < consequences.size(); i++) {
+    						IMessageDependency consequence = consequences.get(i);
+    
+    						if (!eventLogTable.getEventLogTableFacade().MessageDependency_getIsReuse(consequence.getCPtr()) &&
+    							consequence.getBeginSendEntry().equals(eventLogEntry))
+    						{
+    							IEvent consequenceEvent = consequence.getConsequenceEvent();
+    							
+    							if (consequenceEvent != null)
+    								return consequenceEvent.getEventEntry();
+    						}
+    					}
 					}
 				}
 
