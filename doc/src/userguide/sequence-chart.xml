@@ -72,13 +72,13 @@
       </note>
     </para>    
     <sect2>
-      <title>Long File Support</title>
+      <title>Large File Support</title>
       <para>
-	Since an eventlog file might be several Gbytes long therefore both tools are
-	designed in a way that allows efficiently displaying such a file without requiring
-	large amounts of physical memory to load it at once. As you navigate through the
-	file physical memory is filled up with the content lazily. Since it is difficult
-	to reliably identify in a platform independent way when the system is going low on
+	Since an eventlog file might be several Gbytes therefore both tools are designed
+	in a way that allows efficiently displaying such a file without requiring large
+	amounts of physical memory to load it at once. As you navigate through the file
+	physical memory is filled up with the content lazily. Since it is difficult to
+	reliably identify in a platform independent way when the system is going low on
 	physical memory it is left up to the user to release the allocated memory when
 	needed. This operation although usually not required at all is available from the
 	popup menu as <guimenuitem>Release Memory</guimenuitem>. Executing it will not
@@ -86,11 +86,11 @@
       </para>
       <para>
 	The eventlog file being loaded lazily (and optionally filtered) also means that
-	the exact number of events and rows it contains cannot be determined. This affects
-	the way scrollbars work in the lazy direction, horizontal for the Sequence Chart
-	and vertical for the Eventlog Table. Basically the scrollbars become non linear in
-	that direction which most of the time remains unnoticable for the user unless the
-	file is really small.
+	the exact number of events and rows it contains cannot be cheaply determined. This
+	affects the way scrollbars work in the lazy direction, horizontal for the Sequence
+	Chart and vertical for the Eventlog Table. Basically these scrollbars act as a non
+	linear approximation in that direction which most of the time remains unnoticable
+	for the user unless the file is really small.
       </para>
     </sect2>
     <sect2>
@@ -114,76 +114,130 @@
     </para>
     <para>
       The table has three columns where the first two called event number and simulation
-      time show the values corresponding to the event where that line was recorded. The
+      time show the values corresponding to the event where the line was recorded. The
       third column called details contains the actual data which varies for each kind. The
       different kind of lines can be easily recognized by their icon. Some lines such as
       sending a message through a sequence of gates relate with each other and are
       indented for easier recognition.
     </para>
+    <para>
+      There are various options which control how and what the Eventlog Table
+      displays. Some of these are available from the toolbar while some others are
+      accessible only from the popup menu.
+    </para>
     <sect2>
       <title>Display Mode</title>
       <para>
 	The eventlog file content may be displayed in two different notations. The
-	<guilabel>Raw</guilabel> data notation shows exactly what is present in the file
-	while the <guilabel>Descriptive</guilabel> notation displays it after some
-	preprocessing into a human readable form. To switch between them use the
-	<guilabel>Display Mode</guilabel> <icon name="displaymode.png"/> option from the
-	toolbar or the context menu.
+	<guilabel>Raw</guilabel> data notation shows exactly what is present in the file.
+      </para>	
+      <picture file="pictures/EventlogTable-RawMode.png">
+	<guilabel>Raw</guilabel> notation
+      </picture>
+      <para>
+	On the other hand the <guilabel>Descriptive</guilabel> notation displays the log
+	file after some preprocessing into a human readable form. It also resolves
+	references and types so that less navigation is required to understand what was
+	going on. To switch between the two use the <guilabel>Display Mode</guilabel>
+	<icon name="displaymode.png"/> option from the toolbar or the context menu.
       </para>
-      <picture file="pictures/sequencechart2.png"><guilabel>Descriptive</guilabel> notation</picture>
-      <picture file="pictures/sequencechart3.png"><guilabel>Raw</guilabel> notation</picture>
+      <picture file="pictures/EventlogTable-DescriptiveMode.png">
+	<guilabel>Descriptive</guilabel> notation
+      </picture>
     </sect2>
     <sect2>
       <title>Name Mode</title>
-      <para>TODO <icon name="namemode.gif"/>
+      <para>
+	There are three different ways to display names in the Eventlog table configurable
+	by the <guilabel>Name Mode</guilabel> <icon name="namemode.gif"/> option. Full
+	path and full name shows what is expected while the smart mode uses the context
+	where the line is to decide whether a full path or a full name should be
+	displayed. For each event line it always uses the full path and for all other
+	lines if the name is the same as the enclosing event's module name then it shows
+	the full name only.
       </para>
     </sect2>
     <sect2>
       <title>Type Mode</title>
-      <para>TODO
+      <para>
+	The option called <guilabel>Type Mode</guilabel> can be used to switch between
+	displaying the C++ class name or the NED type name in a parenthesis just before
+	the name of modules. This is only available from the context menu.
       </para>
     </sect2>
     <sect2>
       <title>Line Filter</title>
       <para>
 	The Eventlog Table may be filtered by using the <guilabel>Line Filter</guilabel>
-	selector on the toolbar or from the context menu which allows filtering lines with
-	specific types. There are some predefined filters but also custom filter patterns
-	may be specified referring to fields present in the raw mode. The following is a
-	custom filter example which shows message sends where the class of the message is
-	AirFrame.
+	<icon name="filter.png"/> selector on the toolbar or from the context menu which
+	allows filtering lines with specific kinds. There are some predefined filters but
+	also custom filter patterns may be specified referring to fields present in
+	the <guilabel>Raw</guilabel> mode. The following is a custom filter example which
+	shows message sends where the class of the message is AirFrame.
 	<screen>BS and c(AirFrame)</screen>
+	See the OMNeT++ User Manual for more details on match expressions.
       </para>
       <note>
-	Event lines marked with green circles <icon name="event.png"/> are always shown in the Eventlog Table.
+	Event lines marked with green circles <icon name="event.png"/> are always shown in
+	the Eventlog Table independently of the line filter.
       </note>
     </sect2>
     <sect2>
       <title>Navigation</title>
       <para>
-	Standard navigation and selection within the Eventlog Table is done just like in
-	any other table but there are extra navigation options in the context menu. These
-	options focus on the causes of events and consequences of message sends.
+	Standard keyboard and mouse navigation and multiple selection within the Eventlog
+	Table is done just like in any other table but there are extra navigation options
+	in the context menu. 
       </para>
-      <picture file="pictures/sequencechart4.png">Context menu</picture>
-      <picture file="pictures/sequencechart5.png">Bookmark</picture>
+      <para>
+	The simplest are the <guilabel>Goto Event</guilabel> and the <guilabel>Goto
+	Simulation Time</guilabel> which simply jump to given location.
+      </para>
+      <para>
+	There are navigation options to go to the previous (<keycap>ALT + ARROW UP</keycap>)
+	or next (<keycap>ALT + ARROW UP</keycap>) event in general and to go to the previous
+	(<keycap>SHIFT + ARROW UP</keycap>) or next (<keycap>SHIFT + ARROW DOWN</keycap>)
+	event in the same module.
+      </para>
+      <para>
+	Some of the navigation options focus on the causes of events and consequences of
+	message sends. To go to the cause event press <keycap>CONTROL + ARROW UP</keycap>
+	and to go to the arrival of a message send press <keycap>CONTROL + ARROW DOWN</keycap>
+	while the selection is on the message being sent.
+      </para>
+      <picture file="pictures/EventlogTable-NavigationMenu.png">Context menu</picture>
     </sect2>
     <sect2>
       <title>Searching</title>
+      <para>
+	For performance reasons the search <icon name="Search.gif"/> function works
+	directly on the eventlog file and not the text displayed in the Eventlog table. It
+	means that some static text present in <guilabel>Descriptive</guilabel> mode
+	cannot be found. Usually it is easier to figure out what to search for
+	in <guilabel>Raw</guilabel> mode where the content of the eventlog file is
+	directly displayed. The search can work in both directions from the current
+	selection and be case insensitive. To repeat the last search use
+	the <guilabel>Find Next</guilabel> <icon name="SearchNext.gif"/> command.
+      </para>
     </sect2>
     <sect2>
       <title>Bookmarks</title>
       <para>
-	For easier navigation the OMNeT++ IDE navigation history and bookmarks (from the
-	context menu) are supported. Use the bookmark view to jump to bookmarks even after
-	restarting the IDE.
+	For easier navigation the Eventlog table supports navigation history accessible
+	from the standard IDE toolbar and bookmarks <icon name="bkmrk_nav.gif"/> available
+	from the context menu. Bookmarked events are highlighted with a different
+	background color.  
+      </para>
+      <picture file="pictures/EventlogTable-Bookmark.png">Bookmark</picture>
+      <para>
+	Use the bookmark view to jump to bookmarks even after restarting the IDE.
       </para>
     </sect2>
   </sect1>
 
   <sect1>
     <title>Sequence Chart</title>
-    !!! TODO
+    !!! TODO !!!
     <picture file="pictures/sequencechart1.png">Message detail</picture>
     <para>
       The Sequence Chart also displays the content of an eventlog file focusing on the
@@ -270,6 +324,7 @@
 
   <sect1>
     <title>On The Fly Filter Tool</title>
+    !!! TODO !!!
     <para>
       The content of the eventlog file may be filtered on the fly by opening the filter
       configuration.
