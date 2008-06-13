@@ -48,7 +48,7 @@ class SCAVE_API CompoundFilter : public FilterNode
 
         virtual bool isReady() const  {return false;}
         virtual void process()  {}
-        virtual bool finished() const {return true;}
+        virtual bool isFinished() const {return true;}
 };
 
 
@@ -66,7 +66,7 @@ class SCAVE_API CompoundFilterType : public FilterNodeType
                 std::string _comment;   // comment
                 StringMap _attrassignments;  // _attrs[name] = value
             public:
-                const char *nodeType() const  {return _nodetype.c_str();}
+                const char *getNodeType() const  {return _nodetype.c_str();}
                 const char *comment() const  {return _comment.c_str();}
                 void setNodeType(const char *s)  {_nodetype = s;}
                 void setComment(const char *s)  {_comment = s;}

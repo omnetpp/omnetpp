@@ -46,7 +46,7 @@ class SCAVE_API ArrayBuilderNode : public SingleSinkNode
         virtual ~ArrayBuilderNode();
         virtual bool isReady() const;
         virtual void process();
-        virtual bool finished() const;
+        virtual bool isFinished() const;
 
         void sort();
         size_t length() {return veclen;}

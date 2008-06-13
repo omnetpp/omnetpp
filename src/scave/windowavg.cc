@@ -38,7 +38,7 @@ WindowAverageNode::~WindowAverageNode()
 
 bool WindowAverageNode::isReady() const
 {
-    return in()->length()>=winsize || in()->closing();
+    return in()->length()>=winsize || in()->isClosing();
 }
 
 void WindowAverageNode::process()
@@ -55,7 +55,7 @@ void WindowAverageNode::process()
         o.y = sumy/n;
         out()->write(&o,1);
     }
-    while (in()->length()>=winsize || (in()->closing() && in()->length()>0));
+    while (in()->length()>=winsize || (in()->isClosing() && in()->length()>0));
 }
 
 //-----

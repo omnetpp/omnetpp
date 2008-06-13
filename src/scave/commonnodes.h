@@ -60,7 +60,7 @@ class SCAVE_API SingleSinkNode : public Node
 class SCAVE_API FilterNode : public Node
 {
     protected:
-        virtual bool finished() const;
+        virtual bool isFinished() const;
     public:
         Port in;
         Port out;

@@ -106,7 +106,7 @@ void ArrayBuilderNode::process()
     }
 }
 
-bool ArrayBuilderNode::finished() const
+bool ArrayBuilderNode::isFinished() const
 {
     return in()->eof();
 }

@@ -64,11 +64,11 @@ void FileWriterNode::process()
         CHECK(fprintf(f,"%.*g\t%.*g\n", prec, a.x, prec, a.y));
     }
 
-    if (in()->closing())
+    if (in()->isClosing())
         fclose(f);
 }
 
-bool FileWriterNode::finished() const
+bool FileWriterNode::isFinished() const
 {
     return in()->eof();
 }

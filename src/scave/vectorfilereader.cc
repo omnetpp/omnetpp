@@ -139,10 +139,10 @@ void VectorFileReaderNode::process()
         }
         else if (vec[0][0] == 'v' && strcmp(vec[0], "version") == 0)
         {
-        	int version;
-        	CHECK(numtokens >= 2, "missing version number");
-        	CHECK(parseInt(vec[1], version), "version is not a number");
-        	CHECK(version <= 2, "expects version 2 or lower");
+            int version;
+            CHECK(numtokens >= 2, "missing version number");
+            CHECK(parseInt(vec[1], version), "version is not a number");
+            CHECK(version <= 2, "expects version 2 or lower");
         }
         else if (numtokens>=3 && opp_isdigit(vec[0][0]))  // silently ignore incomplete lines
         {
@@ -173,7 +173,7 @@ void VectorFileReaderNode::process()
     }
 }
 
-bool VectorFileReaderNode::finished() const
+bool VectorFileReaderNode::isFinished() const
 {
     return fFinished;
 }

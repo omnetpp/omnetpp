@@ -42,7 +42,7 @@ class SCAVE_API StddevNode : public SingleSinkNode
         virtual ~StddevNode();
         virtual bool isReady() const;
         virtual void process();
-        virtual bool finished() const;
+        virtual bool isFinished() const;
 
         virtual long getCount() const     {return num_vals;}
         virtual double getSum() const     {return sum_vals;}

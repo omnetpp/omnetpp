@@ -79,7 +79,7 @@ class SCAVE_API IndexedVectorFileReaderNode : public ReaderNode
 
         virtual bool isReady() const;
         virtual void process();
-        virtual bool finished() const;
+        virtual bool isFinished() const;
 
     private:
         void readIndexFile();

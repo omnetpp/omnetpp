@@ -74,7 +74,7 @@ void IndexedVectorFileReaderNode2::process()
         fFinished = true;
 }
 
-bool IndexedVectorFileReaderNode2::finished() const
+bool IndexedVectorFileReaderNode2::isFinished() const
 {
     return fFinished;
 }

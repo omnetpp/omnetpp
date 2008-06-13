@@ -44,7 +44,7 @@ class SCAVE_API TeeNode : public Node
 
         virtual bool isReady() const;
         virtual void process();
-        virtual bool finished() const;
+        virtual bool isFinished() const;
 };
 
 class SCAVE_API TeeNodeType : public NodeType

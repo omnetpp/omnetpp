@@ -45,11 +45,11 @@ class SCAVE_API Channel
         Channel();
         ~Channel() {}
 
-        Node *producerNode() const {return producernode;}
         void setProducerNode(Node *node) {producernode = node;}
+        Node *getProducerNode() const {return producernode;}
 
-        Node *consumerNode() const {return consumernode;}
         void setConsumerNode(Node *node) {consumernode = node;}
+        Node *getConsumerNode() const {return consumernode;}
 
         /**
          * Returns ptr to the first buffered data item (next one to be read), or NULL
@@ -70,7 +70,7 @@ class SCAVE_API Channel
          * Returns true if producer has already called close() which means
          * there won't be any more data except those already in the buffer
          */
-        bool closing()  {return producerfinished;}
+        bool isClosing()  {return producerfinished;}
 
         /**
          * Returns true if close() has been called and there's no buffered data
@@ -93,7 +93,7 @@ class SCAVE_API Channel
          * Returns true when the consumer has closed the channel, that is,
          * it will not read any more data from the channel.
          */
-        bool consumerClosed() {return consumerfinished;}
+        bool isConsumerClosed() {return consumerfinished;}
 
         /**
          * Number of currently buffered items.

@@ -46,7 +46,7 @@ void TeeNode::process()
 
 }
 
-bool TeeNode::finished() const
+bool TeeNode::isFinished() const
 {
     return in()->eof();
 }

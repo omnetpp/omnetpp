@@ -114,7 +114,7 @@ class SCAVE_API Node
         /**
          * Returns the corresponding NodeType class.
          */
-        NodeType *nodeType() const {return nodetype;}
+        NodeType *getNodeType() const {return nodetype;}
 
         /** Execution and scheduling */
         //@{
@@ -126,21 +126,21 @@ class SCAVE_API Node
         /**
          * Are more invocations of process() necessary()?
          */
-        virtual bool finished() const = 0;
+        virtual bool isFinished() const = 0;
 
         /**
-         * Provided it has not finished() yet, can process() be invoked
-         * right now? (finished() is called first -- isReady() is only
-         * invoked if finished() returns false. So isReady() doesn't need
+         * Provided it has not isFinished() yet, can process() be invoked
+         * right now? (isFinished() is called first -- isReady() is only
+         * invoked if isFinished() returns false. So isReady() doesn't need
          * to check for eof.)
          */
         virtual bool isReady() const = 0;
         //@}
 
         /**
-         * Invoked by the dataflow manager when the node's finished() first
+         * Invoked by the dataflow manager when the node's isFinished() first
          * returns true. It sets a status flag so that further invocations
-         * of finished() can be avoided.
+         * of isFinished() can be avoided.
          */
         void setAlreadyFinished() {alreadyfinished = true;}
 
@@ -148,7 +148,7 @@ class SCAVE_API Node
          * Used by the dataflow manager. Returns true if setAlreadyFinished()
          * has already been invoked.
          */
-        bool alreadyFinished() {return alreadyfinished;}
+        bool getAlreadyFinished() {return alreadyfinished;}
 };
 
 NAMESPACE_END

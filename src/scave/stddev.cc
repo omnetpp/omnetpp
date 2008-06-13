@@ -46,7 +46,7 @@ void StddevNode::process()
     }
 }
 
-bool StddevNode::finished() const
+bool StddevNode::isFinished() const
 {
     return in()->eof();
 }

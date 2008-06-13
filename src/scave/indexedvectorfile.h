@@ -155,7 +155,7 @@ class SCAVE_API IndexedVectorFileWriterNode : public Node
 
         virtual bool isReady() const;
         virtual void process();
-        virtual bool finished() const;
+        virtual bool isFinished() const;
     protected:
         void writeRecordsToBuffer(VectorInputPort *port);
         void writeBufferToFile(VectorInputPort *port);

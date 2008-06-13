@@ -81,7 +81,7 @@ class SCAVE_API DataflowManager
         /**
          * Executes the data-flow network. That will basically keep
          * calling the process() method of nodes that say they are
-         * ready (isReady() method) until they are all done (finished()
+         * ready (isReady() method) until they are all done (isFinished()
          * method). If none of them are ready but there are ones which
          * haven't finished yet, the method declares a deadlock.
          */

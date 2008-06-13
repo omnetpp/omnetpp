@@ -68,7 +68,7 @@ void IndexedVectorFileReaderNode::process()
     }
 }
 
-bool IndexedVectorFileReaderNode::finished() const
+bool IndexedVectorFileReaderNode::isFinished() const
 {
     return index && currentBlockIndex >= blocksToRead.size();
 }

@@ -41,7 +41,7 @@ class SCAVE_API FileWriterNode : public SingleSinkNode
         void setPrecision(int prec) {this->prec = prec;}
         virtual bool isReady() const;
         virtual void process();
-        virtual bool finished() const;
+        virtual bool isFinished() const;
 };
 
 class SCAVE_API FileWriterNodeType : public SingleSinkNodeType

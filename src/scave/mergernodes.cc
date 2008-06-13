@@ -32,7 +32,7 @@ bool MergerNode::isReady() const
 {
     // every input port must have data available (or already have reached EOF)
     for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
-        if ((*it)()->length()==0 && !(*it)()->closing())
+        if ((*it)()->length()==0 && !(*it)()->isClosing())
             return false;
     return true;
 }
@@ -64,7 +64,7 @@ void MergerNode::process()
     }
 }
 
-bool MergerNode::finished() const
+bool MergerNode::isFinished() const
 {
     // only finished if all ports are at EOF
     for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)

@@ -51,7 +51,7 @@ class SCAVE_API XYPlotNode : public Node
 
         virtual bool isReady() const;
         virtual void process();
-        virtual bool finished() const;
+        virtual bool isFinished() const;
 };
 
 class SCAVE_API XYPlotNodeType : public NodeType

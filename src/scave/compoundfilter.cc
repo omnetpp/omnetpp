@@ -147,7 +147,7 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
         Subfilter& subfilt = const_cast<CompoundFilterType *>(this)->subfilter(i);
 
         // get type
-        const char *subnodetypename = subfilt.nodeType();
+        const char *subnodetypename = subfilt.getNodeType();
         NodeType *subnodetype = NodeTypeRegistry::getInstance()->getNodeType(subnodetypename);
 
         // collect parameters for subfilter
@@ -178,8 +178,8 @@ Node *CompoundFilterType::create(DataflowManager *mgr, StringMap& attrs) const
         // connect to next one
         if (prevsubnode)
         {
-            Port *port1 = prevsubnode->nodeType()->getPort(prevsubnode,"out");
-            Port *port2 = subnode->nodeType()->getPort(subnode,"in");
+            Port *port1 = prevsubnode->getNodeType()->getPort(prevsubnode,"out");
+            Port *port2 = subnode->getNodeType()->getPort(subnode,"in");
             mgr->connect(port1, port2);
         }
         prevsubnode = subnode;
@@ -196,7 +196,7 @@ Port *CompoundFilterType::getPort(Node *node, const char *name) const
                     NULL;
     if (!subnode)
         throw opp_runtime_error("no such port `%s'", name);
-    return subnode->nodeType()->getPort(subnode, name);
+    return subnode->getNodeType()->getPort(subnode, name);
 }
 
 void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
@@ -204,7 +204,7 @@ void CompoundFilterType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/S
     int n = numSubfilters();
     for (int i=0; i<n; i++)
     {
-        const char *nodetypename = subfilter(i).nodeType();
+        const char *nodetypename = subfilter(i).getNodeType();
         NodeType *nodeType = NodeTypeRegistry::getInstance()->getNodeType(nodetypename);
         nodeType->mapVectorAttributes(attrs, warnings);
     }

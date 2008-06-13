@@ -38,7 +38,7 @@ Port *SingleSinkNodeType::getPort(Node *node, const char *name) const
     throw opp_runtime_error("no such port `%s'", name);
 }
 
-bool FilterNode::finished() const
+bool FilterNode::isFinished() const
 {
     return in()->eof();
 }
