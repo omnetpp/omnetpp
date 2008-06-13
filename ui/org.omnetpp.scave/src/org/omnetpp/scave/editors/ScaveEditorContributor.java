@@ -45,7 +45,7 @@ import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RefreshComputedDataFileAction;
 import org.omnetpp.scave.actions.RemoveAction;
 import org.omnetpp.scave.actions.SelectAllAction;
-import org.omnetpp.scave.actions.ShowVectorBrowserViewAction;
+import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
 import org.omnetpp.scave.actions.UngroupAction;
 import org.omnetpp.scave.actions.ZoomChartAction;
 import org.omnetpp.scave.editors.ui.DatasetPage;
@@ -102,7 +102,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	private IAction addSelectedToDatasetAction;
 	private IAction copyToClipboardAction;
 	private IAction createTempChartAction;
-	private IAction showVectorBrowserViewAction;
+	private IAction showOutputVectorViewAction;
 	private Map<String,IAction> exportActions;
 
 	/**
@@ -164,7 +164,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 		}
     	copyToClipboardAction = registerAction(page, new CopyToClipboardAction());
     	createTempChartAction = registerAction(page, new CreateTempChartAction());
-        showVectorBrowserViewAction = registerAction(page, new ShowVectorBrowserViewAction());
+        showOutputVectorViewAction = registerAction(page, new ShowOutputVectorViewAction());
 
 //      addResultFileAction = registerAction(page, new AddResultFileAction());
 //      addWildcardResultFileAction = registerAction(page, new AddWildcardResultFileAction());
@@ -370,8 +370,8 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	public IAction getCreateTempChartAction() {
 		return createTempChartAction;
 	}
-	public IAction getShowVectorBrowserViewAction() {
-		return showVectorBrowserViewAction;
+	public IAction getShowOutputVectorViewAction() {
+		return showOutputVectorViewAction;
 	}
 	public RetargetAction getUndoRetargetAction() {
 		return undoRetargetAction;

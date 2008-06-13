@@ -11,10 +11,10 @@ import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.views.VectorBrowserView;
 
 
-public class ShowVectorBrowserViewAction extends AbstractScaveAction {
-	public ShowVectorBrowserViewAction() {
-		setText("Show Vector Data View");
-		setToolTipText("Show Vector Data View");
+public class ShowOutputVectorViewAction extends AbstractScaveAction {
+	public ShowOutputVectorViewAction() {
+		setText("Show Output Vector View");
+		setToolTipText("Show Output Vector View");
 	}
 	
 	@Override
@@ -24,7 +24,7 @@ public class ShowVectorBrowserViewAction extends AbstractScaveAction {
 			workbenchPage.showView(VectorBrowserView.ID);
 		} 
 		catch (PartInitException e) {
-			IStatus error = ScavePlugin.getErrorStatus(0, "Failed to open Vector Data View", e);
+			IStatus error = ScavePlugin.getErrorStatus(0, "Failed to open Output Vector View", e);
 			ErrorDialog dialog = new ErrorDialog(scaveEditor.getSite().getShell(), null, null, error, IStatus.ERROR);
 			dialog.open();
 		}

@@ -176,7 +176,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 			contextMenuManager.add(setFilterAction);
 			contextMenuManager.add(new ChooseTableColumnsAction(panel.getTable()));
 			contextMenuManager.add(new Separator());
-			contextMenuManager.add(editorContributor.getShowVectorBrowserViewAction());
+			contextMenuManager.add(editorContributor.getShowOutputVectorViewAction());
 		}
 		// XXX call getSite().registerContexMenu() ?
 	}
