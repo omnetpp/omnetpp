@@ -23,10 +23,10 @@
 USING_NAMESPACE
 
 
-Port *XYPlotNode::portY(int k)
+Port *XYPlotNode::getPortY(int k)
 {
     if (k<0 || yin.size()< (unsigned)k)
-        throw opp_runtime_error("XYPlotNode::portY(k): k=%d out of range, size of yin[] is %d",k,yin.size());
+        throw opp_runtime_error("XYPlotNode::getPortY(k): k=%d out of range, size of yin[] is %d",k,yin.size());
     if (yin.size()==(unsigned)k)
     {
         yin.push_back(Port(this));
@@ -35,10 +35,10 @@ Port *XYPlotNode::portY(int k)
     return &yin[k];
 }
 
-Port *XYPlotNode::portOut(int k)
+Port *XYPlotNode::getPortOut(int k)
 {
     if (k<0 || out.size()<=(unsigned)k)
-        throw opp_runtime_error("XYPlotNode::portOut(k): k=%d out of range, size of out[] is %d",k,out.size());
+        throw opp_runtime_error("XYPlotNode::getPortOut(k): k=%d out of range, size of out[] is %d",k,out.size());
     return &out[k];
 }
 
@@ -128,9 +128,9 @@ Port *XYPlotNodeType::getPort(Node *node, const char *portname) const
     if (!strcmp(portname,"x"))
         return &(node1->xin);
     if (portname[0]=='y')
-        return node1->portY(atoi(portname+1));
+        return node1->getPortY(atoi(portname+1));
     else if (!strncmp(portname,"out",3))
-        return node1->portOut(atoi(portname+3));
+        return node1->getPortOut(atoi(portname+3));
     throw opp_runtime_error("no such port `%s'", portname);
 }
 

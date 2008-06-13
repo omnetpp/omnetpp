@@ -72,7 +72,7 @@ static std::string second(std::pair<int,std::string> pair)
     return pair.second;
 }
 
-std::vector<std::string> EnumType::names() const
+std::vector<std::string> EnumType::getNames() const
 {
     std::vector<std::pair<int,std::string> > pairs(valueToNameMap.begin(), valueToNameMap.end());
     std::sort(pairs.begin(), pairs.end(), less);

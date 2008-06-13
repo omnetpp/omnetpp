@@ -76,7 +76,7 @@ class SCAVE_API IDList
         IDList dup() const;
         void sortByFileAndRun(ResultFileManager *mgr, bool ascending);
         void sortByRunAndFile(ResultFileManager *mgr, bool ascending);
-        int itemTypes() const;  // SCALAR, VECTOR or their binary OR
+        int getItemTypes() const;  // SCALAR, VECTOR or their binary OR
         bool areAllScalars() const;
         bool areAllVectors() const;
         bool areAllHistograms() const;

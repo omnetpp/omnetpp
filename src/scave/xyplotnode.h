@@ -46,8 +46,8 @@ class SCAVE_API XYPlotNode : public Node
         XYPlotNode() : xin(this) {}
         virtual ~XYPlotNode() {}
 
-        Port *portY(int k);
-        Port *portOut(int k);
+        Port *getPortY(int k);
+        Port *getPortOut(int k);
 
         virtual bool isReady() const;
         virtual void process();

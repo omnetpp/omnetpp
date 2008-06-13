@@ -77,7 +77,7 @@ class SCAVE_API EnumType
     /**
      * Returns the names of the enum members sorted by their values.
      */
-    std::vector<std::string> names() const;
+    std::vector<std::string> getNames() const;
 
     /**
      * String representation of the definition of this enum.

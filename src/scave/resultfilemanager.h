@@ -287,7 +287,7 @@ class SCAVE_API ResultFileManager
     };
 
   public:
-    enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::itemTypes()
+    enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
     static std::string *stringSetFindOrInsert(StringSet& set, const std::string& str);

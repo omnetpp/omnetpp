@@ -465,7 +465,7 @@ void IDList::reverse()
     std::reverse(v->begin(), v->end());
 }
 
-int IDList::itemTypes() const
+int IDList::getItemTypes() const
 {
     checkV();
     int types = 0;
@@ -476,17 +476,17 @@ int IDList::itemTypes() const
 
 bool IDList::areAllScalars() const
 {
-    return itemTypes()==ResultFileManager::SCALAR;
+    return getItemTypes()==ResultFileManager::SCALAR;
 }
 
 bool IDList::areAllVectors() const
 {
-    return itemTypes()==ResultFileManager::VECTOR;
+    return getItemTypes()==ResultFileManager::VECTOR;
 }
 
 bool IDList::areAllHistograms() const
 {
-    return itemTypes()==ResultFileManager::HISTOGRAM;
+    return getItemTypes()==ResultFileManager::HISTOGRAM;
 }
 
 void IDList::toByteArray(char *array, int n) const
