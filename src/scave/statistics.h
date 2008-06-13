@@ -46,7 +46,7 @@ class SCAVE_API Statistics
         double getMin() const { return _min; }
         double getMax() const { return _max; }
         double getSum() const { return _sum; }
-        double sumSqr() const { return _sumSqr; }
+        double getSumSqr() const { return _sumSqr; }
         double getMean() const { return _count == 0 ? dblNaN : _sum / _count; }
         double getStddev() const { return sqrt(getVariance()); }
         double getVariance() const;
@@ -57,31 +57,31 @@ class SCAVE_API Statistics
 
 inline double Statistics::getVariance() const
 {
-            if (_count >= 1)
-            {
-                double var = (_sumSqr - _sum*_sum/_count)/(_count-1);
-                return var < 0 ? 0 : var;
-            }
-            else
-                return dblNaN;
+    if (_count >= 1)
+    {
+        double var = (_sumSqr - _sum*_sum/_count)/(_count-1);
+        return var < 0 ? 0 : var;
+    }
+    else
+        return dblNaN;
 }
 
 inline void Statistics::collect(double value)
 {
-            _count++;
-            _min = (_min < value ? _min : value);
-            _max = (_max > value ? _max : value);
-            _sum += value;
-            _sumSqr += value * value;
+    _count++;
+    _min = (_min < value ? _min : value);
+    _max = (_max > value ? _max : value);
+    _sum += value;
+    _sumSqr += value * value;
 }
 
 inline void Statistics::adjoin(const Statistics &other)
 {
-            _count += other._count;
-            _min = (_min < other._min ? _min : other._min);
-            _max = (_max > other._max ? _max : other._max);
-            _sum += other._sum;
-            _sumSqr += other._sumSqr;
+    _count += other._count;
+    _min = (_min < other._min ? _min : other._min);
+    _max = (_max > other._max ? _max : other._max);
+    _sum += other._sum;
+    _sumSqr += other._sumSqr;
 }
 
 NAMESPACE_END

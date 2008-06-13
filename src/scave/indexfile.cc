@@ -406,10 +406,10 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
     }
     else if (tokens[0][0] == 'v' && strcmp(tokens[0], "version") == 0)
     {
-    	int version;
-    	CHECK(numTokens >= 2, "missing version number", lineNum);
-    	CHECK(parseInt(tokens[1], version), "version is not a number", lineNum);
-    	CHECK(version <= 2, "expects version 2 or lower", lineNum);
+        int version;
+        CHECK(numTokens >= 2, "missing version number", lineNum);
+        CHECK(parseInt(tokens[1], version), "version is not a number", lineNum);
+        CHECK(version <= 2, "expects version 2 or lower", lineNum);
     }
     else if (index->run.parseLine(tokens, numTokens, filename.c_str(), lineNum))
     {
@@ -553,7 +553,7 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
                                                         BigDecimal::ttoa(buff2, block.endTime, e))); }
         if (vector.hasColumn('V')) { CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
                                                 block.getCount(), precision, block.getMin(), precision, block.getMax(),
-                                                precision, block.getSum(), precision, block.sumSqr())); }
+                                                precision, block.getSum(), precision, block.getSumSqr())); }
         CHECK(fprintf(file, "\n"));
     }
 }

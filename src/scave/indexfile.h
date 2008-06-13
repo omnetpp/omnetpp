@@ -47,7 +47,7 @@ struct Block {
     double getMin() const { return stat.getMin(); }
     double getMax() const { return stat.getMax(); }
     double getSum() const { return stat.getSum(); }
-    double sumSqr() const { return stat.sumSqr(); }
+    double getSumSqr() const { return stat.getSumSqr(); }
 
     long endSerial() const { return startSerial + getCount(); }
 
@@ -99,7 +99,7 @@ struct VectorData {
     double getMin() const { return stat.getMin(); }
     double getMax() const { return stat.getMax(); }
     double getSum() const { return stat.getSum(); }
-    double sumSqr() const { return stat.sumSqr(); }
+    double getSumSqr() const { return stat.getSumSqr(); }
 
     /**
      * Adds the block statistics to the vector statistics.
