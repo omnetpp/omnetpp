@@ -78,6 +78,9 @@ while (<LISTFILE>)
     # cModule
     $txt =~ s/\bgate\(([^,)]+)\)->size\(\)/gateSize(\1)/mg;
 
+    # turn mod->simTime() and simulation.simTime() into just simTime()
+    $txt =~ s/[a-zA-Z0-9]+(\.|->)simtime\(\)/simTime()/mg;
+
     # rename cQueue methods
     $txt =~ s/\bgetTail *\( *\)/pop()/mg;
     $txt =~ s/\btail *\( *\)/front()/mg;
