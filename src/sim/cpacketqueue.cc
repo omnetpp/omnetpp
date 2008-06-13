@@ -57,7 +57,7 @@ std::string cPacketQueue::info() const
     if (empty())
         return std::string("empty");
     std::stringstream out;
-    out << "len=" << length() << ", " << getBitLength() << " bits (" << getByteLength() << " bytes)";
+    out << "len=" << getLength() << ", " << getBitLength() << " bits (" << getByteLength() << " bytes)";
     return out.str();
 }
 

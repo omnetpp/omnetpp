@@ -136,7 +136,7 @@ class SIM_API cPacketQueue : public cQueue
     //@{
     /**
      * Returns the total size of the messages in the queue, in bits.
-     * This is the sum of the message lengths; see cMessage::length().
+     * This is the sum of the message bit lengths; see cMessage::getBitLength().
      */
     int64 getBitLength() const  {return bitlength;}
 

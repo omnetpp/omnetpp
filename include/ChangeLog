@@ -287,6 +287,8 @@
 		priority() / setPriority()
 	- added some extra fields required by sequence chart drawing: cause event
 	  number, message id, message tree id, etc.
+	- methods associated with "length" renamed: getBitLength(), setBitLength(),
+	  addBitLength()
 	- removed two static methods of limited usefulness: cmpbydelivtime(), 
 	  cmpbypriority().
 	

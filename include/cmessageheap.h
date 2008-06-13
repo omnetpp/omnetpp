@@ -152,7 +152,7 @@ class SIM_API cMessageHeap : public cOwnedObject
     cMessage *peekFirst() const;
 
     /**
-     * Returns the mth message in the heap if 0 <= m < length(), and NULL
+     * Returns the mth message in the heap if 0 <= m < getLength(), and NULL
      * otherwise. Note that iteration does not necessarily return messages
      * in increasing timestamp (getArrivalTime()) order unless you called
      * sort() before.
@@ -185,12 +185,22 @@ class SIM_API cMessageHeap : public cOwnedObject
     /**
      * Returns the number of messages in the heap.
      */
-    int length() const {return n;}
+    int getLength() const {return n;}
 
     /**
      * Returns true if the heap is empty.
      */
-    bool empty() const {return n==0;}
+    bool isEmpty() const {return n==0;}
+
+    /**
+     * Alias for getLength().
+     */
+    int length() const {return getLength();}
+
+    /**
+     * Alias for isEmpty().
+     */
+    bool empty() const {return isEmpty();}
     //@}
 };
 

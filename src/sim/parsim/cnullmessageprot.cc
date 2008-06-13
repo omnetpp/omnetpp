@@ -235,7 +235,7 @@ cMessage *cNullMessageProtocol::getNextEvent()
     // our EIT and resendEOT messages are always scheduled, so the FES can
     // only be empty if there are no other partitions at all -- "no events" then
     // means we're finished.
-    if (sim->msgQueue.empty())
+    if (sim->msgQueue.isEmpty())
         return NULL;
 
     // we could do a receiveNonblocking() call here to look at our mailbox,

@@ -52,7 +52,7 @@ void Source::handleMessage(cMessage *msg)
     ASSERT(msg==sendMessageEvent);
 
     cMessage *m = new cMessage("job");
-    m->setLength((long)par("msgLength"));
+    m->setBitLength((long)par("msgLength"));
     send(m, "out");
 
     scheduleAt(simTime()+(double)par("sendIaTime"), sendMessageEvent);

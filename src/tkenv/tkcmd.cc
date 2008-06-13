@@ -664,11 +664,11 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"length")) {
        if (dynamic_cast<cMessage *>(object)) {
            char buf[20];
-           sprintf(buf,"%"INT64_PRINTF_FORMAT"d", dynamic_cast<cMessage *>(object)->length());
+           sprintf(buf,"%"INT64_PRINTF_FORMAT"d", dynamic_cast<cMessage *>(object)->getBitLength());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
        } else if (dynamic_cast<cQueue *>(object)) {
            char buf[20];
-           sprintf(buf,"%d", dynamic_cast<cQueue *>(object)->length());
+           sprintf(buf,"%d", dynamic_cast<cQueue *>(object)->getLength());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;
@@ -1317,7 +1317,7 @@ int sortFesAndGetRange_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
    // find smallest t!=simTime() element, and greatest element.
    simulation.msgQueue.sort();
-   int len = simulation.msgQueue.length();
+   int len = simulation.msgQueue.getLength();
    if (len==0) {Tcl_SetResult(interp, TCLCONST("0 0"), TCL_STATIC); return TCL_OK;}
    simtime_t now = simulation.getSimTime();
    simtime_t tmin = now;

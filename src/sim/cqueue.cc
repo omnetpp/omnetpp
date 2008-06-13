@@ -281,7 +281,7 @@ cOwnedObject *cQueue::pop()
     return remove_qelem(frontp);
 }
 
-int cQueue::length() const
+int cQueue::getLength() const
 {
     return n;
 }

@@ -23,6 +23,9 @@
 
 NAMESPACE_BEGIN
 
+#ifdef _MSC_VER
+#pragma warning(push, 0)  // deprecation warnings inside the header
+#endif
 
 /**
  * Use of this class is DISCOURAGED, it is provided for backward compatibility
@@ -38,7 +41,7 @@ NAMESPACE_BEGIN
  * @see Iterator
  * @ingroup Containers
  */
-class SIM_API cLinkedList : public cOwnedObject
+class SIM_API _OPPDEPRECATED cLinkedList : public cOwnedObject
 {
     // a list elem
     struct Elem
@@ -253,12 +256,12 @@ class SIM_API cLinkedList : public cOwnedObject
     /**
      * Returns the number of items contained in the list.
      */
-    int length() const {return n;}
+    int getLength() const {return n;}
 
     /**
      * Returns true if the list is empty.
      */
-    bool empty() const {return n==0;}
+    bool isEmpty() const {return n==0;}
 
     /**
      * Returns true if the list contains the given pointer.
@@ -272,6 +275,10 @@ class SIM_API cLinkedList : public cOwnedObject
     void clear();
     //@}
 };
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 
 NAMESPACE_END

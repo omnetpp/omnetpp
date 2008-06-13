@@ -890,7 +890,7 @@ void Tkenv::updateSimtimeDisplay()
                         "}", NULL ));
 
     // statistics
-    sprintf(buf, "%u", simulation.msgQueue.length());
+    sprintf(buf, "%u", simulation.msgQueue.getLength());
     CHK(Tcl_VarEval(interp, FESLENGTH_LABEL " config -text {"
                         "Msgs scheduled: ", buf,
                         "}", NULL ));

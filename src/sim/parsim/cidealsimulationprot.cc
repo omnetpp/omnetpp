@@ -87,7 +87,7 @@ void cIdealSimulationProtocol::processReceivedMessage(cMessage *msg, int destMod
 cMessage *cIdealSimulationProtocol::getNextEvent()
 {
     // if no more local events, wait for something to come from other partitions
-    while (sim->msgQueue.empty())
+    while (sim->msgQueue.isEmpty())
         if (!receiveBlocking())
             return NULL;
 

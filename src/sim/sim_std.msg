@@ -22,6 +22,11 @@
 
 cplusplus
 {{
+
+#ifdef _MSC_VER
+#  pragma warning(disable:4996)  // deprecation (cLinkedList)
+#endif
+
 USING_NAMESPACE
 //
 // Register enums from the sim. kernel
@@ -208,7 +213,7 @@ class cMessage extends cOwnedObject
         short kind @group(message) @editable @hint(generic user-settable attribute, usually carries "type" or "role" of message);
         short priority @group(message) @editable @hint(controls delivery order of messages with equal timestamps);
         //FIXME the next two fields should be really int64, but opp_msgc doesn't support int64 yet
-        long length @getter(length) @group(message) @editable @hint(simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel);
+        long bitLength @group(message) @editable @hint(simulated length of the message in bits, affects transmission time and probability of bit errors when sent through a channel);
         long byteLength @group(message) @editable @hint(length in bytes, i.e. length in bits divided by eight);
         bool hasBitError @getter(hasBitError) @group(message) @setter(setBitError) @editable @hint(signals that a bit error occurred when the message was sent through a channel with nonzero bit error rate);
         string displayString @group(message) @hint(controls appearance of the message in GUI);
@@ -366,20 +371,20 @@ class cMsgPar extends cOwnedObject
 
 class cLinkedList extends cOwnedObject
 {
-        int length @getter(length) @hint(number of items contained);
+        int length @hint(number of items contained);
 }
 
 class cMessageHeap extends cOwnedObject
 {
-        int length @getter(length) @hint(number of items contained);
-        cMessage *messages[] @getter(peek) @sizeGetter(length) @hint(self-messages currently scheduled and messages currently in transit);
+        int length @hint(number of items contained);
+        cMessage *messages[] @getter(peek) @sizeGetter(getLength) @hint(self-messages currently scheduled and messages currently in transit);
 }
 
 class cQueue extends cOwnedObject
 {
         bool takeOwnership @group(general) @editable @hint(whether the queue should own the objects inserted into it);
-        int length @getter(length) @hint(number of items in the queue);
-        cOwnedObject *contents[] @getter(get) @sizeGetter(length) @hint(queue contents);
+        int length @hint(number of items in the queue);
+        cOwnedObject *contents[] @getter(get) @sizeGetter(getLength) @hint(queue contents);
 }
 
 class cPacketQueue extends cQueue

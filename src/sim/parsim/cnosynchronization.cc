@@ -56,7 +56,7 @@ void cNoSynchronization::endRun()
 cMessage *cNoSynchronization::getNextEvent()
 {
     // if no more local events, wait for something to come from other partitions
-    if (sim->msgQueue.empty())
+    if (sim->msgQueue.isEmpty())
     {
         ev.printf("no local events, waiting for something to arrive from other partitions\n");
         if (!receiveBlocking())

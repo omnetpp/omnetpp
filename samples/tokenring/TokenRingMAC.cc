@@ -122,7 +122,7 @@ void TokenRingMAC::activity()
     if (myAddress == 0)
     {
         TRToken *token = new TRToken("token", TR_TOKEN);
-        token->setLength(TR_TOKEN_BITS);
+        token->setBitLength(TR_TOKEN_BITS);
         send(token, "phyOut");
     }
 

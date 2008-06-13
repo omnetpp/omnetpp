@@ -398,7 +398,7 @@ void Cmdenv::simulate()
                                timeToStr(totalElapsed()),
                                cMessage::getTotalMessageCount(),
                                cMessage::getLiveMessageCount(),
-                               simulation.msgQueue.length());
+                               simulation.msgQueue.getLength());
                    }
                }
 
@@ -452,7 +452,7 @@ void Cmdenv::simulate()
                        ::fprintf(fout, "     Messages:  created: %ld   present: %ld   in FES: %d\n",
                                cMessage::getTotalMessageCount(),
                                cMessage::getLiveMessageCount(),
-                               simulation.msgQueue.length());
+                               simulation.msgQueue.getLength());
                    }
                    else
                    {

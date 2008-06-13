@@ -29,6 +29,10 @@
 #include "ccommbuffer.h"
 #endif
 
+#ifdef _MSC_VER
+#  pragma warning(disable:4996)  // deprecation warning
+#endif
+
 USING_NAMESPACE
 
 

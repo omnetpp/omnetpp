@@ -241,12 +241,22 @@ class SIM_API cQueue : public cOwnedObject
     /**
      * Returns the number of objects contained in the queue.
      */
-    virtual int length() const;
+    virtual int getLength() const;
 
     /**
      * Returns true if the queue is empty.
      */
-    bool empty() const {return length()==0;}
+    bool isEmpty() const {return getLength()==0;}
+
+    /**
+     * Alias for getLength().
+     */
+    int length() const {return getLength();}
+
+    /**
+     * Alias for isEmpty().
+     */
+    bool empty() const {return isEmpty();}
 
     /**
      * Returns the ith element in the queue, or NULL if i is out of range.
