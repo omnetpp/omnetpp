@@ -22,6 +22,18 @@
         </listitem>
       </itemizedlist>
     </para>
+
+    <para>   <!-- some overview on how the whole thing works -->
+      How C/C++ builds in the IDE work: CDT already supports "standard make" builds, 
+      ie it can invoke "make"; and when you select "Build" in the IDE, we generate a makefile 
+      (via a built-in Java version of opp_makemake) and then let CDT do a "standard make" build.
+
+      Note: the OMNeT++ IDE does not use the "managed make" feature of CDT.
+
+      TODO: describe what is .cproject, .oppbuildspec etc
+    </para>
+
+  
   </sect1>
 
   <sect1>
