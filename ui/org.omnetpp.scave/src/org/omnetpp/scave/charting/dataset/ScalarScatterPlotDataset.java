@@ -47,7 +47,7 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 	}
 
 	public double getX(int series, int item) {
-		return scalars.getValue(0, item).mean();
+		return scalars.getValue(0, item).getMean();
 	}
 	
 	public BigDecimal getPreciseX(int series, int item) {
@@ -59,7 +59,7 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
 	}
 
 	public double getY(int series, int item) {
-		return scalars.getValue(series+1, item).mean();
+		return scalars.getValue(series+1, item).getMean();
 	}
 
 	public BigDecimal getPreciseY(int series, int item) {

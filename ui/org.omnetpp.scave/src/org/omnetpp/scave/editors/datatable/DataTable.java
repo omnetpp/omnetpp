@@ -469,23 +469,23 @@ public class DataTable extends Table {
 				return String.valueOf(vector.getVectorId());
 			}
 			else if (COL_COUNT.equals(column)) {
-				int count = vector.count();
+				int count = vector.getCount();
 				return count >= 0 ? String.valueOf(count) : "n.a.";
 			}
 			else if (COL_MEAN.equals(column)) {
-				double mean = vector.mean();
+				double mean = vector.getMean();
 				return Double.isNaN(mean) ? "n.a." : String.valueOf(mean);
 			}
 			else if (COL_STDDEV.equals(column)) {
-				double stddev = vector.stddev();
+				double stddev = vector.getStddev();
 				return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
 			}
 			else if (COL_MIN.equals(column)) {
-				double min = vector.min();
+				double min = vector.getMin();
 				return Double.isNaN(min) ? "n.a." : String.valueOf(min);
 			}
 			else if (COL_MAX.equals(column)) {
-				double max = vector.max();
+				double max = vector.getMax();
 				return Double.isNaN(max) ? "n.a." : String.valueOf(max);
 			}
 			else if (COL_MIN_TIME.equals(column)) {
@@ -500,23 +500,23 @@ public class DataTable extends Table {
 		else if (type == ResultType.HISTOGRAM_LITERAL) {
 			HistogramResult histogram = (HistogramResult)result;
 			if (COL_COUNT.equals(column)) {
-				int count = histogram.count();
+				int count = histogram.getCount();
 				return count >= 0 ? String.valueOf(count) : "n.a.";
 			}
 			else if (COL_MEAN.equals(column)) {
-				double mean = histogram.mean();
+				double mean = histogram.getMean();
 				return Double.isNaN(mean) ? "n.a." : String.valueOf(mean);
 			}
 			else if (COL_STDDEV.equals(column)) {
-				double stddev = histogram.stddev();
+				double stddev = histogram.getStddev();
 				return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
 			}
 			else if (COL_MIN.equals(column)) {
-				double min = histogram.min();
+				double min = histogram.getMin();
 				return Double.isNaN(min) ? "n.a." : String.valueOf(min);
 			}
 			else if (COL_MAX.equals(column)) {
-				double max = histogram.max();
+				double max = histogram.getMax();
 				return Double.isNaN(max) ? "n.a." : String.valueOf(max);
 			}
 		}

@@ -49,7 +49,7 @@ public class HistogramDataset implements IHistogramDataset {
 			cellBreaks[size] = Double.POSITIVE_INFINITY;
 			double[] cellValues = histogram.getValues().toArray();
 			histograms[i] = new HistogramData(keys[i], isDiscrete,
-									histogram.count(), histogram.min(), histogram.max(),
+									histogram.getCount(), histogram.getMin(), histogram.getMax(),
 									cellBreaks, cellValues);
 		}
 	}

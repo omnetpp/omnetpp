@@ -114,7 +114,7 @@ public class ScalarDataset implements IAveragedScalarDataset {
      * @return The value.
      */
     public double getValue(int row, int column) {
-       	return data.getValue(row, column).mean();
+       	return data.getValue(row, column).getMean();
     }
     
 	/**

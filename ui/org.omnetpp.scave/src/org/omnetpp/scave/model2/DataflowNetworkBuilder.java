@@ -119,14 +119,14 @@ public class DataflowNetworkBuilder {
 		}
 		
 		public void createNodes(DataflowManager manager) {
-			Assert.isLegal(NodeTypeRegistry.instance().exists(type),
+			Assert.isLegal(NodeTypeRegistry.getInstance().exists(type),
 					"Unknown node type: " + type);
-			NodeType nodeType = NodeTypeRegistry.instance().getNodeType(type);
+			NodeType nodeType = NodeTypeRegistry.getInstance().getNodeType(type);
 			node = nodeType.create(manager, attrs);
 		}
 		
 		public Port createPort(PortWrapper port) {
-			return node.nodeType().getPort(node, port.name);
+			return node.getNodeType().getPort(node, port.name);
 		}
 	}
 	
@@ -274,10 +274,10 @@ public class DataflowNetworkBuilder {
 		}
 
 		public void createNodes(DataflowManager manager) {
-			Assert.isLegal(NodeTypeRegistry.instance().exists(operation.getOperation()),
+			Assert.isLegal(NodeTypeRegistry.getInstance().exists(operation.getOperation()),
 					"Unknown node type: " + operation.getOperation());
 			
-			NodeTypeRegistry registry = NodeTypeRegistry.instance();
+			NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
 			StringMap attrs = new StringMap();
 			for (Param param : operation.getParams())
 				attrs.set(param.getName(), param.getValue());
@@ -285,8 +285,8 @@ public class DataflowNetworkBuilder {
 			
 			if (outPort2.channel != null) {
 				teeNode = registry.getNodeType("tee").create(manager, EMPTY_ATTRS);
-				Port out = teeNode.nodeType().getPort(teeNode, "next-out");
-				Port in = filterNode.nodeType().getPort(filterNode, "in");
+				Port out = teeNode.getNodeType().getPort(teeNode, "next-out");
+				Port in = filterNode.getNodeType().getPort(filterNode, "in");
 				manager.connect(out, in);
 			}
 		}
@@ -295,14 +295,14 @@ public class DataflowNetworkBuilder {
 		public Port createPort(PortWrapper port) {
 			if (port == inPort) {
 				if (teeNode != null)
-					return teeNode.nodeType().getPort(teeNode, "in");
+					return teeNode.getNodeType().getPort(teeNode, "in");
 				else
-					return filterNode.nodeType().getPort(filterNode, "in");
+					return filterNode.getNodeType().getPort(filterNode, "in");
 			}
 			else if (port == outPort1)
-				return filterNode.nodeType().getPort(filterNode, "out");
+				return filterNode.getNodeType().getPort(filterNode, "out");
 			else if (port == outPort2)
-				return teeNode.nodeType().getPort(teeNode, "next-out");
+				return teeNode.getNodeType().getPort(teeNode, "next-out");
 			else
 				Assert.isLegal(false);
 			return null;

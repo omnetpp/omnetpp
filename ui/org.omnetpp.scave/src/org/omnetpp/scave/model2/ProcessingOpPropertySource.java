@@ -39,15 +39,15 @@ public class ProcessingOpPropertySource extends PropertySource {
 	private EditingDomain domain;
 
 	private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-	private static final NodeTypeRegistry registry = NodeTypeRegistry.instance();
+	private static final NodeTypeRegistry registry = NodeTypeRegistry.getInstance();
 	private static final String[] nodeTypes;
 	static {
 		NodeTypeVector nodeTypeVector = registry.getNodeTypes();
 		List<String> filterNodeTypes = new ArrayList<String>();
 		for (int i = 0; i < nodeTypeVector.size(); ++i) {
 			NodeType nodeType = nodeTypeVector.get(i);
-			if ("filter".equals(nodeType.category()))
-				filterNodeTypes.add(nodeTypeVector.get(i).name());
+			if ("filter".equals(nodeType.getCategory()))
+				filterNodeTypes.add(nodeTypeVector.get(i).getName());
 		}
 		nodeTypes = filterNodeTypes.toArray(new String[filterNodeTypes.size()]);
 	}
@@ -84,7 +84,7 @@ public class ProcessingOpPropertySource extends PropertySource {
 		String op = processingOp.getOperation();
 		if (registry.exists(op)) {
 			NodeType nodeType = registry.getNodeType(op);
-			if ("filter".equals(nodeType.category()))
+			if ("filter".equals(nodeType.getCategory()))
 				return new ParamsPropertySource(nodeType, processingOp.getParams());
 		}
 		return new BasePropertySource();

@@ -348,7 +348,7 @@ public class DatasetManager {
 			XYDataset ds = xyDatasets.get(i);
 			double prevX = Double.NEGATIVE_INFINITY;
 			for (int j = 0; j < ds.getColumnCount(); ++j) {
-				double x = ds.getValue(0, j).mean();
+				double x = ds.getValue(0, j).getMean();
 				if (!Double.isNaN(x)) {
 					if (x < prevX)
 						Assert.isTrue(false, "Not ordered");
@@ -596,7 +596,7 @@ public class DatasetManager {
 		for (String key : inputAttrs.keys().toArray()) // TODO use clone()
 			outAttrs.set(key, inputAttrs.get(key));
 		
-		NodeType type = NodeTypeRegistry.instance().getNodeType(operation);
+		NodeType type = NodeTypeRegistry.getInstance().getNodeType(operation);
 		StringVector warningList = new StringVector();
 		type.mapVectorAttributes(outAttrs, warningList);
 		for (int i = 0; i < warningList.size(); ++i)

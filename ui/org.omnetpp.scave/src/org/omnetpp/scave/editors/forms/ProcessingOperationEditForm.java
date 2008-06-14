@@ -77,14 +77,14 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 	
 	public ProcessingOperationEditForm(ProcessingOp processingOp, EObject parent) {
 		this.processingOp = processingOp;
-		NodeTypeVector types = NodeTypeRegistry.instance().getNodeTypes();
+		NodeTypeVector types = NodeTypeRegistry.getInstance().getNodeTypes();
 		List<NodeType> filterTypes = new ArrayList<NodeType>();
 		List<String> filterNames = new ArrayList<String>();
 		for (int i = 0; i < types.size(); ++i) {
 			NodeType nodeType = types.get(i);
-			if ("filter".equals(nodeType.category())) {
+			if ("filter".equals(nodeType.getCategory())) {
 				filterTypes.add(nodeType);
-				filterNames.add(nodeType.name());
+				filterNames.add(nodeType.getName());
 			}
 		}
 		this.operationTypes = filterTypes.toArray(new NodeType[filterTypes.size()]);
@@ -189,7 +189,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 	private void updateDescription() {
 		int index = operationCombo.getSelectionIndex();
 		NodeType type = index >= 0 ? operationTypes[index] : null;
-		description.setText(type != null ? type.description() : "");
+		description.setText(type != null ? type.getDescription() : "");
 		description.getParent().getParent().layout();
 	}
 	

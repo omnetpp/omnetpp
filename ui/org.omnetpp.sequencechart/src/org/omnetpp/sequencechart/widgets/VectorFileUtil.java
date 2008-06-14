@@ -46,7 +46,7 @@ public class VectorFileUtil {
 		if (includeEventNumbers)
 			stringMap.set("collecteventnumbers", "true");
 		Node arrayBuilderNode = createNode(dataflowManager, "arraybuilder", stringMap);
-		dataflowManager.connect(port, arrayBuilderNode.nodeType().getPort(arrayBuilderNode, "in"));
+		dataflowManager.connect(port, arrayBuilderNode.getNodeType().getPort(arrayBuilderNode, "in"));
 
 		// run the data-flow network
 		long startTime = System.currentTimeMillis();
@@ -65,7 +65,7 @@ public class VectorFileUtil {
 	}
 
 	private static Node createNode(DataflowManager dataflowManager, String typeName, StringMap attrs) {
-		NodeTypeRegistry factory = NodeTypeRegistry.instance();
+		NodeTypeRegistry factory = NodeTypeRegistry.getInstance();
 		if (!factory.exists(typeName))
 			throw new IllegalArgumentException("unknown node type: " + typeName);
 		NodeType nodeType = factory.getNodeType(typeName);

@@ -50,7 +50,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
         if (type == ResultItem.Type.TYPE_ENUM) {
             EnumType enumType = resultItem.getEnum();
-            valueNames = enumType.names().toArray();
+            valueNames = enumType.getNames().toArray();
         }
     }
 
