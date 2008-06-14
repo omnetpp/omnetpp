@@ -47,7 +47,7 @@ class Port
     Port(); // prevent generating a default public one
     ~Port();
   public:
-    Node *node();
+    Node *getNode();
 };
 
 %newobject Node::getArray;
@@ -58,7 +58,7 @@ class Node
     Node(); // prevent generating a default public one
     ~Node();
   public:
-    NodeType *nodeType() const;
+    NodeType *getNodeType() const;
     %extend {
         XYArray *getArray() {
             ArrayBuilderNode *abNode = dynamic_cast<ArrayBuilderNode *>(self);
