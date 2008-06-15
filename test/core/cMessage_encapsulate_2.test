@@ -3,7 +3,7 @@ Tests message length behaviour with cMessage.encapsulate().
 
 %activity:
 cMessage *payload = new cMessage;
-payload->setLength(128);
+payload->setBitLength(128);
 
 cMessage *frame = new cMessage;
 frame->setBitLength(32);
@@ -14,7 +14,7 @@ ev << frame->getBitLength() << endl;
 frame->decapsulate();
 ev << frame->getBitLength() << endl;
 
-ev << payload->length() << endl;
+ev << payload->getBitLength() << endl;
 
 %contains: stdout
 160

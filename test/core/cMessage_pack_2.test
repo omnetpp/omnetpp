@@ -12,10 +12,10 @@ Tests cMessage.netPack/netUnpack and msg encapsulation.
 cFileCommBuffer *buffer = new cFileCommBuffer();
 
 cMessage *payload = new cMessage("payload");
-payload->setLength(123);
+payload->setBitLength(123);
 
 cMessage msg("msg");
-msg.setLength(1500);
+msg.setBitLength(1500);
 msg.encapsulate(payload);
 msg.netPack(buffer);
 
@@ -24,18 +24,18 @@ msg2.netUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
 PRINT(msg2.getName());
-PRINT(msg2.length());
+PRINT(msg2.getBitLength());
 PRINT(msg2.getEncapsulatedMsg()==NULL);
 
 cMessage *payload2 = msg2.decapsulate();
 PRINT(payload2->getName());
-PRINT(payload2->length());
+PRINT(payload2->getBitLength());
 
 %contains: stdout
 isBufferEmpty:1
 msg2.getName():msg
-msg2.length():1623
+msg2.getBitLength():1623
 msg2.getEncapsulatedMsg()==NULL:0
 payload2->getName():payload
-payload2->length():123
+payload2->getBitLength():123
 

@@ -42,7 +42,7 @@ void Node::finish()
     cStdDev stats("stats");
     for (int i=1; i<=10; i++)
         stats.collect(i*i);
-    recordScalar(&stats, "m");
+    recordStatistic(&stats, "m");
 }
 
 }; //namespace

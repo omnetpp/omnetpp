@@ -1,5 +1,5 @@
 %description:
-check that recordScalar() methods work OK.
+check that recordScalar()/recordStatistic() methods work OK.
 
 %activity:
 
@@ -11,11 +11,11 @@ recordScalar("two", -1.3);
 
 for (int i=1; i<=10; i++)
     stats.collect(i*i);
-recordScalar(&stats, "m");
+recordStatistic(&stats, "m");
 
 for (int i=1; i<=10; i++)
     weightedStats.collect2(i*i,i);
-recordScalar(&weightedStats, "m");
+recordStatistic(&weightedStats, "m");
 
 %contains-regex: test.sca
 scalar Test 	one 	24.2

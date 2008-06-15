@@ -37,7 +37,7 @@ for (int i=0; i<3; i++)
     CHECK(!strcmp(cc->getName(), msg->getName()));
     CHECK(cc->getKind()==msg->getKind());
     CHECK(cc->getPriority()==msg->getPriority());
-    CHECK(cc->length()==msg->getBitLength());
+    CHECK(cc->getBitLength()==msg->getBitLength());
     CHECK(cc->hasBitError()==msg->hasBitError());
     CHECK(cc->getTimestamp()==msg->getTimestamp());
     CHECK(cc->getContextPointer()==msg->getContextPointer());

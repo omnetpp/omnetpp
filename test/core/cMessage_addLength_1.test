@@ -1,22 +1,22 @@
 %description:
-Tests cMessage.addLength().
+Tests cMessage.addBitLength().
 
 %activity:
 cMessage msg("msg");
 
-ev << msg.length() << endl;
+ev << msg.getBitLength() << endl;
 
-msg.addLength(100);
-ev << msg.length() << endl;
+msg.addBitLength(100);
+ev << msg.getBitLength() << endl;
 
-msg.addLength(50);
-ev << msg.length() << endl;
+msg.addBitLength(50);
+ev << msg.getBitLength() << endl;
 
-msg.addLength(-10);
-ev << msg.length() << endl;
+msg.addBitLength(-10);
+ev << msg.getBitLength() << endl;
 
-msg.addLength(-300);
-ev << msg.length() << endl;
+msg.addBitLength(-300);
+ev << msg.getBitLength() << endl;
 
 %exitcode: 1
 

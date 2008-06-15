@@ -8,14 +8,14 @@ int dummy;
 
 msg.setKind(10);
 msg.setPriority(3);
-msg.setLength(456);
+msg.setBitLength(456);
 msg.setBitError(true);
 msg.setTimestamp(2.434);
 msg.setContextPointer(&dummy);
 
 ev << "kind: " << msg.getKind() << endl;
 ev << "priority: " << msg.getPriority() << endl;
-ev << "length: " << msg.length() << endl;
+ev << "length: " << msg.getBitLength() << endl;
 ev << "bitError: " << msg.hasBitError() << endl;
 ev << "timestamp: " << msg.getTimestamp() << endl;
 ev << "contextPointer ok: " << (msg.getContextPointer() == &dummy) << endl;
