@@ -516,7 +516,7 @@ sub processFile()
             # add to base enum, too
             print CC "EXECUTE_ON_STARTUP(\n";
             print CC "    cEnum *e = cEnum::find(\"$baseenum\");\n";
-            print CC "    if (!e) enums.instance()->add(e = new cEnum(\"$baseenum\"));\n";
+            print CC "    if (!e) enums.getInstance()->add(e = new cEnum(\"$baseenum\"));\n";
             foreach $fieldname (@fieldlist)
             {
                 print CC "    e->insert($fieldname, \"$fieldname\");\n";
