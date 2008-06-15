@@ -57,7 +57,7 @@ class SIM_API _OPPDEPRECATED cLinkedList : public cOwnedObject
      * the ++ and -- operators can be used to step from one element of
      * the list to the next/previous one.
      */
-    class Iterator
+    class _OPPDEPRECATED Iterator
     {
       private:
         Elem *p;
