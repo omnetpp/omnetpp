@@ -37,18 +37,6 @@ class cDefaultList;
 
 
 /**
- * Prototype for functions that can be used by cQueue objects configured as
- * priority queues to compare two objects.
- * Return values of CompareFunc should be
- * - greater than zero if a > b
- * - smaller than zero if a < b
- *
- * @ingroup EnumsTypes
- */
-typedef int (*CompareFunc)(cOwnedObject *a, cOwnedObject *b);
-
-
-/**
  * Base class for several classes in the \opp library. Instances of
  * cOwnedObjects are kept track of by the simulation kernel, and
  * may be inserted into cQueue and cArray.

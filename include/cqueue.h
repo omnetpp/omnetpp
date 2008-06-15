@@ -26,9 +26,22 @@ NAMESPACE_BEGIN
 
 
 /**
+ * Type for comparison functions for cObject. Return value should be:
+ * - less than zero if a < b
+ * - greater than zero if a > b
+ *
+ * @ingroup EnumsTypes
+ */
+typedef int (*CompareFunc)(cObject *a, cObject *b);
+
+
+/**
  * Queue class for objects derived from cOwnedObject. The default behaviour of
  * cQueue is a FIFO: you insert elements at the back using insert(), and
  * remove them at the front using pop().
+ *
+ * cQueue may be set up to acts as a priority queue. This requires the user to specify
+ * a comparison function.
  *
  * By default, cQueue's destructor deletes all contained objects. This behaviour
  * can be changed by calling setTakeOwnership(false) before inserting objects.
@@ -106,6 +119,7 @@ class SIM_API cQueue : public cOwnedObject
     bool tkownership;
     QElem *frontp, *backp;  // inserting at back(), removal at front()
     int n;  // number of items in the queue
+    CompareFunc compare;   // comparison function; NULL for FIFO
 
   protected:
     // internal functions
@@ -118,9 +132,10 @@ class SIM_API cQueue : public cOwnedObject
     /** @name Constructors, destructor, assignment. */
     //@{
     /**
-     * Constructor.
+     * Constructor. When comparison function argument is NULL, the queue will
+     * act as FIFO, otherwise as priority queue.
      */
-    cQueue(const char *name = NULL);
+    cQueue(const char *name = NULL, CompareFunc cmp=NULL);
 
     /**
      * Copy constructor. Contained objects that are owned by the queue
@@ -183,6 +198,12 @@ class SIM_API cQueue : public cOwnedObject
 
     /** @name Setup, insertion and removal functions. */
     //@{
+    /**
+     * Sets the comparator function. This only affects future insertions,
+     * i.e. the queue's current content will not be re-sorted.
+     */
+    virtual void setup(CompareFunc cmp);
+
     /**
      * Adds an element to the back of the queue. Trying to insert a
      * NULL pointer is an error (throws cRuntimeError).

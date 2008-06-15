@@ -45,11 +45,12 @@ cQueue::cQueue(const cQueue& queue) : cOwnedObject()
     operator=(queue);
 }
 
-cQueue::cQueue(const char *name) : cOwnedObject(name)
+cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name)
 {
     tkownership = true;
     frontp = backp = NULL;
     n = 0;
+    compare = cmp;
 }
 
 cQueue::~cQueue()
@@ -79,6 +80,9 @@ void cQueue::netPack(cCommBuffer *buffer)
     throw cRuntimeError(this,eNOPARSIM);
 #else
     cOwnedObject::netPack(buffer);
+
+    if (compare)
+        throw new cRuntimeError(this,"netPack(): cannot serialize comparison function");
 
     buffer->pack(n);
 
@@ -143,6 +147,11 @@ cQueue& cQueue::operator=(const cQueue& queue)
     return *this;
 }
 
+void cQueue::setup(CompareFunc cmp)
+{
+    compare=cmp;
+}
+
 cQueue::QElem *cQueue::find_qelem(cOwnedObject *obj) const
 {
     QElem *p = frontp;
@@ -204,16 +213,12 @@ cOwnedObject *cQueue::remove_qelem(QElem *p)
 void cQueue::insert(cOwnedObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert NULL pointer in queue");
+        throw cRuntimeError(this, "cannot insert NULL pointer");
 
     if (getTakeOwnership())
         take(obj);
 
-    if (backp)
-    {
-        insafter_qelem(backp, obj);
-    }
-    else
+    if (!backp)
     {
         // insert as the only item
         QElem *e = new QElem;
@@ -222,16 +227,31 @@ void cQueue::insert(cOwnedObject *obj)
         frontp = backp = e;
         n = 1;
     }
+    else if (compare==NULL)
+    {
+        insafter_qelem(backp, obj);
+    }
+    else
+    {
+        // priority queue: seek insertion place
+        QElem *p = backp;
+        while (p && compare(obj, p->obj) < 0)
+            p = p->prev;
+        if (p)
+            insafter_qelem(p, obj);
+        else
+            insbefore_qelem(frontp, obj);
+    }
 }
 
 void cQueue::insertBefore(cOwnedObject *where, cOwnedObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this, "cannot insert NULL pointer in queue");
+        throw cRuntimeError(this, "cannot insert NULL pointer");
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw cRuntimeError(this, "insertBefore(w,o): object w=`%s' not in queue", where->getName());
+        throw cRuntimeError(this, "insertBefore(w,o): object w=`%s' not in the queue", where->getName());
 
     if (getTakeOwnership())
         take(obj);
@@ -241,11 +261,11 @@ void cQueue::insertBefore(cOwnedObject *where, cOwnedObject *obj)
 void cQueue::insertAfter(cOwnedObject *where, cOwnedObject *obj)
 {
     if (!obj)
-        throw cRuntimeError(this,"cannot insert NULL pointer in queue");
+        throw cRuntimeError(this,"cannot insert NULL pointer");
 
     QElem *p = find_qelem(where);
     if (!p)
-        throw cRuntimeError(this, "insertAfter(w,o): object w=`%s' not in queue",where->getName());
+        throw cRuntimeError(this, "insertAfter(w,o): object w=`%s' not in the queue",where->getName());
 
     if (getTakeOwnership())
         take(obj);

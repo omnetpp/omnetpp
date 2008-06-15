@@ -129,6 +129,8 @@ class SIM_API SimTime
     bool operator<=(const SimTime& x) const  {return t<=x.t;}
     bool operator>=(const SimTime& x) const  {return t>=x.t;}
 
+    SimTime operator-() const {SimTime x; x.t = -t; return x;}
+
     friend const SimTime operator+(const SimTime& x, const SimTime& y);
     friend const SimTime operator-(const SimTime& x, const SimTime& y);
 

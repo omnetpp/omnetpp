@@ -116,10 +116,10 @@
 	- added methods for metadata annotation: setEnum(), setUnit(), setType(), setInterpolationMode(), setMin(), setMax()
 
 	cQueue:
-	- sorting removed (class can no longer be used as priority queue)
 	- head()/tail() removed, back()/front() added (insert at back, pop from front!);
 	  because of head/tail change, iterator direction and meaning of insertBefore/insertAfter
 	  has changed
+	- boolean flag to specify ascending/descending order removed
 	- compat.h typedef cQueueIterator removed, as iterator semantic was changed in a non-compatible way anyway
 
 	New class: cPacketQueue
