@@ -1,3 +1,9 @@
+opp_makemake: generate one rule per .msg file. note: batch rules like
+    $(MSG_H_FILES) $(MSG_CC_FILES): $(MSGFILES)
+             $(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
+have been tries but do not work properly (nmake tends to recompile everything
+when any msg file changes)
+
 added ln.c
 opp_test: 
  - each test gets its own directory
