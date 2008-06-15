@@ -264,6 +264,16 @@ class SIM_API _OPPDEPRECATED cLinkedList : public cOwnedObject
     bool isEmpty() const {return n==0;}
 
     /**
+     * Alias for getLength().
+     */
+    int length() const {return getLength();}
+
+    /**
+     * Alias for isEmpty().
+     */
+    bool empty() const {return isEmpty();}
+
+    /**
      * Returns true if the list contains the given pointer.
      */
     bool contains(void *item) const  {return find_llelem(item)!=NULL;}
