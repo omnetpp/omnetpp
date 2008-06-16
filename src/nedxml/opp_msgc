@@ -1396,7 +1396,9 @@ sub generateClass
     }
     foreach $fieldname (@fieldlist)
     {
-        if ($fisabstract{$fieldname}) {
+        if ($fprops{$fieldname}->{nopack} ne '') {
+            # @nopack specified
+        } elsif ($fisabstract{$fieldname}) {
             print CC "    // field $fieldname is abstract -- please do packing in customized class\n";
         } else {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
@@ -1422,7 +1424,9 @@ sub generateClass
     }
     foreach $fieldname (@fieldlist)
     {
-        if ($fisabstract{$fieldname}) {
+        if ($fprops{$fieldname}->{nopack} ne '') {
+            # @nopack specified
+        } elsif ($fisabstract{$fieldname}) {
             print CC "    // field $fieldname is abstract -- please do unpacking in customized class\n";
         } else {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
