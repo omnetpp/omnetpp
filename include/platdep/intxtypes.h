@@ -53,8 +53,8 @@
 
   // Minimum of signed integral types.
   #ifndef INT8_MIN
-  #endif
   #define INT8_MIN      (-128)
+  #endif
 
   #ifndef INT16_MIN
   #define INT16_MIN     (-32767-1)
