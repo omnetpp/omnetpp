@@ -63,7 +63,7 @@ class ENVIR_API BootEnv : public cEnvir
     virtual void endSend(cMessage *msg)  {UNSUPPORTED;}
     virtual void messageDeleted(cMessage *msg)  {UNSUPPORTED;}
     virtual void moduleReparented(cModule *module, cModule *oldparent)  {UNSUPPORTED;}
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *method)  {UNSUPPORTED;}
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)  {UNSUPPORTED;}
     virtual void componentMethodEnd()  {UNSUPPORTED;}
     virtual void moduleCreated(cModule *newmodule)  {UNSUPPORTED;}
     virtual void moduleDeleted(cModule *module)  {UNSUPPORTED;}

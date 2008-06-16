@@ -1157,9 +1157,9 @@ void Tkenv::messageDeleted(cMessage *msg)
     EnvirBase::messageDeleted(msg);
 }
 
-void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *method)
+void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *methodFmt, va_list va)
 {
-    EnvirBase::componentMethodBegin(fromComp, toComp, method);
+    EnvirBase::componentMethodBegin(fromComp, toComp, methodFmt, va);
 
     if (!animating || !opt_anim_methodcalls)
         return;
@@ -1168,6 +1168,9 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
         return; // not yet animated
 
     updateGraphicalInspectorsBeforeAnimation();
+
+    static char methodText[MAX_METHODCALL];
+    vsprintf(methodText, methodFmt, va);
 
     cModule *from = (cModule *)fromComp;
     cModule *to = (cModule *)toComp;
@@ -1198,7 +1201,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                                         insp->windowName(), " ",
                                         parentptr," ",
                                         modptr," ",
-                                        " {",method,"} ",
+                                        " {",methodText,"} ",
                                         NULL));
             }
         }
@@ -1221,7 +1224,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                                         insp->windowName(), " ",
                                         parentptr," ",
                                         modptr," ",
-                                        " {",method,"} ",
+                                        " {",methodText,"} ",
                                         NULL));
             }
         }
@@ -1239,7 +1242,7 @@ void Tkenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
                                         insp->windowName(), " ",
                                         fromptr," ",
                                         toptr," ",
-                                        " {",method,"} ",
+                                        " {",methodText,"} ",
                                         NULL));
             }
         }

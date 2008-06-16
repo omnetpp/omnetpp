@@ -832,10 +832,10 @@ void EnvirBase::messageDeleted(cMessage *msg)
         eventlogmgr->messageDeleted(msg);
 }
 
-void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
+void EnvirBase::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)
 {
     if (eventlogmgr)
-        eventlogmgr->componentMethodBegin(from, to, method);
+        eventlogmgr->componentMethodBegin(from, to, methodFmt, va);
 }
 
 void EnvirBase::componentMethodEnd()

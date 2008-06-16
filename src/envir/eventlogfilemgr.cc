@@ -267,14 +267,16 @@ void EventlogFileManager::messageDeleted(cMessage *msg)
     }
 }
 
-void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to, const char *method)
+void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)
 {
     if (isEventLogRecordingEnabled)
     {
         if (from->isModule() && to->isModule())
         {
+            static char methodText[MAX_METHODCALL];
+            vsprintf(methodText, methodFmt, va);
             EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog,
-                ((cModule *)from)->getId(), ((cModule *)to)->getId(), method);
+                ((cModule *)from)->getId(), ((cModule *)to)->getId(), methodText);
         }
     }
 }

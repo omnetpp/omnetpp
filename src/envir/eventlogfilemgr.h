@@ -68,7 +68,7 @@ class ENVIR_API EventlogFileManager
     virtual void endSend(cMessage *msg);
     virtual void messageDeleted(cMessage *msg);
     virtual void moduleReparented(cModule *module, cModule *oldparent);
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *method);
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va);
     virtual void componentMethodEnd();
     virtual void moduleCreated(cModule *newmodule);
     virtual void moduleDeleted(cModule *module);

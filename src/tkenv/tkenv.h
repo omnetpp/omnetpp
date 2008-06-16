@@ -135,7 +135,7 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
       virtual void endSend(cMessage *msg);
       virtual void messageDeleted(cMessage *msg);
-      virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *method);
+      virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va);
       virtual void componentMethodEnd();
       virtual void moduleCreated(cModule *newmodule);
       virtual void moduleDeleted(cModule *module);

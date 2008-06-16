@@ -237,7 +237,7 @@ class SIM_API cEnvir
      * function of another component. This hook enables a graphical user
      * interface to animate the method call in the network diagram.
      */
-    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *method) = 0;
+    virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va) = 0;
 
     /**
      * Notifies the environment that the method entered in the last
