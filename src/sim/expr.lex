@@ -66,7 +66,7 @@ static char textbuf[TEXTBUF_LEN];
 // buffer to collect characters during extendCount()
 static std::string extendbuf;
 
-#include "util.h"  // opp_strdup()
+#include "simutil.h"  // opp_strdup()
 %}
 
 %%

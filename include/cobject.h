@@ -21,7 +21,7 @@
 
 #include <string>
 #include "simkerneldefs.h"
-#include "util.h"
+#include "simutil.h"
 #include "cvisitor.h"
 
 // Note: we include regmacros.h here in order to prevent the compiler from

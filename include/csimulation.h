@@ -21,7 +21,7 @@
 #define __CSIMULATION_H
 
 #include "simkerneldefs.h"
-#include "util.h"
+#include "simutil.h"
 #include "globals.h"
 #include "cmessageheap.h"
 #include "ccoroutine.h"

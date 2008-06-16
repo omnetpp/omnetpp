@@ -26,7 +26,7 @@
 #include <deque>
 #include "platmisc.h"
 #include "envirext.h"
-#include "util.h"
+#include "simutil.h"
 #include "fileoutvectormgr.h"
 
 NAMESPACE_BEGIN

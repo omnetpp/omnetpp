@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <deque>
 
-#include "util.h"
+#include "simutil.h"
 #include "opp_string.h"
 #include "cparsimcomm.h"
 

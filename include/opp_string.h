@@ -23,7 +23,7 @@
 #include <map>
 #include <ostream>
 #include "simkerneldefs.h"
-#include "util.h"
+#include "simutil.h"
 
 NAMESPACE_BEGIN
 

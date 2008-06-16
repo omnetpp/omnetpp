@@ -156,8 +156,8 @@
 // string-to-int64 conversion
 //
 #ifdef _MSC_VER
-#define strtoll   strtoi64
-#define strtoull  strtoui64
+#define strtoll   _strtoi64
+#define strtoull  _strtoui64
 #endif
 
 #endif

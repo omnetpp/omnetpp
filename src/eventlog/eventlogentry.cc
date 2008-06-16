@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <errno.h>
+#include <stdlib.h>
 #include "eventlog.h"
 #include "eventlogentry.h"
 #include "eventlogentryfactory.h"

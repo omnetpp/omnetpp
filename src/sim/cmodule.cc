@@ -32,7 +32,7 @@
 #include "cproperties.h"
 #include "cproperty.h"
 #include "stringutil.h"
-#include "util.h"
+#include "simutil.h"
 
 USING_NAMESPACE
 

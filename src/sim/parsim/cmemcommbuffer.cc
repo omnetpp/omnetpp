@@ -20,7 +20,7 @@
 
 #include <string.h>
 #include "cmemcommbuffer.h"
-#include "util.h"  // opp_string
+#include "simutil.h"
 #include "cownedobject.h"
 #include "globals.h"
 #include "regmacros.h"

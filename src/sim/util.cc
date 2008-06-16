@@ -24,7 +24,7 @@
 #include <math.h>
 #include "unitconversion.h"
 #include "opp_ctype.h"
-#include "util.h"
+#include "simutil.h"
 #include "cenvir.h"
 #include "csimulation.h"
 #include "globals.h"

@@ -22,7 +22,7 @@
 #include <iostream>
 #include "cenvir.h"
 #include "simkerneldefs.h"
-#include "util.h"
+#include "simutil.h"
 #include "cnamedobject.h"
 #include "cexception.h"
 

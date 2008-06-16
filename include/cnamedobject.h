@@ -21,7 +21,7 @@
 #include <typeinfo>
 #include <iostream>
 #include "simkerneldefs.h"
-#include "util.h"
+#include "simutil.h"
 #include "cobject.h"
 #include "cexception.h"
 #include "cstringpool.h"

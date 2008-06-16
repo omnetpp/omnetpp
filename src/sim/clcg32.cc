@@ -17,7 +17,7 @@
 *--------------------------------------------------------------*/
 
 #include "clcg32.h"
-#include "util.h"
+#include "simutil.h"
 #include "cenvir.h"
 #include "cexception.h"
 #include "cconfigkey.h"

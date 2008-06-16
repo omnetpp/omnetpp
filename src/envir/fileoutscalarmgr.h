@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include "envirdefs.h"
 #include "envirext.h"
-#include "util.h"
+#include "simutil.h"
 #include "stringutil.h"
 #include "runattributes.h"
 

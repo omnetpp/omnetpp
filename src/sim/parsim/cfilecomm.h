@@ -22,7 +22,7 @@
 #define __CFILECOMM_H__
 
 #include "cparsimcomm.h"
-#include "util.h"
+#include "simutil.h"
 
 NAMESPACE_BEGIN
 

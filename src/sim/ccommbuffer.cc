@@ -20,7 +20,7 @@
 
 
 #include "ccommbuffer.h"
-#include "util.h"  // opp_string
+#include "simutil.h"
 #include "cobject.h"
 #include "cclassfactory.h"    // createOne()
 

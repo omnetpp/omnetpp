@@ -25,7 +25,7 @@
 
 #include <stdio.h>
 #include "fileoutvectormgr.h"
-#include "util.h"
+#include "simutil.h"
 
 NAMESPACE_BEGIN
 

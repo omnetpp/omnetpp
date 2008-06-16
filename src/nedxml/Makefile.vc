@@ -131,6 +131,8 @@ clean:
 	-cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe* opp_msgc opp_msgc.cmd 2>nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/a_m.obj: a_m.cc \
+  a_m.h
 $O/cppexprgenerator.obj: cppexprgenerator.cc \
   cppexprgenerator.h \
   nederror.h \

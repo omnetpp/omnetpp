@@ -17,7 +17,7 @@
 *--------------------------------------------------------------*/
 
 #include "cenvir.h"
-#include "util.h"
+#include "simutil.h"
 #include "cexception.h"
 #include "cmersennetwister.h"
 #include "cmessage.h"

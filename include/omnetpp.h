@@ -97,7 +97,7 @@
 #include "opp_string.h"
 #include "random.h"
 #include "regmacros.h"
-#include "util.h"
+#include "simutil.h"
 #include "nedsupport.h"
 #include "compat.h"
 #include "platdep/intxtypes.h"

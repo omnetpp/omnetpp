@@ -23,7 +23,7 @@
 #include "cclassdescriptor.h"
 #include "carray.h"
 #include "cenum.h"
-#include "util.h"
+#include "simutil.h"
 #include "cclassfactory.h"  // createOne()
 
 USING_NAMESPACE

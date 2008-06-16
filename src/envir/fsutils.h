@@ -19,7 +19,7 @@
 #define __FSUTILS_H
 
 #include "envirdefs.h"
-#include "util.h"
+#include "simutil.h"
 
 NAMESPACE_BEGIN
 

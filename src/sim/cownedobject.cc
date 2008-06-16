@@ -23,7 +23,7 @@
 #include "cenvir.h"
 #include "globals.h"
 #include "cexception.h"
-#include "util.h"
+#include "simutil.h"
 #include "cdefaultlist.h"
 #include "cclassdescriptor.h"
 

@@ -35,7 +35,7 @@
 #include "ccomponenttype.h"
 #include "stringutil.h"
 #include "stringpool.h"
-#include "util.h"
+#include "simutil.h"
 
 USING_NAMESPACE
 

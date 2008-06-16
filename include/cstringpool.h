@@ -17,7 +17,7 @@
 #define __CSTRINGPOOL_H
 
 #include "simkerneldefs.h"
-#include "util.h"
+#include "simutil.h"
 #include <map>
 
 NAMESPACE_BEGIN
