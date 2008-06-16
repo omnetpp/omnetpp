@@ -117,7 +117,7 @@ $O/arrow.o: arrow.cc \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -211,7 +211,7 @@ $O/inspector.o: inspector.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
@@ -314,7 +314,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
@@ -356,7 +356,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
   ../../include/util.h \
@@ -421,7 +421,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
   ../../include/util.h \
@@ -543,7 +543,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/util.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/timeutil.h \
   ../../include/platdep/platdefs.h \
   ../../include/cregistrationlist.h \
@@ -581,7 +581,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cownedobject.h \
   ../../include/cdefaultlist.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
   ../../include/util.h \
@@ -646,7 +646,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/platdep/platmisc.h \
@@ -711,7 +711,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/simkerneldefs.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/cobject.h \
@@ -767,7 +767,7 @@ $O/tklib.o: tklib.cc \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -816,7 +816,7 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -864,10 +864,11 @@ $O/visitor.o: visitor.cc \
   ../../include/cchannel.h \
   ../../include/cgate.h \
   visitor.h \
+  tkutil.h \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/platdep/platmisc.h \

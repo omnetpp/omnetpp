@@ -58,4 +58,5 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/seedtool.o: seedtool.cc
+$O/ln.o: ln.c
 $O/opp_replace.o: opp_replace.c

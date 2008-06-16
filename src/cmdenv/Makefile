@@ -86,7 +86,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
