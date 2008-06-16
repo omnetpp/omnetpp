@@ -18,7 +18,7 @@
 #define __LCGRANDOM_H
 
 #include "commondefs.h"
-#include "inttypes.h"
+#include "intxtypes.h"
 #include "exception.h"
 
 NAMESPACE_BEGIN

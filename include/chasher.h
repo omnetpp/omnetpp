@@ -23,7 +23,7 @@
 #include "simkerneldefs.h"
 #include "cobject.h"
 #include "cexception.h"
-#include "platdep/inttypes.h"
+#include "platdep/intxtypes.h"
 
 NAMESPACE_BEGIN
 

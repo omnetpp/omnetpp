@@ -23,7 +23,7 @@
 #include <float.h>
 #include <math.h>
 #include "platdep/platdefs.h"
-#include "platdep/inttypes.h"
+#include "platdep/intxtypes.h"
 
 // OMNeT++ version -- must match NEDC_VERSION and MSGC_VERSION in nedxml!
 //XXX move to platdefs.h? and remove NEDC_VERSION

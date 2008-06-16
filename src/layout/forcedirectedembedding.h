@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <time.h>
 #include <iostream>
-#include "inttypes.h"
+#include "intxtypes.h"
 #include "geometry.h"
 #include "forcedirectedparametersbase.h"
 

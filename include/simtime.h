@@ -19,7 +19,7 @@
 #include <string>
 #include <iostream>
 #include "simkerneldefs.h"
-#include "platdep/inttypes.h"
+#include "platdep/intxtypes.h"
 
 NAMESPACE_BEGIN
 

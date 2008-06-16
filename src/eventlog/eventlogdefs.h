@@ -19,7 +19,7 @@
 
 #include "platdefs.h"
 #include "exception.h"
-#include "inttypes.h" // for int64, our equivalent of Java's "long" type
+#include "intxtypes.h" // for int64, our equivalent of Java's "long" type
 #include "commonutil.h"
 #include "bigdecimal.h"
 

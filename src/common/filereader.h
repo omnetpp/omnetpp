@@ -21,7 +21,7 @@
 #include <string>
 #include "platmisc.h"
 #include "commondefs.h"
-#include "inttypes.h"   // for int64
+#include "intxtypes.h"   // for int64
 
 NAMESPACE_BEGIN
 

@@ -20,7 +20,7 @@
 #include <assert.h>
 #include "commondefs.h"
 #include "exception.h"
-#include "inttypes.h"
+#include "intxtypes.h"
 
 
 #ifdef NDEBUG

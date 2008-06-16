@@ -33,7 +33,7 @@
 #include "fnamelisttokenizer.h"
 #include "stringutil.h"
 
-#include "inttypes.h"
+#include "intxtypes.h"
 
 NAMESPACE_BEGIN
 

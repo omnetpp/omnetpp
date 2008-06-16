@@ -16,7 +16,7 @@
 
 #include <algorithm>
 #include <sys/stat.h>
-#include "inttypes.h"
+#include "intxtypes.h"
 #include "exception.h"
 #include "filereader.h"
 #include "linetokenizer.h"

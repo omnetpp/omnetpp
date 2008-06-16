@@ -19,7 +19,7 @@
 
 #include <string>
 #include <functional>
-#include "inttypes.h"
+#include "intxtypes.h"
 #include "scavedefs.h"
 #include "timeutil.h"
 

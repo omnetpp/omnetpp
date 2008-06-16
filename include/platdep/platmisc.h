@@ -110,7 +110,7 @@ inline bool opp_loadlibrary(const char *libname)
 //
 // 64-bit file offsets
 //
-#include "inttypes.h"
+#include "intxtypes.h"
 
 typedef int64 file_offset_t;  // off_t on Linux
 

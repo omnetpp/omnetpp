@@ -34,7 +34,7 @@
 #include "cchannel.h"
 #include "cbasicchannel.h"
 
-#include "inttypes.h"
+#include "intxtypes.h"
 #include "inspector.h"
 #include "envirbase.h"
 #include "graphlayouter.h"
