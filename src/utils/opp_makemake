@@ -1214,7 +1214,12 @@ msgheaders: $(MSGFILES:.msg=_m.h)
 
 clean:
 {nmake:}	-rmdir /s /q $(O:/=\) 2>nul
-{~nmake:}	-rm -rf $O
+{nmake:}	-del $(VC_AUX_FILES) 2>nul
+{nmake:}{exe:}	-del $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.exe=.dll) 2>nul
+{nmake:}{sharedlib:}	-del $(TARGET) $(TARGET:.dll=.exe) $(TARGET:.dll=.lib) 2>nul
+{nmake:}{staticlib:}	-del $(TARGET) $(TARGET:.lib=.exe) $(TARGET:.lib=.dll) 2>nul
+{nmake:}{nolink:}	-del $(TARGET) $(TARGET).exe $(TARGET).dll $(TARGET).lib 2>nul
+{~nmake:}	-rm -rf $O $(TARGET)
 {~nmake:}{@dir:sourcedirs}	-rm -f {dir}/*_m.{cc} {dir}/*_m.h
 {~nmake:}{/@}
 {nmake:}{@bsdir:backslashedsourcedirs}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul
