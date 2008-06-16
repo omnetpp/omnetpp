@@ -33,7 +33,7 @@ import org.omnetpp.ide.preferences.OmnetppPreferencePage;
  *
  * This class MUST NOT make any reference to CDT data structures, DependencyCache etc;
  * all input should be passed in via MakemakeOptions.
- * 
+ *
  * @author Andras
  */
 //XXX "Out" dir should be excluded implicitly
@@ -77,7 +77,7 @@ public class Makemake {
      */
     public void generateMakefile(IContainer folder, final MakemakeOptions options, Map<IContainer,Map<IFile,Set<IFile>>> perFileDeps) throws CoreException, MakemakeException {
         this.folder = folder;
-        
+
         File directory = folder.getLocation().toFile();
         projectLocation = folder.getProject().getLocation();
         folderLocation = folder.getLocation();
@@ -110,7 +110,7 @@ public class Makemake {
             throw new MakemakeException("target (-o option) should only be a name, it cannot contain relative path");
 
         // isRecursive and deep do not mix
-        if (isDeep) 
+        if (isDeep)
             isRecursive = false;
 
         String makecommand = isNMake ? "nmake /nologo /f Makefile.vc" : "make";
@@ -121,7 +121,7 @@ public class Makemake {
         String omnetppRoot = OmnetppMainPlugin.getDefault().getPreferenceStore().getString(OmnetppPreferencePage.OMNETPP_ROOT);
         if (StringUtils.isEmpty(omnetppRoot))
             throw new MakemakeException("OMNeT++ root must be set in Window|Preferences");
-        String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc"); 
+        String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc");
 
         // collect source files
         if (!isDeep) {
@@ -153,7 +153,7 @@ public class Makemake {
         for (String i : options.libDirs)
             libDirs.add(abs2rel(i));
 
-        
+
         // try to determine if .cc or .cpp files are used
         String ccExt = options.ccext;
         if (ccExt == null) {
@@ -174,7 +174,7 @@ public class Makemake {
         }
 
         String objExt = isNMake ? "obj" : "o";
-        String targetPrefix = ""; 
+        String targetPrefix = "";
         String targetSuffix = "";
         if (options.type == MakemakeOptions.Type.EXE)
             targetSuffix = isNMake ? ".exe" : "$(EXE_SUFFIX)";
@@ -221,9 +221,9 @@ public class Makemake {
         if (ccExt.equals("cpp"))
             sources.addAll(cppfiles);
         sources.addAll(msgfiles);
-        if (!options.ignoreNedFiles) 
+        if (!options.ignoreNedFiles)
             sources.addAll(nedfiles);
-        
+
         for (String i : sources) {
             i = i.replaceAll("\\*[^ ]*", "");
             i = i.replaceAll("[^ ]*_n\\." + ccExt + "$", "");
@@ -274,7 +274,7 @@ public class Makemake {
         outdir = outRootRel.toString();
 
         // determine subpath: the project-relative path of this folder
-        String subpath = folder.getProjectRelativePath().toString(); 
+        String subpath = folder.getProjectRelativePath().toString();
 
         // XP has 8K limit on line length, so we may have to use the inline file feature of nmake
         int approximateLinkerLineLength = 500 + quoteJoin(objs).length() + quoteJoin(extraObjs).length() + 2*quoteJoin(options.libs).length() + 2*quoteJoin(libDirs).length();
@@ -285,7 +285,7 @@ public class Makemake {
         //String sep = " ";
         String sep = " \\\n\t";
         for (IContainer srcFolder : perFileDeps.keySet()) {
-            if (MakefileTools.makefileCovers(folder, srcFolder, options.isDeep, options.exceptSubdirs)) {  
+            if (MakefileTools.makefileCovers(folder, srcFolder, options.isDeep, options.exceptSubdirs)) {
                 Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(srcFolder);
                 for (IFile srcFile : fileDepsMap.keySet()) {
                     if (srcFile.getFileExtension().equals(ccExt)) {
@@ -307,8 +307,8 @@ public class Makemake {
         m.put("rbrace", "}");
         m.put("nmake", isNMake);
         m.put("target", targetPrefix+ target + targetSuffix);
-        m.put("outdir", outdir); 
-        m.put("subpath", subpath); 
+        m.put("outdir", outdir);
+        m.put("subpath", subpath);
         m.put("isdeep", isDeep);
         m.put("progname", "opp_makemake");  // isNMake ? "opp_nmakemake" : "opp_makemake"
         m.put("args", options.toString());
@@ -338,9 +338,9 @@ public class Makemake {
         m.put("makecommand", makecommand);
         m.put("makefile", isNMake ? "Makefile.vc" : "Makefile");
         m.put("makefrags", makefrags);
-        m.put("msgccfiles", quoteJoin(msgccfiles));
-        m.put("msghfiles", quoteJoin(msghfiles));
-        m.put("msgfiles", quoteJoin(msgfiles));
+        m.put("msgccfiles", msgccfiles);
+        m.put("msghfiles", msghfiles);
+        m.put("msgfiles", msgfiles);
         m.put("objs", quoteJoin(objs));
         m.put("submakedirs", quoteJoin(submakeDirs));
         m.put("dllsymbol", StringUtils.nullToEmpty(options.dllSymbol));
@@ -360,7 +360,7 @@ public class Makemake {
             }
         }
         String content = StringUtils.substituteIntoTemplate(template, m);
-        content = content.replace("\r\n", "\n");  // make line endings consistent 
+        content = content.replace("\r\n", "\n");  // make line endings consistent
 
         // only overwrite file if it does not already exist with the same content,
         // to avoid excessive Eclipse workspace refreshes and infinite builder invocations
@@ -373,7 +373,7 @@ public class Makemake {
         List<String> result = new ArrayList<String>();
         collectDirs(dir, ".", exceptSubdirs, result);
         return result;
-    }    
+    }
 
     protected void collectDirs(IContainer dir, String dirPath, List<String> exceptSubdirs, final List<String> result) throws CoreException {
         if (!exceptSubdirs.contains(dirPath)) {  //FIXME like in Perl! ie. -Xtmp should mean -X./tmp not -X**/tmp!!! also wildcards should be supported!!!
@@ -411,7 +411,7 @@ public class Makemake {
     protected List<String> glob(String pattern) {
         return glob(".", pattern);
     }
-    
+
     protected List<String> glob(String subFolder, String pattern) {
         final String regex = pattern.replace(".", "\\.").replace("*", ".*").replace("?", ".?"); // good enough for what we need here
         String[] files = folder.getLocation().append(subFolder).toFile().list(new FilenameFilter() {
@@ -432,7 +432,7 @@ public class Makemake {
     protected String abs2rel(String location) throws CoreException {
         return abs2rel(new Path(location)).toString();
     }
-    
+
     protected IPath abs2rel(IPath location) throws CoreException {
         if (!location.isAbsolute()) {
             // leave relative paths untouched
