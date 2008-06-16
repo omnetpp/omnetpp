@@ -29,7 +29,7 @@
 USING_NAMESPACE
 
 
-#define INT64_PRINTF_FORMAT   LL  /* abbreviation */
+#define LL  INT64_PRINTF_FORMAT  /* abbreviation */
 
 void cClassDescriptor::long2string(long l, char *buf, int bufsize)
 {
