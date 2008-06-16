@@ -30,11 +30,8 @@ O = {outdir}/$(CONFIGNAME)/{subpath}
 OBJS = {objs}
 
 # Message files
-MSGFILES = {msgfiles}
-
-# C++ files generated from msg files
-MSG_CC_FILES = {msgccfiles}
-MSG_H_FILES = {msghfiles}
+MSGFILES ={@msg:msgfiles} \
+    {msg}{/@}
 
 {submakedirs:}# Subdirectories to recurse into
 {submakedirs:}SUBMAKE_DIRS = {submakedirs}
@@ -107,18 +104,16 @@ MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 #------------------------------------------------------------------------------
 
 # Main target
-all: $O/$(TARGET)
+all: $(TARGET)
+{~nolink:}
+{~nolink:}$(TARGET) : $O/$(TARGET)
+{~nolink:}{nmake:}	copy $(O:/=\)\$(TARGET) $(TARGET)
+{~nolink:}{~nmake:}	ln -s -f $O/$(TARGET) .
 
 {exe:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@mkdir -p $O
 {exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
-{exe:}{nmake:}	echo @^%~dp0\$(O:/=\)\$(TARGET) ^%* > $(TARGET:.exe=.cmd)
-{exe:}{~nmake:}ifeq ("$(EXE_SUFFIX)",".exe")
-{exe:}{~nmake:}	echo "@%~dp0\\\\$(subst /,\\\\,$O)\\\\$(TARGET) %*" > $(subst .exe,.cmd,$(TARGET))
-{exe:}{~nmake:}else
-{exe:}{~nmake:}	ln -s -f $O/$(TARGET) .
-{exe:}{~nmake:}endif
 {sharedlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@mkdir -p $O
@@ -127,7 +122,7 @@ all: $O/$(TARGET)
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O
 {staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) {nmake_inlineend}
-{nolink:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} {makefile}
+{nolink:}$(TARGET): $(OBJS) {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
 {submakedirs:}submakedirs:
@@ -150,19 +145,27 @@ all: $O/$(TARGET)
 {msgfiles:}{~nmake:}%_m.{cc} %_m.h: %.msg
 {msgfiles:}{~nmake:}	$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
 {msgfiles:}{~nmake:}
-{msgfiles:}$(MSG_H_FILES) $(MSG_CC_FILES): $(MSGFILES)
-{msgfiles:}	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
+{@msg:msgfiles,m_cc:msgccfiles,m_h:msghfiles}
+{nmake:}{m_cc} {m_h} : {msg}
+{nmake:}	$(MSGC:/=\) -s _m.{cc} $(MSGCOPTS) {msg}
+{/@}
+
 {submakedirs:}{nmake:}	@if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [opp_msgc in %%i] && nmake /nologo /f Makefile.vc msgheaders && @popd || exit /b 1
 {submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) msgheaders) || exit 1; fi; done;
 
-msgheaders: $(MSG_H_FILES)
+msgheaders: $(MSGFILES:.msg=_m.h)
 
 clean:
 {nmake:}	-rmdir /s /q $(O:/=\) 2>nul
-{~nmake:}	-rm -rf $O
+{nmake:}	-del $(VC_AUX_FILES) 2>nul
+{nmake:}{exe:}	-del $(TARGET) $(TARGET:.exe=.lib) $(TARGET:.exe=.dll) 2>nul
+{nmake:}{sharedlib:}	-del $(TARGET) $(TARGET:.dll=.exe) $(TARGET:.dll=.lib) 2>nul
+{nmake:}{staticlib:}	-del $(TARGET) $(TARGET:.lib=.exe) $(TARGET:.lib=.dll) 2>nul
+{nmake:}{nolink:}	-del $(TARGET) $(TARGET).exe $(TARGET).dll $(TARGET).lib 2>nul
+{~nmake:}	-rm -rf $O $(TARGET)
 {~nmake:}{@dir:sourcedirs}	-rm -f {dir}/*_m.{cc} {dir}/*_m.h
 {~nmake:}{/@}
-{nmake:}{@bsdir:backslashedsourcedirs}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul 
+{nmake:}{@bsdir:backslashedsourcedirs}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul
 {nmake:}{/@}
 {submakedirs:}{nmake:}	-if not "$(SUBMAKE_DIRS)"=="" for %%i in ( $(SUBMAKE_DIRS:/=\) ) do @pushd %%i && echo [clean in %%i] && nmake /nologo /f Makefile.vc clean && @popd || exit /b 1
 {submakedirs:}{~nmake:}	for i in $(SUBMAKE_DIRS) ""; do if [ "$$i" != "" ]; then (cd $$i && $(MAKE) clean); fi; done;
