@@ -6,6 +6,26 @@
 	* opp_msgc: added support for @nopack field property ("don't include 
 	in netPack()/netUnpack()")  [requested by Ingmar Baumgart]
 
+	* opp_msgc: for the record, supported properties are:
+	
+	class properties:
+	- @customize(<bool>)
+	- @omitGetVerb(<bool>)
+
+	field properties:
+	- @enum(<string>)
+	- @nopack(<bool>)
+	- @getter(<string>)
+	- @setter(<string>)
+	- @sizeGetter(<string>)
+	- @sizeSetter(<string>)
+	- @editable(<bool>)
+
+	field properties recognized by Tkenv inspectors:
+	- @label(<string>)
+	- @group(<string>)
+	- @hint(<string>)
+
 2008-02-23  Andras Varga
 
 	Summary of nedxml changes for omnetpp-4.0 (2006..2008):
