@@ -70,7 +70,7 @@ void cClassDescriptor::uint642string(uint64 l, char *buf, int bufsize)
     sprintf(buf, "%"LL"u", l);
 }
 
-unsigned int64 cClassDescriptor::string2uint64(const char *s)
+uint64 cClassDescriptor::string2uint64(const char *s)
 {
     return strtoull(s, NULL, 10);
 }
