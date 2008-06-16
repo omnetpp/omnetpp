@@ -1,5 +1,5 @@
 //==========================================================================
-//  INTTYPES.H - part of
+//  INTXTYPES.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __INTTYPES_H
-#define __INTTYPES_H
+#ifndef __INTXTYPES_H
+#define __INTXTYPES_H
 
 //
 // Make intX_t and uintX_t types available
