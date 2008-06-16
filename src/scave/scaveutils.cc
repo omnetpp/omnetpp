@@ -44,7 +44,7 @@ bool parseLong(const char *s, long &dest)
 bool parseInt64(const char *s, int64 &dest)
 {
     char *e;
-    dest = strtoi64(s,&e,10);
+    dest = strtoll(s,&e,10);
     return !*e;
 }
 

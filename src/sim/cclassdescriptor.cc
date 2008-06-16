@@ -29,37 +29,57 @@
 USING_NAMESPACE
 
 
+#define INT64_PRINTF_FORMAT   LL  /* abbreviation */
+
 void cClassDescriptor::long2string(long l, char *buf, int bufsize)
 {
-    ASSERT(bufsize>=10);
+    ASSERT(bufsize>=32);
     sprintf(buf, "%ld", l);
+}
+
+long cClassDescriptor::string2long(const char *s)
+{
+    return strtol(s, NULL, 10);
 }
 
 void cClassDescriptor::ulong2string(unsigned long l, char *buf, int bufsize)
 {
-    ASSERT(bufsize>=10);
+    ASSERT(bufsize>=32);
     sprintf(buf, "%lu", l);
 }
 
-
-long cClassDescriptor::string2long(const char *s)
-{
-    return atol(s);
-}
-
-
 unsigned long cClassDescriptor::string2ulong(const char *s)
 {
-    return (unsigned long) atol(s);
+    return strtoul(s, NULL, 10);
 }
 
+void cClassDescriptor::int642string(int64 l, char *buf, int bufsize)
+{
+    ASSERT(bufsize>=32);
+    sprintf(buf, "%"LL"d", l);
+}
+
+int64 cClassDescriptor::string2int64(const char *s)
+{
+    return strtoll(s, NULL, 10);
+}
+
+void cClassDescriptor::uint642string(uint64 l, char *buf, int bufsize)
+{
+    ASSERT(bufsize>=32);
+    sprintf(buf, "%"LL"u", l);
+}
+
+unsigned int64 cClassDescriptor::string2uint64(const char *s)
+{
+    return strtoull(s, NULL, 10);
+}
 
 void cClassDescriptor::bool2string(bool b, char *buf, int bufsize)
 {
     ASSERT(bufsize>=7);
     strcpy(buf, b ? "true" : "false");
 }
-
 
 bool cClassDescriptor::string2bool(const char *s)
 {
@@ -79,7 +99,6 @@ double cClassDescriptor::string2double(const char *s)
     return atof(s);
 }
 
-
 void cClassDescriptor::enum2string(long e, const char *enumname, char *buf, int bufsize)
 {
     ASSERT(bufsize>=30); // FIXME: very crude check
@@ -98,7 +117,6 @@ void cClassDescriptor::enum2string(long e, const char *enumname, char *buf, int 
     }
     sprintf(buf+strlen(buf), " (%s)",s);
 }
-
 
 long cClassDescriptor::string2enum(const char *s, const char *enumname)
 {

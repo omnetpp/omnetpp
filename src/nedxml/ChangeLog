@@ -1,3 +1,8 @@
+2008-06-16  Andras Varga
+
+	* opp_msgc: added support for C99 integer types (int8_t, uint64_t, etc),
+	also without "_t" suffix (int8, uint64), and for float.
+
 2008-02-23  Andras Varga
 
 	Summary of nedxml changes for omnetpp-4.0 (2006..2008):

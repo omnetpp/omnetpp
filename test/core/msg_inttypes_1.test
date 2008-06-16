@@ -1,0 +1,56 @@
+%description:
+Check integer field types
+
+%file: test.msg
+
+namespace {};
+
+class MyClass
+{
+    char c;
+    short s;
+    int i;
+    long l;
+
+    unsigned char uc;
+    unsigned short us;
+    unsigned int ui;
+    unsigned long ul;
+
+    // note: "unsigned intX"/"unsigned intX_t" syntax not supported
+
+    int8  i8;
+    int16 i16;
+    int32 i32;
+    int64 i64;
+
+    uint8  ui8;
+    uint16 ui16;
+    uint32 ui32;
+    uint64 ui64;
+
+    int8_t  i8t;
+    int16_t i16t;
+    int32_t i32t;
+    int64_t i64t;
+
+    uint8_t  ui8t;
+    uint16_t ui16t;
+    uint32_t ui32t;
+    uint64_t ui64t;
+};
+
+%includes:
+#include "test_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+MyClass x;
+x.setI(10);  PRINT(x.getI());
+//TODO
+
+%contains: stdout
+x.getI():10
+

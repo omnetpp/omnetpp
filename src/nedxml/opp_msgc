@@ -308,7 +308,8 @@ sub processFile()
         . '|gatesizes|gates|if|import|index|inout|input|interface|int|like|long|message|module'
         . '|network|nocheck|noncobject|cpolymorphic|numeric|on|output|package|parameters|properties|property'
         . '|readonly|ref|short|simple|sizeof|string|struct|submodules|this|to|true|typename|types'
-        . '|unsigned|where|withcppclass|xmldoc|xml';
+        . '|unsigned|where|withcppclass|xmldoc|xml|float|int8|int16|int32|int64|uint8|uint16|uint32|uint64'
+        . '|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t';
 
     # parse cppincludes
     while ($msg =~ s/cppinclude\s+(["\<].*?["\>])//s)
@@ -1023,83 +1024,49 @@ sub prepareForCodeGeneration
             $fromstring{$fieldname} = "";
             #$fval{$fieldname} = '' unless ($fval{$fieldname} ne '');
         } elsif ($fkind{$fieldname} eq 'basic') {
+            # defaults:
+            $datatype{$fieldname} = $ftype;
+            $argtype{$fieldname} = $ftype;
+            $rettype{$fieldname} = $ftype;
+            $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
+
             if ($ftype eq "bool") {
-                $datatype{$fieldname} = "bool";
-                $argtype{$fieldname} = "bool";
-                $rettype{$fieldname} = "bool";
+                # $datatype, $argtype, $rettype: default (same as $ftype)
                 $tostring{$fieldname} = "bool2string";
                 $fromstring{$fieldname} = "string2bool";
                 $fval{$fieldname} = 'false' unless ($fval{$fieldname} ne '');
-            } elsif ($ftype eq "char") {
-                $datatype{$fieldname} = "char";
-                $argtype{$fieldname} = "char";
-                $rettype{$fieldname} = "char";
+            } elsif ($ftype =~ /^(char|short|int|long|int8|int16|int32|int8_t|int16_t|int32_t)$/) {
+                # $datatype, $argtype, $rettype, $fval: default (same as $ftype)
                 $tostring{$fieldname} = "long2string";
                 $fromstring{$fieldname} = "string2long";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
-            } elsif ($ftype eq "unsigned char") {
-                $datatype{$fieldname} = "unsigned char";
-                $argtype{$fieldname} = "unsigned char";
-                $rettype{$fieldname} = "unsigned char";
-                $tostring{$fieldname} = "long2string";
-                $fromstring{$fieldname} = "string2long";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
-            } elsif ($ftype eq "short") {
-                $datatype{$fieldname} = "short";
-                $argtype{$fieldname} = "short";
-                $rettype{$fieldname} = "short";
-                $tostring{$fieldname} = "long2string";
-                $fromstring{$fieldname} = "string2long";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
-            } elsif ($ftype eq "unsigned short") {
-                $datatype{$fieldname} = "unsigned short";
-                $argtype{$fieldname} = "unsigned short";
-                $rettype{$fieldname} = "unsigned short";
-                $tostring{$fieldname} = "long2string";
-                $fromstring{$fieldname} = "string2long";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
-            } elsif ($ftype eq "int") {
-                $datatype{$fieldname} = "int";
-                $argtype{$fieldname} = "int";
-                $rettype{$fieldname} = "int";
-                $tostring{$fieldname} = "long2string";
-                $fromstring{$fieldname} = "string2long";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
-            } elsif ($ftype eq "unsigned int") {
-                $datatype{$fieldname} = "unsigned int";
-                $argtype{$fieldname} = "unsigned int";
-                $rettype{$fieldname} = "unsigned int";
-                $tostring{$fieldname} = "long2string";
-                $fromstring{$fieldname} = "string2long";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
-            } elsif ($ftype eq "long") {
-                $datatype{$fieldname} = "long";
-                $argtype{$fieldname} = "long";
-                $rettype{$fieldname} = "long";
-                $tostring{$fieldname} = "long2string";
-                $fromstring{$fieldname} = "string2long";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
-            } elsif ($ftype eq "unsigned long") {
-                $datatype{$fieldname} = "unsigned long";
-                $argtype{$fieldname} = "unsigned long";
-                $rettype{$fieldname} = "unsigned long";
-                $tostring{$fieldname} = "long2string";
-                $fromstring{$fieldname} = "string2long";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
+            } elsif ($ftype =~ /^unsigned (char|short|int|long)$/) {
+                # $datatype, $argtype, $rettype, $fval: default (same as $ftype)
+                $tostring{$fieldname} = "ulong2string";
+                $fromstring{$fieldname} = "string2ulong";
+            } elsif ($ftype =~ /^(uint8|uint16|uint32|uint8_t|uint16_t|uint32_t)$/) {
+                # $datatype, $argtype, $rettype, $fval: default (same as $ftype)
+                $tostring{$fieldname} = "ulong2string";
+                $fromstring{$fieldname} = "string2ulong";
+            } elsif ($ftype =~ /^(int64|int64_t)$/) {
+                # $datatype, $argtype, $rettype, $fval: default (same as $ftype)
+                $tostring{$fieldname} = "int642string";
+                $fromstring{$fieldname} = "string2int64";
+            } elsif ($ftype =~ /^(uint64|uint64_t)$/) {
+                # $datatype, $argtype, $rettype, $fval: default (same as $ftype)
+                $tostring{$fieldname} = "uint642string";
+                $fromstring{$fieldname} = "string2uint64";
+            } elsif ($ftype eq "float") {
+                # $datatype, $argtype, $rettype, $fval: default (same as $ftype)
+                $tostring{$fieldname} = "double2string";
+                $fromstring{$fieldname} = "string2double";
             } elsif ($ftype eq "double") {
-                $datatype{$fieldname} = "double";
-                $argtype{$fieldname} = "double";
-                $rettype{$fieldname} = "double";
+                # $datatype, $argtype, $rettype, $fval: default (same as $ftype)
                 $tostring{$fieldname} = "double2string";
                 $fromstring{$fieldname} = "string2double";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "simtime_t") {
-                $datatype{$fieldname} = "simtime_t";
-                $argtype{$fieldname} = "simtime_t";
-                $rettype{$fieldname} = "simtime_t";
+                # $datatype, $argtype, $rettype, $fval: default (same as $ftype)
                 $tostring{$fieldname} = "double2string";
                 $fromstring{$fieldname} = "string2double";
-                $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "string") {
                 $datatype{$fieldname} = "opp_string";
                 $argtype{$fieldname} = "const char *";

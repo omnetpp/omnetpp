@@ -118,7 +118,7 @@ int64 EventLogTokenBasedEntry::getInt64Token(char **tokens, int numTokens, const
     errno = 0;
     char *end;
     char *token = getToken(tokens, numTokens, sign, mandatory);
-    int64 value = token ? strtoi64(token, &end, 10) : defaultValue;
+    int64 value = token ? strtoll(token, &end, 10) : defaultValue;
     if (errno)
         throw opp_runtime_error("Invalid int64 value "INT64_PRINTF_FORMAT" in line %.*s", value, currentLineLength, currentLine);
     return value;

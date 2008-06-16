@@ -66,9 +66,13 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
   protected:
     // utility functions for converting from/to strings
     static void long2string(long l, char *buf, int bufsize);
-    static void ulong2string(unsigned long l, char *buf, int bufsize);
     static long string2long(const char *s);
+    static void ulong2string(unsigned long l, char *buf, int bufsize);
     static unsigned long string2ulong(const char *s);
+    static void int642string(int64 l, char *buf, int bufsize);
+    static int64 string2int64(const char *s);
+    static void uint642string(uint64 l, char *buf, int bufsize);
+    static uint64 string2uint64(const char *s);
     static void bool2string(bool b, char *buf, int bufsize);
     static bool string2bool(const char *s);
     static void double2string(double d, char *buf, int bufsize);

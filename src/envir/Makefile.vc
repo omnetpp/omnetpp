@@ -114,7 +114,7 @@ $O/akaroarng.obj: akaroarng.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -134,7 +134,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/platdep/platmisc.h \
@@ -195,7 +195,7 @@ $O/bootenv.obj: bootenv.cc \
   ../../include/random.h \
   ../../include/simtime.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/csimulation.h \
   ../../include/crng.h \
   ../../include/util.h \
@@ -237,7 +237,7 @@ $O/cxmldoccache.obj: cxmldoccache.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -279,7 +279,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
@@ -318,7 +318,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   objectprinter.h \
   intervals.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/platdep/platmisc.h \
@@ -361,7 +361,7 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/platdep/platmisc.h \
@@ -395,7 +395,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   fileoutscalarmgr.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -442,7 +442,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   fileoutvectormgr.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -485,7 +485,7 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   envirbase.h \
   filesnapshotmgr.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -522,7 +522,7 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/platdep/platmisc.h \
   ../../include/simkerneldefs.h \
   ../../include/errmsg.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
   ../../include/cownedobject.h \
@@ -544,7 +544,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/cstatistic.h \
   indexedfileoutvectormgr.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cownedobject.h \
   ../../include/util.h \
@@ -587,7 +587,7 @@ $O/inifilereader.obj: inifilereader.cc \
   ../../include/cconfigreader.h \
   ../../include/simkerneldefs.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/platdep/platmisc.h \
@@ -610,7 +610,7 @@ $O/intervals.obj: intervals.cc \
   ../../include/util.h \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -636,7 +636,7 @@ $O/main.obj: main.cc \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -655,7 +655,7 @@ $O/matchablefield.obj: matchablefield.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -675,7 +675,7 @@ $O/matchableobject.obj: matchableobject.cc \
   ../../include/cvisitor.h \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
@@ -695,7 +695,7 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
@@ -729,7 +729,7 @@ $O/opp_run.obj: opp_run.cc \
   ../../include/simkerneldefs.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/platdep/platmisc.h \
@@ -741,7 +741,7 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/csimulation.h \
   runattributes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
@@ -782,7 +782,7 @@ $O/scenario.obj: scenario.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
@@ -803,7 +803,7 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/cvisitor.h \
@@ -823,7 +823,7 @@ $O/speedometer.obj: speedometer.cc \
   ../../include/simkerneldefs.h \
   envirdefs.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h
 $O/valueiterator.obj: valueiterator.cc \
   valueiterator.h \
@@ -833,7 +833,7 @@ $O/valueiterator.obj: valueiterator.cc \
   ../../include/errmsg.h \
   ../../include/opp_string.h \
   ../../include/platdep/platdefs.h \
-  ../../include/platdep/inttypes.h \
+  ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/util.h \
   ../../include/platdep/platmisc.h

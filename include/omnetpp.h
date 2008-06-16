@@ -100,6 +100,7 @@
 #include "util.h"
 #include "nedsupport.h"
 #include "compat.h"
+#include "platdep/intxtypes.h"
 
 NAMESPACE_BEGIN
 

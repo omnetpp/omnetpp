@@ -153,12 +153,11 @@
 #endif
 
 //
-// Parse int64 strings
+// string-to-int64 conversion
 //
 #ifdef _MSC_VER
-#define strtoi64 _strtoi64
-#else
-#define strtoi64 strtoll
+#define strtoll   strtoi64
+#define strtoull  strtoui64
 #endif
 
 #endif
