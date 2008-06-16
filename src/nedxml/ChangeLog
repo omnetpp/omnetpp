@@ -26,6 +26,10 @@
 	- @group(<string>)
 	- @hint(<string>)
 
+	Note: by default, getters for a field named "isFoo" is going to be 
+	named "getIsFoo". To change this to "isFoo", specify @getter(isFoo)
+	on the field.
+
 2008-02-23  Andras Varga
 
 	Summary of nedxml changes for omnetpp-4.0 (2006..2008):
