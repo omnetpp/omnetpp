@@ -498,7 +498,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Returns the size of the module vector the module is in. For non-vector
      * modules it returns 1.
      */
-    int size() const  {return vectsize<0 ? 1 : vectsize;}
+    int getVectorSize() const  {return vectsize<0 ? 1 : vectsize;}
+
+    /**
+     * Alias for getVectorSize().
+     */
+    int size() const  {return getVectorSize();}
     //@}
 
     /** @name Submodule access. */

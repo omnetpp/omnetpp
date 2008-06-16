@@ -282,7 +282,12 @@ class SIM_API cGate : public cObject, noncopyable
      *
      * The gate vector size can also be obtained by calling the cModule::gateSize().
      */
-    int size() const  {return desc->gateSize();}
+    int getVectorSize() const  {return desc->gateSize();}
+
+    /**
+     * Alias for getVectorSize().
+     */
+    int size() const  {return getVectorSize();}
     //@}
 
     /** @name Transmission state. */
