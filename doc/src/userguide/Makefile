@@ -1,4 +1,4 @@
-FOP=./fop/fop
+FOP=fop
 
 all: html pdf
 
