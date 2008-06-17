@@ -16,11 +16,19 @@
 #ifndef __INTXTYPES_H
 #define __INTXTYPES_H
 
+//XXX we may need to determine HAVE_STDINT_H in configure
+#if defined _MSC_VER
+#define HAVE_STDINT_H 0
+#else
+#define HAVE_STDINT_H 1
+#endif
+
 //
 // Make intX_t and uintX_t types available
 //
-#if __STDC_VERSION__ >= 199901L
-  #include <stdint.h>  // C99 header
+#if HAVE_STDINT_H
+  // include C99 header
+  #include <stdint.h>
 #elif _MSC_VER
   typedef __int8              int8_t;
   typedef __int16             int16_t;
