@@ -88,8 +88,9 @@
     <picture file="pictures/Intro-NewProjectWizard2.png">Selecting a toolchain</picture>
     <para>
       Finally choose from the preset configurations. By default a debug and a release
-      configuration can be created. Pressing the <guibutton>Finish</guibutton> button will 
-      create the project.
+      configuration can be created. Pressing the
+      <guibutton>Finish</guibutton>
+      button will create the project.
     </para>
     <picture file="pictures/Intro-NewProjectWizard3.png">
       Selecting configurations
@@ -98,12 +99,147 @@
 
   <sect1>
     <title>Configuring the Project</title>
-    <para>TBD</para>
-    <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
-    <picture file="pictures/CPP-ConfigureProject2.png">Target definition</picture>
-    <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
-    <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
+    <para>
+      The OMNeT++ IDE adds several extensions to the standard CDT to make the building of
+      simulations much easier. The project properties dialog is extended with a special
+      page - called Makemake (OMNeT++) - where you can configure the options used for
+      automatically generate the makefile(s). In each source folder you specify in CDT, a
+      separate makefile will be created according to the settings you specify in the
+      dialog. On the C/C++ Build page you can specify which makefile will be called by the
+      IDE build process when you initiate a Build action. By default the Build directory
+      is specified as ${PrimarySourceDir} which is the first source directory specified on
+      the
+      <guimenuitem>C/C++ General | Path and Symbols | Source location</guimenuitem>
+      page. You can set any directory for the build directory, but keep in mind that it
+      should contain an automatically generated makefile (i.e. must be a source directory)
+      or you have to create a makefile manually there (not recommended). If you have
+      several source directories make sure that the primary makefile calls the
+      sub-makefiles correctly.
+    </para>
+    <note>
+      The build configuration is done on the Makemake page. Usually you don't have to
+      change anything on other C++ related property pages.
+    </note>
+    <para>
+      You can open the the property dialog by right clicking on a folder or project and
+      selecting the
+      <guimenuitem>Properties</guimenuitem>
+      menu. Choose the Makemake (OMNeT++) page from here.
+    </para>
+    <para>
+      Before you start modifying the settings, make sure that you select the source folder
+      you want to configure. If you want to convert the current folder to a source folder
+      simply click on the
+      <guibutton>Mark as Source Folder</guibutton>
+      .
+    </para>
+    <note>Creating a source folder here, will affect all configuration.</note>
     <picture file="pictures/CPP-SourceFolder.png">Setting a source folder</picture>
+
+    <para>
+      The first tab on the Makemake page allows you to configure the scope of the makefile
+      and what source files will be included.
+      <itemizedlist>
+        <listitem>
+          Deep - will use all source files recursively in all subdirectories.
+        </listitem>
+        <listitem>
+          Recursive - will use source files only in the current directory. Invokes make in
+          all subdirectory (i.e. makefiles must exist in those directories)
+        </listitem>
+        <listitem>
+          Local - will use source files only in the current directory. Subdirectories will
+          be ignored.
+        </listitem>
+      </itemizedlist>
+      If you want to invoke additional makefiles from this makefile, click on the
+      <guibutton>More >></guibutton>
+      button and specify which directories should be visited.
+    </para>
+    <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
+
+    <beginpage />
+    <para>
+      On the next tab, you can specify how the final target of the build is created.
+      <itemizedlist>
+        <listitem>
+          The target type can be either executable or a shared/static library. Libraries
+          can be exported to be used by other dependent projects that can link against
+          them automatically. It is possible to compile all the sources without linking
+          them.
+        </listitem>
+        <listitem>
+          You may set the target name. The default value is derived from the project name.
+        </listitem>
+        <listitem>
+          The output directory can specify where the object files and the final target
+          will be created (relative to the project root)
+        </listitem>
+      </itemizedlist>
+
+    </para>
+    <picture file="pictures/CPP-ConfigureProject2.png">Target definition</picture>
+
+    <para>
+      The compiler options tab allows you to adjust the parameters passed to the compiler
+      during the build process. The build system discovers the necessary include
+      directories automatically. You can specify where the system should look for input
+      files. You can scan all subfolders in the source directory or even allow to scan all
+      directories in the project (and all other projects it depends on).
+    </para>
+    <warning>
+      The include file names must be unique (i.e. include files with the same name in
+      different directories are not allowed) otherwise the builder cannot determine the
+      correct location of the file.
+    </warning>
+    <para>
+      If needed you can set the source file extensions (.cc or .cpp) however in most cases
+      auto-detection works correctly so you don't have to change this parameter.
+    </para>
+    <commercial>
+      <note>
+        The commercial version of OMNeT++ supports the Microsoft Visual C++ toolchain.
+        This compiler requires some special steps during DLL linking. Please check the
+        Windows DLL section and click on the help link to get further description how to
+        use this feature.
+      </note>
+    </commercial>
+    <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
+
+    <para>
+      Link options allows to fine tune the linking steps at the end of the build process.
+      <itemizedlist>
+        <listitem>
+          Link with all object files in the project - if you have additional object files
+          (other than the ones generated from this source folder) you can instruct the
+          linker to use them. This can happen if these object files are generated by other
+          means (external makefiles etc.)
+        </listitem>
+        <listitem>
+          Link with libraries exported from referenced projects - if you are depending on
+          an other project's target (i.e. static or dynamic library), you can instruct the
+          linker to automatically link with those libraries. You must explicitly set your
+          project dependencies (See Dependent Projects section).
+        </listitem>
+        <listitem>
+          User interface libraries - you can set what runtime environments you will use in
+          your simulation. Selecting All, will link against both Cmdenv and Tkenv.
+        </listitem>
+        <listitem>
+          Additional libraries and library path can be set by clicking on the More>>
+          button.
+        </listitem>
+      </itemizedlist>
+    </para>
+    <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
+
+    <para>
+      To exclude a directory from the source tree select the directory from the project
+      explorer and right click on it. From the context menu select
+      <guimenuitem>Exclude from build</guimenuitem>
+      and select all configurations where you want to exclude the directory. (Usually you
+      should select both release and debug configuration.)
+    </para>
     <picture file="pictures/CPP-ExcludeSource.png">
       Excluding a directory from the build
     </picture>
@@ -111,16 +247,52 @@
 
   <sect1>
     <title>Dependent Projects</title>
-    <para>TBD</para>
+    <para>
+      If your project uses code from other projects (i.e. you are using a library provided
+      by an other project like the INET Framework or the queuing library provided in the
+      samples directory) you should make the project dependent on that code. This step
+      ensures that your code is linked with the dependent project's output, and the NED
+      path can be correctly set.
+    </para>
+    <para>
+      To set the project dependence, right click on your project and select
+      <guimenuitem>Properties</guimenuitem>
+      . In the Properties dialog select Project References page and click on the projects
+      you are depending on. If those projects provide shared or static libraries as their
+      output the linker will automatically include those libraries during link phase. It
+      is also possible to use executable files from other projects. In this case your
+      project should not have any code in it so no compilation or linking is necessary.
+      You project should contain only INI and NED files and use the pre-built simulation
+      executable from the other projects.
+    </para>
     <picture file="pictures/CPP-ProjectReferences.png">
       Setting project dependencies
     </picture>
+    <note>
+      To see an example, how project dependency is working, check the queuenet and
+      queueinglib examples in the samples directory. Queuinglib provides a pre-built
+      executable file containing all simple modules while queuenet contains only network
+      definitions and initialization files for the samples.
+    </note>
   </sect1>
 
   <sect1>
     <title>Editing C++ Code</title>
-    <para>TBD</para>
+    <para>
+      The OMNeT++ IDE comes with a C/C++ editor provided by the CDT component. In addition
+      to the standard editor features provided by the Eclipse environment the C/C++ editor
+      provides syntax highlighting and content assistance on the source code. Use
+      <keycap>CTRL+SPACE</keycap>
+      to activate the content assist window anywhere in your source code. An other useful
+      key combination is
+      <keycap>CTRL+TAB</keycap>
+      which switches between your CPP and header file. Press <keycap>CTRL+SHIFT+L</keycap> to get 
+      a list of currently active key bindings. For further information about editing C++ files
+      please visit the CDT section in the online help system.
+    </para>    
     <picture file="pictures/CPP-Editor.png">C++ source editor</picture>
+    <note>Content assistance is working only if the IDE can scan your header files in the background.
+    </note>
   </sect1>
 
   <sect1>

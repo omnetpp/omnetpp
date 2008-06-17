@@ -48,7 +48,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	makeindex usman
 	pdflatex usman.tex $(LOGFILTER)
 	pdflatex usman.tex $(LOGFILTER)
-	cp usman.pdf ../../manual
+	cp usman.pdf ../..
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
 # --- generating html ---
