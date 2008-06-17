@@ -26,18 +26,21 @@ public class VectorChartProperties extends ChartProperties
 	/*======================================================================
 	 *                             Axes
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MIN)
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MIN,
+			description="Crops the input below this x value.")
 	public Double getXAxisMin() { return getDoubleProperty(PROP_X_AXIS_MIN); }
 	public void setXAxisMin(Double min) { setProperty(PROP_X_AXIS_MIN, min); }
 
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MAX)
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_MAX,
+			description="Crops the input above this x value.")
 	public Double getXAxisMax() { return getDoubleProperty(PROP_X_AXIS_MAX); }
 	public void setXAxisMax(Double max) { setProperty(PROP_X_AXIS_MAX, max); }
 
 	/*======================================================================
 	 *                             Lines
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Plot",id="Lines",displayName="Lines")
+	@org.omnetpp.common.properties.Property(category="Plot",id="Lines",displayName="Lines",
+			description="Properties of individual lines. Default is applied to all properties not set individually.")
 	public IPropertySource getLineProperties()
 	{
 		IXYDataset dataset = DatasetManager.createXYDataset(chart, null, false, manager, null);

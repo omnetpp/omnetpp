@@ -124,17 +124,20 @@ public class ChartProperties extends PropertySource {
 	/*======================================================================
 	 *                             Main
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Main",id=PROP_ANTIALIAS,displayName="antialias")
+	@org.omnetpp.common.properties.Property(category="Main",id=PROP_ANTIALIAS,displayName="antialias",
+			description="Enables antialising.")
 	public boolean getAntialias() { return getBooleanProperty(PROP_ANTIALIAS); }
 	public void setAntialias(boolean flag) { setProperty(PROP_ANTIALIAS, flag); }
 	public boolean defaultAntialias() { return ChartDefaults.DEFAULT_ANTIALIAS; }
 
-	@org.omnetpp.common.properties.Property(category="Main",id=PROP_CACHING,displayName="caching")
+	@org.omnetpp.common.properties.Property(category="Main",id=PROP_CACHING,displayName="caching",
+			description="Enables caching. Caching makes scrolling faster, but sometimes the plot might not be correct.")
 	public boolean getCaching() { return getBooleanProperty(PROP_CACHING); }
 	public void setCaching(boolean flag) { setProperty(PROP_CACHING, flag); }
 	public boolean defaultCaching() { return ChartDefaults.DEFAULT_CANVAS_CACHING; }
 
-	@org.omnetpp.common.properties.Property(category="Main",id=PROP_BACKGROUND_COLOR,displayName="background color",descriptorClass=ColorPropertyDescriptor.class)
+	@org.omnetpp.common.properties.Property(category="Main",id=PROP_BACKGROUND_COLOR,displayName="background color",
+			descriptorClass=ColorPropertyDescriptor.class, description="Background color of the chart.")
 	public String getBackgroundColor() { return getStringProperty(PROP_BACKGROUND_COLOR); }
 	public void setBackgroundColor(String rgb) { setProperty(PROP_BACKGROUND_COLOR, rgb); }
 	public String defaultBackgroundColor() { return ColorFactory.asString(ChartDefaults.DEFAULT_BACKGROUND_COLOR.getRGB()); }
@@ -142,37 +145,44 @@ public class ChartProperties extends PropertySource {
 	/*======================================================================
 	 *                             Titles
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE,descriptorClass=TitlePatternPropertyDescriptor.class)
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE,
+			descriptorClass=TitlePatternPropertyDescriptor.class, description="Main title of the chart.")
 	public String getGraphTitle() { return getStringProperty(PROP_GRAPH_TITLE); }
 	public void setGraphTitle(String title) { setProperty(PROP_GRAPH_TITLE, title); }
 	public String defaultGraphTitle() { return ChartDefaults.DEFAULT_TITLE; }
 
-	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE_FONT)
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_GRAPH_TITLE_FONT,
+			description="Font used to draw the title.")
 	public FontData getGraphTitleFont() { return getFontProperty(PROP_GRAPH_TITLE_FONT); }
 	public void setGraphTitleFont(FontData font) { setProperty(PROP_GRAPH_TITLE_FONT, font); }
 	public FontData getDefaultTitleFont() { return getDefaultFontProperty(PROP_GRAPH_TITLE_FONT); }
 
-	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_AXIS_TITLE)
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_AXIS_TITLE,
+			description="Title of the horizontal axis.")
 	public String getXAxisTitle() { return getStringProperty(PROP_X_AXIS_TITLE); }
 	public void setXAxisTitle(String title) { setProperty(PROP_X_AXIS_TITLE, title); }
 	public String defaultXAxisTitle() { return ChartDefaults.DEFAULT_X_AXIS_TITLE; }
 
-	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_Y_AXIS_TITLE)
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_Y_AXIS_TITLE,
+			description="Title of the vertical axis.")
 	public String getYAxisTitle() { return getStringProperty(PROP_Y_AXIS_TITLE); }
 	public void setYAxisTitle(String title) { setProperty(PROP_Y_AXIS_TITLE, title); }
 	public String defaultYAxisTitle() { return ChartDefaults.DEFAULT_Y_AXIS_TITLE; }
 
-	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_AXIS_TITLE_FONT)
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_AXIS_TITLE_FONT,
+			description="Font used to draw the axes titles.")
 	public FontData getAxisTitleFont() { return getFontProperty(PROP_AXIS_TITLE_FONT); }
 	public void setAxisTitleFont(FontData font) { setProperty(PROP_AXIS_TITLE_FONT, font); }
 	public FontData defaultAxisTitleFont() { return getDefaultFontProperty(PROP_AXIS_TITLE_FONT); }
 
-	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_LABEL_FONT)
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_LABEL_FONT,
+			description="Font used to draw the tick labels.")
 	public FontData getLabelsFont() { return getFontProperty(PROP_LABEL_FONT); }
 	public void setLabelsFont(FontData font) { setProperty(PROP_LABEL_FONT, font); }
 	public FontData defaultLabelsFont() { return getDefaultFontProperty(PROP_LABEL_FONT); }
 	
-	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_LABELS_ROTATE_BY,displayName="x labels rotated by")
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_X_LABELS_ROTATE_BY,displayName="x labels rotated by",
+			description="Rotates the tick labels of the horizontal axis by the given angle (in degrees).")
 	public Double getXLabelsRotate() { return getDoubleProperty(PROP_X_LABELS_ROTATE_BY); }
 	public void setXLabelsRotate(Double value) { setProperty(PROP_X_LABELS_ROTATE_BY, value); }
 	public Double defaultXLabelsRotate() { return ChartDefaults.DEFAULT_X_LABELS_ROTATED_BY; }
@@ -180,20 +190,24 @@ public class ChartProperties extends PropertySource {
 	/*======================================================================
 	 *                             Axes
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_MIN)
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_MIN,
+			description="Crops the input below this y value.")
 	public Double getYAxisMin() { return getDoubleProperty(PROP_Y_AXIS_MIN); }
 	public void setYAxisMin(Double min) { setProperty(PROP_Y_AXIS_MIN, min); }
 
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_MAX)
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_MAX,
+			description="Crops the input above this y value.")
 	public Double getYAxisMax() { return getDoubleProperty(PROP_Y_AXIS_MAX); }
 	public void setYAxisMax(Double max) { setProperty(PROP_Y_AXIS_MAX, max); }
 
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_LOGARITHMIC)
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_Y_AXIS_LOGARITHMIC,
+			description="Applies a logarithmic transformation to the y values.")
 	public boolean getYAxisLogarithmic() { return getBooleanProperty(PROP_Y_AXIS_LOGARITHMIC); }
 	public void setYAxisLogarithmic(boolean flag) { setProperty(PROP_Y_AXIS_LOGARITHMIC, flag); }
 	public boolean defaultYAxisLogarithmic() { return ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC; }
 
-	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID,displayName="grid")
+	@org.omnetpp.common.properties.Property(category="Axes",id=PROP_XY_GRID,displayName="grid",
+			description="Add grid lines to the plot.")
 	public ShowGrid getXYGrid() { return getEnumProperty(PROP_XY_GRID, ShowGrid.class); }
 	public void setXYGrid(ShowGrid showgrid) { setProperty(PROP_XY_GRID, showgrid); }
 	public ShowGrid defaultXYGrid() { return ChartDefaults.DEFAULT_SHOW_GRID; }
@@ -202,31 +216,31 @@ public class ChartProperties extends PropertySource {
 	 *                             Legend
 	 *======================================================================*/
 	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_DISPLAY_LEGEND,
-			displayName="display")
+			displayName="display", description="Displays the legend.")
 	public boolean getDisplayLegend() { return getBooleanProperty(PROP_DISPLAY_LEGEND); }
 	public void setDisplayLegend(boolean flag) { setProperty(PROP_DISPLAY_LEGEND, flag); }
 	public boolean defaultDisplayLegend() { return ChartDefaults.DEFAULT_DISPLAY_LEGEND; }
 
 	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_BORDER,
-			displayName="border")
+			displayName="border", description="Add border around the legend.")
 	public boolean getLegendBorder() { return getBooleanProperty(PROP_LEGEND_BORDER); }
 	public void setLegendBorder(boolean flag) { setProperty(PROP_LEGEND_BORDER, flag); }
 	public boolean defaultLegendBorder() { return ChartDefaults.DEFAULT_LEGEND_BORDER; }
 
 	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_FONT,
-			displayName="font")
+			displayName="font", description="Font used to draw the legend items.")
 	public FontData getLegendFont() { return getFontProperty(PROP_LEGEND_FONT); }
 	public void setLegendFont(FontData font) { setProperty(PROP_LEGEND_FONT, font); }
 	public FontData defaultLegendFont() { return getDefaultFontProperty(PROP_LEGEND_FONT); }
 
 	@org.omnetpp.common.properties.Property(category="Legend", id=PROP_LEGEND_POSITION,
-			displayName="position")
+			displayName="position", description="Position of the legend.")
 	public LegendPosition getLegendPosition() { return getEnumProperty(PROP_LEGEND_POSITION, LegendPosition.class); }
 	public void setLegendPosition(LegendPosition position) { setProperty(PROP_LEGEND_POSITION, position); }
 	public LegendPosition defaultLegendPosition() { return ChartDefaults.DEFAULT_LEGEND_POSITION; }
 
 	@org.omnetpp.common.properties.Property(category="Legend",id=PROP_LEGEND_ANCHORING,
-			displayName="anchor point")
+			displayName="anchor point", description="Anchor point of the legend.")
 	public LegendAnchor getLegendAnchoring() { return getEnumProperty(PROP_LEGEND_ANCHORING, LegendAnchor.class); }
 	public void setLegendAnchoring(LegendAnchor anchoring) { setProperty(PROP_LEGEND_ANCHORING, anchoring); }
 	public LegendAnchor defaultLegendAnchor() { return ChartDefaults.DEFAULT_LEGEND_ANCHOR; }

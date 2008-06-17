@@ -37,7 +37,8 @@ public class ScalarChartProperties extends ChartProperties
 	/*======================================================================
 	 *                             Titles
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_WRAP_LABELS)
+	@org.omnetpp.common.properties.Property(category="Titles",id=PROP_WRAP_LABELS,
+			description="If true labels are wrapped, otherwise aligned vertically.")
 	public boolean getWrapLabels() { return getBooleanProperty(PROP_WRAP_LABELS); }
 	public void setWrapLabels(boolean wrap) { setProperty(PROP_WRAP_LABELS, wrap); }
 	public boolean defaultWrapLabels() { return ChartDefaults.DEFAULT_WRAP_LABELS; }
@@ -45,17 +46,20 @@ public class ScalarChartProperties extends ChartProperties
 	/*======================================================================
 	 *                             Bars
 	 *======================================================================*/
-	@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_BASELINE)
+	@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_BASELINE,
+			description="Baseline of the bars.")
 	public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
 	public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
 	public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
 
-	@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_PLACEMENT)
+	@org.omnetpp.common.properties.Property(category="Plot",id=PROP_BAR_PLACEMENT,
+			description="Arrangement of the bars within a group.")
 	public BarPlacement getBarPlacement() { return getEnumProperty(PROP_BAR_PLACEMENT, BarPlacement.class); }
 	public void setBarPlacement(BarPlacement placement) { setProperty(PROP_BAR_PLACEMENT, placement); }
 	public BarPlacement defaultBarPlacement() { return ChartDefaults.DEFAULT_BAR_PLACEMENT; }
 	
-	@org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars")
+	@org.omnetpp.common.properties.Property(category="Plot",id="Bars",displayName="Bars",
+			description="Properties of individual bars. Default is applied to all properties not set individually.")
 	public IPropertySource getBarProperties() {
 		ScalarDataset dataset = DatasetManager.createScalarDataset((BarChart)chart, manager, null);
 		String[] names = new String[dataset.getColumnCount()];

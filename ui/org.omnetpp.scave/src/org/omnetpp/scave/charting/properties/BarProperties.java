@@ -20,7 +20,9 @@ public class BarProperties extends PropertySource {
 		return barId == null ? baseName : baseName + "/" + barId;
 	}
 
-	@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_COLOR,descriptorClass=ColorPropertyDescriptor.class,optional=true)
+	@org.omnetpp.common.properties.Property(category="Bars",id=PROP_BAR_COLOR,
+			descriptorClass=ColorPropertyDescriptor.class,optional=true,
+			description="Color of the bar. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.")
 	public String getColor() { return chartProps.getStringProperty(propertyName(PROP_BAR_COLOR)); } // FIXME use RGB
 	public void setColor(String color) { chartProps.setProperty(propertyName(PROP_BAR_COLOR), color); }
 	public String defaultColor() { return null; }

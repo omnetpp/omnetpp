@@ -46,17 +46,17 @@ public class HistogramChartProperties extends ChartProperties
 		super(chart, properties, manager);
 	}
 
-	@Property(category="Plot",id=PROP_HIST_BAR)
+	@Property(category="Plot",id=PROP_HIST_BAR,description="Histogram drawing method.")
 	public HistogramBar getBarType() { return getEnumProperty(PROP_HIST_BAR, HistogramBar.class); }
 	public void setBarType(HistogramBar placement) { setProperty(PROP_HIST_BAR, placement); }
 	public HistogramBar defaultBarType() { return ChartDefaults.DEFAULT_HIST_BAR; }
 	
-	@Property(category="Plot",id=PROP_BAR_BASELINE)
+	@Property(category="Plot",id=PROP_BAR_BASELINE,description="Baseline of the bars.")
 	public Double getBarBaseline() { return getDoubleProperty(PROP_BAR_BASELINE); }
 	public void setBarBaseline(Double baseline) { setProperty(PROP_BAR_BASELINE, baseline); }
 	public Double defaultBarBaseline() { return ChartDefaults.DEFAULT_BAR_BASELINE; }
 	
-	@Property(category="Plot",id=PROP_HIST_DATA)
+	@Property(category="Plot",id=PROP_HIST_DATA,description="Histogram data. Counts, probability density and cumulative density can be displayed.")
 	public HistogramDataType getHistogramDataType() { return getEnumProperty(PROP_HIST_DATA, HistogramDataType.class); }
 	public void setHistogramDataType(HistogramDataType data) { setProperty(PROP_HIST_DATA, data); }
 	public HistogramDataType defaultHistogramData() { return ChartDefaults.DEFAULT_HIST_DATA; }
@@ -64,7 +64,8 @@ public class HistogramChartProperties extends ChartProperties
 	/*======================================================================
 	 *                             Histograms
 	 *======================================================================*/
-	@Property(category="Plot",id="Histograms",displayName="Histograms")
+	@Property(category="Plot",id="Histograms",displayName="Histograms",
+			description="Histogram plot properties.")
 	public IPropertySource getHistogramProperties()
 	{
 		IHistogramDataset dataset = DatasetManager.createHistogramDataset((HistogramChart)chart, manager, null);
