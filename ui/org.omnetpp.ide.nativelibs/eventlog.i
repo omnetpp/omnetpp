@@ -48,7 +48,7 @@ COMMON_ENGINE_BIGDECIMAL();
 #define NAMESPACE_END
 #define USING_NAMESPACE
 
-%include "inttypes.h"
+%include "intxtypes.h"
 %include "eventlogdefs.h"
 
 /*--------------------------------------------------------------------------

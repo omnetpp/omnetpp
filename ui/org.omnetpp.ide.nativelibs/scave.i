@@ -45,7 +45,7 @@
 #define NAMESPACE_END
 #define USING_NAMESPACE
 
-%include "inttypes.h"
+%include "intxtypes.h"
 %include "scavedefs.h"
 
 %typemap(jni) ID "jlong";
