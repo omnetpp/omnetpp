@@ -152,7 +152,7 @@ LIB_PREFIX="lib"
 #
 #  Figure out target platform
 #
-if test "$TARGET_PLATFORM" == "mingw"; then
+if test "$TARGET_PLATFORM" = "mingw"; then
     # cross compiling for mingw
     mingw=yes
     windows=yes
@@ -230,7 +230,13 @@ fi
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
+# on mingw special debug option is needed to debug with gdb
+if test "$mingw" = "yes"; then
+  CFLAGS_DEBUG=${CFLAGS_DEBUG:- -gstabs+ -Wall}
+else
+  CFLAGS_DEBUG=${CFLAGS_DEBUG:- -g -Wall}
+fi
+
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O2 -DNDEBUG=1}
 WHOLE_ARCHIVE_ON=
 WHOLE_ARCHIVE_OFF=
