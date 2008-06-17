@@ -4,15 +4,26 @@
 %}
 
 /*--------------------------------------------------------------------------
- * int64 <--> long mapping
+ * int32 <--> int mapping
  *--------------------------------------------------------------------------*/
 %include "intxtypes.h"
 
-%typemap(jni)    int64 "jlong"
-%typemap(jtype)  int64 "long"
-%typemap(jstype) int64 "long"
-%typemap(javain) int64 "$javainput"
-%typemap(javaout) int64 {
+%typemap(jni)    int32_t "jint"
+%typemap(jtype)  int32_t "int"
+%typemap(jstype) int32_t "int"
+%typemap(javain) int32_t "$javainput"
+%typemap(javaout) int32_t {
+   return $jnicall;
+}
+
+/*--------------------------------------------------------------------------
+ * int64 <--> long mapping
+ *--------------------------------------------------------------------------*/
+%typemap(jni)    int64_t "jlong"
+%typemap(jtype)  int64_t "long"
+%typemap(jstype) int64_t "long"
+%typemap(javain) int64_t "$javainput"
+%typemap(javaout) int64_t {
    return $jnicall;
 }
 

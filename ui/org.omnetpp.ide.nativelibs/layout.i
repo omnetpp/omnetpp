@@ -5,6 +5,7 @@
 
 %include "loadlib.i"
 %include "enumtypeunsafe.swg"
+%include "commondefs.i"
 %javaconst(1);
 
 %{
@@ -35,16 +36,6 @@
 #define NAMESPACE_BEGIN
 #define NAMESPACE_END
 #define USING_NAMESPACE
-
-%typemap(jni)    int32 "jint"
-%typemap(jtype)  int32 "int"
-%typemap(jstype) int32 "int"
-%typemap(javain) int32 "$javainput"
-
-%typemap(jni)    int64 "jlong"
-%typemap(jtype)  int64 "long"
-%typemap(jstype) int64 "long"
-%typemap(javain) int64 "$javainput"
 
 %typemap(jni)    cModule* "jobject"
 %typemap(jtype)  cModule* "Object"
