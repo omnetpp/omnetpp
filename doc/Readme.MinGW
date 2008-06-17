@@ -15,15 +15,15 @@ Copy the omnetpp archive to the directory where you want to install it. Be sure
 that the path to the directory does NOT contain any space.
 Extract the archive using the command:
 
-    unzip omnetpp-version-src-windows.zip
+    unzip omnetpp-<version>-src-windows.zip
 
-A sub-directory called omnetpp-version will be created which will contain the simulator
+A sub-directory called omnetpp-<version> will be created which will contain the simulator
 files. The directory will contain a full MSYS and MINGW installation customized for
 the OMNeT++ environment.
 
 Start mingwenv.cmd which will bring up a bash shell where the the path is already set
-to include the omnetpp-version/bin directory. If you want to start omnetpp simulations
-from the windows explorer please add the omnetpp-version/bin directory to your system path.
+to include the omnetpp-<version>/bin directory. If you want to start omnetpp simulations
+from the windows explorer please add the omnetpp-<version>/bin directory to your system path.
 
 All software needed to compile the OMNeT++ libraries with MINGW compiler is included in
 the archive file.
@@ -50,8 +50,8 @@ nice gui windows and dialogs.
 2. Starting the IDE
 
 OMNeT++ 4.0 comes with a brand new IDE (based on Eclipse). You will need at least
-Java Runtime Environment 5.0 installed on your machine.  After building the 
-libraries (see previous step) you should be able to start the IDE by typing:
+Java Runtime Environment 5.0 installed on your machine.  You should be able 
+to start the IDE by typing:
 
     omnetpp
 
@@ -96,5 +96,4 @@ OMNeT++ has been tested with the MinW gcc compiler. The current distribution
 contains gcc 4.2.1 version.
 
 Microsoft Visual C++ is not supported in the Academic Edition.
-
 

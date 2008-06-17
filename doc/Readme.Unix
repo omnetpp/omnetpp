@@ -1,22 +1,22 @@
 Installing OMNeT++ on Linux/Unix
-==========================
+================================
 
 1. Installing OMNeT++
 
 Download the omnetpp source code and documentation from the omnetpp site.
-Make sure you select to download the Unix archive omnetpp.tgz.
+Make sure you select to download the Unix archive omnetpp-<version>-src.tgz.
 
 Copy the omnetpp archive to the directory where you want to install it
 (usually your home directory). Extract the archive using the command:
 
-    tar zxvf omnetpp.tgz
+    tar zxvf omnetpp-<version>-src.tgz
 
-A sub-directory called omnetpp-version will be created which will contain the simulator
+A sub-directory called omnetpp-<version> will be created which will contain the simulator
 files. You should now add the following lines to your startup file (.bashrc
 or .bash_profile if you're using bash; .profile if you're using some other
 sh-like shell):
 
-    export PATH=$PATH:~/omnetpp/bin
+    export PATH=$PATH:~/omnetpp-<version>/bin
 
 You will need to restart the shell before proceeding (logout and login again).
 
@@ -50,10 +50,9 @@ nice gui windows and dialogs.
 
 OMNeT++ 4.0 comes with a brand new IDE (based on Eclipse). You will need at least
 sun-java5-jre installed on your machine (sun-java6-jre or openjdk-6-jre should work too).
-After building the libraries (see previous step) you should be able to start the IDE
-by typing:
+You should be able to start the IDE by typing:
 
-omnetpp
+    omnetpp
 
 NOTE: The IDE is supported ONLY on the following platforms:
  - Windows 32bit
@@ -92,10 +91,11 @@ to the lib/ and bin/ subdirs.
 
 4. Portability issues
 
-OMNeT++ has been tested on Linux, but it should work on other Unixes too.
-It probably makes things easier if you have gcc and the usual GNU tools
-installed, but you should be able to get along using other C++ compilers too.
-If you get it to work, please send a mail to the mailing list!
+OMNeT++ has been tested on Linux, but it should work on other Unixes too,
+although the IDE may not be supported. It probably makes things easier 
+if you have gcc and the usual GNU tools installed, but you should be 
+able to get along using other C++ compilers too. If you get it to work, 
+please send a mail to the mailing list!
 
 5. TIPS
 
@@ -106,7 +106,7 @@ If you get it to work, please send a mail to the mailing list!
   and change the "type=Unknown" to "name=tk" selection entries. This will effectively
   disable the animation for non toplevel Tcl/Tk windows.
 
-- If you are running the IDE on GTK you will notice that a lotof space is vasted in
+- If you are running the IDE on GTK you will notice that a lot of space is vasted in
   list and treelist controls (this is a general GTK issue). To make the IDE a little
   more compact and usable look into the 'contrib' directory. We have created a .gtkrc
   file which tweaks the GTK environment a little bit more compact.

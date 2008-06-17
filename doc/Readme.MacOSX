@@ -1,5 +1,5 @@
-Installing OMNeT++ on Mac Os X
-==========================
+Installing OMNeT++ on Mac OS X
+==============================
 
 1. Installing OMNeT++
 
@@ -55,8 +55,7 @@ nice gui windows and dialogs.
 2. Starting the IDE
 
 OMNeT++ 4.0 comes with a brand new IDE (based on Eclipse). Mac OS X already has Java 5
-installed so you should be ok. After building the libraries (see previous step) 
-you should be able to start the IDE by typing:
+installed so you should be ok. You should be able to start the IDE by typing:
 
     omnetpp
 
