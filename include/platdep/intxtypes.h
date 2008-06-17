@@ -29,7 +29,7 @@
 #if HAVE_STDINT_H
   // include C99 header
   #include <stdint.h>
-#elif _MSC_VER
+#elif defined _MSC_VER
   typedef __int8              int8_t;
   typedef __int16             int16_t;
   typedef __int32             int32_t;
