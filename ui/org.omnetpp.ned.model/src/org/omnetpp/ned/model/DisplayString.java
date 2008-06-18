@@ -534,9 +534,9 @@ public class DisplayString implements IDisplayString {
         System.out.println("\\end{longtable}");
     }
     
-    static {
-      dumpSupportedTagsInTex();	
-    };
+//    static {
+//      dumpSupportedTagsInTex();	
+//    };
 }
 
 
