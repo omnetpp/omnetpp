@@ -331,7 +331,7 @@ public class Makemake {
         m.put("tkenv", options.userInterface.startsWith("T"));
         m.put("extraobjs", quoteJoin(extraObjs));
         m.put("includepath", prefixQuoteJoin(includeDirs, "-I"));
-        m.put("libpath", prefixQuoteJoin(libDirs, (isNMake ? "/libpath:" : "-L")));
+        m.put("libpathdirs", libDirs);
         m.put("libs", options.libs);
         m.put("defines", prefixQuoteJoin(defines, "-D"));
         m.put("makefiledefines", options.makefileDefines);

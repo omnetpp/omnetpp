@@ -21,7 +21,8 @@ INCLUDE_PATH = {includepath}
 EXTRA_OBJS = {extraobjs}
 
 # Additional libraries (-L, -l options)
-LIBS = {libpath}{@lib:libs} {-l}{lib}{.lib}{/@}
+LIBS ={@dir:libpathdirs} {-L}{dir}{/@} {@lib:libs} {-l}{lib}{.lib}{/@}
+{libpathdirs:}{~nmake:}LIBS +={@dir:libpathdirs} -Wl,-rpath,{dir}{/@} 
 
 # Output directory
 O = {outdir}/$(CONFIGNAME)/{subpath}
