@@ -84,29 +84,6 @@ inline std::string opp_getWindowsError(DWORD errorCode)
 }
 #endif
 
-
-//
-// Loading a dll or so file dynamically
-//
-inline bool opp_loadlibrary(const char *libname)
-{
-#if HAVE_DLOPEN
-     std::string libfname(libname);
-     libfname += ".so";
-     if (!dlopen(libfname.c_str(), RTLD_NOW|RTLD_GLOBAL))
-         throw std::runtime_error(std::string("Cannot load library '")+libfname+"': "+dlerror());
-     return true;
-#elif defined(_WIN32)
-     std::string libfname(libname);
-     libfname += ".dll";
-     if (!LoadLibrary((char *)libfname.c_str()))
-         throw std::runtime_error(std::string("Cannot load library '")+libfname+"': "+opp_getWindowsError(GetLastError()));
-     return true;
-#else
-     throw std::runtime_error(std::string("Cannot load library '")+libname+"': dlopen() syscall not available");
-#endif
-}
-
 //
 // 64-bit file offsets
 //
