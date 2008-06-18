@@ -751,7 +751,8 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
     }
 
     // for substituteIntoTemplate()
-    private static boolean getFromMapAsBool(Map<String, Object> map, String key) {
+    @SuppressWarnings("unchecked")
+	private static boolean getFromMapAsBool(Map<String, Object> map, String key) {
         Object object = map.get(key);
         if (object == null)
             throw new RuntimeException("template error: undefined (or null) template parameter '" + key + "'");
@@ -759,7 +760,9 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             return (Boolean)object;
         else if (object instanceof String)
             return ((String)object).length() != 0;
-        else
+        else if (object instanceof List)
+        	return !((List)object).isEmpty();
+        else	
             throw new RuntimeException("template error: template parameter '" + key + "' was expected to be a string or boolean, but it is " + object.getClass().toString());
     }
 
