@@ -18,7 +18,7 @@ channel Conn1 extends ned.BasicChannel
 channel Conn2 extends ned.BasicChannel
 {
     parameters:
-        error = 0.001;
+        ber = 0.001;
 }
 
 channel Conn3 extends ned.BasicChannel
@@ -31,7 +31,7 @@ channel Conn4 extends ned.BasicChannel
 {
     parameters:
         delay = 0.004s;
-        error = 0.001;
+        ber = 0.001;
 }
 
 channel Conn5 extends ned.BasicChannel
@@ -44,7 +44,7 @@ channel Conn5 extends ned.BasicChannel
 channel Conn6 extends ned.BasicChannel
 {
     parameters:
-        error = 0.001;
+        ber = 0.001;
         datarate = 64000bps;
 }
 
@@ -52,7 +52,8 @@ channel Conn7 extends ned.BasicChannel
 {
     parameters:
         delay = 0.004s;
-        error = 0.001;
+        ber = 0.001;
+        per = 0.02;
         datarate = 64000bps;
 }
 
@@ -116,8 +117,9 @@ void Gen::activity()
         {
             cBasicChannel *sch = check_and_cast<cBasicChannel *>(ch);
             if (sch->getDelay() != 0)  ev << "delay=" << sch->getDelay() << ":";
-            if (sch->getError())  ev << "error=" << sch->getError() << ":";
             if (sch->getDatarate())  ev << "datarate=" << sch->getDatarate() << ":";
+            if (sch->getBitErrorRate())  ev << "ber=" << sch->getBitErrorRate() << ":";
+            if (sch->getPacketErrorRate())  ev << "per=" << sch->getPacketErrorRate() << ":";
         }
         ev << endl;
     }
@@ -141,10 +143,10 @@ void Sink::handleMessage(cMessage *msg)
 %contains: stdout
 0:
 1:delay=0.004:
-2:error=0.001:
+2:ber=0.001:
 3:datarate=64000:
-4:delay=0.004:error=0.001:
+4:delay=0.004:ber=0.001:
 5:delay=0.004:datarate=64000:
-6:error=0.001:datarate=64000:
-7:delay=0.004:error=0.001:datarate=64000:
+6:datarate=64000:ber=0.001:
+7:delay=0.004:datarate=64000:ber=0.001:per=0.02:
 

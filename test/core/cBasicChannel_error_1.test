@@ -7,7 +7,7 @@ channel MyConn extends ned.BasicChannel
 {
     parameters:
         delay = 0.004s;
-        error = 0.1;
+        ber = 0.1;
 }
 
 simple Node1

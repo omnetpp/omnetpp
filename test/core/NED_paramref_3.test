@@ -67,6 +67,6 @@ network Test
                 o[3]: --> n[3].i[1]
                 o[4]: --> n[4].i[0]
                 o[5]: --> n[5].i[0]
-                o[6]: --> n[6].i[0], ned.BasicChannel disabled=false delay=0 error=0 datarate=1
+                o[6]: --> n[6].i[0], ned.BasicChannel disabled=false delay=0 datarate=1 ber=0 per=0
         }
 

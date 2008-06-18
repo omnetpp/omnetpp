@@ -6,7 +6,7 @@ check NED user-defined functions (Define_Function() macro) in channels
 channel Chan extends ned.BasicChannel
 {
     parameters:
-        error = testfunc0();
+        ber = testfunc0();
         delay = testfunc3(10, 20, 30);
         datarate = testfunc4(10, 20, 30);
 }

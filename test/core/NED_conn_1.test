@@ -31,12 +31,12 @@ network Test
     connections:
         gen.out[0] --> sink.in[0];
         gen.out[1] --> {  delay = 0.004s; } --> sink.in[1];
-        gen.out[2] --> {  error = 0.001; } --> sink.in[2];
+        gen.out[2] --> {  ber = 0.001; } --> sink.in[2];
         gen.out[3] --> {  datarate = 64000bps; } --> sink.in[3];
-        gen.out[4] --> {  delay = 0.004s; error = 0.001; } --> sink.in[4];
+        gen.out[4] --> {  delay = 0.004s; ber = 0.001; } --> sink.in[4];
         gen.out[5] --> {  delay = 0.004s; datarate = 64000bps; } --> sink.in[5];
-        gen.out[6] --> {  error = 0.001; datarate = 64000bps; } --> sink.in[6];
-        gen.out[7] --> {  delay = 0.004s; error = 0.001; datarate = 64000bps; } --> sink.in[7];
+        gen.out[6] --> {  ber = 0.001; datarate = 64000bps; } --> sink.in[6];
+        gen.out[7] --> {  delay = 0.004s; ber = 0.001; datarate = 64000bps; } --> sink.in[7];
 }
 
 %file: test.cc
@@ -65,8 +65,9 @@ void Gen::activity()
         {
             cBasicChannel *sch = check_and_cast<cBasicChannel *>(ch);
             if (sch->getDelay() != 0)  ev << "delay=" << sch->getDelay() << ":";
-            if (sch->getError())  ev << "error=" << sch->getError() << ":";
             if (sch->getDatarate())  ev << "datarate=" << sch->getDatarate() << ":";
+            if (sch->getBitErrorRate())  ev << "ber=" << sch->getBitErrorRate() << ":";
+            if (sch->getPacketErrorRate())  ev << "per=" << sch->getPacketErrorRate() << ":";
         }
         ev << endl;
     }
@@ -90,10 +91,10 @@ void Sink::handleMessage(cMessage *msg)
 %contains: stdout
 0:
 1:delay=0.004:
-2:error=0.001:
+2:ber=0.001:
 3:datarate=64000:
-4:delay=0.004:error=0.001:
+4:delay=0.004:ber=0.001:
 5:delay=0.004:datarate=64000:
-6:error=0.001:datarate=64000:
-7:delay=0.004:error=0.001:datarate=64000:
+6:ber=0.001:datarate=64000:
+7:delay=0.004:ber=0.001:datarate=64000:
 
