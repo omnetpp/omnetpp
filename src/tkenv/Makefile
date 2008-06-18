@@ -112,7 +112,7 @@ $O/arrow.o: arrow.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/simkerneldefs.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
@@ -208,7 +208,7 @@ $O/inspector.o: inspector.cc \
   ../../include/opp_string.h \
   ../../include/random.h \
   ../../include/regmacros.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/intxtypes.h \
@@ -311,7 +311,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/opp_string.h \
   ../../include/random.h \
   ../../include/regmacros.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/intxtypes.h \
@@ -359,7 +359,7 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
@@ -424,7 +424,7 @@ $O/modinsp.o: modinsp.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
@@ -540,7 +540,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/opp_string.h \
   ../../include/random.h \
   ../../include/regmacros.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/nedsupport.h \
   ../../include/compat.h \
   ../../include/platdep/intxtypes.h \
@@ -584,7 +584,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
   ../../include/cenvir.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
@@ -619,7 +619,6 @@ $O/statinsp.o: statinsp.cc \
   ../../include/ccomponenttype.h \
   inspector.h \
   tkutil.h
-$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
@@ -648,7 +647,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cownedobject.h \
@@ -702,7 +701,6 @@ $O/tkenv.o: tkenv.cc \
   inspfactory.h \
   modinsp.h \
   ../utils/ver.h \
-  tclcode.cc \
   ../envir/envirdefs.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
@@ -713,7 +711,7 @@ $O/tkenv.o: tkenv.cc \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/cobject.h \
   ../../include/cexception.h \
   ../../include/cstringpool.h \
@@ -762,7 +760,7 @@ $O/tklib.o: tklib.cc \
   ../../include/cownedobject.h \
   ../../include/cenvir.h \
   ../../include/simkerneldefs.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
@@ -811,7 +809,7 @@ $O/tkutil.o: tkutil.cc \
   tkutil.h \
   ../../include/cenvir.h \
   ../../include/simkerneldefs.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/cnamedobject.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
@@ -870,7 +868,7 @@ $O/visitor.o: visitor.cc \
   ../../include/platdep/platdefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/simtime.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/platdep/platmisc.h \
   ../../include/errmsg.h \
   ../../include/cvisitor.h \

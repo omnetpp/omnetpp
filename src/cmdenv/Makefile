@@ -81,7 +81,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/csimulation.h \
   ../envir/envirbase.h \
   ../../include/simkerneldefs.h \
-  ../../include/util.h \
+  ../../include/simutil.h \
   ../../include/globals.h \
   ../../include/cmessageheap.h \
   ../../include/ccoroutine.h \
