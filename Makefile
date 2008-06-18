@@ -50,6 +50,8 @@ JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 # Group targets.
 #
 base: $(BASE)
+	cd $(OMNETPP_SRC_DIR)/envir && $(MAKE) opp_run_executable
+
 ui : common layout eventlog scave nedxml $(JNILIBS)
 samples: $(SAMPLES)
 

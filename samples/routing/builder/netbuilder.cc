@@ -61,7 +61,7 @@ void NetBuilder::addLinkAttributes(cGate *src, double delay, double error, doubl
         if (delay>0)
             channel->setDelay(delay);
         if (error>0)
-            channel->setError(error);
+            channel->setBitErrorRate(error);
         if (datarate>0)
             channel->setDatarate(datarate);
         channel->finalizeParameters();

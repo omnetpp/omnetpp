@@ -87,15 +87,14 @@ $O/event.o: event.cc \
   eventlogentry.h \
   ../common/commondefs.h \
   ievent.h \
-  eventlogentries.h \
   messagedependency.h \
+  ../common/stringpool.h \
+  ieventlog.h \
+  eventlogindex.h \
   eventlogdefs.h \
   ../common/exception.h \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
-  ../common/stringpool.h \
-  ieventlog.h \
-  eventlogindex.h \
   ../common/linetokenizer.h \
   ../common/matchexpression.h
 $O/eventlog.o: eventlog.cc \
@@ -108,23 +107,7 @@ $O/eventlog.o: eventlog.cc \
   eventlogindex.h \
   ievent.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
-  ../common/matchexpression.h \
-  eventlogdefs.h \
-  ../common/linetokenizer.h \
-  ../common/exception.h \
-  ../common/commonutil.h \
-  ../common/bigdecimal.h
-$O/eventlogentries.o: eventlogentries.cc \
-  event.h \
-  eventlogentries.h \
-  ../common/stringutil.h \
-  ievent.h \
-  ../common/filereader.h \
-  eventlogentry.h \
-  messagedependency.h \
-  ../common/commondefs.h \
   ../common/matchexpression.h \
   eventlogdefs.h \
   ../common/linetokenizer.h \
@@ -142,7 +125,6 @@ $O/eventlogentry.o: eventlogentry.cc \
   eventlogindex.h \
   ../common/commondefs.h \
   ievent.h \
-  eventlogentries.h \
   messagedependency.h \
   eventlogdefs.h \
   ../common/exception.h \
@@ -156,7 +138,6 @@ $O/eventlogentryfactory.o: eventlogentryfactory.cc \
   ievent.h \
   ../common/filereader.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/commondefs.h \
   ../common/matchexpression.h \
@@ -174,7 +155,6 @@ $O/eventlogfacade.o: eventlogfacade.cc \
   filteredeventlog.h \
   eventlogfacade.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/matchexpression.h \
   eventlogdefs.h \
@@ -202,7 +182,6 @@ $O/eventlogtablefacade.o: eventlogtablefacade.cc \
   event.h \
   eventlogtablefacade.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/matchexpression.h \
   eventlogdefs.h \
@@ -230,7 +209,6 @@ $O/eventlogtool.o: eventlogtool.cc \
   ieventlog.h \
   ievent.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/matchexpression.h \
   ../common/patternmatcher.h \
@@ -242,7 +220,6 @@ $O/filteredevent.o: filteredevent.cc \
   ievent.h \
   ../common/filereader.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/commondefs.h \
   ../common/matchexpression.h \
@@ -271,7 +248,6 @@ $O/filteredeventlog.o: filteredeventlog.cc \
   ../common/filereader.h \
   ievent.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/linetokenizer.h \
   ../common/stringpool.h \
@@ -280,7 +256,6 @@ $O/filteredeventlog.o: filteredeventlog.cc \
 $O/ievent.o: ievent.cc \
   ievent.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/matchexpression.h \
   eventlogdefs.h \
@@ -300,7 +275,6 @@ $O/ieventlog.o: ieventlog.cc \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
   eventlogentry.h \
-  eventlogentries.h \
   messagedependency.h \
   ../common/matchexpression.h \
   ../common/linetokenizer.h
@@ -314,7 +288,6 @@ $O/messagedependency.o: messagedependency.cc \
   ../common/commonutil.h \
   ../common/bigdecimal.h \
   ../common/commondefs.h \
-  eventlogentries.h \
   ../common/filereader.h \
   ../common/matchexpression.h \
   ../common/linetokenizer.h
@@ -328,7 +301,6 @@ $O/sequencechartfacade.o: sequencechartfacade.cc \
   ../common/commondefs.h \
   ../common/exception.h \
   eventlogentry.h \
-  eventlogentries.h \
   ../common/matchexpression.h \
   eventlogdefs.h \
   ../common/linetokenizer.h \

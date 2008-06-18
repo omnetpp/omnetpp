@@ -22,7 +22,7 @@ LIBNAME=libenvir$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/envir
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../sim -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) -DSHARED_LIB_SUFFIX=$(SHARED_LIB_SUFFIX)
+COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../sim -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) -DSHARED_LIB_SUFFIX="\"$(SHARED_LIB_SUFFIX)\""
 
 IMPLIBS= -L$L -lsim_std$D -lnedxml$D -lcommon$D $(XML_LIBS)
 
@@ -47,7 +47,7 @@ $O/%.o: %.cc
 #
 # Targets
 #
-all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/opp_run$(EXE_SUFFIX)
+all : $L/$(LIBNAME)$(LIB_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
@@ -78,10 +78,13 @@ eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentri
 
 $O/envirbase.o: eventlogwriter.h
 
+# default opp_run target - called only at the end once tkenv and cmdenv is done
+opp_run_executable: $O/opp_run$(EXE_SUFFIX)
+
 # opp_run is useless with static libs
 ifeq ("$(LIB_SUFFIX)","$(SHARED_LIB_SUFFIX)")
 $O/opp_run$(EXE_SUFFIX) : $O/opp_run.o $L/$(LIBNAME)$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o -lenvir$D $(IMPLIBS) $(SYS_LIBS)
+	$(CXX) $(LDFLAGS) -Wl,-rpath,. -o "$@" $O/opp_run.o -lenvir$D $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS)
 	cp $O/opp_run$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 
 $O/opp_run.o : opp_run.cc

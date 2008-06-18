@@ -21,7 +21,7 @@ LIBNAME=envir$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/envir
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 
-COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"$O/$(LIBNAME).pdb"
+COPTS= $(CFLAGS) -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -DHAVE_DLOPEN=$(HAVE_DLOPEN) -DSHARED_LIB_SUFFIX="\"$(SHARED_LIB_SUFFIX)\"" /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../sim/sim_std$D.lib $O/../nedxml/nedxml$D.lib $O/../common/common$D.lib $(XML_LIBS)
 
 OBJS= $O/args.obj $O/bootenv.obj $O/main.obj $O/envirbase.obj $O/fsutils.obj \
@@ -52,7 +52,7 @@ COPTS=$(COPTS) -DWITH_NETBUILDER
 #
 # Targets
 #
-all : $O/$(LIBNAME)$(LIB_SUFFIX) $O/opp_run.exe
+all : $O/$(LIBNAME)$(LIB_SUFFIX)
 
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
@@ -76,10 +76,13 @@ eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentri
 
 $O/envirbase.obj: eventlogwriter.h
 
+# default opp_run target - called only at the end once tkenv and cmdenv is done 
+opp_run_executable: $O/opp_run$(EXE_SUFFIX)
+
 # opp_run is useless with static libs
 !if "$(LIB_SUFFIX)"==".dll"
 $O/opp_run.exe : $O/opp_run.obj $O/$(LIBNAME)$(LIB_SUFFIX)
-	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/opp_run.obj $(O:/=\)\$(LIBNAME).lib $(IMPLIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/opp_run.obj $(O:/=\)\$(LIBNAME).lib $(ALL_ENV_LIBS) $(IMPLIBS)
 	copy $(O:/=\)\opp_run.exe $(OMNETPP_BIN_DIR:/=\)
 	-copy $(O:/=\)\opp_run.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
