@@ -2993,8 +2993,8 @@ Some exponents with the ranges they provide are shown in the following table.
 
 <p><div align=center>
   <fontmaroon><em> Unknown LaTeX command </em> \begin </font>tabular<fontmaroon><em>  </em>  </font>
-
-<p>    Exponent & Resolution & Approx. Range <br>
+    
+<p>    Exponent & Resolution & Approx. Range <br> 
      -18 & <i>10<sup>-18</sup></i>s (1as) & <i>\pm 9.22</i>s <br>
      -15 & <i>10<sup>-15</sup></i>s (1fs) & <i>\pm 153.72</i> minutes <br>
      -12 & <i>10<sup>-12</sup></i>s (1ps) & <i>\pm 106.75</i> days <br>
@@ -3002,7 +3002,7 @@ Some exponents with the ranges they provide are shown in the following table.
      -6  & <i>10<sup>-6</sup></i>s (1us)  & <i>\pm 292271</i> years <br>
      -3  & <i>10<sup>-3</sup></i>s (1ms)  & <i>\pm 2.9227e8</i> years <br>
      0   & 1s                & <i>\pm 2.9227e11</i> years <br>
-
+    
 <p>  <fontmaroon><em> Unknown LaTeX command </em> \end </font>tabular<fontmaroon><em>  </em>  </font>
 </div>
 
@@ -3737,7 +3737,7 @@ discussed yet, but the code is probably understandable nevertheless.)
 class Generator : public <a href="../api/classcSimpleModule.html">cSimpleModule</a>
 {
   public:
-    Generator() : <a href="../api/classcSimpleModule.html">cSimpleModule</a>()
+    Generator() : <a href="../api/classcSimpleModule.html">cSimpleModule</a>() 
   protected:
     virtual void initialize();
     virtual void handleMessage(<a href="../api/classcMessage.html">cMessage</a> *msg);
@@ -7435,7 +7435,7 @@ this is not written out in the following table):
     </TD> <TD align=left>
 <b>Generated code</b>
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 primitive types
 <pre>
 double field;
@@ -7446,7 +7446,7 @@ double getField();
 void setField(double d);
 </pre>
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 string type
 <pre>
 string field;
@@ -7457,7 +7457,7 @@ const char *getField();
 void setField(const char *);
 </pre>
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 fixed-size arrays
 <pre>
 double field[4];
@@ -7470,7 +7470,7 @@ unsigned getFieldArraySize();
 </pre>
 
 <p></TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 dynamic arrays
 <pre>
 double field[];
@@ -7483,7 +7483,7 @@ double getField(unsigned k);
 void setField(unsigned k, double d);
 </pre>
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 customized class
 <pre>
 class Foo {
@@ -7500,7 +7500,7 @@ class Foo : public Foo_Base {
 };
 </pre>
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 abstract fields
 <pre>
 abstract double field;
@@ -7511,7 +7511,7 @@ double getField() = 0;
 void setField(double d) = 0;
 </pre>
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 </table>
 
 <p>
@@ -8128,7 +8128,7 @@ which one to be used.
 <TR> <TD align=left> <tt>geometric(p, <i>rng=0</tt>)</i> </TD> <TD align=left> geometric distribution with parameter 0&lt;=p&lt;=1 </TD></TR>
 <TR> <TD align=left> <tt>negbinomial(n, p, <i>rng=0</tt>)</i> </TD> <TD align=left> binomial distribution with parameters n&gt;0 and 0&lt;=p&lt;=1</TD></TR>
 <TR> <TD align=left> <tt>poisson(lambda, <i>rng=0</tt>)</i> </TD> <TD align=left> Poisson distribution with parameter lambda </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 </table>
 
 <p>
@@ -12306,7 +12306,7 @@ switches<!--command line switches-->:
   </TD> <TD align=left>
   The program prints a short help message and the networks
   contained in the executable, then exits.</TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
   <tt>-f</tt> <tt>&lt;</tt><i>fileName<tt>&gt;</tt></i>
   </TD> <TD align=left>
   Specify the name of the configuration file.
@@ -12315,7 +12315,7 @@ switches<!--command line switches-->:
   configuration file.  For example, one file can contain your general
   settings, another one most of the module parameters, another one the
   module parameters you change often.</TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
   <tt>-l</tt> <tt>&lt;</tt><i>fileName<tt>&gt;</tt></i>
   </TD> <TD align=left>
   Load a shared object<!--shared objects--> (<tt>.so</tt> file on Unix).
@@ -12325,7 +12325,7 @@ switches<!--command line switches-->:
   on Unix) you can even eliminate the need to re-link the simulation
   program after each change in a source file.  (Shared objects can be
   created with <tt>gcc -shared...</tt>)</TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
   <tt>-r</tt> <tt>&lt;</tt><i>runs<tt>&gt;</tt></i>
   </TD> <TD align=left>
   It specifies which runs should be executed (e.g. <tt>-r 2,4,6-8</tt>).
@@ -12536,7 +12536,7 @@ switches<!--command line switches-->:
   </TD> <TD align=left>
   The program prints a short help message and the networks
   contained in the executable, then exits.</TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
   <tt>-f </tt><i>&lt;fileName&gt;</i>
   </TD> <TD align=left>
   Specify the name of the configuration file.
@@ -12545,7 +12545,7 @@ switches<!--command line switches-->:
   configuration file.  For example, one file can contain your general
   settings, another one most of the module parameters, another one the
   module parameters you change often.</TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
   <tt>-l </tt><i>&lt;fileName&gt;</i>
   </TD> <TD align=left>
   Load a shared object<!--shared objects--> (<tt>.so</tt> file on Unix).
@@ -12555,7 +12555,7 @@ switches<!--command line switches-->:
   on Unix) you can even eliminate the need to re-link the simulation
   program after each change in a source file.  (Shared objects can be
   created with <tt>gcc -shared...</tt>)</TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
   <tt>-r </tt><i>&lt;run-number&gt;</i>
   </TD> <TD align=left>
   It has the same effect as (but takes priority over) the <tt>[Tkenv]/default-run=</tt>
@@ -14953,27 +14953,27 @@ everywhere else (Figure <a href="#fig:inst">below</a>).
 
 <p><b>Entry and default value</b> </TD> <TD align=left> <b>Description</b></TD></TR>
 <TR> <TD align=left colspan=2><b>[General]</b></TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parallel-simulation = &lt;true/false&gt;<br>
 default: false
 </TD> <TD align=left>
 Enables parallel distributed simulation. The following configuration
 entries are only examined if <tt>parallel-simulation=true</tt>
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parsim-debug = &lt;true/false&gt;<br>
 default: true
 </TD> <TD align=left>
 Enables debugging output
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parsim-mpicommunications-mpibuffer = &lt;bytes&gt;<br>
 default: 256K * (numPartitions-1) + 16K
 </TD> <TD align=left>
 Size of MPI send buffer to allocate; see MPI_Buffer_attach()
 MPI call. If the buffer is too small, a deadlock can occur.
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parsim-namedpipecommunications-prefix = &lt;string&gt;<br>
 default: "omnetpp" or "comm/"
 </TD> <TD align=left>
@@ -14985,19 +14985,19 @@ Unix: default value is "comm/", which means that the named pipes will
 be created with the name "comm/pipe-xx-yy". The "comm/" subdirectory must
 already exist when the simulation is launched.
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parsim-filecommunications-prefix = &lt;string&gt;<br>
 default: "comm/"
 </TD> <TD align=left>
 (see below)
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parsim-filecommunications-preserve-read = &lt;true/false&gt;<br>
 default: false
 </TD> <TD align=left>
 (see below)
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parsim-filecommunications-read-prefix = &lt;string&gt;<br>
 default: "comm/read/"
 </TD> <TD align=left>
@@ -15011,14 +15011,14 @@ an exception is thrown somewhere inside the standard C library, which
 materializes itself in OMNeT++ as an "Error: (null)" message...
 Strangely, this can be reproduced in both Linux and Windows.
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parsim-nullmessageprotocol-lookahead-class = &lt;class name string&gt;<br>
 default: "cLinkDelayLookahead"
 </TD> <TD align=left>
 Selects the lookahead class for the Null Message Algorithm; the
 class must be subclassed from cNMPLookahead.
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parsim-nullmessageprotocol-laziness = &lt;0..1&gt;<br>
 default: 0.5
 </TD> <TD align=left>
@@ -15026,7 +15026,7 @@ Controls how often the Null Message Algorithm should send out null
 messages; the value is understood in proportion to the lookahead,
 e.g. 0.5 means every lookahead/2 simsec.
 </TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 parsim-idealsimulationprotocol-tablesize = &lt;int&gt;<br>
 default: 100,000
 </TD> <TD align=left>
@@ -15182,7 +15182,7 @@ The rectangles in the picture represent components:
     your simulation program with.
        <br><ul><font size=-1>[Use of dynamic (shared) libraries is also possible, but
        for simplicity we'll use the word <i>linking</i> here.]</font></ul>
-
+    
   <li><b>Envir</b> is another library which contains all code
     that is common to all user interfaces. <tt>main()</tt> is also in Envir.
     Envir provides services like ini file handling for specific user interface
@@ -15662,7 +15662,7 @@ Specific user interfaces such as <tt>TCmdenv</tt>,
 <ul>
   <li>add new configuration options
   <li>provide a <tt>run()</tt> function
-
+  
 <p>  <li>implement functions left empty in <tt>TOmnetApp</tt> (like
     <tt>breakpointHit()</tt>, <tt>objectDeleted()</tt>).
 </ul>
@@ -15917,7 +15917,7 @@ ini file is in (provided it's in a NED directory).
         channel interfaces).
 </ul>
 
-A <tt>network</tt> is a shorthand for a compound module with the <tt>@isNetwork</tt>
+<p>A <tt>network</tt> is a shorthand for a compound module with the <tt>@isNetwork</tt>
 property set, so the same rules apply to it as to compound modules.
 
 <p>Inheritance may:
@@ -15996,7 +15996,8 @@ unqualified name of the component.
     derived simple module or channel will continue to use the C++ class from its
     super type.
 
-<p><H3><A NAME="sec436"/>15.8.1 Current namespace</H3>
+<p>
+<H3><A NAME="sec436"/>15.8.1 Current namespace</H3>
 <a name="cha:ned-ref:current-namespace"></a>
 
 <p>The <i>current namespace</i> is the value of the first <tt>@namespace</tt>
@@ -16381,7 +16382,7 @@ perform conversions on them.
 
 <p><table border>
 <TR> <TD align=center>
-
+  
 <p>  <b>Unit</b> </TD> <TD align=center> <b>Name</b> </TD> <TD align=right> <b>Value</b> </TD></TR>
 <TR> <TD align=center>   s </TD> <TD align=center> second </TD> <TD align=right> </TD></TR>
 <TR> <TD align=center>   d </TD> <TD align=center> day </TD> <TD align=right> 86400s </TD></TR>
@@ -18134,7 +18135,7 @@ red solid circle will be used;
 </TD> <TD align=left>
  Displays the given text in a tooltip when the user moves
 the mouse over the message icon.</TD></TR>
-<TR> <TD align=left>
+<TR> <TD align=left> 
 </table>
 
 <p>
@@ -18797,28 +18798,28 @@ etc.
 attr run 1
 
 <p>\ttfamily
-attr network "largeNet"
+attr network "largeNet" 
 
 <p>\ttfamily
 attr date "2005-07-10 14:34:11"
 
 <p>\ttfamily
-attr host "localhost"
+attr host "localhost" 
 
 <p>\ttfamily
 attr inifile "xxx.ini"
 
 <p>\ttfamily
-attr experiment "blabla"
+attr experiment "blabla" 
 
 <p>\ttfamily
-attr measurement "rtete"
+attr measurement "rtete" 
 
 <p>\ttfamily
 attr replication "12th"
 
 <p>\ttfamily
-attr numseeds 2
+attr numseeds 2 
 
 <p>\ttfamily
 attr seed-0-mt 573367
