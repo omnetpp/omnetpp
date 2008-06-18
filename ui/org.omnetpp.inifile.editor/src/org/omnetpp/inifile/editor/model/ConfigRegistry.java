@@ -462,6 +462,10 @@ public class ConfigRegistry {
         "The random number generator class to be used. It can be `cMersenneTwister', " +
         "`cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be " +
         "subclassed from cRNG).");
+    public static final ConfigKey CFGID_RUNNUMBER_WIDTH = addPerRunEntry(
+        "runnumber-width", CFG_INT, "0",
+        "Setting a nonzero value will cause the $runnumber variable to get padded " +
+        "with leading zeroes to the given length.");
     public static final ConfigKey CFGID_SCALAR_RECORDING = addPerObjectEntry(
         "scalar-recording", CFG_BOOL, "true",
         "Whether the matching output scalars should be recorded. Syntax: " +

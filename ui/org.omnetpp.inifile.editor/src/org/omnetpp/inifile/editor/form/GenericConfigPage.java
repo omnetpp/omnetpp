@@ -31,6 +31,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_MODULE_EVENT
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NED_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NUM_RNGS;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_RUNNUMBER_WIDTH;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUTSCALARMANAGER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUTVECTORMANAGER_CLASS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_OUTPUT_SCALAR_FILE;
@@ -200,6 +201,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group1, CFGID_MAX_MODULE_NESTING, "Allowed maximum module nesting");
             addSpacer(form);
             Group group6 = createGroup(form, "Other");
+            addTextFieldEditor(group6, CFGID_RUNNUMBER_WIDTH, "Run number width");
             addTextFieldEditor(group6, CFGID_NED_PATH, "NED file path");
             addTextFieldEditor(group6, CFGID_USER_INTERFACE, "User interface");
 		}
