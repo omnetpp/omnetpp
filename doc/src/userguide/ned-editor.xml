@@ -461,7 +461,7 @@
         <title>Searching in NED Files</title>
         <para>
           Selecting a text or moving the cursor over a word and pressing
-          <keycap>SHIFT+CTRL+G</keycap>
+          <keycap>CTRL+SHIFT+G</keycap>
           searches for the selection in all NED files in the open projects. This function
           lets you quickly find references to the word or type currently under the cursor.
           The results are shown in the standard Search View.
@@ -473,7 +473,7 @@
           Sometimes it is very inconvenient to add the necessary import statements to the
           beginning of the NED file by hand. The IDE can do it for you (almost)
           automatically. Pressing
-          <keycap>SHIFT+CTRL+O</keycap>
+          <keycap>CTRL+SHIFT+O</keycap>
           will try to insert all needed import statement and asks you to specify the used
           packages in case of ambiguity.
         </para>
@@ -495,7 +495,7 @@
           coding guidelines by activating the
           <guimenuitem>Format SOurce</guimenuitem>
           context menu item or by pressing the
-          <keycap>SHIFT+CTRL+F</keycap>
+          <keycap>CTRL+SHIFT+F</keycap>
           key combination.
         </para>
         <note>
