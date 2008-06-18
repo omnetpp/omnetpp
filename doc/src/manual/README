@@ -19,7 +19,7 @@ Type "make usman.html". It uses local perl scripts for the conversion.
 
 Making PDF output
 -----------------
-Make sure that MiKTeX/miktext/bin is in the path, the type "make usman.pdf". 
+Make sure that MiKTeX/miktext/bin is in the path, the type "make .pdf". 
 
 
 Graphics

@@ -57,7 +57,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	makeindex tmp/usman
 	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
 	pdflatex -aux-directory=tmp usman.tex $(LOGFILTER)
-	copy usman.pdf ..\..\manual
+	copy usman.pdf ..\..\manual\manual.pdf
 
 # --- generating html ---
 
@@ -88,6 +88,6 @@ html : $(HTMCHAPTERS) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.pl
 	copy figures\*.png ..\..\manual
 
 clean:
-	-del usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
+	-del usman.dvi manual.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc *.bbl *.blg *.htm usman.tmp usman.html
 
 
