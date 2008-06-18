@@ -245,6 +245,13 @@ ParamElement *addParameter(NEDElement *params, YYLTYPE namepos)
     return param;
 }
 
+ParamElement *addParameter(NEDElement *params, const char *name, YYLTYPE namepos)
+{
+    ParamElement *param = (ParamElement *)createElementWithTag(NED_PARAM,params);
+    param->setName(name);
+    return param;
+}
+
 GateElement *addGate(NEDElement *gates, YYLTYPE namepos)
 {
     GateElement *gate = (GateElement *)createElementWithTag(NED_GATE,gates);

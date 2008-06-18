@@ -86,6 +86,10 @@
 	  setDataRate() methods from cGate; use methods from the gate's channel 
 	  instead: check_and_cast<cBasicChannel *>(gate->channel())->setDelay(0.1);
 	  or use generic component parameter access instead: gate->channel()->par("delay")=0.1.
+        - "error" parameter renamed to "ber" (bit error rate or BER, cBasicChannel methods 
+          getBitErrorRate/setBitErrorRate)
+        - added "per" parameter (packet error rate or PER, cBasicChannel methods 
+          getPacketErrorRate/setPacketErrorRate)
 	- added cIdealChannel which lets messages through without any change or delay.
 	- breaking change in cBasicChannel behaviour: implicit queueing is no longer supported:
 	  sending on a busy gate (when simTime() < gate->transmissionFinishes()) results in an

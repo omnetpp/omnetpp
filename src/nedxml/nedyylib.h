@@ -50,6 +50,7 @@ void storeBannerAndRightComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE las
 void storeInnerComments(NEDElement *node, YYLTYPE pos);
 
 ParamElement *addParameter(NEDElement *params, YYLTYPE namepos);
+ParamElement *addParameter(NEDElement *params, const char *name, YYLTYPE namepos);
 GateElement *addGate(NEDElement *gates, YYLTYPE namepos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);

@@ -40,8 +40,9 @@ cBasicChannel::cBasicChannel(const char *name) : cChannel(name)
 {
     txfinishtime = 0;
     delayparam = 0;
-    errorparam = 0;
     datarateparam = 0;
+    berparam = 0;
+    perparam = 0;
 }
 
 cBasicChannel::~cBasicChannel()
@@ -62,20 +63,24 @@ void cBasicChannel::finalizeParameters()
 void cBasicChannel::rereadPars()
 {
     delayparam = par("delay");
-    errorparam = par("error");
     datarateparam = par("datarate");
+    berparam = par("ber");
+    perparam = par("per");
 
     if (delayparam<0)
         throw cRuntimeError(this, "negative delay %s", SIMTIME_STR(delayparam));
-    if (errorparam<0 || errorparam>1)
-        throw cRuntimeError(this,"wrong bit error rate %g", errorparam);
     if (datarateparam<0)
         throw cRuntimeError(this, "negative datarate %g", datarateparam);
+    if (berparam<0 || berparam>1)
+        throw cRuntimeError(this, "wrong bit error rate %g", berparam);
+    if (perparam<0 || perparam>1)
+        throw cRuntimeError(this, "wrong packet error rate %g", perparam);
 
     setFlag(FL_ISDISABLED, par("disabled"));
     setFlag(FL_DELAY_NONZERO, delayparam!=0);
-    setFlag(FL_ERROR_NONZERO, errorparam!=0);
     setFlag(FL_DATARATE_NONZERO, datarateparam!=0);
+    setFlag(FL_BER_NONZERO, berparam!=0);
+    setFlag(FL_PER_NONZERO, perparam!=0);
 }
 
 void cBasicChannel::handleParameterChange(const char *)
@@ -88,14 +93,19 @@ void cBasicChannel::setDelay(double d)
     par("delay").setDoubleValue(d);
 }
 
-void cBasicChannel::setError(double d)
-{
-    par("error").setDoubleValue(d);
-}
-
 void cBasicChannel::setDatarate(double d)
 {
     par("datarate").setDoubleValue(d);
+}
+
+void cBasicChannel::setBitErrorRate(double d)
+{
+    par("ber").setDoubleValue(d);
+}
+
+void cBasicChannel::setPacketErrorRate(double d)
+{
+    par("per").setDoubleValue(d);
 }
 
 void cBasicChannel::setDisabled(bool d)
@@ -143,14 +153,18 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
         t += delayparam;
     }
 
-    // bit error rate modeling
-    if (flags & FL_ERROR_NONZERO)
+    // bit error modeling
+    if (flags & (FL_BER_NONZERO | FL_PER_NONZERO))
     {
-        if (dblrand() < 1.0 - pow(1.0-errorparam, (double)msg->getBitLength()))
-            msg->setBitError(true);
+        if (flags & FL_BER_NONZERO)
+            if (dblrand() < 1.0 - pow(1.0-berparam, (double)msg->getBitLength()))
+                msg->setBitError(true);
+        if (flags & FL_PER_NONZERO)
+            if (dblrand() < perparam)
+                msg->setBitError(true);
     }
 
-    // FIXME: XXX: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
+    // XXX: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
     EVCB.messageSendHop(msg, getFromGate(), delayparam, transmissiondelay);
 
     // hand over msg to next gate

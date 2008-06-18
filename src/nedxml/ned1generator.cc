@@ -489,11 +489,12 @@ void NED1Generator::doChannelParam(ParamElement *node, const char *indent)
     // this is used both in channel definitions and in connections
     OUT << getBannerComment(node, indent);
     const char *name = node->getName();
-    if (strcmp(name, "delay")==0 || strcmp(name, "error")==0 || strcmp(name, "datarate")==0)
+    if (strcmp(name, "delay")==0 || strcmp(name, "ber")==0 || strcmp(name, "datarate")==0)
     {
         // indent==NULL means no indent and no new line at end (but a space at front)
+        if (strcmp(name, "ber")==0) name="error";  // "error" got renamed to "ber" in 4.0
         OUT << (indent ? indent : " ");
-        OUT << node->getName() << " ";
+        OUT << name << " ";
         printExpression(node, "value", indent);
         if (indent)
             OUT << ";" << getRightComment(node);

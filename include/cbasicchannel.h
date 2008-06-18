@@ -33,14 +33,16 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
     enum {
       FL_ISDISABLED = 64,
       FL_DELAY_NONZERO = 128,
-      FL_ERROR_NONZERO = 256,
-      FL_DATARATE_NONZERO = 512,
+      FL_DATARATE_NONZERO = 256,
+      FL_BER_NONZERO = 512,
+      FL_PER_NONZERO = 1024,
     };
 
     // cached values of parameters (note: parameters are non-volatile)
     simtime_t delayparam; // propagation delay
-    double errorparam;    // bit error rate
     double datarateparam; // data rate
+    double berparam;    // bit error rate
+    double perparam;    // packet error rate
 
     // stores the end of the last transmission; used if there is a datarate
     simtime_t txfinishtime;
@@ -82,58 +84,74 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
     virtual std::string info() const;
     //@}
 
-    /** @name Setting and getting channel attributes. */
+    /** @name Setting and getting channel parameters. */
     //@{
 
     /**
-     * Sets the delay parameter of the channel.
-     * An alternative way of accessing this values is by par("delay").
+     * Sets the propagation delay of the channel, in seconds.
      */
     virtual void setDelay(double d);
 
     /**
-     * Sets the bit error rate parameter of the channel.
-     * An alternative way of accessing this values is by par("error").
-     * When a message sent through the channel suffers at least
-     * one bit error, its bit error flag will be set.
-     *
-     * @see cMessage::hasBitError()
-     */
-    virtual void setError(double d);
-
-    /**
-     * Sets the data rate parameter of the channel.
-     * An alternative way of accessing this values is by par("datarate").
-     * This value affects the transmission time of messages sent through
-     * the channel.
+     * Sets the data rate of the channel, in bit/second.
      *
      * @see isBusy(), getTransmissionFinishTime()
      */
     virtual void setDatarate(double d);
 
     /**
-     * Sets the "disabled" parameter of the channel. A disabled channel
-     * discards all messages sent on it.
+     * Sets the bit error rate (BER) of the channel.
+     *
+     * @see cMessage::hasBitError()
+     */
+    virtual void setBitErrorRate(double d);
+
+    /**
+     * Sets the packet error rate (PER) of the channel.
+     *
+     * @see cMessage::hasBitError()
+     */
+    virtual void setPacketErrorRate(double d);
+
+    /**
+     * Disables or enables the channel.
      */
     virtual void setDisabled(bool d);
 
     /**
-     * Returns the delay of the channel.
+     * Returns the propagation delay of the channel, in seconds.
+     * This method is equivalent to reading the "delay" parameter, via par("delay").
      */
     virtual simtime_t getDelay() const {checkState(); return delayparam;}
 
     /**
-     * Returns the bit error rate of the channel.
-     */
-    virtual double getError() const  {checkState(); return errorparam;}
-
-    /**
-     * Returns the data rate of the channel.
+     * Returns the data rate of the channel, in bit/second.
+     * This method is equivalent to reading the "datarate" parameter, via par("datarate").
+     * This value affects the transmission time of messages sent through
+     * the channel.
      */
     virtual double getDatarate() const  {checkState(); return datarateparam;}
 
     /**
-     * Returns the "disabled" parameter of the channel.
+     * Returns the bit error rate (BER) of the channel.
+     * This method is equivalent to reading the "ber" parameter, via par("ber").
+     * When a message sent through the channel suffers at least
+     * one bit error, its bit error flag will be set.
+     */
+    virtual double getBitErrorRate() const  {checkState(); return berparam;}
+
+    /**
+     * Returns the packet error rate (PER) of the channel.
+     * This method is equivalent to reading the "per" parameter, via par("per").
+     * When a message is sent through the channel, its bit error flag
+     * will be set with this probability.
+     */
+    virtual double getPacketErrorRate() const  {checkState(); return perparam;}
+
+    /**
+     * Returns whether the channel is disabled.
+     * This method is equivalent to reading the "disabled" parameter, via par("disabled").
+     * A disabled channel discards all messages sent on it.
      */
     virtual bool isDisabled() const  {checkState(); return flags & FL_ISDISABLED;}
     //@}

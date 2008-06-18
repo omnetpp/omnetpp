@@ -259,16 +259,20 @@ opt_channelattrblock
 channelattrblock
         : channelattrblock CHANATTRNAME expression opt_semicolon
                 {
+                  const char *name = toString(@2);
+                  if (strcmp(name,"error")==0) name = "ber";  // "error" got renamed to "ber" in 4.0
                   ps.params->setIsImplicit(false);
-                  ps.param = addParameter(ps.params, @2);
+                  ps.param = addParameter(ps.params, name, @2);
                   addExpression(ps.param, "value",@3,$3);
                   storeBannerAndRightComments(ps.param,@2,@3);
                   storePos(ps.param, @2,@4);
                 }
         | CHANATTRNAME expression opt_semicolon
                 {
+                  const char *name = toString(@1);
+                  if (strcmp(name,"error")==0) name = "ber"; // "error" got renamed to "ber" in 4.0
                   ps.params->setIsImplicit(false);
-                  ps.param = addParameter(ps.params, @1);
+                  ps.param = addParameter(ps.params, name, @1);
                   addExpression(ps.param, "value",@2,$2);
                   storeBannerAndRightComments(ps.param,@1,@2);
                   storePos(ps.param, @$);

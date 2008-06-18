@@ -418,11 +418,12 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "}\n";
     out << "\n";
 
-    out << "static cChannel *_createNonTypedBasicChannel(double delay, double error, double datarate)\n";
+    out << "static cChannel *_createNonTypedBasicChannel(double delay, double ber, double datarate)\n";
     out << "{\n";
     out << "    cBasicChannel *channel = new cBasicChannel(\"channel\");\n";
     out << "    if (delay!=0) channel->setDelay(delay);\n";
-    out << "    if (error!=0) channel->setError(error);\n";
+    out << "    if (ber!=0) channel->setBitErrorRate(ber);\n";
+    out << "    if (per!=0) channel->setPacketErrorRate(per);\n";
     out << "    if (datarate!=0) channel->setDatarate(datarate);\n";
     out << "    return channel;\n";
     out << "}\n";
