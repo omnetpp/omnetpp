@@ -97,7 +97,7 @@ interfaces \ttt{IBidirectionalChannel} and \ttt{IUnidirectionalChannel}; the
 latter two are reserved for future use.
 
 %%
-%% Note: the following code is from src/nedxml/nedparser.cc, 
+%% Note: the following code is from src/nedxml/nedparser.cc,
 %%       NEDParser::getBuiltInDeclarations()
 %%
 \begin{verbatim}
@@ -135,7 +135,7 @@ moduleinterface IUnidirectionalChannel {
 \section{Packages}
 
 NED supports hierarchical namespaces called \textit{packages}. The solution
-is roughly modelled after Java's packages, with minor changes.
+is roughly modelled after Java's packages, with minor changes.
 \subsection{Package declaration}
 
 The package of the declarations in a NED file is determined by the package
@@ -156,7 +156,7 @@ special role.
 
 If there is no toplevel \ttt{package.ned} or it contains no package declaration,
 the declared package of a NED file in the folder \ttt{\textit{<srcfolder>}/x/y/z}
-\textit{must} be \ttt{x.y.z}.
+\textit{must} be \ttt{x.y.z}.
 If there is a toplevel \ttt{package.ned} and it declares to be in package
 \ttt{a.b}, then any NED file in the folder \ttt{\textit{<srcfolder>}/x/y/z}
 \textit{must} have the declared package \ttt{a.b.x.y.z}.
@@ -169,7 +169,7 @@ If there is a toplevel \ttt{package.ned} and it declares to be in package
 
 \section{Name uniqueness}
 
-All component type names must be unique.  
+All component type names must be unique.
 %%FIXME clarify
 
 Identifier names within a component must be unique. That is, submodule
@@ -193,7 +193,7 @@ Visible names are:
 \subsection{Imports}
 
 Imports have a similar syntax to Java, but they are more flexible with wildcards.
-All of the following are legal:
+All of the following are legal:
 \begin{verbatim}
 import inet.protocols.network.ip.RoutingTable;
 import inet.protocols.network.ip.*;
@@ -247,7 +247,9 @@ ini file is in (provided it's in a NED directory).
         interfaces).
   \item A channel interface may only extend a channel interface (or several
         channel interfaces).
-\end{itemize}A \ttt{network} is a shorthand for a compound module with the \ttt{@isNetwork}
+\end{itemize}
+
+A \ttt{network} is a shorthand for a compound module with the \ttt{@isNetwork}
 property set, so the same rules apply to it as to compound modules.
 
 Inheritance may:
@@ -259,7 +261,7 @@ Inheritance may:
   \item it may NOT modify inherited submodules, connections and inner types
 \end{itemize}
 
-XXX 
+XXX
 - parameter once assigned in base class or type MUST be allowed to be
   set to a different value in subclass/place of usage!!!
 
@@ -323,11 +325,13 @@ unqualified name of the component.
     NED subclassing does not imply subclassing the C++ implementation. If you
     want to subclass a simple module or channel in NED as well as in C++, you
     explicitly need the to specify the \ttt{@class} property, otherwise the
-    derived simple module or channel will continue to use the C++ class from its    super type.\end{note}
+    derived simple module or channel will continue to use the C++ class from its
+    super type.
+\end{note}
 
 \subsection{Current namespace}
 \label{cha:ned-ref:current-namespace}
- 
+
 The \textit{current namespace} is the value of the first \ttt{@namespace}
 property found while searching the following order:
 \begin{enumerate}
@@ -483,7 +487,7 @@ Gate vector sizes may NOT be overridden in subclasses.
 \section{Expressions}
 \label{ch-ned-ref:sec:expressions}
 
-FIXME TODO: 
+FIXME TODO:
 - @unit and expression evaluation wrt units
 - rules for resolving an identifier in an expression
 
@@ -687,19 +691,19 @@ The expression syntax is the following:
         Positions start from zero.
   \item Predicate of the form "\ttt{[@attribute=\textit{\$param}]}" are also
         accepted, where \ttt{\textit{\$param}} can be one of:
-        \ttt{\$MODULE\_\-FULLPATH}, 
-        \ttt{\$MODULE\_\-FULLNAME}, 
+        \ttt{\$MODULE\_\-FULLPATH},
+        \ttt{\$MODULE\_\-FULLNAME},
         \ttt{\$MODULE\_\-NAME},
-        \ttt{\$MODULE\_\-INDEX}, 
+        \ttt{\$MODULE\_\-INDEX},
         \ttt{\$MODULE\_\-ID},
-        \ttt{\$PARENT\-MODULE\_\-FULLPATH}, 
+        \ttt{\$PARENT\-MODULE\_\-FULLPATH},
         \ttt{\$PARENT\-MODULE\_\-FULLNAME},
-        \ttt{\$PARENT\-MODULE\_\-NAME}, 
+        \ttt{\$PARENT\-MODULE\_\-NAME},
         \ttt{\$PARENT\-MODULE\_\-INDEX},
-        \ttt{\$PARENT\-MODULE\_\-ID}, 
-        \ttt{\$GRANDPARENT\-MODULE\_\-FULLPATH}, 
+        \ttt{\$PARENT\-MODULE\_\-ID},
+        \ttt{\$GRANDPARENT\-MODULE\_\-FULLPATH},
         \ttt{\$GRANDPARENT\-MODULE\_\-FULLNAME},
-        \ttt{\$GRANDPARENT\-MODULE\_\-NAME}, 
+        \ttt{\$GRANDPARENT\-MODULE\_\-NAME},
         \ttt{\$GRANDPARENT\-MODULE\_\-INDEX},
         \ttt{\$GRANDPARENT\-MODULE\_\-ID}.
 \end{itemize}
