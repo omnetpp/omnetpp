@@ -106,7 +106,11 @@ while (<LISTFILE>)
     $txt =~ s/\bisRouteOK *\( *\)/isPathOK()/mg;
     $txt =~ s/->datarate\(\)->doubleValue\(\)/->channel()->par("datarate").doubleValue()/mg;
     $txt =~ s/->delay\(\)->doubleValue\(\)/->channel()->par("delay").doubleValue()/mg;
-    $txt =~ s/->error\(\)->doubleValue\(\)/->channel()->par("error").doubleValue()/mg;
+    $txt =~ s/->error\(\)->doubleValue\(\)/->channel()->par("ber").doubleValue()/mg;
+
+    # cBasicChannel
+    $txt =~ s/\berror\(\)/getBitErrorRate()/mg;
+    $txt =~ s/\bsetError\(/setBitErrorRate(/mg;
 
     # cTopology
     $txt =~ s/\bunweightedSingleShortestPathsTo\(/calculateUnweightedSingleShortestPathsTo(/mg;
