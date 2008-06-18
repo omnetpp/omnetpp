@@ -47,6 +47,7 @@ Register_PerRunConfigEntry(CFGID_REPEAT, "repeat", CFG_INT, "1", "For scenarios.
 Register_PerRunConfigEntry(CFGID_EXPERIMENT_LABEL, "experiment-label", CFG_STRING, "${configname}", "Identifies the simulation experiment (which consists of several, potentially repeated measurements). This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigEntry(CFGID_MEASUREMENT_LABEL, "measurement-label", CFG_STRING, "${iterationvars}", "Identifies the measurement within the experiment. This string gets recorded into result files, and may be referred to during result analysis.");
 Register_PerRunConfigEntry(CFGID_REPLICATION_LABEL, "replication-label", CFG_STRING, "#${repetition}", "Identifies one replication of a measurement (see repeat= and measurement-label= as well). This string gets recorded into result files, and may be referred to during result analysis.");
+Register_PerRunConfigEntry(CFGID_RUNNUMBER_WIDTH, "runnumber-width", CFG_INT, "0", "Setting a nonzero value will cause the $runnumber variable to get padded with leading zeroes to the given length.");
 Register_PerObjectConfigEntry(CFGID_APPLY_DEFAULT, "apply-default", CFG_BOOL, "false", "Applies to module parameters: whether NED default values should be assigned if present.");
 
 extern cConfigKey *CFGID_NETWORK;
@@ -247,9 +248,10 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
 void SectionBasedConfiguration::setupVariables(const char *configName, int runNumber, Scenario *scenario, const std::vector<int>& sectionChain)
 {
     // create variables
+    int runnumberWidth = std::max(0,atoi(opp_nulltoempty(internalGetValue(sectionChain, CFGID_RUNNUMBER_WIDTH->getName()))));
     variables[CFGVAR_INIFILE] = opp_nulltoempty(getFileName());
     variables[CFGVAR_CONFIGNAME] = configName;
-    variables[CFGVAR_RUNNUMBER] = opp_stringf("%d", runNumber);
+    variables[CFGVAR_RUNNUMBER] = opp_stringf("%0*d", runnumberWidth, runNumber);
     variables[CFGVAR_NETWORK] = opp_nulltoempty(internalGetValue(sectionChain, CFGID_NETWORK->getName()));
     variables[CFGVAR_PROCESSID] = opp_stringf("%d", (int) getpid());
     variables[CFGVAR_DATETIME] = opp_makedatetimestring();
