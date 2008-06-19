@@ -67,7 +67,7 @@ public class PaletteFilterAction extends WorkbenchPartAction {
         Collections.sort(orderedQNames);
         for (String qname : orderedQNames) {
             INEDTypeInfo nedType = res.getToplevelNedType(qname, project);
-            String packageName = nedType.getPackageName();
+            String packageName = StringUtils.fallback(nedType.getPackageName(), "(default)");
             if (!packages.containsKey(packageName))
                 packages.put(packageName, 1);
             else 
