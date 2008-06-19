@@ -2,6 +2,8 @@ FOP=$(TOOLS_DIR)\fop\fop.bat
 XSLTPROC=$(TOOLS_DIR)\libxslt\bin\xsltproc
 DOCBOOK=$(TOOLS_DIR)\docbook
 
+all: html pdf
+
 icons:
 	perl icons.pl
 
