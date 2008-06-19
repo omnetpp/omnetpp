@@ -1,3 +1,10 @@
+2008-06-19  Andras Varga
+
+	* refined signal handling: only turn on special signal handling while 
+	the simulation is processing events. During lengthy initializations
+	etc, one can still abort the program via Ctrl-C. SIGTERM and SIGINT 
+	are handled. [suggested by Bradley Settlemyer]
+
 2008-02-23  Andras Varga
 
 	Summary of changes for omnetpp-4.0 (2006..2008):

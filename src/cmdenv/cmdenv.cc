@@ -177,10 +177,16 @@ void Cmdenv::signalHandler(int signum)
         sigint_received = true;
 }
 
-void Cmdenv::setupSignals()
+void Cmdenv::installSignalHandler()
 {
     signal(SIGINT, signalHandler);
     signal(SIGTERM, signalHandler);
+}
+
+void Cmdenv::deinstallSignalHandler()
+{
+    signal(SIGINT, SIG_DFL);
+    signal(SIGTERM, SIG_DFL);
 }
 
 void Cmdenv::shutdown()
@@ -197,8 +203,6 @@ int Cmdenv::run()
     //FIXME: check if wrong configname! check if runnumber out of range!
     if (!initialized)
         return 1;
-
-    setupSignals();
 
     cConfiguration *cfg = getConfig();
 
@@ -368,6 +372,11 @@ const char *Cmdenv::progressPercentage()
 
 void Cmdenv::simulate()
 {
+    // implement graceful exit when Ctrl-C is hit during simulation. We want
+    // to finish the current event, then normally exit via callFinish() etc
+    // so that simulation results are not lost.
+    installSignalHandler();
+
     startClock();
     sigint_received = false;
     try
@@ -493,6 +502,9 @@ void Cmdenv::simulate()
     }
     disable_tracing = false;
     stopClock();
+
+    // restore default signal handling
+    deinstallSignalHandler();
 }
 
 //-----------------------------------------------------

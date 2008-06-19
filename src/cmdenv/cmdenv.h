@@ -89,7 +89,8 @@ class CMDENV_API Cmdenv : public EnvirBase
      void simulate();
      const char *progressPercentage();
 
-     void setupSignals();
+     void installSignalHandler();
+     void deinstallSignalHandler();
      static void signalHandler(int signum);
 };
 
