@@ -333,7 +333,20 @@ void EnvirBase::printHelp()
     ev << "    -h enums          Lists registered enums\n";
     ev << "    -h all            Union of all the above\n";
     ev << "\n";
-    printUISpecificHelp();
+
+    // print specific help for each user interface
+    cRegistrationList *table = omnetapps.getInstance();
+    table->sort();
+    for (int i=0; i<table->size(); i++)
+    {
+        // instantiate the ui, call printUISpecificHelp(), then dispose.
+        // note: their ctors are not supposed to do anything but trivial member initializations
+        cOmnetAppRegistration *appreg = check_and_cast<cOmnetAppRegistration *>(table->get(i));
+        cEnvir *app = appreg->createOne();
+        if (dynamic_cast<EnvirBase *>(app))
+            ((EnvirBase *)app)->printUISpecificHelp();
+        delete app;
+    }
 }
 
 void EnvirBase::dumpComponentList(const char *category)
