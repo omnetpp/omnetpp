@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.color.ColorFactory;
@@ -269,14 +270,16 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
 	}
 	
 	protected void selectLine(String lineName) {
+		Table table = linesTableViewer.getTable();
 		if (lineName != null) {
 			int index = Arrays.binarySearch(lines, new Line(lineName));
 			if (index >= 0) {
-				linesTableViewer.getTable().select(index);
+				table.select(index);
+				table.showSelection();
 				return;
 			}
 		}
-		linesTableViewer.getTable().selectAll();
+		table.selectAll();
 	}
 	
 	protected ImageCombo createImageComboField(String labelText, Composite parent) {
