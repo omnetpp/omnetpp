@@ -20,6 +20,8 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
 public class SequenceChartView extends EventLogView {
 	private SequenceChart sequenceChart;
 
+    private SequenceChartContributor sequenceChartContributor;
+
 	private ISelectionListener selectionListener;
 
 	private IPartListener partListener;
@@ -33,7 +35,7 @@ public class SequenceChartView extends EventLogView {
 		viewSite.setSelectionProvider(sequenceChart);
 
 		// contribute to toolbar
-		SequenceChartContributor sequenceChartContributor = new SequenceChartContributor(sequenceChart);
+		sequenceChartContributor = new SequenceChartContributor(sequenceChart);
 		sequenceChart.setSequenceChartContributor(sequenceChartContributor);
 		sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 

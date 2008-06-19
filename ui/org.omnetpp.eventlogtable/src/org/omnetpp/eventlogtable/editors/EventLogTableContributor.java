@@ -70,10 +70,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     
     public final static String IMAGE_NAME_MODE = TOOL_IMAGE_DIR + "NameMode.gif";
 
-    public final static String IMAGE_FILTER = TOOL_IMAGE_DIR + "filter.png";
+    public final static String IMAGE_LINE_FILTER_MODE = TOOL_IMAGE_DIR + "LineFilterMode.png";
 
-    public final static String IMAGE_REFRESH = TOOL_IMAGE_DIR + "refresh.gif";
-    
 	protected EventLogTable eventLogTable;
 
     protected FindTextDialog findDialog;
@@ -110,7 +108,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
     protected EventLogTableMenuAction nameModeAction;
 
-    protected EventLogTableMenuAction filterModeAction;
+    protected EventLogTableMenuAction lineFilterModeAction;
 
 	protected EventLogTableMenuAction displayModeAction;
 
@@ -141,7 +139,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         this.toggleBookmarkAction = createToggleBookmarkAction();
         this.typeModeAction = createTypeModeAction();
         this.nameModeAction = createNameModeAction();
-		this.filterModeAction = createFilterModeAction();
+		this.lineFilterModeAction = createLineFilterModeAction();
 		this.displayModeAction = createDisplayModeAction();
 		this.filterAction = createFilterAction();
         this.refreshAction = createRefreshAction();
@@ -160,6 +158,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	
 	@Override
 	public void dispose() {
+        if (eventLogTable != null) 
+            eventLogTable.removeSelectionChangedListener(this);
+
 		eventLogTable = null;
 		singleton = null;
 
@@ -197,10 +198,11 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         menuManager.add(gotoPreviousModuleEventAction);
         menuManager.add(gotoNextModuleEventAction);
         menuManager.add(separatorAction);
+        menuManager.add(filterAction);
         menuManager.add(typeModeAction);
         menuManager.add(nameModeAction);
-		menuManager.add(filterModeAction);
-		menuManager.add(displayModeAction);
+        menuManager.add(lineFilterModeAction);
+        menuManager.add(displayModeAction);
         menuManager.add(separatorAction);
         menuManager.add(toggleBookmarkAction);
         menuManager.add(refreshAction);
@@ -233,11 +235,11 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         toolBarManager.add(findNextAction);
         toolBarManager.add(separatorAction);
         toolBarManager.add(nameModeAction);
-		toolBarManager.add(filterModeAction);
+		toolBarManager.add(lineFilterModeAction);
 		toolBarManager.add(displayModeAction);
 		toolBarManager.add(separatorAction);
-		toolBarManager.add(filterAction);
-        toolBarManager.add(refreshAction);
+	    toolBarManager.add(filterAction);
+		toolBarManager.add(refreshAction);
 	}
 
 	public void contributeToStatusLine(IStatusLineManager statusLineManager) {
@@ -252,10 +254,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				eventLogInput = eventLogTable.getEventLogInput();
 				if (eventLogInput != null)
 					eventLogInput.removeEventLogChangedListener(this);
-			}
 
-			if (eventLogTable != null)
 				eventLogTable.removeSelectionChangedListener(this);
+			}
 
 			eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
 
@@ -293,7 +294,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         gotoNextModuleEventAction.run();
     }
 
-	private void update() {
+	public void update() {
 		try {
 			for (Field field : getClass().getDeclaredFields()) {
 				Class<?> fieldType = field.getType();
@@ -1068,19 +1069,19 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		};
 	}
 	
-	private EventLogTableMenuAction createFilterModeAction() {
-		return new EventLogTableMenuAction("Line Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
+	private EventLogTableMenuAction createLineFilterModeAction() {
+		return new EventLogTableMenuAction("Line Filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_LINE_FILTER_MODE)) {
 			private AbstractMenuCreator menuCreator;
 
 			@Override
 			public void run() {
-				eventLogTable.setFilterMode((eventLogTable.getFilterMode() + 1) % 5);
+				eventLogTable.setLineFilterMode((eventLogTable.getLineFilterMode() + 1) % 5);
 				update();
 			}
 
 			@Override
 			protected int getMenuIndex() {
-				return eventLogTable.getFilterMode();
+				return eventLogTable.getLineFilterMode();
 			}
 			
 			@Override
@@ -1105,7 +1106,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     											pattern = "*";
     		
     										eventLogTable.setCustomFilter(pattern);
-    										eventLogTable.setFilterMode(4);
+    										eventLogTable.setLineFilterMode(4);
     										update();
 										}
 									}
@@ -1113,13 +1114,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 							});
 						}
 	
-						private void addSubMenuItem(final Menu menu, String text, final int filterMode) {
+						private void addSubMenuItem(final Menu menu, String text, final int lineFilterMode) {
 							addSubMenuItem(menu, text, new SelectionAdapter() {
 								public void widgetSelected(SelectionEvent e) {
 									MenuItem menuItem = (MenuItem)e.widget;
 									
 									if (menuItem.getSelection()) {
-										eventLogTable.setFilterMode(filterMode);
+										eventLogTable.setLineFilterMode(lineFilterMode);
 										update();
 									}
 								}
@@ -1140,7 +1141,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createFilterAction() {
-		return new EventLogTableMenuAction("Event Filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_FILTER)) {
+		return new EventLogTableAction("Event Filter", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
 			@Override
 			public void run() {
 				if (isFilteredEventLog())
@@ -1149,50 +1150,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 					filter();
 			}
 
-			@Override
-			protected int getMenuIndex() {
-				if (isFilteredEventLog())
-					return 1;
-				else
-					return 0;
-			}
+            @Override
+            public void update() {
+                setChecked(isFilteredEventLog());
+            }
 
 			private boolean isFilteredEventLog() {
 				return eventLogTable.getEventLog() instanceof FilteredEventLog;
-			}
-			
-			@Override
-			public IMenuCreator getMenuCreator() {
-				return new AbstractMenuCreator() {
-					@Override
-					protected void createMenu(Menu menu) {
-						addSubMenuItem(menu, "Show All", new Runnable() {
-							public void run() {
-								removeFilter();
-							}
-						});
-						addSubMenuItem(menu, "Filter...", new Runnable() {
-							public void run() {
-								filter();
-							}
-						});
-					}
-
-					private void addSubMenuItem(Menu menu, String text, final Runnable runnable) {
-						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
-						subMenuItem.setText(text);
-						subMenuItem.addSelectionListener( new SelectionAdapter() {
-							public void widgetSelected(SelectionEvent e) {
-								MenuItem menuItem = (MenuItem)e.widget;
-								
-								if (menuItem.getSelection()) {
-									runnable.run();
-									update();
-								}
-							}
-						});
-					}
-				};
 			}
 
 			private void removeFilter() {
@@ -1229,7 +1193,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
     private EventLogTableAction createRefreshAction() {
-        return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, EventLogTablePlugin.getImageDescriptor(IMAGE_REFRESH)) {
+        return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
             @Override
             public void run() {
                 eventLogTable.refresh();

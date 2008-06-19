@@ -230,7 +230,7 @@ public class SequenceChart
 	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
 	private List<Integer> selectionEventNumbers = new ArrayList<Integer>(); // the selection
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
-	private MenuManager menuManager;
+    private SequenceChartContributor sequenceChartContributor;
 
 	/*************************************************************************************
 	 * PUBLIC INNER TYPES
@@ -1265,6 +1265,7 @@ public class SequenceChart
 			setAxisModules(eventLogInput.getSelectedModules());
 		}
 
+		sequenceChartContributor.update();
 		clearCanvasCacheAndRedraw();
 	}
 
@@ -1274,6 +1275,7 @@ public class SequenceChart
 		if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() != -1)
 			sequenceChartFacade.relocateTimelineCoordinateSystem(sequenceChartFacade.getTimelineCoordinateSystemOriginEvent());
 
+        sequenceChartContributor.update();
 		clearCanvasCacheAndRedraw();
 	}
 
@@ -1302,7 +1304,8 @@ public class SequenceChart
 	 * Sets the contributor used to build the pop-up menu in the chart.
 	 */
 	public void setSequenceChartContributor(SequenceChartContributor sequenceChartContributor) {
-		menuManager = new MenuManager();
+	    this.sequenceChartContributor = sequenceChartContributor;
+		MenuManager menuManager = new MenuManager();
 		sequenceChartContributor.contributeToPopupMenu(menuManager);
 		setMenu(menuManager.createContextMenu(this));
 	}

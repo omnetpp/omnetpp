@@ -37,7 +37,7 @@ public class EventLogProgressManager {
 				{
 					try {
 						EventLogProgressManager.this.progressMonitor = progressMonitor;
-						progressMonitor.beginTask("A long running event log operation is in progress. Please wait.", IProgressMonitor.UNKNOWN);
+						progressMonitor.beginTask("A long running event log operation is in progress. Please wait or press Cancel to abort.", IProgressMonitor.UNKNOWN);
 						runnable.run();
 						progressMonitor.done();
 					}

@@ -306,11 +306,11 @@ public class EventLogTable
 		return (EventLogTableContentProvider)getContentProvider();
 	}
 
-	public int getFilterMode() {
+	public int getLineFilterMode() {
 		return eventLogTableFacade.getFilterMode();
 	}
 
-	public void setFilterMode(int i) {
+	public void setLineFilterMode(int i) {
 		eventLogTableFacade.setFilterMode(i);
 		stayNear();
 	}
@@ -411,11 +411,13 @@ public class EventLogTable
 			}
 		}
 
+		eventLogTableContributor.update();
 		redraw();
 	}
 	
 	public void eventLogFilterRemoved() {
 		eventLog = eventLogInput.getEventLog();
+        eventLogTableContributor.update();
 		redraw();
 	}
 
@@ -445,7 +447,7 @@ public class EventLogTable
 				IEvent event = eventLog.getEventForEventNumber(eventLogTableState.topVisibleEventNumber);
 
 				if (event != null) {
-					setFilterMode(eventLogTableState.filterMode);
+					setLineFilterMode(eventLogTableState.lineFilterMode);
 					setCustomFilter(eventLogTableState.customFilter);
                     setTypeMode(eventLogTableState.typeMode);
                     setNameMode(eventLogTableState.nameMode);
@@ -476,7 +478,7 @@ public class EventLogTable
 			else {
 				EventLogTableState eventLogTableState = new EventLogTableState();
 				eventLogTableState.topVisibleEventNumber = eventLogEntryReference.getEventLogEntry(eventLogInput).getEvent().getEventNumber();
-				eventLogTableState.filterMode = getFilterMode();
+				eventLogTableState.lineFilterMode = getLineFilterMode();
 				eventLogTableState.customFilter = getCustomFilter();
                 eventLogTableState.typeMode = getTypeMode();
                 eventLogTableState.nameMode = getNameMode();
@@ -494,7 +496,7 @@ public class EventLogTable
 class EventLogTableState implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public int topVisibleEventNumber;
-	public int filterMode;
+	public int lineFilterMode;
 	public String customFilter;
     public EventLogTable.TypeMode typeMode;
     public EventLogTable.NameMode nameMode;

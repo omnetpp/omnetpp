@@ -20,6 +20,8 @@ import org.omnetpp.eventlogtable.widgets.EventLogTable;
 public class EventLogTableView extends EventLogView {
 	private EventLogTable eventLogTable;
 
+    private EventLogTableContributor eventLogTableContributor;
+
 	private ISelectionListener selectionListener;
 
 	private IPartListener partListener;
@@ -33,7 +35,7 @@ public class EventLogTableView extends EventLogView {
 		viewSite.setSelectionProvider(eventLogTable);
 		
 		// contribute to toolbar
-		EventLogTableContributor eventLogTableContributor = new EventLogTableContributor(eventLogTable);
+		eventLogTableContributor = new EventLogTableContributor(eventLogTable);
 		eventLogTable.setEventLogTableContributor(eventLogTableContributor);
 		eventLogTableContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
 

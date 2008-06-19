@@ -365,9 +365,8 @@ public class EventLogInput extends FileEditorInput
 
 			if (eventLogFilterParameters == null)
 				manager.removeProperty(getFile(), STATE_PROPERTY);
-			else {
+			else
 				manager.setProperty(getFile(), STATE_PROPERTY, eventLogFilterParameters);
-			}
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);

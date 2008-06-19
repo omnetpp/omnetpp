@@ -25,7 +25,9 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
@@ -82,7 +84,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
 
-public class SequenceChartContributor extends EditorActionBarContributor implements IEventLogChangeListener {
+public class SequenceChartContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_TIMELINE_MODE = TOOL_IMAGE_DIR + "timelinemode.png";
    
@@ -107,10 +109,6 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     public final static String IMAGE_ATTACH_VECTOR_TO_AXIS = TOOL_IMAGE_DIR + "attachvector.png";
 	
     public final static String IMAGE_EXPORT_SVG = TOOL_IMAGE_DIR + "export_wiz.gif";
-	
-    public final static String IMAGE_REFRESH = TOOL_IMAGE_DIR + "refresh.gif";
-	
-    public final static String IMAGE_FILTER = TOOL_IMAGE_DIR + "filter.png";
 	
 	private static SequenceChartContributor singleton;
 
@@ -191,7 +189,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 //		this.exportToSVGAction = createExportToSVGAction();
 		this.refreshAction = createRefreshAction();
 		this.releaseMemoryAction = createReleaseMemoryAction();
-		
+
 		this.timelineModeStatus = createTimelineModeStatus();
 		this.filterStatus = createFilterStatus();
 
@@ -202,11 +200,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	public SequenceChartContributor(SequenceChart sequenceChart) {
 		this();
 		this.sequenceChart = sequenceChart;
+        sequenceChart.addSelectionChangedListener(this);
 	}
 	
 	@Override
 	public void dispose() {
-		sequenceChart = null;
+	    if (sequenceChart != null) 
+	        sequenceChart.removeSelectionChangedListener(this);
+
+	    sequenceChart = null;
 		singleton = null;
 
 		super.dispose();
@@ -283,7 +285,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				// static menu
 				menuManager.add(timelineModeAction);
 				menuManager.add(axisOrderingModeAction);
-				menuManager.add(filterAction);
+			    menuManager.add(filterAction);
 				menuManager.add(separatorAction);
                 
 				// show/hide submenu
@@ -330,8 +332,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
 		toolBarManager.add(timelineModeAction);
 		toolBarManager.add(axisOrderingModeAction);
-		toolBarManager.add(filterAction);
-		toolBarManager.add(separatorAction);
+        toolBarManager.add(filterAction);
+        toolBarManager.add(separatorAction);
 		toolBarManager.add(showEventNumbersAction);
 		toolBarManager.add(showMessageNamesAction);
         toolBarManager.add(showReuseMessagesAction);
@@ -358,6 +360,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				eventLogInput = sequenceChart.getInput();
 				if (eventLogInput != null)
 					eventLogInput.removeEventLogChangedListener(this);
+
+                sequenceChart.removeSelectionChangedListener(this);
 			}
 
 			sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
@@ -366,13 +370,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 			if (eventLogInput != null)
 				eventLogInput.addEventLogChangedListener(this);
 
+			sequenceChart.addSelectionChangedListener(this);
+
 			update();
 		}
 		else
 			sequenceChart = null;
 	}
 	
-	private void update() {
+	public void update() {
 		try {
 			for (Field field : getClass().getDeclaredFields()) {
 				Class<?> fieldType = field.getType();
@@ -420,7 +426,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	 * NOTIFICATIONS
 	 */
 
-	public void eventLogAppended() {
+    public void selectionChanged(SelectionChangedEvent event) {
+        update();
+    }
+
+    public void eventLogAppended() {
 		// void
 	}
 
@@ -686,7 +696,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	}
 	
 	private SequenceChartAction createFilterAction() {
-		return new SequenceChartMenuAction("Filter", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_FILTER)) {
+		return new SequenceChartAction("Filter", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
 			@Override
 			public void run() {
 				if (isFilteredEventLog())
@@ -695,52 +705,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					filter();
 			}
 
-			@Override
-			protected int getMenuIndex() {
-				if (isFilteredEventLog())
-					return 1;
-				else
-					return 0;
-			}
-
 			private boolean isFilteredEventLog() {
 				return getEventLog() instanceof FilteredEventLog;
 			}
-			
-			@Override
-			public IMenuCreator getMenuCreator() {
-				return new AbstractMenuCreator() {
-					@Override
-					protected void createMenu(Menu menu) {
-						addSubMenuItem(menu, "Show All", new Runnable() {
-							public void run() {
-								removeFilter();
-							}
-						});
-						addSubMenuItem(menu, "Filter...", new Runnable() {
-							public void run() {
-								filter();
-							}
-						});
-					}
 
-					private void addSubMenuItem(Menu menu, String text, final Runnable runnable) {
-						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
-						subMenuItem.setText(text);
-						subMenuItem.addSelectionListener( new SelectionAdapter() {
-							public void widgetSelected(SelectionEvent e) {
-								MenuItem menuItem = (MenuItem)e.widget;
-								
-								if (menuItem.getSelection()) {
-									runnable.run();
-									update();
-								}
-							}
-						});
-					}
-				};
-			}
-			
+			@Override
+            public void update() {
+                setChecked(isFilteredEventLog());
+            }
+
 			private void filter() {
                 EventLogInput eventLogInput = sequenceChart.getInput();
                 EventLogFilterParameters filterParameters = eventLogInput.getFilterParameters();
@@ -1511,7 +1484,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 //	}
 	
 	private SequenceChartAction createRefreshAction() {
-		return new SequenceChartAction("Refresh", Action.AS_PUSH_BUTTON, SequenceChartPlugin.getImageDescriptor(IMAGE_REFRESH)) {
+		return new SequenceChartAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
 			@Override
 			public void run() {
 				sequenceChart.refresh();
