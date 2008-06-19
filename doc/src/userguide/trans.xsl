@@ -15,21 +15,21 @@
    <figure float="0">
       <title><xsl:apply-templates select="node()"/></title>
       <screenshot>
-        <mediaobject>
-          <imageobject>
-             <xsl:choose>
-                <xsl:when test="@width">
-                   <imagedata fileref="{@file}" width="{@width}" align="center"/>
-                </xsl:when>	
-                <xsl:otherwise>	
-                   <imagedata fileref="{@file}" scale="50" align="center"/>
-                </xsl:otherwise>	
-             </xsl:choose>     
-          </imageobject>
-          <textobject>
-             <phrase></phrase>
-          </textobject>
-        </mediaobject>
+         <mediaobject>
+            <imageobject>
+               <xsl:choose>
+                  <xsl:when test="@width">
+                     <imagedata fileref="{@file}" width="{@width}" align="center"/>
+                  </xsl:when>	
+                  <xsl:otherwise>	
+                     <imagedata fileref="{@file}" scale="50" align="center"/>
+                  </xsl:otherwise>	
+               </xsl:choose>     
+            </imageobject>
+            <textobject>
+               <phrase></phrase>
+            </textobject>
+         </mediaobject>
       </screenshot>
    </figure>
 </xsl:template>
@@ -38,7 +38,14 @@
    <guibutton>
       <inlinegraphic scale="60">
          <xsl:attribute name="fileref">
-            <xsl:value-of select="concat('icons/',@name)"/>
+            <xsl:choose>
+               <xsl:when test="@file">
+                  <xsl:value-of select="@file"/>
+               </xsl:when>	
+               <xsl:otherwise>	
+                  <xsl:value-of select="concat('icons/',@name)"/>
+               </xsl:otherwise>	
+            </xsl:choose>     
          </xsl:attribute>
       </inlinegraphic>
    </guibutton>
