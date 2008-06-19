@@ -451,7 +451,7 @@ public class Makemake {
             }
             if (containingProject != null) {
                 // generate something like $(OTHER_PROJECT_DIR)/some/file
-                IPath projectRelativePath = location.removeFirstSegments(projectLocation.segmentCount());
+                IPath projectRelativePath = location.removeFirstSegments(containingProject.getLocation().segmentCount());
                 String symbolicProjectName = makeSymbolicProjectName(containingProject);
                 return new Path("$(" + symbolicProjectName + ")").append(projectRelativePath);
             }
