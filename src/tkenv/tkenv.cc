@@ -111,6 +111,10 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
 
 Tkenv::Tkenv()
 {
+    // Note: ctor should only contain trivial initializations, because
+    // the class may be instantiated only for the purpose of calling
+    // printUISpecificHelp() on it
+
     interp = NULL;  // Tcl/Tk not set up yet
     simstate = SIM_NONET;
     stopsimulation_flag = false;

@@ -88,6 +88,10 @@ char *timeToStr(timeval t, char *buf=NULL)
 
 Cmdenv::Cmdenv()
 {
+    // Note: ctor should only contain trivial initializations, because
+    // the class may be instantiated only for the purpose of calling
+    // printUISpecificHelp() on it
+
     // initialize fout to stdout, then we'll replace it if redirection is
     // requested in the ini file
     fout = stdout;
