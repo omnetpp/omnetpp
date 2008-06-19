@@ -1,6 +1,6 @@
 FOP=fop
 
-all: html pdf
+all: pdf html
 
 html:  
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
