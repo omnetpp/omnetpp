@@ -9,24 +9,6 @@
   <sect1>
     <title>Overview</title>
 
-    <para>[from feature-list.doc:]</para>
-
-    <para>
-      Scave is the result analysis tool of OMNeT++, and its task is to help the user
-      process and visualize simulation results saved into vector and scalar files. Scave
-      is designed so that the user can work equally well on the output of a single
-      simulation run (one or two files) and the result of simulation batches (which may be
-      several hundred files, possibly in multiple directories). Ad-hoc browsing of the
-      data is supported just as well as systematic and repeatable processing. The latter
-      means that all processing and charts are stored as "recipes"; for example, if
-      simulations need to be re-run due to a model bug or misconfiguration, existing
-      charts need not be drawn all over again, but simply replacing the old result files
-      with the new ones will result in the charts being automatically displayed with the
-      new data.
-    </para>
-    
-    <para>[from Gabor:]</para>
-
     <para>
       While it might be powerful in facilitating quick debugging to view how simulations
       work in the Tkenv environment, in most cases the result of the final simulations
@@ -36,44 +18,35 @@
       you are looking at.
     </para>
 
-    <para>[from Gabor:]</para>
-
-    <para>
-      In OMNEST/OMNeT++ 4.0, statistical analysis becomes a lot more powerful. Not only is
-      the statistical analysis tool integrated into the Eclipse environment, your settings
-      -- your recipe for finding results from the raw data -- will be recorded in analysis
-      files (.anf) and become instantly reproducible. Even if you need to replace some of
-      the underlying data in your experiments, you do not need to re-develop the recipe
-      (filters, operations, graphs) to squeeze the results you want out of the system.
-    </para>
-
-    <para>[from the simutools2008 paper:]</para>
-
     <para>
       Analyzing the simulation result is a lengthy and time consuming process. In most
       cases the user wants to see the same type of data for each run of the simulation or
       display the same graphs for different modules in the model, so automation is very
       important. (The user does not want to repeat the steps of re-creating charts every
-      time simulations have to be re-run for some reason.) The lack of automation support
-      drives many users away from existing GUI analysis tools, and forces them to write
-      scripts.
+      time simulations have to be re-run for some reason.)
     </para>
-
+    
     <para>
-      OMNeT++ solves this by making result analysis rule-based. Simulations and series of
-      simulations produce various result files. The user selects the input of the analysis
-      by specifying file names or file name patterns (e.g. "adhoc-*.vec"). Data of
-      interest can be selected into datasets by further pattern rules. The user completes
-      datasets by adding various processing, filtering and charting steps, all using the
-      GUI (Figure 7). Whenever the underlying files or their contents change, dataset
-      contents and charts are recalculated. The editor only saves the "recipe" and not the
-      actual numbers, so when simulations are re-run and so result files get replaced,
-      charts are automatically up-to-date. Data in result files are tagged with meta
-      information: experiment, measurement and replication labels are added to the result
-      files to make the filtering process easy. It is possible to create very
-      sophisticated filtering rules, for example, all 802.11 retry counts of host[5..10]
-      in experiment X, averaged over replications. In addition datasets can use other
-      datasets as their input so datasets can build on each other.
+      In OMNEST/OMNeT++ 4.0, statistical analysis becomes a lot more powerful. Not only is
+      the statistical analysis tool integrated into the Eclipse environment, your settings
+      -- your recipe for finding results from the raw data -- will be recorded in analysis
+      files (.anf) and become instantly reproducible. This means that all processing and
+      charts are stored as datasets; for example, if simulations need to be re-run due to
+      a model bug or misconfiguration, existing charts need not be drawn all over again,
+      but simply replacing the old result files with the new ones will result in the
+      charts being automatically displayed with the new data.
+    </para>
+    
+    <para>
+      When creating an analysis the user first selects the input of the analysis by
+      specifying file names or file name patterns (e.g. "adhoc-*.vec"). Data of interest
+      can be selected into datasets by further pattern rules. The user completes datasets
+      by adding various processing, filtering and charting steps, all using the GUI. Data
+      in result files are tagged with meta information: experiment, measurement and
+      replication labels are added to the result files to make the filtering process easy.
+      It is possible to create very sophisticated filtering rules, for example, all 802.11
+      retry counts of host[5..10] in experiment X, averaged over replications. In addition
+      datasets can use other datasets as their input so datasets can build on each other.
     </para>
 
   </sect1>
@@ -115,11 +88,10 @@
     <title>Using the Analysis Editor</title>
 
     <para>
-      Scave is implemented as a multi-page editor. What the editor edits is the "recipe":
-      what result files to take as inputs, what data to select from them, what (optional)
-      processing to apply, and what kind of charts to create from them. The pages (tabs)
-      of the editor roughly correspond to these steps. You will see that Scave is much
-      more than just a union of the OMNeT++ 3.x Scalars and Plove tools.
+      The Analysis Editor is implemented as a multi-page editor. What the editor edits is
+      the "recipe": what result files to take as inputs, what data to select from them,
+      what (optional) processing to apply, and what kind of charts to create from them.
+      The pages (tabs) of the editor roughly correspond to these steps.
     </para>
     
     <sect2>
@@ -145,10 +117,11 @@
   
         <para>
           The input files are loaded when the analysis file is opened. When the file changed
-          on the disk it is reloaded automatically when the workspace is refreshed. (It done
-          by Eclipse if "General|Workspace|Refresh automatically" option is turned on in the
-          Preferences.) Vector files are not loaded directly, but an index file created and
-          the vectors data (name, module, statistics...) are loaded from the index file.
+          on the disk it is reloaded automatically when the workspace is refreshed. (Eclipse
+          refreshes the workspace automatically if the "General|Workspace|Refresh automatically"
+          option is turned on in the Preferences.)
+          Vector files are not loaded directly, but an index file created and
+          the vectors attributes (name, module, run, statistics...) are loaded from the index file.
           The index files are generated during the simulation, but can be safely deleted
           without loss of information. If the index file is missing or the vector file was
           modified then the IDE rebuilds the index in the background.
@@ -180,44 +153,57 @@
 
       </sect3>
 
-      <para>
-        The second page of the Analysis editor displays results (vectors, scalars and
-        histograms) from all files in tables, and lets the user browse them. Results can
-        be sorted and filtered. Simple filtering is possible with combo boxes, or when
-        that's not enough, the user can write arbitrarily complex filters using a generic
-        pattern matching expression language. Selected or filtered data can be immediately
-        plotted, or remembered in named datasets for further processing.
-      </para>
+      <sect3>
+        <title>Browsing input</title>
+              
+        <para>
+          The second page of the Analysis editor displays results (vectors, scalars and
+          histograms) from all files in tables, and lets the user browse them. Results can
+          be sorted and filtered. Simple filtering is possible with combo boxes, or when
+          that's not enough, the user can write arbitrarily complex filters using a generic
+          pattern matching expression language. Selected or filtered data can be immediately
+          plotted, or remembered in named datasets for further processing.
+        </para>
+        
+        <tip>
+          In the advanced filter text field there is a Contest Assist available. Press
+          Ctrl+Space to get a list of suggestions appropriate at the cursor position.
+        </tip>
+        
+        <tip>
+          You can easily display the data of a selected file, run, experiment, measurement
+          or replication if you double click on the required tree node in the lower part
+          of the Inputs page. It sets the appropriate filter and shows the data on the 
+          "Browse Data" page.
+        </tip>
+        
+        <picture file="pictures/ANF-BrowseDataPage.png">
+          Browsing vector and scalar data generated by the simulation
+        </picture>
+  
+        <para>
+          To hide or show table columns, open <guimenuitem>Choose table columns...</guimenuitem>
+          from the context menu and select the columns to be displayed.
+          The settings are persisted and applied in each subsequently opened editor.
+          The table rows can be sorted by clicking on the column name.
+        </para>
+        
+        <para>
+          You can display the selected data items on a chart. To open the chart 
+          choose <guimenuitem>Plot</guimenuitem>
+          from the context menu. (Double click also works for single data.) The chart is not added
+          to the analysis file, so you can explore the data by opening the chart this way and
+          closing the chart page without making the editor dirty.
+        </para>
+        
+        <para>
+          The selected vector's data can also be displayed in a table. Make sure that the
+          Output Vector View is opened. If not, then you can open it from the context menu 
+          (<guimenuitem>Show Output Vector View</guimenuitem>). If you select a vector in the 
+          editor the view will display its content.
+        </para>
       
-      <tip>
-        In the advanced filter text field there is a Contest Assist available. Press
-        Ctrl+Space to get a list of suggestions appropriate at the cursor position.
-      </tip>
-      
-      <picture file="pictures/ANF-BrowseDataPage.png">
-        Browsing vector and scalar data generated by the simulation
-      </picture>
-
-      <para>
-        To select the table columns to be displayed, open <guimenuitem>Choose table column...</guimenuitem>
-        from the context menu. The settings are persisted and applied in each subsequently opened editor.
-        The table rows can be sorted by clicking on the column in the table header.
-      </para>
-      
-      <para>
-        Selected data items can be displayed on a chart by selecting <guimenuitem>Plot</guimenuitem>
-        from the context menu. The chart is not added to the analysis file, so you can explore the
-        data by opening the chart this way and closing the chart page without making the editor dirty.
-        If you want to save such a temporary chart in the analysis, choose
-        <guimenuitem>Convert to dataset...</guimenuitem> from the context menu of the chart. (Also
-        available from the toolbar.)
-      </para>
-      
-      <para>
-        The selected vector's data can also be displayed in a tabular form. Open the
-        Output Vector view (<guimenuitem>Window|Show View|Output Vector</guimenuitem>) and select
-        the vector to be displayed from the table.
-      </para>
+      </sect3>
       
     </sect2>
     
@@ -231,16 +217,19 @@
         
         <para>
           The third page displays the datasets and charts created during the analysis.
-          Datasets are filtered and processed input data. Each dataset contains a list of
-          processing steps.  
+          Datasets describe a set of input data, the processings applied to them and 
+          the charts. The dataset is displayed as a tree of processing steps and charts.
+          There are nodes for adding and discarding data, applying processing to vectors,
+          selecting the operands of the operations and content of charts, and for
+          creating charts.
         </para>
+        
+        <picture file="pictures/ANF-DatasetsPage.png">Defining datasets to be analyzed</picture>
         
         <tip>
           You can browse the dataset's content after the selected processing applied in
           the Dataset View.
         </tip>
-        
-      <picture file="pictures/ANF-DatasetsPage.png">Defining datasets to be analyzed</picture>
         
       </sect3>
       
@@ -249,7 +238,7 @@
         
         <para>
           Usual tree editing operations work on the Dataset tree. New elements can be
-          added by dragging elements from the toolbar on the right of the page to the
+          added by dragging elements from the palette on the right to the
           appropriate place of the tree. Alternatively you can select the parent node and
           press the button on the toolbar. Existing element can be edited by selecting the
           element and editing its properties on the property sheet or opening an item specific
@@ -257,12 +246,15 @@
         </para>
         
         <tip>
-          Datasets can be opened on a separate page by double clicking on them. It is more
-          comfortable to edit the tree on this page.
+          <para>
+            Datasets can be opened on a separate page by double clicking on them. It is more
+            comfortable to edit the tree on this page. Double clicking on a chart node
+            will display the chart.
+          </para>
         </tip>
   
         <para>
-          Filters can be applied to the data by adding Apply/Compute items to the dataset.
+          Computations can be applied to the data by adding Apply/Compute nodes to the dataset.
           The data items to which the filter should be applied can be selected by adding
           Select/Deselect children to the processing node. By default the filter applied
           to each data item. The difference between Apply and Compute is that Apply will
@@ -272,14 +264,19 @@
         <para>
           Processing steps enclosed into a Group node has effect only in the group. This
           was you can create branches in the dataset.
+          To group a range of sibling node select them and choose <guimenuitem>Group</guimenuitem>
+          from the context menu. To remove the grouping select the Group node and choose
+          <guimenuitem>Ungroup</guimenuitem>.
         </para>
         
         <para>
           Charts can be inserted to display data. The data items to be displayed can be
           selected by adding Select/Deselect children to the chart node. By default the
-          chart displays all items. There are lots of customization can be applied to
+          chart displays all data in the dataset at its position. You can modify the
+          content of the chart by adding Select and Deselect children to it.
+          There are lots of customization can be applied to
           charts including setting titles, colors, adding legends, grid lines, etc. See
-          the next section for details.
+          the <xref linkend="charts"/> section for details.
         </para>
         
       </sect3>
@@ -288,28 +285,109 @@
         <title>Export</title>
         
         <para>
-          The dataset's content at the selected item can be saved into CSV, Octave
-          text or Matlab script files.
+          You can export the content of the dataset into text files. Three format is
+          supported: comma separated values (CSV), Octave text files and Matlab script.
+          Right click on the processing node or chart and select the format
+          from the <guimenuitem>Export to File</guimenuitem> submenu. The file will
+          contain the data of the chart or the dataset after the selected processing is
+          applied. Enter a name of the file and press <guibutton>Finish</guibutton>.
         </para>
         
         <para>
-          Scalars can be processed before written to the file. TODO: details.
+          Vectors are always written as two columns into the CSV files, but the shape of the 
+          scalars' table can be changed by selecting the grouping attributes in the dialog.
+          
+          E.g. assume we have 2 scalars (named s1 and s2) written by 2 modules (m1 and m2) in 2 runs (r1 and r2),
+          so we have a total 8 scalar values. If none of the checkboxes is selected in the
+          <guilabel>Scalars grouped by</guilabel> group, then the data is written as:
+          
+          <informaltable>
+            <tgroup cols="8">
+              <thead>
+                <row>
+                  <entry>r1 m1 s1</entry>
+                  <entry>r1 m1 s2</entry>
+                  <entry>r1 m2 s1</entry>
+                  <entry>r1 m2 s2</entry>
+                  <entry>r2 m1 s1</entry>
+                  <entry>r2 m1 s2</entry>
+                  <entry>r2 m2 s1</entry>
+                  <entry>r2 m2 s2</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>1</entry>
+                  <entry>2</entry>
+                  <entry>3</entry>
+                  <entry>4</entry>
+                  <entry>5</entry>
+                  <entry>6</entry>
+                  <entry>7</entry>
+                  <entry>8</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+          
+          After grouping the scalars by module name and scalar name it looks like:
+          
+          <informaltable>
+            <tgroup cols="4">
+              <colspec colwidth="15%"/>
+              <colspec colwidth="15%"/>
+              <colspec colwidth="15%"/>
+              <colspec colwidth="15%"/>
+              <thead>
+                <row>
+                  <entry>Module</entry>
+                  <entry>Name</entry>
+                  <entry>r1</entry>
+                  <entry>r2</entry>
+                </row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>m1</entry>
+                  <entry>s1</entry>
+                  <entry>1</entry>
+                  <entry>5</entry>
+                </row>
+                <row>
+                  <entry>m1</entry>
+                  <entry>s2</entry>
+                  <entry>2</entry>
+                  <entry>6</entry>
+                </row>
+                <row>
+                  <entry>m2</entry>
+                  <entry>s1</entry>
+                  <entry>3</entry>
+                  <entry>7</entry>
+                </row>
+                <row>
+                  <entry>m2</entry>
+                  <entry>s2</entry>
+                  <entry>4</entry>
+                  <entry>8</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+          
         </para>
+        
+        <para>Settings specific to the file format:</para>
         
         <formalpara>
           <title>CSV</title>
           <para>
-            The CSV file contains an optional header followed by vector's data or
+            You can select the separator, line ends and quoting character. The default 
+            setting corresponds to RFC4180. The precision of the numeric values can also
+            be set.
+            The CSV file contains an optional header followed by the vector's data or
             groups of scalars. If multiple vectors are exported, each vector is written
-            into a separate file.
-          </para>
-        </formalpara>
-        
-        <formalpara>
-          <title>Matlab</title>
-          <para>
-            The data is exported as a Matlab script file. It can be loaded into Matlab/Octave
-            with the source() function. TODO: format 
+            into a separate file. 
           </para>
         </formalpara>
         
@@ -318,9 +396,16 @@
           <para>
             The data is exported as an Octave text file. This format can be loaded into the
             <ulink url="http:://www.r-project.org">R</ulink>
-            statistical data analysis tool as well. Vectors are saved as structures
-            containing two array fields for the x and y values. Scalars are saved as
-            structures containing an array for each each column of their tables.
+            statistical data analysis tool as well. The tables are saved as structures
+            containing an array for each column.
+          </para>
+        </formalpara>
+        
+        <formalpara>
+          <title>Matlab</title>
+          <para>
+            The data is exported as a Matlab script file. It can be loaded into Matlab/Octave
+            with the source() function. 
           </para>
         </formalpara>
         
@@ -332,28 +417,22 @@
         <title>Chart sheets</title>
         
         <para>
-          The lower part of the Dataset page shows the chart sheets.
-          A chart sheet is a logical grouping of charts that can be 
-          displayed on one page. The chart sheet page can be opened 
-          by double clicking on the chart sheet node in the dataset 
-          tree.          
+          Sometimes it is useful to display several charts on one page. When you create
+          a chart it is automatically added to a default chart sheet. Chart sheets
+          and the their charts are displayed on the lower pane of the Datasets page.
+          To create a new chart sheet use <guibutton>Chart Sheet</guibutton>
+          button on the palette. You can add charts to it either by using the opening dialog or by
+          dragging charts. To move charts between charts between chart sheets use drag and drop or
+          Cut/Paste. You can display the charts by double clicking on the chart sheet node.
         </para>
         
-        <picture name="ANF-ChartSheetPage.png"/>
-        
-        <para>
-          There is a chart sheet named "Default sheet".
-          New charts automatically added to the default chart sheet.
-          New chart sheet can be created by pressing the
-          <icon name="ChartSheet.gif"/> button.
-          Charts can be moved between chart sheets by drag and drop.
-        </para>
+        <picture file="pictures/ANF-ChartSheetPage.png"/>
         
       </sect3>
       
     </sect2>
     
-    <sect2>
+    <sect2 id="charts" xreflabel="Charts">
       <title>Charts</title>
       
       <sect3>
@@ -367,14 +446,21 @@
         </para>
         
         <para>
-          Charts can be customized. Titles, legend, grid, background, etc. 
+          Charts can be customized. You can set titles, legend, grid lines, background, etc. 
         </para>
+        
       </sect3>
       
       <sect3>
         <title>Creating charts</title>
         
-        <para>TODO</para>
+        <para>
+          To create a chart use the palette on the Dataset page. Temporary charts can be
+          created from selected vectors on the Browse Data page for quick view.
+          If you want to save such a temporary chart in the analysis, choose
+          <guimenuitem>Convert to dataset...</guimenuitem> from the context menu of the chart or
+          <icon name="template.gif"/> from the toolbar.
+        </para>
         
       </sect3>
       
@@ -387,7 +473,7 @@
           When you select a line and choose <guimenuitem>Lines...</guimenuitem> from the menu,
           you can edit the properties of the selected line.
         </para>
-
+        
         <para>
           You can also use the Properties view to edit the chart.
         </para>
@@ -396,55 +482,74 @@
           TODO: list of common properties
         </para>
         
+      <!--
+          <xi:include href="chart-properties.xml#xpointer(//section[@id='ChartProperties'])"/>
+      -->  
       </sect3>
       
       <sect3><title>Zooming and panning</title>
+        
         <para>
-          Charts has two mouse mode. In Pan mode the charts can be srolled by dragging it or
-          using the mouse wheel. In Zoom mode the chart can be zoomed in/out be clicking with the
-          mouse, using the mouse wheel or selecting a rectangular area. The toolbar icons
-          <icon name="hand.gif"/> and <icon name="zoom.png"/>
-          switch between Pan and Zoom mode.
+          Charts has two mouse mode. In Pan mode you can sroll with the mouse wheel or
+          drag the chart. In Zoom mode the chart can be zoomed in by left click or
+          zoom out by <keycap>Shift+</keycap> left click, or with the mouse wheel.
+          Dragging selects a rectangular area to zoom in. The toolbar icons
+          <icon name="hand.gif"/> and <icon name="zoom.png"/> switch between Pan and Zoom mode.
+          You can also find toolbar buttons to zoom in <icon name="zoomplus.png"/>,
+          zoom out (<icon name="zoomminus.png"/>) and zoom to fit (<icon name="zoomtofit.png"/>).
+          Zooming and moving actions are remembered in the navigation history.
         </para>
+        
       </sect3>
       
       <sect3><title>Tooltip</title>
+        
         <para>
           When the mouse is hovered over a data point the appearing tooltip shows line labels
           and the values of the points near to the cursor. The names of all lines can be
-          displayed by hovering over the
-          <icon name="legend.gif"/> button.
-        </para>  
+          displayed by hovering over the <icon name="legend.gif"/> button.
+        </para>
+          
       </sect3>
       
       <sect3><title>Copy to clipboard</title>
         <para>
-          The chart can be copied to the clipboard as a bitmap image by selecting
+          You can copy the chart to the clipboard by selecting
           <guimenuitem>Copy to Clipboard</guimenuitem> from the context menu.
-          The bitmap has the same size as the chart on the screen.
+          The chart is copied as a bitmap image having the same size as on the screen.
         </para>
       </sect3>
       
+      
+      
       <sect3><title>Bar charts</title>
+
         <para>
           Bar charts are displaying scalar data as grouped vertical bars. The value of a
           bar can be an averaged value of scalars.
         </para>
+
         <picture file="pictures/ANF-ScalarChart.png"/>
+
         <para>
           The scalar chart's content can be specified on the Content tab of their
           Edit dialog. By default the scalars are grouped by their module name and
           averaged by replications.
         </para>
+
         <picture file="pictures/ANF-ScalarChartEditDialog.png"/>
+
       </sect3>
       
       <sect3>
         <title>Line charts</title>
+        
         <para>
-          Line charts can be used to display output vectors in a graphical format.
+          Line charts can be used to display output vectors.
         </para>
+        
         <picture file="pictures/ANF-VectorChart.png"/>
+        
         <para>
           Line names identifies lines on the legend, property sheets and edit dialogs.
           They are formed automatically from the file, run, module name, vector name, and
@@ -454,6 +559,7 @@
           vectors: {file}, {run}, {module}, {name}, {experiment}, {measurement},
           {replication}. There is a content assist to help entering these names.
         </para>
+        
         <para>
           The following properties can be set for each line separately:
           <variablelist>
@@ -484,38 +590,44 @@
             </varlistentry>
           </variablelist>
         </para>
+        
         <para>
           Filtering operations can be applied to the dataset of chart by selecting
           <guimenuitem>Apply</guimenuitem> or <guimenuitem>Compute</guimenuitem> from the 
           context menu.
         </para>
+        
         <para>
           Line charts are synchronized with Output Vector and Dataset views.
           Select a data point and see that in the Output Vector and Dataset view
           the data point and the vector containing it is selected.
         </para>
+        
       </sect3>
       
       <sect3>
         <title>Histogram charts</title>
+        
         <para>Histogram charts can display data of histograms. They support three view mode:
-        <variablelist>
-          <varlistentry><term>Count</term>
-            <listitem><para>The chart shows the recorded counts of data points in each cell.</para></listitem>
-          </varlistentry>
-          <varlistentry><term>Probability density</term>
-            <listitem><para>
-              The chart shows the probability density function computed from the histogram data.
-            </para></listitem>
-          </varlistentry>
-          <varlistentry><term>Cumulative density</term>
-            <listitem><para>
-              The chart shows the cumulative density function computed from the histogram data.
-            </para></listitem>
-          </varlistentry>
-        </variablelist>
+          <variablelist>
+            <varlistentry><term>Count</term>
+              <listitem><para>The chart shows the recorded counts of data points in each cell.</para></listitem>
+            </varlistentry>
+            <varlistentry><term>Probability density</term>
+              <listitem><para>
+                The chart shows the probability density function computed from the histogram data.
+              </para></listitem>
+            </varlistentry>
+            <varlistentry><term>Cumulative density</term>
+              <listitem><para>
+                The chart shows the cumulative density function computed from the histogram data.
+              </para></listitem>
+            </varlistentry>
+          </variablelist>
         </para>
+        
         <picture file="pictures/ANF-HistogramChart.png"/>
+        
         <tip>
           <para>
             When drawing several histograms to one chart, set the "Bar type" property to
@@ -527,15 +639,18 @@
       
       <sect3>
         <title>Scatter charts</title>
+        
         <para>
           Scatter charts can be created from both scalar and vector data.
         </para>
+        
         <formalpara><title>Scalars</title>
           <para>
             A scalar is chosen for the X coordinate of points.
             The y coordinates are get from the other scalars that created in the same run.
           </para>
         </formalpara>
+        
         <formalpara><title>Vectors</title>
           <para>
             A vector is chosen for the X coordinate of points. The y coordinates are get
@@ -543,7 +658,16 @@
             the same time are paired to give a point on the scatter chart.
           </para>
         </formalpara>
-        <para>TODO: describe iso lines</para>
+        
+        <para>
+          By default the data points that comes from the same y data are connected by lines.
+          This is not always what you want, because the y data generated in runs having 
+          different parameter settings and are not homogenous. You can classify the data points
+          by selected scalars. These scalars won't give y coordinates but used to determine 
+          the iso-lines of the scatter chart. On an iso-line the selected scalars have the
+          same value.   
+        </para>
+        
       </sect3>
     
     </sect2>
@@ -555,28 +679,34 @@
     
     <sect2>
       <title>Outline View</title>
-      <picture file="pictures/ANF-OutlineView.png">Outline View of the analysis</picture>
+
       <para>
         The Outline View allows an overview of the current analysis. Clicking on an
         element will select the corresponding element in the current editor. Tree editing
         operations also work in this view.
       </para>
+
+      <picture file="pictures/ANF-OutlineView.png">Outline View of the analysis</picture>
+      
     </sect2>
   
     <sect2>
       <title>Properties View</title>
-      <picture file="pictures/ANF-PropertiesView.png">Properties View showing chart properties</picture>
+
       <para>
         The properties view displays the properties of the selected dataset, processing node
         and chart. Font and color properties can be edited as text or by opening dialogs.
         Text fields that have a bulb on the left side have a context assist. 
         Press <keycap>Ctrl+Space</keycap> to activate.   
       </para>
+
+      <picture file="pictures/ANF-PropertiesView.png">Properties View showing chart properties</picture>
+      
     </sect2>
     
     <sect2>
       <title>Output Vector View</title>
-      <picture file="pictures/ANF-OutputVectorView.png"/>
+      
       <para>
         The Output Vector View shows the content of the selected vector. It displays the
         serial number, simulation time and value of the data points. When event numbers
@@ -585,14 +715,19 @@
         disk. Vectors that are the result of some computation are saved into temporary
         files.
       </para>
+      
+      <picture file="pictures/ANF-OutputVectorView.png"/>
+      
       <para>
         To navigate to a specific line use the scroll bar or the menu of the view:
         <picture file="pictures/ANF-OutputVectorViewMenu.png"/>
       </para>
+      
     </sect2>
   
     <sect2>
       <title>Dataset View</title>
+      
       <para>
         The Dataset View displays the dataset's content at the selected dataset item. It is
         divided into three table similar to that are on the Browse Data page. The tables can be
@@ -600,7 +735,9 @@
         <icon name="ShowScalars.gif"/><icon name="ShowVectors.gif"/><icon name="ShowHistograms.gif"/>
          icons. There is also a tool button (<icon name="filter.png"/>) to show or hide the filter.
       </para>
+      
       <picture file="pictures/ANF-DatasetView.png">Dataset View</picture>
+      
     </sect2>
     
   </sect1>
@@ -610,14 +747,11 @@
     
     <para>
       You can work with scalar and vector files with the command line tool
-      <application>scavetool</application>. It let you index vector files, apply processing operations,
+      <application>scavetool</application>. It lets you index vector files, apply processing operations,
       and save the result in several formats. If you start it without arguments it will print its usage
       to the console.
     </para>
-    <!--
-    <xi:include href="chart-properties.xml" parse="xml" xpointer="xpointer(//para[@id='chart-properties'])"/>
-    <xi:include href="chart-properties.xml" parse="xml" xpointer="xpointer(//para[@id='linechart-properties'])"/>
-    -->
+    
   </sect1>
 
 </chapter>
