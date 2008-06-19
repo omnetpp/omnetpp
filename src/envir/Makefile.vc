@@ -77,7 +77,7 @@ eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentri
 $O/envirbase.obj: eventlogwriter.h
 
 # default opp_run target - called only at the end once tkenv and cmdenv is done 
-opp_run_executable: $O/opp_run$(EXE_SUFFIX)
+opp_run_executable: $O/opp_run.exe
 
 # opp_run is useless with static libs
 !if "$(LIB_SUFFIX)"==".dll"
