@@ -23,17 +23,18 @@
       </itemizedlist>
     </para>
 
-    <para>   <!-- some overview on how the whole thing works -->
-      How C/C++ builds in the IDE work: CDT already supports "standard make" builds, 
-      ie it can invoke "make"; and when you select "Build" in the IDE, we generate a makefile 
-      (via a built-in Java version of opp_makemake) and then let CDT do a "standard make" build.
+    <para><!-- some overview on how the whole thing works -->
+      How C/C++ builds in the IDE work: CDT already supports "standard make" builds, ie it
+      can invoke "make"; and when you select "Build" in the IDE, we generate a makefile
+      (via a built-in Java version of opp_makemake) and then let CDT do a "standard make"
+      build.
 
       Note: the OMNeT++ IDE does not use the "managed make" feature of CDT.
 
       TODO: describe what is .cproject, .oppbuildspec etc
     </para>
 
-  
+
   </sect1>
 
   <sect1>
@@ -188,10 +189,18 @@
       directories in the project (and all other projects it depends on).
     </para>
     <warning>
-      The include file names must be unique (i.e. include files with the same name in
-      different directories are not allowed) otherwise the builder cannot determine the
-      correct location of the file.
+      As a rule of thumb, the include file names must be unique (i.e. include files with
+      the same name in different directories are not allowed) otherwise the builder cannot
+      determine the correct location of the file.
     </warning>
+    <tip>
+      Include files can be qualified with the parent directories to avoid this problem. If
+      you have two include files with the same name (e.g. inc.h) in different directories,
+      add the directory names before the filenames to make the include statements unique.
+      Use #include "dir1/inc.h" and #include "dir2/inc.h" in your c++ files. If the
+      problematic file is located in the project root use the form #include
+      "../projectname/inc.h" to make it unique. 
+    </tip>
     <para>
       If needed you can set the source file extensions (.cc or .cpp) however in most cases
       auto-detection works correctly so you don't have to change this parameter.
@@ -286,12 +295,15 @@
       to activate the content assist window anywhere in your source code. An other useful
       key combination is
       <keycap>CTRL+TAB</keycap>
-      which switches between your CPP and header file. Press <keycap>CTRL+SHIFT+L</keycap> to get 
-      a list of currently active key bindings. For further information about editing C++ files
-      please visit the CDT section in the online help system.
-    </para>    
+      which switches between your CPP and header file. Press
+      <keycap>CTRL+SHIFT+L</keycap>
+      to get a list of currently active key bindings. For further information about
+      editing C++ files please visit the CDT section in the online help system.
+    </para>
     <picture file="pictures/CPP-Editor.png">C++ source editor</picture>
-    <note>Content assistance is working only if the IDE can scan your header files in the background.
+    <note>
+      Content assistance is working only if the IDE can scan your header files in the
+      background.
     </note>
   </sect1>
 
