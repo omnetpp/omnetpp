@@ -15,7 +15,7 @@ public class StyledTextRecognizer extends ObjectRecognizer {
         if (uiObject instanceof StyledText) {
             StyledText styledText = (StyledText)uiObject;
             Composite container = findContainer(styledText);
-            dumpWidgetHierarchy(container);
+            // dumpWidgetHierarchy(container);
             if (findDescendantControl(container, StyledText.class) == uiObject)
                 return makeMethodCall(container, expr("findSyledText()", 0.8, styledText));
         }
