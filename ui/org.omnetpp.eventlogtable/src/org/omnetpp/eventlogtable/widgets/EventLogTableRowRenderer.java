@@ -18,6 +18,7 @@ import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -233,7 +234,12 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							else if (eventLogEntry instanceof ModuleMethodBeginEntry) {
 								ModuleMethodBeginEntry moduleMethodBeginEntry = (ModuleMethodBeginEntry)eventLogEntry;
 								drawText("Begin calling ", CONSTANT_TEXT_COLOR);
-								drawText(moduleMethodBeginEntry.getMethod(), DATA_COLOR);
+								String method = moduleMethodBeginEntry.getMethod();
+								
+								if (StringUtils.isEmpty(method))
+								    drawText("method", CONSTANT_TEXT_COLOR);
+								else
+								    drawText(method, DATA_COLOR);
 								drawText(" in ", CONSTANT_TEXT_COLOR);
 								drawModuleDescription(moduleMethodBeginEntry.getToModuleId());
 

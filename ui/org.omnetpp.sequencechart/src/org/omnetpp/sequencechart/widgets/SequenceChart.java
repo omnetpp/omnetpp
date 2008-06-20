@@ -1890,11 +1890,14 @@ public class SequenceChart
 
         if (isInitializationEvent(eventPtr)) {
 	        for (int i = 0; i < sequenceChartFacade.Event_getNumConsequences(eventPtr); i++) {
-	            long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(sequenceChartFacade.Event_getConsequence(eventPtr, i));
-
-                if (consequenceEventPtr != 0) {
-                    int y = getEventYViewportCoordinate(consequenceEventPtr);
-	                drawEvent(graphics, eventPtr, getEventAxisModuleIndex(consequenceEventPtr), x, y);
+	            long consequencePtr = sequenceChartFacade.Event_getConsequence(eventPtr, i);
+	            long beginSendEntryPtr = sequenceChartFacade.MessageDependency_getBeginSendEntry(consequencePtr);
+	            
+                if (beginSendEntryPtr != 0) {
+                    int contextModuleId = sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr);
+                    int moduleIndex = getAxisModuleIndexByModuleId(contextModuleId);
+                    int y = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
+	                drawEvent(graphics, eventPtr, moduleIndex, x, y);
                 }
 	        }
 	    }
@@ -2130,12 +2133,9 @@ public class SequenceChart
         if (isInitializationEvent(event)) {
             long eventPtr = event.getCPtr();
             for (int i = 0; i < sequenceChartFacade.Event_getNumConsequences(eventPtr); i++) {
-                long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(sequenceChartFacade.Event_getConsequence(eventPtr, i));
-
-                if (consequenceEventPtr != 0) {
-                    int y = getEventYViewportCoordinate(consequenceEventPtr);
-                    drawSelectionMark(graphics, x, y);
-                }
+                long consequencePtr = sequenceChartFacade.Event_getConsequence(eventPtr, i);
+                int y = getInitializationEventYViewportCoordinate(consequencePtr);
+                drawSelectionMark(graphics, x, y);
             }
         }
         else {
@@ -2197,7 +2197,7 @@ public class SequenceChart
 		int causeEventNumber = sequenceChartFacade.Event_getEventNumber(causeEventPtr);
 		int consequenceEventNumber = sequenceChartFacade.Event_getEventNumber(consequenceEventPtr);
         int invalid = -Integer.MAX_VALUE;
-        int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? getModuleYViewportCoordinate(sequenceChartFacade.Event_getModuleId(consequenceEventPtr)) : getEventYViewportCoordinate(causeEventPtr);
+        int x1 = invalid, y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) : getEventYViewportCoordinate(causeEventPtr);
         int x2 = invalid, y2 = getEventYViewportCoordinate(consequenceEventPtr);
         int fontHeight = font.getFontData()[0].getHeight();
 
@@ -2602,10 +2602,6 @@ public class SequenceChart
 	    }
 	}
     
-    private int getModuleYViewportCoordinate(int moduleId) {
-        return getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(moduleId));
-    }
-
     private int getModuleYViewportCoordinateByModuleIndex(int index) {
         if (axisModuleYs == null)
             calculateAxisYs();
@@ -2623,6 +2619,13 @@ public class SequenceChart
 
     private boolean isInitializationEvent(IEvent event) {
         return event.getEventNumber() == 0;
+    }
+    
+    private int getInitializationEventYViewportCoordinate(long consequencePtr) {
+        long beginSendEntryPtr = sequenceChartFacade.MessageDependency_getBeginSendEntry(consequencePtr);
+        int contextModuleId = sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr);
+        int moduleIndex = getAxisModuleIndexByModuleId(contextModuleId);
+        return getModuleYViewportCoordinateByModuleIndex(moduleIndex);
     }
 
 	public int getEventXViewportCoordinate(long eventPtr) {
@@ -3344,14 +3347,11 @@ public class SequenceChart
 
 			            	    if (isInitializationEvent(eventPtr)) {
 			                        for (int i = 0; i < sequenceChartFacade.Event_getNumConsequences(eventPtr); i++) {
-			                            long consequenceEventPtr = sequenceChartFacade.MessageDependency_getConsequenceEvent(sequenceChartFacade.Event_getConsequence(eventPtr, i));
-			                            
-                                        if (consequenceEventPtr != 0) {
-    			                            int y = getEventYViewportCoordinate(consequenceEventPtr);
-    
-    			                            if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, y, MOUSE_TOLERANCE))
-    		                                    events.add(sequenceChartFacade.Event_getEvent(eventPtr));
-    		                            }
+			                            long consequencePtr = sequenceChartFacade.Event_getConsequence(eventPtr, i);
+			                            int y = getInitializationEventYViewportCoordinate(consequencePtr);
+
+			                            if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, y, MOUSE_TOLERANCE))
+		                                    events.add(sequenceChartFacade.Event_getEvent(eventPtr));
 			                        }
 			            	    }
 			            	    else if (eventSymbolContainsPoint(mouseX, mouseY - GUTTER_HEIGHT, x, getEventYViewportCoordinate(eventPtr), MOUSE_TOLERANCE))
