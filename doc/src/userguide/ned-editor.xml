@@ -55,19 +55,6 @@
   <sect1>
     <title>Creating new NED files</title>
     <para>
-      In Eclipse, all files are within projects, so first you need a suitable project. The
-      project needs to be one designated as an OMNeT++ Project. (In Eclipse lingo, it
-      should have the “OMNeT++ Nature”.) The easiest way to create such a project is to
-      use a wizard: just choose
-      <guimenuitem>File|New|OMNeT++ Project...</guimenuitem>
-      from the menu, specify a project name, and click the
-      <guibutton>Finish</guibutton>
-      button.
-      <picture file="pictures/Intro-NewProjectWizard.png">
-        Creating a new OMNeT++ Project
-      </picture>
-    </para>
-    <para>
       Once you have an empty OMNeT++ project, you can create new NED files. Choosing
       <guimenuitem>File|New|Network Description File</guimenuitem>
       from the menu will bring up a wizard where you can specify the target directory and

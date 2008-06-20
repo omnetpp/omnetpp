@@ -78,7 +78,7 @@
       At the first page of the wizard you should specify the project name and ensure that
       the Support C++ Development checkbox is selected.
     </para>
-    <picture file="pictures/Intro-NewProjectWizard.png">
+    <picture file="pictures/CPP-NewProjectWizard.png">
       Setting project name and enabling C++ support
     </picture>
     <para>
@@ -86,14 +86,14 @@
       see only a single toolchain supported on your platform, so you don't need to select
       anything.
     </para>
-    <picture file="pictures/Intro-NewProjectWizard2.png">Selecting a toolchain</picture>
+    <picture file="pictures/CPP-NewProjectWizard2.png">Selecting a toolchain</picture>
     <para>
       Finally choose from the preset configurations. By default a debug and a release
       configuration can be created. Pressing the
       <guibutton>Finish</guibutton>
       button will create the project.
     </para>
-    <picture file="pictures/Intro-NewProjectWizard3.png">
+    <picture file="pictures/CPP-NewProjectWizard3.png">
       Selecting configurations
     </picture>
   </sect1>
