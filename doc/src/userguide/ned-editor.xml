@@ -348,7 +348,6 @@
           <keycap>CTRL+SPACE</keycap>
           key combination to get a list of posible values.
         </para>
-        <picture file="pictures/NED-PropertiesView.png">Property Editor</picture>
       </sect3>
       <note>
         The following functions are available only in source editing mode:
