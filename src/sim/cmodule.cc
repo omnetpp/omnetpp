@@ -1054,10 +1054,9 @@ bool cModule::initializeModules(int stage)
     int numStages = numInitStages();
     if (stage < numStages)
     {
-        ev << "Initializing module " << getFullPath() << ", stage " << stage << "\n";
-
         // switch context for the duration of the call
-        cContextSwitcher tmp(this);
+        Enter_Method("initialize");
+        ev << "Initializing module " << getFullPath() << ", stage " << stage << "\n";
         initialize(stage);
     }
 

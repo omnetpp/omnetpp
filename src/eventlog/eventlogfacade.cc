@@ -135,6 +135,18 @@ bool EventLogFacade::Event_isSelfMessageProcessingEvent(ptr_t ptr)
     return ((IEvent*)ptr)->isSelfMessageProcessingEvent();
 }
 
+EventLogEntry *EventLogFacade::EventLogEntry_getEventLogEntry(ptr_t ptr)
+{
+    EVENTLOGENTRY_PTR(ptr);
+    return (EventLogEntry*)ptr;
+}
+
+int EventLogFacade::EventLogEntry_getContextModuleId(ptr_t ptr)
+{
+    EVENTLOGENTRY_PTR(ptr);
+    return ((EventLogEntry*)ptr)->contextModuleId;
+}
+
 bool EventLogFacade::EventLogEntry_isSelfMessage(ptr_t ptr)
 {
     EVENTLOGENTRY_PTR(ptr);

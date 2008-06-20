@@ -62,6 +62,8 @@ class EVENTLOG_API EventLogFacade
         ptr_t Event_getConsequence(ptr_t ptr, int index);
         bool Event_isSelfMessageProcessingEvent(ptr_t ptr);
 
+        EventLogEntry *EventLogEntry_getEventLogEntry(ptr_t ptr);
+        int EventLogEntry_getContextModuleId(ptr_t ptr);
         bool EventLogEntry_isSelfMessage(ptr_t ptr);
         int EventLogEntry_getMessageId(ptr_t ptr);
         const char *EventLogEntry_getModuleFullPath(ptr_t ptr);

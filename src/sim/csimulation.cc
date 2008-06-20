@@ -416,6 +416,7 @@ void cSimulation::startRun()
     //  for the destination module and cause trouble in cSimpleMod's activate().
     if (systemmodp)
     {
+        cContextSwitcher tmp(systemmodp);
         systemmodp->scheduleStart(0);
         systemmodp->callInitialize();
     }
