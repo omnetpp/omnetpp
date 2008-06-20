@@ -13,6 +13,7 @@
 
 <xsl:template match="picture">
    <figure float="0">
+      <xsl:attribute name="id"><xsl:value-of select="@file"/></xsl:attribute>
       <title><xsl:apply-templates select="node()"/></title>
       <screenshot>
          <mediaobject>
