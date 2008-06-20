@@ -18,24 +18,24 @@ import org.omnetpp.scave.model2.FilterSyntax.Node;
 import org.omnetpp.scave.model2.FilterSyntax.Token;
 
 /**
- * Content proposal provider for the filter text fields. 
+ * Content proposal provider for the filter text fields.
  */
 class FilterContentProposalProvider implements IContentProposalProvider
 {
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	private static ContentProposal[] binaryOperatorProposals;
 	private static ContentProposal[] unaryOperatorProposals;
 	private static ContentProposal[] fieldPrefixProposals;
 	private static ContentProposal noProposal = new ContentProposal("", "No proposal");
-	
+
 	// Proposals for field names
 	private ContentProposal[] fieldProposals;
 	// Proposals for prefixed field names
 	private ContentProposal[] prefixedFieldProposals;
 	// Maps fields names to patterns
 	private Map<String,ContentProposal[]> patternProposals = new HashMap<String,ContentProposal[]>();
-	
+
 	// decorators
 	private static final int DEC_NONE		= 0x00;
 	private static final int DEC_OP 		= 0x01;
@@ -43,8 +43,8 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	private static final int DEC_QUOTE		= 0x04;
 	private static final int DEC_SP_BEFORE	= 0x08;
 	private static final int DEC_SP_AFTER	= 0x10;
-	
-	
+
+
 	static {
 		binaryOperatorProposals = new ContentProposal[] {
 				new ContentProposal("OR"),
@@ -58,7 +58,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 				new ContentProposal("param:")
 		};
 	}
-	
+
 	public FilterContentProposalProvider() {
 		String[] filterFields = ResultItemFields.getFieldNames().toArray();
 		prefixedFieldProposals = new ContentProposal[0];
@@ -67,10 +67,10 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			fieldProposals[i] = new ContentProposal(filterFields[i], filterFields[i]+"()");
 		}
 	}
-	
+
 	/**
 	 * The proposals for pattern fields depends on the content of the analysis file,
-	 * and this method is used to pass the offered proposals for each field as a 
+	 * and this method is used to pass the offered proposals for each field as a
 	 * FilterHints object.
 	 * @param hints the hints for field patterns
 	 */
@@ -105,15 +105,15 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	 * If the cursor is at the right end of a token then completions offered,
 	 * otherwise if the cursor is in the middle or at the beginning of a token
 	 * then a replacement offered.
-	 * 
+	 *
 	 * To execute the replacement, the decorated field should have
 	 * an IControlContentAdapter2.
-	 * 
+	 *
 	 * The returned proposals are instances of FilterContentProposalProvider.ContentProposal.
 	 */
 	public IContentProposal[] getProposals(String contents, int position) {
 		List<IContentProposal> result = new ArrayList<IContentProposal>();
-		
+
 		Token token = getContainingOrPrecedingToken(contents, position);
 		if (token != null) {
 			Node parent = token.getParent();
@@ -200,8 +200,8 @@ class FilterContentProposalProvider implements IContentProposalProvider
 					collectFilteredProposals(result, patternProposals.get(FilterUtil.getDefaultField()), "", position, position, spaceBefore | DEC_QUOTE);
 				}
 			}
-		} 
-		
+		}
+
 		if (result.isEmpty()) {
 			result.add(noProposal);
 		}
@@ -214,14 +214,14 @@ class FilterContentProposalProvider implements IContentProposalProvider
 
 		return result.toArray(new IContentProposal[result.size()]);
 	}
-	
+
 	/**
 	 * Finds the leaf node (token) in the parse tree that contains the {@code position}
 	 * either in the middle or at the right end.
-	 * 
+	 *
 	 * @param contents the content of the filter field
 	 * @param position a position within the {@code contents}
-	 * @return the token containing the position or null if no such token 
+	 * @return the token containing the position or null if no such token
 	 */
 	private Token getContainingOrPrecedingToken(String contents, final int position) {
 		// Visitor for the parse tree which remembers the last visited node
@@ -230,11 +230,11 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		{
 			boolean found;
 			Token token;
-			
+
 			public boolean visit(Node node) {
 				return !found;
 			}
-			
+
 			public void visit(Token token) {
 				if (debug)
 					System.out.println("Visiting: " + token);
@@ -260,12 +260,12 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			System.out.println("Found: " + visitor.token);
 		return visitor.token;
 	}
-	
-	
+
+
 	/**
 	 * Collects the items from {@code proposals} starting with {@code prefix} into {@result}.
 	 * The proposals are modified according to the other parameters.
-	 * 
+	 *
 	 * @param result the list of the collected proposals
 	 * @param proposals	the list of proposals to be filtered
 	 * @param prefix the required prefix of the proposals
@@ -274,7 +274,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 	 * @param addOpeningParen if true '(' appended
 	 * @param addClosingParen if true ") " appended
 	 * @param addQuotes if true '"' are added around
-	 * @param addSpace if true ' ' appended 
+	 * @param addSpace if true ' ' appended
 	 */
 	private void collectFilteredProposals(List<IContentProposal> result, ContentProposal[] proposals, String prefix,
 			int startIndex, int endIndex, int decorators) {
@@ -289,18 +289,18 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			}
 		}
 	}
-	
+
 	/**
 	 * Content proposal for the filter field.
-	 * 
+	 *
 	 * The proposal specify a replacement of a range of text in the field
 	 * with the new content. The content can be decorated to add quotes,
 	 * parenthesis.
-	 * 
+	 *
 	 * The class implemented as mutable data.
 	 */
 	public static class ContentProposal implements IContentProposal {
-		
+
 		private int startIndex;				// start of the replaced range
 		private int endIndex;				// end of the replaced range
 		private String content;				// replacement
@@ -308,7 +308,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 		private String label;				// text displayed in the proposal popup
 		private String description;			// desciption the proposal, TODO: fill this field
 		private int decorators;				// additional characters added to the content
-		
+
 		public ContentProposal(String proposal) {
 			this(proposal, proposal);
 		}
@@ -318,7 +318,7 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			this.label = label;
 			this.cursorPosition = content.length();
 		}
-		
+
 		public String getContent() {
 			StringBuffer result = new StringBuffer(
 					((decorators & DEC_QUOTE) != 0 ? FilterUtil.quoteStringIfNeeded(content) : content));
@@ -326,17 +326,17 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			if ((decorators & DEC_OP) != 0) result.append('(');
 			if ((decorators & DEC_CP) != 0) result.append(") ");
 			if ((decorators & DEC_SP_AFTER) != 0) result.append(' ');
-			return result.toString(); 
+			return result.toString();
 		}
-		
+
 		public int getStartIndex() {
 			return startIndex;
 		}
-		
+
 		public int getEndIndex() {
 			return endIndex;
 		}
-		
+
 		public int getCursorPosition() {
 			int position = cursorPosition;
 			if ((decorators & DEC_QUOTE) != 0) position+= FilterUtil.quoteStringIfNeeded(content).length() - content.length(); // put cursor after the ending '"'
@@ -346,31 +346,31 @@ class FilterContentProposalProvider implements IContentProposalProvider
 			if ((decorators & DEC_SP_AFTER) != 0) position++;
 			return position;
 		}
-		
+
 		public String getDescription() {
 			return description;
 		}
 		public String getLabel() {
 			return label;
 		}
-		
+
 		public void setStartIndex(int index) {
 			startIndex = index;
 		}
-		
+
 		public void setEndIndex(int index) {
 			endIndex = index;
 		}
-		
+
 		public void setDecorators(int decorators) {
 			this.decorators = decorators;
 		}
-		
+
 		public boolean startsWith(String prefix) {
 			return content.startsWith(prefix);
 		}
 	}
-	
+
 	public static void test() {
 		FilterContentProposalProvider provider = new FilterContentProposalProvider();
 		provider.getProposals("", 0);

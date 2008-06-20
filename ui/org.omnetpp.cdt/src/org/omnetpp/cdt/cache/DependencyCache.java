@@ -41,17 +41,17 @@ import org.omnetpp.common.util.StringUtils;
 /**
  * Keeps track of which cc/h files include which other files, to be used
  * for dependency generation in Makefiles.
- * 
- * Conditionals (#ifdef) are ignored altogether; this vastly simplifies 
+ *
+ * Conditionals (#ifdef) are ignored altogether; this vastly simplifies
  * things (compiler-defined and externally defined macros don't need to
- * be known; a header file's include list doesn't depend on which 
+ * be known; a header file's include list doesn't depend on which
  * project/file it is included from, etc), allows platform-independent
  * dependencies to be generated, and in general has much more advantages
  * than drawbacks.
- *  
+ *
  * Strategy of handling msg files: pretend that _m.cc/h files exist, then
  * extract dependencies from them as from normal .cc/h files.
- * 
+ *
  * @author Andras
  */
 // Note: we may need to factor out a getNonTransitiveFolderDependencies() too
@@ -68,7 +68,7 @@ public class DependencyCache {
         public String filename; // the included file name
         public boolean isSysInclude; // true: <foo.h>, false: "foo.h"
         //public IFile file; // the file in which the #include occurs -- not needed
-        public int line = -1; // line number of the #include line  
+        public int line = -1; // line number of the #include line
 
         public Include(int line, String filename, boolean isSysInclude) {
             Assert.isTrue(filename != null);
@@ -147,7 +147,7 @@ public class DependencyCache {
             }
         });
     }
-    
+
     /**
      * A file or something in the project has changed. We need to invalidate
      * relevant parts of the cache.
@@ -159,8 +159,8 @@ public class DependencyCache {
                 projectData.remove(p);
     }
 
-    /** 
-     * Discards cached #include information for this project. Useful for incremental 
+    /**
+     * Discards cached #include information for this project. Useful for incremental
      * builder invocations with type==CLEAN_BUILD.
      */
     synchronized public void clean(IProject project) {
@@ -172,49 +172,49 @@ public class DependencyCache {
 
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
-     * 
-     * Note: may be a long-running operation, so it needs to invoked from a background job 
+     *
+     * Note: may be a long-running operation, so it needs to invoked from a background job
      * where UI responsiveness is an issue.
      */
     synchronized public Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project) {
         ProjectData projectData = getOrCreateProjectData(project);
-        return projectData.folderDependencies; 
+        return projectData.folderDependencies;
     }
 
     /**
      * For each file, it determines which other files it includes (directly or indirectly).
-     * Message files (.msg) are represented as _m.cc and _m.h files. 
-     * 
+     * Message files (.msg) are represented as _m.cc and _m.h files.
+     *
      * The result is grouped by folders; that is, each folder maps to the set of files
      * it contains. Grouping by folders significantly speeds up makefile generation.
-     *  
-     * Note: may be a long-running operation, so it needs to invoked from a background job 
+     *
+     * Note: may be a long-running operation, so it needs to invoked from a background job
      * where UI responsiveness is an issue.
      */
     synchronized public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project) {
         ProjectData projectData = getOrCreateProjectData(project);
-        return projectData.perFileDependencies; 
+        return projectData.perFileDependencies;
     }
 
     /**
      * Return the given project and all projects referenced from it (transitively).
      * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
-     */ 
+     */
     synchronized public IProject[] getProjectGroup(IProject project) {
         ProjectData projectData = getOrCreateProjectData(project);
-        return projectData.projectGroup.toArray(new IProject[]{}); 
+        return projectData.projectGroup.toArray(new IProject[]{});
     }
 
     protected ProjectData getOrCreateProjectData(IProject project) {
         if (!projectData.containsKey(project)) {
             ProjectData data = new ProjectData();
             data.project = project;
-            
+
             // determine project group (this project plus all referenced projects)
             data.projectGroup = new ArrayList<IProject>();
             data.projectGroup.add(project);
             data.projectGroup.addAll(Arrays.asList(ProjectUtils.getAllReferencedProjects(project)));
-            
+
             ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(MakefileBuilder.MARKER_ID);
 
             // Register all source files (including excluded ones!) in the marker synchronizer;
@@ -233,7 +233,7 @@ public class DependencyCache {
 
             // collect list of .h and .cc files in this project group (also, add _m.cc/_m.h for msg files)
             collectCppSourceFilesInProjectGroup(data, markerSync);
-            
+
             // resolve includes
             resolveIncludes(data, markerSync);
 
@@ -247,12 +247,12 @@ public class DependencyCache {
 
             // store
             projectData.put(project, data);
-            
+
             markerSync.runAsWorkspaceJob();
         }
         return projectData.get(project);
     }
-    
+
     protected void registerAllFilesInMarkerSynchronizer(IProject project, final ProblemMarkerSynchronizer markerSync) {
         try {
             project.accept(new IResourceVisitor() {
@@ -285,7 +285,7 @@ public class DependencyCache {
                     return MakefileTools.isGoodFolder(resource) && !CDataUtil.isExcluded(resource.getProjectRelativePath(), sourceEntries);
                 }
             });
-            
+
             // project is OK now
             fileIncludesUpToDate.add(project);
         }
@@ -325,9 +325,9 @@ public class DependencyCache {
         try {
             String contents = FileUtils.readTextFile(file.getContents()) + "\n";
             return parseIncludes(contents);
-        } 
+        }
         catch (IOException e) {
-            throw Activator.wrapIntoCoreException("Error collecting #includes from " + file.getFullPath(), e); 
+            throw Activator.wrapIntoCoreException("Error collecting #includes from " + file.getFullPath(), e);
         }
     }
 
@@ -347,15 +347,15 @@ public class DependencyCache {
     }
 
     protected void collectCppSourceFilesInProjectGroup(ProjectData data, ProblemMarkerSynchronizer markerSync) {
-        // collect list of .h and .cc files in this project group 
+        // collect list of .h and .cc files in this project group
         // (meanwhile resolve msg files to _m.cc and _m.h)
         data.cppSourceFiles = new HashMap<IFile,List<Include>>();
         for (IFile file : fileIncludes.keySet()) {
             if (data.projectGroup.contains(file.getProject())) {
                 if (file.getFileExtension().equals("msg")) {
                     // from a msg file, the build process will generate:
-                    // - an _m.h file gets generated with all the #include from the msg file 
-                    // - an _m.cc file which includes the _m.h file 
+                    // - an _m.h file gets generated with all the #include from the msg file
+                    // - an _m.cc file which includes the _m.h file
                     IFile mhFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.h")));
                     IFile mccFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.cc"))); //XXX or .cpp?
                     data.cppSourceFiles.put(mhFile, fileIncludes.get(file).includes);
@@ -387,8 +387,8 @@ public class DependencyCache {
             for (Include include : data.cppSourceFiles.get(file)) {
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
                     // this is a standard C/C++ header file, just ignore.
-                    // Note: non-standards angle-bracket #includes will be resolved and 
-                    // used as dependency if found, but there's no warning if they're 
+                    // Note: non-standards angle-bracket #includes will be resolved and
+                    // used as dependency if found, but there's no warning if they're
                     // not found.
                 }
                 else if (include.filename.contains("..")) {
@@ -446,8 +446,8 @@ public class DependencyCache {
             // and if anything changed, repeat the whole thing
             for (IFile x : includedFilesMap.keySet())
                 for (IFile y : includedFilesMap.get(x).toArray(new IFile[]{}))
-                    if (includedFilesMap.get(x).addAll(includedFilesMap.get(y))) 
-                        again = true; 
+                    if (includedFilesMap.get(x).addAll(includedFilesMap.get(y)))
+                        again = true;
         }
 
         // group by folders
@@ -498,7 +498,7 @@ public class DependencyCache {
             for (IContainer x : result.keySet())
                 for (IContainer y : result.keySet())
                     if (x != y && result.get(y).contains(x))  // if y depends on x
-                        if (result.get(y).addAll(result.get(x)))  // then add x's dependencies to y 
+                        if (result.get(y).addAll(result.get(x)))  // then add x's dependencies to y
                             again = true; // and if anything changed, repeat the whole thing
         }
 
@@ -524,7 +524,7 @@ public class DependencyCache {
     			System.out.println("  file: "+file.getName()+": "+perFileDependencies.get(con).get(file).toString());
     	}
     }
-    
+
     protected void addMarker(ProblemMarkerSynchronizer markerSynchronizer, IResource file, int severity, String message, int line) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(IMarker.SEVERITY, severity);

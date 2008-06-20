@@ -16,6 +16,7 @@ import org.omnetpp.scave.builder.Activator;
 
 public class ScaveMarkers {
 	public static final String MARKERTYPE_SCAVEPROBLEM = "org.omnetpp.scave.builder.scaveproblem";
+	private boolean debug = false;
 
 	public static void deleteMarkers(final IFile file, final String type) {
 		try {
@@ -23,16 +24,17 @@ public class ScaveMarkers {
 			if (markers.length == 0)
 				return;
 		} catch (CoreException e1) {}
-		
+
 		runInWorkspace("delete markers", file, new IWorkspaceRunnable() {
 		    public void run(IProgressMonitor monitor) throws CoreException {
 		    	file.deleteMarkers(type, true, IResource.DEPTH_ZERO);
 		    	monitor.done();
-				System.out.println("markers deleted: "+type+" from "+file);
+		    	if (debug)
+					System.out.println("markers deleted: "+type+" from "+file);
 		    }
 		});
 	}
-	
+
 	public static void setMarker(final IFile file, final String type, final int severity, final String message, final int line) {
 		runInWorkspace("set markers", file, new IWorkspaceRunnable() {
 		    public void run(IProgressMonitor monitor) throws CoreException {
@@ -40,12 +42,13 @@ public class ScaveMarkers {
 		    	IMarker marker = file.createMarker(type);
                 marker.setAttributes(createMarkerAttributes(severity, message, line));
 		    	monitor.done();
-				System.out.println("markers deleted: "+type+" from "+file);
+		    	if (debug)
+					System.out.println("markers deleted: "+type+" from "+file);
 		    }
 		});
 	}
-	
-	
+
+
 	/**
 	 * Utility function to add markers to a file.
 	 */
@@ -58,11 +61,12 @@ public class ScaveMarkers {
                 IMarker marker = file.createMarker(type);
                 marker.setAttributes(createMarkerAttributes(severity, message, line));
                 monitor.done();
-    			System.out.println("marker added: "+type+" on "+file+" line "+line+": "+message);
+                if (debug)
+                    System.out.println("marker added: "+type+" on "+file+" line "+line+": "+message);
             }
         });
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static HashMap createMarkerAttributes(int severity, String message, int line) {
         final HashMap map = new HashMap();
@@ -72,7 +76,7 @@ public class ScaveMarkers {
         	map.put(IMarker.LINE_NUMBER, line);
         return map;
 	}
-	
+
 	protected static void runInWorkspace(String operationName, IFile file, final IWorkspaceRunnable operation) {
 		if (ResourcesPlugin.getWorkspace().isTreeLocked()) {
 			(new WorkspaceJob(operationName) {

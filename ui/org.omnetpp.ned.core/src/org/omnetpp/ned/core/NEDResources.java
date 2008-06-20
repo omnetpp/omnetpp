@@ -77,6 +77,8 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 //XXX remove "source" from plain NEDModelChangeEvent too (and turn "anything might have changed" event into a separate class)
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
+    private boolean debug = false;
+
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
     private static final String NED_EXTENSION = "ned";
 
@@ -180,14 +182,14 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         // register as a workspace listener
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
     }
-    
+
     public void dispose() {
         // remove ourselves from the listener list
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
     }
-    
+
     public static NEDResources getInstance() {
-        if (instance == null) 
+        if (instance == null)
             instance = new NEDResources();
         return instance;
     }
@@ -220,11 +222,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
     public synchronized Set<IFile> getNedFiles(IProject project) {
         Set<IFile> files = new HashSet<IFile>();
-        
+
         for (IFile file : nedFiles.keySet())
             if (project.equals(file.getProject()))
                 files.add(file);
-        
+
         return files;
     }
 
@@ -450,7 +452,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 		    // inner type?
 	        if (lookupContext instanceof CompoundModuleElementEx) {
-	            // always lookup in the topmost compound module's context because "types:" is not allowed elsewhere 
+	            // always lookup in the topmost compound module's context because "types:" is not allowed elsewhere
 	            CompoundModuleElementEx topLevelCompoundModule = (CompoundModuleElementEx)lookupContext.getParent().getParentWithTag(NEDElementTags.NED_COMPOUND_MODULE);
                 if (topLevelCompoundModule != null)
                     lookupContext = topLevelCompoundModule;
@@ -546,7 +548,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
                 NED_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()) &&
                 getNedSourceFolderFor((IFile)resource) != null);
     }
-    
+
     public IContainer[] getNedSourceFolders(IProject project) {
 		ProjectData projectData = projects.get(project);
 		return projectData == null ? new IContainer[0] : projectData.nedSourceFolders;
@@ -649,7 +651,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	//Note: the following is a bad idea, because of undefined startup order: the editor calling us might run sooner than readAllNedFiles()
     	//Assert.isTrue(isNEDFile(file), "file is outside the NED source folders, or not a NED file at all");
 
-        System.out.println("reading from disk: " + file.toString());
+        if (debug)
+            System.out.println("reading from disk: " + file.toString());
 
         // parse the NED file and put it into the hash table
         String fileName = file.getLocation().toOSString();
@@ -771,12 +774,15 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
         		projectData.components.remove(name);
         	}
 
-        	System.out.println("types in project " + project.getName() + ": " + StringUtils.join(projectData.components.keySet(), ", ", " and "));
+        	if (debug)
+        		System.out.println("types in project " + project.getName() + ": " + StringUtils.join(projectData.components.keySet(), ", ", " and "));
 
         }
 
-        long dt = System.currentTimeMillis() - startMillis;
-        System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + projects.size() + " projects");
+        if (debug) {
+        	long dt = System.currentTimeMillis() - startMillis;
+        	System.out.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + projects.size() + " projects");
+        }
 
         // schedule a validation
         validationJob.restartTimer();
@@ -813,7 +819,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
 		// fake a begin change event, then "finally" an end change event
 		fireBeginChangeEvent();
-		System.out.println("Validation started");
+		if (debug)
+			System.out.println("Validation started");
 		ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
 		try {
             // clear consistency error markers from the ned tree
@@ -863,9 +870,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             fireEndChangeEvent();
         }
 
-        long dt = System.currentTimeMillis() - startMillis;
-        System.out.println("validateAllFiles(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers on " + markerSync.getNumberOfFiles() + " files");
-        System.out.println("typeinfo: refreshLocalCount:" + NEDTypeInfo.debugRefreshLocalCount + "  refreshInheritedCount:" + NEDTypeInfo.debugRefreshInheritedCount);
+        if (debug) {
+        	long dt = System.currentTimeMillis() - startMillis;
+        	System.out.println("validateAllFiles(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers on " + markerSync.getNumberOfFiles() + " files");
+        	System.out.println("typeinfo: refreshLocalCount:" + NEDTypeInfo.debugRefreshLocalCount + "  refreshInheritedCount:" + NEDTypeInfo.debugRefreshInheritedCount);
+        }
 	}
 
     public synchronized void fireBeginChangeEvent() {
