@@ -58,6 +58,7 @@ import org.omnetpp.common.util.StringUtils;
 // when we write a "Cross-folder Dependencies View" (using DOT to render the graph?)
 //XXX mindenki a SAJAT projektre tegye csak r� a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz!
 public class DependencyCache {
+	private static boolean debug = false;
     // the standard C/C++ headers (we'll ignore those #include directives)
     protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.split(" ")));
 
@@ -229,7 +230,8 @@ public class DependencyCache {
             for (IProject p : data.projectGroup)
                 if (!fileIncludesUpToDate.contains(p))
                     collectIncludes(p, markerSync);
-            System.out.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
+            if (debug)
+            	System.out.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
 
             // collect list of .h and .cc files in this project group (also, add _m.cc/_m.h for msg files)
             collectCppSourceFilesInProjectGroup(data, markerSync);
@@ -270,7 +272,8 @@ public class DependencyCache {
     }
 
     protected void collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync) {
-        System.out.println("collectIncludes(): " + project);
+        if (debug)
+        	System.out.println("collectIncludes(): " + project);
 
         try {
             // parse all C++ source files for #include; also warn for linked-in files
@@ -299,11 +302,13 @@ public class DependencyCache {
      * Parses the file for the list of #includes, if it's not up to date already.
      */
     protected void checkFileIncludes(IFile file) throws CoreException {
-        //System.out.println("   checkFileIncludes(): " + file);
+        if (debug)
+        	System.out.println("   checkFileIncludes(): " + file);
         long fileTime = file.getModificationStamp();
         FileIncludes fileData = fileIncludes.get(file);
         if (fileData == null || fileData.modificationStamp < fileTime) {
-            System.out.println("   parsing includes from: " + file);
+            if (debug)
+            	System.out.println("   parsing includes from: " + file);
             if (fileData == null)
                 fileIncludes.put(file, (fileData = new FileIncludes()));
 
