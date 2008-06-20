@@ -10,31 +10,24 @@
     <title>Overview</title>
 
     <para>
-      While it might be powerful in facilitating quick debugging to view how simulations
-      work in the Tkenv environment, in most cases the result of the final simulations
-      will be recorded as scalar values (e.g. average load: 75%), or vector values (e.g.
-      queue length over time) or histograms. These values will be recorded at the end of
-      the simulation as well as during runtime and provide real insight into the scenario
-      you are looking at.
-    </para>
-
-    <para>
-      Analyzing the simulation result is a lengthy and time consuming process. In most
-      cases the user wants to see the same type of data for each run of the simulation or
-      display the same graphs for different modules in the model, so automation is very
-      important. (The user does not want to repeat the steps of re-creating charts every
-      time simulations have to be re-run for some reason.)
+      Analyzing the simulation result is a lengthy and time consuming process.
+      The result of the simulation is recorded as scalar values, vector values and histograms.
+      The user then applies statistical methods to extract the relevant information, and 
+      to draw a conclusion. These may include several steps, usually you need to
+      filter and transform the data, and draw the result on charts. 
+      Automation is very important here. The user does not want to repeat the
+      steps of re-creating charts every time simulations have to be re-run for some reason.
     </para>
     
     <para>
-      In OMNEST/OMNeT++ 4.0, statistical analysis becomes a lot more powerful. Not only is
-      the statistical analysis tool integrated into the Eclipse environment, your settings
-      -- your recipe for finding results from the raw data -- will be recorded in analysis
-      files (.anf) and become instantly reproducible. This means that all processing and
-      charts are stored as datasets; for example, if simulations need to be re-run due to
-      a model bug or misconfiguration, existing charts need not be drawn all over again,
-      but simply replacing the old result files with the new ones will result in the
-      charts being automatically displayed with the new data.
+      In OMNEST/OMNeT++ 4.0 the statistical analysis tool integrated into the Eclipse
+      environment. Your settings -- your recipe for finding results from the raw data --
+      will be recorded in analysis files (.anf) and become instantly reproducible. This
+      means that all processing and charts are stored as datasets; for example, if
+      simulations need to be re-run due to a model bug or misconfiguration, existing
+      charts need not be drawn all over again, but simply replacing the old result files
+      with the new ones will result in the charts being automatically displayed with the
+      new data.
     </para>
     
     <para>
