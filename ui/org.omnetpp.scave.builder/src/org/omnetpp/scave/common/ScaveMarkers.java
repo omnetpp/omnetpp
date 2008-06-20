@@ -16,7 +16,7 @@ import org.omnetpp.scave.builder.Activator;
 
 public class ScaveMarkers {
 	public static final String MARKERTYPE_SCAVEPROBLEM = "org.omnetpp.scave.builder.scaveproblem";
-	private boolean debug = false;
+	private static boolean debug = false;
 
 	public static void deleteMarkers(final IFile file, final String type) {
 		try {
