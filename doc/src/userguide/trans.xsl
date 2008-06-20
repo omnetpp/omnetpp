@@ -52,6 +52,10 @@
    </guibutton>
 </xsl:template>
 
+<xsl:template match="eventnumber">
+   event #<xsl:apply-templates select="node()"/>
+</xsl:template>
+
 <xsl:template match="inifile">
    <screen><xsl:apply-templates select="node()"/></screen>
 </xsl:template>

@@ -479,7 +479,7 @@
         <para>
           It is possible to reformat the whole NED file according to the recommended
           coding guidelines by activating the
-          <guimenuitem>Format SOurce</guimenuitem>
+          <guimenuitem>Format Source</guimenuitem>
           context menu item or by pressing the
           <keycap>CTRL+SHIFT+F</keycap>
           key combination.

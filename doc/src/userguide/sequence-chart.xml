@@ -16,21 +16,19 @@
     </para>
     <para>
       Refer to the OMNeT++ 4.0 User Manual for further details on what an eventlog file
-      is, what its format and how to set up the simulation kernel to automatically record
-      it during simulation.
+      is, what is its exact format and how to set up the simulation kernel to
+      automatically record it during simulation.
     </para>
   </sect1>
 
   <sect1>
-    <title>Configuration</title>
+    <title>Creating an eventlog file</title>
     <para>
       The Inifile Editor provides a small group of widgets in the Output Files section to
       configure the eventlog feature. To enable recording simply put a checkmark next to
       its checkbox.
     </para>
-    <picture file="pictures/INI-Eventlog.png">
-      Inifile Editor - Output Files section - Eventlog
-    </picture>
+    <picture file="pictures/INI-Eventlog.png">Inifile eventlog configuration</picture>
     <para>
       The eventlog file should have the file extension <filename>log</filename> as the
       example shows above so that OMNeT++ IDE tools will be able to recognize it
@@ -43,77 +41,580 @@
     </para>
     <para>
       All the other eventlog specific parameters described in the OMNeT++ 4.0 User Manual
-      can also be set using the Inifile Editor in the usual way.
+      can also be set using the Inifile Editor in the usual ways.
     </para>
   </sect1>
 
   <sect1>
-    <title>Tools</title>
+    <title>Overview</title>
+    <sect2>
+      <title>Sequence Chart</title>
+      <para>
+	The Sequence Chart ...
+      </para>
+    </sect2>
+    <sect2>
+      <title>Eventlog Table</title>
+      <para>
+	The Eventlog Table ...
+      </para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Examples</title>
     <para>
-      There are two tools called the Sequence Chart and the Eventlog Table (often just
-      referred as tools in the rest of this chapter) in the OMNeT++ IDE to inspect the
-      contents of an eventlog file. Both tools can be used as an editor and a view. The
-      difference between being an editor or a view is quite important from the user's
-      point of view, because there is only at most one instance of a view of the same
-      kind. It means that even if multiple eventlog files are open in editors there are no
-      more than one Eventlog Table view. This singleton view will automatically display
-      the eventlog file of the active editor remembering its position and state when
-      switching among editors back and forth. For more details on what an editor and a
-      view is and what are the differences see the Eclipse documentation.
+      Before running any of the following examples make sure that eventlog recording is
+      enabled by uncommenting the line <screen>record-eventlog = true</screen> in the file
+      <filename>omnetpp.ini</filename> under the simulation's directory. To open the
+      generated eventlog in the OMNeT++ IDE go to the example's
+      <filename>results</filename> directory with the <guilabel>Resource
+      Navigator</guilabel> and double click on the log file.
     </para>
+    <sect2>
+      <title>Tic toc</title>
+      <para>
+	This example is available in the OMNeT++ installation under the directory
+	<filename>samples/tictoc</filename>. Tic toc is the most basic example in this
+	chapter which provides a quick overview how to use and understand the Sequence
+	Chart.
+      </para>
+      <para>
+	Start the simulation and choose the simplest configuration 'Tictoc1' which
+	specifies only two nodes called 'tic' and 'toc'. During initializion one of the
+	nodes will send a message to the other and at each event from that on the node
+	receiving the message will simply send it back. This process continues until you
+	stop the simulation. In <xref
+	linkend="pictures/SequenceChart-Examples-TicTocTwoNodes.png"/> you can see how
+	this is represented on a Sequence Chart. The two horizontal black lines correspond
+	to the two nodes and are labelled 'tic' and 'toc'. The red circles represent
+	events and the blue arrows represent message sends. It is easy to see that all
+	message sends take 100 ms and that the first sender is the node 'tic'.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-TicTocTwoNodes.png">
+	Tic toc with two nodes
+      </picture>
+      <para>
+	In the next tic toc example there are six nodes tossing a message around until it
+	reaches its destination. To generate the eventlog file restart the simulation and
+	choose the configuration 'Tictoc9'. In <xref
+	linkend="pictures/SequenceChart-Examples-TicTocSeveralNodes.png"/> you can see how
+	the message goes from one node to another starting from node '0' and returning
+	back to it two times until finally the message reaches its end point at node
+	'3'. The chart also shows that this example unlike the previous one starts with a
+	self message instead of immediately sending a message from initialize to another
+	node.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodes.png">
+	Tic toc with six nodes
+      </picture>
+      <para>
+	This simple example allows to see how filtering works with the Sequence
+	Chart. Open the filter dialog with the toolbar button <icon name="filter.png"/>
+	and put a checkmark for node '0' and '3' on the panel <guilabel>Module filter|by
+	name</guilabel> and apply it. The chart now displays only two axes corresponding
+	for the two selected nodes. There are three virtual message sends on the figure,
+	the first two show the message returning back to node '0' at
+	<eventnumber>9</eventnumber> and <eventnumber>13</eventnumber> while the last
+	shows that it reaches the destination at <eventnumber>16</eventnumber> where the
+	simulation ends. The details where the message was in between is filtered out.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodesFiltered.png">
+	Filtering for node '0' and '3'
+      </picture>
+    </sect2>
+    <sect2>
+      <title>FIFO</title>
+      <para>
+	This example is available in the OMNeT++ installation under the directory
+	<filename>samples/fifo</filename>. The FIFO is an important example because it
+	uses a queue which is an essential part of discrete event simulations and
+	introduces the notion of message reuses.
+      </para>
+      <para>
+	When you start the simulation choose the configuration 'low job arrival rate' and
+	let it go for a while. In <xref
+	linkend="pictures/SequenceChart-Examples-FIFO.png"/> you can see three modules, a
+	'source', a 'queue' and a 'sink'. The simulation starts with a self message and then
+	the generator sends the first message to the queue at
+	<eventnumber>1</eventnumber>. It is immediately obvious that the message stays for
+	a while in the queue from <eventnumber>2</eventnumber> to event #3. To measure
+	this amount of simulation time show the popup for one of the events while the
+	other one is selected. Finally the message is sent to the 'sink' where it is
+	destroyed at <eventnumber>4</eventnumber>.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-FIFO.png">
+	First in first out queue
+      </picture>
+      <para>
+	The interesting thing happens at <eventnumber>12</eventnumber> where the incoming
+	message suddenly disappears, it seems like the queue does not send that message
+	out. Actually what happens is that the queue enqueues the job because it has
+	already got one at <eventnumber>10</eventnumber> which is still in the
+	queue. Since this queue is a FIFO therefore it will send out the first message at
+	<eventnumber>13</eventnumber>. To see as in <xref
+	linkend="pictures/SequenceChart-Examples-FIFOReuse.png"/> how this happens turn on
+	<guilabel>Show Reuse Messages</guilabel> from the context menu. It will display a
+	couple of green dotted arrows one of which is from <eventnumber>12</eventnumber>
+	to <eventnumber>17</eventnumber>. This arrow represents a message reuse that is
+	the job got at <eventnumber>12</eventnumber> is sent out from the queue at
+	<eventnumber>17</eventnumber>. Notice that the message that was already in the
+	queue when the queue got this one will be sent out earlier at
+	<eventnumber>13</eventnumber>.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-FIFOReuse.png">
+	Showing message reuses
+      </picture>
+      <para>
+	There are a couple of green dotted arrows with a somewhat different meaning such
+	as the one from <eventnumber>3</eventnumber> to
+	<eventnumber>6</eventnumber>. These represent the fact that the queue reuses
+	(instead of recreating it) the timer message each time it gets a job when it is
+	empty. In other words the timer self message is more or less remembered just like
+	normal jobs which are enqueued but in a separate member variable in the queue's
+	C++ implementation.
+      </para>
+      <para>
+	The last part of this example is filtering out the queue from the chart. Open the
+	filter dialog and put a checkmark for 'sink' and 'source' on the panel
+	<guilabel>Module filter|by NED type</guilabel> and apply it. If you look at the
+	result in <xref linkend="pictures/SequenceChart-Examples-FIFOFiltered.png"/> then
+	you will see zig zag arrows going from the 'source' to the 'sink'. These arrows
+	represent the fact that a message is being sent through the queue from 'source' to
+	'sink'. The first two arrows do not overlap in simulation time which means the
+	queue did not have more than one message at that time. On the other hand the third
+	and fourth arrows do overlap due to the fact that the forth job reached the queue
+	while it was busy with the third one. Scrolling forward you can find other places
+	where the queue becomes empty again.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-FIFOFiltered.png">
+	Filtering the queue out
+      </picture>
+    </sect2>
+    <sect2>
+      <title>Routing</title>
+      <para>
+	This example is available in the OMNeT++ installation under the directory
+	<filename>samples/routing</filename>.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-Routing.png">
+	Network with 10 nodes
+      </picture>
+    </sect2>
+    <sect2>
+      <title>Wireless</title>
+      <para>
+	This example is available in the INET Framework under the directory
+	<filename>examples/adhoc/ieee80211</filename>. The predefined configuration called
+	Config1 specifies two mobile hosts moving around on the playground and
+	communicating via the IEEE 802.11 wireless protocol. The network devices are
+	configured for ad hoc mode and the transmitter power is set so that hosts can move
+	out of range. One of the hosts is continuously pinging the other. The goal is to
+	create two sequence charts focusing on the protocol's MAC layer. The first chart
+	will show a ping message being successfully sent through the wireless channel
+	while the second will show the opposite, ping messages being continuously resent
+	due to packet loss.
+      </para>
+      <para>
+	We also would like to record message data during the simulation so the following
+	line should also be uncommented: <screen>eventlog-message-detail-pattern = *:(not
+	declaredOn(cMessage) and not declaredOn(cNamedObject) and not
+	declaredOn(cObject))</screen>
+      </para>
+      <para>
+	Start the simulation environment and choose the configuration 'host1 pinging
+	host0'. Run the simulation in fast mode until around event number
+	<eventnumber>5000</eventnumber>. Press finish and exit from the runtime
+	environment.
+      </para>
+      <sect3>
+	<title>Preparing the result</title>
+	<para>
+	  When you open the Sequence Chart it will show a couple of self messages being
+	  sent regularly. These are the self messages which control the movement of the
+	  two hosts on the playground.
+	</para>
+	<para>
+	  We don't care about those move messages much but would like to focus on the MAC
+	  layer instead. To begin with open the filter dialog and check the
+	  <guilabel>Module Filter|by NED type</guilabel> option in the tree on the left
+	  hand side. It will display on the right hand side a list of NED types present in
+	  the eventlog file. Select the inet.linklayer.ieee80211.mac.Ieee80211Mac and the
+	  inet.linklayer.radio.Ieee80211Radio types and apply the filter by pressing the
+	  <guilabel>Ok</guilabel> button. This will hide all axes from the chart except
+	  four simple modules the two MACs and the two radios.
+	</para>
+	<para>
+	  The next step is to attach vector data to the four axes. Open the context menu
+	  for each axis by clicking on them one by one and select the submenu
+	  <guilabel>Attach Vector to Axis</guilabel>. When pops up always select the file
+	  offered and choose the vector mac:State for the MAC modules and mac:RadioState
+	  for the radio modules. You should edit the filter in the selection dialog
+	  (i.e. delete the last segment) for the radio modules because at the moment the
+	  radio state is actually recorded by the MAC module so the default filter will
+	  not be right. When this step is completed the chart should display four thick
+	  colored bars as module axes.
+	</para>
+	<para>
+	  To make understanding easier you can reorder the axis so that the radio modules
+	  are put next to each other. After some zooming and scrolling you should be able to
+	  fit the first message exchanges in the window among the two hosts at the MAC layer.
+	</para>
+      </sect3>
+      <sect3>
+	<title>Successful ping</title>
+	<para>
+	  The first message sent by host1 is not a ping request but an ARP request which
+	  after some processing in host0 generates the corresponding ARP reply. This is
+	  shown by the zig zag arrow between <eventnumber>90</eventnumber> and
+	  <eventnumber>91</eventnumber>. The reply goes back to host1 which then sends a
+	  wlan acknowledge in return. In this process host1 discovers the MAC address of
+	  host0 based on its IP address.
+	</para>
+	<para>
+	  The send procedure for the first ping message starts at
+	  <eventnumber>105</eventnumber> in host1 and finishes by receiving the
+	  acknowledge at <eventnumber>127</eventnumber>. The ping reply send procedure
+	  starts at <eventnumber>125</eventnumber> in host0 and finishes by receiving the
+	  acknowledge at <eventnumber>144</eventnumber>. Scrolling a little bit forward
+	  you can see the second complete successful ping procedure can be seen between
+	  <eventnumber>170</eventnumber> and <eventnumber>206</eventnumber>. Open the
+	  filter dialog and enter these numbers in the range filter.
+	</para>
+	<picture file="pictures/SequenceChart-Examples-Wireless-SuccessfulPing.png">
+	  The second ping procedure
+	</picture>
+	<para>
+	  Timing is critical in a protocol implementation so let's take a look at it. The
+	  message send from <eventnumber>171</eventnumber> to
+	  <eventnumber>172</eventnumber> occurs in zero simulation time (gray background)
+	  and represents the moment when the MAC decides to send the ping request down to
+	  its radio module. If you look at <eventnumber>172</eventnumber> and
+	  <eventnumber>173</eventnumber> you will see how the message propagates from
+	  radio1 to radio0 in a finite amount of time with the light of speed. Also
+	  looking at the the <eventnumber>172</eventnumber> and
+	  <eventnumber>174</eventnumber> you can notice that the transmission time is non
+	  zero based on the message's length. Another interesting fact which can be
+	  immediately drawn from the figure is that the higher level protocol layers do
+	  not add delay to the processing between <eventnumber>176</eventnumber> and
+	  <eventnumber>183</eventnumber> while generating the ping reply message in
+	  host0. And finally you can get a quick grasp about the timings of IEEE 802.11 in
+	  linear timeline mode <icon name="timelinemode.png"/> where the figure changes
+	  drammaticaly (scroll and zoom in/out if needed).
+	</para>
+	<commercial>
+	  <para>
+	    And finally you can export this sequence chart using the context menu's
+	    <guilabel>Export to SVG</guilabel> menu option for documentation purposes.
+	  </para>
+	</commercial>
+      </sect3>
+      <sect3>
+	<title>Packet loss</title>
+	<para>
+	  TODO...
+	</para>
+      </sect3>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Sequence Chart</title>
     <para>
-      It is possible to open the same eventlog file in multiple editors and to navigate to
-      different locations or use different filters in them. Once an eventlog is open in an
-      editor you can use the <guimenuitem>Window|New Editor</guimenuitem> to open it
-      again.
+      The Sequence Chart also displays the content of an eventlog file focusing on the
+      causes and consequences of events and message sends recorded during the simulation.
+      It is also capable to display filtered eventlog files just like the Eventlog Table.
+    </para>
+    <sect2>
+      <title>Legend</title>
+      <informaltable>
+	<tgroup cols="2">
+	  <colspec colwidth="130"/>
+	  <colspec/>
+	  <tbody>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-SimpleModuleAxis.png"/></entry>
+	      <entry>simple module axis</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-CompoundModuleAxis.png"/></entry>
+	      <entry>compound module axis</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-AxisWithAttachedVector.png"/></entry>
+	      <entry>axis with attached vector</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-ModuleFullPath.png"/></entry>
+	      <entry>module full path</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-InitializationEvent.png"/></entry>
+	      <entry>initialization event</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessageProcessingEvent.png"/></entry>
+	      <entry>self message processing event</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageProcessingEvent.png"/></entry>
+	      <entry>message processing event</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-EventNumber.png"/></entry>
+	      <entry>event number</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessage.png"/></entry>
+	      <entry>self message</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageSend.png"/></entry>
+	      <entry>message send</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageReuse.png"/></entry>
+	      <entry>message reuse</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-SplitArrow.png"/></entry>
+	      <entry>split arrow</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-ZigZagArrow.png"/></entry>
+	      <entry>zig zag arrow</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageName.png"/></entry>
+	      <entry>message name</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-ZeroSimulationTimeRegion.png"/></entry>
+	      <entry>zero simulation time region</entry>
+	    </row>
+	    <row valign="middle">
+	      <entry><icon file="pictures/SequenceChart-Legend-SimulationTimeHairline.png"/></entry>
+	      <entry>simulation time hairline</entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </informaltable>
+    </sect2>
+    <sect2>
+      <title>Timeline</title>
+      <para>
+	The Sequence Chart's horizontal axis corresponds to the simulation time in four
+	different ways. Linear and event number mean that the simulation time and event
+	number is proportional to the distance measured in pixels respectively. While non
+	linear and step mean that there is a non linear transformation between distance
+	measured in pixels and simulation time. The goal of this non linear transformation
+	is to get a compact figure even if there are longer and shorter periods of
+	simulation time intervals between events. You can switch between
+	<guilabel>Timeline Mode</guilabel>s <icon name="timelinemode.png"/> from the
+	toolbar or the context menu.
+      </para>
+      <para>
+	The <guilabel>Custom nonlinear</guilabel> timeline mode might be useful in those
+	rare cases when the automatic mode does not work well. The best practice is to
+	switch to <guilabel>Nonlinear</guilabel> mode first and then to <guilabel>Custom
+	nonlinear</guilabel> so that the chart will continuously refresh during changing
+	the parameters. At the extreme you can set the parameters so that the nonlinear
+	mode becomes equivalent to linear or step.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Zero Simulation Time Regions</title>
+      <para>
+	It is quite common in simulation models that multiple events occur at the very
+	same simulation time possibly in different modules. A region with gray background
+	color indicates that the simulation time does not change along the horizontal axis
+	within the area and all events inside occured at the same moment. Of course the
+	order of the events still matters.
+      </para>
+      <picture file="pictures/SequenceChart-ZeroSimulationTimeRegions.png">Nonlinear simulation time</picture>
+    </sect2>
+    <sect2>
+      <title>Module Axes</title>
+      <para>
+	The Sequence Chart's vertical axis corresponds to single or compound modules in
+	the simulation. By default all single modules are displayed as a single solid line
+	and events occurred in that module are shown as filled circles on that
+	line. Compound modules are shown as double solid lines along with events occured
+	in any of the simple modules not having a separate axis under that compound
+	module. These lines called module axes can be reordered with the option
+	<guilabel>Axis Ordering Mode</guilabel> <icon name="axisordering.gif"/> manually,
+	by module name, by module id or by approximately minimizing the number of crossing
+	arrows between them.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Gutter</title>
+      <para>
+	Both the top and the bottom of the Sequence Chart display the simulation times
+	corresponding to the currently visible part. The left side of the top simulation
+	time gutter displays the common simulation time prefix which should be added to
+	each individual simulation time shown at the vertical hairlines. This reduces the
+	number of characters on the gutter and allows easier recognition of simulation
+	time changes in the significant digits. The right side of the figure displays the
+	simulation time range currently visible within the sequence chart window. To see
+	what is the simulation time at a specific point on the chart move the mouse to the
+	desired place and read the value horizontally aligned with the mouse on the
+	gutter.
+      </para>
+      <picture file="pictures/SequenceChart-Gutter.png">Gutter and range</picture>
+    </sect2>
+    <sect2>
+      <title>Events</title>
+      <para>
+	Events are displayed as filled circles along the module axes. A green circle
+	represents the processing of a self message while a red circle is an event caused
+	by receiving a message from another module. The very first event which has the
+	event number zero represents the module initialization phase and may spread across
+	multiple module axes because the simulation kernel calls each module during
+	initialization. To easily distinguish this event from the normal ones it is
+	displayed with white background color. Event numbers are just below and to the
+	right of their corresponding events and are prefixed with '#'.
+      </para>
+      <picture file="pictures/SequenceChart-Events.png">Various event kinds</picture>
+    </sect2>
+    <sect2>
+      <title>Messages</title>
+      <para>
+	The Sequence Chart represents message sends via blue arrows. Vertically the arrow
+	starts at the module which is sending the message and ends at the module which
+	processed that message. Horizontally the start and end points of the arrow
+	correspond to the sender and receiver events. The message name is displayed
+	somewhere near middle of the arrow.
+      </para>
+      <para>
+	When a message arrives to a module which neither deletes nor sends but rather
+	stores it in some internal state and later on sends the very same message to
+	another module then the events where the message arrived and where the message was
+	actually sent are in a so called message reuse relationship. This is represented
+	by a green dotted arrow between the two events. These arrows are not shown by
+	default due to timer self messages usually being reused continuously and adding
+	unnecessary noise to the chart. Use the <guilabel>Show Reuse Messages</guilabel>
+	<icon name="reusearrows.png"/> option on the toolbar or the context menu to show
+	or hide these arrows.
+      </para>
+      <para>
+	Sometimes depending on the zoom factor a message send goes far away on the figure
+	in which case the line is split into two smaller parts displayed at the two ends
+	pointing towards each other but without actually linked with a continuous
+	line. One end of both arrow pieces is a dotted and the other end is a solid
+	line. The one which is solid always exactly points to or from the event it is
+	really connected to. The other one which is dotted either specifies only the
+	module where the arrow really starts or ends or in case of a self message it just
+	points towards the other arrow horizontally.
+      </para>
+      <picture file="pictures/SequenceChart-SplitArrows.png">Split arrows</picture>
+    </sect2>
+    <sect2>
+      <title>Attaching Vectors</title>
+      <para>
+	It is possible to attach Vector data to individual axes from the context menu by
+	right clicking on the desired axis and selecting <guilabel>Attach Vector to
+	Axis</guilabel> from the corresponding submenu. In this case the solid line of the
+	axis will be turned into a thick bar with coloring based on the values present in
+	the vector. If the vector is of type enum and its element names have been
+	registered with the C++ macro Register_Enum then the chart will display those
+	names inside the bar. Otherwise it will simply display the value as a number. The
+	background coloring for the thick bar is automatical either based on the
+	enumeration member or alternating for other types.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Zooming</title>
+      <para>
+	To zoom in or out horizontally along the timeline use the <guilabel>Zoom
+	In/Out</guilabel> <icon name="zoomplus.png"/> <icon name="zoomminus.png"/>
+	commands from the toolbar. To decrease or increase the distance between the axes
+	use the <guilabel>Increase/Decrease Spacing</guilabel> <icon
+	name="incr_spacing.png"/> <icon name="decr_spacing.png"/> commands.
+	<note>
+	  When zooming out more events and messages become visible on the chart making it
+	  slower while zooming in more message lines break making it less informative. Try
+	  to keep a reasonable zoom level.
+	</note>
+      </para>
+    </sect2>
+    <sect2>
+      <title>Navigation</title>
+      <para>
+	To scroll the Sequence Chart either use the scroll bars, drag with the mouse left
+	button or scroll with the mouse wheel using the <keycap>SHIFT</keycap> modifier
+	key for horizontal scroll.
+      </para>
+      <para>
+	There are also navigation options to go to the previous
+	(<keycap>SHIFT+LEFT</keycap>) or next (<keycap>SHIFT+RIGHT</keycap>) event in the
+	same module.
+      </para>
+      <para>
+	Similarly to the Eventlog Table to go to the cause event press
+	<keycap>CTRL+LEFT</keycap> and to go to the arrival of a message send press
+	<keycap>CTRL+RIGTH</keycap> while an event is selected.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Tooltips</title>
+      <para>
+	The Sequence Chart displays tooltips for axes, events, message sends and
+	resuses. When a tooltip is shown for any of the above the chart will highlight the
+	corresponding parts. Sometimes when the chart is zoomed out it might show a
+	complex tooltip at once because there are multiple things under the mouse.
+      </para>
       <note>
-	Dragging one of the editors from the tabbed pane to one of the sides of the editor
-	area allows to interact with the two simultaneously.
+	To measure the simulation time difference between two events select one of them
+	and stay at the other to display the tooltip.
       </note>
-    </para>    
-    <sect2>
-      <title>Settings</title>
-      <para>
-	There are various settings for both tools which affect the display. Various
-	display modes, content position, filtering, etc. These user specified settings are
-	automatically saved for each file and reused whenever the file is visited again.
-      </para>
+      <picture file="pictures/SequenceChart-Tooltip.png">Event tooltip</picture>
     </sect2>
     <sect2>
-      <title>Large File Support</title>
+      <title>Bookmarks</title>
       <para>
-	Since an eventlog file might be several Gbytes therefore both tools are designed
-	in a way that allows efficiently displaying such a file without requiring large
-	amounts of physical memory to load it at once. As you navigate through the file
-	physical memory is filled up with the content lazily. Since it is difficult to
-	reliably identify in a platform independent way when the system is going low on
-	physical memory it is left up to the user to release the allocated memory when
-	needed. This operation although usually not required at all is available from the
-	context menu as <guimenuitem>Release Memory</guimenuitem>. Executing it will not
-	affect the user interface in any way.
-      </para>
-      <para>
-	The eventlog file being loaded lazily (and optionally filtered) also means that
-	the exact number of events and rows it contains cannot be cheaply determined. This
-	affects the way scrollbars work in the lazy direction, horizontal for the Sequence
-	Chart and vertical for the Eventlog Table. Basically these scrollbars act as a non
-	linear approximation in that direction which most of the time remains unnoticable
-	for the user unless the file is really small.
+	Just like the Eventlog Table the Sequence Chart also supports bookmarks to make
+	navigation easier. Actually bookmarks are saved for the files rather than the
+	various editors therefore they are shared between them. The chart highlights
+	bookmarked events with a circle around them similarly to primary selection but
+	with a different color.
       </para>
     </sect2>
+    <commercial>
+      <sect2>
+	<title>Exporting</title>
+	<para>
+	  The Sequence Chart supports exporting continuous parts into SVG format for
+	  documentation purposes. This function is available from the context menu <icon
+	  name="export_wiz.gif"/>. You can export the whole Sequence Chart, a region
+	  between two selected events or the currently visible area.
+	</para>
+      </sect2>
+    </commercial>
     <sect2>
-      <title>Live Data</title>
+      <title>Filtering</title>
       <para>
-	Despite the simulation kernel keeps the eventlog file open for writing while the
-	simulation is running it may be opened in the OMNeT++ IDE simultaneously. Both
-	tools can be instructed by pressing the <keycap>END</keycap> key to follow the end
-	of the eventlog as new content is appended to it.
+	Filtering the Sequence Chart is also possible. This actually means that some of
+	the events are not displayed on the chart so that the user can focus on the
+	relevant parts. When filtering is turned on (displayed in the status line) some of
+	the message arrows might be decorated with a filter sign (a double zigzag crossing
+	the arrow line's center). Such a message arrow means that there is a message going
+	out from the source module which after some processing in some other filtered out
+	modules reaches the target module. The message name of the arrow in this case
+	corresponds to the first and the last message in the chain.
       </para>
-    </sect2>
-    <sect2>
-      <title>Long Running Operations</title>
+      <picture file="pictures/SequenceChart-ZigZagArrows.png">Zig zag arrows</picture>
       <para>
-	TODO
+	If events occured in a module are completely filtered out then the Sequence Chart
+	will not display the superfluous axis belonging to that module. This reduces the
+	number of axes and makes it easier to understand the figure. Moreover similarly to
+	the Eventlog Table subsequent events may not have subsequent event numbers which
+	means that the events in between have been filtered out. At the extreme the chart
+	may even become empty meaning that there are no matching events at all.
+      </para>
+      <para>
+	You can filter the Sequence Chart from the filter dialog or from the context menu
+	using the shortcuts provided for events and message sends under the mouse.
       </para>
     </sect2>
   </sect1>
@@ -164,8 +665,8 @@
       <para>
 	There are three different ways to display names in the Eventlog table configurable
 	by the <guilabel>Name Mode</guilabel> <icon name="namemode.gif"/> option. Full
-	path and full name shows what is expected while the smart mode uses the context
-	where the line is to decide whether a full path or a full name should be
+	path and full name shows what you would expect while the smart mode uses the
+	context where the line is to decide whether a full path or a full name should be
 	displayed. For each event line it always uses the full path and for all other
 	lines if the name is the same as the enclosing event's module name then it shows
 	the full name only.
@@ -183,13 +684,13 @@
       <title>Line Filter</title>
       <para>
 	The Eventlog Table may be filtered by using the <guilabel>Line Filter</guilabel>
-	<icon name="filter.png"/> selector on the toolbar or from the context menu which
-	allows filtering lines with specific kinds. There are some predefined filters but
-	also custom filter patterns may be specified referring to fields present in
-	the <guilabel>Raw</guilabel> mode. The following is a custom filter example which
-	shows message sends where the class of the message is AirFrame.
-	<screen>BS and c(AirFrame)</screen>
-	See the OMNeT++ User Manual for more details on match expressions.
+	<icon name="LineFilterMode.png"/> selector available on the toolbar or from the context
+	menu. This option allows filtering lines for specific kinds. There are some
+	predefined filters but you can also provide custom filter patterns referring to
+	fields present in the <guilabel>Raw</guilabel> mode. The following is a custom
+	filter example which will show message sends where the message's class is
+	AirFrame. <screen>BS and c(AirFrame)</screen> See the OMNeT++ User Manual for
+	more details on match expressions.
       </para>
       <note>
 	Event lines marked with green circles <icon name="event.png"/> are always shown in
@@ -205,21 +706,21 @@
       </para>
       <para>
 	The simplest are the <guilabel>Goto Event</guilabel> and the <guilabel>Goto
-	Simulation Time</guilabel> which simply jump to given location.
+	Simulation Time</guilabel> which simply jump to the given location.
       </para>
       <para>
-	There are navigation options to go to the previous (<keycap>ALT + UP ARROW</keycap>)
-	or next (<keycap>ALT + DOWN ARROW</keycap>) event in general and to go to the previous
-	(<keycap>SHIFT + UP ARROW</keycap>) or next (<keycap>SHIFT + DOWN ARROW</keycap>)
+	There are navigation options to go to the previous (<keycap>ALT+UP</keycap>) or
+	next (<keycap>ALT+DOWN</keycap>) event in general and to go to the previous
+	(<keycap>SHIFT+UP</keycap>) or next (<keycap>SHIFT+DOWN</keycap>)
 	event in the same module.
       </para>
       <para>
 	Some of the navigation options focus on the causes of events and consequences of
-	message sends. To go to the cause event press <keycap>CONTROL + UP ARROW</keycap>
-	and to go to the arrival of a message send press <keycap>CONTROL + DOWN ARROW</keycap>
+	message sends. To go to the cause event press <keycap>CTRL+UP</keycap>
+	and to go to the arrival of a message send press <keycap>CTRL+DOWN</keycap>
 	while the selection is on the message being sent.
       </para>
-      <picture file="pictures/EventlogTable-NavigationMenu.png">Context menu</picture>
+      <picture file="pictures/EventlogTable-NavigationMenu.png">Navigation context menu</picture>
     </sect2>
     <sect2>
       <title>Searching</title>
@@ -227,39 +728,40 @@
 	For performance reasons the search <icon name="Search.gif"/> function works
 	directly on the eventlog file and not the text displayed in the Eventlog table. It
 	means that some static text present in <guilabel>Descriptive</guilabel> mode
-	cannot be found. Usually it is easier to figure out what to search for
-	in <guilabel>Raw</guilabel> mode where the content of the eventlog file is
-	directly displayed. The search can work in both directions from the current
-	selection and be case insensitive. To repeat the last search use
-	the <guilabel>Find Next</guilabel> <icon name="SearchNext.gif"/> command.
+	cannot be found. Usually it is easier to figure out what to search for in
+	<guilabel>Raw</guilabel> mode where the eventlog's content file is directly
+	displayed. The search can work in both directions starting from the current
+	selection and may be case insensitive. To repeat the last search use the
+	<guilabel>Find Next</guilabel> <icon name="SearchNext.gif"/> command.
       </para>
     </sect2>
     <sect2>
       <title>Bookmarks</title>
       <para>
 	For easier navigation the Eventlog table supports navigation history accessible
-	from the standard IDE toolbar and bookmarks <icon name="bkmrk_nav.gif"/> available
-	from the context menu. Bookmarked events are highlighted with a different
-	background color.  
+	from the standard IDE toolbar and also bookmarks <icon name="bkmrk_nav.gif"/>
+	available from the context menu. Bookmarked events are highlighted with a
+	different background color.
       </para>
-      <picture file="pictures/EventlogTable-Bookmark.png">Bookmark</picture>
+      <picture file="pictures/EventlogTable-Bookmark.png">A bookmark</picture>
       <para>
-	Use the bookmark view to jump to bookmarks even after restarting the IDE.
+	Use the standard bookmark view to jump to bookmarks even after restarting the IDE.
       </para>
     </sect2>
     <sect2>
       <title>Tooltips</title>
       <para>
-	At the moment only the message send lines have tooltips but only if message detail
+	At the moment only the message send lines have tooltips and only if message detail
 	recording was configured for the simulation. In this case the tooltip will show
 	the recorded content of the message being sent.
       </para>
+      <picture file="pictures/EventlogTable-Tooltip.png">A message send tooltip</picture>
     </sect2>
     <sect2>
       <title>Filtering</title>
       <para>
-	If the Eventlog Table displays a filtered eventlog then subsequent events may have
-	non subsequent event numbers which means that the events in between have been
+	If the Eventlog Table displays a filtered eventlog then subsequent events may not
+	have subsequent event numbers which means that the events in between have been
 	filtered out. At the extreme the table may even become empty meaning that there
 	are no matching events at all.
       </para>
@@ -267,230 +769,68 @@
   </sect1>
 
   <sect1>
-    <title>Sequence Chart</title>
-    <para>
-      The Sequence Chart also displays the content of an eventlog file focusing on the
-      causes and consequences of events and message sends recorded during the simulation.
-      It is also capable to display filtered eventlog files just like the Eventlog Table.
-    </para>
-    <sect2>
-      <title>Timeline</title>
-      <para>
-	The horizontal axis of the Sequence Chart corresponds to the simulation time in
-	four different ways. Linear and event number mean that the simulation time and
-	event number is proportional to the distance measured in pixels
-	respectively. While non linear and step mean that there is a non linear
-	transformation between distance measured in pixels and simulation time. The goal
-	of this non linear transformation is to get a compact figure even if there are
-	longer and shorter periods of simulation time intervals between events. You can
-	switch between <guilabel>Timeline Mode</guilabel>s <icon name="timelinemode.png"/>
-	from the toolbar or the context menu.
-      </para>
-      <para>
-	The <guilabel>Custom nonlinear</guilabel> timeline mode might be useful when the
-	automatic mode does not work well. The best practice is to switch to
-	<guilabel>Nonlinear</guilabel> mode first and then to <guilabel>Custom
-	nonlinear</guilabel> so that the chart will continuously refresh during changing
-	the parameters. At the extreme you can set the parameters so that the nonlinear
-	mode becomes equivalent to linear or step.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Zero Simulation Time Regions</title>
-      <para>
-	It is quite common in simulation models that multiple events occur at the very
-	same simulation time possibly in different modules. A region with gray background
-	color indicates that the simulation time does not change along the horizontal axis
-	within the area.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Module Axes</title>
-      <para>
-	The vertical axis of the Sequence Chart corresponds to single or compound modules
-	in the simulation. By default all single modules are displayed as a single solid
-	line and events occurred in that module are shown as filled circles on that
-	line. A green circle represents the processing of a self message while a red
-	circle is an event caused by receiving a message from another module. Axes can be
-	reordered with the option <guilabel>Axis Ordering Mode</guilabel>
-	<icon name="axisordering.gif"/> manually, by module name, by module id or by
-	(approximately) minimizing the number of crossing arrows between them.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Gutter</title>
-      <para>
-	Both the top and the bottom of the Sequence Chart display the simulation times
-	corresponding to the currently visible part. The left side of the top simulation
-	time gutter displays the common simulation time prefix which should be added to
-	each individual simulation time shown at the vertical hairlines. The right side of
-	the figure displays the simulation time range currently visible within the
-	sequence chart window. To see what the simulation time at a specific point on the
-	chart move the mouse there and read the value horizontally aligned with the mouse
-	on the gutter.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Messages</title>
-      <para>
-	The Sequence Chart represents message sends via blue arrows. The arrow starts at
-	the module which is sending the message and ends at the module which processed
-	that message. The simulation times of the start and end points of the arrow
-	correspond to the sender and receiver events.
-      </para>
-      <para>
-	When a message arrives to a module which neither deletes nor sends but rather
-	stores it in some internal state and later on sends the very same message to
-	another module then the events where the message arrived and where the message was
-	actually sent are in a so called message reuse relationship. This is represented
-	by a green arrow between the two events. These arrows are not shown by default due
-	to timer self messages usually being reused continuously and adding unnecessary
-	noise to the chart. Use <guilabel>Show Reuse Messages</guilabel> <icon
-	name="reusearrows.png"/> on the toolbar or the context menu to show or hide these
-	arrows.
-      </para>
-      <para>
-	Sometimes depending on the zoom factor a message send goes far away on the figure
-	in which case the line is broken into two smaller parts displayed at the two ends
-	pointing towards each other but without actually linked with a continuous
-	line. One of both arrow piece's end is dotted and the other end is solid line. The
-	one which is solid always exactly points to or from the event it is really
-	connected to. The other one which is dotted either specifies only the module where
-	the arrow really starts or ends or in case of self message it just points towards
-	the other arrow.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Attaching Vectors</title>
-      <para>
-	It is possible to attach Vector data to individual axes from the context menu by
-	right clicking on the desired axis and selecting <guilabel>Attach Vector to
-	Axis</guilabel> from the corresponding submenu. In this case the solid line of the
-	axis will be turned into a thick bar with coloring based on the values present in
-	the vector. If the vector is of type enum and its names have been registered with
-	the C++ macro Register_Enum then the chart will display those names inside the
-	bar. Otherwise it will simply display the value as a number. The background
-	coloring for the thick bar is automatically either based on the enumeration member
-	or alternating for other types.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Zooming</title>
-      <para>
-	To zoom in or out along the timeline use the <guilabel>Zoom</guilabel>guilabel>
-	<icon name="zoomplus.png"/> <icon name="zoomminus.png"/> commands from the
-	toolbar. To decrease or increase the distance between the axes use the
-	<guilabel>Spacing</guilabel> <icon name="incr_spacing.png"/> <icon
-	name="decr_spacing.png"/> commands.
-	<note>
-	  When zooming out more events and messages become visible on the chart making it
-	  slower while zooming in more message lines break making it less informative. Try
-	  to keep a reasonable zoom level.
-	</note>
-      </para>
-    </sect2>
-    <sect2>
-      <title>Navigation</title>
-      <para>
-	To scroll the Sequence Chart either use the scroll bars, drag with the mouse or
-	scroll with the mouse wheel using the <keycap>SHIFT</keycap> modifier for
-	horizontal scroll.
-      </para>
-      <para>
-	There are navigation options to go to the previous (<keycap>SHIFT + LEFT
-	ARROW</keycap>) or next (<keycap>SHIFT + RIGHT ARROW</keycap>) event in the same
-	module.
-      </para>
-      <para>
-	Similarly to the Eventlog Table to go to the cause event press <keycap>CONTROL +
-	LEFT ARROW</keycap> and to go to the arrival of a message send press
-	<keycap>CONTROL + RIGTH ARROW</keycap> while an event is selected.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Tooltips</title>
-      <para>
-	The Sequence Chart displays tooltips for axes, events, message sends and
-	resuses. Sometimes when the chart is zoomed out it might show multiple tooltips at
-	once because there are multiple things under the mouse. To measure the simulation
-	time difference between two events select one of them and stay at the other to
-	display the tooltip.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Bookmarks</title>
-      <para>
-	Just like the Eventlog Table the Sequence Chart also supports bookmarks to make
-	navigation easier. Actually bookmarks are saved for the files rather than the
-	various editors therefore they are shared between them.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Exporting</title>
-      <para>
-	The Sequence Chart supports documentation purposes by being able to export
-	continuous parts into SVG format. There are three ways to do it, either the whole
-	Sequence Chart, between two selected events or the currently visible are can be
-	exported from the context menu.
-      </para>
-    </sect2>
-    <sect2>
-      <title>Filtering</title>
-      <para>
-	Filtering the Sequence Chart is also possible. This actually means that some of
-	the events are not displayed on the chart so that the user can focus on the
-	relevant parts. When filtering is turned on (displayed in the status line) some of
-	the message arrows might be decorated with a filter sign (a double zigzag crossing
-	the arrow line's center). Such a message arrow means that there is a message going
-	out from the source module which after some processing in some other filtered out
-	modules reaches the target module. The message names correspond to the first and
-	the last message in the chain of filtered message sends.
-      </para>
-    </sect2>
-  </sect1>
-
-  <sect1>
-    <title>Filter Tool</title>
+    <title>Filtering</title>
     <para>
       The content of an eventlog file may be filtered in memory on the fly by opening the
-      filter configuration dialog and applying it.
+      filter configuration dialog <icon name="Filter.png"/> and applying it. The result is
+      another eventlog resident in memory where some events are filtered out.
+      <note>
+	Similarly to the command line Eventlog Tool described in the OMNeT++ 4.0 Manual
+	the in memory filtering can also only filter out whole events.
+      </note>
     </para>
     <para>
-      In memory on the fly filtering means that the result of the filter is not saved into
-      an eventlog file but it is rather lazily computed and stored within memory. This
-      allows rapid switching between various views on the same eventlog data within both
-      the Sequence Chart and the Eventlog Table.
+      In memory on the fly filtering means that the filter's result is not saved into an
+      eventlog file but it is rather lazily computed and stored within memory. This allows
+      rapid switching between various views on the same eventlog data within both the
+      Sequence Chart and the Eventlog Table.
     </para>
     <para>
       The filter configuration dialog has many options organized into a tree each
-      restricting the content of the eventlog on its own. The individual components may be
+      restricting the eventlog's content on its own. The individual components may be
       turned on and off independently of each other.
     </para>
-    <sect2>
-      <title>Collection limits</title>
-      <para>
-	TODO
-      </para>
-    </sect2>
+    <para>
+      The combination of various filter options is non trivial. To make it less confusing
+      the filter dialog automatically displays the current filter in a textual form at the
+      bottom.
+    </para>
     <sect2>
       <title>Range filter</title>
       <para>
-	This filter is the simplest one which filters out events from the beginning and
-	from the end of the eventlog file. This might help to reduce the computation time
-	when defining filters which otherwise would be very expensive to compute for the
-	whole eventlog.
+	This is the simplest one which filters out events from the beginning and from the
+	end of the eventlog. It might help to reduce the computation time when defining
+	filters which otherwise would be very expensive to compute for the whole eventlog
+	file.
       </para>
     </sect2>
     <sect2>
       <title>Module filter</title>
       <para>
-	TODO
+	With this filter you can filter out events that did not occur in any of the
+	specified modules. The modules which will be included in the result can be
+	selected by NED type, full path, module id or by a match expression. The
+	expression may refer to data present in the lines marked with 'MC' in the eventlog
+	file.
       </para>
     </sect2>
     <sect2>
       <title>Message filter</title>
       <para>
-	TODO
+	This filter is the most complicated one. It allows filtering for events which
+	either process or send specific messages. The messages can be selected based on
+	their C++ class name, message name, various message ids and a match expression.
+	The expression may refer to data present in the lines marked with 'BS' in the
+	eventlog file.
+      </para>
+      <para>
+	There are four different message ids to filter for each with different
+	characteristics. The most basic one is the id which is unique for each constructed
+	message independently of how it was created. The tree id is special in that it
+	gets copied over when a message is created by copying another. The encapsulation
+	id is different in that it gives the id of the innertmost encapsulated
+	message. Finally the encapsulation tree id combines the two by providing the
+	innermost encapsulated message's tree id.
       </para>
     </sect2>
     <sect2>
@@ -505,8 +845,116 @@
       <note>
 	Since computing the causes and consequences far away in the log file from the
 	traced event might be a time consuming task therefore there are extra limits
-	around the traced event to be set.
+	around the traced event to be set. These limits are separate from the range filter
+	due to being linked to the traced event. It is strongly recommended to provide
+	limits when tracing events to avoid long running operations.
       </note>
+    </sect2>
+    <sect2>
+      <title>Collection limits</title>
+      <para>
+	When an in memory filter is applied to an eventlog it does not only filter out
+	whole events but provide automatic discovery for message dependency chains. It
+	means that two events far away and not directly related to each other will have a
+	virtual message send (or reuse) dependency between them if there is a path of
+	message sends (and reuses) connecting the two. The process of collecting these
+	virtual dependencies is time consuming and has to be limited. There are two
+	options one of which limits the number of virtual message dependencies per event
+	and another which limits the depth to look at cause/consequence chains during
+	computing the filter's result.
+      </para>
+    </sect2>
+    <sect2>
+      <title>Long Running Operations</title>
+      <para>
+	Sometimes computing the filter's result takes a lot of time especially when
+	tracing causes/consequences without specifying proper range limits in terms of
+	event numbers or simulation times. If you canel the long running operation then
+	you can go back to the filter dialog to modify the filter parameters or simply
+	turn it off and restart drawing. Providing a proper range filter is always a good
+	idea to speed up computing the filter's result.
+      </para>
+    </sect2>
+  </sect1>
+
+  <sect1>
+    <title>Features</title>
+    <para>
+      There are two tools called the Sequence Chart and the Eventlog Table (often just
+      referred as tools in the rest of this chapter) in the OMNeT++ IDE to inspect the
+      contents of an eventlog file. Both tools can be used as an editor and a view. The
+      difference between being an editor or a view is quite important from the user's
+      point of view, because there is only at most one instance of a view of the same
+      kind. It means that even if multiple eventlog files are open in editors there are no
+      more than one Eventlog Table view shared between them. This singleton view will
+      automatically display the eventlog file of the active editor, and remember its
+      position and state when switching among editors back and forth. For more details on
+      what an editor and a view is and what are the differences see the Eclipse
+      documentation.
+    </para>
+    <para>
+      It is possible to open the same eventlog file in multiple editors and to navigate to
+      different locations or use different filters in them. Once an eventlog is open in an
+      editor, you can use the <guimenuitem>Window|New Editor</guimenuitem> to open it
+      again.
+      <note>
+	Dragging one of the editors from the tabbed pane to one of the editor's sides area
+	allows to interact with the two simultaneously.
+      </note>
+    </para>    
+    <sect2>
+      <title>Settings</title>
+      <para>
+	There are various settings for both tools which affect the display such as display
+	modes, content position, filtering, etc. These user specified settings are
+	automatically saved for each file and reused whenever the file is visited again.
+	TODO: if you delete the file at ... resets state
+      </para>
+    </sect2>
+    <sect2>
+      <title>Large File Support</title>
+      <para>
+	Since an eventlog file might be several Gbytes therefore both tools are designed
+	in a way that allows efficiently displaying such a file without requiring large
+	amounts of physical memory to load it at once. As you navigate through the file
+	physical memory is filled up with the content lazily. Since it is difficult to
+	reliably identify in a platform independent way when the system is going low on
+	physical memory it is left up to the user to release the allocated memory when
+	needed. This operation although usually not required at all is available from the
+	context menu as <guimenuitem>Release Memory</guimenuitem>. Executing it will not
+	affect the user interface in any way.
+      </para>
+      <para>
+	The eventlog file being loaded lazily (and optionally filtered) also means that
+	the exact number of events and rows it contains cannot be cheaply determined. This
+	affects the way scrollbars work in the lazy direction, horizontal for the Sequence
+	Chart and vertical for the Eventlog Table. Basically these scrollbars act as a non
+	linear approximation in that direction which most of the time remains unnoticable
+	for the user unless the file is really small.
+      </para>
+    </sect2>
+    <sect2>
+      <!-- TODO: running simulation -->
+      <title>Live Data</title>
+      <para>
+	Despite the simulation kernel keeps the eventlog file open for writing while the
+	simulation is running it may be opened in the OMNeT++ IDE simultaneously. Both
+	tools can be instructed by pressing the <keycap>END</keycap> key to follow the
+	eventlog's end as new content is appended to it.
+      </para>
+    </sect2>
+    <sect2>
+      <!-- note? caveats -->
+      <title>Long Running Operations</title>
+      <para>
+	Sometimes drawing the Sequence Chart may take a lot of time. Zooming out too much
+	for example might result in slow response times. A dialog might pop up telling
+	that a long running eventlog operation is in progress. You can safely cancel these
+	operations at any time you like or just wait until they finish. To restart the
+	rendering simply press the refresh button <icon name="refresh.gif"/> on the
+	toolbar.
+      </para>
+      TODO: sometime a long running operation is a sign of a problem and should be reported
     </sect2>
   </sect1>
 
