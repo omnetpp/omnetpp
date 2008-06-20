@@ -157,13 +157,13 @@
 	<guilabel>Show Reuse Messages</guilabel> from the context menu. It will display a
 	couple of green dotted arrows one of which is from <eventnumber>12</eventnumber>
 	to <eventnumber>17</eventnumber>. This arrow represents a message reuse that is
-	the job got at <eventnumber>12</eventnumber> is sent out from the queue at
-	<eventnumber>17</eventnumber>. Notice that the message that was already in the
-	queue when the queue got this one will be sent out earlier at
+	the job got and enqueued at <eventnumber>12</eventnumber> is sent out from the
+	queue at <eventnumber>17</eventnumber>. Notice that the message that was already
+	in the queue when the queue got this one will be sent out earlier at
 	<eventnumber>13</eventnumber>.
       </para>
       <picture file="pictures/SequenceChart-Examples-FIFOReuse.png">
-	Showing message reuses
+	Showing reuse messages
       </picture>
       <para>
 	There are a couple of green dotted arrows with a somewhat different meaning such
@@ -171,7 +171,7 @@
 	<eventnumber>6</eventnumber>. These represent the fact that the queue reuses
 	(instead of recreating it) the timer message each time it gets a job when it is
 	empty. In other words the timer self message is more or less remembered just like
-	normal jobs which are enqueued but in a separate member variable in the queue's
+	normal jobs which are enqueued, but in a separate member variable in the queue's
 	C++ implementation.
       </para>
       <para>
@@ -182,10 +182,10 @@
 	you will see zig zag arrows going from the 'source' to the 'sink'. These arrows
 	represent the fact that a message is being sent through the queue from 'source' to
 	'sink'. The first two arrows do not overlap in simulation time which means the
-	queue did not have more than one message at that time. On the other hand the third
-	and fourth arrows do overlap due to the fact that the forth job reached the queue
-	while it was busy with the third one. Scrolling forward you can find other places
-	where the queue becomes empty again.
+	queue did not have more than one message in it at that time. On the other hand the
+	third and fourth arrows do overlap due to the fact that the forth job reached the
+	queue while it was busy with the third one. Scrolling forward you can find other
+	places where the queue becomes empty and arrows do not overlap again.
       </para>
       <picture file="pictures/SequenceChart-Examples-FIFOFiltered.png">
 	Filtering the queue out
@@ -195,10 +195,23 @@
       <title>Routing</title>
       <para>
 	This example is available in the OMNeT++ installation under the directory
-	<filename>samples/routing</filename>.
+	<filename>samples/routing</filename>. The predefined configuration called Net10
+	specifies a network with 10 nodes each node having an application, a few queues
+	and a routing module inside. Three preselected nodes namely the node '1', '6' and
+	'8' are destinations while any node can be a source. The routing module uses the
+	shortest path algorithm to find the route to the destination. The goal in this
+	example is to create a sequence chart that shows messages which go in
+	simultaneously from multiple sources to their destinations.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-RoutingNetwork.png">
+	Network with 10 nodes
+      </picture>
+      <para>
+	Since we don't care about the details what happens within a node we can just turn
+	on filtering for the NED type
       </para>
       <picture file="pictures/SequenceChart-Examples-Routing.png">
-	Network with 10 nodes
+	Filtering for nodes
       </picture>
     </sect2>
     <sect2>
@@ -300,7 +313,8 @@
 	  <eventnumber>183</eventnumber> while generating the ping reply message in
 	  host0. And finally you can get a quick grasp about the timings of IEEE 802.11 in
 	  linear timeline mode <icon name="timelinemode.png"/> where the figure changes
-	  drammaticaly (scroll and zoom in/out if needed).
+	  drammaticaly (scroll and zoom in/out if needed) showing how useful the nonlinear
+	  mode is.
 	</para>
 	<commercial>
 	  <para>
