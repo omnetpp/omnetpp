@@ -117,7 +117,7 @@ proc create_omnetpp_window {} {
 
     # File menu
     foreach i {
-      {command -command new_run -label {Set up a run...} -underline 7}
+      {command -command new_run -label {Set up a configuration...} -underline 7}
       {command -command new_network -label {Set up a network...} -underline 7}
       {separator}
       {command -command load_nedfile -label {Load NED file...} -underline 0}
@@ -272,7 +272,7 @@ proc create_omnetpp_window {} {
     }
 
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
-    set help_tips(.toolbar.newrun)  {Set up a run}
+    set help_tips(.toolbar.newrun)  {Set up an inifile configuration}
     set help_tips(.toolbar.copy)    {Copy selected text to clipboard (Ctrl+C)}
     set help_tips(.toolbar.save)    {Save window contents to file}
     set help_tips(.toolbar.newnet)  {Set up a network}

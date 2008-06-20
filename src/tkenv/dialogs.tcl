@@ -75,7 +75,7 @@ proc comboSelectionDialog {title text label variable list} {
 #
 proc runSelectionDialog {configname_var runnumber_var} {
     set w .runseldialog
-    createOkCancelDialog $w "Set up Run"
+    createOkCancelDialog $w "Set up an Inifile Configuration"
 
     upvar $configname_var configname
     upvar $runnumber_var  runnumber
@@ -105,7 +105,7 @@ proc runSelectionDialog {configname_var runnumber_var} {
             set configname [lindex $configlist 0]
         }
 
-        label $w.f.m -anchor w -justify left -text "Set up one of the runs defined in omnetpp.ini."
+        label $w.f.m -anchor w -justify left -text "Set up one of the configurations defined in omnetpp.ini."
         label-combo $w.f.c "Config name:" $configlist $configname
         label-combo $w.f.c2 "Run number:" {} $runnumber
         pack $w.f.m -fill x -padx 2 -pady 2 -side top
