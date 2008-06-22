@@ -22,7 +22,7 @@ read WAIT
 nedtool -P @nedfiles.lst || exit 1
 
 echo <<__END__
-NED files has been converted.
+NED files have been converted.
 
 Since there were semantic changes in the NED language, there are details
 that could not be converted automatically. Please revise the following:
