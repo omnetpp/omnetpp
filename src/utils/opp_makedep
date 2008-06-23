@@ -258,15 +258,24 @@ if ($UseStdout) {
 }
 exit(0);
 
+
+sub scan {
+   local($filename) = @_ ;
+   %recursedFiles = ();
+   $result = &do_scan($filename);
+   die if %recursedFiles;  # must be empty again
+   return $result;
+}
+
 #
-# scan
+# do_scan
 #
 #       This function is the guts of the dependency generation.
 #  It is a recursive function that searches for #include's in
 #  the file list.  If it runs into an include file, it then opens that file to
 #  search for more #include's.
 #
-sub scan {
+sub do_scan {
    local( $filename ) = @_ ;
    local( $included, $found, $_ );
    local( @list ) = ();
@@ -362,8 +371,12 @@ sub scan {
        }
 
        # scan through each of the files that turned up
-       for ( @list ) {
-          push(@result, @{ &scan( $_ ) } );
+       foreach my $i (@list) {
+           if (!$recursedFiles{$i}) { # guard against include cycles
+               $recursedFiles{$i} = 1;
+               push(@result, @{ &do_scan($i) } );
+               delete $recursedFiles{$i};
+           }
        }
 
        # throw out duplicates
@@ -384,18 +397,18 @@ sub scan {
 #
 sub exists {
    local($filename) = @_;
-   return 1 if (-e $filename);
+   return 1 if (-f $filename);
 
    # for *_m.h files, pretend that the file exists if the corresponding .msg file exists
    if ($filename =~ /${MsgHSuffix}$/) {
        my $msgfilename = $filename;
        $msgfilename =~ s/${MsgHSuffix}$/${MsgSuffix}/;
-       return 1 if (-e $msgfilename);
+       return 1 if (-f $msgfilename);
    }
    elsif ($filename =~ /${MsgCCSuffix}$/) {
        my $msgfilename = $filename;
        $msgfilename =~ s/${MsgCCSuffix}$/${MsgSuffix}/;
-       return 1 if (-e $msgfilename);
+       return 1 if (-f $msgfilename);
    }
    return 0;
 }

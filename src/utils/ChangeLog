@@ -1,34 +1,59 @@
-opp_makemake: generate one rule per .msg file. note: batch rules like
-    $(MSG_H_FILES) $(MSG_CC_FILES): $(MSGFILES)
-             $(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
-have been tries but do not work properly (nmake tends to recompile everything
-when any msg file changes)
+2008-06-23  Rudolf Hornig, Andras Varga
 
-added ln.c
-opp_test: 
- - each test gets its own directory
- - new section %includes -- it goes outside the C++ namespace (%global goes inside)  TODO add to the docu!!!
- - new entry %network: it sets the network name in the ini file, possibly in the generated ned files too
+	* opp_makedep: optimized by memoizing the result of header files scan
 
-opp_(n)makemake: unified unix and windows versions in a new template substitution
-based implementation
+	* opp_makedep: added -v, --verbose command-line option
 
-opp_(n)makemake: dropped -N option, and made dynamic NED loading the default
-opp_(n)makemake: default is linking with BOTH cmdenv and tkenv -- use -u runtime option to choose
-opp_makedep: --objdir option changed to --objprefix (also available as -P)
+	* opp_makedep: fix: it choked if there was a directory with the same
+	name as an included files (ie. #include <queue>, and a queue/ dir)
 
-opp_makemake option changes:
--b,--basedir ==> -P,--projectdir
-old -P option (opp_msgc windows export/import symbol) became -p
-added --nmake option
-added -M, --mode option
--c filename, --configfile filename option no longer exists, config file is found by calling opp_configfilepath
-removed -t,--importlib option, as plain -l does the job as well
-added -a,--make-lib option, which builds a static lib
-removed tstamp mechanism from opp_makemake (wasn't very useful)
-generates dependencies for msg files too, but expects _m.cc files on the command line for that!
+2008-06-15  Andras Varga
 
+	* opp_makemake: generate one rule per .msg file. note: batch rules like
+	    $(MSG_H_FILES) $(MSG_CC_FILES): $(MSGFILES)
+	    	$(MSGC{nmake?:/=\}) -s _m.{cc} $(MSGCOPTS) $(MSGFILES)
+	have been tries but do not work properly (nmake tends to recompile 
+	everything when any msg file changes)
 
+2008-06-15  Andras Varga
+
+	* added ln.c
+
+2008-06-01  Andras Varga
+
+	Summary of changes for the OMNeT++ 4.0 branch:
+
+	* opp_test: 
+	 - each test gets its own directory
+	 - new section %includes -- it goes outside the C++ namespace 
+	   (%global goes inside)  TODO add to the docu!!!
+	 - new entry %network: it sets the network name in the ini file, 
+	   possibly in the generated ned files too
+
+	* opp_(n)makemake: unified unix and windows versions in a new 
+	template substitution based implementation
+
+	* opp_(n)makemake: dropped -N option, and made dynamic NED loading 
+	the default
+
+	* opp_(n)makemake: default is linking with BOTH cmdenv and tkenv (pass
+	the -u option to simulation executables to choose Cmdenv or Tkenv)
+
+	* opp_makedep: --objdir option changed to --objprefix (also available 
+	as -P)
+
+	* opp_(n)makemake option changes:
+	  - renamed -b,--basedir to -P,--projectdir
+	  - old -P option (opp_msgc windows export/import symbol) became -p
+	  - added --nmake option
+	  - added -M, --mode option
+	  - the -c filename, --configfile filename option no longer exists, 
+	    config file is found by calling opp_configfilepath
+	  - removed -t,--importlib option, as plain -l does the job as well
+	  - added -a,--make-lib option, which builds a static lib
+	  - removed tstamp mechanism from opp_makemake (wasn't very useful)
+	  - generates dependencies for msg files too, but expects _m.cc files 
+	    on the command line for that!
 
 2006-10-21  ------ omnetpp-3.3 released ------
 
