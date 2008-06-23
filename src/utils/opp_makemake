@@ -587,6 +587,8 @@ sub isGoodDir($;$)
 # Newlines inside {...} are not permitted; this allows detecting errors caused
 # by misplaced braces. Also, nesting is not supported.
 #
+# Lines starting with ### treated as comments and will be removed from the output
+#
 sub substituteIntoTemplate($;$;$;$);
 sub substituteIntoTemplate($;$;$;$)
 {
@@ -715,6 +717,9 @@ sub substituteIntoTemplate($;$;$;$)
         }
     }
     $buf .= substr($template, $current);  # rest of the template
+    $buf =~ s/^[ \t]*###.*$//mg;     # remove comments
+    $buf =~ s/ +\n/\n/sg;            # remove spaces at line end
+    $buf =~ s/\n\n\n+/\n\n/sg;       # remove multiple empty lines
     return $buf;
 }
 
@@ -1175,7 +1180,7 @@ all: $(TARGET)
 {sharedlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@mkdir -p $O
-{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) {nmake?$(OMNETPP_LIBS)} {nmake_inlineend}
+{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} $(OBJS) $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) {nmake_inlineend}
 {staticlib:}$O/$(TARGET): $(OBJS) {submakedirs?submakedirs} $(EXTRA_OBJS) {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@mkdir -p $O

@@ -607,6 +607,8 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      *  
      * Newlines in the template should be represented by "\n" and not "\r\n", so you 
      * may need to preprocess the template by calling: template = template.replace("\r\n", "\n").
+     * 
+     * Lines starting with ### treated as comments and will be removed from the output
      */
     public static String substituteIntoTemplate(String template, Map<String, Object> map) {
         return substituteIntoTemplate(template, map, "{", "}");
@@ -726,7 +728,11 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
             }
         }
         buf.append(template.substring(current));  // rest of the template
-        return buf.toString();
+        String result = buf.toString();       
+        result = result.replaceAll("(?m)^[ \t]*###.*$", ""); // remove '###' lines
+        result = result.replaceAll(" +\n", "\n");
+        result = result.replaceAll("\n\n\n+", "\n\n");
+        return result;
     }
 
     // for substituteIntoTemplate()
