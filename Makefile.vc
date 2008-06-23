@@ -179,6 +179,16 @@ makefiles:
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f --deep && nmake -f Makefile.vc depend
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\queuenet && call opp_nmakemake -f -n
 
+# copy 3rd party DLLs to the bin directory
+copy-dlls: reminder
+	copy msys/bin/tcl84.dll bin
+	copy msys/bin/tclpip84.dll bin
+	copy msys/bin/tk84.dll bin
+	copy msys/bin/BLT24.dll bin
+	copy msys/bin/BLTlite24.dll bin
+	copy msys/bin/zlib1.dll bin
+	copy msys/bin/libxml2.dll bin
+
 reminder:
 !IF "$(TCL_LIBRARY)" == ""
 	@echo ***

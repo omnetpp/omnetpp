@@ -84,7 +84,7 @@ opp_run_executable: $O/opp_run$(EXE_SUFFIX)
 # opp_run is useless with static libs
 ifeq ("$(LIB_SUFFIX)","$(SHARED_LIB_SUFFIX)")
 $O/opp_run$(EXE_SUFFIX) : $O/opp_run.o $L/$(LIBNAME)$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -Wl,-rpath,. -o "$@" $O/opp_run.o -lenvir$D $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS)
+	$(CXX) $(LDFLAGS) -Wl,-rpath,. -o "$@" $O/opp_run.o $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS)
 	cp $O/opp_run$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 
 $O/opp_run.o : opp_run.cc

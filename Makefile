@@ -160,3 +160,18 @@ makefiles:
 	done
 	(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
 
+# copy 3rd party DLLs to the bin directory
+copy-mingw-dlls: copy-dlls
+	cp mingw/bin/libgcc_sjlj_1.dll bin
+	cp mingw/bin/libstdc++_sjlj_6.dll bin
+
+copy-dlls:
+	cp msys/bin/tcl84.dll bin
+	cp msys/bin/tclpip84.dll bin
+	cp msys/bin/tk84.dll bin
+	cp msys/bin/BLT24.dll bin
+	cp msys/bin/BLTlite24.dll bin
+	cp msys/bin/zlib1.dll bin
+	cp msys/bin/libxml2.dll bin
+
+
