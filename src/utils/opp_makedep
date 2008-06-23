@@ -63,6 +63,9 @@ Bug (feature): ignores #ifdefs altogether.
 # the #include syntax we are looking for
 $Syntax = '^\s*#\s*include\s+["<]([^">]*)([">])' ;
 
+# cache. key: filename (project relative), value: array of include files (with project relative path)
+$IncludeCache = ();
+
 # marker line in the makefile
 $Separator = '# DO NOT DELETE THIS LINE -- make depend depends on it.';
 
@@ -245,8 +248,7 @@ $Deps = "";
 for (@CFileList)
 {
     print "Processing $_...\n" if $Verbose;
-    @Includes = ();
-    &scan( $SourceDirectory.$_ );
+    my @Includes = @ {&scan( $SourceDirectory.$_ ) };
     $Deps .= &print_dep( $_, @Includes );
 }
 if ($UseStdout) {
@@ -269,100 +271,112 @@ sub scan {
    local( $included, $found, $_ );
    local( @list ) = ();
    local($IncludeDir);
+   local( @result);
 
-   my $txt = &read_file($filename);
-   if ($txt eq '-')
+   if (! $IncludeCache{$filename})
    {
-      # be more tolerant if filename contains wildcard (which means the shell couldn't expand it)
-      if ($filename =~ /[\*\?]/) {
-         print STDERR "opp_makedep: warning: unable to open $filename: $!\n";
-      } else {
-         print STDERR "opp_makedep: unable to open $filename: $!\n" ;
-         exit(2);
-      }
+       my $txt = &read_file($filename);
+       if ($txt eq '-')
+       {
+          # be more tolerant if filename contains wildcard (which means the shell couldn't expand it)
+          if ($filename =~ /[\*\?]/) {
+             print STDERR "opp_makedep: warning: unable to open $filename: $!\n";
+          } else {
+             print STDERR "opp_makedep: unable to open $filename: $!\n" ;
+             exit(2);
+          }
+       }
+
+       while ($txt =~ s/^\s*#\s*include\s+["<]([^">]*)([">])//m)
+       {
+           $included = $1;
+           $delim = $2;  # " or >
+
+           # try to find included file
+           undef $found;
+           if ( $included =~ /^\// )
+           {
+              # absolute path -- no search needed
+              if (&exists($included))
+              {
+                 $found = 1;
+              }
+           }
+           else
+           {
+              # filename only or relative path
+              # if quote delimited, try relative path from location of current file
+              if ($delim eq '"')
+              {
+                 $filename =~ /^(.*?)[^\/]*$/;
+                 $dir = $1;
+                 if (&exists($dir.$included))
+                 {
+                    $found = 1;
+                    $included = $dir.$included;
+                 }
+              }
+
+              # look for file in the search path
+              if (!defined($found))
+              {
+                 foreach $IncludeDir (@IncludePath)
+                 {
+                    if (&exists("$IncludeDir/$included"))
+                    {
+                       $found = 1;
+                       $included = "$IncludeDir/$included";
+                       last;
+                    }
+                 }
+              }
+           }
+
+           # if not found, either skip this file or raise error
+           if (!defined($found))
+           {
+              if ($IgnoreStdHeaders)
+              {
+                 next;
+              }
+              else
+              {
+                 print STDERR "opp_makedep: file not in include path: $included (use -Y to turn off this error)\n";
+                 exit(1);
+              }
+           }
+
+           # if found, see if it's already on the list
+           undef $found ;
+           for ($[ .. $#Includes)
+           {
+               $found = $_, last if ( $Includes[$_] eq $included );
+           }
+
+           # nope! put it on
+           if ( ! defined( $found ) )
+           {
+              push( @result, $included );
+              push( @list, $included );
+           }
+       }
+
+       # scan through each of the files that turned up
+       for ( @list ) {
+          push(@result, @{ &scan( $_ ) } );
+       }
+
+       # throw out duplicates
+       my %tmp;
+       foreach my $i (@result) {
+           $tmp{$i} = 1;
+       }
+       @result = keys(%tmp);
+
+       $IncludeCache{$filename} = [ @result ];
    }
 
-   foreach $_ (split ("\n", $txt))
-   {
-      if ( /${Syntax}/ )
-      {
-         $included = $1;
-         $delim = $2;  # " or >
-
-         # try to find included file
-         undef $found;
-         if ( $included =~ /^\// )
-         {
-            # absolute path -- no search needed
-            if (&exists($included))
-            {
-               $found = 1;
-            }
-         }
-         else
-         {
-            # filename only or relative path
-            # if quote delimited, try relative path from location of current file
-            if ($delim eq '"')
-            {
-               $filename =~ /^(.*?)[^\/]*$/;
-               $dir = $1;
-               if (&exists($dir.$included))
-               {
-                  $found = 1;
-                  $included = $dir.$included;
-               }
-            }
-
-            # look for file in the search path
-            if (!defined($found))
-            {
-               foreach $IncludeDir (@IncludePath)
-               {
-                  if (&exists("$IncludeDir/$included"))
-                  {
-                     $found = 1;
-                     $included = "$IncludeDir/$included";
-                     last;
-                  }
-               }
-            }
-         }
-
-         # if not found, either skip this file or raise error
-         if (!defined($found))
-         {
-            if ($IgnoreStdHeaders)
-            {
-               next;
-            }
-            else
-            {
-               print STDERR "opp_makedep: file not in include path: $included (use -Y to turn off this error)\n";
-               exit(1);
-            }
-         }
-
-         # if found, see if it's already on the list
-         undef $found ;
-         for ($[ .. $#Includes)
-         {
-             $found = $_, last if ( $Includes[$_] eq $included );
-         }
-
-         # nope! put it on
-         if ( ! defined( $found ) )
-         {
-            push( @Includes, $included );
-            push( @list, $included );
-         }
-      }
-   }
-
-   # scan through each of the files that turned up
-   for ( @list ) {
-      &scan( $_ );
-   }
+   return $IncludeCache{$filename};
 }
 
 #
@@ -394,6 +408,7 @@ sub read_file {
    local($filename) = @_;
    local($txt);
 
+   print "    Reading file: $filename \n";
    if (!open(INFILE, $filename)) {
        if ($filename =~ /${MsgHSuffix}$/) {
            # for *_m.h files, return the corresponding .msg file contents (which will be parsed for includes)
