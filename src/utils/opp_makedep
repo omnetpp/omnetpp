@@ -408,7 +408,7 @@ sub read_file {
    local($filename) = @_;
    local($txt);
 
-   print "    Reading file: $filename \n";
+   print "    Reading file: $filename \n" if $Verbose;
    if (!open(INFILE, $filename)) {
        if ($filename =~ /${MsgHSuffix}$/) {
            # for *_m.h files, return the corresponding .msg file contents (which will be parsed for includes)
