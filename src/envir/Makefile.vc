@@ -76,13 +76,13 @@ eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentri
 
 $O/envirbase.obj: eventlogwriter.h
 
-# default opp_run target - called only at the end once tkenv and cmdenv is done 
+# default opp_run target - called only at the end once tkenv and cmdenv is done
 opp_run_executable: $O/opp_run.exe
 
 # opp_run is useless with static libs
 !if "$(LIB_SUFFIX)"==".dll"
 $O/opp_run.exe : $O/opp_run.obj $O/$(LIBNAME)$(LIB_SUFFIX)
-	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/opp_run.obj $(O:/=\)\$(LIBNAME).lib $(ALL_ENV_LIBS) $(IMPLIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:"$@" $O/opp_run.obj /libpath:$L $(ALL_ENV_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 	copy $(O:/=\)\opp_run.exe $(OMNETPP_BIN_DIR:/=\)
 	-copy $(O:/=\)\opp_run.exe.manifest $(OMNETPP_BIN_DIR:/=\) 2>nul
 
