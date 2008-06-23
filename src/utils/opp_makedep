@@ -31,6 +31,7 @@ where possible options are:
   --msgccsuffix <msg-cc-file-suffix>
   --srcdir <source-directory>
   --objdirtree
+  -v
 
 <file_list> is a list of C/C++ files for which dependencies must be generated.
 
@@ -52,6 +53,7 @@ where possible options are:
  --objdirtree the object files are assumed to be in a similar directory
    structure as the sources (by default, they are assumed to be all in a
    single directory)
+ -v, --verbose  print progress information
 
 Bug (feature): ignores #ifdefs altogether.
 
@@ -100,6 +102,8 @@ $UseStdout = 0;
 # Name of the makefile in which the dependencies should be substituted
 $Makefile = "Makefile";
 
+# Whether to be verbose
+$Verbose = 0;
 
 #
 # If no args, print usage
@@ -198,6 +202,10 @@ while (@ARGV)
     {
         $SourceDirectory = shift @ARGV;
     }
+    elsif ($arg eq "-v" || $arg eq "--verbose")
+    {
+        $Verbose = 1;
+    }
     elsif ($arg =~ /^-/)
     {
         print STDERR "opp_makedep: warning: ignoring unknown option $arg (--help prints valid options)\n";
@@ -236,6 +244,7 @@ if ($#CFileList == -1)
 $Deps = "";
 for (@CFileList)
 {
+    print "Processing $_...\n" if $Verbose;
     @Includes = ();
     &scan( $SourceDirectory.$_ );
     $Deps .= &print_dep( $_, @Includes );
