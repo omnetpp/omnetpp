@@ -29,6 +29,8 @@ OBJS= $O/ievent.obj $O/ieventlog.obj $O/eventlogfacade.obj $O/eventlogtablefacad
       $O/messagedependency.obj $O/event.obj $O/eventlogentry.obj $O/eventlogentries.obj \
       $O/filteredevent.obj $O/filteredeventlog.obj $O/eventlogentryfactory.obj
 
+GENERATED_SOURCES= eventlogentries.cc eventlogentries.h eventlogfactory.cc
+
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DEVENTLOG_EXPORT
 !endif
@@ -75,11 +77,11 @@ $(OBJS) : $O
 $O $L:
 	md $(@:/=\)
 
-depend:
+depend: $(GENERATED_SOURCES)
 	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del -f eventlogentries.cc eventlogentries.h eventlogfactory.cc 2>nul
+	-del -f $(GENERATED_SOURCES) 2>nul
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 	-cd $(OMNETPP_BIN_DIR:/=\) && del /q eventlogtool.exe* 2>nul

@@ -4,9 +4,29 @@
 #
 #=====================================================================
 
+#=====================================================================
+#
+# Main targets
+#
+#=====================================================================
+
 ifeq ("$(MODE)","")
 all: allmodes
+else
+all: components
 endif
+
+allmodes:
+	$(MAKE) MODE=release
+	$(MAKE) MODE=debug
+
+components: base samples
+
+#=====================================================================
+#
+# Includes and basic checks
+#
+#=====================================================================
 
 include Makefile.inc
 
@@ -20,22 +40,6 @@ endif
 ifeq ("$(strip $(OMNETPP_LIB_DIR))","")
 $(error OMNETPP_LIB_DIR must be correctly set)
 endif
-
-#=====================================================================
-#
-# Main targets
-#
-#=====================================================================
-
-all: check-env components
-
-allmodes:
-	$(MAKE) MODE=debug
-	$(MAKE) MODE=release
-
-components: base samples
-
-
 #=====================================================================
 #
 # OMNeT++ components
@@ -62,9 +66,13 @@ layout eventlog scave nedxml sim envir cmdenv tkenv : common
 envir : sim
 tkenv cmdenv : envir
 tkenv : layout
-sim : nedxml
+sim : nedxml common
 $(SAMPLES) : makefiles base
+$(BASE) : check-env
 
+.PHONY: check-env cleanall depend makefiles clean apis docu tests all allmodes \
+        components base ui samples common layout eventlog scave nedxml sim \
+        envir cmdenv tkenv utils
 
 #
 # Core libraries and programs
@@ -101,7 +109,7 @@ docu:
 #
 # Test
 #
-tests: check-env base
+tests: base
 	cd $(OMNETPP_TEST_DIR) && $(MAKE)
 
 #=====================================================================
@@ -160,12 +168,10 @@ makefiles:
 	done
 	(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
 
-# copy 3rd party DLLs to the bin directory
-copy-mingw-dlls: copy-dlls
+# utility target to copy 3rd party DLLs to the bin directory on MINGW build
+copy-dlls: 
 	cp mingw/bin/libgcc_sjlj_1.dll bin
 	cp mingw/bin/libstdc++_sjlj_6.dll bin
-
-copy-dlls:
 	cp msys/bin/tcl84.dll bin
 	cp msys/bin/tclpip84.dll bin
 	cp msys/bin/tk84.dll bin

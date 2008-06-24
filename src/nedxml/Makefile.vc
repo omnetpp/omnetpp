@@ -35,7 +35,11 @@ OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj $O/nedexception.obj \
       $O/ned1.tab.obj $O/lex.ned1yy.obj \
       $O/msg2.tab.obj $O/lex.msg2yy.obj \
       $O/nedresourcecache.obj $O/nedtypeinfo.obj
-#       $O/nedtypeinfo2.obj
+
+GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \ 
+                  ned1.tab.h ned1.tab.cc lex.ned1yy.cc \ 
+                  ned2.tab.h ned2.tab.cc lex.ned2yy.cc \
+                  msg2.tab.h msg2.tab.cc lex.msg2yy.cc 
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DNEDXML_EXPORT
@@ -121,11 +125,11 @@ $O $L:
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
 
-depend:
+depend: $(GENERATED_SOURCES)
 	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del *.tab.* lex.*yy.* 2>nul
+	-del $(GENERATED_SOURCES) 2>nul
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 	-cd $(OMNETPP_BIN_DIR:/=\) && del /q nedtool.exe* opp_msgc opp_msgc.cmd 2>nul

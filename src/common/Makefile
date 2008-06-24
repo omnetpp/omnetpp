@@ -34,6 +34,9 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
       $O/enumstr.o
 
+GENERATED_SOURCES= expression.tab.h expression.tab.cc lex.expressionyy.cc \
+                   matchexpression.tab.h matchexpression.tab.cc 
+
 #
 # Automatic rules
 #
@@ -46,7 +49,7 @@ $O/%.o: %.cc
 #
 # Targets
 #
-all : $L/$(LIBNAME)$(LIB_SUFFIX) expression.tab.cc matchexpression.tab.cc
+all : $L/$(LIBNAME)$(LIB_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
@@ -69,115 +72,136 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 expression.tab.h expression.tab.cc : expression.y
 	$(YACC) -p expressionyy -b expression -d expression.y && mv expression.tab.c expression.tab.cc
 
-lex.expressionyy.cc: expression.lex expression.tab.cc
+lex.expressionyy.cc: expression.lex
 	$(LEX) -Pexpressionyy expression.lex && mv lex.expressionyy.c lex.expressionyy.cc
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
 	$(YACC) --no-lines -p matchexpressionyy -b matchexpression -d matchexpression.y && mv matchexpression.tab.c matchexpression.tab.cc
 
-matchexpressionlexer.cc : matchexpression.tab.cc
-
-depend:
+depend: $(GENERATED_SOURCES)
 	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc
 
 clean:
-	rm -f *.tab.* lex.*yy.*
+	rm -f $(GENERATED_SOURCES)
 	rm -rf $O
 	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.o: bigdecimal.cc \
-  opp_ctype.h \
   bigdecimal.h \
   commondefs.h \
+  opp_ctype.h \
   exception.h
 $O/commonutil.o: commonutil.cc \
   commonutil.h \
   commondefs.h \
   exception.h
 $O/displaystring.o: displaystring.cc \
-  opp_ctype.h \
-  displaystring.h \
-  stringutil.h \
-  commondefs.h \
   commonutil.h \
+  commondefs.h \
+  stringutil.h \
+  displaystring.h \
+  opp_ctype.h \
   exception.h
 $O/enumstr.o: enumstr.cc \
-  enumstr.h \
-  commondefs.h
-$O/exception.o: exception.cc \
-  exception.h \
-  commondefs.h
-$O/expression.o: expression.cc \
-  expression.h \
-  expressionyydefs.h \
   commondefs.h \
-  commonutil.h \
-  stringutil.h \
+  enumstr.h
+$O/exception.o: exception.cc \
+  commondefs.h \
   exception.h
-$O/fileglobber.o: fileglobber.cc \
-  fileglobber.h \
-  commondefs.h
-$O/filereader.o: filereader.cc \
+$O/expression.o: expression.cc \
   commonutil.h \
+  commondefs.h \
+  stringutil.h \
+  expressionyydefs.h \
+  exception.h \
+  expression.h
+$O/expression.tab.o: expression.tab.cc \
+  commonutil.h \
+  commondefs.h \
+  unitconversion.h \
+  stringutil.h \
+  expressionyydefs.h \
+  exception.h \
+  expression.h
+$O/fileglobber.o: fileglobber.cc \
+  commondefs.h \
+  fileglobber.h
+$O/filereader.o: filereader.cc \
   filereader.h \
-  exception.h \
-  commondefs.h
+  commonutil.h \
+  commondefs.h \
+  exception.h
 $O/fileutil.o: fileutil.cc \
-  opp_ctype.h \
-  fileutil.h \
+  commondefs.h \
   stringtokenizer.h \
-  exception.h \
-  commondefs.h
+  fileutil.h \
+  opp_ctype.h \
+  exception.h
 $O/fnamelisttokenizer.o: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
-  commondefs.h \
   commonutil.h \
+  commondefs.h \
   exception.h
 $O/lcgrandom.o: lcgrandom.cc \
+  commondefs.h \
   lcgrandom.h \
-  commondefs.h \
   exception.h
+$O/lex.expressionyy.o: lex.expressionyy.cc \
+  commonutil.h \
+  commondefs.h \
+  stringutil.h \
+  expression.tab.h \
+  expressionyydefs.h \
+  exception.h \
+  expression.h
 $O/linetokenizer.o: linetokenizer.cc \
-  exception.h \
+  commondefs.h \
   linetokenizer.h \
-  commondefs.h
+  exception.h
 $O/matchexpression.o: matchexpression.cc \
+  commonutil.h \
+  commondefs.h \
+  patternmatcher.h \
   matchexpression.h \
-  patternmatcher.h \
-  commonutil.h \
-  commondefs.h \
   exception.h
+$O/matchexpression.tab.o: matchexpression.tab.cc \
+  commondefs.h \
+  patternmatcher.h \
+  matchexpression.h \
+  exception.h \
+  matchexpressionlexer.h
 $O/matchexpressionlexer.o: matchexpressionlexer.cc \
-  stringutil.h \
-  matchexpressionlexer.h \
-  commondefs.h \
   commonutil.h \
-  exception.h
-$O/patternmatcher.o: patternmatcher.cc \
-  opp_ctype.h \
-  patternmatcher.h \
+  commondefs.h \
   stringutil.h \
   exception.h \
+  matchexpressionlexer.h \
+  matchexpression.tab.h
+$O/patternmatcher.o: patternmatcher.cc \
+  commonutil.h \
   commondefs.h \
-  commonutil.h
+  patternmatcher.h \
+  stringutil.h \
+  opp_ctype.h \
+  exception.h
 $O/stringpool.o: stringpool.cc \
-  stringpool.h \
-  commondefs.h
+  commondefs.h \
+  stringpool.h
 $O/stringtokenizer.o: stringtokenizer.cc \
-  stringtokenizer.h \
-  commondefs.h
+  commondefs.h \
+  stringtokenizer.h
 $O/stringutil.o: stringutil.cc \
   commonutil.h \
-  opp_ctype.h \
+  commondefs.h \
   stringutil.h \
   stringtokenizer.h \
-  commondefs.h \
+  opp_ctype.h \
   exception.h
 $O/unitconversion.o: unitconversion.cc \
-  opp_ctype.h \
-  stringutil.h \
-  unitconversion.h \
-  commondefs.h \
   commonutil.h \
+  commondefs.h \
+  unitconversion.h \
+  stringutil.h \
+  opp_ctype.h \
   exception.h

@@ -31,6 +31,9 @@ OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj \
       $O/enumstr.obj
 
+GENERATED_SOURCES= expression.tab.h expression.tab.cc lex.expressionyy.cc \ 
+                   matchexpression.tab.h matchexpression.tab.cc 
+
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DCOMMON_EXPORT
 !endif
@@ -47,7 +50,7 @@ COPTS= $(COPTS) -DCOMMON_EXPORT
 #
 # Targets
 #
-all : $O/$(LIBNAME)$(LIB_SUFFIX) expression.tab.cc matchexpression.tab.cc
+all : $O/$(LIBNAME)$(LIB_SUFFIX)
 
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
@@ -66,7 +69,7 @@ expression.tab.h expression.tab.cc : expression.y
 	copy expression.tab.c expression.tab.cc
 	del expression.tab.c
 
-lex.expressionyy.cc: expression.lex expression.tab.cc
+lex.expressionyy.cc: expression.lex
 	$(LEX:/=\) -Pexpressionyy expression.lex
 	$(FIXFLEX) lex.expressionyy.c
 	copy lex.expressionyy.c lex.expressionyy.cc
@@ -77,15 +80,6 @@ matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
 	copy matchexpression.tab.c matchexpression.tab.cc
 	del matchexpression.tab.c
 
-matchexpressionlexer.cc: matchexpression.tab.cc
-
-
-#lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h
-#	$(LEX:/=\) -Pmatchexpressionyy matchexpression.lex
-#	$(FIXFLEX) lex.matchexpressionyy.cc
-#	copy lex.matchexpressionyy.c lex.matchexpressionyy.cc
-#	del lex.matchexpressionyy.c
-
 $(OBJS): $O
 
 $O $L:
@@ -94,11 +88,11 @@ $O $L:
 doc:
 	$(DOXYGEN:/=\) doxy.cfg
 
-depend:
+depend: $(GENERATED_SOURCES)
 	$(MAKEDEPEND) -I. -fMakefile.vc -P^$O/ -- *.cc
 
 clean:
-	-del *.tab.* lex.*yy.* 2>nul
+	-del $(GENERATED_SOURCES) 2>nul
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 

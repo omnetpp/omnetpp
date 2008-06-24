@@ -85,6 +85,8 @@ IMPLIBS= $(IMPLIBS) $(MPI_LIBS)
 !endif
 !endif
 
+GENERATED_SOURCES= expr.tab.h expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.h
+
 #
 # Automatic rules
 #
@@ -140,11 +142,11 @@ $(OBJS): $O $O/netbuilder $O/parsim
 $O $O/netbuilder $O/parsim $L:
 	md $(@:/=\)
 
-depend:
+depend: $(GENERATED_SOURCES)
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -P^$O/ -- *.cc netbuilder/*.cc parsim/*.cc
 
 clean:
-	-del expr.tab.h expr.tab.cc lex.expryy.cc *_m.cc *_m.h
+	-del $(GENERATED_SOURCES) 2>nul
 	-rmdir /s /q $(O:/=\) 2>nul
 	-del /q $(L:/=\)\$(LIBNAME).* $(OMNETPP_LIB_DIR:/=\)\$(LIBNAME).* 2>nul
 

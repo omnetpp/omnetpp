@@ -81,6 +81,8 @@ COPTS += $(MPI_CFLAGS)
 endif
 endif
 
+GENERATED_SOURCES= expr.tab.h expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.h
+
 #
 # Automatic rules
 #
@@ -123,14 +125,14 @@ lex.expryy.cc: expr.lex expr.tab.h
 	$(LEX) -Pexpryy expr.lex
 	mv lex.expryy.c lex.expryy.cc
 
-depend:
+depend: $(GENERATED_SOURCES)
 	$(MAKEDEPEND) -I../../include -P\$$O/ -- *.cc netbuilder/*.cc parsim/*.cc
 
 sim_std_m.cc sim_std_m.h : sim_std.msg
 	$(MSGC) -Xnc -Xns sim_std.msg
 
 clean:
-	rm -f expr.tab.h expr.tab.cc lex.expryy.cc *_m.cc *_m.h
+	rm -f $(GENERATED_SOURCES)
 	rm -rf $O
 	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
 
