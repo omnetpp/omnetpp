@@ -27,6 +27,16 @@ NAMESPACE_BEGIN
 #pragma warning(push, 0)  // deprecation warnings inside the header
 #endif
 
+#if defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ >= 3
+// gcc-4.3.1 is broken: it insists on spitting out deprecation warnings for 
+// cLinkedList::Iterator when this header gets included anywhere, and
+// cannot be convinced otherwise. #pragma GCC diagnostic does not work.
+// So we better forget deprecation with that compiler.
+#define CLINKEDLIST_DEPRECATED
+#else
+#define CLINKEDLIST_DEPRECATED  _OPPDEPRECATED
+#endif
+
 /**
  * Use of this class is DISCOURAGED, it is provided for backward compatibility
  * only. Use std::deque or std::list instead.
@@ -41,7 +51,7 @@ NAMESPACE_BEGIN
  * @see Iterator
  * @ingroup Containers
  */
-class SIM_API _OPPDEPRECATED cLinkedList : public cOwnedObject
+class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
 {
     // a list elem
     struct Elem
@@ -51,13 +61,14 @@ class SIM_API _OPPDEPRECATED cLinkedList : public cOwnedObject
     };
 
   public:
+
     /**
      * Walks along a cLinkedList object. To examine each element in the list,
      * the Iterator class can be used. Once an Iterator object is created for the list,
      * the ++ and -- operators can be used to step from one element of
      * the list to the next/previous one.
      */
-    class _OPPDEPRECATED Iterator
+    class CLINKEDLIST_DEPRECATED Iterator
     {
       private:
         Elem *p;
