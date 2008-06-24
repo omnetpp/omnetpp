@@ -47,7 +47,7 @@ COPTS= $(COPTS) -DCOMMON_EXPORT
 #
 # Targets
 #
-all : $O/$(LIBNAME)$(LIB_SUFFIX)
+all : $O/$(LIBNAME)$(LIB_SUFFIX) expression.tab.cc matchexpression.tab.cc
 
 $O/$(LIBNAME).lib : $(OBJS) $L
 	$(AR) /out:"$@" $(OBJS)
@@ -66,7 +66,7 @@ expression.tab.h expression.tab.cc : expression.y
 	copy expression.tab.c expression.tab.cc
 	del expression.tab.c
 
-lex.expressionyy.cc: expression.lex expression.tab.h
+lex.expressionyy.cc: expression.lex expression.tab.cc
 	$(LEX:/=\) -Pexpressionyy expression.lex
 	$(FIXFLEX) lex.expressionyy.c
 	copy lex.expressionyy.c lex.expressionyy.cc
@@ -77,7 +77,7 @@ matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
 	copy matchexpression.tab.c matchexpression.tab.cc
 	del matchexpression.tab.c
 
-matchexpressionlexer.cc: matchexpression.tab.h
+matchexpressionlexer.cc: matchexpression.tab.cc
 
 
 #lex.matchexpressionyy.cc: matchexpression.lex matchexpression.tab.h

@@ -46,7 +46,7 @@ $O/%.o: %.cc
 #
 # Targets
 #
-all : $L/$(LIBNAME)$(LIB_SUFFIX)
+all : $L/$(LIBNAME)$(LIB_SUFFIX) expression.tab.cc matchexpression.tab.cc
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
@@ -69,13 +69,13 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 expression.tab.h expression.tab.cc : expression.y
 	$(YACC) -p expressionyy -b expression -d expression.y && mv expression.tab.c expression.tab.cc
 
-lex.expressionyy.cc: expression.lex expression.tab.h
+lex.expressionyy.cc: expression.lex expression.tab.cc
 	$(LEX) -Pexpressionyy expression.lex && mv lex.expressionyy.c lex.expressionyy.cc
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
 	$(YACC) --no-lines -p matchexpressionyy -b matchexpression -d matchexpression.y && mv matchexpression.tab.c matchexpression.tab.cc
 
-matchexpressionlexer.cc : matchexpression.tab.h
+matchexpressionlexer.cc : matchexpression.tab.cc
 
 depend:
 	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc
