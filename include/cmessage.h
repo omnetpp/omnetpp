@@ -496,7 +496,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cOwnedObject *addObject(cOwnedObject *p)  {getParList().add(p); return p;}
+    cObject *addObject(cObject *p)  {getParList().add(p); return p;}
 
     /**
      * Returns the object with the given name in the message's object list.
@@ -543,7 +543,7 @@ class SIM_API cMessage : public cOwnedObject
      *
      * @see getParList()
      */
-    cObject *removeObject(cOwnedObject *p)  {return getParList().remove(p);}
+    cObject *removeObject(cObject *p)  {return getParList().remove(p);}
     //@}
 
     /** @name Message encapsulation. */
