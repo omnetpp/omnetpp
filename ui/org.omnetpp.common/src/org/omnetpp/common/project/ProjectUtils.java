@@ -248,8 +248,13 @@ public class ProjectUtils {
         try {
             monitor.beginTask("Importing project", 100);
             project.create(description, new SubProgressMonitor(monitor, 30));
+            // XXX sometimes the natures on the project do not initialize correctly
+            // doing an open/close cycle helps the workspace to read the natures
+            // this is a HACK
+            project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 20));
+            project.close(new SubProgressMonitor(monitor, 20));
             if (open)
-                project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 70));
+                project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 30));
         } 
         catch (CoreException e) {
             throw new InvocationTargetException(e);
