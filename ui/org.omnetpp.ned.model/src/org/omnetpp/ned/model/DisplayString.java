@@ -358,7 +358,7 @@ public class DisplayString implements IDisplayString {
 	public float getAsFloat(Prop propName, float defValue) {
         try {
             String propValue = getAsString(propName);
-            return propValue == null ? defValue : Float.valueOf(propValue);
+            return StringUtils.isEmpty(propValue) ? defValue : Float.valueOf(propValue);
         } catch (NumberFormatException e) { }
         return defValue;
 	}
@@ -395,9 +395,8 @@ public class DisplayString implements IDisplayString {
 	}
 
     public int getRange(Float scale) {
-    	int range = unit2pixel(getAsFloat(DisplayString.Prop.RANGE, -1.0f), scale);
-    	if (range <= 0) range = -1;
-    	return range;
+    	float floatvalue = getAsFloat(DisplayString.Prop.RANGE, -1.0f);
+    	return (floatvalue <= 0) ? -1 : unit2pixel(floatvalue, scale);
     }
 
     public Point getLocation(Float scale) {
