@@ -31,7 +31,7 @@ OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj \
       $O/enumstr.obj
 
-GENERATED_SOURCES= expression.tab.h expression.tab.cc lex.expressionyy.cc \ 
+GENERATED_SOURCES= expression.tab.h expression.tab.cc lex.expressionyy.cc \
                    matchexpression.tab.h matchexpression.tab.cc 
 
 !if "$(LIB_SUFFIX)"==".dll"
@@ -98,21 +98,21 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/bigdecimal.obj: bigdecimal.cc \
-  opp_ctype.h \
   bigdecimal.h \
-  commondefs.h \
-  exception.h
-$O/commonutil.obj: commonutil.cc \
-  commonutil.h \
-  commondefs.h \
-  exception.h
-$O/displaystring.obj: displaystring.cc \
+  exception.h \
   opp_ctype.h \
-  displaystring.h \
-  stringutil.h \
+  commondefs.h
+$O/commonutil.obj: commonutil.cc \
+  exception.h \
   commondefs.h \
+  commonutil.h
+$O/displaystring.obj: displaystring.cc \
+  stringutil.h \
+  exception.h \
+  opp_ctype.h \
   commonutil.h \
-  exception.h
+  commondefs.h \
+  displaystring.h
 $O/enumstr.obj: enumstr.cc \
   enumstr.h \
   commondefs.h
@@ -120,98 +120,98 @@ $O/exception.obj: exception.cc \
   exception.h \
   commondefs.h
 $O/expression.obj: expression.cc \
-  expression.h \
   expressionyydefs.h \
-  commondefs.h \
-  commonutil.h \
   stringutil.h \
-  exception.h
-$O/expression.tab.obj: expression.tab.cc \
-  commonutil.h \
-  expressionyydefs.h \
   expression.h \
   exception.h \
-  stringutil.h \
+  commondefs.h \
+  commonutil.h
+$O/expression.tab.obj: expression.tab.cc \
+  expressionyydefs.h \
   unitconversion.h \
-  commondefs.h
+  stringutil.h \
+  expression.h \
+  exception.h \
+  commondefs.h \
+  commonutil.h
 $O/fileglobber.obj: fileglobber.cc \
   fileglobber.h \
   commondefs.h
 $O/filereader.obj: filereader.cc \
-  commonutil.h \
   filereader.h \
   exception.h \
-  commondefs.h
+  commondefs.h \
+  commonutil.h
 $O/fileutil.obj: fileutil.cc \
-  opp_ctype.h \
-  fileutil.h \
-  stringtokenizer.h \
   exception.h \
-  commondefs.h
+  fileutil.h \
+  opp_ctype.h \
+  commondefs.h \
+  stringtokenizer.h
 $O/fnamelisttokenizer.obj: fnamelisttokenizer.cc \
   fnamelisttokenizer.h \
+  exception.h \
   commondefs.h \
-  commonutil.h \
-  exception.h
+  commonutil.h
 $O/lcgrandom.obj: lcgrandom.cc \
   lcgrandom.h \
-  commondefs.h \
-  exception.h
+  exception.h \
+  commondefs.h
 $O/lex.expressionyy.obj: lex.expressionyy.cc \
-  expressionyydefs.h \
-  exception.h \
   expression.tab.h \
-  stringutil.h \
+  expressionyydefs.h \
   expression.h \
-  commondefs.h \
-  commonutil.h
-$O/linetokenizer.obj: linetokenizer.cc \
+  stringutil.h \
   exception.h \
+  commonutil.h \
+  commondefs.h
+$O/linetokenizer.obj: linetokenizer.cc \
   linetokenizer.h \
+  exception.h \
   commondefs.h
 $O/matchexpression.obj: matchexpression.cc \
-  matchexpression.h \
+  exception.h \
   patternmatcher.h \
-  commonutil.h \
   commondefs.h \
-  exception.h
+  commonutil.h \
+  matchexpression.h
 $O/matchexpression.tab.obj: matchexpression.tab.cc \
-  matchexpression.h \
+  exception.h \
   matchexpressionlexer.h \
   patternmatcher.h \
-  exception.h \
-  commondefs.h
+  commondefs.h \
+  matchexpression.h
 $O/matchexpressionlexer.obj: matchexpressionlexer.cc \
   stringutil.h \
-  matchexpression.tab.h \
+  exception.h \
   matchexpressionlexer.h \
   commondefs.h \
   commonutil.h \
-  exception.h
+  matchexpression.tab.h
 $O/patternmatcher.obj: patternmatcher.cc \
-  opp_ctype.h \
-  patternmatcher.h \
   stringutil.h \
   exception.h \
-  commondefs.h \
-  commonutil.h
+  patternmatcher.h \
+  opp_ctype.h \
+  commonutil.h \
+  commondefs.h
 $O/stringpool.obj: stringpool.cc \
   stringpool.h \
   commondefs.h
 $O/stringtokenizer.obj: stringtokenizer.cc \
-  stringtokenizer.h \
-  commondefs.h
+  commondefs.h \
+  stringtokenizer.h
 $O/stringutil.obj: stringutil.cc \
-  commonutil.h \
-  opp_ctype.h \
   stringutil.h \
+  exception.h \
+  opp_ctype.h \
+  commondefs.h \
   stringtokenizer.h \
-  commondefs.h \
-  exception.h
+  commonutil.h
 $O/unitconversion.obj: unitconversion.cc \
-  opp_ctype.h \
-  stringutil.h \
   unitconversion.h \
-  commondefs.h \
+  stringutil.h \
+  exception.h \
+  opp_ctype.h \
   commonutil.h \
-  exception.h
+  commondefs.h
