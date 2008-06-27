@@ -34,6 +34,12 @@ public class SubmoduleElementEx extends SubmoduleElement
 
     protected DisplayString displayString = null;
 
+    // cached return value of getNedTypeInfo()
+    private INEDTypeInfo cachedTypeInfo;
+
+    // the value of INEDTypeResolver.getLastChangeSerial() when cachedTypeInfo was calculated
+    private long cachedTypeInfoSerial; 
+
     protected SubmoduleElementEx() {
         init();
 	}
@@ -129,9 +135,14 @@ public class SubmoduleElementEx extends SubmoduleElement
 	}
 
 	public INEDTypeInfo getNEDTypeInfo() {
-    	INEDTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
-    	INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNEDElement();
-		return (typeElement instanceof IModuleKindTypeElement) ? typeInfo : null;
+	    if (cachedTypeInfoSerial != getDefaultNedTypeResolver().getLastChangeSerial()) {
+	        // determine and cache typeInfo
+	        INEDTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
+	        INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNEDElement();
+	        cachedTypeInfo = (typeElement instanceof IModuleKindTypeElement) ? typeInfo : null;
+	        cachedTypeInfoSerial = getDefaultNedTypeResolver().getLastChangeSerial(); 
+	    }
+	    return cachedTypeInfo;	        
     }
 
     public INedTypeElement getEffectiveTypeRef() {

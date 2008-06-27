@@ -623,7 +623,10 @@ public class GraphicalNedEditor
 
     // refresh the whole content plus the outline page and the palette too
     public void refresh() {
+        long startTime = System.currentTimeMillis();
         getGraphicalViewer().getContents().refresh();
+        System.out.println("Graphical Editor refresh: " + (System.currentTimeMillis()-startTime) + "ms");
+        
         paletteRefreshJob.restartTimer();
     }
 

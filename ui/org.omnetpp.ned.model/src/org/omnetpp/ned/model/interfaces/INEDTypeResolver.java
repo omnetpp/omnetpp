@@ -28,6 +28,13 @@ public interface INEDTypeResolver {
 	}
 
 	/**
+	 * Returns the current value of a counter that gets incremented by every 
+	 * NED change. Checking against this counter allows one to invalidate 
+	 * cached NED data whenever they potentially become stale.
+	 */
+    public long getLastChangeSerial();
+	
+	/**
 	 * INTERNAL Factory method, to be called from INedTypeElement constructors.
 	 */
 	public INEDTypeInfo createTypeInfoFor(INedTypeElement node);

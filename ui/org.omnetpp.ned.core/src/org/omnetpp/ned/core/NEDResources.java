@@ -77,11 +77,11 @@ import org.omnetpp.ned.model.pojo.NEDElementTags;
 //XXX remove "source" from plain NEDModelChangeEvent too (and turn "anything might have changed" event into a separate class)
 public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 
-    private boolean debug = false;
+    private boolean debug = true;
 
 	private static final String PACKAGE_NED_FILENAME = "package.ned";
     private static final String NED_EXTENSION = "ned";
-
+    
     // singleton instance
     private static NEDResources instance = null;
     // list of objects that listen on *all* NED changes
@@ -119,9 +119,13 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     // DO NOT SET THIS DIRECTLY! Use invalidate().
     private boolean needsRehash = false;
 
-    // We use this counter to increment whenever a rehash occurred. Checks can be made
+    // For debugging: We increment this counter whenever a rehash occurs. Checks can be made
     // to assert that the function is not called unnecessarily
     private int debugRehashCounter = 0;
+    
+    // every NED change increments this counter. Checking against this counter allows one to 
+    // invalidate cached NED data whenever they potentially become stale.
+    private long lastChangeSerial = 1;   
 
     // file element to contain built-in declarations (does not correspond to any physical file)
     private NedFileElementEx builtInDeclarationsFile;
@@ -129,7 +133,9 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     private boolean nedModelChangeNotificationDisabled = false;
 	private boolean refactoringInProgress = false;
 
-
+    // cache for the method lookupNedType(String name, INedTypeLookupContext lookupContext)
+    private Map<INedTypeLookupContext, Map<String, INEDTypeInfo>> nedTypeLookupCache = new HashMap<INedTypeLookupContext, Map<String,INEDTypeInfo>>();  
+	
     // utilities for predicate-based filtering of NED types using getAllNedTypes()
     public static class InstanceofPredicate implements IPredicate {
     	private Class<? extends INedTypeElement> clazz;
@@ -212,6 +218,19 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     	return null;
     }
 
+
+    public boolean isRefactoringInProgress() {
+        return refactoringInProgress;
+    }
+
+    public void setRefactoringInProgress(boolean refactoringInProgress) {
+        this.refactoringInProgress = refactoringInProgress;
+    }
+    
+    public long getLastChangeSerial() {
+        return lastChangeSerial;
+    }
+    
 	public INEDTypeInfo createTypeInfoFor(INedTypeElement node) {
 		return new NEDTypeInfo(node);
 	}
@@ -420,9 +439,25 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	}
 
     public synchronized INEDTypeInfo lookupNedType(String name, INedTypeLookupContext lookupContext) {
-		rehashIfNeeded();
+        // return cached value if exists, otherwise call doLookupNedType()
+        Map<String, INEDTypeInfo> map = nedTypeLookupCache.get(lookupContext);
+        if (map == null)
+            nedTypeLookupCache.put(lookupContext, map = new HashMap<String, INEDTypeInfo>());
+        INEDTypeInfo typeInfo = map.get(name);
+        // note: we need to distinguish between "null" meaning "not yet looked up", and
+        // "looked up but no such type" (represented as: no such key vs value is null)
+        if (typeInfo == null && !map.containsKey(name))
+            map.put(name, typeInfo = doLookupNedType(name, lookupContext));
+        return typeInfo;
+    }
+    
+    // Internal method of lookupNedType -- not to be called directly
+    protected INEDTypeInfo doLookupNedType(String name, INedTypeLookupContext lookupContext) {
+        rehashIfNeeded();
 		Assert.isTrue(lookupContext!=null, "lookupNedType() cannot be called with context==null");
-
+		
+		// if (debug) System.out.println("looking up: " + name + " in " + lookupContext.debugString());
+		
 	    // note: this method is to be kept consistent with NEDResourceCache::resolveNedType() in the C++ code
 	    // note2: partially qualified names are not supported: name must be either simple name or fully qualified
 		IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();
@@ -896,9 +931,11 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	}
 
 	public synchronized void invalidate() {
+	    lastChangeSerial++;
 		needsRehash = true;
+	    nedTypeLookupCache.clear();  
 
-		// invalidate all inherited members on all typeInfo objects
+	    // invalidate all inherited members on all typeInfo objects
         for (NedFileElementEx file : nedElementFiles.keySet())
             invalidateTypeInfo(file);
     }
@@ -1017,6 +1054,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
      * Respond to model changes
      */
     protected void nedModelChanged(NEDModelEvent event) {
+        
     	// System.out.println("**** nedModelChanged - notify");
         if (nedModelChangeNotificationDisabled)
             return;
@@ -1118,13 +1156,5 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
     				"  deps: " + StringUtils.join(projectData.referencedProjects, ",") +
     				"  nedfolders: " + StringUtils.join(projectData.nedSourceFolders, ","));
     	}
-	}
-
-	public boolean isRefactoringInProgress() {
-		return refactoringInProgress;
-	}
-
-	public void setRefactoringInProgress(boolean refactoringInProgress) {
-		this.refactoringInProgress = refactoringInProgress;
 	}
 }

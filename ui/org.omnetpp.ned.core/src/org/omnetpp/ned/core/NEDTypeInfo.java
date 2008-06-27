@@ -27,6 +27,7 @@ import org.omnetpp.ned.model.interfaces.INEDTypeInfo;
 import org.omnetpp.ned.model.interfaces.INEDTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.notification.NEDModelChangeEvent;
 import org.omnetpp.ned.model.notification.NEDModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.InterfaceNameElement;
@@ -39,6 +40,8 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  * @author rhornig, andras
  */
 public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementConstants {
+    private static boolean debug = false;
+    
 	protected INedTypeElement componentNode;
 
 	protected int debugId = lastDebugId++;
@@ -64,7 +67,7 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	protected Map<String, INEDElement> localMembers = new LinkedHashMap<String, INEDElement>();
 
 	// local plus inherited
-	protected boolean needsRefreshInherited;
+	protected boolean needsRefreshInherited; //XXX may be replaced with inheritedRefreshSerial, see INEDTypeResolver.getLastChangeSerial()
 	protected List<INEDTypeInfo> extendsChain = null;
 	protected Set<INedTypeElement> allInterfaces = new HashSet<INedTypeElement>();
 	protected Map<String, PropertyElementEx> allProperties = new LinkedHashMap<String, PropertyElementEx>();
@@ -281,7 +284,9 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
         //long startMillis = System.currentTimeMillis();
 
         ++debugRefreshInheritedCount;
-        // System.out.println("NEDTypeInfo for "+getName()+" inheritedRefresh: " + refreshInheritedCount);
+
+        if (debug)
+            System.out.println("NEDTypeInfo for "+getName()+" inheritedRefresh: " + debugRefreshInheritedCount);
 
         // first wee need our local members updated
         if (needsRefreshLocal)
@@ -333,7 +338,9 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	}
 
 	public void invalidate() {
-		//System.out.println(getName() +  ": invalidated *all* members (local+inherited)");
+	    if (debug)
+	        System.out.println(getName() +  ": invalidated *all* members (local+inherited)");
+	    
 		fullyQualifiedName = null;
         needsRefreshLocal = true;
 		needsRefreshInherited = true;
@@ -342,7 +349,9 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
 	}
 
 	public void invalidateInherited() {
-		//System.out.println(getName() +  ": invalidated inherited members");
+        if (debug)
+            System.out.println(getName() +  ": invalidated inherited members");
+        
 		fullyQualifiedName = null;
 		needsRefreshInherited = true;
 		allUsedTypes = null;
@@ -539,7 +548,8 @@ public class NEDTypeInfo implements INEDTypeInfo, NEDElementTags, NEDElementCons
     }
 
     public void modelChanged(NEDModelEvent event) {
-        invalidate();
+        if (event instanceof NEDModelChangeEvent)
+            invalidate();
     }
 
     public void debugDump() {
