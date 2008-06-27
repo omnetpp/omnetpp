@@ -69,6 +69,8 @@ Register_OmnetApp("Tkenv", Tkenv, 20, "graphical user interface");
 // -u _tkenv_lib (gcc) or /include:_tkenv_lib (vc++) in the link command.
 //
 extern "C" TKENV_API void tkenv_lib() {}
+// on some compilers (e.g. linux gcc 4.2) the functions are generated without _ 
+extern "C" TKENV_API void _tkenv_lib() {}
 
 
 // widgets in the Tk user interface

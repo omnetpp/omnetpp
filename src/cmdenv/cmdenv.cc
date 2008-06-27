@@ -63,6 +63,9 @@ Register_OmnetApp("Cmdenv", Cmdenv, 10, "command-line user interface");
 // -u _cmdenv_lib (gcc) or /include:_cmdenv_lib (vc++) in the link command.
 //
 extern "C" CMDENV_API void cmdenv_lib() {}
+// on some compilers (e.g. linux gcc 4.2) the functions are generated without _ 
+extern "C" CMDENV_API void _cmdenv_lib() {}
+
 
 static char buffer[1024];
 
