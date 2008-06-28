@@ -146,24 +146,38 @@ public class ProblemMarkerSynchronizer {
         }
     }
 
-	protected void addRemoveMarkers() throws CoreException {
+	@SuppressWarnings("unchecked")
+    protected void addRemoveMarkers() throws CoreException {
+    
 	    long startTime = System.currentTimeMillis();
 	    
 	    // process each file registered
 		for (IResource file : markerTable.keySet()) {
 			if (file.exists()) {
-				List<MarkerData> list = markerTable.get(file);
+			    // query existing markers
+			    Map<Map,IMarker> existingMarkerAttrs = new HashMap<Map, IMarker>();
+			    IMarker[] tmp = file.findMarkers(markerBaseType, true, 0);
+			    for (IMarker marker : tmp) {
+			        // must convert to HashMap, because MarkerAttributesMap calculates hashCode differently
+			        Map attrs = new HashMap();
+			        attrs.putAll(marker.getAttributes()); 
+			        existingMarkerAttrs.put(attrs, marker);
+			    }
 
+			    List<MarkerData> list = markerTable.get(file);
+			    Map<Map, MarkerData> newMarkerAttrs = new HashMap<Map, MarkerData>();
+			    for (MarkerData markerData : list)
+			        newMarkerAttrs.put(markerData.attrs, markerData);
+			        
 				// add markers that aren't on IResource yet
-				for (MarkerData markerData : list)
-					if (!fileContainsMarker(file, markerData))
-						createMarker(file, markerData);
+				for (Map newAttrs : newMarkerAttrs.keySet())
+					if (!existingMarkerAttrs.keySet().contains(newAttrs))  //FIXME or type not equal!
+						createMarker(file, newMarkerAttrs.get(newAttrs));
 
 				// remove IResource markers which aren't in our table
-				IMarker[] markers = file.findMarkers(markerBaseType, true, 0);
-				for (IMarker marker : markers)
-					if (!listContainsMarker(list, marker))
-						{marker.delete(); markersRemoved++;}
+                for (Map m : existingMarkerAttrs.keySet())
+                    if (!newMarkerAttrs.keySet().contains(m))  //FIXME or type not equal!
+						{existingMarkerAttrs.get(m).delete(); markersRemoved++;}
 			}
 		}
 
@@ -175,28 +189,6 @@ public class ProblemMarkerSynchronizer {
 		    else
 		        System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers, took "+millis + "ms");
 		}
-	}
-
-	protected boolean fileContainsMarker(IResource file, MarkerData markerData) throws CoreException {
-		IMarker[] markers = file.findMarkers(markerData.type, false, 0);
-		for (IMarker marker : markers)
-			if (markerAttributesAreEqual(marker.getAttributes(), markerData))
-				return true;
-		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected boolean listContainsMarker(List<MarkerData> list, IMarker marker) throws CoreException {
-		Map markerAttributes = marker.getAttributes();
-		for (MarkerData markerData : list)
-			if (markerAttributesAreEqual(markerAttributes, markerData))
-				return true;
-		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected boolean markerAttributesAreEqual(Map markerAttributes, MarkerData markerData) {
-		return markerAttributes.equals(markerData.attrs);
 	}
 
 	protected void createMarker(IResource file, MarkerData markerData) throws CoreException {
