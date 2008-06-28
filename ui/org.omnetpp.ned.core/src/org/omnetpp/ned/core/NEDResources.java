@@ -1063,7 +1063,7 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
             INEDElement source = ((NEDModelChangeEvent)event).getSource();
             Assert.isTrue(source==null || refactoringInProgress || source instanceof NedFileElementEx || hasConnectedEditor(getNedFile(source.getContainingNedFileElement())), "NED trees not opened in any editor must NOT be changed");
             invalidate();
-            validationJob.restartTimer();
+            validationJob.restartTimer(); //FIXME obey begin/end notifications too!
         }
 
         // notify generic listeners (like NedFileEditParts who refresh themselves

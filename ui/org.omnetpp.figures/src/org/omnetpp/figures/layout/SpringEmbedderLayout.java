@@ -20,6 +20,7 @@ import org.omnetpp.figures.SubmoduleFigure;
  * @author rhornig
  */
 public class SpringEmbedderLayout extends XYLayout {
+    private static boolean debug = false;
 
     private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
 	private static final int DEFAULT_MAX_WIDTH = 740;
@@ -113,6 +114,8 @@ public class SpringEmbedderLayout extends XYLayout {
 	@Override
     @SuppressWarnings("unchecked")
     public void layout(IFigure parent) {
+	    long startTime = System.currentTimeMillis();
+	    
         AbstractGraphLayoutAlgorithm alg = null;
         // find the place of movable nodes if auto-layout requested
         if (requestAutoLayout) {
@@ -146,6 +149,8 @@ public class SpringEmbedderLayout extends XYLayout {
             newBounds.translate(-newBounds.width / 2, -newBounds.height / 2);
             f.setBounds(newBounds);
         }
+        if (debug)
+            System.out.println("SpringEmbedderLayout: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
     /**

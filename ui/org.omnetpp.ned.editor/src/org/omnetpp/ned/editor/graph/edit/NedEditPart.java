@@ -63,11 +63,11 @@ abstract public class NedEditPart
         // getMarkersForElement is very costly. We should create the marker text only ON demand
         // move this code to the GrahicalNedEditor's HoverSupport class
         String message = "";        
-        if (maxSeverity >= IMarker.SEVERITY_INFO) {
-            IMarker[] markers = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNedModel());
-            for (IMarker marker : markers)
-                message += marker.getAttribute(IMarker.MESSAGE , "")+"\n";
-        }
+//        if (maxSeverity >= IMarker.SEVERITY_INFO) {
+//            IMarker[] markers = NEDResourcesPlugin.getNEDResources().getMarkersForElement(getNedModel());
+//            for (IMarker marker : markers)
+//                message += marker.getAttribute(IMarker.MESSAGE , "")+"\n";
+//        }
         if (getFigure() instanceof NedFigure)
             ((NedFigure)getFigure()).setProblemDecoration(maxSeverity, StringUtils.strip(message));
     }

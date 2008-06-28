@@ -154,6 +154,12 @@ public class ProblemMarkerSynchronizer {
 	    // process each file registered
 		for (IResource file : markerTable.keySet()) {
 			if (file.exists()) {
+			    // idea: compare the two sets of markers (old, existing).
+			    // Markers are basically an attribute map (plus a type string),
+			    // so we have sets of the attribute maps. Plus, we need a mapping
+			    // back from the attribute set to the original IMarker (or MarkerData),
+			    // hence the two maps of maps below.
+			    
 			    // query existing markers
 			    Map<Map,IMarker> existingMarkerAttrs = new HashMap<Map, IMarker>();
 			    IMarker[] tmp = file.findMarkers(markerBaseType, true, 0);
@@ -164,20 +170,23 @@ public class ProblemMarkerSynchronizer {
 			        existingMarkerAttrs.put(attrs, marker);
 			    }
 
+			    // new markers
 			    List<MarkerData> list = markerTable.get(file);
 			    Map<Map, MarkerData> newMarkerAttrs = new HashMap<Map, MarkerData>();
 			    for (MarkerData markerData : list)
 			        newMarkerAttrs.put(markerData.attrs, markerData);
 			        
-				// add markers that aren't on IResource yet
-				for (Map newAttrs : newMarkerAttrs.keySet())
-					if (!existingMarkerAttrs.keySet().contains(newAttrs))  //FIXME or type not equal!
-						createMarker(file, newMarkerAttrs.get(newAttrs));
+				// add markers that aren't on IResource yet.
+			    // note: the "..or types not equal" condition adds about 30% to the runtime cost;
+			    // this can be reduced by eliminating double lookups (results in slightly uglier code)
+				for (Map attrs : newMarkerAttrs.keySet())
+					if (!existingMarkerAttrs.keySet().contains(attrs) || !existingMarkerAttrs.get(attrs).getType().equals(newMarkerAttrs.get(attrs).type))
+						createMarker(file, newMarkerAttrs.get(attrs));
 
 				// remove IResource markers which aren't in our table
-                for (Map m : existingMarkerAttrs.keySet())
-                    if (!newMarkerAttrs.keySet().contains(m))  //FIXME or type not equal!
-						{existingMarkerAttrs.get(m).delete(); markersRemoved++;}
+                for (Map attrs : existingMarkerAttrs.keySet())
+                    if (!newMarkerAttrs.keySet().contains(attrs) || !existingMarkerAttrs.get(attrs).getType().equals(newMarkerAttrs.get(attrs).type))
+						{existingMarkerAttrs.get(attrs).delete(); markersRemoved++;}
 			}
 		}
 

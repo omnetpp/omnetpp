@@ -686,13 +686,13 @@ public abstract class NEDElement extends PlatformObject implements INEDElement, 
     }
 
 	protected void updateCumulatedProblemSeverities() {
-		int nedSeverity = syntaxProblemMaxLocalSeverity;
+		int syntaxSeverity = syntaxProblemMaxLocalSeverity;
 		int consistencySeverity = consistencyProblemMaxLocalSeverity;
 		for (INEDElement child : this) {
-			nedSeverity = Math.max(nedSeverity, child.getSyntaxProblemMaxCumulatedSeverity());
+			syntaxSeverity = Math.max(syntaxSeverity, child.getSyntaxProblemMaxCumulatedSeverity());
 			consistencySeverity = Math.max(consistencySeverity, child.getConsistencyProblemMaxCumulatedSeverity());
 		}
-		syntaxProblemMaxCumulatedSeverity = nedSeverity;
+		syntaxProblemMaxCumulatedSeverity = syntaxSeverity;
 		consistencyProblemMaxCumulatedSeverity = consistencySeverity;
 	}
 
