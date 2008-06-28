@@ -37,6 +37,8 @@ import org.eclipse.core.runtime.jobs.Job;
  * @author Andras
  */
 public class ProblemMarkerSynchronizer {
+    private static boolean debug = true;
+    
     protected static class MarkerData {
 		String type;
 		Map<String, Object> attrs;
@@ -138,12 +140,15 @@ public class ProblemMarkerSynchronizer {
             // which invokes a timerExec, whose run() contains validateAllNedFiles, etc...)
             job.setRule(ResourcesPlugin.getWorkspace().getRoot());
             job.setPriority(Job.INTERACTIVE);
-            job.setSystem(true);
+            if (!debug) 
+                job.setSystem(true);
             job.schedule();
         }
     }
 
 	protected void addRemoveMarkers() throws CoreException {
+	    long startTime = System.currentTimeMillis();
+	    
 	    // process each file registered
 		for (IResource file : markerTable.keySet()) {
 			if (file.exists()) {
@@ -163,10 +168,13 @@ public class ProblemMarkerSynchronizer {
 		}
 
 		// debug
-//		if (markersAdded==0 && markersRemoved==0)
-//			System.out.println("markerSychronizer: no marker change");
-//		else
-//			System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers");
+		if (debug) {
+	        long millis = System.currentTimeMillis() - startTime;
+		    if (markersAdded==0 && markersRemoved==0)
+		        System.out.println("markerSychronizer: no marker change, took " + millis + "ms");
+		    else
+		        System.out.println("markerSychronizer: added "+markersAdded+", removed "+markersRemoved+" markers, took "+millis + "ms");
+		}
 	}
 
 	protected boolean fileContainsMarker(IResource file, MarkerData markerData) throws CoreException {
