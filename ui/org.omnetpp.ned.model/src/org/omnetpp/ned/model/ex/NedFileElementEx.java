@@ -64,7 +64,7 @@ public class NedFileElementEx extends NedFileElement implements INedFileElement,
 	public void fireModelEvent(NEDModelEvent event) {
 	    // note: the following assert is technically correct; it is commented out because 
 	    // hasSyntaxError() absolutely kills the performance while validating large models
-		Assert.isTrue((!readOnly && !hasSyntaxError()) || !(event instanceof NEDModelChangeEvent), "Attempted to modify the NED element tree while it is in read only mode");
+		//XXX Assert.isTrue((!readOnly && !hasSyntaxError()) || !(event instanceof NEDModelChangeEvent), "Attempted to modify the NED element tree while it is in read only mode");
 		super.fireModelEvent(event);
 	}
 
