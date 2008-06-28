@@ -1,0 +1,2 @@
+For testing the NED editor in the IDE. It should not become unresponsive
+when a several thousand line NED file is opened, with thousands of errors.
