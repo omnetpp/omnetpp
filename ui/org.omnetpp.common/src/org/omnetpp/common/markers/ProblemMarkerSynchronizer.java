@@ -175,18 +175,27 @@ public class ProblemMarkerSynchronizer {
 			    Map<Map, MarkerData> newMarkerAttrs = new HashMap<Map, MarkerData>();
 			    for (MarkerData markerData : list)
 			        newMarkerAttrs.put(markerData.attrs, markerData);
-			        
-				// add markers that aren't on IResource yet.
-			    // note: the "..or types not equal" condition adds about 30% to the runtime cost;
-			    // this can be reduced by eliminating double lookups (results in slightly uglier code)
-				for (Map attrs : newMarkerAttrs.keySet())
-					if (!existingMarkerAttrs.keySet().contains(attrs) || !existingMarkerAttrs.get(attrs).getType().equals(newMarkerAttrs.get(attrs).type))
-						createMarker(file, newMarkerAttrs.get(attrs));
 
-				// remove IResource markers which aren't in our table
-                for (Map attrs : existingMarkerAttrs.keySet())
-                    if (!newMarkerAttrs.keySet().contains(attrs) || !existingMarkerAttrs.get(attrs).getType().equals(newMarkerAttrs.get(attrs).type))
-						{existingMarkerAttrs.get(attrs).delete(); markersRemoved++;}
+			    // if changed, synchronize (this "if" is not strictly needed, but improves 
+			    // performance of the most common case ("no change")). 
+			    // Small issue: attrMaps don't contain the marker type, so we fail to notice 
+			    // if a marker has been replaced with one with identical attributes but 
+			    // different type -- a very-very unlikely case.
+			    // 
+			    if (!newMarkerAttrs.keySet().equals(existingMarkerAttrs.keySet())) {
+			        
+			        // add markers that aren't on IResource yet.
+			        // note: the "..or types not equal" condition adds about 30% to the runtime cost;
+			        // this can be reduced by eliminating double lookups (results in slightly uglier code)
+			        for (Map attrs : newMarkerAttrs.keySet())
+			            if (!existingMarkerAttrs.keySet().contains(attrs) || !existingMarkerAttrs.get(attrs).getType().equals(newMarkerAttrs.get(attrs).type))
+			                createMarker(file, newMarkerAttrs.get(attrs));
+
+			        // remove IResource markers which aren't in our table
+			        for (Map attrs : existingMarkerAttrs.keySet())
+			            if (!newMarkerAttrs.keySet().contains(attrs) || !existingMarkerAttrs.get(attrs).getType().equals(newMarkerAttrs.get(attrs).type))
+			                {existingMarkerAttrs.get(attrs).delete(); markersRemoved++;}
+			    }
 			}
 		}
 
