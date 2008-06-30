@@ -1,10 +1,12 @@
+#!/usr/bin/perl -- # -*- Perl -*-
+
 #
 # Extract chart properties from java files
 # and generates a docbook document.
 #
 # Call with the file names of the java files.
 #
-sub wordsplit
+sub decamelize
 {
 	my $s = shift;
 	my @words = split( /[_\s]+|\b|(?<![A-Z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])/, $s );
@@ -30,12 +32,15 @@ sub processFile
   my @cats, %names, %descs;
 
   # parse java file
+  @cats = ();
+  %names = {};
+  %descs = {};
   @props = ($content =~ /properties\.Property\((.*?)\)\s*\n.*?get(.*?)\(\)/gcs);
   for ($i=0; $i < @props; $i += 2) {
     ($cat)  = ($props[$i] =~ /category="(.*?)"/s);
     ($name) = ($props[$i] =~ /displayName="(.*?)"/s);
     ($desc) = ($props[$i] =~ /description="([^"]*?)"/s);
-    $name = wordsplit $props[$i+1] unless ($name);
+    $name = decamelize $props[$i+1] unless ($name);
 
     my $found = 0;
     foreach ( @cats ) {
@@ -47,7 +52,7 @@ sub processFile
   }
 
   # emit docbook
-  print "  <section id=\"$file\">\n";
+  print "  <para id=\"$file\">\n";
   foreach $cat (@cats) {
     print "    <variablelist>\n";
     print "      <title>$cat</title>\n";
@@ -60,7 +65,7 @@ sub processFile
     }
     print "    </variablelist>\n";
   }
-  print "  </section>\n";
+  print "  </para>\n";
 }
 
 # emit docbook
