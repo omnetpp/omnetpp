@@ -73,8 +73,8 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
   ../../include/cgate.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
   ../../include/cmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -82,6 +82,7 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \

@@ -21,14 +21,14 @@
 
 #include <stddef.h>
 
-#ifndef __WIN32__
-#  if defined(_WIN32) || defined(WIN32)
-#    define __WIN32__
+#ifndef _WIN32
+#  if defined(_WIN32) || defined(WIN32) || defined(__WIN32__)
+#    define _WIN32
 #  endif
 #endif
 
 // macros needed for building Windows DLLs
-#if defined(__WIN32__)
+#if defined(_WIN32)
 #  define OPP_DLLEXPORT  __declspec(dllexport)
 #  define OPP_DLLIMPORT  __declspec(dllimport)
 #else

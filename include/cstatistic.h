@@ -20,10 +20,9 @@
 #ifndef __CSTATISTIC_H
 #define __CSTATISTIC_H
 
-#include "simkerneldefs.h"
-
 #include <stdio.h>
 #include "cownedobject.h"
+#include "simtime.h"
 
 NAMESPACE_BEGIN
 
@@ -108,12 +107,10 @@ class SIM_API cStatistic : public cOwnedObject
      */
     virtual void collect(double value) = 0;
 
-#ifndef USE_DOUBLE_SIMTIME
     /**
      * Convenience method, delegates to collect(double).
      */
-    virtual void collect(simtime_t value) {collect(value.dbl());}
-#endif
+    virtual void collect(SimTime value) {collect(value.dbl());}
 
     /**
      * Returns true if this object collects weighted statistics.

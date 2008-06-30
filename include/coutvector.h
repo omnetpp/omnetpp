@@ -176,12 +176,10 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      */
     virtual bool record(double value);
 
-#ifndef USE_DOUBLE_SIMTIME
     /**
      * Convenience method, delegates to record(double).
      */
-    virtual bool record(simtime_t value)  {return record(value.dbl());}
-#endif
+    virtual bool record(SimTime value)  {return record(value.dbl());}
 
     /**
      * Records the value with the given time as timestamp. Values must be
@@ -194,12 +192,10 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
      */
     virtual bool recordWithTimestamp(simtime_t t, double value);
 
-#ifndef USE_DOUBLE_SIMTIME
     /**
      * Convenience method, delegates to recordWithTimestamp(simtime_t, double).
      */
-    virtual bool recordWithTimestamp(simtime_t t, simtime_t value) {return recordWithTimestamp(t, value.dbl());}
-#endif
+    virtual bool recordWithTimestamp(simtime_t t, SimTime value) {return recordWithTimestamp(t, value.dbl());}
 
     /**
      * Enables recording data via this object. (It is enabled by default.)

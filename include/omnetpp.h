@@ -51,6 +51,7 @@
 #include "clongparimpl.h"
 #include "cmersennetwister.h"
 #include "simtime.h"
+#include "simtime_t.h"
 #include "cmessage.h"
 #include "cmsgpar.h"
 #include "cmodule.h"

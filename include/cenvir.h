@@ -24,6 +24,7 @@
 #include <sstream>
 #include <iostream>
 #include "simkerneldefs.h"
+#include "simtime_t.h"
 #include "opp_string.h"
 
 NAMESPACE_BEGIN

@@ -101,8 +101,8 @@ $O/arrow.obj: arrow.cc \
   arrow.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/opp_string.h \
   ../../include/cenvir.h \
+  ../../include/opp_string.h \
   tkdefs.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
@@ -110,8 +110,9 @@ $O/arrow.obj: arrow.cc \
   ../../include/platdep/platdefs.h \
   tkutil.h \
   ../../include/simtime.h \
-  ../../include/simutil.h \
+  ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/regmacros.h
@@ -184,6 +185,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/coutvector.h \
   ../../include/cxmlparimpl.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
   ../../include/cvarhist.h \
@@ -278,6 +280,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/coutvector.h \
   ../../include/cxmlparimpl.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
   ../../include/cvarhist.h \
@@ -338,6 +341,7 @@ $O/layouterenv.obj: layouterenv.cc \
   tklib.h \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
   ../../include/platdep/intxtypes.h \
@@ -391,6 +395,7 @@ $O/modinsp.obj: modinsp.cc \
   tklib.h \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
   ../../include/platdep/intxtypes.h \
@@ -478,6 +483,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/coutvector.h \
   ../../include/cxmlparimpl.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
   ../../include/cvarhist.h \
@@ -536,6 +542,7 @@ $O/statinsp.obj: statinsp.cc \
   tklib.h \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/cdensityestbase.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cmessageheap.h \
@@ -588,6 +595,7 @@ $O/tkcmd.obj: tkcmd.cc \
   tklib.h \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
@@ -642,6 +650,7 @@ $O/tkenv.obj: tkenv.cc \
   tklib.h \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
   ../../include/cmessageheap.h \
@@ -681,6 +690,7 @@ $O/tklib.obj: tklib.cc \
   ../../include/cvisitor.h \
   tklib.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -717,6 +727,7 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \
@@ -762,6 +773,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/cmathfunction.h \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
+  ../../include/simtime_t.h \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/globals.h \

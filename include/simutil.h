@@ -24,8 +24,8 @@
 #include <stdio.h>   // for sprintf
 #include <stdlib.h>  // for gcvt
 #include <typeinfo>  // for type_info
-#include "platdep/platmisc.h"
 #include "simkerneldefs.h"
+#include "platdep/platmisc.h"
 #include "errmsg.h"
 
 NAMESPACE_BEGIN

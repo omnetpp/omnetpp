@@ -110,12 +110,10 @@ class SIM_API cStdDev : public cStatistic
      */
     virtual void collect(double value);
 
-#ifndef USE_DOUBLE_SIMTIME
     /**
      * Convenience method, delegates to collect(double).
      */
-    virtual void collect(simtime_t value) {collect(value.dbl());}
-#endif
+    virtual void collect(SimTime value) {collect(value.dbl());}
 
     /**
      * Updates this object with data coming from another statistics
@@ -297,12 +295,10 @@ class SIM_API cWeightedStdDev : public cStdDev
      */
     virtual void collect(double value)  {collect2(value,1.0);}
 
-#ifndef USE_DOUBLE_SIMTIME
     /**
      * Convenience method, delegates to collect(double).
      */
-    virtual void collect(simtime_t value) {collect(value.dbl());}
-#endif
+    virtual void collect(SimTime value) {collect(value.dbl());}
 
     /**
      * Returns true, because this class collects weighted statistics.
@@ -314,22 +310,20 @@ class SIM_API cWeightedStdDev : public cStdDev
      */
     virtual void collect2(double value, double weight);
 
-#ifndef USE_DOUBLE_SIMTIME
     /**
      * Convenience method, delegates to collect2(double, double).
      */
-    virtual void collect2(simtime_t value, double weight) {collect2(value.dbl(), weight);}
+    virtual void collect2(SimTime value, double weight) {collect2(value.dbl(), weight);}
 
     /**
      * Convenience method, delegates to collect2(double, double).
      */
-    virtual void collect2(double value, simtime_t weight) {collect2(value, weight.dbl());}
+    virtual void collect2(double value, SimTime weight) {collect2(value, weight.dbl());}
 
     /**
      * Convenience method, delegates to collect2(double, double).
      */
-    virtual void collect2(simtime_t value, simtime_t weight) {collect2(value.dbl(), weight.dbl());}
-#endif
+    virtual void collect2(SimTime value, SimTime weight) {collect2(value.dbl(), weight.dbl());}
 
     /**
      * Updates this object with data coming from another statistics

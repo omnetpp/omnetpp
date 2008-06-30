@@ -21,6 +21,7 @@
 
 #include "simkerneldefs.h"
 #include "envirdefs.h"
+#include "simtime_t.h"
 #include "timeutil.h"
 
 NAMESPACE_BEGIN

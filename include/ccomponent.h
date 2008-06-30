@@ -21,6 +21,7 @@
 #include "cownedobject.h"
 #include "cpar.h"
 #include "cdefaultlist.h"
+#include "simtime.h"
 
 NAMESPACE_BEGIN
 
@@ -325,12 +326,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      */
     void recordScalar(const char *name, double value, const char *unit=NULL);
 
-#ifndef USE_DOUBLE_SIMTIME
     /**
      * Convenience method, delegates to recordScalar(const char *, double).
      */
-    void recordScalar(const char *name, simtime_t value, const char *unit=NULL) {recordScalar(name, value.dbl(), unit);}
-#endif
+    void recordScalar(const char *name, SimTime value, const char *unit=NULL) {recordScalar(name, value.dbl(), unit);}
 
     /**
      * Records the given statistics into the scalar result file.

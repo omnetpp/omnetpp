@@ -54,9 +54,13 @@
 #endif
 
 //
-// Getting Windows error strings
+// Include windows header -- needed for getting Windows error strings,
+// and also by ccoroutine.
 //
 #ifdef _WIN32
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0400  // needed for the Fiber API
+#endif
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #undef min

@@ -22,6 +22,7 @@
 #define __CPARSIMSYNCHR_H__
 
 #include "cscheduler.h"
+#include "simtime_t.h"
 
 NAMESPACE_BEGIN
 

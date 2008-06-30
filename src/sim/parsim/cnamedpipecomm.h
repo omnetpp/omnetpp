@@ -27,23 +27,19 @@
 
 #include <stdio.h>
 #include <deque>
-
 #include "simutil.h"
 #include "opp_string.h"
 #include "cparsimcomm.h"
-
+#include "platdep/platmisc.h"  // for <windows.h>
 
 // decide platform
 #if defined(_WIN32)
 #define USE_WINDOWS_PIPES
 #endif
 
+NAMESPACE_BEGIN
 
 #ifdef USE_WINDOWS_PIPES
-#define MEAN_AND_LEAN
-#include <windows.h>
-
-NAMESPACE_BEGIN
 typedef HANDLE PIPE;
 #else
 typedef int PIPE;

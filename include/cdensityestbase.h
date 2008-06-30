@@ -179,12 +179,10 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual void collect(double value);
 
-#ifndef USE_DOUBLE_SIMTIME
     /**
      * Convenience method, delegates to collect(double).
      */
-    virtual void collect(simtime_t value) {collect(value.dbl());}
-#endif
+    virtual void collect(SimTime value) {collect(value.dbl());}
 
     /**
      * Updates this object with data coming from another statistics

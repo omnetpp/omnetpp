@@ -114,13 +114,14 @@ $O/akaroarng.obj: akaroarng.cc \
   ../../include/errmsg.h \
   ../../include/cvisitor.h \
   ../../include/cconfiguration.h \
-  ../../include/cenvir.h \
   ../../include/opp_string.h \
+  ../../include/cenvir.h \
   ../../include/cexception.h \
   akaroarng.h \
   ../../include/crng.h \
   ../../include/platdep/platdefs.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   envirdefs.h \
@@ -143,6 +144,7 @@ $O/akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
@@ -192,6 +194,7 @@ $O/bootenv.obj: bootenv.cc \
   speedometer.h \
   fsutils.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   envirdefs.h \
@@ -214,8 +217,8 @@ $O/bootenv.obj: bootenv.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   matchableobject.h \
-  ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cexpression.h \
   ../../include/crng.h \
   ../../include/platdep/platdefs.h \
   ../../include/random.h \
@@ -236,6 +239,7 @@ $O/cxmldoccache.obj: cxmldoccache.cc \
   ../nedxml/saxparser.h \
   cxmldoccache.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
@@ -268,6 +272,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/csimulation.h \
   cxmldoccache.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   envirdefs.h \
@@ -321,6 +326,7 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/csimulation.h \
   ../../include/onstartup.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/simkerneldefs.h \
   envirdefs.h \
@@ -345,11 +351,46 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
+  eventlogwriter.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccoroutine.h \
   objectprinter.h \
   ../../include/cchannel.h \
+  ../../include/ccomponent.h \
+  ../../include/regmacros.h
+$O/eventlogwriter.obj: eventlogwriter.cc \
+  ../../include/cregistrationlist.h \
+  ../../include/cgate.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/cenvir.h \
+  ../../include/cmodule.h \
+  ../../include/onstartup.h \
+  ../../include/csimulation.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/simutil.h \
+  envirdefs.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/cobject.h \
+  ../../include/cclassfactory.h \
+  ../../include/globals.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/errmsg.h \
+  ../../include/cdefaultlist.h \
+  ../../include/opp_string.h \
+  ../../include/cconfigkey.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cexpression.h \
+  ../../include/cownedobject.h \
+  eventlogwriter.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cpar.h \
+  ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
@@ -368,6 +409,7 @@ $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -417,6 +459,7 @@ $O/fileoutvectormgr.obj: fileoutvectormgr.cc \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -460,6 +503,7 @@ $O/filesnapshotmgr.obj: filesnapshotmgr.cc \
   args.h \
   ../../include/onstartup.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -489,6 +533,7 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/onstartup.h \
   fsutils.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -519,6 +564,7 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -550,7 +596,6 @@ $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   ../../include/regmacros.h
 $O/inifilereader.obj: inifilereader.cc \
   fsutils.h \
-  ../../include/simtime.h \
   ../../include/simutil.h \
   envirdefs.h \
   ../../include/simkerneldefs.h \
@@ -575,9 +620,10 @@ $O/intervals.obj: intervals.cc \
   args.h \
   ../../include/onstartup.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
-  envirdefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   matchablefield.h \
@@ -599,6 +645,7 @@ $O/main.obj: main.cc \
   ../../include/cstringpool.h \
   ../../include/cenvir.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
@@ -620,6 +667,7 @@ $O/matchablefield.obj: matchablefield.cc \
   ../../include/cenvir.h \
   ../../include/cclassdescriptor.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -640,6 +688,7 @@ $O/matchableobject.obj: matchableobject.cc \
   ../../include/cenvir.h \
   ../../include/cclassdescriptor.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -667,6 +716,7 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/csimulation.h \
   ../../include/onstartup.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
@@ -694,6 +744,7 @@ $O/objectprinter.obj: objectprinter.cc \
 $O/opp_run.obj: opp_run.cc \
   ../../include/cenvir.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -717,6 +768,7 @@ $O/runattributes.obj: runattributes.cc \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -744,7 +796,6 @@ $O/scenario.obj: scenario.cc \
   ../../include/cvisitor.h \
   ../../include/cconfiguration.h \
   valueiterator.h \
-  ../../include/simtime.h \
   envirdefs.h \
   sectionbasedconfig.h \
   ../../include/simkerneldefs.h \
@@ -768,6 +819,7 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
   valueiterator.h \
   ../../include/onstartup.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
@@ -790,13 +842,13 @@ $O/sectionbasedconfig.obj: sectionbasedconfig.cc \
 $O/speedometer.obj: speedometer.cc \
   speedometer.h \
   ../../include/simtime.h \
+  ../../include/simtime_t.h \
   ../../include/simkerneldefs.h \
   envirdefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h
 $O/valueiterator.obj: valueiterator.cc \
   valueiterator.h \
-  ../../include/simtime.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   envirdefs.h \

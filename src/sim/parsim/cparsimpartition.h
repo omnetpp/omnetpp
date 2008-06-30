@@ -23,6 +23,7 @@
 
 #include "simkerneldefs.h"
 #include "cobject.h"
+#include "simtime_t.h"
 
 NAMESPACE_BEGIN
 

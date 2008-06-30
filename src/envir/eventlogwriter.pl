@@ -134,7 +134,7 @@ print H
 
 #include <stdio.h>
 #include \"envirdefs.h\"
-#include \"cexception.h\"
+#include \"simtime_t.h\"
 
 USING_NAMESPACE
 
@@ -172,6 +172,7 @@ print CC "
 #include \"cconfigkey.h\"
 #include \"csimulation.h\"
 #include \"cmodule.h\"
+#include \"cexception.h\"
 
 #ifdef CHECK
 #undef CHECK

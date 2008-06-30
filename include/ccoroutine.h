@@ -19,6 +19,9 @@
 #ifndef __CCOROUTINE_H
 #define __CCOROUTINE_H
 
+#include "simkerneldefs.h"
+#include "platdep/platmisc.h"  // for <windows.h>
+
 // select coroutine library
 #ifdef _WIN32
 #define USE_WIN32_FIBERS
@@ -26,27 +29,11 @@
 #define USE_PORTABLE_COROUTINES
 #endif
 
-#include "simkerneldefs.h"
-
-
-#ifdef USE_WIN32_FIBERS
-// Fiber API is not accessible without defining _WIN32_WINNT (hack?)
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0400
-#endif
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
 NAMESPACE_BEGIN
-// their getMin() and getMax() macros interfere with us
-#undef min
-#undef max
-#endif
 
 #ifdef USE_PORTABLE_COROUTINES
 struct _Task;
 #endif
-
 
 /**
  * Prototype for functions that can be used with cCoroutine objects as
