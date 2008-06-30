@@ -7,58 +7,74 @@
   <sect1>
     <title>Introduction</title>
     <para>
-      The Sequence Chart and the Event Log Table are part of the OMNeT++ IDE and they are
-      based on the eventlog feature of OMNeT++ 4.0. They aim to help understanding complex
-      simulation models and to help correctly implementing the desired component
-      behaviors. Using these tools you will be able to easily examine every minute detail
-      of the simulation back and forth in terms of simulation time or step-by-step
-      focusing on the behavior instead of the statistical results of your model.
+      The Sequence Chart and the Eventlog Table tools (often just referred as tools in the
+      rest of this chapter) are part of the OMNeT++ IDE. Both of them display an eventlog
+      file which can be optionally but automatically recorded by the OMNeT++ 4.0
+      simulation kernel.
     </para>
     <para>
-      Refer to the OMNeT++ 4.0 User Manual for further details on what an eventlog file
-      is, what is its exact format and how to set up the simulation kernel to
-      automatically record it during simulation.
+      An eventlog file contains various information about a simulation run such as the
+      simple and compound modules that were present in the network, the connections
+      between them, the messages sent during the simulation (optionally with field level
+      detail) and the events where they were processed.
+    </para>
+    <note>
+      Please refer to the OMNeT++ 4.0 Manual for further details on what an eventlog file
+      is and what is its exact format.
+    </note>
+    <para>
+      The Sequence Chart displays eventlog files in a graphical notation focusing on the
+      causes and consequences of events and message sends. It helps understanding complex
+      simulation models and helps correctly implementing the desired component
+      behaviors. The Eventlog Table displays an eventlog file in a more detailed and
+      direct way focusing on the exact data in tabular format. Both tools can display
+      filtered eventlogs created via the Eventlog Tool filter command as described in the
+      OMNeT++ 4.0 Manual, by a third party custom filter tool or by the IDE's in memory
+      filtering.
+    </para>
+    <para>
+      Using these tools you will be able to easily examine every minute detail of your
+      simulation back and forth in terms of simulation time or events focusing on the
+      behavior instead of the statistical results of your model.
     </para>
   </sect1>
 
   <sect1>
     <title>Creating an eventlog file</title>
     <para>
-      The Inifile Editor provides a small group of widgets in the Output Files section to
-      configure the eventlog feature. To enable recording simply put a checkmark next to
-      its checkbox.
+      The Inifile Editor in the OMNeT++ IDE provides a group of widgets in the
+      <guilabel>Output Files</guilabel> section to configure automatic eventlog
+      recording. To enable it simply put a checkmark next to its checkbox or insert the
+      line <screen>record-eventlog = true</screen> into the inifile.
     </para>
     <picture file="pictures/INI-Eventlog.png">Inifile eventlog configuration</picture>
     <para>
-      The eventlog file should have the file extension <filename>log</filename> as the
-      example shows above so that OMNeT++ IDE tools will be able to recognize it
-      automatically. To open an eventlog file simply double click on it in the Project
-      Explorer view.
-      <note>
-	To open a file in an editor other than its default editor right click on it and
-	choose an item from the <guisubmenu>Open With</guisubmenu> submenu.
-      </note>
+      By default the recorded eventlog file will be put in the project's
+      <filename>results</filename> directory with the name
+      <filename>${configname}-${runnumber}.log</filename>.
+    </para>
+    <caution>
+      If you override the default file name please make sure that the file extension is
+      <filename>log</filename> as the example shows above so that the OMNeT++ IDE tools
+      will be able to recognize it automatically.
+    </caution>
+    <para>
+      The 'recording intervals' and 'record events' parameters control which events will
+      be recorded based on their simulation time and on the module where they occur. The
+      'message details' parameter specifies the level of detail what will be recorded from
+      a message's content when it is sent.
     </para>
     <para>
-      All the other eventlog specific parameters described in the OMNeT++ 4.0 User Manual
-      can also be set using the Inifile Editor in the usual ways.
+      These parameters also affect the recorded file's size which in turn might change
+      performance both during simulation and when viewing the results in the IDE. The
+      smaller the file is the better for both writing it to the disk and for loading and
+      displaying it from memory. It is always a good idea to provide these parameters with
+      reasonable limits.
     </para>
-  </sect1>
-
-  <sect1>
-    <title>Overview</title>
-    <sect2>
-      <title>Sequence Chart</title>
-      <para>
-	The Sequence Chart ...
-      </para>
-    </sect2>
-    <sect2>
-      <title>Eventlog Table</title>
-      <para>
-	The Eventlog Table ...
-      </para>
-    </sect2>
+    <note>
+      Please refer to the OMNeT++ 4.0 Manual for a more complete description of each
+      eventlog recording parameter.
+    </note>
   </sect1>
 
   <sect1>
@@ -68,8 +84,13 @@
       enabled by uncommenting the line <screen>record-eventlog = true</screen> in the file
       <filename>omnetpp.ini</filename> under the simulation's directory. To open the
       generated eventlog in the OMNeT++ IDE go to the example's
-      <filename>results</filename> directory with the <guilabel>Resource
-      Navigator</guilabel> and double click on the log file.
+      <filename>results</filename> directory in the <guilabel>Resource
+      Navigator</guilabel> view and double click on the log file.
+      <note>
+	You can also open a file in an editor other than its default editor by right
+	clicking on it and choosing an item from the <guisubmenu>Open With</guisubmenu>
+	submenu.
+      </note>
     </para>
     <sect2>
       <title>Tic toc</title>
@@ -151,16 +172,17 @@
 	message suddenly disappears, it seems like the queue does not send that message
 	out. Actually what happens is that the queue enqueues the job because it has
 	already got one at <eventnumber>10</eventnumber> which is still in the
-	queue. Since this queue is a FIFO therefore it will send out the first message at
+	queue. Since this queue is a FIFO, it will send out the first message at
 	<eventnumber>13</eventnumber>. To see as in <xref
 	linkend="pictures/SequenceChart-Examples-FIFOReuse.png"/> how this happens turn on
 	<guilabel>Show Reuse Messages</guilabel> from the context menu. It will display a
 	couple of green dotted arrows one of which is from <eventnumber>12</eventnumber>
 	to <eventnumber>17</eventnumber>. This arrow represents a message reuse that is
 	the job got and enqueued at <eventnumber>12</eventnumber> is sent out from the
-	queue at <eventnumber>17</eventnumber>. Notice that the message that was already
-	in the queue when the queue got this one will be sent out earlier at
-	<eventnumber>13</eventnumber>.
+	queue at <eventnumber>17</eventnumber>. Notice the message that was already in the
+	queue when it got this second one will be sent out earlier at
+	<eventnumber>13</eventnumber>. Moreover this is the event where the second's
+	message processing starts.
       </para>
       <picture file="pictures/SequenceChart-Examples-FIFOReuse.png">
 	Showing reuse messages
@@ -198,8 +220,8 @@
 	<filename>samples/routing</filename>. The predefined configuration called Net10
 	specifies a network with 10 nodes each node having an application, a few queues
 	and a routing module inside. Three preselected nodes namely the node '1', '6' and
-	'8' are destinations while any node can be a source. The routing module uses the
-	shortest path algorithm to find the route to the destination. The goal in this
+	'8' are destinations while all nodes are message sources. The routing module uses
+	the shortest path algorithm to find the route to the destination. The goal in this
 	example is to create a sequence chart that shows messages which go in
 	simultaneously from multiple sources to their destinations.
       </para>
@@ -207,12 +229,45 @@
 	Network with 10 nodes
       </picture>
       <para>
-	Since we don't care about the details what happens within a node we can just turn
-	on filtering for the NED type
+	Since we don't care about the details what happens within a node, we can just turn
+	on filtering for the NED type 'node.Node'. The chart will have 10 axes, each axis
+	drawn as two parallel solid black lines close to each other. These are the
+	compound modules that represent the nodes in the network. So far events could be
+	directly drawn on the simple module's axis where they occured, but now they will
+	be drawn on their ancestor compound module's axis.
       </para>
       <picture file="pictures/SequenceChart-Examples-Routing.png">
 	Filtering for nodes
       </picture>
+      <para>
+	To reduce noise the chart will automatically omit events which are internal to the
+	compound module. Internal to a compound module means that the event processes a
+	message from and sends out messages to only other internal modules.
+      </para>
+      <para>
+	If you look at <xref linkend="pictures/SequenceChart-Examples-Routing.png"/> you
+	will see a message going from node '7' at <eventnumber>10</eventnumber> to node
+	'1' at <eventnumber>23</eventnumber>. This message stays in node '2' for a while
+	from <eventnumber>15</eventnumber> to <eventnumber>17</eventnumber>. Actually the
+	routing decision in node '2' takes zero simulation time indicated by the gray
+	background area.
+      </para>
+      <para>
+	This example also demonstrates message detail recording configured by
+	<screen>eventlog-message-detail-pattern = Packet:declaredOn(Packet)</screen> in
+	the inifile. The result in <xref
+	linkend="pictures/SequenceChart-Examples-RoutingTooltip.png"/> shows the tooltip
+	presented for the second hop of the message described above.
+      </para>
+      <picture file="pictures/SequenceChart-Examples-RoutingTooltip.png">
+	Message detail tooltip
+      </picture>
+      <para>
+	It is very easy to find another message on the chart going through the network
+	parallel in simulation time. The one sent from node '3' at
+	<eventnumber>13</eventnumber> to node '8' arriving at
+	<eventnumber>19</eventnumber> is such a messsage.
+      </para>
     </sect2>
     <sect2>
       <title>Wireless</title>
@@ -229,16 +284,15 @@
 	due to packet loss.
       </para>
       <para>
-	We also would like to record message data during the simulation so the following
+	We also would like to record message detail during the simulation so the following
 	line should also be uncommented: <screen>eventlog-message-detail-pattern = *:(not
 	declaredOn(cMessage) and not declaredOn(cNamedObject) and not
 	declaredOn(cObject))</screen>
       </para>
       <para>
-	Start the simulation environment and choose the configuration 'host1 pinging
-	host0'. Run the simulation in fast mode until around event number
-	<eventnumber>5000</eventnumber>. Press finish and exit from the runtime
-	environment.
+	To generate the evenlog file start the simulation environment and choose the
+	configuration 'host1 pinging host0'. Run the simulation in fast mode until around
+	event number <eventnumber>5000</eventnumber>.
       </para>
       <sect3>
 	<title>Preparing the result</title>
@@ -290,11 +344,13 @@
 	  acknowledge at <eventnumber>127</eventnumber>. The ping reply send procedure
 	  starts at <eventnumber>125</eventnumber> in host0 and finishes by receiving the
 	  acknowledge at <eventnumber>144</eventnumber>. Scrolling a little bit forward
-	  you can see the second complete successful ping procedure can be seen between
-	  <eventnumber>170</eventnumber> and <eventnumber>206</eventnumber>. Open the
-	  filter dialog and enter these numbers in the range filter.
+	  you can see as in <xref
+	  linkend="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png"/> the
+	  second complete successful ping procedure between <eventnumber>170</eventnumber>
+	  and <eventnumber>206</eventnumber>. Open the filter dialog and enter these
+	  numbers in the range filter.
 	</para>
-	<picture file="pictures/SequenceChart-Examples-Wireless-SuccessfulPing.png">
+	<picture file="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png">
 	  The second ping procedure
 	</picture>
 	<para>
@@ -324,9 +380,29 @@
 	</commercial>
       </sect3>
       <sect3>
-	<title>Packet loss</title>
+	<title>Unsuccessful ping</title>
 	<para>
-	  TODO...
+	  To see how the chart looks when ping messages get lost in the air first turn off
+	  range filtering and then go to <eventnumber>1269</eventnumber> by selecting the
+	  <guimenuitem>Goto Event...</guimenuitem> from the Eventlog table view's context
+	  menu.  In <xref
+	  linkend="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png"/> you can
+	  see how the receiver radio does not send the incoming message to its MAC layer
+	  due to the signal level being too low. This actually happens at
+	  <eventnumber>1274</eventnumber> in node '0' while the transmitter MAC layer in
+	  node '1' receives a timeout at <eventnumber>1275</eventnumber> and starts the
+	  backoff procedure to resend the very same ping message. This goes on with
+	  statistically increasing backoff time intervals until
+	  <eventnumber>1317</eventnumber> where the maximum number of retries is reached
+	  and the message is dropped.
+	</para>
+	<picture file="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png">
+	  Ping message get lost
+	</picture>
+	<para>
+	  The chart makes clear that during the unsuccessful ping period there are no
+	  events occuring in the MAC layer of node '0' and it is continuously in the state
+	  'IDLE'.
 	</para>
       </sect3>
     </sect2>
@@ -335,12 +411,18 @@
   <sect1>
     <title>Sequence Chart</title>
     <para>
-      The Sequence Chart also displays the content of an eventlog file focusing on the
-      causes and consequences of events and message sends recorded during the simulation.
-      It is also capable to display filtered eventlog files just like the Eventlog Table.
+      The Sequence Chart is devided into three parts the top and bottom gutters and the
+      main area. The gutters show the simulation times and the main area displays module
+      axes, events and message sends. The chart grows horizontally with simulation time
+      and vertically with modules. Module axes can optionally display vector data.
     </para>
     <sect2>
       <title>Legend</title>
+      <para>
+	A sequence chart is built from various small graphical elements representing
+	simple and compound modules, events, message sends, names, etc. listed in the
+	following table.
+      </para>
       <informaltable>
 	<tgroup cols="2">
 	  <colspec colwidth="130"/>
@@ -392,11 +474,11 @@
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-SplitArrow.png"/></entry>
-	      <entry>split arrow</entry>
+	      <entry>message send far away, split arrow</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-ZigZagArrow.png"/></entry>
-	      <entry>zig zag arrow</entry>
+	      <entry>virtual message send, zig zag arrow</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-MessageName.png"/></entry>
@@ -589,7 +671,7 @@
       <para>
 	Just like the Eventlog Table the Sequence Chart also supports bookmarks to make
 	navigation easier. Actually bookmarks are saved for the files rather than the
-	various editors therefore they are shared between them. The chart highlights
+	various editors, therefore they are shared between them. The chart highlights
 	bookmarked events with a circle around them similarly to primary selection but
 	with a different color.
       </para>
@@ -636,18 +718,13 @@
   <sect1>
     <title>Eventlog Table</title>
     <para>
-      The Eventlog Table can display the content of an eventlog file recorded during a
-      simulation both as a view and as an editor in the OMNeT++ IDE. It is also capable to
-      display filtered eventlog files whether they were created via the Eventlog Tool
-      filter command, by a custom filter tool or by in memory filtering.
-    </para>
-    <para>
-      The table has three columns where the first two called event number and simulation
-      time show the values corresponding to the event where the line was recorded. The
-      third column called details contains the actual data which varies for each kind. The
-      different kind of lines can be easily recognized by their icon. Some lines such as
-      sending a message through a sequence of gates relate with each other and are
-      indented for easier recognition.
+      The Evenlog Table has one row per line in the eventlog file. It has three columns
+      where the first two called event number and simulation time show the values
+      corresponding to the event where the line was recorded. The third column called
+      details contains the actual data which varies for each line kind. The different kind
+      of lines can be easily recognized by their icon. Some lines such as sending a
+      message through a sequence of gates relate with each other and are indented for
+      easier recognition.
     </para>
     <para>
       There are various options which control how and what the Eventlog Table
@@ -698,13 +775,13 @@
       <title>Line Filter</title>
       <para>
 	The Eventlog Table may be filtered by using the <guilabel>Line Filter</guilabel>
-	<icon name="LineFilterMode.png"/> selector available on the toolbar or from the context
-	menu. This option allows filtering lines for specific kinds. There are some
-	predefined filters but you can also provide custom filter patterns referring to
-	fields present in the <guilabel>Raw</guilabel> mode. The following is a custom
+	<icon name="LineFilterMode.png"/> selector available on the toolbar or from the
+	context menu. This option allows filtering lines for specific kinds. There are
+	some predefined filters but you can also provide custom filter patterns referring
+	to fields present in the <guilabel>Raw</guilabel> mode. The following is a custom
 	filter example which will show message sends where the message's class is
-	AirFrame. <screen>BS and c(AirFrame)</screen> See the OMNeT++ User Manual for
-	more details on match expressions.
+	AirFrame. <screen>BS and c(AirFrame)</screen> See the OMNeT++ Manual for more
+	details on match expressions.
       </para>
       <note>
 	Event lines marked with green circles <icon name="event.png"/> are always shown in
@@ -783,7 +860,7 @@
   </sect1>
 
   <sect1>
-    <title>Filtering</title>
+    <title>Filter Dialog</title>
     <para>
       The content of an eventlog file may be filtered in memory on the fly by opening the
       filter configuration dialog <icon name="Filter.png"/> and applying it. The result is
@@ -800,7 +877,7 @@
       Sequence Chart and the Eventlog Table.
     </para>
     <para>
-      The filter configuration dialog has many options organized into a tree each
+      The filter configuration dialog shown in has many options organized into a tree each
       restricting the eventlog's content on its own. The individual components may be
       turned on and off independently of each other.
     </para>
@@ -809,6 +886,9 @@
       the filter dialog automatically displays the current filter in a textual form at the
       bottom.
     </para>
+    <picture file="SequenceChart-FilterDialog.png">
+      Filter dialog
+    </picture>
     <sect2>
       <title>Range filter</title>
       <para>
@@ -858,10 +938,10 @@
       </para>
       <note>
 	Since computing the causes and consequences far away in the log file from the
-	traced event might be a time consuming task therefore there are extra limits
-	around the traced event to be set. These limits are separate from the range filter
-	due to being linked to the traced event. It is strongly recommended to provide
-	limits when tracing events to avoid long running operations.
+	traced event might be a time consuming task, there are extra limits around the
+	traced event to be set. These limits are separate from the range filter due to
+	being linked to the traced event. It is strongly recommended to provide limits
+	when tracing events to avoid long running operations.
       </note>
     </sect2>
     <sect2>
@@ -892,83 +972,92 @@
   </sect1>
 
   <sect1>
-    <title>Features</title>
+    <title>Other features</title>
     <para>
-      There are two tools called the Sequence Chart and the Eventlog Table (often just
-      referred as tools in the rest of this chapter) in the OMNeT++ IDE to inspect the
-      contents of an eventlog file. Both tools can be used as an editor and a view. The
-      difference between being an editor or a view is quite important from the user's
-      point of view, because there is only at most one instance of a view of the same
-      kind. It means that even if multiple eventlog files are open in editors there are no
-      more than one Eventlog Table view shared between them. This singleton view will
+      Both the Sequence Chart and the Eventlog Table tools can be used as an editor and
+      also as a view. The difference between being an editor or a view is quite important,
+      because there is only at most one instance of a view of the same kind. It means that
+      even if multiple eventlog files are open in Sequence Chart editors there are no more
+      than one Eventlog Table view shared between them. This singleton view will
       automatically display the eventlog file of the active editor, and remember its
       position and state when switching among editors back and forth. For more details on
-      what an editor and a view is and what are the differences see the Eclipse
-      documentation.
+      what an editor and a view is and what are the differences please refer to the
+      Eclipse documentation.
+      <note>
+	Despite the name editor which is a concept of the Eclipse platform neither the
+	Sequence Chart nor the Eventlog Table can be used to actually edit the contents of
+	an eventlog file.
+      </note>
     </para>
     <para>
       It is possible to open the same eventlog file in multiple editors and to navigate to
-      different locations or use different filters in them. Once an eventlog is open in an
-      editor, you can use the <guimenuitem>Window|New Editor</guimenuitem> to open it
-      again.
+      different locations or use different diplay modes or filters in them. Once an
+      eventlog is open in an editor, you can use the <guimenuitem>Window|New
+      Editor</guimenuitem> to open it again.
       <note>
-	Dragging one of the editors from the tabbed pane to one of the editor's sides area
-	allows to interact with the two simultaneously.
+	Dragging one of the editors from the tabbed pane to the side of the area allows
+	you to interact with the two simultaneously.
       </note>
-    </para>    
+    </para>
     <sect2>
       <title>Settings</title>
       <para>
 	There are various settings for both tools which affect the display such as display
-	modes, content position, filtering, etc. These user specified settings are
-	automatically saved for each file and reused whenever the file is visited again.
-	TODO: if you delete the file at ... resets state
+	modes, content position, filter parameters, etc. These user specified settings are
+	automatically saved for each file and reused whenever the file is visited
+	again. The per file settings are stored under the OMNeT++ workspace in the
+	directory
+	<filename>.metadata\.plugins\org.eclipse.core.resources\.projects\&lt;project-name&gt;</filename>.
       </para>
     </sect2>
     <sect2>
       <title>Large File Support</title>
       <para>
-	Since an eventlog file might be several Gbytes therefore both tools are designed
-	in a way that allows efficiently displaying such a file without requiring large
-	amounts of physical memory to load it at once. As you navigate through the file
-	physical memory is filled up with the content lazily. Since it is difficult to
-	reliably identify in a platform independent way when the system is going low on
-	physical memory it is left up to the user to release the allocated memory when
-	needed. This operation although usually not required at all is available from the
-	context menu as <guimenuitem>Release Memory</guimenuitem>. Executing it will not
-	affect the user interface in any way.
+	Since an eventlog file might be several Gbytes, both tools are designed in a way
+	that allows efficiently displaying such a file without requiring large amounts of
+	physical memory to load it at once. As you navigate through the file physical
+	memory is filled up with the content lazily. Since it is difficult to reliably
+	identify when the system is going low on physical memory, it is up to the user to
+	release the allocated memory when needed. This operation although usually not
+	required is available from the context menu as <guimenuitem>Release
+	Memory</guimenuitem>. It does not affect the user interface in any way.
       </para>
       <para>
-	The eventlog file being loaded lazily (and optionally filtered) also means that
-	the exact number of events and rows it contains cannot be cheaply determined. This
-	affects the way scrollbars work in the lazy direction, horizontal for the Sequence
-	Chart and vertical for the Eventlog Table. Basically these scrollbars act as a non
-	linear approximation in that direction which most of the time remains unnoticable
-	for the user unless the file is really small.
+	The fact that the eventlog file is being loaded lazily (and optionally filtered)
+	also means that the exact number of events and rows it contains cannot be cheaply
+	determined. This affects the way scrollbars work in the lazy direction, horizontal
+	for the Sequence Chart and vertical for the Eventlog Table. Basically these
+	scrollbars act as a non linear approximation in that direction which most of the
+	time remains unnoticable for the user unless the file is really small.
       </para>
     </sect2>
     <sect2>
-      <!-- TODO: running simulation -->
-      <title>Live Data</title>
+      <title>Viewing a running simulation's results</title>
       <para>
 	Despite the simulation kernel keeps the eventlog file open for writing while the
-	simulation is running it may be opened in the OMNeT++ IDE simultaneously. Both
+	simulation is running, it may be opened in the OMNeT++ IDE simultaneously. Both
 	tools can be instructed by pressing the <keycap>END</keycap> key to follow the
-	eventlog's end as new content is appended to it.
+	eventlog's end as new content is appended to it. If you pause the simulation in
+	the runtime environment then after a few seconds the tools will refresh their
+	contents. This actually makes possible to follow the simulation step-by-step.
       </para>
     </sect2>
     <sect2>
-      <!-- note? caveats -->
-      <title>Long Running Operations</title>
+      <title>Caveats</title>
       <para>
 	Sometimes drawing the Sequence Chart may take a lot of time. Zooming out too much
 	for example might result in slow response times. A dialog might pop up telling
 	that a long running eventlog operation is in progress. You can safely cancel these
 	operations at any time you like or just wait until they finish. To restart the
-	rendering simply press the refresh button <icon name="refresh.gif"/> on the
-	toolbar.
+	rendering process simply press the refresh button <icon name="refresh.gif"/> on
+	the toolbar. Before actually doing that it is a good idea to revert to some
+	defaults (e.g. default zoom level) or revert the last changes (e.g. navigate back,
+	turn filter off, etc.) and then try refreshing.
       </para>
-      TODO: sometime a long running operation is a sign of a problem and should be reported
+      <caution>
+	On the other hand a long running opreration might be a sign of a problem that should
+	be reported for further consideration.
+      </caution>
     </sect2>
   </sect1>
 
