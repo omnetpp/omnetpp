@@ -243,9 +243,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					IMenuManager subMenuManager = new MenuManager(sequenceChart.getEventText(event, false, null));
 					menuManager.add(subMenuManager);
 
+                    subMenuManager.add(createFilterEventCausesConsequencesAction(event));
+                    subMenuManager.add(createSelectEventAction(event));
 					subMenuManager.add(createCenterEventAction(event));
-					subMenuManager.add(createSelectEventAction(event));
-					subMenuManager.add(createFilterEventCausesConsequencesAction(event));
 				}
 
 				if (events.size() != 0)
@@ -696,22 +696,59 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	}
 	
 	private SequenceChartAction createFilterAction() {
-		return new SequenceChartAction("Filter", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
-			@Override
-			public void run() {
-				if (isFilteredEventLog())
-					removeFilter();
-				else
-					filter();
-			}
+        return new SequenceChartMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
+            @Override
+            public void run() {
+                if (isFilteredEventLog())
+                    removeFilter();
+                else
+                    filter();
+            }
 
-			private boolean isFilteredEventLog() {
-				return getEventLog() instanceof FilteredEventLog;
-			}
+            @Override
+            protected int getMenuIndex() {
+                if (isFilteredEventLog())
+                    return 1;
+                else
+                    return 0;
+            }
 
-			@Override
-            public void update() {
-                setChecked(isFilteredEventLog());
+            private boolean isFilteredEventLog() {
+                return getEventLog() instanceof FilteredEventLog;
+            }
+            
+            @Override
+            public IMenuCreator getMenuCreator() {
+                return new AbstractMenuCreator() {
+                    @Override
+                    protected void createMenu(Menu menu) {
+                        addSubMenuItem(menu, "Show All", new Runnable() {
+                            public void run() {
+                                removeFilter();
+                            }
+                        });
+                        addSubMenuItem(menu, "Filter...", new Runnable() {
+                            public void run() {
+                                filter();
+                            }
+                        });
+                    }
+
+                    private void addSubMenuItem(Menu menu, String text, final Runnable runnable) {
+                        MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+                        subMenuItem.setText(text);
+                        subMenuItem.addSelectionListener( new SelectionAdapter() {
+                            public void widgetSelected(SelectionEvent e) {
+                                MenuItem menuItem = (MenuItem)e.widget;
+                                
+                                if (menuItem.getSelection()) {
+                                    runnable.run();
+                                    update();
+                                }
+                            }
+                        });
+                    }
+                };
             }
 
 			private void filter() {
@@ -1132,7 +1169,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				// select a run
 				Run run = null;
 				RunList runList = resultFileManager.getRunsInFile(resultFile);
-                String eventlogRunId = getEventLog().getSimulationBeginEntry().getRunId();
+                String eventlogRunName = getEventLog().getSimulationBeginEntry().getRunId();
 				if (runList.size() == 0) {
                     MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.APPLICATION_MODAL | SWT.ICON_ERROR);
                     messageBox.setText("No runs in result file");
@@ -1151,7 +1188,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             return run.getRunName();
                         }
                     });
-                    dialog.setFilter(eventlogRunId);
+                    dialog.setFilter(eventlogRunName);
                     dialog.setElements(runList.toArray());
                     dialog.setTitle("Run selection");
                     dialog.setMessage("Select a run to browse for vectors:");
@@ -1161,11 +1198,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				}
 
                 // compare eventlog run id against vector file's run id
-				String vectorFileRunId = run.getRunName();
-				if (!eventlogRunId.equals(vectorFileRunId)) {
+				String vectorRunName = run.getRunName();
+				if (!eventlogRunName.equals(vectorRunName)) {
                     MessageBox messageBox = new MessageBox(Display.getCurrent().getActiveShell(), SWT.OK | SWT.CANCEL | SWT.APPLICATION_MODAL | SWT.ICON_WARNING);
                     messageBox.setText("Run ID mismatch");
-                    messageBox.setMessage("The eventlog run ID: " + eventlogRunId + " and the vector file run ID: " + vectorFileRunId + " does not match. Do you want to continue?");
+                    messageBox.setMessage("The eventlog run ID: " + eventlogRunName + " and the vector file run ID: " + vectorRunName + " does not match. Do you want to continue?");
                     
                     if (messageBox.open() == SWT.CANCEL)
                         return;
@@ -1206,7 +1243,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				// attach vector data
 				ResultItem resultItem = resultFileManager.getItem(id);
 				XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
-				sequenceChart.setAxisRenderer(axisModule, new AxisVectorBarRenderer(sequenceChart, vectorFileName, resultItem, data));
+				sequenceChart.setAxisRenderer(axisModule, 
+			        new AxisVectorBarRenderer(sequenceChart, vectorFileName, vectorRunName, resultItem.getModuleName(), resultItem.getName(), resultItem, data));
 			}
 		};
 	}

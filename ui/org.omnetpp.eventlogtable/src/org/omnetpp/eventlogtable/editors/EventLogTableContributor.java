@@ -1141,23 +1141,60 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createFilterAction() {
-		return new EventLogTableAction("Event Filter", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
-			@Override
-			public void run() {
-				if (isFilteredEventLog())
-					removeFilter();
-				else
-					filter();
-			}
-
+        return new EventLogTableMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
             @Override
-            public void update() {
-                setChecked(isFilteredEventLog());
+            public void run() {
+                if (isFilteredEventLog())
+                    removeFilter();
+                else
+                    filter();
             }
 
-			private boolean isFilteredEventLog() {
-				return eventLogTable.getEventLog() instanceof FilteredEventLog;
-			}
+            @Override
+            protected int getMenuIndex() {
+                if (isFilteredEventLog())
+                    return 1;
+                else
+                    return 0;
+            }
+
+            private boolean isFilteredEventLog() {
+                return getEventLog() instanceof FilteredEventLog;
+            }
+            
+            @Override
+            public IMenuCreator getMenuCreator() {
+                return new AbstractMenuCreator() {
+                    @Override
+                    protected void createMenu(Menu menu) {
+                        addSubMenuItem(menu, "Show All", new Runnable() {
+                            public void run() {
+                                removeFilter();
+                            }
+                        });
+                        addSubMenuItem(menu, "Filter...", new Runnable() {
+                            public void run() {
+                                filter();
+                            }
+                        });
+                    }
+
+                    private void addSubMenuItem(Menu menu, String text, final Runnable runnable) {
+                        MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+                        subMenuItem.setText(text);
+                        subMenuItem.addSelectionListener( new SelectionAdapter() {
+                            public void widgetSelected(SelectionEvent e) {
+                                MenuItem menuItem = (MenuItem)e.widget;
+                                
+                                if (menuItem.getSelection()) {
+                                    runnable.run();
+                                    update();
+                                }
+                            }
+                        });
+                    }
+                };
+            }
 
 			private void removeFilter() {
 				final EventLogInput eventLogInput = eventLogTable.getEventLogInput();

@@ -26,7 +26,23 @@ public class ManualAxisOrder {
     private static final int BUTTON_USE_CURRENT = IDialogConstants.CLIENT_ID + 5;
 
     // this is a total ordering among all modules seen so far
-    private ArrayList<ModuleTreeItem> lastAxisModuleOrder = new ArrayList<ModuleTreeItem>();
+    private ArrayList<ModuleTreeItem> lastAxisModuleOrder;
+    
+    public ManualAxisOrder() {
+        setAxisOrder(new ArrayList<ModuleTreeItem>());
+    }
+
+    public ManualAxisOrder(ArrayList<ModuleTreeItem> axisModuleOrder) {
+        setAxisOrder(axisModuleOrder);
+    }
+    
+    public void setAxisOrder(ArrayList<ModuleTreeItem> axisModuleOrder) {
+        this.lastAxisModuleOrder = axisModuleOrder;
+    }
+    
+    public ArrayList<ModuleTreeItem> getAxisOrder() {
+        return lastAxisModuleOrder;
+    }
 
     private ArrayList<ModuleTreeItem> getCurrentAxisModuleOrder(ModuleTreeItem[] selectedAxisModules) {
         // ensure all modules are known in the stored ordering

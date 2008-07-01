@@ -28,23 +28,26 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	
 	protected SequenceChart sequenceChart;
 
-	protected XYArray data;
+    protected String vectorFileName;
+    
+    protected String vectorRunName;
+
+    protected String vectorModuleFullPath;
+
+    protected String vectorName;
+
+    protected XYArray data;
 
 	protected String[] valueNames;
 
-	protected String vectorFileName;
-
-	protected String moduleFullPath;
-	
-	protected String vectorName;
-
     protected ResultItem.Type type;
 
-    public AxisVectorBarRenderer(SequenceChart sequenceChart, String vectorFileName, ResultItem resultItem, XYArray data) {
+    public AxisVectorBarRenderer(SequenceChart sequenceChart, String vectorFileName, String vectorRunName, String vectorModuleFullPath, String vectorName, ResultItem resultItem, XYArray data) {
 		this.sequenceChart = sequenceChart;
-		this.vectorFileName = vectorFileName;
-		this.moduleFullPath = resultItem.getModuleName();
-		this.vectorName = resultItem.getName();
+	    this.vectorFileName = vectorFileName;
+	    this.vectorRunName = vectorRunName;
+	    this.vectorModuleFullPath = vectorModuleFullPath;
+	    this.vectorName = vectorName;
 		this.data = data;
         this.type = resultItem.getType();
 
@@ -54,20 +57,24 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
         }
     }
 
+    public String getVectorFileName() {
+        return vectorFileName;
+    }
+
+    public String getVectorRunName() {
+        return vectorRunName;
+    }
+
+    public String getVectorModuleFullPath() {
+        return vectorModuleFullPath;
+    }
+
+    public String getVectorName() {
+        return vectorName;
+    }
+
 	public int getHeight() {
 		return 13;
-	}
-
-	public String getVectorFileName() {
-		return vectorFileName;
-	}
-	
-	public String getModuleFullPath() {
-		return moduleFullPath;
-	}
-	
-	public String getVectorName() {
-		return vectorName;
 	}
 
 	/**

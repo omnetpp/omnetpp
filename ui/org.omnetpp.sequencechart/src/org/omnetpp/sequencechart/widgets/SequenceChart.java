@@ -77,12 +77,10 @@ import org.omnetpp.eventlog.engine.IMessageDependencyList;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.PtrVector;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
-import org.omnetpp.scave.engine.FileRunList;
-import org.omnetpp.scave.engine.IDList;
+import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
-import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.editors.SequenceChartContributor;
@@ -577,7 +575,6 @@ public class SequenceChart
 	 * Returns the current timeline mode.
 	 */
 	public TimelineMode getTimelineMode() {
-
 		return TimelineMode.values()[sequenceChartFacade.getTimelineMode()];
 	}
 
@@ -1124,6 +1121,7 @@ public class SequenceChart
 					setPixelPerTimelineCoordinate(sequenceChartState.pixelPerTimelineCoordinate);
 					setAxisModules(eventLogInput.getSelectedModules());
 
+					// restore attached vectors
 					if (sequenceChartState.axisStates != null) {
 						ResultFileManager resultFileManager = new ResultFileManager();
 
@@ -1132,28 +1130,43 @@ public class SequenceChart
 
 							if (axisState.vectorFileName != null) {
 								ResultFile resultFile = resultFileManager.loadFile(axisState.vectorFileName);
-								Run run = resultFileManager.getRunsInFile(resultFile).get(0);
-								// TODO: compare it against log file's run
-								FileRunList fileRunList = new FileRunList();
-								fileRunList.add(resultFileManager.getFileRun(resultFile, run));
-								IDList idList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), fileRunList, axisState.vectorModuleFullPath, axisState.vectorName);
-
-								if (idList.size() == 1) {
-									long id = idList.get(0);
-									ResultItem resultItem = resultFileManager.getItem(id);
-									XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
-									setAxisRenderer(getAxisModule(axisState.vectorModuleFullPath),
-										new AxisVectorBarRenderer(this, axisState.vectorFileName, resultItem, data));
-								}
+								FileRun fileRun = resultFileManager.getFileRun(resultFile, resultFileManager.getRunByName(axisState.vectorRunName));
+								long id = resultFileManager.getItemByName(fileRun, axisState.vectorModuleFullPath, axisState.vectorName);
+								// TODO: compare vector's run against log file's run
+								ResultItem resultItem = resultFileManager.getItem(id);
+								XYArray data = VectorFileUtil.getDataOfVector(resultFileManager, id, true);
+								setAxisRenderer(getAxisModule(axisState.moduleFullPath),
+							        new AxisVectorBarRenderer(this, axisState.vectorFileName, axisState.vectorRunName, axisState.vectorModuleFullPath, axisState.vectorName, resultItem, data));
 							}
 						}
 					}
 
+					// restore axis order
+					if (sequenceChartState.axisOrderingMode != null)
+					    axisOrderingMode = sequenceChartState.axisOrderingMode;
+					if (sequenceChartState.moduleFullPathesManualAxisOrder != null) {
+                        ArrayList<ModuleTreeItem> axisOrder = new ArrayList<ModuleTreeItem>();
+                        
+                        for (int i = 0; i < sequenceChartState.moduleFullPathesManualAxisOrder.length; i++)
+                            axisOrder.add(eventLogInput.getModuleTreeRoot().findDescendantModule(sequenceChartState.moduleFullPathesManualAxisOrder[i]));
+                        
+                        manualAxisOrder.setAxisOrder(axisOrder);
+                    }
 
-					// assume height to be at least this
+                    // restore spacing
+					if (sequenceChartState.axisSpacingMode != null)
+					    axisSpacingMode = sequenceChartState.axisSpacingMode;
+					if (sequenceChartState.axisSpacing != -1)
+					    axisSpacing = sequenceChartState.axisSpacing;
+
+                    // assume height to be at least this
 					relocateFixPoint(fixPointEvent, sequenceChartState.fixPointViewportCoordinate);
 					calculateVirtualSize();
 					scrollVerticalTo(sequenceChartState.viewportTop);
+                    
+                    // restore timeline mode
+                    if (sequenceChartState.timelineMode != null)
+                        setTimelineMode(sequenceChartState.timelineMode);
 
 					return true;
 				}
@@ -1182,6 +1195,7 @@ public class SequenceChart
 				sequenceChartState.pixelPerTimelineCoordinate = pixelPerTimelineCoordinate;
 
 				if (axisModules != null) {
+				    // store attached vector
 					AxisState[] axisStates = new AxisState[axisModules.size()];
 
 					for (int i = 0; i < axisModules.size(); i++) {
@@ -1191,12 +1205,32 @@ public class SequenceChart
 						if (axisRenderers[i] instanceof AxisVectorBarRenderer) {
 							AxisVectorBarRenderer renderer = (AxisVectorBarRenderer)axisRenderers[i];
 							axisState.vectorFileName = renderer.getVectorFileName();
-							axisState.vectorModuleFullPath = renderer.getModuleFullPath();
-							axisState.vectorName = renderer.getVectorName();
+                            axisState.vectorRunName = renderer.getVectorRunName();
+                            axisState.vectorModuleFullPath = renderer.getVectorModuleFullPath();
+                            axisState.vectorName = renderer.getVectorName();
 						}
 					}
 
 					sequenceChartState.axisStates = axisStates;
+
+					// store manual axis order
+					sequenceChartState.axisOrderingMode = axisOrderingMode;
+					ArrayList<ModuleTreeItem> axisOrder = manualAxisOrder.getAxisOrder();
+					String[] moduleFullPathesManualAxisOrder = new String[axisOrder.size()];
+					for (int i = 0; i < moduleFullPathesManualAxisOrder.length; i++) {
+					    ModuleTreeItem axisModule = axisOrder.get(i);
+					    
+					    if (axisModule != null)
+					        moduleFullPathesManualAxisOrder[i] = axisModule.getModuleFullPath();
+					}
+					sequenceChartState.moduleFullPathesManualAxisOrder = moduleFullPathesManualAxisOrder;
+
+                    // store timeline mode
+					sequenceChartState.timelineMode = getTimelineMode();
+
+                    // store spacing
+                    sequenceChartState.axisSpacingMode = axisSpacingMode;
+                    sequenceChartState.axisSpacing = axisSpacing;
 				}
 
 				manager.setProperty(resource, STATE_PROPERTY, sequenceChartState);
@@ -3721,12 +3755,22 @@ class SequenceChartState implements Serializable {
 	public int fixPointViewportCoordinate;
 	public double pixelPerTimelineCoordinate;
 	public AxisState[] axisStates;
+	public SequenceChart.TimelineMode timelineMode;
+    public SequenceChart.AxisSpacingMode axisSpacingMode;
+	public double axisSpacing;
+	public SequenceChart.AxisOrderingMode axisOrderingMode;
+	public String[] moduleFullPathesManualAxisOrder;
 }
 
 class AxisState implements Serializable {
 	private static final long serialVersionUID = 1L;
+    
+    // identifies the axis module 
+    public String moduleFullPath;
+	
+	// identifies the vector
 	public String vectorFileName;
-	public String moduleFullPath;
-	public String vectorModuleFullPath;
-	public String vectorName;
+    public String vectorRunName;
+    public String vectorModuleFullPath;
+    public String vectorName;
 }

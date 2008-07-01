@@ -184,7 +184,20 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 		return descendant[0];
 	}
 	
-	@Override
+    public ModuleTreeItem findDescendantModule(final String fullPath) {
+        final ModuleTreeItem[] descendant = new ModuleTreeItem[1];
+
+        visitLeaves(new IModuleTreeItemVisitor() {
+            public void visit(ModuleTreeItem treeItem) {
+                if (treeItem.getModuleFullPath().equals(fullPath))
+                    descendant[0] = treeItem;
+            }
+        });
+
+        return descendant[0];
+    }
+
+    @Override
 	public String toString() {
 	    return getModuleFullPath();
 	}
