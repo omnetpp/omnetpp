@@ -82,7 +82,7 @@ public class ProcessingOpPropertySource extends PropertySource {
 	@Property
 	public IPropertySource getParameters() {
 		String op = processingOp.getOperation();
-		if (registry.exists(op)) {
+		if (op != null && registry.exists(op)) {
 			NodeType nodeType = registry.getNodeType(op);
 			if ("filter".equals(nodeType.getCategory()))
 				return new ParamsPropertySource(nodeType, processingOp.getParams());

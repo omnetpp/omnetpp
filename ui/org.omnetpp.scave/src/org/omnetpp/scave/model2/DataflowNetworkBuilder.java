@@ -114,6 +114,7 @@ public class DataflowNetworkBuilder {
 		StringMap attrs;
 		
 		public SimpleNode(String type, StringMap attrs) {
+			Assert.isNotNull(type);
 			this.type = type;
 			this.attrs = attrs;
 		}
@@ -237,6 +238,7 @@ public class DataflowNetworkBuilder {
 		boolean disconnected1, disconnected2;
 		
 		public ComputeNode(Compute operation, int outVectorId) {
+			Assert.isLegal(operation != null && operation.getOperation() != null);
 			this.operation = operation;
 			this.outVectorId = outVectorId;
 			addInputPort(inPort = new PortWrapper(-1, "in"));
