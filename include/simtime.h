@@ -103,7 +103,11 @@ class SIM_API SimTime
      * Constructor initializes to zero.
      */
     SimTime() {t=0;}
-    template<typename T> SimTime(T d) {operator=(d);}
+    SimTime(double d) {operator=(d);}
+    SimTime(cPar& d) {operator=(d);}
+    SimTime(const SimTime& x) {operator=(x);}
+    // note: template ctor is not a good idea -- often causes suprises
+    // template<typename T> SimTime(T d) {operator=(d);}
 
     /** @name Arithmetic operations */
     //@{

@@ -1,3 +1,9 @@
+2008-07-01  Andras Varga
+
+	* opp_msgc: doPacking/doUnpacking functions for arrays and primitive 
+	types moved out of the generated code into the simkernel headers
+	include/packing.h
+
 2008-06-16  Andras Varga
 
 	* opp_msgc: added support for C99 integer types (int8_t, uint64_t, etc),

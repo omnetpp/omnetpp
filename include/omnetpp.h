@@ -100,6 +100,7 @@
 #include "regmacros.h"
 #include "simutil.h"
 #include "nedsupport.h"
+#include "packing.h"
 #include "compat.h"
 #include "platdep/intxtypes.h"
 
