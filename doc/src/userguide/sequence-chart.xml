@@ -7,34 +7,37 @@
   <sect1>
     <title>Introduction</title>
     <para>
-      The Sequence Chart and the Eventlog Table tools (often just referred as tools in the
-      rest of this chapter) are part of the OMNeT++ IDE. Both of them display an eventlog
-      file which can be optionally but automatically recorded by the OMNeT++ 4.0
+      This chapter describes the
+      Sequence Chart and the Eventlog Table tools. Both of them display an eventlog
+      file recorded by the OMNeT++ 4.0
       simulation kernel.
     </para>
     <para>
-      An eventlog file contains various information about a simulation run such as the
-      simple and compound modules that were present in the network, the connections
-      between them, the messages sent during the simulation (optionally with field level
-      detail) and the events where they were processed.
+      An eventlog file contains a log of messages sent during the simulation,
+      and the details of events that sent or received them. This includes both
+      messages sent between modules and self-messages (timers). The amount of
+      data recorded from messages can be controlled by the user, as well as
+      start/stop time, which modules to include in the log, and so on.
+      The file also contains the topology of the model, that is, the modules and
+      their interconnections.
     </para>
     <note>
       Please refer to the OMNeT++ 4.0 Manual for further details on what an eventlog file
-      is and what is its exact format.
+      is, and what is its exact format.
     </note>
     <para>
-      The Sequence Chart displays eventlog files in a graphical notation focusing on the
+      The Sequence Chart displays eventlog files in a graphical form, focusing on the
       causes and consequences of events and message sends. It helps understanding complex
-      simulation models and helps correctly implementing the desired component
+      simulation models, and helps correctly implementing the desired component
       behaviors. The Eventlog Table displays an eventlog file in a more detailed and
-      direct way focusing on the exact data in tabular format. Both tools can display
+      direct way, in a tabular format, focusing on the exact data. Both tools can display
       filtered eventlogs created via the Eventlog Tool filter command as described in the
       OMNeT++ 4.0 Manual, by a third party custom filter tool or by the IDE's in memory
       filtering.
     </para>
     <para>
-      Using these tools you will be able to easily examine every minute detail of your
-      simulation back and forth in terms of simulation time or events focusing on the
+      Using these tools, you will be able to easily examine every detail of your
+      simulation back and forth in terms of simulation time or events, focusing on the
       behavior instead of the statistical results of your model.
     </para>
   </sect1>
@@ -44,102 +47,105 @@
     <para>
       The Inifile Editor in the OMNeT++ IDE provides a group of widgets in the
       <guilabel>Output Files</guilabel> section to configure automatic eventlog
-      recording. To enable it simply put a checkmark next to its checkbox or insert the
+      recording. To enable it, simply put a checkmark next to its checkbox, or insert the
       line <screen>record-eventlog = true</screen> into the inifile.
     </para>
     <picture file="pictures/INI-Eventlog.png">Inifile eventlog configuration</picture>
     <para>
-      By default the recorded eventlog file will be put in the project's
-      <filename>results</filename> directory with the name
+      By default, the recorded eventlog file will be put in the project's
+      <filename>results</filename> directory, with the name
       <filename>${configname}-${runnumber}.log</filename>.
     </para>
     <warning>
-      If you override the default file name please make sure that the file extension is
-      <filename>log</filename> as the example shows above so that the OMNeT++ IDE tools
+      If you override the default file name, please make sure that the file extension is
+      <filename>log</filename>, so that the OMNeT++ IDE tools
       will be able to recognize it automatically.
     </warning>
     <para>
-      The 'recording intervals' and 'record events' parameters control which events will
+      The 'recording intervals' and 'record events' configuration keys control which events will
       be recorded based on their simulation time and on the module where they occur. The
-      'message details' parameter specifies what will be recorded from a message's content
-      when it is sent.
+      'message details' configuration key specifies what will be recorded from a message's content.
+      Message contents will be recorded each time the message gets sent.
     </para>
     <para>
-      These parameters also affect the recorded file's size which in turn might change
-      performance both during simulation and when viewing the results in the IDE. The
-      smaller the file is the better for both writing it to the disk and for loading and
-      displaying it from memory. It is always a good idea to provide these parameters with
-      reasonable limits.
+      The amount of data recorded will affect the eventlog file size as well as the
+      execution speed of the simulation, so it is often a good idea to tailor these
+      settings to get a reasonable tradeoff between performance and details.
     </para>
     <note>
       Please refer to the OMNeT++ 4.0 Manual for a complete description of eventlog
-      recording parameters.
+      recording settings.
     </note>
   </sect1>
 
   <sect1>
     <title>Examples</title>
     <para>
-      Before running any of the following examples make sure that eventlog recording is
-      enabled by uncommenting the line <screen>record-eventlog = true</screen> in the file
-      <filename>omnetpp.ini</filename> under the simulation's directory. To open the
-      generated eventlog in the OMNeT++ IDE go to the example's
+      This section will guide you through the use of the Sequence Chart and Eventlog Table
+      tools, using example simulations from OMNeT++ and the INET Framework.
+      Before running any of the simulations, make sure that eventlog recording is
+      enabled, by adding or uncommenting the line <screen>record-eventlog = true</screen>
+      in <filename>omnetpp.ini</filename> file in the simulation's directory. To open the
+      generated eventlog in the OMNeT++ IDE, go to the example's
       <filename>results</filename> directory in the <guilabel>Resource
-      Navigator</guilabel> view and double click on the log file.
+      Navigator</guilabel> view, and double-click the log file. By default, the file
+      will open in the Sequence Chart.
       <tip>
-	You can also open a file in an editor other than its default editor by right
-	clicking on it and choosing an item from the <guisubmenu>Open With</guisubmenu>
-	submenu. This way you can open an eventlog file in the Eventlog Table editor
-	instead of the default Sequence Chart.
+	To open the file in the Eventlog Table as editor, right-click the file, and
+	choose the corresponding item from the context menu's <guisubmenu>Open With</guisubmenu>
+	submenu.
       </tip>
     </para>
     <sect2>
-      <title>Tic toc</title>
+      <title>Tictoc</title>
       <para>
-	This example is available in the OMNeT++ installation under the directory
-	<filename>samples/tictoc</filename>. Tic toc is the most basic example in this
-	chapter which provides a quick overview how to use and understand the Sequence
+	The Tictoc example is available in the OMNeT++ installation under the directory
+	<filename>samples/tictoc</filename>. Tictoc is the most basic example in this
+	chapter, and it provides a quick overview on how to use and understand the Sequence
 	Chart.
       </para>
       <para>
-	Start the simulation and choose the simplest configuration 'Tictoc1' which
-	specifies only two nodes called 'tic' and 'toc'. During initializion one of the
-	nodes will send a message to the other and at each event from that on the node
-	which receives the message will simply send it back. This process continues until
+	Start the simulation, and choose the simplest configuration, 'Tictoc1', which
+	specifies only two nodes called 'tic' and 'toc'. During initializion, one of the
+	nodes will send a message to the other. From that on, every time a node
+	receives the message, it will simply send it back. This process continues until
 	you stop the simulation. In <xref
 	linkend="pictures/SequenceChart-Examples-TicTocTwoNodes.png"/> you can see how
 	this is represented on a Sequence Chart. The two horizontal black lines correspond
-	to the two nodes and are labelled 'tic' and 'toc'. The red circles represent
-	events and the blue arrows represent message sends. It is easy to see that all
-	message sends take 100 ms and that the first sender is the node 'tic'.
+	to the two nodes, and are labelled 'tic' and 'toc'. The red circles represent
+	events, and the blue arrows represent message sends. It is easy to see that all
+	message sends take 100 ms, and that the first sender is the node 'tic'.
       </para>
       <picture file="pictures/SequenceChart-Examples-TicTocTwoNodes.png">
-	Tic toc with two nodes
+	Tictoc with two nodes
       </picture>
       <para>
-	In the next tic toc example there are six nodes tossing a message around until it
-	reaches its destination. To generate the eventlog file restart the simulation and
+	In the next Tictoc example there are six nodes tossing a message around until it
+	reaches its destination. To generate the eventlog file, restart the simulation and
 	choose the configuration 'Tictoc9'. In <xref
 	linkend="pictures/SequenceChart-Examples-TicTocSeveralNodes.png"/> you can see how
-	the message goes from one node to another starting from node '0' and returning
-	back to it two times until finally the message reaches its end point at node
-	'3'. The chart also shows that this example unlike the previous one starts with a
+	the message goes from one node to another, starting from node '0' and passing through it
+	twice more, until it finally reaches its destination, node
+	'3'. The chart also shows that this example, unlike the previous one, starts with a
 	self message instead of immediately sending a message from initialize to another
 	node.
       </para>
       <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodes.png">
-	Tic toc with six nodes
+	Tictoc with six nodes
       </picture>
       <para>
-	This simple example allows to see how filtering works with the Sequence
+	Let us demonstrate on this simple example how filtering works with the Sequence
 	Chart. Open the filter dialog with the toolbar button <icon name="filter.png"/>
 	and put a checkmark for node '0' and '3' on the panel <guilabel>Module filter|by
-	name</guilabel> and apply it. The chart now displays only two axes corresponding
-	for the two selected nodes. There are three virtual message sends on the figure,
-	the first two show the message returning back to node '0' at
-	<eventnumber>9</eventnumber> and <eventnumber>13</eventnumber> while the last
-	shows that it reaches the destination at <eventnumber>16</eventnumber> where the
-	simulation ends. The details where the message was in between is filtered out.
+	name</guilabel> and apply it. The chart now displays only two axes that correspond
+	to the two selected nodes.
+	Note that the arrows on this figure are decorated with zigzags, meaning
+	that they represent a sequence of message sends. Such arrows will be called
+	virtual message sends in the rest of this chapter.
+	The first two arrows show the message returning to node '0' at
+	<eventnumber>9</eventnumber> and <eventnumber>13</eventnumber>, and the third
+	shows that it reaches the destination at <eventnumber>16</eventnumber>.
+	The events where the message was in between are filtered out.
       </para>
       <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodesFiltered.png">
 	Filtering for node '0' and '3'
@@ -148,64 +154,73 @@
     <sect2>
       <title>FIFO</title>
       <para>
-	This example is available in the OMNeT++ installation under the directory
-	<filename>samples/fifo</filename>. The FIFO is an important example because it
+	The FIFO example is available in the OMNeT++ installation under the directory
+	<filename>samples/fifo</filename>. The FIFO is an important example, because it
 	uses a queue which is an essential part of discrete event simulations and
 	introduces the notion of message reuses.
       </para>
       <para>
-	When you start the simulation choose the configuration 'low job arrival rate' and
-	let it go for a while. In <xref
+	When you start the simulation, choose the configuration 'low job arrival rate' and
+	let it run for a while. In <xref
 	linkend="pictures/SequenceChart-Examples-FIFO.png"/> you can see three modules, a
 	'source', a 'queue' and a 'sink'. The simulation starts with a self message and then
 	the generator sends the first message to the queue at
-	<eventnumber>1</eventnumber>. It is immediately obvious that the message stays for
-	a while in the queue from <eventnumber>2</eventnumber> to event #3. To measure
-	this amount of simulation time show the popup for one of the events while the
-	other one is selected. Finally the message is sent to the 'sink' where it is
+	<eventnumber>1</eventnumber>. It is immediately obvious that the message stays
+	in the queue for a certain period of time, between <eventnumber>2</eventnumber> and
+	<eventnumber>3</eventnumber>.
+      </para>
+      <tip>
+	When you select one event and hover with the mouse above the other,
+	the Sequence Chart will show the length of this time period in a tooltip.
+      </tip>
+      <para>
+	Finally, the message is sent to the 'sink' where it is
 	destroyed at <eventnumber>4</eventnumber>.
       </para>
       <picture file="pictures/SequenceChart-Examples-FIFO.png">
-	First in first out queue
+	The FIFO example
       </picture>
       <para>
 	The interesting thing happens at <eventnumber>12</eventnumber> where the incoming
-	message suddenly disappears, it seems like the queue does not send that message
-	out. Actually what happens is that the queue enqueues the job because it has
-	already got one at <eventnumber>10</eventnumber> which is still in the
-	queue. Since this queue is a FIFO, it will send out the first message at
-	<eventnumber>13</eventnumber>. To see as in <xref
-	linkend="pictures/SequenceChart-Examples-FIFOReuse.png"/> how this happens turn on
-	<guilabel>Show Reuse Messages</guilabel> from the context menu. It will display a
-	couple of green dotted arrows one of which is from <eventnumber>12</eventnumber>
-	to <eventnumber>17</eventnumber>. This arrow represents a message reuse that is
-	the job got and enqueued at <eventnumber>12</eventnumber> is sent out from the
-	queue at <eventnumber>17</eventnumber>. Notice the message that was already in the
-	queue when it got this second one will be sent out earlier at
-	<eventnumber>13</eventnumber>. Moreover this is the event where the second's
-	message processing starts.
+	message suddenly disappears. It seems like the queue does not send that message
+	out. Actually what happens is that the queue enqueues the job because it is busy
+	serving the message received at <eventnumber>10</eventnumber>.
+	Since this queue is a FIFO, it will send out the first message at
+	<eventnumber>13</eventnumber>. To see how this happens, turn on
+	<guilabel>Show Reuse Messages</guilabel> from the context menu; the result is
+	shown in <xref linkend="pictures/SequenceChart-Examples-FIFOReuse.png"/>.
+	It displays a
+	couple of green dotted arrows, one of which starts at <eventnumber>12</eventnumber>
+	and arrives at <eventnumber>17</eventnumber>. This is a reuse arrow; it means
+	that the message sent out from the queue at <eventnumber>17</eventnumber>
+	is the same as one received and enqueued at <eventnumber>12</eventnumber>.
+	Note that the service of this message actually begins at <eventnumber>13</eventnumber>,
+	when the queue becomes free after completing the service of the job received at
+	<eventnumber>10</eventnumber>.
       </para>
       <picture file="pictures/SequenceChart-Examples-FIFOReuse.png">
 	Showing reuse messages
       </picture>
       <para>
-	There are a couple of green dotted arrows with a somewhat different meaning such
-	as the one from <eventnumber>3</eventnumber> to
-	<eventnumber>6</eventnumber>. These represent the fact that the queue reuses
-	(instead of recreating it) the timer message each time it gets a job when it is
-	empty. In other words the timer self message is more or less remembered just like
-	normal jobs which are enqueued, but in a separate member variable in the queue's
-	C++ implementation.
+	Another type of message reuse can be seen on the arrow
+	from <eventnumber>3</eventnumber> to <eventnumber>6</eventnumber>:
+	it represents the fact that the queue reuses
+	the same timer message instead of creating a new one each time.
       </para>
+      <note>
+        Whenever you see a reuse arrow, it means that the underlying implementation
+        remembers the message between the two events. It might be stored
+        in a pointer variable, a queue, or some other data structure.
+      </note>
       <para>
-	The last part of this example is filtering out the queue from the chart. Open the
-	filter dialog and put a checkmark for 'sink' and 'source' on the panel
+	The last part of this example is about filtering out the queue from the chart. Open the
+	filter dialog, and put a checkmark for 'sink' and 'source' on the panel
 	<guilabel>Module filter|by NED type</guilabel> and apply it. If you look at the
 	result in <xref linkend="pictures/SequenceChart-Examples-FIFOFiltered.png"/> then
-	you will see zig zag arrows going from the 'source' to the 'sink'. These arrows
+	you will see zigzag arrows going from the 'source' to the 'sink'. These arrows
 	represent the fact that a message is being sent through the queue from 'source' to
-	'sink'. The first two arrows do not overlap in simulation time which means the
-	queue did not have more than one message in it at that time. On the other hand the
+	'sink'. The first two arrows do not overlap in simulation time, which means the
+	queue did not have more than one message in it during that time. On the other hand the
 	third and fourth arrows do overlap due to the fact that the forth job reached the
 	queue while it was busy with the third one. Scrolling forward you can find other
 	places where the queue becomes empty and arrows do not overlap again.
@@ -217,20 +232,20 @@
     <sect2>
       <title>Routing</title>
       <para>
-	This example is available in the OMNeT++ installation under the directory
+	The Routing example is available in the OMNeT++ installation under the directory
 	<filename>samples/routing</filename>. The predefined configuration called Net10
-	specifies a network with 10 nodes each node having an application, a few queues
-	and a routing module inside. Three preselected nodes namely the node '1', '6' and
-	'8' are destinations while all nodes are message sources. The routing module uses
+	specifies a network with 10 nodes, with each node having an application, a few queues
+	and a routing module inside. Three preselected nodes, namely the node '1', '6' and
+	'8', are destinations while all nodes are message sources. The routing module uses
 	the shortest path algorithm to find the route to the destination. The goal in this
-	example is to create a sequence chart that shows messages which go in
+	example is to create a sequence chart that shows messages which travel
 	simultaneously from multiple sources to their destinations.
       </para>
       <picture file="pictures/SequenceChart-Examples-RoutingNetwork.png">
 	Network with 10 nodes
       </picture>
       <para>
-	Since we don't care about the details what happens within a node, we can just turn
+	Since we don't care about the details what happens within nodes, we can just turn
 	on filtering for the NED type 'node.Node'. The chart will have 10 axes, each axis
 	drawn as two parallel solid black lines close to each other. These are the
 	compound modules that represent the nodes in the network. So far events could be
@@ -241,21 +256,28 @@
 	Filtering for nodes
       </picture>
       <para>
-	To reduce noise the chart will automatically omit events which are internal to the
-	compound module. Internal to a compound module means that the event processes a
-	message from and sends out messages to only other internal modules.
+	To reduce clutter, the chart will automatically omit events which are internal to the
+	compound module. An event is internal to a compound module if it only
+	processes a message from, and sends out messages to, other modules inside the
+	compound module.
       </para>
       <para>
 	If you look at <xref linkend="pictures/SequenceChart-Examples-Routing.png"/> you
 	will see a message going from node '7' at <eventnumber>10</eventnumber> to node
-	'1' at <eventnumber>23</eventnumber>. This message stays in node '2' for a while
-	from <eventnumber>15</eventnumber> to <eventnumber>17</eventnumber>. Actually the
-	routing decision in node '2' takes zero simulation time indicated by the gray
-	background area.
+	'1' at <eventnumber>23</eventnumber>. This message stays in node '2'
+	between <eventnumber>15</eventnumber> and <eventnumber>17</eventnumber>.
+	The gray background area between them means that zero simulation time has
+	elapsed, that is, the model does not account for processing time inside the
+	network nodes.
       </para>
+      <note>
+        This model contains both finite propagation delay and transmission time;
+        arrows in the sequence chart correspond to the interval between the start
+        of the transmission and the end of the reception.
+      </note>
       <para>
 	This example also demonstrates message detail recording configured by
-	<screen>eventlog-message-detail-pattern = Packet:declaredOn(Packet)</screen> in
+	<inifile>eventlog-message-detail-pattern = Packet:declaredOn(Packet)</inifile> in
 	the inifile. The result in <xref
 	linkend="pictures/SequenceChart-Examples-RoutingTooltip.png"/> shows the tooltip
 	presented for the second hop of the message described above.
@@ -267,7 +289,7 @@
 	It is very easy to find another message on the chart going through the network
 	parallel in simulation time. The one sent from node '3' at
 	<eventnumber>13</eventnumber> to node '8' arriving at
-	<eventnumber>19</eventnumber> is such a messsage.
+	<eventnumber>19</eventnumber> is such a message.
       </para>
     </sect2>
     <sect2>
@@ -334,7 +356,7 @@
 	<para>
 	  The first message sent by host1 is not a ping request but an ARP request which
 	  after some processing in host0 generates the corresponding ARP reply. This is
-	  shown by the zig zag arrow between <eventnumber>90</eventnumber> and
+	  shown by the zigzag arrow between <eventnumber>90</eventnumber> and
 	  <eventnumber>91</eventnumber>. The reply goes back to host1 which then sends a
 	  wlan acknowledge in return. In this process host1 discovers the MAC address of
 	  host0 based on its IP address.
@@ -479,7 +501,7 @@
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-ZigZagArrow.png"/></entry>
-	      <entry>virtual message send; zig zag arrow</entry>
+	      <entry>virtual message send; zigzag arrow</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-MessageName.png"/></entry>
@@ -700,7 +722,7 @@
 	modules reaches the target module. The message name of the arrow in this case
 	corresponds to the first and the last message in the chain.
       </para>
-      <picture file="pictures/SequenceChart-ZigZagArrows.png">Zig zag arrows</picture>
+      <picture file="pictures/SequenceChart-ZigZagArrows.png">Zigzag arrows</picture>
       <para>
 	If events occured in a module are completely filtered out then the Sequence Chart
 	will not display the superfluous axis belonging to that module. This reduces the
@@ -737,7 +759,7 @@
       <para>
 	The eventlog file content may be displayed in two different notations. The
 	<guilabel>Raw</guilabel> data notation shows exactly what is present in the file.
-      </para>	
+      </para>
       <picture file="pictures/EventlogTable-RawMode.png">
 	<guilabel>Raw</guilabel> notation
       </picture>
@@ -794,7 +816,7 @@
       <para>
 	Standard keyboard and mouse navigation and multiple selection within the Eventlog
 	Table is done just like in any other table but there are extra navigation options
-	in the context menu. 
+	in the context menu.
       </para>
       <para>
 	The simplest are the <guilabel>Goto Event</guilabel> and the <guilabel>Goto
