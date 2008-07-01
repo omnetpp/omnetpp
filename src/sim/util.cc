@@ -311,11 +311,11 @@ const char *opp_typename(const std::type_info& t)
 
 //----
 
-cContextSwitcher::cContextSwitcher(cComponent *newContext)
+cContextSwitcher::cContextSwitcher(const cComponent *newContext)
 {
     // save current context and switch to new
     callerContext = simulation.getContext();
-    simulation.setContext(newContext);
+    simulation.setContext(const_cast<cComponent *>(newContext));
 }
 
 cContextSwitcher::~cContextSwitcher()
@@ -331,11 +331,11 @@ cContextSwitcher::~cContextSwitcher()
 
 static va_list dummy_va;
 
-cMethodCallContextSwitcher::cMethodCallContextSwitcher(cComponent *newContext, bool notifyEnvir) :
+cMethodCallContextSwitcher::cMethodCallContextSwitcher(const cComponent *newContext, bool notifyEnvir) :
   cContextSwitcher(newContext)
 {
     if (notifyEnvir && newContext!=callerContext)
-        EVCB.componentMethodBegin(callerContext, newContext, "", dummy_va);
+        EVCB.componentMethodBegin(callerContext, const_cast<cComponent *>(newContext), "", dummy_va);
 }
 
 void cMethodCallContextSwitcher::methodCall(const char *methodFmt,...)

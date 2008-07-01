@@ -245,7 +245,7 @@ class SIM_API cContextSwitcher
     /**
      * Switches context to the given module
      */
-    cContextSwitcher(cComponent *newContext);
+    cContextSwitcher(const cComponent *newContext);
 
     /**
      * Restores the original context
@@ -263,7 +263,7 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
     /**
      * Switches context to the given module
      */
-    cMethodCallContextSwitcher(cComponent *newContext, bool notifyEnvir=true);
+    cMethodCallContextSwitcher(const cComponent *newContext, bool notifyEnvir=true);
 
     /**
      * Restores the original context
