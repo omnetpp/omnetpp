@@ -109,7 +109,7 @@ public class ScaveEditorContributor extends ScaveModelActionBarContributor {
 	 * This action opens the Dataset view.
 	 */
 	private IAction showDatasetViewAction =
-		new Action("Show Dataset view") {
+		new Action("Show Dataset View") {
 			@Override
 			public void run() {
 				try {
