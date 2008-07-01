@@ -53,16 +53,16 @@
       <filename>results</filename> directory with the name
       <filename>${configname}-${runnumber}.log</filename>.
     </para>
-    <caution>
+    <warning>
       If you override the default file name please make sure that the file extension is
       <filename>log</filename> as the example shows above so that the OMNeT++ IDE tools
       will be able to recognize it automatically.
-    </caution>
+    </warning>
     <para>
       The 'recording intervals' and 'record events' parameters control which events will
       be recorded based on their simulation time and on the module where they occur. The
-      'message details' parameter specifies the level of detail what will be recorded from
-      a message's content when it is sent.
+      'message details' parameter specifies what will be recorded from a message's content
+      when it is sent.
     </para>
     <para>
       These parameters also affect the recorded file's size which in turn might change
@@ -72,8 +72,8 @@
       reasonable limits.
     </para>
     <note>
-      Please refer to the OMNeT++ 4.0 Manual for a more complete description of each
-      eventlog recording parameter.
+      Please refer to the OMNeT++ 4.0 Manual for a complete description of eventlog
+      recording parameters.
     </note>
   </sect1>
 
@@ -86,11 +86,12 @@
       generated eventlog in the OMNeT++ IDE go to the example's
       <filename>results</filename> directory in the <guilabel>Resource
       Navigator</guilabel> view and double click on the log file.
-      <note>
+      <tip>
 	You can also open a file in an editor other than its default editor by right
 	clicking on it and choosing an item from the <guisubmenu>Open With</guisubmenu>
-	submenu.
-      </note>
+	submenu. This way you can open an eventlog file in the Eventlog Table editor
+	instead of the default Sequence Chart.
+      </tip>
     </para>
     <sect2>
       <title>Tic toc</title>
@@ -104,8 +105,8 @@
 	Start the simulation and choose the simplest configuration 'Tictoc1' which
 	specifies only two nodes called 'tic' and 'toc'. During initializion one of the
 	nodes will send a message to the other and at each event from that on the node
-	receiving the message will simply send it back. This process continues until you
-	stop the simulation. In <xref
+	which receives the message will simply send it back. This process continues until
+	you stop the simulation. In <xref
 	linkend="pictures/SequenceChart-Examples-TicTocTwoNodes.png"/> you can see how
 	this is represented on a Sequence Chart. The two horizontal black lines correspond
 	to the two nodes and are labelled 'tic' and 'toc'. The red circles represent
@@ -438,11 +439,11 @@
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-AxisWithAttachedVector.png"/></entry>
-	      <entry>axis with attached vector</entry>
+	      <entry>axis with attached vector data</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-ModuleFullPath.png"/></entry>
-	      <entry>module full path</entry>
+	      <entry>module full path as axis label</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-InitializationEvent.png"/></entry>
@@ -474,11 +475,11 @@
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-SplitArrow.png"/></entry>
-	      <entry>message send far away, split arrow</entry>
+	      <entry>message send that goes far away; split arrow</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-ZigZagArrow.png"/></entry>
-	      <entry>virtual message send, zig zag arrow</entry>
+	      <entry>virtual message send; zig zag arrow</entry>
 	    </row>
 	    <row valign="middle">
 	      <entry><icon file="pictures/SequenceChart-Legend-MessageName.png"/></entry>
@@ -627,11 +628,11 @@
 	commands from the toolbar. To decrease or increase the distance between the axes
 	use the <guilabel>Increase/Decrease Spacing</guilabel> <icon
 	name="incr_spacing.png"/> <icon name="decr_spacing.png"/> commands.
-	<note>
-	  When zooming out more events and messages become visible on the chart making it
+	<warning>
+	  When you zoom out more events and messages become visible on the chart making it
 	  slower while zooming in more message lines break making it less informative. Try
 	  to keep a reasonable zoom level.
-	</note>
+	</warning>
       </para>
     </sect2>
     <sect2>
@@ -660,10 +661,10 @@
 	corresponding parts. Sometimes when the chart is zoomed out it might show a
 	complex tooltip at once because there are multiple things under the mouse.
       </para>
-      <note>
+      <tip>
 	To measure the simulation time difference between two events select one of them
 	and stay at the other to display the tooltip.
-      </note>
+      </tip>
       <picture file="pictures/SequenceChart-Tooltip.png">Event tooltip</picture>
     </sect2>
     <sect2>
@@ -936,13 +937,13 @@
 	consequence event. If there was a reuse in the path then the whole path is
 	considered to be a reuse itself.
       </para>
-      <note>
+      <warning>
 	Since computing the causes and consequences far away in the log file from the
 	traced event might be a time consuming task, there are extra limits around the
 	traced event to be set. These limits are separate from the range filter due to
 	being linked to the traced event. It is strongly recommended to provide limits
 	when tracing events to avoid long running operations.
-      </note>
+      </warning>
     </sect2>
     <sect2>
       <title>Collection limits</title>
@@ -954,7 +955,7 @@
 	message sends (and reuses) connecting the two. The process of collecting these
 	virtual dependencies is time consuming and has to be limited. There are two
 	options one of which limits the number of virtual message dependencies per event
-	and another which limits the depth to look at cause/consequence chains during
+	and another which limits the depth of cause/consequence chains looked at during
 	computing the filter's result.
       </para>
     </sect2>
@@ -985,8 +986,8 @@
       Eclipse documentation.
       <note>
 	Despite the name editor which is a concept of the Eclipse platform neither the
-	Sequence Chart nor the Eventlog Table can be used to actually edit the contents of
-	an eventlog file.
+	Sequence Chart nor the Eventlog Table can be used to actually change the contents
+	of an eventlog file.
       </note>
     </para>
     <para>
@@ -994,10 +995,10 @@
       different locations or use different diplay modes or filters in them. Once an
       eventlog is open in an editor, you can use the <guimenuitem>Window|New
       Editor</guimenuitem> to open it again.
-      <note>
+      <tip>
 	Dragging one of the editors from the tabbed pane to the side of the area allows
 	you to interact with the two simultaneously.
-      </note>
+      </tip>
     </para>
     <sect2>
       <title>Settings</title>
