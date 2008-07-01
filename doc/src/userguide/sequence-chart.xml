@@ -1055,10 +1055,10 @@
 	defaults (e.g. default zoom level) or revert the last changes (e.g. navigate back,
 	turn filter off, etc.) and then try refreshing.
       </para>
-      <caution>
-	On the other hand a long running opreration might be a sign of a problem that should
+      <warning>
+	An unreasonably long running opreration might be a sign of a problem that should
 	be reported for further consideration.
-      </caution>
+      </warning>
     </sect2>
   </sect1>
 
