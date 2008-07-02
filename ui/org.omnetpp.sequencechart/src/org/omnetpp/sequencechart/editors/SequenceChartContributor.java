@@ -136,6 +136,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
     protected SequenceChartAction showAxisLabelsAction;
 
+    protected SequenceChartAction showAxesWithoutEventsAction;
+
     protected SequenceChartAction increaseSpacingAction;
 
 	protected SequenceChartAction decreaseSpacingAction;
@@ -178,6 +180,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.showArrowHeadsAction = createShowArrowHeadsAction();
         this.showZeroSimulationTimeRegionsAction = createShowZeroSimulationTimeRegionsAction();
         this.showAxisLabelsAction = createShowAxisLabelsAction();
+        this.showAxesWithoutEventsAction = createShowAxesWithoutEventsAction();
 		this.increaseSpacingAction = createIncreaseSpacingAction();
 		this.decreaseSpacingAction = createDecreaseSpacingAction();
         this.defaultZoomAction = createDefaultZoomAction();
@@ -298,6 +301,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 subMenuManager.add(showArrowHeadsAction);
                 subMenuManager.add(showZeroSimulationTimeRegionsAction);
                 subMenuManager.add(showAxisLabelsAction);
+                subMenuManager.add(showAxesWithoutEventsAction);
 
                 menuManager.add(separatorAction);
 				menuManager.add(increaseSpacingAction);
@@ -928,6 +932,21 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             @Override
             public void update() {
                 setChecked(sequenceChart.getShowAxisLabels());
+            }
+        };
+    }
+    
+    private SequenceChartAction createShowAxesWithoutEventsAction() {
+        return new SequenceChartAction("Show Axes Without Events", Action.AS_CHECK_BOX) {
+            @Override
+            public void run() {
+                sequenceChart.setShowAxesWithoutEvents(!sequenceChart.getShowAxesWithoutEvents());
+                update();
+            }
+            
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowAxesWithoutEvents());
             }
         };
     }

@@ -39,13 +39,13 @@ public class EventLogTable
 {
 	private static final boolean debug = true;
 
-	public static final String STATE_PROPERTY = "EventLogTableState";
+	private static final String STATE_PROPERTY = "EventLogTableState";
 	
 	private boolean paintHasBeenFinished = false;
 	
 	private boolean internalErrorHappenedDuringPaint = false;
 
-	private boolean followEnd = false; // when the event log changes should we follow it or not?
+	private boolean followEnd = false; // when the eventlog changes should we follow it or not?
 
 	private EventLogInput eventLogInput;
 	
@@ -157,10 +157,10 @@ public class EventLogTable
 		}
 		else if (eventLogInput.isCanceled())
 		    drawNotificationMessage(gc,
-		        "Processing of a long running event log operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +
+		        "Processing of a long running eventlog operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +
 		        "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.");
 		else if (eventLogInput.isLongRunningOperationInProgress())
-		    drawNotificationMessage(gc, "Processing a long running event log operation. Please wait.");
+		    drawNotificationMessage(gc, "Processing a long running eventlog operation. Please wait.");
 		else
 			eventLogInput.runWithProgressMonitor(new Runnable() {
 				public void run() {
@@ -357,7 +357,7 @@ public class EventLogTable
     }
 
 	/*************************************************************************************
-	 * EVENT LOG NOTIFICATIONS
+	 * EVENTLOG NOTIFICATIONS
 	 */
 
 	public void eventLogAppended() {
@@ -375,7 +375,7 @@ public class EventLogTable
             scrollToBegin();
 
         if (debug)
-			System.out.println("EventLogTable got notification about event log change");
+			System.out.println("EventLogTable got notification about eventlog change");
 
         configureVerticalScrollBar();
 		updateVerticalBarPosition();
@@ -383,7 +383,7 @@ public class EventLogTable
 		if (followEnd)
 		{
 			if (debug)
-				System.out.println("Scrolling to follow event log change");
+				System.out.println("Scrolling to follow eventlog change");
 
 			if (!eventLog.isEmpty())
 			    scrollToEnd();

@@ -65,6 +65,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	public ModuleTreeItem addDescendantModule(int parentModuleId, int moduleId, String moduleClassName, String moduleFullName, boolean isCompoundModule) {
 	    Assert.isTrue(findDescendantModule(moduleId) == null);
 	    ModuleTreeItem parentModule = findDescendantModule(parentModuleId);
+	    Assert.isTrue(parentModule != null);
 	    ModuleTreeItem module = new ModuleTreeItem(moduleFullName, parentModule, isCompoundModule);
 	    module.setModuleId(moduleId);
 	    module.setModuleClassName(moduleClassName);

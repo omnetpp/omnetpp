@@ -1,6 +1,6 @@
 package org.omnetpp.sequencechart.widgets.axisorder;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.omnetpp.common.eventlog.EventLogInput;
@@ -15,7 +15,7 @@ public class FlatAxisOrderByMinimizingCost {
 		this.eventLogInput = eventLogInput;
 	}
 
-    public int[] calculateOrdering(ModuleTreeItem[] axisModules, HashMap<Integer, Integer> moduleIdToAxisModuleIndexMap) {
+    public int[] calculateOrdering(ModuleTreeItem[] axisModules, Map<Integer, Integer> moduleIdToAxisModuleIndexMap) {
         IntIntMap cppModuleIdToAxisModuleIndexMap = getCppModuleIdToAxisModuleIndexMap(moduleIdToAxisModuleIndexMap);
         IntVector cppAxisMessageDependecyWeightMatrix = eventLogInput.getSequenceChartFacade().getApproximateMessageDependencyCountAdjacencyMatrix(cppModuleIdToAxisModuleIndexMap, 100, 1, 0);
         int[][] axisMessageDependecyWeightMatrix = getAxisMessageDependecyWeightMatrix(cppAxisMessageDependecyWeightMatrix, axisModules.length);
@@ -104,7 +104,7 @@ public class FlatAxisOrderByMinimizingCost {
         return axisMessageDependecyWeightMatrix;
     }
 
-   private IntIntMap getCppModuleIdToAxisModuleIndexMap(HashMap<Integer, Integer> moduleIdToAxisModuleIndexMap) {
+   private IntIntMap getCppModuleIdToAxisModuleIndexMap(Map<Integer, Integer> moduleIdToAxisModuleIndexMap) {
         IntIntMap cppModuleIdToAxisModuleIndexMap = new IntIntMap();
 
         for (Integer key : moduleIdToAxisModuleIndexMap.keySet())

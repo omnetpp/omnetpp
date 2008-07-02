@@ -56,7 +56,7 @@ public class EventLogInput extends FileEditorInput
 	/**
 	 * Root of the module tree present in the event log file.
 	 */
-	protected ModuleTreeItem moduleTreeRoot = new ModuleTreeItem();
+	protected ModuleTreeItem moduleTreeRoot;
 
 	/**
 	 * A list of listeners to be notified when the contents of the event log changes.
@@ -190,7 +190,12 @@ public class EventLogInput extends FileEditorInput
 	}
 
 	public ModuleTreeItem getModuleTreeRoot() {
-		return moduleTreeRoot;
+	    if (moduleTreeRoot == null) {
+	        moduleTreeRoot = new ModuleTreeItem();
+	        synchronizeModuleTree();
+	    }
+
+	    return moduleTreeRoot;
 	}
 	
 	public void synchronizeModuleTree() {

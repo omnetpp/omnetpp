@@ -405,7 +405,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                                 drawText("Simulation finished", CONSTANT_TEXT_COLOR);
                             }
 							else
-								throw new RuntimeException("Unknown event log entry: " + eventLogEntry.getClassName());
+								throw new RuntimeException("Unknown eventlog entry: " + eventLogEntry.getClassName());
 						}
 						break;
 					case RAW:

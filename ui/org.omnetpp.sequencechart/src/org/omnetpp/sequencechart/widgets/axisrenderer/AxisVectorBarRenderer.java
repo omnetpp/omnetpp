@@ -18,29 +18,29 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
  * with the names representing the individual values of a data vector.
  */
 public class AxisVectorBarRenderer implements IAxisRenderer {
-	protected static final Color AXIS_COLOR = ColorFactory.BLACK;
+	private static final Color AXIS_COLOR = ColorFactory.BLACK;
 
-	protected static final Font VALUE_NAME_FONT = new Font(null, "Courier New", 8, 0);
+	private static final Font VALUE_NAME_FONT = new Font(null, "Courier New", 8, 0);
 
-	protected static final Color VALUE_NAME_COLOR = ColorFactory.BLACK;
+	private static final Color VALUE_NAME_COLOR = ColorFactory.BLACK;
 	
-	protected static final Color NO_VALUE_COLOR = ColorFactory.WHITE;
+	private static final Color NO_VALUE_COLOR = ColorFactory.WHITE;
 	
-	protected SequenceChart sequenceChart;
+	private SequenceChart sequenceChart;
 
-    protected String vectorFileName;
+    private String vectorFileName;
     
-    protected String vectorRunName;
+    private String vectorRunName;
 
-    protected String vectorModuleFullPath;
+    private String vectorModuleFullPath;
 
-    protected String vectorName;
+    private String vectorName;
 
-    protected XYArray data;
+    private XYArray data;
 
-	protected String[] valueNames;
+	private String[] valueNames;
 
-    protected ResultItem.Type type;
+    private ResultItem.Type type;
 
     public AxisVectorBarRenderer(SequenceChart sequenceChart, String vectorFileName, String vectorRunName, String vectorModuleFullPath, String vectorName, ResultItem resultItem, XYArray data) {
 		this.sequenceChart = sequenceChart;

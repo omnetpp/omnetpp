@@ -203,7 +203,7 @@ public class ManualAxisOrder {
 			@Override
 			public String getText(Object element) {
 				ModuleTreeItem moduleTreeItem = (ModuleTreeItem)element;
-				return moduleTreeItem.getModuleFullPath();
+				return moduleTreeItem.getModuleFullPath() + " (id = " + moduleTreeItem.getModuleId() + ")";
 			}
 		});
 
