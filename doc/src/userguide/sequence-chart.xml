@@ -127,7 +127,7 @@
 	the message goes from one node to another, starting from node '0' and passing through it
 	twice more, until it finally reaches its destination, node
 	'3'. The chart also shows that this example, unlike the previous one, starts with a
-	self message instead of immediately sending a message from initialize to another
+	self-message instead of immediately sending a message from initialize to another
 	node.
       </para>
       <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodes.png">
@@ -163,7 +163,7 @@
 	When you start the simulation, choose the configuration 'low job arrival rate' and
 	let it run for a while. In <xref
 	linkend="pictures/SequenceChart-Examples-FIFO.png"/> you can see three modules, a
-	'source', a 'queue' and a 'sink'. The simulation starts with a self message and then
+	'source', a 'queue' and a 'sink'. The simulation starts with a self-message and then
 	the generator sends the first message to the queue at
 	<eventnumber>1</eventnumber>. It is immediately obvious that the message stays
 	in the queue for a certain period of time, between <eventnumber>2</eventnumber> and
@@ -297,35 +297,34 @@
       <para>
 	This example is available in the INET Framework under the directory
 	<filename>examples/adhoc/ieee80211</filename>. The predefined configuration called
-	Config1 specifies two mobile hosts moving around on the playground and
+	Config1 specifies two mobile hosts moving around on the playground, and
 	communicating via the IEEE 802.11 wireless protocol. The network devices are
-	configured for ad hoc mode and the transmitter power is set so that hosts can move
-	out of range. One of the hosts is continuously pinging the other. The goal is to
-	create two sequence charts focusing on the protocol's MAC layer. The first chart
-	will show a ping message being successfully sent through the wireless channel
-	while the second will show the opposite, ping messages being continuously resent
-	due to packet loss.
+	configured for ad-hoc mode, and the transmitter power is set so that hosts can move
+	out of range. One of the hosts is continuously pinging the other. In this section
+	we will explore the protocol's MAC layer, using two sequence charts. The first chart
+	will show a successful ping message being sent through the wireless channel,
+	and the second will show ping messages getting lost and being continuously re-sent.
       </para>
       <para>
-	We also would like to record message detail during the simulation so the following
-	line should also be uncommented: <screen>eventlog-message-detail-pattern = *:(not
-	declaredOn(cMessage) and not declaredOn(cNamedObject) and not
-	declaredOn(cObject))</screen>
+	We also would like to record message some details during the simulation. To do that,
+	comment out the following line from omnetpp.ini:
+	<screen>eventlog-message-detail-pattern = *:(not declaredOn(cMessage) and
+	not declaredOn(cNamedObject) and not declaredOn(cObject))</screen>
       </para>
       <para>
-	To generate the evenlog file start the simulation environment and choose the
-	configuration 'host1 pinging host0'. Run the simulation in fast mode until around
+	To generate the eventlog file, start the simulation environment and choose the
+	configuration 'host1 pinging host0'. Run the simulation in fast mode until about
 	event number <eventnumber>5000</eventnumber>.
       </para>
       <sect3>
 	<title>Preparing the result</title>
 	<para>
-	  When you open the Sequence Chart it will show a couple of self messages being
-	  sent regularly. These are the self messages which control the movement of the
-	  two hosts on the playground.
+	  When you open the Sequence Chart, it will show a couple of self-messages named
+	  'move' being scheduled regularly. These are self-messages that control the movement of the
+	  hosts on the playground.
 	</para>
 	<para>
-	  We don't care about those move messages much but would like to focus on the MAC
+	  Let us ignore the 'move' messages, and focus on the MAC
 	  layer instead. To begin with open the filter dialog and check the
 	  <guilabel>Module Filter|by NED type</guilabel> option in the tree on the left
 	  hand side. It will display on the right hand side a list of NED types present in
@@ -433,18 +432,18 @@
 
   <sect1>
     <title>Sequence Chart</title>
+    <para>This section describes FIXME, TODO, XXX, and FILL-ME-IN in more details.</para>
     <para>
-      The Sequence Chart is devided into three parts the top and bottom gutters and the
-      main area. The gutters show the simulation times and the main area displays module
-      axes, events and message sends. The chart grows horizontally with simulation time
+      The Sequence Chart is divided into three parts: the top and bottom gutters, and the
+      main area. The gutters show the simulation time, and the main area displays module
+      axes, events and message sends. The chart grows horizontally with simulation time,
       and vertically with modules. Module axes can optionally display vector data.
     </para>
     <sect2>
       <title>Legend</title>
       <para>
-	A sequence chart is built from various small graphical elements representing
-	simple and compound modules, events, message sends, names, etc. listed in the
-	following table.
+	Graphical elements on the sequence chart represent modules, events and messages,
+	as listed in the following table.
       </para>
       <informaltable>
 	<tgroup cols="2">
@@ -468,15 +467,15 @@
 	      <entry>module full path as axis label</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-InitializationEvent.png"/></entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-InitializationEvent.png"/> (hollow circle)</entry>
 	      <entry>initialization event</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessageProcessingEvent.png"/></entry>
-	      <entry>self message processing event</entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessageProcessingEvent.png"/> (green disc)</entry>
+	      <entry>self-message processing event</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-MessageProcessingEvent.png"/></entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageProcessingEvent.png"/> (red disc)</entry>
 	      <entry>message processing event</entry>
 	    </row>
 	    <row valign="middle">
@@ -484,23 +483,23 @@
 	      <entry>event number</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessage.png"/></entry>
-	      <entry>self message</entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-SelfMessage.png"/> (blue arrow, arched)</entry>
+	      <entry>self-message</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-MessageSend.png"/></entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageSend.png"/> (blue arrow)</entry>
 	      <entry>message send</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-MessageReuse.png"/></entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-MessageReuse.png"/> (green dotted arrow)</entry>
 	      <entry>message reuse</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-SplitArrow.png"/></entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-SplitArrow.png"/> (arrow with a dashed segment)</entry>
 	      <entry>message send that goes far away; split arrow</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-ZigZagArrow.png"/></entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-ZigZagArrow.png"/> (arrow with zigzag)</entry>
 	      <entry>virtual message send; zigzag arrow</entry>
 	    </row>
 	    <row valign="middle">
@@ -508,7 +507,7 @@
 	      <entry>message name</entry>
 	    </row>
 	    <row valign="middle">
-	      <entry><icon file="pictures/SequenceChart-Legend-ZeroSimulationTimeRegion.png"/></entry>
+	      <entry><icon file="pictures/SequenceChart-Legend-ZeroSimulationTimeRegion.png"/> (gray background)</entry>
 	      <entry>zero simulation time region</entry>
 	    </row>
 	    <row valign="middle">
@@ -522,8 +521,18 @@
     <sect2>
       <title>Timeline</title>
       <para>
-	The Sequence Chart's horizontal axis corresponds to the simulation time in four
-	different ways. Linear and event number mean that the simulation time and event
+	Simulation time may be mapped onto the horizontal axis in various ways, linear
+	mapping only being one of them. The reason for having multiple mapping modes is
+	that intervals between interesting events are often of different magnitudes
+	(for example, microsecond timings in a MAC protocol vs multi-second timeouts
+	in higher layers), which is impossible to visualize using a linear scale.
+      </para>
+      <para>
+        The available mapping modes are:
+      </para>
+FIXME PLEASE TURN DESCRIPTION INTO BULLETED LIST!
+      <para>
+	Linear and event number mean that the simulation time and event
 	number is proportional to the distance measured in pixels respectively. While non
 	linear and step mean that there is a non linear transformation between distance
 	measured in pixels and simulation time. The goal of this non linear transformation
@@ -544,74 +553,84 @@
     <sect2>
       <title>Zero Simulation Time Regions</title>
       <para>
-	It is quite common in simulation models that multiple events occur at the very
-	same simulation time possibly in different modules. A region with gray background
+	It is common in simulation models that multiple events occur at the
+	same simulation time, possibly in different modules. A region with gray background
 	color indicates that the simulation time does not change along the horizontal axis
-	within the area and all events inside occured at the same moment. Of course the
-	order of the events still matters.
+	within the area, thus all events inside it have the same simulation time associated
+	with them.
       </para>
       <picture file="pictures/SequenceChart-ZeroSimulationTimeRegions.png">Nonlinear simulation time</picture>
     </sect2>
     <sect2>
       <title>Module Axes</title>
       <para>
-	The Sequence Chart's vertical axis corresponds to single or compound modules in
-	the simulation. By default all single modules are displayed as a single solid line
-	and events occurred in that module are shown as filled circles on that
-	line. Compound modules are shown as double solid lines along with events occured
-	in any of the simple modules not having a separate axis under that compound
-	module. These lines called module axes can be reordered with the option
-	<guilabel>Axis Ordering Mode</guilabel> <icon name="axisordering.gif"/> manually,
-	by module name, by module id or by approximately minimizing the number of crossing
-	arrows between them.
+	The Sequence Chart's vertical axis corresponds to modules in the simulation.
+	By default, each simple module is displayed on a separate horizontal
+	axis, and events that occurred in that module are shown as circles on it.
+	A compound module is shown as axis represented with a double line, and it will
+	display events from all contained simple modules, except those that have their
+	own axes displayed.
       </para>
+      <para>
+	Module axes can be reordered with the option <guilabel>Axis Ordering Mode</guilabel>
+	<icon name="axisordering.gif"/>. Ordering can be manual, or sorted by module name,
+	by module id or by minimizing the number of crossing arrows.
+      </para>
+      <note>
+        The algorithm that minimizes crossings works by taking a random sample from the file,
+        and determines the order of axes from that -- which means that the resulting order
+        will only be an approximation. A more precise algorithm which takes all arrows into
+        account would not be practical, because of the typically large size of eventlog files.
+      </note>
     </sect2>
     <sect2>
       <title>Gutter</title>
       <para>
-	Both the top and the bottom of the Sequence Chart display the simulation times
-	corresponding to the currently visible part. The left side of the top simulation
-	time gutter displays the common simulation time prefix which should be added to
+	The upper and lower edges of the Sequence Chart show a gutter that displays
+	the simulation time. The left side of the top gutter displays a
+	<emphasis>time prefix</emphasis> value, which should be added to
 	each individual simulation time shown at the vertical hairlines. This reduces the
 	number of characters on the gutter and allows easier recognition of simulation
 	time changes in the significant digits. The right side of the figure displays the
-	simulation time range currently visible within the sequence chart window. To see
-	what is the simulation time at a specific point on the chart move the mouse to the
-	desired place and read the value horizontally aligned with the mouse on the
-	gutter.
+	simulation time range currently visible within the sequence chart window.
       </para>
+      <tip>
+	To see what is the simulation time at a specific point on the chart, move
+	the mouse to the desired place and read the value horizontally aligned with
+	the mouse on the gutter.
+      </tip>
       <picture file="pictures/SequenceChart-Gutter.png">Gutter and range</picture>
     </sect2>
     <sect2>
       <title>Events</title>
       <para>
 	Events are displayed as filled circles along the module axes. A green circle
-	represents the processing of a self message while a red circle is an event caused
-	by receiving a message from another module. The very first event which has the
-	event number zero represents the module initialization phase and may spread across
-	multiple module axes because the simulation kernel calls each module during
-	initialization. To easily distinguish this event from the normal ones it is
-	displayed with white background color. Event numbers are just below and to the
-	right of their corresponding events and are prefixed with '#'.
+	represents the processing of a self-message, while a red circle is an event caused
+	by receiving a message from another module. Event number zero represents the
+	module initialization phase, and may spread across
+	multiple module axes, because the simulation kernel calls each module during
+	initialization. Initialization events are displayed with white background color.
+	Event numbers are displayed below and to the right of their corresponding events,
+	and are prefixed with '#'.
       </para>
       <picture file="pictures/SequenceChart-Events.png">Various event kinds</picture>
     </sect2>
     <sect2>
       <title>Messages</title>
       <para>
-	The Sequence Chart represents message sends via blue arrows. Vertically the arrow
-	starts at the module which is sending the message and ends at the module which
-	processed that message. Horizontally the start and end points of the arrow
+	The Sequence Chart represents message sends via blue arrows. Vertically, the arrow
+	starts at the module which sent the message, and ends at the module which
+	processed message. Horizontally the start and end points of the arrow
 	correspond to the sender and receiver events. The message name is displayed
-	somewhere near middle of the arrow.
+	near the middle of the arrow.
       </para>
       <para>
-	When a message arrives to a module which neither deletes nor sends but rather
+	When a message arrives at a module which neither deletes nor sends it, but rather
 	stores it in some internal state and later on sends the very same message to
 	another module then the events where the message arrived and where the message was
 	actually sent are in a so called message reuse relationship. This is represented
 	by a green dotted arrow between the two events. These arrows are not shown by
-	default due to timer self messages usually being reused continuously and adding
+	default due to timer self-messages usually being reused continuously and adding
 	unnecessary noise to the chart. Use the <guilabel>Show Reuse Messages</guilabel>
 	<icon name="reusearrows.png"/> option on the toolbar or the context menu to show
 	or hide these arrows.
@@ -623,7 +642,7 @@
 	line. One end of both arrow pieces is a dotted and the other end is a solid
 	line. The one which is solid always exactly points to or from the event it is
 	really connected to. The other one which is dotted either specifies only the
-	module where the arrow really starts or ends or in case of a self message it just
+	module where the arrow really starts or ends or in case of a self-message it just
 	points towards the other arrow horizontally.
       </para>
       <picture file="pictures/SequenceChart-SplitArrows.png">Split arrows</picture>
