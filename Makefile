@@ -126,7 +126,7 @@ check-env:
 	    chmod +x $(OMNETPP_BIN_DIR)/$$probefile) 2>/dev/null; then \
 	  if $$probefile >/dev/null 2>/dev/null; then :; else \
 	    echo 'ERROR: $(OMNETPP_BIN_DIR) is not in the path! You can add it by entering:'; \
-	    echo '   export PATH=$$PATH:$(OMNETPP_BIN_DIR)'; \
+	    echo '   export PATH=$(OMNETPP_BIN_DIR):$$PATH'; \
 	    exit 1; \
 	  fi; \
 	else \
