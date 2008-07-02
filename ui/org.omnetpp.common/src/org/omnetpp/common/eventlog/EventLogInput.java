@@ -13,7 +13,6 @@ import org.omnetpp.eventlog.engine.EventLogTableFacade;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.eventlog.engine.IntVector;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntryList;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
@@ -189,6 +188,10 @@ public class EventLogInput extends FileEditorInput
 		return sequenceChartFacade;
 	}
 
+	/**
+	 * Returns the module tree which at least contains all modules created during initialization.
+	 * Dynamically created modules might be added later as they get discovered.
+	 */
 	public ModuleTreeItem getModuleTreeRoot() {
 	    if (moduleTreeRoot == null) {
 	        moduleTreeRoot = new ModuleTreeItem();
@@ -197,7 +200,12 @@ public class EventLogInput extends FileEditorInput
 
 	    return moduleTreeRoot;
 	}
-	
+
+	/**
+	 * Updates the module tree according to the current state of the eventlog.
+	 * The C++ implementation lazily discovers dynamic modules as the corresponding
+	 * module creation entries are read from the file.
+	 */
 	public void synchronizeModuleTree() {
         ModuleCreatedEntryList moduleCreatedEntryList = eventLog.getModuleCreatedEntries();
 
@@ -208,6 +216,7 @@ public class EventLogInput extends FileEditorInput
                 ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(entry.getModuleId());
                 
                 if (moduleTreeItem != null && moduleTreeItem.getModuleName().equals("<unknown>")) {
+                    // FIXME: what about references to this tree item? are there any?
                     moduleTreeItem.remove();
                     moduleTreeItem = null;
                 }
@@ -216,35 +225,6 @@ public class EventLogInput extends FileEditorInput
                     moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
             }
         }
-	}
-
-	private ArrayList<ModuleTreeItem> getAllSimpleModules() {
-		final ArrayList<ModuleTreeItem> modules = new ArrayList<ModuleTreeItem>();
-
-		moduleTreeRoot.visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
-			public void visit(ModuleTreeItem treeItem) {
-				if (treeItem != moduleTreeRoot && !treeItem.isCompoundModule())
-					modules.add(treeItem);
-			}
-		});
-
-		return modules;
-	}
-
-	public ArrayList<ModuleTreeItem> getSelectedModules() {
-	    synchronizeModuleTree();
-
-	    if (eventLog instanceof FilteredEventLog && eventLogFilterParameters.enableModuleFilter) {
-			ArrayList<ModuleTreeItem> selectedModules = new ArrayList<ModuleTreeItem>();
-			IntVector moduleIds = ((FilteredEventLog)eventLog).getSelectedModuleIds();
-
-			for (int i = 0; i < moduleIds.size(); i++)
-				selectedModules.add(moduleTreeRoot.findDescendantModule(moduleIds.get(i)));
-			
-			return selectedModules;
-		}
-		else
-			return getAllSimpleModules();
 	}
 
 	/*************************************************************************************

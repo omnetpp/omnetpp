@@ -683,7 +683,7 @@ public class FilterEventLogDialog
 	}
 
 	private FilterDialogTreeNode createModuleFilterTreeNode(Composite parent) {
-	    // synchronize tree state first
+	    // synchronize module tree state first
         eventLogInput.synchronizeModuleTree();
 
         // module filter 

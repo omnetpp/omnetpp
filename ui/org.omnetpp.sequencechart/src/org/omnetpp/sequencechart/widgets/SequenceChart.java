@@ -215,7 +215,7 @@ public class SequenceChart
     private boolean invalidAxisRenderers = true; // requests recalculation
 	private IAxisRenderer[] axisRenderers; // used to draw the axis (parallel to axisModules)
     
-	private boolean invalidModuleIdToAxisRendererMap; // true means the map must be updated for axis modules
+	private boolean invalidModuleIdToAxisRendererMap; // requests recalculation
     private Map<Integer, IAxisRenderer> moduleIdToAxisRendererMap = new HashMap<Integer, IAxisRenderer>(); // this map is not cleared when the eventlog is filtered or the filter is removed
 
     private boolean invalidAxisModulePositions = true; // requests recalculation
@@ -759,12 +759,12 @@ public class SequenceChart
 	}
 
 	public void scrollToBegin() {
-		if (!eventLogInput.isCanceled())
+		if (!eventLogInput.isCanceled() && !eventLog.isEmpty())
 			scrollToElement(eventLog.getFirstEvent(), 0);
 	}
 
 	public void scrollToEnd() {
-		if (!eventLogInput.isCanceled()) {
+		if (!eventLogInput.isCanceled() && !eventLog.isEmpty()) {
 			scrollToElement(eventLog.getLastEvent(), getViewportWidth());
 			followEnd = true;
 		}
@@ -1340,22 +1340,38 @@ public class SequenceChart
     /**
      * Makes sure all axes are present which will be needed to draw the chart 
      * in the currently visible region.
-     * 
-     * FilteredEventLog EnableModuleFilter ShowAxisWithoutEvents AxisModules
-     * false            false              false                 All simple modules which have events (collected)
-     * false            false              true                  All simple modules
-     * true             false              false
-     * true             false              true                  All simple modules
-     * true             true               false                 All selected modules which have events
-     * true             true               true                  All selected modules
      */
     private void calculateAxisModules() {
-        if (showAxesWithoutEvents)
-            axisModules = eventLogInput.getSelectedModules();
+        if (showAxesWithoutEvents) {
+            eventLogInput.getModuleTreeRoot().visitLeaves(new ModuleTreeItem.IModuleTreeItemVisitor() {
+                public void visit(ModuleTreeItem moduleTreeItem) {
+                    if (isSelectedAxisModule(moduleTreeItem) && !axisModules.contains(moduleTreeItem)) {
+                        axisModules.add(moduleTreeItem);
+                        invalidateAxisModules();
+                    }
+                }
+            });
+        }
         else {
-            long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
+            // events
+            long[] eventPtrRange = getFirstLastEventForPixelRange(-getExtraClippingForEvents(), getViewportWidth() + getExtraClippingForEvents());
             long startEventPtr = eventPtrRange[0];
             long endEventPtr = eventPtrRange[1];
+    
+            if (startEventPtr != 0 && endEventPtr != 0) {
+                for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.Event_getNextEvent(eventPtr)) {
+                    if (!isInitializationEvent(eventPtr))
+                        ensureAxisModuleForModuleId(sequenceChartFacade.Event_getModuleId(eventPtr));
+
+                    if (eventPtr == endEventPtr)
+                        break;
+                }
+            }
+            
+            // message dependencies
+            eventPtrRange = getFirstLastEventPtrForMessageDependencies();
+            startEventPtr = eventPtrRange[0];
+            endEventPtr = eventPtrRange[1];
     
             if (startEventPtr != 0 && endEventPtr != 0) {
                 PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
@@ -1380,10 +1396,12 @@ public class SequenceChart
     }
 
     private void ensureAxisModuleForModuleId(int moduleId) {
+        // check if module already has an associated axis?
         for (ModuleTreeItem axisModule : axisModules)
             if (axisModule.findDescendantModule(moduleId) != null)
                 return;
 
+        // get the module tree item
         ModuleTreeItem moduleTreeRoot = eventLogInput.getModuleTreeRoot();
         ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(moduleId);
 
@@ -1399,8 +1417,33 @@ public class SequenceChart
             }
         }
 
-        axisModules.add(moduleTreeItem);
-        invalidateAxisModules();
+        // find the selected module axis and add it
+        while (moduleTreeItem != null) {
+            if (isSelectedAxisModule(moduleTreeItem)) {
+                axisModules.add(moduleTreeItem);
+                invalidateAxisModules();
+                break;
+            }
+
+            moduleTreeItem = moduleTreeItem.getParentModule();
+        }
+    }
+
+    /**
+     * True means the module is selected to have an axis but might still be excluded 
+     * depending on the showAxesWithoutEvents flag.
+     */
+    private boolean isSelectedAxisModule(ModuleTreeItem moduleTreeItem) {
+        if (eventLogInput.getModuleTreeRoot() == moduleTreeItem)
+            return false;
+
+        if (eventLog instanceof FilteredEventLog && eventLogInput.getFilterParameters().enableModuleFilter) {
+            ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(moduleTreeItem.getModuleId());
+            Assert.isTrue(moduleCreatedEntry != null);
+            return ((FilteredEventLog)eventLog).matchesModuleCreatedEntry(moduleCreatedEntry);
+        }
+        else
+            return !moduleTreeItem.isCompoundModule();
     }
 
     /*************************************************************************************
@@ -1984,7 +2027,7 @@ public class SequenceChart
 
 			graphics.getClip(Rectangle.SINGLETON);
 
-			int extraClipping = (showMessageNames || showEventNumbers) ? 300 : 100;
+			int extraClipping = getExtraClippingForEvents();
 			long[] eventPtrRange = getFirstLastEventForPixelRange(Rectangle.SINGLETON.x - extraClipping, Rectangle.SINGLETON.right() + extraClipping);
 			long startEventPtr = eventPtrRange[0];
 			long endEventPtr = eventPtrRange[1];
@@ -2011,6 +2054,10 @@ public class SequenceChart
 	            drawWithAntialias = true;
 		}
 	}
+
+    private int getExtraClippingForEvents() {
+        return (showMessageNames || showEventNumbers) ? 300 : 100;
+    }
 
 	private void drawZeroSimulationTimeRegions(Graphics graphics, long startEventPtr, long endEventPtr) {
 		long previousEventPtr = -1;

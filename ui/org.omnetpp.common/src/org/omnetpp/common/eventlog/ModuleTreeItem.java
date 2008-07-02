@@ -173,6 +173,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	}
 
 	public ModuleTreeItem findDescendantModule(final int id) {
+	    // TODO: put a hash table in the root
 		final ModuleTreeItem[] descendant = new ModuleTreeItem[1];
 
 		visitLeaves(new IModuleTreeItemVisitor() {
@@ -186,6 +187,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	}
 	
     public ModuleTreeItem findDescendantModule(final String fullPath) {
+        // TODO: put a hash table in the root
         final ModuleTreeItem[] descendant = new ModuleTreeItem[1];
 
         visitLeaves(new IModuleTreeItemVisitor() {

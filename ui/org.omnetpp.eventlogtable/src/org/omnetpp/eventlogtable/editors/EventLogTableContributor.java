@@ -514,10 +514,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 				
 				if (eventLogEntryReference != null) {
-				    IMessageDependency cause = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber()).getCause();
-					
-					if (cause != null)
-						return cause.getBeginSendEntry();
+				    IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
+				    
+				    if (event != null) {
+    				    IMessageDependency cause = event.getCause();
+    
+    					if (cause != null)
+    						return cause.getBeginSendEntry();
+				    }
 				}
 				
 				return null;
