@@ -135,9 +135,9 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setMaximumNumberOfConsequences(int maximumNumberOfConsequences) { this->maximumNumberOfConsequences = maximumNumberOfConsequences; }
 
         bool matchesFilter(IEvent *event);
+        bool matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreatedEntry);
         FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward, long stopEventNumber = -1);
         FilteredEvent *getMatchingEventInDirection(IEvent *event, bool forward, long stopEventNumber = -1);
-        std::vector<int> getSelectedModuleIds();
 
         // IEventLog interface
         virtual ProgressMonitor setProgressMonitor(ProgressMonitor progressMonitor) { return eventLog->setProgressMonitor(progressMonitor); }
@@ -182,7 +182,6 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
          */
         bool matchesEvent(IEvent *event);
         bool matchesDependency(IEvent *event);
-        bool matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreatedEntry);
         bool matchesBeginSendEntry(BeginSendEntry *beginSendEntry);
         bool matchesExpression(MatchExpression &matchExpression, EventLogEntry *eventLogEntry);
         bool matchesPatterns(std::vector<PatternMatcher> &patterns, const char *str);

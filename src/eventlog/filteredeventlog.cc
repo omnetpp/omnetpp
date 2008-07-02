@@ -542,21 +542,6 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
     return NULL;
 }
 
-std::vector<int> FilteredEventLog::getSelectedModuleIds()
-{
-    std::vector<int> moduleIds;
-    std::vector<ModuleCreatedEntry *> moduleCreatedEntries = eventLog->getModuleCreatedEntries();
-
-    for (std::vector<ModuleCreatedEntry *>::iterator it = moduleCreatedEntries.begin(); it != moduleCreatedEntries.end(); it++) {
-        ModuleCreatedEntry *moduleCreatedEntry = *it;
-
-        if (moduleCreatedEntry && matchesModuleCreatedEntry(moduleCreatedEntry))
-            moduleIds.push_back(moduleCreatedEntry->moduleId);
-    }
-
-    return moduleIds;
-}
-
 // TODO: LONG RUNNING OPERATION
 // this does a recursive depth search
 bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
