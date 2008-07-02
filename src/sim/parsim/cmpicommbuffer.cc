@@ -146,9 +146,9 @@ void cMPICommBuffer::pack(const char *d)
         throw cRuntimeError("cMPICommBuffer::pack(const char*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(opp_string& d)
+void cMPICommBuffer::pack(const opp_string& d)
 {
-    pack(d.buffer());
+    pack(d.c_str());
 }
 
 void cMPICommBuffer::pack(SimTime d)
@@ -163,91 +163,91 @@ void cMPICommBuffer::pack(const char *d, int size)
         throw cRuntimeError("cMPICommBuffer::pack(const char*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(unsigned char *d, int size)
+void cMPICommBuffer::pack(const unsigned char *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned char));
     if (MPI_Pack(d, size, MPI_UNSIGNED_CHAR, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(unsigned char*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(bool *d, int size)
+void cMPICommBuffer::pack(const bool *d, int size)
 {
     extendBufferFor(size*sizeof(char));
     if (MPI_Pack(d, size, MPI_CHAR, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(char*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(short *d, int size)
+void cMPICommBuffer::pack(const short *d, int size)
 {
     extendBufferFor(size*sizeof(short));
     if (MPI_Pack(d, size, MPI_CHAR, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(char*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(unsigned short *d, int size)
+void cMPICommBuffer::pack(const unsigned short *d, int size)
 {
     extendBufferFor(size*sizeof(short));
     if (MPI_Pack(d, size, MPI_CHAR, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(char*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(int *d, int size)
+void cMPICommBuffer::pack(const int *d, int size)
 {
     extendBufferFor(size*sizeof(int));
     if (MPI_Pack(d, size, MPI_INT, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(int*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(unsigned int *d, int size)
+void cMPICommBuffer::pack(const unsigned int *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned));
     if (MPI_Pack(d, size, MPI_UNSIGNED, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(unsigned*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(long *d, int size)
+void cMPICommBuffer::pack(const long *d, int size)
 {
     extendBufferFor(size*sizeof(long));
     if (MPI_Pack(d, size, MPI_LONG, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(long*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(unsigned long *d, int size)
+void cMPICommBuffer::pack(const unsigned long *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned long));
     if (MPI_Pack(d, size, MPI_UNSIGNED_LONG, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(unsigned long*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(int64 *d, int size)
+void cMPICommBuffer::pack(const int64 *d, int size)
 {
     extendBufferFor(size*sizeof(int64));
     if (MPI_Pack(d, size, MPI_LONG_LONG, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(int64*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(uint64 *d, int size)
+void cMPICommBuffer::pack(const uint64 *d, int size)
 {
     extendBufferFor(size*sizeof(uint64));
     if (MPI_Pack(d, size, MPI_UNSIGNED_LONG_LONG, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(uint64*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(float *d, int size)
+void cMPICommBuffer::pack(const float *d, int size)
 {
     extendBufferFor(size*sizeof(float));
     if (MPI_Pack(d, size, MPI_FLOAT, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(float*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(double *d, int size)
+void cMPICommBuffer::pack(const double *d, int size)
 {
     extendBufferFor(size*sizeof(double));
     if (MPI_Pack(d, size, MPI_DOUBLE, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
         throw cRuntimeError("cMPICommBuffer::pack(double*): MPI_Pack() returned error");
 }
 
-void cMPICommBuffer::pack(long double *d, int size)
+void cMPICommBuffer::pack(const long double *d, int size)
 {
     extendBufferFor(size*sizeof(long double));
     if (MPI_Pack(d, size, MPI_LONG_DOUBLE, mBuffer, mBufferSize, &mMsgSize, MPI_COMM_WORLD))
@@ -261,13 +261,13 @@ void cMPICommBuffer::pack(const char **d, int size)
         pack(d[i]);
 }
 
-void cMPICommBuffer::pack(opp_string *d, int size)
+void cMPICommBuffer::pack(const opp_string *d, int size)
 {
     for (int i = 0; i < size; i++)
         pack(d[i]);
 }
 
-void cMPICommBuffer::pack(SimTime *d, int size)
+void cMPICommBuffer::pack(const SimTime *d, int size)
 {
     for (int i = 0; i < size; i++)
         pack(d[i]);

@@ -67,29 +67,29 @@ class SIM_API cFileCommBuffer : public cCommBufferBase
     virtual void pack(double d);
     virtual void pack(long double d);
     virtual void pack(const char *d);
-    virtual void pack(opp_string& d);
+    virtual void pack(const opp_string& d);
     virtual void pack(SimTime d);
     //@}
 
     /** @name Pack arrays of basic types */
     //@{
     virtual void pack(const char *d, int size);
-    virtual void pack(unsigned char *d, int size);
-    virtual void pack(bool *d, int size);
-    virtual void pack(short *d, int size);
-    virtual void pack(unsigned short *d, int size);
-    virtual void pack(int *d, int size);
-    virtual void pack(unsigned int *d, int size);
-    virtual void pack(long *d, int size);
-    virtual void pack(unsigned long *d, int size);
-    virtual void pack(int64 *d, int size);
-    virtual void pack(uint64 *d, int size);
-    virtual void pack(float *d, int size);
-    virtual void pack(double *d, int size);
-    virtual void pack(long double *d, int size);
+    virtual void pack(const unsigned char *d, int size);
+    virtual void pack(const bool *d, int size);
+    virtual void pack(const short *d, int size);
+    virtual void pack(const unsigned short *d, int size);
+    virtual void pack(const int *d, int size);
+    virtual void pack(const unsigned int *d, int size);
+    virtual void pack(const long *d, int size);
+    virtual void pack(const unsigned long *d, int size);
+    virtual void pack(const int64 *d, int size);
+    virtual void pack(const uint64 *d, int size);
+    virtual void pack(const float *d, int size);
+    virtual void pack(const double *d, int size);
+    virtual void pack(const long double *d, int size);
     virtual void pack(const char **d, int size);
-    virtual void pack(opp_string *d, int size);
-    virtual void pack(SimTime *d, int size);
+    virtual void pack(const opp_string *d, int size);
+    virtual void pack(const SimTime *d, int size);
     //@}
 
     /** @name Unpack basic types */

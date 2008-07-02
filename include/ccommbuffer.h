@@ -139,7 +139,7 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Packs a string.
      */
-    virtual void pack(opp_string& d) = 0;
+    virtual void pack(const opp_string& d) = 0;
     /**
      * Packs a SimTime.
      */
@@ -155,55 +155,55 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Packs an array of unsigned chars.
      */
-    virtual void pack(unsigned char *d,  int size) = 0;
+    virtual void pack(const unsigned char *d,  int size) = 0;
     /**
      * Packs an array of bools.
      */
-    virtual void pack(bool *d, int size) = 0;
+    virtual void pack(const bool *d, int size) = 0;
     /**
      * Packs an array of shorts.
      */
-    virtual void pack(short *d, int size) = 0;
+    virtual void pack(const short *d, int size) = 0;
     /**
      * Packs an array of unsigned shorts.
      */
-    virtual void pack(unsigned short *d, int size) = 0;
+    virtual void pack(const unsigned short *d, int size) = 0;
     /**
      * Packs an array of ints.
      */
-    virtual void pack(int *d, int size) = 0;
+    virtual void pack(const int *d, int size) = 0;
     /**
      * Packs an array of unsigned ints.
      */
-    virtual void pack(unsigned int *d, int size) = 0;
+    virtual void pack(const unsigned int *d, int size) = 0;
     /**
      * Packs an array of longs.
      */
-    virtual void pack(long *d, int size) = 0;
+    virtual void pack(const long *d, int size) = 0;
     /**
      * Packs an array of unsigned longs.
      */
-    virtual void pack(unsigned long *d, int size) = 0;
+    virtual void pack(const unsigned long *d, int size) = 0;
     /**
      * Packs an array of int64s.
      */
-    virtual void pack(int64 *d, int size) = 0;
+    virtual void pack(const int64 *d, int size) = 0;
     /**
      * Packs an array of unsigned int64s.
      */
-    virtual void pack(uint64 *d, int size) = 0;
+    virtual void pack(const uint64 *d, int size) = 0;
     /**
      * Packs an array of floats.
      */
-    virtual void pack(float *d, int size) = 0;
+    virtual void pack(const float *d, int size) = 0;
     /**
      * Packs an array of doubles.
      */
-    virtual void pack(double *d, int size) = 0;
+    virtual void pack(const double *d, int size) = 0;
     /**
      * Packs an array of long doubles.
      */
-    virtual void pack(long double *d, int size) = 0;
+    virtual void pack(const long double *d, int size) = 0;
     /**
      * Packs an array of strings.
      */
@@ -215,11 +215,11 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Packs an array of opp_strings.
      */
-    virtual void pack(opp_string *d, int size) = 0;
+    virtual void pack(const opp_string *d, int size) = 0;
     /**
      * Packs an array of SimTimes.
      */
-    virtual void pack(SimTime *d, int size) = 0;
+    virtual void pack(const SimTime *d, int size) = 0;
     //@}
 
     /** @name Unpack basic types */

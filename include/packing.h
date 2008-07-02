@@ -29,8 +29,8 @@ NAMESPACE_BEGIN
 //
 
 #define DOPACKING(T,R) \
-          inline void doPacking(cCommBuffer *b, T R a) {b->pack(a);}  \
-          inline void doPacking(cCommBuffer *b, T *a, int n) {b->pack(a,n);}  \
+          inline void doPacking(cCommBuffer *b, const T R a) {b->pack(a);}  \
+          inline void doPacking(cCommBuffer *b, const T *a, int n) {b->pack(a,n);}  \
           inline void doUnpacking(cCommBuffer *b, T& a) {b->unpack(a);}  \
           inline void doUnpacking(cCommBuffer *b, T *a, int n) {b->unpack(a,n);}
 #define _
@@ -47,7 +47,7 @@ DOPACKING(float,_)
 DOPACKING(double,_)
 DOPACKING(long double,_)
 DOPACKING(char *,_)
-DOPACKING(const char *,_)
+//FIXME DOPACKING(char *,_)
 DOPACKING(SimTime,_)
 DOPACKING(opp_string,&)
 #undef _
@@ -57,15 +57,15 @@ DOPACKING(opp_string,&)
 // Default pack/unpack function for arrays
 //
 template<typename T>
-void doPacking(cCommBuffer *b, T *t, int n) {
+void doPacking(cCommBuffer *b, const T *t, int n) {
     for (int i=0; i<n; i++)
-        doPacking(b,t[i]);
+        doPacking(b, t[i]);
 }
 
 template<typename T>
 void doUnpacking(cCommBuffer *b, T *t, int n) {
     for (int i=0; i<n; i++)
-        doUnpacking(b,t[i]);
+        doUnpacking(b, t[i]);
 }
 
 NAMESPACE_END

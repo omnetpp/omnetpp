@@ -182,9 +182,9 @@ void cFileCommBuffer::pack(const char *d)
     mMsgSize+=strlen(mBuffer+mMsgSize);
 }
 
-void cFileCommBuffer::pack(opp_string& d)
+void cFileCommBuffer::pack(const opp_string& d)
 {
-    pack(d.buffer());
+    pack(d.c_str());
 }
 
 void cFileCommBuffer::pack(SimTime d)
@@ -198,79 +198,79 @@ void cFileCommBuffer::pack(const char *d, int size)
     STOREARRAY(char,d,size);
 }
 
-void cFileCommBuffer::pack(unsigned char *d, int size)
+void cFileCommBuffer::pack(const unsigned char *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned char));
     STOREARRAY(unsigned char,d,size);
 }
 
-void cFileCommBuffer::pack(bool *d, int size)
+void cFileCommBuffer::pack(const bool *d, int size)
 {
     extendBufferFor(size*sizeof(bool));
     STOREARRAY(bool,d,size);
 }
 
-void cFileCommBuffer::pack(short *d, int size)
+void cFileCommBuffer::pack(const short *d, int size)
 {
     extendBufferFor(size*sizeof(short));
     STOREARRAY(short,d,size);
 }
 
-void cFileCommBuffer::pack(unsigned short *d, int size)
+void cFileCommBuffer::pack(const unsigned short *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned short));
     STOREARRAY(unsigned short,d,size);
 }
 
-void cFileCommBuffer::pack(int *d, int size)
+void cFileCommBuffer::pack(const int *d, int size)
 {
     extendBufferFor(size*sizeof(int));
     STOREARRAY(int,d,size);
 }
 
-void cFileCommBuffer::pack(unsigned int *d, int size)
+void cFileCommBuffer::pack(const unsigned int *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned int));
     STOREARRAY(unsigned int,d,size);
 }
 
-void cFileCommBuffer::pack(long *d, int size)
+void cFileCommBuffer::pack(const long *d, int size)
 {
     extendBufferFor(size*sizeof(long));
     STOREARRAY(long,d,size);
 }
 
-void cFileCommBuffer::pack(unsigned long *d, int size)
+void cFileCommBuffer::pack(const unsigned long *d, int size)
 {
     extendBufferFor(size*sizeof(unsigned long));
     STOREARRAY(unsigned long,d,size);
 }
 
-void cFileCommBuffer::pack(int64 *d, int size)
+void cFileCommBuffer::pack(const int64 *d, int size)
 {
     extendBufferFor(size*sizeof(int64));
     STOREARRAY(int64,d,size);
 }
 
-void cFileCommBuffer::pack(uint64 *d, int size)
+void cFileCommBuffer::pack(const uint64 *d, int size)
 {
     extendBufferFor(size*sizeof(uint64));
     STOREARRAY(uint64,d,size);
 }
 
-void cFileCommBuffer::pack(float *d, int size)
+void cFileCommBuffer::pack(const float *d, int size)
 {
     extendBufferFor(size*sizeof(float));
     STOREARRAY(float,d,size);
 }
 
-void cFileCommBuffer::pack(double *d, int size)
+void cFileCommBuffer::pack(const double *d, int size)
 {
     extendBufferFor(size*sizeof(double));
     STOREARRAY(double,d,size);
 }
 
-void cFileCommBuffer::pack(long double *d, int size)
+void cFileCommBuffer::pack(const long double *d, int size)
 {
     extendBufferFor(size*sizeof(long double));
     STOREARRAY(long double,d,size);
@@ -283,13 +283,13 @@ void cFileCommBuffer::pack(const char **d, int size)
         pack(d[i]);
 }
 
-void cFileCommBuffer::pack(opp_string *d, int size)
+void cFileCommBuffer::pack(const opp_string *d, int size)
 {
     for (int i = 0; i < size; i++)
         pack(d[i]);
 }
 
-void cFileCommBuffer::pack(SimTime *d, int size)
+void cFileCommBuffer::pack(const SimTime *d, int size)
 {
     for (int i = 0; i < size; i++)
         pack(d[i]);

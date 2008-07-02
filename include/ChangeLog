@@ -69,9 +69,10 @@
 	  it would have to return two cGate* pointers)
 	- gate("xxx") now throws error if gate is not found, instead of returning NULL
 	- gate("xxx") now won't return gate "xxx[0]"
-	- gate("out")->size() does not work, because gate("out") throws an error ("not found") if out is a vector gate;
-	  gate("out",0)->size() would work, but only if out[] is of nonzero size (otherwise "out[0] not found" error occurs).
-	  Best is to use gateSize("out"), a cModule member function.
+	- gate("out")->size() does not work, because gate("out") throws an error 
+	  ("not found") if "out" is a vector gate; gate("out",0)->size() will work, 
+	  but only if out[] is of nonzero size (otherwise you'll get the "gate out[0]
+	  not found" error). Best is to use gateSize("out"), a cModule member function.
 	- removed setTo(), setFrom() methods; use connectTo() instead!
 	- isRouteOK() renamed to isPathOK()
 	- dynamic gate creating changed:
@@ -125,14 +126,16 @@
 
 	cOutVector:
 	- removed half-hearted tuple=2 support from cOutVector and underlying infrastructure
-	- added methods for metadata annotation: setEnum(), setUnit(), setType(), setInterpolationMode(), setMin(), setMax()
+	- added methods for metadata annotation: setEnum(), setUnit(), setType(), 
+	  setInterpolationMode(), setMin(), setMax()
 
 	cQueue:
 	- head()/tail() removed, back()/front() added (insert at back, pop from front!);
 	  because of head/tail change, iterator direction and meaning of insertBefore/insertAfter
 	  has changed
 	- boolean flag to specify ascending/descending order removed
-	- compat.h typedef cQueueIterator removed, as iterator semantic was changed in a non-compatible way anyway
+	- compat.h typedef cQueueIterator removed, as iterator semantic was changed in a 
+	  non-compatible way anyway
 
 	New class: cPacketQueue
 
@@ -192,6 +195,7 @@
 
 	cMessageHeap:
 	- renamed getFirst() to removeFirst(), and get(cMessage*) to remove(cMessage*)
+	
 	cPar implementation changed
 
 	cPar, etc:
@@ -210,6 +214,13 @@
 	  lots of pure virtual methods
 	- removed puts(const char *) and gets(const char *)
 
+	cCommBuffer:
+	- added pack/unpack methods for int64
+	- array packing methods now take const pointers
+	- doPacking()/doUnpacking() methods moved out of opp_msgc-generated
+	  code into the simkernel headers (packing.h, included by omnetpp.h)
+
+	Misc:
 	- cBag class removed
 
 	- global connect() function removed (use cGate::connectTo() instead!)
