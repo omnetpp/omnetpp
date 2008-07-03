@@ -4,7 +4,7 @@
 # Extract chart properties from java files
 # and generates a docbook document.
 #
-# Call with the file names of the java files.
+# Call with the directory of the java files.
 #
 sub decamelize
 {
@@ -52,31 +52,38 @@ sub processFile
   }
 
   # emit docbook
-  print "  <para id=\"$file\">\n";
+  print "  <tgroup id='$file' cols='2'>\n";
+  print "    <colspec colname='name' colwidth='1.5in'/>\n";
+  print "    <colspec colname='description' colwidth='3*'/>\n";
+  print "    <spanspec spanname='category' namest='name' nameend='description' align='left'/>\n";
+  print "    <tbody>\n";
+
   foreach $cat (@cats) {
-    print "    <variablelist>\n";
-    print "      <title>$cat</title>\n";
+    print "    <row><entry spanname='category'>$cat</entry></row>\n";
     foreach $i ( 0 .. $#{ $names{$cat} } ) {
-      print "      <varlistentry><term>$names{$cat}[$i]</term>\n";
-      print "        <listitem>\n";
-      print "          <para>$descs{$cat}[$i]</para>\n";
-      print "        </listitem>\n";
-      print "      </varlistentry>\n";
+      print "      <row>\n";
+      print "        <entry>$names{$cat}[$i]</entry>\n";
+      print "        <entry>$descs{$cat}[$i]</entry>\n";
+      print "      </row>\n";
     }
-    print "    </variablelist>\n";
   }
-  print "  </para>\n";
+  print "    </tbody>\n";
+  print "  </tgroup>\n";
 }
+
+$javaFileDir = $ARGV[0];
 
 # emit docbook
 print "<?xml version=\"1.0\"?>\n";
-print "<!DOCTYPE chapter PUBLIC \"-//OASIS//DTD DocBook XML V4.5//EN\"\n";
+print "<!DOCTYPE table PUBLIC \"-//OASIS//DTD DocBook XML V4.5//EN\"\n";
 print "    \"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd\">\n";
-print "<section>\n";
-foreach $file (@ARGV) {
-  processFile $file;
+print "<table>\n";
+opendir (DIR, $javaFileDir) || die "can not open directory $javaFileDir\n";
+for (readdir(DIR)) {
+  processFile "$javaFileDir/$_" if (/.*Properties.java/ && -f "$javaFileDir/$_");
 }
-print "</section>\n";
+closedir DIR;
+print "</table>\n";
 
 
 

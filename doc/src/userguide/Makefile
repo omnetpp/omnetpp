@@ -16,13 +16,7 @@ pdf:   chart-properties.xml
 	rm tmp.fo tmp.xml
 	cp userguide.pdf ../..
 
+CHART_PROP_DIR = ../../../ui/org.omnetpp.scave/src/org/omnetpp/scave/charting/properties
 
-P = ..\..\..\ui\org.omnetpp.scave\src\org\omnetpp\scave\charting\properties
-JAVA_CHART_PROP_FILES = $(P)/ChartProperties.java $(P)/VectorChartProperties.java \
-                        $(P)/ScalarChartProperties.java $(P)/HistogramChartProperties.java \
-                        $(P)/ScatterChartProperties.java $(P)/LineProperties.java \
-                        $(P)/BarProperties.java $(P)/HistogramProperties.java
-
-chart-properties.xml: chart-properties.pl $(JAVA_CHART_PROP_FILES)
-	perl chart-properties.pl $(JAVA_CHART_PROP_FILES) >chart-properties.xml
-
+chart-properties.xml: chart-properties.pl $(CHART_PROP_DIR)/*Properties.java
+	perl chart-properties.pl $(CHART_PROP_DIR) >chart-properties.xml
