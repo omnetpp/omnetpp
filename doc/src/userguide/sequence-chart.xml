@@ -136,16 +136,15 @@
       <para>
 	Let us demonstrate on this simple example how filtering works with the Sequence
 	Chart. Open the filter dialog with the toolbar button <icon name="filter.png"/>
-	and put a checkmark for node '0' and '3' on the panel <guilabel>Module filter|by
-	name</guilabel> and apply it. The chart now displays only two axes that correspond
-	to the two selected nodes.
-	Note that the arrows on this figure are decorated with zigzags, meaning
-	that they represent a sequence of message sends. Such arrows will be called
-	virtual message sends in the rest of this chapter.
-	The first two arrows show the message returning to node '0' at
+	and put a checkmark for node '0' and '3' on the <guilabel>Module filter|by
+	name</guilabel> panel, and apply it. The chart now displays only two axes that
+	correspond to the two selected nodes.  Note that the arrows on this figure are
+	decorated with zigzags, meaning that they represent a sequence of message
+	sends. Such arrows will be called virtual message sends in the rest of this
+	chapter.  The first two arrows show the message returning to node '0' at
 	<eventnumber>9</eventnumber> and <eventnumber>13</eventnumber>, and the third
-	shows that it reaches the destination at <eventnumber>16</eventnumber>.
-	The events where the message was in between are filtered out.
+	shows that it reaches the destination at <eventnumber>16</eventnumber>.  The
+	events where the message was in between are filtered out.
       </para>
       <picture file="pictures/SequenceChart-Examples-TicTocSeveralNodesFiltered.png">
 	Filtering for node '0' and '3'
@@ -213,17 +212,18 @@
         in a pointer variable, a queue, or some other data structure.
       </note>
       <para>
-	The last part of this example is about filtering out the queue from the chart. Open the
-	filter dialog, and put a checkmark for 'sink' and 'source' on the panel
-	<guilabel>Module filter|by NED type</guilabel> and apply it. If you look at the
-	result in <xref linkend="pictures/SequenceChart-Examples-FIFOFiltered.png"/> then
-	you will see zigzag arrows going from the 'source' to the 'sink'. These arrows
-	represent the fact that a message is being sent through the queue from 'source' to
-	'sink'. The first two arrows do not overlap in simulation time, which means the
-	queue did not have more than one message in it during that time. On the other hand the
-	third and fourth arrows do overlap due to the fact that the forth job reached the
-	queue while it was busy with the third one. Scrolling forward you can find other
-	places where the queue becomes empty and arrows do not overlap again.
+	The last part of this example is about filtering out the queue from the
+	chart. Open the filter dialog, and put a checkmark for 'sink' and 'source' on the
+	<guilabel>Module filter|by NED type</guilabel> panel, and apply it. If you look at
+	the result in <xref linkend="pictures/SequenceChart-Examples-FIFOFiltered.png"/>
+	then you will see zigzag arrows going from the 'source' to the 'sink'. These
+	arrows represent the fact that a message is being sent through the queue from
+	'source' to 'sink'. The first two arrows do not overlap in simulation time, which
+	means the queue did not have more than one message in it during that time. On the
+	other hand the third and fourth arrows do overlap due to the fact that the forth
+	job reached the queue while it was busy with the third one. Scrolling forward you
+	can find other places where the queue becomes empty and arrows do not overlap
+	again.
       </para>
       <picture file="pictures/SequenceChart-Examples-FIFOFiltered.png">
 	Filtering the queue out
@@ -295,15 +295,16 @@
     <sect2>
       <title>Wireless</title>
       <para>
-	This example is available in the INET Framework under the directory
+	The Wirless example is available in the INET Framework under the directory
 	<filename>examples/adhoc/ieee80211</filename>. The predefined configuration called
 	Config1 specifies two mobile hosts moving around on the playground, and
 	communicating via the IEEE 802.11 wireless protocol. The network devices are
-	configured for ad-hoc mode, and the transmitter power is set so that hosts can move
-	out of range. One of the hosts is continuously pinging the other. In this section
-	we will explore the protocol's MAC layer, using two sequence charts. The first chart
-	will show a successful ping message being sent through the wireless channel,
-	and the second will show ping messages getting lost and being continuously re-sent.
+	configured for ad-hoc mode, and the transmitter power is set so that hosts can
+	move out of range. One of the hosts is continuously pinging the other. In this
+	section we will explore the protocol's MAC layer, using two sequence charts. The
+	first chart will show a successful ping message being sent through the wireless
+	channel, and the second will show ping messages getting lost and being
+	continuously re-sent.
       </para>
       <para>
 	We also would like to record message some details during the simulation. To do that,
@@ -324,107 +325,117 @@
 	  hosts on the playground.
 	</para>
 	<para>
-	  Let us ignore the 'move' messages, and focus on the MAC
-	  layer instead. To begin with open the filter dialog and check the
-	  <guilabel>Module Filter|by NED type</guilabel> option in the tree on the left
-	  hand side. It will display on the right hand side a list of NED types present in
-	  the eventlog file. Select the inet.linklayer.ieee80211.mac.Ieee80211Mac and the
-	  inet.linklayer.radio.Ieee80211Radio types and apply the filter by pressing the
-	  <guilabel>Ok</guilabel> button. This will hide all axes from the chart except
-	  four simple modules the two MACs and the two radios.
+	  Let us ignore the 'move' messages, and focus on the MAC layer instead. To begin
+	  with, open the filter dialog, and put a checkmark for 'Ieee80211Mac' and
+	  'Ieee80211Radio' on the <guilabel>Module filter|by NED type</guilabel> panel,
+	  and apply it. This will hide all axes from the chart except four simple modules,
+	  the two MACs and the two radios.
 	</para>
 	<para>
 	  The next step is to attach vector data to the four axes. Open the context menu
-	  for each axis by clicking on them one by one and select the submenu
-	  <guilabel>Attach Vector to Axis</guilabel>. When pops up always select the file
-	  offered and choose the vector mac:State for the MAC modules and mac:RadioState
-	  for the radio modules. You should edit the filter in the selection dialog
-	  (i.e. delete the last segment) for the radio modules because at the moment the
-	  radio state is actually recorded by the MAC module so the default filter will
-	  not be right. When this step is completed the chart should display four thick
-	  colored bars as module axes.
+	  for each axis by clicking on them one by one, and select the <guilabel>Attach
+	  Vector to Axis</guilabel> submenu. Accept the vector file offered by default,
+	  and choose the vector 'mac:State' for the MAC modules, and 'mac:RadioState' for
+	  the radio modules. You will have to edit the filter in the vector selection
+	  dialog (i.e. delete the last segment) for the radio modules, because at the
+	  moment the radio state is actually recorded by the MAC module, so the default
+	  filter will not be right. When this step is completed, the chart should display
+	  four thick colored bars as module axes.
 	</para>
 	<para>
-	  To make understanding easier you can reorder the axis so that the radio modules
-	  are put next to each other. After some zooming and scrolling you should be able to
-	  fit the first message exchanges in the window among the two hosts at the MAC layer.
+	  To make understanding easier, you might want to manually reorder the axis, so
+	  that the radio modules are put next to each other. Use the button <icon
+	  name="axisordering.gif"/> on the toolbar to switch to manual ordering. With a
+	  little zooming and scrolling you should be able to fit the first message
+	  exchange between the two hosts into the window.
 	</para>
       </sect3>
       <sect3>
 	<title>Successful ping</title>
 	<para>
-	  The first message sent by host1 is not a ping request but an ARP request which
-	  after some processing in host0 generates the corresponding ARP reply. This is
-	  shown by the zigzag arrow between <eventnumber>90</eventnumber> and
-	  <eventnumber>91</eventnumber>. The reply goes back to host1 which then sends a
-	  wlan acknowledge in return. In this process host1 discovers the MAC address of
-	  host0 based on its IP address.
+	  The first message sent by 'host1' is not a ping request but an ARP request. The
+	  processing of this message in 'host0' generates the corresponding ARP
+	  reply. This is shown by the zigzag arrow between <eventnumber>90</eventnumber>
+	  and <eventnumber>91</eventnumber>. The reply goes back to 'host1' which then
+	  sends a WLAN acknowledge in return. In this process 'host1' discovers the MAC
+	  address of 'host0' based on its IP address.
 	</para>
 	<para>
 	  The send procedure for the first ping message starts at
-	  <eventnumber>105</eventnumber> in host1 and finishes by receiving the
+	  <eventnumber>105</eventnumber> in 'host1', and finishes by receiving the
 	  acknowledge at <eventnumber>127</eventnumber>. The ping reply send procedure
-	  starts at <eventnumber>125</eventnumber> in host0 and finishes by receiving the
-	  acknowledge at <eventnumber>144</eventnumber>. Scrolling a little bit forward
-	  you can see as in <xref
+	  starts at <eventnumber>125</eventnumber> in 'host0' and finishes by receiving
+	  the WLAN acknowledge at <eventnumber>144</eventnumber>. If you scroll a little
+	  bit forward you can see as in <xref
 	  linkend="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png"/> the
 	  second complete successful ping procedure between <eventnumber>170</eventnumber>
-	  and <eventnumber>206</eventnumber>. Open the filter dialog and enter these
-	  numbers in the range filter.
+	  and <eventnumber>206</eventnumber>. To focus on the second successful ping
+	  message exchange, open the filter dialog, and enter these numbers in the range
+	  filter.
 	</para>
 	<picture file="pictures/SequenceChart-Examples-WirelessSuccessfulPing.png">
 	  The second ping procedure
 	</picture>
 	<para>
-	  Timing is critical in a protocol implementation so let's take a look at it. The
-	  message send from <eventnumber>171</eventnumber> to
-	  <eventnumber>172</eventnumber> occurs in zero simulation time (gray background)
-	  and represents the moment when the MAC decides to send the ping request down to
-	  its radio module. If you look at <eventnumber>172</eventnumber> and
-	  <eventnumber>173</eventnumber> you will see how the message propagates from
-	  radio1 to radio0 in a finite amount of time with the light of speed. Also
-	  looking at the the <eventnumber>172</eventnumber> and
-	  <eventnumber>174</eventnumber> you can notice that the transmission time is non
-	  zero based on the message's length. Another interesting fact which can be
-	  immediately drawn from the figure is that the higher level protocol layers do
-	  not add delay to the processing between <eventnumber>176</eventnumber> and
-	  <eventnumber>183</eventnumber> while generating the ping reply message in
-	  host0. And finally you can get a quick grasp about the timings of IEEE 802.11 in
-	  linear timeline mode <icon name="timelinemode.png"/> where the figure changes
-	  drammaticaly (scroll and zoom in/out if needed) showing how useful the nonlinear
-	  mode is.
+	  Timing is critical in a protocol implementation, so let's take a look at it
+	  using the Sequence Chart. The first self message represents the fact that the
+	  MAC module listens to the radio for a DIFS period before sending the message
+	  out. The message send from <eventnumber>171</eventnumber> to
+	  <eventnumber>172</eventnumber> occurs in zero simulation time as indicated by
+	  the gray background. It represents the moment when the MAC module decides to
+	  send the ping request down to its radio module. The backoff procedure was
+	  skipped for this message, because there was no transmission during the DIFS
+	  period. If you look at <eventnumber>172</eventnumber> and
+	  <eventnumber>173</eventnumber> you will see how the message propagates through
+	  the air from 'radio1' to 'radio0'. This finite amount of time is calculated from
+	  the physical distance of the two modules and the speed of light. Also looking at
+	  <eventnumber>172</eventnumber> and <eventnumber>174</eventnumber> you can notice
+	  that the transmission time is not zero. This time interval is calculated from
+	  the message's length and the radio module's bitrate. Another interesting fact,
+	  which can be immediately drawn from the figure, is that the higher level
+	  protocol layers do not add delay for generating the ping reply message in
+	  'host0' between <eventnumber>176</eventnumber> and
+	  <eventnumber>183</eventnumber>. The procedure ends with sending back a WLAN
+	  acknowledge after waiting a SIFS period.
+	</para>
+	<para>
+	  And finally, you can get a quick overview about the relative timings of the IEEE
+	  802.11 protocol with switching to linear timeline mode. Use the button <icon
+	  name="timelinemode.png"/> on the toolbar, and notice how the figure changes
+	  dramatically. You might need to scroll and zoom in or out to see the
+	  details. This actually shows how useful the nonlinear timeline mode is.
 	</para>
 	<commercial>
 	  <para>
-	    And finally you can export this sequence chart using the context menu's
-	    <guilabel>Export to SVG</guilabel> menu option for documentation purposes.
+	    You can export this sequence chart for documentation purposes using the
+	    context menu's <guilabel>Export to SVG</guilabel> option.
 	  </para>
 	</commercial>
       </sect3>
       <sect3>
 	<title>Unsuccessful ping</title>
 	<para>
-	  To see how the chart looks when ping messages get lost in the air first turn off
-	  range filtering and then go to <eventnumber>1269</eventnumber> by selecting the
-	  <guimenuitem>Goto Event...</guimenuitem> from the Eventlog table view's context
-	  menu.  In <xref
+	  To see how the chart looks when the ping messages get lost in the air, first
+	  turn off range filtering. Then go to <eventnumber>1269</eventnumber> by
+	  selecting the <guimenuitem>Goto Event...</guimenuitem> from the Eventlog table
+	  view's context menu. In <xref
 	  linkend="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png"/> you can
-	  see how the receiver radio does not send the incoming message to its MAC layer
-	  due to the signal level being too low. This actually happens at
-	  <eventnumber>1274</eventnumber> in node '0' while the transmitter MAC layer in
-	  node '1' receives a timeout at <eventnumber>1275</eventnumber> and starts the
-	  backoff procedure to resend the very same ping message. This goes on with
-	  statistically increasing backoff time intervals until
-	  <eventnumber>1317</eventnumber> where the maximum number of retries is reached
-	  and the message is dropped.
+	  see how the receiver radio does not send up the incoming message to its MAC
+	  layer due to the signal level being too low. This actually happens at
+	  <eventnumber>1274</eventnumber> in 'host0'. Meanwhile the transmitter MAC layer
+	  in 'host1' receives the timeout message at <eventnumber>1275</eventnumber>, and
+	  starts the backoff procedure before resending the very same ping message. This
+	  process goes on with statistically increasing backoff time intervals until
+	  <eventnumber>1317</eventnumber>. Finally the maximum number of retries is
+	  reached and the message is dropped.
 	</para>
 	<picture file="pictures/SequenceChart-Examples-WirelessUnsuccessfulPing.png">
 	  Ping message get lost
 	</picture>
 	<para>
-	  The chart makes clear that during the unsuccessful ping period there are no
-	  events occuring in the MAC layer of node '0' and it is continuously in the state
-	  'IDLE'.
+	  The chart also makes clear that during the unsuccessful ping period there are no
+	  events occuring in the MAC layer of 'host0' and it is continuously in 'IDLE'
+	  state.
 	</para>
       </sect3>
     </sect2>
@@ -538,7 +549,7 @@ FIXME PLEASE TURN DESCRIPTION INTO BULLETED LIST!
 	measured in pixels and simulation time. The goal of this non linear transformation
 	is to get a compact figure even if there are longer and shorter periods of
 	simulation time intervals between events. You can switch between
-	<guilabel>Timeline Mode</guilabel>s <icon name="timelinemode.png"/> from the
+	<guilabel>Timeline Mode</guilabel>s <icon name="timelinemode.png"/> on the
 	toolbar or the context menu.
       </para>
       <para>
@@ -632,7 +643,7 @@ FIXME PLEASE TURN DESCRIPTION INTO BULLETED LIST!
 	by a green dotted arrow between the two events. These arrows are not shown by
 	default due to timer self-messages usually being reused continuously and adding
 	unnecessary noise to the chart. Use the <guilabel>Show Reuse Messages</guilabel>
-	<icon name="reusearrows.png"/> option on the toolbar or the context menu to show
+	<icon name="reusearrows.png"/> button on the toolbar or the context menu to show
 	or hide these arrows.
       </para>
       <para>
@@ -665,10 +676,10 @@ FIXME PLEASE TURN DESCRIPTION INTO BULLETED LIST!
       <title>Zooming</title>
       <para>
 	To zoom in or out horizontally along the timeline use the <guilabel>Zoom
-	In/Out</guilabel> <icon name="zoomplus.png"/> <icon name="zoomminus.png"/>
-	commands from the toolbar. To decrease or increase the distance between the axes
-	use the <guilabel>Increase/Decrease Spacing</guilabel> <icon
-	name="incr_spacing.png"/> <icon name="decr_spacing.png"/> commands.
+	In/Out</guilabel> <icon name="zoomplus.png"/> <icon name="zoomminus.png"/> buttons
+	on the toolbar. To decrease or increase the distance between the axes use the
+	<guilabel>Increase/Decrease Spacing</guilabel> <icon name="incr_spacing.png"/>
+	<icon name="decr_spacing.png"/> commands.
 	<warning>
 	  When you zoom out more events and messages become visible on the chart making it
 	  slower while zooming in more message lines break making it less informative. Try
@@ -770,7 +781,7 @@ FIXME PLEASE TURN DESCRIPTION INTO BULLETED LIST!
     </para>
     <para>
       There are various options which control how and what the Eventlog Table
-      displays. Some of these are available from the toolbar while some others are
+      displays. Some of these are available on the toolbar while some others are
       accessible only from the context menu.
     </para>
     <sect2>
@@ -787,7 +798,7 @@ FIXME PLEASE TURN DESCRIPTION INTO BULLETED LIST!
 	file after some preprocessing into a human readable form. It also resolves
 	references and types so that less navigation is required to understand what was
 	going on. To switch between the two use the <guilabel>Display Mode</guilabel>
-	<icon name="displaymode.png"/> option from the toolbar or the context menu.
+	<icon name="displaymode.png"/> button on the toolbar or the context menu.
       </para>
       <picture file="pictures/EventlogTable-DescriptiveMode.png">
 	<guilabel>Descriptive</guilabel> notation
