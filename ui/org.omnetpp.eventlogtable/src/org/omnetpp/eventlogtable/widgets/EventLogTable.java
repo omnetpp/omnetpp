@@ -453,7 +453,7 @@ public class EventLogTable
                     setNameMode(eventLogTableState.nameMode);
 					setDisplayMode(eventLogTableState.displayMode);
 
-					gotoElement(new EventLogEntryReference(event.getEventEntry()));
+					scrollToElement(new EventLogEntryReference(event.getEventEntry()));
 
 					return true;
 				}
