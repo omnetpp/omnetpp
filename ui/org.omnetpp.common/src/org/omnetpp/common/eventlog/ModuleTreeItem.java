@@ -1,12 +1,14 @@
 package org.omnetpp.common.eventlog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 
 
 /**
- * Stores a submodule tree for ModuleTreeDialog etc.
+ * Stores a module tree.
  * 
  * @author andras
  */
@@ -23,16 +25,11 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	
 	private ArrayList<ModuleTreeItem> submodules = new ArrayList<ModuleTreeItem>();
 
+	private Map<Integer, ModuleTreeItem> moduleIdToModuleMap;
+
 	public interface IModuleTreeItemVisitor
 	{
 		public void visit(ModuleTreeItem treeItem);
-	}
-	
-	/**
-	 * Create a blank node. Can be used to create a tree root. 
-	 */
-	public ModuleTreeItem() {
-		moduleName = "<root>";
 	}
 
 	/**
@@ -41,12 +38,16 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	 * @param moduleName cannot be null
 	 * @param parent null is allowed
 	 */
-	public ModuleTreeItem(String moduleName, ModuleTreeItem parent, boolean isCompoundModule) {
+	public ModuleTreeItem(int moduleId, String moduleName, String moduleClassName, ModuleTreeItem parent, boolean isCompoundModule) {
+        setModuleId(moduleId);
 		setModuleName(moduleName);
+		setModuleClassName(moduleClassName);
 		this.isCompoundModule = isCompoundModule;
 		parentModule = parent;
 		if (parentModule != null)
 			parentModule.addSubmodule(this);
+		else
+		    getModuleIdToModuleMap().put(moduleId, this);
 	}
 	
 	public boolean isCompoundModule() {
@@ -54,10 +55,12 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	}
 	
 	private void addSubmodule(ModuleTreeItem submodule) {
+        getRootModule().getModuleIdToModuleMap().put(submodule.getModuleId(), submodule);
 		submodules.add(submodule);
 	}
 	
 	public void remove() {
+        getRootModule().getModuleIdToModuleMap().remove(moduleId);
         parentModule.submodules.remove(this);
 	    parentModule = null;
 	}
@@ -65,10 +68,8 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	public ModuleTreeItem addDescendantModule(int parentModuleId, int moduleId, String moduleClassName, String moduleFullName, boolean isCompoundModule) {
 	    Assert.isTrue(findDescendantModule(moduleId) == null);
 	    ModuleTreeItem parentModule = findDescendantModule(parentModuleId);
-	    Assert.isTrue(parentModule != null);
-	    ModuleTreeItem module = new ModuleTreeItem(moduleFullName, parentModule, isCompoundModule);
-	    module.setModuleId(moduleId);
-	    module.setModuleClassName(moduleClassName);
+	    Assert.isTrue(parentModuleId == -1 || parentModule != null);
+	    ModuleTreeItem module = new ModuleTreeItem(moduleId, moduleFullName, moduleClassName, parentModule, isCompoundModule);
 
 	    return module;
 	}
@@ -140,7 +141,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	}
 
 	public ModuleTreeItem getRootModule() {
-		ModuleTreeItem ancestorModule = parentModule;
+		ModuleTreeItem ancestorModule = this;
 		
 		while (ancestorModule.parentModule != null)
 			ancestorModule = ancestorModule.parentModule;
@@ -171,21 +172,33 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	public int compareTo(ModuleTreeItem item) {
 		return moduleName.compareTo(item.getModuleName());
 	}
+	
+	private Map<Integer, ModuleTreeItem> getModuleIdToModuleMap() {
+	    if (moduleIdToModuleMap == null)
+	        moduleIdToModuleMap = new HashMap<Integer, ModuleTreeItem>();
+	    
+	    return moduleIdToModuleMap;
+	}
 
 	public ModuleTreeItem findDescendantModule(final int id) {
-	    // TODO: put a hash table in the root
-		final ModuleTreeItem[] descendant = new ModuleTreeItem[1];
-
-		visitLeaves(new IModuleTreeItemVisitor() {
-			public void visit(ModuleTreeItem treeItem) {
-				if (treeItem.getModuleId() == id)
-					descendant[0] = treeItem;
-			}
-		});
-
-		return descendant[0];
+	    ModuleTreeItem descendantModule = getRootModule().getModuleIdToModuleMap().get(id);
+	    
+	    if (isDescendantModule(descendantModule))
+	        return descendantModule;
+	    else
+	        return null;
 	}
 	
+    public boolean isDescendantModule(ModuleTreeItem descendantModule) {
+        while (descendantModule != null)
+            if (descendantModule == this)
+                return true;
+            else
+                descendantModule = descendantModule.parentModule;
+
+        return false;
+    }
+
     public ModuleTreeItem findDescendantModule(final String fullPath) {
         // TODO: put a hash table in the root
         final ModuleTreeItem[] descendant = new ModuleTreeItem[1];

@@ -8,8 +8,16 @@ import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.eventlog.engine.IntIntMap;
 import org.omnetpp.eventlog.engine.IntVector;
 
+/**
+ * This class implements a sort method that tries to minimize the total number of axes that arrows are crossing.
+ * It takes a statistical sample from the eventlog and spends a limited amount of time to reorder axes.
+ * Reordering uses bubble sort and two axes are swapped only when the result is better in terms of the number of crossings.
+ * This will result in a local optimum. 
+ */
 public class FlatAxisOrderByMinimizingCost {
-    protected EventLogInput eventLogInput;
+    private EventLogInput eventLogInput;
+    
+    private static int TIME_LIMIT = 1000; // in milliseconds
 
     public FlatAxisOrderByMinimizingCost(EventLogInput eventLogInput) {
 		this.eventLogInput = eventLogInput;
@@ -36,10 +44,14 @@ public class FlatAxisOrderByMinimizingCost {
         return axisModulePositions;
     }
 
+    /**
+     * This is the actual sort based on the statistical sample in the weight matrix.
+     */
     private void bubbleSort(ModuleTreeItem[] axisModules, int[][] axisMessageDependecyWeightMatrix) {
+        long begin = System.currentTimeMillis();
         int numberOfAxes = axisModules.length;
 
-        while (true) {
+        while (System.currentTimeMillis() - begin < TIME_LIMIT) {
             boolean swapped = false;
 
             for (int i = 0; i < numberOfAxes; i++)

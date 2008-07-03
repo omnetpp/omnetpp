@@ -193,10 +193,8 @@ public class EventLogInput extends FileEditorInput
 	 * Dynamically created modules might be added later as they get discovered.
 	 */
 	public ModuleTreeItem getModuleTreeRoot() {
-	    if (moduleTreeRoot == null) {
-	        moduleTreeRoot = new ModuleTreeItem();
+	    if (moduleTreeRoot == null)
 	        synchronizeModuleTree();
-	    }
 
 	    return moduleTreeRoot;
 	}
@@ -211,18 +209,24 @@ public class EventLogInput extends FileEditorInput
 
         for (int i = 0; i < moduleCreatedEntryList.size(); i++) {
             ModuleCreatedEntry entry = moduleCreatedEntryList.get(i);
-            
+
             if (entry != null) {
-                ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(entry.getModuleId());
-                
-                if (moduleTreeItem != null && moduleTreeItem.getModuleName().equals("<unknown>")) {
-                    // FIXME: what about references to this tree item? are there any?
-                    moduleTreeItem.remove();
-                    moduleTreeItem = null;
+                if (entry.getParentModuleId() == -1) {
+                    if (moduleTreeRoot == null)
+                        moduleTreeRoot = new ModuleTreeItem(entry.getModuleId(), entry.getFullName(), entry.getModuleClassName(), null, entry.getCompoundModule());
                 }
-    
-                if (moduleTreeItem == null)
-                    moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
+                else {
+                    ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(entry.getModuleId());
+                    
+                    if (moduleTreeItem != null && moduleTreeItem.getModuleName().equals("<unknown>")) {
+                        // FIXME: what about references to this tree item? are there any?
+                        moduleTreeItem.remove();
+                        moduleTreeItem = null;
+                    }
+        
+                    if (moduleTreeItem == null)
+                        moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
+                }
             }
         }
 	}

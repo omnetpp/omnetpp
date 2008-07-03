@@ -1396,25 +1396,22 @@ public class SequenceChart
     }
 
     private void ensureAxisModuleForModuleId(int moduleId) {
-        // check if module already has an associated axis?
-        for (ModuleTreeItem axisModule : axisModules)
-            if (axisModule.findDescendantModule(moduleId) != null)
-                return;
-
-        // get the module tree item
         ModuleTreeItem moduleTreeRoot = eventLogInput.getModuleTreeRoot();
         ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(moduleId);
+
+        // check if module already has an associated axis?
+        for (ModuleTreeItem axisModule : axisModules)
+            if (axisModule == moduleTreeItem || (axisModule.isCompoundModule() && axisModule.isDescendantModule(moduleTreeItem)))
+                return;
 
         if (moduleTreeItem == null) {
             ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(moduleId);
 
             if (entry != null)
                 moduleTreeItem = moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
-            else {
+            else
                 // FIXME: this is not correct and will not be replaced automagically when the ModuleCreatedEntry is found later on
-                moduleTreeItem = new ModuleTreeItem("<unknown>", moduleTreeRoot, false);
-                moduleTreeItem.setModuleId(moduleId);
-            }
+                moduleTreeItem = new ModuleTreeItem(moduleId, "<unknown>", "<unknown>", moduleTreeRoot, false);
         }
 
         // find the selected module axis and add it
@@ -1434,9 +1431,6 @@ public class SequenceChart
      * depending on the showAxesWithoutEvents flag.
      */
     private boolean isSelectedAxisModule(ModuleTreeItem moduleTreeItem) {
-        if (eventLogInput.getModuleTreeRoot() == moduleTreeItem)
-            return false;
-
         if (eventLog instanceof FilteredEventLog && eventLogInput.getFilterParameters().enableModuleFilter) {
             ModuleCreatedEntry moduleCreatedEntry = eventLog.getModuleCreatedEntry(moduleTreeItem.getModuleId());
             Assert.isTrue(moduleCreatedEntry != null);
@@ -1547,6 +1541,7 @@ public class SequenceChart
                         axisModulePositions = new AxisOrderByModuleName().calculateOrdering(axisModulesArray);
                         break;
                     case MINIMIZE_CROSSINGS:
+                        axisModulesArray = manualAxisOrder.getCurrentAxisModuleOrder(axisModulesArray).toArray(new ModuleTreeItem[0]);
                         axisModulePositions = new FlatAxisOrderByMinimizingCost(eventLogInput).calculateOrdering(axisModulesArray, getModuleIdToAxisModuleIndexMap());
                         break;
                     default:

@@ -44,7 +44,7 @@ public class ManualAxisOrder {
         return lastAxisModuleOrder;
     }
 
-    private ArrayList<ModuleTreeItem> getCurrentAxisModuleOrder(ModuleTreeItem[] selectedAxisModules) {
+    public ArrayList<ModuleTreeItem> getCurrentAxisModuleOrder(ModuleTreeItem[] selectedAxisModules) {
         // ensure all modules are known in the stored ordering
         for (ModuleTreeItem axisModule : selectedAxisModules)
             if (!lastAxisModuleOrder.contains(axisModule))
