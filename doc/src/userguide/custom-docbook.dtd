@@ -1,0 +1,23 @@
+<!ENTITY % local.formal.class "|picture">
+<!ENTITY % local.tech.char.class "|icon">
+
+<!-- load DocBook -->
+<!ENTITY % DocBookDTD PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" >
+%DocBookDTD;
+
+<!-- @file, @width, content as title content -->
+<!ELEMENT picture (%title.char.mix;)*>
+<!ATTLIST picture
+        %common.attrib;
+	file	 	CDATA		#IMPLIED
+	width		CDATA		#IMPLIED
+>
+
+<!-- @file, @name -->
+<!ELEMENT icon EMPTY>
+<!ATTLIST icon
+        %common.attrib;
+	file	 	CDATA		#IMPLIED
+	name		CDATA		#IMPLIED
+>
