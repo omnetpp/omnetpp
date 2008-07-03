@@ -301,27 +301,27 @@ void cSimpleModule::scheduleStart(simtime_t t)
     // modules dynamically doesn't have to know whether the module is
     // using activity() or handleMessage(); the same code (which
     // contains a call to scheduleStart()) can be used for both.
+    if (usesActivity()) {
+        if (timeoutmsg!=NULL)
+            throw cRuntimeError("scheduleStart(): module `%s' already started",getFullPath().c_str());
 
-    // ignore for simple modules using handleMessage()
-    if (!usesActivity())
-        return;
+        // create timeoutmsg, used as internal timeout message
+        char buf[24];
+        sprintf(buf,"starter-%d", getId());
+        timeoutmsg = new cMessage(buf,MK_STARTER);
 
-    if (timeoutmsg!=NULL)
-        throw cRuntimeError("scheduleStart(): module `%s' already started",getFullPath().c_str());
+        // initialize message fields
+        timeoutmsg->setSentFrom(NULL, -1, 0);
+        timeoutmsg->setArrival(this, -1, t);
 
-    // create timeoutmsg, used as internal timeout message
-    char buf[24];
-    sprintf(buf,"starter-%d", getId());
-    timeoutmsg = new cMessage(buf,MK_STARTER);
+        // use timeoutmsg as the activation message; insert it into the FES
+        Enter_Method("scheduleStart");
+        EVCB.messageScheduled(timeoutmsg);
+        simulation.insertMsg(timeoutmsg);
+    }
 
-    // initialize message fields
-    timeoutmsg->setSentFrom(NULL, -1, 0);
-    timeoutmsg->setArrival(this, -1, t);
-
-    // use timeoutmsg as the activation message; insert it into the FES
-    Enter_Method("scheduleStart");
-    EVCB.messageScheduled(timeoutmsg);
-    simulation.insertMsg(timeoutmsg);
+    for (SubmoduleIterator submod(this); !submod.end(); submod++)
+        submod()->scheduleStart(t);
 }
 
 void cSimpleModule::deleteModule()
