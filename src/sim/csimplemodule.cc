@@ -319,6 +319,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
     timeoutmsg->setArrival(this, -1, t);
 
     // use timeoutmsg as the activation message; insert it into the FES
+    Enter_Method("scheduleStart");
     EVCB.messageScheduled(timeoutmsg);
     simulation.insertMsg(timeoutmsg);
 }
