@@ -1097,8 +1097,11 @@ public class SequenceChart
 				IEvent fixPointEvent = eventLog.getEventForEventNumber(sequenceChartState.fixPointEventNumber);
 
 				if (fixPointEvent != null) {
-					setPixelPerTimelineUnit(sequenceChartState.pixelPerTimelineCoordinate);
 					clearAxisModules();
+
+                    setPixelPerTimelineUnit(sequenceChartState.pixelPerTimelineCoordinate);
+                    relocateFixPoint(fixPointEvent, sequenceChartState.fixPointViewportCoordinate);
+                    scrollVerticalTo(sequenceChartState.viewportTop);
 
 					// restore attached vectors
 					if (sequenceChartState.axisStates != null) {
@@ -1137,10 +1140,6 @@ public class SequenceChart
 					    axisSpacingMode = sequenceChartState.axisSpacingMode;
 					if (sequenceChartState.axisSpacing != -1)
 					    axisSpacing = sequenceChartState.axisSpacing;
-
-                    // assume height to be at least this
-					relocateFixPoint(fixPointEvent, sequenceChartState.fixPointViewportCoordinate);
-					scrollVerticalTo(sequenceChartState.viewportTop);
                     
                     // restore timeline mode
                     if (sequenceChartState.timelineMode != null)
@@ -1489,7 +1488,7 @@ public class SequenceChart
 
 		if (index != -1) {
 		    getAxisRenderers()[index] = axisRenderer;
-		    invalidateAxisModuleYs();
+		    invalidateAxisSpacing();
 		}
 	}
 
@@ -1564,12 +1563,6 @@ public class SequenceChart
         return axisModuleYs;
     }
     
-    private void invalidateAxisModuleYs() {
-        invalidAxisModuleYs = true;
-        invalidVirtualSize = true;
-        clearCanvasCacheAndRedraw();
-    }
-
     /**
      * Calculates top y coordinates of axis bounding boxes based on height returned by each axis.
      */

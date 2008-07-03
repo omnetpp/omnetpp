@@ -105,7 +105,7 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	 */
 	public String getModuleFullPath() {
 	    String path = getModuleName();
-	    for (ModuleTreeItem current=getParentModule(); current!=null && current.getParentModule()!=null /*omit <root>*/; current=current.getParentModule())
+	    for (ModuleTreeItem current = getParentModule(); current != null; current=current.getParentModule())
 	    	path = current.getModuleName()+"."+path;
 	    return path;
 	}
