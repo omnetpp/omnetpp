@@ -31,6 +31,21 @@ class cCommBuffer;
 class cOwnedObject;
 class opp_string;
 
+//
+// cCommBuffer needs to pack long long and unsigned long long (which should be
+// at least 64 bits in size) but earlier versions of MSVC (7.1 and before)
+// don't have long long; use __int64 instead. MSVC 8.0 and above should be OK.
+// The following typedefs can be removed when we drop support for MVSC 7.1.
+//
+// Do not use this type except in cCommBuffer implementations.
+//
+#ifdef _MSC_VER
+typedef __int64            _long_long_t;
+typedef unsigned __int64   _unsigned_long_long_t;
+#else
+typedef long long          _long_long_t;
+typedef unsigned long long _unsigned_long_long_t;
+#endif
 
 
 /**
@@ -109,13 +124,13 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void pack(unsigned long d) = 0;
     /**
-     * Packs an int64.
+     * Packs a long long (on MSVC, __int64).
      */
-    virtual void pack(int64 d) = 0;
+    virtual void pack(_long_long_t d) = 0;
     /**
-     * Packs an unsigned int64.
+     * Packs an unsigned long long (on MSVC, __int64).
      */
-    virtual void pack(uint64 d) = 0;
+    virtual void pack(_unsigned_long_long_t d) = 0;
     /**
      * Packs a float.
      */
@@ -185,13 +200,13 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void pack(const unsigned long *d, int size) = 0;
     /**
-     * Packs an array of int64s.
+     * Packs an array of long long's (on MSVC, __int64).
      */
-    virtual void pack(const int64 *d, int size) = 0;
+    virtual void pack(const _long_long_t *d, int size) = 0;
     /**
-     * Packs an array of unsigned int64s.
+     * Packs an array of unsigned long long's (on MSVC, __int64).
      */
-    virtual void pack(const uint64 *d, int size) = 0;
+    virtual void pack(const _unsigned_long_long_t *d, int size) = 0;
     /**
      * Packs an array of floats.
      */
@@ -261,13 +276,13 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void unpack(unsigned long& d) = 0;
     /**
-     * Unpacks an int64.
+     * Unpacks a long long (on MSVC, __int64).
      */
-    virtual void unpack(int64& d) = 0;
+    virtual void unpack(_long_long_t& d) = 0;
     /**
-     * Unpacks an unsigned int64.
+     * Unpacks an unsigned long long (on MSVC, __int64).
      */
-    virtual void unpack(uint64& d) = 0;
+    virtual void unpack(_unsigned_long_long_t& d) = 0;
     /**
      * Unpacks a float.
      */
@@ -337,13 +352,13 @@ class SIM_API cCommBuffer : public cObject
      */
     virtual void unpack(unsigned long *d, int size) = 0;
     /**
-     * Unpacks an array of int64s.
+     * Unpacks an array of long long's (on MSVC, __int64).
      */
-    virtual void unpack(int64 *d, int size) = 0;
+    virtual void unpack(_long_long_t *d, int size) = 0;
     /**
-     * Unpacks an array of unsigned int64s.
+     * Unpacks an array of unsigned long long's (on MSVC, __int64).
      */
-    virtual void unpack(uint64 *d, int size) = 0;
+    virtual void unpack(_unsigned_long_long_t *d, int size) = 0;
     /**
      * Unpacks an array of floats.
      */

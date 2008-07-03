@@ -99,16 +99,16 @@ void cMemCommBuffer::pack(unsigned long d)
     STORE(unsigned long,d);
 }
 
-void cMemCommBuffer::pack(int64 d)
+void cMemCommBuffer::pack(_long_long_t d)
 {
-    extendBufferFor(sizeof(int64));
-    STORE(int64,d);
+    extendBufferFor(sizeof(_long_long_t));
+    STORE(_long_long_t,d);
 }
 
-void cMemCommBuffer::pack(uint64 d)
+void cMemCommBuffer::pack(_unsigned_long_long_t d)
 {
-    extendBufferFor(sizeof(uint64));
-    STORE(uint64,d);
+    extendBufferFor(sizeof(_unsigned_long_long_t));
+    STORE(_unsigned_long_long_t,d);
 }
 
 void cMemCommBuffer::pack(float d)
@@ -202,16 +202,16 @@ void cMemCommBuffer::pack(const unsigned long *d, int size)
     STOREARRAY(unsigned long,d,size);
 }
 
-void cMemCommBuffer::pack(const int64 *d, int size)
+void cMemCommBuffer::pack(const _long_long_t *d, int size)
 {
-    extendBufferFor(size*sizeof(int64));
-    STOREARRAY(int64,d,size);
+    extendBufferFor(size*sizeof(_long_long_t));
+    STOREARRAY(_long_long_t,d,size);
 }
 
-void cMemCommBuffer::pack(const uint64 *d, int size)
+void cMemCommBuffer::pack(const _unsigned_long_long_t *d, int size)
 {
-    extendBufferFor(size*sizeof(uint64));
-    STOREARRAY(uint64,d,size);
+    extendBufferFor(size*sizeof(_unsigned_long_long_t));
+    STOREARRAY(_unsigned_long_long_t,d,size);
 }
 
 void cMemCommBuffer::pack(const float *d, int size)
@@ -298,14 +298,14 @@ void cMemCommBuffer::unpack(unsigned long& d)
     EXTRACT(unsigned long,d);
 }
 
-void cMemCommBuffer::unpack(int64& d)
+void cMemCommBuffer::unpack(_long_long_t& d)
 {
-    EXTRACT(int64,d);
+    EXTRACT(_long_long_t,d);
 }
 
-void cMemCommBuffer::unpack(uint64& d)
+void cMemCommBuffer::unpack(_unsigned_long_long_t& d)
 {
-    EXTRACT(uint64,d);
+    EXTRACT(_unsigned_long_long_t,d);
 }
 
 void cMemCommBuffer::unpack(float& d)
@@ -345,7 +345,7 @@ void cMemCommBuffer::unpack(opp_string& d)
 
 void cMemCommBuffer::unpack(SimTime& d)
 {
-    int64 raw;
+    _long_long_t raw;
     unpack(raw);
     d.setRaw(raw);
 }
@@ -395,14 +395,14 @@ void cMemCommBuffer::unpack(unsigned long *d, int size)
     EXTRACTARRAY(unsigned long,d,size);
 }
 
-void cMemCommBuffer::unpack(int64 *d, int size)
+void cMemCommBuffer::unpack(_long_long_t *d, int size)
 {
-    EXTRACTARRAY(int64,d,size);
+    EXTRACTARRAY(_long_long_t,d,size);
 }
 
-void cMemCommBuffer::unpack(uint64 *d, int size)
+void cMemCommBuffer::unpack(_unsigned_long_long_t *d, int size)
 {
-    EXTRACTARRAY(uint64,d,size);
+    EXTRACTARRAY(_unsigned_long_long_t,d,size);
 }
 
 void cMemCommBuffer::unpack(float *d, int size)

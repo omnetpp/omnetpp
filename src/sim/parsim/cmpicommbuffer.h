@@ -55,8 +55,8 @@ class SIM_API cMPICommBuffer : public cCommBufferBase
     virtual void pack(unsigned int d);
     virtual void pack(long d);
     virtual void pack(unsigned long d);
-    virtual void pack(int64 d);
-    virtual void pack(uint64 d);
+    virtual void pack(_long_long_t d);
+    virtual void pack(_unsigned_long_long_t d);
     virtual void pack(float d);
     virtual void pack(double d);
     virtual void pack(long double d);
@@ -76,8 +76,8 @@ class SIM_API cMPICommBuffer : public cCommBufferBase
     virtual void pack(const unsigned int *d, int size);
     virtual void pack(const long *d, int size);
     virtual void pack(const unsigned long *d, int size);
-    virtual void pack(const int64 *d, int size);
-    virtual void pack(const uint64 *d, int size);
+    virtual void pack(const _long_long_t *d, int size);
+    virtual void pack(const _unsigned_long_long_t *d, int size);
     virtual void pack(const float *d, int size);
     virtual void pack(const double *d, int size);
     virtual void pack(const long double *d, int size);
@@ -97,8 +97,8 @@ class SIM_API cMPICommBuffer : public cCommBufferBase
     virtual void unpack(unsigned int& d);
     virtual void unpack(long& d);
     virtual void unpack(unsigned long& d);
-    virtual void unpack(int64& d);
-    virtual void unpack(uint64& d);
+    virtual void unpack(_long_long_t& d);
+    virtual void unpack(_unsigned_long_long_t& d);
     virtual void unpack(float& d);
     virtual void unpack(double& d);
     virtual void unpack(long double& d);
@@ -118,8 +118,8 @@ class SIM_API cMPICommBuffer : public cCommBufferBase
     virtual void unpack(unsigned int *d, int size);
     virtual void unpack(long *d, int size);
     virtual void unpack(unsigned long *d, int size);
-    virtual void unpack(int64 *d, int size);
-    virtual void unpack(uint64 *d, int size);
+    virtual void unpack(_long_long_t *d, int size);
+    virtual void unpack(_unsigned_long_long_t *d, int size);
     virtual void unpack(float *d, int size);
     virtual void unpack(double *d, int size);
     virtual void unpack(long double *d, int size);

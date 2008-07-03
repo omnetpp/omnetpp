@@ -143,13 +143,13 @@ void cFileCommBuffer::pack(unsigned long d)
     STORE("ul %lu",d);
 }
 
-void cFileCommBuffer::pack(int64 d)
+void cFileCommBuffer::pack(_long_long_t d)
 {
     extendBufferFor(30);
     STORE("i64 %"LL"d",d);
 }
 
-void cFileCommBuffer::pack(uint64 d)
+void cFileCommBuffer::pack(_unsigned_long_long_t d)
 {
     extendBufferFor(30);
     STORE("u64 %"LL"u",d);
@@ -246,16 +246,16 @@ void cFileCommBuffer::pack(const unsigned long *d, int size)
     STOREARRAY(unsigned long,d,size);
 }
 
-void cFileCommBuffer::pack(const int64 *d, int size)
+void cFileCommBuffer::pack(const _long_long_t *d, int size)
 {
-    extendBufferFor(size*sizeof(int64));
-    STOREARRAY(int64,d,size);
+    extendBufferFor(size*sizeof(_long_long_t));
+    STOREARRAY(_long_long_t,d,size);
 }
 
-void cFileCommBuffer::pack(const uint64 *d, int size)
+void cFileCommBuffer::pack(const _unsigned_long_long_t *d, int size)
 {
-    extendBufferFor(size*sizeof(uint64));
-    STOREARRAY(uint64,d,size);
+    extendBufferFor(size*sizeof(_unsigned_long_long_t));
+    STOREARRAY(_unsigned_long_long_t,d,size);
 }
 
 void cFileCommBuffer::pack(const float *d, int size)
@@ -352,12 +352,12 @@ void cFileCommBuffer::unpack(unsigned long& d)
     EXTRACT("ul %ld",d);
 }
 
-void cFileCommBuffer::unpack(int64& d)
+void cFileCommBuffer::unpack(_long_long_t& d)
 {
     EXTRACT("i64 %"LL"d",d);
 }
 
-void cFileCommBuffer::unpack(uint64& d)
+void cFileCommBuffer::unpack(_unsigned_long_long_t& d)
 {
     EXTRACT("u64 %"LL"u",d);
 }
@@ -411,7 +411,7 @@ void cFileCommBuffer::unpack(opp_string& d)
 
 void cFileCommBuffer::unpack(SimTime& d)
 {
-    int64 raw;
+    _long_long_t raw;
     unpack(raw);
     d.setRaw(raw);
 }
@@ -461,14 +461,14 @@ void cFileCommBuffer::unpack(unsigned long *d, int size)
     EXTRACTARRAY(unsigned long,d,size);
 }
 
-void cFileCommBuffer::unpack(int64 *d, int size)
+void cFileCommBuffer::unpack(_long_long_t *d, int size)
 {
-    EXTRACTARRAY(int64,d,size);
+    EXTRACTARRAY(_long_long_t,d,size);
 }
 
-void cFileCommBuffer::unpack(uint64 *d, int size)
+void cFileCommBuffer::unpack(_unsigned_long_long_t *d, int size)
 {
-    EXTRACTARRAY(uint64,d,size);
+    EXTRACTARRAY(_unsigned_long_long_t,d,size);
 }
 
 void cFileCommBuffer::unpack(float *d, int size)
