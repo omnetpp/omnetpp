@@ -67,4 +67,47 @@
    <screen><xsl:apply-templates select="node()"/></screen>
 </xsl:template>
 
+<xsl:template match="chart-properties">
+  <table>
+    <title><xsl:apply-templates/></title>
+    <!-- Aaaah. If I put more groups here, there won't be rowsep between them. -->
+    <tgroup cols='2' rowsep='1'>
+      <colspec colname='name' colwidth='1.5in'/>
+      <colspec colname='description' colwidth='3*'/>
+      <spanspec spanname='category' namest='name' nameend='description' align='left'/>
+      <tbody>
+        <xsl:call-template name="chart.properties.groups">
+          <xsl:with-param name="groups" select="normalize-space(@groups)"/>
+        </xsl:call-template>
+      </tbody>
+    </tgroup>
+  </table>
+</xsl:template>
+
+<!-- Iterating on a list of tokens is not a one-liner in XSLT -->
+<xsl:template name="chart.properties.groups">
+  <xsl:param name="groups"/>
+  <xsl:choose>
+    <xsl:when test="contains($groups, ' ')">
+      <xsl:call-template name="chart.properties.group">
+        <xsl:with-param name="group" select="substring-before($groups, ' ')"/>
+      </xsl:call-template>
+      <xsl:call-template name="chart.properties.groups">
+        <xsl:with-param name="groups" select="substring-after($groups, ' ')"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="chart.properties.group">
+        <xsl:with-param name="group" select="$groups"/>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="chart.properties.group">
+  <xsl:param name="group"/>
+  <xsl:apply-templates select="document('chart-properties.xml')//tgroup[@id=$group]/tbody/row"/>
+</xsl:template>
+
+
 </xsl:stylesheet>

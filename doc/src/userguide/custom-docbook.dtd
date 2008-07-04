@@ -1,4 +1,4 @@
-<!ENTITY % local.formal.class "|picture">
+<!ENTITY % local.formal.class "|picture|chart-properties">
 <!ENTITY % local.tech.char.class "|icon">
 
 <!-- load DocBook -->
@@ -6,7 +6,6 @@
     "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" >
 %DocBookDTD;
 
-<!-- @file, @width, content as title content -->
 <!ELEMENT picture (%title.char.mix;)*>
 <!ATTLIST picture
         %common.attrib;
@@ -14,10 +13,16 @@
 	width		CDATA		#IMPLIED
 >
 
-<!-- @file, @name -->
+<!ELEMENT chart-properties (%title.char.mix;)*>
+<!ATTLIST chart-properties
+        %common.attrib;
+	groups	 	NMTOKENS	#REQUIRED
+>
+
 <!ELEMENT icon EMPTY>
 <!ATTLIST icon
         %common.attrib;
 	file	 	CDATA		#IMPLIED
 	name		CDATA		#IMPLIED
 >
+

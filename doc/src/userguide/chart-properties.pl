@@ -35,12 +35,15 @@ sub processFile
   @cats = ();
   %names = {};
   %descs = {};
-  @props = ($content =~ /properties\.Property\((.*?)\)\s*\n.*?get(.*?)\(\)/gcs);
-  for ($i=0; $i < @props; $i += 2) {
+  @props = ($content =~ /Property\((.*?)\)\s*\n\s*?public\s*?(\w+)\s*?get(.*?)\(\)/gcs);
+  for ($i=0; $i < @props; $i += 3) {
     ($cat)  = ($props[$i] =~ /category="(.*?)"/s);
     ($name) = ($props[$i] =~ /displayName="(.*?)"/s);
     ($desc) = ($props[$i] =~ /description="([^"]*?)"/s);
-    $name = decamelize $props[$i+1] unless ($name);
+    $type = $props[$i+1];
+    $name = decamelize $props[$i+2] unless ($name);
+
+    next if ($type =~ /.*IPropertySource.*/);
 
     my $found = 0;
     foreach ( @cats ) {
@@ -52,7 +55,7 @@ sub processFile
   }
 
   # emit docbook
-  print "  <tgroup id='$file' cols='2'>\n";
+  print "  <tgroup id='$file' cols='2' rowsep='1'>\n";
   print "    <colspec colname='name' colwidth='1.5in'/>\n";
   print "    <colspec colname='description' colwidth='3*'/>\n";
   print "    <spanspec spanname='category' namest='name' nameend='description' align='left'/>\n";

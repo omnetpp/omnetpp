@@ -1,14 +1,12 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 
-<chapter id="result-anal" xmlns:xi="http://www.w3.org/2001/XInclude">
+<chapter id="result-anal">
 
   <title>Analyzing the Results</title>
 
   <sect1>
     <title>Overview</title>
-
     <para>
       Analyzing the simulation result is a lengthy and time consuming process.
       The result of the simulation is recorded as scalar values, vector values and histograms.
@@ -18,7 +16,6 @@
       Automation is very important here. The user does not want to repeat the
       steps of re-creating charts every time simulations have to be re-run for some reason.
     </para>
-    
     <para>
       In OMNEST/OMNeT++ 4.0 the statistical analysis tool integrated into the Eclipse
       environment. Your settings -- your recipe for finding results from the raw data --
@@ -29,7 +26,6 @@
       with the new ones will result in the charts being automatically displayed with the
       new data.
     </para>
-    
     <para>
       When creating an analysis the user first selects the input of the analysis by
       specifying file names or file name patterns (e.g. "adhoc-*.vec"). Data of interest
@@ -41,22 +37,22 @@
       retry counts of host[5..10] in experiment X, averaged over replications. In addition
       datasets can use other datasets as their input so datasets can build on each other.
     </para>
-
   </sect1>
 
   <sect1>
     <title>Creating Analysis Files</title>
-    
     <para>
       To create a new analysis file choose
-      <guimenuitem>File|New|Analysis File</guimenuitem> from the menu.
+      <menuchoice>
+        <guimenu>File</guimenu>
+        <guisubmenu>New</guisubmenu>
+        <guimenuitem>Analysis File</guimenuitem>
+      </menuchoice> from the menu.
       Select the folder the new file created in and enter file name.
       Press <guibutton>Finish</guibutton> and an empty analysis file is created
       and opened.
     </para>
-    
     <picture file="pictures/ANF-NewAnalysisFileDialog.png">New Analysis File dialog</picture>
-    
     <para>
       There is a quick way to create an analysis file for a result file.
       Just double click on the result file in the Navigator View to open the
@@ -67,14 +63,12 @@
       a numeric suffix (e.g. aloha-10.vec), then all files with the same prefix added
       the the analysis file (i.e. aloha-*.vec and aloha-*.sca).
     </para>
-    
     <tip>
       <para>
         If the analysis file already exists, double clicking on the result file will open
         it.
       </para>
     </tip>
-
   </sect1>
 
   <sect1>
@@ -89,25 +83,21 @@
     
     <sect2>
       <title>Input files</title>
-      
       <sect3>
         <title>Selecting input files</title>
-        
         <para>
           The first page displays the result files that serve as input to the analysis. The
           upper half specifies what files to select, by explicit filenames or by wildcards.
           New input files can be added to the analysis by dragging vector and scalar files
           from the Project Explorer View, or by opening dialogs with the
           <guibutton>Add File...</guibutton> or <guibutton>Wildcard...</guibutton>
-          buttons. If the file name is absolute (starts with '/') it is interpreted relative
+          buttons. If the file name starts with '/' it is interpreted relative
           to the workspace root, otherwise it is relative to the folder of the analysis
           file.
         </para>
-  
         <picture file="pictures/ANF-InputsPage.png">
           Specifying input files for data analysis
         </picture>
-  
         <para>
           The input files are loaded when the analysis file is opened. When the file changed
           on the disk it is reloaded automatically when the workspace is refreshed. (Eclipse
@@ -119,36 +109,35 @@
           without loss of information. If the index file is missing or the vector file was
           modified, then the IDE rebuilds the index in the background.
         </para>
-        
-        <tip>The Progress View displays the progress of the indexing process.</tip>
-        
+        <tip>
+          <para>
+            The Progress View displays the progress of the indexing process.
+          </para>
+        </tip>
         <para>
-          The lower half shows what files actually matched the input specification, and what
-          runs they contain. Note that OMNeT++ 4.0 result files contain a unique run ID and
-          several metadata annotations in addition to the actual recorded data. The third
-          tree organizes simulation runs runs according to their
+          The lower half shows what files actually matched the input specification, and
+          what runs they contain. Note that OMNeT++ 4.0 result files contain a unique run
+          ID and several metadata annotations in addition to the actual recorded data. The
+          third tree organizes simulation runs according to their
           experiment-measurement-replication labels.
         </para>
-  
         <para>
           The underlying assumption is that users will organize their simulation-based
-          research into various /experiments/. An experiment will consist of several
-          /measurements/, which are typically (but not necessarily) simulations done with
-          the same model but with different parameter settings; that is, the user will
-          explore the parameter space with several simulation runs. And, to gain statistical
+          research into various <emphasis>experiments</emphasis>. An experiment will consist of several
+          <emphasis>measurements</emphasis>, which are typically (but not necessarily) simulations done with the same model
+          but with different parameter settings; that is, the user will explore the
+          parameter space with several simulation runs. And, to gain statistical
           confidence in the results, each measurement will be possibly repeated several
           times, with different random number seeds. It is easy to set up such scenarios
           with the improved ini files of OMNeT++ 4.0, and then the
           experiment-measurement-replication labels will be assigned more-or-less
-          automatically -- please refer to the chapter "Configuring simulations TBD check"
-          in the manual) for more discussion.
+          automatically -- please refer to the chapter "Configuring and Running Simulations"
+          in the manual for more discussion.
         </para>
-
       </sect3>
 
       <sect3>
         <title>Browsing input</title>
-              
         <para>
           The second page of the Analysis editor displays results (vectors, scalars and
           histograms) from all files in tables, and lets the user browse them. Results can
@@ -157,30 +146,32 @@
           pattern matching expression language. Selected or filtered data can be immediately
           plotted, or remembered in named datasets for further processing.
         </para>
-        
+        <para>
+          Pressing the <guibutton>Advanced</guibutton> button switches to advanced filter mode.
+          In the text field you can enter a complex filter pattern.
+        </para>
         <tip>
-          In the advanced filter text field there is a Contest Assist available. Press
-          Ctrl+Space to get a list of suggestions appropriate at the cursor position.
+          <para>
+            You can easily display the data of a selected file, run, experiment,
+            measurement or replication if you double click on the required tree node in
+            the lower part of the Inputs page. It sets the appropriate filter and shows
+            the data on the "Browse Data" page.
+          </para>
+          <para>
+            If you right click on a table cell and select
+            <guimenuitem>Set filter: ...</guimenuitem>
+            action from the menu, you can set the value of that cell as the filter expression. 
+          </para>
         </tip>
-        
-        <tip>
-          You can easily display the data of a selected file, run, experiment, measurement
-          or replication if you double click on the required tree node in the lower part
-          of the Inputs page. It sets the appropriate filter and shows the data on the 
-          "Browse Data" page.
-        </tip>
-        
         <picture file="pictures/ANF-BrowseDataPage.png">
           Browsing vector and scalar data generated by the simulation
         </picture>
-  
         <para>
           To hide or show table columns, open <guimenuitem>Choose table columns...</guimenuitem>
           from the context menu and select the columns to be displayed.
           The settings are persisted and applied in each subsequently opened editor.
           The table rows can be sorted by clicking on the column name.
         </para>
-        
         <para>
           You can display the selected data items on a chart. To open the chart 
           choose <guimenuitem>Plot</guimenuitem>
@@ -188,26 +179,119 @@
           to the analysis file, so you can explore the data by opening the chart this way and
           closing the chart page without making the editor dirty.
         </para>
-        
         <para>
           The selected vector's data can also be displayed in a table. Make sure that the
           Output Vector View is opened. If not, then you can open it from the context menu 
           (<guimenuitem>Show Output Vector View</guimenuitem>). If you select a vector in the 
           editor, the view will display its content.
         </para>
-      
+        <para>
+          You can create a dataset from the selected result items. Select
+          <guimenuitem>Add Filter Expression to Dataset...</guimenuitem> if you want to 
+          add all items displayed in the table. Select
+          <guimenuitem>Add Filter Selected Data to Dataset...</guimenuitem> if you want to
+          add the selected items only. You can add the items to an existing dataset, or
+          you can create a new dataset in the opening dialog.
+        </para>
       </sect3>
       
+      <sect3>
+        <title>Filter expressions</title>
+        <para>
+          A filter expression is composed
+          of atomic patterns with the AND, OR, NOT operators. An atomic pattern 
+          filters for the value of a field of the result item, and has the form
+          <![CDATA[<field_name>(<pattern>)]]>. The following table shows the valid field names.
+          The name field can be omitted and simply the name pattern can be used as a filter 
+          expression. It must be quoted if it contains whitespace or parenthesis.
+          
+          <informaltable>
+            <tgroup cols="2">
+              <colspec colwidth="1in"/>
+              <colspec colwidth="2*"/> <!-- There is a warning if 1* is used, bug in docbook/fo? -->
+              <thead>
+                <row><entry>Field</entry><entry>Description</entry></row>
+              </thead>
+              <tbody>
+                <row>
+                  <entry>name</entry><entry>the name of the scalar, vector or histogram</entry>
+                </row>
+                <row>
+                  <entry>module</entry><entry>the name of the module</entry>
+                </row>
+                <row>
+                  <entry>file</entry><entry>the file of the result item</entry>
+                </row>
+                <row>
+                  <entry>run</entry><entry>the run identifier</entry>
+                </row>
+                <row>
+                  <entry>attr:<emphasis>name</emphasis></entry>
+                  <entry>the value of the run attribute named <emphasis>name</emphasis>,
+                         e.g. attr:experiment
+                  </entry>
+                </row>
+                <row>
+                  <entry>param:<emphasis>name</emphasis> </entry>
+                  <entry>the value of the module parameter named <emphasis>name</emphasis></entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+          
+          In the pattern specifying the field value the following shortcuts can be used:
+          <informaltable>
+            <tgroup cols="2">
+              <colspec colwidth="1in"/>
+              <colspec colwidth="2*"/>
+              <thead>
+                <row><entry>Pattern</entry><entry>Description</entry></row>
+              </thead>
+              <tbody>
+                <row><entry>?</entry><entry>matches any character except '.'</entry></row>
+                <row><entry>*</entry><entry>matches zero or more characters except '.'</entry></row>
+                <row><entry>**</entry><entry>matches zero or more characters (any character)</entry></row>
+                <row><entry>{a-z}</entry><entry>matches a character in range a-z</entry></row>
+                <row><entry>{^a-z}</entry><entry>matches a character not in range a-z</entry></row>
+                <row><entry>{32..255}</entry><entry>any number (ie. sequence of digits) in range 32..255  (e.g. "99")</entry></row>
+                <row><entry>[32..255]</entry><entry>any number in square brackets in range 32..255 (e.g. "[99]")</entry></row>
+                <row><entry>\</entry><entry>takes away the special meaning of the subsequent character</entry></row>
+              </tbody>
+            </tgroup>
+          </informaltable>
+        </para>
+        <tip>
+          <para>
+            In the text fields where you can enter a filter expression there is a Contest Assist available.
+            Press <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo>
+            to get a list of suggestions appropriate at the cursor position.
+          </para>
+        </tip>
+        <sect4>
+          <title>Examples</title>
+          <informalexample>
+            <para><literallayout><userinput>"queuing time"</userinput></literallayout></para>
+            <para>filters for result items named <emphasis>queuing time</emphasis>.</para>
+          </informalexample>
+          <informalexample>
+            <para>
+              <literallayout><userinput>module(**.sink) AND (name("queuing time") OR</userinput>
+<userinput>                     name("transmission time"))</userinput></literallayout>
+            </para>
+            <para>
+              results in the <emphasis>queuing times</emphasis> and <emphasis>transmission times</emphasis>
+              that are written by modules named <emphasis>sink</emphasis>. 
+            </para>
+          </informalexample>
+        </sect4>
+      </sect3>
     </sect2>
     
     <sect2>
-    
       <title>Datasets</title>
-      
 
       <sect3>
         <title>Overview</title>
-        
         <para>
           The third page displays the datasets and charts created during the analysis.
           Datasets describe a set of input data, the processings applied to them and 
@@ -216,19 +300,19 @@
           selecting the operands of the operations and content of charts, and for
           creating charts.
         </para>
-        
         <picture file="pictures/ANF-DatasetsPage.png">Defining datasets to be analyzed</picture>
-        
         <tip>
-          You can browse the dataset's content in the Dataset View. The view displays the 
-          content of the dataset at the selected child.
+          <para>
+          You can browse the dataset's content in the Dataset View. Open the view by selecting
+          <guimenuitem>Show Dataset View</guimenuitem> from the context menu. Select a chart
+          to display its content or another node to display the content of the dataset after that 
+          processing is applied.
+          </para>
         </tip>
-        
       </sect3>
       
       <sect3>
         <title>Editing datasets</title>
-        
         <para>
           The usual tree editing operations work on the Dataset tree. New elements can be
           added by dragging elements from the palette on the right to the
@@ -237,7 +321,6 @@
           element and editing its properties on the property sheet, or opening an item specific
           edit dialog by choosing <guimenuitem>Properties...</guimenuitem> from the context menu.
         </para>
-        
         <tip>
           <para>
             Datasets can be opened on a separate page by double clicking on them. It is more
@@ -245,7 +328,6 @@
             will display the chart.
           </para>
         </tip>
-  
         <para>
           Computations can be applied to the data by adding Apply/Compute nodes to the dataset.
           The data items to which the filter should be applied can be selected by adding
@@ -253,7 +335,6 @@
           to each data item. The difference between Apply and Compute is that Apply will
           remove its input from the dataset, while Compute keeps the original data too.
         </para>
-        
         <para>
           Processing steps enclosed into a Group node has effect only in the group. This
           way you can create branches in the dataset.
@@ -261,7 +342,6 @@
           from the context menu. To remove the grouping, select the Group node and choose
           <guimenuitem>Ungroup</guimenuitem>.
         </para>
-        
         <para>
           Charts can be inserted to display data. The data items to be displayed can be
           selected by adding Select/Deselect children to the chart node. By default the
@@ -271,7 +351,6 @@
           charts including setting titles, colors, adding legends, grid lines, etc. See
           the <xref linkend="charts"/> section for details.
         </para>
-        
       </sect3>
       
       <sect3>
@@ -285,7 +364,7 @@
           contain the data of the chart, or the dataset after the selected processing is
           applied. Enter the name of the file and press <guibutton>Finish</guibutton>.
         </para>
-        
+
         <para>
           Vectors are always written as two columns into the CSV files, but the shape of the 
           scalars' table can be changed by selecting the grouping attributes in the dialog.
@@ -297,6 +376,14 @@
           
           <informaltable>
             <tgroup cols="8">
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
               <thead>
                 <row>
                   <entry>r1 m1 s1</entry>
@@ -326,12 +413,12 @@
           
           After grouping the scalars by module name and scalar name it looks like:
           
-          <informaltable>
+          <informaltable pgwide="0">
             <tgroup cols="4">
-              <colspec colwidth="15%"/>
-              <colspec colwidth="15%"/>
-              <colspec colwidth="15%"/>
-              <colspec colwidth="15%"/>
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
+              <colspec colwidth="48pt"/>
               <thead>
                 <row>
                   <entry>Module</entry>
@@ -420,7 +507,7 @@
           Cut/Paste. You can display the charts by double clicking on the chart sheet node.
         </para>
         
-        <picture file="pictures/ANF-ChartSheetPage.png"/>
+        <picture file="pictures/ANF-ChartSheetPage.png">Chart Sheet page with three charts</picture>
         
       </sect3>
       
@@ -477,12 +564,7 @@
           display the properties grouped by their category.
           (<icon name="Eclipse_ShowCategories.png"/> on the toolbar of the Properties View)
         </para>
-        <para>
-          TODO: list of common properties
-        </para>
-      <!--
-          <xi:include href="chart-properties.xml#xpointer(//section[@id='ChartProperties'])"/>
-      -->  
+        <chart-properties groups="ChartProperties">Common chart properties</chart-properties>
       </sect3>
       
       <sect3>
@@ -490,8 +572,9 @@
         <para>
           Charts have two mouse modes. In Pan mode you can scroll with the mouse wheel, and
           drag the chart. In Zoom mode the chart can be zoomed in by left clicking and
-          zoomed out by <keycap>Shift+</keycap> left click, or with the mouse wheel.
-          Dragging selects a rectangular area to zoom in. The toolbar icons
+          zoomed out by <keycombo><keycap>Shift</keycap><mousebutton>left</mousebutton></keycombo>
+          click, or with the mouse wheel. Dragging selects a rectangular area to zoom in.
+          The toolbar icons
           <icon name="hand.gif"/> and <icon name="zoom.png"/> switch between Pan and Zoom mode.
           You can also find toolbar buttons to zoom in <icon name="zoomplus.png"/>,
           zoom out (<icon name="zoomminus.png"/>) and zoom to fit (<icon name="zoomtofit.png"/>).
@@ -504,7 +587,8 @@
         <para>
           When the mouse is hovered over a data point the appearing tooltip shows line labels
           and the values of the points near to the cursor. The names of all lines can be
-          displayed by hovering over the <icon name="legend.gif"/> button.
+          displayed by hovering over the <icon name="legend.gif"/> button at the top right corner
+          of the chart.
         </para>
       </sect3>
       
@@ -525,7 +609,7 @@
           bars can be changed. Optionally a logarithmic transformation can be applied 
           to the values.
         </para>
-        <picture file="pictures/ANF-ScalarChart.png"/>
+        <picture file="pictures/ANF-ScalarChart.png">Bar chart</picture>
         <para>
           The scalar chart's content can be specified on the Content tab of their
           Properties dialog. Attributes in the "Groups" list box determines the groups so that
@@ -535,9 +619,13 @@
           by dragging them from the upper list box to the lower list boxes.
           Most frequently you want to group the scalars by modules, and label the bars
           with the scalar name. This is the default setting, if you leave each attribute in the
-          upper list box.  
+          upper list box.
         </para>
-        <picture file="pictures/ANF-ScalarChartEditDialog.png"/>
+        <picture file="pictures/ANF-ScalarChartEditDialog.png">Dialog page for bar chart content</picture>
+        <para>
+          Properties of bar charts in addition to common chart properties:
+        </para>
+        <chart-properties groups="ScalarChartProperties BarProperties">Bar chart properties</chart-properties>
       </sect3>
       
       <sect3>
@@ -549,14 +637,15 @@
           (linear, step-wise, pins or none) and the color of the lines. Individual lines
           can be hidden.
         </para>
-        <picture file="pictures/ANF-VectorChart.png"/>
+        <picture file="pictures/ANF-VectorChart.png">Line chart</picture>
         <para>
           Line names identify lines on the legend, property sheets and edit dialogs.
           They are formed automatically from attributes of the vector (like file, run,
           module, vector name, etc.). If you want to name the lines otherwise, you can
           enter a name pattern in the <guilabel>Line names</guilabel> field of the
           Properties dialog (Main tab). You can use "{file}", "{run}", "{module}", "{name}",
-          to refer to an attribute value, press <keycap>Ctrl+Space</keycap> for the complete
+          to refer to an attribute value, press
+          <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo> for the complete
           list.
         </para>
         <para>
@@ -570,6 +659,7 @@
           Select a data point and see that in the Output Vector and Dataset View
           the data point and the vector are selected.
         </para>
+        <chart-properties groups="VectorChartProperties LineProperties">Line chart properties</chart-properties>
       </sect3>
       
       <sect3>
@@ -591,13 +681,14 @@
             </varlistentry>
           </variablelist>
         </para>
-        <picture file="pictures/ANF-HistogramChart.png"/>
+        <picture file="pictures/ANF-HistogramChart.png">Histogram chart</picture>
         <tip>
           <para>
             When drawing several histograms on one chart, set the "Bar type" property to
             Outline. This way the histograms will not cover each other.
           </para>
         </tip>
+        <chart-properties groups="HistogramChartProperties HistogramProperties">Histogram chart properties</chart-properties>
       </sect3>
       
       <sect3>
@@ -632,6 +723,7 @@
             in the ini file.
           </para>
         </tip>
+        <chart-properties groups="VectorChartProperties LineProperties">Scatter chart properties</chart-properties>
       </sect3>
     </sect2>
   
@@ -656,7 +748,7 @@
         The properties view displays the properties of the selected dataset, processing node
         and chart. Font and color properties can be edited as text or by opening dialogs.
         Text fields that have a bulb on the left side have a context assist; press
-        <keycap>Ctrl+Space</keycap> to activate it.   
+        <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo> to activate it.   
       </para>
       <picture file="pictures/ANF-PropertiesView.png">Properties View showing chart properties</picture>
     </sect2>
@@ -671,7 +763,7 @@
         disk. Vectors that are the result of some computation are saved into temporary
         files.
       </para>
-      <picture file="pictures/ANF-OutputVectorView.png"/>
+      <picture file="pictures/ANF-OutputVectorView.png">Output Vector View</picture>
       <para>
         To navigate to a specific line use the scroll bar or the menu of the view:
         <picture file="pictures/ANF-OutputVectorViewMenu.png"/>
