@@ -26,13 +26,6 @@ import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_LEGEND_
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_Y_AXIS_MIN;
 
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.geometry.Insets;
@@ -46,7 +39,6 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -55,7 +47,6 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.image.ImageConverter;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
@@ -550,57 +541,6 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas {
 	protected void chartChanged() {
 		layoutChart();
 		clearCanvasCacheAndRedraw();
-	}
-	
-	/**
-	 * Copies the image of the chart to the clipboard.
-	 * Uses AWT functionality, because SWT does not support ImageTransfer yet.
-	 * See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=78856.
-	 */
-	public void copyToClipboard() {
-		Clipboard cp = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
-		ClipboardOwner owner = new java.awt.datatransfer.ClipboardOwner() {
-			public void lostOwnership(Clipboard clipboard, Transferable contents) {
-			}
-		};
-		
-		class ImageTransferable implements Transferable {
-			public java.awt.Image image;
-
-			public ImageTransferable(java.awt.Image image) {
-				this.image = image;
-			}
-			
-			public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
-				if (flavor == DataFlavor.imageFlavor)
-					return image;
-				else
-					throw new UnsupportedFlavorException(flavor);
-			}
-
-			public DataFlavor[] getTransferDataFlavors() {
-				return new DataFlavor[] {DataFlavor.imageFlavor};
-			}
-
-			public boolean isDataFlavorSupported(DataFlavor flavor) {
-				return flavor == DataFlavor.imageFlavor;
-			}
-		};
-		
-		int width = getClientArea().width, height = getClientArea().height;
-		Image image = getImage(width, height);
-		cp.setContents(new ImageTransferable(ImageConverter.convertToAWT(image)), owner);
-	}
-	
-	/**
-	 * Returns the image of the chart.
-	 */
-	public Image getImage(int width, int height) {
-		Image image = new Image(getDisplay(), width, height);
-		GC gc = new GC(image);
-		paint(gc);
-		gc.dispose();
-		return image;
 	}
 	
 	protected void paintInsets(GC gc) {

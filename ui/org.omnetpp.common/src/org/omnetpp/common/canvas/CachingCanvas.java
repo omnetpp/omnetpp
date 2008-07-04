@@ -1,5 +1,11 @@
 package org.omnetpp.common.canvas;
 
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.Assert;
@@ -13,6 +19,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.canvas.ITileCache.Tile;
+import org.omnetpp.common.image.ImageConverter;
 
 /**
  * A scrollable canvas that supports caching of (part of) the drawing 
@@ -67,6 +74,57 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 		this.doCaching = doCaching;
 		clearCanvasCache();
 	}
+    
+    /**
+     * Copies the image of the chart to the clipboard.
+     * Uses AWT functionality, because SWT does not support ImageTransfer yet.
+     * See: https://bugs.eclipse.org/bugs/show_bug.cgi?id=78856.
+     */
+    public void copyToClipboard() {
+        Clipboard cp = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+        ClipboardOwner owner = new java.awt.datatransfer.ClipboardOwner() {
+            public void lostOwnership(Clipboard clipboard, Transferable contents) {
+            }
+        };
+        
+        class ImageTransferable implements Transferable {
+            public java.awt.Image image;
+
+            public ImageTransferable(java.awt.Image image) {
+                this.image = image;
+            }
+            
+            public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+                if (flavor == DataFlavor.imageFlavor)
+                    return image;
+                else
+                    throw new UnsupportedFlavorException(flavor);
+            }
+
+            public DataFlavor[] getTransferDataFlavors() {
+                return new DataFlavor[] {DataFlavor.imageFlavor};
+            }
+
+            public boolean isDataFlavorSupported(DataFlavor flavor) {
+                return flavor == DataFlavor.imageFlavor;
+            }
+        };
+        
+        int width = getClientArea().width, height = getClientArea().height;
+        Image image = getImage(width, height);
+        cp.setContents(new ImageTransferable(ImageConverter.convertToAWT(image)), owner);
+    }
+    
+    /**
+     * Returns the image of the chart.
+     */
+    public Image getImage(int width, int height) {
+        Image image = new Image(getDisplay(), width, height);
+        GC gc = new GC(image);
+        paint(gc);
+        gc.dispose();
+        return image;
+    }
 
 	/**
 	 * Paints the canvas, making use of the cache.

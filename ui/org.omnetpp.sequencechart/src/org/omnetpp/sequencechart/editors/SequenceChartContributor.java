@@ -157,6 +157,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	protected SequenceChartAction refreshAction;
 	
     protected SequenceChartAction releaseMemoryAction;
+    
+    protected SequenceChartAction copyToClipboardAction;
 //  TODO factor out to org.omnetpp.imageexport 
 //	protected SequenceChartAction exportToSVGAction;
 
@@ -189,6 +191,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.denseAxesAction = createDenseAxesAction();
 		this.balancedAxesAction = createBalancedAxesAction();
 		this.toggleBookmarkAction = createToggleBookmarkAction();
+		this.copyToClipboardAction = createCopyToClipboardAction();
 //		this.exportToSVGAction = createExportToSVGAction();
 		this.refreshAction = createRefreshAction();
 		this.releaseMemoryAction = createReleaseMemoryAction();
@@ -325,6 +328,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 showInSubmenu.add(showInViewItem);
 		        menuManager.add(showInSubmenu);
 
+                menuManager.add(separatorAction);
+                menuManager.add(copyToClipboardAction);
 		        // TODO factor out to org.omnetpp.imageexport
 //				menuManager.add(exportToSVGAction);
 				
@@ -1321,6 +1326,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				setEnabled(sequenceChart.getSelectionEvent() != null);
 			}
 		};
+	}
+
+	private SequenceChartAction createCopyToClipboardAction() {
+	    return new SequenceChartAction("Copy to Clipboard", Action.AS_PUSH_BUTTON) {
+	        @Override
+	        public void run() {
+	            sequenceChart.copyToClipboard();
+	        }
+	    };
 	}
 
 // TODO factor out to org.omnetpp.imageexport	
