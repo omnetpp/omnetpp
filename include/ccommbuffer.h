@@ -146,10 +146,6 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Packs a string.
      */
-    void pack(char *d)  {pack((const char *)d);}
-    /**
-     * Packs a string.
-     */
     virtual void pack(const char *d) = 0;
     /**
      * Packs a string.
