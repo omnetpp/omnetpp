@@ -38,6 +38,7 @@ NAMESPACE_BEGIN
 
 class cXMLDocCache;
 class cScheduler;
+class cModuleType;
 // WITH_PARSIM:
 class cParsimCommunications;
 class cParsimPartition;
