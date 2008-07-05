@@ -40,6 +40,7 @@ class  cScheduler;
 class  cParsimPartition;
 class  cNEDFileLoader;
 class  cHasher;
+class  cModuleType;
 
 
 /**
