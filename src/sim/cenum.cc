@@ -84,6 +84,15 @@ cEnum *cEnum::find(const char *name)
     return dynamic_cast<cEnum *>(enums.getInstance()->lookup(name));
 }
 
+cEnum *cEnum::get(const char *name)
+{
+    cEnum *p = find(name);
+    if (!p)
+        throw cRuntimeError("Enum \"%s\" not found -- its declaration may be missing "
+                            "from .msg files, or the code was not linked in", name);
+    return p;
+}
+
 cEnum *cEnum::registerNames(const char *nameList)
 {
     tmpNames.clear();

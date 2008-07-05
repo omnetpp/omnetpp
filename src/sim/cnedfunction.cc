@@ -138,6 +138,16 @@ cNEDFunction *cNEDFunction::find(const char *name, int argcount)
     return NULL;
 }
 
+cNEDFunction *cNEDFunction::get(const char *name, int argcount)
+{
+    cNEDFunction *p = find(name, argcount);
+    if (!p)
+        throw cRuntimeError("NED function \"%s\" with %d args not found -- perhaps it wasn't registered "
+                            "with the Define_NED_Function() macro, or its code is not linked in",
+                            name, argcount);
+    return p;
+}
+
 cNEDFunction *cNEDFunction::findByPointer(NEDFunction f)
 {
     cRegistrationList *a = nedFunctions.getInstance();

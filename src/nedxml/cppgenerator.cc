@@ -324,7 +324,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
 
     out << "static cModuleType *_getModuleType(const char *modname)\n";
     out << "{\n";
-    out << "    cModuleType *modtype = findModuleType(modname);\n";
+    out << "    cModuleType *modtype = cModuleType::find(modname);\n";
     out << "    if (!modtype)\n";
     out << "        throw cRuntimeError(\"Module type definition %s not found (Define_Module() missing from C++ code?)\", modname);\n";
     out << "    return modtype;\n";

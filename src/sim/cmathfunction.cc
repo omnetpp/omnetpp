@@ -142,6 +142,16 @@ cMathFunction *cMathFunction::find(const char *name, int argcount)
     return NULL;
 }
 
+cMathFunction *cMathFunction::get(const char *name, int argcount)
+{
+    cMathFunction *p = find(name, argcount);
+    if (!p)
+        throw cRuntimeError("Math function \"%s\" with %d args not found -- perhaps it wasn't registered "
+                            "with the Register_Function() macro, or its code is not linked in",
+                            name, argcount);
+    return p;
+}
+
 cMathFunction *cMathFunction::findByPointer(MathFunc f)
 {
     cRegistrationList *a = nedFunctions.getInstance();

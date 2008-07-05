@@ -31,11 +31,5 @@ cGlobalRegistrationList enums("enums");
 cGlobalRegistrationList classDescriptors("class descriptors");
 cGlobalRegistrationList configKeys("supported configuration keys");
 
-
-cModuleType *findModuleType(const char *name)
-{
-    return cModuleType::find(name);
-}
-
 NAMESPACE_END
 

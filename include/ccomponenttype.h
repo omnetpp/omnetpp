@@ -108,9 +108,16 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     //@}
 
     /**
-     * Find a component type by fully qualified name. Returns NULL if not found.
+     * Finds a component type by fully qualified NED type name.
+     * Returns NULL if not found.
      */
     static cComponentType *find(const char *qname);
+
+    /**
+     * Finds a component type by fully qualified NED type name.
+     * Throws an error if not found.
+     */
+    static cComponentType *get(const char *qname);
 };
 
 
@@ -213,9 +220,16 @@ class SIM_API cModuleType : public cComponentType
     //@}
 
     /**
-     * Find a component type by fully qualified name.
+     * Finds a module type by fully qualified NED type name.
+     * Returns NULL if not found.
      */
     static cModuleType *find(const char *qname);
+
+    /**
+     * Finds a module type by fully qualified NED type name.
+     * Throws an error if not found.
+     */
+    static cModuleType *get(const char *qname);
 };
 
 
@@ -282,9 +296,17 @@ class SIM_API cChannelType : public cComponentType
     //@}
 
     /**
-     * Find a component type by fully qualified name.
+     * Finds a channel type by fully qualified NED type name.
+     * Returns NULL if not found.
      */
     static cChannelType *find(const char *qname);
+
+    /**
+     * Finds a channel type by fully qualified NED type name.
+     * Throws an error if not found.
+     */
+    static cChannelType *get(const char *qname);
+
 };
 
 NAMESPACE_END

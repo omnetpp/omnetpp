@@ -116,9 +116,14 @@ class SIM_API cEnum : public cOwnedObject
     std::string str() const;
 
     /**
-     * Finds a registered enum by name.
+     * Finds a registered enum by name. Returns NULL if not found.
      */
     static cEnum *find(const char *name);
+
+    /**
+     * Returns the enum with the given name. Throws an error if not found.
+     */
+    static cEnum *get(const char *name);
 };
 
 NAMESPACE_END

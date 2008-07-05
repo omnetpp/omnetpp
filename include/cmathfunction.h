@@ -174,9 +174,14 @@ class SIM_API cMathFunction : public cNoncopyableOwnedObject
     //@}
 
     /**
-     * Finds a registered function by name.
+     * Finds a registered function by name. Returns NULL if not found.
      */
     static cMathFunction *find(const char *name, int numArgs);
+
+    /**
+     * Finds a registered function by name. Throws an error if not found.
+     */
+    static cMathFunction *get(const char *name, int numArgs);
 
     /**
      * Finds a registered function by function pointer.

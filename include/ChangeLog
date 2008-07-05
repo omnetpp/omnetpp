@@ -232,7 +232,6 @@
 	   - findChannelType
 	   - findNetworkType()
 	   - findModuleType()
-	    findModuleType() left for compatibility
 
 	- cModuleType::buildInside(mod) became protected (was deprecated anyway)
 

@@ -115,6 +115,9 @@ while (<LISTFILE>)
     # cTopology
     $txt =~ s/\bunweightedSingleShortestPathsTo\(/calculateUnweightedSingleShortestPathsTo(/mg;
 
+    # dynamic module creation
+    $txt =~ s/\bfindModuleType\(/cModuleType::get(/mg;
+
     # add getters (automatic)
     $txt =~ s/\b($arglessGetters) ?\( *\)/"get".ucfirst($1)."()"/mge;
     $txt =~ s/\b($gettersWithArg) ?\(/"get".ucfirst($1)."("/mge;

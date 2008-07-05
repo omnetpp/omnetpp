@@ -45,13 +45,19 @@ cClassFactory *cClassFactory::find(const char *classname)
     return dynamic_cast<cClassFactory *>(classes.getInstance()->lookup(classname));
 }
 
-cObject *cClassFactory::createOne(const char *classname)
+cClassFactory *cClassFactory::get(const char *classname)
 {
     cClassFactory *p = find(classname);
     if (!p)
         throw cRuntimeError("Class \"%s\" not found -- perhaps its code was not linked in, "
                             "or the class wasn't registered with Register_Class(), or in the case of "
                             "modules and channels, with Define_Module()/Define_Channel()", classname);
+    return p;
+}
+
+cObject *cClassFactory::createOne(const char *classname)
+{
+    cClassFactory *p = get(classname);
     return p->createOne();
 }
 

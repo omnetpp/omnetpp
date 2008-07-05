@@ -52,6 +52,16 @@ cComponentType *cComponentType::find(const char *qname)
     return dynamic_cast<cComponentType *>(componentTypes.getInstance()->lookup(qname));
 }
 
+cComponentType *cComponentType::get(const char *qname)
+{
+    cComponentType *p = find(qname);
+    if (!p) {
+        const char *hint = (!qname || !strchr(qname,'.')) ? " (fully qualified type name expected)" : "";
+        throw cRuntimeError("NED type \"%s\" not found%s", qname, hint);
+    }
+    return p;
+}
+
 cParImpl *cComponentType::getSharedParImpl(const char *key) const
 {
     StringToParMap::const_iterator it = sharedParMap.find(key);
@@ -177,6 +187,16 @@ cModuleType *cModuleType::find(const char *qname)
     return dynamic_cast<cModuleType *>(componentTypes.getInstance()->lookup(qname));
 }
 
+cModuleType *cModuleType::get(const char *qname)
+{
+    cModuleType *p = find(qname);
+    if (!p) {
+        const char *hint = (!qname || !strchr(qname,'.')) ? " (fully qualified type name expected)" : "";
+        throw cRuntimeError("NED module type \"%s\" not found%s", qname, hint);
+    }
+    return p;
+}
+
 //----
 
 cChannelType *cChannelType::idealChannelType;
@@ -254,4 +274,13 @@ cChannelType *cChannelType::find(const char *qname)
     return dynamic_cast<cChannelType *>(componentTypes.getInstance()->lookup(qname));
 }
 
+cChannelType *cChannelType::get(const char *qname)
+{
+    cChannelType *p = find(qname);
+    if (!p) {
+        const char *hint = (!qname || !strchr(qname,'.')) ? " (fully qualified type name expected)" : "";
+        throw cRuntimeError("NED channel type \"%s\" not found%s", qname, hint);
+    }
+    return p;
+}
 

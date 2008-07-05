@@ -22,8 +22,6 @@
 
 NAMESPACE_BEGIN
 
-class cModuleType;
-
 //
 // Global objects
 //
@@ -38,19 +36,6 @@ SIM_API extern cGlobalRegistrationList classes;         ///< List of all classes
 SIM_API extern cGlobalRegistrationList enums;           ///< List of all enum objects (cEnum)
 SIM_API extern cGlobalRegistrationList classDescriptors;///< List of all class descriptors (cClassDescriptor)
 SIM_API extern cGlobalRegistrationList configKeys;      ///< List of supported configuration keys (cConfigKey)
-
-
-/**
- *
- * @addtogroup Functions
- */
-//@{
-
-/**
- * DEPRECATED. Use cComponentType::find() instead.
- */
-SIM_API _OPPDEPRECATED cModuleType *findModuleType(const char *s);
-//@}
 
 NAMESPACE_END
 

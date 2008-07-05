@@ -81,6 +81,11 @@ class SIM_API cClassFactory : public cNoncopyableOwnedObject
     static cClassFactory *find(const char *classname);
 
     /**
+     * Like find(), but throws an error if the object was not found.
+     */
+    static cClassFactory *get(const char *classname);
+
+    /**
      * Creates an instance of a particular class; the result has to be cast
      * to the appropriate type by hand. The class must have been registered
      * previously with the Register_Class() macro. The class name string
