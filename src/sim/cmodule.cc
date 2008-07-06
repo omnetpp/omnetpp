@@ -937,11 +937,11 @@ cPar& cModule::getAncestorPar(const char *name)
 
 void cModule::finalizeParameters()
 {
-    cComponent::finalizeParameters(); // this will read input parameters
-
     // temporarily switch context
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
+
+    cComponent::finalizeParameters(); // this will read input parameters
 
     // set up gate vectors (their sizes may depend on the parameter settings)
     getModuleType()->addGatesTo(this);
@@ -953,8 +953,15 @@ int cModule::buildInside()
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);
 
+    // if finalizeParameters() hasn't been called yet, do it now;
+    // this is needed to make dynamic module creation more robust
+    if (!parametersFinalized())
+        finalizeParameters();
+
     // call doBuildInside() in this context
     doBuildInside();
+
+    setFlag(FL_BUILDINSIDE_CALLED, true);
 
     return 0;
 }

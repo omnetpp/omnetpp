@@ -120,7 +120,7 @@ bool cBasicChannel::isBusy() const
 
 bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
 {
-    if (!areParamsFinalized())
+    if (!parametersFinalized())
         throw cRuntimeError("Error sending message (%s)%s on gate %s: channel parameters not yet set up",
                             msg->getClassName(), msg->getFullName(), getFromGate()->getFullPath().c_str());
 

@@ -42,10 +42,11 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     friend class cPar; // needs to call handleParameterChange()
   private:
     enum {
-      FL_PARAMSFINALIZED = 4,   // whether parameters have been set up
-      FL_EVLOGENABLED = 8,      // whether logging via ev<< is enabled
-      FL_DISPSTR_CHECKED = 16,  // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
-      FL_DISPSTR_NOTEMPTY = 32, // for hasDisplayString(): whether the display string is not empty
+      FL_PARAMSFINALIZED = 4,   // whether finalizeParameters() has been called
+      FL_INITIALIZED = 8,       // whether initialize() has been called
+      FL_EVLOGENABLED = 16,     // whether logging via ev<< is enabled
+      FL_DISPSTR_CHECKED = 32,  // for hasDisplayString(): whether the FL_DISPSTR_NOTEMPTY flag is valid
+      FL_DISPSTR_NOTEMPTY = 64, // for hasDisplayString(): whether the display string is not empty
     };
 
   protected:
@@ -82,7 +83,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     virtual void recordParametersAsScalars();
 
     // internal: has finalizeParameters() been called?
-    bool areParamsFinalized() const {return flags&FL_PARAMSFINALIZED;}
+    bool parametersFinalized() const {return flags&FL_PARAMSFINALIZED;}
+
+    // internal: has initialize() been called?
+    bool initialized() const {return flags&FL_INITIALIZED;}
 
     // internal: used from Tkenv: find out if this module has a display string.
     // getDisplayString() would create the object immediately which we want to avoid.

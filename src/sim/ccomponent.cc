@@ -104,10 +104,10 @@ void cComponent::reallocParamv(int size)
 
 void cComponent::addPar(cParImpl *value)
 {
-    if (areParamsFinalized())
+    if (parametersFinalized())
         throw cRuntimeError(this, "cannot add parameters at runtime");
     if (findPar(value->getName())>=0)
-        throw cRuntimeError(this, "cannot add `%s': already exists", value->getName());
+        throw cRuntimeError(this, "cannot add parameter `%s': already exists", value->getName());
     if (numparams==paramvsize)
         reallocParamv(paramvsize+1);
     paramv[numparams++].init(this, value);
@@ -148,7 +148,7 @@ void cComponent::finalizeParameters()
     for (int i=0; i<n; i++)
         par(i).read();
 
-    flags |= FL_PARAMSFINALIZED;
+    setFlag(FL_PARAMSFINALIZED, true);
 }
 
 bool cComponent::hasDisplayString()
@@ -164,7 +164,7 @@ bool cComponent::hasDisplayString()
     const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : NULL;
     bool result = !opp_isempty(propValue);
 
-    flags |= FL_DISPSTR_CHECKED;
+    setFlag(FL_DISPSTR_CHECKED, true);
     setFlag(FL_DISPSTR_NOTEMPTY, result);
     return result;
 }
@@ -177,7 +177,7 @@ cDisplayString& cComponent::getDisplayString()
         dispstr->setHostObject(this);
 
         // set display string (it may depend on parameter values via "$param" references)
-        if (!areParamsFinalized())
+        if (!parametersFinalized())
             throw cRuntimeError(this, "Cannot access display string yet: parameters not yet set up");
         cProperties *props = getProperties();
         cProperty *prop = props->get("display");

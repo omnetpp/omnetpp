@@ -254,7 +254,7 @@ void cNEDNetworkBuilder::addGatesTo(cModule *module, cNEDDeclaration *decl)
 {
     //TRACE("addGatesTo(%s), decl=%s", module->getFullPath().c_str(), decl->getName()); //XXX
 
-    // recursively add and assign super types' gates
+    // recursively add super types' gates
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);

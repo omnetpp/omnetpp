@@ -31,11 +31,11 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
 {
   private:
     enum {
-      FL_ISDISABLED = 64,
-      FL_DELAY_NONZERO = 128,
-      FL_DATARATE_NONZERO = 256,
-      FL_BER_NONZERO = 512,
-      FL_PER_NONZERO = 1024,
+      FL_ISDISABLED = 128,
+      FL_DELAY_NONZERO = 256,
+      FL_DATARATE_NONZERO = 512,
+      FL_BER_NONZERO = 1024,
+      FL_PER_NONZERO = 2048,
     };
 
     // cached values of parameters (note: parameters are non-volatile)
@@ -49,7 +49,7 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
 
   private:
     // internal: checks whether parameters have been set up
-    void checkState() const  {if (!areParamsFinalized()) throw cRuntimeError(this, ePARAMSNOTREADY);}
+    void checkState() const  {if (!parametersFinalized()) throw cRuntimeError(this, ePARAMSNOTREADY);}
 
   protected:
     // internal: update cached copies of parameters

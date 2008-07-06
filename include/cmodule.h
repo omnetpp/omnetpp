@@ -208,7 +208,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
   private:
     enum {
-        FL_RECORD_EVENTS = 64, // enables recording events in this module
+        FL_BUILDINSIDE_CALLED = 128, // whether buildInside() has been called
+        FL_RECORD_EVENTS = 256, // enables recording events in this module
     };
 
   protected:
@@ -236,6 +237,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     bool isRecordEvents() const  {return flags&FL_RECORD_EVENTS;}
 
   protected:
+    // internal: has initialize() been called?
+    bool buildInsideCalled() const {return flags&FL_BUILDINSIDE_CALLED;}
+
     // internal: called from callInitialize(). Does one stage for this submodule
     // tree, and returns true if there's more stages to do
     virtual bool initializeModules(int stage);
