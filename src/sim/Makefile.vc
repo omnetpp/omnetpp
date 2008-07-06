@@ -2270,6 +2270,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cstddev.h \
   ../../include/cclassfactory.h \
   ../../include/cdoubleparimpl.h \
+  ../../include/packing.h \
   ../../include/errmsg.h \
   ../../include/ctopology.h \
   ../../include/distrib.h \
@@ -2305,8 +2306,8 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cvisitor.h \
   ../../include/cmathfunction.h \
   ../../include/coutvector.h \
-  ../../include/onstartup.h \
   ../../include/cxmlparimpl.h \
+  ../../include/onstartup.h \
   sim_std_m.h \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \

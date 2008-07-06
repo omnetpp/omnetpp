@@ -111,7 +111,7 @@
 
 
 //
-// We prefer shorter names for ints. If they collide with existing code,
+// We prefer shorter names for ints. If they collide with other headers,
 // #undef them after #including omnetpp.h.
 //
 #ifndef int8
@@ -158,6 +158,26 @@
 #else
 #   define INT64_PRINTF_FORMAT   "ll"
 #endif
+
+
+//
+// cCommBuffer and cHasher need to process long long and unsigned long long
+// (which should be a different type from long, and at least 64 bits in size).
+// However, earlier versions of MSVC (7.1 and before) don't understand
+// long long but have __int64 instead. MSVC 8.0 and above are OK.
+// The following typedefs can be removed when we drop support for MVSC 7.1.
+//
+// These types are NOT part of the OMNeT++ public API. Do not use them
+// except in cCommBuffer implementations.
+//
+#ifdef _MSC_VER
+typedef __int64            _long_long_t;
+typedef unsigned __int64   _unsigned_long_long_t;
+#else
+typedef long long          _long_long_t;
+typedef unsigned long long _unsigned_long_long_t;
+#endif
+
 
 //
 // string-to-int64 conversion

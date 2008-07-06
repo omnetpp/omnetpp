@@ -23,6 +23,7 @@
 
 #include "cobject.h"
 #include "simtime.h"
+#include "platdep/intxtypes.h"
 
 NAMESPACE_BEGIN
 
@@ -30,22 +31,6 @@ NAMESPACE_BEGIN
 class cCommBuffer;
 class cOwnedObject;
 class opp_string;
-
-//
-// cCommBuffer needs to pack long long and unsigned long long (which should be
-// at least 64 bits in size) but earlier versions of MSVC (7.1 and before)
-// don't have long long; use __int64 instead. MSVC 8.0 and above should be OK.
-// The following typedefs can be removed when we drop support for MVSC 7.1.
-//
-// Do not use this type except in cCommBuffer implementations.
-//
-#ifdef _MSC_VER
-typedef __int64            _long_long_t;
-typedef unsigned __int64   _unsigned_long_long_t;
-#else
-typedef long long          _long_long_t;
-typedef unsigned long long _unsigned_long_long_t;
-#endif
 
 
 /**

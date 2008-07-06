@@ -62,17 +62,17 @@ class SIM_API cHasher : noncopyable
     //@{
     void reset() {value = 0;}
     void add(const char *p, size_t length);
-    void add(int d)   {merge((uint32)d);}
-    void add(short d) {merge((uint32)d);}
-    void add(char d)  {merge((uint32)d);}
-    void add(long d)  {int64 tmp=d; merge2((uint64)tmp);}
-    void add(int64 d) {merge2((uint64)d);}
-    void add(unsigned int d)   {merge((uint32)d);}
-    void add(unsigned short d) {merge((uint32)d);}
+    void add(char d)           {merge((uint32)d);}
+    void add(short d)          {merge((uint32)d);}
+    void add(int d)            {merge((uint32)d);}
+    void add(long d)           {int64 tmp=d; merge2((uint64)tmp);}
+    void add(_long_long_t d)   {merge2((uint64)d);}
     void add(unsigned char d)  {merge((uint32)d);}
+    void add(unsigned short d) {merge((uint32)d);}
+    void add(unsigned int d)   {merge((uint32)d);}
     void add(unsigned long d)  {uint64 tmp=d; merge2(tmp);}
-    void add(uint64 d)         {merge2(d);}
-    // note safe(r) type punning, see http://cocoawithlove.decenturl.com/type-punning
+    void add(_unsigned_long_long_t d)  {merge2(d);}
+    // note: safe(r) type punning, see http://cocoawithlove.decenturl.com/type-punning
     void add(double d)         {union _ {double d; uint64 i;}; merge2(((union _ *)&d)->i);}
     void add(const char *s)    {if (s) add(s, strlen(s)+1); else add(0);}
     //@}

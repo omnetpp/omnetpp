@@ -145,6 +145,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cclassfactory.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
+  ../../include/packing.h \
   ../../include/errmsg.h \
   ../../include/ctopology.h \
   tkdefs.h \
@@ -240,6 +241,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
   ../../include/errmsg.h \
+  ../../include/packing.h \
   ../../include/ctopology.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
@@ -443,6 +445,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
   ../../include/errmsg.h \
+  ../../include/packing.h \
   ../../include/ctopology.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
