@@ -56,7 +56,7 @@ class ENVIR_API Scenario
   public:
     /**
      * Used in resolving and generating scenarios, it implements a $x iteration variable.
-     * Currently just delegates SectonBasedConfiguration::getIterationVariable().
+     * Currently just delegates to SectionBasedConfiguration::getIterationVariable().
      */
     class VariableReference : public Expression::Functor
     {
