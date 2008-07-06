@@ -362,11 +362,14 @@ void cSimulation::setupNetwork(cModuleType *network)
     printf("DEBUG: before setupNetwork: %d objects\n", cOwnedObject::getLiveObjectCount());
     objectlist.clear();
 #endif
+
     if (!network)
         throw cRuntimeError(eNONET);
+    if (!network->isNetwork())
+        throw cRuntimeError("setupNetwork: `%s' is not a network", network->fullName());
 
     // set cNetworkType pointer
-    networktype = network;  //FIXME check it's a module declared with the "network" keyword
+    networktype = network;
 
     // just to be sure
     msgQueue.clear();
