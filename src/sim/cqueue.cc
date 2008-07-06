@@ -134,6 +134,7 @@ cQueue& cQueue::operator=(const cQueue& queue)
 
     cOwnedObject::operator=(queue);
     tkownership = queue.tkownership;
+    compare = queue.compare;
 
     bool old_tk = getTakeOwnership();
     for (cQueue::Iterator iter(queue, false); !iter.end(); iter++)

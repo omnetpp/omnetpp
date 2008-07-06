@@ -159,7 +159,7 @@ if ($testprogram eq '') {
     $workdir =~ /([^\/\\]*)$/;
     $tmp = $1;
     if ($isWindows) {
-        $testprogram = $tmp . ".cmd";
+        $testprogram = $tmp . ".exe";
     } else {
         $testprogram = "./" . $tmp;
     }

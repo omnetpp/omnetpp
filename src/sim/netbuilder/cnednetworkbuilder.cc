@@ -82,9 +82,9 @@ static void updateOrRethrowException(std::exception& e, NEDElement *context)
     }
 }
 
-void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration *decl)
+void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl)
 {
-    //TRACE("addParametersTo(%s), decl=%s", component->getFullPath().c_str(), decl->getName()); //XXX
+    //TRACE("addParametersAndGatesTo(%s), decl=%s", component->getFullPath().c_str(), decl->getName()); //XXX
 
     //TODO for performance: component->reallocParamv(decl->getParameterDeclarations().size());
 
@@ -93,7 +93,7 @@ void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration 
     {
         const char *superName = decl->extendsName(0);
         cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
-        addParametersTo(component, superDecl);
+        addParametersAndGatesTo(component, superDecl);
     }
 
     // add this decl parameters / assignments
@@ -102,6 +102,14 @@ void cNEDNetworkBuilder::addParametersTo(cComponent *component, cNEDDeclaration 
     {
         currentDecl = decl; // switch "context"
         doParams(component, paramsNode, false);
+    }
+
+    // add this decl's gates (if there are any)
+    GatesElement *gatesNode = decl->getGatesElement();
+    if (gatesNode)
+    {
+        currentDecl = decl; // switch "context"
+        doGates((cModule *)component, gatesNode, false);
     }
 }
 
@@ -134,7 +142,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 {
     const char *paramName = paramNode->getName();
 
-    // isSubComponent==false: we are called from cModuleType::addParametersTo();
+    // isSubComponent==false: we are called from cModuleType::addParametersAndGatesTo();
     // isSubComponent==true: we are called from assignSubcomponentParams().
     // if type==NONE, this is an inherited parameter (must have been added already)
     bool isNewParam = !isSubcomponent && paramNode->getType()!=NED_PARTYPE_NONE;
@@ -205,32 +213,9 @@ void cNEDNetworkBuilder::doGates(cModule *module, GatesElement *gatesNode, bool 
 void cNEDNetworkBuilder::doGate(cModule *module, GateElement *gateNode, bool isSubcomponent)
 {
     try {
-        const char *gateName = gateNode->getName();
-        ExpressionElement *exprNode = gateNode->getFirstExpressionChild();
-
-        // determine gatesize
-        int gatesize = -1;
-        if (gateNode->getIsVector() && exprNode)
-        {
-            cParImpl *value = currentDecl->getSharedParImplFor(exprNode);
-            if (!value)
-            {
-                cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
-                value = new cLongParImpl();
-                value->setName("gatesize-expression");
-                cExpressionBuilder::setExpression(value, dynamicExpr);
-                currentDecl->putSharedParImplFor(exprNode, value);
-            }
-            gatesize = value->longValue(module);
-        }
-
         // add gate if it's declared here
         if (!isSubcomponent && gateNode->getType()!=NED_GATETYPE_NONE)
-            module->addGate(gateName, translateGateType(gateNode->getType()), gateNode->getIsVector());
-
-        // set gate vector size
-        if (gatesize!=-1)
-            module->setGateSize(gateName, gatesize);
+            module->addGate(gateNode->getName(), translateGateType(gateNode->getType()), gateNode->getIsVector());
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, gateNode); throw;
@@ -250,24 +235,63 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
         return ((unsigned)idx>=v.size()) ? NULL : v[idx];
 }
 
-void cNEDNetworkBuilder::addGatesTo(cModule *module, cNEDDeclaration *decl)
+void cNEDNetworkBuilder::doGateSizes(cModule *module, GatesElement *gatesNode, bool isSubcomponent)
 {
-    //TRACE("addGatesTo(%s), decl=%s", module->getFullPath().c_str(), decl->getName()); //XXX
+    ASSERT(gatesNode!=NULL);
+    for (NEDElement *child=gatesNode->getFirstChildWithTag(NED_GATE); child; child=child->getNextSiblingWithTag(NED_GATE))
+        doGateSize(module, (GateElement *)child, isSubcomponent);
+}
+
+void cNEDNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool isSubcomponent)
+{
+    try {
+        if (gateNode->getIsVector()) {
+            // if there's a gatesize expression given, apply it
+            ExpressionElement *exprNode = gateNode->getFirstExpressionChild();
+            if (exprNode)
+            {
+                // ExpressionElement first needs to be compiled into a cParImpl
+                // for evaluation; these cParImpl's are cached
+                cParImpl *value = currentDecl->getSharedParImplFor(exprNode);
+                if (!value)
+                {
+                    // not yet seen, compile and cache it
+                    cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
+                    value = new cLongParImpl();
+                    value->setName("gatesize-expression");
+                    cExpressionBuilder::setExpression(value, dynamicExpr);
+                    currentDecl->putSharedParImplFor(exprNode, value);
+                }
+
+                // evaluate the expresssion, and set the gate vector size
+                int gatesize = value->longValue(module);
+                module->setGateSize(gateNode->getName(), gatesize);
+            }
+        }
+    }
+    catch (std::exception& e) {
+        updateOrRethrowException(e, gateNode); throw;
+    }
+}
+
+void cNEDNetworkBuilder::setupGateVectors(cModule *module, cNEDDeclaration *decl)
+{
+    //TRACE("setupGateVectors(%s), decl=%s", module->getFullPath().c_str(), decl->getName()); //XXX
 
     // recursively add super types' gates
     if (decl->numExtendsNames() > 0)
     {
         const char *superName = decl->extendsName(0);
         cNEDDeclaration *superDecl = cNEDLoader::getInstance()->getDecl(superName);
-        addGatesTo(module, superDecl);
+        setupGateVectors(module, superDecl);
     }
 
-    // add this decl gates / gatesizes
+    // add this decl's gatesizes
     GatesElement *gatesNode = decl->getGatesElement();
     if (gatesNode)
     {
         currentDecl = decl; // switch "context"
-        doGates(module, gatesNode, false);
+        doGateSizes(module, gatesNode, false);
     }
 }
 
@@ -503,8 +527,8 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
 
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
         assignSubcomponentParams(submodp, submod);
-        submodp->finalizeParameters(); // also sets up type's gates
-        setupGateVectors(submodp, submod);
+        submodp->finalizeParameters(); // also sets up gate sizes declared inside the type
+        setupSubmoduleGateVectors(submodp, submod);
     }
     else
     {
@@ -529,8 +553,8 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
 
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
             assignSubcomponentParams(submodp, submod);
-            submodp->finalizeParameters(); // also sets up type's gates
-            setupGateVectors(submodp, submod);
+            submodp->finalizeParameters(); // also sets up gate sizes declared inside the type
+            setupSubmoduleGateVectors(submodp, submod);
         }
     }
 
@@ -545,11 +569,11 @@ void cNEDNetworkBuilder::assignSubcomponentParams(cComponent *subcomponent, NEDE
         doParams(subcomponent, paramsNode, true);
 }
 
-void cNEDNetworkBuilder::setupGateVectors(cModule *submodule, NEDElement *submoduleNode)
+void cNEDNetworkBuilder::setupSubmoduleGateVectors(cModule *submodule, NEDElement *submoduleNode)
 {
     GatesElement *gatesNode = (GatesElement *) submoduleNode->getFirstChildWithTag(NED_GATES);
     if (gatesNode)
-        doGates(submodule, gatesNode, true);
+        doGateSizes(submodule, gatesNode, true);
 }
 
 void cNEDNetworkBuilder::addConnectionOrConnectionGroup(cModule *modp, NEDElement *connOrConnGroup)

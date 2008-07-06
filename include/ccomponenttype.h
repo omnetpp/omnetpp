@@ -139,22 +139,25 @@ class SIM_API cModuleType : public cComponentType
     virtual cModule *createModuleObject() = 0;
 
     /**
-     * Adds parameters to a newly created module object.
-     * To be defined in subclasses.
+     * Adds parameters and gates to a newly created module object.
+     * Gate vectors will be created with zero size, and a further
+     * call to setupGateVectors() will be needed once parameter values
+     * have been finalized.
      */
-    virtual void addParametersTo(cModule *mod) = 0;
+    virtual void addParametersAndGatesTo(cModule *mod) = 0;
 
     /**
-     * Must be invoked before connecting the gates and calling mod->buildInside().
-     * The parameter values must have been finalized (read from omnetpp.ini etc)
-     * at this point. This method adds gates and gate vectors (whose size may
-     * depend on parameter values).
+     * Sets gate vector sizes on the module. This must be called AFTER all
+     * parameters have been set (see finalizeParameters()) because gate
+     * vector sizes may depend on parameter values; and it it must be
+     * invoked before connecting the gates and calling mod->buildInside().
      */
-    virtual void addGatesTo(cModule *mod) = 0;
+    virtual void setupGateVectors(cModule *mod) = 0;
 
     /**
      * Creates and connects submodules of a newly created module object.
-     * To be defined in subclasses.
+     * To be defined in subclasses. addParametersAndGatesTo() and
+     * setupGateVectors() must have been already called at this point.
      *
      * NOTE: If you have an old simulation model that attempts to call
      * this method directly, it is using an API call which has been DEPRECATED
@@ -164,7 +167,8 @@ class SIM_API cModuleType : public cComponentType
 
     /**
      * Utility function: instantiates the given class, and tries to cast the
-     * result to cModule. Raises an error if class was not found or could not be cast.
+     * result to cModule. Raises an error if class was not found or could
+     * not be cast.
      */
     cModule *instantiateModuleClass(const char *classname);
 

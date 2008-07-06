@@ -944,7 +944,7 @@ void cModule::finalizeParameters()
     cComponent::finalizeParameters(); // this will read input parameters
 
     // set up gate vectors (their sizes may depend on the parameter settings)
-    getModuleType()->addGatesTo(this);
+    getModuleType()->setupGateVectors(this);
 }
 
 int cModule::buildInside()

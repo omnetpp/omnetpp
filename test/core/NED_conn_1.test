@@ -95,6 +95,5 @@ void Sink::handleMessage(cMessage *msg)
 3:datarate=64000:
 4:delay=0.004:ber=0.001:
 5:delay=0.004:datarate=64000:
-6:ber=0.001:datarate=64000:
-7:delay=0.004:ber=0.001:datarate=64000:
-
+6:datarate=64000:ber=0.001:
+7:delay=0.004:datarate=64000:ber=0.001:

@@ -66,16 +66,16 @@ cModule *cDynamicModuleType::createModuleObject()
         return new cCompoundModule();
 }
 
-void cDynamicModuleType::addParametersTo(cModule *module)
+void cDynamicModuleType::addParametersAndGatesTo(cModule *module)
 {
     cNEDDeclaration *decl = getDecl();
-    cNEDNetworkBuilder().addParametersTo(module, decl);
+    cNEDNetworkBuilder().addParametersAndGatesTo(module, decl);
 }
 
-void cDynamicModuleType::addGatesTo(cModule *module)
+void cDynamicModuleType::setupGateVectors(cModule *module)
 {
     cNEDDeclaration *decl = getDecl();
-    cNEDNetworkBuilder().addGatesTo(module, decl);
+    cNEDNetworkBuilder().setupGateVectors(module, decl);
 }
 
 void cDynamicModuleType::buildInside(cModule *module)

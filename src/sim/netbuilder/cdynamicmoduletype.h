@@ -35,10 +35,10 @@ class SIM_API cDynamicModuleType : public cModuleType
     virtual cModule *createModuleObject();
 
     /** Redefined from cModuleType */
-    virtual void addParametersTo(cModule *module);
+    virtual void addParametersAndGatesTo(cModule *module);
 
     /** Redefined from cModuleType */
-    virtual void addGatesTo(cModule *module);
+    virtual void setupGateVectors(cModule *module);
 
     /** Redefined from cModuleType */
     virtual void buildInside(cModule *module);

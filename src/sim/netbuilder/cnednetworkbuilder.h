@@ -83,8 +83,10 @@ class SIM_API cNEDNetworkBuilder
     void doParam(cComponent *component, ParamElement *paramNode, bool isSubcomponent);
     void doGates(cModule *component, GatesElement *gatesNode, bool isSubcomponent);
     void doGate(cModule *component, GateElement *gateNode, bool isSubcomponent);
+    void doGateSizes(cModule *component, GatesElement *gatesNode, bool isSubcomponent);
+    void doGateSize(cModule *component, GateElement *gateNode, bool isSubcomponent);
     void assignSubcomponentParams(cComponent *subcomponent, NEDElement *subcomponentNode);
-    void setupGateVectors(cModule *submodule, NEDElement *submoduleNode);
+    void setupSubmoduleGateVectors(cModule *submodule, NEDElement *submoduleNode);
 
     void addConnectionOrConnectionGroup(cModule *modp, NEDElement *connOrConnGroup);
     void doConnOrConnGroupBody(cModule *modp, NEDElement *connOrConnGroup, NEDElement *loopOrCondition);
@@ -114,17 +116,20 @@ class SIM_API cNEDNetworkBuilder
     cNEDNetworkBuilder() {}
 
     /**
-     * Adds parameters from the given NED declaration. Invoked from cDynamicModule.
-     */
-    void addParametersTo(cComponent *component, cNEDDeclaration *decl);
-
-    /**
-     * Adds gates to the module from the given NED declaration. This should be
-     * called AFTER all parameters have been set, because gate vector sizes
-     * may depend on parameter values.
+     * Adds parameters and gates from the given NED declaration. Gate vectors
+     * will be created with zero size, and a further call to setupGateVectors()
+     * will be needed once parameter values have been finalized. (This method is
+     * also used with channels, with the "gates" part being a no-op then.)
      * Invoked from cDynamicModule.
      */
-    void addGatesTo(cModule *module, cNEDDeclaration *decl);
+    void addParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl);
+
+    /**
+     * Sets gate vector sizes on the module, using the given NED declaration.
+     * This should be called AFTER all parameters have been set, because gate
+     * vector sizes may depend on parameter values. Invoked from cDynamicModule.
+     */
+    void setupGateVectors(cModule *module, cNEDDeclaration *decl);
 
     /**
      * Builds submodules and internal connections, based on the info in the

@@ -29,6 +29,18 @@ cmdenv-express-mode = false
 
 Test.n1.out[0].channel.delay = 5s
 
-%contains-regex: stdout
-ffffff
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.n1: Node {
+            gates:
+                out[0]: --> n2.in[0], ned.BasicChannel disabled=false delay=5 datarate=0 ber=0 per=0
+        }
+        module Test.n2: Node {
+            gates:
+                in[0]: <-- n1.out[0], ned.BasicChannel disabled=false delay=5 datarate=0 ber=0 per=0
+        }
+}
 

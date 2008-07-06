@@ -150,8 +150,9 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     // set up RNG mapping
     ev.getRNGMappingFor(mod);
 
-    // add parameters to the new module
-    addParametersTo(mod);
+    // add parameters and gates to the new module;
+    // note: setupGateVectors() will be called from finalizeParameters()
+    addParametersAndGatesTo(mod);
 
     // notify envir
     EVCB.moduleCreated(mod);
