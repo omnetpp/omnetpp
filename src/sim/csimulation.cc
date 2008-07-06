@@ -366,7 +366,7 @@ void cSimulation::setupNetwork(cModuleType *network)
     if (!network)
         throw cRuntimeError(eNONET);
     if (!network->isNetwork())
-        throw cRuntimeError("setupNetwork: `%s' is not a network", network->fullName());
+        throw cRuntimeError("setupNetwork: `%s' is not a network", network->getFullName());
 
     // set cNetworkType pointer
     networktype = network;
