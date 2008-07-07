@@ -34,6 +34,8 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		outputfolder.addView(IConstants.MODULEHIERARCHY_VIEW_ID);
 		outputfolder.addView(IConstants.MODULEPARAMETERS_VIEW_ID);
 		outputfolder.addView(IConstants.NEDINHERITANCE_VIEW_ID);
+		outputfolder.addView(IConstants.NEWS_VIEW_ID);
+		
 		// note: placeholders for our other views don't need to be listed here,
 		// because they are contributed via perspectiveExtension extensions
 		// in their plugin.xml's.

@@ -14,12 +14,12 @@
 			<fileset dir="../">
 				<include name="org.omnetpp.*/**" />
 				<include name="org.eclipse.cdt.*/**" />
+				<include name="com.itsolut/**" />
 				<exclude name="*/bin/**" />
 				<exclude name="org.omnetpp.ide/**" />
 				<exclude name="org.omnetpp.scave.old/**" />
 				<exclude name="org.omnetpp.test.*/**" />
 				<exclude name="org.omnetpp.experimental.*/**" />
-				<include name="com.simulcraft.*/**" />
 			</fileset>
 		</copy>
 		<copy todir="${buildDirectory}/features">
@@ -27,7 +27,7 @@
 				<include name="org.omnetpp.ide/**" />
 				<include name="org.omnetpp.ide.commercial/**" />
 				<include name="org.omnetpp.ide.academic/**" />
-				<include name="com.simulcraft.tracker/**" />
+				<include name="com.itsolut/**" />
 			</fileset>
 		</copy>
 	</target>

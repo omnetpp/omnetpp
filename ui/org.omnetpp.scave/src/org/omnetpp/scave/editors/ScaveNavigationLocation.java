@@ -18,9 +18,9 @@ import org.omnetpp.scave.editors.ui.ScaveEditorPage;
 public class ScaveNavigationLocation extends NavigationLocation {
 	
 	/* Tags used in the saved state (IMemento format) */
-	private static final String TAG_TEXT = "Text";
-	private static final String TAG_PAGE_ID = "PageID";
-	private static final String TAG_PAGE_MEMENTO = "PageMemento";
+	public static final String TAG_TEXT = "Text";
+	public static final String TAG_PAGE_ID = "PageID";
+	public static final String TAG_PAGE_MEMENTO = "PageMemento";
 	
 	/** Timestamp of the creation of this location. */
 	long timestamp;

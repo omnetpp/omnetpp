@@ -46,7 +46,8 @@ import org.omnetpp.common.util.ReflectionUtils;
  * @author Andras
  */
 public class HoverSupport {
-    // Note: this is a copy of the stylesheet used by JDT (we want to avoid depending on the JDT plugins)
+    private static final String AFFORDANCE = "Press 'F2' for focus";
+	// Note: this is a copy of the stylesheet used by JDT (we want to avoid depending on the JDT plugins)
     private static final String HTML_PROLOG =
         "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
         "/* Font definitions*/\n" +
@@ -362,14 +363,10 @@ public class HoverSupport {
 	 */
 	public static IInformationControlCreator getHoverControlCreator() {
 		return new IInformationControlCreator() {
-			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
 				// for more info, see JavadocHover class in JDT
-				int shellStyle = SWT.TOOL;
-				int style = SWT.NONE;
-				String tooltipAffordanceString = "Press 'F2' for focus."; //TODO use EditorsUI.getTooltipAffordanceString();
 				if (BrowserInformationControl.isAvailable(parent))
-				    return (new BrowserInformationControl(parent, shellStyle, style, tooltipAffordanceString) {
+				    return (new BrowserInformationControl(parent, null, AFFORDANCE) {
 				        // note: this subclassing is sort of a hack, because the required width got
 				        // consistently underestimated by a few pixels on XP, resulting in an extra line wrap.
 				        // configureControl() is not a good place for extending the width, because
@@ -379,8 +376,8 @@ public class HoverSupport {
 				            super.setSize(width + 20, height);
 				        }	    
 				    });
-				else
-					return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false), tooltipAffordanceString);
+				else 
+					return new DefaultInformationControl(parent, AFFORDANCE, new HTMLTextPresenter(false));
 			}
 		};
 	}
@@ -390,13 +387,16 @@ public class HoverSupport {
 	 */
 	public static IInformationControlCreator getInformationPresenterControlCreator() {
 		return new IInformationControlCreator() {
-			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
 				// for more info, see JavadocHover class in JDT
-				int shellStyle = SWT.RESIZE | SWT.TOOL;
-				int style = SWT.V_SCROLL | SWT.H_SCROLL;
 				if (BrowserInformationControl.isAvailable(parent)) {
-					BrowserInformationControl browserInformationControl = new BrowserInformationControl(parent, shellStyle, style);
+					BrowserInformationControl browserInformationControl = new BrowserInformationControl(parent, null, true) {
+				        // note: see similar code in getHoverControlCreator
+				        @Override
+				        public void setSize(int width, int height) {
+				            super.setSize(width + 20, height);
+				        }	    
+					};
 					
 					if (!SWT.getPlatform().equals("win32") && !SWT.getPlatform().equals("wpf")) {
 					    final Shell shell = (Shell)ReflectionUtils.getFieldValue(browserInformationControl,"fShell");
@@ -408,7 +408,7 @@ public class HoverSupport {
 					
 					return browserInformationControl;
 				} else {
-					DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false));
+					DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent, new HTMLTextPresenter(false));
 					if (!SWT.getPlatform().equals("win32") && !SWT.getPlatform().equals("wpf")) {
 					    final Shell shell = ((PopupDialog)ReflectionUtils.getFieldValue(defaultInformationControl,"fPopupDialog")).getShell();
 					    ((GridLayout)shell.getLayout()).marginHeight = 5;

@@ -13,14 +13,14 @@
    </url>
 
    <requires>
-      <import feature="org.eclipse.cdt" version="4.0.3.200802251018" match="compatible"/>
-      <import feature="org.eclipse.emf.common" version="2.3.1.v200802051830" match="compatible"/>
-      <import feature="org.eclipse.emf.common.ui" version="2.3.1.v200802051830" match="compatible"/>
-      <import feature="org.eclipse.emf.ecore" version="2.3.2.v200802051830" match="compatible"/>
-      <import feature="org.eclipse.emf.edit" version="2.3.2.v200802051830" match="compatible"/>
-      <import feature="org.eclipse.emf.edit.ui" version="2.3.1.v200802051830" match="compatible"/>
-      <import feature="org.eclipse.gef" version="3.3.2.v20080129" match="compatible"/>
-      <import feature="org.eclipse.platform" version="3.3.3.r33x_r20080129-_19UEl7Ezk_gXF1kouft" match="compatible"/>
+      <import feature="org.eclipse.cdt" version="5.0.0.200806171202" match="compatible"/>
+      <import feature="org.eclipse.emf.common" version="2.4.0.v200806091234" match="compatible"/>
+      <import feature="org.eclipse.emf.common.ui" version="2.4.0.v200806091234" match="compatible"/>
+      <import feature="org.eclipse.emf.ecore" version="2.4.0.v200806091234" match="compatible"/>
+      <import feature="org.eclipse.emf.edit" version="2.4.0.v200806091234" match="compatible"/>
+      <import feature="org.eclipse.emf.edit.ui" version="2.4.0.v200806091234" match="compatible"/>
+      <import feature="org.eclipse.gef" version="3.4.0.v20080115-677-8082A5696H274A" match="compatible"/>
+      <import feature="org.eclipse.platform" version="3.4.0.v20080610-9I96EhtEm-T_5LxIsybz-3MdGZmOA3uwv7Ka_M" match="compatible"/>
    </requires>
 
    <plugin

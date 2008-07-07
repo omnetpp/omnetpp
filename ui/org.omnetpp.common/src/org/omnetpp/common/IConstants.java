@@ -6,6 +6,7 @@ package org.omnetpp.common;
  * @author Andras
  */
 public interface IConstants {
+	public static final String NEWS_VIEW_ID = "org.omnetpp.main.NewsView";
 	public static final String MODULEPARAMETERS_VIEW_ID = "org.omnetpp.inifile.ModuleParameters";
 	public static final String MODULEHIERARCHY_VIEW_ID = "org.omnetpp.inifile.ModuleHierarchy";
     public static final String NEDINHERITANCE_VIEW_ID = "org.omnetpp.inifile.NedInheritance";

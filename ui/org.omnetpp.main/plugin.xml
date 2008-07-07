@@ -107,6 +107,15 @@
          </perspectiveShortcut>
       </perspectiveExtension>
       <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               id="org.omnetpp.ide.views.NewsView"
+               ratio="0.5"
+               relationship="bottom"
+               relative="org.eclipse.ui.views.TaskList">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
             targetID="org.omnetpp.main.OmnetppPerspective">
          <perspectiveShortcut
                id="org.eclipse.ui.resourcePerspective">
@@ -220,5 +229,16 @@
       <startup
             class="org.omnetpp.ide.OmnetppStartup">
       </startup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="false"
+            category="org.omnetpp.views"
+            class="org.omnetpp.ide.views.NewsView"
+            icon="icons/omnest16.gif"
+            id="org.omnetpp.main.NewsView"
+            name="OMNeT++ News">
+      </view>
    </extension>
 </plugin>

@@ -79,6 +79,11 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 //TODO label provider: print attributes in "quotes"
 public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLocationProvider {
 
+	public static final String
+		ACTIVE_PAGE = "ActivePage",
+		PAGE = "Page",
+		PAGE_ID = "PageId";
+
 	private InputsPage inputsPage;
 	private BrowseDataPage browseDataPage;
 	private DatasetsAndChartsPage datasetsPage;
@@ -817,11 +822,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		else
 			return null;
 	}
-
-	private static final String
-		ACTIVE_PAGE = "ActivePage",
-		PAGE = "Page",
-		PAGE_ID = "PageId";
 
 	private void saveState(IMemento memento) {
 		memento.putInteger(ACTIVE_PAGE, getActivePage());

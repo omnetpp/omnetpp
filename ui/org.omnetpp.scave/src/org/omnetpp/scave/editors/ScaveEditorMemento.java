@@ -25,6 +25,8 @@ import org.omnetpp.scave.ScavePlugin;
  */
 public class ScaveEditorMemento implements IMemento
 {
+	public static final String ZOOM = "Zoom";
+
 	/* Name of the root element of the XML memento */
 	private static final String ROOT_ELEMENT = "ScaveState";
 	
@@ -35,6 +37,10 @@ public class ScaveEditorMemento implements IMemento
 	private static final String QUALIFIER = ScavePlugin.PLUGIN_ID;
 	private static final QualifiedName KEY_CHUNK_COUNT = new QualifiedName(QUALIFIER, CHUNK_COUNT);
 	private static final QualifiedName KEY_SCAVE_STATE = new QualifiedName(QUALIFIER, SCAVE_STATE);
+	// keys that can be used with this memento
+	private String[] mementoKeys = {ZOOM, ScaveNavigationLocation.TAG_PAGE_ID, 
+			ScaveNavigationLocation.TAG_TEXT, ScaveNavigationLocation.TAG_PAGE_MEMENTO,
+			ScaveEditor.PAGE, ScaveEditor.PAGE_ID, ScaveEditor.ACTIVE_PAGE };
 	
 	/* The IMemento methods are delegated to this XMLMemento */
 	private XMLMemento memento;
@@ -79,6 +85,10 @@ public class ScaveEditorMemento implements IMemento
 		return memento.getInteger(key);
 	}
 
+	public Boolean getBoolean(String key) {
+		return memento.getBoolean(key);
+	}
+
 	public String getString(String key) {
 		return memento.getString(key);
 	}
@@ -99,6 +109,10 @@ public class ScaveEditorMemento implements IMemento
 		memento.putInteger(key, n);
 	}
 
+	public void putBoolean(String key, boolean value) {
+		memento.putBoolean(key, value);
+	}
+	
 	public void putMemento(IMemento memento) {
 		memento.putMemento(memento);
 	}
@@ -181,4 +195,13 @@ public class ScaveEditorMemento implements IMemento
 			return -1;
 		}
 	}
+
+	public String[] getAttributeKeys() {
+		return mementoKeys;
+	}
+
+	public String getType() {
+		return "ScaveEditorMemento";
+	}
+
 }

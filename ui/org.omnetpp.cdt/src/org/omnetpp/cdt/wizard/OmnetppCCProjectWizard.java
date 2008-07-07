@@ -1,12 +1,14 @@
 package org.omnetpp.cdt.wizard;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.cdt.ui.newui.UIMessages;
 import org.eclipse.cdt.ui.wizards.CDTCommonProjectWizard;
+import org.eclipse.cdt.ui.wizards.CDTMainWizardPage;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -25,7 +27,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.omnetpp.cdt.cdtpatches.CDTMainWizardPage_Patched;
+import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
@@ -37,6 +39,7 @@ import org.omnetpp.ide.wizard.NewOmnetppProjectWizard;
  *
  * @author Andras
  */
+@SuppressWarnings("restriction")
 public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements INewWizard {
 
 //    protected NewOmnetppCppProjectWizardPage projectPage;
@@ -47,7 +50,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
      *   (1) hide project name / location because we have a separate page for that
      *   (2) filter the project types and templates shown
      */
-    class CustomizedCDTMainPage extends CDTMainWizardPage_Patched {
+    class CustomizedCDTMainPage extends CDTMainWizardPage {
         public CustomizedCDTMainPage() {
             super(CUIPlugin.getResourceString("CProjectWizard"));
             setTitle("Select Project Type");
@@ -59,11 +62,11 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             super.createControl(parent);
 
             // hide project name and location -- we have a separate project page
-            hideControl(projectNameField.getParent());
-            hideControl((Control)ReflectionUtils.getFieldValue(locationArea, "locationLabel"));
-            hideControl((Control)ReflectionUtils.getFieldValue(locationArea, "locationPathField"));
-            hideControl((Control)ReflectionUtils.getFieldValue(locationArea, "browseButton"));
-            hideControl((Control)ReflectionUtils.getFieldValue(locationArea, "useDefaultsButton"));
+            hideControl(getProjectNameField().getParent());
+            hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "locationLabel"));
+            hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "locationPathField"));
+            hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "browseButton"));
+            hideControl((Control)ReflectionUtils.getFieldValue(getLocationArea(), "useDefaultsButton"));
         }
 
         private void hideControl(Control control) {
@@ -81,16 +84,26 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard implements I
             String projectName = projectPage.getProjectName();
             boolean useDefaultLocation = projectPage.useDefaults();
             IPath location = projectPage.getLocationPath();
-            projectNameField.setText(projectName);
-            ((Button)ReflectionUtils.getFieldValue(locationArea, "useDefaultsButton")).setSelection(useDefaultLocation);
+            getProjectNameField().setText(projectName);
+            ((Button)ReflectionUtils.getFieldValue(getLocationArea(), "useDefaultsButton")).setSelection(useDefaultLocation);
             if (!useDefaultLocation)
-                ((Text)ReflectionUtils.getFieldValue(locationArea, "locationPathField")).setText(location.append(projectName.trim()).toString());
+                ((Text)ReflectionUtils.getFieldValue(getLocationArea(), "locationPathField")).setText(location.append(projectName.trim()).toString());
+        }
+        
+		public ProjectContentsLocationArea getLocationArea() {
+        	return (ProjectContentsLocationArea)ReflectionUtils.getFieldValue(this, "locationArea");
         }
 
-        @Override
-        protected ArrayList<EntryDescriptor> filterItems(ArrayList<EntryDescriptor> items) {
+        public Text getProjectNameField() {
+        	return (Text)ReflectionUtils.getFieldValue(this, "projectNameField");
+        }
+        
+        @SuppressWarnings("unchecked")
+		@Override
+        public List<EntryDescriptor> filterItems(List items) {
             ArrayList<EntryDescriptor> newItems = new ArrayList<EntryDescriptor>();
-            for (EntryDescriptor entry : items) {
+            for (Object o : items) {
+            	EntryDescriptor entry = (EntryDescriptor)o;
                 if (entry.getId().startsWith("org.omnetpp"))
                     newItems.add(entry);
             }

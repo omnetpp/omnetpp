@@ -309,16 +309,12 @@ public class HoverSupport2 {
 	 */
 	public static IInformationControlCreator getHoverControlCreator() {
 		return new IInformationControlCreator() {
-			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
 				// for more info, see JavadocHover class in JDT
-				int shellStyle = SWT.TOOL;
-				int style = SWT.NONE;
-				String tooltipAffordanceString = "Press 'F2' for focus."; //TODO use EditorsUI.getTooltipAffordanceString();
 				if (BrowserInformationControl.isAvailable(parent))
-					return new BrowserInformationControl(parent, shellStyle, style, tooltipAffordanceString);
+					return new BrowserInformationControl(parent, null, true);
 				else
-					return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false), tooltipAffordanceString);
+					return new DefaultInformationControl(parent, new HTMLTextPresenter(false));
 			}
 		};
 	}
@@ -328,15 +324,11 @@ public class HoverSupport2 {
 	 */
 	public static IInformationControlCreator getInformationPresenterControlCreator() {
 		return new IInformationControlCreator() {
-			@SuppressWarnings("restriction")
 			public IInformationControl createInformationControl(Shell parent) {
-				// for more info, see JavadocHover class in JDT
-				int shellStyle = SWT.RESIZE | SWT.TOOL;
-				int style = SWT.V_SCROLL | SWT.H_SCROLL;
 				if (BrowserInformationControl.isAvailable(parent))
-					return new BrowserInformationControl(parent, shellStyle, style);
+					return new BrowserInformationControl(parent, null, true);
 				else
-					return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false));
+					return new DefaultInformationControl(parent, new HTMLTextPresenter(false));
 			}
 		};
 	}

@@ -24,6 +24,7 @@ import org.omnetpp.scave.charting.IChartSelection;
 import org.omnetpp.scave.charting.IChartSelectionListener;
 import org.omnetpp.scave.charting.VectorChartSelection;
 import org.omnetpp.scave.editors.ScaveEditor;
+import org.omnetpp.scave.editors.ScaveEditorMemento;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ChartDataPoint;
@@ -201,7 +202,7 @@ public class ChartPage extends ScaveEditorPage {
 
 	@Override
 	public void saveState(IMemento memento) {
-		memento.putString("Zoom", chartView.getZoomedArea().toString());
+		memento.putString(ScaveEditorMemento.ZOOM, chartView.getZoomedArea().toString());
 	}
 	
 	@Override
