@@ -31,7 +31,7 @@ S  [ \t\v\n\r\f]
 #include <string.h>
 #include "expressionyydefs.h"
 #include "exception.h"
-#include "expression.tab.h"
+#include "expression.tab.hh"
 
 #define yylval expressionyylval
 extern YYSTYPE yylval;

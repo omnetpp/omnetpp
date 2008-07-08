@@ -34,8 +34,8 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
       $O/enumstr.o
 
-GENERATED_SOURCES= expression.tab.h expression.tab.cc lex.expressionyy.cc \
-                   matchexpression.tab.h matchexpression.tab.cc 
+GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
+                   matchexpression.tab.hh matchexpression.tab.cc 
 
 #
 # Automatic rules
@@ -69,14 +69,14 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $L $(LIBNAME)$(A_LIB_SUFFIX)
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
-expression.tab.h expression.tab.cc : expression.y
-	$(YACC) -p expressionyy -b expression -d expression.y && mv expression.tab.c expression.tab.cc
+expression.tab.hh expression.tab.cc : expression.y
+	$(YACC) -o expression.tab.cc -p expressionyy -d expression.y 
 
 lex.expressionyy.cc: expression.lex
-	$(LEX) -Pexpressionyy expression.lex && mv lex.expressionyy.c lex.expressionyy.cc
+	$(LEX) -o lex.expressionyy.cc -Pexpressionyy expression.lex 
 
-matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
-	$(YACC) --no-lines -p matchexpressionyy -b matchexpression -d matchexpression.y && mv matchexpression.tab.c matchexpression.tab.cc
+matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
+	$(YACC) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
 
 depend: $(GENERATED_SOURCES)
 	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc
@@ -151,8 +151,8 @@ $O/lex.expressionyy.o: lex.expressionyy.cc \
   commonutil.h \
   commondefs.h \
   stringutil.h \
-  expression.tab.h \
   expressionyydefs.h \
+  expression.tab.hh \
   exception.h \
   expression.h
 $O/linetokenizer.o: linetokenizer.cc \
@@ -175,9 +175,9 @@ $O/matchexpressionlexer.o: matchexpressionlexer.cc \
   commonutil.h \
   commondefs.h \
   stringutil.h \
+  matchexpression.tab.hh \
   exception.h \
-  matchexpressionlexer.h \
-  matchexpression.tab.h
+  matchexpressionlexer.h
 $O/patternmatcher.o: patternmatcher.cc \
   commonutil.h \
   commondefs.h \

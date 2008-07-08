@@ -15,7 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include "stringutil.h"
-#include "matchexpression.tab.h"  // token values
+#include "matchexpression.tab.hh"  // token values
 #include "matchexpressionlexer.h"
 #include "platmisc.h"   // strncasecmp
 
