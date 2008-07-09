@@ -76,7 +76,9 @@ lex.expressionyy.cc: expression.lex
 	del lex.expressionyy.c
 
 matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
-	$(YACC:/=\) --no-lines -o matchexpression.tab.cucu -p matchexpressionyy -d matchexpression.y
+	$(YACC:/=\) --no-lines -p matchexpressionyy -d matchexpression.y
+	copy matchexpression.tab.c matchexpression.tab.cc
+	del matchexpression.tab.c
 
 $(OBJS): $O
 
