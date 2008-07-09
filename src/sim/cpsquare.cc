@@ -71,12 +71,12 @@ cPSquare::~cPSquare()
 }
 
 
-void cPSquare::netPack(cCommBuffer *buffer)
+void cPSquare::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cDensityEstBase::netPack(buffer);
+    cDensityEstBase::parsimPack(buffer);
 
     buffer->pack(numcells);
     buffer->pack(numobs);
@@ -88,12 +88,12 @@ void cPSquare::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cPSquare::netUnpack(cCommBuffer *buffer)
+void cPSquare::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cDensityEstBase::netUnpack(buffer);
+    cDensityEstBase::parsimUnpack(buffer);
 
     buffer->unpack(numcells);
     buffer->unpack(numobs);

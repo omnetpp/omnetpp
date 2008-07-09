@@ -28,7 +28,7 @@ NAMESPACE_BEGIN
 #endif
 
 #if defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ >= 3
-// gcc-4.3.1 is broken: it insists on spitting out deprecation warnings for 
+// gcc-4.3.1 is broken: it insists on spitting out deprecation warnings for
 // cLinkedList::Iterator when this header gets included anywhere, and
 // cannot be convinced otherwise. #pragma GCC diagnostic does not work.
 // So we better forget deprecation with that compiler.
@@ -190,14 +190,14 @@ class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void netPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void netUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer);
     //@}
 
     /** @name Container functions. */

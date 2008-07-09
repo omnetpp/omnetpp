@@ -107,16 +107,16 @@ cKSplit::~cKSplit()
     delete iter;
 }
 
-void cKSplit::netPack(cCommBuffer *buffer)
+void cKSplit::parsimPack(cCommBuffer *buffer)
 {
-    // cDensityEstBase::netPack(buffer);
-    throw cRuntimeError(this,"netPack() not implemented");
+    // cDensityEstBase::parsimPack(buffer);
+    throw cRuntimeError(this,"parsimPack() not implemented");
 }
 
-void cKSplit::netUnpack(cCommBuffer *buffer)
+void cKSplit::parsimUnpack(cCommBuffer *buffer)
 {
-    // cDensityEstBase::netUnpack(buffer);
-    throw cRuntimeError(this,"netUnpack() not implemented");
+    // cDensityEstBase::parsimUnpack(buffer);
+    throw cRuntimeError(this,"parsimUnpack() not implemented");
 }
 
 cKSplit& cKSplit::operator=(const cKSplit& res)

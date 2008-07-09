@@ -210,20 +210,20 @@ class SIM_API cObject
   public:
     /** @name Support for parallel execution.
      *
-     * Packs/unpacks object from/to a buffer. These functions are used by parallel execution.
-     * These functions should be redefined in all derived classes whose instances
-     * are expected to travel across partitions.
+     * These functions pack/unpack the object from/to a communication buffer,
+     * and should be redefined in classes whose instances are expected to
+     * travel across partitions.
      */
     //@{
     /**
      * Serializes the object into a buffer.
      */
-    virtual void netPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void netUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer);
     //@}
 
     /** @name Miscellaneous functions. */

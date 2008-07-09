@@ -59,13 +59,13 @@ std::string cFSM::info() const
     return out.str();
 }
 
-void cFSM::netPack(cCommBuffer *buffer)
+void cFSM::parsimPack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"netPack() not implemented");
+    throw cRuntimeError(this,"parsimPack() not implemented");
 }
 
-void cFSM::netUnpack(cCommBuffer *buffer)
+void cFSM::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"netUnpack() not implemented");
+    throw cRuntimeError(this,"parsimUnpack() not implemented");
 }
 

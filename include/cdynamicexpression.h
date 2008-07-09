@@ -283,7 +283,7 @@ class SIM_API cDynamicExpression : public cExpression
      */
     virtual std::string info() const;
 
-    // Note: netPack()/netUnpack() de-inherited in cExpression.
+    // Note: parsimPack()/parsimUnpack() de-inherited in cExpression.
     //@}
 
     /** @name Setter and evaluator methods. */

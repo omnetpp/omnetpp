@@ -74,33 +74,33 @@ void cQueue::forEachChild(cVisitor *v)
          v->visit(p->obj);
 }
 
-void cQueue::netPack(cCommBuffer *buffer)
+void cQueue::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netPack(buffer);
+    cOwnedObject::parsimPack(buffer);
 
     if (compare)
-        throw new cRuntimeError(this,"netPack(): cannot serialize comparison function");
+        throw new cRuntimeError(this,"parsimPack(): cannot serialize comparison function");
 
     buffer->pack(n);
 
     for (cQueue::Iterator iter(*this, 0); !iter.end(); iter--)
     {
         if (iter()->getOwner() != this)
-            throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
+            throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to \"external\" object");
         buffer->packObject(iter());
     }
 #endif
 }
 
-void cQueue::netUnpack(cCommBuffer *buffer)
+void cQueue::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netUnpack(buffer);
+    cOwnedObject::parsimUnpack(buffer);
 
     buffer->unpack(n);
 

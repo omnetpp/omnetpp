@@ -69,14 +69,14 @@ std::string cLinkedList::info() const
     return out.str();
 }
 
-void cLinkedList::netPack(cCommBuffer *buffer)
+void cLinkedList::parsimPack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"netPack() not supported -- don't know how to pack an item");
+    throw cRuntimeError(this,"parsimPack() not supported -- don't know how to pack an item");
 }
 
-void cLinkedList::netUnpack(cCommBuffer *buffer)
+void cLinkedList::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"netUnpack() not supported");
+    throw cRuntimeError(this,"parsimUnpack() not supported");
 }
 
 void cLinkedList::config( VoidDelFunc _delfunc, VoidDupFunc _dupfunc,

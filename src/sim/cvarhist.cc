@@ -63,12 +63,12 @@ cVarHistogram::~cVarHistogram()
     delete [] bin_bounds;
 }
 
-void cVarHistogram::netPack(cCommBuffer *buffer)
+void cVarHistogram::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cHistogramBase::netPack(buffer);
+    cHistogramBase::parsimPack(buffer);
 
     buffer->pack(max_num_cells);
     if (buffer->packFlag(bin_bounds!=NULL))
@@ -76,12 +76,12 @@ void cVarHistogram::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cVarHistogram::netUnpack(cCommBuffer *buffer)
+void cVarHistogram::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cHistogramBase::netUnpack(buffer);
+    cHistogramBase::parsimUnpack(buffer);
 
     buffer->unpack(max_num_cells);
     if (buffer->checkFlag())

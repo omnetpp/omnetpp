@@ -160,26 +160,26 @@ void cDefaultList::forEachChild(cVisitor *v)
         v->visit(vect[i]);
 }
 
-void cDefaultList::netPack(cCommBuffer *buffer)
+void cDefaultList::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netPack(buffer);
+    cOwnedObject::parsimPack(buffer);
 
     if (size>0)
-        throw cRuntimeError(this, "netPack() not supported (makes no sense)");
+        throw cRuntimeError(this, "parsimPack() not supported (makes no sense)");
 #endif
 }
 
-void cDefaultList::netUnpack(cCommBuffer *buffer)
+void cDefaultList::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netUnpack(buffer);
+    cOwnedObject::parsimUnpack(buffer);
     if (size>0)
-        throw cRuntimeError(this, "netUnpack(): can only unpack into empty object");
+        throw cRuntimeError(this, "parsimUnpack(): can only unpack into empty object");
 #endif
 }
 

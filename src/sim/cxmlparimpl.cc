@@ -52,12 +52,12 @@ std::string cXMLParImpl::detailedInfo() const
     return (flags & FL_ISEXPR) ? "<expression>" : val==NULL ? "NULL" : val->detailedInfo();
 }
 
-void cXMLParImpl::netPack(cCommBuffer *buffer)
+void cXMLParImpl::parsimPack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cXMLParImpl::netUnpack(cCommBuffer *buffer)
+void cXMLParImpl::parsimUnpack(cCommBuffer *buffer)
 {
     //TBD
 }

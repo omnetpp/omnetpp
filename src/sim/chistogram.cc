@@ -59,12 +59,12 @@ cHistogramBase::~cHistogramBase()
     delete [] cellv;
 }
 
-void cHistogramBase::netPack(cCommBuffer *buffer)
+void cHistogramBase::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cDensityEstBase::netPack(buffer);
+    cDensityEstBase::parsimPack(buffer);
     buffer->pack(num_cells);
 
     if (buffer->packFlag(cellv!=NULL))
@@ -72,12 +72,12 @@ void cHistogramBase::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cHistogramBase::netUnpack(cCommBuffer *buffer)
+void cHistogramBase::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cDensityEstBase::netUnpack(buffer);
+    cDensityEstBase::parsimUnpack(buffer);
     buffer->pack(num_cells);
 
     if (buffer->checkFlag())
@@ -180,22 +180,22 @@ cHistogramBase(name,numcells)
     cellsize = 0;
 }
 
-void cEqdHistogramBase::netPack(cCommBuffer *buffer)
+void cEqdHistogramBase::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cHistogramBase::netPack(buffer);
+    cHistogramBase::parsimPack(buffer);
     buffer->pack(cellsize);
 #endif
 }
 
-void cEqdHistogramBase::netUnpack(cCommBuffer *buffer)
+void cEqdHistogramBase::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cHistogramBase::netUnpack(buffer);
+    cHistogramBase::parsimUnpack(buffer);
     buffer->unpack(cellsize);
 #endif
 }

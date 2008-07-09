@@ -192,19 +192,19 @@ void cMsgPar::forEachChild(cVisitor *v)
     }
 }
 
-void cMsgPar::netPack(cCommBuffer *buffer)
+void cMsgPar::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netPack(buffer);
+    cOwnedObject::parsimPack(buffer);
 
     // For error checking & handling
     if (typechar != 'S' && typechar != 'L' && typechar != 'D'
         && typechar != 'F' && typechar != 'T' && typechar != 'P'
         && typechar != 'O' && typechar != 'M')
     {
-        throw cRuntimeError(this,"netPack: unsupported type '%c'",typechar);
+        throw cRuntimeError(this,"parsimPack: unsupported type '%c'",typechar);
     }
 
     buffer->pack(typechar);
@@ -232,7 +232,7 @@ void cMsgPar::netPack(cCommBuffer *buffer)
     case 'F':
         ff = cMathFunction::findByPointer(func.f);
         if (ff == NULL)
-            throw cRuntimeError(this,"netPack(): cannot transmit unregistered function");
+            throw cRuntimeError(this,"parsimPack(): cannot transmit unregistered function");
 
         buffer->pack(ff->getName());
         buffer->pack(func.argc);
@@ -244,28 +244,28 @@ void cMsgPar::netPack(cCommBuffer *buffer)
 
     case 'T':
         if (dtr.res && dtr.res->getOwner() != this)
-            throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
+            throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to \"external\" object");
         if (buffer->packFlag(dtr.res!=NULL))
             buffer->packObject(dtr.res);
         break;
 
     case 'P':
-        throw cRuntimeError(this,"netPack(): cannot transmit pointer to unknown data structure (type 'P')");
+        throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to unknown data structure (type 'P')");
 
     case 'O':
         if (obj.obj && obj.obj->getOwner() != this)
-            throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
+            throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to \"external\" object");
         if (buffer->packFlag(obj.obj!=NULL))
             buffer->packObject(obj.obj);
         break;
 
     case 'M':
-        throw cRuntimeError(this,"netPack(): cannot transmit pointer to XML element (type 'M')");
+        throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to XML element (type 'M')");
     }
 #endif
 }
 
-void cMsgPar::netUnpack(cCommBuffer *buffer)
+void cMsgPar::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
@@ -273,7 +273,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
     char *funcname;
     int argc;
 
-    cOwnedObject::netUnpack(buffer);
+    cOwnedObject::parsimUnpack(buffer);
 
     buffer->unpack(typechar);
     buffer->unpack(changedflag);
@@ -305,7 +305,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
         if (ff == NULL)
         {
             delete [] funcname;
-            throw cRuntimeError(this,"netUnpack(): transmitted function `%s' with %d args not registered here",
+            throw cRuntimeError(this,"parsimUnpack(): transmitted function `%s' with %d args not registered here",
                                     funcname, argc);
         }
         func.f = ff->getMathFunc();
@@ -326,7 +326,7 @@ void cMsgPar::netUnpack(cCommBuffer *buffer)
 
     case 'P':
     case 'M':
-        throw cRuntimeError(this,"netUnpack(): unpacking types I, P, M not implemented");
+        throw cRuntimeError(this,"parsimUnpack(): unpacking types I, P, M not implemented");
 
     case 'O':
         if (!buffer->checkFlag())

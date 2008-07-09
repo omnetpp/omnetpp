@@ -50,12 +50,12 @@ cDensityEstBase::~cDensityEstBase()
     delete [] firstvals;
 }
 
-void cDensityEstBase::netPack(cCommBuffer *buffer)
+void cDensityEstBase::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cStdDev::netPack(buffer);
+    cStdDev::parsimPack(buffer);
 
     buffer->pack(rangemin);
     buffer->pack(rangemax);
@@ -71,12 +71,12 @@ void cDensityEstBase::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cDensityEstBase::netUnpack(cCommBuffer *buffer)
+void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cStdDev::netUnpack(buffer);
+    cStdDev::parsimUnpack(buffer);
 
     buffer->unpack(rangemin);
     buffer->unpack(rangemax);

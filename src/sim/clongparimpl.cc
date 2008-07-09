@@ -46,12 +46,12 @@ void cLongParImpl::operator=(const cLongParImpl& other)
         val = other.val;
 }
 
-void cLongParImpl::netPack(cCommBuffer *buffer)
+void cLongParImpl::parsimPack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cLongParImpl::netUnpack(cCommBuffer *buffer)
+void cLongParImpl::parsimUnpack(cCommBuffer *buffer)
 {
     //TBD
 }

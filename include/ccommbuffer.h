@@ -40,7 +40,7 @@ class opp_string;
  * For example, the MPI implementation, cMPICommBuffer encapsulates
  * MPI_Pack() and MPI_Unpack().
  *
- * @see cOwnedObject::netPack(), cOwnedObject::netUnpack()
+ * @see cOwnedObject::parsimPack(), cOwnedObject::parsimUnpack()
  *
  * @ingroup ParsimBrief
  * @ingroup Parsim

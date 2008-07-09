@@ -169,14 +169,14 @@ class SIM_API cArray : public cOwnedObject
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void netPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from an MPI receive buffer
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
-    virtual void netUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer);
     //@}
 
     /** @name Container functions. */

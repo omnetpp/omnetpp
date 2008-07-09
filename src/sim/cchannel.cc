@@ -64,14 +64,14 @@ void cChannel::forEachChild(cVisitor *v)
     cDefaultList::forEachChild(v);
 }
 
-void cChannel::netPack(cCommBuffer *buffer)
+void cChannel::parsimPack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"netPack() not implemented");
+    throw cRuntimeError(this,"parsimPack() not implemented");
 }
 
-void cChannel::netUnpack(cCommBuffer *buffer)
+void cChannel::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"netUnpack() not implemented");
+    throw cRuntimeError(this,"parsimUnpack() not implemented");
 }
 
 void cChannel::callInitialize()

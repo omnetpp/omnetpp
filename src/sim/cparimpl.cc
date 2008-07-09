@@ -54,12 +54,12 @@ cParImpl& cParImpl::operator=(const cParImpl& other)
     return *this;
 }
 
-void cParImpl::netPack(cCommBuffer *buffer)
+void cParImpl::parsimPack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cParImpl::netUnpack(cCommBuffer *buffer)
+void cParImpl::parsimUnpack(cCommBuffer *buffer)
 {
     //TBD
 }

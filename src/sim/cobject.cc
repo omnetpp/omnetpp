@@ -113,11 +113,11 @@ void cObject::dropAndDelete(cOwnedObject *obj)
     delete obj;
 }
 
-void cObject::netPack(cCommBuffer *buffer)
+void cObject::parsimPack(cCommBuffer *buffer)
 {
 }
 
-void cObject::netUnpack(cCommBuffer *buffer)
+void cObject::parsimUnpack(cCommBuffer *buffer)
 {
 }
 

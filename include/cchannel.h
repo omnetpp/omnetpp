@@ -82,12 +82,12 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     /**
      * Serializes the object into a buffer.
      */
-    virtual void netPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void netUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer);
     //@}
 
     /** @name Public methods for invoking initialize()/finish(), redefined from cComponent.

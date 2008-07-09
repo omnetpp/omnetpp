@@ -153,12 +153,12 @@ void cArray::forEachChild(cVisitor *v)
             v->visit(vect[i]);
 }
 
-void cArray::netPack(cCommBuffer *buffer)
+void cArray::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netPack(buffer);
+    cOwnedObject::parsimPack(buffer);
 
     buffer->pack(capacity);
     buffer->pack(delta);
@@ -170,19 +170,19 @@ void cArray::netPack(cCommBuffer *buffer)
         if (buffer->packFlag(vect[i]!=NULL))
         {
             if (vect[i]->getOwner() != this)
-                throw cRuntimeError(this,"netPack(): cannot transmit pointer to \"external\" object");
+                throw cRuntimeError(this,"parsimPack(): cannot transmit pointer to \"external\" object");
             buffer->packObject(vect[i]);
         }
     }
 #endif
 }
 
-void cArray::netUnpack(cCommBuffer *buffer)
+void cArray::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netUnpack(buffer);
+    cOwnedObject::parsimUnpack(buffer);
 
     delete [] vect;
 

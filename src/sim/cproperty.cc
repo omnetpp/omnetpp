@@ -146,12 +146,12 @@ std::string cProperty::info() const
     return os.str();
 }
 
-void cProperty::netPack(cCommBuffer *buffer)
+void cProperty::parsimPack(cCommBuffer *buffer)
 {
     throw cRuntimeError(this, eCANTPACK);
 }
 
-void cProperty::netUnpack(cCommBuffer *buffer)
+void cProperty::parsimUnpack(cCommBuffer *buffer)
 {
     if (isLocked())
         throw cRuntimeError(this, eLOCKED);

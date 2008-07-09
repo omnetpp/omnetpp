@@ -67,12 +67,12 @@ std::string cStdDev::info() const
     return out.str();
 }
 
-void cStdDev::netPack(cCommBuffer *buffer)
+void cStdDev::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cStatistic::netPack(buffer);
+    cStatistic::parsimPack(buffer);
     buffer->pack(num_vals);
     buffer->pack(min_vals);
     buffer->pack(max_vals);
@@ -81,12 +81,12 @@ void cStdDev::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cStdDev::netUnpack(cCommBuffer *buffer)
+void cStdDev::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cStatistic::netUnpack(buffer);
+    cStatistic::parsimUnpack(buffer);
     buffer->unpack(num_vals);
     buffer->unpack(min_vals);
     buffer->unpack(max_vals);
@@ -245,12 +245,12 @@ std::string cWeightedStdDev::info() const
     return out.str();
 }
 
-void cWeightedStdDev::netPack(cCommBuffer *buffer)
+void cWeightedStdDev::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cStdDev::netPack(buffer);
+    cStdDev::parsimPack(buffer);
     buffer->pack(sum_weights);
     buffer->pack(sum_weighted_vals);
     buffer->pack(sum_squared_weights);
@@ -258,12 +258,12 @@ void cWeightedStdDev::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cWeightedStdDev::netUnpack(cCommBuffer *buffer)
+void cWeightedStdDev::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cStdDev::netUnpack(buffer);
+    cStdDev::parsimUnpack(buffer);
     buffer->unpack(sum_weights);
     buffer->unpack(sum_weighted_vals);
     buffer->unpack(sum_squared_weights);

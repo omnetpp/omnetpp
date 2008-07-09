@@ -144,21 +144,21 @@ cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
     return *this;
 }
 
-void cOwnedObject::netPack(cCommBuffer *buffer)
+void cOwnedObject::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cNamedObject::netPack(buffer);
+    cNamedObject::parsimPack(buffer);
 #endif
 }
 
-void cOwnedObject::netUnpack(cCommBuffer *buffer)
+void cOwnedObject::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cNamedObject::netUnpack(buffer);
+    cNamedObject::parsimUnpack(buffer);
 #endif
 }
 
@@ -170,15 +170,15 @@ cNoncopyableOwnedObject *cNoncopyableOwnedObject::dup() const
                               "and does not support dup()", getClassName());
 }
 
-void cNoncopyableOwnedObject::netPack(cCommBuffer *buffer)
+void cNoncopyableOwnedObject::parsimPack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this, "netPack(): %s subclasses from cNoncopyableOwnedObject, and "
+    throw cRuntimeError(this, "parsimPack(): %s subclasses from cNoncopyableOwnedObject, and "
                               "does not support pack/unpack operations", getClassName());
 }
 
-void cNoncopyableOwnedObject::netUnpack(cCommBuffer *buffer)
+void cNoncopyableOwnedObject::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this, "netUnpack(): %s subclasses from cNoncopyableOwnedObject, and "
+    throw cRuntimeError(this, "parsimUnpack(): %s subclasses from cNoncopyableOwnedObject, and "
                               "does not support pack/unpack operations", getClassName());
 }
 

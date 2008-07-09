@@ -171,15 +171,15 @@ std::string cMessage::detailedInfo() const
     return "";  // all fields are available via reflection, no point in repeating them here
 }
 
-void cMessage::netPack(cCommBuffer *buffer)
+void cMessage::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netPack(buffer);
+    cOwnedObject::parsimPack(buffer);
 
     if (contextptr || ctrlp)
-        throw cRuntimeError(this,"netPack(): cannot pack object with contextPointer or controlInfo set");
+        throw cRuntimeError(this,"parsimPack(): cannot pack object with contextPointer or controlInfo set");
 
     buffer->pack(msgkind);
     buffer->pack(prior);
@@ -208,12 +208,12 @@ void cMessage::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cMessage::netUnpack(cCommBuffer *buffer)
+void cMessage::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netUnpack(buffer);
+    cOwnedObject::parsimUnpack(buffer);
 
     ASSERT(sharecount==0);
     buffer->unpack(msgkind);

@@ -35,7 +35,7 @@ const char *cErrorMessages::get(ErrorCode e)
       case eCANCEL:    return "Simulation cancelled";
       case eCANTCOPY:  return "Assignment, copying, dup() not supported by this class";
       case eCANTDUP:   return "This object cannot dup() itself";
-      case eCANTPACK:  return "netPack()/netUnpack() not supported for this object";
+      case eCANTPACK:  return "parsimPack()/parsimUnpack() not supported for this object";
       case eCUSTOM:    return "%s";
       case eENDEDOK:   return "No more events -- simulation ended";
       case eENDSIM:    return "Simulation stopped with endSimulation()";

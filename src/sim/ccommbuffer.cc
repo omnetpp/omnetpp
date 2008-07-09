@@ -30,7 +30,7 @@ USING_NAMESPACE
 void cCommBuffer::packObject(cObject *obj)
 {
     pack(obj->getClassName());
-    obj->netPack(this);
+    obj->parsimPack(this);
 }
 
 cObject *cCommBuffer::unpackObject()
@@ -40,7 +40,7 @@ cObject *cCommBuffer::unpackObject()
     cObject *obj = createOne(classname);
     delete [] classname;
 
-    obj->netUnpack(this);
+    obj->parsimUnpack(this);
     return obj;
 }
 

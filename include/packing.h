@@ -21,7 +21,7 @@
 NAMESPACE_BEGIN
 
 //
-// This file contains methods for netPack/netUnpack methods generated in _m.cc files
+// This file contains methods for generated parsimPack/parsimUnpack methods
 //
 
 //
@@ -47,7 +47,6 @@ DOPACKING(float,_)
 DOPACKING(double,_)
 DOPACKING(long double,_)
 DOPACKING(char *,_)
-//FIXME DOPACKING(char *,_)
 DOPACKING(SimTime,_)
 DOPACKING(opp_string,&)
 #undef _

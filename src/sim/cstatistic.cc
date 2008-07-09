@@ -66,12 +66,12 @@ cStatistic::~cStatistic()
     dropAndDelete(ra);
 }
 
-void cStatistic::netPack(cCommBuffer *buffer)
+void cStatistic::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netPack(buffer);
+    cOwnedObject::parsimPack(buffer);
 
     buffer->pack(genk);
 
@@ -82,12 +82,12 @@ void cStatistic::netPack(cCommBuffer *buffer)
 #endif
 }
 
-void cStatistic::netUnpack(cCommBuffer *buffer)
+void cStatistic::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cOwnedObject::netUnpack(buffer);
+    cOwnedObject::parsimUnpack(buffer);
 
     buffer->unpack(genk);
 

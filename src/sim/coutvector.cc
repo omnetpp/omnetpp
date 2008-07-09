@@ -82,14 +82,14 @@ std::string cOutVector::info() const
     return out.str();
 }
 
-void cOutVector::netPack(cCommBuffer *buffer)
+void cOutVector::parsimPack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this, "netPack() not supported");
+    throw cRuntimeError(this, "parsimPack() not supported");
 }
 
-void cOutVector::netUnpack(cCommBuffer *buffer)
+void cOutVector::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this, "netUnpack(): not supported");
+    throw cRuntimeError(this, "parsimUnpack(): not supported");
 }
 
 void cOutVector::setUnit(const char *unit)

@@ -61,22 +61,22 @@ std::string cPacketQueue::info() const
     return out.str();
 }
 
-void cPacketQueue::netPack(cCommBuffer *buffer)
+void cPacketQueue::parsimPack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cQueue::netPack(buffer);
+    cQueue::parsimPack(buffer);
     buffer->pack(bitlength);
 #endif
 }
 
-void cPacketQueue::netUnpack(cCommBuffer *buffer)
+void cPacketQueue::parsimUnpack(cCommBuffer *buffer)
 {
 #ifndef WITH_PARSIM
     throw cRuntimeError(this,eNOPARSIM);
 #else
-    cQueue::netUnpack(buffer);
+    cQueue::parsimUnpack(buffer);
     buffer->unpack(bitlength);
 #endif
 }

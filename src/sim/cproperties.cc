@@ -64,12 +64,12 @@ std::string cProperties::info() const
     return out.str();
 }
 
-void cProperties::netPack(cCommBuffer *buffer)
+void cProperties::parsimPack(cCommBuffer *buffer)
 {
     // TBD
 }
 
-void cProperties::netUnpack(cCommBuffer *buffer)
+void cProperties::parsimUnpack(cCommBuffer *buffer)
 {
     if (islocked)
         throw cRuntimeError(this, eLOCKED);

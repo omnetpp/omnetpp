@@ -81,14 +81,14 @@ std::string cTopology::info() const
     return out.str();
 }
 
-void cTopology::netPack(cCommBuffer *buffer)
+void cTopology::parsimPack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"netPack() not implemented");
+    throw cRuntimeError(this,"parsimPack() not implemented");
 }
 
-void cTopology::netUnpack(cCommBuffer *buffer)
+void cTopology::parsimUnpack(cCommBuffer *buffer)
 {
-    throw cRuntimeError(this,"netUnpack() not implemented");
+    throw cRuntimeError(this,"parsimUnpack() not implemented");
 }
 
 cTopology& cTopology::operator=(const cTopology&)

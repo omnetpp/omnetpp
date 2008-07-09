@@ -45,12 +45,12 @@ void cStringParImpl::operator=(const cStringParImpl& other)
         val = other.val;
 }
 
-void cStringParImpl::netPack(cCommBuffer *buffer)
+void cStringParImpl::parsimPack(cCommBuffer *buffer)
 {
     //TBD
 }
 
-void cStringParImpl::netUnpack(cCommBuffer *buffer)
+void cStringParImpl::parsimUnpack(cCommBuffer *buffer)
 {
     //TBD
 }

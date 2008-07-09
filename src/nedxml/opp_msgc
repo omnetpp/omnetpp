@@ -1158,8 +1158,8 @@ sub generateClass
     } else {
         print H "    virtual $msgclass *dup() const {return new $msgclass(*this);}\n";
     }
-    print H "    virtual void netPack(cCommBuffer *b);\n";
-    print H "    virtual void netUnpack(cCommBuffer *b);\n";
+    print H "    virtual void parsimPack(cCommBuffer *b);\n";
+    print H "    virtual void parsimUnpack(cCommBuffer *b);\n";
     print H "\n";
     print H "    // field getter/setter methods\n";
     foreach $fieldname (@fieldlist)
@@ -1194,8 +1194,8 @@ sub generateClass
         if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
             print CC "Register_Class($msgclass);\n\n";
         }
-        print H "inline void doPacking(cCommBuffer *b, $realmsgclass& obj) {obj.netPack(b);}\n";
-        print H "inline void doUnpacking(cCommBuffer *b, $realmsgclass& obj) {obj.netUnpack(b);}\n\n";
+        print H "inline void doPacking(cCommBuffer *b, $realmsgclass& obj) {obj.parsimPack(b);}\n";
+        print H "inline void doUnpacking(cCommBuffer *b, $realmsgclass& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
     if ($classtype eq "cobject") {
@@ -1343,15 +1343,15 @@ sub generateClass
     print CC "}\n\n";
 
     #
-    # Note: This class may not be derived from cOwnedObject, and then this netPack()/
-    # netUnpack() is NOT that of cOwnedObject. However it's still needed because a
+    # Note: This class may not be derived from cOwnedObject, and then this parsimPack()/
+    # parsimUnpack() is NOT that of cOwnedObject. However it's still needed because a
     # "friend" doPacking() function could not access protected members otherwise.
     #
-    print CC "void $msgclass\:\:netPack(cCommBuffer *b)\n";
+    print CC "void $msgclass\:\:parsimPack(cCommBuffer *b)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
         if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
-            print CC "    $msgbaseclass\:\:netPack(b);\n" unless ($msgbaseclass eq "cObject");
+            print CC "    $msgbaseclass\:\:parsimPack(b);\n" unless ($msgbaseclass eq "cObject");
         } else {
             print CC "    doPacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
         }
@@ -1375,11 +1375,11 @@ sub generateClass
     }
     print CC "}\n\n";
 
-    print CC "void $msgclass\:\:netUnpack(cCommBuffer *b)\n";
+    print CC "void $msgclass\:\:parsimUnpack(cCommBuffer *b)\n";
     print CC "{\n";
     if ($msgbaseclass ne "") {
         if ($classtype eq "cobject" || $classtype eq "cpolymorphic") {
-            print CC "    $msgbaseclass\:\:netUnpack(b);\n" unless ($msgbaseclass eq "cObject");
+            print CC "    $msgbaseclass\:\:parsimUnpack(b);\n" unless ($msgbaseclass eq "cObject");
         } else {
             print CC "    doUnpacking(b,($msgbaseclass&)*this);\n"; # this would do for cOwnedObject too, but the other is nicer
         }

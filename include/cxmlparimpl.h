@@ -79,12 +79,12 @@ class SIM_API cXMLParImpl : public cParImpl
     /**
      * Serializes the object into a buffer.
      */
-    virtual void netPack(cCommBuffer *buffer);
+    virtual void parsimPack(cCommBuffer *buffer);
 
     /**
      * Deserializes the object from a buffer.
      */
-    virtual void netUnpack(cCommBuffer *buffer);
+    virtual void parsimUnpack(cCommBuffer *buffer);
     //@}
 
     /** @name Redefined cParImpl setter functions. */

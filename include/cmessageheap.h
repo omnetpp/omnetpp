@@ -134,7 +134,7 @@ class SIM_API cMessageHeap : public cOwnedObject
      */
     virtual void forEachChild(cVisitor *v);
 
-    // no netPack() and netUnpack()
+    // no parsimPack() and parsimUnpack()
     //@}
 
     /** @name Container functions. */
