@@ -124,20 +124,16 @@ public class Makemake {
         String configFile = omnetppRoot + (isNMake ? "\\configuser.vc" : "/Makefile.inc");
 
         // collect source files
-        if (!isDeep) {
-            ccfiles = glob("*.cc");
-            cppfiles = glob("*.cpp");
-            msgfiles = glob("*.msg");
-            nedfiles = glob("*.ned");
-        }
-        else {
+        if (isDeep)
             sourceDirs = collectDirs(folder, options.exceptSubdirs);
-            for (String i : sourceDirs) {
-                ccfiles.addAll(glob(i, "*.cc"));
-                cppfiles.addAll(glob(i, "*.cpp"));
-                msgfiles.addAll(glob(i, "*.msg"));
-                nedfiles.addAll(glob(i, "*.ned"));
-            }
+        else
+            sourceDirs.add(".");
+
+        for (String i : sourceDirs) {
+            ccfiles.addAll(glob(i, "*.cc"));
+            cppfiles.addAll(glob(i, "*.cpp"));
+            msgfiles.addAll(glob(i, "*.msg"));
+            nedfiles.addAll(glob(i, "*.ned"));
         }
 
         for (String dir : sourceDirs)
