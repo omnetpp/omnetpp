@@ -320,12 +320,6 @@ sub parse_testfile
 
         $values{$key} =~ s/\@TESTNAME\@/$testname/g;
         $bodies{$key} =~ s/\@TESTNAME\@/$testname/g;
-
-        $values{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
-        $bodies{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
-
-        $values{$key} =~ s/{}/${testname}/g;
-        $bodies{$key} =~ s/{}/${testname}/g;
     }
 }
 
@@ -340,7 +334,6 @@ sub testcase_generatesources
     # generate "package.ned"
     $ned = $PackageNEDTemplate;
     $ned =~ s/\@TESTNAME\@/$testname/g;
-    $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
     $nedfname = $workdir."/".$testname."/package.ned";
     writefile($nedfname, $ned);
 
@@ -359,7 +352,6 @@ sub testcase_generatesources
         $ned = $ModuleNEDTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$module/g;
-        $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
         $nedfname = $workdir."/".$testname."/test.ned";
         writefile($nedfname, $ned);
 
@@ -370,7 +362,6 @@ sub testcase_generatesources
         $cpp =~ s/\@INCLUDES\@/$includescode/g;
         $cpp =~ s/\@GLOBAL\@/$globalcode/g;
         $cpp =~ s/\@ACTIVITY\@/$activity/g;
-        $cpp =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
         $cppfname = $workdir."/".$testname."/test.cc";
         writefile($cppfname, $cpp);
     }
@@ -445,7 +436,6 @@ sub testcase_generatesources
         $inifile = $INITemplate;
         $inifile =~ s/\@TESTNAME\@/$testname/g;
         $inifile =~ s/\@NETWORKNAME\@/$networkname/g;
-        $inifile =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
     }
     writefile($inifname, $inifile);
 

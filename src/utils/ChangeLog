@@ -1,3 +1,9 @@
+2008-07-10  Andras Varga
+
+	* opp_test: removed feature that {} was synonymous to @TESTNAME@, and
+	{foo} to @TESTNAME@_foo. Those abbreviations are no longer that useful,
+	now that NED files of different test cases don't interfere.
+
 2008-06-23  Rudolf Hornig, Andras Varga
 
 	* opp_makedep: optimized by memoizing the result of header files scan
