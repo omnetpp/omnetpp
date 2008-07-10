@@ -11,7 +11,7 @@ in ALL test cases! See below:
 //EXECUTE_ON_STARTUP(  throw std::range_error("something bad happened");  );
 
 %activity:
-// nothing
+ev << "#UNRESOLVED: test currently disabled, edit it to enable\n";
 
 %exitcode: 1
 
