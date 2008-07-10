@@ -65,6 +65,8 @@ Define_Module(Test);
 
 void Test::activity()
 {
+    ev << "#UNRESOLVED: incomplete test case; needs to be revised or deleted\n";
+
     int numrepl=10000;
 
     PAR_MEAN_AND_VARIANCE(uniform_par);
