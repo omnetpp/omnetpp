@@ -1,5 +1,6 @@
 %description:
 Test that the simulation exits gracefully if simulation is interrupted (SIGTERM).
+Exit codes: Windows: 3; Linux: ??
 
 %includes:
 #include <signal.h>
@@ -15,7 +16,4 @@ class Foo : public cSimpleModule
 
 Define_Module(Foo);
 
-%exitcode: 99
-
-%contains: stdout
-FIXME
+%exitcode: 3
