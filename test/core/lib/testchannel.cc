@@ -1,6 +1,6 @@
 #include <omnetpp.h>
 
-class TestChannel : public cChannel
+class TestChannel : public cIdealChannel
 {
   private:
     int numPackets;
@@ -21,6 +21,9 @@ void TestChannel::initialize()
 
 bool TestChannel::deliver(cMessage *msg, simtime_t at)
 {
+    numPackets++;
+    ev << "TestChannel delivering msg: " << msg->getName() << "\n";
+    return cIdealChannel::deliver(msg, at);
 }
 
 void TestChannel::finish()
