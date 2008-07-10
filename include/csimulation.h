@@ -95,7 +95,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
 
   public:
     // internal: FES
-    cMessageHeap msgQueue;     // future messages (FES)
+    cMessageHeap msgQueue;    // future messages (FES)
     cMessageHeap& getMessageQueue() {return msgQueue;}  // accessor for sim_std.msg
 
     // internal: things that cannot be done from the constructor of global object

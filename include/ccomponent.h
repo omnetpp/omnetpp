@@ -40,6 +40,9 @@ class cRNG;
 class SIM_API cComponent : public cDefaultList //implies noncopyable
 {
     friend class cPar; // needs to call handleParameterChange()
+    friend class cChannel; // allow it to access FL_INITIALIZED
+    friend class cModule; // allow it to access FL_INITIALIZED
+
   private:
     enum {
       FL_PARAMSFINALIZED = 4,   // whether finalizeParameters() has been called

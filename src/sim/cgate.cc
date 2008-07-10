@@ -275,9 +275,16 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
     }
     else
     {
-        if (channelp) {
+        if (channelp)
+        {
+            if (!channelp->initialized())
+                throw cRuntimeError(channelp, "Channel not initialized (did you forget to invoke "
+                                              "callInitialize() for a dynamically created channel or "
+                                              "a dynamically created compound module that contains it?)");
             return channelp->deliver(msg, t);
-        } else {
+        }
+        else
+        {
             EVCB.messageSendHop(msg, this);
             return togatep->deliver(msg, t);
         }

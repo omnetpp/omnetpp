@@ -611,6 +611,9 @@ void cSimulation::doOneEvent(cSimpleModule *mod)  //FIXME why do we need the cSi
     // sent out again
     msg->setPreviousEventNumber(event_num);
 
+    if (!mod->initialized())
+        throw cRuntimeError(mod, "Module not initialized (did you forget to invoke callInitialize() for a dynamically created module?)");
+
     try
     {
         if (mod->usesActivity())

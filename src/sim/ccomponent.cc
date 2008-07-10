@@ -139,6 +139,9 @@ int cComponent::findPar(const char *parname) const
 
 void cComponent::finalizeParameters()
 {
+    if (parametersFinalized())
+        throw cRuntimeError(this, "finalizeParameters() already called for this module or channel");
+
     // temporarily switch context
     cContextSwitcher tmp(this);
     cContextTypeSwitcher tmp2(CTX_BUILD);

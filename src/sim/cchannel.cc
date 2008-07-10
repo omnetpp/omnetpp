@@ -94,16 +94,27 @@ bool cChannel::initializeChannel(int stage)
     // channels don't contain further subcomponents, so just we just invoke
     // initialize(stage) in the right context here.
     if (simulation.getContextType()!=CTX_INITIALIZE)
-        throw cRuntimeError("internal function initializeChannel() may only be called via callInitialize()");
+        throw cRuntimeError("Internal function initializeChannel() may only be called via callInitialize()");
+
+    if (stage==0)
+    {
+        if (initialized())
+            throw cRuntimeError(this, "Channel already initialized");
+
+        // call finalizeParameters() if user has forgotten to do it; this is needed
+        // to make dynamic module/channel creation more robust
+        if (!parametersFinalized())
+            finalizeParameters();
+    }
 
     int numStages = numInitStages();
     if (stage < numStages)
     {
-        ev << "Initializing channel " << getFullPath() << ", stage " << stage << "\n";
-
         // switch context for the duration of the call
         cContextSwitcher tmp(this);
+        ev << "Initializing channel " << getFullPath() << ", stage " << stage << "\n";
         initialize(stage);
+        setFlag(FL_INITIALIZED, true);
     }
 
     bool moreStages = stage < numStages-1;

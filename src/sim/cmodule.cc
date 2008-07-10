@@ -949,14 +949,17 @@ void cModule::finalizeParameters()
 
 int cModule::buildInside()
 {
-    // temporarily switch context
-    cContextSwitcher tmp(this);
-    cContextTypeSwitcher tmp2(CTX_BUILD);
+    if (buildInsideCalled())
+        throw cRuntimeError(this, "buildInside() already called for this module");
 
-    // if finalizeParameters() hasn't been called yet, do it now;
+    // call finalizeParameters() if user has forgotten to do it;
     // this is needed to make dynamic module creation more robust
     if (!parametersFinalized())
         finalizeParameters();
+
+    // temporarily switch context
+    cContextSwitcher tmp(this);
+    cContextTypeSwitcher tmp2(CTX_BUILD);
 
     // call doBuildInside() in this context
     doBuildInside();
@@ -1057,6 +1060,17 @@ bool cModule::initializeModules(int stage)
     if (simulation.getContextType()!=CTX_INITIALIZE)
         throw cRuntimeError("internal function initializeModules() may only be called via callInitialize()");
 
+    if (stage==0)
+    {
+        if (initialized())
+            throw cRuntimeError(this, "Module already initialized");
+
+        // call buildInside() if user has forgotten to do it; this is needed
+        // to make dynamic module creation more robust
+        if (!buildInsideCalled())
+            buildInside();
+    }
+
     // first call initialize(stage) for this module...
     int numStages = numInitStages();
     if (stage < numStages)
@@ -1065,6 +1079,7 @@ bool cModule::initializeModules(int stage)
         Enter_Method("initialize");
         ev << "Initializing module " << getFullPath() << ", stage " << stage << "\n";
         initialize(stage);
+        setFlag(FL_INITIALIZED, true);
     }
 
     // then recursively initialize submodules
