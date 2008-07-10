@@ -92,9 +92,6 @@ match("??aa?b?", "!!aa!b", false);
 //
 // sets
 //
-// note: {} or {ace} would be replaced by opp_test, so write it as
-// ...{" "}... (exploiting C/C++ compile-time string concatenation)
-//
 match("{c-e}", "c", true);
 match("{c-e}", "d", true);
 match("{c-e}", "e", true);
@@ -109,10 +106,10 @@ match("{c-e5-7}", "4", false);
 match("{c-e5-7}", "8", false);
 match("{c-e5-7}", "-", false);
 // char enumeration
-match("{" "ace}", "a", true);
-match("{" "ace}", "c", true);
-match("{" "ace}", "e", true);
-match("{" "ace}", "b", false);
+match("{ace}", "a", true);
+match("{ace}", "c", true);
+match("{ace}", "e", true);
+match("{ace}", "b", false);
 // "-" in the set
 match("{-ace}", "-", true);
 match("{-ace}", "a", true);
@@ -126,19 +123,19 @@ match("{-ace0-59}", "e", true);
 match("{-ace0-59}", "b", false);
 match("{-ace0-59}", "8", false);
 // "}" in the set (must be first)
-match("{" "}ace}", "}", true);
-match("{" "}ace}", "a", true);
-match("{" "}ace}", "b", false);
+match("{}ace}", "}", true);
+match("{}ace}", "a", true);
+match("{}ace}", "b", false);
 // special chars (backslash doesn't quote here)
-match("{-*\\?[]{" "}", "-", true);
-match("{-*\\?[]{" "}", "*", true);
-match("{-*\\?[]{" "}", "\\", true);
-match("{-*\\?[]{" "}", "?", true);
-match("{-*\\?[]{" "}", "[", true);
-match("{-*\\?[]{" "}", "]", true);
-match("{-*\\?[]{" "}", "{", true);
-match("{-*\\?[]{" "}", "a", false);
-match("{-*\\?[]{" "}", "!", false);
+match("{-*\\?[]{}", "-", true);
+match("{-*\\?[]{}", "*", true);
+match("{-*\\?[]{}", "\\", true);
+match("{-*\\?[]{}", "?", true);
+match("{-*\\?[]{}", "[", true);
+match("{-*\\?[]{}", "]", true);
+match("{-*\\?[]{}", "{", true);
+match("{-*\\?[]{}", "a", false);
+match("{-*\\?[]{}", "!", false);
 
 //
 // negated sets (test cases derived from set tests)
@@ -178,15 +175,15 @@ match("{^}ace}", "}", false);
 match("{^}ace}", "a", false);
 match("{^}ace}", "b", true);
 // special chars (backslash doesn't quote here)
-match("{^-*\\?[]{" "}", "-", false);
-match("{^-*\\?[]{" "}", "*", false);
-match("{^-*\\?[]{" "}", "\\", false);
-match("{^-*\\?[]{" "}", "?", false);
-match("{^-*\\?[]{" "}", "[", false);
-match("{^-*\\?[]{" "}", "]", false);
-match("{^-*\\?[]{" "}", "{", false);
-match("{^-*\\?[]{" "}", "a", true);
-match("{^-*\\?[]{" "}", "!", true);
+match("{^-*\\?[]{}", "-", false);
+match("{^-*\\?[]{}", "*", false);
+match("{^-*\\?[]{}", "\\", false);
+match("{^-*\\?[]{}", "?", false);
+match("{^-*\\?[]{}", "[", false);
+match("{^-*\\?[]{}", "]", false);
+match("{^-*\\?[]{}", "{", false);
+match("{^-*\\?[]{}", "a", true);
+match("{^-*\\?[]{}", "!", true);
 
 //
 // "*"
