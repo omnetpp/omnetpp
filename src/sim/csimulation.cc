@@ -586,28 +586,28 @@ void cSimulation::transferTo(cSimpleModule *modp)
     }
 }
 
-void cSimulation::doOneEvent(cSimpleModule *mod)  //FIXME why do we need the cSimpleModule argument??? remove!!!
+void cSimulation::doOneEvent(cSimpleModule *mod)
 {
-    if (getHasher())
-    {
-        // note: there's no value in adding getEventNumber()
-        getHasher()->add(SIMTIME_RAW(simTime()));
-        getHasher()->add(mod->getId());
-    }
-
-    // get event to be handled
-    cMessage *msg = msgQueue.removeFirst();
-
-    // store arrival event number of this message; it is useful input for the
-    // sequence chart tool if the message doesn't get immediately deleted or
-    // sent out again
-    msg->setPreviousEventNumber(event_num);
-
     try
     {
         // switch to the module's context
         setContext(mod);
         setContextType(CTX_EVENT);
+
+        if (getHasher())
+        {
+            // note: there's no value in adding getEventNumber()
+            getHasher()->add(SIMTIME_RAW(simTime()));
+            getHasher()->add(mod->getId());
+        }
+
+        // get event to be handled (note: it becomes owned by the target module)
+        cMessage *msg = msgQueue.removeFirst();
+
+        // store arrival event number of this message; it is useful input for the
+        // sequence chart tool if the message doesn't get immediately deleted or
+        // sent out again
+        msg->setPreviousEventNumber(event_num);
 
         // notify the environment about the event (writes eventlog, etc.)
         EVCB.simulationEvent(msg);
