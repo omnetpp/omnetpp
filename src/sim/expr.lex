@@ -44,7 +44,7 @@ S  [ \t\v\n\r\f]
 #include <string.h>
 #include "expryydefs.h"
 #include "cexception.h"
-#include "expr.tab.h"
+#include "expr.tab.hh"
 
 using OPP::opp_strdup;
 

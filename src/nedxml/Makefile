@@ -38,9 +38,9 @@ OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o $O/nedexception.o \
       $O/nedresourcecache.o $O/nedtypeinfo.o
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
-                  ned1.tab.h ned1.tab.cc lex.ned1yy.cc \
-                  ned2.tab.h ned2.tab.cc lex.ned2yy.cc \
-                  msg2.tab.h msg2.tab.cc lex.msg2yy.cc 
+                  ned1.tab.hh ned1.tab.cc lex.ned1yy.cc \
+                  ned2.tab.hh ned2.tab.cc lex.ned2yy.cc \
+                  msg2.tab.hh msg2.tab.cc lex.msg2yy.cc 
 
 #
 # Automatic rules
@@ -83,29 +83,23 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 
-ned1.tab.h ned1.tab.cc : ned1.y
-	$(YACC) -p ned1yy -b ned1 -d ned1.y
-	mv ned1.tab.c ned1.tab.cc
+ned1.tab.hh ned1.tab.cc : ned1.y
+	$(YACC) -o ned1.tab.cc -p ned1yy -d ned1.y
 
 lex.ned1yy.cc: ned1.lex
-	$(LEX) -Pned1yy ned1.lex
-	mv lex.ned1yy.c lex.ned1yy.cc
+	$(LEX) -o lex.ned1yy.cc -Pned1yy ned1.lex
 
-ned2.tab.h ned2.tab.cc : ned2.y
-	$(YACC) --verbose --debug -p ned2yy -b ned2 -d ned2.y
-	mv ned2.tab.c ned2.tab.cc
+ned2.tab.hh ned2.tab.cc : ned2.y
+	$(YACC) -o ned2.tab.cc -p ned2yy -d ned2.y
 
 lex.ned2yy.cc: ned2.lex
-	$(LEX) -Pned2yy ned2.lex
-	mv lex.ned2yy.c lex.ned2yy.cc
+	$(LEX) -o lex.ned2yy.cc -Pned2yy ned2.lex
 
-msg2.tab.h msg2.tab.cc : msg2.y
-	$(YACC) -p msg2yy -b msg2 -d msg2.y
-	mv msg2.tab.c msg2.tab.cc
+msg2.tab.hh msg2.tab.cc : msg2.y
+	$(YACC) -o msg2.tab.cc -p msg2yy -d msg2.y
 
 lex.msg2yy.cc: msg2.lex
-	$(LEX) -Pmsg2yy msg2.lex
-	mv lex.msg2yy.c lex.msg2yy.cc
+	$(LEX) -o lex.msg2yy.cc -Pmsg2yy msg2.lex
 
 depend: $(GENERATED_SOURCES)
 	$(MAKEDEPEND) -I../../include -P\$$O/ -- *.cc
@@ -142,13 +136,13 @@ $O/cppmsggenerator.o: cppmsggenerator.cc \
   nedelements.h \
   nedxmldefs.h
 $O/lex.msg2yy.o: lex.msg2yy.cc \
+  msg2.tab.hh \
   nedyydefs.h \
-  msg2.tab.h \
   nedexception.h \
   nedxmldefs.h
 $O/lex.ned1yy.o: lex.ned1yy.cc \
   nedyydefs.h \
-  ned1.tab.h \
+  ned1.tab.hh \
   nedexception.h \
   nedxmldefs.h
 $O/lex.ned2yy.o: lex.ned2yy.cc \
@@ -157,8 +151,8 @@ $O/lex.ned2yy.o: lex.ned2yy.cc \
   nedelements.h \
   nedutil.h \
   nedparser.h \
+  ned2.tab.hh \
   nedyydefs.h \
-  ned2.tab.h \
   nedelement.h \
   nedexception.h \
   nedxmldefs.h \
@@ -198,8 +192,8 @@ $O/ned2.tab.o: ned2.tab.cc \
   nedelements.h \
   nedutil.h \
   nedparser.h \
+  ned2.tab.hh \
   nedyydefs.h \
-  ned2.tab.h \
   nedelement.h \
   nedexception.h \
   nedxmldefs.h \

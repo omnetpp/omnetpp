@@ -31,7 +31,7 @@ S  [ \t\v\n\r\f]
 #include <string.h>
 #include "nedyydefs.h"
 #include "nedexception.h"
-#include "ned1.tab.h"
+#include "ned1.tab.hh"
 
 #define yylloc ned1yylloc
 extern YYSTYPE yylval;
