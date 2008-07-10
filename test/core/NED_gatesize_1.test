@@ -40,7 +40,7 @@ network Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class GenMod : public cSimpleModule
 {

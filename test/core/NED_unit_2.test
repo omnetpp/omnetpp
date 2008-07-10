@@ -14,7 +14,7 @@ simple Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class Test : public cSimpleModule
 {

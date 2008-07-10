@@ -3,7 +3,7 @@ Check static arrays in classes
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 class MyClass
 {

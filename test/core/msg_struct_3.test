@@ -3,7 +3,7 @@ Check simple field types in structs are initialized to zero
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 struct MyStruct
 {

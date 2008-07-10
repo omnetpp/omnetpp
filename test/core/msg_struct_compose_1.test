@@ -3,7 +3,7 @@ Check struct as struct member
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 struct Base
 {

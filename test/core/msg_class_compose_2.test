@@ -3,7 +3,7 @@ Check non-cOwnedObject-class as member in non-cOwnedObject class
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 class Class1
 {

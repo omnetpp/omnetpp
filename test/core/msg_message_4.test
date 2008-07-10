@@ -3,7 +3,7 @@ Check string fields in messages
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 message MyMessage
 {

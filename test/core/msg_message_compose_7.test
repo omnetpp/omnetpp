@@ -3,7 +3,7 @@ Check static array of cOwnedObject-based class as message member
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 class cQueue;
 

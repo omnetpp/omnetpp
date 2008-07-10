@@ -22,7 +22,7 @@ network Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class NodeA : public cSimpleModule
 {

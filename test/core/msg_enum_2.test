@@ -3,7 +3,7 @@ Check "inheritance" with enums
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 enum Base
 {

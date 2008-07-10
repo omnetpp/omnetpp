@@ -3,7 +3,7 @@ Check static arrays in structs are initialized to zero
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 struct MyStruct
 {

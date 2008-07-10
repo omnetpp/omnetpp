@@ -3,7 +3,7 @@ Check dynamic arrays for messages
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 message MyMessage
 {

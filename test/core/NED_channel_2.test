@@ -24,7 +24,7 @@ network Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class TestChannel : public cIdealChannel
 {
@@ -35,5 +35,5 @@ Register_Class(TestChannel);
 }; //namespace
 
 %contains: stdout
-out[0]: --> b.in[0], TestChannel  ({}::TestChannel)
+out[0]: --> b.in[0], TestChannel  (@TESTNAME@::TestChannel)
 

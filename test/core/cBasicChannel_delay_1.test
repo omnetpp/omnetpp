@@ -34,7 +34,7 @@ network Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class Node1 : public cSimpleModule
 {

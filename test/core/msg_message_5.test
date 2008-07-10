@@ -3,7 +3,7 @@ Check static arrays in messages
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 message MyMessage
 {

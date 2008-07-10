@@ -3,7 +3,7 @@ Static array out of bounds test for non-cOwnedObject rooted classes
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 class MyClass
 {

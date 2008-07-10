@@ -26,7 +26,7 @@ network Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class PlainInit : public cSimpleModule {
     virtual void initialize() {ev << "init " << getFullPath() << "\n";}

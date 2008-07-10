@@ -3,7 +3,7 @@ Check primitive scalar field types in cOwnedObject-rooted classes
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 class MyClass extends cOwnedObject
 {

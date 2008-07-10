@@ -3,7 +3,7 @@ Check dynamic arrays in non-cOwnedObject rooted classes
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 class MyClass
 {

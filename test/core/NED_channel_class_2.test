@@ -10,7 +10,7 @@ Test @class property with C++ namespace.
 simple Simple
 {
     parameters:
-        @class("{}::Simple");
+        @class("@TESTNAME@::Simple");
     gates:
         inout g;
 }
@@ -18,7 +18,7 @@ simple Simple
 channel ChannelWithNamespace extends ned.IdealChannel
 {
     parameters:
-        @class("{}::ChannelWithNamespace");
+        @class("@TESTNAME@::ChannelWithNamespace");
 }
 
 network Test
@@ -34,7 +34,7 @@ network Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class ChannelWithNamespace: public cIdealChannel
 {

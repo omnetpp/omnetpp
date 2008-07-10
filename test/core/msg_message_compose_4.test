@@ -3,7 +3,7 @@ Check cobject-class as message member
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 class Class1
 {

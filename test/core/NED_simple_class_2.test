@@ -10,7 +10,7 @@ Test @class property with C++ namespace.
 simple SimpleWithNamespace
 {
     parameters:
-        @class("{}::ClassWithNamespace");
+        @class("@TESTNAME@::ClassWithNamespace");
 }
 
 network Test
@@ -23,7 +23,7 @@ network Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class ClassWithNamespace : public cSimpleModule
 {

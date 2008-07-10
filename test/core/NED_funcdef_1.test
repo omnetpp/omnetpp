@@ -18,7 +18,7 @@ simple Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 double testfunc0() {return 0;}
 double testfunc1(double a) {return a;}

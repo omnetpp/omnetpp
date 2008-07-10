@@ -3,7 +3,7 @@ ev.getXMLDocument(): file not found
 
 %activity:
 
-cXMLElement *node = ev.getXMLDocument("{}qwerty.xml");
+cXMLElement *node = ev.getXMLDocument("@TESTNAME@qwerty.xml");
 if (!node)
     ev << "NULL\n";
 else
@@ -12,4 +12,4 @@ else
 %exitcode: 1
 
 %contains: stdout
-Error reading `{}qwerty.xml'
+Error reading `@TESTNAME@qwerty.xml'

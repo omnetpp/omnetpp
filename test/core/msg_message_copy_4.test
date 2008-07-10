@@ -3,7 +3,7 @@ Copying and assignment for messages: dynamic arrays of struct and class members
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 struct MyStruct
 {

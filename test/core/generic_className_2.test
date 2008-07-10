@@ -21,4 +21,4 @@ void SomeModule::activity()
 %exitcode: 0
 
 %contains: stdout
-'{}::SomeModule'
+'@TESTNAME@::SomeModule'

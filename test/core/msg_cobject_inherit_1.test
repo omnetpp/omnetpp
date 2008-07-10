@@ -3,7 +3,7 @@ Check inheriting from a cOwnedObject-rooted class
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 class Base extends cOwnedObject
 {

@@ -31,7 +31,7 @@ network Test {
 
 %file: creator.cc
 #include <omnetpp.h>
-namespace {} {
+namespace @TESTNAME@ {
 
 class Creator : public cSimpleModule {
   public:

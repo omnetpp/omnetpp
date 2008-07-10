@@ -3,7 +3,7 @@ Check inheritance for messages
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 message Base
 {

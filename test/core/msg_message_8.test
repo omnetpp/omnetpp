@@ -3,7 +3,7 @@ Dynamic array out of bounds test for messages
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 message MyMessage
 {

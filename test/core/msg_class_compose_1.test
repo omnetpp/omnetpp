@@ -3,7 +3,7 @@ Check struct as class member in non-cOwnedObject rooted classes
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 struct MyStruct
 {

@@ -3,7 +3,7 @@ Check string fields in non-cOwnedObject-rooted classes
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 class MyClass
 {

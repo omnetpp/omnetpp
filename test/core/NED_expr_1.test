@@ -75,17 +75,17 @@ simple Test
 
 	// divides with non integer results
         volatile double p52 = 7 / 4;       // integer divide with non integer result
-        volatile double p53 = 7.8 % 4.1;     // non integer modulus 
-        volatile double p54 = 7.2 % 4.8;     // non integer modulus 
-	volatile double p55 = (-7.8)%4.1;    // non integer negative 
-	volatile double p56 = (-7.1)%4.8;    // non integer negative 
+        volatile double p53 = 7.8 % 4.1;     // non integer modulus
+        volatile double p54 = 7.2 % 4.8;     // non integer modulus
+	volatile double p55 = (-7.8)%4.1;    // non integer negative
+	volatile double p56 = (-7.1)%4.8;    // non integer negative
 }
 
 %file: test.cc
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class Test : public cSimpleModule
 {

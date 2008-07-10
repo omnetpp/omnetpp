@@ -34,7 +34,7 @@ simple Simple
 #include <string.h>
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class Simple : public cSimpleModule
 {

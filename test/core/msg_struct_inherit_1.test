@@ -3,7 +3,7 @@ Check inheritance for structs
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 struct Base
 {

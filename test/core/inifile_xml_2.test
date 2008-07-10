@@ -81,7 +81,7 @@ network Net
 #include <string.h>
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class Simple : public cSimpleModule
 {

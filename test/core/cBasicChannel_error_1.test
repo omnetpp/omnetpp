@@ -35,7 +35,7 @@ network Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 #define NUM_MSGS         2000
 #define BIT_ERROR_RATE   0.1

@@ -3,7 +3,7 @@ Check primitive scalar field types in messages
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 message MyMessage
 {

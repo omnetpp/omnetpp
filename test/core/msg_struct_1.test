@@ -3,7 +3,7 @@ Check simple field types in structs
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 struct MyStruct
 {

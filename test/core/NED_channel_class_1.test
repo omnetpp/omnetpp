@@ -10,7 +10,7 @@ Test @class property without C++ namespace.
 simple Simple
 {
     parameters:
-        @class("{}::Simple");
+        @class("@TESTNAME@::Simple");
     gates:
         inout g;
 }
@@ -49,7 +49,7 @@ bool ChannelWithoutNamespace::deliver(cMessage *msg, simtime_t t)
     return cIdealChannel::deliver(msg, t);
 }
 
-namespace {} {
+namespace @TESTNAME@ {
 
 class Simple : public cSimpleModule
 {

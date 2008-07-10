@@ -3,7 +3,7 @@ Check enums
 
 %file: test.msg
 
-namespace {};
+namespace @TESTNAME@;
 
 enum MyEnum
 {

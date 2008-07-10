@@ -18,7 +18,7 @@ network Test
 
 #include <omnetpp.h>
 
-namespace {} {
+namespace @TESTNAME@ {
 
 //redefine ASSERT so that checks remain in the code even with NDEBUG defined
 #undef ASSERT
