@@ -1,5 +1,5 @@
 %description:
-Tests cMessage.netPack/netUnpack and msg encapsulation.
+Tests cMessage.parsimPack/parsimUnpack and msg encapsulation.
 
 %includes:
 #include <string.h>
@@ -17,10 +17,10 @@ payload->setBitLength(123);
 cMessage msg("msg");
 msg.setBitLength(1500);
 msg.encapsulate(payload);
-msg.netPack(buffer);
+msg.parsimPack(buffer);
 
 cMessage msg2("tmp");
-msg2.netUnpack(buffer);
+msg2.parsimUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
 PRINT(msg2.getName());

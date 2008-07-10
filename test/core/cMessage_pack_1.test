@@ -1,5 +1,5 @@
 %description:
-Tests cMessage.netPack/netUnpack.
+Tests cMessage.parsimPack/parsimUnpack.
 
 %includes:
 #include <string.h>
@@ -17,10 +17,10 @@ msg.setPriority(8);
 msg.setBitLength(1500);
 msg.setBitError(false);
 msg.setTimestamp(0.2234);
-msg.netPack(buffer);
+msg.parsimPack(buffer);
 
 cMessage msg2("tmp");
-msg2.netUnpack(buffer);
+msg2.parsimUnpack(buffer);
 ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
 
 PRINT(msg2.getName());
