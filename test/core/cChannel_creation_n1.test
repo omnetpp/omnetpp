@@ -1,0 +1,50 @@
+%description:
+test dynamic channel creation:
+- forgetting to invoke callInitialize() on the channel should cause an error
+
+%file: test.ned
+import testlib.*;
+
+simple Creator {
+    gates:
+        output out;
+}
+
+network Test {
+    submodules:
+        creator: Creator;
+        sink: Sink;
+        dump: Dump;
+    connections allowunconnected:
+}
+
+%file: creator.cc
+#include <omnetpp.h>
+namespace {} {
+
+class Creator : public cSimpleModule {
+  public:
+    Creator() : cSimpleModule(16384) { }
+    void activity();
+};
+
+Define_Module(Creator);
+
+void Creator::activity() {
+    cChannelType *channelType = cChannelType::get("testlib.TestChannel");
+    cChannel *channel = channelType->create("ch", getParentModule());
+    //channel->callInitialize();
+
+    cModule *sink = getParentModule()->getSubmodule("sink");
+    gate("out")->connectTo(sink->gate("in"), channel);
+
+    send(new cMessage("hello"), "out");
+}
+
+};
+
+%exitcode: 1
+
+%contains: stdout
+Channel not initialized
+
