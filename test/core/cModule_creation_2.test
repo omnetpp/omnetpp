@@ -1,0 +1,16 @@
+%description:
+test dynamic module creation: basic positive test using createScheduleInit()
+
+%activity:
+
+cModuleType *sinkType = cModuleType::get("testlib.Sink");
+cModule *sink = sinkType->createScheduleInit("sink", this);
+sendDirect(new cMessage("hello"), 1, 0, sink->gate("in"));
+
+%exitcode: 0
+
+%contains-regex: stdout
+Initializing Sink.*
+Sink received msg hello.*
+Sink finishing, received msgs: 1
+

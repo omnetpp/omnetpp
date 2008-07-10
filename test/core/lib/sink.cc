@@ -27,7 +27,7 @@ void Sink::handleMessage(cMessage *msg)
 
 void Sink::finish()
 {
-    ev << "Sink finishing: received " << numPackets << " messages\n";
+    ev << "Sink finishing, received msgs: " << numPackets << "\n";
 }
 
 
