@@ -298,7 +298,10 @@ class SIM_API cEnvir
      * Called from module destructors, to notify the environment about objects
      * that the user didn't delete in the module destructor.
      */
-    virtual void undisposedObject(cObject *obj) = 0;
+    // Note: this may not be pure virtual, as it may get called even after main()
+    // exited and bootEnv was destructed, and we don't want to get a "pure virtual
+    // method called" error
+    virtual void undisposedObject(cObject *obj) {}
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */

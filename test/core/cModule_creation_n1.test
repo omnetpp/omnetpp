@@ -2,7 +2,6 @@
 test dynamic module creation: forgetting to invoke callInitialize() should cause an error
 
 %activity:
-
 cModuleType *sinkType = cModuleType::get("testlib.Sink");
 cModule *sink = sinkType->create("sink", this);
 // sink->callInitialize(); --> SKIPPED
@@ -10,6 +9,6 @@ sendDirect(new cMessage("hello"), 1, 0, sink->gate("in"));
 
 %exitcode: 1
 
-%contains: stdout
-Test.sinkModule not initialized
+%contains-regex: stdout
+Test.sink.*: Module not initialized
 
