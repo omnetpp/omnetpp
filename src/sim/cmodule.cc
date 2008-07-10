@@ -1063,7 +1063,7 @@ bool cModule::initializeModules(int stage)
     if (stage==0)
     {
         if (initialized())
-            throw cRuntimeError(this, "Module already initialized");
+            throw cRuntimeError(this, "initialize() already called for this module");
 
         // call buildInside() if user has forgotten to do it; this is needed
         // to make dynamic module creation more robust
