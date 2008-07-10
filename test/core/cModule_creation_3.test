@@ -2,18 +2,22 @@
 test dynamic module creation:
 - creating a compound module
 - finalizeParameters(), buildInside() called implicitly from callInitialize()
+- test that parameters, gate sizes get properly set up
 
 %file: test.ned
 import testlib.*;
 
 // will be dynamically instantiated
 module BoxedSink {
+    parameters:
+        int numGates;
+        string other = default("foo");
     gates:
-        input in;
+        input in[numGates];
     submodules:
         sink: Sink;
-    connections:
-        in --> sink.in;
+    connections allowunconnected:
+        in[0] --> sink.in;
 }
 
 simple Creator {
@@ -41,10 +45,18 @@ void Creator::activity() {
     cModuleType *sinkType = cModuleType::get("BoxedSink");
     cModule *sink = sinkType->create("boxedSink", getParentModule());
     sink->callInitialize();
-    sendDirect(new cMessage("hello"), 1, 0, sink->gate("in"));
+    sendDirect(new cMessage("hello"), 1, 0, sink->gate("in", 0));
 }
 
 };
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+**.boxedSink.numGates = 3
+**.apply-default = true # will assign boxedSink.other
 
 %exitcode: 0
 
@@ -56,16 +68,20 @@ module Test: Test {
         module Test.creator: Creator {
         }
         module Test.boxedSink: BoxedSink {
+            parameters:
+                numGates = 3
+                other = "foo"
             gates:
-                in: not connected
+                in[0]: not connected
+                in[1]: not connected
+                in[2]: not connected
             submodules:
                 module Test.boxedSink.sink: testlib.Sink {
                     gates:
-                        in: <-- <parent>.in
+                        in: <-- <parent>.in[0]
                 }
         }
 }
-
 %contains-regex: stdout
 Initializing Sink.*
 Sink received msg hello.*
