@@ -122,21 +122,22 @@ boilerplate C++ and NED code manually. There are three other ways to proceed:
 
 Note that since all sources are compiled into a single test executable,
 actions have to be taken to prevent accidental name clashes among test
-cases. One has currently two choices to achieve this (yes, namespaces will be 
+cases. One has currently two choices to achieve this (yes, namespaces will be
 used for this purpose soon):
  - the string @TESTNAME@ will be replaced with the test case name everywhere
    in the sources, so if you use names like @TESTNAME@_Module, they will be
    unique;
- - words enclosed in curly braces (like {Module}) will be automatically
-   prefixed with the test name, so {Module} and @TESTNAME@_Module yield the
-   same results.
- - {} is a shorthand for @TESTNAME@.
 
 What needs to be prefixed?
  - module name, channel names, network names (but not submodule names)
  - C++ class names (but not their members)
  - global variables, if there are any (one should avoid them if possible)
  - module and file names as arguments to the %module, %file, etc. entries (!)
+
+Note: In OMNeT++ 3.x versions of opp_test, the syntaxes {} and {foo} had
+special meaning: they were abbreviations of @TESTNAME@ and @TESTNAME@_foo,
+respectively. This syntax is not supported any more, and occurrences in old
+test cases should be replaced with explicit @TESTNAME@ macros.
 
 The full list of possible % entries in a test file:
 
