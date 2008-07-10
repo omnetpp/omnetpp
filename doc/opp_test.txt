@@ -134,6 +134,11 @@ What needs to be prefixed?
  - global variables, if there are any (one should avoid them if possible)
  - module and file names as arguments to the %module, %file, etc. entries (!)
 
+A test case is unresolved if the test program cannot be executed at all, the
+output cannot be read, or if the test case declares so. The latter is done
+by printing #UNRESOLVED or #UNRESOLVED:some-explanation on the standard
+output, at the beginning of the line.
+
 Note: In OMNeT++ 3.x versions of opp_test, the syntaxes {} and {foo} had
 special meaning: they were abbreviations of @TESTNAME@ and @TESTNAME@_foo,
 respectively. This syntax is not supported any more, and occurrences in old
