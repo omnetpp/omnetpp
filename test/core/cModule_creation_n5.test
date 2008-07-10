@@ -1,0 +1,15 @@
+%description:
+test dynamic module creation:
+- double initialization should cause an error
+
+%activity:
+cModuleType *sinkType = cModuleType::get("testlib.Sink");
+cModule *sink = sinkType->create("sink", this);
+sink->callInitialize();
+sink->callInitialize(); // ==> error
+
+%exitcode: 1
+
+%contains: stdout
+initialize() already called for this module
+
