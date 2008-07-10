@@ -513,6 +513,17 @@ sub testcase_run()
         }
     }
 
+    # if stdout contains "#UNRESOLVED" or "#UNRESOLVED: some explanation", count this test as unresolved
+    open(IN, $workdir."/".$testname."/".$outfname);
+    while (<IN>) {
+        if (/^#UNRESOLVED:? *(.*)/) {
+            unresolved($testfilename, "test program says UNRESOLVED: $1");
+            close(IN);
+            return;
+       }
+    }
+    close(IN);
+
     # check output files
     foreach $key (keys(%values))
     {
