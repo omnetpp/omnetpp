@@ -38,7 +38,7 @@ fclose(f3);
 #
 # (cLongHistogram) Test.
 #
-7	 #= num_samples
+7	 #= num_vals
 9 20	 #= min, max
 92	 #= sum
 1330	 #= square sum
@@ -67,7 +67,7 @@ fclose(f3);
 #
 # (cLongHistogram) Test.
 #
-7	 #= num_samples
+7	 #= num_vals
 9 20	 #= min, max
 92	 #= sum
 1330	 #= square sum
