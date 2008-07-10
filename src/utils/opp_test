@@ -60,10 +60,6 @@ All files will be created in the work directory.
     'not-contains'       => 'vbf',
     'contains-regex'     => 'vbf',
     'not-contains-regex' => 'vbf',
-    'contains-filt'      => 'vbf',
-    'not-contains-filt'  => 'vbf',
-    'contains-regex-filt' => 'vbf',
-    'not-contains-regex-filt' => 'vbf',
 
     'exitcode'           => '1v',
     'ignore-exitcode'    => '1v'
@@ -540,15 +536,10 @@ sub testcase_run()
                 return;
             }
             $txt = '';
-            $dofilter = ($key =~ /-filt\(/);
             while (<IN>)
             {
-                # when filt is on, match only lines beginning with "::"
-                if (!$dofilter || /^::/)
-                {
-                    s/ *[\r\n]*$//;
-                    $txt.= $_."\n";
-                }
+                s/ *[\r\n]*$//;
+                $txt.= $_."\n";
             }
             close IN;
 
@@ -557,7 +548,7 @@ sub testcase_run()
             $pattern =~ s/^\s*(.*?)\s*$/$1/s; # trim pattern
 
             # check contains or not-contains
-            if ($key =~ /^contains-regex(-filt)?\(/) {
+            if ($key =~ /^contains-regex\(/) {
                 if (!($txt =~ /$pattern/s)) {
                    fail($testfilename, "$values{$key} fails \%$key rule");
                    if (length($txt)<=8192) {
@@ -568,7 +559,7 @@ sub testcase_run()
                    return;
                 }
             }
-            if ($key =~ /^not-contains-regex(-filt)?\(/) {
+            if ($key =~ /^not-contains-regex\(/) {
                 if ($txt =~ /$pattern/s) {
                    fail($testfilename, "$values{$key} fails \%$key rule");
                    if (length($txt)<=8192) {
@@ -579,7 +570,7 @@ sub testcase_run()
                    return;
                 }
             }
-            if ($key =~ /^contains(-filt)?\(/) {
+            if ($key =~ /^contains\(/) {
                 if (!($txt =~ /\Q$pattern\E/s)) {
                    fail($testfilename, "$values{$key} fails \%$key rule");
                    if (length($txt)<=8192) {
@@ -590,7 +581,7 @@ sub testcase_run()
                    return;
                 }
             }
-            if ($key =~ /^not-contains(-filt)?\(/) {
+            if ($key =~ /^not-contains\(/) {
                 if ($txt =~ /\Q$pattern\E/s) {
                    fail($testfilename, "$values{$key} fails \%$key rule");
                    if (length($txt)<=8192) {
