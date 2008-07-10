@@ -7,6 +7,7 @@ class Dump : public cSimpleModule
 
   protected:
     virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
     virtual void dump(cModule *mod, std::string currentIndent);
     virtual std::string props2str(cProperties *props);
 };
@@ -15,6 +16,13 @@ Define_Module(Dump);
 
 void Dump::initialize()
 {
+    scheduleAt(1, new cMessage());
+}
+
+void Dump::handleMessage(cMessage *msg)
+{
+    delete msg;
+
     printClassNames = par("printClassNames").boolValue();
     printf("==============================\n");
     dump(simulation.getSystemModule(), std::string());

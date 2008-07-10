@@ -1,0 +1,73 @@
+%description:
+test dynamic module creation:
+- creating a compound module
+- finalizeParameters(), buildInside() called implicitly from callInitialize()
+
+%file: test.ned
+import testlib.*;
+
+// will be dynamically instantiated
+module BoxedSink {
+    gates:
+        input in;
+    submodules:
+        sink: Sink;
+    connections:
+        in --> sink.in;
+}
+
+simple Creator {
+}
+
+network Test {
+    submodules:
+        creator: Creator;
+        dump: Dump;
+}
+
+%file: creator.cc
+#include <omnetpp.h>
+namespace {} {
+
+class Creator : public cSimpleModule {
+  public:
+    Creator() : cSimpleModule(16384) { }
+    void activity();
+};
+
+Define_Module(Creator);
+
+void Creator::activity() {
+    cModuleType *sinkType = cModuleType::get("BoxedSink");
+    cModule *sink = sinkType->create("boxedSink", getParentModule());
+    sink->callInitialize();
+    sendDirect(new cMessage("hello"), 1, 0, sink->gate("in"));
+}
+
+};
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.creator: Creator {
+        }
+        module Test.boxedSink: BoxedSink {
+            gates:
+                in: not connected
+            submodules:
+                module Test.boxedSink.sink: testlib.Sink {
+                    gates:
+                        in: <-- <parent>.in
+                }
+        }
+}
+
+%contains-regex: stdout
+Initializing Sink.*
+Sink received msg hello.*
+Sink finishing, received msgs: 1
+
