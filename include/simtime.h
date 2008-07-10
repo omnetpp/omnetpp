@@ -106,7 +106,7 @@ class SIM_API SimTime
     SimTime(double d) {operator=(d);}
     SimTime(cPar& d) {operator=(d);}
     SimTime(const SimTime& x) {operator=(x);}
-    // note: template ctor is not a good idea -- often causes suprises
+    // note: template ctor is not a good idea -- often causes surprises
     // template<typename T> SimTime(T d) {operator=(d);}
 
     /** @name Arithmetic operations */
