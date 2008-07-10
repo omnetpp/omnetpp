@@ -98,19 +98,19 @@ void Receiver::activity()
 %exitcode: 1
 
 %contains-regex: stdout
-out->channel\(\):chan
+out->getChannel\(\):chan
 .*
 hello1 arrived at 0.5
 .*
-out->channel\(\):NULL
+out->getChannel\(\):NULL
 .*
-out->channel\(\):chan
+out->getChannel\(\):chan
 .*
 hello2 arrived at 1.25
 .*
 hello3 arrived at 2.125
 .*
-out->channel\(\):NULL
+out->getChannel\(\):NULL
 done
 
 

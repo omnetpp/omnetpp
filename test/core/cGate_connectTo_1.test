@@ -71,17 +71,17 @@ void Receiver::activity()
 %exitcode: 1
 
 %contains-regex: stdout
-out->toGate\(\):in
-rcvin->fromGate\(\):out
+out->getToGate\(\):in
+rcvin->getFromGate\(\):out
 .*
 arrived:hello
 .*
-out->toGate\(\):NULL
-rcvin->fromGate\(\):NULL
-out->toGate\(\):NULL
-rcvin->fromGate\(\):NULL
-out->toGate\(\):in
-rcvin->fromGate\(\):out
+out->getToGate\(\):NULL
+rcvin->getFromGate\(\):NULL
+out->getToGate\(\):NULL
+rcvin->getFromGate\(\):NULL
+out->getToGate\(\):in
+rcvin->getFromGate\(\):out
 .*Error .*gate already connected
 
 
