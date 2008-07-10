@@ -2,7 +2,7 @@
 test dynamic module creation:
 - creating a compound module
 - finalizeParameters(), buildInside() called implicitly from callInitialize()
-- test that parameters, gate sizes get properly set up
+- test that parameters and gate vectors get properly set up
 
 %file: test.ned
 import testlib.*;
