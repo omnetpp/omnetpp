@@ -10,15 +10,13 @@ network Test {
     submodules:
         node[5]: Node;
     connections:
-        node[1].g <--> node[1000].g;    
+        node[1].g <--> node[1000].g;
 }
 
 %exitcode: 1
 
 %contains-regex: stdout
-<!> Error in module \(Test\) Test: No submodule `node\[1000\]' to be connected, at test\.ned:7\.
-
-
+No submodule `node\[1000\]' to be connected.*
 End run of OMNeT\+\+$
 
 %contains-regex: stderr
