@@ -99,16 +99,16 @@ void cMemCommBuffer::pack(unsigned long d)
     STORE(unsigned long,d);
 }
 
-void cMemCommBuffer::pack(_long_long_t d)
+void cMemCommBuffer::pack(opp_long_long d)
 {
-    extendBufferFor(sizeof(_long_long_t));
-    STORE(_long_long_t,d);
+    extendBufferFor(sizeof(opp_long_long));
+    STORE(opp_long_long,d);
 }
 
-void cMemCommBuffer::pack(_unsigned_long_long_t d)
+void cMemCommBuffer::pack(opp_unsigned_long_long d)
 {
-    extendBufferFor(sizeof(_unsigned_long_long_t));
-    STORE(_unsigned_long_long_t,d);
+    extendBufferFor(sizeof(opp_unsigned_long_long));
+    STORE(opp_unsigned_long_long,d);
 }
 
 void cMemCommBuffer::pack(float d)
@@ -202,16 +202,16 @@ void cMemCommBuffer::pack(const unsigned long *d, int size)
     STOREARRAY(unsigned long,d,size);
 }
 
-void cMemCommBuffer::pack(const _long_long_t *d, int size)
+void cMemCommBuffer::pack(const opp_long_long *d, int size)
 {
-    extendBufferFor(size*sizeof(_long_long_t));
-    STOREARRAY(_long_long_t,d,size);
+    extendBufferFor(size*sizeof(opp_long_long));
+    STOREARRAY(opp_long_long,d,size);
 }
 
-void cMemCommBuffer::pack(const _unsigned_long_long_t *d, int size)
+void cMemCommBuffer::pack(const opp_unsigned_long_long *d, int size)
 {
-    extendBufferFor(size*sizeof(_unsigned_long_long_t));
-    STOREARRAY(_unsigned_long_long_t,d,size);
+    extendBufferFor(size*sizeof(opp_unsigned_long_long));
+    STOREARRAY(opp_unsigned_long_long,d,size);
 }
 
 void cMemCommBuffer::pack(const float *d, int size)
@@ -298,14 +298,14 @@ void cMemCommBuffer::unpack(unsigned long& d)
     EXTRACT(unsigned long,d);
 }
 
-void cMemCommBuffer::unpack(_long_long_t& d)
+void cMemCommBuffer::unpack(opp_long_long& d)
 {
-    EXTRACT(_long_long_t,d);
+    EXTRACT(opp_long_long,d);
 }
 
-void cMemCommBuffer::unpack(_unsigned_long_long_t& d)
+void cMemCommBuffer::unpack(opp_unsigned_long_long& d)
 {
-    EXTRACT(_unsigned_long_long_t,d);
+    EXTRACT(opp_unsigned_long_long,d);
 }
 
 void cMemCommBuffer::unpack(float& d)
@@ -345,7 +345,7 @@ void cMemCommBuffer::unpack(opp_string& d)
 
 void cMemCommBuffer::unpack(SimTime& d)
 {
-    _long_long_t raw;
+    opp_long_long raw;
     unpack(raw);
     d.setRaw(raw);
 }
@@ -395,14 +395,14 @@ void cMemCommBuffer::unpack(unsigned long *d, int size)
     EXTRACTARRAY(unsigned long,d,size);
 }
 
-void cMemCommBuffer::unpack(_long_long_t *d, int size)
+void cMemCommBuffer::unpack(opp_long_long *d, int size)
 {
-    EXTRACTARRAY(_long_long_t,d,size);
+    EXTRACTARRAY(opp_long_long,d,size);
 }
 
-void cMemCommBuffer::unpack(_unsigned_long_long_t *d, int size)
+void cMemCommBuffer::unpack(opp_unsigned_long_long *d, int size)
 {
-    EXTRACTARRAY(_unsigned_long_long_t,d,size);
+    EXTRACTARRAY(opp_unsigned_long_long,d,size);
 }
 
 void cMemCommBuffer::unpack(float *d, int size)

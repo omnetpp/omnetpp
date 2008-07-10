@@ -860,7 +860,7 @@ bool cModule::checkInternalConnections() const
     {
        cGate *g = i();
        if (g->size()!=0 && !g->isConnectedInside())
-            throw cRuntimeError(this,"Gate `%s' is not connected to getSubmodule(or output gate of same module)", g->getFullPath().c_str());
+            throw cRuntimeError(this,"Gate `%s' is not connected to submodule (or output gate of same module)", g->getFullPath().c_str());
     }
 
     // check submodules

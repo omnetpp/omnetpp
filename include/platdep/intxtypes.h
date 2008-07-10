@@ -171,11 +171,11 @@
 // except in cCommBuffer implementations.
 //
 #ifdef _MSC_VER
-typedef __int64            _long_long_t;
-typedef unsigned __int64   _unsigned_long_long_t;
+typedef __int64            opp_long_long;
+typedef unsigned __int64   opp_unsigned_long_long;
 #else
-typedef long long          _long_long_t;
-typedef unsigned long long _unsigned_long_long_t;
+typedef long long          opp_long_long;
+typedef unsigned long long opp_unsigned_long_long;
 #endif
 
 

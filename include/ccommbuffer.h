@@ -111,11 +111,11 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Packs a long long (on MSVC, __int64).
      */
-    virtual void pack(_long_long_t d) = 0;
+    virtual void pack(opp_long_long d) = 0;
     /**
      * Packs an unsigned long long (on MSVC, __int64).
      */
-    virtual void pack(_unsigned_long_long_t d) = 0;
+    virtual void pack(opp_unsigned_long_long d) = 0;
     /**
      * Packs a float.
      */
@@ -183,11 +183,11 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Packs an array of long long's (on MSVC, __int64).
      */
-    virtual void pack(const _long_long_t *d, int size) = 0;
+    virtual void pack(const opp_long_long *d, int size) = 0;
     /**
      * Packs an array of unsigned long long's (on MSVC, __int64).
      */
-    virtual void pack(const _unsigned_long_long_t *d, int size) = 0;
+    virtual void pack(const opp_unsigned_long_long *d, int size) = 0;
     /**
      * Packs an array of floats.
      */
@@ -259,11 +259,11 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Unpacks a long long (on MSVC, __int64).
      */
-    virtual void unpack(_long_long_t& d) = 0;
+    virtual void unpack(opp_long_long& d) = 0;
     /**
      * Unpacks an unsigned long long (on MSVC, __int64).
      */
-    virtual void unpack(_unsigned_long_long_t& d) = 0;
+    virtual void unpack(opp_unsigned_long_long& d) = 0;
     /**
      * Unpacks a float.
      */
@@ -335,11 +335,11 @@ class SIM_API cCommBuffer : public cObject
     /**
      * Unpacks an array of long long's (on MSVC, __int64).
      */
-    virtual void unpack(_long_long_t *d, int size) = 0;
+    virtual void unpack(opp_long_long *d, int size) = 0;
     /**
      * Unpacks an array of unsigned long long's (on MSVC, __int64).
      */
-    virtual void unpack(_unsigned_long_long_t *d, int size) = 0;
+    virtual void unpack(opp_unsigned_long_long *d, int size) = 0;
     /**
      * Unpacks an array of floats.
      */
