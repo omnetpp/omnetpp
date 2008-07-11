@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -41,7 +42,7 @@ public class OmnetppStartup implements IStartup {
                     // building during the import process and will take forever.
                     // Also, CDT is a pain with autobuild on.
                     disableAutoBuild();
-                    importSampleProjects(false);
+                    importSampleProjects(true);
                 }
             }
         });
@@ -71,7 +72,7 @@ public class OmnetppStartup implements IStartup {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     ProjectUtils.importAllProjectsFromWorkspaceDirectory(open, monitor);
                 }
-            };
+            };            
             new ProgressMonitorDialog(shell).run(true, true, op);
         } 
         catch (InvocationTargetException e) {
