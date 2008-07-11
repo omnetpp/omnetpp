@@ -39,7 +39,7 @@ public class NewsView extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		browser = new Browser(parent,SWT.NONE);
-		browser.setUrl("http://www.omnetpp.org/news");
+		browser.setUrl("http://omnetpp.org/news");
 	}
 	/**
 	 * Passing the focus request to the viewer's control.
