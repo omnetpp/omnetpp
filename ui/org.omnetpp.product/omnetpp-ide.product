@@ -47,7 +47,6 @@
    </plugins>
 
    <features>
-      <feature id="com.itsolut.mantis_feature" version="3.0.0.200806182047"/>
       <feature id="org.eclipse.cdt" version="5.0.0.200806171202"/>
       <feature id="org.eclipse.emf.common" version="2.4.0.v200806091234"/>
       <feature id="org.eclipse.emf.common.ui" version="2.4.0.v200806091234"/>
@@ -55,9 +54,7 @@
       <feature id="org.eclipse.emf.ecore.edit" version="2.4.0.v200806091234"/>
       <feature id="org.eclipse.emf.edit" version="2.4.0.v200806091234"/>
       <feature id="org.eclipse.emf.edit.ui" version="2.4.0.v200806091234"/>
-      <feature id="org.eclipse.epp.usagedata.feature" version="1.0.0.R200806162215"/>
       <feature id="org.eclipse.gef" version="3.4.0.v20080115-677-8082A5696H274A"/>
-      <feature id="org.eclipse.mylyn_feature" version="3.0.0.v20080619-1900"/>
       <feature id="org.eclipse.platform" version="3.4.0.v20080610-9I96EhtEm-T_5LxIsybz-3MdGZmOA3uwv7Ka_M"/>
       <feature id="org.omnetpp.ide.academic" version="4.0.0.qualifier"/>
    </features>

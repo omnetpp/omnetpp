@@ -49,6 +49,16 @@
 				<pathelement location="${eclipseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar" />
 			</classpath>
 		</java>
+		<!-- remove eclipse P2 provisioning related packages. currently we are using
+		     the old update manager -->
+		<delete>
+			<fileset dir="${eclipseLocation}">
+				<include name="plugins/org.eclipse.ecf.*/**" />
+				<include name="features/org.eclipse.ecf.*/**" />
+				<include name="plugins/org.eclipse.equinox.p2.*/**" />
+				<include name="features/org.eclipse.equinox.p2.*/**" />
+			</fileset>
+		</delete>
 	</target>
 
 	<!-- prepare for a commercial build / replace OMNeT++ strings to OMNEST etc. -->	
