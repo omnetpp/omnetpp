@@ -8,10 +8,6 @@ one[x]
 two***
 three?
 four
-::twenty one[x]
-::twenty two***
-::twenty three?
-::twenty six
 
 %activity:
 rename("x.txt", "a.txt");
@@ -22,34 +18,14 @@ one[x]
 two***
 three?
 four
-::twe
 
 %not-contains: a.txt
 foo
 
 %contains-regex: a.txt
-three\?
-.*
-::twentyX* t.o\*+
-.*
-::twe
+thre+\?
+.*ur
 
 %not-contains-regex: a.txt
 foo
 
-%contains-filt: a.txt
-::twenty one[x]
-::twenty two***
-::twenty three?
-::twenty six
-
-%not-contains-filt: a.txt
-four
-
-%contains-regex-filt: a.txt
-::twentyX* t.o\*+
-.*
-::twe
-
-%not-contains-regex-filt: a.txt
-four
