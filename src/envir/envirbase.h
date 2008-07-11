@@ -45,6 +45,10 @@ class cParsimPartition;
 class cParsimSynchronizer;
 // endif
 
+// assumed maximum length for getFullPath() string.
+// note: this maximum actually not enforced anywhere
+#define MAX_OBJECTFULLPATH  1024
+
 
 /**
  * Abstract base class for the user interface. Concrete user interface

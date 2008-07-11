@@ -42,10 +42,6 @@
 #define NULL ((void*)0)
 #endif
 
-// maximum lengths for getClassName() and getFullPath() strings
-#define MAX_CLASSNAME       100        //FIXME remove!!!
-#define MAX_OBJECTFULLPATH  1024
-
 //
 // other common defines
 //
