@@ -57,6 +57,9 @@
       <feature id="org.eclipse.gef" version="3.4.0.v20080115-677-8082A5696H274A"/>
       <feature id="org.eclipse.platform" version="3.4.0.v20080610-9I96EhtEm-T_5LxIsybz-3MdGZmOA3uwv7Ka_M"/>
       <feature id="org.omnetpp.ide.academic" version="4.0.0.qualifier"/>
+      <feature id="org.eclipse.team.svn" version="0.7.1.I20080612-1500"/>
+      <feature id="org.polarion.eclipse.team.svn.connector" version="2.0.1.I20080612-1500"/>
+      <feature id="org.polarion.eclipse.team.svn.connector.svnkit" version="2.0.1.I20080612-1500"/>
    </features>
 
 </product>
