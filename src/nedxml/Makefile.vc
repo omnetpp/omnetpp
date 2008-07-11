@@ -37,9 +37,9 @@ OBJS= $O/nedelements.obj $O/nedelement.obj $O/nederror.obj $O/nedexception.obj \
       $O/nedresourcecache.obj $O/nedtypeinfo.obj
 
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
-                  ned1.tab.h ned1.tab.cc lex.ned1yy.cc \
-                  ned2.tab.h ned2.tab.cc lex.ned2yy.cc \
-                  msg2.tab.h msg2.tab.cc lex.msg2yy.cc
+                  ned1.tab.hh ned1.tab.cc lex.ned1yy.cc \
+                  ned2.tab.hh ned2.tab.cc lex.ned2yy.cc \
+                  msg2.tab.hh msg2.tab.cc lex.msg2yy.cc
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DNEDXML_EXPORT
@@ -84,38 +84,26 @@ $O/nedtool.obj : nedtool.cc $O
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 	$(PERL) dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 
-ned1.tab.h ned1.tab.cc : ned1.y
-	$(YACC:/=\) -p ned1yy -b ned1 -d ned1.y
-	copy ned1.tab.c ned1.tab.cc
-	del ned1.tab.c
+ned1.tab.hh ned1.tab.cc : ned1.y
+	$(YACC:/=\) -o ned1.tab.cc -p ned1yy -d ned1.y
 
 lex.ned1yy.cc: ned1.lex
-	$(LEX:/=\) -Pned1yy ned1.lex
-	$(FIXFLEX) lex.ned1yy.c
-	copy lex.ned1yy.c lex.ned1yy.cc
-	del lex.ned1yy.c
+	$(LEX:/=\) -o lex.ned1yy.cc -Pned1yy ned1.lex
+	$(FIXFLEX) lex.ned1yy.cc
 
-ned2.tab.h ned2.tab.cc : ned2.y
-	$(YACC:/=\) --verbose --debug -p ned2yy -b ned2 -d ned2.y
-	copy ned2.tab.c ned2.tab.cc
-	del ned2.tab.c
+ned2.tab.hh ned2.tab.cc : ned2.y
+	$(YACC:/=\) -o ned2.tab.cc -p ned2yy -d ned2.y
 
 lex.ned2yy.cc: ned2.lex
-	$(LEX:/=\) -Pned2yy ned2.lex
-	$(FIXFLEX) lex.ned2yy.c
-	copy lex.ned2yy.c lex.ned2yy.cc
-	del lex.ned2yy.c
+	$(LEX:/=\) -o lex.ned2yy.cc -Pned2yy ned2.lex
+	$(FIXFLEX) lex.ned2yy.cc
 
-msg2.tab.h msg2.tab.cc : msg2.y
-	$(YACC:/=\) -p msg2yy -b msg2 -d msg2.y
-	copy msg2.tab.c msg2.tab.cc
-	del msg2.tab.c
+msg2.tab.hh msg2.tab.cc : msg2.y
+	$(YACC:/=\) -o msg2.tab.cc -p msg2yy -d msg2.y
 
 lex.msg2yy.cc: msg2.lex
-	$(LEX:/=\) -Pmsg2yy msg2.lex
-	$(FIXFLEX) lex.msg2yy.c
-	copy lex.msg2yy.c lex.msg2yy.cc
-	del lex.msg2yy.c
+	$(LEX:/=\) -o lex.msg2yy.cc -Pmsg2yy msg2.lex
+	$(FIXFLEX) lex.msg2yy.cc
 
 $(OBJS): $O
 
@@ -158,12 +146,7 @@ $O/cppmsggenerator.obj: cppmsggenerator.cc \
 $O/lex.msg2yy.obj: lex.msg2yy.cc \
   nedyydefs.h \
   nedexception.h \
-  msg2.tab.h \
-  nedxmldefs.h
-$O/lex.ned1yy.obj: lex.ned1yy.cc \
-  nedyydefs.h \
-  ned1.tab.h \
-  nedexception.h \
+  msg2.tab.hh \
   nedxmldefs.h
 $O/lex.ned2yy.obj: lex.ned2yy.cc \
   nedyydefs.h \
@@ -171,7 +154,7 @@ $O/lex.ned2yy.obj: lex.ned2yy.cc \
   nederror.h \
   nedyylib.h \
   nedxmldefs.h \
-  ned2.tab.h \
+  ned2.tab.hh \
   nedelements.h \
   nedexception.h \
   nedelement.h \
@@ -212,7 +195,7 @@ $O/ned2.tab.obj: ned2.tab.cc \
   nederror.h \
   nedyylib.h \
   nedxmldefs.h \
-  ned2.tab.h \
+  ned2.tab.hh \
   nedelements.h \
   nedexception.h \
   nedelement.h \

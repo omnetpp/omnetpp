@@ -31,8 +31,8 @@ OBJS= $O/lcgrandom.obj $O/filereader.obj $O/linetokenizer.obj \
       $O/fileutil.obj $O/stringutil.obj $O/commonutil.obj $O/exception.obj $O/bigdecimal.obj \
       $O/enumstr.obj
 
-GENERATED_SOURCES= expression.tab.h expression.tab.cc lex.expressionyy.cc \
-                   matchexpression.tab.h matchexpression.tab.cc 
+GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
+                   matchexpression.tab.hh matchexpression.tab.cc
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DCOMMON_EXPORT
@@ -64,21 +64,15 @@ $O/$(LIBNAME).dll : $(OBJS) $L
 	copy $(O:/=\)\$(LIBNAME).lib $(L:/=\)
 	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-expression.tab.h expression.tab.cc : expression.y
-	$(YACC:/=\) -p expressionyy -b expression -d expression.y
-	copy expression.tab.c expression.tab.cc
-	del expression.tab.c
+expression.tab.hh expression.tab.cc : expression.y
+	$(YACC:/=\) -o expression.tab.cc -p expressionyy -d expression.y
 
 lex.expressionyy.cc: expression.lex
-	$(LEX:/=\) -Pexpressionyy expression.lex
-	$(FIXFLEX) lex.expressionyy.c
-	copy lex.expressionyy.c lex.expressionyy.cc
-	del lex.expressionyy.c
+	$(LEX:/=\) -o lex.expressionyy.cc -Pexpressionyy expression.lex
+	$(FIXFLEX) lex.expressionyy.cc
 
-matchexpression.tab.h matchexpression.tab.cc : matchexpression.y
-	$(YACC:/=\) --no-lines -p matchexpressionyy -d matchexpression.y
-	copy matchexpression.tab.c matchexpression.tab.cc
-	del matchexpression.tab.c
+matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
+	$(YACC:/=\) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
 
 $(OBJS): $O
 
@@ -158,13 +152,13 @@ $O/lcgrandom.obj: lcgrandom.cc \
   exception.h \
   commondefs.h
 $O/lex.expressionyy.obj: lex.expressionyy.cc \
-  expression.tab.h \
   expressionyydefs.h \
   expression.h \
   stringutil.h \
   exception.h \
   commonutil.h \
-  commondefs.h
+  commondefs.h \
+  expression.tab.hh
 $O/linetokenizer.obj: linetokenizer.cc \
   linetokenizer.h \
   exception.h \
@@ -182,12 +176,12 @@ $O/matchexpression.tab.obj: matchexpression.tab.cc \
   commondefs.h \
   matchexpression.h
 $O/matchexpressionlexer.obj: matchexpressionlexer.cc \
+  matchexpression.tab.hh \
   stringutil.h \
   exception.h \
   matchexpressionlexer.h \
   commondefs.h \
-  commonutil.h \
-  matchexpression.tab.h
+  commonutil.h
 $O/patternmatcher.obj: patternmatcher.cc \
   stringutil.h \
   exception.h \

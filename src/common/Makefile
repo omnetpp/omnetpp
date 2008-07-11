@@ -35,7 +35,7 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/enumstr.o
 
 GENERATED_SOURCES= expression.tab.hh expression.tab.cc lex.expressionyy.cc \
-                   matchexpression.tab.hh matchexpression.tab.cc 
+                   matchexpression.tab.hh matchexpression.tab.cc
 
 #
 # Automatic rules

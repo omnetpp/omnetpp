@@ -121,11 +121,11 @@ expr.tab.hh expr.tab.cc : expr.y
 lex.expryy.cc: expr.lex
 	$(LEX) -o lex.expryy.cc -Pexpryy expr.lex
 
-depend: $(GENERATED_SOURCES)
-	$(MAKEDEPEND) -I../../include -P\$$O/ -- *.cc netbuilder/*.cc parsim/*.cc
-
 sim_std_m.cc sim_std_m.h : sim_std.msg
 	$(MSGC) -Xnc -Xns sim_std.msg
+
+depend: $(GENERATED_SOURCES)
+	$(MAKEDEPEND) -I../../include -P\$$O/ -- *.cc netbuilder/*.cc parsim/*.cc
 
 clean:
 	rm -f $(GENERATED_SOURCES)

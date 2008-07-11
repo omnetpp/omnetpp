@@ -40,7 +40,7 @@ OBJS= $O/nedelements.o $O/nedelement.o $O/nederror.o $O/nedexception.o \
 GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
                   ned1.tab.hh ned1.tab.cc lex.ned1yy.cc \
                   ned2.tab.hh ned2.tab.cc lex.ned2yy.cc \
-                  msg2.tab.hh msg2.tab.cc lex.msg2yy.cc 
+                  msg2.tab.hh msg2.tab.cc lex.msg2yy.cc
 
 #
 # Automatic rules

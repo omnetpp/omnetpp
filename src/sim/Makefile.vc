@@ -85,7 +85,7 @@ IMPLIBS= $(IMPLIBS) $(MPI_LIBS)
 !endif
 !endif
 
-GENERATED_SOURCES= expr.tab.h expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.h
+GENERATED_SOURCES= expr.tab.hh expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.h
 
 #
 # Automatic rules
@@ -122,17 +122,12 @@ $(OBJS)
 	copy /b $(O:/=\)\$(LIBNAME).lib $(L:/=\)
 	-copy /b $(O:/=\)\$(LIBNAME).pdb $(L:/=\) 2>nul
 
-expr.tab.h expr.tab.cc : expr.y
-	$(YACC:/=\) -p expryy -b expr -d expr.y
-	$(PERL:/=\) -i.bak -pe "s/enum {(.*?)};/const int $$1;/" expr.tab.c
-	copy expr.tab.c expr.tab.cc
-	del expr.tab.c
+expr.tab.hh expr.tab.cc : expr.y
+	$(YACC:/=\) -o expr.tab.cc -p expryy -d expr.y
 
-lex.expryy.cc: expr.lex expr.tab.h
-	$(LEX:/=\) -Pexpryy expr.lex
-	$(FIXFLEX) lex.expryy.c
-	copy lex.expryy.c lex.expryy.cc
-	del lex.expryy.c
+lex.expryy.cc: expr.lex
+	$(LEX:/=\) -o lex.expryy.cc -Pexpryy expr.lex
+	$(FIXFLEX) lex.expryy.cc
 
 sim_std_m.cc sim_std_m.h : sim_std.msg
 	$(MSGC:/=\) -Xnc -Xns sim_std.msg
@@ -2122,7 +2117,6 @@ $O/lex.expryy.obj: lex.expryy.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   expryydefs.h \
-  expr.tab.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/platdep/intxtypes.h \
@@ -2133,6 +2127,7 @@ $O/lex.expryy.obj: lex.expryy.cc \
   ../../include/cexception.h \
   ../../include/cdynamicexpression.h \
   ../../include/cexpression.h \
+  expr.tab.hh \
   ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
 $O/minixpath.obj: minixpath.cc \
