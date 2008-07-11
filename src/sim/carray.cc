@@ -97,7 +97,7 @@ cArray::cArray(const cArray& list) : cOwnedObject()
 cArray::cArray(const char *name, int cap, int dt) :
 cOwnedObject( name )
 {
-    tkownership = true;
+    setFlag(FL_TKOWNERSHIP,true);
     delta = Max(1,dt);
     capacity = Max(cap,0);
     firstfree = 0;
@@ -122,7 +122,6 @@ cArray& cArray::operator=(const cArray& list)
 
     cOwnedObject::operator=(list);
 
-    tkownership = list.tkownership;
     capacity = list.capacity;
     delta = list.delta;
     firstfree = list.firstfree;

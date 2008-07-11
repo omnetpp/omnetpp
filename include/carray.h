@@ -101,7 +101,7 @@ class SIM_API cArray : public cOwnedObject
     };
 
   private:
-    bool tkownership; //FIXME utilize cOwnedObject::flags
+    enum {FL_TKOWNERSHIP = 2};
     cObject **vect;   // vector of objects
     int capacity;     // allocated size of vect[]
     int delta;        // if needed, grows by delta
@@ -327,14 +327,14 @@ class SIM_API cArray : public cOwnedObject
      * should automatically take ownership of the objects that are inserted
      * into it.
      */
-    void setTakeOwnership(bool tk) {tkownership=tk;}
+    void setTakeOwnership(bool tk) {setFlag(FL_TKOWNERSHIP,tk);}
 
     /**
      * Returns the flag which determines whether the container object
      * should automatically take ownership of the objects that are inserted
      * into it.
      */
-    bool getTakeOwnership() const   {return tkownership;}
+    bool getTakeOwnership() const   {return flags&FL_TKOWNERSHIP;}
     //@}
 };
 
