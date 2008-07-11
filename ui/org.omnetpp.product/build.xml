@@ -50,13 +50,13 @@
 			</classpath>
 		</java>
 		<!-- remove eclipse P2 provisioning related packages. currently we are using
-		     the old update manager -->
+		     the old update manager-->
 		<delete>
-			<fileset dir="${eclipseLocation}">
-				<include name="plugins/org.eclipse.ecf.*/**" />
-				<include name="features/org.eclipse.ecf.*/**" />
-				<include name="plugins/org.eclipse.equinox.p2.*/**" />
-				<include name="features/org.eclipse.equinox.p2.*/**" />
+			<fileset dir="${buildDirectory}/tmp/${archivePrefix}">
+				<include name="plugins/org.eclipse.ecf*/**" />
+				<include name="features/org.eclipse.ecf*/**" />
+				<include name="plugins/org.eclipse.equinox.p2*/**" />
+				<include name="features/org.eclipse.equinox.p2*/**" />
 			</fileset>
 		</delete>
 	</target>
