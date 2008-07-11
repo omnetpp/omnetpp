@@ -1,6 +1,9 @@
 %description:
 Test NaN: 0/0 to produce it, and that x!=x if x is NaN
 
+Note: MSVC prints NaN as -1.#IND and 1.#QNAN, so we need to %subst them
+to their gcc equivalent.
+
 %global:
 static bool isNaN(double d) { return d != d; }
 
@@ -26,10 +29,13 @@ PRINT(nan<=nan);
 PRINT(nan>=nan);
 ev << ".\n";
 
+%subst: /-?1\.#IND/nan/
+%subst: /-?1\.#QNAN/nan/
+
 %contains: stdout
-nan:-1.#IND
-nan*2:-1.#IND
--nan:1.#QNAN
+nan:nan
+nan*2:nan
+-nan:nan
 isNaN(nan):1
 isNaN(3.14):0
 isNaN(1/zero):0
@@ -41,3 +47,4 @@ nan>nan:0
 nan<=nan:0
 nan>=nan:0
 .
+

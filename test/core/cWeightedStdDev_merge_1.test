@@ -1,6 +1,9 @@
 %description:
 merging two cWeightedStdDev objects
 
+Note: MSVC prints NaN as -1.#IND and 1.#QNAN, so we need to %subst them
+to their gcc equivalent.
+
 %global:
 void print(cStdDev& s)
 {
@@ -50,34 +53,37 @@ collect(0,5);
 collect(1,0);
 collect(5,0);
 
+%subst: /-?1\.#IND/nan/
+%subst: /-?1\.#QNAN/nan/
+
 %contains: stdout
 a n=10 w=5.25482 S=110.788 SS=1235.91 min=9.91721 max=12.8183 mean=10.8993 stddev=0.753895 var=0.568357
 b n=20 w=77.4722 S=112.759 SS=835.396 min=0.202184 max=9.78618 mean=5.98712 stddev=3.25594 var=10.6012
 a+b n=30 w=82.727 S=223.548 SS=2071.31 min=0.202184 max=12.8183 mean=6.29914 stddev=3.37705 var=11.4045
 ref n=30 w=82.727 S=223.548 SS=2071.31 min=0.202184 max=12.8183 mean=6.29914 stddev=3.37705 var=11.4045
 ---
-a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=-1.#IND var=-1.#IND
-b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=-1.#IND var=-1.#IND
-a+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=-1.#IND var=-1.#IND
-ref n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=-1.#IND var=-1.#IND
+a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
+a+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
+ref n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
 ---
-a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=-1.#IND var=-1.#IND
+a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
 b n=1 w=1.93166 S=2.64556 SS=6.99897 min=2.64556 max=2.64556 mean=2.64556 stddev=1.#INF var=1.#INF
 a+b n=1 w=1.93166 S=2.64556 SS=6.99897 min=2.64556 max=2.64556 mean=2.64556 stddev=1.#INF var=1.#INF
 ref n=1 w=1.93166 S=2.64556 SS=6.99897 min=2.64556 max=2.64556 mean=2.64556 stddev=1.#INF var=1.#INF
 ---
-a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=-1.#IND var=-1.#IND
+a n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
 b n=5 w=12.8125 S=24.3524 SS=151.245 min=0.187898 max=7.74234 mean=5.19716 stddev=3.18406 var=10.1382
 a+b n=5 w=12.8125 S=24.3524 SS=151.245 min=0.187898 max=7.74234 mean=5.19716 stddev=3.18406 var=10.1382
 ref n=5 w=12.8125 S=24.3524 SS=151.245 min=0.187898 max=7.74234 mean=5.19716 stddev=3.18406 var=10.1382
 ---
-a n=1 w=0.222321 S=11.0605 SS=122.334 min=11.0605 max=11.0605 mean=11.0605 stddev=-1.#IND var=-1.#IND
-b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=-1.#IND var=-1.#IND
-a+b n=1 w=0.222321 S=11.0605 SS=122.334 min=11.0605 max=11.0605 mean=11.0605 stddev=-1.#IND var=-1.#IND
-ref n=1 w=0.222321 S=11.0605 SS=122.334 min=11.0605 max=11.0605 mean=11.0605 stddev=-1.#IND var=-1.#IND
+a n=1 w=0.222321 S=11.0605 SS=122.334 min=11.0605 max=11.0605 mean=11.0605 stddev=nan var=nan
+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
+a+b n=1 w=0.222321 S=11.0605 SS=122.334 min=11.0605 max=11.0605 mean=11.0605 stddev=nan var=nan
+ref n=1 w=0.222321 S=11.0605 SS=122.334 min=11.0605 max=11.0605 mean=11.0605 stddev=nan var=nan
 ---
 a n=5 w=3.25445 S=55.1952 SS=614.533 min=9.79754 max=12.7187 mean=11.0909 stddev=1.28883 var=1.66109
-b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=-1.#IND var=-1.#IND
+b n=0 w=0 S=0 SS=0 min=0 max=0 mean=0 stddev=nan var=nan
 a+b n=5 w=3.25445 S=55.1952 SS=614.533 min=9.79754 max=12.7187 mean=11.0909 stddev=1.28883 var=1.66109
 ref n=5 w=3.25445 S=55.1952 SS=614.533 min=9.79754 max=12.7187 mean=11.0909 stddev=1.28883 var=1.66109
 ---
