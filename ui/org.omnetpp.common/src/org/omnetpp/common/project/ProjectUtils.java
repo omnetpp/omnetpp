@@ -242,7 +242,7 @@ public class ProjectUtils {
         // outside the workspace directory
         //
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IProject project = workspace.getRoot().getProject(projectName);
+        final IProject project = workspace.getRoot().getProject(projectName);
         IProjectDescription description = workspace.newProjectDescription(projectName);
         
         try {
@@ -251,10 +251,9 @@ public class ProjectUtils {
             // XXX sometimes the natures on the project do not initialize correctly
             // doing an open/close cycle helps the workspace to read the natures
             // this is a HACK
-            project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 20));
-            project.close(new SubProgressMonitor(monitor, 20));
-            if (open)
-                project.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 30));
+            project.open(IResource.NONE, new SubProgressMonitor(monitor, 30));
+            if (!open) 
+            	project.close(new SubProgressMonitor(monitor, 20));
         } 
         catch (CoreException e) {
             throw new InvocationTargetException(e);
