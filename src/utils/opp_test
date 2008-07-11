@@ -56,6 +56,8 @@ All files will be created in the work directory.
     'inifile'            => '1vbf',
     'network'            => '1v',
 
+    'subst'              => 'v',
+
     'contains'           => 'vbf',
     'not-contains'       => 'vbf',
     'contains-regex'     => 'vbf',
@@ -553,6 +555,32 @@ sub testcase_run()
                 $txt.= $_."\n";
             }
             close IN;
+
+            # do substitutions on it
+            foreach my $key2 (keys(%values)) {
+                if ($key2 =~ /^subst/) {
+                    my $rule = $values{$key2};  # something like "/foo/bar/"
+                    my $sep = substr($rule, 0, 1);  # typically "/"
+                    if (!($rule =~ /^$sep(.*?)$sep(.*?)$sep(.*)$/)) {
+                        unresolved($testfilename, "wrong subst rule: syntax is /search-regex/replace-string/flags");
+                        return;
+                    }
+                    my $searchstring = $1;
+                    my $replacement = $2;
+                    my $flags = $3;
+                    if ($flags =~ /$sep/) {
+                        unresolved($testfilename, "wrong subst rule: too many occurrences of separator character '$sep', choose another separator");
+                        return;
+                    }
+                    if (!($flags =~ /^[ism]*$/)) {
+                        unresolved($testfilename, "wrong subst rule: invalid flags '$flag': only 'i', 's' and 'm' supported ('g' is implicit)");
+                        return;
+                    }
+
+                    # do it
+                    $txt =~ s/(?g$flags)$searchstring/$replacement/;
+                }
+            }
 
             # get pattern
             $pattern = $bodies{$key};

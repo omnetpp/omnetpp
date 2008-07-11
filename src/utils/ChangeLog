@@ -1,3 +1,12 @@
+2008-07-11  Andras Varga
+
+	* opp_test: implemented the possibility to do replacements on the output
+	before matching. This is useful for handling platform differences, like
+	MSVC printing NaN and INF differently from gcc. 
+	    Syntax: %subst /search-regex/replacement/flags
+	It is allowed to have more than one %subst in a test case file. 
+	Perl-style regexes are supported (of course).
+
 2008-07-10  Andras Varga
 
 	* opp_test: removed feature that {} was synonymous to @TESTNAME@, and
