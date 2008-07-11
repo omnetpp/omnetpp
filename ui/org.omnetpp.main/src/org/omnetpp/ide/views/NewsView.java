@@ -1,18 +1,9 @@
 package org.omnetpp.ide.views;
 
 
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 
@@ -48,7 +39,7 @@ public class NewsView extends ViewPart {
 	 */
 	public void createPartControl(Composite parent) {
 		browser = new Browser(parent,SWT.NONE);
-		browser.setUrl("http://www.omnetpp.org");
+		browser.setUrl("http://www.omnetpp.org/news");
 	}
 	/**
 	 * Passing the focus request to the viewer's control.
