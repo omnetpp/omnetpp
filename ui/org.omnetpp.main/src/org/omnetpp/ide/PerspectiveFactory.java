@@ -30,11 +30,11 @@ public class PerspectiveFactory implements IPerspectiveFactory {
         blfolder.addView(IPageLayout.ID_OUTLINE);
 
 		IFolderLayout outputfolder = layout.createFolder("bottom", IPageLayout.BOTTOM, (float)0.75, editorArea); //$NON-NLS-1$
+		outputfolder.addView(IConstants.NEWS_VIEW_ID);
 		outputfolder.addView(IPageLayout.ID_PROBLEM_VIEW);
 		outputfolder.addView(IConstants.MODULEHIERARCHY_VIEW_ID);
 		outputfolder.addView(IConstants.MODULEPARAMETERS_VIEW_ID);
 		outputfolder.addView(IConstants.NEDINHERITANCE_VIEW_ID);
-		outputfolder.addView(IConstants.NEWS_VIEW_ID);
 		
 		// note: placeholders for our other views don't need to be listed here,
 		// because they are contributed via perspectiveExtension extensions
