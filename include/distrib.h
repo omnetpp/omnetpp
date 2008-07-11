@@ -91,7 +91,7 @@ inline SimTime normal(SimTime mean, SimTime stddev, int rng=0) {return normal(me
 SIM_API double truncnormal(double mean, double stddev, int rng=0);
 
 /**
- * XXX
+ * SimTime version of truncnormal(double,double,int), for convenience.
  */
 inline SimTime truncnormal(SimTime mean, SimTime stddev, int rng=0) {return normal(mean.dbl(), stddev.dbl(), rng);}
 
@@ -275,7 +275,7 @@ SIM_API double pareto_shifted(double a, double b, double c, int rng=0);
 
 /**
  * @ingroup RandomNumbers
- * @defgroup RandomNumbersDiscr Discrete distributions 
+ * @defgroup RandomNumbersDiscr Discrete distributions
  */
 //@{
 

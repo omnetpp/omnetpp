@@ -378,10 +378,10 @@ class SIM_API cGate : public cObject, noncopyable
     /** @name Display string. */
     //@{
     /**
-     * Returns the display string for the gate, which in practice affects the
-     * apprearance of the connection for which this gate is the source.
-     * XXX delegates to the channel; if there's no channel, it created a
-     * cIdealChannel.
+     * Returns the display string for the gate, which controls the appearance
+     * of the connection arrow starting from gate. The display string is stored
+     * in the channel associated with the connection. If there's no channel,
+     * this call creates an installs a cIdealChannel to hold the display string.
      */
     cDisplayString& getDisplayString();
 

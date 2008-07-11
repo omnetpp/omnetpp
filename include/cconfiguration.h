@@ -66,7 +66,7 @@ class cConfigKey;
  * Model code (simple modules) should not directly read the configuration --
  * they should rely on module parameters for input.
  *
- * Two layers etc!!!
+ *XXX Two layers etc!!!
  * ([General] is treated as if it was short for [Config General].)
  *
  *XXX refine
@@ -91,8 +91,6 @@ class cConfigKey;
  *
  * @ingroup EnvirExtensions
  */
-//FIXME explain what is cConfigKey (ie purpose: to detect unrecognized entries (ie caused by typos) in omnetpp.ini)
-//XXX refine the above docu!
 class SIM_API cConfiguration : public cObject
 {
   public:
@@ -333,7 +331,7 @@ class SIM_API cConfiguration : public cObject
     static std::vector<std::string> parseFilenames(const char *s, const char *baseDir, const char *defaultValue);
     //@}
 
-    /** @name XXX */
+    /** @name Getters for global and per-config entries */
     //@{
     /**
      * Returns a config value without any conversion.
@@ -381,7 +379,7 @@ class SIM_API cConfiguration : public cObject
     virtual std::vector<std::string> getAsFilenames(cConfigKey *entry);
     //@}
 
-    /** @name XXX */
+    /** @name Getters for per-object entries */
     //@{
     /**
      * Returns a per-object config value without any conversion.
