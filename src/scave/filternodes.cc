@@ -84,7 +84,7 @@ void AdderNode::process()
 
 const char *AdderNodeType::getDescription() const
 {
-    return "Adds a constant to the input: y(t) = x(t)+c";
+    return "Adds a constant to the input: yout[k] = y[k] + c";
 }
 
 void AdderNodeType::getAttributes(StringMap& attrs) const
@@ -134,7 +134,7 @@ void MultiplierNode::process()
 
 const char *MultiplierNodeType::getDescription() const
 {
-    return "Multiplies input by a constant: y(t) = a*x(t)";
+    return "Multiplies input by a constant: yout[k] = a * y[k]";
 }
 
 void MultiplierNodeType::getAttributes(StringMap& attrs) const
@@ -189,7 +189,7 @@ void DividerNode::process()
 
 const char *DividerNodeType::getDescription() const
 {
-    return "Divides input by a constant: y(t) = x(t)/a";
+    return "Divides input by a constant: yout[k] = y[k] / a";
 }
 
 void DividerNodeType::getAttributes(StringMap& attrs) const
@@ -245,7 +245,7 @@ void ModuloNode::process()
 
 const char *ModuloNodeType::getDescription() const
 {
-    return "Computes input modulo a constant: y(t) = x(t)%a";
+    return "Computes input modulo a constant: yout[k] = y[k] % a";
 }
 
 void ModuloNodeType::getAttributes(StringMap& attrs) const
@@ -305,7 +305,7 @@ void DifferenceNode::process()
 
 const char *DifferenceNodeType::getDescription() const
 {
-    return "Substracts the previous value from every value: y[k] = y[k] - y[k-1]";
+    return "Substracts the previous value from every value: yout[k] = y[k] - y[k-1]";
 }
 
 void DifferenceNodeType::getAttributes(StringMap& attrs) const
@@ -362,7 +362,7 @@ void TimeDiffNode::process()
 
 const char *TimeDiffNodeType::getDescription() const
 {
-    return "Returns the difference in time between this and the previous value: y[k] = x[k] - x[k-1]";
+    return "Returns the difference in time between this and the previous value: yout[k] = t[k] - t[k-1]";
 }
 
 void TimeDiffNodeType::getAttributes(StringMap& attrs) const
@@ -489,7 +489,7 @@ void SumNode::process()
 
 const char *SumNodeType::getDescription() const
 {
-    return "Sums up values: y[k] = SUM(y[i], i=0..k)";
+    return "Sums up values: yout[k] = SUM(y[i], i=0..k)";
 }
 
 void SumNodeType::getAttributes(StringMap& attrs) const
@@ -543,7 +543,7 @@ void TimeShiftNode::process()
 
 const char *TimeShiftNodeType::getDescription() const
 {
-    return "Shifts the input series in time by a constant: y(t) = x(t-dt)";
+    return "Shifts the input series in time by a constant: tout[k] = t[k] + dt";
 }
 
 void TimeShiftNodeType::getAttributes(StringMap& attrs) const
@@ -586,7 +586,7 @@ void LinearTrendNode::process()
 
 const char *LinearTrendNodeType::getDescription() const
 {
-    return "Adds linear component to input series: y(t) = x(t) + a*t";
+    return "Adds linear component to input series: yout[k] = y[k] + a * t[k]";
 }
 
 void LinearTrendNodeType::getAttributes(StringMap& attrs) const
@@ -1010,7 +1010,7 @@ void DivideByTimeNode::process()
 
 const char *DivideByTimeNodeType::getDescription() const
 {
-    return "Divides input by the current time: y(t) = x(t)/t";
+    return "Divides input by the current time: yout[k] = y[k] / t[k]";
 }
 
 void DivideByTimeNodeType::getAttributes(StringMap& attrs) const
@@ -1059,7 +1059,7 @@ void TimeToSerialNode::process()
 
 const char *TimeToSerialNodeType::getDescription() const
 {
-    return "Replaces time values with their index: t -> k";
+    return "Replaces time values with their index: tout[k] = k";
 }
 
 void TimeToSerialNodeType::getAttributes(StringMap& attrs) const

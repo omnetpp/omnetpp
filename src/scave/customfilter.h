@@ -52,7 +52,7 @@ class SCAVE_API ExpressionFilterNode : public FilterNode
             std::string varname;
           public:
             NodeVar(ExpressionFilterNode *node, const char *name)
-                {hostnode = node; varname = name; hostnode->skipFirstDatum |= (varname=="xprev" || varname=="yprev"); }
+                {hostnode = node; varname = name; hostnode->skipFirstDatum |= (varname=="tprev" || varname=="yprev"); }
             virtual ~NodeVar() {}
             virtual Expression::Functor *dup() const {return new NodeVar(hostnode, varname.c_str());}
             virtual const char *getName() const {return varname.c_str();}

@@ -41,7 +41,7 @@ class Resolver : public Expression::Resolver
 
 Expression::Functor *Resolver::resolveVariable(const char *varname)
 {
-    if (strcmp(varname, "x")==0 || strcmp(varname, "y")==0 || strcmp(varname, "xprev")==0 || strcmp(varname, "yprev")==0)
+    if (strcmp(varname, "t")==0 || strcmp(varname, "y")==0 || strcmp(varname, "tprev")==0 || strcmp(varname, "yprev")==0)
         return new ExpressionFilterNode::NodeVar(hostnode, varname);
     else
         throw opp_runtime_error("Unrecognized variable: %s", varname);
@@ -95,11 +95,11 @@ void ExpressionFilterNode::process()
 
 double ExpressionFilterNode::getVariable(const char *varname)
 {
-    if (varname[0]=='x' && varname[1]==0)
+    if (varname[0]=='t' && varname[1]==0)
         return currentDatum.x;
     else if (varname[0]=='y' && varname[1]==0)
         return currentDatum.y;
-    else if (varname[0]=='x' && strcmp(varname, "xprev")==0)
+    else if (varname[0]=='t' && strcmp(varname, "tprev")==0)
         return prevDatum.x;
     else if (varname[0]=='y' && strcmp(varname, "yprev")==0)
         return prevDatum.y;
@@ -111,7 +111,7 @@ double ExpressionFilterNode::getVariable(const char *varname)
 
 const char *ExpressionFilterNodeType::getDescription() const
 {
-    return "Evaluates an arbitrary expression. Use x for time, y for value, and xprev, yprev for the previous values."; //FIXME use "t" and "y" instead?
+    return "Evaluates an arbitrary expression. Use t for time, y for value, and tprev, yprev for the previous values."; //FIXME use "t" and "y" instead?
 }
 
 void ExpressionFilterNodeType::getAttributes(StringMap& attrs) const
