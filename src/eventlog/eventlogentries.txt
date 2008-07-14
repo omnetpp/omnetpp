@@ -134,6 +134,7 @@ SD SendDirectEntry // sending a message directly to a destination gate
    dg int destGateId                // id of the gate at the destination module to which the message is being sent
    pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
    td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
+   is bool isReceptionStart true
 }
 
 SH SendHopEntry // sending a message through a connection identified by its source module and gate id
@@ -142,6 +143,7 @@ SH SendHopEntry // sending a message through a connection identified by its sour
    sg int senderGateId              // id of the gate at the source module from which the message is being sent
    pd simtime_t propagationDelay  0 // propagation delay that is while the message is propagated through the connection
    td simtime_t transmissionDelay 0 // transmission delay that is while the whole message is sent from the source gate
+   is bool isReceptionStart false
 }
 
 DM DeleteMessageEntry // deleting a message
