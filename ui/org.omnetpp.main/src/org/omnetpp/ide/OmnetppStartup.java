@@ -20,6 +20,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.ide.views.NewsView;
 
 /**
  * Performs various tasks when the workbench starts up.
@@ -34,6 +35,9 @@ public class OmnetppStartup implements IStartup {
      * Method declared on IStartup.
      */
     public void earlyStartup() {
+    	
+    	System.out.println("*** Current OMNeT++ version: "+NewsView.getCurrentVersion());
+    	
         final IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {

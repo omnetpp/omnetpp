@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NED1Generator;
 import org.omnetpp.ned.engine.NED2Generator;
@@ -63,8 +64,8 @@ public class NEDTreeUtil {
  	 * Callers should check NEDErrorStore to determine whether a parse error occurred. 
 	 * All errors produced here will be syntax errors (see NEDSYNTAXPROBLEM_MARKERID).
 	 */
-	public static NedFileElementEx loadNedSource(String filename, INEDErrorStore errors) {
-        return parseNedSource(null, errors, filename);
+	public static NedFileElementEx parseNedFile(String filename, INEDErrorStore errors) {
+        return doParseNedSource(null, errors, filename);
 	}
 
     /**
@@ -74,7 +75,11 @@ public class NEDTreeUtil {
      * Callers should check INEDErrorStore to determine whether a parse error occurred.
      * All errors produced here will be syntax errors (see NEDSYNTAXPROBLEM_MARKERID).
      */
-    public static NedFileElementEx parseNedSource(String source, INEDErrorStore errors, String filename) {
+	public static NedFileElementEx parseNedText(String source, String filename, INEDErrorStore errors) {
+        return doParseNedSource(source, errors, filename);
+	}
+
+	private static NedFileElementEx doParseNedSource(String source, INEDErrorStore errors, String filename) {
 		Assert.isTrue(filename != null);
 		NEDElement swigTree = null;
 		try {
@@ -82,7 +87,7 @@ public class NEDTreeUtil {
 			NEDErrorStore swigErrors = new NEDErrorStore();
 			NEDParser np = new NEDParser(swigErrors);
 			np.setParseExpressions(false);
-			swigTree = source!=null ? np.parseNEDText(source) : np.parseNEDFile(filename);
+			swigTree = source!=null ? np.parseNEDText(source, filename) : np.parseNEDFile(filename);
 			if (swigTree == null) {
 				// return an empty NedFileElement if parsing totally failed
 				NedFileElementEx fileNode = (NedFileElementEx)NEDElementFactory.getInstance().createElement(NEDElementTags.NED_NED_FILE, null);
@@ -140,7 +145,7 @@ public class NEDTreeUtil {
             NEDErrorStore swigErrors = new NEDErrorStore();
             NEDParser np = new NEDParser(swigErrors);
             np.setParseExpressions(false);
-            swigTree = source!=null ? np.parseMSGText(source) : np.parseMSGFile(filename);
+            swigTree = source!=null ? np.parseMSGText(source, filename) : np.parseMSGFile(filename);
             if (swigTree == null) {
                 // return an empty MsgFileElement if parsing totally failed
                 MsgFileElementEx fileNode = (MsgFileElementEx)NEDElementFactory.getInstance().createElement(NEDElementTags.NED_MSG_FILE, null);

@@ -41,7 +41,7 @@ public class MsgTreeUtil {
             NEDErrorStore swigErrors = new NEDErrorStore();
             NEDParser np = new NEDParser(swigErrors);
             np.setParseExpressions(false);
-            swigTree = np.parseMSGText(source);
+            swigTree = np.parseMSGText(source, "buffer");
             if (swigTree == null)
                 return null;
     
