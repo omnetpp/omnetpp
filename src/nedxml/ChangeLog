@@ -1,3 +1,9 @@
+2008-07-14  Andras Varga
+
+	* ned1.lex, ned2.lex, msg2.lex: accept UTF-8 BOM mark (EF BB BF).
+	Note: NED only accepts international chars inside comments, but
+	not within indentifiers
+
 2008-07-01  Andras Varga
 
 	* opp_msgc: doPacking/doUnpacking functions for arrays and primitive 

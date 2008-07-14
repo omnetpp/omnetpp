@@ -153,7 +153,7 @@ USING_NAMESPACE
 "<="                    { countChars(); return LE; }
 ">="                    { countChars(); return GE; }
 
-"\ef\bb\bf"             { /* UTF-8 BOM mark, ignore */ }
+"\xEF\xBB\xBF"          { /* UTF-8 BOM mark, ignore */ }
 {S}                     { countChars(); }
 .                       { countChars(); return INVALID_CHAR; }
 
