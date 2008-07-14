@@ -51,6 +51,18 @@ class COMMON_API BigDecimal
     static const int minScale = -18; // XXX the range length must be <= 18, see buffer allocation in ttoa()
     static const int maxScale = 0;
 
+#define E3 *(int64)1000
+#define E6 E3 E3
+#define E9 E3 E6
+#define E12 E3 E9
+#define E15 E3 E12
+    static const int64[] powersOfTen = {1, 10, 100,
+                                        1 E3, 10 E3, 100 E3,
+                                        1 E6, 10 E6, 100 E6,
+                                        1 E9, 10 E9, 100 E9,
+                                        1 E12, 10 E12, 100 E12,
+                                        1 E15, 10 E15, 100 E15};
+
     void checkScale(int scale)
     {
         if (scale < minScale || scale > maxScale)
@@ -198,10 +210,15 @@ class COMMON_API BigDecimal
     //@}
 };
 
-
 inline const BigDecimal operator+(const BigDecimal& x, const BigDecimal& y)
 {
-    return BigDecimal(x.dbl()+y.dbl());
+    if (true) {
+        int scale = std::min(x.scale, y.scale);
+        int64 intVal = x.intVal * powersOfTen[x.scale - scale] + y.intVal * powersOfTen[y.scale - scale];
+        return BigDecimal(intVal, scale);
+    }
+    else
+       return BigDecimal(x.dbl()+y.dbl());
 }
 
 inline const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y)
