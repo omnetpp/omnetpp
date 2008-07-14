@@ -61,7 +61,7 @@ public class NedSelectionProvider implements IPostSelectionProvider {
          * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(ISelectionChangedListener)
          */
         public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-            if (fNedTextEditor != null)
+            if (fNedTextEditor != null && fNedTextEditor.getSelectionProvider() != null)
                 fNedTextEditor.getSelectionProvider().removeSelectionChangedListener(listener);
         }
 

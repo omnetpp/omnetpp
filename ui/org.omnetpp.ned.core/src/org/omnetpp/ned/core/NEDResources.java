@@ -462,6 +462,8 @@ public class NEDResources implements INEDTypeResolver, IResourceChangeListener {
 	    // note2: partially qualified names are not supported: name must be either simple name or fully qualified
 		IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();
 		ProjectData projectData = projects.get(project);
+		if (projectData == null)  // do not return type if the project is closed
+			return null;
 		if (name.contains(".")) {
 		    // contains dot, so it is a fully qualified name
 	        if (lookupContext instanceof CompoundModuleElementEx) {

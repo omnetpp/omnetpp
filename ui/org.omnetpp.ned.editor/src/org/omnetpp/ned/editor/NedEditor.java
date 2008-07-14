@@ -171,7 +171,8 @@ public class NedEditor
     public void dispose() {
         // detach the editor file from the core plugin and do not set a new file
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
-        getSite().getPage().removePartListener(partListener);
+        if (getSite() != null && getSite().getPage() != null)
+        	getSite().getPage().removePartListener(partListener);
         NEDResourcesPlugin.getNEDResources().removeNEDModelChangeListener(nedModelListener);
 
         // super must be called before disconnect to let the child editors remove their listeners
