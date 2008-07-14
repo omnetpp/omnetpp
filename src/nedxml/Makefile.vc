@@ -148,6 +148,11 @@ $O/lex.msg2yy.obj: lex.msg2yy.cc \
   nedexception.h \
   msg2.tab.hh \
   nedxmldefs.h
+$O/lex.ned1yy.obj: lex.ned1yy.cc \
+  nedyydefs.h \
+  nedexception.h \
+  nedxmldefs.h \
+  ned1.tab.hh
 $O/lex.ned2yy.obj: lex.ned2yy.cc \
   nedyydefs.h \
   nedparser.h \
