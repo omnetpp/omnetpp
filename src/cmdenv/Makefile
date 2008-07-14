@@ -87,6 +87,7 @@ $O/cmdenv.o: cmdenv.cc \
   ../envir/objectprinter.h \
   ../../include/carray.h \
   ../envir/speedometer.h \
+  ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
   ../../include/ccomponent.h \

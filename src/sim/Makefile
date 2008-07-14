@@ -119,7 +119,7 @@ expr.tab.hh expr.tab.cc : expr.y
 	$(YACC) -o expr.tab.cc -p expryy -d expr.y
 
 lex.expryy.cc: expr.lex
-	$(LEX) -o lex.expryy.cc -Pexpryy expr.lex
+	$(LEX) -olex.expryy.cc -Pexpryy expr.lex
 
 sim_std_m.cc sim_std_m.h : sim_std.msg
 	$(MSGC) -Xnc -Xns sim_std.msg
