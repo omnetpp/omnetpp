@@ -1,24 +1,33 @@
 package org.omnetpp.ide;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ide.views.NewsView;
 
@@ -29,14 +38,16 @@ import org.omnetpp.ide.views.NewsView;
  */
 public class OmnetppStartup implements IStartup {
 
-    public static final String SAMPLES_DIR = "samples";
+    private static final String VERSION = "4.0.0";
+	private static final String VERSIONCHECK_URL = "http://localhost/rhornig/versioncheck";
+	public static final String SAMPLES_DIR = "samples";
 
     /*
      * Method declared on IStartup.
      */
     public void earlyStartup() {
-    	
-    	System.out.println("*** Current OMNeT++ version: "+NewsView.getCurrentVersion());
+
+    	checkForNewVersion();
     	
         final IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
@@ -52,6 +63,48 @@ public class OmnetppStartup implements IStartup {
         });
     }
 
+	/**
+	 * The current version string returned by the version check URL or NULL if 
+	 * there is an error, no network present etc.
+	 */
+	private String getCurrentVersion() {
+		try {
+			byte buffer[] = new byte[1024];
+			URL url = new URL(VERSIONCHECK_URL);
+			url.openStream().read(buffer);
+			return new String(buffer).trim();
+		} catch (MalformedURLException e) {
+		} catch (IOException e) {
+		}
+		return null;
+	}
+	
+	private void checkForNewVersion() {
+		Job versioncheckJob = new Job ("Checking for newer versions") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				String newestVersion = getCurrentVersion(); 
+		    	if (newestVersion != null && !newestVersion.equals(VERSION)) {
+		    		Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+			    			try {
+			    				IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+			    				IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
+			    				if (workbenchPage != null)
+			    					workbenchPage.showView(IConstants.NEWS_VIEW_ID);
+			    			} 
+			    			catch (PartInitException e) {
+			    				CommonPlugin.logError(e);
+			    			}
+						}
+		    		});
+		    	}
+				return Status.OK_STATUS;
+			}
+    	};
+    	versioncheckJob.setSystem(true);
+    	versioncheckJob.schedule();
+	}
     /**
      * Determines whether this is the first IDE startup after the installation, with the 
      * default workspace (the "samples" directory). We check two things:

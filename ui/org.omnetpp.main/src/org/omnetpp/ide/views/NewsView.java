@@ -31,8 +31,7 @@ import org.eclipse.ui.part.ViewPart;
  */
 
 public class NewsView extends ViewPart {
-	private static final String NEWS_URL = "http://omnetpp.org/news";
-	private static final String VERSIONCHECK_URL = "http://localhost/rhornig/versioncheck";
+	private static final String NEWS_URL = "http://localhost/rhornig/news";
 	protected Browser browser; 
 	/**
 	 * The constructor.
@@ -55,19 +54,4 @@ public class NewsView extends ViewPart {
 		browser.setFocus();
 	}
 	
-	/**
-	 * The current version string returned by the version check URL or NULL if 
-	 * there is an error, no network present etc.
-	 */
-	public static String getCurrentVersion() {
-		try {
-			byte buffer[] = new byte[1024];
-			URL url = new URL(VERSIONCHECK_URL);
-			url.openStream().read(buffer);
-			return new String(buffer);
-		} catch (MalformedURLException e) {
-		} catch (IOException e) {
-		}
-		return null;
-	}
 }
