@@ -52,7 +52,7 @@ void NEDResourceCache::registerBuiltinDeclarations()
 
     NEDErrorStore errors;
     NEDParser parser(&errors);
-    NEDElement *tree = parser.parseNEDText(nedcode);
+    NEDElement *tree = parser.parseNEDText(nedcode, "built-in-declarations");
     if (errors.containsError())
     {
         delete tree;
@@ -62,7 +62,7 @@ void NEDResourceCache::registerBuiltinDeclarations()
     //TODO check errors, run validation perhaps
 
     // note: file must be called package.ned so that @namespace("") takes effect
-    addFile("/[builtin-declarations]/package.ned", tree);
+    addFile("/[built-in-declarations]/package.ned", tree);
 }
 
 

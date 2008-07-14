@@ -98,9 +98,9 @@ NEDElement *NEDParser::parseNEDFile(const char *fname)
     return parseNED();
 }
 
-NEDElement *NEDParser::parseNEDText(const char *nedtext)
+NEDElement *NEDParser::parseNEDText(const char *nedtext, const char *fname)
 {
-    if (!loadText(nedtext))
+    if (!loadText(nedtext, fname))
         return NULL;
     return parseNED();
 }
@@ -109,7 +109,7 @@ NEDElement *NEDParser::parseNEDExpression(const char *nedexpression)
 {
     parseexpr = true;
     std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
-    return parseNEDText(source.c_str());
+    return parseNEDText(source.c_str(), "buffer");
 }
 
 NEDElement *NEDParser::parseMSGFile(const char *fname)
@@ -119,9 +119,9 @@ NEDElement *NEDParser::parseMSGFile(const char *fname)
     return parseMSG();
 }
 
-NEDElement *NEDParser::parseMSGText(const char *nedtext)
+NEDElement *NEDParser::parseMSGText(const char *nedtext, const char *fname)
 {
-    if (!loadText(nedtext))
+    if (!loadText(nedtext,fname))
         return NULL;
     return parseMSG();
 }
@@ -148,12 +148,12 @@ bool NEDParser::loadFile(const char *fname)
     return true;
 }
 
-bool NEDParser::loadText(const char *nedtext)
+bool NEDParser::loadText(const char *nedtext, const char *fname)
 {
     // init vars
     if (nedsource) delete nedsource;
     nedsource = new NEDFileBuffer();
-    filename = "buffer";
+    filename = fname;
     errors->clear();
 
     // prepare nedsource object

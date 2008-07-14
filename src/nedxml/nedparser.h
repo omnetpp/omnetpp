@@ -63,7 +63,7 @@ class NEDXML_API NEDParser
     NEDFileBuffer *nedsource;  // represents the source file
 
     bool loadFile(const char *fname);
-    bool loadText(const char *nedtext);
+    bool loadText(const char *nedtext, const char *fname);
     NEDElement *parseNED();
     NEDElement *parseMSG();
     static bool guessIsNEDInNewSyntax(const char *txt);
@@ -123,8 +123,9 @@ class NEDXML_API NEDParser
     /**
      * Parse the given NED source and return the result tree.
      * Returns NULL or partial tree if there was an error.
+     * Filename will be used to fill in the source location attribute.
      */
-    NEDElement *parseNEDText(const char *nedtext);
+    NEDElement *parseNEDText(const char *nedtext, const char *fname);
 
     /**
      * Parse the given text as a NED expression, and return the result tree.
@@ -141,8 +142,9 @@ class NEDXML_API NEDParser
     /**
      * Parse the given MSG source and return the result tree.
      * Returns NULL or partial tree if there was an error.
+     * Filename will be used to fill in the source location attribute.
      */
-    NEDElement *parseMSGText(const char *nedtext);
+    NEDElement *parseMSGText(const char *nedtext, const char *fname);
 };
 
 NAMESPACE_END
