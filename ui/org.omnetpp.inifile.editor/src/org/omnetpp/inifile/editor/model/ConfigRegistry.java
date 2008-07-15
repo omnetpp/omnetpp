@@ -38,7 +38,7 @@ public class ConfigRegistry {
 	/** Name of the "extends=" config key */
 	public static final String EXTENDS; // initialized at the bottom of this file
 	
-    /** ".apply-default": dot plus the name of CFGID_APPLY_DEFAULT */
+	/** ".apply-default": dot plus the name of CFGID_APPLY_DEFAULT */
 	public static final String dot_APPLY_DEFAULT; // initialized at the bottom of this file
 
 	private static Map<String, ConfigKey> entries = new HashMap<String, ConfigKey>();
@@ -278,9 +278,14 @@ public class ConfigRegistry {
         "configuration lookups will fall back to the base section.");
     public static final ConfigKey CFGID_FINGERPRINT = addPerRunEntry(
         "fingerprint", CFG_STRING, null,
-        "The expected fingerprint, suitable for crude regression tests. If present, " +
-        "the actual fingerprint is calculated during simulation, and compared " +
-        "against the expected one.");
+        "The expected fingerprint of the simulation. When provided, a fingerprint " +
+        "will be calculated from the simulation event times and other quantities " +
+        "during simulation, and checked against the given one. Fingerprints are " +
+        "suitable for crude regression tests. As fingerprints occasionally differ " +
+        "across platforms, more than one fingerprint values can be specified here, " +
+        "separated by spaces, and a match with any of them will be accepted. To " +
+        "calculate the initial fingerprint, enter any dummy string (such as \"none\"), " +
+        "and run the simulation.");
     public static final ConfigKey CFGID_FNAME_APPEND_HOST = addGlobalEntry(
         "fname-append-host", CFG_BOOL, "false",
         "Turning it on will cause the host name and process Id to be appended to the " +
