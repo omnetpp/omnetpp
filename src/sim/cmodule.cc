@@ -409,9 +409,9 @@ cGate *cModule::gate(int id)
     if (h==0) {
         unsigned int descIndex = id>>1;
         if (descIndex >= (unsigned int) descvSize)
-            return NULL; //XXX as assert?
+            return NULL; //XXX as assert? FIXME docu says we should throw an error!!!
         cGate::Desc *desc = descv + descIndex;
-        ASSERT(desc->namep); // not deleted
+        ASSERT(desc->namep); // not deleted -- FIXME maybe we'll need readable error messages instead! or return NULL!
         ASSERT(!desc->isVector()); //FIXME too many asserts here?
         ASSERT((id&1)==0 ? desc->getType()!=cGate::OUTPUT : desc->getType()!=cGate::INPUT);
         //return (id&1)==0 ? desc->inputgate : desc->outputgate;
