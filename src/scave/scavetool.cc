@@ -108,6 +108,39 @@ void printUsage()
     );
 }
 
+static void loadFiles(ResultFileManager &manager, const std::vector<std::string> &fileNames, bool verbose)
+{
+    // load files
+    ResultFileManager resultFileManager;
+    for (int i=0; i<(int)fileNames.size(); i++)
+    {
+        //TODO on Windows: manual globbing of wildcards
+        const char *fileName = fileNames[i].c_str();
+        if (verbose) printf("reading %s...", fileName);
+        try {
+            ResultFile *f = manager.loadFile(fileName);
+            if (!f)
+            {
+                if (verbose) printf("\n");
+                fprintf(stderr, "Error: %s: load() returned null\n", fileName);
+            }
+            else if (f->numUnrecognizedLines>0)
+            {
+                if (verbose) printf("\n");
+                fprintf(stderr, "WARNING: %s: %d invalid/incomplete lines out of %d\n", fileName, f->numUnrecognizedLines, f->numLines);
+            }
+            else
+            {
+                if (verbose) printf(" %d lines\n", f->numLines);
+            }
+        }
+        catch (std::exception& e) {
+            fprintf(stdout, "Exception: %s\n", e.what());
+        }
+    }
+    if (verbose) printf("%d file(s) loaded\n", manager.getFiles().size());
+}
+
 int filterCommand(int argc, char **argv)
 {
     // options
@@ -156,33 +189,7 @@ int filterCommand(int argc, char **argv)
     {
         // load files
         ResultFileManager resultFileManager;
-        for (int i=0; i<(int)opt_fileNames.size(); i++)
-        {
-            //TODO on Windows: manual globbing of wildcards
-            const char *fileName = opt_fileNames[i].c_str();
-            if (opt_verbose) printf("reading %s...", fileName);
-            try {
-                ResultFile *f = resultFileManager.loadFile(fileName);
-                if (!f)
-                {
-                    if (opt_verbose) printf("\n");
-                    fprintf(stderr, "Error: %s: load() returned null\n", fileName);
-                }
-                else if (f->numUnrecognizedLines>0)
-                {
-                    if (opt_verbose) printf("\n");
-                    fprintf(stderr, "WARNING: %s: %d invalid/incomplete lines out of %d\n", fileName, f->numUnrecognizedLines, f->numLines);
-                }
-                else
-                {
-                    if (opt_verbose) printf(" %d lines\n", f->numLines);
-                }
-            }
-            catch (std::exception& e) {
-                fprintf(stdout, "Exception: %s\n", e.what());
-            }
-        }
-        if (opt_verbose) printf("%d file(s) loaded\n", resultFileManager.getFiles().size());
+        loadFiles(resultFileManager, opt_fileNames, opt_verbose);
 
         // filter statistics
         IDList vectorIDList = resultFileManager.filterIDList(resultFileManager.getAllVectors(), opt_filterExpression.c_str());
@@ -358,9 +365,82 @@ int filterCommand(int argc, char **argv)
     return 0;
 }
 
+//TODO allow filtering by patterns here too?
+//TODO specifying more than one flag should list tuples e.g. (module,statistic) pairs
+// occurring in the input files
 int summaryCommand(int argc, char **argv)
 {
-    //TODO implement...
+	bool opt_name = false;
+	bool opt_module = false;
+	bool opt_run = false;
+	bool opt_config = false;
+	int count = 0;
+    std::vector<std::string> opt_fileNames;
+
+    for (int i=2; i<argc; i++)
+    {
+        const char *opt = argv[i];
+        if (opt[0] == '-')
+        	count++;
+        if (strcmp(opt, "-n") == 0)
+            opt_name = true;
+        else if (strcmp(opt, "-m") == 0)
+            opt_module = true;
+        else if (strcmp(opt, "-r") == 0)
+            opt_run = true;
+        else if (strcmp(opt, "-c") == 0)
+            opt_config = true;
+        else if (opt[0] != '-')
+            opt_fileNames.push_back(argv[i]);
+        else
+            {fprintf(stderr, "unknown option `%s'", opt);return 1;}
+    }
+    if (count == 0)
+    	opt_name = true;
+    else if (count > 1)
+    {
+    	fprintf(stderr, "expects only one option");
+    	return 1;
+    }
+
+    ResultFileManager manager;
+    loadFiles(manager, opt_fileNames, false);
+
+    StringSet *result = NULL;
+    if (opt_name)
+    {
+    	IDList ids = manager.getAllItems();
+    	result = manager.getUniqueNames(ids);
+    }
+    else if (opt_module)
+    {
+    	IDList ids = manager.getAllItems();
+    	result = manager.getUniqueModuleNames(ids);
+    }
+    else if (opt_run)
+    {
+    	const RunList &runs = manager.getRuns();
+    	result = new StringSet;
+    	for (RunList::const_iterator it=runs.begin(); it!=runs.end(); ++it)
+    	{
+    		result->insert((*it)->runName);
+    	}
+    }
+    else if (opt_config)
+    {
+    	const RunList &runs = manager.getRuns();
+    	result = manager.getUniqueRunAttributeValues(runs, "configname"); // TODO RunAttribute::CONFIG
+    }
+
+    if (result != NULL)
+    {
+    	for (StringSet::iterator it=result->begin(); it != result->end(); ++it)
+    	{
+    		printf("%s\n", it->c_str());
+    	}
+    	delete result;
+    }
+
     return 0;
 }
 

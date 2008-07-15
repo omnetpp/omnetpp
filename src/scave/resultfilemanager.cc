@@ -348,51 +348,48 @@ const HistogramResult& ResultFileManager::getHistogram(ID id) const
     return getFileForID(id)->histogramResults.at(_pos(id));
 }
 
-IDList ResultFileManager::getAllScalars() const
+template <class T>
+void ResultFileManager::collectIDs(IDList &out, std::vector<T> ResultFile::* vec, int type) const
 {
-    IDList out;
     for (int k=0; k<(int)fileList.size(); k++)
     {
         if (fileList[k]!=NULL)
         {
-            ScalarResults& v = fileList[k]->scalarResults;
+            std::vector<T>& v = fileList[k]->*vec;
             for (int i=0; i<(int)v.size(); i++)
                 if (!v[i].isComputed())
-                    out.uncheckedAdd(_mkID(false,SCALAR,k,i));
+                    out.uncheckedAdd(_mkID(false,type,k,i));
         }
     }
+}
+
+IDList ResultFileManager::getAllItems() const
+{
+	IDList out;
+	collectIDs(out, &ResultFile::scalarResults, SCALAR);
+	collectIDs(out, &ResultFile::vectorResults, VECTOR);
+	collectIDs(out, &ResultFile::histogramResults, HISTOGRAM);
+	return out;
+}
+
+IDList ResultFileManager::getAllScalars() const
+{
+    IDList out;
+	collectIDs(out, &ResultFile::scalarResults, SCALAR);
     return out;
 }
 
 IDList ResultFileManager::getAllVectors() const
 {
     IDList out;
-    for (int k=0; k<(int)fileList.size(); k++)
-    {
-        if (fileList[k]!=NULL)
-        {
-            VectorResults& v = fileList[k]->vectorResults;
-            for (int i=0; i<(int)v.size(); i++)
-                if (!v[i].isComputed())
-                    out.uncheckedAdd(_mkID(false,VECTOR,k,i));
-        }
-    }
+	collectIDs(out, &ResultFile::vectorResults, VECTOR);
     return out;
 }
 
 IDList ResultFileManager::getAllHistograms() const
 {
     IDList out;
-    for (int k=0; k<(int)fileList.size(); k++)
-    {
-        if (fileList[k]!=NULL)
-        {
-            HistogramResults& v = fileList[k]->histogramResults;
-            for (int i=0; i<(int)v.size(); i++)
-                if (!v[i].isComputed())
-                    out.uncheckedAdd(_mkID(false,HISTOGRAM,k,i));
-        }
-    }
+	collectIDs(out, &ResultFile::histogramResults, HISTOGRAM);
     return out;
 }
 
@@ -947,7 +944,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     	CHECK(version <= 2, "expects version 2 or lower");
     	return;
     }
-    
+
 
     // if we haven't seen a "run" line yet (as with old vector files), add a default run
     if (ctx.fileRunRef==NULL)

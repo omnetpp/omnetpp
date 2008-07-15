@@ -315,6 +315,9 @@ class SCAVE_API ResultFileManager
     ResultFile *getFileForID(ID id) const; // checks for NULL
     void loadVectorsFromIndex(const char *filename, ResultFile *fileRef);
 
+    template <class T>
+    void collectIDs(IDList &result, std::vector<T> ResultFile::* vec, int type) const;
+
   public:
     ResultFileManager();
     ~ResultFileManager();
@@ -352,6 +355,7 @@ class SCAVE_API ResultFileManager
     IDList getAllScalars() const;
     IDList getAllVectors() const;
     IDList getAllHistograms() const;
+    IDList getAllItems() const;
     IDList getScalarsInFileRun(FileRun *fileRun) const;
     IDList getVectorsInFileRun(FileRun *fileRun) const;
     IDList getHistogramsInFileRun(FileRun *fileRun) const;
