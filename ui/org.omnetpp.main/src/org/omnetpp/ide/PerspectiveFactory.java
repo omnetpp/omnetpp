@@ -62,6 +62,7 @@ public class PerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IConstants.VECTORBROWSER_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.SEQUENCECHART_VIEW_ID);
 		layout.addShowViewShortcut(IConstants.EVENTLOG_VIEW_ID);
+		layout.addShowViewShortcut(IConstants.NEWS_VIEW_ID);
 
 
         // TODO final strings needed here

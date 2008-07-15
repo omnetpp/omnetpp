@@ -11,7 +11,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
-
 import org.omnetpp.common.project.ProjectUtils;
 
 /**
@@ -54,9 +53,9 @@ public class ToggleNatureAction implements IObjectActionDelegate {
             action.setEnabled(!projects.isEmpty());
         
         if (anyProjectMissesNature(projects))
-            action.setText("Add OMNeT++ Nature");
+            action.setText("Add OMNeT++ Support");
         else
-            action.setText("Remove OMNeT++ Nature");
+            action.setText("Remove OMNeT++ Support");
     }
 
     /* (non-Javadoc)

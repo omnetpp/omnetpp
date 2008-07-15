@@ -148,7 +148,7 @@
                class="org.omnetpp.ide.ToggleNatureAction"
                enablesFor="+"
                id="org.omnetpp.ide.addRemoveNatureAction"
-               label="Add/Remove OMNeT++ Nature"
+               label="Add/Remove OMNeT++ Support"
                menubarPath="additions">
          </action>
       </objectContribution>

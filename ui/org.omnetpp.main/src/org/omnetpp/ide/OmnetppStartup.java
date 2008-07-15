@@ -39,7 +39,8 @@ import org.omnetpp.ide.views.NewsView;
 public class OmnetppStartup implements IStartup {
 
     private static final String VERSION = "4.0.0";
-	private static final String VERSIONCHECK_URL = "http://localhost/rhornig/versioncheck";
+    private static final String VERSIONS_URL = NewsView.BASE_URL + "/versions";
+	private static final String LATESTVERSION_URL = VERSIONS_URL + "/latest";
 	public static final String SAMPLES_DIR = "samples";
 
     /*
@@ -70,7 +71,7 @@ public class OmnetppStartup implements IStartup {
 	private String getCurrentVersion() {
 		try {
 			byte buffer[] = new byte[1024];
-			URL url = new URL(VERSIONCHECK_URL);
+			URL url = new URL(LATESTVERSION_URL);
 			url.openStream().read(buffer);
 			return new String(buffer).trim();
 		} catch (MalformedURLException e) {
@@ -90,8 +91,13 @@ public class OmnetppStartup implements IStartup {
 			    			try {
 			    				IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 			    				IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
-			    				if (workbenchPage != null)
-			    					workbenchPage.showView(IConstants.NEWS_VIEW_ID);
+			    				if (workbenchPage != null) {
+			    					NewsView newsView = (NewsView)workbenchPage.findView(IConstants.NEWS_VIEW_ID);
+			    					if (newsView != null) {
+			    						newsView.setURL(VERSIONS_URL);
+			    						workbenchPage.showView(IConstants.NEWS_VIEW_ID);
+			    					}
+			    				}
 			    			} 
 			    			catch (PartInitException e) {
 			    				CommonPlugin.logError(e);
