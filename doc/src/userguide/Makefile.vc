@@ -12,7 +12,7 @@ html: catalog
 	$(XSLTPROC) --nonet --output userguide.html  $(DOCBOOK)/html/docbook.xsl tmp.xml
 	del tmp.xml
 
-pdf: chart-properties.xml catalog
+pdf: chart-properties.xml processing-operations.xml catalog
 	$(XSLTPROC) --nonet --xinclude --output tmp.xml trans.xsl userguide.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:///$(TOOLS_DIR:\=/)/docbook/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	$(XSLTPROC) --nonet --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
@@ -24,6 +24,9 @@ catalog:
 	
 CHART_PROP_DIR = ..\..\..\ui\org.omnetpp.scave\src\org\omnetpp\scave\charting\properties
 
-chart-properties.xml: chart-properties.pl $(CHART_PROP_DIR)\*Properties.java
-	perl chart-properties.pl $(CHART_PROP_DIR) >chart-properties.xml
+chart-properties.xml: generate.pl $(CHART_PROP_DIR)\*Properties.java
+	perl generate.pl chart-properties $(CHART_PROP_DIR) >$@
+
+processing-operations.xml: generate.pl
+	perl generate.pl processing-operations >$@
 

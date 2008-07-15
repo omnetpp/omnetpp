@@ -8,7 +8,7 @@ html:
 	xsltproc --output userguide.html  /usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl tmp.xml
 	rm tmp.xml
 
-pdf:   chart-properties.xml
+pdf:   chart-properties.xml processing-operations.xml
 	xsltproc --xinclude --output tmp.xml trans.xsl userguide.xml
 	perl -pe "s!\@DOCBOOK_STYLESHEET\@!file:////usr/share/xml/docbook/stylesheet/nwalsh/fo/docbook.xsl!g" custom-fo-docbook.xsl >custom-fo-docbook-tmp.xsl
 	xsltproc  --output tmp.fo custom-fo-docbook-tmp.xsl tmp.xml
@@ -18,5 +18,8 @@ pdf:   chart-properties.xml
 
 CHART_PROP_DIR = ../../../ui/org.omnetpp.scave/src/org/omnetpp/scave/charting/properties
 
-chart-properties.xml: chart-properties.pl $(CHART_PROP_DIR)/*Properties.java
-	perl chart-properties.pl $(CHART_PROP_DIR) >chart-properties.xml
+chart-properties.xml: generate.pl $(CHART_PROP_DIR)/*Properties.java
+	perl generate.pl chart-properties $(CHART_PROP_DIR) >$@
+
+processing-operations.xml: generate.pl
+	perl generate.pl processing-operations >$@

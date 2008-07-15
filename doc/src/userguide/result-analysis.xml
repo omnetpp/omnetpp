@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
 
-<chapter id="result-anal">
+<chapter id="result-anal" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <title>Analyzing the Results</title>
 
@@ -330,15 +330,17 @@
         </tip>
         <para>
           Computations can be applied to the data by adding Apply/Compute nodes to the dataset.
-          The data items to which the filter should be applied can be selected by adding
-          Select/Deselect children to the processing node. By default, the filter applied
+          The data items to which the computation should be applied can be selected by adding
+          Select/Deselect children to the processing node. By default, the computation applied
           to each data item. The difference between Apply and Compute is that Apply will
           remove its input from the dataset, while Compute keeps the original data too.
+          <xref linkend="processing-operations"/> contains the list of available operations.
         </para>
+        <xi:include href="processing-operations.xml#xpointer(//table[@id='processing-operations'])"/>
         <para>
           Processing steps enclosed into a Group node has effect only in the group. This
           way you can create branches in the dataset.
-          To group a range of sibling node select them and choose <guimenuitem>Group</guimenuitem>
+          To group a range of sibling nodes, select them and choose <guimenuitem>Group</guimenuitem>
           from the context menu. To remove the grouping, select the Group node and choose
           <guimenuitem>Ungroup</guimenuitem>.
         </para>
