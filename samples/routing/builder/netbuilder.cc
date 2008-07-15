@@ -27,7 +27,7 @@
 class NetBuilder : public cSimpleModule
 {
   protected:
-    void addLinkAttributes(cGate *src, double delay, double error, double datarate);
+    void connect(cGate *src, cGate *dest, double delay, double ber, double datarate);
     void buildNetwork(cModule *parent);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
@@ -53,20 +53,20 @@ void NetBuilder::handleMessage(cMessage *msg)
     buildNetwork(getParentModule());
 }
 
-void NetBuilder::addLinkAttributes(cGate *src, double delay, double error, double datarate)
+void NetBuilder::connect(cGate *src, cGate *dest, double delay, double ber, double datarate)
 {
-    if (delay>0 || error>0 || datarate>0)
+    cChannel *channel = NULL;
+    if (delay>0 || ber>0 || datarate>0)
     {
-        cBasicChannel *channel = cChannelType::createBasicChannel("channel", src->getOwnerModule());
+        cBasicChannel *channel = cChannelType::createBasicChannel("channel");
         if (delay>0)
             channel->setDelay(delay);
-        if (error>0)
-            channel->setBitErrorRate(error);
+        if (ber>0)
+            channel->setBitErrorRate(ber);
         if (datarate>0)
             channel->setDatarate(datarate);
-        channel->finalizeParameters();
-        src->setChannel(channel);
     }
+    src->connectTo(dest, channel);
 }
 
 void NetBuilder::buildNetwork(cModule *parent)
@@ -131,10 +131,8 @@ void NetBuilder::buildNetwork(cModule *parent)
         destmod->getOrCreateFirstUnconnectedGatePair("port", false, true, destIn, destOut);
 
         // connect
-        srcOut->connectTo(destIn);
-        destOut->connectTo(srcIn);
-        addLinkAttributes(srcOut, delay, error, datarate);
-        addLinkAttributes(destOut, delay, error, datarate);
+        connect(srcOut, destIn, delay, error, datarate);
+        connect(destOut, srcIn, delay, error, datarate);
     }
 
     std::map<long,cModule *>::iterator it;

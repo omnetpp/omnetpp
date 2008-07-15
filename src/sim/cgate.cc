@@ -204,7 +204,7 @@ cProperties *cGate::getProperties() const
     return props;
 }
 
-void cGate::connectTo(cGate *g, cChannel *chan)
+cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 {
     if (togatep)
         throw cRuntimeError(this, "connectTo(): gate already connected");
@@ -217,9 +217,28 @@ void cGate::connectTo(cGate *g, cChannel *chan)
     togatep = g;
     togatep->fromgatep = this;
     if (chan)
-        setChannel(chan);
+        installChannel(chan);
+
+    checkChannels();
 
     EVCB.connectionCreated(this);
+
+    // initialize the channel here, to simplify dynamic connection creation.
+    // Heuristics: if parent module is not yet initialized, we expect that
+    // this channel will be initialized as part of it, so don't do it here;
+    // otherwise initialize the channel now.
+    if (chan && !leaveUninitialized && chan->getParentModule()->initialized())
+        chan->callInitialize();
+
+    return chan;
+}
+
+void cGate::installChannel(cChannel *chan)
+{
+    ASSERT(channelp==NULL && chan!=NULL);
+    channelp = chan;
+    channelp->setFromGate(this);
+    take(channelp);
 }
 
 void cGate::disconnect()
@@ -238,18 +257,17 @@ void cGate::disconnect()
     channelp = NULL;
 }
 
-void cGate::setChannel(cChannel *ch)
+void cGate::checkChannels() const
 {
-    if (ch == channelp)
-        return;
-
-    dropAndDelete(channelp);
-    channelp = ch;
-    if (channelp)
-    {
-        channelp->setFromGate(this);
-        take(channelp);
-    }
+    int n = 0;
+    for (const cGate *g=getSourceGate(); g->togatep!=NULL; g=g->togatep)
+        if (g->channelp && g->channelp->supportsDatarate())
+            n++;
+    if (n>1)
+        throw cRuntimeError("More than one channel with data rate found in the "
+                            "connection path between gates %s and %s",
+                            getSourceGate()->getFullPath().c_str(),
+                            getDestinationGate()->getFullPath().c_str());
 }
 
 cGate *cGate::getSourceGate() const
@@ -349,10 +367,10 @@ bool cGate::isPathOK() const
 
 cDisplayString& cGate::getDisplayString()
 {
-    if (!getChannel()) {
-        cChannel *channel = cChannelType::createIdealChannel("channel", getOwnerModule());
-        channel->finalizeParameters();
-        setChannel(channel);
+    if (!getChannel())
+    {
+        installChannel(cChannelType::getIdealChannel()->create("channel"));
+        channelp->callInitialize();
     }
     return getChannel()->getDisplayString();
 }

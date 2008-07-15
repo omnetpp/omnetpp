@@ -216,7 +216,7 @@ cChannel *cChannelType::instantiateChannelClass(const char *classname)
     return channel;
 }
 
-cChannel *cChannelType::create(const char *name, cModule *parentmod)
+cChannel *cChannelType::create(const char *name)
 {
     cContextTypeSwitcher tmp(CTX_BUILD);
 
@@ -233,7 +233,7 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
     channel->setComponentType(this);
 
     // put the object members of the new module to their place
-    parentmod->take(channel); // temporarily -- then connection's src gate will take() it
+    oldlist->take(channel);
     channel->takeAllObjectsFrom(tmplist);
 
     // restore defaultowner
@@ -245,29 +245,7 @@ cChannel *cChannelType::create(const char *name, cModule *parentmod)
     // add parameters to the new module
     addParametersTo(channel);
 
-    //FIXME what else?
-    // register with simulation?
-    // notify ev?
-
     return channel;
-}
-
-cIdealChannel *cChannelType::createIdealChannel(const char *name, cModule *parentmod)
-{
-    if (!idealChannelType) {
-        idealChannelType = find("ned.IdealChannel");
-        ASSERT(idealChannelType);
-    }
-    return (cIdealChannel *)idealChannelType->create(name, parentmod);
-}
-
-cBasicChannel *cChannelType::createBasicChannel(const char *name, cModule *parentmod)
-{
-    if (!basicChannelType) {
-        basicChannelType = find("ned.BasicChannel");
-        ASSERT(basicChannelType);
-    }
-    return (cBasicChannel *)basicChannelType->create(name, parentmod);
 }
 
 cChannelType *cChannelType::find(const char *qname)
@@ -284,4 +262,33 @@ cChannelType *cChannelType::get(const char *qname)
     }
     return p;
 }
+
+cChannelType *cChannelType::getIdealChannel()
+{
+    if (!idealChannelType) {
+        idealChannelType = find("ned.IdealChannel");
+        ASSERT(idealChannelType);
+    }
+    return idealChannelType;
+}
+
+cChannelType *cChannelType::getBasicChannel()
+{
+    if (!basicChannelType) {
+        basicChannelType = find("ned.BasicChannel");
+        ASSERT(basicChannelType);
+    }
+    return basicChannelType;
+}
+
+cIdealChannel *cChannelType::createIdealChannel(const char *name)
+{
+    return dynamic_cast<cIdealChannel *>(getIdealChannel()->create(name));
+}
+
+cBasicChannel *cChannelType::createBasicChannel(const char *name)
+{
+    return dynamic_cast<cBasicChannel *>(getBasicChannel()->create(name));
+}
+
 

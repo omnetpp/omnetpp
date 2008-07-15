@@ -86,6 +86,10 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
 
     /** @name Setting and getting channel parameters. */
     //@{
+    /**
+     * Returns true.
+     */
+    virtual bool supportsDatarate() const {return true;}
 
     /**
      * Sets the propagation delay of the channel, in seconds.

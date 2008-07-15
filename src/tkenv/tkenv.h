@@ -130,9 +130,9 @@ class TKENV_API Tkenv : public EnvirBase
       virtual void messageScheduled(cMessage *msg);
       virtual void messageCancelled(cMessage *msg);
       virtual void beginSend(cMessage *msg);
-      virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+      virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart);
       virtual void messageSendHop(cMessage *msg, cGate *srcGate);
-      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+      virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart);
       virtual void endSend(cMessage *msg);
       virtual void messageDeleted(cMessage *msg);
       virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va);

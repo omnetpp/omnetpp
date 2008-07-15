@@ -898,7 +898,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecElement *channelspec, cMo
     }
 
     // create channel object
-    cChannel *channelp = channeltype->create(channelname, parentmodp);
+    cChannel *channelp = channeltype->create(channelname);
     return channelp;
 }
 

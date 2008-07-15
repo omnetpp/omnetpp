@@ -69,7 +69,7 @@ Register_OmnetApp("Tkenv", Tkenv, 20, "graphical user interface");
 // -u _tkenv_lib (gcc) or /include:_tkenv_lib (vc++) in the link command.
 //
 extern "C" TKENV_API void tkenv_lib() {}
-// on some compilers (e.g. linux gcc 4.2) the functions are generated without _ 
+// on some compilers (e.g. linux gcc 4.2) the functions are generated without _
 extern "C" TKENV_API void _tkenv_lib() {}
 
 
@@ -1138,9 +1138,9 @@ void Tkenv::beginSend(cMessage *msg)
     EnvirBase::beginSend(msg);
 }
 
-void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void Tkenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
 {
-    EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+    EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay, isStart);
 }
 
 void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
@@ -1148,9 +1148,9 @@ void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate)
     EnvirBase::messageSendHop(msg, srcGate);
 }
 
-void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void Tkenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
 {
-    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, isStart);
 }
 
 void Tkenv::endSend(cMessage *msg)

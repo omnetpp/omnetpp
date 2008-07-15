@@ -37,9 +37,11 @@ NAMESPACE_BEGIN
  */
 class SIM_API cDefaultList : public cNoncopyableOwnedObject
 {
-  private:
     friend class cObject;
     friend class cOwnedObject;
+    friend class cChannelType;
+
+  private:
     cOwnedObject **vect; // vector of objects
     int capacity;        // allocated size of vect[]
     int size;            // number of elements used in vect[] (0..size-1)

@@ -106,6 +106,9 @@ class SIM_API cMessage : public cOwnedObject
     friend class cMessageHeap;
 
   private:
+    enum { FL_ISRECEPTIONSTART = 2};  //TODO also FL_BITERROR
+    //XXX optimize: are there too many useless fields??? like created,frommod,fromgate (note: sendtime and tstamp do actually get used)
+
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
     int64 len;                 // length of message -- used for bit error and transmissing delay modeling
     short msgkind;             // message kind -- 0>= user-defined meaning, <0 reserved
@@ -126,6 +129,7 @@ class SIM_API cMessage : public cOwnedObject
     int tomod, togate;         // dest. module and gate IDs -- set internally
     simtime_t created;         // creation time -- set be constructor
     simtime_t sent,delivd;     // time of sending & delivery -- set internally
+    simtime_t duration;        // transmission duration on last channel with datarate
     simtime_t tstamp;          // time stamp -- user-defined meaning
 
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
@@ -660,6 +664,15 @@ class SIM_API cMessage : public cOwnedObject
      * Returns time when the message arrived (or will arrive if it
      * is currently scheduled or is underway), or 0 if the message
      * hasn't been sent/scheduled yet.
+     *
+     * When the message has nonzero length and it travelled though a
+     * channel with nonzero data rate, arrival time may represent either
+     * the start or the end of the reception, as returned by the
+     * isReceptionStart() method. By default it is the end of the reception;
+     * it can be changed by calling setDeliverOnReceptionStart(true) on the
+     * gate at receiving end of the channel that has the nonzero data rate.
+     *
+     * @see getDuration()
      */
     simtime_t getArrivalTime()  const {return delivd;}
 
@@ -673,13 +686,41 @@ class SIM_API cMessage : public cOwnedObject
      * If it's a vector gate, the method returns true if the message arrived
      * on any gate in the vector.
      */
-    bool arrivedOn(const char *s);
+    bool arrivedOn(const char *s); //FIXME const
 
     /**
      * Return true if the message arrived through the given gate
      * in the named gate vector.
      */
-    bool arrivedOn(const char *s, int gateindex);
+    bool arrivedOn(const char *s, int gateindex); //FIXME const
+
+    /**
+     * XXX Transmission duration on the last channel with datarate...
+     *
+     * @see isReceptionStart(), getArrivalTime()
+     */
+    simtime_t getDuration() const {return duration;}
+
+    /**
+     * Tells whether this message represents the start or the end of the
+     * reception, provided the message has nonzero length and it travelled
+     * through a channel with nonzero data rate.
+     *
+     * @see getArrivalTime(), getDuration()
+     */
+    bool isReceptionStart() const {return flags & FL_ISRECEPTIONSTART;}
+
+//FIXME rething corner cases: what if msg travels through multiple conns, among them:
+//   no channel
+//      OK, leaves all msg fields (msg duration and isRxStart bit) intact
+//   cIdealChannel
+//   cBasicChannel with zero datarate
+//      set msg duration and isRxStart bit or not???
+//   cBasicChannel with nonzero datarate
+//      (ie: if 2nd channel is faster and gate in between is set to deliverOnStart,
+//      the 2nd channel may transmit the last bit BEFORE it received it from the 1st channel!!!)
+//  allow one channel per path only? (not good because display strings are on channels too)
+//  allow one channel WITH DATARATE per path only? how to check?
 
     /**
      * Returns a unique message identifier assigned upon message creation.
@@ -694,6 +735,7 @@ class SIM_API cMessage : public cOwnedObject
     //@}
 
     /** @name Internally used methods. */
+//FIXME if internal, why fully documented etc??
     //@{
 
     /**
@@ -722,6 +764,12 @@ class SIM_API cMessage : public cOwnedObject
      * returned by the getArrivalTime() method.
      */
     virtual void setArrivalTime(simtime_t t);
+
+    //XXX
+    void setDuration(simtime_t d) {duration = d;}
+
+    //XXX
+    void setReceptionStart(bool b) {setFlag(FL_ISRECEPTIONSTART, b);}
 
     /**
      * Used internally by the parallel simulation kernel.

@@ -57,9 +57,9 @@ class ENVIR_API BootEnv : public cEnvir
     virtual void messageScheduled(cMessage *msg)  {UNSUPPORTED;}
     virtual void messageCancelled(cMessage *msg)  {UNSUPPORTED;}
     virtual void beginSend(cMessage *msg)  {UNSUPPORTED;}
-    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay=0, simtime_t transmissionDelay=0)  {UNSUPPORTED;}
+    virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)  {UNSUPPORTED;}
     virtual void messageSendHop(cMessage *msg, cGate *srcGate)  {UNSUPPORTED;}
-    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)  {UNSUPPORTED;}
+    virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)  {UNSUPPORTED;}
     virtual void endSend(cMessage *msg)  {UNSUPPORTED;}
     virtual void messageDeleted(cMessage *msg)  {UNSUPPORTED;}
     virtual void moduleReparented(cModule *module, cModule *oldparent)  {UNSUPPORTED;}

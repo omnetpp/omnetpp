@@ -125,6 +125,8 @@ class SIM_API cGate : public cObject, noncopyable
     Desc *desc; // descriptor of gate/gate vector, stored in cModule
     int pos;    // b0: input(0) or output(1); rest (pos>>1): array index, or -1 if scalar gate
 
+    bool deliverOnReceptionStart; //FIXME init to false! also: merge into 'pos', or into desc's 'size' member!
+
     cChannel *channelp; // channel object (if exists)
     cGate *fromgatep;   // previous and next gate in the path
     cGate *togatep;
@@ -138,6 +140,12 @@ class SIM_API cGate : public cObject, noncopyable
 
     // internal
     static void clearFullnamePool();
+
+    // internal
+    void installChannel(cChannel *chan);
+
+    // internal
+    void checkChannels() const;
 
   public:
     /** @name Redefined cObject member functions */
@@ -183,19 +191,19 @@ class SIM_API cGate : public cObject, noncopyable
 
     /** @name Connecting the gate. */
     //@{
-
     /**
-     * Connects the gate to another gate, optionally using the given
-     * channel object. This method can be used to manually create
-     * connections for dynamically created modules. If no channel object
-     * is specified (or NULL pointer is passed), the existing channel
-     * object (assigned via setChannel()) is preserved.
+     * Connects the gate to another gate, using the given channel object
+     * (if one is specified). This method can be used to manually create
+     * connections for dynamically created modules.
+     *
+     * This method does not invoke callInitialize() on the channel object:
+     * it must be done manually, after this call.
      *
      * If the gate is already connected, an error will occur.
-     * The g argument cannot be NULL, that is, you cannot use
+     * The gate argument cannot be NULL, that is, you cannot use
      * this function to disconnect a gate. Use disconnect() instead.
      */
-    void connectTo(cGate *g, cChannel *chan=NULL);
+    cChannel *connectTo(cGate *g, cChannel *chan=NULL, bool leaveUninitialized=false);
 
     /**
      * Disconnects the gate. It also destroys the associated channel object
@@ -205,25 +213,6 @@ class SIM_API cGate : public cObject, noncopyable
      * The method has no effect if the gate is not connected.
      */
     void disconnect();
-    //@}
-
-    /** @name Accessing the channel object. */
-    //@{
-
-    /**
-     * Assigns a channel object to this gate. The channel object stores
-     * connection attributes such as delay, bit error rate or data rate.
-     *
-     * See also connectTo().
-     */
-    void setChannel(cChannel *ch);
-
-    /**
-     * Returns the channel object attached to this gate, or NULL if there's
-     * no channel. This is the channel between this gate and this->getToGate(),
-     * that is, channels are stored on the "from" side of the connections.
-     */
-    cChannel *getChannel() const {return channelp;}
     //@}
 
     /** @name Information about the gate. */
@@ -289,6 +278,34 @@ class SIM_API cGate : public cObject, noncopyable
      * Alias for getVectorSize().
      */
     int size() const  {return getVectorSize();}
+
+    /**
+     * Returns the channel object attached to this gate, or NULL if there's
+     * no channel. This is the channel between this gate and this->getToGate(),
+     * that is, channels are stored on the "from" side of the connections.
+     */
+    cChannel *getChannel() const  {return channelp;}
+
+    /**
+     * Usually only makes sense on input gates which are connected to
+     * channel with data rate. Messages with nonzero length then have a
+     * nonzero transmission duration (and thus, reception duration on the other
+     * side of the connection). By default, the delivery of the message
+     * to the module marks the end of the reception. Setting this bit will cause
+     * the channel to deliver the message to the module at the start of the
+     * reception. The duration that the reception will take can be extracted
+     * from the message object, by its getDuration() method.
+     */
+    void setDeliverOnReceptionStart(bool d) {deliverOnReceptionStart = d;}
+
+    /**
+     * Returns whether messages delivered through this gate will mark the
+     * start or the end of the reception process (assuming nonzero message length
+     * and data rate on the channel.)
+     *
+     * @see setDeliverOnReceptionStart()
+     */
+    bool getDeliverOnReceptionStart() const  {return deliverOnReceptionStart;}
     //@}
 
     /** @name Transmission state. */

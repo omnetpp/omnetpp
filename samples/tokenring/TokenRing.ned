@@ -32,10 +32,10 @@ network TokenRing
                 @display("p=80,80,ring");
         }
     connections:
-        station[numStations-1].out --> {  delay = cableDelay; } --> station[0].in;
+        station[numStations-1].out --> {  delay = cableDelay; datarate = dataRate; } --> station[0].in;
 
         for i=0..numStations-2 {
-            station[i].out --> { delay = cableDelay; } --> station[i+1].in;
+            station[i].out --> { delay = cableDelay; datarate = dataRate; } --> station[i+1].in;
         }
 }
 

@@ -74,6 +74,13 @@ void cChannel::parsimUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this,"parsimUnpack() not implemented");
 }
 
+void cChannel::finalizeParameters()
+{
+    if (!fromgatep)
+        throw cRuntimeError(this,"finalizeParameters() may only be called when the channel is already installed on a connection");
+    cComponent::finalizeParameters();
+}
+
 void cChannel::callInitialize()
 {
     cContextTypeSwitcher tmp(CTX_INITIALIZE);

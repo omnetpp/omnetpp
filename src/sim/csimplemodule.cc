@@ -401,6 +401,8 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
     // set message parameters and send it
     simtime_t delayEndTime = simTime()+delay;
     msg->setSentFrom(this, outgate->getId(), delayEndTime);
+    msg->setDuration(0);
+    msg->setReceptionStart(false);  //FIXME modify sendDirect in the same way!!!
 
     EVCB.beginSend(msg);
     bool keepit = outgate->deliver(msg, delayEndTime);
@@ -501,8 +503,11 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
     msg->setSentFrom(this, -1, simTime());
 
     EVCB.beginSend(msg);
-    EVCB.messageSendDirect(msg, togate, propdelay, transmdelay);
-    bool keepit = togate->deliver(msg, simTime()+propdelay);  //XXX NOTE: no +transmdelay! we want to deliver the msg when the *first* bit arrives, not the last one
+    bool isstart = togate->getDeliverOnReceptionStart();
+    msg->setDuration(transmdelay);
+    msg->setReceptionStart(isstart);
+    EVCB.messageSendDirect(msg, togate, propdelay, transmdelay, isstart);
+    bool keepit = togate->deliver(msg, simTime() + propdelay + (isstart ? 0 : transmdelay));
     if (!keepit)
     {
         delete msg; //FIXME problem: tell tkenv somehow that msg has been deleted, otherwise animation will crash

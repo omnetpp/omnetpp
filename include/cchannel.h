@@ -51,6 +51,9 @@ class SIM_API cChannel : public cComponent //implies noncopyable
     // channel, and returns true if there's more stages to do
     virtual bool initializeChannel(int stage);
 
+    // internal: overridden to perform additional checks
+    virtual void finalizeParameters();
+
   public:
     /** @name Constructors, destructor */
     //@{
@@ -140,6 +143,11 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * Returns the gate this channel is attached to.
      */
     cGate *getFromGate() const  {return fromgatep;}
+
+    /**
+     * XXX ilyenbol csak 1 lehet a path-ban
+     */
+    virtual bool supportsDatarate() const = 0;
     //@}
 
     /** @name Channel functionality */
@@ -193,6 +201,11 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
      * of the connection without any processing.
      */
     virtual bool deliver(cMessage *msg, simtime_t at);
+
+    /**
+     * Returns false.
+     */
+    virtual bool supportsDatarate() const {return false;}
 
     /**
      * This implementation just returns the current simulation time.

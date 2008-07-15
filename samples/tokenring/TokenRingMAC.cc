@@ -92,6 +92,8 @@ TokenRingMAC::~TokenRingMAC()
 
 void TokenRingMAC::activity()
 {
+    gate("phyIn")->setDeliverOnReceptionStart(true);
+
     dataRate = par("dataRate");     // 4 or 16 Mbit/s
     tokenHoldingTime = par("THT");   // typically 10ms
     myAddress = par("address");
@@ -190,7 +192,7 @@ void TokenRingMAC::activity()
 
                 if (debug)
                 {
-                    ev << "Begun transmitting \"" << data->getName() << "\""
+                    ev << "Began transmitting \"" << data->getName() << "\""
                           " in frame \"" << frame->getName() << "\"" << endl;
                 }
                 send(frame, "phyOut");
@@ -344,7 +346,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         if (recvEnd->isScheduled())
         {
             // make sure our assumption is right
-            ASSERT(fabs((recvEnd->getArrivalTime()-simTime())) < 1e-10);
+            ASSERT(recvEnd->getArrivalTime() == simTime());
 
             if (debug)
             {

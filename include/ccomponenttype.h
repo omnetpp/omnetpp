@@ -284,19 +284,7 @@ class SIM_API cChannelType : public cComponentType
      * this methods inserts it into the simulation's data structure,
      * and adds the parameters specified in the NED declaration.
      */
-    virtual cChannel *create(const char *name, cModule *parentmod);
-
-    /**
-     * Equivalent to <tt>cChannelType::find("ned.IdealChannel").create(name, parentmod)</tt>,
-     * only faster because the type lookup is only done once in the program.
-     */
-    static cIdealChannel *createIdealChannel(const char *name, cModule *parentmod);
-
-    /**
-     * Equivalent to <tt>cChannelType::find("ned.BasicChannel").create(name, parentmod)</tt>,
-     * only faster because the type lookup is only done once in the program.
-     */
-    static cBasicChannel *createBasicChannel(const char *name, cModule *parentmod);
+    virtual cChannel *create(const char *name);
     //@}
 
     /**
@@ -311,6 +299,19 @@ class SIM_API cChannelType : public cComponentType
      */
     static cChannelType *get(const char *qname);
 
+    /**
+     * Equivalent to <tt>cChannelType::get("ned.IdealChannel")</tt>, but more efficient.
+     */
+    static cChannelType *getIdealChannel();
+
+    /**
+     * Equivalent to <tt>cChannelType::get("ned.BasicChannel")</tt>, but more efficient.
+     */
+    static cChannelType *getBasicChannel();
+
+    //FIXME comments
+    static cIdealChannel *createIdealChannel(const char *name);
+    static cBasicChannel *createBasicChannel(const char *name);
 };
 
 NAMESPACE_END

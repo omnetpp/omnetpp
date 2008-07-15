@@ -109,7 +109,7 @@ Register_PerRunConfigEntry(CFGID_NETWORK, "network", CFG_STRING, NULL, "The name
 Register_PerRunConfigEntry(CFGID_WARNINGS, "warnings", CFG_BOOL, "true", "Enables warnings.");
 Register_PerRunConfigEntryU(CFGID_SIM_TIME_LIMIT, "sim-time-limit", "s", NULL, "Stops the simulation when simulation time reaches the given limit. The default is no limit.");
 Register_PerRunConfigEntryU(CFGID_CPU_TIME_LIMIT, "cpu-time-limit", "s", NULL, "Stops the simulation when CPU usage has reached the given limit. The default is no limit.");
-Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "The expected fingerprint, suitable for crude regression tests. If present, the actual fingerprint is calculated during simulation, and compared against the expected one.");
+Register_PerRunConfigEntry(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, NULL, "The expected fingerprint of the simulation. When provided, a fingerprint will be calculated from the simulation event times and other quantities during simulation, and checked against the given one. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one fingerprint values can be specified here, separated by spaces, and a match with any of them will be accepted. To calculate the initial fingerprint, enter any dummy string (such as \"none\"), and run the simulation.");
 Register_PerRunConfigEntry(CFGID_NUM_RNGS, "num-rngs", CFG_INT, "1", "The number of random number generators.");
 Register_PerRunConfigEntry(CFGID_RNG_CLASS, "rng-class", CFG_STRING, "cMersenneTwister", "The random number generator class to be used. It can be `cMersenneTwister', `cLCG32', `cAkaroaRNG', or you can use your own RNG class (it must be subclassed from cRNG).");
 Register_PerRunConfigEntry(CFGID_SEED_SET, "seed-set", CFG_INT, "${runnumber}", "Selects the kth set of automatic random number seeds for the simulation. Meaningful values include ${repetition} which is the repeat loop counter (see repeat= key), and ${runnumber}.");
@@ -815,10 +815,10 @@ void EnvirBase::messageCancelled(cMessage *msg)
         eventlogmgr->messageCancelled(msg);
 }
 
-void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void EnvirBase::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
 {
     if (eventlogmgr)
-        eventlogmgr->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+        eventlogmgr->messageSendDirect(msg, toGate, propagationDelay, transmissionDelay, isStart);
 }
 
 void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
@@ -827,10 +827,10 @@ void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate)
         eventlogmgr->messageSendHop(msg, srcGate);
 }
 
-void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+void EnvirBase::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay, bool isStart)
 {
     if (eventlogmgr)
-        eventlogmgr->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+        eventlogmgr->messageSendHop(msg, srcGate, propagationDelay, transmissionDelay, isStart);
 }
 
 void EnvirBase::endSend(cMessage *msg)
@@ -1341,11 +1341,22 @@ void EnvirBase::checkFingerprint()
     if (opt_fingerprint.empty() || !simulation.getHasher())
         return;
 
-    if (simulation.getHasher()->equals(opt_fingerprint.c_str()))
-        putsmsg("Fingerprint successfully verified.");
-    else
-        putsmsg((std::string("Fingerprint mismatch! expected: ")+opt_fingerprint.c_str()+
-               ", actual: "+simulation.getHasher()->str()).c_str());
+    int k = 0;
+    StringTokenizer tokenizer(opt_fingerprint.c_str());
+    while (tokenizer.hasMoreTokens())
+    {
+        const char *fingerprint = tokenizer.nextToken();
+        if (simulation.getHasher()->equals(fingerprint))
+        {
+            printfmsg("Fingerprint successfully verified: %s", fingerprint);
+            return;
+        }
+        k++;
+    }
+
+    printfmsg("Fingerprint mismatch! calculated: %s, expected: %s%s",
+              simulation.getHasher()->str().c_str(),
+              (k>=2 ? "one of: " : ""), opt_fingerprint.c_str());
 }
 
 cModuleType *EnvirBase::resolveNetwork(const char *networkname)
