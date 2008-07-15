@@ -138,6 +138,11 @@ class SIM_API cException : public std::exception
     virtual void setMessage(const char *txt) {msg = txt;}
 
     /**
+     * Prepends the message with given text and a colon.
+     */
+    virtual void prependMessage(const char *txt) {msg = std::string(txt) + ": " + msg;}
+
+    /**
      * Returns true if the exception has "context info", that is, it occurred
      * within a known module or channel. getContextClassName(), getContextFullPath()
      * and getModuleID() may only be called if this method returns true.

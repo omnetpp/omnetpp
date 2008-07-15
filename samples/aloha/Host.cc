@@ -77,10 +77,10 @@ void Host::handleMessage(cMessage *msg)
 
         cMessage *pk = new cMessage(pkname);
         pk->setBitLength(pkLenBits->longValue());
-        simtime_t txtime = pk->getBitLength() / txRate;
-        sendDirect(pk, radioDelay, server->gate("in"));
+        simtime_t duration = pk->getBitLength() / txRate;
+        sendDirect(pk, radioDelay, duration, server->gate("in"));
 
-        scheduleAt(simTime()+txtime, endTxEvent);
+        scheduleAt(simTime()+duration, endTxEvent);
     }
     else if (state==TRANSMIT)
     {

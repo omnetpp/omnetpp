@@ -191,8 +191,8 @@ int cGate::getId() const
     if (!desc->isVector())
         id = (descIndex<<1)|(pos&1);
     else
-        // note: we use descIndex+1 otherwise h can remain zero after <<LBITS
-        id = ((descIndex+1)<<GATEID_LBITS) | ((pos&1)<<(GATEID_LBITS-1)) | (pos>>1);
+        // note: we use descIndex+1 otherwise h could remain zero after <<LBITS
+        id = ((descIndex+1)<<GATEID_LBITS) | ((pos&1)<<(GATEID_LBITS-1)) | (pos>>2);
     return id;
 }
 

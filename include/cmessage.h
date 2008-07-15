@@ -145,6 +145,7 @@ class SIM_API cMessage : public cOwnedObject
     static long total_msgs;
     static long live_msgs;
 
+  private:
     // internal: create parlist
     void _createparlist();
 
@@ -178,6 +179,37 @@ class SIM_API cMessage : public cOwnedObject
 
     // internal: only to be used by test cases
     int getShareCount() const {return sharecount;}
+
+    // internal: called by the simulation kernel as part of the send(),
+    // scheduleAt() calls to set the values returned by the
+    // getSenderModuleId(), getSenderGate(), getSendingTime() methods.
+    virtual void setSentFrom(cModule *module, int gateId, simtime_t t);
+
+    // internal: called by the simulation kernel as part of processing
+    // the send(), scheduleAt() calls to set the values returned
+    // by the getArrivalModuleId(), getArrivalGate() methods.
+    virtual void setArrival(cModule *module, int gateId);
+
+    // internal: called by the simulation kernel as part of processing
+    // the send(), scheduleAt() calls to set the values returned
+    // by the getArrivalModuleId(), getArrivalGate(), getArrivalTime() methods.
+    virtual void setArrival(cModule *module, int gate, simtime_t t);
+
+    // internal: called by the simulation kernel to set the value returned
+    // by the getArrivalTime() method
+    virtual void setArrivalTime(simtime_t t);
+
+    //XXX
+    void setDuration(simtime_t d) {duration = d;}
+
+    // internal: sets the isReceptionStart() flag
+    void setReceptionStart(bool b) {setFlag(FL_ISRECEPTIONSTART, b);}
+
+    // internal: used by the parallel simulation kernel.
+    void setSrcProcId(int procId) {srcprocid = (short)procId;}
+
+    // internal: used by the parallel simulation kernel.
+    int getSrcProcId() const {return srcprocid;}
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -677,22 +709,22 @@ class SIM_API cMessage : public cOwnedObject
     simtime_t getArrivalTime()  const {return delivd;}
 
     /**
-     * Return true if the message arrived through gate g.
+     * Return true if the message arrived through the given gate.
      */
-    bool arrivedOn(int g) const {return g==togate;}
+    bool arrivedOn(int gateId) const {return gateId==togate;}
 
     /**
      * Return true if the message arrived on the gate given with its name.
      * If it's a vector gate, the method returns true if the message arrived
      * on any gate in the vector.
      */
-    bool arrivedOn(const char *s); //FIXME const
+    bool arrivedOn(const char *gatename) const;
 
     /**
      * Return true if the message arrived through the given gate
      * in the named gate vector.
      */
-    bool arrivedOn(const char *s, int gateindex); //FIXME const
+    bool arrivedOn(const char *gatename, int gateindex) const;
 
     /**
      * XXX Transmission duration on the last channel with datarate...
@@ -710,18 +742,6 @@ class SIM_API cMessage : public cOwnedObject
      */
     bool isReceptionStart() const {return flags & FL_ISRECEPTIONSTART;}
 
-//FIXME rething corner cases: what if msg travels through multiple conns, among them:
-//   no channel
-//      OK, leaves all msg fields (msg duration and isRxStart bit) intact
-//   cIdealChannel
-//   cBasicChannel with zero datarate
-//      set msg duration and isRxStart bit or not???
-//   cBasicChannel with nonzero datarate
-//      (ie: if 2nd channel is faster and gate in between is set to deliverOnStart,
-//      the 2nd channel may transmit the last bit BEFORE it received it from the 1st channel!!!)
-//  allow one channel per path only? (not good because display strings are on channels too)
-//  allow one channel WITH DATARATE per path only? how to check?
-
     /**
      * Returns a unique message identifier assigned upon message creation.
      */
@@ -732,54 +752,6 @@ class SIM_API cMessage : public cOwnedObject
      * created by copying it (i.e. by dup() or the copy constructor).
      */
     long getTreeId() const {return msgtreeid;}
-    //@}
-
-    /** @name Internally used methods. */
-//FIXME if internal, why fully documented etc??
-    //@{
-
-    /**
-     * Called internally by the simulation kernel as part of the send(),
-     * scheduleAt() calls to set the parameters returned by the
-     * getSenderModuleId(), getSenderGate(), getSendingTime() methods.
-     */
-    virtual void setSentFrom(cModule *module, int gateId, simtime_t t);
-
-    /**
-     * Called internally by the simulation kernel as part of processing
-     * the send(), scheduleAt() calls to set the parameters returned
-     * by the getArrivalModuleId(), getArrivalGate() methods.
-     */
-    virtual void setArrival(cModule *module, int gateId);
-
-    /**
-     * Called internally by the simulation kernel as part of processing
-     * the send(), scheduleAt() calls to set the parameters returned
-     * by the getArrivalModuleId(), getArrivalGate(), getArrivalTime() methods.
-     */
-    virtual void setArrival(cModule *module, int gate, simtime_t t);
-
-    /**
-     * Called internally by the simulation kernel to set the parameters
-     * returned by the getArrivalTime() method.
-     */
-    virtual void setArrivalTime(simtime_t t);
-
-    //XXX
-    void setDuration(simtime_t d) {duration = d;}
-
-    //XXX
-    void setReceptionStart(bool b) {setFlag(FL_ISRECEPTIONSTART, b);}
-
-    /**
-     * Used internally by the parallel simulation kernel.
-     */
-    void setSrcProcId(int procId) {srcprocid = (short)procId;}
-
-    /**
-     * Used internally by the parallel simulation kernel.
-     */
-    int getSrcProcId() const {return srcprocid;}
     //@}
 
     /** @name Miscellaneous. */

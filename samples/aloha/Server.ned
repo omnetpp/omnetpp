@@ -13,7 +13,6 @@
 simple Server
 {
     parameters:
-        double txRate @unit(bps); // transmission rate (needed to calculate lengths of packet receptions)
         @display("i=device/antennatower_l");
     gates:
         input in;

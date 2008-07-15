@@ -39,7 +39,7 @@ void Server::handleMessage(cMessage *msg)
     {
         cModule *mod = srvProcType->createScheduleInit("serverproc",this);
         ev << "DYNA_CONN_REQ: Created process ID=" << mod->getId() << endl;
-        sendDirect(pk, 0.0, mod, "in");
+        sendDirect(pk, mod, "in");
     }
     else
     {
@@ -50,7 +50,7 @@ void Server::handleMessage(cMessage *msg)
             ev << " That process already exited, deleting msg\n";
             delete pk;
         } else {
-            sendDirect(pk, 0.0, mod, "in");
+            sendDirect(pk, mod, "in");
         }
     }
 }

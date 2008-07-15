@@ -56,7 +56,7 @@ void ServerProcess::activity()
     pk->setSrcAddress(ownAddr);
     pk->setDestAddress(clientAddr);
     pk->setServerProcId(getId());
-    sendDirect(pk, 0, serverOutGate);
+    sendDirect(pk, serverOutGate);
 
     // process data packets until DISC_REQ comes
     for(;;)
@@ -82,7 +82,7 @@ void ServerProcess::activity()
         datapk->setSrcAddress(ownAddr);
         datapk->setDestAddress(clientAddr);
         datapk->setPayload("result");
-        sendDirect(datapk, 0, serverOutGate);
+        sendDirect(datapk, serverOutGate);
     }
 
     // connection teardown in response to DISC_REQ
@@ -91,7 +91,7 @@ void ServerProcess::activity()
     pk->setKind(DYNA_DISC_ACK);
     pk->setSrcAddress(ownAddr);
     pk->setDestAddress(clientAddr);
-    sendDirect(pk, 0, serverOutGate);
+    sendDirect(pk, serverOutGate);
 
     ev << "exiting\n";
     deleteModule();

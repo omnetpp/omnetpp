@@ -120,11 +120,6 @@ bool cBasicChannel::isBusy() const
 
 bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
 {
-    //FIXME next check is probably not needed -- cGate checks if channel got initialized, and that implies params too
-    if (!parametersFinalized())
-        throw cRuntimeError("Error sending message (%s)%s on gate %s: channel parameters not yet set up",
-                            msg->getClassName(), msg->getFullName(), getFromGate()->getFullPath().c_str());
-
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)
         return false;
@@ -140,18 +135,18 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
 
     cGate *nextgate = getFromGate()->getToGate();
 
-    simtime_t transmissiondelay = 0;
+    simtime_t duration = 0;
     bool isstart = false;
 
     // datarate modeling
     if (flags & FL_DATARATE_NONZERO)
     {
-        transmissiondelay = msg->getBitLength() / datarateparam;
-        msg->setDuration(transmissiondelay);
+        duration = msg->getBitLength() / datarateparam;
         isstart = nextgate->getDeliverOnReceptionStart();
+        msg->setDuration(duration);
         msg->setReceptionStart(isstart);
         if (!isstart)
-            t += transmissiondelay;
+            t += duration;
         txfinishtime = t;
     }
 
@@ -174,7 +169,7 @@ bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
 
     // FIXME: this is not reusable this way in custom channels, put it into a base class function with the next line (levy)
     // i.e use template method...?
-    EVCB.messageSendHop(msg, getFromGate(), delayparam, transmissiondelay, isstart);
+    EVCB.messageSendHop(msg, getFromGate(), delayparam, duration, isstart);
 
     // hand over msg to next gate
     return nextgate->deliver(msg, t);

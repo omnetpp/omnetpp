@@ -479,66 +479,59 @@ cMsgPar& cMessage::par(const char *s)
 
 int cMessage::findPar(const char *s) const
 {
-    if (!parlistp)
-        return -1;
-    return parlistp->find(s);
+    return !parlistp ? -1 : parlistp->find(s);
 }
 
 cGate *cMessage::getSenderGate() const
 {
     if (frommod<0 || fromgate<0)  return NULL;
     cModule *mod = simulation.getModule(frommod);
-    if (!mod) return NULL;
-    return mod->gate( fromgate );
+    return !mod ? NULL : mod->gate(fromgate);
 }
 
 cGate *cMessage::getArrivalGate() const
 {
     if (tomod<0 || togate<0)  return NULL;
     cModule *mod = simulation.getModule(tomod);
-    if (!mod) return NULL;
-    return mod->gate(togate);
+    return !mod ? NULL : mod->gate(togate);
 }
 
-bool cMessage::arrivedOn(const char *s)
+bool cMessage::arrivedOn(const char *gatename) const
 {
     cGate *arrgate = getArrivalGate();
-    if (!arrgate) return false;
-    return arrgate->isName(s);
+    return arrgate && arrgate->isName(gatename);
 }
 
-bool cMessage::arrivedOn(const char *s, int gateindex)
+bool cMessage::arrivedOn(const char *gatename, int gateindex) const
 {
     cGate *arrgate = getArrivalGate();
-    if (!arrgate) return false;
-    return arrgate->isName(s) && arrgate->getIndex()==gateindex;
+    return arrgate && arrgate->isName(gatename) && arrgate->getIndex()==gateindex;
 }
 
 const char *cMessage::getDisplayString() const
 {
-    // redefine to get messages with custom appearance
-    return "";
+    return ""; // redefine this method to get messages with custom appearance
 }
 
 
-void cMessage::setSentFrom(cModule *module, int gate, simtime_t t)
+void cMessage::setSentFrom(cModule *module, int gateId, simtime_t t)
 {
     frommod = module ? module->getId() : -1;
-    fromgate = gate;
+    fromgate = gateId;
     sent = t;
 }
 
-void cMessage::setArrival(cModule *module, int gate, simtime_t t)
+void cMessage::setArrival(cModule *module, int gateId, simtime_t t)
 {
     tomod = module ? module->getId() : -1;
-    togate = gate;
+    togate = gateId;
     delivd = t;
 }
 
-void cMessage::setArrival(cModule *module, int gate)
+void cMessage::setArrival(cModule *module, int gateId)
 {
     tomod = module ? module->getId() : -1;
-    togate = gate;
+    togate = gateId;
 }
 
 void cMessage::setArrivalTime(simtime_t t)

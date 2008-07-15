@@ -24,7 +24,6 @@ class Server : public cSimpleModule
     // state variables, event pointers
     bool channelBusy;
     cMessage *endRxEvent;
-    double txRate;
 
     long currentCollisionNumFrames;
     simtime_t recvStartTime;

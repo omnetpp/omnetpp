@@ -92,7 +92,7 @@ TokenRingMAC::~TokenRingMAC()
 
 void TokenRingMAC::activity()
 {
-    gate("phyIn")->setDeliverOnReceptionStart(true);
+    gate("phyIn")->getFromGate()->setDeliverOnReceptionStart(true); //FIXME getFromGate shuold NOT be needed!!!!!!!!
 
     dataRate = par("dataRate");     // 4 or 16 Mbit/s
     tokenHoldingTime = par("THT");   // typically 10ms
@@ -222,7 +222,6 @@ void TokenRingMAC::activity()
             send(token, "phyOut");
             token = NULL;
         }
-
         // frame arrived from network?
         else if (dynamic_cast<TRFrame *>(msg)!=NULL)
         {
@@ -323,6 +322,8 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         ev << "Received beginning of frame \"" << frame->getName() << "\"" << endl;
     }
 
+    ASSERT(frame->isReceptionStart());
+
     // extract source and destination
     int dest = frame->getDestination();
     int source = frame->getSource();
@@ -346,6 +347,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         if (recvEnd->isScheduled())
         {
             // make sure our assumption is right
+            // note: checking for equality only works with 64-bit fixed-point simtime_t!
             ASSERT(recvEnd->getArrivalTime() == simTime());
 
             if (debug)
@@ -369,7 +371,7 @@ void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
         // when receiving will finish, and schedule an event for that time.
         //
         recvEnd->setContextPointer(data2);
-        scheduleAt(simTime()+frame->getBitLength()/(double)dataRate, recvEnd);
+        scheduleAt(simTime()+frame->getDuration(), recvEnd);
     }
 
     // In the Token Ring protocol, a frame is stripped out from the ring

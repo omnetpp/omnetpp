@@ -253,12 +253,38 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     int sendDelayed(cMessage *msg, simtime_t delay, cGate *outputgate);
 
     /**
-     * Sends a message directly to another module.
-     * See sendDirect(cMessage *, simtime_t, cModule *, const char *, in) for a
-     * more detailed description.
+     * Sends a message directly to another module, with zero propagation delay
+     * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
+     * for a more detailed description.
      */
-    //FIXME remove this method? see next ones!
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, cModule *mod, int inputgateid);
+    int sendDirect(cMessage *msg, cModule *mod, const char *inputGateName, int gateIndex=-1);
+
+    /**
+     * Sends a message directly to another module, with zero propagation delay
+     * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
+     * for a more detailed description.
+     */
+    int sendDirect(cMessage *msg, cModule *mod, int inputGateId);
+
+    /**
+     * Sends a message directly to another module, with zero propagation delay
+     * and duration. See sendDirect(cMessage *, simtime_t, simtime_t, cGate *)
+     * for a more detailed description.
+     */
+    int sendDirect(cMessage *msg, cGate *inputGate);
+
+    /**
+     * Sends a message directly to another module.
+     * See sendDirect(cMessage *, simtime_t, simtime_t, cGate *) for a more
+     * detailed description.
+     */
+    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, const char *inputGateName, int gateIndex=-1);
+
+    /**
+     * See sendDirect(cMessage *, simtime_t, simtime_t, cGate *) for a more
+     * detailed description.
+     */
+    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cModule *mod, int inputGateId);
 
     /**
      * Send a message directly to another module.
@@ -281,47 +307,10 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * i.e. where getFromGate()!=NULL. This means that modules MUST have
      * dedicated gates for receiving via sendDirect(). You cannot have a gate
      * which receives messages via both connections and sendDirect().
+     *
+     * XXX refine, e.g. cover duration and inputGate.setDeliverOnReceptionStart() !!!
      */
-    //FIXME remove this method? see next ones!
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, cModule *mod, const char *inputgatename, int gateindex=-1);
-
-    /**
-     * Sends a message directly to another module.
-     * See sendDirect(cMessage *, simtime_t, cModule *, const char *, in) for a
-     * more detailed description.
-     */
-    //FIXME remove this method? see next ones!
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, cGate *inputgate);
-
-    /**
-     * Sends a message directly to another module.
-     * See sendDirect(cMessage *, simtime_t, cModule *, const char *, in) for a
-     * more detailed description.
-     */
-    //XXX refine doc -- transmissionDelay is currently IGNORED (only used by animation), as we want to deliver the msg when the *first* bit arrives, not the last one
-    //XXX make transmissionDelay first?
-    //XXX rename transmissionDelay to transmissionTime? or transmissionDuration? or transmissionInterval?
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t transmissionDelay, cModule *mod, int inputgateid);
-
-    /**
-     * Sends a message directly to another module.
-     * See sendDirect(cMessage *, simtime_t, cModule *, const char *, in) for a
-     * more detailed description.
-     */
-    //XXX refine doc -- transmissionDelay is currently IGNORED (only used by animation), as we want to deliver the msg when the *first* bit arrives, not the last one
-    //XXX make transmissionDelay first?
-    //XXX rename transmissionDelay to transmissionTime? or transmissionDuration? or transmissionInterval?
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t transmissionDelay, cModule *mod, const char *inputgatename, int gateindex=-1);
-
-    /**
-     * Sends a message directly to another module.
-     * See sendDirect(cMessage *, simtime_t, cModule *, const char *, in) for a
-     * more detailed description.
-     */
-    //XXX refine doc -- transmissionDelay is currently IGNORED (only used by animation), as we want to deliver the msg when the *first* bit arrives, not the last one
-    //XXX make transmissionDelay first?
-    //XXX rename transmissionDelay to transmissionTime? or transmissionDuration? or transmissionInterval?
-    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t transmissionDelay, cGate *inputgate);
+    int sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration, cGate *inputGate);
     //@}
 
     /** @name Self-messages. */

@@ -29,9 +29,10 @@ Server::~Server()
 
 void Server::initialize()
 {
-    txRate = par("txRate");
     endRxEvent = new cMessage("end-reception");
     channelBusy = false;
+
+    gate("in")->setDeliverOnReceptionStart(true);
 
     currentCollisionNumFrames = 0;
     totalFrames = 0;
@@ -58,7 +59,7 @@ void Server::initialize()
     channelUtilizationVector.setName("channel utilization");
     channelUtilizationVector.setType(cOutVector::TYPE_DOUBLE);
     channelUtilizationVector.setInterpolationMode(cOutVector::LINEAR);
-    
+
     collisionMultiplicityHistogram.setName("collision multiplicity");
     collisionMultiplicityHistogram.setRangeAutoUpper(0.0);
     collisionLengthHistogram.setName("collision length");
@@ -105,13 +106,14 @@ void Server::handleMessage(cMessage *msg)
     else
     {
         totalFrames++;
-        simtime_t endReception = simTime() + msg->getBitLength() / txRate;
+        ASSERT(msg->isReceptionStart());
+        simtime_t endReceptionTime = simTime() + msg->getDuration();
         if (!channelBusy)
         {
             ev << "started receiving\n";
             recvStartTime = simTime();
             channelBusy = true;
-            scheduleAt(endReception, endRxEvent);
+            scheduleAt(endReceptionTime, endRxEvent);
             if (ev.isGUI())
             {
                 getDisplayString().setTagArg("i2",0,"x_yellow");
@@ -129,10 +131,10 @@ void Server::handleMessage(cMessage *msg)
             else
                 currentCollisionNumFrames++;
 
-            if (endReception > endRxEvent->getArrivalTime())
+            if (endReceptionTime > endRxEvent->getArrivalTime())
             {
                 cancelEvent(endRxEvent);
-                scheduleAt(endReception, endRxEvent);
+                scheduleAt(endReceptionTime, endRxEvent);
             }
 
             // update network graphics

@@ -109,23 +109,23 @@ class SIM_API cGate : public cObject, noncopyable
         bool inUse() const {return namep!=NULL;}
         Type getType() const {return namep->type;}
         bool isVector() const {return size>=0;}
-        int indexOf(const cGate *g) const {return (g->pos>>1)==-1 ? 0 : g->pos>>1;}
+        int indexOf(const cGate *g) const {return (g->pos>>2)==-1 ? 0 : g->pos>>2;}
+        bool deliverOnReceptionStart(const cGate *g) const {return g->pos&2;}
         Type getTypeOf(const cGate *g) const {return (g->pos&1)==0 ? INPUT : OUTPUT;}
         bool isInput(const cGate *g) const {return (g->pos&1)==0;}
         bool isOutput(const cGate *g) const {return (g->pos&1)==1;}
         int gateSize() const {return size>=0 ? size : 1;}
-        void setInputGate(cGate *g) {ASSERT(getType()!=OUTPUT && !isVector()); inputgate=g; g->desc=this; g->pos=(-1<<1);}
-        void setOutputGate(cGate *g) {ASSERT(getType()!=INPUT && !isVector()); outputgate=g; g->desc=this; g->pos=(-1<<1)|1;}
-        void setInputGate(cGate *g, int index) {ASSERT(getType()!=OUTPUT && isVector()); inputgatev[index]=g; g->desc=this; g->pos=(index<<1);}
-        void setOutputGate(cGate *g, int index) {ASSERT(getType()!=INPUT && isVector()); outputgatev[index]=g; g->desc=this; g->pos=(index<<1)|1;}
+        void setInputGate(cGate *g) {ASSERT(getType()!=OUTPUT && !isVector()); inputgate=g; g->desc=this; g->pos=(-1<<2);}
+        void setOutputGate(cGate *g) {ASSERT(getType()!=INPUT && !isVector()); outputgate=g; g->desc=this; g->pos=(-1<<2)|1;}
+        void setInputGate(cGate *g, int index) {ASSERT(getType()!=OUTPUT && isVector()); inputgatev[index]=g; g->desc=this; g->pos=(index<<2);}
+        void setOutputGate(cGate *g, int index) {ASSERT(getType()!=INPUT && isVector()); outputgatev[index]=g; g->desc=this; g->pos=(index<<2)|1;}
         static int capacityFor(int size) {return size<8 ? (size+1)&~1 : size<32 ? (size+3)&~3 : size<256 ? (size+15)&~15 : (size+63)&~63;}
     };
 
   protected:
     Desc *desc; // descriptor of gate/gate vector, stored in cModule
-    int pos;    // b0: input(0) or output(1); rest (pos>>1): array index, or -1 if scalar gate
-
-    bool deliverOnReceptionStart; //FIXME init to false! also: merge into 'pos', or into desc's 'size' member!
+    int pos;    // b0: input(0) or output(1); b1: deliverOnReceptionStart bit;
+                // rest (pos>>2): array index, or -1 if scalar gate
 
     cChannel *channelp; // channel object (if exists)
     cGate *fromgatep;   // previous and next gate in the path
@@ -296,7 +296,7 @@ class SIM_API cGate : public cObject, noncopyable
      * reception. The duration that the reception will take can be extracted
      * from the message object, by its getDuration() method.
      */
-    void setDeliverOnReceptionStart(bool d) {deliverOnReceptionStart = d;}
+    void setDeliverOnReceptionStart(bool d) {if (d) pos|=2; else pos&=~2;}
 
     /**
      * Returns whether messages delivered through this gate will mark the
@@ -305,7 +305,7 @@ class SIM_API cGate : public cObject, noncopyable
      *
      * @see setDeliverOnReceptionStart()
      */
-    bool getDeliverOnReceptionStart() const  {return deliverOnReceptionStart;}
+    bool getDeliverOnReceptionStart() const  {return pos&2;}
     //@}
 
     /** @name Transmission state. */

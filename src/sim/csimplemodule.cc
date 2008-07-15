@@ -337,21 +337,19 @@ void cSimpleModule::deleteModule()
     delete this;
 }
 
-int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, const char *gatename, int gateindex)
+#define TRY(code, msgprefix) try {code;} catch(cRuntimeError& e) {e.prependMessage(msgprefix);throw;}
+
+int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, const char *gateName, int gateIndex)
 {
-    cGate *outgate = gate(gatename,gateindex);
-    if (outgate==NULL)
-       throw cRuntimeError(gateindex<0 ? "send()/sendDelayed(): module has no gate `%s'":
-                                         "send()/sendDelayed(): module has no gate `%s[%d]'",
-                           gatename, gateindex);
+    cGate *outgate;
+    TRY(outgate = gate(gateName,gateIndex), "send()/sendDelayed()");
     return sendDelayed(msg, delay, outgate);
 }
 
-int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, int g)
+int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, int gateId)
 {
-    cGate *outgate = gate(g);
-    if (outgate==NULL)
-        throw cRuntimeError("send()/sendDelayed(): module has no gate #%d",g);
+    cGate *outgate;
+    TRY(outgate = gate(gateId), "send()/sendDelayed()");
     return sendDelayed(msg, delay, outgate);
 }
 
@@ -418,43 +416,40 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
     return 0;
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cModule *mod, int g)
+int cSimpleModule::sendDirect(cMessage *msg, cModule *mod, const char *gateName, int gateIndex)
 {
-    return sendDirect(msg, propdelay, SIMTIME_ZERO, mod, g);
+    return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, mod, gateName, gateIndex);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay,
-                              cModule *mod, const char *gatename, int gateindex)
+int cSimpleModule::sendDirect(cMessage *msg, cModule *mod, int gateId)
 {
-    return sendDirect(msg, propdelay, SIMTIME_ZERO, mod, gatename, gateindex);
+    return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, mod, gateId);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, cGate *togate)
+int cSimpleModule::sendDirect(cMessage *msg, cGate *togate)
 {
-    return sendDirect(msg, propdelay, SIMTIME_ZERO, togate);
+    return sendDirect(msg, SIMTIME_ZERO, SIMTIME_ZERO, togate);
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t transmdelay, cModule *mod, int g)
-{
-    cGate *togate = mod->gate(g);
-    if (togate==NULL)
-        throw cRuntimeError("sendDirect(): module `%s' has no gate #%d", mod->getFullPath().c_str(),g);
-
-    return sendDirect(msg, propdelay, togate);
-}
-
-int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t transmdelay,
-                              cModule *mod, const char *gatename, int gateindex)
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t duration,
+                              cModule *mod, const char *gateName, int gateIndex)
 {
     if (!mod)
-        throw cRuntimeError("sendDirect(): module ptr is NULL");
-    cGate *togate = mod->gate(gatename,gateindex);
-    if (togate==NULL)
-        throw cRuntimeError(gateindex<0 ? "sendDirect(): module `%s' has no gate `%s'":
-                                          "sendDirect(): module `%s' has no gate `%s[%d]'",
-                            mod->getFullPath().c_str(),gatename,gateindex);
-    return sendDirect(msg, propdelay, togate);
+        throw cRuntimeError("sendDirect(): destination module pointer is NULL");
+    cGate *togate;
+    TRY(togate = mod->gate(gateName, gateIndex), "sendDirect()");
+    return sendDirect(msg, propdelay, duration, togate);
 }
+
+int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t duration, cModule *mod, int gateId)
+{
+    if (!mod)
+        throw cRuntimeError("sendDirect(): destination module pointer is NULL");
+    cGate *togate;
+    TRY(togate = mod->gate(gateId), "sendDirect()");
+    return sendDirect(msg, propdelay, duration, togate);
+}
+
 
 int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t transmdelay, cGate *togate)
 {
@@ -471,6 +466,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t tran
         throw cRuntimeError("sendDirect(): message pointer is NULL");
     if (msg->getOwner()!=this)
     {
+        // try to give a meaningful error message
         if (this!=simulation.getContextModule())
             throw cRuntimeError("sendDirect() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
