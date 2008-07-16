@@ -196,23 +196,44 @@ class SIM_API cGate : public cObject, noncopyable
      * (if one is specified). This method can be used to manually create
      * connections for dynamically created modules.
      *
-     * This method does not invoke callInitialize() on the channel object:
-     * it must be done manually, after this call.
+     * This method invokes callInitialize() on the channel object, unless the
+     * compound module containing this connection is not yet initialized
+     * (then it assumes that this channel will be initialized as part of the
+     * compound module initialization process.) To leave the channel
+     * uninitialized, specify true for the leaveUninitialized parameter.
      *
-     * If the gate is already connected, an error will occur.
-     * The gate argument cannot be NULL, that is, you cannot use
-     * this function to disconnect a gate. Use disconnect() instead.
+     * If the gate is already connected, an error will occur. The gate
+     * argument cannot be NULL, that is, you cannot use this function
+     * to disconnect a gate; use disconnect() for that.
+     *
+     * Note: When you set channel parameters are after channel initialization,
+     * make sure the channel class is implemented so that the changes take
+     * effect; i.e. the channel should either override and properly handle
+     * handleParameterChange(), or should not cache any values from parameters.
      */
-    cChannel *connectTo(cGate *g, cChannel *chan=NULL, bool leaveUninitialized=false);
+    cChannel *connectTo(cGate *gate, cChannel *channel=NULL, bool leaveUninitialized=false);
 
     /**
-     * Disconnects the gate. It also destroys the associated channel object
-     * if one has been set (see setChannel()). disconnect() must be invoked
-     * on the source gate ("from" side) of the connection.
+     * Disconnects the gate, and also deletes the associated channel object
+     * if one has been set. disconnect() must be invoked on the source gate
+     * ("from" side) of the connection.
      *
      * The method has no effect if the gate is not connected.
      */
     void disconnect();
+
+    /**
+     * Disconnects the gate, then connects it again to the same gate, with the
+     * given channel object (if not NULL). The gate must be connected.
+     *
+     * @see connectTo()
+     */
+    cChannel *reconnectWith(cChannel *channel, bool leaveUninitialized=false);
+
+    /**
+     * DEPRECATED: Use reconnectWith() instead.
+     */
+    _OPPDEPRECATED void setChannel(cChannel *channel) {reconnectWith(channel);}
     //@}
 
     /** @name Information about the gate. */

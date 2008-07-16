@@ -270,6 +270,15 @@ void cGate::checkChannels() const
                             getDestinationGate()->getFullPath().c_str());
 }
 
+cChannel *cGate::reconnectWith(cChannel *channel, bool leaveUninitialized)
+{
+    cGate *otherGate = getToGate();
+    if (!otherGate)
+        throw cRuntimeError(this, "reconnectWith(): gate must be already connected");
+    disconnect();
+    return connectTo(otherGate, channel, leaveUninitialized);
+}
+
 cGate *cGate::getSourceGate() const
 {
     const cGate *g;
