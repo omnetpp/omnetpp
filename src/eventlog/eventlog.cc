@@ -119,7 +119,7 @@ void EventLog::progress()
     }
 }
 
-long EventLog::getApproximateNumberOfEvents()
+eventnumber_t EventLog::getApproximateNumberOfEvents()
 {
     if (approximateNumberOfEvents == -1)
     {
@@ -171,7 +171,7 @@ Event *EventLog::getApproximateEventAt(double percentage)
         file_offset_t endOffset = lastEvent->getBeginOffset();
         file_offset_t offset = beginOffset + (file_offset_t)((endOffset - beginOffset) * percentage);
 
-        long eventNumber;
+        eventnumber_t eventNumber;
         file_offset_t lineStartOffset = -1, lineEndOffset;
         simtime_t simulationTime;
         readToEventLine(true, offset, eventNumber, simulationTime, lineStartOffset, lineEndOffset);
@@ -260,7 +260,7 @@ Event *EventLog::getLastEvent()
     return lastEvent;
 }
 
-Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
+Event *EventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind)
 {
     Assert(eventNumber >= 0);
 
@@ -288,7 +288,7 @@ Event *EventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
         return getEventForBeginOffset(offset);
 }
 
-Event *EventLog::getNeighbourEvent(IEvent *event, long distance)
+Event *EventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
 {
     Assert(event);
     return (Event *)IEventLog::getNeighbourEvent(event, distance);

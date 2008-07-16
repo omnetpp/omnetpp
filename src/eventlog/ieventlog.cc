@@ -34,7 +34,7 @@ void IEventLog::synchronize(FileReader::FileChangedState change)
     }
 }
 
-void IEventLog::printEvents(FILE *file, long fromEventNumber, long toEventNumber, bool outputEventLogMessages)
+void IEventLog::printEvents(FILE *file, eventnumber_t fromEventNumber, eventnumber_t toEventNumber, bool outputEventLogMessages)
 {
     IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
 
@@ -45,7 +45,7 @@ void IEventLog::printEvents(FILE *file, long fromEventNumber, long toEventNumber
     }
 }
 
-void IEventLog::print(FILE *file, long fromEventNumber, long toEventNumber, bool outputInitializationEntries, bool outputEventLogMessages)
+void IEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t toEventNumber, bool outputInitializationEntries, bool outputEventLogMessages)
 {
     if (outputInitializationEntries)
         printInitializationLogEntries(file);
@@ -53,10 +53,10 @@ void IEventLog::print(FILE *file, long fromEventNumber, long toEventNumber, bool
     printEvents(file, fromEventNumber, toEventNumber, outputEventLogMessages);
 }
 
-IEvent *IEventLog::getNeighbourEvent(IEvent *event, long distance)
+IEvent *IEventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
 {
     Assert(event);
-    long neighbourEventNumber = event->getEventNumber() + distance;
+    eventnumber_t neighbourEventNumber = event->getEventNumber() + distance;
 
     if (lastNeighbourEvent && lastNeighbourEventNumber != -1 && abs(neighbourEventNumber - lastNeighbourEventNumber) < abs(distance))
         return getNeighbourEvent(lastNeighbourEvent, neighbourEventNumber - lastNeighbourEventNumber);
@@ -79,7 +79,7 @@ IEvent *IEventLog::getNeighbourEvent(IEvent *event, long distance)
     return lastNeighbourEvent;
 }
 
-double IEventLog::getApproximatePercentageForEventNumber(long eventNumber)
+double IEventLog::getApproximatePercentageForEventNumber(eventnumber_t eventNumber)
 {
     IEvent *firstEvent = getFirstEvent();
     IEvent *lastEvent = getLastEvent();

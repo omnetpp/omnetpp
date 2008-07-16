@@ -15,14 +15,13 @@
 *--------------------------------------------------------------*/
 
 #include <algorithm>
+#include "eventlogentry.h"
 #include "eventlogindex.h"
 #include "exception.h"
 
 USING_NAMESPACE
 
-#define LL  INT64_PRINTF_FORMAT
-
-static bool isEventNumber(long eventNumber)
+static bool isEventNumber(eventnumber_t eventNumber)
 {
     return true;
 }
@@ -32,7 +31,7 @@ static bool isEventNumber(simtime_t simulationTime)
     return false;
 }
 
-static bool isSimulationTime(long eventNumber)
+static bool isSimulationTime(eventnumber_t eventNumber)
 {
     return false;
 }
@@ -42,12 +41,12 @@ static bool isSimulationTime(simtime_t simulationTime)
     return true;
 }
 
-static long getKey(long key, long eventNumber, simtime_t simulationTime)
+static eventnumber_t getKey(eventnumber_t key, eventnumber_t eventNumber, simtime_t simulationTime)
 {
     return eventNumber;
 }
 
-static simtime_t getKey(simtime_t key, long eventNumber, simtime_t simulationTime)
+static simtime_t getKey(simtime_t key, eventnumber_t eventNumber, simtime_t simulationTime)
 {
     return simulationTime;
 }
@@ -62,7 +61,7 @@ EventLogIndex::CacheEntry::CacheEntry()
     this->endOffset = -1;
 }
 
-EventLogIndex::CacheEntry::CacheEntry(long eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
+EventLogIndex::CacheEntry::CacheEntry(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
 {
     this->simulationTime = simulationTime;
     this->beginEventNumber = eventNumber;
@@ -72,7 +71,7 @@ EventLogIndex::CacheEntry::CacheEntry(long eventNumber, simtime_t simulationTime
     this->endOffset = endOffset;
 }
 
-void EventLogIndex::CacheEntry::include(long eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
+void EventLogIndex::CacheEntry::include(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
 {
     Assert(this->simulationTime == simulationTime);
     this->beginEventNumber = std::min(beginEventNumber, eventNumber);
@@ -82,7 +81,7 @@ void EventLogIndex::CacheEntry::include(long eventNumber, simtime_t simulationTi
     this->endOffset = std::max(this->endOffset, endOffset);
 }
 
-void EventLogIndex::CacheEntry::getBeginKey(long &key)
+void EventLogIndex::CacheEntry::getBeginKey(eventnumber_t &key)
 {
     key = beginEventNumber;
 }
@@ -92,7 +91,7 @@ void EventLogIndex::CacheEntry::getBeginKey(simtime_t &key)
     key = simulationTime;
 }
 
-void EventLogIndex::CacheEntry::getEndKey(long &key)
+void EventLogIndex::CacheEntry::getEndKey(eventnumber_t &key)
 {
     key = endEventNumber;
 }
@@ -142,7 +141,7 @@ void EventLogIndex::clearInternalState(FileReader::FileChangedState change)
     reader->synchronize();
 }
 
-long EventLogIndex::getFirstEventNumber()
+eventnumber_t EventLogIndex::getFirstEventNumber()
 {
     if (firstEventNumber == EVENT_NOT_YET_CALCULATED)
     {
@@ -153,7 +152,7 @@ long EventLogIndex::getFirstEventNumber()
     return firstEventNumber;
 }
 
-long EventLogIndex::getLastEventNumber()
+eventnumber_t EventLogIndex::getLastEventNumber()
 {
     if (lastEventNumber == EVENT_NOT_YET_CALCULATED)
     {
@@ -197,7 +196,7 @@ file_offset_t EventLogIndex::getBeginOffsetForEndOffset(file_offset_t endOffset)
 {
     Assert(endOffset >= 0);
 
-    long eventNumber;
+    eventnumber_t eventNumber;
     simtime_t simulationTime;
     file_offset_t lineBeginOffset, lineEndOffset;
 
@@ -211,7 +210,7 @@ file_offset_t EventLogIndex::getEndOffsetForBeginOffset(file_offset_t beginOffse
 {
     Assert(beginOffset >= 0);
 
-    long eventNumber;
+    eventnumber_t eventNumber;
     simtime_t simulationTime;
     file_offset_t lineBeginOffset, lineEndOffset;
 
@@ -229,12 +228,12 @@ bool EventLogIndex::isEventBeginOffset(file_offset_t offset)
     return line && *line == 'E';
 }
 
-file_offset_t EventLogIndex::getOffsetForEventNumber(long eventNumber, MatchKind matchKind)
+file_offset_t EventLogIndex::getOffsetForEventNumber(eventnumber_t eventNumber, MatchKind matchKind)
 {
     Assert(eventNumber >= 0);
     file_offset_t offset = searchForOffset(eventNumberToCacheEntryMap, eventNumber, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld for match kind: %d at offset: %"LL"d\n", eventNumber, matchKind, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Found event number: %ld for match kind: %d at offset: %"INT64_PRINTF_FORMAT"d\n", eventNumber, matchKind, offset);
 
     return offset;
 }
@@ -244,7 +243,7 @@ file_offset_t EventLogIndex::getOffsetForSimulationTime(simtime_t simulationTime
     Assert(simulationTime >= 0);
     file_offset_t offset = searchForOffset(simulationTimeToCacheEntryMap, simulationTime, matchKind);
 
-    if (PRINT_DEBUG_MESSAGES) printf("Found simulation time: %.*g for match kind: %d at offset: %"LL"d\n", 12, simulationTime.dbl(), matchKind, offset);
+    if (PRINT_DEBUG_MESSAGES) printf("Found simulation time: %.*g for match kind: %d at offset: %"INT64_PRINTF_FORMAT"d\n", 12, simulationTime.dbl(), matchKind, offset);
 
     return offset;
 }
@@ -434,7 +433,7 @@ template <typename T> file_offset_t EventLogIndex::binarySearchForOffset(T key, 
 {
     Assert(key >= 0);
     file_offset_t foundOffset, middleEventBeginOffset, middleEventEndOffset;
-    long middleEventNumber;
+    eventnumber_t middleEventNumber;
     simtime_t middleSimulationTime;
 
     /**
@@ -494,7 +493,7 @@ template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(T key, 
 {
     Assert(beginOffset >= 0);
 
-    long eventNumber;
+    eventnumber_t eventNumber;
     simtime_t simulationTime;
     file_offset_t lineBeginOffset, lineEndOffset;
     file_offset_t previousOffset = beginOffset;
@@ -536,7 +535,7 @@ template <typename T> file_offset_t EventLogIndex::linearSearchForOffset(T key, 
     return -1;
 }
 
-bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset, long& eventNumber, simtime_t& simulationTime, file_offset_t& lineStartOffset, file_offset_t& lineEndOffset)
+bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset, eventnumber_t& eventNumber, simtime_t& simulationTime, file_offset_t& lineStartOffset, file_offset_t& lineEndOffset)
 {
     Assert(readStartOffset >= 0);
     eventNumber = -1;
@@ -545,7 +544,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
 
     char *line;
 
-    if (PRINT_DEBUG_MESSAGES) printf("Reading to first event line from offset: %"LL"d in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
+    if (PRINT_DEBUG_MESSAGES) printf("Reading to first event line from offset: %"INT64_PRINTF_FORMAT"d in direction: %s\n", readStartOffset, forward ? "forward" : "backward");
 
     // find first "E" line, return false if none found
     while (true)
@@ -575,9 +574,9 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
         const char *token = tokens[i];
 
         if (token[0] == '#' && token[1] == '\0')
-            eventNumber = atol(tokens[i+1]);
+            eventNumber = EventLogEntry::parseEventNumber(tokens[i+1]);
         else if (token[0] == 't' && token[1] == '\0')
-            simulationTime = BigDecimal::parse(tokens[i+1]);
+            simulationTime = EventLogEntry::parseSimulationTime(tokens[i+1]);
     }
 
     if (eventNumber != -1) {
@@ -590,7 +589,7 @@ bool EventLogIndex::readToEventLine(bool forward, file_offset_t readStartOffset,
     throw opp_runtime_error("Wrong file format: no event number in 'E' line, line %d", reader->getNumReadLines());
 }
 
-void EventLogIndex::cacheEntry(long eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
+void EventLogIndex::cacheEntry(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset)
 {
     EventNumberToCacheEntryMap::iterator itEventNumber = eventNumberToCacheEntryMap.lower_bound(eventNumber);
 
@@ -618,10 +617,10 @@ void EventLogIndex::dump()
     printf("eventNumberToCacheEntryMap:\n");
 
     for (EventNumberToCacheEntryMap::iterator it = eventNumberToCacheEntryMap.begin(); it != eventNumberToCacheEntryMap.end(); ++it)
-        printf("  #%ld --> offset %"LL"d (0x%"LL"x)\n", it->first, it->second.beginOffset, it->second.beginOffset);
+        printf("  #%ld --> offset %"INT64_PRINTF_FORMAT"d (0x%"INT64_PRINTF_FORMAT"x)\n", it->first, it->second.beginOffset, it->second.beginOffset);
 
     printf("simulationTimeToCacheEntryMap:\n");
 
     for (SimulationTimeToCacheEntryMap::iterator it = simulationTimeToCacheEntryMap.begin(); it != simulationTimeToCacheEntryMap.end(); ++it)
-        printf("  %.*g --> offset %"LL"d (0x%"LL"x)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
+        printf("  %.*g --> offset %"INT64_PRINTF_FORMAT"d (0x%"INT64_PRINTF_FORMAT"x)\n", 12, it->first.dbl(), it->second.beginOffset, it->second.beginOffset);
 }

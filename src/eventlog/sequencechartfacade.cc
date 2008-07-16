@@ -247,7 +247,7 @@ IEvent *SequenceChartFacade::getEventForNonLinearTimelineCoordinate(double timel
         currentEvent = timelineCoordinateRangeStartEvent;
     }
 
-    // TODO: long running operation
+    // TODO: LONG RUNNING OPERATION
     // does a linear search towards requested non linear timeline coordinate
     while (currentEvent && (forward ? getTimelineCoordinate(currentEvent) < timelineCoordinate :
                                       timelineCoordinate <= getTimelineCoordinate(currentEvent)))
@@ -266,7 +266,7 @@ IEvent *SequenceChartFacade::getLastEventNotAfterTimelineCoordinate(double timel
             return eventLog->getLastEventNotAfterSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
         case EVENT_NUMBER:
             {
-                long eventNumber = (long)floor(timelineCoordinate) + timelineCoordinateOriginEventNumber;
+                eventnumber_t eventNumber = (eventnumber_t)floor(timelineCoordinate) + timelineCoordinateOriginEventNumber;
 
                 if (eventNumber < 0)
                     return NULL;
@@ -298,7 +298,7 @@ IEvent *SequenceChartFacade::getFirstEventNotBeforeTimelineCoordinate(double tim
             return eventLog->getFirstEventNotBeforeSimulationTime(getSimulationTimeForTimelineCoordinate(timelineCoordinate));
         case EVENT_NUMBER:
             {
-                long eventNumber = (long)floor(timelineCoordinate) + timelineCoordinateOriginEventNumber;
+                eventnumber_t eventNumber = (eventnumber_t)floor(timelineCoordinate) + timelineCoordinateOriginEventNumber;
 
                 if (eventNumber < 0)
                     return eventLog->getFirstEvent();
@@ -493,7 +493,7 @@ std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_
     IEvent *endEvent = (IEvent *)endEventPtr;
     Assert(startEvent);
     Assert(endEvent);
-    long startEventNumber = startEvent->getEventNumber();
+    eventnumber_t startEventNumber = startEvent->getEventNumber();
 
     // TODO: LONG RUNNING OPERATION
     // this might take a while if start and end events are far away from each other
@@ -529,7 +529,7 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
     LCGRandom lcgRandom;
     std::vector<int> adjacencyMatrix;
     std::set<int> axisIndexSet;
-    std::map<long, IEvent *> eventNumberToEventMap;
+    std::map<eventnumber_t, IEvent *> eventNumberToEventMap;
 
     for (std::map<int, int>::iterator it = moduleIdToAxisIndexMap->begin(); it != moduleIdToAxisIndexMap->end(); it++)
         axisIndexSet.insert(it->second);
@@ -559,7 +559,7 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
         }
     }
 
-    for (std::map<long, IEvent *>::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++) {
+    for (std::map<eventnumber_t, IEvent *>::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++) {
         IEvent *event = it->second;
         IMessageDependencyList *causes = event->getCauses();
 

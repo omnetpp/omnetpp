@@ -42,8 +42,8 @@ enum EventLogTableFilterMode {
 class EVENTLOG_API EventLogTableFacade : public EventLogFacade
 {
     protected:
-        long approximateNumberOfEntries;
-        long lastMatchedEventNumber;
+        eventnumber_t approximateNumberOfEntries;
+        eventnumber_t lastMatchedEventNumber;
         int lastNumMatchingEventLogEntries;
         EventLogTableFilterMode filterMode;
         std::string customFilter;
@@ -62,24 +62,24 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         void setCustomFilter(const char *pattern) { customFilter = pattern; matchExpression.setPattern((std::string("E or (") + customFilter + ")").c_str(), false, true, false); }
         const char *getCustomFilter() { return customFilter.c_str(); }
 
-        EventLogEntry *getEventLogEntry(long eventNumber, int eventLogEntryIndex);
+        EventLogEntry *getEventLogEntry(eventnumber_t eventNumber, int eventLogEntryIndex);
         EventLogEntry *getFirstEntry();
         EventLogEntry *getLastEntry();
         int getEntryIndexInEvent(EventLogEntry *eventLogEntry);
         EventLogEntry *getEntryInEvent(IEvent *event, int index);
-        long getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit);
+        eventnumber_t getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, eventnumber_t limit);
         EventLogEntry *getClosestEntryInEvent(EventLogEntry *eventLogEntry);
-        long getDistanceToFirstEntry(EventLogEntry *eventLogEntry, long limit);
-        long getDistanceToLastEntry(EventLogEntry *eventLogEntry, long limit);
-        EventLogEntry *getNeighbourEntry(EventLogEntry *eventLogEntry, long distance);
+        eventnumber_t getDistanceToFirstEntry(EventLogEntry *eventLogEntry, eventnumber_t limit);
+        eventnumber_t getDistanceToLastEntry(EventLogEntry *eventLogEntry, eventnumber_t limit);
+        EventLogEntry *getNeighbourEntry(EventLogEntry *eventLogEntry, eventnumber_t distance);
         double getApproximatePercentageForEntry(EventLogEntry *eventLogEntry);
         EventLogEntry *getApproximateEventLogEntryTableAt(double percentage);
-        long getApproximateNumberOfEntries();
+        eventnumber_t getApproximateNumberOfEntries();
 
     protected:
         EventLogEntry *getPreviousEntry(EventLogEntry *eventLogEntry, int& index);
         EventLogEntry *getNextEntry(EventLogEntry *eventLogEntry, int& index);
-        EventLogEntry *getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance);
+        EventLogEntry *getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, eventnumber_t distance, eventnumber_t& reachedDistance);
 };
 
 NAMESPACE_END

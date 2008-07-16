@@ -54,12 +54,12 @@ ptr_t EventLogFacade::Event_getNonFilteredEvent(ptr_t ptr)
         return Event_getNonFilteredEvent((ptr_t)((FilteredEvent *)ievent)->getEvent());
 }
 
-ptr_t EventLogFacade::Event_getEventForEventNumber(long eventNumber)
+ptr_t EventLogFacade::Event_getEventForEventNumber(eventnumber_t eventNumber)
 {
     return (ptr_t)eventLog->getEventForEventNumber(eventNumber);
 }
 
-ptr_t EventLogFacade::Event_getNonFilteredEventForEventNumber(long eventNumber)
+ptr_t EventLogFacade::Event_getNonFilteredEventForEventNumber(eventnumber_t eventNumber)
 {
     EventLog *nonFilteredEventLog = dynamic_cast<EventLog *>(eventLog);
 
@@ -81,7 +81,7 @@ ptr_t EventLogFacade::Event_getNextEvent(ptr_t ptr)
     return (ptr_t)((IEvent*)ptr)->getNextEvent();
 }
 
-long EventLogFacade::Event_getEventNumber(ptr_t ptr)
+eventnumber_t EventLogFacade::Event_getEventNumber(ptr_t ptr)
 {
     EVENT_PTR(ptr);
     return ((IEvent*)ptr)->getEventNumber();

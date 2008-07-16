@@ -20,7 +20,7 @@
 
 USING_NAMESPACE
 
-FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumber)
+FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, eventnumber_t eventNumber)
 {
     this->eventNumber = eventNumber;
     this->filteredEventLog = filteredEventLog;

@@ -83,11 +83,11 @@ class EVENTLOG_API Event : public IEvent
         virtual int getNumBeginSendEntries() { return numBeginSendEntries; }
         virtual EventLogMessageEntry *getEventLogMessage(int index);
 
-        virtual long getEventNumber() { return eventEntry->eventNumber; }
+        virtual eventnumber_t getEventNumber() { return eventEntry->eventNumber; }
         virtual simtime_t& getSimulationTime() { return eventEntry->simulationTime; }
         virtual int getModuleId() { return eventEntry->moduleId; }
         virtual long getMessageId() { return eventEntry->messageId; }
-        virtual long getCauseEventNumber() { return eventEntry->causeEventNumber; }
+        virtual eventnumber_t getCauseEventNumber() { return eventEntry->causeEventNumber; }
 
         virtual bool isSelfMessage(BeginSendEntry *beginSendEntry);
         virtual bool isSelfMessageProcessingEvent();

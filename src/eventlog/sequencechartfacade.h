@@ -37,10 +37,10 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 {
     protected:
         long timelineCoordinateSystemVersion;
-        long timelineCoordinateOriginEventNumber;
+        eventnumber_t timelineCoordinateOriginEventNumber;
         double timelineCoordinateOriginSimulationTime;
-        long timelineCoordinateRangeStartEventNumber;
-        long timelineCoordinateRangeEndEventNumber;
+        eventnumber_t timelineCoordinateRangeStartEventNumber;
+        eventnumber_t timelineCoordinateRangeEndEventNumber;
         TimelineMode timelineMode;
         double nonLinearMinimumTimelineCoordinateDelta;
         double nonLinearFocus;
@@ -61,7 +61,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         void setNonLinearFocus(double nonLinearFocus);
 
         IEvent *getTimelineCoordinateSystemOriginEvent() { return eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber); }
-        long getTimelineCoordinateSystemOriginEventNumber() { return timelineCoordinateOriginEventNumber; }
+        eventnumber_t getTimelineCoordinateSystemOriginEventNumber() { return timelineCoordinateOriginEventNumber; }
         double getTimelineCoordinateDelta(double simulationTimeDelta);
         /**
          * Calculates the timeline coordinate for the given event. Returns value from the cache if already there or calculates it

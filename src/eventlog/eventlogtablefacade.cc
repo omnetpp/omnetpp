@@ -111,7 +111,7 @@ int EventLogTableFacade::getNumMatchingEventLogEntries(IEvent *event)
     }
 }
 
-EventLogEntry *EventLogTableFacade::getEventLogEntry(long eventNumber, int eventLogEntryIndex)
+EventLogEntry *EventLogTableFacade::getEventLogEntry(eventnumber_t eventNumber, int eventLogEntryIndex)
 {
     IEvent *event = eventLog->getEventForEventNumber(eventNumber);
     Assert(event);
@@ -139,7 +139,7 @@ EventLogEntry *EventLogTableFacade::getLastEntry()
         return getEntryInEvent(event, getNumMatchingEventLogEntries(event) - 1);
 }
 
-EventLogEntry *EventLogTableFacade::getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long distance, long& reachedDistance)
+EventLogEntry *EventLogTableFacade::getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, eventnumber_t distance, eventnumber_t& reachedDistance)
 {
     Assert(sourceEventLogEntry);
     EventLogEntry *eventLogEntry = sourceEventLogEntry;
@@ -234,7 +234,7 @@ EventLogEntry *EventLogTableFacade::getEntryInEvent(IEvent *event, int index)
         }
     }
 
-    throw opp_runtime_error("No event log entry with index: %d in event: %"LL"d", index, event->getEventNumber());
+    throw opp_runtime_error("No event log entry with index: %d in event: %"INT64_PRINTF_FORMAT"d", index, event->getEventNumber());
 }
 
 int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
@@ -255,33 +255,33 @@ int EventLogTableFacade::getEntryIndexInEvent(EventLogEntry *eventLogEntry)
         }
     }
 
-    throw opp_runtime_error("No event log entry found in event: %"LL"d", event->getEventNumber());
+    throw opp_runtime_error("No event log entry found in event: %"INT64_PRINTF_FORMAT"d", event->getEventNumber());
 }
 
-long EventLogTableFacade::getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, long limit)
+eventnumber_t EventLogTableFacade::getDistanceToEntry(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, eventnumber_t limit)
 {
-    long reachedDistance;
+    eventnumber_t reachedDistance;
     getEntryAndDistance(sourceEventLogEntry, targetEventLogEntry, limit, reachedDistance);
     return reachedDistance;
 }
 
-long EventLogTableFacade::getDistanceToFirstEntry(EventLogEntry *eventLogEntry, long limit)
+eventnumber_t EventLogTableFacade::getDistanceToFirstEntry(EventLogEntry *eventLogEntry, eventnumber_t limit)
 {
-    long reachedDistance;
+    eventnumber_t reachedDistance;
     getEntryAndDistance(eventLogEntry, getFirstEntry(), -limit, reachedDistance);
     return -reachedDistance;
 }
 
-long EventLogTableFacade::getDistanceToLastEntry(EventLogEntry *eventLogEntry, long limit)
+eventnumber_t EventLogTableFacade::getDistanceToLastEntry(EventLogEntry *eventLogEntry, eventnumber_t limit)
 {
-    long reachedDistance;
+    eventnumber_t reachedDistance;
     getEntryAndDistance(eventLogEntry, getLastEntry(), limit, reachedDistance);
     return reachedDistance;
 }
 
-EventLogEntry *EventLogTableFacade::getNeighbourEntry(EventLogEntry *eventLogEntry, long distance)
+EventLogEntry *EventLogTableFacade::getNeighbourEntry(EventLogEntry *eventLogEntry, eventnumber_t distance)
 {
-    long reachedDistance;
+    eventnumber_t reachedDistance;
     return getEntryAndDistance(eventLogEntry, NULL, distance, reachedDistance);
 }
 
@@ -304,7 +304,7 @@ EventLogEntry *EventLogTableFacade::getApproximateEventLogEntryTableAt(double pe
         return eventLog->getApproximateEventAt(percentage)->getEventEntry();
 }
 
-long EventLogTableFacade::getApproximateNumberOfEntries()
+eventnumber_t EventLogTableFacade::getApproximateNumberOfEntries()
 {
     if (approximateNumberOfEntries == -1)
     {

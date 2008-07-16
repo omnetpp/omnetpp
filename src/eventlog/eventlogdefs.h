@@ -50,8 +50,14 @@ NAMESPACE_BEGIN
 // but not all supported compilers are C99 compatible
 typedef unsigned long ptr_t;
 
-typedef BigDecimal simtime_t;
+typedef int64 eventnumber_t;
+#define EVENTNUMBER_PRINTF_FORMAT INT64_PRINTF_FORMAT
+inline int64 abs(int64 a)
+{
+   return a < 0 ? -a : a;
+}
 
+typedef BigDecimal simtime_t;
 #define simtime_nil BigDecimal::MinusOne
 
 #ifndef PI

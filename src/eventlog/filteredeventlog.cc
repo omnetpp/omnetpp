@@ -100,7 +100,7 @@ void FilteredEventLog::setPatternMatchers(std::vector<PatternMatcher> &patternMa
     }
 }
 
-long FilteredEventLog::getApproximateNumberOfEvents()
+eventnumber_t FilteredEventLog::getApproximateNumberOfEvents()
 {
     if (approximateNumberOfEvents == -1)
     {
@@ -161,7 +161,7 @@ long FilteredEventLog::getApproximateNumberOfEvents()
     return approximateNumberOfEvents;
 }
 
-double FilteredEventLog::getApproximatePercentageForEventNumber(long eventNumber)
+double FilteredEventLog::getApproximatePercentageForEventNumber(eventnumber_t eventNumber)
 {
     if (tracedEventNumber != -1)
         // TODO: this is clearly not good and should return a much better approximation
@@ -193,7 +193,7 @@ FilteredEvent *FilteredEventLog::getApproximateEventAt(double percentage)
     }
 }
 
-FilteredEvent *FilteredEventLog::getNeighbourEvent(IEvent *event, long distance)
+FilteredEvent *FilteredEventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
 {
     return (FilteredEvent *)IEventLog::getNeighbourEvent(event, distance);
 }
@@ -363,7 +363,7 @@ FilteredEvent *FilteredEventLog::getFirstEvent()
 {
     if (!firstMatchingEvent && !eventLog->isEmpty())
     {
-        long startEventNumber = firstEventNumber == -1 ? eventLog->getFirstEvent()->getEventNumber() : std::max(eventLog->getFirstEvent()->getEventNumber(), firstEventNumber);
+        eventnumber_t startEventNumber = firstEventNumber == -1 ? eventLog->getFirstEvent()->getEventNumber() : std::max(eventLog->getFirstEvent()->getEventNumber(), firstEventNumber);
         firstMatchingEvent = getMatchingEventInDirection(startEventNumber, true);
     }
 
@@ -374,14 +374,14 @@ FilteredEvent *FilteredEventLog::getLastEvent()
 {
     if (!lastMatchingEvent && !eventLog->isEmpty())
     {
-        long startEventNumber = lastEventNumber == -1 ? eventLog->getLastEvent()->getEventNumber() : std::min(eventLog->getLastEvent()->getEventNumber(), lastEventNumber);
+        eventnumber_t startEventNumber = lastEventNumber == -1 ? eventLog->getLastEvent()->getEventNumber() : std::min(eventLog->getLastEvent()->getEventNumber(), lastEventNumber);
         lastMatchingEvent = getMatchingEventInDirection(startEventNumber, false);
     }
 
     return lastMatchingEvent;
 }
 
-FilteredEvent *FilteredEventLog::getEventForEventNumber(long eventNumber, MatchKind matchKind)
+FilteredEvent *FilteredEventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind)
 {
     Assert(eventNumber >= 0);
 
@@ -470,7 +470,7 @@ EventLogEntry *FilteredEventLog::findEventLogEntry(EventLogEntry *start, const c
     return eventLogEntry;
 }
 
-FilteredEvent *FilteredEventLog::getMatchingEventInDirection(long eventNumber, bool forward, long stopEventNumber)
+FilteredEvent *FilteredEventLog::getMatchingEventInDirection(eventnumber_t eventNumber, bool forward, eventnumber_t stopEventNumber)
 {
     Assert(eventNumber >= 0);
     IEvent *event = eventLog->getEventForEventNumber(eventNumber);
@@ -478,7 +478,7 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(long eventNumber, b
     return getMatchingEventInDirection(event, forward, stopEventNumber);
 }
 
-FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool forward, long stopEventNumber)
+FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool forward, eventnumber_t stopEventNumber)
 {
     Assert(event);
 
@@ -626,7 +626,7 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
     return result;
 }
 
-FilteredEvent *FilteredEventLog::cacheFilteredEvent(long eventNumber)
+FilteredEvent *FilteredEventLog::cacheFilteredEvent(eventnumber_t eventNumber)
 {
     EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
 

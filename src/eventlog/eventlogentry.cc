@@ -27,6 +27,8 @@ LineTokenizer EventLogEntry::tokenizer(32768);
 static const char *currentLine;
 static int currentLineLength;
 
+/***********************************************/
+
 EventLogEntry::EventLogEntry()
 {
     contextModuleId = -1;
@@ -60,6 +62,20 @@ bool EventLogEntry::isMessageSend()
     return dynamic_cast<BeginSendEntry *>(this) != NULL;
 }
 
+eventnumber_t EventLogEntry::parseEventNumber(const char *str)
+{
+    char *end;
+    return strtoll(str, &end, 10);
+}
+
+simtime_t EventLogEntry::parseSimulationTime(const char *str)
+{
+    const char *end;
+    return BigDecimal::parse(str, end);
+}
+
+/***********************************************/
+
 char *EventLogTokenBasedEntry::getToken(char **tokens, int numTokens, const char *sign, bool mandatory)
 {
     for (int i = 1; i < numTokens; i+= 2)
@@ -86,49 +102,94 @@ bool EventLogTokenBasedEntry::getBoolToken(char **tokens, int numTokens, const c
 
 int EventLogTokenBasedEntry::getIntToken(char **tokens, int numTokens, const char *sign, bool mandatory, int defaultValue)
 {
-    errno = 0;
     char *token = getToken(tokens, numTokens, sign, mandatory);
-    int value = token ? atoi(token) : defaultValue;
-    if (errno)
-        throw opp_runtime_error("Invalid long value %d in line %.*s", value, currentLineLength, currentLine);
-    return value;
+
+    if (token) {
+        errno = 0;
+        int value = atoi(token);
+        if (errno)
+            throw opp_runtime_error("Invalid long value %d in line %.*s", value, currentLineLength, currentLine);
+        return value;
+    }
+    else
+        return defaultValue;
 }
 
 short EventLogTokenBasedEntry::getShortToken(char **tokens, int numTokens, const char *sign, bool mandatory, short defaultValue)
 {
-    errno = 0;
     char *token = getToken(tokens, numTokens, sign, mandatory);
-    short value = token ? atoi(token) : defaultValue;
-    if (errno)
-        throw opp_runtime_error("Invalid short value %d in line %.*s", value, currentLineLength, currentLine);
-    return value;
+
+    if (token) {
+        errno = 0;
+        short value = atoi(token);
+        if (errno)
+            throw opp_runtime_error("Invalid short value %d in line %.*s", value, currentLineLength, currentLine);
+        return value;
+    }
+    else
+        return defaultValue;
 }
 
 long EventLogTokenBasedEntry::getLongToken(char **tokens, int numTokens, const char *sign, bool mandatory, long defaultValue)
 {
-    errno = 0;
     char *token = getToken(tokens, numTokens, sign, mandatory);
-    long value = token ? atol(token) : defaultValue;
-    if (errno)
-        throw opp_runtime_error("Invalid long value %ld in line %.*s", value, currentLineLength, currentLine);
-    return value;
+
+    if (token) {
+        errno = 0;
+        long value = atol(token);
+        if (errno)
+            throw opp_runtime_error("Invalid long value %ld in line %.*s", value, currentLineLength, currentLine);
+        return value;
+    }
+    else
+        return defaultValue;
 }
 
 int64 EventLogTokenBasedEntry::getInt64Token(char **tokens, int numTokens, const char *sign, bool mandatory, int64 defaultValue)
 {
-    errno = 0;
-    char *end;
     char *token = getToken(tokens, numTokens, sign, mandatory);
-    int64 value = token ? strtoll(token, &end, 10) : defaultValue;
-    if (errno)
-        throw opp_runtime_error("Invalid int64 value "INT64_PRINTF_FORMAT" in line %.*s", value, currentLineLength, currentLine);
-    return value;
+
+    if (token) {
+        char *end;
+        errno = 0;
+        int64 value = strtoll(token, &end, 10);
+        if (errno)
+            throw opp_runtime_error("Invalid int64 value "INT64_PRINTF_FORMAT" in line %.*s", value, currentLineLength, currentLine);
+        return value;
+    }
+    else
+        return defaultValue;
+}
+
+eventnumber_t EventLogTokenBasedEntry::getEventNumberToken(char **tokens, int numTokens, const char *sign, bool mandatory, eventnumber_t defaultValue)
+{
+    char *token = getToken(tokens, numTokens, sign, mandatory);
+
+    if (token) {
+        char *end;
+        errno = 0;
+        int64 value = strtoll(token, &end, 10);
+        if (errno)
+            throw opp_runtime_error("Invalid event number value %"EVENTNUMBER_PRINTF_FORMAT"d in line %.*s", value, currentLineLength, currentLine);
+        return value;
+    }
+    else
+        return defaultValue;
 }
 
 simtime_t EventLogTokenBasedEntry::getSimtimeToken(char **tokens, int numTokens, const char *sign, bool mandatory, simtime_t defaultValue)
 {
     char *token = getToken(tokens, numTokens, sign, mandatory);
-    return token ? BigDecimal::parse(token) : defaultValue;
+
+    if (token) {
+        const char *end;
+        BigDecimal value = BigDecimal::parse(token, end);
+        if (*end != '\0')
+            throw opp_runtime_error("Invalid simulation time value %s in line %.*s", value.str(), currentLineLength, currentLine);
+        return value;
+    }
+    else
+        return defaultValue;
 }
 
 const char *EventLogTokenBasedEntry::getStringToken(char **tokens, int numTokens, const char *sign, bool mandatory, const char *defaultValue)

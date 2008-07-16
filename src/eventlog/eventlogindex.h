@@ -42,8 +42,8 @@ class EVENTLOG_API EventLogIndex
 
         file_offset_t firstEventOffset;
         file_offset_t lastEventOffset;
-        long firstEventNumber;
-        long lastEventNumber;
+        eventnumber_t firstEventNumber;
+        eventnumber_t lastEventNumber;
         simtime_t firstSimulationTime;
         simtime_t lastSimulationTime;
 
@@ -57,19 +57,19 @@ class EVENTLOG_API EventLogIndex
         {
             public:
                 simtime_t simulationTime;
-                long beginEventNumber; // begin event with simulation time
-                long endEventNumber; // end event with simulation time
+                eventnumber_t beginEventNumber; // begin event with simulation time
+                eventnumber_t endEventNumber; // end event with simulation time
                 file_offset_t beginOffset; // begin offset of begin event
                 file_offset_t endEventBeginOffset; // begin offset of end event
                 file_offset_t endOffset; // end offset of end event
 
             public:
                 CacheEntry();
-                CacheEntry(long eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset);
-                void include(long eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset);
-                void getBeginKey(long &key);
+                CacheEntry(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset);
+                void include(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset);
+                void getBeginKey(eventnumber_t &key);
                 void getBeginKey(simtime_t &key);
-                void getEndKey(long &key);
+                void getEndKey(eventnumber_t &key);
                 void getEndKey(simtime_t &key);
         };
 
@@ -77,7 +77,7 @@ class EVENTLOG_API EventLogIndex
          * Subsequent events in an event log file may not have subsequent event numbers,
          * therefore it is insufficient to store the file offset only in the cache.
          */
-        typedef std::map<long, CacheEntry> EventNumberToCacheEntryMap;
+        typedef std::map<eventnumber_t, CacheEntry> EventNumberToCacheEntryMap;
         EventNumberToCacheEntryMap eventNumberToCacheEntryMap;
 
         /**
@@ -88,7 +88,7 @@ class EVENTLOG_API EventLogIndex
         SimulationTimeToCacheEntryMap simulationTimeToCacheEntryMap;
 
     protected:
-        void cacheEntry(long eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset);
+        void cacheEntry(eventnumber_t eventNumber, simtime_t simulationTime, file_offset_t beginOffset, file_offset_t endOffset);
 
         /**
          * Search for the file offset based on the key with the given match kind.
@@ -128,8 +128,8 @@ class EVENTLOG_API EventLogIndex
         virtual ~EventLogIndex();
 
         virtual void synchronize(FileReader::FileChangedState change);
-        long getFirstEventNumber();
-        long getLastEventNumber();
+        eventnumber_t getFirstEventNumber();
+        eventnumber_t getLastEventNumber();
         simtime_t& getFirstSimulationTime();
         simtime_t& getLastSimulationTime();
         file_offset_t getFirstEventOffset();
@@ -146,7 +146,7 @@ class EVENTLOG_API EventLogIndex
         /**
          * Returns the begin file offset of the requested event. See MatchKind for details.
          */
-        file_offset_t getOffsetForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
+        file_offset_t getOffsetForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT);
         /**
          * Returns the begin file offset of the requested simulation time. See MatchKind for details.
          */
@@ -155,7 +155,7 @@ class EVENTLOG_API EventLogIndex
          * Returns true if OK, false if no "E" line found till the end of file in the given direction.
          * Reads the first event line in the given direction starting from the given offset.
          */
-        bool readToEventLine(bool forward, file_offset_t readBeginOffset, long& eventNumber, simtime_t& simulationTime, file_offset_t& lineBeginOffset, file_offset_t& lineEndOffset);
+        bool readToEventLine(bool forward, file_offset_t readBeginOffset, eventnumber_t& eventNumber, simtime_t& simulationTime, file_offset_t& lineBeginOffset, file_offset_t& lineEndOffset);
         void dump();
 };
 

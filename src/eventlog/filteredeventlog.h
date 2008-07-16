@@ -37,12 +37,12 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
 {
     protected:
         IEventLog *eventLog; // this will not be destructed because might be shared among multiple filtered event logs
-        long approximateNumberOfEvents;
+        eventnumber_t approximateNumberOfEvents;
         double approximateMatchingEventRatio;
 
         // filter parameters
-        long firstEventNumber; // the first event to be considered by the filter or -1
-        long lastEventNumber; // the last event to be considered by the filter or -1
+        eventnumber_t firstEventNumber; // the first event to be considered by the filter or -1
+        eventnumber_t lastEventNumber; // the last event to be considered by the filter or -1
 
         // module filter
         bool enableModuleFilter;
@@ -63,7 +63,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         std::vector<long> messageEncapsulationTreeIds;
 
         // trace filter
-        long tracedEventNumber; // the event number from which causes and consequences are followed or -1
+        eventnumber_t tracedEventNumber; // the event number from which causes and consequences are followed or -1
         bool traceCauses; // only when tracedEventNumber is given, includes events which cause the traced event even if through a chain of filtered events
         bool traceConsequences; // only when tracedEventNumber is given
         bool traceMessageReuses;
@@ -77,10 +77,10 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         int maximumNumberOfConsequences; // maximum number of message dependencies collected for a single event
 
         // internal state
-        typedef std::map<long, FilteredEvent *> EventNumberToFilteredEventMap;
+        typedef std::map<eventnumber_t, FilteredEvent *> EventNumberToFilteredEventMap;
         EventNumberToFilteredEventMap eventNumberToFilteredEventMap;
 
-        typedef std::map<long, bool> EventNumberToBooleanMap;
+        typedef std::map<eventnumber_t, bool> EventNumberToBooleanMap;
         EventNumberToBooleanMap eventNumberToFilterMatchesFlagMap; // a cache of whether the given event number matches the filter or not
         EventNumberToBooleanMap eventNumberToTraceableEventFlagMap;
 
@@ -92,10 +92,10 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         ~FilteredEventLog();
 
     public:
-        long getFirstEventNumber() { return firstEventNumber; }
-        void setFirstEventNumber(long firstEventNumber) { this->firstEventNumber = firstEventNumber; }
-        long getLastEventNumber() { return lastEventNumber; }
-        void setLastEventNumber(long lastEventNumber) { this->lastEventNumber = lastEventNumber; }
+        eventnumber_t getFirstEventNumber() { return firstEventNumber; }
+        void setFirstEventNumber(eventnumber_t firstEventNumber) { this->firstEventNumber = firstEventNumber; }
+        eventnumber_t getLastEventNumber() { return lastEventNumber; }
+        void setLastEventNumber(eventnumber_t lastEventNumber) { this->lastEventNumber = lastEventNumber; }
 
         bool getCollectMessageReuses() { return collectMessageReuses; }
         void setCollectMessageReuses(bool collectMessageReuses) { this->collectMessageReuses = collectMessageReuses; }
@@ -116,7 +116,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setMessageEncapsulationIds(std::vector<long> &messageEncapsulationIds) { this->messageEncapsulationIds = messageEncapsulationIds; }
         void setMessageEncapsulationTreeIds(std::vector<long> &messageEncapsulationTreeIds) { this->messageEncapsulationTreeIds = messageEncapsulationTreeIds; }
 
-        void setTracedEventNumber(long tracedEventNumber) { this->tracedEventNumber = tracedEventNumber; }
+        void setTracedEventNumber(eventnumber_t tracedEventNumber) { this->tracedEventNumber = tracedEventNumber; }
         void setTraceCauses(bool traceCauses) { this->traceCauses = traceCauses; }
         void setTraceConsequences(bool traceConsequences) { this->traceConsequences = traceConsequences; }
         void setTraceSelfMessages(bool traceSelfMessages) { this->traceSelfMessages = traceSelfMessages; }
@@ -136,15 +136,15 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
 
         bool matchesFilter(IEvent *event);
         bool matchesModuleCreatedEntry(ModuleCreatedEntry *moduleCreatedEntry);
-        FilteredEvent *getMatchingEventInDirection(long startEventNumber, bool forward, long stopEventNumber = -1);
-        FilteredEvent *getMatchingEventInDirection(IEvent *event, bool forward, long stopEventNumber = -1);
+        FilteredEvent *getMatchingEventInDirection(eventnumber_t startEventNumber, bool forward, eventnumber_t stopEventNumber = -1);
+        FilteredEvent *getMatchingEventInDirection(IEvent *event, bool forward, eventnumber_t stopEventNumber = -1);
 
         // IEventLog interface
         virtual ProgressMonitor setProgressMonitor(ProgressMonitor progressMonitor) { return eventLog->setProgressMonitor(progressMonitor); }
         virtual void setProgressCallInterval(double seconds) { eventLog->setProgressCallInterval(seconds); }
         virtual void synchronize(FileReader::FileChangedState change);
         virtual FileReader *getFileReader() { return eventLog->getFileReader(); }
-        virtual long getNumParsedEvents() { return eventLog->getNumParsedEvents(); }
+        virtual eventnumber_t getNumParsedEvents() { return eventLog->getNumParsedEvents(); }
         virtual std::set<const char *>& getMessageNames() { return eventLog->getMessageNames(); }
         virtual std::set<const char *>& getMessageClassNames() { return eventLog->getMessageClassNames(); }
         virtual int getNumModuleCreatedEntries() { return eventLog->getNumModuleCreatedEntries(); }
@@ -156,14 +156,14 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual bool isEmpty();
         virtual FilteredEvent *getFirstEvent();
         virtual FilteredEvent *getLastEvent();
-        virtual FilteredEvent *getNeighbourEvent(IEvent *event, long distance = 1);
-        virtual FilteredEvent *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
+        virtual FilteredEvent *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1);
+        virtual FilteredEvent *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT);
         virtual FilteredEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
 
         virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive);
 
-        virtual long getApproximateNumberOfEvents();
-        virtual double getApproximatePercentageForEventNumber(long eventNumber);
+        virtual eventnumber_t getApproximateNumberOfEvents();
+        virtual double getApproximatePercentageForEventNumber(eventnumber_t eventNumber);
         virtual FilteredEvent *getApproximateEventAt(double percentage);
 
         virtual int getNumInitializationLogEntries() { return eventLog->getNumInitializationLogEntries(); }
@@ -175,7 +175,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
          * Caches the given filtered event in the event cache if not present yet.
          * The event must be known to match this filter.
          */
-        FilteredEvent *cacheFilteredEvent(long eventNumber);
+        FilteredEvent *cacheFilteredEvent(eventnumber_t eventNumber);
 
         /**
          * Checks whether the given event matches this filter.

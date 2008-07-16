@@ -65,14 +65,9 @@ while (<FILE>)
          $fieldPrintfType = "%d";
          $fieldDefault = "false";
       }
-      elsif ($fieldType eq "int64")
+      elsif ($fieldType eq "int")
       {
-         $fieldPrintfType = "%\"INT64_PRINTF_FORMAT\"d";
-         $fieldDefault = "-1";
-      }
-      elsif ($fieldType eq "long")
-      {
-         $fieldPrintfType = "%ld";
+         $fieldPrintfType = "%d";
          $fieldDefault = "-1";
       }
       elsif ($fieldType eq "short")
@@ -80,9 +75,19 @@ while (<FILE>)
          $fieldPrintfType = "%d";
          $fieldDefault = "-1";
       }
-      elsif ($fieldType eq "int")
+      elsif ($fieldType eq "long")
       {
-         $fieldPrintfType = "%d";
+         $fieldPrintfType = "%ld";
+         $fieldDefault = "-1";
+      }
+      elsif ($fieldType eq "int64")
+      {
+         $fieldPrintfType = "%\"INT64_PRINTF_FORMAT\"d";
+         $fieldDefault = "-1";
+      }
+      elsif ($fieldType eq "eventnumber_t")
+      {
+         $fieldPrintfType = "%\"EVENTNUMBER_PRINTF_FORMAT\"d";
          $fieldDefault = "-1";
       }
       elsif ($fieldType eq "simtime_t")
@@ -285,6 +290,10 @@ foreach $class (@classes)
       {
         $parserFunction = "getStringToken";
       }
+      elsif ($field->{TYPE} eq "eventnumber_t")
+      {
+        $parserFunction = "getEventNumberToken";
+      }
       elsif ($field->{TYPE} eq "simtime_t")
       {
         $parserFunction = "getSimtimeToken";
@@ -472,6 +481,10 @@ foreach $class (@classes)
       elsif (($field->{TYPE} eq "int") || $field->{TYPE} eq "long")
       {
          print ENTRIES_CSV_FILE "$field->{CODE}\tinteger\t$field->{COMMENT}\n";
+      }
+      elsif ($field->{TYPE} eq "eventnumber_t")
+      {
+         print ENTRIES_CSV_FILE "$field->{CODE}\tevent number\t$field->{COMMENT}\n";
       }
       elsif ($field->{TYPE} eq "simtime_t")
       {

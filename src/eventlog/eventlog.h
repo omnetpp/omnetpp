@@ -42,8 +42,8 @@ class EventLogEntry;
 class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
 {
     protected:
-        long numParsedEvents;
-        long approximateNumberOfEvents;
+        eventnumber_t numParsedEvents;
+        eventnumber_t approximateNumberOfEvents;
 
         long progressCallInterval;
         long lastProgressCall; // as returned by clock()
@@ -66,7 +66,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         std::set<const char *> messageClassNames; // message class names seen so far (see Event::parse)
         std::set<const char *> messageNames; // message names seen so far (see Event::parse)
 
-        typedef std::map<long, Event *> EventNumberToEventMap;
+        typedef std::map<eventnumber_t, Event *> EventNumberToEventMap;
         EventNumberToEventMap eventNumberToEventMap; // all parsed events so far
 
         typedef std::map<file_offset_t, Event *> OffsetToEventMap;
@@ -95,7 +95,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         // IEventLog interface
         virtual void synchronize(FileReader::FileChangedState change);
         virtual FileReader *getFileReader() { return reader; }
-        virtual long getNumParsedEvents() { return numParsedEvents; }
+        virtual eventnumber_t getNumParsedEvents() { return numParsedEvents; }
         virtual std::set<const char *>& getMessageNames() { return messageNames; }
         virtual std::set<const char *>& getMessageClassNames() { return messageClassNames; }
         virtual int getNumModuleCreatedEntries() { return moduleIdToModuleCreatedEntryMap.size(); }
@@ -106,13 +106,13 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
 
         virtual Event *getFirstEvent();
         virtual Event *getLastEvent();
-        virtual Event *getNeighbourEvent(IEvent *event, long distance = 1);
-        virtual Event *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT);
+        virtual Event *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1);
+        virtual Event *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT);
         virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
 
         virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive);
 
-        virtual long getApproximateNumberOfEvents();
+        virtual eventnumber_t getApproximateNumberOfEvents();
         virtual Event *getApproximateEventAt(double percentage);
 
         virtual int getNumInitializationLogEntries() { return initializationLogEntries.size(); }

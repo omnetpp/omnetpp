@@ -48,11 +48,11 @@ class EVENTLOG_API EventLogFacade
 
         IEvent* Event_getEvent(ptr_t ptr);
         ptr_t Event_getNonFilteredEvent(ptr_t ptr);
-        ptr_t Event_getEventForEventNumber(long eventNumber);
-        ptr_t Event_getNonFilteredEventForEventNumber(long eventNumber);
+        ptr_t Event_getEventForEventNumber(eventnumber_t eventNumber);
+        ptr_t Event_getNonFilteredEventForEventNumber(eventnumber_t eventNumber);
         ptr_t Event_getPreviousEvent(ptr_t ptr);
         ptr_t Event_getNextEvent(ptr_t ptr);
-        long Event_getEventNumber(ptr_t ptr);
+        eventnumber_t Event_getEventNumber(ptr_t ptr);
         simtime_t& Event_getSimulationTime(ptr_t ptr);
         double Event_getSimulationTimeAsDouble(ptr_t ptr);
         int Event_getModuleId(ptr_t ptr);

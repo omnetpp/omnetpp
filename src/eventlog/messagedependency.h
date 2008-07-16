@@ -43,10 +43,10 @@ class EVENTLOG_API IMessageDependency
 
         virtual IMessageDependency *duplicate(IEventLog *eventLog) = 0;
 
-        virtual long getCauseEventNumber() = 0;
+        virtual eventnumber_t getCauseEventNumber() = 0;
         virtual IEvent *getCauseEvent() = 0;
 
-        virtual long getConsequenceEventNumber() = 0;
+        virtual eventnumber_t getConsequenceEventNumber() = 0;
         virtual IEvent *getConsequenceEvent() = 0;
 
         virtual simtime_t& getCauseSimulationTime() = 0;
@@ -78,28 +78,28 @@ typedef std::vector<IMessageDependency *> IMessageDependencyList;
 class EVENTLOG_API MessageDependency : public IMessageDependency
 {
     protected:
-        long causeEventNumber; // -2 means not yet calculated from the consequenceEventNumber, -1 means not found in file
+        eventnumber_t causeEventNumber; // -2 means not yet calculated from the consequenceEventNumber, -1 means not found in file
         int causeBeginSendEntryNumber; // optional (-1) and refers to an entry of causeEvent
 
-        long consequenceEventNumber; // -2 means not yet calculated from the causeEventNumber, -1 means not found in file
+        eventnumber_t consequenceEventNumber; // -2 means not yet calculated from the causeEventNumber, -1 means not found in file
         int consequenceBeginSendEntryNumber; // optional (-1) and refers to an entry of consequenceEvent
 
     public:
-        MessageDependency(IEventLog *eventLog, bool isReuse, long eventNumber, int beginSendEntryNumber);
+        MessageDependency(IEventLog *eventLog, bool isReuse, eventnumber_t eventNumber, int beginSendEntryNumber);
         virtual ~MessageDependency() {}
 
         virtual MessageDependency *duplicate(IEventLog *eventLog);
 
-        virtual long getCauseEventNumber();
+        virtual eventnumber_t getCauseEventNumber();
         virtual IEvent *getCauseEvent();
 
-        virtual long getConsequenceEventNumber();
+        virtual eventnumber_t getConsequenceEventNumber();
         virtual IEvent *getConsequenceEvent();
 
-        long getCauseBeginSendEntryNumber() { return causeBeginSendEntryNumber; }
+        int getCauseBeginSendEntryNumber() { return causeBeginSendEntryNumber; }
         virtual BeginSendEntry *getCauseBeginSendEntry();
 
-        long getConsequenceBeginSendEntryNumber() { return consequenceBeginSendEntryNumber; }
+        int getConsequenceBeginSendEntryNumber() { return consequenceBeginSendEntryNumber; }
         virtual BeginSendEntry *getConsequenceBeginSendEntry();
 
         virtual BeginSendEntry *getBeginSendEntry() { return isReuse ? getConsequenceBeginSendEntry() : getCauseBeginSendEntry(); }
@@ -133,10 +133,10 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
         IMessageDependency *getBeginMessageDependency() { return beginMessageDependency; }
         IMessageDependency *getEndMessageDependency() { return endMessageDependency; }
 
-        virtual long getCauseEventNumber() { return beginMessageDependency->getCauseEventNumber(); }
+        virtual eventnumber_t getCauseEventNumber() { return beginMessageDependency->getCauseEventNumber(); }
         virtual IEvent *getCauseEvent();
 
-        virtual long getConsequenceEventNumber() { return endMessageDependency->getConsequenceEventNumber(); }
+        virtual eventnumber_t getConsequenceEventNumber() { return endMessageDependency->getConsequenceEventNumber(); }
         virtual IEvent *getConsequenceEvent();
 
         virtual simtime_t& getCauseSimulationTime() { return beginMessageDependency->getCauseSimulationTime(); };

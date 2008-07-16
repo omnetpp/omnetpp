@@ -58,7 +58,7 @@ bool IMessageDependency::equals(IMessageDependency *other)
 
 /**************************************************/
 
-MessageDependency::MessageDependency(IEventLog *eventLog, bool isReuse, long eventNumber, int beginSendEntryNumber)
+MessageDependency::MessageDependency(IEventLog *eventLog, bool isReuse, eventnumber_t eventNumber, int beginSendEntryNumber)
     : IMessageDependency(eventLog, isReuse)
 {
     Assert(eventNumber >= 0 && beginSendEntryNumber >= 0);
@@ -92,7 +92,7 @@ BeginSendEntry *MessageDependency::getCauseBeginSendEntry()
     return (BeginSendEntry *)event->getEventLogEntry(causeBeginSendEntryNumber);
 }
 
-long MessageDependency::getCauseEventNumber()
+eventnumber_t MessageDependency::getCauseEventNumber()
 {
     if (causeEventNumber == EVENT_NOT_YET_CALCULATED)
     {
@@ -108,7 +108,7 @@ long MessageDependency::getCauseEventNumber()
 
 IEvent *MessageDependency::getCauseEvent()
 {
-    long causeEventNumber = getCauseEventNumber();
+    eventnumber_t causeEventNumber = getCauseEventNumber();
 
     if (causeEventNumber < 0)
         return NULL;
@@ -129,7 +129,7 @@ BeginSendEntry *MessageDependency::getConsequenceBeginSendEntry()
     return (BeginSendEntry *)event->getEventLogEntry(consequenceBeginSendEntryNumber);
 }
 
-long MessageDependency::getConsequenceEventNumber()
+eventnumber_t MessageDependency::getConsequenceEventNumber()
 {
     if (consequenceEventNumber == EVENT_NOT_YET_CALCULATED || consequenceEventNumber == EVENT_NOT_YET_REACHED)
     {
@@ -182,7 +182,7 @@ long MessageDependency::getConsequenceEventNumber()
 
 IEvent *MessageDependency::getConsequenceEvent()
 {
-    long consequenceEventNumber = getConsequenceEventNumber();
+    eventnumber_t consequenceEventNumber = getConsequenceEventNumber();
 
     if (consequenceEventNumber < 0)
         return NULL;
@@ -264,7 +264,7 @@ FilteredMessageDependency *FilteredMessageDependency::duplicate(IEventLog *event
 
 IEvent *FilteredMessageDependency::getCauseEvent()
 {
-    long causeEventNumber = beginMessageDependency->getCauseEventNumber();
+    eventnumber_t causeEventNumber = beginMessageDependency->getCauseEventNumber();
 
     if (causeEventNumber < 0)
         return NULL;
@@ -274,7 +274,7 @@ IEvent *FilteredMessageDependency::getCauseEvent()
 
 IEvent *FilteredMessageDependency::getConsequenceEvent()
 {
-    long consequenceEventNumber = endMessageDependency->getConsequenceEventNumber();
+    eventnumber_t consequenceEventNumber = endMessageDependency->getConsequenceEventNumber();
 
     if (consequenceEventNumber < 0)
         return NULL;

@@ -16,6 +16,7 @@
 
 #include <time.h>
 #include "../utils/ver.h"
+#include "platmisc.h"
 #include "filereader.h"
 #include "linetokenizer.h"
 #include "eventlogindex.h"
@@ -24,8 +25,6 @@
 
 USING_NAMESPACE
 
-#define LL  INT64_PRINTF_FORMAT
-
 class Options
 {
     public:
@@ -33,11 +32,11 @@ class Options
         char *outputFileName;
         FILE *outputFile;
 
-        long firstEventNumber;
-        long lastEventNumber;
+        eventnumber_t firstEventNumber;
+        eventnumber_t lastEventNumber;
 
-        long fromEventNumber;
-        long toEventNumber;
+        eventnumber_t fromEventNumber;
+        eventnumber_t toEventNumber;
 
         simtime_t fromSimulationTime;
         simtime_t toSimulationTime;
@@ -48,7 +47,7 @@ class Options
         bool traceConsequences;
 
         std::vector<file_offset_t> fileOffsets;
-        std::vector<long> eventNumbers;
+        std::vector<eventnumber_t> eventNumbers;
 
         const char *moduleExpression;
         std::vector<std::string> moduleNames;
@@ -71,8 +70,8 @@ class Options
 
         IEventLog *createEventLog(FileReader *fileReader);
         void deleteEventLog(IEventLog *eventLog);
-        long getFirstEventNumber();
-        long getLastEventNumber();
+        eventnumber_t getFirstEventNumber();
+        eventnumber_t getLastEventNumber();
 };
 
 Options::Options()
@@ -152,7 +151,7 @@ void Options::deleteEventLog(IEventLog *eventLog)
     delete eventLog;
 }
 
-long Options::getFirstEventNumber()
+eventnumber_t Options::getFirstEventNumber()
 {
     if (firstEventNumber == -2) {
         FileReader *fileReader = new FileReader(inputFileName);
@@ -168,14 +167,14 @@ long Options::getFirstEventNumber()
             if (event)
                 firstEventNumber = event->getEventNumber();
             else
-                firstEventNumber = LONG_MAX;
+                firstEventNumber = -1;
         }
     }
 
     return firstEventNumber;
 }
 
-long Options::getLastEventNumber()
+eventnumber_t Options::getLastEventNumber()
 {
     if (lastEventNumber == -2) {
         FileReader *fileReader = new FileReader(inputFileName);
@@ -191,7 +190,7 @@ long Options::getLastEventNumber()
             if (event)
                 lastEventNumber = event->getEventNumber();
             else
-                lastEventNumber = -LONG_MAX;
+                lastEventNumber = -1;
         }
     }
 
@@ -209,25 +208,25 @@ void offsets(Options options)
     long begin = clock();
 
     if (!options.eventNumbers.empty()) {
-        for (std::vector<long>::iterator it = options.eventNumbers.begin(); it != options.eventNumbers.end(); it++) {
+        for (std::vector<eventnumber_t>::iterator it = options.eventNumbers.begin(); it != options.eventNumbers.end(); it++) {
             file_offset_t offset = eventLogIndex.getOffsetForEventNumber(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%ld --> file offset %"LL"d (0x%"LL"x)\n", *it, offset, offset);
+                fprintf(stdout, "# Event #%"EVENTNUMBER_PRINTF_FORMAT"d --> file offset %"INT64_PRINTF_FORMAT"d (0x%"INT64_PRINTF_FORMAT"x)\n", *it, offset, offset);
 
             if (offset != -1 && options.verbose) {
                 fileReader->seekTo(offset);
                 fprintf(stdout, "#  - line at that offset: %.*s", fileReader->getCurrentLineLength(), fileReader->getNextLineBufferPointer());
             }
 
-            fprintf(options.outputFile, "%"LL"d\n", offset);
+            fprintf(options.outputFile, "%"INT64_PRINTF_FORMAT"d\n", offset);
         }
     }
 
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing offsets for %d events while reading %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", (int)options.eventNumbers.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing offsets for %d events while reading %"INT64_PRINTF_FORMAT"d lines and %"INT64_PRINTF_FORMAT"d bytes from log file %s completed in %g seconds\n", (int)options.eventNumbers.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void events(Options options)
@@ -245,7 +244,7 @@ void events(Options options)
             IEvent *event = eventLog.getEventForBeginOffset(*it);
 
             if (options.verbose)
-                fprintf(stdout, "# Event #%ld found at file offset %"LL"d (0x%"LL"x)\n", event->getEventNumber(), *it, *it);
+                fprintf(stdout, "# Event #%"EVENTNUMBER_PRINTF_FORMAT"d found at file offset %"INT64_PRINTF_FORMAT"d (0x%"INT64_PRINTF_FORMAT"x)\n", event->getEventNumber(), *it, *it);
 
             event->print(options.outputFile);
         }
@@ -254,13 +253,13 @@ void events(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing events for %d offsets while reading %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", (int)options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing events for %d offsets while reading %"INT64_PRINTF_FORMAT"d lines and %"INT64_PRINTF_FORMAT"d bytes from log file %s completed in %g seconds\n", (int)options.fileOffsets.size(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void ranges(Options options)
 {
     if (options.verbose)
-        fprintf(stdout, "# Printing coherent ranges from log file %s\n", options.inputFileName);
+        fprintf(stdout, "# Printing continuous ranges from log file %s\n", options.inputFileName);
 
     FileReader *fileReader = new FileReader(options.inputFileName);
     EventLog eventLog(fileReader);
@@ -274,7 +273,7 @@ void ranges(Options options)
         IEvent *nextEvent = event->getNextEvent();
 
         if (!nextEvent || event->getEventNumber() != nextEvent->getEventNumber() - 1) {
-            fprintf(stdout, "%ld -> %ld\n", rangeFirstEvent->getEventNumber(), event->getEventNumber());
+            fprintf(stdout, "#%"EVENTNUMBER_PRINTF_FORMAT"d -> #%"EVENTNUMBER_PRINTF_FORMAT"d\n", rangeFirstEvent->getEventNumber(), event->getEventNumber());
             rangeFirstEvent = nextEvent;
         }
 
@@ -284,13 +283,13 @@ void ranges(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Printing coherent ranges while reading %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Printing continuous ranges while reading %"INT64_PRINTF_FORMAT"d lines and %"INT64_PRINTF_FORMAT"d bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void echo(Options options)
 {
     if (options.verbose)
-        fprintf(stdout, "# Echoing events from log file %s from event number %ld to event number %ld\n", options.inputFileName, options.getFirstEventNumber(), options.getLastEventNumber());
+        fprintf(stdout, "# Echoing events from log file %s from event number #%"EVENTNUMBER_PRINTF_FORMAT"d to event number #%"EVENTNUMBER_PRINTF_FORMAT"d\n", options.inputFileName, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
     IEventLog *eventLog = options.createEventLog(fileReader);
@@ -300,7 +299,7 @@ void echo(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Echoing of %ld events, %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Echoing of %"EVENTNUMBER_PRINTF_FORMAT"d events, %"INT64_PRINTF_FORMAT"d lines and %"INT64_PRINTF_FORMAT"d bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     options.deleteEventLog(eventLog);
 }
@@ -319,15 +318,15 @@ void cat(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Cating of %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Cating of %"INT64_PRINTF_FORMAT"d lines and %"INT64_PRINTF_FORMAT"d bytes from log file %s completed in %g seconds\n", fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 }
 
 void filter(Options options)
 {
-    long tracedEventNumber = options.eventNumbers.empty() ? -1 : options.eventNumbers.at(0);
+    eventnumber_t tracedEventNumber = options.eventNumbers.empty() ? -1 : options.eventNumbers.at(0);
 
     if (options.verbose)
-        fprintf(stdout, "# Filtering events from log file %s for traced event number %ld from event number %ld to event number %ld\n",
+        fprintf(stdout, "# Filtering events from log file %s for traced event number #%"EVENTNUMBER_PRINTF_FORMAT"d from event number #%"EVENTNUMBER_PRINTF_FORMAT"d to event number #%"EVENTNUMBER_PRINTF_FORMAT"d\n",
             options.inputFileName, tracedEventNumber, options.getFirstEventNumber(), options.getLastEventNumber());
 
     FileReader *fileReader = new FileReader(options.inputFileName);
@@ -338,7 +337,7 @@ void filter(Options options)
     long end = clock();
 
     if (options.verbose)
-        fprintf(stdout, "# Filtering of %ld events, %"LL"d lines and %"LL"d bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
+        fprintf(stdout, "# Filtering of %"EVENTNUMBER_PRINTF_FORMAT"d events, %"INT64_PRINTF_FORMAT"d lines and %"INT64_PRINTF_FORMAT"d bytes from log file %s completed in %g seconds\n", eventLog->getNumParsedEvents(), fileReader->getNumReadLines(), fileReader->getNumReadBytes(), options.inputFileName, (double)(end - begin) / CLOCKS_PER_SEC);
 
     options.deleteEventLog(eventLog);
 }
@@ -419,14 +418,26 @@ void parseLongTokens(std::vector<long> &parameter, char *str)
         parameter.push_back(atol(tokens[j]));
 }
 
-void parseFileOffsetTokens(std::vector<file_offset_t> &parameter, char *str)
+void parseEventNumberTokens(std::vector<eventnumber_t> &parameter, char *str)
 {
+    char *e;
     LineTokenizer tokenizer;
     tokenizer.tokenize(str, strlen(str));
     char **tokens = tokenizer.tokens();
 
     for (int j = 0; j < tokenizer.numTokens(); j++)
-        parameter.push_back(atol(tokens[j]));
+        parameter.push_back(strtoll(tokens[j], &e, 10));
+}
+
+void parseFileOffsetTokens(std::vector<file_offset_t> &parameter, char *str)
+{
+    char *e;
+    LineTokenizer tokenizer;
+    tokenizer.tokenize(str, strlen(str));
+    char **tokens = tokenizer.tokens();
+
+    for (int j = 0; j < tokenizer.numTokens(); j++)
+        parameter.push_back(strtoll(tokens[j], &e, 10));
 }
 
 void parseStringTokens(std::vector<std::string> &parameter, char *str)
@@ -444,6 +455,7 @@ int main(int argc, char **argv)
     if (argc < 3)
         usage("Not enough arguments specified");
     else {
+        char *e;
         char *command = argv[1];
         Options options;
 
@@ -453,15 +465,15 @@ int main(int argc, char **argv)
             else if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--verbose"))
                 options.verbose = true;
             else if (!strcmp(argv[i], "-fe") || !strcmp(argv[i], "--from-event-number"))
-                options.fromEventNumber = atol(argv[++i]);
+                options.fromEventNumber = strtoll(argv[++i], &e, 10);
             else if (!strcmp(argv[i], "-te") || !strcmp(argv[i], "--to-event-number"))
-                options.toEventNumber = atol(argv[++i]);
+                options.toEventNumber = strtoll(argv[++i], &e, 10);
             else if (!strcmp(argv[i], "-ft") || !strcmp(argv[i], "--from-simulation-time"))
                 options.fromSimulationTime = BigDecimal::parse(argv[++i]);
             else if (!strcmp(argv[i], "-tt") || !strcmp(argv[i], "--to-simulation-time"))
                 options.toSimulationTime = BigDecimal::parse(argv[++i]);
             else if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--event-numbers"))
-                parseLongTokens(options.eventNumbers, argv[++i]);
+                parseEventNumberTokens(options.eventNumbers, argv[++i]);
             else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets"))
                 parseFileOffsetTokens(options.fileOffsets, argv[++i]);
             else if (!strcmp(argv[i], "-me") || !strcmp(argv[i], "--module-expression"))

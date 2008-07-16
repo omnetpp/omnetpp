@@ -77,11 +77,11 @@ class EVENTLOG_API IEvent
         virtual EventLogMessageEntry *getEventLogMessage(int index) = 0;
 
         // some of the data found in the 'E' entry (line), to get additional data query the entries
-        virtual long getEventNumber() = 0;
+        virtual eventnumber_t getEventNumber() = 0;
         virtual simtime_t& getSimulationTime() = 0;
         virtual int getModuleId() = 0;
         virtual long getMessageId() = 0;
-        virtual long getCauseEventNumber() = 0;
+        virtual eventnumber_t getCauseEventNumber() = 0;
 
         /**
          * Returns the immediately preceding event or NULL if there's no such event.

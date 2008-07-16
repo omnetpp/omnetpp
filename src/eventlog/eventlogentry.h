@@ -59,6 +59,8 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
         virtual const char *getAttribute(const char *name) const = 0;
 
         static EventLogEntry *parseEntry(Event *event, int entryIndex, char *line, int length);
+        static eventnumber_t parseEventNumber(const char *str);
+        static simtime_t parseSimulationTime(const char *str);
 };
 
 /**
@@ -73,6 +75,7 @@ class EVENTLOG_API EventLogTokenBasedEntry : public EventLogEntry
         short getShortToken(char **tokens, int numTokens, const char *sign, bool mandatory, short defaultValue);
         long getLongToken(char **tokens, int numTokens, const char *sign, bool mandatory, long defaultValue);
         int64 getInt64Token(char **tokens, int numTokens, const char *sign, bool mandatory, int64 defaultValue);
+        eventnumber_t getEventNumberToken(char **tokens, int numTokens, const char *sign, bool mandatory, eventnumber_t defaultValue);
         simtime_t getSimtimeToken(char **tokens, int numTokens, const char *sign, bool mandatory, simtime_t defaultValue);
         const char *getStringToken(char **tokens, int numTokens, const char *sign, bool mandatory, const char *defaultValue);
 

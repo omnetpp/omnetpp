@@ -58,7 +58,7 @@ class EVENTLOG_API IEventLog
         /**
          * Remembers the last IEvent returned by getNeighbourEvent so that subsequent calls might return much faster.
          */
-        long lastNeighbourEventNumber;
+        eventnumber_t lastNeighbourEventNumber;
         IEvent *lastNeighbourEvent;
 
     public:
@@ -88,7 +88,7 @@ class EVENTLOG_API IEventLog
         /**
          * Returns the number of events parsed so far.
          */
-        virtual long getNumParsedEvents() = 0;
+        virtual eventnumber_t getNumParsedEvents() = 0;
         /**
          * Returns the message names parsed so far.
          */
@@ -135,7 +135,7 @@ class EVENTLOG_API IEventLog
          * Returns the requested event or NULL if there's no such event included in the log.
          * The given event number may not be included in the log.
          */
-        virtual IEvent *getEventForEventNumber(long eventNumber, MatchKind matchKind = EXACT) = 0;
+        virtual IEvent *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT) = 0;
         /**
          * Returns the requested event or NULL if there's no such event included in the log.
          * The given simulation time may not be included in the log.
@@ -151,7 +151,7 @@ class EVENTLOG_API IEventLog
          * Returns the approximate number of events present in the log.
          * This value may be less, equal or greater than the real number of events if there are many.
          */
-        virtual long getApproximateNumberOfEvents() = 0;
+        virtual eventnumber_t getApproximateNumberOfEvents() = 0;
         /**
          * Returns an event approximately at the given percentage in terms of eventlog size.
          */
@@ -168,29 +168,29 @@ class EVENTLOG_API IEventLog
         /**
          * Returns the event at the given instance. 0 means the parameter event will be returned.
          */
-        virtual IEvent *getNeighbourEvent(IEvent *event, long distance = 1);
+        virtual IEvent *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1);
 
         /**
          * Returns true if the event with the given event number is included in the log.
          */
-        virtual bool isIncludedInLog(long eventNumber) { return getEventForEventNumber(eventNumber) != NULL; }
-        virtual IEvent *getFirstEventNotBeforeEventNumber(long eventNumber) { return getEventForEventNumber(eventNumber, LAST_OR_NEXT); }
-        virtual IEvent *getLastEventNotAfterEventNumber(long eventNumber) { return getEventForEventNumber(eventNumber, FIRST_OR_PREVIOUS); }
+        virtual bool isIncludedInLog(eventnumber_t eventNumber) { return getEventForEventNumber(eventNumber) != NULL; }
+        virtual IEvent *getFirstEventNotBeforeEventNumber(eventnumber_t eventNumber) { return getEventForEventNumber(eventNumber, LAST_OR_NEXT); }
+        virtual IEvent *getLastEventNotAfterEventNumber(eventnumber_t eventNumber) { return getEventForEventNumber(eventNumber, FIRST_OR_PREVIOUS); }
         virtual IEvent *getFirstEventNotBeforeSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, LAST_OR_NEXT); }
         virtual IEvent *getLastEventNotAfterSimulationTime(simtime_t simulationTime) { return getEventForSimulationTime(simulationTime, FIRST_OR_PREVIOUS); }
 
-        virtual double getApproximatePercentageForEventNumber(long eventNumber);
+        virtual double getApproximatePercentageForEventNumber(eventnumber_t eventNumber);
 
         /**
          * Prints all or only the events in the requested range from the log.
          * The given event numbers may not be included in the log.
          */
-        virtual void printEvents(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1, bool outputEventLogMessages = true);
+        virtual void printEvents(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true);
         /**
          * Prints initialization entries and calls printEvents.
          * The given event numbers may not be included in the log.
          */
-        virtual void print(FILE *file = stdout, long fromEventNumber = -1, long toEventNumber = -1, bool outputInitializationEntries = true, bool outputEventLogMessages = true);
+        virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputInitializationEntries = true, bool outputEventLogMessages = true);
 };
 
 NAMESPACE_END

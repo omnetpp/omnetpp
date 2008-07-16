@@ -37,8 +37,8 @@ class EVENTLOG_API FilteredEvent : public IEvent
     protected:
         FilteredEventLog *filteredEventLog;
 
-        long eventNumber; // the corresponding event number
-        long causeEventNumber; // the event number from which the message was sent that is being processed in this event
+        eventnumber_t eventNumber; // the corresponding event number
+        eventnumber_t causeEventNumber; // the event number from which the message was sent that is being processed in this event
         IMessageDependency *cause; // the message send which is processed in this event
         IMessageDependencyList *causes; // the arrival message sends of messages which we send in this even and are in the filtered set
         IMessageDependencyList *consequences; // the message sends and arrivals from this event to another in the filtered set
@@ -59,7 +59,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
         };
 
     public:
-        FilteredEvent(FilteredEventLog *filteredEventLog, long eventNumber);
+        FilteredEvent(FilteredEventLog *filteredEventLog, eventnumber_t eventNumber);
         ~FilteredEvent();
 
         IEvent *getEvent();
@@ -81,11 +81,11 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual int getNumBeginSendEntries() { return getEvent()->getNumBeginSendEntries(); }
         virtual EventLogMessageEntry *getEventLogMessage(int index) { return getEvent()->getEventLogMessage(index); }
 
-        virtual long getEventNumber() { return eventNumber; }
+        virtual eventnumber_t getEventNumber() { return eventNumber; }
         virtual simtime_t& getSimulationTime() { return getEvent()->getSimulationTime(); }
         virtual int getModuleId() { return getEvent()->getModuleId(); }
         virtual long getMessageId() { return getEvent()->getMessageId(); }
-        virtual long getCauseEventNumber() { return getEvent()->getCauseEventNumber(); }
+        virtual eventnumber_t getCauseEventNumber() { return getEvent()->getCauseEventNumber(); }
 
         virtual bool isSelfMessage(BeginSendEntry *beginSendEntry) { return getEvent()->isSelfMessage(beginSendEntry); }
         virtual bool isSelfMessageProcessingEvent() { return getEvent()->isSelfMessageProcessingEvent(); }
