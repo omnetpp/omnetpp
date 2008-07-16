@@ -112,7 +112,7 @@ class TKENV_API Tkenv : public EnvirBase
       eState simstate;             // state of the simulation run
       int runmode;                 // the current mode the simulation is executing under
       simtime_t rununtil_time;     // time limit in current "Run Until" execution, or zero
-      long rununtil_event;         // event number in current "Run Until" execution, or zero
+      eventnumber_t rununtil_event;// event number in current "Run Until" execution, or zero
       cModule *rununtil_module;    // stop before and after events in this module; ignored with EXPRESS mode
 
       bool stopsimulation_flag;    // flag to signal that simulation must be stopped (STOP button pressed in the UI)
@@ -176,9 +176,9 @@ class TKENV_API Tkenv : public EnvirBase
 
       void rebuildSim();
       void doOneStep();
-      void runSimulation(int mode, simtime_t until_time=0, long until_event=0, cModule *until_module=NULL);
+      void runSimulation(int mode, simtime_t until_time=0, eventnumber_t until_event=0, cModule *until_module=NULL);
       void setSimulationRunMode(int runmode);
-      void setSimulationRunUntil(simtime_t until_time, long until_event);
+      void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_event);
       void setSimulationRunUntilModule(cModule *until_module);
       bool doRunSimulation();
       bool doRunSimulationExpress();

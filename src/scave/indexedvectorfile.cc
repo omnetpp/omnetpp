@@ -59,7 +59,7 @@ IndexedVectorFileReader::~IndexedVectorFileReader()
 #define CHECK(cond, msg, block, line) \
             if (!(cond))\
             {\
-                throw opp_runtime_error("Invalid vector file syntax: %s, file %s, block offset %"LL", line in block %d", \
+                throw opp_runtime_error("Invalid vector file syntax: %s, file %s, block offset %"LL"d, line in block %d", \
                                         msg, fname.c_str(), (int64)block.startOffset, line);\
             }
 
@@ -108,7 +108,7 @@ void IndexedVectorFileReader::loadBlock(const Block &block)
         {
             switch (columns[j])
             {
-            case 'E': CHECK(parseLong(tokens[j+1], entry.eventNumber), "Malformed event number", block, i); break;
+            case 'E': CHECK(parseInt64(tokens[j+1], entry.eventNumber), "Malformed event number", block, i); break;
             case 'T': CHECK(parseSimtime(tokens[j+1], entry.simtime), "Malformed simulation time", block, i); break;
             case 'V': CHECK(parseDouble(tokens[j+1], entry.value), "Malformed vector value", block, i); break;
             default: CHECK(false, "Unknown column", block, i); break;
@@ -154,7 +154,7 @@ OutputVectorEntry *IndexedVectorFileReader::getEntryBySimtime(simultime_t simtim
     return NULL;
 }
 
-OutputVectorEntry *IndexedVectorFileReader::getEntryByEventnum(long eventNum, bool after)
+OutputVectorEntry *IndexedVectorFileReader::getEntryByEventnum(eventnumber_t eventNum, bool after)
 {
     const Block *block = vector->getBlockByEventnum(eventNum, after);
     if (block)
@@ -202,7 +202,7 @@ long IndexedVectorFileReader::collectEntriesInSimtimeInterval(simultime_t startT
     return count;
 }
 
-long IndexedVectorFileReader::collectEntriesInEventnumInterval(long startEventNum, long endEventNum, Entries &out)
+long IndexedVectorFileReader::collectEntriesInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Entries &out)
 {
     Blocks::size_type startIndex;
     Blocks::size_type endIndex;
@@ -399,9 +399,9 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
             if (port->bufferPtr - port->buffer >= port->bufferSize - 100)
                 writeBufferToFile(port);
             if (a.xp.isNil())
-                bufferPrintf(port, "%d\t%ld\t%.*g\t%.*g\n", vectorId, a.eventNumber, prec, a.x, prec, a.y);
+                bufferPrintf(port, "%d\t%"LL"d\t%.*g\t%.*g\n", vectorId, a.eventNumber, prec, a.x, prec, a.y);
             else
-                bufferPrintf(port, "%d\t%ld\t%s\t%.*g\n", vectorId, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y);
+                bufferPrintf(port, "%d\t%"LL"d\t%s\t%.*g\n", vectorId, a.eventNumber, BigDecimal::ttoa(buf, a.xp, endp), prec, a.y);
             port->bufferNumOfRecords++;
             port->vector.blocks.back().collect(a.eventNumber, a.x, a.y);
         }
@@ -423,7 +423,7 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
                     else
                         bufferPrintf(port,"%s", BigDecimal::ttoa(buf, a.xp, endp)); break;
                 case 'V': bufferPrintf(port,"%.*g", prec, a.y); break;
-                case 'E': bufferPrintf(port,"%ld", a.eventNumber); break;
+                case 'E': bufferPrintf(port,"%"LL"d", a.eventNumber); break;
                 default: throw opp_runtime_error("unknown column type: '%c'", columns[j]);
                 }
             }

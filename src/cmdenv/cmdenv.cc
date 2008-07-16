@@ -63,9 +63,11 @@ Register_OmnetApp("Cmdenv", Cmdenv, 10, "command-line user interface");
 // -u _cmdenv_lib (gcc) or /include:_cmdenv_lib (vc++) in the link command.
 //
 extern "C" CMDENV_API void cmdenv_lib() {}
-// on some compilers (e.g. linux gcc 4.2) the functions are generated without _ 
+// on some compilers (e.g. linux gcc 4.2) the functions are generated without _
 extern "C" CMDENV_API void _cmdenv_lib() {}
 
+
+#define LL  INT64_PRINTF_FORMAT
 
 static char buffer[1024];
 
@@ -400,7 +402,7 @@ void Cmdenv::simulate()
                // print event banner if neccessary
                if (opt_eventbanners && mod->isEvEnabled())
                {
-                   ::fprintf(fout, "** Event #%ld  T=%s%s.  (%s) %s (id=%d)\n",
+                   ::fprintf(fout, "** Event #%"LL"d  T=%s%s.  (%s) %s (id=%d)\n",
                            simulation.getEventNumber(),
                            SIMTIME_STR(simulation.getSimTime()),
                            progressPercentage(),
@@ -424,7 +426,7 @@ void Cmdenv::simulate()
                    ::fflush(fout);
 
                // execute event
-               simulation.doOneEvent( mod );
+               simulation.doOneEvent(mod);
 
                // flush so that output from different modules don't get mixed
                flushLastLine();
@@ -455,7 +457,7 @@ void Cmdenv::simulate()
 
                    if (opt_perfdisplay)
                    {
-                       ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s%s\n",
+                       ::fprintf(fout, "** Event #%"LL"d   T=%s   Elapsed: %s%s\n",
                                simulation.getEventNumber(),
                                SIMTIME_STR(simulation.getSimTime()),
                                timeToStr(totalElapsed()),
@@ -472,7 +474,7 @@ void Cmdenv::simulate()
                    }
                    else
                    {
-                       ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s%s   ev/sec=%g\n",
+                       ::fprintf(fout, "** Event #%"LL"d   T=%s   Elapsed: %s%s   ev/sec=%g\n",
                                simulation.getEventNumber(),
                                SIMTIME_STR(simulation.getSimTime()),
                                timeToStr(totalElapsed()),

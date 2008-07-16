@@ -383,12 +383,13 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (mode==-1) {Tcl_SetResult(interp, TCLCONST("wrong mode argument, should be slow, normal, fast or express"), TCL_STATIC);return TCL_ERROR;}
 
    simtime_t until_time = 0;
-   long until_event = 0;
+   eventnumber_t until_event = 0;
    if (argc==4)
    {
        if (!opp_isblank(argv[2]))
            TRY( until_time = STR_SIMTIME(argv[2]) ); // simtime overflow
-       until_event = atol(argv[3]);
+       char *e;
+       until_event = strtoll(argv[3], &e, 10);
    }
 
    app->runSimulation(mode, until_time, until_event);
@@ -421,8 +422,8 @@ int setRunUntil_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        simtime_t until_time = 0;
        if (!opp_isblank(argv[2]))
            TRY( until_time = STR_SIMTIME(argv[1]) );  // simtime overflow
-       long until_event = atol(argv[2]);
-
+       char *e;
+       eventnumber_t until_event = strtoll(argv[2], &e, 10);
        app->setSimulationRunUntil(until_time, until_event);
    }
    return TCL_OK;

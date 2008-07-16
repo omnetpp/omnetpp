@@ -113,7 +113,7 @@ static bool eventnumGreater(const Block &first, const Block &second)
     return first.startEventNum > second.endEventNum;
 }
 
-const Block *VectorData::getBlockByEventnum(long eventNum, bool after) const
+const Block *VectorData::getBlockByEventnum(eventnumber_t eventNum, bool after) const
 {
     Block blockToFind;
     blockToFind.startEventNum = eventNum;
@@ -131,7 +131,7 @@ const Block *VectorData::getBlockByEventnum(long eventNum, bool after) const
     }
 }
 
-Blocks::size_type VectorData::getBlocksInEventnumInterval(long startEventNum, long endEventNum, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const
+Blocks::size_type VectorData::getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const
 {
     Block blockToFind;
     blockToFind.startEventNum = startEventNum;
@@ -431,7 +431,7 @@ void IndexFileReader::parseLine(char **tokens, int numTokens, VectorFileIndex *i
         CHECK(parseInt64(tokens[i++], block.size), "invalid block size", lineNum);
         if (vector->hasColumn('E'))
         {
-            CHECK(parseLong(tokens[i++], block.startEventNum) && parseLong(tokens[i++], block.endEventNum),
+            CHECK(parseInt64(tokens[i++], block.startEventNum) && parseInt64(tokens[i++], block.endEventNum),
                 "invalid event numbers", lineNum);
         }
         if (vector->hasColumn('T'))
@@ -547,10 +547,10 @@ void IndexFileWriter::writeBlock(const VectorData &vector, const Block &block)
     if (block.getCount() > 0)
     {
         CHECK(fprintf(file, "%d\t%"LL"d %"LL"d", vector.vectorId, (int64)block.startOffset, (int64)block.size));
-        if (vector.hasColumn('E')) { CHECK(fprintf(file, " %ld %ld", block.startEventNum, block.endEventNum)); }
+        if (vector.hasColumn('E')) { CHECK(fprintf(file, " %"LL"d %"LL"d", block.startEventNum, block.endEventNum)); }
         if (vector.hasColumn('T')) { CHECK(fprintf(file, " %s %s",
-                                                        BigDecimal::ttoa(buff1, block.startTime, e),
-                                                        BigDecimal::ttoa(buff2, block.endTime, e))); }
+                                                BigDecimal::ttoa(buff1, block.startTime, e),
+                                                BigDecimal::ttoa(buff2, block.endTime, e))); }
         if (vector.hasColumn('V')) { CHECK(fprintf(file, " %ld %.*g %.*g %.*g %.*g",
                                                 block.getCount(), precision, block.getMin(), precision, block.getMax(),
                                                 precision, block.getSum(), precision, block.getSumSqr())); }

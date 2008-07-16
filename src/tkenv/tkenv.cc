@@ -72,6 +72,7 @@ extern "C" TKENV_API void tkenv_lib() {}
 // on some compilers (e.g. linux gcc 4.2) the functions are generated without _
 extern "C" TKENV_API void _tkenv_lib() {}
 
+#define LL  INT64_PRINTF_FORMAT
 
 // widgets in the Tk user interface
 #define NETWORK_LABEL         ".statusbar.networklabel"
@@ -373,7 +374,7 @@ void Tkenv::doOneStep()
     }
 }
 
-void Tkenv::runSimulation(int mode, simtime_t until_time, long until_event, cModule *until_module)
+void Tkenv::runSimulation(int mode, simtime_t until_time, eventnumber_t until_event, cModule *until_module)
 {
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
@@ -453,7 +454,7 @@ void Tkenv::setSimulationRunMode(int mode)
     runmode = mode;
 }
 
-void Tkenv::setSimulationRunUntil(simtime_t until_time, long until_event)
+void Tkenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_event)
 {
     rununtil_time = until_time;
     rununtil_event = until_event;
@@ -887,7 +888,7 @@ void Tkenv::updateSimtimeDisplay()
 {
     // event and time display
     char buf[16];
-    sprintf(buf, "%lu", simulation.getEventNumber());
+    sprintf(buf, "%"LL"d", simulation.getEventNumber());
     CHK(Tcl_VarEval(interp, EVENT_LABEL " config -text {"
                         "Event #", buf,
                         "}", NULL ));
@@ -961,7 +962,7 @@ void Tkenv::clearPerformanceDisplay()
 void Tkenv::printEventBanner(cSimpleModule *module)
 {
     char banner[MAX_OBJECTFULLPATH+60];
-    sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
+    sprintf(banner,"** Event #%"LL"d.  T=%s.  Module #%u `%s'\n",
             simulation.getEventNumber(),
             SIMTIME_STR(simulation.getSimTime()),
             module->getId(),

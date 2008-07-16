@@ -46,8 +46,8 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
     struct sBlock {
       file_offset_t offset; // file offset of the block
       file_offset_t size;   // size of the block
-      long startEventNum;   // event number of the first sample in the block
-      long endEventNum;     // event number of the last sample in the block
+      eventnumber_t startEventNum; // event number of the first sample in the block
+      eventnumber_t endEventNum;   // event number of the last sample in the block
       simtime_t startTime;  // simulation time of the first sample in the block
       simtime_t endTime;    // simulation time of the last sample in the block
       long count;           // count of samples in the block
@@ -64,10 +64,10 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
 
     struct sSample {
         simtime_t simtime;
-        long eventNumber;
+        eventnumber_t eventNumber;
         double value;
 
-        sSample(simtime_t t, long eventNumber, double val) : simtime(t), eventNumber(eventNumber), value(val) {}
+        sSample(simtime_t t, eventnumber_t eventNumber, double val) : simtime(t), eventNumber(eventNumber), value(val) {}
     };
 
     typedef std::vector<sSample> Samples;

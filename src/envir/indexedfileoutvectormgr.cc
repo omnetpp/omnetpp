@@ -198,7 +198,7 @@ bool cIndexedFileOutputVectorManager::record(void *vectorhandle, simtime_t t, do
             initVector(vp);
 
         sBlock &currentBlock = vp->currentBlock;
-        long eventNumber = simulation.getEventNumber();
+        eventnumber_t eventNumber = simulation.getEventNumber();
         if (currentBlock.count == 0)
         {
             currentBlock.startTime = t;
@@ -264,7 +264,7 @@ void cIndexedFileOutputVectorManager::writeBlock(sVector *vp)
     if (vp->recordEventNumbers)
     {
         for (std::vector<sSample>::iterator it = vp->buffer.begin(); it != vp->buffer.end(); ++it)
-            CHECK(fprintf(f,"%d\t%ld\t%s\t%.*g\n", vp->id, it->eventNumber, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
+            CHECK(fprintf(f,"%d\t%"LL"d\t%s\t%.*g\n", vp->id, it->eventNumber, SIMTIME_TTOA(buff, it->simtime), prec, it->value), fname);
     }
     else
     {

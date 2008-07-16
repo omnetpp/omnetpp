@@ -135,7 +135,7 @@ class SIM_API cMessage : public cOwnedObject
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
     unsigned long insertordr;  // used by cMessageHeap
 
-    long prev_event_num;       // event number of the sending, scheduling this message
+    eventnumber_t prev_event_num; // event number of the sending, scheduling this message
 
     long msgid;                // a unique message identifier assigned upon message creation
     long msgtreeid;            // a message identifier that is inherited by dup, if non dupped it is msgid
@@ -164,10 +164,10 @@ class SIM_API cMessage : public cOwnedObject
   public:
     // internal: returns the event number which scheduled this event, or the event in which
     // this message was last delivered to a module. Stored for recording into the event log file.
-    long getPreviousEventNumber() const {return prev_event_num;}
+    eventnumber_t getPreviousEventNumber() const {return prev_event_num;}
 
     // internal: sets previousEventNumber.
-    void setPreviousEventNumber(long num) {prev_event_num = num;}
+    void setPreviousEventNumber(eventnumber_t num) {prev_event_num = num;}
 
     // internal convenience method: returns the getId() of the innermost encapsulated message,
     // or itself if there's no encapsulated message
@@ -177,29 +177,32 @@ class SIM_API cMessage : public cOwnedObject
     // or itself if there's no encapsulated message
     long getEncapsulationTreeId() const;
 
+    // internal: used by cMessageHeap.
+    unsigned long getInsertOrder() const {return insertordr;}
+
     // internal: only to be used by test cases
     int getShareCount() const {return sharecount;}
 
     // internal: called by the simulation kernel as part of the send(),
     // scheduleAt() calls to set the values returned by the
     // getSenderModuleId(), getSenderGate(), getSendingTime() methods.
-    virtual void setSentFrom(cModule *module, int gateId, simtime_t t);
+    void setSentFrom(cModule *module, int gateId, simtime_t t);
 
     // internal: called by the simulation kernel as part of processing
     // the send(), scheduleAt() calls to set the values returned
     // by the getArrivalModuleId(), getArrivalGate() methods.
-    virtual void setArrival(cModule *module, int gateId);
+    void setArrival(cModule *module, int gateId);
 
     // internal: called by the simulation kernel as part of processing
     // the send(), scheduleAt() calls to set the values returned
     // by the getArrivalModuleId(), getArrivalGate(), getArrivalTime() methods.
-    virtual void setArrival(cModule *module, int gate, simtime_t t);
+    void setArrival(cModule *module, int gate, simtime_t t);
 
     // internal: called by the simulation kernel to set the value returned
     // by the getArrivalTime() method
-    virtual void setArrivalTime(simtime_t t);
+    void setArrivalTime(simtime_t t);
 
-    //XXX
+    // internal: sets the message duration; called by channel objects and sendDirect
     void setDuration(simtime_t d) {duration = d;}
 
     // internal: sets the isReceptionStart() flag
@@ -409,11 +412,6 @@ class SIM_API cMessage : public cOwnedObject
      * Returns the message's time stamp.
      */
     simtime_t getTimestamp() const {return tstamp;}
-
-    /**
-     * INTERNAL: Used by cMessageHeap.
-     */
-    unsigned long getInsertOrder() const {return insertordr;}
 
     /**
      * Returns the context pointer.

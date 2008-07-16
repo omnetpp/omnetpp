@@ -67,9 +67,9 @@ void ArrayBuilderNode::resize()
     }
 
     if (collectEvec) {
-        long *newevec = new long[newsize];
-        memcpy(newevec, evec, veccapacity*sizeof(long));
-        delete[] evec;
+        eventnumber_t *newevec = new eventnumber_t[newsize];
+        memcpy(newevec, evec, veccapacity*sizeof(eventnumber_t));
+        delete [] evec;
         evec = newevec;
     }
 

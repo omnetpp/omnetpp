@@ -33,13 +33,13 @@ NAMESPACE_BEGIN
 
 struct OutputVectorEntry {
     long serial;
-    long eventNumber;
+    eventnumber_t eventNumber;
     simultime_t simtime;
     double value;
 
     OutputVectorEntry()
         : eventNumber(-1) {}
-    OutputVectorEntry(long serial, long eventNumber, simultime_t simtime, double value)
+    OutputVectorEntry(long serial, eventnumber_t eventNumber, simultime_t simtime, double value)
         : serial(serial), eventNumber(eventNumber), simtime(simtime), value(value) {}
 };
 
@@ -88,7 +88,7 @@ class SCAVE_API IndexedVectorFileReader
          * or the last entry whose simtime is <= than the given simtime (when after is false).
          * Returns NULL when no entry after/before.
          */
-        OutputVectorEntry *getEntryByEventnum(long eventNum, bool after);
+        OutputVectorEntry *getEntryByEventnum(eventnumber_t eventNum, bool after);
 
         /**
          * Adds output vector entries in the [startTime,endTime] interval to
@@ -99,7 +99,7 @@ class SCAVE_API IndexedVectorFileReader
          * Adds output vector entries in the [startTime,endTime] interval to
          * the specified vector. Returns the number of entries added.
          */
-        long collectEntriesInEventnumInterval(long startEventNum, long endEventNum, Entries &out);
+        long collectEntriesInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Entries &out);
 };
 
 /**

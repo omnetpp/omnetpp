@@ -96,7 +96,7 @@ struct SCAVE_API VectorResult : public ResultItem
 {
     int vectorId;
     std::string columns;
-    long startEventNum, endEventNum;
+    eventnumber_t startEventNum, endEventNum;
     simultime_t startTime, endTime;
     Statistics stat;
 

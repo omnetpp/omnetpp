@@ -77,7 +77,7 @@ Datum parseColumns(char **tokens, int numtokens, const string &columns, const ch
     else if (colno == 3 && columns[0] == 'E' && columns[1] == 'T' && columns[2] == 'V')
     {
         // parse event number, time and value
-        if (!parseLong(tokens[1], a.eventNumber) || !parseSimtime(tokens[2],a.xp) || !parseDouble(tokens[3],a.y))
+        if (!parseInt64(tokens[1], a.eventNumber) || !parseSimtime(tokens[2],a.xp) || !parseDouble(tokens[3],a.y))
             throw ResultFileFormatException("invalid vector file syntax: invalid event number, time or value column", file, lineno, offset);
         a.x = a.xp.dbl();
     }
@@ -89,7 +89,7 @@ Datum parseColumns(char **tokens, int numtokens, const string &columns, const ch
             switch (columns[i])
             {
             case 'E':
-                if (!parseLong(tokens[i+1], a.eventNumber))
+                if (!parseInt64(tokens[i+1], a.eventNumber))
                     throw ResultFileFormatException("invalid vector file syntax: invalid event number", file, lineno, offset);
                 break;
             case 'T':
@@ -163,7 +163,7 @@ void VectorFileReaderNode::process()
                 for (PortVector::iterator p=portvec->second.begin(); p!=portvec->second.end(); ++p)
                     p->getChannel()->write(&a,1);
 
-                //DBG(("vectorfilereader: written id=%d (%ld,%g,%g)\n", vectorId, a.eventNumber, a.x, a.y));
+                //DBG(("vectorfilereader: written id=%d (%"LL"d,%g,%g)\n", vectorId, a.eventNumber, a.x, a.y));
             }
         }
     }

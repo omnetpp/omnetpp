@@ -113,7 +113,7 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
     const char *file = filename.c_str();
     file_offset_t offset;
-#define CHECK(cond, msg) {if (!cond) throw opp_runtime_error(msg ", file %s, offset %"LL, file, (int64)offset); }
+#define CHECK(cond, msg) {if (!cond) throw opp_runtime_error(msg ", file %s, offset %"LL"d", file, (int64)offset); }
 
     VectorData *vector = portDataPtr->vector;
     file_offset_t startOffset = blockPtr->startOffset;

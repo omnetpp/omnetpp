@@ -34,8 +34,8 @@ struct Block {
     file_offset_t startOffset;
     int64 size;
     long startSerial;
-    long startEventNum;
-    long endEventNum;
+    eventnumber_t startEventNum;
+    eventnumber_t endEventNum;
     simultime_t startTime;
     simultime_t endTime;
     Statistics stat;
@@ -53,7 +53,7 @@ struct Block {
 
     bool contains(long serial) const { return startSerial <= serial && serial < endSerial(); }
 
-    void collect(long eventNum, simultime_t simtime, double value)
+    void collect(eventnumber_t eventNum, simultime_t simtime, double value)
     {
         if (getCount() == 0)
         {
@@ -80,8 +80,8 @@ struct VectorData {
     std::string columns;
     StringMap attributes;
     int64 blockSize;
-    long startEventNum;
-    long endEventNum;
+    eventnumber_t startEventNum;
+    eventnumber_t endEventNum;
     simultime_t startTime;
     simultime_t endTime;
     Statistics stat;
@@ -143,7 +143,7 @@ struct VectorData {
      * or the last block whose startEventNum <= eventNum (when after == false).
      * Returns NULL if no such block.
      */
-    const Block *getBlockByEventnum(long eventNum, bool after) const;
+    const Block *getBlockByEventnum(eventnumber_t eventNum, bool after) const;
 
     /**
      * Finds the start (inclusive) and end (exclusive) indeces of the range of blocks,
@@ -157,7 +157,7 @@ struct VectorData {
      * containing entries in the [startEventNum,endEventNum] interval (both inclusive).
      * Returns the number of blocks found.
      */
-    Blocks::size_type getBlocksInEventnumInterval(long startEventNum, long endEventNum, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const;
+    Blocks::size_type getBlocksInEventnumInterval(eventnumber_t startEventNum, eventnumber_t endEventNum, Blocks::size_type &startIndex, Blocks::size_type &endIndex) const;
 };
 
 typedef std::vector<VectorData> Vectors;

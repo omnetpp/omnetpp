@@ -39,7 +39,7 @@ class SCAVE_API ArrayBuilderNode : public SingleSinkNode
         size_t veclen;
         BigDecimal *xpvec;
         bool collectEvec;
-        long *evec; // event numbers
+        eventnumber_t *evec; // event numbers
         void resize();
     public:
         ArrayBuilderNode();

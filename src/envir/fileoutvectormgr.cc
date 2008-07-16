@@ -40,6 +40,8 @@ Register_Class(cFileOutputVectorManager);
 #define VECTOR_FILE_VERSION 2
 #define DEFAULT_PRECISION  "14"
 
+#define LL  INT64_PRINTF_FORMAT
+
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.vec", "Name for the output vector file.");
 Register_PerRunConfigEntry(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output vector file. The maximum value is ~15 (IEEE double precision). This setting has no effect on the \"time\" column of output vectors, which are represented as fixed-point numbers and always get recorded precisely.");
 
@@ -94,7 +96,7 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
     {
         openFile();
         if (!f) return;
-        
+
         CHECK(fprintf(f, "version %d\n", VECTOR_FILE_VERSION));
     }
 
@@ -191,7 +193,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
         assert(f!=NULL);
         if (vp->recordEventNumbers)
         {
-            CHECK(fprintf(f,"%d\t%ld\t%s\t%.*g\n", vp->id, simulation.getEventNumber(), SIMTIME_TTOA(buff, t), prec, value));
+            CHECK(fprintf(f,"%d\t%"LL"d\t%s\t%.*g\n", vp->id, simulation.getEventNumber(), SIMTIME_TTOA(buff, t), prec, value));
         }
         else
         {

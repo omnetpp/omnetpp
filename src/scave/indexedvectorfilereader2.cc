@@ -115,7 +115,7 @@ bool IndexedVectorFileReaderNode2::readNextBlock(PortData &portData)
 
     const char *file = filename.c_str();
     file_offset_t offset;
-#define CHECK(cond, msg) {if (!cond) throw opp_runtime_error(msg ", file %s, offset %"LL, file, (int64)offset); }
+#define CHECK(cond, msg) {if (!cond) throw opp_runtime_error(msg ", file %s, offset %"LL"d", file, (int64)offset); }
 
 
     Block &block = vector->blocks[portData.currentBlockIndex++];

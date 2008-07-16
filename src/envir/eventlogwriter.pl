@@ -71,6 +71,10 @@ while (<FILE>)
       {
          $fieldPrintfType = '%"LL"d';
       }
+      elsif ($fieldType eq "eventnumber_t")
+      {
+         $fieldPrintfType = '%"LL"d';
+      }
       elsif ($fieldType eq "simtime_t")
       {
          $fieldPrintfType = "%s";

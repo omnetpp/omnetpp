@@ -86,7 +86,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     cScheduler *schedulerp;   // event scheduler
 
     simtime_t sim_time;       // simulation time (time of current event)
-    long event_num;           // sequence number of current event
+    eventnumber_t event_num;  // sequence number of current event
 
     cMessage *msg_for_activity; // helper variable to pass the received message into activity()
     cException *exception;    // helper variable to get exceptions back from activity()
@@ -294,7 +294,7 @@ class SIM_API cSimulation : public cNoncopyableOwnedObject
     /**
      * Returns the sequence number of current event.
      */
-    long getEventNumber() const  {return event_num;}
+    eventnumber_t getEventNumber() const  {return event_num;}
     //@}
 
     /** @name Scheduling and context switching during simulation. */

@@ -39,9 +39,9 @@ struct Datum
 {
     // x value stored as a double or a BigDecimal, usually the simulation time t
     double x;       // x value as double
-    BigDecimal xp;  // precise x value, BigDecimal::Nil if not filled in  FIXME REVISE ALL FILTERS WHETHER THEY USE xp CORRECTLY! Andras
-    double y;  ///< usually the value at t
-    long eventNumber;
+    BigDecimal xp;  // precise x value, BigDecimal::Nil if not filled in
+    double y;       // usually the value at t
+    eventnumber_t eventNumber;
 
     Datum() : xp(BigDecimal::Nil), eventNumber(-1) {}
 };

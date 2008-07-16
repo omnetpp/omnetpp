@@ -71,6 +71,9 @@
 #endif
 
 
+typedef int64 eventnumber_t;
+
+
 /**
  * Prototype for functions that are called by some objects (cMsgPar, cLinkedList)
  * to free up user-defined data structures.
