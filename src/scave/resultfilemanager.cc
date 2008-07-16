@@ -137,15 +137,11 @@ ResultFileManager::~ResultFileManager()
     classNames.clear();
 }
 
-std::string *ResultFileManager::stringSetFindOrInsert(StringSet& set, const std::string& str)
+const std::string *ResultFileManager::stringSetFindOrInsert(StringSet& set, const std::string& str)
 {
-    StringSet::iterator m = set.find(str);
-    if (m==set.end())
-    {
-        std::pair<StringSet::iterator,bool> p = set.insert(str);
-        m = p.first;
-    }
-    return &const_cast<std::string&>(*m);
+	std::pair<StringSet::iterator,bool> p = set.insert(str);
+	StringSet::iterator m = p.first;
+    return &(*m);
 }
 
 ResultFileList ResultFileManager::getFiles() const
@@ -201,10 +197,7 @@ ResultFileList *ResultFileManager::getUniqueFiles(const IDList& ids) const
         set.insert(getItem(ids.get(i)).fileRunRef->fileRef);
 
     // convert to list for easier handling at recipient
-    ResultFileList *list = new ResultFileList();
-    for (std::set<ResultFile*>::iterator i = set.begin(); i!=set.end(); i++)
-        list->push_back(*i);
-    return list;
+    return new ResultFileList(set.begin(), set.end());
 }
 
 RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
@@ -215,10 +208,7 @@ RunList *ResultFileManager::getUniqueRuns(const IDList& ids) const
         set.insert(getItem(ids.get(i)).fileRunRef->runRef);
 
     // convert to list for easier handling at recipient
-    RunList *list = new RunList();
-    for (std::set<Run*>::iterator i = set.begin(); i!=set.end(); i++)
-        list->push_back(*i);
-    return list;
+    return new RunList(set.begin(), set.end());
 }
 
 FileRunList *ResultFileManager::getUniqueFileRuns(const IDList& ids) const
@@ -229,10 +219,7 @@ FileRunList *ResultFileManager::getUniqueFileRuns(const IDList& ids) const
         set.insert(getItem(ids.get(i)).fileRunRef);
 
     // convert to list for easier handling at recipient
-    FileRunList *list = new FileRunList();
-    for (std::set<FileRun*>::iterator i = set.begin(); i!=set.end(); i++)
-        list->push_back(*i);
-    return list;
+    return new FileRunList(set.begin(), set.end());
 }
 
 StringSet *ResultFileManager::getUniqueModuleNames(const IDList& ids) const

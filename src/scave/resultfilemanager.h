@@ -54,8 +54,8 @@ struct SCAVE_API ResultItem
     enum Type { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
 
     FileRun *fileRunRef; // backref to containing FileRun
-    std::string *moduleNameRef; // points into ResultFileManager's StringSet
-    std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
+    const std::string *moduleNameRef; // points into ResultFileManager's StringSet
+    const std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
     StringMap attributes; // metadata in key/value form
     ComputationNode computation;
 
@@ -290,7 +290,7 @@ class SCAVE_API ResultFileManager
     enum {SCALAR=1, VECTOR=2, HISTOGRAM=4}; // must be 1,2,4,8 etc, because of IDList::getItemTypes()
 
   private:
-    static std::string *stringSetFindOrInsert(StringSet& set, const std::string& str);
+    static const std::string *stringSetFindOrInsert(StringSet& set, const std::string& str);
 
     // ID: 1 bit computed, 7 bit type, 24 bit fileid, 32 bit pos
     static bool _computed(ID id) { return (id >> 63) != 0; }
