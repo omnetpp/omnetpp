@@ -83,26 +83,27 @@
 	- channels became first-class citizens: they have a common base class
 	  (cComponent) with cModule, they participate in the initialize()/
 	  finish() protocol, and so on.
+	- cBasicChannel renamed to cDatarateChannel
 	- removed delay(), setDelay(), error(), setError(), dataRate(),
 	  setDataRate() methods from cGate; use methods from the gate's channel 
-	  instead: check_and_cast<cBasicChannel *>(gate->channel())->setDelay(0.1);
+	  instead: check_and_cast<cDatarateChannel *>(gate->channel())->setDelay(0.1);
 	  or use generic component parameter access instead: gate->channel()->par("delay")=0.1.
-        - "error" parameter renamed to "ber" (bit error rate or BER, cBasicChannel methods 
+        - "error" parameter renamed to "ber" (bit error rate or BER, cDatarateChannel methods 
           getBitErrorRate/setBitErrorRate)
-        - added "per" parameter (packet error rate or PER, cBasicChannel methods 
+        - added "per" parameter (packet error rate or PER, cDatarateChannel methods 
           getPacketErrorRate/setPacketErrorRate)
-	- added cIdealChannel which lets messages through without any change or delay.
-	- breaking change in cBasicChannel behaviour: implicit queueing is no longer supported:
-	  sending on a busy gate (when simTime() < gate->transmissionFinishes()) results in an
-	  error. Thus, using a special transmitter module (with an internal queue) is now
-	  sort of mandatory when channels with data rate are in use.
+	- added cIdealChannel which lets messages through without any change
+	  and without any delay.
+	- breaking change in cDatarateChannel behaviour: implicit queueing is 
+	  no longer supported: sending on a busy gate (that is, when simTime() < 
+	  gate->transmissionFinishTime()) results in an error. Thus, using a 
+	  special transmitter module (with an internal queue) is now sort of 
+	  mandatory when channels with data rate are in use.
 	- setting channel parameters from the ini file:
 	   (1) make the parameter input, e.g.: 
 	         a.out --> { delay=default(0); } --> b.in;
 	   (2) add <fromgate-fullpath>.channel.<paramname> = <value> into the ini file, e.g.:
 	         **.a.out.channel.delay = 10ms
-	- TODO: make it easier to find the first gate with datarate (as g->transmissionFinishes()
-	  is "non-transitive"). Add another method? or make transmissionFinishes() transitive?
 
 	Dynamic module/channel creation:
 	- finalizeParameters() must be called (for channels, this reads input params from omnetpp.ini;

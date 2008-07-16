@@ -15,50 +15,50 @@ import inet.MScharf.Nodes.INET.WebServer;
 import inet.nodes.inet.Router;
 
 
-channel server2edge extends ned.BasicChannel
+channel server2edge extends ned.DatarateChannel
 {
     parameters:
         delay = 1us;
         datarate = 2*10e6;
 }
 
-channel host2edge extends ned.BasicChannel
+channel host2edge extends ned.DatarateChannel
 {
     parameters:
         delay = 1us;
         datarate = 1*1000000;
 }
-channel edge2gw extends ned.BasicChannel
+channel edge2gw extends ned.DatarateChannel
 {
     parameters:
         delay = 1us;
         datarate = 155*1000000;
 }
-channel gw2core extends ned.BasicChannel
+channel gw2core extends ned.DatarateChannel
 {
     parameters:
         delay = 1us;
         datarate = 622*1000000;
 }
-channel core2core extends ned.BasicChannel
+channel core2core extends ned.DatarateChannel
 {
     parameters:
         delay = 1us;
         datarate = 1000*1000000;
 }
-channel stub2stub extends ned.BasicChannel
+channel stub2stub extends ned.DatarateChannel
 {
     parameters:
         delay = 1us;
         datarate = 2500*1000000;
 }
-channel stub2transit extends ned.BasicChannel
+channel stub2transit extends ned.DatarateChannel
 {
     parameters:
         delay = 1us;
         datarate = 2500*1000000;
 }
-channel transit2transit extends ned.BasicChannel
+channel transit2transit extends ned.DatarateChannel
 {
     parameters:
         delay = 1us;

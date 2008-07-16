@@ -3,7 +3,7 @@ Test "disabled" parameter of channels
 
 %file: test.ned
 
-channel MyConn extends ned.BasicChannel
+channel MyConn extends ned.DatarateChannel
 {
     parameters:
         delay = 0.004s;
@@ -49,7 +49,7 @@ Define_Module(Node1);
 void Node1::activity()
 {
     // set channel to disabled
-    cBasicChannel *chan = check_and_cast<cBasicChannel *>(gate("out")->getChannel());
+    cDatarateChannel *chan = check_and_cast<cDatarateChannel *>(gate("out")->getChannel());
     chan->setDisabled(true);
 
     // send packets

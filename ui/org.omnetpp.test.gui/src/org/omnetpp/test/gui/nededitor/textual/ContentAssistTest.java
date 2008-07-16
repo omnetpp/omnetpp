@@ -104,7 +104,7 @@ public class ContentAssistTest extends NedFileTestCase {
         textualNedEditor.typeIn(" extends ");
         textualNedEditor.pressKey(' ', SWT.CTRL);
         Access.findContentAssistPopup().assertContent(new String[] {
-                "BasicChannel - ned - channel type",
+                "DatarateChannel - ned - channel type",
                 "Channel1 - channel type",
                 "Channel1 - testpackage - channel type",
                 "Channel2 - channel type",
@@ -220,7 +220,7 @@ public class ContentAssistTest extends NedFileTestCase {
                 "cg - gate",
                 "InnerChannel1 - inner type",
                 "InnerChannel2 - inner type",
-                "BasicChannel - ned - channel type",
+                "DatarateChannel - ned - channel type",
                 "Channel1 - channel type",
                 "Channel1 - testpackage - channel type",
                 "Channel2 - channel type",

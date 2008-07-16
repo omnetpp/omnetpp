@@ -82,7 +82,7 @@ import org.omnetpp.ned.model.pojo.UnknownElement;
 //FIXME validate like-param: must me a string parameter, etc!
 public class NEDValidator extends AbstractNEDValidatorEx {
 
-	private static final String DEFAULT_CHANNEL_TYPE = "ned.BasicChannel";
+	private static final String DEFAULT_CHANNEL_TYPE = "ned.DatarateChannel";
 
 	private INEDTypeResolver resolver;
 
@@ -587,7 +587,7 @@ public class NEDValidator extends AbstractNEDValidatorEx {
 				errors.addError(node, "'"+likeTypeName+"' is not a channel interface type");
 		}
 		else {
-			// fallback: type is BasicChannel
+			// fallback: type is DatarateChannel
 			channelSpecType = resolver.getToplevelNedType(DEFAULT_CHANNEL_TYPE, contextProject);
 			Assert.isTrue(channelSpecType!=null);
 		}

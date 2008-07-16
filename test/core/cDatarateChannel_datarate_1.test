@@ -3,7 +3,7 @@ Test channel data rate
 
 %file: test.ned
 
-channel MyConn extends ned.BasicChannel
+channel MyConn extends ned.DatarateChannel
 {
     parameters:
         datarate = 1e5bps;

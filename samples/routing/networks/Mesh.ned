@@ -17,7 +17,7 @@ network Mesh
         double height @prompt("Number of rows") = default(9);
         double width @prompt("Number of columns") = default(7);
     types:
-        channel C extends ned.BasicChannel
+        channel C extends ned.DatarateChannel
         {
             parameters:
                 delay = 0.1ms;

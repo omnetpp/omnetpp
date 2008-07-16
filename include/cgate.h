@@ -37,7 +37,7 @@ class cChannel;
 class cProperties;
 class cDisplayString;
 class cIdealChannel;
-class cBasicChannel;
+class cDatarateChannel;
 
 
 //
@@ -333,7 +333,7 @@ class SIM_API cGate : public cObject, noncopyable
     //@{
 
     /**
-     * If the gate has a channel subclassed from cBasicChannel,
+     * If the gate has a channel subclassed from cDatarateChannel,
      * the methods calls isBusy() on it and returns the result.
      * Otherwise, it returns false.
      */

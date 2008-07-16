@@ -986,7 +986,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //    sprintf(buf,"#%d", g->getId());
 //    setLabel(".nb.info.id.e", buf);
 //    setEntry(".nb.info.dispstr.e", g->getDisplayString().str());
-//    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->getChannel());
+//    cDatarateChannel *ch = dynamic_cast<cDatarateChannel*>(g->getChannel());
 //    if (ch)
 //    {
 //        setEntry(".nb.info.delay.e", ch->getDelay());
@@ -1010,7 +1010,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //    cGate *g = static_cast<cGate *>(object);
 //    g->setName(getEntry(".nb.info.name.e"));
 //    g->getDisplayString().parse(getEntry(".nb.info.dispstr.e"));
-//    cBasicChannel *ch = dynamic_cast<cBasicChannel*>(g->getChannel());
+//    cDatarateChannel *ch = dynamic_cast<cDatarateChannel*>(g->getChannel());
 //    double delay = atof(getEntry(".nb.info.delay.e"));
 //    double error = atof(getEntry(".nb.info.error.e"));
 //    double datarate = atof(getEntry(".nb.info.datarate.e"));
@@ -1018,7 +1018,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
 //    {
 //        if (!ch)
 //        {
-//            ch = new cBasicChannel("channel");
+//            ch = new cDatarateChannel("channel");
 //            g->setChannel(ch);
 //        }
 //        ch->setDelay(delay<0 ? 0 : delay);

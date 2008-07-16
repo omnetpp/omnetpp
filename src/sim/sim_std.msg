@@ -120,7 +120,7 @@ class cChannel extends cComponent
     cDisplayString displayString @group(general) @hint(controls appearance of this channel in the GUI);
 }
 
-class cBasicChannel extends cChannel
+class cDatarateChannel extends cChannel
 {
     // Note: no need to spell out delay etc, they come from cComponent parameters
     bool isBusy @getter(isBusy) @group(general) @hint(if channel is currently transmitting);

@@ -17,7 +17,7 @@ Define_Module(Sender);
 
 cChannel *Sender::createChannel(double delay)
 {
-    cBasicChannel *ch = cChannelType::createBasicChannel("chan");
+    cDatarateChannel *ch = cChannelType::createDatarateChannel("chan");
     ch->setDelay(delay);
     return ch;
 }

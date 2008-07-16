@@ -106,7 +106,7 @@ void cMySQLNetBuilder::addLinkAttributes(cGate *src, double delay, double error,
 {
     if (delay>0 || error>0 || datarate>0)
     {
-        cBasicChannel *chan = new cBasicChannel("chan");
+        cDatarateChannel *chan = new cDatarateChannel("chan");
         if (delay>0)
             chan->setDelay(delay);
         if (error>0)

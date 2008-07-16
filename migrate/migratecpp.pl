@@ -70,7 +70,8 @@ while (<LISTFILE>)
     $txt =~ s/\bgetAsText\b/str/mg;
 
     $txt =~ s/\bcException\b/cRuntimeError/mg;
-    $txt =~ s/\bcSimpleChannel\b/cBasicChannel/mg;
+    $txt =~ s/\bcSimpleChannel\b/cDatarateChannel/mg;
+    $txt =~ s/\bcBasicChannel\b/cDatarateChannel/mg;
 
     # message length (careful with length(), as it may easily be string.length(), queue.length() etc)
     $txt =~ s/([a-zA-Z0-9]*([Mm]sg|[Mm]essage|[Pp]k|[Pp]acket|[Ff]rame)[a-zA-Z0-9]*)->length\(\)/$1->getBitLength()/mg;
@@ -108,7 +109,7 @@ while (<LISTFILE>)
     $txt =~ s/->delay\(\)->doubleValue\(\)/->channel()->par("delay").doubleValue()/mg;
     $txt =~ s/->error\(\)->doubleValue\(\)/->channel()->par("ber").doubleValue()/mg;
 
-    # cBasicChannel
+    # cDatarateChannel
     $txt =~ s/\berror\(\)/getBitErrorRate()/mg;
     $txt =~ s/\bsetError\(/setBitErrorRate(/mg;
 
@@ -234,7 +235,7 @@ while (<LISTFILE>)
        }
 
        # dynamic channel creation
-       if ($line =~ /\bnew +cBasicChannel\b/) {
+       if ($line =~ /\bnew +cDatarateChannel\b/) {
           print "*** warning at $fname:$lineno: channel creation should be done via cChannelType, see manual; direct \"new\" won't work properly\n";
           print "$linewithcomment\n";
        }

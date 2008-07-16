@@ -385,7 +385,7 @@ NAMESPACE_END
 #include "cpsquare.h"
 #include "cstringtokenizer.h"
 #include "cxmlelement.h"
-#include "cbasicchannel.h"
+#include "cdataratechannel.h"
 #include "cpacketqueue.h"
 
 USING_NAMESPACE
@@ -416,7 +416,7 @@ void _sim_dummy_func()
       std_sim_descriptor_dummy();
       cXMLElement a(0,0,0);
       (void)a;
-      cBasicChannel c(NULL);
+      cDatarateChannel c(NULL);
       (void)c;
       cPacketQueue pq;
       (void)pq;

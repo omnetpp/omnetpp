@@ -22,7 +22,7 @@
 #include "cparimpl.h"
 #include "cexception.h"
 #include "globals.h"
-#include "cbasicchannel.h"
+#include "cdataratechannel.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -201,7 +201,7 @@ cModuleType *cModuleType::get(const char *qname)
 //----
 
 cChannelType *cChannelType::idealChannelType;
-cChannelType *cChannelType::basicChannelType;
+cChannelType *cChannelType::datarateChannelType;
 
 cChannelType::cChannelType(const char *name) : cComponentType(name)
 {
@@ -272,13 +272,13 @@ cChannelType *cChannelType::getIdealChannel()
     return idealChannelType;
 }
 
-cChannelType *cChannelType::getBasicChannel()
+cChannelType *cChannelType::getDatarateChannel()
 {
-    if (!basicChannelType) {
-        basicChannelType = find("ned.BasicChannel");
-        ASSERT(basicChannelType);
+    if (!datarateChannelType) {
+        datarateChannelType = find("ned.DatarateChannel");
+        ASSERT(datarateChannelType);
     }
-    return basicChannelType;
+    return datarateChannelType;
 }
 
 cIdealChannel *cChannelType::createIdealChannel(const char *name)
@@ -286,9 +286,9 @@ cIdealChannel *cChannelType::createIdealChannel(const char *name)
     return dynamic_cast<cIdealChannel *>(getIdealChannel()->create(name));
 }
 
-cBasicChannel *cChannelType::createBasicChannel(const char *name)
+cDatarateChannel *cChannelType::createDatarateChannel(const char *name)
 {
-    return dynamic_cast<cBasicChannel *>(getBasicChannel()->create(name));
+    return dynamic_cast<cDatarateChannel *>(getDatarateChannel()->create(name));
 }
 
 

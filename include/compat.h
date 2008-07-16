@@ -24,7 +24,7 @@
 //
 
 // renamed classes:
-typedef _OPPDEPRECATED OPP::cBasicChannel cSimpleChannel;
+typedef _OPPDEPRECATED OPP::cDatarateChannel cSimpleChannel;
 typedef /*_OPPDEPRECATED*/ OPP::cObject cPolymorphic;
 
 #endif

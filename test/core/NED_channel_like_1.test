@@ -10,7 +10,7 @@ channelinterface IChannel
         string p2;
 }
 
-channel Foo extends ned.BasicChannel like IChannel
+channel Foo extends ned.DatarateChannel like IChannel
 {
     parameters:
         int p1 = 5;

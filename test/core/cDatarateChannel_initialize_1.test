@@ -4,7 +4,7 @@ initialized.
 
 %file: test.ned
 
-channel MyConn extends ned.BasicChannel
+channel MyConn extends ned.DatarateChannel
 {
     parameters:
         delay = 1s;

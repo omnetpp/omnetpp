@@ -30,7 +30,7 @@
 #include "globals.h"
 #include "cgate.h"
 #include "cchannel.h"
-#include "cbasicchannel.h"
+#include "cdataratechannel.h"
 #include "cdisplaystring.h"
 #include "ccomponenttype.h"
 #include "stringutil.h"
@@ -320,7 +320,7 @@ bool cGate::deliver(cMessage *msg, simtime_t t)
 
 bool cGate::isBusy() const
 {
-    cBasicChannel *ch = dynamic_cast<cBasicChannel *>(channelp);
+    cDatarateChannel *ch = dynamic_cast<cDatarateChannel *>(channelp);
     return ch ? ch->isBusy() : false;
 }
 

@@ -351,46 +351,11 @@ $O/eventlogfilemgr.obj: eventlogfilemgr.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
-  eventlogwriter.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/ccoroutine.h \
   objectprinter.h \
   ../../include/cchannel.h \
-  ../../include/ccomponent.h \
-  ../../include/regmacros.h
-$O/eventlogwriter.obj: eventlogwriter.cc \
-  ../../include/cregistrationlist.h \
-  ../../include/cgate.h \
-  ../../include/cstringpool.h \
-  ../../include/cvisitor.h \
-  ../../include/cenvir.h \
-  ../../include/cmodule.h \
-  ../../include/onstartup.h \
-  ../../include/csimulation.h \
-  ../../include/simtime.h \
-  ../../include/simtime_t.h \
-  ../../include/simutil.h \
-  envirdefs.h \
-  ../../include/simkerneldefs.h \
-  ../../include/cmessageheap.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/cobject.h \
-  ../../include/cclassfactory.h \
-  ../../include/globals.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/errmsg.h \
-  ../../include/cdefaultlist.h \
-  ../../include/opp_string.h \
-  ../../include/cconfigkey.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/cexpression.h \
-  ../../include/cownedobject.h \
-  eventlogwriter.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/cpar.h \
-  ../../include/ccoroutine.h \
   ../../include/ccomponent.h \
   ../../include/regmacros.h
 $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \

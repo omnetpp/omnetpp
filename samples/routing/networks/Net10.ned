@@ -10,7 +10,7 @@
 package networks;
 
 import node.Node;
-import ned.BasicChannel;
+import ned.DatarateChannel;
 
 //
 // A network topology commonly known as the "NTT backbone".
@@ -18,7 +18,7 @@ import ned.BasicChannel;
 network Net10
 {
     types:
-        channel C extends BasicChannel
+        channel C extends DatarateChannel
         {
             parameters:
                 delay = 0.1ms;

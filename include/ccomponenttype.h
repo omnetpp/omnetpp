@@ -246,7 +246,7 @@ class SIM_API cChannelType : public cComponentType
 {
   protected:
     static cChannelType *idealChannelType;
-    static cChannelType *basicChannelType;
+    static cChannelType *datarateChannelType;
 
   protected:
     /**
@@ -305,13 +305,13 @@ class SIM_API cChannelType : public cComponentType
     static cChannelType *getIdealChannel();
 
     /**
-     * Equivalent to <tt>cChannelType::get("ned.BasicChannel")</tt>, but more efficient.
+     * Equivalent to <tt>cChannelType::get("ned.DatarateChannel")</tt>, but more efficient.
      */
-    static cChannelType *getBasicChannel();
+    static cChannelType *getDatarateChannel();
 
     //FIXME comments
     static cIdealChannel *createIdealChannel(const char *name);
-    static cBasicChannel *createBasicChannel(const char *name);
+    static cDatarateChannel *createDatarateChannel(const char *name);
 };
 
 NAMESPACE_END

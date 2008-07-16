@@ -1,5 +1,5 @@
 //==========================================================================
-//   CBASICCHANNEL.H  -  header for
+//   CDATARATECHANNEL.H  -  header for
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CBASICCHANNEL_H
-#define __CBASICCHANNEL_H
+#ifndef __CDATARATECHANNEL_H
+#define __CDATARATECHANNEL_H
 
 #include "cchannel.h"
 #include "cpar.h"
@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup SimCore
  */
-class SIM_API cBasicChannel : public cChannel //implies noncopyable
+class SIM_API cDatarateChannel : public cChannel //implies noncopyable
 {
   private:
     enum {
@@ -67,12 +67,12 @@ class SIM_API cBasicChannel : public cChannel //implies noncopyable
     /**
      * Constructor.
      */
-    explicit cBasicChannel(const char *name=NULL);
+    explicit cDatarateChannel(const char *name=NULL);
 
     /**
      * Destructor.
      */
-    virtual ~cBasicChannel();
+    virtual ~cDatarateChannel();
     //@}
 
     /** @name Redefined cObject member functions. */

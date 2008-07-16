@@ -1,5 +1,5 @@
 %description:
-Basic test for BasicChannel
+Basic test for DatarateChannel
 
 %file: test.ned
 
@@ -42,7 +42,7 @@ Define_Module(Sender);
 void Sender::activity()
 {
    // create and set channel
-   cBasicChannel *ch = cChannelType::createBasicChannel("chan");
+   cDatarateChannel *ch = cChannelType::createDatarateChannel("chan");
    ch->setDelay(0.1);
    gate("out")->reconnectWith(ch);
 

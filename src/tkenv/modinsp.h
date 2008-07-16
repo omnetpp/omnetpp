@@ -32,7 +32,7 @@
 #include "cqueue.h"
 #include "ccompoundmodule.h"
 #include "cchannel.h"
-#include "cbasicchannel.h"
+#include "cdataratechannel.h"
 
 #include "intxtypes.h"
 #include "inspector.h"

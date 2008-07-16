@@ -1,5 +1,5 @@
 //========================================================================
-//  CBASICCHANNEL.CC - part of
+//  CDATARATECHANNEL.CC - part of
 //
 //                 OMNeT++/OMNEST
 //              Discrete System Simulation in C++
@@ -14,7 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "cbasicchannel.h"
+#include "cdataratechannel.h"
 #include "cmessage.h"
 #include "cmodule.h"
 #include "cenvir.h"
@@ -33,10 +33,10 @@ USING_NAMESPACE
 
 using std::ostream;
 
-Register_Class(cBasicChannel);
+Register_Class(cDatarateChannel);
 
 
-cBasicChannel::cBasicChannel(const char *name) : cChannel(name)
+cDatarateChannel::cDatarateChannel(const char *name) : cChannel(name)
 {
     txfinishtime = 0;
     delayparam = 0;
@@ -45,22 +45,22 @@ cBasicChannel::cBasicChannel(const char *name) : cChannel(name)
     perparam = 0;
 }
 
-cBasicChannel::~cBasicChannel()
+cDatarateChannel::~cDatarateChannel()
 {
 }
 
-std::string cBasicChannel::info() const
+std::string cDatarateChannel::info() const
 {
     return cChannel::info();
 }
 
-void cBasicChannel::finalizeParameters()
+void cDatarateChannel::finalizeParameters()
 {
     cChannel::finalizeParameters();
     rereadPars();
 }
 
-void cBasicChannel::rereadPars()
+void cDatarateChannel::rereadPars()
 {
     delayparam = par("delay");
     datarateparam = par("datarate");
@@ -83,42 +83,42 @@ void cBasicChannel::rereadPars()
     setFlag(FL_PER_NONZERO, perparam!=0);
 }
 
-void cBasicChannel::handleParameterChange(const char *)
+void cDatarateChannel::handleParameterChange(const char *)
 {
     rereadPars();
 }
 
-void cBasicChannel::setDelay(double d)
+void cDatarateChannel::setDelay(double d)
 {
     par("delay").setDoubleValue(d);
 }
 
-void cBasicChannel::setDatarate(double d)
+void cDatarateChannel::setDatarate(double d)
 {
     par("datarate").setDoubleValue(d);
 }
 
-void cBasicChannel::setBitErrorRate(double d)
+void cDatarateChannel::setBitErrorRate(double d)
 {
     par("ber").setDoubleValue(d);
 }
 
-void cBasicChannel::setPacketErrorRate(double d)
+void cDatarateChannel::setPacketErrorRate(double d)
 {
     par("per").setDoubleValue(d);
 }
 
-void cBasicChannel::setDisabled(bool d)
+void cDatarateChannel::setDisabled(bool d)
 {
     par("disabled").setBoolValue(d);
 }
 
-bool cBasicChannel::isBusy() const
+bool cDatarateChannel::isBusy() const
 {
     return simulation.getSimTime() < txfinishtime;
 }
 
-bool cBasicChannel::deliver(cMessage *msg, simtime_t t)
+bool cDatarateChannel::deliver(cMessage *msg, simtime_t t)
 {
     // if channel is disabled, signal that message should be deleted
     if (flags & FL_ISDISABLED)

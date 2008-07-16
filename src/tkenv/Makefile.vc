@@ -122,6 +122,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cpsquare.h \
   ../../include/carray.h \
   ../../include/ccompoundmodule.h \
+  ../../include/cdataratechannel.h \
   ../../include/cgate.h \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
@@ -132,7 +133,6 @@ $O/inspector.obj: inspector.cc \
   ../../include/clcg32.h \
   tkutil.h \
   ../../include/simtime.h \
-  ../../include/cbasicchannel.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cwatch.h \
@@ -217,6 +217,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cpsquare.h \
   ../../include/carray.h \
   ../../include/ccompoundmodule.h \
+  ../../include/cdataratechannel.h \
   ../../include/cgate.h \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
@@ -227,7 +228,6 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/clcg32.h \
   tkutil.h \
   ../../include/simtime.h \
-  ../../include/cbasicchannel.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cwatch.h \
@@ -312,13 +312,13 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/carray.h \
   ../../include/ccompoundmodule.h \
   ../../include/cgate.h \
+  ../../include/cdataratechannel.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/cbasicchannel.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
@@ -364,6 +364,7 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/carray.h \
   ../../include/ccompoundmodule.h \
   ../../include/cgate.h \
+  ../../include/cdataratechannel.h \
   arrow.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -371,7 +372,6 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/cbasicchannel.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cmsgpar.h \
@@ -420,6 +420,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cpsquare.h \
   ../../include/carray.h \
   ../../include/ccompoundmodule.h \
+  ../../include/cdataratechannel.h \
   ../../include/cgate.h \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
@@ -430,7 +431,6 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/clcg32.h \
   tkutil.h \
   ../../include/simtime.h \
-  ../../include/cbasicchannel.h \
   objinsp.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
@@ -618,6 +618,7 @@ $O/tkenv.obj: tkenv.cc \
   modinsp.h \
   ../../include/carray.h \
   ../../include/ccompoundmodule.h \
+  ../../include/cdataratechannel.h \
   ../../include/cgate.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -625,7 +626,6 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/csimulation.h \
   tkutil.h \
   ../../include/simtime.h \
-  ../../include/cbasicchannel.h \
   ../../include/simutil.h \
   ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \

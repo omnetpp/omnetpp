@@ -25,7 +25,7 @@
 #include "cmodule.h"
 #include "cgate.h"
 #include "cchannel.h"
-#include "cbasicchannel.h"
+#include "cdataratechannel.h"
 #include "ccomponenttype.h"
 #include "clongparimpl.h"
 #include "cboolparimpl.h"
@@ -857,7 +857,7 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
     std::string channeltypename;
     if (opp_isempty(channelspec->getLikeType())) {
         //TODO create cIdealChannel if there are no parameters?
-        channeltypename = opp_isempty(channelspec->getType()) ? "ned.BasicChannel" : channelspec->getType();
+        channeltypename = opp_isempty(channelspec->getType()) ? "ned.DatarateChannel" : channelspec->getType();
     }
     else
     {

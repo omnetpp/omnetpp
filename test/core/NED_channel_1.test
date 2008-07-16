@@ -5,50 +5,50 @@ Tests connection parameters when using channel types. (slightly obsolete)
 
 import ned.*;
 
-channel Conn0 extends ned.BasicChannel
+channel Conn0 extends ned.DatarateChannel
 {
 }
 
-channel Conn1 extends ned.BasicChannel
+channel Conn1 extends ned.DatarateChannel
 {
     parameters:
         delay = 0.004s;
 }
 
-channel Conn2 extends ned.BasicChannel
+channel Conn2 extends ned.DatarateChannel
 {
     parameters:
         ber = 0.001;
 }
 
-channel Conn3 extends ned.BasicChannel
+channel Conn3 extends ned.DatarateChannel
 {
     parameters:
         datarate = 64000bps;
 }
 
-channel Conn4 extends ned.BasicChannel
+channel Conn4 extends ned.DatarateChannel
 {
     parameters:
         delay = 0.004s;
         ber = 0.001;
 }
 
-channel Conn5 extends ned.BasicChannel
+channel Conn5 extends ned.DatarateChannel
 {
     parameters:
         delay = 0.004s;
         datarate = 64000bps;
 }
 
-channel Conn6 extends ned.BasicChannel
+channel Conn6 extends ned.DatarateChannel
 {
     parameters:
         ber = 0.001;
         datarate = 64000bps;
 }
 
-channel Conn7 extends ned.BasicChannel
+channel Conn7 extends ned.DatarateChannel
 {
     parameters:
         delay = 0.004s;
@@ -115,7 +115,7 @@ void Gen::activity()
         cChannel *ch = g->getChannel();
         if (ch)
         {
-            cBasicChannel *sch = check_and_cast<cBasicChannel *>(ch);
+            cDatarateChannel *sch = check_and_cast<cDatarateChannel *>(ch);
             if (sch->getDelay() != 0)  ev << "delay=" << sch->getDelay() << ":";
             if (sch->getDatarate())  ev << "datarate=" << sch->getDatarate() << ":";
             if (sch->getBitErrorRate())  ev << "ber=" << sch->getBitErrorRate() << ":";

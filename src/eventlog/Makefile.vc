@@ -148,7 +148,8 @@ $O/eventlogfacade.obj: eventlogfacade.cc \
   filteredeventlog.h
 $O/eventlogindex.obj: eventlogindex.cc \
   eventlogindex.h \
-  eventlogdefs.h
+  eventlogdefs.h \
+  eventlogentry.h
 $O/eventlogtablefacade.obj: eventlogtablefacade.cc \
   messagedependency.h \
   eventlogtablefacade.h \

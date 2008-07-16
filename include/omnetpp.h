@@ -19,7 +19,7 @@
 #define __OMNETPP_H
 
 #include "carray.h"
-#include "cbasicchannel.h"
+#include "cdataratechannel.h"
 #include "cboolparimpl.h"
 #include "cchannel.h"
 #include "cclassfactory.h"

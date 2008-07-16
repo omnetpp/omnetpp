@@ -28,7 +28,7 @@
 #include "cparsimpartition.h"
 #include "cplaceholdermod.h"
 #include "cproxygate.h"
-#include "cbasicchannel.h"
+#include "cdataratechannel.h"
 #include "globals.h"
 #include "regmacros.h"
 
@@ -81,8 +81,8 @@ void cLinkDelayLookahead::startRun()
                     // check we have a delay on this link (it gives us lookahead)
                     cGate *fromg  = pg->getFromGate();
                     cChannel *chan = fromg->getChannel();
-                    cBasicChannel *basicChan = dynamic_cast<cBasicChannel *>(chan);
-                    simtime_t linkDelay = basicChan ? basicChan->getDelay() : 0.0;
+                    cDatarateChannel *datarateChan = dynamic_cast<cDatarateChannel *>(chan);
+                    simtime_t linkDelay = datarateChan ? datarateChan->getDelay() : 0.0;
                     if (linkDelay<=0.0)
                         throw cRuntimeError("cLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());
 

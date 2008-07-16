@@ -243,7 +243,7 @@ channelheader
                   ps.channel = (ChannelElement *)createElementWithTag(NED_CHANNEL, ps.nedfile);
                   ps.channel->setName(toString(@2));
                   ps.extends = (ExtendsElement *)createElementWithTag(NED_EXTENDS, ps.channel);
-                  ps.extends->setName("ned.BasicChannel");  // NED-1 channels are implicitly BasicChannels
+                  ps.extends->setName("ned.DatarateChannel");  // NED-1 channels are implicitly DatarateChannels
                   ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.channel);
                   ps.params->setIsImplicit(true);
                   storeBannerAndRightComments(ps.channel,@1,@2);
