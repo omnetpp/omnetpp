@@ -83,6 +83,8 @@ void BurstyApp::initialize()
     fsm.setName("fsm");
     eedVector.setName("end-to-end delay");
 
+    destAddresses = cStringTokenizer(par("destAddresses").stdstringValue().c_str()).asIntVector();
+    myAddress = par("address").longValue();
     sleepTime = &par("sleepTime");
     burstTime = &par("burstTime");
     sendIATime = &par("sendIaTime");
