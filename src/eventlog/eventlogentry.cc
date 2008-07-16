@@ -185,7 +185,7 @@ simtime_t EventLogTokenBasedEntry::getSimtimeToken(char **tokens, int numTokens,
         const char *end;
         BigDecimal value = BigDecimal::parse(token, end);
         if (*end != '\0')
-            throw opp_runtime_error("Invalid simulation time value %s in line %.*s", value.str(), currentLineLength, currentLine);
+            throw opp_runtime_error("Invalid simulation time value %s in line %.*s", value.str().c_str(), currentLineLength, currentLine);
         return value;
     }
     else

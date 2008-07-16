@@ -174,7 +174,8 @@ static void restoreGlobalParserState()  // for error recovery
     ps = globalps;
 }
 
-static void assertNonEmpty(std::stack<NEDElement *>& somescope) {
+static void assertNonEmpty(std::stack<NEDElement *>& somescope) 
+{
     // for error recovery: STL stack::top() crashes if stack is empty
     if (somescope.empty())
     {

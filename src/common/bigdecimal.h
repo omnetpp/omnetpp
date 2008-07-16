@@ -217,10 +217,10 @@ inline const BigDecimal operator+(const BigDecimal& x, const BigDecimal& y)
     int scale = std::min(x.scale, y.scale);
     int xm = x.scale - scale;
     int ym = y.scale - scale;
+ 
+    const int NUMPOWERS = sizeof(powersOfTen) / sizeof(*powersOfTen); 
 
-    if (!x.isSpecial() && !y.isSpecial() &&
-        0 <= xm && xm < sizeof(powersOfTen) / sizeof(*powersOfTen) &&
-        0 <= ym && ym < sizeof(powersOfTen) / sizeof(*powersOfTen))
+    if (!x.isSpecial() && !y.isSpecial() && 0 <= xm && xm < NUMPOWERS && 0 <= ym && ym < NUMPOWERS)
     {
         int64 xmp = powersOfTen[xm];
         int64 xv = x.intVal * xmp;

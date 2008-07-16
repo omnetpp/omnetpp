@@ -295,7 +295,7 @@ void cIndexedFileOutputVectorManager::writeBlockToIndexFile(sVector *vp)
 
         if (vp->recordEventNumbers)
         {
-            CHECK(fprintf(fi, "%d\t%"LL"d %"LL"d %ld %ld %s %s %ld %.*g %.*g %.*g %.*g\n",
+            CHECK(fprintf(fi, "%d\t%"LL"d %"LL"d %"LL"d %"LL"d %s %s %ld %.*g %.*g %.*g %.*g\n",
                         vp->id, block.offset, block.size,
                         block.startEventNum, block.endEventNum,
                         SIMTIME_TTOA(buff1, block.startTime), SIMTIME_TTOA(buff2, block.endTime),
