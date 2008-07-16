@@ -89,10 +89,10 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
          * timeline origin is at the first event.
          */
         double getTimelineCoordinateForSimulationTime(double simulationTime, bool upperLimit = false);
+        double getTimelineCoordinateForSimulationTimeAndEventInModule(simtime_t simulationTime, int moduleId);
 
         std::vector<ptr_t> *getIntersectingMessageDependencies(ptr_t startEventPtr, ptr_t endEventPtr);
         std::vector<int> getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples, int messageSendWeight = 1, int messageReuseWeight = 0);
-
     protected:
         void extractSimulationTimesAndTimelineCoordinates(
             IEvent *event, IEvent *&nextEvent,

@@ -472,6 +472,20 @@ double SequenceChartFacade::getTimelineCoordinateForSimulationTime(double simula
     return timelineCoordinate;
 }
 
+double SequenceChartFacade::getTimelineCoordinateForSimulationTimeAndEventInModule(simtime_t simulationTime, int moduleId)
+{
+    IEvent *event = eventLog->getLastEventNotAfterSimulationTime(simulationTime);
+
+    while (event && event->getSimulationTime() == simulationTime) {
+        if (event->getModuleId() == moduleId)
+            return getTimelineCoordinate(event);
+
+        event = event->getNextEvent();
+    }
+
+    return getTimelineCoordinateForSimulationTime(simulationTime.dbl());
+}
+
 std::vector<ptr_t> *SequenceChartFacade::getIntersectingMessageDependencies(ptr_t startEventPtr, ptr_t endEventPtr)
 {
     std::set<ptr_t> messageDependencies;
