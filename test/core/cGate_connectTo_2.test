@@ -17,10 +17,8 @@ Define_Module(Sender);
 
 cChannel *Sender::createChannel(double delay)
 {
-    cChannelType *channelType = cChannelType::find("ned.BasicChannel"); //XXX find something more concise to create a basic channel...
-    cBasicChannel *ch = (cBasicChannel *)channelType->create("chan", getParentModule());
+    cBasicChannel *ch = cChannelType::createBasicChannel("chan");
     ch->setDelay(delay);
-    ch->callInitialize();
     return ch;
 }
 
@@ -49,8 +47,7 @@ void Sender::activity()
 
    // set channel, then reconnect
    ch = createChannel(0.25);
-   out->setChannel(ch);
-   out->connectTo(rcvin);
+   out->connectTo(rcvin, ch);
    PRINT(out->getChannel());
 
    // send to verify
@@ -60,7 +57,7 @@ void Sender::activity()
 
    // change channel
    ch = createChannel(0.125);
-   out->setChannel(ch);
+   out->reconnectWith(ch);
 
    // send to verify
    cMessage *msg3 = new cMessage("hello3");
@@ -68,7 +65,7 @@ void Sender::activity()
    wait(1);
 
    // remove channel
-   out->setChannel(NULL);
+   out->reconnectWith(NULL);
    PRINT(out->getChannel());
 
    ev << "done\n";

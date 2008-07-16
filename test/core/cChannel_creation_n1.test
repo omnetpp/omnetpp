@@ -32,11 +32,10 @@ Define_Module(Creator);
 
 void Creator::activity() {
     cChannelType *channelType = cChannelType::get("testlib.TestChannel");
-    cChannel *channel = channelType->create("ch", getParentModule());
-    //channel->callInitialize();
+    cChannel *channel = channelType->create("ch");
 
     cModule *sink = getParentModule()->getSubmodule("sink");
-    gate("out")->connectTo(sink->gate("in"), channel);
+    gate("out")->connectTo(sink->gate("in"), channel, true);
 
     send(new cMessage("hello"), "out");
 }

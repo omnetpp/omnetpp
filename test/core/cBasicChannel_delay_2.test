@@ -44,7 +44,7 @@ void Sender::activity()
    // create and set channel
    cBasicChannel *ch = cChannelType::createBasicChannel("chan");
    ch->setDelay(0.1);
-   gate("out")->setChannel(ch);
+   gate("out")->reconnectWith(ch);
 
    // send message
    cMessage *msg = new cMessage();

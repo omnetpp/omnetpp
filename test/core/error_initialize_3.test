@@ -1,6 +1,6 @@
 %description:
 Test that the simulation exits gracefully if simulation is interrupted (SIGTERM).
-Exit codes: Windows: 3; Linux: ??
+Exit codes: Windows: 3; Linux: 143
 
 %includes:
 #include <signal.h>
